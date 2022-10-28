@@ -142,7 +142,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           )}
           {isInRecovery ? (
             <Button
-              label="Cancel"
+              label={intl.formatMessage({ id: "general.cancel" })}
               RightIcon={GetStarted}
               flavor="blue"
               style={{
@@ -201,14 +201,14 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
       if (isObi) {
         return (
           <FormattedMessage
-            id="onboarding1.welcometoobi"
+            id="onboarding1.welcometo.obi"
             defaultMessage="Welcome to Obi"
           />
         );
       }
       return (
         <FormattedMessage
-          id="onboarding1.welcometoloop"
+          id="onboarding1.welcometo.loop"
           defaultMessage="Welcome to Loop"
         />
       );

@@ -113,7 +113,7 @@ export function Lookup({ address, onSelect, onCancel }: LookupProps) {
                 }}
               >
                 <FormattedMessage
-                  id="recover.choosewallet.title"
+                  id="recovery.choosewallet.title"
                   defaultMessage="Choose an existing wallet"
                 />
               </Text>
@@ -126,12 +126,12 @@ export function Lookup({ address, onSelect, onCancel }: LookupProps) {
               >
                 {wallets.length > 0 ? (
                   <FormattedMessage
-                    id="recover.choosewallet.subtext"
+                    id="recovery.choosewallet.subtext"
                     defaultMessage="We found the following Obi Wallets associated with your phone number and security answer. Select the one you want to recover."
                   />
                 ) : (
                   <FormattedMessage
-                    id="recover.choosewallet.subtextnone"
+                    id="recovery.choosewallet.subtextnone"
                     defaultMessage="We found no Obi Wallets associated with your phone number and security answer. Please try a different combination."
                   />
                 )}
@@ -231,11 +231,11 @@ export function Lookup({ address, onSelect, onCancel }: LookupProps) {
               onPress={() => {
                 onCancel();
               }}
-              style={{ paddingVertical: 15, paddingHorizontal: 63 }}
+              style={{ paddingVertical: 15, paddingHorizontal: 15 }}
             >
-              <Text style={{ color: "#787B9C" }}>
+              <Text style={{ color: "#787B9C", textAlign: "center" }}>
                 <FormattedMessage
-                  id="recover.choosewallet.tryagain"
+                  id="recovery.choosewallet.tryagain"
                   defaultMessage="Try a different combination"
                 />
               </Text>

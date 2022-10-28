@@ -7,6 +7,7 @@
   "general.notactive": "Nicht Aktiv",
   "general.yes": "Ja",
   "general.no": "Nein",
+  "general.cancel": "Abbrechen",
 
   "assets.network": "Netzwerk",
   "assets.walletname": "Wallet Name",
@@ -47,6 +48,12 @@
   "recovery.continuesocial": "Fortfahren mit Social-Key Update",
   "recovery.singlesig.title": "Dein Singlesig Wallet Wiederherstellen",
   "recovery.singlesig.enterphrase": "Gib die Recovery-Phrase deines Singlesig-Wallets ein.",
+  "recovery.singlesig.generateseed": "Seed generieren",
+
+  "recovery.choosewallet.title": "Wähle ein bestehendes Wallet",
+  "recovery.choosewallet.subtext": "Wir haben folgende Obi-Wallets gefunden, die mit deiner Telefonnummer und Sicherheitsantwort zusammenhängen. Wähle jenes, das du wiederherstellen möchtest.",
+  "recovery.choosewallet.subtextnone": "Wir haben keine Obi-Wallets gefunden, die mit deiner Telefonnummer und Sicherheitsantwort zusammenhängen. Bitte versuche eine andere Kombination.",
+  "recovery.choosewallet.tryagain": "Versuche eine andere Kombination.",
 
   "onboarding1.welcometo.loop": "Willkommen bei Loop",
   "onboarding1.welcometo.obi": "Willkommen bei Obi",
@@ -54,6 +61,7 @@
   "onboarding1.getstarted": "Loslegen",
   "onboarding1.recoverwallet": "Wallet Wiederherstellen",
   "onboarding1.recoversinglesig": "Singlesig Wiederherstellen",
+  "onboarding1.demo": "Demo Modus Starten",
 
   "onboarding2.authyourkeys": "Erstelle einen Telefon-Key",
   "onboarding2.authyourkeyssubtext": "Bitte beantworte eine Sicherheitsfrage.",
@@ -66,6 +74,8 @@
   "onboarding2.sendmagicsms": "Magic SMS Empfangen",
   "onboarding2.recovery.authyourkeys": "Erstelle einen neuen Telefon-Key",
   "onboarding2.recovery.authyourkeyssubtext": "Bitte beantworte eine Sicherheitsfrage. Es kann die gleiche wie deine vorherige Antwort sein oder eine andere.",
+  "onboarding2.recovery.phonenumber": "Deinen alten Telefon-Key wiederherstellen",
+  "onboarding2.recovery.social": "Deinen Social-Key wiederherstellen",
 
   "onboarding2.error.phonekeyexists.title": "Du hast bereits einen Schlüssel für deine Telefonnummer",
   "onboarding2.error.phonekeyexists.text": "Möchtest du den Schlüssel für deine bestehende Telefonnummer wiederverwenden",
@@ -115,6 +125,7 @@
   "onboarding5.recovery.setsocialkey.subtext2": "Du verwendest derzeit den Obi-Account. Dies wird den Obi-Account von deiner Multisig entfernen und ihn mit dem Key deines Freundes ersetzen.",
   "onboarding5.error.noactivity.title": "Wir konnten keine Aktivität unter diese Adresse finden.",
   "onboarding5.error.noactivity.subtext": "Bitte überprüfe die Adresse, sag deinem Freund er soll sie zumindest einmal verwenden (zum Beispiel indem er Coins an sich selbst schickt), oder versuche eine andere Adresse.",
+  "onboarding5.recovery.socialsubtext": "Gib die juno-Adresse eines vertrauenswürdigen Freundes ein, die du benutzt hast als du dein Wallet erstellt hast.",
 
   "onboarding4.error.socialkeyexists.title": "Du hast bereits einen Social-Key",
   "onboarding4.error.socialkeyexists.text": "Möchtest du deinen bestehenden Biometrie-Key wiederverwenden? Für:",
@@ -133,6 +144,11 @@
   "signature.modal.createobiwallet": "Erstelle Obi Wallet",
   "signature.modal.value": "Wert",
   "signature.modal.signatures": "Signaturen",
+  "signature.modal.unknownmessage.heading": "Unbekannte Nachricht",
+  "signature.modal.unknownmessage.subheading": "Bitte Daten-Tab prüfen",
+  "signature.modal.initcontract": "Init Contract",
+  "signature.modal.proposeupdateadmin": "Neuen Admin für Obi Wallet vorschlagen",
+  "signature.modal.confirmupdateadmin": "Neuen Admin für Obi Wallet bestätigen",
 
   "signature.modal.biometricsignature": "Biometrischer Key",
   "signature.modal.phonesignature": "Telefonnummer Key",
