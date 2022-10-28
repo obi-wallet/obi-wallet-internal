@@ -44,7 +44,7 @@ export function NFTs() {
           />
           <Text style={{ color: "white", fontSize: 20, fontWeight: "700" }}>
             <FormattedMessage
-              id="menu.loading's"
+              id="menu.loadingnfts"
               defaultMessage="Loading NFTs.."
             />
           </Text>

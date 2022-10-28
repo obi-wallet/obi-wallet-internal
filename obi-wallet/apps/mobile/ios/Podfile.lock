@@ -98,7 +98,7 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
   - glog (0.3.5)
-  - hermes-engine (0.70.3)
+  - hermes-engine (0.70.4)
   - JWT (3.0.0-beta.14):
     - Base64 (~> 1.1.2)
   - libevent (2.1.12)
@@ -433,7 +433,7 @@ PODS:
     - React-Core
   - RNPermissions (3.6.1):
     - React-Core
-  - RNReanimated (2.11.0):
+  - RNReanimated (2.12.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -723,7 +723,7 @@ SPEC CHECKSUMS:
   FlipperKit: 6d21c9ee3751177a958cd203ed06b4f5acb55fed
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  hermes-engine: bb344d89a0d14c2c91ad357480a79698bb80e186
+  hermes-engine: 3623325e0d0676a45fbc544d72c57dd79fce7446
   JWT: ef71dfb03e1f842081e64dc42eef0e164f35d251
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
@@ -767,7 +767,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
   RNKeychain: ff836453cba46938e0e9e4c22e43d43fa2c90333
   RNPermissions: dcdb7b99796bbeda6975a6e79ad519c41b251b1c
-  RNReanimated: 0d608bff84327b7b804013de9d23b36292344b32
+  RNReanimated: 95fde05503235f14cd4a0cf526ffbad3d54af688
   RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
   RNSentry: 694aecc3d8240e4935374974a6636e360ae06394
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
