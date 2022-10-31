@@ -54,6 +54,7 @@ import { createBiometricSignature } from "../../biometrics";
 import { InlineButton } from "../../button";
 import { createSigningCosmWasmClient } from "../../clients";
 import { lendFees } from "../../fee-lender-worker";
+import { Loader } from "../../loader";
 import {
   BottomSheet,
   BottomSheetRef,
@@ -392,9 +393,23 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
               paddingVertical: 50,
             }}
           >
-            <Text style={{ color: "white", fontSize: 16, fontWeight: "700" }}>
-              Preparing…
-            </Text>
+            <Loader
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 999,
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}
+              loadingText={intl.formatMessage({
+                id: "onboarding6.loadingtext",
+                defaultMessage: "Preparing Wallet...",
+              })}
+            />
           </View>
         ) : (
           <KeysList
