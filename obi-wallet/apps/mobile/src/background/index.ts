@@ -16,6 +16,7 @@ import {
   InteractionService,
   Key,
   KeyRingStatus,
+  LedgerApp,
   LedgerService,
   MultiKeyStoreInfoWithSelected,
   PermissionService,
@@ -434,6 +435,30 @@ class KeyRingService extends AbstractKeyRingService {
   ): Promise<boolean> {
     console.log("Not implemented, verifyADR36AminoSignDoc");
     return Promise.resolve(false);
+  }
+
+  initializeNonDefaultLedgerApp(
+    env: Env,
+    ledgerApp: LedgerApp
+  ): Promise<Uint8Array> {
+    console.log("Not implemented, initializeNonDefaultLedgerApp");
+    return Promise.resolve(new Uint8Array());
+  }
+
+  requestSignEIP712CosmosTx_v0(
+    env: Env,
+    msgOrigin: string,
+    chainId: string,
+    signer: string,
+    eip712: {
+      types: Record<string, { name: string; type: string }[] | undefined>;
+      domain: Record<string, any>;
+      primaryType: string;
+    },
+    signDoc: StdSignDoc,
+    signOptions: KeplrSignOptions
+  ): Promise<AminoSignResponse> {
+    throw new Error("Method not implemented.");
   }
 }
 
