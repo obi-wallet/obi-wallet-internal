@@ -140,7 +140,7 @@
 
   "signature.modal.confirmtx": "Transaktion Bestätigen",
   "signature.modal.txdetails": "Tx Details",
-  "signature.modal.data": "DATEN",
+  "signature.modal.data": "Daten",
   "signature.modal.createobiwallet": "Erstelle Obi Wallet",
   "signature.modal.value": "Wert",
   "signature.modal.signatures": "Signaturen",

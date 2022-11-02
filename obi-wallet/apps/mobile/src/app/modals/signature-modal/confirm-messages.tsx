@@ -110,9 +110,18 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
             <View style={{ flexDirection: "row", height: 50 }}>
               {renderTabButton({
                 tab: Tab.TransactionDetails,
-                label: "Tx Details",
+                label: intl.formatMessage({
+                  id: "signature.modal.txdetails",
+                  defaultMessage: "Tx Details",
+                }),
               })}
-              {renderTabButton({ tab: Tab.Data, label: "Data" })}
+              {renderTabButton({
+                tab: Tab.Data,
+                label: intl.formatMessage({
+                  id: "signature.modal.data",
+                  defaultMessage: "Data",
+                }),
+              })}
             </View>
 
             <View
