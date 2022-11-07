@@ -1,9 +1,11 @@
 import { MultisigThresholdPubkey } from "@cosmjs/amino";
 
 import {
+  Secp256k1PublicKey,
   SerializedBiometricsPayload,
   SerializedCloudPayload,
   SerializedPhoneNumberPayload,
+  SerializedProxyAddress,
   SerializedSocialPayload,
 } from "./serialized-data";
 
@@ -35,6 +37,10 @@ export enum MultisigState {
 export * from "./serialized-data";
 
 export interface ProxyWallet {
-  contract: string;
-  signers: string[];
+  proxyAddress: SerializedProxyAddress;
+  admin: {
+    biometrics: Secp256k1PublicKey;
+    phoneNumber: Secp256k1PublicKey;
+    social?: Secp256k1PublicKey;
+  };
 }
