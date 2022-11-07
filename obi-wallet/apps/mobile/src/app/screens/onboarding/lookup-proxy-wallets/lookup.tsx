@@ -5,7 +5,6 @@ import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { ProxyWallet, Text } from "@obi-wallet/common";
-import * as R from "ramda";
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Linking, ScrollView, TouchableOpacity, View } from "react-native";
@@ -16,12 +15,12 @@ import { Background } from "../../components/background";
 import { VerifyAndProceedButton } from "../../components/phone-number/verify-and-proceed-button";
 
 export interface LookupProps {
-  address: string;
+  publicKey: string;
   onSelect(wallet: ProxyWallet): void;
   onCancel(): void;
 }
 
-export function Lookup({ address, onSelect, onCancel }: LookupProps) {
+export function Lookup({ publicKey, onSelect, onCancel }: LookupProps) {
   const [wallets, setWallets] = useState<ProxyWallet[] | null>(null);
   const [selectedWallet, setSelectedWallet] = useState<ProxyWallet | null>(
     null
@@ -30,48 +29,18 @@ export function Lookup({ address, onSelect, onCancel }: LookupProps) {
   useEffect(() => {
     (async () => {
       try {
-        const response = await fetch(getUrl(address));
-        const { result } = (await response.json()) as LookupQueryResponse;
-        const wallets = result.txs.map((tx) => {
-          const event = tx.tx_result.events.find((event) => {
-            return event.type === "wasm-obisign";
-          });
-          if (!event) return null;
-          const attributes = event.attributes.map((attribute) => {
-            return {
-              key: Buffer.from(attribute.key, "base64").toString("utf-8"),
-              value: Buffer.from(attribute.value, "base64").toString("utf-8"),
-            };
-          });
-
-          const contractAttribute = attributes.find((attribute) => {
-            return attribute.key === "_contract_address";
-          });
-
-          if (!contractAttribute) return null;
-
-          return {
-            contract: contractAttribute.value,
-            signers: attributes
-              .filter((attribute) => {
-                return attribute.key === "signer";
-              })
-              .map((attribute) => {
-                return attribute.value;
-              }),
-          };
-        });
-
-        let proxyWallets = wallets.filter((wallet) => {
-          return wallet !== null;
-        }) as ProxyWallet[];
-        proxyWallets = R.uniqBy(R.prop("contract"), proxyWallets);
+        const response = await fetch(
+          `https://proxy-wallets.obiwallet.workers.dev/juno-1/${encodeURIComponent(
+            publicKey
+          )}`
+        );
+        const proxyWallets = (await response.json()) as ProxyWallet[];
         setWallets(proxyWallets);
       } catch (e) {
         console.log(e);
       }
     })();
-  }, [address]);
+  }, [publicKey]);
 
   if (!wallets) return null;
 
@@ -144,7 +113,7 @@ export function Lookup({ address, onSelect, onCancel }: LookupProps) {
 
               return (
                 <TouchableOpacity
-                  key={wallet.contract}
+                  key={wallet.proxyAddress.address}
                   style={{
                     height: 79,
                     width: "100%",
@@ -186,7 +155,10 @@ export function Lookup({ address, onSelect, onCancel }: LookupProps) {
                         fontWeight: "600",
                       }}
                     >
-                      {Bech32Address.shortenAddress(wallet.contract, 20)}
+                      {Bech32Address.shortenAddress(
+                        wallet.proxyAddress.address,
+                        20
+                      )}
                     </Text>
                   </View>
                   <IconButton
@@ -197,7 +169,7 @@ export function Lookup({ address, onSelect, onCancel }: LookupProps) {
                     }}
                     onPress={() => {
                       Linking.openURL(
-                        `https://www.mintscan.io/juno/wasm/contract/${wallet.contract}`
+                        `https://www.mintscan.io/juno/wasm/contract/${wallet.proxyAddress.address}`
                       );
                     }}
                   >
@@ -245,27 +217,4 @@ export function Lookup({ address, onSelect, onCancel }: LookupProps) {
       </View>
     </SafeAreaView>
   );
-}
-
-function getUrl(address: string) {
-  const url = new URL("https://juno-obi-rpc.dalnim.finance/tx_search");
-  url.searchParams.append("query", `"wasm-obisign.signer='${address}'"`);
-
-  return url.href;
-}
-
-interface LookupQueryResponse {
-  result: {
-    txs: {
-      tx_result: {
-        events: {
-          type: string;
-          attributes: {
-            key: string;
-            value: string;
-          }[];
-        }[];
-      };
-    }[];
-  };
 }

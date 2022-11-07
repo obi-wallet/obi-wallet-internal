@@ -43,7 +43,7 @@ export const RecoverMultisig = observer<RecoverMultisigProps>(
       if (!nextMultisig.multisig?.address) return [];
       if (!sender?.multisig?.address) return [];
 
-      const contract = wallet.walletInRecovery?.contract;
+      const contract = wallet.walletInRecovery?.proxyAddress.address;
       if (!contract) return [];
 
       if (wallet.updateProposed) {
@@ -128,7 +128,7 @@ export const RecoverMultisig = observer<RecoverMultisigProps>(
             const response = await RequestObiSignAndBroadcastMsg.send({
               id: wallet.id,
               encodeObjects,
-              multisig,
+              multisig: sender,
               hiddenKeyIds: wallet.updateProposed ? [] : ["biometrics"],
             });
 
@@ -178,7 +178,7 @@ export const RecoverMultisig = observer<RecoverMultisigProps>(
           }
         })();
       }
-    }, [chainStore, encodeObjects, multisig, navigation, wallet]);
+    }, [chainStore, encodeObjects, sender, navigation, wallet]);
 
     return (
       <SafeAreaView style={{ flex: 1 }}>

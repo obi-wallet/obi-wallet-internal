@@ -95,7 +95,24 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   @action
-  public setWalletInRecovery(wallet: ProxyWallet) {
+  public async setWalletInRecovery(wallet: ProxyWallet) {
+    await this.setCurrentAdmin({
+      biometrics: {
+        publicKey: wallet.admin.biometrics,
+      },
+      phoneNumber: this.nextAdmin.phoneNumber,
+      social: wallet.admin.social
+        ? {
+            publicKey: wallet.admin.social,
+          }
+        : null,
+      cloud: null,
+    });
+    if (wallet.admin.social) {
+      await this.setSocialPublicKey({
+        publicKey: wallet.admin.social,
+      });
+    }
     this._walletInRecovery = wallet;
   }
 

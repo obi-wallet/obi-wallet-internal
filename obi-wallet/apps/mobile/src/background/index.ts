@@ -452,6 +452,7 @@ class KeyRingService extends AbstractKeyRingService {
     signer: string,
     eip712: {
       types: Record<string, { name: string; type: string }[] | undefined>;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       domain: Record<string, any>;
       primaryType: string;
     },

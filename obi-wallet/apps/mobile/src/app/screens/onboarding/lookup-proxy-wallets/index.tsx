@@ -7,19 +7,19 @@ import { Lookup } from "./lookup";
 export const LookupProxyWallets = observer(() => {
   const wallet = useMultisigWallet();
   const { navigate } = useRootNavigation();
-  const address = wallet.nextAdmin.phoneNumber?.address;
+  const publicKey = wallet.nextAdmin.phoneNumber?.publicKey;
 
-  if (!address) return null;
+  if (!publicKey) return null;
 
   return (
     <Lookup
-      address={address}
+      publicKey={publicKey.value}
       onCancel={() => {
         navigate("create-multisig-phone-number");
       }}
-      onSelect={(recoveryWallet) => {
-        wallet.setWalletInRecovery(recoveryWallet);
-        navigate("create-multisig-social");
+      onSelect={async (recoveryWallet) => {
+        await wallet.setWalletInRecovery(recoveryWallet);
+        navigate("recover-multisig");
       }}
     />
   );

@@ -1,3 +1,4 @@
+import { JsonObject } from "@cosmjs/cosmwasm-stargate";
 import { Coin } from "@cosmjs/stargate";
 import { toGenerator } from "@keplr-wallet/common";
 import { computed, flow, makeObservable, observable } from "mobx";
@@ -137,7 +138,7 @@ export class BalancesStore {
       if (!route) return 0;
       if (route.length === 0) return 1;
 
-      let dexBasePriceElements: any;
+      let dexBasePriceElements: JsonObject;
 
       let dexBasePrice: number;
       if (

@@ -522,6 +522,7 @@ export function useSignatureModalProps({
           if (!(await client.getAccount(address))) {
             await lendFees({ chainId, address });
           }
+
           async function hasEnoughForFees() {
             const balance = await client?.getBalance(address, denom);
             return balance && parseInt(balance.amount, 10) >= feeAmount;

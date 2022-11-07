@@ -1,4 +1,3 @@
-import { pubkeyToAddress } from "@cosmjs/amino";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { createStargateClient, Text } from "@obi-wallet/common";
@@ -8,7 +7,6 @@ import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import invariant from "tiny-invariant";
 
 import { IconButton, InlineButton } from "../../../../button";
 import { useMultisigWallet, useStore } from "../../../../stores";
@@ -233,87 +231,13 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                   setFetchingPubKey(false);
 
                   if (publicKey) {
-                    const walletInRecovery = wallet.walletInRecovery;
-                    if (walletInRecovery) {
-                      invariant(
-                        walletInRecovery.signers.length === 3,
-                        "Expected wallet to have three signers."
-                      );
-
-                      const socialAddress = pubkeyToAddress(
-                        publicKey,
-                        chainStore.currentChainInformation.prefix
-                      );
-
-                      if (
-                        !walletInRecovery.signers.find((signer) => {
-                          return signer === socialAddress;
-                        })
-                      ) {
-                        Alert.alert(
-                          "Error",
-                          "This address was not used to create this wallet. Please try again."
-                        );
-                        return;
-                      }
-
-                      const previousBiometrics = walletInRecovery.signers.find(
-                        (signer) => {
-                          return (
-                            signer !== socialAddress &&
-                            signer !== wallet.nextAdmin?.phoneNumber?.address
-                          );
-                        }
-                      );
-
-                      if (!previousBiometrics) {
-                        Alert.alert(
-                          "Error",
-                          "Could not find previous device public key."
-                        );
-                        return;
-                      }
-
-                      const biometricsPublicKey = await getAccountPubkey(
-                        previousBiometrics
-                      );
-
-                      if (!biometricsPublicKey) {
-                        Alert.alert(
-                          "Error",
-                          "Could not find previous device public key."
-                        );
-                        return;
-                      }
-
-                      invariant(
-                        wallet.nextAdmin?.phoneNumber,
-                        "Expected next admin to have a phone number."
-                      );
-
-                      wallet.setCurrentAdmin({
-                        biometrics: {
-                          // @ts-expect-error Assuming tendermint
-                          publicKey: biometricsPublicKey,
-                        },
-                        phoneNumber: wallet.nextAdmin?.phoneNumber,
-                        social: {
-                          publicKey,
-                        },
-                      });
-                      wallet.setSocialPublicKey({
-                        publicKey,
-                      });
-                      navigation.navigate("recover-multisig");
+                    await wallet.setSocialPublicKey({
+                      publicKey,
+                    });
+                    if (wallet.keyInRecovery !== "social") {
+                      navigation.navigate("create-multisig-init");
                     } else {
-                      wallet.setSocialPublicKey({
-                        publicKey,
-                      });
-                      if (wallet.keyInRecovery !== "social") {
-                        navigation.navigate("create-multisig-init");
-                      } else {
-                        navigation.navigate("replace-multisig");
-                      }
+                      navigation.navigate("replace-multisig");
                     }
                   }
                 }}
