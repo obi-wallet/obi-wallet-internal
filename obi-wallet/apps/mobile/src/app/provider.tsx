@@ -1,7 +1,11 @@
 import { messages } from "@obi-wallet/common";
-import { NavigationContainer } from "@react-navigation/native";
+import analytics from "@react-native-firebase/analytics";
+import {
+  NavigationContainer,
+  NavigationContainerRef,
+} from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { ReactNode, StrictMode } from "react";
+import { ReactNode, StrictMode, useRef } from "react";
 import { IntlProvider } from "react-intl";
 import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -14,6 +18,10 @@ export interface ProviderProps {
 }
 
 export const Provider = observer<ProviderProps>(({ children }) => {
+  const routeName = useRef<string>();
+  const navigation =
+    useRef<NavigationContainerRef<ReactNavigation.RootParamList>>(null);
+
   const { languageStore } = rootStore;
   const { currentLanguage } = languageStore;
 
@@ -54,7 +62,25 @@ export const Provider = observer<ProviderProps>(({ children }) => {
           }}
         >
           <SafeAreaProvider>
-            <NavigationContainer>
+            <NavigationContainer
+              ref={navigation}
+              onReady={() => {
+                routeName.current = navigation.current?.getCurrentRoute()?.name;
+              }}
+              onStateChange={async () => {
+                const previousRouteName = routeName.current;
+                const currentRouteName =
+                  navigation.current?.getCurrentRoute()?.name;
+
+                if (previousRouteName !== currentRouteName) {
+                  await analytics().logScreenView({
+                    screen_name: currentRouteName,
+                    screen_class: currentRouteName,
+                  });
+                }
+                routeName.current = currentRouteName;
+              }}
+            >
               <StatusBar barStyle="light-content" />
               {children}
             </NavigationContainer>
