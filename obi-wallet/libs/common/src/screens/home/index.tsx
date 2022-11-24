@@ -89,7 +89,7 @@ export const Home = observer<HomeProps>(
                       setEditMode(true);
                     }}
                     key={app.url}
-                    imgURL={app.icon}
+                    imgUrl={app.icon}
                     label={app.label}
                     onRemove={
                       editMode

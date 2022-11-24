@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { FC, ReactNode } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SvgProps } from "react-native-svg";
 import SvgUri from "react-native-svg-uri";
@@ -44,8 +44,8 @@ export function Tiles({ children }: { children: ReactNode }) {
 }
 
 export interface TileProps {
-  imgURL?: string | null;
-  ImgComponent?: React.FC<SvgProps>;
+  imgUrl?: string | null;
+  ImgComponent?: FC<SvgProps>;
   label: string;
   disabled?: boolean;
   onRemove?: () => void;
@@ -54,7 +54,7 @@ export interface TileProps {
 }
 
 export function Tile({
-  imgURL,
+  imgUrl,
   ImgComponent,
   label,
   disabled,
@@ -63,22 +63,25 @@ export function Tile({
   onLongPress,
 }: TileProps) {
   const getImage = () => {
-    if (imgURL) {
-      //if img is svg, use it as is
-      imgURL?.includes(".svg") ? (
-        <SvgUri width="100%" height="100%" source={{ uri: imgURL }} />
-      ) : (
+    if (imgUrl) {
+      if (imgUrl.endsWith(".svg")) {
+        return <SvgUri width="100%" height="100%" source={{ uri: imgUrl }} />;
+      }
+
+      return (
         <Image
           style={styles.icon}
           source={{
-            uri: imgURL || "https://place-hold.it/180x180",
+            uri: imgUrl || "https://place-hold.it/180x180",
           }}
         />
       );
     }
+
     if (ImgComponent) {
       return <ImgComponent width="100%" height="100%" />;
     }
+
     return null;
   };
   const children = (
