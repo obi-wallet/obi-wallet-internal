@@ -102,3 +102,7 @@ buck-out/
 
 # React Cosmos
 cosmos.userdeps.js
+
+# Firebase
+google-services.json
+GoogleService-Info.plist
