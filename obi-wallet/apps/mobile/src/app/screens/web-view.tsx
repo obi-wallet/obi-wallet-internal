@@ -4,10 +4,10 @@ import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
-import { App, fetchMeta, Text } from "@obi-wallet/common";
+import { fetchMeta, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Share, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
@@ -26,57 +26,12 @@ export type WebViewScreenProps = NativeStackScreenProps<
 export const WebViewScreen = observer<WebViewScreenProps>(
   ({ navigation, route }) => {
     const { app } = route.params;
-    const [currentAppMetadata, setCurrentAppMetadata] = useState(app);
     const [currentUrl, setCurrentUrl] = useState(app.url);
-    const [loaded, setLoaded] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [title, setTitle] = useState(app.label);
     const webViewRef = useRef<WebView>(null);
 
     const safeArea = useSafeAreaInsets();
-
-    useEffect(() => {
-      if (loaded) {
-        void (async () => {
-          //fetch title from app url html
-          try {
-            const { title, icon } = await fetchMeta(app.url);
-            //
-            // const res = await axios.get(app.url);
-            // const html = res.data;
-            // const root = await parse(html);
-            // // get the page manifest
-            // const manifest = root.querySelector('link[rel="manifest"]');
-            // const manifestUrl = manifest?.attributes.href;
-            // console.log({ manifestUrl });
-            // //get host from currentUrl
-            // const host = currentUrl.split("/")[2];
-            // console.log({ host }, host + manifestUrl);
-            // const manifestRes = await axios.get("https://" + host + manifestUrl);
-            // console.log(manifestRes.data.icons);
-            // //get the largest icon from manifestres.data.icons
-            // const largestIcon = manifestRes.data.icons.sort(
-            //   (a, b) => b.sizes.length - a.sizes.length
-            // )[0];
-            // // if largestIcon is a url keep it else compose it from host and largestIcon.src
-            // const icon = largestIcon.src.startsWith("http")
-            //   ? largestIcon.src
-            //   : "https://" + host + largestIcon.src;
-
-            const normalizedIcon = icon?.endsWith("/")
-              ? icon.substr(0, icon.length - 1)
-              : icon;
-
-            setCurrentAppMetadata({
-              ...app,
-              icon: normalizedIcon,
-              label: title ?? app.url,
-            });
-          } catch (e) {
-            console.log(e);
-          }
-        })();
-      }
-    }, [app, currentUrl, loaded]);
 
     const bottomSheetRef = useRef<BottomSheet>(null);
     const triggerBottomSheet = (index: number) => {
@@ -141,18 +96,16 @@ export const WebViewScreen = observer<WebViewScreenProps>(
         <ConnectedWebView
           url={currentUrl}
           webViewRef={webViewRef}
-          onLoadEnd={() => {
-            setLoaded(true);
-          }}
           style={{ flex: 1, width: "100%", height: "100%" }}
+          onLoadEnd={() => {
+            setLoading(false);
+          }}
           onNavigationStateChange={(e) => {
             setCurrentUrl(e.url);
             setTitle(e.title);
           }}
-          loading={!loaded}
-          setLoading={(loading) => {
-            setLoaded(!loading);
-          }}
+          loading={loading}
+          setLoading={setLoading}
         />
         <BottomSheet
           handleIndicatorStyle={{ backgroundColor: "white" }}
@@ -182,7 +135,7 @@ export const WebViewScreen = observer<WebViewScreenProps>(
                 paddingHorizontal: 20,
               }}
             >
-              <FavButton app={currentAppMetadata} />
+              <FavButton title={title} url={currentUrl} />
               <RefreshButton onPress={() => webViewRef.current?.reload()} />
               <ShareButton url={currentUrl} />
             </View>
@@ -193,17 +146,52 @@ export const WebViewScreen = observer<WebViewScreenProps>(
   }
 );
 
-const FavButton = observer<{ app: App }>(({ app }) => {
+const FavButton = observer<{ title: string; url: string }>(({ title, url }) => {
   const { appsStore } = useStore();
-  const isFavorite = appsStore.hasFavorite(app.url);
+  const isFavorite = appsStore.hasFavorite(url);
 
   return (
     <SheetButton
-      onPress={() => {
+      onPress={async () => {
         if (isFavorite) {
-          appsStore.removeFavoriteByUrl(app.url);
+          appsStore.removeFavoriteByUrl(url);
         } else {
-          appsStore.addFavorite(app);
+          try {
+            const { icon } = await fetchMeta(url);
+            //
+            // const res = await axios.get(app.url);
+            // const html = res.data;
+            // const root = await parse(html);
+            // // get the page manifest
+            // const manifest = root.querySelector('link[rel="manifest"]');
+            // const manifestUrl = manifest?.attributes.href;
+            // console.log({ manifestUrl });
+            // //get host from currentUrl
+            // const host = currentUrl.split("/")[2];
+            // console.log({ host }, host + manifestUrl);
+            // const manifestRes = await axios.get("https://" + host + manifestUrl);
+            // console.log(manifestRes.data.icons);
+            // //get the largest icon from manifestres.data.icons
+            // const largestIcon = manifestRes.data.icons.sort(
+            //   (a, b) => b.sizes.length - a.sizes.length
+            // )[0];
+            // // if largestIcon is a url keep it else compose it from host and largestIcon.src
+            // const icon = largestIcon.src.startsWith("http")
+            //   ? largestIcon.src
+            //   : "https://" + host + largestIcon.src;
+
+            const normalizedIcon = icon?.endsWith("/")
+              ? icon.substr(0, icon.length - 1)
+              : icon;
+
+            appsStore.addFavorite({
+              icon: normalizedIcon,
+              label: title ?? url,
+              url,
+            });
+          } catch (e) {
+            console.log(e);
+          }
         }
       }}
       IconComponent={
