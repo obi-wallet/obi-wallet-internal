@@ -24,7 +24,8 @@ export async function fetchMeta(url: string): Promise<Meta> {
   function getIcon(): string | null {
     const icon =
       root.querySelector("link[rel='apple-touch-icon']") ??
-      root.querySelector("link[rel='icon']");
+      root.querySelector("link[rel='icon']") ??
+      root.querySelector("link[rel='shortcut icon']");
     const href = icon?.getAttribute("href") ?? null;
 
     const base = root.querySelector("base");
