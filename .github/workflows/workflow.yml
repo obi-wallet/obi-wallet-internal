@@ -9,6 +9,5 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16.x
-      - run: sudo apt-get update
       - run: yarn setup
       - run: yarn checks
