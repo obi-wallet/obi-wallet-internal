@@ -9,6 +9,12 @@
       "options": {
         "lintFilePatterns": ["libs/injected-provider/**/*.ts"]
       }
+    },
+    "tsc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -b libs/common/tsconfig.lib.json"
+      }
     }
   },
   "tags": []

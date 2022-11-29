@@ -19,6 +19,12 @@
         "jestConfig": "libs/background/jest.config.ts",
         "passWithNoTests": true
       }
+    },
+    "tsc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -b libs/common/tsconfig.lib.json"
+      }
     }
   }
 }
