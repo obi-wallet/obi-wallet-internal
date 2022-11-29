@@ -29,8 +29,5 @@ EOF
 # Install dependencies
 yarn
 
-# Install Keplr dependencies and build packages
-(cd ..; yarn && yarn build:libs)
-
 # Build provider
 bash scripts/build-provider.sh
