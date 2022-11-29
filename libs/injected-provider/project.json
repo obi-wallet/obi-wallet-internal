@@ -9,14 +9,6 @@
       "options": {
         "lintFilePatterns": ["libs/injected-provider/**/*.ts"]
       }
-    },
-    "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/injected-provider"],
-      "options": {
-        "jestConfig": "libs/injected-provider/jest.config.ts",
-        "passWithNoTests": true
-      }
     }
   },
   "tags": []
