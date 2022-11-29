@@ -7,21 +7,6 @@ import {
 } from "@cosmjs/amino";
 import { DirectSignResponse } from "@cosmjs/proto-signing";
 import { DeliverTxResponse } from "@cosmjs/stargate";
-import {
-  AbstractKeyRingService,
-  BIP44HDPath,
-  ChainsService,
-  ExportKeyRingData,
-  init,
-  InteractionService,
-  Key,
-  KeyRingStatus,
-  LedgerApp,
-  LedgerService,
-  MultiKeyStoreInfoWithSelected,
-  PermissionService,
-  ScryptParams,
-} from "@keplr-wallet/background";
 import { escapeHTML } from "@keplr-wallet/common";
 import {
   Bech32Address,
@@ -37,6 +22,21 @@ import {
   Message,
 } from "@keplr-wallet/router";
 import { BIP44, EthSignType, KeplrSignOptions } from "@keplr-wallet/types";
+import {
+  KeyRingService as AbstractKeyRingService,
+  BIP44HDPath,
+  ChainsService,
+  ExportKeyRingData,
+  init,
+  InteractionService,
+  Key,
+  KeyRingStatus,
+  LedgerApp,
+  LedgerService,
+  MultiKeyStoreInfoWithSelected,
+  PermissionService,
+  ScryptParams,
+} from "@obi-wallet/background";
 import {
   EmbedChainInfos,
   isSinglesigWallet,

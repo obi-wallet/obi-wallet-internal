@@ -1,11 +1,11 @@
-import { Keplr } from "@keplr-wallet/types";
-import { SecretUtils } from "secretjs/types/enigmautils";
 import {
   EncodeObject,
   OfflineDirectSigner,
   OfflineSigner,
 } from "@cosmjs/proto-signing";
 import { DeliverTxResponse } from "@cosmjs/stargate";
+import { Keplr } from "@keplr-wallet/types";
+import { SecretUtils } from "secretjs/types/enigmautils";
 
 export function init(
   keplr: Keplr,

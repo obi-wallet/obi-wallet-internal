@@ -2,6 +2,7 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "background": "libs/background",
     "common": "libs/common",
     "injected-provider": "libs/injected-provider",
     "mobile": "apps/mobile"
