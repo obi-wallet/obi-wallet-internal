@@ -1,6 +1,10 @@
-dist
-build
+# Transpiled code
+dist/
+build/
 
-apps/mobile/android
-apps/mobile/ios
+/apps/mobile/android/
+/apps/mobile/ios/
 apps/mobile/cosmos.userdeps.js
+
+# Yarn
+.yarn/
