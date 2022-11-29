@@ -10,12 +10,10 @@
         "lintFilePatterns": ["libs/injected-provider/**/*.ts"]
       }
     },
-    "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/injected-provider"],
+    "tsc": {
+      "executor": "nx:run-commands",
       "options": {
-        "jestConfig": "libs/injected-provider/jest.config.ts",
-        "passWithNoTests": true
+        "command": "tsc -b libs/common/tsconfig.lib.json"
       }
     }
   },

@@ -7,4 +7,7 @@ module.exports = {
   moduleNameMapper: {
     ".svg": "@nrwl/react-native/plugins/jest/svg-mock",
   },
+  transform: {
+    "\\.(js|ts|tsx)$": require.resolve("../../apps/mobile/preprocessor.js"),
+  },
 };
