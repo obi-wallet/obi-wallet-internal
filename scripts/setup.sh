@@ -26,8 +26,5 @@ tee apps/mobile/android/app/src/main/assets/appcenter-config.json <<EOF
 }
 EOF
 
-# Install dependencies
-yarn
-
 # Build provider
 bash scripts/build-provider.sh
