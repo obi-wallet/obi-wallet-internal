@@ -89,6 +89,13 @@
         "cwd": "apps/mobile"
       }
     },
+    "cosmos": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cosmos-native",
+        "cwd": "apps/mobile"
+      }
+    },
     "tsc": {
       "executor": "nx:run-commands",
       "options": {

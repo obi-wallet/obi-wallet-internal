@@ -36,6 +36,11 @@ export function init(
   embedChainInfos: ChainInfo[],
   // The origins that are able to pass any permission.
   privilegedOrigins: string[],
+  communityChainInfoRepo: {
+    readonly organizationName: string;
+    readonly repoName: string;
+    readonly branchName: string;
+  },
   commonCrypto: CommonCrypto,
   notification: Notification,
   ledgerOptions: Partial<LedgerOptions> = {},
@@ -67,7 +72,8 @@ export function init(
   );
 
   const chainUpdaterService = new Updater.ChainUpdaterService(
-    storeCreator("updator")
+    storeCreator("updator"),
+    communityChainInfoRepo
   );
 
   const tokensService = new Tokens.TokensService(storeCreator("tokens"));
@@ -86,7 +92,7 @@ export function init(
     ledgerOptions
   );
 
-  const keyRingService = createKeyRingService(
+  const keyRingService = new KeyRing.KeyRingService(
     storeCreator("keyring"),
     embedChainInfos,
     commonCrypto
@@ -103,12 +109,13 @@ export function init(
   const phishingListService = new PhishingList.PhishingListService({
     blockListUrl:
       "https://raw.githubusercontent.com/chainapsis/phishing-block-list/main/block-list.txt",
+    twitterListUrl:
+      "https://raw.githubusercontent.com/chainapsis/phishing-block-list/main/twitter-scammer-list.txt",
     fetchingIntervalMs: 3 * 3600 * 1000, // 3 hours
     retryIntervalMs: 10 * 60 * 1000, // 10 mins,
     allowTimeoutMs: 10 * 60 * 1000, // 10 mins,
   });
 
-  interactionService.init();
   persistentMemoryService.init();
   permissionService.init(interactionService, chainsService, keyRingService);
   chainUpdaterService.init(chainsService);
@@ -118,7 +125,11 @@ export function init(
     chainsService,
     keyRingService
   );
-  chainsService.init(chainUpdaterService, interactionService);
+  chainsService.init(
+    chainUpdaterService,
+    interactionService,
+    permissionService
+  );
   ledgerService.init(interactionService);
   keyRingService.init(
     interactionService,

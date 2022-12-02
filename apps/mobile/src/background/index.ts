@@ -38,6 +38,7 @@ import {
   ScryptParams,
 } from "@obi-wallet/background";
 import {
+  CommunityChainInfoRepo,
   EmbedChainInfos,
   isSinglesigWallet,
   KVStore,
@@ -473,6 +474,7 @@ export function initBackground() {
     new MessageRequesterInternalToUi(),
     EmbedChainInfos,
     PrivilegedOrigins,
+    CommunityChainInfoRepo,
     {
       rng: (array) => {
         return Promise.resolve(crypto.getRandomValues(array));

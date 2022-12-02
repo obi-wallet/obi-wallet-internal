@@ -9,7 +9,7 @@ import {
 } from "@keplr-wallet/stores";
 
 import { Chain } from "../chains";
-import { EmbedChainInfos } from "../config";
+import { CommunityChainInfoRepo, EmbedChainInfos } from "../config";
 import { produceEnv } from "../env";
 import { AbstractKVStore, KVStore as DefaultKVStore } from "../kv-store";
 import { MessageRequesterInternal } from "../message-requester";
@@ -66,7 +66,8 @@ export class RootStore {
       ObservableQueryBase.experimentalDeferInitialQueryController
     );
     this.keplrChainSuggestStore = new ChainSuggestStore(
-      this.keplrInteractionStore
+      this.keplrInteractionStore,
+      CommunityChainInfoRepo
     );
     this.keplrPermissionStore = new PermissionStore(
       this.keplrInteractionStore,
