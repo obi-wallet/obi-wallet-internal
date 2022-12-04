@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/mobile/src",
+  "sourceRoot": "apps/loop-mobile/src",
   "projectType": "application",
   "targets": {
     "start": {
@@ -23,11 +23,11 @@
     "bundle-ios": {
       "dependsOn": ["injected-provider", "react-native-asset"],
       "executor": "@nrwl/react-native:bundle",
-      "outputs": ["apps/mobile/build"],
+      "outputs": ["apps/loop-mobile/build"],
       "options": {
         "entryFile": "src/main.tsx",
         "platform": "ios",
-        "bundleOutput": "dist/apps/mobile/ios/main.jsbundle"
+        "bundleOutput": "dist/apps/loop-mobile/ios/main.jsbundle"
       }
     },
     "run-android": {
@@ -39,8 +39,8 @@
       "dependsOn": ["injected-provider", "react-native-asset"],
       "executor": "@nrwl/react-native:build-android",
       "outputs": [
-        "apps/mobile/android/app/build/outputs/bundle",
-        "apps/mobile/android/app/build/outputs/apk"
+        "apps/loop-mobile/android/app/build/outputs/bundle",
+        "apps/loop-mobile/android/app/build/outputs/apk"
       ],
       "options": {}
     },
@@ -50,7 +50,7 @@
       "options": {
         "entryFile": "src/main.tsx",
         "platform": "android",
-        "bundleOutput": "dist/apps/mobile/android/main.jsbundle"
+        "bundleOutput": "dist/apps/loop-mobile/android/main.jsbundle"
       }
     },
     "sync-deps": {
@@ -65,14 +65,14 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/mobile/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": ["apps/loop-mobile/**/*.{ts,tsx,js,jsx}"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/mobile"],
+      "outputs": ["coverage/apps/loop-mobile"],
       "options": {
-        "jestConfig": "apps/mobile/jest.config.ts",
+        "jestConfig": "apps/loop-mobile/jest.config.ts",
         "passWithNoTests": true
       }
     },
@@ -86,20 +86,20 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "react-native-asset",
-        "cwd": "apps/mobile"
+        "cwd": "apps/loop-mobile"
       }
     },
     "cosmos": {
       "executor": "nx:run-commands",
       "options": {
         "command": "cosmos-native",
-        "cwd": "apps/mobile"
+        "cwd": "apps/loop-mobile"
       }
     },
     "tsc": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsc -b apps/mobile/tsconfig.app.json"
+        "command": "tsc -b apps/loop-mobile/tsconfig.app.json"
       }
     }
   },

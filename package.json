@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "_runAll": "nx run-many --projects=mobile,background,common,injected-provider --output-style=static",
+    "_runAll": "nx run-many --projects=loop-mobile,background,common,injected-provider --output-style=static",
     "checks": "yarn lint && yarn test",
     "codepush": "yarn codepush-ios && yarn codepush-android",
     "codepush-android": "cd ./apps/mobile && appcenter codepush release-react -a Obi-Money/loop-obi-android -d Staging -e ./src/main.tsx",

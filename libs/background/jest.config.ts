@@ -8,6 +8,8 @@ module.exports = {
     ".svg": "@nrwl/react-native/plugins/jest/svg-mock",
   },
   transform: {
-    "\\.(js|ts|tsx)$": require.resolve("../../apps/mobile/preprocessor.js"),
+    "\\.(js|ts|tsx)$": require.resolve(
+      "../../apps/loop-mobile/preprocessor.js"
+    ),
   },
 };
