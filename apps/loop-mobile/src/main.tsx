@@ -1,4 +1,4 @@
-import "./shim";
+import "@obi-wallet/mobile-shim";
 
 import * as Sentry from "@sentry/react-native";
 import { AppRegistry, LogBox } from "react-native";

@@ -3,8 +3,10 @@
   "version": 2,
   "projects": {
     "loop-mobile": "apps/loop-mobile",
+
     "background": "libs/background",
     "common": "libs/common",
-    "injected-provider": "libs/injected-provider"
+    "injected-provider": "libs/injected-provider",
+    "mobile-shim": "libs/mobile-shim"
   }
 }
