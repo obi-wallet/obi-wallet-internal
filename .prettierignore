@@ -2,9 +2,9 @@
 dist/
 build/
 
-/apps/mobile/android/
-/apps/mobile/ios/
-apps/mobile/cosmos.userdeps.js
+/apps/*/android/
+/apps/*/ios/
+/apps/*/cosmos.userdeps.js
 
 # Yarn
 .yarn/

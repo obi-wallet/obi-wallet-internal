@@ -2,9 +2,13 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "loop-mobile": "apps/loop-mobile",
+    "loop-mobile-dev": "apps/loop-mobile-dev",
+
     "background": "libs/background",
     "common": "libs/common",
     "injected-provider": "libs/injected-provider",
-    "mobile": "apps/mobile"
+    "mobile": "libs/mobile",
+    "mobile-shim": "libs/mobile-shim"
   }
 }

@@ -2,13 +2,13 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd ${SCRIPT_DIR}/..;
 
 # Load environment variables
-export $(grep -v '^#' apps/mobile/.env | xargs)
+export $(grep -v '^#' apps/loop-mobile/.env | xargs)
 
 # Create empty React Cosmos userdeps file
-touch apps/mobile/cosmos.userdeps.js
+touch apps/loop-mobile/cosmos.userdeps.js
 
-# Create apps/mobile/ios/Mobile/AppCenter-Config.plist
-tee apps/mobile/ios/Mobile/AppCenter-Config.plist <<EOF
+# Create apps/loop-mobile/ios/Mobile/AppCenter-Config.plist
+tee apps/loop-mobile/ios/Mobile/AppCenter-Config.plist <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -19,8 +19,33 @@ tee apps/mobile/ios/Mobile/AppCenter-Config.plist <<EOF
 </plist>
 EOF
 
-# Create apps/mobile/android/app/src/main/assets/appcenter-config.json
-tee apps/mobile/android/app/src/main/assets/appcenter-config.json <<EOF
+# Create apps/loop-mobile/android/app/src/main/assets/appcenter-config.json
+tee apps/loop-mobile/android/app/src/main/assets/appcenter-config.json <<EOF
+{
+  "app_secret": "${ANDROID_APP_CENTER_SECRET}"
+}
+EOF
+
+# Load environment variables
+export $(grep -v '^#' apps/loop-mobile-dev/.env | xargs)
+
+# Create empty React Cosmos userdeps file
+touch apps/loop-mobile-dev/cosmos.userdeps.js
+
+# Create apps/loop-mobile-dev/ios/Mobile/AppCenter-Config.plist
+tee apps/loop-mobile-dev/ios/Mobile/AppCenter-Config.plist <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+    <key>AppSecret</key>
+    <string>${IOS_APP_CENTER_SECRET}</string>
+    </dict>
+</plist>
+EOF
+
+# Create apps/loop-mobile-dev/android/app/src/main/assets/appcenter-config.json
+tee apps/loop-mobile-dev/android/app/src/main/assets/appcenter-config.json <<EOF
 {
   "app_secret": "${ANDROID_APP_CENTER_SECRET}"
 }

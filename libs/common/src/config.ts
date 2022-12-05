@@ -1969,3 +1969,9 @@ export const EmbedChainInfos: ChainInfo[] = [
 
 // The origins that are able to pass any permission that external webpages can have.
 export const PrivilegedOrigins: string[] = PRIVILEGED_ORIGINS;
+
+export const CommunityChainInfoRepo = {
+  organizationName: "chainapsis",
+  repoName: "keplr-chain-registry",
+  branchName: "main",
+};

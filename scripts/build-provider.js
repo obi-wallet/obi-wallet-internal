@@ -11,6 +11,6 @@ const content = `export const bundle = ${JSON.stringify(bundle)};
 
 const output = path.join(
   __dirname,
-  "../apps/mobile/src/app/injected-provider/bundle.ts"
+  "../libs/mobile/src/app/injected-provider/bundle.ts"
 );
 fs.writeFileSync(output, content, "utf8");

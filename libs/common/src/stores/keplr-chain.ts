@@ -1,5 +1,4 @@
 import {
-  ChainInfoWithEmbed,
   SetPersistentMemoryMsg,
   GetPersistentMemoryMsg,
   GetChainInfosMsg,
@@ -19,7 +18,7 @@ import {
 import { ChainInfo } from "@keplr-wallet/types";
 import { observable, action, computed, makeObservable, flow } from "mobx";
 
-export class KeplrChainStore extends BaseChainStore<ChainInfoWithEmbed> {
+export class KeplrChainStore extends BaseChainStore<ChainInfo> {
   @observable
   protected _selectedChainId: string;
 
@@ -67,7 +66,7 @@ export class KeplrChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   }
 
   @computed
-  get current(): ChainInfoInner<ChainInfoWithEmbed> {
+  get current(): ChainInfoInner {
     if (this.hasChain(this._selectedChainId)) {
       return this.getChain(this._selectedChainId);
     }
