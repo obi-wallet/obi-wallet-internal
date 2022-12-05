@@ -1,3 +1,3 @@
-import { SendScreen } from "../src/app/screens/send";
+import { SendScreen } from "@obi-wallet/mobile";
 
 export default <SendScreen />;

@@ -1,4 +1,4 @@
-import { AddressQrCodeScannerModal } from "../src/app/screens/components/address-qr-code-scanner-modal";
+import { AddressQrCodeScannerModal } from "@obi-wallet/mobile";
 
 export default (
   <AddressQrCodeScannerModal

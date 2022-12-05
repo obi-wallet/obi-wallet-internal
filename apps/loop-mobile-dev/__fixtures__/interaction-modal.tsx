@@ -2,10 +2,8 @@ import {
   isAnyMultisigWallet,
   RequestObiSignAndBroadcastMsg,
 } from "@obi-wallet/common";
+import { InteractionModal, useStore } from "@obi-wallet/mobile";
 import { useEffect } from "react";
-
-import { InteractionModal } from "../src/app/modals/interaction-modal";
-import { useStore } from "../src/app/stores";
 
 // eslint-disable-next-line import/no-default-export
 export default () => {

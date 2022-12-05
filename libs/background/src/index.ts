@@ -92,7 +92,7 @@ export function init(
     ledgerOptions
   );
 
-  const keyRingService = new KeyRing.KeyRingService(
+  const keyRingService = createKeyRingService(
     storeCreator("keyring"),
     embedChainInfos,
     commonCrypto

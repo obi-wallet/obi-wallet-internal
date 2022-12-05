@@ -1,3 +1,3 @@
-import { LookupProxyWallets } from "../src/app/screens/onboarding/lookup-proxy-wallets";
+import { LookupProxyWallets } from "@obi-wallet/mobile";
 
 export default <LookupProxyWallets />;

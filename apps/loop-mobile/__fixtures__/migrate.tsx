@@ -1,3 +1,3 @@
-import { MigrateScreen } from "../src/app/screens/migrate";
+import { MigrateScreen } from "@obi-wallet/mobile";
 
 export default <MigrateScreen />;
