@@ -30,8 +30,6 @@
     "@react-native-async-storage/async-storage": "*",
     "@react-native-clipboard/clipboard": "*",
     "@react-native-community/blur": "*",
-    "@react-native-firebase/analytics": "*",
-    "@react-native-firebase/app": "*",
     "@react-navigation/bottom-tabs": "*",
     "@react-navigation/drawer": "*",
     "@react-navigation/native": "*",
