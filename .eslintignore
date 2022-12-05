@@ -1,7 +1,7 @@
 # Injected provider
-apps/loop-mobile/src/app/injected-provider/bundle.ts
+apps/*/src/app/injected-provider/bundle.ts
 
 # Built app
-apps/loop-mobile/android
-apps/loop-mobile/ios
-apps/loop-mobile/cosmos.userdeps.js
+apps/*/android
+apps/*/ios
+apps/*/cosmos.userdeps.js

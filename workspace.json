@@ -3,6 +3,7 @@
   "version": 2,
   "projects": {
     "loop-mobile": "apps/loop-mobile",
+    "loop-mobile-dev": "apps/loop-mobile-dev",
 
     "background": "libs/background",
     "common": "libs/common",

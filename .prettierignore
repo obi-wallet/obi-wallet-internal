@@ -2,9 +2,9 @@
 dist/
 build/
 
-/apps/loop-mobile/android/
-/apps/loop-mobile/ios/
-/apps/loop-mobile/cosmos.userdeps.js
+/apps/*/android/
+/apps/*/ios/
+/apps/*/cosmos.userdeps.js
 
 # Yarn
 .yarn/

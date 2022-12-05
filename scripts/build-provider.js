@@ -9,8 +9,13 @@ const bundle = fs.readFileSync(dist, "utf8");
 const content = `export const bundle = ${JSON.stringify(bundle)};
 `;
 
-const output = path.join(
-  __dirname,
-  "../apps/loop-mobile/src/app/injected-provider/bundle.ts"
-);
-fs.writeFileSync(output, content, "utf8");
+const mobileApps = ["loop-mobile", "loop-mobile-dev"];
+mobileApps.forEach((app) => {
+  const output = path.join(
+    __dirname,
+    "../apps/",
+    app,
+    "/src/app/injected-provider/bundle.ts"
+  );
+  fs.writeFileSync(output, content, "utf8");
+});

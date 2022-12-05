@@ -3,4 +3,4 @@ cd ${SCRIPT_DIR}/..;
 
 yarn webpack --config libs/injected-provider/webpack.config.js --mode production
 node scripts/build-provider
-yarn prettier --write apps/loop-mobile/src/app/injected-provider/bundle.ts
+yarn prettier --write apps/*/src/app/injected-provider/bundle.ts
