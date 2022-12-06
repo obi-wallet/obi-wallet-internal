@@ -4,7 +4,9 @@ import {
   SinglePubkey,
 } from "@cosmjs/amino";
 import { action, computed, makeObservable, observable } from "mobx";
+import R from "ramda";
 
+import { healthChecks } from "../../health-checks";
 import { ChainStore } from "../chain";
 import {
   Multisig,
@@ -92,6 +94,24 @@ export class MultisigWallet extends AbstractWallet {
 
   public get walletInRecovery() {
     return this._walletInRecovery;
+  }
+
+  public async identifyProblems() {
+    const currentChain = this.chainStore.currentChain;
+    const { types, checks } = healthChecks[currentChain];
+
+    const potentialProblems = await Promise.all(
+      R.map(async (type) => {
+        const isProblem = !(await checks[type](this));
+        return {
+          type,
+          isProblem,
+        };
+      }, types)
+    );
+    return potentialProblems
+      .filter(({ isProblem }) => isProblem)
+      .map(({ type }) => type);
   }
 
   @action

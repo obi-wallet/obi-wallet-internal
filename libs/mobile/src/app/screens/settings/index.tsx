@@ -24,6 +24,7 @@ import MultiSigIcon from "./assets/edit.svg";
 import HelpAndSupport from "./assets/headset.svg";
 import ObiLogo from "./assets/obi-logo.svg";
 import LogoutIcon from "./assets/power-red.svg";
+import { HealthChecksScreen } from "./health-checks";
 import { KeysConfigScreen } from "./keys-config";
 import { Seedphrase } from "./seedphrase";
 
@@ -116,18 +117,33 @@ export const SettingsScreen = observer(() => {
         />
       */}
         {isMultisigWallet ? (
-          <Setting
-            Icon={MultiSigIcon}
-            title={intl.formatMessage({
-              id: "settings.multigsigsettings",
-              defaultMessage: "Key Settings",
-            })}
-            subtitle={intl.formatMessage({
-              id: "settings.multigsigsettings.subtext",
-              defaultMessage: "Manage your SMS, social, and other keys.",
-            })}
-            onPress={() => navigation.navigate("MultiSigSettings")}
-          />
+          <>
+            <Setting
+              Icon={MultiSigIcon}
+              title={intl.formatMessage({
+                id: "settings.multigsigsettings",
+                defaultMessage: "Key Settings",
+              })}
+              subtitle={intl.formatMessage({
+                id: "settings.multigsigsettings.subtext",
+                defaultMessage: "Manage your SMS, social, and other keys.",
+              })}
+              onPress={() => navigation.navigate("MultiSigSettings")}
+            />
+            <Setting
+              Icon={MultiSigIcon}
+              title={intl.formatMessage({
+                id: "settings.multisighealthchecks",
+                defaultMessage: "Wallet Health",
+              })}
+              subtitle={intl.formatMessage({
+                id: "settings.multisighealthchecks.subtext",
+                defaultMessage:
+                  "Check for any potential issues in your wallet.",
+              })}
+              onPress={() => navigation.navigate("MultisigHealthChecks")}
+            />
+          </>
         ) : (
           <Setting
             Icon={MultiSigIcon}
@@ -372,6 +388,12 @@ export const settingsScreens = () => {
         name="MultiSigSettings"
         key="MultiSigSettings"
         component={KeysConfigScreen}
+        options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name="MultisigHealthChecks"
+        key="MultisigHealthChecks"
+        component={HealthChecksScreen}
         options={{ headerShown: false }}
       />
       <RootStack.Screen
