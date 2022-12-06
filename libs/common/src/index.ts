@@ -5,6 +5,7 @@ export * from "./clients";
 export * from "./config";
 export * from "./config.ui";
 export * from "./env";
+export * from "./health-checks";
 export * from "./kv-store";
 export * from "./languages";
 export * from "./message-requester";
