@@ -10,8 +10,14 @@ import { MsgMigrateContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import Long from "long";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useCallback, useEffect, useState } from "react";
-import { FormattedMessage } from "react-intl";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FormattedMessage, useIntl } from "react-intl";
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 
@@ -20,12 +26,12 @@ import { Back } from "../components/back";
 import WarningIcon from "../components/keys-list/assets/warning-icon.svg";
 
 export const HealthChecksScreen = observer(() => {
+  const intl = useIntl();
   const { walletsStore } = useStore();
   const wallet = useMultisigWallet();
   const [problems, setProblems] = useState<string[] | undefined>();
 
   const refetchProblems = useCallback(async () => {
-    setProblems(undefined);
     const wallet = walletsStore.currentWallet;
     if (isMultisigWallet(wallet)) {
       setProblems(await wallet.identifyProblems());
@@ -33,10 +39,9 @@ export const HealthChecksScreen = observer(() => {
   }, [walletsStore.currentWallet]);
 
   useEffect(() => {
+    setProblems(undefined);
     void refetchProblems();
   }, [refetchProblems]);
-
-  if (!problems) return null;
 
   const problemsData: Record<
     string,
@@ -46,6 +51,31 @@ export const HealthChecksScreen = observer(() => {
       getOnPress: (wallet: MultisigWallet) => () => Promise<void>;
     }
   > = {
+    [JunoChecks.CORRECT_ADMIN]: {
+      title: (
+        <FormattedMessage
+          id="settings.multisighealthchecks.juno.correctadmin.title"
+          defaultMessage="Incorrect admin"
+        />
+      ),
+      description: (
+        <FormattedMessage
+          id="settings.multisighealthchecks.juno.correctadmin.description"
+          defaultMessage="The admin of your wallet is not correct."
+        />
+      ),
+      getOnPress: (wallet: MultisigWallet) => {
+        return async () => {
+          Alert.alert(
+            intl.formatMessage({
+              id: "settings.multisighealthchecks.juno.correctadmin.message",
+              defaultMessage:
+                "Please move your funds out and create a new wallet.",
+            })
+          );
+        };
+      },
+    },
     [JunoChecks.CODE_ID_AT_LEAST_1311]: {
       title: (
         <FormattedMessage
@@ -80,6 +110,7 @@ export const HealthChecksScreen = observer(() => {
                 address: wallet.proxyAddress.address,
                 codeId: 1311,
               });
+              await refetchProblems();
             } catch (e) {
               console.log(response.rawLog);
             }
@@ -110,7 +141,7 @@ export const HealthChecksScreen = observer(() => {
       },
     },
   };
-  const data = problems.map((type) => {
+  const data = (problems || []).map((type) => {
     const { getOnPress, ...problemData } = problemsData[type];
 
     return {
@@ -118,7 +149,6 @@ export const HealthChecksScreen = observer(() => {
       ...problemData,
       async onPress() {
         await getOnPress(wallet)();
-        await refetchProblems();
       },
     };
   });
@@ -140,26 +170,30 @@ export const HealthChecksScreen = observer(() => {
             defaultMessage="Wallet Health"
           />
         </Text>
-        <Text style={styles.subHeading}>
-          {data.length > 0 ? (
-            <FormattedMessage
-              id="settings.multisighealthchecks.subtitle.issues"
-              defaultMessage="We found potential issues with your wallet. Tap on them to resolve them."
+        {problems ? (
+          <>
+            <Text style={styles.subHeading}>
+              {data.length > 0 ? (
+                <FormattedMessage
+                  id="settings.multisighealthchecks.subtitle.issues"
+                  defaultMessage="We found potential issues with your wallet. Tap on them to resolve them."
+                />
+              ) : (
+                <FormattedMessage
+                  id="settings.multisighealthchecks.subtitle.healthy"
+                  defaultMessage="We could not find any issues with your wallet."
+                />
+              )}
+            </Text>
+            <FlatList
+              data={data}
+              keyExtractor={(item) => item.type}
+              renderItem={(props) => {
+                return <ListItem {...props} />;
+              }}
             />
-          ) : (
-            <FormattedMessage
-              id="settings.multisighealthchecks.subtitle.healthy"
-              defaultMessage="We could not find any issues with your wallet."
-            />
-          )}
-        </Text>
-        <FlatList
-          data={data}
-          keyExtractor={(item) => item.type}
-          renderItem={(props) => {
-            return <ListItem {...props} />;
-          }}
-        />
+          </>
+        ) : null}
       </View>
     </SafeAreaView>
   );
