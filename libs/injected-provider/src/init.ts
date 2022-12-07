@@ -18,7 +18,14 @@ export function init(
   obiSignAndBroadcast: (
     address: string,
     messages: EncodeObject[]
-  ) => Promise<DeliverTxResponse>
+  ) => Promise<DeliverTxResponse>,
+  obiInAppPurchase: (
+    pricingTier: string,
+    payload: {
+      collectionAddress: string;
+      amount: string;
+    }
+  ) => Promise<{ success: boolean }>
 ) {
   /* eslint-disable @typescript-eslint/ban-ts-comment */
   // @ts-ignore
@@ -33,5 +40,7 @@ export function init(
   window.getEnigmaUtils = getEnigmaUtils;
   // @ts-ignore
   window.obiSignAndBroadcast = obiSignAndBroadcast;
+  // @ts-ignore
+  window.obiInAppPurchase = obiInAppPurchase;
   /* eslint-enable @typescript-eslint/ban-ts-comment */
 }

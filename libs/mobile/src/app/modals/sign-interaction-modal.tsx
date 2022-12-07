@@ -1,42 +1,39 @@
-import { coins } from "@cosmjs/amino";
-import { SignDocWrapper } from "@keplr-wallet/cosmos";
+import { DeliverTxResponse } from "@cosmjs/stargate";
+import { RequestObiSignAndBroadcastPayload } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 
 import { useStore } from "../stores";
-import { ConfirmMessages } from "./signature-modal/confirm-messages";
+import { SignatureModal, useSignatureModalProps } from "./signature-modal";
 
 export const SignInteractionModal = observer(() => {
-  const { chainStore, signInteractionStore } = useStore();
+  const { signInteractionStore } = useStore();
 
-  const signDocWrapper = signInteractionStore.waitingData?.data.signDocWrapper;
+  const data = signInteractionStore.waitingData?.data;
 
-  if (!signDocWrapper) return null;
+  if (!data) return null;
 
-  return (
-    <ConfirmMessages
-      innerMessages={signDocWrapper.aminoSignDoc.msgs}
-      messages={signDocWrapper.aminoSignDoc.msgs}
-      onConfirm={async () => {
-        // TODO: simulate fees
-        const newSignDoc = {
-          ...signDocWrapper.aminoSignDoc,
-          fee: {
-            amount: coins(6000, chainStore.currentChainInformation.denom),
-            gas: "1280000",
-          },
-        };
-
-        try {
-          await signInteractionStore.approveAndWaitEnd(
-            SignDocWrapper.fromAminoSignDoc(newSignDoc)
-          );
-        } catch (error) {
-          console.log(error);
-        }
-      }}
-      onCancel={() => {
-        signInteractionStore.rejectAll();
-      }}
-    />
-  );
+  return <InteractionModalInner data={data} />;
 });
+
+const InteractionModalInner = observer(
+  ({ data }: { data: RequestObiSignAndBroadcastPayload }) => {
+    const { signInteractionStore } = useStore();
+
+    const { signatureModalProps } = useSignatureModalProps({
+      data,
+      async onConfirm(response: DeliverTxResponse): Promise<void> {
+        await signInteractionStore.approveAndWaitEnd(response);
+      },
+    });
+
+    return (
+      <SignatureModal
+        {...signatureModalProps}
+        visible
+        onCancel={() => {
+          signInteractionStore.rejectAll();
+        }}
+      />
+    );
+  }
+);

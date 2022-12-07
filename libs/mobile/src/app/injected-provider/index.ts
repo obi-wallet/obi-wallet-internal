@@ -5,6 +5,8 @@ import { BACKGROUND_PORT } from "@keplr-wallet/router";
 import {
   isAnyMultisigWallet,
   MessageRequesterExternal,
+  PricingTier,
+  RequestObiInAppPurchaseMsg,
   RequestObiSignAndBroadcastMsg,
 } from "@obi-wallet/common";
 import { useMemo } from "react";
@@ -29,6 +31,20 @@ class ConcreteKeplr extends Keplr {
         ? currentWallet.currentAdmin
         : null,
       wrap: true,
+    });
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  public async obiInAppPurchase(
+    pricingTier: PricingTier,
+    payload: {
+      collectionAddress: string;
+      amount: string;
+    }
+  ): Promise<{ success: boolean }> {
+    const msg = new RequestObiInAppPurchaseMsg({
+      pricingTier,
+      payload,
     });
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }

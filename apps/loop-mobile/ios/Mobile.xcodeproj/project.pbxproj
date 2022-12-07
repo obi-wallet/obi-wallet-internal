@@ -51,41 +51,41 @@
 		00E356EE1AD99517003FC87E /* MobileTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* MobileTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MobileTests.m; sourceTree = "<group>"; };
-		0A1CB398E7584B67AE3EAD29 /* Inter-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-MediumItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-MediumItalic.otf"; sourceTree = "<group>"; };
-		137CDD8AFC304A5BB9154C0D /* Inter-SemiBold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-SemiBold.otf"; sourceTree = "<group>"; };
+		0A1CB398E7584B67AE3EAD29 /* Inter-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-MediumItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-MediumItalic.otf"; sourceTree = "<group>"; };
+		137CDD8AFC304A5BB9154C0D /* Inter-SemiBold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-SemiBold.otf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Mobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Mobile/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = Mobile/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Mobile/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Mobile/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Mobile/main.m; sourceTree = "<group>"; };
-		13FE0CEABFDB4C3585CC9E80 /* Inter-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-BoldItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-BoldItalic.otf"; sourceTree = "<group>"; };
-		20B7A27418C24BF1AC530788 /* Inter-ExtraBold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraBold.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-ExtraBold.otf"; sourceTree = "<group>"; };
-		22E38EE06F4E47518B66ACC8 /* Inter-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Medium.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-Medium.otf"; sourceTree = "<group>"; };
-		397A315A07DB4B7485CB7D3E /* Inter-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Black.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-Black.otf"; sourceTree = "<group>"; };
-		4640E730284E48F5A30B0F94 /* Inter-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Regular.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-Regular.otf"; sourceTree = "<group>"; };
+		13FE0CEABFDB4C3585CC9E80 /* Inter-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-BoldItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-BoldItalic.otf"; sourceTree = "<group>"; };
+		20B7A27418C24BF1AC530788 /* Inter-ExtraBold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraBold.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-ExtraBold.otf"; sourceTree = "<group>"; };
+		22E38EE06F4E47518B66ACC8 /* Inter-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Medium.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-Medium.otf"; sourceTree = "<group>"; };
+		397A315A07DB4B7485CB7D3E /* Inter-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Black.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-Black.otf"; sourceTree = "<group>"; };
+		4640E730284E48F5A30B0F94 /* Inter-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Regular.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-Regular.otf"; sourceTree = "<group>"; };
 		4800715328F4CB9200DDE16C /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
 		4800715428F4CB9E00DDE16C /* release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = "<group>"; };
 		483293BB28D6969D0052B2F9 /* AppCenter-Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = "AppCenter-Config.plist"; path = "Mobile/AppCenter-Config.plist"; sourceTree = "<group>"; };
 		485443582926DE87007A3D10 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		57BDAAC6C26944AEB6A3AFF8 /* Inter-ThinItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ThinItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-ThinItalic.otf"; sourceTree = "<group>"; };
-		6145451B085F4589B5342980 /* Inter-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Thin.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-Thin.otf"; sourceTree = "<group>"; };
-		6603BB7257154C8096537291 /* Inter-ExtraLightItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraLightItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-ExtraLightItalic.otf"; sourceTree = "<group>"; };
+		57BDAAC6C26944AEB6A3AFF8 /* Inter-ThinItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ThinItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-ThinItalic.otf"; sourceTree = "<group>"; };
+		6145451B085F4589B5342980 /* Inter-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Thin.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-Thin.otf"; sourceTree = "<group>"; };
+		6603BB7257154C8096537291 /* Inter-ExtraLightItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraLightItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-ExtraLightItalic.otf"; sourceTree = "<group>"; };
 		72EC3E2E86CB65139E418A77 /* Pods_Mobile_MobileTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Mobile_MobileTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Mobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		8C8612B7FC224D868B563916 /* Inter-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Light.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-Light.otf"; sourceTree = "<group>"; };
-		9022E57617AD4A9A836E54B2 /* Inter-ExtraBoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraBoldItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-ExtraBoldItalic.otf"; sourceTree = "<group>"; };
-		91B4DCEEF35E4A26B8DC6F4C /* Inter-BlackItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-BlackItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-BlackItalic.otf"; sourceTree = "<group>"; };
+		8C8612B7FC224D868B563916 /* Inter-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Light.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-Light.otf"; sourceTree = "<group>"; };
+		9022E57617AD4A9A836E54B2 /* Inter-ExtraBoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraBoldItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-ExtraBoldItalic.otf"; sourceTree = "<group>"; };
+		91B4DCEEF35E4A26B8DC6F4C /* Inter-BlackItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-BlackItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-BlackItalic.otf"; sourceTree = "<group>"; };
 		A4C3F2194DC2998416077EBE /* Pods-Mobile-MobileTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Mobile-MobileTests.release.xcconfig"; path = "Target Support Files/Pods-Mobile-MobileTests/Pods-Mobile-MobileTests.release.xcconfig"; sourceTree = "<group>"; };
-		B134FFD9174E4B43844C51E1 /* Inter-ExtraLight.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraLight.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-ExtraLight.otf"; sourceTree = "<group>"; };
-		B2E70E0870BD4F6280BF3E0A /* Inter-LightItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-LightItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-LightItalic.otf"; sourceTree = "<group>"; };
+		B134FFD9174E4B43844C51E1 /* Inter-ExtraLight.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraLight.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-ExtraLight.otf"; sourceTree = "<group>"; };
+		B2E70E0870BD4F6280BF3E0A /* Inter-LightItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-LightItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-LightItalic.otf"; sourceTree = "<group>"; };
 		CBE522FB19B0A88D5805A687 /* Pods-Mobile-MobileTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Mobile-MobileTests.debug.xcconfig"; path = "Target Support Files/Pods-Mobile-MobileTests/Pods-Mobile-MobileTests.debug.xcconfig"; sourceTree = "<group>"; };
-		D2CEEA87D3E04AC9B1E05BAD /* Inter-V.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-V.ttf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-V.ttf"; sourceTree = "<group>"; };
-		E290FCC42B3841C3B0A811DD /* Inter-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-Bold.otf"; sourceTree = "<group>"; };
-		E3A3A5E42B6F4E798602493B /* Inter-Italic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Italic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-Italic.otf"; sourceTree = "<group>"; };
+		D2CEEA87D3E04AC9B1E05BAD /* Inter-V.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-V.ttf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-V.ttf"; sourceTree = "<group>"; };
+		E290FCC42B3841C3B0A811DD /* Inter-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-Bold.otf"; sourceTree = "<group>"; };
+		E3A3A5E42B6F4E798602493B /* Inter-Italic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Italic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-Italic.otf"; sourceTree = "<group>"; };
 		E4D101D19939DA0BB4996623 /* Pods-Mobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Mobile.debug.xcconfig"; path = "Target Support Files/Pods-Mobile/Pods-Mobile.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F806807D0DF14711800E32A1 /* Inter-SemiBoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBoldItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-SemiBoldItalic.otf"; sourceTree = "<group>"; };
+		F806807D0DF14711800E32A1 /* Inter-SemiBoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBoldItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-SemiBoldItalic.otf"; sourceTree = "<group>"; };
 		FA78CC669352C60AEDCE53BF /* Pods-Mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Mobile.release.xcconfig"; path = "Target Support Files/Pods-Mobile/Pods-Mobile.release.xcconfig"; sourceTree = "<group>"; };
 		FD3897ADA7603BE2D49B2AEC /* Pods_Mobile.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Mobile.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -594,14 +594,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Mobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.6.0;
+				MARKETING_VERSION = 0.7.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -621,13 +621,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				INFOPLIST_FILE = Mobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.6.0;
+				MARKETING_VERSION = 0.7.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

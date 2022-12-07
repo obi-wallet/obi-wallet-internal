@@ -8,3 +8,6 @@ build/
 
 # Yarn
 .yarn/
+
+# Highflux
+.highflux/

@@ -1,15 +1,27 @@
-import { DeliverTxResponse } from "@cosmjs/stargate";
 import { InteractionWaitingData } from "@keplr-wallet/background";
 import { InteractionStore as KeplrInteractionStore } from "@keplr-wallet/stores";
 import { autorun, computed, flow, makeObservable, observable } from "mobx";
 
-import { RequestObiSignAndBroadcastPayload } from "../background";
+export class AbstractSingletonInteractionStore<
+  MessagePayload,
+  MessageResponse
+> {
+  protected readonly interactionStore: KeplrInteractionStore;
+  protected readonly type: string;
 
-export class InteractionStore {
   @observable
   protected _isLoading = false;
 
-  constructor(protected readonly interactionStore: KeplrInteractionStore) {
+  constructor({
+    interactionStore,
+    type,
+  }: {
+    interactionStore: KeplrInteractionStore;
+    type: string;
+  }) {
+    this.interactionStore = interactionStore;
+    this.type = type;
+
     makeObservable(this);
 
     autorun(() => {
@@ -25,15 +37,11 @@ export class InteractionStore {
   }
 
   protected get waitingDatas() {
-    return this.interactionStore.getDatas<RequestObiSignAndBroadcastPayload>(
-      "request-sign-and-broadcast"
-    );
+    return this.interactionStore.getDatas<MessagePayload>(this.type);
   }
 
   @computed
-  get waitingData():
-    | InteractionWaitingData<RequestObiSignAndBroadcastPayload>
-    | undefined {
+  get waitingData(): InteractionWaitingData<MessagePayload> | undefined {
     const datas = this.waitingDatas;
 
     if (datas.length === 0) {
@@ -71,7 +79,7 @@ export class InteractionStore {
   }
 
   @flow
-  *approveAndWaitEnd(response: DeliverTxResponse) {
+  *approveAndWaitEnd(response: MessageResponse) {
     if (this.waitingDatas.length === 0) {
       return;
     }
@@ -83,7 +91,7 @@ export class InteractionStore {
     } finally {
       // yield this.waitEnd();
       // this.interactionStore.clearEvent("request-sign-and-broadcast-end");
-      this.interactionStore.removeData("request-sign-and-broadcast", id);
+      this.interactionStore.removeData(this.type, id);
       this._isLoading = false;
     }
   }
@@ -96,10 +104,7 @@ export class InteractionStore {
 
     this._isLoading = true;
     try {
-      yield this.interactionStore.reject(
-        "request-sign-and-broadcast",
-        this.waitingDatas[0].id
-      );
+      yield this.interactionStore.reject(this.type, this.waitingDatas[0].id);
     } finally {
       this._isLoading = false;
     }
@@ -109,7 +114,7 @@ export class InteractionStore {
   *rejectAll() {
     this._isLoading = true;
     try {
-      yield this.interactionStore.rejectAll("request-sign-and-broadcast");
+      yield this.interactionStore.rejectAll(this.type);
     } finally {
       this._isLoading = false;
     }
@@ -117,7 +122,7 @@ export class InteractionStore {
 
   @flow
   protected *rejectWithId(id: string) {
-    yield this.interactionStore.reject("request-sign-and-broadcast", id);
+    yield this.interactionStore.reject(this.type, id);
   }
 
   get isLoading(): boolean {

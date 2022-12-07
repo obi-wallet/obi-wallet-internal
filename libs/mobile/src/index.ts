@@ -1,6 +1,7 @@
 export { BaseApp } from "./app";
 export { AddressQrCodeScannerModal } from "./app/screens/components/address-qr-code-scanner-modal";
-export { InteractionModal } from "./app/modals/interaction-modal";
+export { InAppPurchaseInteractionModal } from "./app/modals/in-app-purchase-interaction-modal";
+export { SignInteractionModal } from "./app/modals/sign-interaction-modal";
 export { LookupProxyWallets } from "./app/screens/onboarding/lookup-proxy-wallets";
 export { MigrateScreen } from "./app/screens/migrate";
 export { SendScreen } from "./app/screens/send";

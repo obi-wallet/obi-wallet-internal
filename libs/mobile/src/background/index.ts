@@ -23,13 +23,13 @@ import {
 } from "@keplr-wallet/router";
 import { BIP44, EthSignType, KeplrSignOptions } from "@keplr-wallet/types";
 import {
-  KeyRingService as AbstractKeyRingService,
   BIP44HDPath,
   ChainsService,
   ExportKeyRingData,
   init,
   InteractionService,
   Key,
+  KeyRingService as AbstractKeyRingService,
   KeyRingStatus,
   LedgerApp,
   LedgerService,
@@ -43,8 +43,10 @@ import {
   isSinglesigWallet,
   KVStore,
   MessageRequesterInternalToUi,
+  ObiMessage,
   PrivilegedOrigins,
   produceEnv,
+  RequestObiInAppPurchaseMsg,
   RequestObiSignAndBroadcastMsg,
   RootStore,
   RouterBackground,
@@ -515,18 +517,16 @@ export function initBackground() {
     }
   );
 
+  router.registerMessage(RequestObiInAppPurchaseMsg);
   router.registerMessage(RequestObiSignAndBroadcastMsg);
   router.addHandler("obi", async (env: Env, msg: Message<unknown>) => {
-    const message = msg as RequestObiSignAndBroadcastMsg;
-
-    const response = (await interactionService.waitApprove(
+    const message = msg as ObiMessage;
+    return await interactionService.waitApprove(
       env,
-      "/sign",
-      "request-sign-and-broadcast",
+      "/",
+      message.type(),
       message.payload
-    )) as DeliverTxResponse;
-
-    return response;
+    );
   });
 
   router.listen(BACKGROUND_PORT);

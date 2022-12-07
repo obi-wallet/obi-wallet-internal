@@ -1,9 +1,10 @@
 import { messages } from "@obi-wallet/common";
 import { NavigationContainer } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { ComponentProps, ReactNode, StrictMode } from "react";
+import { ComponentProps, ReactNode, StrictMode, useEffect } from "react";
 import { IntlProvider } from "react-intl";
 import { StatusBar } from "react-native";
+import { endConnection, initConnection } from "react-native-iap";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { rootStore } from "../background/root-store";
@@ -21,6 +22,13 @@ export const Provider = observer<ProviderProps>(
   ({ children, navigationContainerProps }) => {
     const { languageStore } = rootStore;
     const { currentLanguage } = languageStore;
+
+    useEffect(() => {
+      void initConnection();
+      return () => {
+        void endConnection();
+      };
+    }, []);
 
     return (
       <StrictMode>

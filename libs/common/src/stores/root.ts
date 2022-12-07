@@ -3,9 +3,9 @@ import {
   ChainSuggestStore,
   DeferInitialQueryController,
   InteractionStore as KeplrInteractionStore,
+  SignInteractionStore as KeplrSignInteractionStore,
   ObservableQueryBase,
   PermissionStore,
-  SignInteractionStore,
 } from "@keplr-wallet/stores";
 
 import { Chain } from "../chains";
@@ -17,7 +17,8 @@ import { RouterUi } from "../router";
 import { AppsStore } from "./apps";
 import { BalancesStore } from "./balances";
 import { ChainStore } from "./chain";
-import { InteractionStore } from "./interaction";
+import { InAppPurchaseInteractionStore } from "./interaction/in-app-purchase";
+import { SignInteractionStore } from "./interaction/sign";
 import { KeplrChainStore } from "./keplr-chain";
 import { LanguageStore } from "./language";
 import { SettingsStore } from "./settings";
@@ -27,7 +28,8 @@ export class RootStore {
   public readonly appsStore: AppsStore;
   public readonly balancesStore: BalancesStore;
   public readonly chainStore: ChainStore;
-  public readonly interactionStore: InteractionStore;
+  public readonly inAppPurchaseInteractionStore: InAppPurchaseInteractionStore;
+  public readonly signInteractionStore: SignInteractionStore;
   public readonly languageStore: LanguageStore;
   public readonly settingsStore: SettingsStore;
   public readonly walletsStore: WalletsStore;
@@ -37,7 +39,7 @@ export class RootStore {
   protected readonly keplrChainSuggestStore: ChainSuggestStore;
   protected readonly keplrInteractionStore: KeplrInteractionStore;
   protected readonly keplrPermissionStore: PermissionStore;
-  protected readonly keplrSignInteractionStore: SignInteractionStore;
+  public readonly keplrSignInteractionStore: KeplrSignInteractionStore;
 
   constructor({
     defaultChain,
@@ -73,13 +75,18 @@ export class RootStore {
       this.keplrInteractionStore,
       new MessageRequesterInternal()
     );
-    this.keplrSignInteractionStore = new SignInteractionStore(
+    this.keplrSignInteractionStore = new KeplrSignInteractionStore(
       this.keplrInteractionStore
     );
 
     this.appsStore = new AppsStore({ kvStore: new KVStore("apps-store") });
     this.chainStore = new ChainStore({ defaultChain });
-    this.interactionStore = new InteractionStore(this.keplrInteractionStore);
+    this.inAppPurchaseInteractionStore = new InAppPurchaseInteractionStore(
+      this.keplrInteractionStore
+    );
+    this.signInteractionStore = new SignInteractionStore(
+      this.keplrInteractionStore
+    );
     this.languageStore = new LanguageStore({
       deviceLanguage,
       enabledLanguages,
@@ -107,9 +114,5 @@ export class RootStore {
 
   public get permissionStore() {
     return this.keplrPermissionStore;
-  }
-
-  public get signInteractionStore() {
-    return this.keplrSignInteractionStore;
   }
 }

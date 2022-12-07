@@ -32,6 +32,16 @@ export class RNInjectedKeplr extends InjectedKeplr {
     return await this.requestMethod("obiSignAndBroadcast", [address, messages]);
   }
 
+  public async obiInAppPurchase(
+    pricingTier: string,
+    payload: {
+      collectionAddress: string;
+      amount: string;
+    }
+  ): Promise<{ success: boolean }> {
+    return await this.requestMethod("obiInAppPurchase", [pricingTier, payload]);
+  }
+
   constructor(version: string, mode: KeplrMode) {
     super(
       version,

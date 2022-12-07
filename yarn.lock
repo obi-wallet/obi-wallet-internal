@@ -17513,6 +17513,7 @@ __metadata:
     react-native-dotenv: ^3.4.2
     react-native-dropdown-picker: ^5.4.3
     react-native-gesture-handler: ^2.8.0
+    react-native-iap: ^12.4.9
     react-native-keyboard-aware-scroll-view: ^0.9.5
     react-native-keychain: ^8.1.1
     react-native-level-fs: ^3.0.1
@@ -19694,6 +19695,16 @@ __metadata:
   version: 0.70.3
   resolution: "react-native-gradle-plugin@npm:0.70.3"
   checksum: 04a3379842bcb4709ac6b37e093a3de59acd33b28b200885843b13908fac685a77ab81d732c34090c56e5c0eec971d578b227f302bd04fe7901e8792d434f41f
+  languageName: node
+  linkType: hard
+
+"react-native-iap@npm:^12.4.9":
+  version: 12.4.9
+  resolution: "react-native-iap@npm:12.4.9"
+  peerDependencies:
+    react: ">=16.13.1"
+    react-native: ">=0.65.1"
+  checksum: 76cbde6f44c63f625814cc8dd800c4a07d5f12459860b147e775e3552cbc8b0d1d6f41ba6caf6fb25ec8163195ee06373420d793831794bf766fb64e4c45b093
   languageName: node
   linkType: hard
 

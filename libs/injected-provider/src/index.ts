@@ -10,5 +10,6 @@ init(
   (chainId: string) => keplr.getOfflineSignerOnlyAmino(chainId),
   (chainId: string) => keplr.getOfflineSignerAuto(chainId),
   (chainId: string) => keplr.getEnigmaUtils(chainId),
-  (...args) => keplr.obiSignAndBroadcast(...args)
+  (...args) => keplr.obiSignAndBroadcast(...args),
+  (...args) => keplr.obiInAppPurchase(...args)
 );
