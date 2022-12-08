@@ -178,7 +178,7 @@ export const Home = observer<HomeProps>(
                 ImgComponent={HistoryIcon}
                 label={intl.formatMessage({
                   id: "apps.myhistory",
-                  defaultMessage: "History",
+                  defaultMessage: "My History",
                 })}
                 onPress={() => {
                   onAppPress({

@@ -452,13 +452,13 @@ export const SendScreen = observer(() => {
                 >
                   <FormattedMessage
                     id="send.denomination"
-                    defaultMessage="Denomination"
+                    defaultMessage="Asset"
                   />
                 </Text>
                 <Text style={{ fontSize: 12, color: "#f6f5ff", opacity: 0.6 }}>
                   <FormattedMessage
                     id="send.selectcoin"
-                    defaultMessage="Select the coin you'd like to send"
+                    defaultMessage="Select the asset you'd like to send"
                   />
                 </Text>
               </View>

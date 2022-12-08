@@ -45,7 +45,7 @@ export function Trade() {
           <Text style={{ color: "white", fontSize: 20, fontWeight: "700" }}>
             <FormattedMessage
               id="menu.trade.loading"
-              defaultMessage="Loading..."
+              defaultMessage="Loading…"
             />
           </Text>
         </View>

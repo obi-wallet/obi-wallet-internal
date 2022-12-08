@@ -2599,6 +2599,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@formatjs/cli@npm:^5.1.7":
+  version: 5.1.7
+  resolution: "@formatjs/cli@npm:5.1.7"
+  peerDependencies:
+    "@vue/compiler-sfc": ^3.2.34
+  peerDependenciesMeta:
+    "@vue/compiler-sfc":
+      optional: true
+  bin:
+    formatjs: bin/formatjs
+  checksum: e9d0d472786863d6c22b1aad4083436eb3e6826d0c77ae2a6c548f38d762827d272c4baa6082ba5d85fb63388f510e7c023c6707124e7a3d2fbce162cb98ad1e
+  languageName: node
+  linkType: hard
+
 "@formatjs/ecma402-abstract@npm:1.14.2":
   version: 1.14.2
   resolution: "@formatjs/ecma402-abstract@npm:1.14.2"
@@ -17410,6 +17424,7 @@ __metadata:
     "@cosmjs/cosmwasm-stargate": ^0.29.4
     "@cosmjs/proto-signing": ^0.29.4
     "@cosmjs/stargate": ^0.29.4
+    "@formatjs/cli": ^5.1.7
     "@fortawesome/fontawesome-svg-core": ^6.2.1
     "@fortawesome/free-regular-svg-icons": ^6.2.1
     "@fortawesome/free-solid-svg-icons": ^6.2.1

@@ -99,7 +99,7 @@ export const KeysConfigScreen = observer(() => {
       id: "biometrics",
       title: intl.formatMessage({
         id: "settings.multisig.option.biometricskey",
-        defaultMessage: "Biometrics Key",
+        defaultMessage: "Device Key",
       }),
     }),
     getKey({
@@ -160,7 +160,7 @@ export const KeysConfigScreen = observer(() => {
           )}
           {data.length - activatedKeys === 1 && (
             <FormattedMessage
-              id="settings.multisig.risk.stepsremaining"
+              id="settings.multisig.risk.stepremaining"
               defaultMessage="step remaining"
             />
           )}
@@ -375,7 +375,7 @@ function KeyConfig({ item, onClose }: KeyConfigProps) {
             >
               <FormattedMessage
                 id="settings.multisig.modal.info"
-                defaultMessage="In case this key is stolen/lost or for any other reason, you can replace it with a new one."
+                defaultMessage="In case this key is lost/stolen, or for any other reason, you can replace it with a new one."
               />
             </Text>
           </>

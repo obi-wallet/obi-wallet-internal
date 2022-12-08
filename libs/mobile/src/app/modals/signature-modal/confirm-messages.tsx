@@ -60,7 +60,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
         <View style={{ flex: 1 }}>
           {loading ? (
             <Loader
-              loadingText="Loading..."
+              loadingText="Loading…"
               style={{
                 flex: 1,
                 justifyContent: "center",

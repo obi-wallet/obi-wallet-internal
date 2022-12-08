@@ -243,7 +243,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                     ) : (
                       <FormattedMessage
                         id="onboarding2.authyourkeyssubtext"
-                        defaultMessage="Please answer a security question."
+                        defaultMessage="Please answer a security question. Obi does NOT store this information."
                       />
                     )}
                   </Text>

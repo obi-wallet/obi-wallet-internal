@@ -55,7 +55,10 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
         const error = e as Error;
         console.error(error);
         Alert.alert(
-          intl.formatMessage({ id: "general.error" }) + " ScanMyBiometrics",
+          intl.formatMessage({
+            id: "general.error",
+            defaultMessage: "Error",
+          }) + " ScanMyBiometrics",
           error.message
         );
       }
@@ -174,7 +177,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
             >
               <FormattedMessage
                 id="onboarding4.authyourkeys"
-                defaultMessage="Authenticate Your Keys"
+                defaultMessage="Create a Device Key"
               />
             </Text>
             <Text
@@ -187,7 +190,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
             >
               <FormattedMessage
                 id="onboarding4.authyourkeys.subtext"
-                defaultMessage="With Obi, your Device, iCloud, and phone number work as a multi-factor authenticator."
+                defaultMessage="Onboarding with Obi creates a multi-key login to keep your account secure and recoverable without needing seed phrases. Obi does NOT store any information."
               />
             </Text>
           </View>

@@ -182,7 +182,7 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                 </View>
               </View>
               <TextInput
-                placeholder="juno1234...."
+                placeholder="juno1234…"
                 style={{ marginTop: 25 }}
                 value={address}
                 onChangeText={setAddress}

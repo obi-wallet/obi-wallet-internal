@@ -114,17 +114,17 @@ export function MultisigPhoneNumberConfirm({
                   {wallet.keyInRecovery === "phoneNumber" ? (
                     <FormattedMessage
                       id="onboarding2.recovery.authyourkeys"
-                      defaultMessage="Create a Replacement Phone Number Key"
+                      defaultMessage="Create a New Phone Number Key"
                     />
                   ) : wallet.keyInRecovery === "biometrics" ? (
                     <FormattedMessage
                       id="onboarding2.recovery.phonenumber"
-                      defaultMessage="Recover your Phone Number Key"
+                      defaultMessage="Recover Your Old Phone Number Key"
                     />
                   ) : (
                     <FormattedMessage
                       id="onboarding3.authyourkeys"
-                      defaultMessage="Authenticate Your Keys"
+                      defaultMessage="Create a Phone Number Key"
                     />
                   )}
                 </Text>
@@ -167,7 +167,7 @@ export function MultisigPhoneNumberConfirm({
               <Text style={{ color: "rgba(246, 245, 255, 0.6)", fontSize: 12 }}>
                 <FormattedMessage
                   id="onboarding3.noresponselabel"
-                  defaultMessage="Didn’t receive a response?"
+                  defaultMessage="Didn't receive a response?"
                 />
               </Text>
 

@@ -120,7 +120,7 @@ export function AssetsHeader({ currentNetwork }: { currentNetwork: string }) {
               <FormattedMessage id="assets.network" defaultMessage="Network" />
             </Text>
             <Text style={{ color: "#F6F5FF", fontSize: 14 }}>
-              {isSmallScreenSubstr(currentNetwork, "...", 15, 16)}
+              {isSmallScreenSubstr(currentNetwork, "…", 15, 16)}
             </Text>
           </View>
         </>
@@ -147,7 +147,7 @@ export function AssetsHeader({ currentNetwork }: { currentNetwork: string }) {
           >
             <FormattedMessage
               id="assets.walletname"
-              defaultMessage="Wallet name"
+              defaultMessage="Wallet Name"
             />
           </Text>
           <Text
@@ -158,7 +158,7 @@ export function AssetsHeader({ currentNetwork }: { currentNetwork: string }) {
               textAlign: "right",
             }}
           >
-            {isSmallScreenSubstr(walletName, "...", 15, 18)}
+            {isSmallScreenSubstr(walletName, "…", 15, 18)}
           </Text>
         </View>
         <TouchableOpacity
@@ -501,7 +501,7 @@ function AssetsListItem({ item }: ListRenderItemInfo<ExtendedCoin>) {
         <View>
           <TouchableOpacity onPress={async () => onTouchAsset(amount)}>
             <Text style={{ color: "#F6F5FF", fontSize: 14, fontWeight: "500" }}>
-              {isSmallScreenSubstr(label, "...", 23, 30)}
+              {isSmallScreenSubstr(label, "…", 23, 30)}
             </Text>
             <Text
               style={{

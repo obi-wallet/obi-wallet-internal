@@ -256,14 +256,14 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
         id: "biometrics",
         title: intl.formatMessage({
           id: "signature.modal.biometricsignature",
-          defaultMessage: "Biometrics Signature",
+          defaultMessage: "Device Key",
         }),
       }),
       ...getKey({
         id: "phoneNumber",
         title: intl.formatMessage({
           id: "signature.modal.phonesignature",
-          defaultMessage: "Phone Number Signature",
+          defaultMessage: "Phone Number Key",
         }),
       }),
     ].filter((key) => {
@@ -407,7 +407,7 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
               }}
               loadingText={intl.formatMessage({
                 id: "onboarding6.loadingtext",
-                defaultMessage: "Preparing Wallet...",
+                defaultMessage: "Preparing wallet…",
               })}
             />
           </View>
@@ -700,13 +700,13 @@ const PhoneNumberBottomSheetContent =
               >
                 <FormattedMessage
                   id="signature.pasteresponse"
-                  defaultMessage="Paste in the response you received."
+                  defaultMessage="Paste in the response you receive."
                 />
               </Text>
               <TextInput
                 placeholder={intl.formatMessage({
                   id: "signature.smscodelabel",
-                  defaultMessage: "8-Digits SMS-Code",
+                  defaultMessage: "8-Digit SMS-Code",
                 })}
                 textContentType="oneTimeCode"
                 keyboardType="number-pad"
