@@ -7,6 +7,7 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { action } from "mobx";
 import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, Image, SafeAreaView, View } from "react-native";
 
@@ -34,6 +35,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
     settingsStore: { isObi },
   } = useStore();
   const wallet = walletsStore.currentWallet;
+
   const multisigWallet = isAnyMultisigWallet(wallet) ? wallet : null;
   const intl = useIntl();
 
@@ -41,6 +43,11 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
     isAnyMultisigWallet(wallet) && wallet.keyInRecovery !== null;
 
   const accountPickerModalProps = useAccountPickerModalProps();
+  useEffect(() => {
+    alert(
+      "Obi is in alpha. Security audits are pending. Current implementations are only intended for trial purposes."
+    );
+  }, []);
 
   return (
     <InitialBackground disabled={isObi}>
