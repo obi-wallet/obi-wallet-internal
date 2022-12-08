@@ -54,6 +54,8 @@
   "recovery.choosewallet.subtext": "Wir haben folgende Obi-Wallets gefunden, die mit deiner Telefonnummer und Sicherheitsantwort zusammenhängen. Wähle jenes, das du wiederherstellen möchtest.",
   "recovery.choosewallet.subtextnone": "Wir haben keine Obi-Wallets gefunden, die mit deiner Telefonnummer und Sicherheitsantwort zusammenhängen. Bitte versuche eine andere Kombination.",
   "recovery.choosewallet.tryagain": "Versuche eine andere Kombination.",
+  "onboarding1.disclaimer": "Disclaimer:",
+  "onboarding1.disclaimerMsg": "Obi befindet sich im Alphastadium. Securityaudits sind noch ausstehend. Die aktuelle Implementierung ist lediglich zu Testzwecken gedacht.",
 
   "onboarding1.welcometo.loop": "Willkommen bei Loop",
   "onboarding1.welcometo.obi": "Willkommen bei Obi",
@@ -119,11 +121,11 @@
 
   "onboarding5.setsocialkey": "Lege einen Social-Key fest",
   "onboarding5.setsocialkey.subtext": "Gib die juno-Adresse eines vertrauenswüdigen Freundes ein (oder scanne sie), der dir helfen kann deinen Account wiederherzustellen. Dein Freund hat keinen Zugriff auf deinen Account.",
-  "onboarding5.setsocialkey.subtext2": "…oder verwende den standard Obi-Account, wenn du keinem deiner Freunde traust.",
-  "onboarding5.useobiaccount": "Verwende Obi Account",
+  "onboarding5.setsocialkey.subtext2": "…oder verwende das Demo-Konto, um direkt durchzustarten.",
+  "onboarding5.useobiaccount": "Verwende Demo-Konto",
   "onboarding5.recovery.setsocialkey": "Lege einen neuen Social-Key fest",
-  "onboarding5.recovery.setsocialkey.subtext2": "Du verwendest derzeit den Obi-Account. Dies wird den Obi-Account von deiner Multisig entfernen und ihn mit dem Key deines Freundes ersetzen.",
-  "onboarding5.error.noactivity.title": "Wir konnten keine Aktivität unter diese Adresse finden.",
+  "onboarding5.recovery.setsocialkey.subtext2": "Du verwendest derzeit das Demo-Konto. Dies wird das Demo-Konto von deiner Multisig entfernen und es mit der Adresse deines Freundes ersetzen.",
+  "onboarding5.error.noactivity.title": "Wir konnten keine Aktivität unter dieser Adresse finden.",
   "onboarding5.error.noactivity.subtext": "Bitte überprüfe die Adresse, sag deinem Freund er soll sie zumindest einmal verwenden (zum Beispiel indem er Coins an sich selbst schickt), oder versuche eine andere Adresse.",
   "onboarding5.recovery.socialsubtext": "Gib die juno-Adresse eines vertrauenswürdigen Freundes ein, die du benutzt hast als du dein Wallet erstellt hast.",
 

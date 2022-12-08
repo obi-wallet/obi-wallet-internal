@@ -198,15 +198,16 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                 wallet.nextAdmin?.social?.address === obi_address ? (
                   <FormattedMessage
                     id="onboarding5.recovery.setsocialkey.subtext2"
-                    defaultMessage="You're currently using the Obi account. This will remove the Obi account from your multisig and replace it with your friend's key."
+                    defaultMessage="You're currently using the demo account. This will remove the demo account from your multisig and replace it with your friend's key."
                   />
                 ) : wallet.keyInRecovery !== "biometrics" ? (
                   <FormattedMessage
                     id="onboarding5.setsocialkey.subtext2"
-                    defaultMessage="…or you can use the default Obi account if you don't trust any of your friends"
+                    defaultMessage="…or you can use the demo account if you don't trust any of your friends"
                   />
                 ) : null}
               </Text>
+
               {wallet.keyInRecovery === "social" &&
               wallet.nextAdmin?.social?.address === obi_address ? null : (
                 <InlineButton
