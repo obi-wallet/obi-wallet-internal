@@ -12,6 +12,16 @@ import {
 import { SvgProps } from "react-native-svg";
 
 const flavors = {
+  obi: {
+    text: {
+      color: "#fff"
+    },
+    button: {
+      backgroundColor: "#437DFF",
+      borderRadius: 30,
+    }
+
+  },
   blue: {
     text: {
       color: "#040317",
