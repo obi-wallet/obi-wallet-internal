@@ -152,23 +152,6 @@ export function HomeScreen() {
   const Drawer = createDrawerNavigator();
   const { chainStore } = useStore();
 
-  // TODO: migrate
-  // useEffect(() => {
-  //   if (
-  //     walletStore.type === WalletType.MULTISIG &&
-  //     multisigStore.state === MultisigState.OUTDATED
-  //   ) {
-  //     Alert.alert("New wallet version available", "", [
-  //       {
-  //         text: "Update",
-  //         onPress: () => {
-  //           navigate("migrate");
-  //         },
-  //       },
-  //     ]);
-  //   }
-  // }, [walletStore.type, multisigStore.state, navigate]);
-
   return (
     <Drawer.Navigator
       useLegacyImplementation={true}

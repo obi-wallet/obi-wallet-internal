@@ -10,7 +10,6 @@ import { Modals } from "./modals";
 import { Provider, ProviderProps } from "./provider";
 import { RootStack } from "./root-stack";
 import { HomeScreen } from "./screens/home";
-import { MigrateScreen } from "./screens/migrate";
 import { MultisigPhoneNumber } from "./screens/onboarding/common/1-phone-number";
 import { MultisigPhoneNumberConfirm } from "./screens/onboarding/common/2-phone-number-confirm";
 import { MultisigBiometrics } from "./screens/onboarding/common/3-biometrics";
@@ -165,7 +164,6 @@ export const StateRenderer = observer(function StateRenderer() {
           />
           <RootStack.Screen name="send" component={SendScreen} />
           <RootStack.Screen name="receive" component={ReceiveScreen} />
-          <RootStack.Screen name="migrate" component={MigrateScreen} />
           {settingsScreens()}
         </RootStack.Group>
       );

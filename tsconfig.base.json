@@ -21,7 +21,7 @@
       "@obi-wallet/injected-provider": ["libs/injected-provider/src/index.ts"],
       "@obi-wallet/mobile": ["libs/mobile/src/index.ts"],
       "@obi-wallet/mobile-shim": ["libs/mobile-shim/src/index.ts"],
-      "@obi-wallet/proxy": ["libs/proxy/src/index.ts"]
+      "@obi-wallet/proxy-contract": ["libs/proxy-contract/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

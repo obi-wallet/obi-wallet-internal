@@ -6,7 +6,6 @@ import {
   StdSignDoc,
 } from "@cosmjs/amino";
 import { DirectSignResponse } from "@cosmjs/proto-signing";
-import { DeliverTxResponse } from "@cosmjs/stargate";
 import { escapeHTML } from "@keplr-wallet/common";
 import {
   Bech32Address,

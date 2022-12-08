@@ -92,7 +92,9 @@ export const SerializedSocialPayload = t.type({
 });
 export type SerializedSocialPayload = t.TypeOf<typeof SerializedSocialPayload>;
 
-export const SerializedCloudPayload = t.type({});
+export const SerializedCloudPayload = t.type({
+  publicKey: SinglePublicKey,
+});
 
 export type SerializedCloudPayload = t.TypeOf<typeof SerializedCloudPayload>;
 

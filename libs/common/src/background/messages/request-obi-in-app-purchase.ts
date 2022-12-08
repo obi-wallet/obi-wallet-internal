@@ -1,5 +1,4 @@
 import { BACKGROUND_PORT, Message } from "@keplr-wallet/router";
-import { ProductPurchase } from "react-native-iap";
 
 import { MessageRequesterInternal } from "../../message-requester";
 

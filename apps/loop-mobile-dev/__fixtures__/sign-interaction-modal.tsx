@@ -3,13 +3,7 @@ import {
   RequestObiSignAndBroadcastMsg,
 } from "@obi-wallet/common";
 import { SignInteractionModal, useStore } from "@obi-wallet/mobile";
-import { useEffect } from "react";
 import { Button, View } from "react-native";
-import {
-  finishTransaction,
-  getProducts,
-  requestPurchase,
-} from "react-native-iap";
 
 // eslint-disable-next-line import/no-default-export
 export default () => {

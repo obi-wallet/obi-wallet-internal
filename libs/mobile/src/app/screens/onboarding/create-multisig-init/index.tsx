@@ -3,6 +3,7 @@ import { MsgInstantiateContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { RequestObiSignAndBroadcastMsg } from "@obi-wallet/common";
+import { InstantiateMsg } from "@obi-wallet/proxy-contract";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { MsgInstantiateContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import Long from "long";
@@ -31,15 +32,16 @@ export const MultisigInit = observer<MultisigInitProps>(({ navigation }) => {
   const encodeObjects = useMemo(() => {
     if (!multisig.multisig?.address) return [];
 
-    const rawMessage = {
-      admin: multisig.multisig.address,
-      hot_wallets: [],
-      uusd_fee_debt: currentChainInformation.startingUsdDebt,
+    const rawMessage: InstantiateMsg = {
       fee_lend_repay_wallet: currentChainInformation.debtRepayAddress,
       home_network: currentChainInformation.chainId,
+      hot_wallets: [],
+      owner: multisig.multisig.address,
+      signer_types: wallet.getSignerTypes(multisig),
       signers: multisig.multisig.publicKey.value.pubkeys.map((pubkey) => {
         return pubkeyToAddress(pubkey, currentChainInformation.prefix);
       }),
+      uusd_fee_debt: currentChainInformation.startingUsdDebt,
     };
 
     const value: MsgInstantiateContract = {
@@ -56,7 +58,7 @@ export const MultisigInit = observer<MultisigInitProps>(({ navigation }) => {
       value,
     };
     return [message];
-  }, [currentChainInformation, multisig]);
+  }, [currentChainInformation, multisig, wallet]);
 
   useEffect(() => {
     if (encodeObjects.length > 0) {

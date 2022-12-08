@@ -6,6 +6,7 @@ import {
   RequestObiSignAndBroadcastMsg,
   Text,
 } from "@obi-wallet/common";
+import { MigrateMsg } from "@obi-wallet/proxy-contract";
 import { MsgMigrateContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import Long from "long";
 import { observer } from "mobx-react-lite";
@@ -122,7 +123,7 @@ export const HealthChecksScreen = observer(() => {
             if (!multisig?.multisig?.address || !wallet.proxyAddress?.address)
               return [];
 
-            const rawMessage = {};
+            const rawMessage: MigrateMsg = {};
 
             const value: MsgMigrateContract = {
               sender: multisig.multisig.address,

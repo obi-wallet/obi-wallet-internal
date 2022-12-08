@@ -1,8 +1,4 @@
-import {
-  createMultisigThresholdPubkey,
-  pubkeyToAddress,
-  SinglePubkey,
-} from "@cosmjs/amino";
+import { createMultisigThresholdPubkey, pubkeyToAddress } from "@cosmjs/amino";
 import { action, computed, makeObservable, observable } from "mobx";
 import R from "ramda";
 
@@ -260,21 +256,22 @@ export class MultisigWallet extends AbstractWallet {
     };
   }
 
+  public getSignerTypes(multisig: SerializedMultisigPayload) {
+    const allKeys = ["biometrics", "phoneNumber", "social", "cloud"] as const;
+    return allKeys.filter((key) => {
+      return multisig[key] !== null;
+    });
+  }
+
   protected createMultisigThresholdPublicKey(
     multisig: SerializedMultisigPayload
   ): MultisigThresholdPublicKey | null {
-    const publicKeys: SinglePubkey[] = [];
-
-    if (multisig.biometrics) {
-      publicKeys.push(multisig.biometrics.publicKey);
-    }
-
-    if (multisig.phoneNumber) {
-      publicKeys.push(multisig.phoneNumber.publicKey);
-    }
-
-    if (multisig.social) {
-      publicKeys.push(multisig.social.publicKey);
+    const publicKeys = [];
+    for (const key of this.getSignerTypes(multisig)) {
+      const keyPayload = multisig[key];
+      if (keyPayload) {
+        publicKeys.push(keyPayload.publicKey);
+      }
     }
 
     if (publicKeys.length === 0) {
