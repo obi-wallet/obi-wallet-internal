@@ -1,5 +1,5 @@
 module.exports = {
-  assets: ["../../libs/mobile/src/assets/fonts/Inter"],
+  assets: ["../../libs/mobile/src/assets/fonts"],
   dependencies: {
     "react-native-device-crypto": {
       platforms: {

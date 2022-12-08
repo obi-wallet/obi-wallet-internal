@@ -81,8 +81,8 @@ export const SendScreen = observer(() => {
     selectedCoin?.denom === "ubottle"
       ? "bottle"
       : selectedCoin?.denom === "udrink"
-      ? "drink"
-      : null;
+        ? "drink"
+        : null;
 
   const normalizedAmount = amount.replace(/,/g, ".");
 
@@ -170,9 +170,9 @@ export const SendScreen = observer(() => {
       >
         {qrCodeScannerModal.render()}
         {drinkOrBottleModalFlavor &&
-        (!address || address === BARTENDER_ADDRESS) &&
-        confirmModalVisible.visible &&
-        confirmModalVisible.success ? (
+          (!address || address === BARTENDER_ADDRESS) &&
+          confirmModalVisible.visible &&
+          confirmModalVisible.success ? (
           <DrinkOrBottleModal
             flavor={drinkOrBottleModalFlavor}
             visible={confirmModalVisible.visible && confirmModalVisible.success}
@@ -185,8 +185,8 @@ export const SendScreen = observer(() => {
         ) : null}
         {((drinkOrBottleModalFlavor && address !== BARTENDER_ADDRESS) ||
           !drinkOrBottleModalFlavor) &&
-        confirmModalVisible.visible &&
-        confirmModalVisible.success ? (
+          confirmModalVisible.visible &&
+          confirmModalVisible.success ? (
           <SuccessModal
             visible={confirmModalVisible.visible && confirmModalVisible.success}
             onDismiss={() => {
@@ -238,9 +238,9 @@ export const SendScreen = observer(() => {
                 drinkOrBottleModalFlavor
                   ? BARTENDER_ADDRESS
                   : intl.formatMessage({
-                      id: "send.walletaddress",
-                      defaultMessage: "Wallet Address",
-                    })
+                    id: "send.walletaddress",
+                    defaultMessage: "Wallet Address",
+                  })
               }
               style={{ flex: 1 }}
               inputStyle={{

@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import {
   isAnyMultisigWallet,
   isMultisigDemoWallet,
@@ -19,7 +20,7 @@ import {
   useAccountPickerModalProps,
 } from "../../account-picker-modal";
 import { InitialBackground } from "../../components/initial-background";
-import { ObiModeToggle } from "../../components/obi-mode-toggle";
+import { BrandToggle } from "../../components/obi-mode-toggle";
 // import ObiLogo from "./assets/wallet-icon.png";
 import { OnboardingStackParamList } from "../onboarding-stack";
 import GetStarted from "./assets/get-started.svg";
@@ -30,14 +31,13 @@ export type WelcomeProps = NativeStackScreenProps<
 >;
 
 export const Welcome = observer<WelcomeProps>(({ navigation }) => {
-  const {
-    walletsStore,
-    settingsStore: { isObi },
-  } = useStore();
-
+  const { walletsStore, settingsStore } = useStore();
+  const isObi = settingsStore.isObi();
   const wallet = walletsStore.currentWallet;
   const multisigWallet = isAnyMultisigWallet(wallet) ? wallet : null;
   const intl = useIntl();
+  const theme = useTheme();
+  console.log({ theme });
 
   const isInRecovery =
     isAnyMultisigWallet(wallet) && wallet.keyInRecovery !== null;
@@ -45,22 +45,19 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
   const accountPickerModalProps = useAccountPickerModalProps();
 
   return (
-    <InitialBackground disabled={isObi}>
+    <InitialBackground>
       <SafeAreaView
         style={{
           flex: 1,
-
-          ...(isObi ? { backgroundColor: "#1A1A1A" } : {}),
         }}
       >
         <View
           style={{
             position: "absolute",
-            top: 65,
+            top: 40,
             left: 0,
             right: 0,
-            paddingLeft: 15,
-            marginBottom: 10
+            marginBottom: 10,
           }}
         >
           <View style={{ padding: 10, marginBottom: 10 }}>
@@ -89,7 +86,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
             </Text>
           </View>
           <View style={{ marginHorizontal: 20 }}>
-            <LanguagePicker />
+            {settingsStore.isLoop() && <LanguagePicker />}
           </View>
         </View>
         <AccountPickerModal {...accountPickerModalProps} />
@@ -101,35 +98,40 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
             zIndex: -1,
           }}
         >
-          <ObiModeToggle>
+          <BrandToggle>
             <View
               style={{
                 aspectRatio: 1 / 1,
                 alignItems: isObi ? "center" : "flex-start",
-                justifyContent: isObi ? "center" : "flex-end",
+                justifyContent: "flex-end",
               }}
             >
-
               {isObi ? (
-
-                <Image source={require("./assets/obi-wallet-icon.png")}
+                <Image
+                  source={require("./assets/obi-wallet-icon.png")}
                   resizeMode="contain"
-                // style={{ width: '100%', height: '100%' }} 
                 />
               ) : (
                 <Image source={require("./assets/loop.png")} />
               )}
             </View>
-          </ObiModeToggle>
+          </BrandToggle>
+          {isObi && (
+            <View
+              style={{ marginBottom: 10, zIndex: 2, alignItems: "flex-end" }}
+            >
+              <LanguagePicker />
+            </View>
+          )}
+
           <Text
             style={{
               color: "#F6F5FF",
               fontSize: 32,
               fontWeight: "600",
               marginTop: 32,
-              textAlign: isObi ? "center" : "left"
+              textAlign: "left",
             }}
-            isObi={isObi}
           >
             {renderTitle()}
           </Text>
@@ -139,23 +141,20 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
               fontSize: 16,
               fontWeight: "400",
               marginTop: 12,
-              textAlign: isObi ? "center" : "left",
-
+              textAlign: "left",
             }}
-            isObi={isObi}
           >
             {renderSubTitle()}
           </Text>
         </View>
-        <View style={{ width: '100%', flex: 1, paddingHorizontal: 15 }}>
-
-          <ScrollView style={{ marginTop: 20, }}>
+        <View style={{ width: "100%", flex: 1, paddingHorizontal: 15 }}>
+          <ScrollView style={{ marginTop: 20 }}>
             {renderContinueButton(multisigWallet?.keyInRecovery)}
             {isInRecovery ? null : (
               <Button
                 label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
                 RightIcon={!isObi ? GetStarted : undefined}
-                flavor={isObi ? "obi" : "blue"}
+                flavor="blue"
                 style={{
                   marginTop: 20,
                 }}
@@ -167,7 +166,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                       {
                         text: "Cancel",
                         // eslint-disable-next-line @typescript-eslint/no-empty-function
-                        onPress() { },
+                        onPress() {},
                       },
                       {
                         text: "Continue",
@@ -189,7 +188,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
               <Button
                 label={intl.formatMessage({ id: "general.cancel" })}
                 RightIcon={!isObi ? GetStarted : undefined}
-                flavor={isObi ? "obi" : "blue"}
+                flavor="blue"
                 style={{
                   marginTop: 20,
                 }}
@@ -199,9 +198,11 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
               />
             ) : (
               <Button
-                label={intl.formatMessage({ id: "onboarding1.recoversinglesig" })}
+                label={intl.formatMessage({
+                  id: "onboarding1.recoversinglesig",
+                })}
                 RightIcon={!isObi ? GetStarted : undefined}
-                flavor={isObi ? "obi" : "blue"}
+                flavor="blue"
                 style={{
                   marginTop: 20,
                 }}
@@ -217,7 +218,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                   defaultMessage: "Enter Demo Mode",
                 })}
                 RightIcon={!isObi ? GetStarted : undefined}
-                flavor={isObi ? "obi" : "blue"}
+                flavor="blue"
                 style={{
                   marginTop: 20,
                 }}
@@ -231,9 +232,8 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
             )}
           </ScrollView>
         </View>
-
       </SafeAreaView>
-    </InitialBackground >
+    </InitialBackground>
   );
 
   function renderTitle() {
@@ -279,7 +279,8 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           />
         );
       default:
-        if (isObi) return "Obi is the most secure and convenient way to manage assets in the Cosmos.";
+        if (isObi)
+          return "Obi is the most secure and convenient way to manage assets in the Cosmos.";
 
         return (
           <FormattedMessage
@@ -307,7 +308,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
         labelId = "onboarding1.getstarted";
     }
     return (
-      <View >
+      <View>
         {!keyInRecovery && walletsStore.readyWallets.length > 0 ? (
           <Button
             label={intl.formatMessage({
@@ -315,8 +316,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
               defaultMessage: "Login",
             })}
             RightIcon={!isObi ? GetStarted : undefined}
-            flavor={isObi ? "obi" : "green"}
-
+            flavor="green"
             onPress={() => {
               accountPickerModalProps.open();
             }}
@@ -325,7 +325,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
         <Button
           label={intl.formatMessage({ id: labelId })}
           RightIcon={!isObi ? GetStarted : undefined}
-          flavor={isObi ? "obi" : "green"}
+          flavor="green"
           style={{
             marginTop: 20,
           }}

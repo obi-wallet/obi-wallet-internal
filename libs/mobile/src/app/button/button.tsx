@@ -1,4 +1,5 @@
-import { Text } from "@obi-wallet/common";
+import { Theme, useTheme } from "@emotion/react";
+import { Brand, Text } from "@obi-wallet/common";
 import { FC } from "react";
 import {
   Platform,
@@ -11,17 +12,8 @@ import {
 } from "react-native";
 import { SvgProps } from "react-native-svg";
 
-const flavors = {
-  obi: {
-    text: {
-      color: "#fff"
-    },
-    button: {
-      backgroundColor: "#437DFF",
-      borderRadius: 30,
-    }
-
-  },
+import { useStore } from "../stores";
+const loopFlavors = {
   blue: {
     text: {
       color: "#040317",
@@ -55,7 +47,6 @@ const flavors = {
     },
   },
 };
-
 const baseStyles = StyleSheet.create({
   leftIcon: {
     marginRight: 8,
@@ -63,23 +54,70 @@ const baseStyles = StyleSheet.create({
   text: {
     fontWeight: "bold",
     fontSize: 16,
+    color: "#00000082",
   },
   button: {
+    marginVertical: 5,
     width: "100%",
     height: 56,
-    borderRadius: 12,
+    borderRadius: 30,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-  },
-  disabledButton: {
+    backgroundColor: "#949494cc",
     opacity: 0.5,
   },
 });
 
+const getFlavorStyles = (
+  brand: Brand,
+  flavor: keyof typeof loopFlavors,
+  theme: Theme,
+  disabled: boolean
+) => {
+  switch (brand) {
+    case Brand.OBI: {
+      if (disabled) return baseStyles;
+
+      return {
+        ...baseStyles,
+        text: {
+          ...baseStyles.text,
+          fontFamily: theme.fonts.bold,
+          color: "#fff",
+        },
+        button: {
+          ...baseStyles.button,
+          backgroundColor: "#437DFF",
+          opacity: 1,
+        },
+      };
+    }
+    case Brand.LOOP: {
+      const loopBorderRadius = 12;
+      if (disabled) return baseStyles;
+      const flavorStyles = loopFlavors[flavor];
+      return {
+        ...baseStyles,
+        text: {
+          ...baseStyles.text,
+          ...flavorStyles.text,
+          fontFamily: theme.fonts.bold,
+        },
+        button: {
+          ...baseStyles.button,
+          ...flavorStyles.button,
+          borderRadius: loopBorderRadius,
+          opacity: 1,
+        },
+      };
+    }
+  }
+};
+
 export interface ButtonProps
   extends Omit<TouchableWithoutFeedbackProps, "children"> {
-  flavor: keyof typeof flavors;
+  flavor: keyof typeof loopFlavors;
   label: string;
   disabled?: boolean;
   LeftIcon?: FC<SvgProps>;
@@ -89,14 +127,18 @@ export interface ButtonProps
 export function Button({
   flavor,
   label,
-  disabled,
+  disabled = false,
   LeftIcon,
   RightIcon,
   ...props
 }: ButtonProps) {
-  const flavorStyles = flavors[disabled ? "gray" : flavor];
+  const { settingsStore } = useStore();
+  const isObi = settingsStore.isObi();
+  const theme = useTheme();
+  const brand = settingsStore.brand;
+  const flavorStyles = getFlavorStyles(brand, flavor, theme, disabled);
   const children = (
-    <View style={[baseStyles.button, flavorStyles.button]}>
+    <View style={flavorStyles.button}>
       {LeftIcon ? (
         <LeftIcon width={24} height={24} style={baseStyles.leftIcon} />
       ) : null}
@@ -104,15 +146,11 @@ export function Button({
       {RightIcon ? <RightIcon width={24} height={24} /> : null}
     </View>
   );
+
   const buttonProps = {
     ...props,
     children,
-    style: [
-      baseStyles.button,
-      flavorStyles.button,
-      disabled ? baseStyles.disabledButton : undefined,
-      props.style,
-    ],
+    style: flavorStyles.button,
   };
 
   const onPress = (e: GestureResponderEvent) => {

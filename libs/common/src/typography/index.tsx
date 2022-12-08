@@ -1,3 +1,5 @@
+import { useTheme } from "@emotion/react";
+import { observable } from "mobx";
 import { ReactNode } from "react";
 import {
   StyleSheet,
@@ -9,24 +11,44 @@ import {
   TextProps,
 } from "react-native";
 
-const styles = StyleSheet.create({
-  font: {
-    fontFamily: "Inter",
-  },
-});
-
 export function Text({
   children,
   style,
+  isObi = false,
   ...props
-}: TextProps & { children: ReactNode }) {
+}: TextProps & { children: ReactNode; isObi?: boolean }) {
+  const theme = useTheme();
+
   return (
-    <OriginalText style={[styles.font, style]} {...props}>
+    <OriginalText
+      style={[
+        {
+          fontFamily: theme.fonts.regular,
+        },
+        style,
+      ]}
+      {...props}
+    >
       {children}
     </OriginalText>
   );
 }
 
-export function TextInput({ style, ...props }: TextInputProps) {
-  return <OriginalTextInput style={[styles.font, style]} {...props} />;
+export function TextInput({
+  style,
+  isObi = false,
+  ...props
+}: TextInputProps & { isObi?: boolean }) {
+  const theme = useTheme();
+  return (
+    <OriginalTextInput
+      style={[
+        {
+          fontFamily: theme.fonts.regular,
+        },
+        style,
+      ]}
+      {...props}
+    />
+  );
 }

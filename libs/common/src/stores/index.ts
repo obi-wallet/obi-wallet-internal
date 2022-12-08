@@ -5,3 +5,4 @@ export * from "./multisig";
 export * from "./root";
 export * from "./language";
 export * from "./wallets";
+export * from "./settings";

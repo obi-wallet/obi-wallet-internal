@@ -17,6 +17,7 @@ import {
 } from "../../../../biometrics";
 import { Button, IconButton } from "../../../../button";
 import { useMultisigWallet, useStore } from "../../../../stores";
+import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
 import { OnboardingStackParamList } from "../../onboarding-stack";
 import FaceScanner from "./assets/face-scanner.svg";
@@ -31,8 +32,7 @@ export type MultisigBiometricsProps = NativeStackScreenProps<
 export const MultisigBiometrics = observer<MultisigBiometricsProps>(
   ({ navigation }) => {
     const wallet = useMultisigWallet();
-    const isObi = useStore().settingsStore.isObi;
-    console.log({ isObi })
+    const isObi = useStore().settingsStore.isObi();
 
     const [scannedBiometrics, setScannedBiometrics] = useState(false);
     const intl = useIntl();
@@ -106,7 +106,9 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
       useState(false);
 
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: isObi ? "#1A1A1A" : "" }}>
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: isObi ? "#1A1A1A" : "" }}
+      >
         {!isObi && <Background />}
         <KeyboardAwareScrollView
           style={{
@@ -119,23 +121,12 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
           }}
         >
           <View>
-            <IconButton
-              style={{
-                marginTop: 20,
-                marginLeft: -5,
-                padding: 5,
-                width: 25,
-
-              }}
-              onPress={() => {
-                navigation.goBack();
-              }}
-            >
-              <FontAwesomeIcon
-                icon={isObi ? faCircleChevronLeft : faChevronLeft}
-                style={{ color: isObi ? "white" : "#7B87A8" }}
-              />
-            </IconButton>
+            <Back style={{
+              marginTop: 20,
+              marginLeft: -5,
+              padding: 5,
+              width: 25
+            }} />
 
             <View
               style={{
@@ -146,7 +137,9 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
             >
               <View
                 style={{
-                  backgroundColor: isObi ? "rgba(219, 222, 255,0.07)" : "rgba(86, 84, 141, 0.07)",
+                  backgroundColor: isObi
+                    ? "rgba(219, 222, 255,0.07)"
+                    : "rgba(86, 84, 141, 0.07)",
                   justifyContent: "center",
                   alignItems: "center",
                   width: 296,
@@ -156,7 +149,9 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
               >
                 <View
                   style={{
-                    backgroundColor: isObi ? "rgba(219, 222, 255,0.17)" : "rgba(86, 84, 141, 0.17)",
+                    backgroundColor: isObi
+                      ? "rgba(219, 222, 255,0.17)"
+                      : "rgba(86, 84, 141, 0.17)",
                     width: 224,
                     height: 224,
                     justifyContent: "center",
@@ -189,7 +184,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
                 fontSize: 14,
                 fontWeight: "400",
                 marginTop: 10,
-                ...(isObi ? { fontFamily: "poppins-light" } : {})
+                ...(isObi ? { fontFamily: "poppins-light" } : {}),
               }}
             >
               <FormattedMessage
@@ -201,7 +196,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
 
           <Button
             label={intl.formatMessage({ id: "onboarding4.biometrics.button" })}
-            flavor={isObi ? "obi" : "blue"}
+            flavor="blue"
             LeftIcon={!isObi ? Scan : undefined}
             onPress={() => {
               if (scannedBiometrics) {
