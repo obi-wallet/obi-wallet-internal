@@ -121,7 +121,7 @@
 
   "onboarding5.setsocialkey": "Lege einen Social-Key fest",
   "onboarding5.setsocialkey.subtext": "Gib die juno-Adresse eines vertrauenswüdigen Freundes ein (oder scanne sie), der dir helfen kann deinen Account wiederherzustellen. Dein Freund hat keinen Zugriff auf deinen Account.",
-  "onboarding5.setsocialkey.subtext2": "...oder verwende das Demo-Konto, um direkt durchzustarten.",
+  "onboarding5.setsocialkey.subtext2": "…oder verwende das Demo-Konto, um direkt durchzustarten.",
   "onboarding5.useobiaccount": "Verwende Demo-Konto",
   "onboarding5.recovery.setsocialkey": "Lege einen neuen Social-Key fest",
   "onboarding5.recovery.setsocialkey.subtext2": "Du verwendest derzeit das Demo-Konto. Dies wird das Demo-Konto von deiner Multisig entfernen und es mit der Adresse deines Freundes ersetzen.",
