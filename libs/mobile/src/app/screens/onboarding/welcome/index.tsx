@@ -4,6 +4,7 @@ import {
   MultisigKey,
   Text,
 } from "@obi-wallet/common";
+import { BlurView, VibrancyView } from "@react-native-community/blur";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { action } from "mobx";
 import { observer } from "mobx-react-lite";
@@ -43,11 +44,6 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
     isAnyMultisigWallet(wallet) && wallet.keyInRecovery !== null;
 
   const accountPickerModalProps = useAccountPickerModalProps();
-  useEffect(() => {
-    alert(
-      "Obi is in alpha. Security audits are pending. Current implementations are only intended for trial purposes."
-    );
-  }, []);
 
   return (
     <InitialBackground disabled={isObi}>
@@ -61,10 +57,38 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           style={{
             position: "absolute",
             top: 65,
-            left: 20,
+            left: 0,
+            right: 0,
           }}
         >
-          <LanguagePicker />
+          <View style={{ padding: 10, marginBottom: 10 }}>
+            <VibrancyView
+              blurType="dark"
+              blurAmount={10}
+              style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                left: 0,
+                bottom: 0,
+              }}
+            />
+            <Text style={{ color: "white" }}>
+              <Text style={{ fontWeight: "600" }}>
+                <FormattedMessage
+                  id="onboarding1.disclaimer"
+                  defaultMessage="Disclaimer:"
+                />{" "}
+              </Text>
+              <FormattedMessage
+                id="onboarding1.disclaimerMsg"
+                defaultMessage="Obi is in alpha. Security audits are pending. Current implementations are only intended for trial purposes."
+              />
+            </Text>
+          </View>
+          <View style={{ marginHorizontal: 20 }}>
+            <LanguagePicker />
+          </View>
         </View>
         <AccountPickerModal {...accountPickerModalProps} />
 

@@ -48,8 +48,8 @@ export async function getBiometricsKeyPair({
       title: "Authentication Required",
     },
     service: BIOMETRICS_KEY,
-    // accessControl:
-    //   Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
+    accessControl:
+      Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
   });
 
   if (credentials) {
@@ -62,16 +62,16 @@ export async function getBiometricsKeyPair({
     await Keychain.resetGenericPassword({ service: "fake-prompt" });
     await Keychain.setGenericPassword("fake1", "fake2", {
       service: "fake-prompt",
-      // accessControl:
-      //   Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
+      accessControl:
+        Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
     });
     await Keychain.getGenericPassword({
       authenticationPrompt: {
         title: "Authentication Required",
       },
       service: "fake-prompt",
-      // accessControl:
-      //   Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
+      accessControl:
+        Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
     });
 
     const privateKeyBuffer = randomBytes(32);
@@ -82,8 +82,8 @@ export async function getBiometricsKeyPair({
 
     await Keychain.setGenericPassword(publicKey, privateKey, {
       service: BIOMETRICS_KEY,
-      // accessControl:
-      //   Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
+      accessControl:
+        Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
     });
     return {
       publicKey,

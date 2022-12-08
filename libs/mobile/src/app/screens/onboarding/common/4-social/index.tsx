@@ -194,24 +194,21 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                   marginTop: 10,
                 }}
               >
-                {/* Pete asked to hide this for now because of alpha disclaimers  */}
                 {wallet.keyInRecovery === "social" &&
-                wallet.nextAdmin?.social?.address === obi_address
-                  ? // <FormattedMessage
-                    //   id="onboarding5.recovery.setsocialkey.subtext2"
-                    //   defaultMessage="You're currently using the Obi account. This will remove the Obi account from your multisig and replace it with your friend's key."
-                    // />
-                    null
-                  : wallet.keyInRecovery !== "biometrics"
-                  ? // <FormattedMessage
-                    //   id="onboarding5.setsocialkey.subtext2"
-                    //   defaultMessage="…or you can use the default Obi account if you don't trust any of your friends"
-                    // />
-                    null
-                  : null}
+                wallet.nextAdmin?.social?.address === obi_address ? (
+                  <FormattedMessage
+                    id="onboarding5.recovery.setsocialkey.subtext2"
+                    defaultMessage="You're currently using the demo account. This will remove the demo account from your multisig and replace it with your friend's key."
+                  />
+                ) : wallet.keyInRecovery !== "biometrics" ? (
+                  <FormattedMessage
+                    id="onboarding5.setsocialkey.subtext2"
+                    defaultMessage="…or you can use the demo account if you don't trust any of your friends"
+                  />
+                ) : null}
               </Text>
-              {/* Pete asked to hide this for now because of alpha disclaimers  */}
-              {/* {wallet.keyInRecovery === "social" &&
+
+              {wallet.keyInRecovery === "social" &&
               wallet.nextAdmin?.social?.address === obi_address ? null : (
                 <InlineButton
                   label={intl.formatMessage({
@@ -223,7 +220,6 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                   }}
                 />
               )}
-            */}
             </View>
             <View>
               <VerifyAndProceedButton
