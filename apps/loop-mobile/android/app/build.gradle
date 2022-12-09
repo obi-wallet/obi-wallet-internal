@@ -154,6 +154,7 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         missingDimensionStrategy 'detox', 'full'
         missingDimensionStrategy 'react-native-camera', 'general'
+        missingDimensionStrategy 'store', 'play'
 
         if (isNewArchitectureEnabled()) {
             // We configure the CMake build only if you decide to opt-in for the New Architecture.
