@@ -12,7 +12,7 @@ import {
 import { useMemo } from "react";
 import invariant from "tiny-invariant";
 
-import { rootStore } from "../../background/root-store";
+import { getRootStore } from "../../background/root-store";
 
 class ConcreteKeplr extends Keplr {
   // noinspection JSUnusedGlobalSymbols
@@ -20,7 +20,7 @@ class ConcreteKeplr extends Keplr {
     address: string,
     messages: EncodeObject[]
   ): Promise<DeliverTxResponse> {
-    const currentWallet = rootStore.walletsStore.currentWallet;
+    const currentWallet = getRootStore().walletsStore.currentWallet;
 
     invariant(currentWallet, "Expected `currentWallet` to be defined.");
 

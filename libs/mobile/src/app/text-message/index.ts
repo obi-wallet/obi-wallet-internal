@@ -7,7 +7,7 @@ import {
   PHONE_NUMBER_TWILIO_BASIC_AUTH_USER,
 } from "react-native-dotenv";
 
-import { rootStore } from "../../background/root-store";
+import { getRootStore } from "../../background/root-store";
 import { envInvariant } from "../../helpers/invariant";
 import { prepareWalletAndSign } from "../secp256k1";
 
@@ -154,7 +154,7 @@ async function encryptAndSendMessage({
   const body = await getMessageBody(message);
   const formData = new FormData();
   const { twilioPhoneNumbers, twilioUrl } =
-    rootStore.chainStore.currentChainInformation;
+    getRootStore().chainStore.currentChainInformation;
   const twilioPhoneNumber =
     twilioPhoneNumbers[Math.floor(Math.random() * twilioPhoneNumbers.length)];
   formData.append("To", twilioPhoneNumber);

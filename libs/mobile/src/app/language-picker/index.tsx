@@ -1,3 +1,4 @@
+import { Language } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { Image } from "react-native";
@@ -42,7 +43,7 @@ export const LanguagePicker = observer(() => {
   const languageStore = useStore().languageStore;
   const { currentLanguage, enabledLanguages } = languageStore;
 
-  const handleLanguageChoice = (language: string | null) => {
+  const handleLanguageChoice = (language: Language | null) => {
     if (language) {
       languageStore.setCurrentLanguage(language);
     }
@@ -51,7 +52,9 @@ export const LanguagePicker = observer(() => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(currentLanguage);
   const [items, setItems] = useState(() => {
-    return allLanguages.filter((lang) => enabledLanguages.includes(lang.code));
+    return allLanguages.filter((lang) =>
+      enabledLanguages.includes(lang.code as Language)
+    );
   });
 
   if (items.length <= 1) return null;

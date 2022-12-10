@@ -1,17 +1,24 @@
-import { messages } from "@obi-wallet/common";
+import { Config, messages } from "@obi-wallet/common";
 import { NavigationContainer } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { ComponentProps, ReactNode, StrictMode, useEffect } from "react";
+import {
+  ComponentProps,
+  ReactNode,
+  StrictMode,
+  useEffect,
+  useMemo,
+} from "react";
 import { IntlProvider } from "react-intl";
 import { StatusBar } from "react-native";
 import { endConnection, initConnection } from "react-native-iap";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { rootStore } from "../background/root-store";
+import { createRootStore } from "../background/root-store";
 import { StoreContext } from "./stores";
 
 export interface ProviderProps {
   children: ReactNode;
+  initialConfig: Config;
   navigationContainerProps?: Omit<
     ComponentProps<typeof NavigationContainer>,
     "children"
@@ -19,7 +26,10 @@ export interface ProviderProps {
 }
 
 export const Provider = observer<ProviderProps>(
-  ({ children, navigationContainerProps }) => {
+  ({ children, initialConfig, navigationContainerProps }) => {
+    const rootStore = useMemo(() => {
+      return createRootStore({ initialConfig });
+    }, [initialConfig]);
     const { languageStore } = rootStore;
     const { currentLanguage } = languageStore;
 

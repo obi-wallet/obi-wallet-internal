@@ -11,10 +11,21 @@ const singlesigKVStore = new MockKVStore("singlesig-store");
 
 function createWalletsStore() {
   const rootStore = new RootStore({
-    defaultChain: "juno-1",
     deviceLanguage: "en",
-    enabledLanguages: ["en"],
-    defaultLanguage: "en",
+    initialConfig: {
+      chains: {
+        enabled: ["juno-1"],
+        default: "juno-1",
+      },
+      languages: {
+        enabled: ["en"],
+        default: "en",
+      },
+      features: {
+        healthChecks: false,
+        nftTab: false,
+      },
+    },
     KVStore: MockKVStore,
   });
   return rootStore.walletsStore;

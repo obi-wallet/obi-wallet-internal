@@ -7,7 +7,7 @@ import {
 import { chains, createStargateClient } from "@obi-wallet/common";
 import secp256k1 from "secp256k1";
 
-import { rootStore } from "../../background/root-store";
+import { getRootStore } from "../../background/root-store";
 import { createSigningStargateClient } from "../clients";
 import { lendFees } from "../fee-lender-worker";
 
@@ -24,7 +24,7 @@ export async function prepareWalletAndSign({
     Buffer.from(privateKey, "base64")
   );
 
-  const { chainStore } = rootStore;
+  const { chainStore } = getRootStore();
   const chainId = chainStore.currentChain;
   const { prefix, denom } = chains[chainId];
   const client = await createStargateClient(chainId);

@@ -1,37 +1,44 @@
 import { KVStore, toGenerator } from "@keplr-wallet/common";
 import { action, flow, makeObservable, observable, runInAction } from "mobx";
 
+import { Language } from "../languages";
+import { ConfigStore } from "./config";
+
 export class LanguageStore {
+  protected readonly configStore: ConfigStore;
   protected readonly kvStore: KVStore;
-  public readonly enabledLanguages: string[];
 
   @observable
-  public currentLanguage: string;
+  public currentLanguage: Language;
 
   constructor({
     deviceLanguage,
-    enabledLanguages,
-    defaultLanguage,
+    configStore,
     kvStore,
   }: {
-    defaultLanguage: string;
     deviceLanguage: string;
-    enabledLanguages: string[];
+    configStore: ConfigStore;
     kvStore: KVStore;
   }) {
+    this.configStore = configStore;
+    const { languages } = configStore.config;
+
     this.currentLanguage =
-      enabledLanguages.find((lang) => lang === deviceLanguage) ??
-      defaultLanguage;
-    this.enabledLanguages = enabledLanguages;
+      languages.enabled.find((lang) => lang === deviceLanguage) ??
+      languages.default;
     this.kvStore = kvStore;
     makeObservable(this);
     this.init();
   }
 
+  public get enabledLanguages() {
+    return this.configStore.config.languages.enabled;
+  }
+
   @flow
   protected async *init() {
     const currentLanguage = yield* toGenerator(
-      this.kvStore.get<string | undefined>("currentLanguage")
+      this.kvStore.get<Language | undefined>("currentLanguage")
     );
 
     if (currentLanguage && this.enabledLanguages.includes(currentLanguage)) {
@@ -42,7 +49,7 @@ export class LanguageStore {
   }
 
   @action
-  public setCurrentLanguage(selectedLanguage: string) {
+  public setCurrentLanguage(selectedLanguage: Language) {
     this.currentLanguage = selectedLanguage;
     void this.save();
   }

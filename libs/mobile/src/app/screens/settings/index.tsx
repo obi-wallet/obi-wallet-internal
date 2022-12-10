@@ -29,7 +29,7 @@ import { KeysConfigScreen } from "./keys-config";
 import { Seedphrase } from "./seedphrase";
 
 export const SettingsScreen = observer(() => {
-  const { walletsStore, settingsStore } = useStore();
+  const { configStore, walletsStore, settingsStore } = useStore();
   const { isObi } = settingsStore;
   const intl = useIntl();
   const navigation = useRootNavigation();
@@ -130,19 +130,21 @@ export const SettingsScreen = observer(() => {
               })}
               onPress={() => navigation.navigate("MultiSigSettings")}
             />
-            <Setting
-              Icon={MultiSigIcon}
-              title={intl.formatMessage({
-                id: "settings.multisighealthchecks",
-                defaultMessage: "Wallet Health",
-              })}
-              subtitle={intl.formatMessage({
-                id: "settings.multisighealthchecks.subtext",
-                defaultMessage:
-                  "Check for any potential issues in your wallet.",
-              })}
-              onPress={() => navigation.navigate("MultisigHealthChecks")}
-            />
+            {configStore.isFeatureEnabled("healthChecks") ? (
+              <Setting
+                Icon={MultiSigIcon}
+                title={intl.formatMessage({
+                  id: "settings.multisighealthchecks",
+                  defaultMessage: "Wallet Health",
+                })}
+                subtitle={intl.formatMessage({
+                  id: "settings.multisighealthchecks.subtext",
+                  defaultMessage:
+                    "Check for any potential issues in your wallet.",
+                })}
+                onPress={() => navigation.navigate("MultisigHealthChecks")}
+              />
+            ) : null}
           </>
         ) : (
           <Setting

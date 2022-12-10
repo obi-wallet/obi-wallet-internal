@@ -2,7 +2,7 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Chain, chains, Text } from "@obi-wallet/common";
+import { chains, Text } from "@obi-wallet/common";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   createDrawerNavigator,
@@ -16,11 +16,8 @@ import { action } from "mobx";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Platform } from "react-native";
-import { NFT_TAB_ENABLED } from "react-native-dotenv";
-import { ENABLED_CHAINS } from "react-native-dotenv";
 import { TouchableHighlight } from "react-native-gesture-handler";
 
-import { envInvariant } from "../../../helpers/invariant";
 import { useStore } from "../../stores";
 import {
   getScreenDimensions,
@@ -42,17 +39,12 @@ import SettingsIcon from "./assets/settingsIcon.svg";
 import TradeIcon from "./assets/tradeIcon.svg";
 import { Assets } from "./components/assets";
 
-envInvariant("ENABLED_CHAINS", ENABLED_CHAINS);
-const enabledChains = ENABLED_CHAINS.split(",") as Chain[];
-const networks = Object.values(chains).filter((network) => {
-  return enabledChains.includes(network.chainId);
-});
-
 export type TabNavigationProps = DrawerScreenProps<ParamListBase>;
 
-export function TabNavigation() {
+export const TabNavigation = observer<TabNavigationProps>(() => {
   const Tab = createBottomTabNavigator();
   const intl = useIntl();
+  const { configStore } = useStore();
 
   const assets = intl.formatMessage({
     id: "menu.assets",
@@ -138,7 +130,7 @@ export function TabNavigation() {
       })}
     >
       <Tab.Screen name={assets} component={Assets} />
-      {NFT_TAB_ENABLED === "true" && (
+      {configStore.isFeatureEnabled("nftTab") && (
         <Tab.Screen name={nfts} component={NFTs} />
       )}
       <Tab.Screen name={apps} component={DappExplorer} />
@@ -146,7 +138,7 @@ export function TabNavigation() {
       <Tab.Screen name={settings} component={SettingsScreen} />
     </Tab.Navigator>
   );
-}
+});
 
 export function HomeScreen() {
   const Drawer = createDrawerNavigator();
@@ -168,7 +160,10 @@ export function HomeScreen() {
 
 const CustomDrawerContent = observer((props: DrawerContentComponentProps) => {
   const { navigation } = props;
-  const { chainStore } = useStore();
+  const { chainStore, configStore } = useStore();
+  const networks = Object.values(chains).filter((network) => {
+    return configStore.config.chains.enabled.includes(network.chainId);
+  });
 
   return (
     <DrawerContentScrollView {...props} style={{ backgroundColor: "#100F1E" }}>

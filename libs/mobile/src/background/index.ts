@@ -56,17 +56,13 @@ import { Alert } from "react-native";
 import scrypt from "scrypt-js";
 import invariant from "tiny-invariant";
 
-let rootStore: RootStore | null = null;
+import { getRootStore } from "./root-store";
 
 class KeyRingService extends AbstractKeyRingService {
   protected interactionService!: InteractionService;
+
   get rootStore(): RootStore {
-    if (!rootStore) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      rootStore = require("./root-store").rootStore;
-    }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return rootStore!;
+    return getRootStore();
   }
 
   addLedgerKey(

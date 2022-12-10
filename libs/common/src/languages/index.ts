@@ -5,12 +5,14 @@ import MessagesEs from "./es.json";
 export type IntlMessage = Record<string, string>;
 export type IntlMessages = { [lang: string]: Record<string, string> };
 
-export const messages: IntlMessages = {
+export const messages = {
   en: MessagesEn,
   de: MessagesDe,
   es: MessagesEs,
-};
+} satisfies IntlMessages;
 
 export type TypeLanguageToFiatCurrency = { ["default"]: string } & {
   [language: string]: string | undefined;
 };
+
+export type Language = keyof typeof messages;

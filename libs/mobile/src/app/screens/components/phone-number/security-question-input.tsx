@@ -3,9 +3,9 @@ import { ComponentType, Dispatch, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { TextInputProps, View } from "react-native";
 
-import { useSecurityQuestions } from "../../../../config";
 import { DropDownPicker } from "../../../drop-down-picker";
 import { TextInput } from "../../../text-input";
+
 export type SetStateCallback<S> = (prevState: S) => S;
 export type OnSecurityQuestionChange = Dispatch<SetStateCallback<string>>;
 
@@ -106,4 +106,40 @@ export function useSecurityQuestionInput() {
     securityAnswer,
     setSecurityAnswer,
   };
+}
+
+export function useSecurityQuestions() {
+  const intl = useIntl();
+
+  return [
+    {
+      label: intl.formatMessage({
+        id: "onboarding2.securityquestion.birthplace",
+        defaultMessage: "What city and country were you born in?",
+      }),
+      value: "birthplace",
+    },
+    {
+      label: intl.formatMessage({
+        id: "onboarding2.securityquestion.schoolname",
+        defaultMessage:
+          "What is the full name of the last elementary/primary school I attended?",
+      }),
+      value: "schoolname",
+    },
+    {
+      label: intl.formatMessage({
+        id: "onboarding2.securityquestion.firstcar",
+        defaultMessage: "What was the make and model of your first car?",
+      }),
+      value: "firstcar",
+    },
+    {
+      label: intl.formatMessage({
+        id: "onboarding2.securityquestion.firstkiss",
+        defaultMessage: "What is the full name of my first kiss?",
+      }),
+      value: "firstkiss",
+    },
+  ];
 }

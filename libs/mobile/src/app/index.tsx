@@ -1,4 +1,9 @@
-import { isMultisigDemoWallet, Text, WalletState } from "@obi-wallet/common";
+import {
+  Config,
+  isMultisigDemoWallet,
+  Text,
+  WalletState,
+} from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { AppState, View } from "react-native";
@@ -28,10 +33,11 @@ import { WebViewScreen } from "./screens/web-view";
 import { useStore } from "./stores";
 
 export interface BaseAppProps {
-  providerProps?: Omit<ProviderProps, "children">;
+  initialConfig: Config;
+  providerProps?: Omit<ProviderProps, "children" | "initialConfig">;
 }
 
-export function BaseApp({ providerProps }: BaseAppProps) {
+export function BaseApp({ initialConfig, providerProps }: BaseAppProps) {
   const [updating, setUpdating] = useState(false);
   const appState = useRef(AppState.currentState);
   const lastUpdate = useRef(0);
@@ -72,7 +78,7 @@ export function BaseApp({ providerProps }: BaseAppProps) {
   }, []);
 
   return (
-    <Provider {...providerProps}>
+    <Provider {...providerProps} initialConfig={initialConfig}>
       <DemoModeHeader />
       <StateRenderer />
       <Modals />

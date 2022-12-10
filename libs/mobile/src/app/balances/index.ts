@@ -1,7 +1,7 @@
 import { Coin } from "@cosmjs/amino";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 
-import { rootStore } from "../../background/root-store";
+import { getRootStore } from "../../background/root-store";
 import { useStore } from "../stores";
 import BottleIcon from "./assets/bottle.svg";
 import DrinkIcon from "./assets/drink.svg";
@@ -43,7 +43,7 @@ export function useBalances() {
 }
 
 export function formatCoin(coin: Coin) {
-  const { denom } = rootStore.chainStore.currentChainInformation;
+  const { denom } = getRootStore().chainStore.currentChainInformation;
   switch (coin.denom) {
     case denom: {
       const digits = 6;
@@ -117,7 +117,7 @@ export function formatCoin(coin: Coin) {
 }
 
 export function formatExtendedCoin(coin: ExtendedCoin) {
-  const { denom } = rootStore.chainStore.currentChainInformation;
+  const { denom } = getRootStore().chainStore.currentChainInformation;
   const formattedCoin = formatCoin(coin);
 
   switch (coin.denom) {

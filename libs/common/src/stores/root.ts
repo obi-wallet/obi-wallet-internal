@@ -3,12 +3,11 @@ import {
   ChainSuggestStore,
   DeferInitialQueryController,
   InteractionStore as KeplrInteractionStore,
-  SignInteractionStore as KeplrSignInteractionStore,
   ObservableQueryBase,
   PermissionStore,
+  SignInteractionStore as KeplrSignInteractionStore,
 } from "@keplr-wallet/stores";
 
-import { Chain } from "../chains";
 import { CommunityChainInfoRepo, EmbedChainInfos } from "../config";
 import { produceEnv } from "../env";
 import { AbstractKVStore, KVStore as DefaultKVStore } from "../kv-store";
@@ -17,6 +16,7 @@ import { RouterUi } from "../router";
 import { AppsStore } from "./apps";
 import { BalancesStore } from "./balances";
 import { ChainStore } from "./chain";
+import { Config, ConfigStore } from "./config";
 import { InAppPurchaseInteractionStore } from "./interaction/in-app-purchase";
 import { SignInteractionStore } from "./interaction/sign";
 import { KeplrChainStore } from "./keplr-chain";
@@ -28,6 +28,7 @@ export class RootStore {
   public readonly appsStore: AppsStore;
   public readonly balancesStore: BalancesStore;
   public readonly chainStore: ChainStore;
+  public readonly configStore: ConfigStore;
   public readonly inAppPurchaseInteractionStore: InAppPurchaseInteractionStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly languageStore: LanguageStore;
@@ -42,16 +43,12 @@ export class RootStore {
   public readonly keplrSignInteractionStore: KeplrSignInteractionStore;
 
   constructor({
-    defaultChain,
     deviceLanguage,
-    enabledLanguages,
-    defaultLanguage,
+    initialConfig,
     KVStore = DefaultKVStore,
   }: {
-    defaultChain: Chain;
     deviceLanguage: string;
-    enabledLanguages: string[];
-    defaultLanguage: string;
+    initialConfig: Config;
     KVStore?: new (prefix: string) => AbstractKVStore;
   }) {
     const router = new RouterUi(produceEnv);
@@ -80,20 +77,21 @@ export class RootStore {
     );
 
     this.appsStore = new AppsStore({ kvStore: new KVStore("apps-store") });
-    this.chainStore = new ChainStore({ defaultChain });
+    this.configStore = new ConfigStore({ initialConfig });
     this.inAppPurchaseInteractionStore = new InAppPurchaseInteractionStore(
       this.keplrInteractionStore
     );
     this.signInteractionStore = new SignInteractionStore(
       this.keplrInteractionStore
     );
+    this.settingsStore = new SettingsStore();
+
     this.languageStore = new LanguageStore({
       deviceLanguage,
-      enabledLanguages,
-      defaultLanguage,
+      configStore: this.configStore,
       kvStore: new KVStore("language-store"),
     });
-    this.settingsStore = new SettingsStore();
+    this.chainStore = new ChainStore({ configStore: this.configStore });
 
     this.walletsStore = new WalletsStore({
       chainStore: this.chainStore,

@@ -1,12 +1,6 @@
-import { RootStore } from "@obi-wallet/common";
+import { Config, RootStore } from "@obi-wallet/common";
 import { NativeModules, Platform } from "react-native";
-import {
-  DEFAULT_CHAIN,
-  DEFAULT_LANGUAGE,
-  ENABLED_LANGUAGES,
-} from "react-native-dotenv";
-
-import { envInvariant } from "../helpers/invariant";
+import invariant from "tiny-invariant";
 
 const deviceLanguage =
   Platform.OS === "ios"
@@ -14,13 +8,23 @@ const deviceLanguage =
       NativeModules.SettingsManager.settings.AppleLanguages[0] // iOS 13
     : NativeModules.I18nManager.localeIdentifier; // Android
 
-envInvariant("DEFAULT_CHAIN", DEFAULT_CHAIN);
-envInvariant("DEFAULT_LANGUAGE", DEFAULT_LANGUAGE);
-envInvariant("ENABLED_LANGUAGES", ENABLED_LANGUAGES);
+export const rootStore: { current: RootStore | null } = { current: null };
 
-export const rootStore = new RootStore({
-  defaultChain: DEFAULT_CHAIN,
-  deviceLanguage: deviceLanguage.slice(0, 2),
-  enabledLanguages: ENABLED_LANGUAGES.split(","),
-  defaultLanguage: DEFAULT_LANGUAGE,
-});
+export function getRootStore(): RootStore {
+  invariant(rootStore.current, "Expected `rootStore` to be initialized.");
+  return rootStore.current;
+}
+
+export function createRootStore({
+  initialConfig,
+}: {
+  initialConfig: Config;
+}): RootStore {
+  if (!rootStore.current) {
+    rootStore.current = new RootStore({
+      deviceLanguage: deviceLanguage.slice(0, 2),
+      initialConfig,
+    });
+  }
+  return rootStore.current;
+}
