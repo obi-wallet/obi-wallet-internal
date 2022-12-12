@@ -17,29 +17,25 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
   ExtendedCoin,
   formatExtendedCoin,
+  UsdBalance,
   useBalances,
 } from "../../../balances";
 import { IconButton } from "../../../button";
 import { RootStackParamList } from "../../../root-stack";
-import { useStore } from "../../../stores";
 import { CoinIcon } from "../../components/coin-icon";
+import { NetworkAccountPickerLayout } from "../../components/network-account-picker-layout";
 import {
   isSmallScreenNumber,
   isSmallScreenSubstr,
 } from "../../components/screen-size";
-import ObiLogo from "../../settings/assets/obi-logo.svg";
 import Receive from "../assets/receive.svg";
 import Send from "../assets/send.svg";
 
-export const Assets = observer(function Assets() {
-  const { chainStore } = useStore();
-  const currentNetwork = chainStore.currentChainInformation.label;
-
+export function Assets() {
   return (
     <ImageBackground
       source={require("../assets/background.png")}
@@ -53,139 +49,15 @@ export const Assets = observer(function Assets() {
         flex: 1,
       }}
     >
-      <SafeAreaView
-        style={{
-          flex: 1,
-          flexGrow: 1,
-        }}
-        edges={["top", "left", "right"]}
-      >
-        <AssetsHeader currentNetwork={currentNetwork} />
+      <NetworkAccountPickerLayout>
         <BalanceAndActions />
         <AssetsList />
-      </SafeAreaView>
+      </NetworkAccountPickerLayout>
     </ImageBackground>
-  );
-});
-
-export function AssetsHeader({ currentNetwork }: { currentNetwork: string }) {
-  const navigation =
-    useNavigation<DrawerNavigationProp<Record<string, object>>>();
-
-  const walletName = "My Obi Wallet";
-
-  return (
-    <View
-      style={{
-        padding: 16,
-        flexDirection: "row",
-        justifyContent: "space-between",
-      }}
-    >
-      <TouchableHighlight
-        style={{
-          backgroundColor: "#16152D",
-          alignSelf: "flex-start",
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-          minWidth: 100,
-          paddingHorizontal: 13,
-          paddingVertical: 10,
-          borderRadius: 8,
-        }}
-        onPress={() => navigation.openDrawer()}
-      >
-        <>
-          <View style={{ alignItems: "center", justifyContent: "center" }}>
-            <FontAwesomeIcon
-              icon={faAngleDoubleLeft}
-              style={{ color: "#7B87A8" }}
-            />
-          </View>
-          <View
-            style={{
-              paddingLeft: 10,
-              justifyContent: "center",
-              alignItems: "flex-start",
-            }}
-          >
-            <Text
-              style={{
-                color: "rgba(246, 245, 255, 0.6)",
-                fontSize: 9,
-                fontWeight: "500",
-              }}
-            >
-              <FormattedMessage id="assets.network" defaultMessage="Network" />
-            </Text>
-            <Text style={{ color: "#F6F5FF", fontSize: 14 }}>
-              {isSmallScreenSubstr(currentNetwork, "...", 15, 16)}
-            </Text>
-          </View>
-        </>
-      </TouchableHighlight>
-
-      {/** <TouchableOpacity  // Disabled navigation due to decision - account-screen should not be accessable currently */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        // Disabled navigation due to decision - account-screen should not be accessible currently
-        // onPress={() => navigation.navigate("AccountsSettings")}
-      >
-        <View style={{ margin: 10 }}>
-          <Text
-            style={{
-              color: "rgba(246, 245, 255, 0.6)",
-              fontSize: 12,
-              fontWeight: "600",
-              textAlign: "right",
-            }}
-          >
-            <FormattedMessage
-              id="assets.walletname"
-              defaultMessage="Wallet name"
-            />
-          </Text>
-          <Text
-            style={{
-              color: "#F6F5FF",
-              fontSize: 14,
-              fontWeight: "500",
-              textAlign: "right",
-            }}
-          >
-            {isSmallScreenSubstr(walletName, "...", 15, 18)}
-          </Text>
-        </View>
-        <TouchableOpacity
-          style={{
-            borderRadius: 17.5,
-            backgroundColor: "#ffffff",
-          }}
-        >
-          <ObiLogo
-            style={{
-              width: 35,
-              height: 35,
-            }}
-          />
-        </TouchableOpacity>
-      </View>
-    </View>
   );
 }
 
 const BalanceAndActions = observer(() => {
-  const { balances } = useBalances();
-  const balanceInUsd = balances.reduce(
-    (acc, coin) => acc + formatExtendedCoin(coin).valueInUsd,
-    0
-  );
-
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
     <View
@@ -208,41 +80,7 @@ const BalanceAndActions = observer(() => {
         <FormattedMessage id="assets.balance" defaultMessage="Balance" />
       </Text>
 
-      <View
-        style={{
-          flexDirection: "row",
-        }}
-      >
-        <Text
-          style={{
-            color: "#F6F5FF",
-            fontSize: 20,
-            fontWeight: "500",
-            alignSelf: "flex-end",
-            marginBottom: 2,
-          }}
-        >
-          $
-        </Text>
-        <Text
-          style={{
-            color: "#F6F5FF",
-            fontSize: 28,
-            fontWeight: "500",
-          }}
-        >
-          {balanceInUsd.toFixed(2).split(".")[0]}.
-        </Text>
-        <Text
-          style={{
-            color: "#F6F5FF",
-            fontSize: 28,
-            fontWeight: "normal",
-          }}
-        >
-          {balanceInUsd.toFixed(2).split(".")[1]}
-        </Text>
-      </View>
+      <UsdBalance />
 
       <View
         style={{

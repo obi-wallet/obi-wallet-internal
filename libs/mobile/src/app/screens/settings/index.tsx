@@ -17,7 +17,6 @@ import { SvgProps } from "react-native-svg";
 
 import { RootStack, useRootNavigation } from "../../root-stack";
 import { useStore } from "../../stores";
-import { Account } from "../account";
 import { Create } from "../account/create";
 import { isSmallScreenNumber } from "../components/screen-size";
 import MultiSigIcon from "./assets/edit.svg";
@@ -374,12 +373,6 @@ export const SettingsNavigator = createNativeStackNavigator();
 export const settingsScreens = () => {
   return (
     <RootStack.Group>
-      <RootStack.Screen
-        name="AccountsSettings"
-        key="AccountsSettings"
-        component={Account}
-        options={{ headerShown: false }}
-      />
       <RootStack.Screen
         name="AddSubAccount"
         key="AddSubAccount"

@@ -19,6 +19,7 @@ import { Platform } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 
 import { useStore } from "../../stores";
+import { AccountScreen } from "../account";
 import {
   getScreenDimensions,
   isSmallScreenNumber,
@@ -46,6 +47,10 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
   const intl = useIntl();
   const { configStore } = useStore();
 
+  const accounts = intl.formatMessage({
+    id: "menu.accounts",
+    defaultMessage: "Accounts",
+  });
   const assets = intl.formatMessage({
     id: "menu.assets",
     defaultMessage: "Assets",
@@ -128,7 +133,11 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
         },
         lazy: false,
       })}
+      initialRouteName={assets}
     >
+      {configStore.isFeatureEnabled("accountsTab") ? (
+        <Tab.Screen name={accounts} component={AccountScreen} />
+      ) : null}
       <Tab.Screen name={assets} component={Assets} />
       {configStore.isFeatureEnabled("nftTab") && (
         <Tab.Screen name={nfts} component={NFTs} />

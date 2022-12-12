@@ -10,6 +10,7 @@ export const config: Config = {
     default: "en",
   },
   features: {
+    accountsTab: true,
     healthChecks: true,
     nftTab: true,
   },

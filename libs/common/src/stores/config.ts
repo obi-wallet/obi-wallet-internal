@@ -13,6 +13,7 @@ export interface Config {
     default: Language;
   };
   features: {
+    accountsTab: boolean;
     healthChecks: boolean;
     nftTab: boolean;
   };

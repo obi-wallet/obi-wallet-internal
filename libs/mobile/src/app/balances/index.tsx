@@ -6,6 +6,8 @@ import { useStore } from "../stores";
 import BottleIcon from "./assets/bottle.svg";
 import DrinkIcon from "./assets/drink.svg";
 import LoopIcon from "./assets/loop.svg";
+import { View } from "react-native";
+import { Text } from "@obi-wallet/common";
 
 export interface ExtendedCoin {
   contract?: string;
@@ -13,6 +15,7 @@ export interface ExtendedCoin {
   amount: string;
   usdPrice: number;
 }
+
 export interface FormattedExtendedCoin {
   icon: ReactNode;
   denom: string;
@@ -40,6 +43,52 @@ export function useBalances() {
     refreshBalances,
     refreshing,
   };
+}
+
+export function UsdBalance({ fontSize = 28 }: { fontSize?: number }) {
+  const scale = fontSize / 28;
+  const { balances } = useBalances();
+  const balanceInUsd = balances.reduce(
+    (acc, coin) => acc + formatExtendedCoin(coin).valueInUsd,
+    0
+  );
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+      }}
+    >
+      <Text
+        style={{
+          color: "#F6F5FF",
+          fontSize: 20 * scale,
+          fontWeight: "500",
+          alignSelf: "flex-end",
+          marginBottom: 2,
+        }}
+      >
+        $
+      </Text>
+      <Text
+        style={{
+          color: "#F6F5FF",
+          fontSize: 28 * scale,
+          fontWeight: "500",
+        }}
+      >
+        {balanceInUsd.toFixed(2).split(".")[0]}.
+      </Text>
+      <Text
+        style={{
+          color: "#F6F5FF",
+          fontSize: 28 * scale,
+          fontWeight: "normal",
+        }}
+      >
+        {balanceInUsd.toFixed(2).split(".")[1]}
+      </Text>
+    </View>
+  );
 }
 
 export function formatCoin(coin: Coin) {
