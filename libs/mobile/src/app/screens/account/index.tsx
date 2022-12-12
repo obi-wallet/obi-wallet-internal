@@ -1,14 +1,15 @@
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import { Text } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import { ComponentType, useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { FlatList, Image, ImageBackground, View } from "react-native";
+import { FlatList, ImageBackground, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SvgProps } from "react-native-svg";
 
 import { UsdBalance } from "../../balances";
-import { useRootNavigation } from "../../root-stack";
+import { useMultisigWallet } from "../../stores";
 import { Background } from "../components/background";
 import { BottomSheetBackdrop } from "../components/bottomSheetBackdrop";
 import { NetworkAccountPickerLayout } from "../components/network-account-picker-layout";
@@ -28,11 +29,11 @@ export function AccountScreen() {
   );
 }
 
-export function AccountScreenInner() {
+export const AccountScreenInner = observer(function AccountScreenInner() {
   const safeArea = useSafeAreaInsets();
-  const navigation = useRootNavigation();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [selectedMenu, setSelectedMenu] = useState("");
+  const wallet = useMultisigWallet();
 
   const triggerBottomSheet = (selection?: Option) => {
     if (selection) {
@@ -52,6 +53,9 @@ export function AccountScreenInner() {
         return null;
     }
   };
+
+  const multisig = wallet.currentAdmin;
+  if (!multisig) return null;
 
   return (
     <View style={{ paddingHorizontal: 20 }}>
@@ -212,7 +216,6 @@ export function AccountScreenInner() {
 
       <View
         style={{
-          flex: 3,
           justifyContent: "flex-end",
           paddingBottom: 20,
           marginBottom: safeArea.bottom / 2,
@@ -220,72 +223,99 @@ export function AccountScreenInner() {
         }}
       >
         <FlatList
-          data={
-            [
-              // { key: "1", amount: 231, name: "My_personal_wallet" },
-              // { key: "2", amount: 8293, name: "Hot_wallet" },
-              // { key: "3", amount: 8293, name: "Captain_Private" },
-              // { key: "4", amount: 8293, name: "other_one" },
-            ]
-          }
-          renderItem={({ item }) => {
-            return null;
+          data={wallet
+            .getSignerTypes(multisig)
+            .map((signerType) => {
+              if (signerType !== "biometrics" && signerType !== "phoneNumber") {
+                return null;
+              }
 
-            // const images = [
-            //   require("./assets/avatars/avatars-1.png"),
-            //   require("./assets/avatars/avatars-2.png"),
-            //   require("./assets/avatars/avatars-3.png"),
-            //   require("./assets/avatars/avatars-4.png"),
-            // ];
-            //
-            // return (
-            //   <View
-            //     style={{
-            //       backgroundColor: "#0F0E20",
-            //       borderRadius: 12,
-            //       marginVertical: 10,
-            //       flexDirection: "row",
-            //       padding: 20,
-            //       flex: 1,
-            //     }}
-            //   >
-            //     <Image
-            //       source={images[Number(item.key) - 1]}
-            //       style={{ height: 42, width: 42, borderRadius: 42 }}
-            //     />
-            //     <View style={{ paddingLeft: 10, flex: 1 }}>
-            //       <Text
-            //         style={{
-            //           fontSize: 14,
-            //           fontWeight: "400",
-            //           color: "#f6f5ff",
-            //         }}
-            //       >
-            //         {item.amount}
-            //       </Text>
-            //       <Text
-            //         style={{
-            //           fontSize: 12,
-            //           fontWeight: "400",
-            //           color: "rgba(246, 245, 255, 0.6);",
-            //         }}
-            //       >
-            //         {item.name}
-            //       </Text>
-            //     </View>
-            //     <View style={{ justifyContent: "center" }}>
-            //       <View
-            //         style={{
-            //           width: 16,
-            //           height: 16,
-            //           borderColor: "rgba(255,255,255,.4)",
-            //           borderWidth: 1,
-            //           borderRadius: 16,
-            //         }}
-            //       ></View>
-            //     </View>
-            //   </View>
-            // );
+              const signer = multisig?.[signerType];
+              if (!signer) return null;
+
+              return {
+                title:
+                  signerType === "biometrics" ? (
+                    <FormattedMessage
+                      id="accountscreen.key.biometrics"
+                      defaultMessage="Device Key"
+                    />
+                  ) : (
+                    <FormattedMessage
+                      id="accountscreen.key.phoneNumber"
+                      defaultMessage="Phone Number Key"
+                    />
+                  ),
+                subTitle: (
+                  <FormattedMessage
+                    id="accountscreen.accountname"
+                    defaultMessage="Obi Smart Account"
+                  />
+                ),
+                address: signer.address,
+              };
+            })
+            .filter(
+              (
+                item
+              ): item is {
+                address: string;
+                title: JSX.Element;
+                subTitle: JSX.Element;
+              } => {
+                return item !== null;
+              }
+            )}
+          keyExtractor={(item) => item.address}
+          renderItem={({ item }) => {
+            return (
+              <View
+                style={{
+                  backgroundColor: "#0F0E20",
+                  borderRadius: 12,
+                  marginVertical: 10,
+                  flexDirection: "row",
+                  padding: 20,
+                  flex: 1,
+                }}
+              >
+                {/*<Image*/}
+                {/*  source={require("./assets/avatars/avatars-1.png")}*/}
+                {/*  style={{ height: 42, width: 42, borderRadius: 42 }}*/}
+                {/*/>*/}
+                <View style={{ paddingLeft: 10, flex: 1 }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "400",
+                      color: "#f6f5ff",
+                    }}
+                  >
+                    {item.title}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "400",
+                      color: "rgba(246, 245, 255, 0.6);",
+                    }}
+                  >
+                    {item.subTitle}
+                  </Text>
+                </View>
+                {/*<View style={{ justifyContent: "center" }}>*/}
+                {/*  <View*/}
+                {/*    style={{*/}
+                {/*      width: 16,*/}
+                {/*      height: 16,*/}
+                {/*      borderColor: "rgba(255,255,255,.4)",*/}
+                {/*      borderWidth: 1,*/}
+                {/*      borderRadius: 16,*/}
+                {/*    }}*/}
+                {/*  ></View>*/}
+                {/*</View>*/}
+              </View>
+            );
           }}
         />
       </View>
@@ -316,7 +346,7 @@ export function AccountScreenInner() {
       </BottomSheet>
     </View>
   );
-}
+});
 
 interface Option {
   key: number;

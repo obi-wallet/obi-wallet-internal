@@ -129,7 +129,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
           >
             <FormattedMessage
               id="assets.walletname"
-              defaultMessage="Wallet name"
+              defaultMessage="Wallet Name"
             />
           </Text>
           <Text
@@ -140,7 +140,10 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
               textAlign: "right",
             }}
           >
-            {isSmallScreenSubstr(walletName, "...", 15, 18)}
+            <FormattedMessage
+              id="accountscreen.accountname"
+              defaultMessage="Obi Smart Account"
+            />
           </Text>
         </View>
         <View
