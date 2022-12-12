@@ -1,5 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
+import { faCircleChevronLeft } from "@fortawesome/free-solid-svg-icons/faCircleChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { isMultisigDemoWallet, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -15,10 +16,12 @@ import {
   resetBiometricsKeyPair,
 } from "../../../../biometrics";
 import { Button, IconButton } from "../../../../button";
-import { useMultisigWallet } from "../../../../stores";
+import { useMultisigWallet, useStore } from "../../../../stores";
+import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
 import { OnboardingStackParamList } from "../../onboarding-stack";
 import FaceScanner from "./assets/face-scanner.svg";
+import ObiFaceScanner from "./assets/obi-face-scanner.svg";
 import Scan from "./assets/scan.svg";
 
 export type MultisigBiometricsProps = NativeStackScreenProps<
@@ -29,6 +32,7 @@ export type MultisigBiometricsProps = NativeStackScreenProps<
 export const MultisigBiometrics = observer<MultisigBiometricsProps>(
   ({ navigation }) => {
     const wallet = useMultisigWallet();
+    const isObi = useStore().settingsStore.isObi();
 
     const [scannedBiometrics, setScannedBiometrics] = useState(false);
     const intl = useIntl();
@@ -102,8 +106,10 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
       useState(false);
 
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <Background />
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: isObi ? "#1A1A1A" : "" }}
+      >
+        {isObi ? null : <Background />}
         <KeyboardAwareScrollView
           style={{
             flex: 1,
@@ -115,22 +121,14 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
           }}
         >
           <View>
-            <IconButton
+            <Back
               style={{
                 marginTop: 20,
                 marginLeft: -5,
                 padding: 5,
                 width: 25,
               }}
-              onPress={() => {
-                navigation.goBack();
-              }}
-            >
-              <FontAwesomeIcon
-                icon={faChevronLeft}
-                style={{ color: "#7B87A8" }}
-              />
-            </IconButton>
+            />
 
             <View
               style={{
@@ -141,7 +139,9 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
             >
               <View
                 style={{
-                  backgroundColor: "rgba(86, 84, 141, 0.07)",
+                  backgroundColor: isObi
+                    ? "rgba(219, 222, 255,0.07)"
+                    : "rgba(86, 84, 141, 0.07)",
                   justifyContent: "center",
                   alignItems: "center",
                   width: 296,
@@ -151,7 +151,9 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
               >
                 <View
                   style={{
-                    backgroundColor: "rgba(86, 84, 141, 0.17)",
+                    backgroundColor: isObi
+                      ? "rgba(219, 222, 255,0.17)"
+                      : "rgba(86, 84, 141, 0.17)",
                     width: 224,
                     height: 224,
                     justifyContent: "center",
@@ -159,7 +161,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
                     borderRadius: 224,
                   }}
                 >
-                  <FaceScanner />
+                  {isObi ? <ObiFaceScanner /> : <FaceScanner />}
                 </View>
               </View>
             </View>
@@ -171,6 +173,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
                 color: "#F6F5FF",
                 marginTop: 79,
               }}
+              isObi={isObi}
             >
               <FormattedMessage
                 id="onboarding4.authyourkeys"
@@ -179,10 +182,11 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
             </Text>
             <Text
               style={{
-                color: "#999CB6",
+                color: isObi ? "white" : "#999CB6",
                 fontSize: 14,
                 fontWeight: "400",
                 marginTop: 10,
+                ...(isObi ? { fontFamily: "poppins-light" } : {}),
               }}
             >
               <FormattedMessage
@@ -195,7 +199,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
           <Button
             label={intl.formatMessage({ id: "onboarding4.biometrics.button" })}
             flavor="blue"
-            LeftIcon={Scan}
+            LeftIcon={isObi ? undefined : Scan}
             onPress={() => {
               if (scannedBiometrics) {
                 navigation.navigate("create-multisig-phone-number");

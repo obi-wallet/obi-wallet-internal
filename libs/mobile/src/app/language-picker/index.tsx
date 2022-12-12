@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { Language } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -42,7 +43,10 @@ const allLanguages = [
 export const LanguagePicker = observer(() => {
   const languageStore = useStore().languageStore;
   const { currentLanguage, enabledLanguages } = languageStore;
-
+  const { settingsStore } = useStore();
+  const isObi = settingsStore.isObi();
+  const theme = useTheme();
+  console.log("theme", theme, { isObi });
   const handleLanguageChoice = (language: Language | null) => {
     if (language) {
       languageStore.setCurrentLanguage(language);
@@ -75,15 +79,17 @@ export const LanguagePicker = observer(() => {
       itemKey="code"
       itemSeparator={false}
       closeAfterSelecting={true}
+      listItemContainerStyle={{
+        borderWidth: 0,
+      }}
       style={{
-        backgroundColor: "transparent",
+        backgroundColor: isObi ? theme.colors.background : "transparent",
         borderWidth: 0,
       }}
       textStyle={{
         fontSize: 16,
         color: "#F6F5FF",
         textAlign: "left",
-        backgroundColor: "transparent",
       }}
       maxHeight={300}
       disableBorderRadius={true}

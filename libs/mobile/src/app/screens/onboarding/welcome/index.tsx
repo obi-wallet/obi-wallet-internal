@@ -1,16 +1,16 @@
+import { useTheme } from "@emotion/react";
 import {
   isAnyMultisigWallet,
   isMultisigDemoWallet,
   MultisigKey,
   Text,
 } from "@obi-wallet/common";
-import { BlurView } from "@react-native-community/blur";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { action } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, Image, SafeAreaView, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
 import { Button } from "../../../button";
 import { LanguagePicker } from "../../../language-picker";
@@ -20,8 +20,8 @@ import {
   useAccountPickerModalProps,
 } from "../../account-picker-modal";
 import { InitialBackground } from "../../components/initial-background";
-import { ObiModeToggle } from "../../components/obi-mode-toggle";
-import ObiLogo from "../../settings/assets/obi-logo.svg";
+import { BrandToggle } from "../../components/obi-mode-toggle";
+// import ObiLogo from "./assets/wallet-icon.png";
 import { OnboardingStackParamList } from "../onboarding-stack";
 import GetStarted from "./assets/get-started.svg";
 
@@ -31,14 +31,13 @@ export type WelcomeProps = NativeStackScreenProps<
 >;
 
 export const Welcome = observer<WelcomeProps>(({ navigation }) => {
-  const {
-    walletsStore,
-    settingsStore: { isObi },
-  } = useStore();
+  const { walletsStore, settingsStore } = useStore();
+  const isObi = settingsStore.isObi();
   const wallet = walletsStore.currentWallet;
-
   const multisigWallet = isAnyMultisigWallet(wallet) ? wallet : null;
   const intl = useIntl();
+  const theme = useTheme();
+  console.log({ theme });
 
   const isInRecovery =
     isAnyMultisigWallet(wallet) && wallet.keyInRecovery !== null;
@@ -46,19 +45,19 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
   const accountPickerModalProps = useAccountPickerModalProps();
 
   return (
-    <InitialBackground disabled={isObi}>
+    <InitialBackground>
       <SafeAreaView
         style={{
           flex: 1,
-          justifyContent: "flex-end",
         }}
       >
         <View
           style={{
             position: "absolute",
-            top: 65,
+            top: 40,
             left: 0,
             right: 0,
+            marginBottom: 10,
           }}
         >
           <View style={{ padding: 10, marginBottom: 10 }}>
@@ -87,7 +86,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
             </Text>
           </View>
           <View style={{ marginHorizontal: 20 }}>
-            <LanguagePicker />
+            {settingsStore.isLoop() && <LanguagePicker />}
           </View>
         </View>
         <AccountPickerModal {...accountPickerModalProps} />
@@ -96,125 +95,142 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           style={{
             paddingHorizontal: 20,
             paddingBottom: 20,
+            zIndex: -1,
           }}
         >
-          <ObiModeToggle>
-            {isObi ? (
-              <View
-                style={{
-                  backgroundColor: "white",
-                  borderRadius: 40,
-                  width: 40,
-                  height: 40,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <ObiLogo width={40} height={40} />
-              </View>
-            ) : (
-              <Image source={require("./assets/loop.png")} />
-            )}
-          </ObiModeToggle>
+          <BrandToggle>
+            <View
+              style={{
+                aspectRatio: 1 / 1,
+                alignItems: isObi ? "center" : "flex-start",
+                justifyContent: "flex-end",
+              }}
+            >
+              {isObi ? (
+                <Image
+                  source={require("./assets/obi-wallet-icon.png")}
+                  resizeMode="contain"
+                />
+              ) : (
+                <Image source={require("./assets/loop.png")} />
+              )}
+            </View>
+          </BrandToggle>
+          {isObi && (
+            <View
+              style={{ marginBottom: 10, zIndex: 2, alignItems: "flex-end" }}
+            >
+              <LanguagePicker />
+            </View>
+          )}
+
           <Text
             style={{
               color: "#F6F5FF",
               fontSize: 32,
               fontWeight: "600",
               marginTop: 32,
+              textAlign: "left",
             }}
           >
             {renderTitle()}
           </Text>
           <Text
             style={{
-              color: "#999CB6",
+              color: isObi ? "white" : "#999CB6",
               fontSize: 16,
               fontWeight: "400",
               marginTop: 12,
+              textAlign: "left",
             }}
           >
             {renderSubTitle()}
           </Text>
-          {renderContinueButton(multisigWallet?.keyInRecovery)}
-          {isInRecovery ? null : (
-            <Button
-              label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
-              RightIcon={GetStarted}
-              flavor="blue"
-              style={{
-                marginTop: 20,
-              }}
-              onPress={() => {
-                Alert.alert(
-                  "Recover Existing Wallet",
-                  "Only use this if you have made a wallet using the Loop app before.",
-                  [
-                    {
-                      text: "Cancel",
-                      // eslint-disable-next-line @typescript-eslint/no-empty-function
-                      onPress() {},
-                    },
-                    {
-                      text: "Continue",
-                      async onPress() {
-                        const wallet =
-                          multisigWallet ??
-                          (await walletsStore.addMultisigWallet());
-                        await wallet.cancelRecovery();
-                        wallet.recover("biometrics");
-                        navigation.navigate("create-multisig-biometrics");
+        </View>
+        <View style={{ width: "100%", flex: 1, paddingHorizontal: 15 }}>
+          <ScrollView style={{ marginTop: 20 }}>
+            {renderContinueButton(multisigWallet?.keyInRecovery)}
+            {isInRecovery ? null : (
+              <Button
+                label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
+                RightIcon={isObi ? undefined : GetStarted}
+                flavor="blue"
+                style={{
+                  marginTop: 20,
+                }}
+                onPress={() => {
+                  Alert.alert(
+                    "Recover Existing Wallet",
+                    "Only use this if you have made a wallet using the Loop app before.",
+                    [
+                      {
+                        text: "Cancel",
+                        // eslint-disable-next-line @typescript-eslint/no-empty-function
+                        onPress() {},
                       },
-                    },
-                  ]
-                );
-              }}
-            />
-          )}
-          {isInRecovery ? (
-            <Button
-              label={intl.formatMessage({ id: "general.cancel" })}
-              RightIcon={GetStarted}
-              flavor="blue"
-              style={{
-                marginTop: 20,
-              }}
-              onPress={async () => {
-                await multisigWallet?.cancelRecovery();
-              }}
-            />
-          ) : (
-            <Button
-              label={intl.formatMessage({ id: "onboarding1.recoversinglesig" })}
-              RightIcon={GetStarted}
-              flavor="blue"
-              style={{
-                marginTop: 20,
-              }}
-              onPress={action(() => {
-                navigation.navigate("recover-singlesig");
-              })}
-            />
-          )}
-          {isInRecovery ? null : (
-            <Button
-              label={intl.formatMessage({
-                id: "onboarding1.demo",
-                defaultMessage: "Enter Demo Mode",
-              })}
-              RightIcon={GetStarted}
-              flavor="blue"
-              style={{
-                marginTop: 20,
-              }}
-              onPress={action(async () => {
-                if (!isMultisigDemoWallet(walletsStore.currentWallet)) {
-                  await walletsStore.addMultisigDemoWallet();
-                }
-                navigation.navigate("create-multisig-biometrics");
-              })}
-            />
-          )}
+                      {
+                        text: "Continue",
+                        async onPress() {
+                          const wallet =
+                            multisigWallet ??
+                            (await walletsStore.addMultisigWallet());
+                          await wallet.cancelRecovery();
+                          wallet.recover("biometrics");
+                          navigation.navigate("create-multisig-biometrics");
+                        },
+                      },
+                    ]
+                  );
+                }}
+              />
+            )}
+            {isInRecovery ? (
+              <Button
+                label={intl.formatMessage({ id: "general.cancel" })}
+                RightIcon={isObi ? undefined : GetStarted}
+                flavor="blue"
+                style={{
+                  marginTop: 20,
+                }}
+                onPress={async () => {
+                  await multisigWallet?.cancelRecovery();
+                }}
+              />
+            ) : (
+              <Button
+                label={intl.formatMessage({
+                  id: "onboarding1.recoversinglesig",
+                })}
+                RightIcon={isObi ? undefined : GetStarted}
+                flavor="blue"
+                style={{
+                  marginTop: 20,
+                }}
+                onPress={action(() => {
+                  navigation.navigate("recover-singlesig");
+                })}
+              />
+            )}
+            {isInRecovery ? null : (
+              <Button
+                label={intl.formatMessage({
+                  id: "onboarding1.demo",
+                  defaultMessage: "Enter Demo Mode",
+                })}
+                RightIcon={isObi ? undefined : GetStarted}
+                flavor="blue"
+                style={{
+                  marginTop: 20,
+                }}
+                onPress={action(async () => {
+                  if (!isMultisigDemoWallet(walletsStore.currentWallet)) {
+                    await walletsStore.addMultisigDemoWallet();
+                  }
+                  navigation.navigate("create-multisig-biometrics");
+                })}
+              />
+            )}
+          </ScrollView>
         </View>
       </SafeAreaView>
     </InitialBackground>
@@ -263,7 +279,8 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           />
         );
       default:
-        if (isObi) return null;
+        if (isObi)
+          return "Obi is the most secure and convenient way to manage assets in the Cosmos.";
 
         return (
           <FormattedMessage
@@ -291,14 +308,14 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
         labelId = "onboarding1.getstarted";
     }
     return (
-      <View style={{ marginTop: 40 }}>
+      <View>
         {!keyInRecovery && walletsStore.readyWallets.length > 0 ? (
           <Button
             label={intl.formatMessage({
               id: "onboarding1.login",
               defaultMessage: "Login",
             })}
-            RightIcon={GetStarted}
+            RightIcon={isObi ? undefined : GetStarted}
             flavor="green"
             onPress={() => {
               accountPickerModalProps.open();
@@ -307,7 +324,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
         ) : null}
         <Button
           label={intl.formatMessage({ id: labelId })}
-          RightIcon={GetStarted}
+          RightIcon={isObi ? undefined : GetStarted}
           flavor="green"
           style={{
             marginTop: 20,

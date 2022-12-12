@@ -1,17 +1,23 @@
+import { useTheme } from "@emotion/react";
+import { Brand } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import { ImageBackground, View } from "react-native";
+
+import { useStore } from "../../../stores";
 
 export interface InitialBackgroundProps {
   children?: React.ReactNode;
-  disabled?: boolean;
 }
 
-export function InitialBackground(props: InitialBackgroundProps) {
+export const InitialBackground = observer((props: InitialBackgroundProps) => {
+  const { settingsStore } = useStore();
+  const theme = useTheme();
   const styles = {
-    backgroundColor: "#090817",
+    backgroundColor: theme.colors.background,
     flex: 1,
   };
-
-  return props.disabled ? (
+  console.log(theme.colors.background);
+  return settingsStore.isObi() ? (
     <View style={styles} {...props} />
   ) : (
     <ImageBackground
@@ -22,4 +28,4 @@ export function InitialBackground(props: InitialBackgroundProps) {
       {...props}
     />
   );
-}
+});

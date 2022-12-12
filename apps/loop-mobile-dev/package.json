@@ -11,6 +11,8 @@
     "@cosmjs/math": "*",
     "@cosmjs/proto-signing": "*",
     "@cosmjs/stargate": "*",
+    "@emotion/native": "*",
+    "@emotion/react": "*",
     "@fortawesome/free-regular-svg-icons": "*",
     "@fortawesome/free-solid-svg-icons": "*",
     "@fortawesome/react-fontawesome": "*",

@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { isMultisigDemoWallet, Text } from "@obi-wallet/common";
@@ -11,8 +12,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { IconButton } from "../../../../button";
 import { PhoneInput } from "../../../../phone-input";
-import { useMultisigWallet } from "../../../../stores";
+import { useMultisigWallet, useStore } from "../../../../stores";
 import { sendPublicKeyTextMessage } from "../../../../text-message";
+import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
 import {
   SecurityQuestionInput,
@@ -20,6 +22,7 @@ import {
 } from "../../../components/phone-number/security-question-input";
 import { SendMagicSmsButton } from "../../../components/phone-number/send-magic-sms-button";
 import { OnboardingStackParamList } from "../../onboarding-stack";
+import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
 
 export type MultisigPhoneNumberProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -30,6 +33,9 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
   ({ navigation }) => {
     const wallet = useMultisigWallet();
     const intl = useIntl();
+    const { settingsStore } = useStore();
+    const isObi = settingsStore.isObi();
+    const theme = useTheme();
 
     useEffect(() => {
       const { phoneNumber } = wallet.nextAdmin;
@@ -167,8 +173,10 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
     };
 
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <Background />
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: theme.colors.background }}
+      >
+        {isObi ? null : <Background />}
         <KeyboardAwareScrollView
           style={{
             flex: 1,
@@ -184,25 +192,24 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
             }}
           >
             <View>
-              <IconButton
+              <Back
                 style={{
                   marginTop: 20,
                   marginLeft: -5,
                   padding: 5,
                   width: 25,
                 }}
-                onPress={() => {
-                  navigation.goBack();
+              />
+              <View
+                style={{
+                  justifyContent: "flex-end",
+                  marginTop: isObi ? 10 : 43,
                 }}
               >
-                <FontAwesomeIcon
-                  icon={faChevronLeft}
-                  style={{ color: "#7B87A8" }}
-                />
-              </IconButton>
-              <View style={{ justifyContent: "flex-end", marginTop: 43 }}>
                 <View>
-                  <Image source={require("./assets/phone.png")} />
+                  {isObi ? null : (
+                    <Image source={require("./assets/phone.png")} />
+                  )}
                   <Text
                     style={{
                       color: "#F6F5FF",
@@ -230,7 +237,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                   </Text>
                   <Text
                     style={{
-                      color: "#999CB6",
+                      color: isObi ? "white" : "#999CB6",
                       fontSize: 14,
                       marginTop: 10,
                     }}

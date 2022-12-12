@@ -4,18 +4,18 @@ import { StyleProp, TouchableWithoutFeedback, ViewStyle } from "react-native";
 
 import { useStore } from "../../../stores";
 
-export interface ObiModeToggleProps {
+export interface BrandModeToggleProps {
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
 }
 
-export const ObiModeToggle = observer<ObiModeToggleProps>((props) => {
+export const BrandToggle = observer<BrandModeToggleProps>((props) => {
   const [pressed, setPressed] = useState(0);
   const { settingsStore } = useStore();
 
   useEffect(() => {
     if (pressed >= 5) {
-      settingsStore.toggleObiMode();
+      settingsStore.toggleBrand();
       setPressed(0);
     }
   }, [settingsStore, pressed]);

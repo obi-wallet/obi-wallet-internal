@@ -71,7 +71,7 @@ export const SettingsScreen = observer(() => {
             onPress={() => {
               // console.log({ timesPressed, isObi })
               if (timesPressed === 4) {
-                settingsStore.toggleObiMode();
+                settingsStore.toggleBrand();
                 setTimesPressed(0);
                 return;
               }
@@ -179,7 +179,7 @@ export const SettingsScreen = observer(() => {
             defaultMessage: "Help & Support",
           })}
           subtitle={intl.formatMessage(
-            isObi
+            isObi()
               ? {
                   id: "settings.helpsupport.subtext.obi",
                   defaultMessage: "Contact Obi support.",
@@ -191,7 +191,9 @@ export const SettingsScreen = observer(() => {
           )}
           onPress={() =>
             Linking.openURL(
-              isObi ? "https://obi.money/contact" : "https://loop.markets/help"
+              isObi()
+                ? "https://obi.money/contact"
+                : "https://loop.markets/help"
             )
           }
         />

@@ -58,7 +58,7 @@ export const Home = observer<HomeProps>(
       OpenseaIcon,
       AmazonIcon,
     ] = icons;
-    const { isObi } = settingsStore;
+    const isObi = settingsStore.isObi;
     const [editMode, setEditMode] = useState(false);
     const [url, setUrl] = useState("");
     const intl = useIntl();
@@ -190,7 +190,7 @@ export const Home = observer<HomeProps>(
                   });
                 }}
               />
-              {isObi && [
+              {isObi() && [
                 <Tile
                   key="uniswap"
                   onLongPress={() => {

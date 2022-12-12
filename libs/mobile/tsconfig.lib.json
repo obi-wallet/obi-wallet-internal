@@ -10,5 +10,11 @@
     "**/*.spec.tsx",
     "test-setup.ts"
   ],
-  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"]
+  "include": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+    "../common/emotion.d.ts"
+  ]
 }
