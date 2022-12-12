@@ -1,4 +1,3 @@
-
 import {
   Config,
   isMultisigDemoWallet,
@@ -100,7 +99,6 @@ export function BaseApp({ initialConfig, providerProps }: BaseAppProps) {
           loadingText="Updating app bundle…"
         />
       ) : null}
-
     </Provider>
   );
 }

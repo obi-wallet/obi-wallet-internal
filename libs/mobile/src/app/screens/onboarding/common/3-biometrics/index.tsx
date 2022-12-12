@@ -121,12 +121,14 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
           }}
         >
           <View>
-            <Back style={{
-              marginTop: 20,
-              marginLeft: -5,
-              padding: 5,
-              width: 25
-            }} />
+            <Back
+              style={{
+                marginTop: 20,
+                marginLeft: -5,
+                padding: 5,
+                width: 25,
+              }}
+            />
 
             <View
               style={{

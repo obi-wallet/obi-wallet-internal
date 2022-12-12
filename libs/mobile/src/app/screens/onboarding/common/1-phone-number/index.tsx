@@ -3,7 +3,6 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { isMultisigDemoWallet, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -15,6 +14,7 @@ import { IconButton } from "../../../../button";
 import { PhoneInput } from "../../../../phone-input";
 import { useMultisigWallet, useStore } from "../../../../stores";
 import { sendPublicKeyTextMessage } from "../../../../text-message";
+import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
 import {
   SecurityQuestionInput,
@@ -22,7 +22,7 @@ import {
 } from "../../../components/phone-number/security-question-input";
 import { SendMagicSmsButton } from "../../../components/phone-number/send-magic-sms-button";
 import { OnboardingStackParamList } from "../../onboarding-stack";
-import { Back } from "../../../components/back";
+import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
 
 export type MultisigPhoneNumberProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -33,7 +33,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
   ({ navigation }) => {
     const wallet = useMultisigWallet();
     const intl = useIntl();
-    const { settingsStore } = useStore()
+    const { settingsStore } = useStore();
     const isObi = settingsStore.isObi();
     const theme = useTheme();
 
@@ -47,7 +47,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
         Alert.alert(
           intl.formatMessage({ id: "onboarding2.error.phonekeyexists.title" }),
           intl.formatMessage({ id: "onboarding2.error.phonekeyexists.text" }) +
-          ` ${phoneNumber.phoneNumber}?`,
+            ` ${phoneNumber.phoneNumber}?`,
           [
             {
               text: intl.formatMessage({
@@ -192,12 +192,14 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
             }}
           >
             <View>
-              <Back style={{
-                marginTop: 20,
-                marginLeft: -5,
-                padding: 5,
-                width: 25
-              }} />
+              <Back
+                style={{
+                  marginTop: 20,
+                  marginLeft: -5,
+                  padding: 5,
+                  width: 25,
+                }}
+              />
               <View
                 style={{
                   justifyContent: "flex-end",
@@ -205,7 +207,9 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                 }}
               >
                 <View>
-                  {isObi ? null : <Image source={require("./assets/phone.png")} />}
+                  {isObi ? null : (
+                    <Image source={require("./assets/phone.png")} />
+                  )}
                   <Text
                     style={{
                       color: "#F6F5FF",

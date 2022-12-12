@@ -46,7 +46,7 @@ export const LanguagePicker = observer(() => {
   const { settingsStore } = useStore();
   const isObi = settingsStore.isObi();
   const theme = useTheme();
-  console.log("theme", theme, { isObi })
+  console.log("theme", theme, { isObi });
   const handleLanguageChoice = (language: Language | null) => {
     if (language) {
       languageStore.setCurrentLanguage(language);
@@ -90,7 +90,6 @@ export const LanguagePicker = observer(() => {
         fontSize: 16,
         color: "#F6F5FF",
         textAlign: "left",
-
       }}
       maxHeight={300}
       disableBorderRadius={true}
