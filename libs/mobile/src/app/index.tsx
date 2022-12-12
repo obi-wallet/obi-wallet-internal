@@ -1,11 +1,10 @@
-import { Theme, ThemeProvider as EmotionThemeProvider } from "@emotion/react";
+
 import {
   Config,
   isMultisigDemoWallet,
   Text,
   WalletState,
 } from "@obi-wallet/common";
-import { Brand } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ReactElement, ReactNode, useEffect, useRef, useState } from "react";
 import { AppState, View } from "react-native";
@@ -81,28 +80,27 @@ export function BaseApp({ initialConfig, providerProps }: BaseAppProps) {
 
   return (
     <Provider {...providerProps} initialConfig={initialConfig}>
-      <ThemeProvider>
-        <DemoModeHeader />
-        <StateRenderer />
-        <Modals />
-        {updating ? (
-          <Loader
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 999,
-              position: "absolute",
-              backgroundColor: "#100F1D",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-            }}
-            loadingText="Updating app bundle…"
-          />
-        ) : null}
-      </ThemeProvider>
+      <DemoModeHeader />
+      <StateRenderer />
+      <Modals />
+      {updating ? (
+        <Loader
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 999,
+            position: "absolute",
+            backgroundColor: "#100F1D",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+          loadingText="Updating app bundle…"
+        />
+      ) : null}
+
     </Provider>
   );
 }
@@ -225,41 +223,4 @@ export const StateRenderer = observer(function StateRenderer() {
       );
     }
   }
-});
-
-const getTheme = (brand: Brand): Theme => {
-  switch (brand) {
-    case Brand.OBI: {
-      return {
-        colors: {
-          background: "#1a1a1a",
-        },
-        fonts: {
-          bold: "poppins-bold",
-          regular: "poppins-regular",
-          light: "poppins-light",
-        },
-      };
-    }
-    case Brand.LOOP: {
-      return {
-        colors: {
-          background: "#090817",
-        },
-        fonts: {
-          bold: "Inter-Bold",
-          regular: "Inter-Regular",
-          light: "Inter-Light",
-        },
-      };
-    }
-  }
-};
-const ThemeProvider = observer(({ children }: { children?: ReactNode }) => {
-  const { settingsStore } = useStore();
-  return (
-    <EmotionThemeProvider theme={getTheme(settingsStore.brand)}>
-      {children}
-    </EmotionThemeProvider>
-  );
 });

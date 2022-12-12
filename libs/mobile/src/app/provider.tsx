@@ -1,4 +1,5 @@
-import { Config, messages } from "@obi-wallet/common";
+import { Theme, ThemeProvider } from "@emotion/react";
+import { Brand, Config, messages } from "@obi-wallet/common";
 import { NavigationContainer } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import {
@@ -30,7 +31,7 @@ export const Provider = observer<ProviderProps>(
     const rootStore = useMemo(() => {
       return createRootStore({ initialConfig });
     }, [initialConfig]);
-    const { languageStore } = rootStore;
+    const { languageStore, settingsStore } = rootStore;
     const { currentLanguage } = languageStore;
 
     useEffect(() => {
@@ -78,8 +79,10 @@ export const Provider = observer<ProviderProps>(
           >
             <SafeAreaProvider>
               <NavigationContainer {...navigationContainerProps}>
-                <StatusBar barStyle="light-content" />
-                {children}
+                <ThemeProvider theme={getTheme(settingsStore.brand)}>
+                  <StatusBar barStyle="light-content" />
+                  {children}
+                </ThemeProvider>
               </NavigationContainer>
             </SafeAreaProvider>
           </IntlProvider>
@@ -88,3 +91,31 @@ export const Provider = observer<ProviderProps>(
     );
   }
 );
+const getTheme = (brand: Brand): Theme => {
+  switch (brand) {
+    case Brand.OBI: {
+      return {
+        colors: {
+          background: "#1a1a1a",
+        },
+        fonts: {
+          bold: "poppins-bold",
+          regular: "poppins-regular",
+          light: "poppins-light",
+        },
+      };
+    }
+    case Brand.LOOP: {
+      return {
+        colors: {
+          background: "#090817",
+        },
+        fonts: {
+          bold: "Inter-Bold",
+          regular: "Inter-Regular",
+          light: "Inter-Light",
+        },
+      };
+    }
+  }
+};
