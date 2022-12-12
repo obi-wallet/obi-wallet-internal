@@ -1,11 +1,13 @@
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import { Text } from "@obi-wallet/common";
 import { ComponentType, useRef, useState } from "react";
+import { FormattedMessage } from "react-intl";
 import { FlatList, Image, ImageBackground, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SvgProps } from "react-native-svg";
 
+import { UsdBalance } from "../../balances";
 import { useRootNavigation } from "../../root-stack";
 import { Background } from "../components/background";
 import { BottomSheetBackdrop } from "../components/bottomSheetBackdrop";
@@ -14,8 +16,6 @@ import InheritanceIcon from "./assets/inheritanceIcon.svg";
 import SpendingIcon from "./assets/spendingIcon.svg";
 import { Inheritance } from "./inheritance";
 import { Spending } from "./spending";
-import { FormattedMessage } from "react-intl";
-import { UsdBalance } from "../../balances";
 
 export function AccountScreen() {
   return (
@@ -229,61 +229,63 @@ export function AccountScreenInner() {
             ]
           }
           renderItem={({ item }) => {
-            const images = [
-              require("./assets/avatars/avatars-1.png"),
-              require("./assets/avatars/avatars-2.png"),
-              require("./assets/avatars/avatars-3.png"),
-              require("./assets/avatars/avatars-4.png"),
-            ];
+            return null;
 
-            return (
-              <View
-                style={{
-                  backgroundColor: "#0F0E20",
-                  borderRadius: 12,
-                  marginVertical: 10,
-                  flexDirection: "row",
-                  padding: 20,
-                  flex: 1,
-                }}
-              >
-                <Image
-                  source={images[Number(item.key) - 1]}
-                  style={{ height: 42, width: 42, borderRadius: 42 }}
-                />
-                <View style={{ paddingLeft: 10, flex: 1 }}>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: "400",
-                      color: "#f6f5ff",
-                    }}
-                  >
-                    {item.amount}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontWeight: "400",
-                      color: "rgba(246, 245, 255, 0.6);",
-                    }}
-                  >
-                    {item.name}
-                  </Text>
-                </View>
-                <View style={{ justifyContent: "center" }}>
-                  <View
-                    style={{
-                      width: 16,
-                      height: 16,
-                      borderColor: "rgba(255,255,255,.4)",
-                      borderWidth: 1,
-                      borderRadius: 16,
-                    }}
-                  ></View>
-                </View>
-              </View>
-            );
+            // const images = [
+            //   require("./assets/avatars/avatars-1.png"),
+            //   require("./assets/avatars/avatars-2.png"),
+            //   require("./assets/avatars/avatars-3.png"),
+            //   require("./assets/avatars/avatars-4.png"),
+            // ];
+            //
+            // return (
+            //   <View
+            //     style={{
+            //       backgroundColor: "#0F0E20",
+            //       borderRadius: 12,
+            //       marginVertical: 10,
+            //       flexDirection: "row",
+            //       padding: 20,
+            //       flex: 1,
+            //     }}
+            //   >
+            //     <Image
+            //       source={images[Number(item.key) - 1]}
+            //       style={{ height: 42, width: 42, borderRadius: 42 }}
+            //     />
+            //     <View style={{ paddingLeft: 10, flex: 1 }}>
+            //       <Text
+            //         style={{
+            //           fontSize: 14,
+            //           fontWeight: "400",
+            //           color: "#f6f5ff",
+            //         }}
+            //       >
+            //         {item.amount}
+            //       </Text>
+            //       <Text
+            //         style={{
+            //           fontSize: 12,
+            //           fontWeight: "400",
+            //           color: "rgba(246, 245, 255, 0.6);",
+            //         }}
+            //       >
+            //         {item.name}
+            //       </Text>
+            //     </View>
+            //     <View style={{ justifyContent: "center" }}>
+            //       <View
+            //         style={{
+            //           width: 16,
+            //           height: 16,
+            //           borderColor: "rgba(255,255,255,.4)",
+            //           borderWidth: 1,
+            //           borderRadius: 16,
+            //         }}
+            //       ></View>
+            //     </View>
+            //   </View>
+            // );
           }}
         />
       </View>

@@ -1,13 +1,13 @@
 import { Coin } from "@cosmjs/amino";
+import { Text } from "@obi-wallet/common";
 import { ReactNode, useCallback, useEffect, useState } from "react";
+import { View } from "react-native";
 
 import { getRootStore } from "../../background/root-store";
 import { useStore } from "../stores";
 import BottleIcon from "./assets/bottle.svg";
 import DrinkIcon from "./assets/drink.svg";
 import LoopIcon from "./assets/loop.svg";
-import { View } from "react-native";
-import { Text } from "@obi-wallet/common";
 
 export interface ExtendedCoin {
   contract?: string;

@@ -2,7 +2,7 @@ import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons/faAngleDoub
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text } from "@obi-wallet/common";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
-import { useNavigation } from "@react-navigation/native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { RootStackParamList } from "../../../root-stack";
 import { useStore } from "../../../stores";
 import ObiLogo from "../../settings/assets/obi-logo.svg";
 import { isSmallScreenNumber, isSmallScreenSubstr } from "../screen-size";
@@ -46,8 +47,10 @@ export const NetworkAccountPickerLayout =
 export const Header = observer<{ currentNetwork: string }>(function Header({
   currentNetwork,
 }) {
-  const navigation =
-    useNavigation<DrawerNavigationProp<Record<string, object>>>();
+  const navigation = useNavigation<
+    DrawerNavigationProp<Record<string, object>> &
+      NavigationProp<RootStackParamList>
+  >();
   const { configStore } = useStore();
   const walletName = "My Obi Wallet";
 
@@ -111,8 +114,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
         }}
         onPress={() => {
           if (configStore.isFeatureEnabled("accountsTab")) {
-            // TODO: i18n, types
-            navigation.navigate("Accounts");
+            navigation.navigate("accounts");
           }
         }}
       >

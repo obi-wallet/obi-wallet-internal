@@ -47,31 +47,6 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
   const intl = useIntl();
   const { configStore } = useStore();
 
-  const accounts = intl.formatMessage({
-    id: "menu.accounts",
-    defaultMessage: "Accounts",
-  });
-  const assets = intl.formatMessage({
-    id: "menu.assets",
-    defaultMessage: "Assets",
-  });
-  const apps = intl.formatMessage({
-    id: "menu.apps",
-    defaultMessage: "Apps",
-  });
-  const nfts = intl.formatMessage({
-    id: "menu.nfts",
-    defaultMessage: "NFTs",
-  });
-  const trade = intl.formatMessage({
-    id: "menu.trade",
-    defaultMessage: "Trade",
-  });
-  const settings = intl.formatMessage({
-    id: "menu.settings",
-    defaultMessage: "Settings",
-  });
-
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -82,15 +57,15 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
             icon = faHome;
           }
           switch (route.name) {
-            case assets:
+            case "assets":
               return !focused ? <AssetsIcon /> : <AssetsIconActive />;
-            case apps:
+            case "apps":
               return !focused ? <AppsIcon /> : <AppsIconActive />;
-            case nfts:
+            case "nfts":
               return !focused ? <NFTsIcon /> : <NFTsIconActive />;
-            case trade:
+            case "trade":
               return !focused ? <TradeIcon /> : <TradeIconActive />;
-            case settings:
+            case "settings":
               return !focused ? <SettingsIcon /> : <SettingsIconActive />;
             default:
               icon = faChevronLeft;
@@ -133,18 +108,72 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
         },
         lazy: false,
       })}
-      initialRouteName={assets}
+      initialRouteName="assets"
     >
       {configStore.isFeatureEnabled("accountsTab") ? (
-        <Tab.Screen name={accounts} component={AccountScreen} />
+        <Tab.Screen
+          name="accounts"
+          options={{
+            title: intl.formatMessage({
+              id: "menu.accounts",
+              defaultMessage: "Accounts",
+            }),
+          }}
+          component={AccountScreen}
+        />
       ) : null}
-      <Tab.Screen name={assets} component={Assets} />
-      {configStore.isFeatureEnabled("nftTab") && (
-        <Tab.Screen name={nfts} component={NFTs} />
-      )}
-      <Tab.Screen name={apps} component={DappExplorer} />
-      <Tab.Screen name={trade} component={Trade} />
-      <Tab.Screen name={settings} component={SettingsScreen} />
+      <Tab.Screen
+        name="assets"
+        options={{
+          title: intl.formatMessage({
+            id: "menu.assets",
+            defaultMessage: "Assets",
+          }),
+        }}
+        component={Assets}
+      />
+      {configStore.isFeatureEnabled("nftTab") ? (
+        <Tab.Screen
+          name="nfts"
+          options={{
+            title: intl.formatMessage({
+              id: "menu.nfts",
+              defaultMessage: "NFTs",
+            }),
+          }}
+          component={NFTs}
+        />
+      ) : null}
+      <Tab.Screen
+        name="apps"
+        options={{
+          title: intl.formatMessage({
+            id: "menu.apps",
+            defaultMessage: "Apps",
+          }),
+        }}
+        component={DappExplorer}
+      />
+      <Tab.Screen
+        name="trade"
+        options={{
+          title: intl.formatMessage({
+            id: "menu.trade",
+            defaultMessage: "Trade",
+          }),
+        }}
+        component={Trade}
+      />
+      <Tab.Screen
+        name="settings"
+        options={{
+          title: intl.formatMessage({
+            id: "menu.settings",
+            defaultMessage: "Settings",
+          }),
+        }}
+        component={SettingsScreen}
+      />
     </Tab.Navigator>
   );
 });
