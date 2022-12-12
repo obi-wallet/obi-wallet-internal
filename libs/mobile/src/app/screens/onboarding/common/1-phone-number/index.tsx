@@ -176,7 +176,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
       <SafeAreaView
         style={{ flex: 1, backgroundColor: theme.colors.background }}
       >
-        {!isObi && <Background />}
+        {isObi ? null : <Background />}
         <KeyboardAwareScrollView
           style={{
             flex: 1,
@@ -205,7 +205,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                 }}
               >
                 <View>
-                  {!isObi && <Image source={require("./assets/phone.png")} />}
+                  {isObi ? null : <Image source={require("./assets/phone.png")} />}
                   <Text
                     style={{
                       color: "#F6F5FF",

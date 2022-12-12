@@ -109,7 +109,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
       <SafeAreaView
         style={{ flex: 1, backgroundColor: isObi ? "#1A1A1A" : "" }}
       >
-        {!isObi && <Background />}
+        {isObi ? null : <Background />}
         <KeyboardAwareScrollView
           style={{
             flex: 1,
@@ -197,7 +197,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
           <Button
             label={intl.formatMessage({ id: "onboarding4.biometrics.button" })}
             flavor="blue"
-            LeftIcon={!isObi ? Scan : undefined}
+            LeftIcon={isObi ? undefined : Scan}
             onPress={() => {
               if (scannedBiometrics) {
                 navigation.navigate("create-multisig-phone-number");

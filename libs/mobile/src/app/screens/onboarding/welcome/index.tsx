@@ -153,7 +153,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
             {isInRecovery ? null : (
               <Button
                 label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
-                RightIcon={!isObi ? GetStarted : undefined}
+                RightIcon={isObi ? undefined : GetStarted}
                 flavor="blue"
                 style={{
                   marginTop: 20,
@@ -166,7 +166,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                       {
                         text: "Cancel",
                         // eslint-disable-next-line @typescript-eslint/no-empty-function
-                        onPress() {},
+                        onPress() { },
                       },
                       {
                         text: "Continue",
@@ -187,7 +187,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
             {isInRecovery ? (
               <Button
                 label={intl.formatMessage({ id: "general.cancel" })}
-                RightIcon={!isObi ? GetStarted : undefined}
+                RightIcon={isObi ? undefined : GetStarted}
                 flavor="blue"
                 style={{
                   marginTop: 20,
@@ -201,7 +201,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                 label={intl.formatMessage({
                   id: "onboarding1.recoversinglesig",
                 })}
-                RightIcon={!isObi ? GetStarted : undefined}
+                RightIcon={isObi ? undefined : GetStarted}
                 flavor="blue"
                 style={{
                   marginTop: 20,
@@ -217,7 +217,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                   id: "onboarding1.demo",
                   defaultMessage: "Enter Demo Mode",
                 })}
-                RightIcon={!isObi ? GetStarted : undefined}
+                RightIcon={isObi ? undefined : GetStarted}
                 flavor="blue"
                 style={{
                   marginTop: 20,
@@ -315,7 +315,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
               id: "onboarding1.login",
               defaultMessage: "Login",
             })}
-            RightIcon={!isObi ? GetStarted : undefined}
+            RightIcon={isObi ? undefined : GetStarted}
             flavor="green"
             onPress={() => {
               accountPickerModalProps.open();
@@ -324,7 +324,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
         ) : null}
         <Button
           label={intl.formatMessage({ id: labelId })}
-          RightIcon={!isObi ? GetStarted : undefined}
+          RightIcon={isObi ? undefined : GetStarted}
           flavor="green"
           style={{
             marginTop: 20,
