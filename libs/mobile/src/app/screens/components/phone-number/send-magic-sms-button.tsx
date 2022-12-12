@@ -5,6 +5,7 @@ import { useIntl } from "react-intl";
 import { View } from "react-native";
 
 import { Button } from "../../../button";
+import { useStore } from "../../../stores";
 import SMS from "./assets/sms.svg";
 
 export interface SendMagicSmsButtonProps {
@@ -20,6 +21,8 @@ export function SendMagicSmsButton({
   disabled,
 }: SendMagicSmsButtonProps) {
   const intl = useIntl();
+  const { settingsStore } = useStore();
+  const isObi = settingsStore.isObi();
 
   return (
     <View>
@@ -57,7 +60,7 @@ export function SendMagicSmsButton({
           id: "onboarding2.sendmagicsms",
           defaultMessage: "Get Magic SMS",
         })}
-        LeftIcon={SMS}
+        LeftIcon={isObi ? undefined : SMS}
         flavor="blue"
         disabled={disabled}
         style={{

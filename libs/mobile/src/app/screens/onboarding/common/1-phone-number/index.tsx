@@ -22,7 +22,6 @@ import {
 } from "../../../components/phone-number/security-question-input";
 import { SendMagicSmsButton } from "../../../components/phone-number/send-magic-sms-button";
 import { OnboardingStackParamList } from "../../onboarding-stack";
-import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
 
 export type MultisigPhoneNumberProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -173,10 +172,8 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
     };
 
     return (
-      <SafeAreaView
-        style={{ flex: 1, backgroundColor: theme.colors.background }}
-      >
-        {isObi ? null : <Background />}
+      <SafeAreaView style={{ flex: 1 }}>
+        <Background />
         <KeyboardAwareScrollView
           style={{
             flex: 1,

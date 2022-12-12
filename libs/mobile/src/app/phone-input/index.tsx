@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { Text, TextInput as OriginalTextInput } from "@obi-wallet/common";
 import { ComponentType, useEffect, useState } from "react";
 import {
@@ -18,53 +19,54 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 import { useStore } from "../stores";
 
-const styles = StyleSheet.create({
-  label: {
-    color: "#787B9C",
-    fontSize: 10,
-    marginBottom: 12,
-    textTransform: "uppercase",
-  },
-  wholeview: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    height: 56,
-    borderWidth: 1,
-    borderColor: "#2F2B4C",
-    fontSize: 14,
-    fontWeight: 500,
-    color: "#F6F5FF",
-    borderRadius: 12,
-  },
-  buttonview: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    fontSize: 14,
-    fontWeight: 500,
-  },
-  inputview: {
-    flex: 1,
-    flexDirection: "row",
-    height: 56,
-    borderColor: "#2F2B4C",
-    borderLeftWidth: 1,
-    fontSize: 14,
-    fontWeight: 500,
-    color: "#F6F5FF",
-  },
-  input: {
-    flex: 1,
-    paddingLeft: 20,
-    color: "#F6F5FF",
-  },
-  data: {
-    backgroundColor: "white",
-    padding: 10,
-  },
-});
+const getStyles = (isObi: boolean) =>
+  StyleSheet.create({
+    label: {
+      color: isObi ? "white" : "#787B9C",
+      fontSize: 10,
+      marginBottom: 12,
+      textTransform: "uppercase",
+    },
+    wholeview: {
+      flexDirection: "row",
+      alignItems: "center",
+      width: "100%",
+      height: 56,
+      borderWidth: 1,
+      borderColor: isObi ? "white" : "#2F2B4C",
+      fontSize: 14,
+      fontWeight: 500,
+      color: "#F6F5FF",
+      borderRadius: 12,
+    },
+    buttonview: {
+      flex: 1,
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      fontSize: 14,
+      fontWeight: 500,
+    },
+    inputview: {
+      flex: 1,
+      flexDirection: "row",
+      height: 56,
+      borderColor: isObi ? "white" : "#2F2B4C",
+      borderLeftWidth: 1,
+      fontSize: 14,
+      fontWeight: 500,
+      color: "#F6F5FF",
+    },
+    input: {
+      flex: 1,
+      paddingLeft: 20,
+      color: "#F6F5FF",
+    },
+    data: {
+      backgroundColor: "white",
+      padding: 10,
+    },
+  });
 
 export function PhoneInput({
   label,
@@ -80,7 +82,8 @@ export function PhoneInput({
   inputStyle?: StyleProp<TextStyle>;
   handlePhoneNumberCountryCode: (param: string) => void;
 }) {
-  const { languageStore } = useStore();
+  const { languageStore, settingsStore } = useStore();
+  const isObi = settingsStore.isObi();
   const { currentLanguage } = languageStore;
 
   // possible Languages to add
@@ -102,6 +105,8 @@ export function PhoneInput({
     setCountryCode(country.cca2);
     setCountry(country);
   };
+  const theme = useTheme();
+  const styles = getStyles(isObi);
   // Default Selection
   const [countryCode, setCountryCode] = useState<CountryCode>("US");
   const [country, setCountry] = useState<Country>({
@@ -146,9 +151,9 @@ export function PhoneInput({
                   dark
                     ? DARK_THEME
                     : {
-                        primaryColor: "blue",
+                        // primaryColor: "blue",
                         primaryColorVariant: "#090816",
-                        backgroundColor: "#090816",
+                        backgroundColor: theme.colors.background,
                         onBackgroundTextColor: "#F6F5FF",
                         fontSize: 14,
                         filterPlaceholderTextColor: "#4B4E6E",
@@ -186,7 +191,9 @@ export function PhoneInput({
             <View style={styles.inputview}>
               <CustomTextInput
                 style={[styles.input, inputStyle]}
-                placeholderTextColor="#4B4E6E"
+                placeholderTextColor={
+                  isObi ? "rgba(255,255,255,0.6)" : "#4B4E6E"
+                }
                 {...props}
               />
             </View>

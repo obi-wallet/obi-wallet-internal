@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { IconButton, InlineButton } from "../../../../button";
 import { useMultisigWallet, useStore } from "../../../../stores";
 import { TextInput } from "../../../../text-input";
+import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
 import { KeyboardAvoidingView } from "../../../components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../components/phone-number/verify-and-proceed-button";
@@ -24,13 +25,13 @@ export type MultisigSocialProps = NativeStackScreenProps<
 
 export const MultisigSocial = observer<MultisigSocialProps>(
   ({ navigation }) => {
-    const { chainStore } = useStore();
+    const { chainStore, settingsStore } = useStore();
     const wallet = useMultisigWallet();
     const [address, setAddress] = useState("");
     const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true); // Verify&Proceed Button disabled by default
     const [fetchingPubKey, setFetchingPubKey] = useState(false);
     const obi_address = "juno17w77rnps59cnallfskg42s3ntnlhrzu2mjkr3e";
-
+    const isObi = settingsStore.isObi();
     const intl = useIntl();
 
     const minAddressInputChars = 43;
@@ -116,25 +117,23 @@ export const MultisigSocial = observer<MultisigSocialProps>(
             }}
           >
             <View>
-              <IconButton
+              <Back
                 style={{
                   marginTop: 20,
                   marginLeft: -5,
                   padding: 5,
                   width: 25,
                 }}
-                onPress={() => {
-                  navigation.goBack();
+              />
+
+              <View
+                style={{
+                  justifyContent: "flex-end",
+                  marginTop: isObi ? 10 : 43,
                 }}
               >
-                <FontAwesomeIcon
-                  icon={faChevronLeft}
-                  style={{ color: "#7B87A8" }}
-                />
-              </IconButton>
-              <View style={{ justifyContent: "flex-end", marginTop: 43 }}>
                 <View>
-                  <PeopleIcon width={70} height={70} />
+                  {isObi ? undefined : <PeopleIcon width={70} height={70} />}
                   <Text
                     style={{
                       color: "#F6F5FF",

@@ -2,6 +2,7 @@ import { useIntl } from "react-intl";
 import { StyleProp, ViewStyle } from "react-native";
 
 import { Button } from "../../../button";
+import { useStore } from "../../../stores";
 import ShieldCheck from "./assets/shield-check.svg";
 
 export interface VerifyAndProceedButtonProps {
@@ -16,14 +17,15 @@ export function VerifyAndProceedButton({
   style,
 }: VerifyAndProceedButtonProps) {
   const intl = useIntl();
-
+  const { settingsStore } = useStore();
+  const isObi = settingsStore.isObi();
   return (
     <Button
       label={intl.formatMessage({
         id: "onboarding3.verifyandproceed",
         defaultMessage: "Verify & Proceed",
       })}
-      LeftIcon={ShieldCheck}
+      LeftIcon={isObi ? undefined : ShieldCheck}
       flavor={disabled ? "gray" : "blue"}
       onPress={() => {
         !disabled && onPress();
