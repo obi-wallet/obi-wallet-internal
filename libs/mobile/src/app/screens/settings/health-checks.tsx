@@ -7,6 +7,7 @@ import {
   Text,
 } from "@obi-wallet/common";
 import { MigrateMsg } from "@obi-wallet/proxy-contract";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { MsgMigrateContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import Long from "long";
 import { observer } from "mobx-react-lite";
@@ -22,183 +23,214 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 
+import { RootStackParamList } from "../../root-stack";
 import { useMultisigWallet, useStore } from "../../stores";
 import { Back } from "../components/back";
 import WarningIcon from "../components/keys-list/assets/warning-icon.svg";
 
-export const HealthChecksScreen = observer(() => {
-  const intl = useIntl();
-  const { walletsStore } = useStore();
-  const wallet = useMultisigWallet();
-  const [problems, setProblems] = useState<string[] | undefined>();
+export type HealthChecksScreen = NativeStackScreenProps<
+  RootStackParamList,
+  "MultisigHealthChecks"
+>;
 
-  const refetchProblems = useCallback(async () => {
-    const wallet = walletsStore.currentWallet;
-    if (isMultisigWallet(wallet)) {
-      setProblems(await wallet.identifyProblems());
-    }
-  }, [walletsStore.currentWallet]);
+export const HealthChecksScreen = observer<HealthChecksScreen>(
+  ({ navigation }) => {
+    const intl = useIntl();
+    const { walletsStore } = useStore();
+    const wallet = useMultisigWallet();
+    const [problems, setProblems] = useState<string[] | undefined>();
 
-  useEffect(() => {
-    setProblems(undefined);
-    void refetchProblems();
-  }, [refetchProblems]);
+    const refetchProblems = useCallback(async () => {
+      const wallet = walletsStore.currentWallet;
+      if (isMultisigWallet(wallet)) {
+        setProblems(await wallet.identifyProblems());
+      }
+    }, [walletsStore.currentWallet]);
 
-  const problemsData: Record<
-    string,
-    {
-      title: ReactNode;
-      description?: ReactNode;
-      getOnPress: (wallet: MultisigWallet) => () => Promise<void>;
-    }
-  > = {
-    [JunoChecks.CORRECT_ADMIN]: {
-      title: (
-        <FormattedMessage
-          id="settings.multisighealthchecks.juno.correctadmin.title"
-          defaultMessage="Incorrect admin"
-        />
-      ),
-      description: (
-        <FormattedMessage
-          id="settings.multisighealthchecks.juno.correctadmin.description"
-          defaultMessage="The admin of your wallet is not correct."
-        />
-      ),
-      getOnPress: (wallet: MultisigWallet) => {
-        return async () => {
-          Alert.alert(
-            intl.formatMessage({
-              id: "settings.multisighealthchecks.juno.correctadmin.message",
-              defaultMessage:
-                "Please move your funds out and create a new wallet.",
-            })
-          );
-        };
+    useEffect(() => {
+      setProblems(undefined);
+      void refetchProblems();
+    }, [refetchProblems]);
+
+    // TODO: add a feature flag for health checks until UX has been approved / we have icons
+    const problemsData: Record<
+      string,
+      {
+        title: ReactNode;
+        description?: ReactNode;
+        getOnPress: (wallet: MultisigWallet) => () => Promise<void>;
+      }
+    > = {
+      [JunoChecks.CORRECT_ADMIN]: {
+        title: (
+          <FormattedMessage
+            id="settings.multisighealthchecks.juno.correctadmin.title"
+            defaultMessage="Incorrect admin"
+          />
+        ),
+        description: (
+          <FormattedMessage
+            id="settings.multisighealthchecks.juno.correctadmin.description"
+            defaultMessage="The admin of your wallet is not correct."
+          />
+        ),
+        getOnPress: (wallet: MultisigWallet) => {
+          return async () => {
+            Alert.alert(
+              intl.formatMessage({
+                id: "settings.multisighealthchecks.juno.correctadmin.message",
+                defaultMessage:
+                  "Please move your funds out and create a new wallet.",
+              })
+            );
+          };
+        },
       },
-    },
-    [JunoChecks.CODE_ID_AT_LEAST_1311]: {
-      title: (
-        <FormattedMessage
-          id="settings.multisighealthchecks.juno.codeidatleast1311.title"
-          defaultMessage="Wallet out of date"
-        />
-      ),
-      description: (
-        <FormattedMessage
-          id="settings.multisighealthchecks.juno.codeidatleast1311.description"
-          defaultMessage="The code ID of your wallet is older than 1311."
-        />
-      ),
-      getOnPress: (wallet: MultisigWallet) => {
-        return async () => {
-          const multisig = wallet.currentAdmin;
-          const encodeObjects = getEncodeObjects();
-
-          if (encodeObjects.length > 0) {
-            const response = await RequestObiSignAndBroadcastMsg.send({
-              id: wallet.id,
-              encodeObjects,
-              multisig,
-            });
-
-            try {
-              invariant(
-                wallet.proxyAddress?.address,
-                "Expected proxy address to exist."
-              );
-              await wallet.finishProxySetup({
-                address: wallet.proxyAddress.address,
-                codeId: 1311,
-              });
-              await refetchProblems();
-            } catch (e) {
-              console.log(response.rawLog);
-            }
-          }
-
-          function getEncodeObjects() {
+      [JunoChecks.CODE_ID_AT_LEAST_1311]: {
+        title: (
+          <FormattedMessage
+            id="settings.multisighealthchecks.juno.codeidatleast1311.title"
+            defaultMessage="Wallet out of date"
+          />
+        ),
+        description: (
+          <FormattedMessage
+            id="settings.multisighealthchecks.juno.codeidatleast1311.description"
+            defaultMessage="The code ID of your wallet is older than 1311."
+          />
+        ),
+        getOnPress: (wallet: MultisigWallet) => {
+          return async () => {
             const multisig = wallet.currentAdmin;
+            const encodeObjects = getEncodeObjects();
 
-            if (!multisig?.multisig?.address || !wallet.proxyAddress?.address)
-              return [];
+            if (encodeObjects.length > 0) {
+              const response = await RequestObiSignAndBroadcastMsg.send({
+                id: wallet.id,
+                encodeObjects,
+                multisig,
+              });
 
-            const rawMessage: MigrateMsg = {};
+              try {
+                invariant(
+                  wallet.proxyAddress?.address,
+                  "Expected proxy address to exist."
+                );
+                await wallet.finishProxySetup({
+                  address: wallet.proxyAddress.address,
+                  codeId: 1311,
+                });
+                await refetchProblems();
+              } catch (e) {
+                console.log(response.rawLog);
+              }
+            }
 
-            const value: MsgMigrateContract = {
-              sender: multisig.multisig.address,
-              // @ts-expect-error
-              codeId: Long.fromInt(1311).toString(),
-              contract: wallet.proxyAddress.address,
-              msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
-            };
-            const message: MsgMigrateContractEncodeObject = {
-              typeUrl: "/cosmwasm.wasm.v1.MsgMigrateContract",
-              value,
-            };
-            return [message];
-          }
-        };
+            function getEncodeObjects() {
+              const multisig = wallet.currentAdmin;
+
+              if (!multisig?.multisig?.address || !wallet.proxyAddress?.address)
+                return [];
+
+              const rawMessage: MigrateMsg = {};
+
+              const value: MsgMigrateContract = {
+                sender: multisig.multisig.address,
+                // @ts-expect-error
+                codeId: Long.fromInt(1311).toString(),
+                contract: wallet.proxyAddress.address,
+                msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
+              };
+              const message: MsgMigrateContractEncodeObject = {
+                typeUrl: "/cosmwasm.wasm.v1.MsgMigrateContract",
+                value,
+              };
+              return [message];
+            }
+          };
+        },
       },
-    },
-  };
-  const data = (problems || []).map((type) => {
-    const { getOnPress, ...problemData } = problemsData[type];
-
-    return {
-      type,
-      ...problemData,
-      async onPress() {
-        await getOnPress(wallet)();
+      [JunoChecks.BIOMETRICS_HOT_WALLET]: {
+        // TODO: type suggestion vs. warning
+        title: (
+          <FormattedMessage
+            id="settings.multisighealthchecks.juno.biometricshotwallet.title"
+            defaultMessage="Device key is not a hot wallet"
+          />
+        ),
+        description: (
+          <FormattedMessage
+            id="settings.multisighealthchecks.juno.biometricshotwallet.description"
+            defaultMessage="TODO"
+          />
+        ),
+        // TODO: this doesn't need to be a getter anymore. Maybe move factory outside of the component?
+        getOnPress: (wallet: MultisigWallet) => {
+          return async () => {
+            // TODO: i18n, types
+            navigation.navigate("Accounts");
+          };
+        },
       },
     };
-  });
+    const data = (problems || []).map((type) => {
+      const { getOnPress, ...problemData } = problemsData[type];
 
-  return (
-    <SafeAreaView
-      style={{
-        backgroundColor: "#090817",
-        flex: 1,
-        paddingHorizontal: 16,
-        paddingTop: 20,
-      }}
-    >
-      <View style={{ flex: 2 }}>
-        <Back style={{ alignSelf: "flex-start" }} />
-        <Text style={styles.heading}>
-          <FormattedMessage
-            id="settings.multisighealthchecks.title"
-            defaultMessage="Wallet Health"
-          />
-        </Text>
-        {problems ? (
-          <>
-            <Text style={styles.subHeading}>
-              {data.length > 0 ? (
-                <FormattedMessage
-                  id="settings.multisighealthchecks.subtitle.issues"
-                  defaultMessage="We found potential issues with your wallet. Tap on them to resolve them."
-                />
-              ) : (
-                <FormattedMessage
-                  id="settings.multisighealthchecks.subtitle.healthy"
-                  defaultMessage="We could not find any issues with your wallet."
-                />
-              )}
-            </Text>
-            <FlatList
-              data={data}
-              keyExtractor={(item) => item.type}
-              renderItem={(props) => {
-                return <ListItem {...props} />;
-              }}
+      return {
+        type,
+        ...problemData,
+        async onPress() {
+          await getOnPress(wallet)();
+        },
+      };
+    });
+
+    return (
+      <SafeAreaView
+        style={{
+          backgroundColor: "#090817",
+          flex: 1,
+          paddingHorizontal: 16,
+          paddingTop: 20,
+        }}
+      >
+        <View style={{ flex: 2 }}>
+          <Back style={{ alignSelf: "flex-start" }} />
+          <Text style={styles.heading}>
+            <FormattedMessage
+              id="settings.multisighealthchecks.title"
+              defaultMessage="Wallet Health"
             />
-          </>
-        ) : null}
-      </View>
-    </SafeAreaView>
-  );
-});
+          </Text>
+          {problems ? (
+            <>
+              <Text style={styles.subHeading}>
+                {data.length > 0 ? (
+                  <FormattedMessage
+                    id="settings.multisighealthchecks.subtitle.issues"
+                    defaultMessage="We found potential issues with your wallet. Tap on them to resolve them."
+                  />
+                ) : (
+                  <FormattedMessage
+                    id="settings.multisighealthchecks.subtitle.healthy"
+                    defaultMessage="We could not find any issues with your wallet."
+                  />
+                )}
+              </Text>
+              <FlatList
+                data={data}
+                keyExtractor={(item) => item.type}
+                renderItem={(props) => {
+                  return <ListItem {...props} />;
+                }}
+              />
+            </>
+          ) : null}
+        </View>
+      </SafeAreaView>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   heading: {

@@ -32,10 +32,33 @@ export const MultisigInit = observer<MultisigInitProps>(({ navigation }) => {
   const encodeObjects = useMemo(() => {
     if (!multisig.multisig?.address) return [];
 
+    const defaultHotWalletAddresses = [
+      multisig.biometrics?.address,
+      multisig.phoneNumber?.address,
+    ].filter((address): address is string => {
+      return address !== null;
+    });
+
     const rawMessage: InstantiateMsg = {
       fee_lend_repay_wallet: currentChainInformation.debtRepayAddress,
       home_network: currentChainInformation.chainId,
-      hot_wallets: [],
+      hot_wallets: defaultHotWalletAddresses.map((address) => {
+        const USDC = 1_000_000; // 6 decimals
+        return {
+          address,
+          current_period_reset: 0,
+          period_multiple: 1,
+          period_type: "DAYS",
+          spend_limits: [
+            {
+              amount: 100 * USDC,
+              denom:
+                "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034",
+              limit_remaining: 100 * USDC,
+            },
+          ],
+        };
+      }),
       owner: multisig.multisig.address,
       signer_types: wallet.getSignerTypes(multisig),
       signers: multisig.multisig.publicKey.value.pubkeys.map((pubkey) => {

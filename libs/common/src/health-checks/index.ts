@@ -1,3 +1,5 @@
+import { HotWalletsResponse } from "@obi-wallet/proxy-contract";
+
 import { Chain } from "../chains";
 import { createCosmWasmClient } from "../clients";
 import { MultisigWallet } from "../stores";
@@ -7,6 +9,7 @@ export type HealthCheck = (wallet: MultisigWallet) => Promise<boolean>;
 export enum JunoChecks {
   CORRECT_ADMIN = "CORRECT_ADMIN",
   CODE_ID_AT_LEAST_1311 = "CODE_ID_AT_LEAST_1311",
+  BIOMETRICS_HOT_WALLET = "BIOMETRICS_HOT_WALLET",
 }
 
 export const junoChecks: Record<JunoChecks, HealthCheck> = {
@@ -24,6 +27,19 @@ export const junoChecks: Record<JunoChecks, HealthCheck> = {
     const codeId = wallet.proxyAddress?.codeId;
     return codeId ? codeId >= 1311 : false;
   },
+  [JunoChecks.BIOMETRICS_HOT_WALLET]: async (wallet) => {
+    const client = await createCosmWasmClient("juno-1");
+    if (!wallet.address) return false;
+    const biometricsAddress = wallet.currentAdmin?.biometrics?.address;
+    if (!biometricsAddress) return false;
+    const { hot_wallets: hotWallets }: HotWalletsResponse =
+      await client.queryContractSmart(wallet.address, {
+        hot_wallets: {},
+      });
+    return hotWallets.some((hotWallet) => {
+      return hotWallet.address === biometricsAddress;
+    });
+  },
 };
 
 export const healthChecks: Record<
@@ -31,7 +47,11 @@ export const healthChecks: Record<
   { types: string[]; checks: Record<string, HealthCheck> }
 > = {
   "juno-1": {
-    types: [JunoChecks.CORRECT_ADMIN, JunoChecks.CODE_ID_AT_LEAST_1311],
+    types: [
+      JunoChecks.CORRECT_ADMIN,
+      JunoChecks.CODE_ID_AT_LEAST_1311,
+      JunoChecks.BIOMETRICS_HOT_WALLET,
+    ],
     checks: junoChecks,
   },
   "uni-3": {
