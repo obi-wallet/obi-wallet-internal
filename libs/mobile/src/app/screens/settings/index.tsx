@@ -1,4 +1,4 @@
-import { isAnyMultisigWallet } from "@obi-wallet/common";
+import { Feature, isAnyMultisigWallet } from "@obi-wallet/common";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { FC, useEffect, useState } from "react";
@@ -28,8 +28,8 @@ import { KeysConfigScreen } from "./keys-config";
 import { Seedphrase } from "./seedphrase";
 
 export const SettingsScreen = observer(() => {
-  const { configStore, walletsStore, settingsStore } = useStore();
-  const { isObi } = settingsStore;
+  const { configStore, walletsStore } = useStore();
+  const isObi = configStore.isObi();
   const intl = useIntl();
   const navigation = useRootNavigation();
   const [appMetadata, setAppMetadata] = useState<LocalPackage | null>(null);
@@ -69,13 +69,12 @@ export const SettingsScreen = observer(() => {
               marginRight: 17,
             }}
             onPress={() => {
-              // console.log({ timesPressed, isObi })
-              if (timesPressed === 4) {
-                settingsStore.toggleBrand();
+              if (timesPressed >= 4) {
+                configStore.toggleBrand();
                 setTimesPressed(0);
                 return;
               }
-              setTimesPressed((st) => st + 1);
+              setTimesPressed((count) => count + 1);
             }}
           >
             <ObiLogo
@@ -129,7 +128,7 @@ export const SettingsScreen = observer(() => {
               })}
               onPress={() => navigation.navigate("MultiSigSettings")}
             />
-            {configStore.isFeatureEnabled("healthChecks") ? (
+            {configStore.isFeatureEnabled(Feature.HealthChecks) ? (
               <Setting
                 Icon={MultiSigIcon}
                 title={intl.formatMessage({
@@ -179,7 +178,7 @@ export const SettingsScreen = observer(() => {
             defaultMessage: "Help & Support",
           })}
           subtitle={intl.formatMessage(
-            isObi()
+            isObi
               ? {
                   id: "settings.helpsupport.subtext.obi",
                   defaultMessage: "Contact Obi support.",
@@ -191,9 +190,7 @@ export const SettingsScreen = observer(() => {
           )}
           onPress={() =>
             Linking.openURL(
-              isObi()
-                ? "https://obi.money/contact"
-                : "https://loop.markets/help"
+              isObi ? "https://obi.money/contact" : "https://loop.markets/help"
             )
           }
         />

@@ -5,7 +5,7 @@ import {
   WalletState,
 } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
-import { ReactElement, ReactNode, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppState, View } from "react-native";
 import codePush from "react-native-code-push";
 

@@ -1,6 +1,7 @@
-import { Config } from "@obi-wallet/common";
+import { Brand, Config, Feature } from "@obi-wallet/common";
 
 export const config: Config = {
+  brand: Brand.Loop,
   chains: {
     enabled: ["juno-1", "uni-3"],
     default: "juno-1",
@@ -10,8 +11,8 @@ export const config: Config = {
     default: "en",
   },
   features: {
-    accountsTab: true,
-    healthChecks: true,
-    nftTab: true,
+    [Feature.AccountsTab]: true,
+    [Feature.HealthChecks]: true,
+    [Feature.NftTab]: true,
   },
 };

@@ -1,11 +1,7 @@
 import { useTheme } from "@emotion/react";
-import { observable } from "mobx";
 import { ReactNode } from "react";
 import {
-  StyleSheet,
-  // eslint-disable-next-line no-restricted-imports
   Text as OriginalText,
-  // eslint-disable-next-line no-restricted-imports
   TextInput as OriginalTextInput,
   TextInputProps,
   TextProps,

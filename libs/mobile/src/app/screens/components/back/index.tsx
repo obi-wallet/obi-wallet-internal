@@ -2,7 +2,7 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { TouchableHighlight, ViewStyle } from "react-native";
+import { ViewStyle } from "react-native";
 
 import { IconButton } from "../../../button";
 import { useStore } from "../../../stores";
@@ -14,8 +14,8 @@ export interface BackProps {
 
 export const Back = observer(({ style }: BackProps) => {
   const { goBack } = useNavigation();
-  const { settingsStore } = useStore();
-  const isObi = settingsStore.isObi();
+  const { configStore } = useStore();
+  const isObi = configStore.isObi();
 
   return (
     <IconButton

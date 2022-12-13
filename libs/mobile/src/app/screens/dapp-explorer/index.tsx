@@ -25,16 +25,14 @@ const icons = [
 ];
 
 export function DappExplorer() {
-  const { appsStore, walletsStore, settingsStore } = useStore();
+  const rootStore = useStore();
   const navigation = useRootNavigation();
   const safeArea = useSafeAreaInsets();
 
   return (
     <SafeAreaView style={{ backgroundColor: "#090817", flex: 1 }}>
       <Home
-        appsStore={appsStore}
-        walletsStore={walletsStore}
-        settingsStore={settingsStore}
+        rootStore={rootStore}
         onAppPress={(app) => {
           navigation.navigate("web-view", {
             app,

@@ -1,6 +1,4 @@
 declare module "react-native-dotenv" {
-  import { Chain } from "@obi-wallet/common";
-
   export const APP_ENV: "development" | "staging" | "production";
   export const COSMOS_ENABLED: "true" | undefined;
 

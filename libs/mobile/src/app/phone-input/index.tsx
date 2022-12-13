@@ -82,8 +82,8 @@ export function PhoneInput({
   inputStyle?: StyleProp<TextStyle>;
   handlePhoneNumberCountryCode: (param: string) => void;
 }) {
-  const { languageStore, settingsStore } = useStore();
-  const isObi = settingsStore.isObi();
+  const { languageStore, configStore } = useStore();
+  const isObi = configStore.isObi();
   const { currentLanguage } = languageStore;
 
   // possible Languages to add

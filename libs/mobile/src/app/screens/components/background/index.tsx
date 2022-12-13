@@ -5,8 +5,8 @@ import { useStore } from "../../../stores";
 
 export function Background() {
   const theme = useTheme();
-  const { settingsStore } = useStore();
-  const isObi = settingsStore.isObi();
+  const { configStore } = useStore();
+  const isObi = configStore.isObi();
 
   return (
     <View

@@ -1,4 +1,3 @@
-import { useTheme } from "@emotion/react";
 import {
   isAnyMultisigWallet,
   isMultisigDemoWallet,
@@ -31,13 +30,11 @@ export type WelcomeProps = NativeStackScreenProps<
 >;
 
 export const Welcome = observer<WelcomeProps>(({ navigation }) => {
-  const { walletsStore, settingsStore } = useStore();
-  const isObi = settingsStore.isObi();
+  const { configStore, walletsStore } = useStore();
+  const isObi = configStore.isObi();
   const wallet = walletsStore.currentWallet;
   const multisigWallet = isAnyMultisigWallet(wallet) ? wallet : null;
   const intl = useIntl();
-  const theme = useTheme();
-  console.log({ theme });
 
   const isInRecovery =
     isAnyMultisigWallet(wallet) && wallet.keyInRecovery !== null;
@@ -86,7 +83,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
             </Text>
           </View>
           <View style={{ marginHorizontal: 20 }}>
-            {settingsStore.isLoop() && <LanguagePicker />}
+            {configStore.isLoop() ? <LanguagePicker /> : null}
           </View>
         </View>
         <AccountPickerModal {...accountPickerModalProps} />
@@ -116,13 +113,13 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
               )}
             </View>
           </BrandToggle>
-          {isObi && (
+          {isObi ? (
             <View
               style={{ marginBottom: 10, zIndex: 2, alignItems: "flex-end" }}
             >
               <LanguagePicker />
             </View>
-          )}
+          ) : null}
 
           <Text
             style={{

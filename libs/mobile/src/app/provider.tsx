@@ -31,7 +31,7 @@ export const Provider = observer<ProviderProps>(
     const rootStore = useMemo(() => {
       return createRootStore({ initialConfig });
     }, [initialConfig]);
-    const { languageStore, settingsStore } = rootStore;
+    const { languageStore, configStore } = rootStore;
     const { currentLanguage } = languageStore;
 
     useEffect(() => {
@@ -79,7 +79,7 @@ export const Provider = observer<ProviderProps>(
           >
             <SafeAreaProvider>
               <NavigationContainer {...navigationContainerProps}>
-                <ThemeProvider theme={getTheme(settingsStore.brand)}>
+                <ThemeProvider theme={getTheme(configStore.brand)}>
                   <StatusBar barStyle="light-content" />
                   {children}
                 </ThemeProvider>
@@ -91,9 +91,10 @@ export const Provider = observer<ProviderProps>(
     );
   }
 );
-const getTheme = (brand: Brand): Theme => {
+
+function getTheme(brand: Brand): Theme {
   switch (brand) {
-    case Brand.OBI: {
+    case Brand.Obi: {
       return {
         colors: {
           background: "#1a1a1a",
@@ -105,7 +106,7 @@ const getTheme = (brand: Brand): Theme => {
         },
       };
     }
-    case Brand.LOOP: {
+    case Brand.Loop: {
       return {
         colors: {
           background: "#090817",
@@ -118,4 +119,4 @@ const getTheme = (brand: Brand): Theme => {
       };
     }
   }
-};
+}

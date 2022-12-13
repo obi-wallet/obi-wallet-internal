@@ -46,8 +46,8 @@ export function TextInput({
   style?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
 }) {
-  const { settingsStore } = useStore();
-  const isObi = settingsStore.isObi();
+  const { configStore } = useStore();
+  const isObi = configStore.isObi();
   const styles = getStyles(isObi);
   return (
     <View style={style}>

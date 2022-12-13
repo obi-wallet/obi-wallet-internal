@@ -17,8 +17,8 @@ export function VerifyAndProceedButton({
   style,
 }: VerifyAndProceedButtonProps) {
   const intl = useIntl();
-  const { settingsStore } = useStore();
-  const isObi = settingsStore.isObi();
+  const { configStore } = useStore();
+  const isObi = configStore.isObi();
   return (
     <Button
       label={intl.formatMessage({

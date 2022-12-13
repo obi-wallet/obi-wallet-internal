@@ -36,8 +36,8 @@ export interface InlineButtonProps
 }
 
 export function InlineButton({ label, ...props }: InlineButtonProps) {
-  const { settingsStore } = useStore();
-  const isObi = settingsStore.isObi();
+  const { configStore } = useStore();
+  const isObi = configStore.isObi();
   const baseStyles = getBaseStyles(isObi);
   const children = <Text style={baseStyles.text}>{label}</Text>;
 

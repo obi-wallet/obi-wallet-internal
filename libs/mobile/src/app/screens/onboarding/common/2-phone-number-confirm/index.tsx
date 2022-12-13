@@ -1,6 +1,4 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { isMultisigDemoWallet, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
@@ -9,7 +7,7 @@ import { Alert, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { IconButton, InlineButton } from "../../../../button";
+import { InlineButton } from "../../../../button";
 import { useMultisigWallet, useStore } from "../../../../stores";
 import { TextInput } from "../../../../text-input";
 import {
@@ -33,8 +31,8 @@ export function MultisigPhoneNumberConfirm({
   route,
 }: MultisigPhoneNumberConfirmProps) {
   const { params } = route;
-  const { settingsStore } = useStore();
-  const isObi = settingsStore.isObi();
+  const { configStore } = useStore();
+  const isObi = configStore.isObi();
   const wallet = useMultisigWallet();
   const [key, setKey] = useState("");
 

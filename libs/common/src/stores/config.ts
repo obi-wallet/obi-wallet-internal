@@ -1,9 +1,21 @@
-import { makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 
 import { Chain } from "../chains";
 import { Language } from "../languages";
 
+export enum Brand {
+  Obi = "Obi",
+  Loop = "Loop",
+}
+
+export enum Feature {
+  AccountsTab = "AccountsTab",
+  HealthChecks = "HealthChecks",
+  NftTab = "NftTab",
+}
+
 export interface Config {
+  brand: Brand;
   chains: {
     enabled: Chain[];
     default: Chain;
@@ -12,14 +24,8 @@ export interface Config {
     enabled: Language[];
     default: Language;
   };
-  features: {
-    accountsTab: boolean;
-    healthChecks: boolean;
-    nftTab: boolean;
-  };
+  features: Record<Feature, boolean>;
 }
-
-export type Feature = keyof Config["features"];
 
 export class ConfigStore {
   @observable
@@ -32,5 +38,23 @@ export class ConfigStore {
 
   public isFeatureEnabled(feature: Feature): boolean {
     return this.config.features[feature];
+  }
+
+  public get brand(): Brand {
+    return this.config.brand;
+  }
+
+  @action
+  public toggleBrand() {
+    this.config.brand =
+      this.config.brand === Brand.Obi ? Brand.Loop : Brand.Obi;
+  }
+
+  public isObi(): boolean {
+    return this.config.brand === Brand.Obi;
+  }
+
+  public isLoop(): boolean {
+    return this.config.brand === Brand.Loop;
   }
 }

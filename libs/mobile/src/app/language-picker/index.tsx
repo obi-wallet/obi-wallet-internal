@@ -43,8 +43,8 @@ const allLanguages = [
 export const LanguagePicker = observer(() => {
   const languageStore = useStore().languageStore;
   const { currentLanguage, enabledLanguages } = languageStore;
-  const { settingsStore } = useStore();
-  const isObi = settingsStore.isObi();
+  const { configStore } = useStore();
+  const isObi = configStore.isObi();
   const theme = useTheme();
   console.log("theme", theme, { isObi });
   const handleLanguageChoice = (language: Language | null) => {

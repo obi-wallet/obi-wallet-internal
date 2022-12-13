@@ -2,17 +2,18 @@ import { Theme, useTheme } from "@emotion/react";
 import { Brand, Text } from "@obi-wallet/common";
 import { FC } from "react";
 import {
+  GestureResponderEvent,
   Platform,
   StyleSheet,
-  TouchableNativeFeedback,
   TouchableHighlight,
+  TouchableNativeFeedback,
   TouchableWithoutFeedbackProps,
   View,
-  GestureResponderEvent,
 } from "react-native";
 import { SvgProps } from "react-native-svg";
 
 import { useStore } from "../stores";
+
 const loopFlavors = {
   blue: {
     text: {
@@ -76,7 +77,7 @@ const getFlavorStyles = (
   disabled: boolean
 ) => {
   switch (brand) {
-    case Brand.OBI: {
+    case Brand.Obi: {
       if (disabled) return baseStyles;
 
       return {
@@ -93,7 +94,7 @@ const getFlavorStyles = (
         },
       };
     }
-    case Brand.LOOP: {
+    case Brand.Loop: {
       const loopBorderRadius = 12;
       if (disabled) return baseStyles;
       const flavorStyles = loopFlavors[flavor];
@@ -132,10 +133,9 @@ export function Button({
   RightIcon,
   ...props
 }: ButtonProps) {
-  const { settingsStore } = useStore();
-  const isObi = settingsStore.isObi();
+  const { configStore } = useStore();
   const theme = useTheme();
-  const brand = settingsStore.brand;
+  const brand = configStore.brand;
   const flavorStyles = getFlavorStyles(brand, flavor, theme, disabled);
   const children = (
     <View style={flavorStyles.button}>

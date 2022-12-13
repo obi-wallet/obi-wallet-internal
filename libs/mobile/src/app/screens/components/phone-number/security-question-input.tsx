@@ -42,7 +42,7 @@ export function SecurityQuestionInput({
   );
 
   const intl = useIntl();
-  const isObi = useStore().settingsStore.isObi();
+  const isObi = useStore().configStore.isObi();
 
   return (
     <View style={{ zIndex: 999 }}>

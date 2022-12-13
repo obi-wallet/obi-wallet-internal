@@ -1,7 +1,4 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
-import { faCircleChevronLeft } from "@fortawesome/free-solid-svg-icons/faCircleChevronLeft";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { isMultisigDemoWallet, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -15,7 +12,7 @@ import {
   getBiometricsPublicKey,
   resetBiometricsKeyPair,
 } from "../../../../biometrics";
-import { Button, IconButton } from "../../../../button";
+import { Button } from "../../../../button";
 import { useMultisigWallet, useStore } from "../../../../stores";
 import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
@@ -32,7 +29,7 @@ export type MultisigBiometricsProps = NativeStackScreenProps<
 export const MultisigBiometrics = observer<MultisigBiometricsProps>(
   ({ navigation }) => {
     const wallet = useMultisigWallet();
-    const isObi = useStore().settingsStore.isObi();
+    const isObi = useStore().configStore.isObi();
 
     const [scannedBiometrics, setScannedBiometrics] = useState(false);
     const intl = useIntl();

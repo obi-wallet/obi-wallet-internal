@@ -1,5 +1,3 @@
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { createStargateClient, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -8,7 +6,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { IconButton, InlineButton } from "../../../../button";
+import { InlineButton } from "../../../../button";
 import { useMultisigWallet, useStore } from "../../../../stores";
 import { TextInput } from "../../../../text-input";
 import { Back } from "../../../components/back";
@@ -25,13 +23,13 @@ export type MultisigSocialProps = NativeStackScreenProps<
 
 export const MultisigSocial = observer<MultisigSocialProps>(
   ({ navigation }) => {
-    const { chainStore, settingsStore } = useStore();
+    const { chainStore, configStore } = useStore();
     const wallet = useMultisigWallet();
     const [address, setAddress] = useState("");
     const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true); // Verify&Proceed Button disabled by default
     const [fetchingPubKey, setFetchingPubKey] = useState(false);
     const obi_address = "juno17w77rnps59cnallfskg42s3ntnlhrzu2mjkr3e";
-    const isObi = settingsStore.isObi();
+    const isObi = configStore.isObi();
     const intl = useIntl();
 
     const minAddressInputChars = 43;

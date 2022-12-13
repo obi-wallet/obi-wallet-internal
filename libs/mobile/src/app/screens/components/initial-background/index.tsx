@@ -1,23 +1,22 @@
 import { useTheme } from "@emotion/react";
-import { Brand } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
+import { ReactNode } from "react";
 import { ImageBackground, View } from "react-native";
 
 import { useStore } from "../../../stores";
 
 export interface InitialBackgroundProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export const InitialBackground = observer((props: InitialBackgroundProps) => {
-  const { settingsStore } = useStore();
+  const { configStore } = useStore();
   const theme = useTheme();
   const styles = {
     backgroundColor: theme.colors.background,
     flex: 1,
   };
-  console.log(theme.colors.background);
-  return settingsStore.isObi() ? (
+  return configStore.isObi() ? (
     <View style={styles} {...props} />
   ) : (
     <ImageBackground

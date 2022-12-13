@@ -18,8 +18,7 @@ import { SvgProps } from "react-native-svg";
 
 import { Card } from "../../card";
 import { FontAwesomeIcon } from "../../font-awesome-icon";
-import { App, AppsStore, isSinglesigWallet, WalletsStore } from "../../stores";
-import { SettingsStore } from "../../stores/settings";
+import { App, isSinglesigWallet, RootStore } from "../../stores";
 import { Tile, Tiles } from "../../tiles";
 import { Text } from "../../typography";
 
@@ -31,23 +30,14 @@ const styles = StyleSheet.create({
 });
 
 export interface HomeProps {
-  appsStore: AppsStore;
-  walletsStore: WalletsStore;
-  settingsStore: SettingsStore;
+  rootStore: RootStore;
   onAppPress: (app: App) => void;
   marginBottom?: number;
   icons: FC<SvgProps>[];
 }
 
 export const Home = observer<HomeProps>(
-  ({
-    appsStore,
-    onAppPress,
-    settingsStore,
-    marginBottom,
-    walletsStore,
-    icons,
-  }) => {
+  ({ onAppPress, marginBottom, rootStore, icons }) => {
     const [
       BuyCryptoIcon,
       CosmicPartyIcon,
@@ -58,7 +48,8 @@ export const Home = observer<HomeProps>(
       OpenseaIcon,
       AmazonIcon,
     ] = icons;
-    const isObi = settingsStore.isObi;
+    const { appsStore, configStore, walletsStore } = rootStore;
+    const isObi = configStore.isObi();
     const [editMode, setEditMode] = useState(false);
     const [url, setUrl] = useState("");
     const intl = useIntl();
@@ -190,53 +181,55 @@ export const Home = observer<HomeProps>(
                   });
                 }}
               />
-              {isObi() && [
-                <Tile
-                  key="uniswap"
-                  onLongPress={() => {
-                    setEditMode(true);
-                  }}
-                  ImgComponent={UniSwapIcon}
-                  label="Uniswap"
-                  onPress={() => {
-                    onAppPress({
-                      label: "Uniswap",
-                      url: `https://uniswap.org`,
-                      icon: "https://place-hold.it/180x180",
-                    });
-                  }}
-                />,
-                <Tile
-                  onLongPress={() => {
-                    setEditMode(true);
-                  }}
-                  key="amazon"
-                  ImgComponent={AmazonIcon}
-                  label="Amazon"
-                  onPress={() => {
-                    onAppPress({
-                      label: "Amazon",
-                      url: "https://amazon.com",
-                      icon: "https://place-hold.it/180x180",
-                    });
-                  }}
-                />,
-                <Tile
-                  onLongPress={() => {
-                    setEditMode(true);
-                  }}
-                  key="opensea"
-                  ImgComponent={OpenseaIcon}
-                  label="OpenSea"
-                  onPress={() => {
-                    onAppPress({
-                      label: "History",
-                      url: "https://opensea.io",
-                      icon: "https://place-hold.it/180x180",
-                    });
-                  }}
-                />,
-              ]}
+              {isObi ? (
+                <>
+                  <Tile
+                    key="uniswap"
+                    onLongPress={() => {
+                      setEditMode(true);
+                    }}
+                    ImgComponent={UniSwapIcon}
+                    label="Uniswap"
+                    onPress={() => {
+                      onAppPress({
+                        label: "Uniswap",
+                        url: `https://uniswap.org`,
+                        icon: "https://place-hold.it/180x180",
+                      });
+                    }}
+                  />
+                  <Tile
+                    onLongPress={() => {
+                      setEditMode(true);
+                    }}
+                    key="amazon"
+                    ImgComponent={AmazonIcon}
+                    label="Amazon"
+                    onPress={() => {
+                      onAppPress({
+                        label: "Amazon",
+                        url: "https://amazon.com",
+                        icon: "https://place-hold.it/180x180",
+                      });
+                    }}
+                  />
+                  <Tile
+                    onLongPress={() => {
+                      setEditMode(true);
+                    }}
+                    key="opensea"
+                    ImgComponent={OpenseaIcon}
+                    label="OpenSea"
+                    onPress={() => {
+                      onAppPress({
+                        label: "History",
+                        url: "https://opensea.io",
+                        icon: "https://place-hold.it/180x180",
+                      });
+                    }}
+                  />
+                </>
+              ) : null}
             </Tiles>
           </ScrollView>
           <KeyboardAvoidingView

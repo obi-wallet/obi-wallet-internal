@@ -2,7 +2,7 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { chains, Text } from "@obi-wallet/common";
+import { chains, Feature, Text } from "@obi-wallet/common";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   createDrawerNavigator,
@@ -110,7 +110,7 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
       })}
       initialRouteName="assets"
     >
-      {configStore.isFeatureEnabled("accountsTab") ? (
+      {configStore.isFeatureEnabled(Feature.AccountsTab) ? (
         <Tab.Screen
           name="accounts"
           options={{
@@ -132,7 +132,7 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
         }}
         component={Assets}
       />
-      {configStore.isFeatureEnabled("nftTab") ? (
+      {configStore.isFeatureEnabled(Feature.NftTab) ? (
         <Tab.Screen
           name="nfts"
           options={{

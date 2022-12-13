@@ -21,8 +21,8 @@ export function SendMagicSmsButton({
   disabled,
 }: SendMagicSmsButtonProps) {
   const intl = useIntl();
-  const { settingsStore } = useStore();
-  const isObi = settingsStore.isObi();
+  const { configStore } = useStore();
+  const isObi = configStore.isObi();
 
   return (
     <View>

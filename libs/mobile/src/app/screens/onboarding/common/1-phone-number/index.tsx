@@ -1,6 +1,3 @@
-import { useTheme } from "@emotion/react";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { isMultisigDemoWallet, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -10,7 +7,6 @@ import { Alert, Image, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { IconButton } from "../../../../button";
 import { PhoneInput } from "../../../../phone-input";
 import { useMultisigWallet, useStore } from "../../../../stores";
 import { sendPublicKeyTextMessage } from "../../../../text-message";
@@ -32,9 +28,8 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
   ({ navigation }) => {
     const wallet = useMultisigWallet();
     const intl = useIntl();
-    const { settingsStore } = useStore();
-    const isObi = settingsStore.isObi();
-    const theme = useTheme();
+    const { configStore } = useStore();
+    const isObi = configStore.isObi();
 
     useEffect(() => {
       const { phoneNumber } = wallet.nextAdmin;

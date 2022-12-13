@@ -21,7 +21,6 @@ import { InAppPurchaseInteractionStore } from "./interaction/in-app-purchase";
 import { SignInteractionStore } from "./interaction/sign";
 import { KeplrChainStore } from "./keplr-chain";
 import { LanguageStore } from "./language";
-import { SettingsStore } from "./settings";
 import { WalletsStore } from "./wallets";
 
 export class RootStore {
@@ -32,7 +31,6 @@ export class RootStore {
   public readonly inAppPurchaseInteractionStore: InAppPurchaseInteractionStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly languageStore: LanguageStore;
-  public readonly settingsStore: SettingsStore;
   public readonly walletsStore: WalletsStore;
 
   // Hide Keplr-related stores by default
@@ -84,7 +82,6 @@ export class RootStore {
     this.signInteractionStore = new SignInteractionStore(
       this.keplrInteractionStore
     );
-    this.settingsStore = new SettingsStore();
 
     this.languageStore = new LanguageStore({
       deviceLanguage,

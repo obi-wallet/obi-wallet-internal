@@ -11,14 +11,14 @@ export interface BrandModeToggleProps {
 
 export const BrandToggle = observer<BrandModeToggleProps>((props) => {
   const [pressed, setPressed] = useState(0);
-  const { settingsStore } = useStore();
+  const { configStore } = useStore();
 
   useEffect(() => {
     if (pressed >= 5) {
-      settingsStore.toggleBrand();
+      configStore.toggleBrand();
       setPressed(0);
     }
-  }, [settingsStore, pressed]);
+  }, [configStore, pressed]);
 
   return (
     <TouchableWithoutFeedback
