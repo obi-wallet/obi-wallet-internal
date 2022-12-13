@@ -9,6 +9,8 @@ import {
   ViewStyle,
 } from "react-native";
 
+import { useStore } from "../stores";
+
 const getStyles = (isObi: boolean) =>
   StyleSheet.create({
     label: {
@@ -37,15 +39,15 @@ export function TextInput({
   style,
   inputStyle,
   CustomTextInput = OriginalTextInput,
-  isObi = false,
   ...props
 }: TextInputProps & {
   CustomTextInput?: ComponentType<TextInputProps>;
   label?: string;
   style?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
-  isObi?: boolean;
 }) {
+  const { settingsStore } = useStore();
+  const isObi = settingsStore.isObi();
   const styles = getStyles(isObi);
   return (
     <View style={style}>

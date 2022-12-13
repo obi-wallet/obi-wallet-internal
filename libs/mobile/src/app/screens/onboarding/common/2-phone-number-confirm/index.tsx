@@ -10,12 +10,13 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { IconButton, InlineButton } from "../../../../button";
-import { useMultisigWallet } from "../../../../stores";
+import { useMultisigWallet, useStore } from "../../../../stores";
 import { TextInput } from "../../../../text-input";
 import {
   parsePublicKeyTextMessageResponse,
   sendPublicKeyTextMessage,
 } from "../../../../text-message";
+import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
 import { KeyboardAvoidingView } from "../../../components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../components/phone-number/verify-and-proceed-button";
@@ -32,7 +33,8 @@ export function MultisigPhoneNumberConfirm({
   route,
 }: MultisigPhoneNumberConfirmProps) {
   const { params } = route;
-
+  const { settingsStore } = useStore();
+  const isObi = settingsStore.isObi();
   const wallet = useMultisigWallet();
   const [key, setKey] = useState("");
 
@@ -84,25 +86,20 @@ export function MultisigPhoneNumberConfirm({
           contentContainerStyle={{ flex: 1, justifyContent: "space-between" }}
         >
           <View>
-            <IconButton
+            <Back
               style={{
                 marginTop: 20,
                 marginLeft: -5,
                 padding: 5,
                 width: 25,
               }}
-              onPress={() => {
-                navigation.goBack();
-              }}
+            />
+
+            <View
+              style={{ justifyContent: "flex-end", marginTop: isObi ? 10 : 43 }}
             >
-              <FontAwesomeIcon
-                icon={faChevronLeft}
-                style={{ color: "#7B87A8" }}
-              />
-            </IconButton>
-            <View style={{ justifyContent: "flex-end", marginTop: 43 }}>
               <View>
-                <InsuranceLogo />
+                {isObi ? null : <InsuranceLogo />}
                 <Text
                   style={{
                     color: "#F6F5FF",
@@ -130,7 +127,7 @@ export function MultisigPhoneNumberConfirm({
                 </Text>
                 <Text
                   style={{
-                    color: "#999CB6",
+                    color: isObi ? "white" : "#999CB6",
                     fontSize: 14,
                     marginTop: 10,
                   }}

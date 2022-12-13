@@ -4,6 +4,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { TextInputProps, View } from "react-native";
 
 import { DropDownPicker } from "../../../drop-down-picker";
+import { useStore } from "../../../stores";
 import { TextInput } from "../../../text-input";
 
 export type SetStateCallback<S> = (prevState: S) => S;
@@ -41,12 +42,13 @@ export function SecurityQuestionInput({
   );
 
   const intl = useIntl();
+  const isObi = useStore().settingsStore.isObi();
 
   return (
     <View style={{ zIndex: 999 }}>
       <Text
         style={{
-          color: "#787B9C",
+          color: isObi ? "white" : "#787B9C",
           fontSize: 10,
           textTransform: "uppercase",
           marginTop: 36,
@@ -69,6 +71,13 @@ export function SecurityQuestionInput({
         setValue={onSecurityQuestionChange}
         setItems={setSecurityQuestions}
         listMode="SCROLLVIEW"
+        dropDownContainerStyle={{
+          backgroundColor: isObi ? "#1E1E1E" : "#000",
+        }}
+        style={{
+          borderRadius: isObi ? 30 : 12,
+          borderColor: isObi ? "white" : "#787B9C",
+        }}
         scrollViewProps={{
           persistentScrollbar: true,
           showsVerticalScrollIndicator: true,

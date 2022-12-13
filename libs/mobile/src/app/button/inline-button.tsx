@@ -8,23 +8,27 @@ import {
   View,
 } from "react-native";
 
-const baseStyles = StyleSheet.create({
-  text: {
-    fontWeight: "500",
-    fontSize: 12,
-    color: "#6959E6",
-  },
-  button: {
-    height: 29,
-    borderWidth: 1,
-    borderRadius: 19,
-    borderColor: "rgba(105, 89, 230, 0.4)",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 15,
-    marginLeft: 8,
-  },
-});
+import { useStore } from "../stores";
+
+const getBaseStyles = (isObi: boolean) =>
+  StyleSheet.create({
+    text: {
+      fontWeight: "500",
+      fontSize: 12,
+      color: isObi ? "#437DFF" : "#6959E6",
+      ...(isObi ? { fontFamily: "poppins" } : {}),
+    },
+    button: {
+      height: 29,
+      borderWidth: 1,
+      borderRadius: 19,
+      borderColor: isObi ? "#437DFF" : "rgba(105, 89, 230, 0.4)",
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 15,
+      marginLeft: 8,
+    },
+  });
 
 export interface InlineButtonProps
   extends Omit<TouchableWithoutFeedbackProps, "children"> {
@@ -32,7 +36,11 @@ export interface InlineButtonProps
 }
 
 export function InlineButton({ label, ...props }: InlineButtonProps) {
+  const { settingsStore } = useStore();
+  const isObi = settingsStore.isObi();
+  const baseStyles = getBaseStyles(isObi);
   const children = <Text style={baseStyles.text}>{label}</Text>;
+
   const buttonProps = {
     ...props,
     children,
