@@ -17,11 +17,14 @@ import {
   useSecurityQuestionInput,
 } from "../../../components/phone-number/security-question-input";
 import { SendMagicSmsButton } from "../../../components/phone-number/send-magic-sms-button";
-import { OnboardingStackParamList } from "../../onboarding-stack";
+import {
+  OnboardingRoute,
+  OnboardingStackParamList,
+} from "../../onboarding-stack";
 
 export type MultisigPhoneNumberProps = NativeStackScreenProps<
   OnboardingStackParamList,
-  "create-multisig-phone-number"
+  OnboardingRoute.CreateMultisigPhoneNumber
 >;
 
 export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
@@ -54,7 +57,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                 id: "onboarding2.error.phonekeyexists.yes",
               }),
               onPress: () => {
-                navigation.navigate("create-multisig-social");
+                navigation.navigate(OnboardingRoute.CreateMultisigSocial);
               },
             },
           ]
@@ -296,7 +299,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                       demoMode: isMultisigDemoWallet(wallet),
                     });
                     navigation.navigate(
-                      "create-multisig-phone-number-confirm",
+                      OnboardingRoute.CreateMultisigPhoneNumberConfirm,
                       {
                         phoneNumber,
                         securityQuestion,

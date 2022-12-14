@@ -2,7 +2,7 @@ import { Home } from "@obi-wallet/common";
 import { SafeAreaView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useRootNavigation } from "../../root-stack";
+import { RootRoute, useRootNavigation } from "../../root-stack";
 import { useStore } from "../../stores";
 import AmazonIcon from "./assets/Amazon_icon.svg";
 import OpenseaIcon from "./assets/OpenSea_icon.svg";
@@ -34,7 +34,7 @@ export function DappExplorer() {
       <Home
         rootStore={rootStore}
         onAppPress={(app) => {
-          navigation.navigate("web-view", {
+          navigation.navigate(RootRoute.WebView, {
             app,
           });
         }}

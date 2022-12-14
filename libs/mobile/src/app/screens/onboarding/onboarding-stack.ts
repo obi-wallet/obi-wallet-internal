@@ -1,17 +1,30 @@
+export enum OnboardingRoute {
+  Welcome = "Welcome",
+  CreateMultisigBiometrics = "CreateMultisigBiometrics",
+  CreateMultisigPhoneNumber = "CreateMultisigPhoneNumber",
+  CreateMultisigPhoneNumberConfirm = "CreateMultisigPhoneNumberConfirm",
+  CreateMultisigSocial = "CreateMultisigSocial",
+  CreateMultisigInit = "CreateMultisigInit",
+  ReplaceMultisig = "ReplaceMultisig",
+  RecoverMultisig = "RecoverMultisig",
+  RecoverSinglesig = "RecoverSinglesig",
+  LookupProxyWallets = "LookupProxyWallets",
+}
+
 export interface OnboardingStackParamList
   extends Record<string, object | undefined> {
-  welcome: undefined;
-  "create-multisig-biometrics": undefined;
-  "create-multisig-phone-number": undefined;
-  "create-multisig-phone-number-confirm": {
+  [OnboardingRoute.Welcome]: undefined;
+  [OnboardingRoute.CreateMultisigBiometrics]: undefined;
+  [OnboardingRoute.CreateMultisigPhoneNumber]: undefined;
+  [OnboardingRoute.CreateMultisigPhoneNumberConfirm]: {
     phoneNumber: string;
     securityQuestion: string;
     securityAnswer: string;
   };
-  "create-multisig-social": undefined;
-  "create-multisig-init": undefined;
-  "replace-multisig": undefined;
-  "recover-multisig": undefined;
-  "recover-singlesig": undefined;
-  "lookup-proxy-wallets": undefined;
+  [OnboardingRoute.CreateMultisigSocial]: undefined;
+  [OnboardingRoute.CreateMultisigInit]: undefined;
+  [OnboardingRoute.ReplaceMultisig]: undefined;
+  [OnboardingRoute.RecoverMultisig]: undefined;
+  [OnboardingRoute.RecoverSinglesig]: undefined;
+  [OnboardingRoute.LookupProxyWallets]: undefined;
 }

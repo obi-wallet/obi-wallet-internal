@@ -21,12 +21,12 @@ import {
 import { InitialBackground } from "../../components/initial-background";
 import { BrandToggle } from "../../components/obi-mode-toggle";
 // import ObiLogo from "./assets/wallet-icon.png";
-import { OnboardingStackParamList } from "../onboarding-stack";
+import { OnboardingRoute, OnboardingStackParamList } from "../onboarding-stack";
 import GetStarted from "./assets/get-started.svg";
 
 export type WelcomeProps = NativeStackScreenProps<
   OnboardingStackParamList,
-  "welcome"
+  OnboardingRoute.Welcome
 >;
 
 export const Welcome = observer<WelcomeProps>(({ navigation }) => {
@@ -173,7 +173,9 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                             (await walletsStore.addMultisigWallet());
                           await wallet.cancelRecovery();
                           wallet.recover("biometrics");
-                          navigation.navigate("create-multisig-biometrics");
+                          navigation.navigate(
+                            OnboardingRoute.CreateMultisigBiometrics
+                          );
                         },
                       },
                     ]
@@ -204,7 +206,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                   marginTop: 20,
                 }}
                 onPress={action(() => {
-                  navigation.navigate("recover-singlesig");
+                  navigation.navigate(OnboardingRoute.RecoverSinglesig);
                 })}
               />
             )}
@@ -223,7 +225,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                   if (!isMultisigDemoWallet(walletsStore.currentWallet)) {
                     await walletsStore.addMultisigDemoWallet();
                   }
-                  navigation.navigate("create-multisig-biometrics");
+                  navigation.navigate(OnboardingRoute.CreateMultisigBiometrics);
                 })}
               />
             )}
@@ -289,19 +291,23 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
   }
 
   function renderContinueButton(keyInRecovery?: MultisigKey | null) {
-    let navigationUrl: string;
+    let navigationUrl:
+      | OnboardingRoute.CreateMultisigPhoneNumber
+      | OnboardingRoute.CreateMultisigSocial
+      | OnboardingRoute.CreateMultisigBiometrics;
+
     let labelId: string;
     switch (keyInRecovery) {
       case "phoneNumber":
-        navigationUrl = "create-multisig-phone-number";
+        navigationUrl = OnboardingRoute.CreateMultisigPhoneNumber;
         labelId = "recovery.continuephone";
         break;
       case "social":
-        navigationUrl = "create-multisig-social";
+        navigationUrl = OnboardingRoute.CreateMultisigSocial;
         labelId = "recovery.continuesocial";
         break;
       default:
-        navigationUrl = "create-multisig-biometrics";
+        navigationUrl = OnboardingRoute.CreateMultisigBiometrics;
         labelId = "onboarding1.getstarted";
     }
     return (

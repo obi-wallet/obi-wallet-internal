@@ -13,7 +13,7 @@ import { deploymentKey } from "./code-push";
 import { Loader } from "./loader";
 import { Modals } from "./modals";
 import { Provider, ProviderProps } from "./provider";
-import { RootStack } from "./root-stack";
+import { RootRoute, RootStack } from "./root-stack";
 import { HomeScreen } from "./screens/home";
 import { MultisigPhoneNumber } from "./screens/onboarding/common/1-phone-number";
 import { MultisigPhoneNumberConfirm } from "./screens/onboarding/common/2-phone-number-confirm";
@@ -21,6 +21,7 @@ import { MultisigBiometrics } from "./screens/onboarding/common/3-biometrics";
 import { MultisigSocial } from "./screens/onboarding/common/4-social";
 import { MultisigInit } from "./screens/onboarding/create-multisig-init";
 import { LookupProxyWallets } from "./screens/onboarding/lookup-proxy-wallets";
+import { OnboardingRoute } from "./screens/onboarding/onboarding-stack";
 import { RecoverMultisig } from "./screens/onboarding/recover-multisig";
 import { RecoverSinglesig } from "./screens/onboarding/recover-singlesig";
 import { ReplaceMultisig } from "./screens/onboarding/replace-multisig-key";
@@ -160,16 +161,19 @@ export const StateRenderer = observer(function StateRenderer() {
     if (walletsStore.currentWallet?.isReady) {
       return (
         <RootStack.Group>
-          <RootStack.Screen name="home" component={HomeScreen} />
+          <RootStack.Screen name={RootRoute.Home} component={HomeScreen} />
           <RootStack.Screen
-            name="web-view"
+            name={RootRoute.WebView}
             component={WebViewScreen}
             options={({ route }) => ({
               title: route.params.app.label,
             })}
           />
-          <RootStack.Screen name="send" component={SendScreen} />
-          <RootStack.Screen name="receive" component={ReceiveScreen} />
+          <RootStack.Screen name={RootRoute.Send} component={SendScreen} />
+          <RootStack.Screen
+            name={RootRoute.Receive}
+            component={ReceiveScreen}
+          />
           {settingsScreens()}
         </RootStack.Group>
       );
@@ -180,41 +184,44 @@ export const StateRenderer = observer(function StateRenderer() {
             headerShown: false,
           }}
         >
-          <RootStack.Screen name="welcome" component={Welcome} />
           <RootStack.Screen
-            name="create-multisig-biometrics"
+            name={OnboardingRoute.Welcome}
+            component={Welcome}
+          />
+          <RootStack.Screen
+            name={OnboardingRoute.CreateMultisigBiometrics}
             component={MultisigBiometrics}
           />
           <RootStack.Screen
-            name="create-multisig-phone-number"
+            name={OnboardingRoute.CreateMultisigPhoneNumber}
             component={MultisigPhoneNumber}
           />
           <RootStack.Screen
-            name="create-multisig-phone-number-confirm"
+            name={OnboardingRoute.CreateMultisigPhoneNumberConfirm}
             component={MultisigPhoneNumberConfirm}
           />
           <RootStack.Screen
-            name="create-multisig-social"
+            name={OnboardingRoute.CreateMultisigSocial}
             component={MultisigSocial}
           />
           <RootStack.Screen
-            name="create-multisig-init"
+            name={OnboardingRoute.CreateMultisigInit}
             component={MultisigInit}
           />
           <RootStack.Screen
-            name="replace-multisig"
+            name={OnboardingRoute.ReplaceMultisig}
             component={ReplaceMultisig}
           />
           <RootStack.Screen
-            name="recover-multisig"
+            name={OnboardingRoute.RecoverMultisig}
             component={RecoverMultisig}
           />
           <RootStack.Screen
-            name="recover-singlesig"
+            name={OnboardingRoute.RecoverSinglesig}
             component={RecoverSinglesig}
           />
           <RootStack.Screen
-            name="lookup-proxy-wallets"
+            name={OnboardingRoute.LookupProxyWallets}
             component={LookupProxyWallets}
           />
         </RootStack.Group>

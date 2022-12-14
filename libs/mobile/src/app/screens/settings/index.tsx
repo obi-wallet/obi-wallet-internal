@@ -1,5 +1,4 @@
 import { Feature, isAnyMultisigWallet } from "@obi-wallet/common";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { FC, useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -26,6 +25,7 @@ import LogoutIcon from "./assets/power-red.svg";
 import { HealthChecksScreen } from "./health-checks";
 import { KeysConfigScreen } from "./keys-config";
 import { Seedphrase } from "./seedphrase";
+import { SettingsRoute } from "./settings-stack";
 
 export const SettingsScreen = observer(() => {
   const { configStore, walletsStore } = useStore();
@@ -126,7 +126,9 @@ export const SettingsScreen = observer(() => {
                 id: "settings.multigsigsettings.subtext",
                 defaultMessage: "Manage your SMS, social, and other keys.",
               })}
-              onPress={() => navigation.navigate("MultiSigSettings")}
+              onPress={() =>
+                navigation.navigate(SettingsRoute.MultisigSettings)
+              }
             />
             {configStore.isFeatureEnabled(Feature.HealthChecks) ? (
               <Setting
@@ -140,7 +142,9 @@ export const SettingsScreen = observer(() => {
                   defaultMessage:
                     "Check for any potential issues in your wallet.",
                 })}
-                onPress={() => navigation.navigate("MultisigHealthChecks")}
+                onPress={() =>
+                  navigation.navigate(SettingsRoute.MultisigHealthChecks)
+                }
               />
             ) : null}
           </>
@@ -155,7 +159,9 @@ export const SettingsScreen = observer(() => {
               id: "settings.singlesigsettings.subtext",
               defaultMessage: "Export your seedphrase.",
             })}
-            onPress={() => navigation.navigate("SingleSigSeedphrase")}
+            onPress={() =>
+              navigation.navigate(SettingsRoute.SinglesigSeedphrase)
+            }
           />
         )}
         <View
@@ -366,33 +372,31 @@ const styles = StyleSheet.create({
   },
 });
 
-export const SettingsNavigator = createNativeStackNavigator();
-
 // This can't be a React component because `Stack.Navigator` doesn't want that.
 export const settingsScreens = () => {
   return (
     <RootStack.Group>
       <RootStack.Screen
-        name="AddSubAccount"
-        key="AddSubAccount"
+        name={SettingsRoute.AddSubAccount}
+        key={SettingsRoute.AddSubAccount}
         component={Create}
         options={{ headerShown: false }}
       />
       <RootStack.Screen
-        name="MultiSigSettings"
-        key="MultiSigSettings"
+        name={SettingsRoute.MultisigSettings}
+        key={SettingsRoute.MultisigSettings}
         component={KeysConfigScreen}
         options={{ headerShown: false }}
       />
       <RootStack.Screen
-        name="MultisigHealthChecks"
-        key="MultisigHealthChecks"
+        name={SettingsRoute.MultisigHealthChecks}
+        key={SettingsRoute.MultisigHealthChecks}
         component={HealthChecksScreen}
         options={{ headerShown: false }}
       />
       <RootStack.Screen
-        name="SingleSigSeedphrase"
-        key="SingleSigSeedphrase"
+        name={SettingsRoute.SinglesigSeedphrase}
+        key={SettingsRoute.SinglesigSeedphrase}
         component={Seedphrase}
         options={{ headerShown: false }}
       />

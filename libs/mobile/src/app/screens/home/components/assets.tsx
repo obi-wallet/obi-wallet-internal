@@ -23,7 +23,7 @@ import {
   useBalances,
 } from "../../../balances";
 import { IconButton } from "../../../button";
-import { RootStackParamList } from "../../../root-stack";
+import { RootRoute, RootStackParamList } from "../../../root-stack";
 import { CoinIcon } from "../../components/coin-icon";
 import { NetworkAccountPickerLayout } from "../../components/network-account-picker-layout";
 import {
@@ -99,7 +99,7 @@ const BalanceAndActions = observer(() => {
               justifyContent: "center",
               alignItems: "center",
             }}
-            onPress={() => navigation.navigate("send")}
+            onPress={() => navigation.navigate(RootRoute.Send)}
           >
             <Send width={25} height={25} />
           </TouchableHighlight>
@@ -126,7 +126,7 @@ const BalanceAndActions = observer(() => {
               justifyContent: "center",
               alignItems: "center",
             }}
-            onPress={() => navigation.navigate("receive")}
+            onPress={() => navigation.navigate(RootRoute.Receive)}
           >
             <Receive width={25} height={25} />
           </TouchableHighlight>
@@ -294,9 +294,9 @@ function AssetsListItem({ item }: ListRenderItemInfo<ExtendedCoin>) {
 
   const onTouchAsset = (amount: number) => {
     if (Number(amount) > 0) {
-      navigation.navigate("send");
+      navigation.navigate(RootRoute.Send);
     } else {
-      navigation.navigate("receive");
+      navigation.navigate(RootRoute.Receive);
     }
   };
 

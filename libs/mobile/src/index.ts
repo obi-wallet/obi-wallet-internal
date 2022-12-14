@@ -1,4 +1,4 @@
-export { BaseApp } from "./app";
+export { BaseApp, StateRenderer } from "./app";
 export { AddressQrCodeScannerModal } from "./app/screens/components/address-qr-code-scanner-modal";
 export { InAppPurchaseInteractionModal } from "./app/modals/in-app-purchase-interaction-modal";
 export { SignInteractionModal } from "./app/modals/sign-interaction-modal";
@@ -7,3 +7,7 @@ export { SendScreen } from "./app/screens/send";
 export { Provider } from "./app/provider";
 export { useStore } from "./app/stores";
 export { setupMain } from "./main";
+export * from "./app/root-stack";
+export * from "./app/screens/onboarding/onboarding-stack";
+export * from "./app/screens/settings/settings-stack";
+export * from "./app/screens/home/home-stack";

@@ -1,5 +1,5 @@
 # Injected provider
-apps/*/src/app/injected-provider/bundle.ts
+libs/mobile/src/app/injected-provider/bundle.ts
 
 # Built app
 apps/*/android

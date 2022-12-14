@@ -13,12 +13,15 @@ import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
 import { KeyboardAvoidingView } from "../../../components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../components/phone-number/verify-and-proceed-button";
-import { OnboardingStackParamList } from "../../onboarding-stack";
+import {
+  OnboardingRoute,
+  OnboardingStackParamList,
+} from "../../onboarding-stack";
 import PeopleIcon from "./assets/people-alt-twotone-24px.svg";
 
 export type MultisigSocialProps = NativeStackScreenProps<
   OnboardingStackParamList,
-  "create-multisig-social"
+  OnboardingRoute.CreateMultisigSocial
 >;
 
 export const MultisigSocial = observer<MultisigSocialProps>(
@@ -69,7 +72,7 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                 id: "general.yes",
               }),
               onPress: () => {
-                navigation.navigate("create-multisig-init");
+                navigation.navigate(OnboardingRoute.CreateMultisigInit);
               },
             },
           ]
@@ -233,9 +236,9 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                       publicKey,
                     });
                     if (wallet.keyInRecovery !== "social") {
-                      navigation.navigate("create-multisig-init");
+                      navigation.navigate(OnboardingRoute.CreateMultisigInit);
                     } else {
-                      navigation.navigate("replace-multisig");
+                      navigation.navigate(OnboardingRoute.ReplaceMultisig);
                     }
                   }
                 }}

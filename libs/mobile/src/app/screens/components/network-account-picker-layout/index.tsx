@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { RootStackParamList } from "../../../root-stack";
 import { useStore } from "../../../stores";
+import { HomeBottomTabRoute } from "../../home/home-stack";
 import ObiLogo from "../../settings/assets/obi-logo.svg";
 import { isSmallScreenSubstr } from "../screen-size";
 
@@ -108,7 +109,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
         }}
         onPress={() => {
           if (configStore.isFeatureEnabled(Feature.AccountsTab)) {
-            navigation.navigate("accounts");
+            navigation.navigate(HomeBottomTabRoute.Accounts);
           }
         }}
       >

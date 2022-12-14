@@ -12,7 +12,7 @@ import { Share, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
-import { RootStackParamList } from "../root-stack";
+import { RootRoute, RootStackParamList } from "../root-stack";
 import { useStore } from "../stores";
 import { ConnectedWebView } from "./components/connected-web-view";
 import Fav from "./webview-assets/favorite-24px.svg";
@@ -20,7 +20,7 @@ import UnFav from "./webview-assets/unfavorite-24px.svg";
 
 export type WebViewScreenProps = NativeStackScreenProps<
   RootStackParamList,
-  "web-view"
+  RootRoute.WebView
 >;
 
 export const WebViewScreen = observer<WebViewScreenProps>(
@@ -217,6 +217,7 @@ export function RefreshButton({ onPress }: { onPress: () => void }) {
     />
   );
 }
+
 export function ShareButton({ url }: { url: string }) {
   const onShare = async () => {
     try {

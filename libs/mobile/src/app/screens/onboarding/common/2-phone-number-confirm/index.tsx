@@ -18,12 +18,15 @@ import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
 import { KeyboardAvoidingView } from "../../../components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../components/phone-number/verify-and-proceed-button";
-import { OnboardingStackParamList } from "../../onboarding-stack";
+import {
+  OnboardingRoute,
+  OnboardingStackParamList,
+} from "../../onboarding-stack";
 import InsuranceLogo from "./assets/insurance-logo.svg";
 
 export type MultisigPhoneNumberConfirmProps = NativeStackScreenProps<
   OnboardingStackParamList,
-  "create-multisig-phone-number-confirm"
+  OnboardingRoute.CreateMultisigPhoneNumberConfirm
 >;
 
 export function MultisigPhoneNumberConfirm({
@@ -238,13 +241,15 @@ export function MultisigPhoneNumberConfirm({
                     setVerifyButtonDisabledDoubleclick(false);
                     switch (wallet.keyInRecovery) {
                       case "biometrics":
-                        navigation.navigate("lookup-proxy-wallets");
+                        navigation.navigate(OnboardingRoute.LookupProxyWallets);
                         break;
                       case "phoneNumber":
-                        navigation.navigate("replace-multisig");
+                        navigation.navigate(OnboardingRoute.ReplaceMultisig);
                         break;
                       default:
-                        navigation.navigate("create-multisig-social");
+                        navigation.navigate(
+                          OnboardingRoute.CreateMultisigSocial
+                        );
                     }
                   } else {
                     setVerifyButtonDisabledDoubleclick(false);

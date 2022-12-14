@@ -16,14 +16,17 @@ import { Button } from "../../../../button";
 import { useMultisigWallet, useStore } from "../../../../stores";
 import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
-import { OnboardingStackParamList } from "../../onboarding-stack";
+import {
+  OnboardingRoute,
+  OnboardingStackParamList,
+} from "../../onboarding-stack";
 import FaceScanner from "./assets/face-scanner.svg";
 import ObiFaceScanner from "./assets/obi-face-scanner.svg";
 import Scan from "./assets/scan.svg";
 
 export type MultisigBiometricsProps = NativeStackScreenProps<
   OnboardingStackParamList,
-  "create-multisig-biometrics"
+  OnboardingRoute.CreateMultisigBiometrics
 >;
 
 export const MultisigBiometrics = observer<MultisigBiometricsProps>(
@@ -88,7 +91,9 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
                   id: "onboarding4.error.biometrickeyexists.yes",
                 }),
                 onPress: () => {
-                  navigation.navigate("create-multisig-phone-number");
+                  navigation.navigate(
+                    OnboardingRoute.CreateMultisigPhoneNumber
+                  );
                 },
               },
             ]
@@ -199,7 +204,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
             LeftIcon={isObi ? undefined : Scan}
             onPress={() => {
               if (scannedBiometrics) {
-                navigation.navigate("create-multisig-phone-number");
+                navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
               } else {
                 scanBiometrics();
               }

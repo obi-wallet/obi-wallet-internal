@@ -1,11 +1,8 @@
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
-import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { chains, Feature, Text } from "@obi-wallet/common";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
-  createDrawerNavigator,
   DrawerContentComponentProps,
   DrawerContentScrollView,
   DrawerItem,
@@ -39,40 +36,38 @@ import NFTsIcon from "./assets/nftsIcon.svg";
 import SettingsIcon from "./assets/settingsIcon.svg";
 import TradeIcon from "./assets/tradeIcon.svg";
 import { Assets } from "./components/assets";
+import {
+  HomeBottomTab,
+  HomeBottomTabRoute,
+  HomeDrawer,
+  HomeDrawerRoute,
+} from "./home-stack";
 
 export type TabNavigationProps = DrawerScreenProps<ParamListBase>;
 
 export const TabNavigation = observer<TabNavigationProps>(() => {
-  const Tab = createBottomTabNavigator();
   const intl = useIntl();
   const { configStore } = useStore();
 
   return (
-    <Tab.Navigator
+    <HomeBottomTab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused }) => {
-          let icon;
-
-          if (route.name === "Home") {
-            icon = faHome;
+          const routeName = route.name as HomeBottomTabRoute;
+          switch (routeName) {
+            case HomeBottomTabRoute.Accounts:
+              return <FontAwesomeIcon icon={faChevronLeft} />;
+            case HomeBottomTabRoute.Assets:
+              return focused ? <AssetsIconActive /> : <AssetsIcon />;
+            case HomeBottomTabRoute.Apps:
+              return focused ? <AppsIconActive /> : <AppsIcon />;
+            case HomeBottomTabRoute.Nfts:
+              return focused ? <NFTsIconActive /> : <NFTsIcon />;
+            case HomeBottomTabRoute.Trade:
+              return focused ? <TradeIconActive /> : <TradeIcon />;
+            case HomeBottomTabRoute.Settings:
+              return focused ? <SettingsIconActive /> : <SettingsIcon />;
           }
-          switch (route.name) {
-            case "assets":
-              return !focused ? <AssetsIcon /> : <AssetsIconActive />;
-            case "apps":
-              return !focused ? <AppsIcon /> : <AppsIconActive />;
-            case "nfts":
-              return !focused ? <NFTsIcon /> : <NFTsIconActive />;
-            case "trade":
-              return !focused ? <TradeIcon /> : <TradeIconActive />;
-            case "settings":
-              return !focused ? <SettingsIcon /> : <SettingsIconActive />;
-            default:
-              icon = faChevronLeft;
-              break;
-          }
-
-          return <FontAwesomeIcon icon={icon} />;
         },
         tabBarStyle: {
           backgroundColor: "#17162C",
@@ -108,11 +103,11 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
         },
         lazy: false,
       })}
-      initialRouteName="assets"
+      initialRouteName={HomeBottomTabRoute.Assets}
     >
       {configStore.isFeatureEnabled(Feature.AccountsTab) ? (
-        <Tab.Screen
-          name="accounts"
+        <HomeBottomTab.Screen
+          name={HomeBottomTabRoute.Accounts}
           options={{
             title: intl.formatMessage({
               id: "menu.accounts",
@@ -122,8 +117,8 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
           component={AccountScreen}
         />
       ) : null}
-      <Tab.Screen
-        name="assets"
+      <HomeBottomTab.Screen
+        name={HomeBottomTabRoute.Assets}
         options={{
           title: intl.formatMessage({
             id: "menu.assets",
@@ -133,8 +128,8 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
         component={Assets}
       />
       {configStore.isFeatureEnabled(Feature.NftTab) ? (
-        <Tab.Screen
-          name="nfts"
+        <HomeBottomTab.Screen
+          name={HomeBottomTabRoute.Nfts}
           options={{
             title: intl.formatMessage({
               id: "menu.nfts",
@@ -144,8 +139,8 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
           component={NFTs}
         />
       ) : null}
-      <Tab.Screen
-        name="apps"
+      <HomeBottomTab.Screen
+        name={HomeBottomTabRoute.Apps}
         options={{
           title: intl.formatMessage({
             id: "menu.apps",
@@ -154,8 +149,8 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
         }}
         component={DappExplorer}
       />
-      <Tab.Screen
-        name="trade"
+      <HomeBottomTab.Screen
+        name={HomeBottomTabRoute.Trade}
         options={{
           title: intl.formatMessage({
             id: "menu.trade",
@@ -164,8 +159,8 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
         }}
         component={Trade}
       />
-      <Tab.Screen
-        name="settings"
+      <HomeBottomTab.Screen
+        name={HomeBottomTabRoute.Settings}
         options={{
           title: intl.formatMessage({
             id: "menu.settings",
@@ -174,16 +169,15 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
         }}
         component={SettingsScreen}
       />
-    </Tab.Navigator>
+    </HomeBottomTab.Navigator>
   );
 });
 
 export function HomeScreen() {
-  const Drawer = createDrawerNavigator();
   const { chainStore } = useStore();
 
   return (
-    <Drawer.Navigator
+    <HomeDrawer.Navigator
       useLegacyImplementation={true}
       initialRouteName={chainStore.currentChainInformation.label}
       screenOptions={{
@@ -191,8 +185,11 @@ export function HomeScreen() {
       }}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen name="home-tabs" component={TabNavigation} />
-    </Drawer.Navigator>
+      <HomeDrawer.Screen
+        name={HomeDrawerRoute.HomeDrawer}
+        component={TabNavigation}
+      />
+    </HomeDrawer.Navigator>
   );
 }
 

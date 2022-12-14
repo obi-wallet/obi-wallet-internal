@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 
 import { useRootNavigation } from "../../../root-stack";
 import { useMultisigWallet } from "../../../stores";
+import { OnboardingRoute } from "../onboarding-stack";
 import { Lookup } from "./lookup";
 
 export const LookupProxyWallets = observer(() => {
@@ -15,11 +16,11 @@ export const LookupProxyWallets = observer(() => {
     <Lookup
       publicKey={publicKey.value}
       onCancel={() => {
-        navigate("create-multisig-phone-number");
+        navigate(OnboardingRoute.CreateMultisigPhoneNumber);
       }}
       onSelect={async (recoveryWallet) => {
         await wallet.setWalletInRecovery(recoveryWallet);
-        navigate("recover-multisig");
+        navigate(OnboardingRoute.RecoverMultisig);
       }}
     />
   );

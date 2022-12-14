@@ -9,7 +9,7 @@ import {
   isAnyMultisigWallet,
   RequestObiSignAndBroadcastMsg,
 } from "@obi-wallet/common";
-import { useNavigation } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -29,6 +29,7 @@ import { ExtendedCoin, formatExtendedCoin, useBalances } from "../../balances";
 import Bottle from "../../balances/assets/bottle.svg";
 import Drink from "../../balances/assets/drink.svg";
 import { Button } from "../../button";
+import { RootRoute, RootStackParamList } from "../../root-stack";
 import { useStore } from "../../stores";
 import { TextInput } from "../../text-input";
 import { useAddressQrCodeScannerModal } from "../components/address-qr-code-scanner-modal";
@@ -37,12 +38,17 @@ import { BottomSheetBackdrop } from "../components/bottomSheetBackdrop";
 import { CoinIcon } from "../components/coin-icon";
 import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
 import { isSmallScreenNumber } from "../components/screen-size";
+import { HomeBottomTabRoute } from "../home/home-stack";
 
 const BARTENDER_ADDRESS =
   "juno1ps9sk7fqh2f95waggk3r5un6sr7rd4gxmq4kzh73zstgkqz52wmqh2wr0s";
 
-export const SendScreen = observer(() => {
-  const { navigate } = useNavigation();
+export type SendScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  RootRoute.Send
+>;
+
+export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
   const { balances, refreshing, refreshBalances } = useBalances();
   const [selectedCoin, setSelectedCoin] = useState<ExtendedCoin | undefined>(
     () => {
@@ -178,8 +184,7 @@ export const SendScreen = observer(() => {
             visible={confirmModalVisible.visible && confirmModalVisible.success}
             onDismiss={() => {
               setConfirmModalStatus({ visible: false });
-              // @ts-expect-error This is actually fine
-              navigate("Assets");
+              navigation.navigate(HomeBottomTabRoute.Assets);
             }}
           />
         ) : null}
@@ -191,8 +196,7 @@ export const SendScreen = observer(() => {
             visible={confirmModalVisible.visible && confirmModalVisible.success}
             onDismiss={() => {
               setConfirmModalStatus({ visible: false });
-              // @ts-expect-error This is actually fine
-              navigate("Assets");
+              navigation.navigate(HomeBottomTabRoute.Assets);
             }}
           />
         ) : null}

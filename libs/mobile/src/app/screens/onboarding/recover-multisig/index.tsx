@@ -20,11 +20,11 @@ import invariant from "tiny-invariant";
 import { IconButton } from "../../../button";
 import { useMultisigWallet, useStore } from "../../../stores";
 import { Background } from "../../components/background";
-import { OnboardingStackParamList } from "../onboarding-stack";
+import { OnboardingRoute, OnboardingStackParamList } from "../onboarding-stack";
 
 export type RecoverMultisigProps = NativeStackScreenProps<
   OnboardingStackParamList,
-  "recover-multisig"
+  OnboardingRoute.RecoverMultisig
 >;
 
 export const RecoverMultisig = observer<RecoverMultisigProps>(

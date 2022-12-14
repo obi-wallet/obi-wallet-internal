@@ -15,11 +15,11 @@ import { TextInput } from "../../../text-input";
 import { Background } from "../../components/background";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../components/phone-number/verify-and-proceed-button";
-import { OnboardingStackParamList } from "../onboarding-stack";
+import { OnboardingRoute, OnboardingStackParamList } from "../onboarding-stack";
 
 export type RecoverSinglesigProps = NativeStackScreenProps<
   OnboardingStackParamList,
-  "recover-singlesig"
+  OnboardingRoute.RecoverSinglesig
 >;
 
 export const RecoverSinglesig = observer<RecoverSinglesigProps>(
