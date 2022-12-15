@@ -102,7 +102,7 @@
   "onboarding2.error.sendingsmsfailed": "Sending SMS failed.",
 
   "onboarding3.authyourkeys": "Create a Phone Number Key",
-  "onboarding3.pastereponse": "Paste in the response you received.",
+  "onboarding3.pastereponse": "Paste in the response you received to",
   "onboarding3.smscodelabel": "8-Digit SMS Code",
   "onboarding3.noresponselabel": "Didn't receive a response?",
   "onboarding3.sendagain": "Resend",

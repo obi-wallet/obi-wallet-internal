@@ -10,9 +10,8 @@ import {
 export function Text({
   children,
   style,
-  isObi = false,
   ...props
-}: TextProps & { children: ReactNode; isObi?: boolean }) {
+}: TextProps & { children: ReactNode; }) {
   const theme = useTheme();
 
   return (
@@ -32,9 +31,9 @@ export function Text({
 
 export function TextInput({
   style,
-  isObi = false,
+
   ...props
-}: TextInputProps & { isObi?: boolean }) {
+}: TextInputProps) {
   const theme = useTheme();
   return (
     <OriginalTextInput

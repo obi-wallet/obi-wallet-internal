@@ -102,7 +102,7 @@
   "onboarding2.error.sendingsmsfailed": "Error al enviar SMS",
 
   "onboarding3.authyourkeys": "Crea una clave de número de teléfono",
-  "onboarding3.pastereponse": "Pega la respuesta que recibiste",
+  "onboarding3.pastereponse": "Pega la respuesta que recibiste en",
   "onboarding3.smscodelabel": "Código SMS de 8 dígitos",
   "onboarding3.noresponselabel": "¿No recibiste una respuesta?",
   "onboarding3.sendagain": "Reenviar",

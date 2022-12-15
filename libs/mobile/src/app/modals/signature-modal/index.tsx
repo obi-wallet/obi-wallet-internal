@@ -159,10 +159,10 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
     const intl = useIntl();
     const [signatures, setSignatures] = useState(new Map<string, Uint8Array>());
     const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
-    const { chainStore } = useStore();
+    const { chainStore, configStore } = useStore();
     const { currentChainInformation } = chainStore;
     const [settingBiometrics, setSettingBiometrics] = useState(false);
-
+    const isObi = configStore.isObi()
     const numberOfSignatures = signatures.size;
     const threshold = multisig?.multisig?.publicKey.value.threshold;
     const enoughSignatures = threshold
@@ -345,7 +345,7 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
           ) : null
         }
       >
-        <View
+        {!isObi && <View
           style={{
             height: 10,
             backgroundColor: "#1E1D3A",
@@ -362,8 +362,8 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
               borderRadius: 10,
             }}
           />
-        </View>
-        <View>
+        </View>}
+        {!isObi && <View>
           <Text
             style={{
               textAlign: "center",
@@ -381,7 +381,7 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
             : {numberOfSignatures}/
             {multisig.multisig?.publicKey.value.threshold}{" "}
           </Text>
-        </View>
+        </View>}
         {settingBiometrics ? (
           <View
             style={{
@@ -413,15 +413,36 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
           </View>
         ) : (
           <KeysList
+
             data={data}
             tiled
             style={{
               marginVertical: 10,
-              backgroundColor: "#130F23",
+              backgroundColor: isObi ? "transparent" : "#130F23",
               borderRadius: 12,
             }}
           />
         )}
+        {
+          isObi && <View>
+            <Text
+              style={{
+                textAlign: "center",
+                color: "#F6F5FF",
+                fontSize: 12,
+                fontWeight: "600",
+                opacity: 0.6,
+                marginTop: 5,
+              }}
+            >
+              <FormattedMessage
+                id="signature.keysrequired"
+                defaultMessage="Keys Required"
+              />
+              : {numberOfSignatures}/
+              {multisig.multisig?.publicKey.value.threshold}{" "}
+            </Text>
+          </View>}
       </ConfirmMessages>
     );
   }

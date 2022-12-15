@@ -9,16 +9,17 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons/faPlay";
 import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import React, { ReactNode } from "react";
 import { useIntl } from "react-intl";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import { formatCoin } from "../../balances";
 import { useStore } from "../../stores";
 import ArrowUpIcon from "./assets/arrowUpIcon.svg";
 
-export function PrettyMessage({ message }: { message: AminoMsg }) {
+export function PrettyMessage({ message }: { message: AminoMsg, }) {
   switch (message.type) {
     case "cosmos-sdk/MsgSend":
       return <PrettyMessageSend value={message.value} />;
@@ -86,7 +87,7 @@ const PrettyMessageInstantiateContract = observer(
 );
 
 const PrettyMessageExecuteContract = observer(
-  ({ message }: { message: AminoMsg }) => {
+  ({ message, }: { message: AminoMsg, }) => {
     const value = message.value as AminoMsgExecuteContract["value"];
     const intl = useIntl();
 
@@ -178,7 +179,7 @@ function MessageElement({
   icon,
   title,
   subTitle,
-  children,
+  children
 }: MessageElementProps) {
   return (
     <View
@@ -208,7 +209,7 @@ function MessageElement({
           {title ? title : ""}
         </Text>
         {subTitle ? (
-          <Text style={{ color: "white", opacity: 0.6 }}>{subTitle}</Text>
+          <Text style={{ color: "white", opacity: 0.6 }} >{subTitle}</Text>
         ) : null}
         {children}
       </View>

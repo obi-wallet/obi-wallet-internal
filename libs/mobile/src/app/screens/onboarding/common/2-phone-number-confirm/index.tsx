@@ -135,8 +135,11 @@ export function MultisigPhoneNumberConfirm({
                 >
                   <FormattedMessage
                     id="onboarding3.pastereponse"
-                    defaultMessage="Paste in the response you received."
-                  />
+                    defaultMessage="Paste in the response you received to"
+                  /> {" "}
+                  <Text style={{ fontWeight: '600' }}>
+                    {params.phoneNumber}.
+                  </Text>
                 </Text>
               </View>
             </View>
