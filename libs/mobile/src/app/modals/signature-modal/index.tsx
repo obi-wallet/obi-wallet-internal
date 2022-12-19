@@ -163,6 +163,7 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
     const { currentChainInformation } = chainStore;
     const [settingBiometrics, setSettingBiometrics] = useState(false);
     const isObi = configStore.isObi()
+    const isLoop = configStore.isLoop()
     const numberOfSignatures = signatures.size;
     const threshold = multisig?.multisig?.publicKey.value.threshold;
     const enoughSignatures = threshold
@@ -345,7 +346,7 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
           ) : null
         }
       >
-        {!isObi && <View
+        {isLoop && <View
           style={{
             height: 10,
             backgroundColor: "#1E1D3A",
@@ -363,7 +364,7 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
             }}
           />
         </View>}
-        {!isObi && <View>
+        {isLoop && <View>
           <Text
             style={{
               textAlign: "center",
@@ -386,7 +387,7 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
           <View
             style={{
               marginVertical: 10,
-              backgroundColor: "#130F23",
+              backgroundColor: isLoop ? "#130F23" : '',
               borderRadius: 12,
               justifyContent: "center",
               alignItems: "center",

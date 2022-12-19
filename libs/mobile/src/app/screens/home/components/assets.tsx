@@ -1,3 +1,4 @@
+import { ThemeContext, useTheme } from "@emotion/react";
 import { faSortAsc } from "@fortawesome/free-solid-svg-icons/faSortAsc";
 import { faSortDesc } from "@fortawesome/free-solid-svg-icons/faSortDesc";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -24,6 +25,7 @@ import {
 } from "../../../balances";
 import { IconButton } from "../../../button";
 import { RootRoute, RootStackParamList } from "../../../root-stack";
+import { useStore } from "../../../stores";
 import { CoinIcon } from "../../components/coin-icon";
 import { NetworkAccountPickerLayout } from "../../components/network-account-picker-layout";
 import {
@@ -33,19 +35,24 @@ import {
 import Receive from "../assets/receive.svg";
 import Send from "../assets/send.svg";
 
-export function Assets() {
+export const Assets = observer(() => {
+  const theme = useTheme()
+  const { configStore } = useStore()
+  const isLoop = configStore.isLoop()
+
   return (
     <ImageBackground
       source={require("../assets/background.png")}
       resizeMode="cover"
       imageStyle={{
-        height: 403,
+        height: isLoop ? 403 : 0,
         marginTop: isSmallScreenNumber(0, 60),
       }}
       style={{
-        backgroundColor: "#090817",
+        backgroundColor: theme.colors.background,
         flex: 1,
       }}
+
     >
       <NetworkAccountPickerLayout>
         <BalanceAndActions />
@@ -53,10 +60,12 @@ export function Assets() {
       </NetworkAccountPickerLayout>
     </ImageBackground>
   );
-}
+})
 
 const BalanceAndActions = observer(() => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { configStore } = useStore()
+  const isLoop = configStore.isLoop()
   return (
     <View
       style={{
@@ -94,8 +103,8 @@ const BalanceAndActions = observer(() => {
             style={{
               width: 56,
               height: 56,
-              backgroundColor: "#100F1E",
-              borderRadius: 16,
+              backgroundColor: isLoop ? "#100F1E" : "#437DFF",
+              borderRadius: isLoop ? 16 : 56,
               justifyContent: "center",
               alignItems: "center",
             }}
@@ -121,8 +130,8 @@ const BalanceAndActions = observer(() => {
             style={{
               width: 56,
               height: 56,
-              backgroundColor: "#100F1E",
-              borderRadius: 16,
+              backgroundColor: isLoop ? "#100F1E" : "#437DFF",
+              borderRadius: isLoop ? 16 : 56,
               justifyContent: "center",
               alignItems: "center",
             }}
@@ -180,6 +189,8 @@ const AssetsList = observer(() => {
     refreshBalances,
     refreshing,
   } = useBalances();
+  const { configStore } = useStore();
+  const isLoop = configStore.isLoop();
   const balances = [...unsortedBalances];
   balances.sort((a, b) => {
     const [first, second] = sortAscending ? [b, a] : [a, b];
@@ -196,10 +207,11 @@ const AssetsList = observer(() => {
         flexDirection: "row",
         justifyContent: "center",
         marginTop: isSmallScreenNumber(20, 40),
-        backgroundColor: "#100F1E",
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
+        backgroundColor: isLoop ? "#100F1E" : "#272727",
+        borderTopLeftRadius: isLoop ? 30 : 7,
+        borderTopRightRadius: isLoop ? 30 : 7,
         paddingHorizontal: 16,
+        marginHorizontal: 10
       }}
     >
       <View
@@ -218,7 +230,7 @@ const AssetsList = observer(() => {
         >
           <Text
             style={{
-              color: "#787B9C",
+              color: isLoop ? "#787B9C" : "white",
               fontSize: 11,
               letterSpacing: 0.7,
               textTransform: "uppercase",
@@ -233,7 +245,7 @@ const AssetsList = observer(() => {
           >
             <Text
               style={{
-                color: "#787B9C",
+                color: isLoop ? "#787B9C" : "white",
                 fontSize: 11,
                 letterSpacing: 0.7,
                 textTransform: "uppercase",
@@ -253,14 +265,14 @@ const AssetsList = observer(() => {
               <FontAwesomeIcon
                 icon={faSortAsc}
                 style={{
-                  color: sortAscending ? "#F6F5FF" : "#393853",
+                  color: sortAscending ? "#F6F5FF" : (isLoop ? "#393853" : "#7E7E7E"),
                   marginLeft: 12,
                 }}
               />
               <FontAwesomeIcon
                 icon={faSortDesc}
                 style={{
-                  color: sortAscending ? "#393853" : "#F6F5FF",
+                  color: sortAscending ? (isLoop ? "#393853" : "#7E7E7E") : "#F6F5FF",
                   marginLeft: 12,
                   marginTop: -15,
                 }}
