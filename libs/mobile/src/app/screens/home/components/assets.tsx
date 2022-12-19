@@ -36,9 +36,9 @@ import Receive from "../assets/receive.svg";
 import Send from "../assets/send.svg";
 
 export const Assets = observer(() => {
-  const theme = useTheme()
-  const { configStore } = useStore()
-  const isLoop = configStore.isLoop()
+  const theme = useTheme();
+  const { configStore } = useStore();
+  const isLoop = configStore.isLoop();
 
   return (
     <ImageBackground
@@ -52,7 +52,6 @@ export const Assets = observer(() => {
         backgroundColor: theme.colors.background,
         flex: 1,
       }}
-
     >
       <NetworkAccountPickerLayout>
         <BalanceAndActions />
@@ -60,12 +59,12 @@ export const Assets = observer(() => {
       </NetworkAccountPickerLayout>
     </ImageBackground>
   );
-})
+});
 
 const BalanceAndActions = observer(() => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const { configStore } = useStore()
-  const isLoop = configStore.isLoop()
+  const { configStore } = useStore();
+  const isLoop = configStore.isLoop();
   return (
     <View
       style={{
@@ -211,7 +210,7 @@ const AssetsList = observer(() => {
         borderTopLeftRadius: isLoop ? 30 : 7,
         borderTopRightRadius: isLoop ? 30 : 7,
         paddingHorizontal: 16,
-        marginHorizontal: 10
+        marginHorizontal: 10,
       }}
     >
       <View
@@ -265,14 +264,22 @@ const AssetsList = observer(() => {
               <FontAwesomeIcon
                 icon={faSortAsc}
                 style={{
-                  color: sortAscending ? "#F6F5FF" : (isLoop ? "#393853" : "#7E7E7E"),
+                  color: sortAscending
+                    ? "#F6F5FF"
+                    : isLoop
+                    ? "#393853"
+                    : "#7E7E7E",
                   marginLeft: 12,
                 }}
               />
               <FontAwesomeIcon
                 icon={faSortDesc}
                 style={{
-                  color: sortAscending ? (isLoop ? "#393853" : "#7E7E7E") : "#F6F5FF",
+                  color: sortAscending
+                    ? isLoop
+                      ? "#393853"
+                      : "#7E7E7E"
+                    : "#F6F5FF",
                   marginLeft: 12,
                   marginTop: -15,
                 }}

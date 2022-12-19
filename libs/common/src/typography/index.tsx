@@ -11,7 +11,7 @@ export function Text({
   children,
   style,
   ...props
-}: TextProps & { children: ReactNode; }) {
+}: TextProps & { children: ReactNode }) {
   const theme = useTheme();
 
   return (

@@ -175,7 +175,6 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
                 color: "#F6F5FF",
                 marginTop: 79,
               }}
-              isObi={isObi}
             >
               <FormattedMessage
                 id="onboarding4.authyourkeys"

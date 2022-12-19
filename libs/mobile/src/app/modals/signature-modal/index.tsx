@@ -162,8 +162,8 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
     const { chainStore, configStore } = useStore();
     const { currentChainInformation } = chainStore;
     const [settingBiometrics, setSettingBiometrics] = useState(false);
-    const isObi = configStore.isObi()
-    const isLoop = configStore.isLoop()
+    const isObi = configStore.isObi();
+    const isLoop = configStore.isLoop();
     const numberOfSignatures = signatures.size;
     const threshold = multisig?.multisig?.publicKey.value.threshold;
     const enoughSignatures = threshold
@@ -346,48 +346,52 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
           ) : null
         }
       >
-        {isLoop && <View
-          style={{
-            height: 10,
-            backgroundColor: "#1E1D3A",
-            borderRadius: 10,
-          }}
-        >
-          <LinearGradient
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            colors={["#FCCFF7", "#E659D6", "#8877EA", "#86E2EE"]}
+        {isLoop && (
+          <View
             style={{
-              flex: 1,
-              width: getSignaturePercentage(),
+              height: 10,
+              backgroundColor: "#1E1D3A",
               borderRadius: 10,
             }}
-          />
-        </View>}
-        {isLoop && <View>
-          <Text
-            style={{
-              textAlign: "center",
-              color: "#F6F5FF",
-              fontSize: 12,
-              fontWeight: "600",
-              opacity: 0.6,
-              marginTop: 5,
-            }}
           >
-            <FormattedMessage
-              id="signature.keysrequired"
-              defaultMessage="Keys Required"
+            <LinearGradient
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              colors={["#FCCFF7", "#E659D6", "#8877EA", "#86E2EE"]}
+              style={{
+                flex: 1,
+                width: getSignaturePercentage(),
+                borderRadius: 10,
+              }}
             />
-            : {numberOfSignatures}/
-            {multisig.multisig?.publicKey.value.threshold}{" "}
-          </Text>
-        </View>}
+          </View>
+        )}
+        {isLoop && (
+          <View>
+            <Text
+              style={{
+                textAlign: "center",
+                color: "#F6F5FF",
+                fontSize: 12,
+                fontWeight: "600",
+                opacity: 0.6,
+                marginTop: 5,
+              }}
+            >
+              <FormattedMessage
+                id="signature.keysrequired"
+                defaultMessage="Keys Required"
+              />
+              : {numberOfSignatures}/
+              {multisig.multisig?.publicKey.value.threshold}{" "}
+            </Text>
+          </View>
+        )}
         {settingBiometrics ? (
           <View
             style={{
               marginVertical: 10,
-              backgroundColor: isLoop ? "#130F23" : '',
+              backgroundColor: isLoop ? "#130F23" : "",
               borderRadius: 12,
               justifyContent: "center",
               alignItems: "center",
@@ -414,7 +418,6 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
           </View>
         ) : (
           <KeysList
-
             data={data}
             tiled
             style={{
@@ -424,8 +427,8 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
             }}
           />
         )}
-        {
-          isObi && <View>
+        {isObi && (
+          <View>
             <Text
               style={{
                 textAlign: "center",
@@ -443,7 +446,8 @@ export const SignatureModalMultisig = observer<SignatureModalProps>(
               : {numberOfSignatures}/
               {multisig.multisig?.publicKey.value.threshold}{" "}
             </Text>
-          </View>}
+          </View>
+        )}
       </ConfirmMessages>
     );
   }

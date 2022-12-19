@@ -46,7 +46,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
 }) {
   const navigation = useNavigation<
     DrawerNavigationProp<Record<string, object>> &
-    NavigationProp<RootStackParamList>
+      NavigationProp<RootStackParamList>
   >();
   const { configStore } = useStore();
   const isObi = configStore.isObi();
@@ -74,7 +74,20 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
         onPress={() => navigation.openDrawer()}
       >
         <>
-          <View style={{ alignItems: "center", justifyContent: "center", ...(isObi ? { padding: 5, borderWidth: 1, borderColor: 'white', borderRadius: 5 } : {}) }}>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              ...(isObi
+                ? {
+                    padding: 5,
+                    borderWidth: 1,
+                    borderColor: "white",
+                    borderRadius: 5,
+                  }
+                : {}),
+            }}
+          >
             <FontAwesomeIcon
               icon={isObi ? faRss : faAngleDoubleLeft}
               style={{ color: isObi ? "white" : "#7B87A8" }}
