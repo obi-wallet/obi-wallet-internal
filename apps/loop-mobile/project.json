@@ -101,6 +101,16 @@
       "options": {
         "command": "tsc -b apps/loop-mobile/tsconfig.app.json"
       }
+    },
+    "codepush": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "appcenter codepush release-react -a Obi-Money/loop-obi-android -d Staging -e ./src/main.tsx",
+          "appcenter codepush release-react -a Obi-Money/loop-obi-ios -d Staging -e ./src/main.tsx"
+        ],
+        "cwd": "apps/loop-mobile"
+      }
     }
   },
   "tags": []

@@ -1,0 +1,117 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/obi-mobile/src",
+  "projectType": "application",
+  "targets": {
+    "start": {
+      "executor": "@nrwl/react-native:start",
+      "options": {
+        "port": 8081
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx start mobile"
+      }
+    },
+    "run-ios": {
+      "dependsOn": ["injected-provider", "react-native-asset"],
+      "executor": "@nrwl/react-native:run-ios",
+      "options": {}
+    },
+    "bundle-ios": {
+      "dependsOn": ["injected-provider", "react-native-asset"],
+      "executor": "@nrwl/react-native:bundle",
+      "outputs": ["apps/obi-mobile/build"],
+      "options": {
+        "entryFile": "src/main.tsx",
+        "platform": "ios",
+        "bundleOutput": "dist/apps/obi-mobile/ios/main.jsbundle"
+      }
+    },
+    "run-android": {
+      "dependsOn": ["injected-provider", "react-native-asset"],
+      "executor": "@nrwl/react-native:run-android",
+      "options": {}
+    },
+    "build-android": {
+      "dependsOn": ["injected-provider", "react-native-asset"],
+      "executor": "@nrwl/react-native:build-android",
+      "outputs": [
+        "apps/obi-mobile/android/app/build/outputs/bundle",
+        "apps/obi-mobile/android/app/build/outputs/apk"
+      ],
+      "options": {}
+    },
+    "bundle-android": {
+      "dependsOn": ["injected-provider", "react-native-asset"],
+      "executor": "@nrwl/react-native:bundle",
+      "options": {
+        "entryFile": "src/main.tsx",
+        "platform": "android",
+        "bundleOutput": "dist/apps/obi-mobile/android/main.jsbundle"
+      }
+    },
+    "sync-deps": {
+      "executor": "@nrwl/react-native:sync-deps",
+      "options": {}
+    },
+    "ensure-symlink": {
+      "executor": "@nrwl/react-native:ensure-symlink",
+      "options": {}
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/obi-mobile/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/obi-mobile"],
+      "options": {
+        "jestConfig": "apps/obi-mobile/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "injected-provider": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "sh scripts/build-provider.sh"
+      }
+    },
+    "react-native-asset": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "react-native-asset",
+        "cwd": "apps/obi-mobile"
+      }
+    },
+    "cosmos": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cosmos-native",
+        "cwd": "apps/obi-mobile"
+      }
+    },
+    "tsc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -b apps/obi-mobile/tsconfig.app.json"
+      }
+    },
+    "codepush": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "appcenter codepush release-react -a Obi-Money/obi-mobile-android -d Staging -e ./src/main.tsx",
+          "appcenter codepush release-react -a Obi-Money/obi-mobile-ios -d Staging -e ./src/main.tsx"
+        ],
+        "cwd": "apps/obi-mobile"
+      }
+    }
+  },
+  "tags": []
+}

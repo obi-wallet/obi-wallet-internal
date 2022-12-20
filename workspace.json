@@ -4,6 +4,7 @@
   "projects": {
     "loop-mobile": "apps/loop-mobile",
     "loop-mobile-dev": "apps/loop-mobile-dev",
+    "obi-mobile": "apps/obi-mobile",
 
     "background": "libs/background",
     "common": "libs/common",
