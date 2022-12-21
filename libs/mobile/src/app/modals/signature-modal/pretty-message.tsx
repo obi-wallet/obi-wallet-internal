@@ -9,10 +9,11 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons/faPlay";
 import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import React, { ReactNode } from "react";
 import { useIntl } from "react-intl";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import { formatCoin } from "../../balances";
 import { useStore } from "../../stores";

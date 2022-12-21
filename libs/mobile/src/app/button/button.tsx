@@ -96,7 +96,15 @@ const getFlavorStyles = (
     }
     case Brand.Loop: {
       const loopBorderRadius = 12;
-      if (disabled) return baseStyles;
+      if (disabled)
+        return {
+          ...baseStyles,
+          button: {
+            ...baseStyles.button,
+            borderRadius: loopBorderRadius,
+          },
+        };
+
       const flavorStyles = loopFlavors[flavor];
       return {
         ...baseStyles,

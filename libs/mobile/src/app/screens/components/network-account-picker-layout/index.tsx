@@ -1,4 +1,5 @@
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons/faAngleDoubleLeft";
+import { faRss } from "@fortawesome/free-solid-svg-icons/faRss";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Feature, Text } from "@obi-wallet/common";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
@@ -48,6 +49,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
       NavigationProp<RootStackParamList>
   >();
   const { configStore } = useStore();
+  const isObi = configStore.isObi();
 
   return (
     <View
@@ -59,7 +61,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
     >
       <TouchableHighlight
         style={{
-          backgroundColor: "#16152D",
+          backgroundColor: isObi ? "#272727" : "#16152D",
           alignSelf: "flex-start",
           flexDirection: "row",
           justifyContent: "center",
@@ -72,10 +74,23 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
         onPress={() => navigation.openDrawer()}
       >
         <>
-          <View style={{ alignItems: "center", justifyContent: "center" }}>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              ...(isObi
+                ? {
+                    padding: 5,
+                    borderWidth: 1,
+                    borderColor: "white",
+                    borderRadius: 5,
+                  }
+                : {}),
+            }}
+          >
             <FontAwesomeIcon
-              icon={faAngleDoubleLeft}
-              style={{ color: "#7B87A8" }}
+              icon={isObi ? faRss : faAngleDoubleLeft}
+              style={{ color: isObi ? "white" : "#7B87A8" }}
             />
           </View>
           <View
@@ -106,6 +121,9 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
           flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: isObi ? "#272727" : "transparent",
+          paddingRight: 10,
+          borderRadius: 8,
         }}
         onPress={() => {
           if (configStore.isFeatureEnabled(Feature.AccountsTab)) {

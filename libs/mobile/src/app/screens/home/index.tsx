@@ -33,6 +33,14 @@ import NFTsIconActive from "./assets/ic_nfts_active.svg";
 import SettingsIconActive from "./assets/ic_settings_active.svg";
 import TradeIconActive from "./assets/ic_trade_active.svg";
 import NFTsIcon from "./assets/nftsIcon.svg";
+import ObiAppsActiveIcon from "./assets/obi-apps-active.svg";
+import ObiAppsIcon from "./assets/obi-apps.svg";
+import ObiAssetsActiveIcon from "./assets/obi-assets-active.svg";
+import ObiAssetsIcon from "./assets/obi-assets.svg";
+import ObiSettingsActiveIcon from "./assets/obi-settings-active.svg";
+import ObiSettingsIcon from "./assets/obi-settings.svg";
+import ObiAccountsIcon from "./assets/obiAccounts.svg";
+import ObiAccountsActiveIcon from "./assets/obiAccountsActive.svg";
 import SettingsIcon from "./assets/settingsIcon.svg";
 import TradeIcon from "./assets/tradeIcon.svg";
 import { Assets } from "./components/assets";
@@ -48,6 +56,8 @@ export type TabNavigationProps = DrawerScreenProps<ParamListBase>;
 export const TabNavigation = observer<TabNavigationProps>(() => {
   const intl = useIntl();
   const { configStore } = useStore();
+  const isLoop = configStore.isLoop();
+  const isObi = configStore.isObi();
 
   return (
     <HomeBottomTab.Navigator
@@ -56,21 +66,26 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
           const routeName = route.name as HomeBottomTabRoute;
           switch (routeName) {
             case HomeBottomTabRoute.Accounts:
-              return <FontAwesomeIcon icon={faChevronLeft} />;
+              return focused ? <ObiAccountsActiveIcon /> : <ObiAccountsIcon />;
             case HomeBottomTabRoute.Assets:
-              return focused ? <AssetsIconActive /> : <AssetsIcon />;
+              if (isLoop)
+                return focused ? <AssetsIconActive /> : <AssetsIcon />;
+              return focused ? <ObiAssetsActiveIcon /> : <ObiAssetsIcon />;
             case HomeBottomTabRoute.Apps:
-              return focused ? <AppsIconActive /> : <AppsIcon />;
+              if (isLoop) return focused ? <AppsIconActive /> : <AppsIcon />;
+              return focused ? <ObiAccountsActiveIcon /> : <ObiAccountsIcon />;
             case HomeBottomTabRoute.Nfts:
               return focused ? <NFTsIconActive /> : <NFTsIcon />;
             case HomeBottomTabRoute.Trade:
               return focused ? <TradeIconActive /> : <TradeIcon />;
             case HomeBottomTabRoute.Settings:
-              return focused ? <SettingsIconActive /> : <SettingsIcon />;
+              if (isLoop)
+                return focused ? <SettingsIconActive /> : <SettingsIcon />;
+              return focused ? <ObiSettingsActiveIcon /> : <ObiSettingsIcon />;
           }
         },
         tabBarStyle: {
-          backgroundColor: "#17162C",
+          backgroundColor: isLoop ? "#17162C" : "#437DFF",
           borderTopColor: "#1E1D33",
           borderTopWidth: 1,
           paddingTop: 20,
@@ -91,8 +106,8 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
         },
         headerShown: false,
         tabBarHideOnKeyboard: true,
-        tabBarActiveTintColor: "#F6F5FF",
-        tabBarInactiveTintColor: "#4D5070",
+        tabBarActiveTintColor: isLoop ? "#F6F5FF" : "white",
+        tabBarInactiveTintColor: isLoop ? "#4D5070" : "white",
         tabBarLabelStyle: {
           fontFamily: "Inter",
           fontSize: 10,
@@ -105,7 +120,7 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
       })}
       initialRouteName={HomeBottomTabRoute.Assets}
     >
-      {configStore.isFeatureEnabled(Feature.AccountsTab) ? (
+      {configStore.isFeatureEnabled(Feature.AccountsTab) && isObi ? (
         <HomeBottomTab.Screen
           name={HomeBottomTabRoute.Accounts}
           options={{
@@ -127,7 +142,7 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
         }}
         component={Assets}
       />
-      {configStore.isFeatureEnabled(Feature.NftTab) ? (
+      {configStore.isFeatureEnabled(Feature.NftTab) && isLoop ? (
         <HomeBottomTab.Screen
           name={HomeBottomTabRoute.Nfts}
           options={{
@@ -149,16 +164,18 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
         }}
         component={DappExplorer}
       />
-      <HomeBottomTab.Screen
-        name={HomeBottomTabRoute.Trade}
-        options={{
-          title: intl.formatMessage({
-            id: "menu.trade",
-            defaultMessage: "Trade",
-          }),
-        }}
-        component={Trade}
-      />
+      {isLoop && (
+        <HomeBottomTab.Screen
+          name={HomeBottomTabRoute.Trade}
+          options={{
+            title: intl.formatMessage({
+              id: "menu.trade",
+              defaultMessage: "Trade",
+            }),
+          }}
+          component={Trade}
+        />
+      )}
       <HomeBottomTab.Screen
         name={HomeBottomTabRoute.Settings}
         options={{
@@ -196,12 +213,17 @@ export function HomeScreen() {
 const CustomDrawerContent = observer((props: DrawerContentComponentProps) => {
   const { navigation } = props;
   const { chainStore, configStore } = useStore();
+
+  const isLoop = configStore.isLoop();
   const networks = Object.values(chains).filter((network) => {
     return configStore.config.chains.enabled.includes(network.chainId);
   });
 
   return (
-    <DrawerContentScrollView {...props} style={{ backgroundColor: "#100F1E" }}>
+    <DrawerContentScrollView
+      {...props}
+      style={{ backgroundColor: isLoop ? "#100F1E" : "#437DFF" }}
+    >
       <TouchableHighlight
         style={{
           alignSelf: "flex-start",
@@ -214,12 +236,12 @@ const CustomDrawerContent = observer((props: DrawerContentComponentProps) => {
       >
         <FontAwesomeIcon
           icon={faTimes}
-          style={{ color: "#4d5070" }}
+          style={{ color: isLoop ? "#4d5070" : "white" }}
         ></FontAwesomeIcon>
       </TouchableHighlight>
       <Text
         style={{
-          color: "#787B9C",
+          color: isLoop ? "#787B9C" : "white",
           marginLeft: 16,
           marginBottom: 17,
           fontSize: 11,
@@ -236,8 +258,10 @@ const CustomDrawerContent = observer((props: DrawerContentComponentProps) => {
             key={network.chainId}
             label={network.label}
             activeTintColor="#F6F5FF"
-            inactiveTintColor="#787B9C"
-            activeBackgroundColor="#27253E"
+            inactiveTintColor={isLoop ? "#787B9C" : "#aaa"}
+            activeBackgroundColor={
+              isLoop ? "#27253E" : "rgba(255, 255, 255, 0.1)"
+            }
             labelStyle={{
               fontFamily: "Inter",
               fontSize: 16,
@@ -252,7 +276,7 @@ const CustomDrawerContent = observer((props: DrawerContentComponentProps) => {
       })}
       <Text
         style={{
-          color: "#787B9C",
+          color: isLoop ? "#787B9C" : "white",
           marginLeft: 16,
           marginTop: 17,
           fontSize: 11,

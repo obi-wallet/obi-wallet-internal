@@ -1,4 +1,5 @@
 import { MultisigKey, Text } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import { FC } from "react";
 import {
   FlatList,
@@ -9,6 +10,7 @@ import {
 } from "react-native";
 import { SvgProps } from "react-native-svg";
 
+import { useStore } from "../../../stores";
 import People from "../../onboarding/common/4-social/assets/people-alt-twotone-24px.svg";
 import Biometrics from "./assets/biometrics-icon.svg";
 import Check from "./assets/check-icon.svg";
@@ -68,7 +70,9 @@ const comingSoonKeys: HydratedKeyListItem[] = [
   },
 ];
 
-export function KeysList({ data, style, tiled }: KeysListProps) {
+export const KeysList = observer(({ data, style, tiled }: KeysListProps) => {
+  const { configStore } = useStore();
+  const isObi = configStore.isObi();
   const hydratedData = data.map((key) => {
     return {
       ...key,
@@ -77,7 +81,14 @@ export function KeysList({ data, style, tiled }: KeysListProps) {
   });
 
   return (
-    <View style={[style]}>
+    <View
+      style={[
+        style,
+        isObi
+          ? { borderTopColor: "rgba(255,255,255,.3)", borderTopWidth: 1 }
+          : {},
+      ]}
+    >
       <FlatList
         data={[...hydratedData, ...comingSoonKeys]}
         horizontal={tiled}
@@ -86,15 +97,17 @@ export function KeysList({ data, style, tiled }: KeysListProps) {
       />
     </View>
   );
-}
+});
 
 export interface KeyListItemProps {
   item: HydratedKeyListItem;
   tiled?: boolean;
 }
 
-export function KeyListItem({ item, tiled }: KeyListItemProps) {
+export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
   const { title, description, Icon, right, onPress, signed } = item;
+  const { configStore } = useStore();
+  const isObi = configStore.isObi();
 
   if (tiled && item.description === "Coming Soon") return null;
 
@@ -104,7 +117,7 @@ export function KeyListItem({ item, tiled }: KeyListItemProps) {
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           <View
             style={{
-              backgroundColor: "#1D1C37",
+              backgroundColor: isObi ? "transparent" : "#1D1C37",
               width: 50,
               height: 50,
               justifyContent: "center",
@@ -136,6 +149,7 @@ export function KeyListItem({ item, tiled }: KeyListItemProps) {
         height: 59,
         width: "100%",
         backgroundColor: "#111023",
+
         marginBottom: 10,
         flexDirection: "row",
         borderRadius: 12,
@@ -145,7 +159,7 @@ export function KeyListItem({ item, tiled }: KeyListItemProps) {
       <View style={{ flex: 2, justifyContent: "center", alignItems: "center" }}>
         <View
           style={{
-            backgroundColor: "#1D1C37",
+            backgroundColor: isObi ? "transparent" : "#1D1C37",
             width: 36,
             height: 36,
             justifyContent: "center",
@@ -184,4 +198,4 @@ export function KeyListItem({ item, tiled }: KeyListItemProps) {
       </View>
     </TouchableOpacity>
   );
-}
+});
