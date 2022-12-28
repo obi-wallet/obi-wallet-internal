@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons/faEllipsis";
 import { faRotateRight } from "@fortawesome/free-solid-svg-icons/faRotateRight";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
@@ -30,7 +31,9 @@ export const WebViewScreen = observer<WebViewScreenProps>(
     const [loading, setLoading] = useState(false);
     const [title, setTitle] = useState(app.label);
     const webViewRef = useRef<WebView>(null);
-
+    const theme = useTheme()
+    const { configStore } = useStore();
+    const isLoop = configStore.isLoop()
     const safeArea = useSafeAreaInsets();
 
     const bottomSheetRef = useRef<BottomSheet>(null);
@@ -42,7 +45,7 @@ export const WebViewScreen = observer<WebViewScreenProps>(
       }
     };
     return (
-      <View style={{ flex: 1, backgroundColor: "#090817" }}>
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <View
           style={{
             marginTop: safeArea.top,
@@ -109,7 +112,7 @@ export const WebViewScreen = observer<WebViewScreenProps>(
         />
         <BottomSheet
           handleIndicatorStyle={{ backgroundColor: "white" }}
-          backgroundStyle={{ backgroundColor: "#24243C" }}
+          backgroundStyle={{ backgroundColor: isLoop ? "#24243C" : "#1a1a1a" }}
           handleStyle={{ backgroundColor: "transparent" }}
           snapPoints={["25%"]}
           enablePanDownToClose={true}
@@ -147,7 +150,8 @@ export const WebViewScreen = observer<WebViewScreenProps>(
 );
 
 const FavButton = observer<{ title: string; url: string }>(({ title, url }) => {
-  const { appsStore } = useStore();
+  const { appsStore, configStore } = useStore();
+  const isLoop = configStore.isLoop()
   const isFavorite = appsStore.hasFavorite(url);
 
   return (
@@ -196,9 +200,9 @@ const FavButton = observer<{ title: string; url: string }>(({ title, url }) => {
       }}
       IconComponent={
         isFavorite ? (
-          <UnFav width={24} height={24} fill="black" />
+          <UnFav width={24} height={24} fill={isLoop ? "black" : "white"} />
         ) : (
-          <Fav width={24} height={24} fill="black" />
+          <Fav width={24} height={24} fill={isLoop ? "black" : "white"} />
         )
       }
       label={isFavorite ? "Remove" : "Add"}
@@ -207,11 +211,13 @@ const FavButton = observer<{ title: string; url: string }>(({ title, url }) => {
 });
 
 export function RefreshButton({ onPress }: { onPress: () => void }) {
+  const { configStore } = useStore();
+  const isLoop = configStore.isLoop()
   return (
     <SheetButton
       onPress={() => onPress()}
       IconComponent={
-        <FontAwesomeIcon icon={faRotateRight} style={{ color: "black" }} />
+        <FontAwesomeIcon icon={faRotateRight} style={{ color: isLoop ? "black" : "white" }} />
       }
       label="Refresh"
     />
@@ -219,6 +225,8 @@ export function RefreshButton({ onPress }: { onPress: () => void }) {
 }
 
 export function ShareButton({ url }: { url: string }) {
+  const { configStore } = useStore();
+  const isLoop = configStore.isLoop()
   const onShare = async () => {
     try {
       const result = await Share.share({
@@ -243,7 +251,7 @@ export function ShareButton({ url }: { url: string }) {
     <SheetButton
       onPress={() => onShare()}
       IconComponent={
-        <FontAwesomeIcon icon={faShare} style={{ color: "black" }} />
+        <FontAwesomeIcon icon={faShare} style={{ color: isLoop ? "black" : "white" }} />
       }
       label="Share"
     />
@@ -259,6 +267,8 @@ export function SheetButton({
   IconComponent: JSX.Element;
   label: string;
 }) {
+  const { configStore } = useStore();
+  const isLoop = configStore.isLoop()
   return (
     <View style={{ justifyContent: "center", alignItems: "center", width: 60 }}>
       <TouchableOpacity
@@ -266,7 +276,7 @@ export function SheetButton({
         style={{
           height: 50,
           width: 50,
-          backgroundColor: "gray",
+          backgroundColor: isLoop ? "gray" : "#437DFF",
           justifyContent: "center",
           alignItems: "center",
           borderRadius: 12,

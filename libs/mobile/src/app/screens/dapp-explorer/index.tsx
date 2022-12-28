@@ -12,6 +12,7 @@ import CosmicPartyIcon from "./assets/cosmic_party.svg";
 import GetTicketsIcon from "./assets/get_tickets.svg";
 import HistoryIcon from "./assets/history.svg";
 import MyTicketsIcon from "./assets/my_tickets.svg";
+import { useTheme } from "@emotion/react";
 
 const icons = [
   BuyCryptoIcon,
@@ -28,9 +29,10 @@ export function DappExplorer() {
   const rootStore = useStore();
   const navigation = useRootNavigation();
   const safeArea = useSafeAreaInsets();
+  const theme = useTheme()
 
   return (
-    <SafeAreaView style={{ backgroundColor: "#090817", flex: 1 }}>
+    <SafeAreaView style={{ backgroundColor: theme.colors.background, flex: 1 }}>
       <Home
         rootStore={rootStore}
         onAppPress={(app) => {

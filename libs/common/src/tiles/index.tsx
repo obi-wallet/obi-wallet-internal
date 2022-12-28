@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tile: {
-    width: "33.33%",
+    width: "25%",
     padding: 12,
     display: "flex",
     flexDirection: "column",
@@ -22,8 +22,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   iconContainer: {
-    width: 84,
-    height: 84,
+    width: 60,
+    height: 60,
     borderRadius: 7,
     ...createShadow(10),
   },
