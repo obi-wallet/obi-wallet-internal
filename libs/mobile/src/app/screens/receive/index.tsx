@@ -12,7 +12,7 @@ import { isSmallScreenNumber } from "../components/screen-size";
 export const ReceiveScreen = observer(() => {
   const { walletsStore, configStore } = useStore();
   const isLoop = configStore.isLoop();
-  const theme = useTheme()
+  const theme = useTheme();
   const address = walletsStore.address;
 
   if (!address) return null;

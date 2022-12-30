@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
@@ -18,6 +19,7 @@ import {
   Key,
   keyMetaData,
   KeysList,
+  PeopleWhiteSVG,
   WarningIcon,
 } from "../../components/keys-list";
 import { isSmallScreenNumber } from "../../components/screen-size";
@@ -45,11 +47,13 @@ const getSVG = (number: number) => {
 };
 
 export const KeysConfigScreen = observer(() => {
-  const { walletsStore } = useStore();
+  const { walletsStore, configStore } = useStore();
   const wallet = walletsStore.currentWallet;
   const currentAdmin = isAnyMultisigWallet(wallet) ? wallet.currentAdmin : null;
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [selectedItem, setSelectedItem] = useState<KeyListItem | null>(null);
+  const theme = useTheme();
+  const isLoop = configStore.isLoop();
 
   const triggerBottomSheet = (index: number) => {
     if (index === -1) {
@@ -116,7 +120,7 @@ export const KeysConfigScreen = observer(() => {
   return (
     <SafeAreaView
       style={{
-        backgroundColor: "#090817",
+        backgroundColor: theme.colors.background,
         flex: 1,
         paddingHorizontal: 16,
         paddingTop: 20,
@@ -179,7 +183,7 @@ export const KeysConfigScreen = observer(() => {
       </View>
       <BottomSheet
         handleIndicatorStyle={{ backgroundColor: "white" }}
-        backgroundStyle={{ backgroundColor: "#100F1E" }}
+        backgroundStyle={{ backgroundColor: isLoop ? "#100F1E" : "#272727" }}
         handleStyle={{ backgroundColor: "transparent" }}
         snapPoints={["50%"]}
         enablePanDownToClose={true}
@@ -234,7 +238,9 @@ interface KeyConfigProps {
 function KeyConfig({ item, onClose }: KeyConfigProps) {
   const { id, title, activated } = item;
   const { Icon } = keyMetaData[id];
-  const { walletsStore } = useStore();
+  const { walletsStore, configStore } = useStore();
+  const isLoop = configStore.isLoop();
+  const isObi = configStore.isObi();
 
   const safeArea = useSafeAreaInsets();
 
@@ -250,12 +256,18 @@ function KeyConfig({ item, onClose }: KeyConfigProps) {
         style={{
           paddingVertical: 5,
           width: "100%",
-          backgroundColor: "#59D6E6",
+          backgroundColor: isLoop ? "#59D6E6" : "#437DFF",
           borderRadius: 12,
           alignItems: "center",
         }}
       >
-        <Text style={{ fontSize: 15, fontWeight: "700" }}>
+        <Text
+          style={{
+            fontSize: 15,
+            fontWeight: "700",
+            ...(isObi ? { color: "white" } : {}),
+          }}
+        >
           {/** ToDo: i18n - Building sentences dynamically is not feasible with translations, as the word-order is different in other languages. */}
           {/** "Replace {title} now" ...not possible */}
           <FormattedMessage
@@ -315,19 +327,35 @@ function KeyConfig({ item, onClose }: KeyConfigProps) {
         <View
           style={{
             padding: 10,
-            backgroundColor: "#1D1C37",
+            backgroundColor: isLoop ? "#1D1C37" : "#437DFF",
             alignSelf: "flex-start",
             borderRadius: 12,
           }}
         >
-          <Icon />
+          {item.id === "social" ? (
+            isLoop ? (
+              <Icon />
+            ) : (
+              <PeopleWhiteSVG width={24} height={24} />
+            )
+          ) : (
+            <Icon fill={isLoop ? "#7B87A8" : "white"} />
+          )}
         </View>
         <View
-          style={{ padding: 10, backgroundColor: "#1D1C37", borderRadius: 12 }}
+          style={{
+            padding: 10,
+            backgroundColor: isLoop
+              ? "#1D1C37"
+              : activated
+              ? "#437DFF"
+              : "#1a1a1a",
+            borderRadius: 12,
+          }}
         >
           <Text
             style={{
-              color: activated ? "#89F5C2" : "#999CB6",
+              color: isLoop ? (activated ? "#89F5C2" : "#999CB6") : "white",
               fontSize: 18,
               fontWeight: "600",
             }}

@@ -31,9 +31,9 @@ export const WebViewScreen = observer<WebViewScreenProps>(
     const [loading, setLoading] = useState(false);
     const [title, setTitle] = useState(app.label);
     const webViewRef = useRef<WebView>(null);
-    const theme = useTheme()
+    const theme = useTheme();
     const { configStore } = useStore();
-    const isLoop = configStore.isLoop()
+    const isLoop = configStore.isLoop();
     const safeArea = useSafeAreaInsets();
 
     const bottomSheetRef = useRef<BottomSheet>(null);
@@ -151,7 +151,7 @@ export const WebViewScreen = observer<WebViewScreenProps>(
 
 const FavButton = observer<{ title: string; url: string }>(({ title, url }) => {
   const { appsStore, configStore } = useStore();
-  const isLoop = configStore.isLoop()
+  const isLoop = configStore.isLoop();
   const isFavorite = appsStore.hasFavorite(url);
 
   return (
@@ -200,9 +200,9 @@ const FavButton = observer<{ title: string; url: string }>(({ title, url }) => {
       }}
       IconComponent={
         isFavorite ? (
-          <UnFav width={24} height={24} fill={isLoop ? "black" : "white"} />
-        ) : (
           <Fav width={24} height={24} fill={isLoop ? "black" : "white"} />
+        ) : (
+          <UnFav width={24} height={24} fill={isLoop ? "black" : "white"} />
         )
       }
       label={isFavorite ? "Remove" : "Add"}
@@ -212,12 +212,15 @@ const FavButton = observer<{ title: string; url: string }>(({ title, url }) => {
 
 export function RefreshButton({ onPress }: { onPress: () => void }) {
   const { configStore } = useStore();
-  const isLoop = configStore.isLoop()
+  const isLoop = configStore.isLoop();
   return (
     <SheetButton
       onPress={() => onPress()}
       IconComponent={
-        <FontAwesomeIcon icon={faRotateRight} style={{ color: isLoop ? "black" : "white" }} />
+        <FontAwesomeIcon
+          icon={faRotateRight}
+          style={{ color: isLoop ? "black" : "white" }}
+        />
       }
       label="Refresh"
     />
@@ -226,7 +229,7 @@ export function RefreshButton({ onPress }: { onPress: () => void }) {
 
 export function ShareButton({ url }: { url: string }) {
   const { configStore } = useStore();
-  const isLoop = configStore.isLoop()
+  const isLoop = configStore.isLoop();
   const onShare = async () => {
     try {
       const result = await Share.share({
@@ -251,7 +254,10 @@ export function ShareButton({ url }: { url: string }) {
     <SheetButton
       onPress={() => onShare()}
       IconComponent={
-        <FontAwesomeIcon icon={faShare} style={{ color: isLoop ? "black" : "white" }} />
+        <FontAwesomeIcon
+          icon={faShare}
+          style={{ color: isLoop ? "black" : "white" }}
+        />
       }
       label="Share"
     />
@@ -268,7 +274,7 @@ export function SheetButton({
   label: string;
 }) {
   const { configStore } = useStore();
-  const isLoop = configStore.isLoop()
+  const isLoop = configStore.isLoop();
   return (
     <View style={{ justifyContent: "center", alignItems: "center", width: 60 }}>
       <TouchableOpacity

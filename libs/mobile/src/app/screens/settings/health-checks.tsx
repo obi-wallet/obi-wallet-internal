@@ -1,4 +1,5 @@
 import { MsgMigrateContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
+import { useTheme } from "@emotion/react";
 import {
   isMultisigWallet,
   JunoChecks,
@@ -31,7 +32,7 @@ export const HealthChecksScreen = observer(() => {
   const { walletsStore } = useStore();
   const wallet = useMultisigWallet();
   const [problems, setProblems] = useState<string[] | undefined>();
-
+  const theme = useTheme();
   const refetchProblems = useCallback(async () => {
     const wallet = walletsStore.currentWallet;
     if (isMultisigWallet(wallet)) {
@@ -157,7 +158,7 @@ export const HealthChecksScreen = observer(() => {
   return (
     <SafeAreaView
       style={{
-        backgroundColor: "#090817",
+        backgroundColor: theme.colors.background,
         flex: 1,
         paddingHorizontal: 16,
         paddingTop: 20,

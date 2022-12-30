@@ -1,5 +1,16 @@
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons/faPaperclip";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import {
+  App,
+  Card,
+  isSinglesigWallet,
+  RootStore,
+  Text,
+  Tile,
+  TextInput,
+  Tiles,
+} from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { FC, useState } from "react";
 import { useIntl } from "react-intl";
@@ -10,18 +21,12 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  TextInput,
   TouchableHighlight,
   View,
 } from "react-native";
 import { SvgProps } from "react-native-svg";
 
-import { Card } from "../../card";
-import { FontAwesomeIcon } from "../../font-awesome-icon";
-import { App, isSinglesigWallet, RootStore } from "../../stores";
-import { Tile, Tiles } from "../../tiles";
-import { Text } from "../../typography";
-import ChevronCircleRight from './assets/chevron_circle_right.svg';
+import ChevronCircleRight from "./assets/chevron_circle_right.svg";
 const styles = StyleSheet.create({
   card: {
     flex: 1,
@@ -29,14 +34,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export interface HomeProps {
+export interface DappProps {
   rootStore: RootStore;
   onAppPress: (app: App) => void;
   marginBottom?: number;
   icons: FC<SvgProps>[];
 }
 
-export const Home = observer<HomeProps>(
+export const Dapps = observer<DappProps>(
   ({ onAppPress, marginBottom, rootStore, icons }) => {
     const [
       BuyCryptoIcon,
@@ -62,7 +67,6 @@ export const Home = observer<HomeProps>(
           marginBottom,
         }}
       >
-
         <Card style={styles.card}>
           {editMode ? (
             <Button
@@ -75,7 +79,7 @@ export const Home = observer<HomeProps>(
 
           <ScrollView style={{ flex: 1 }}>
             <Tiles>
-              {appsStore.favorites.map((app) => {
+              {appsStore.favorites.map((app: any) => {
                 return (
                   <Tile
                     onLongPress={() => {
@@ -87,8 +91,8 @@ export const Home = observer<HomeProps>(
                     onRemove={
                       editMode
                         ? () => {
-                          appsStore.removeFavoriteByUrl(app.url);
-                        }
+                            appsStore.removeFavoriteByUrl(app.url);
+                          }
                         : undefined
                     }
                     onPress={() => {
@@ -263,7 +267,7 @@ export const Home = observer<HomeProps>(
                     width: "100%",
                   }}
                 >
-                  {isLoop &&
+                  {isLoop && (
                     <View
                       style={{
                         flexDirection: "row",
@@ -296,7 +300,7 @@ export const Home = observer<HomeProps>(
                         </Text>
                       </View>
                     </View>
-                  }
+                  )}
                 </View>
                 <View
                   style={{
@@ -371,8 +375,8 @@ export const Home = observer<HomeProps>(
                       const newUrl = url.includes("https://")
                         ? url.replace("https://", "")
                         : url.includes("http://")
-                          ? url.replace("http://", "")
-                          : url;
+                        ? url.replace("http://", "")
+                        : url;
 
                       const searchParam = newUrl.split(" ").join("+");
                       const newSearchUrl = `https://www.google.com/search?q=${searchParam}`;
@@ -385,26 +389,29 @@ export const Home = observer<HomeProps>(
                   }}
                 >
                   <Text>
-                    {isObi ? <View style={{
-                      transform: [
-                        { rotate: '180deg' }
-                      ]
-                    }}>
-                      <ChevronCircleRight />
-                    </View>
-                      : <FontAwesomeIcon
+                    {isObi ? (
+                      <View
+                        style={{
+                          transform: [{ rotate: "180deg" }],
+                        }}
+                      >
+                        <ChevronCircleRight />
+                      </View>
+                    ) : (
+                      <FontAwesomeIcon
                         icon={faChevronRight}
                         // @ts-expect-error
                         size={Platform.OS === "web" ? "1x" : 24}
                         color="#fff"
-                      />}
+                      />
+                    )}
                   </Text>
                 </TouchableHighlight>
               </View>
             </View>
           </KeyboardAvoidingView>
         </Card>
-      </SafeAreaView >
+      </SafeAreaView>
     );
   }
 );
