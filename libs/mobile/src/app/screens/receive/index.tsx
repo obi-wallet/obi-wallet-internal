@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage } from "react-intl";
 import { Platform, Share, Text, TouchableOpacity, View } from "react-native";
@@ -9,7 +10,9 @@ import { Back } from "../components/back";
 import { isSmallScreenNumber } from "../components/screen-size";
 
 export const ReceiveScreen = observer(() => {
-  const { walletsStore } = useStore();
+  const { walletsStore, configStore } = useStore();
+  const isLoop = configStore.isLoop();
+  const theme = useTheme();
   const address = walletsStore.address;
 
   if (!address) return null;
@@ -37,7 +40,7 @@ export const ReceiveScreen = observer(() => {
   return (
     <SafeAreaView
       style={{
-        backgroundColor: "rgba(9, 8, 23, 1);",
+        backgroundColor: theme.colors.background,
         flex: 1,
         paddingHorizontal: 20,
         paddingVertical: Platform.select({
@@ -77,7 +80,7 @@ export const ReceiveScreen = observer(() => {
         </View>
         <TouchableOpacity
           style={{
-            backgroundColor: "#17162C",
+            backgroundColor: isLoop ? "#17162C" : "#272727",
             borderRadius: 12,
             paddingVertical: 20,
             paddingHorizontal: 30,

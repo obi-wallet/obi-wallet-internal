@@ -268,8 +268,8 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
                 justifyContent: "center",
                 alignItems: "center",
                 padding: 5,
-                borderTopRightRadius: 12,
-                borderBottomRightRadius: 12,
+                borderTopRightRadius: isObi ? 32 : 12,
+                borderBottomRightRadius: isObi ? 32 : 12,
                 borderWidth: 1,
                 borderColor: isLoop ? "#2F2B4C" : "white",
                 borderLeftWidth: 0,
@@ -581,7 +581,6 @@ const getBrandBackground = (brand: Brand) => {
 function CoinRenderer({ item, selected, onPress }: CoinRendererProps) {
   const { denom, label, amount, valueInUsd, icon } = formatExtendedCoin(item);
   const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
   const coinIconProps =
     typeof icon === "number" ? { imageIcon: icon } : { SVGIcon: icon };
   const brandColors = getBrandBackground(configStore.brand);

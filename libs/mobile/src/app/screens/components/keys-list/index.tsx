@@ -11,6 +11,7 @@ import {
 import { SvgProps } from "react-native-svg";
 
 import { useStore } from "../../../stores";
+import PeopleWhite from "../../onboarding/common/4-social/assets/people-alt-twotone-24px white.svg";
 import People from "../../onboarding/common/4-social/assets/people-alt-twotone-24px.svg";
 import Biometrics from "./assets/biometrics-icon.svg";
 import Check from "./assets/check-icon.svg";
@@ -108,6 +109,7 @@ export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
   const { title, description, Icon, right, onPress, signed } = item;
   const { configStore } = useStore();
   const isObi = configStore.isObi();
+  const isLoop = configStore.isLoop();
 
   if (tiled && item.description === "Coming Soon") return null;
 
@@ -127,7 +129,7 @@ export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
               borderColor: signed ? "#89F5C2" : "transparent",
             }}
           >
-            <Icon />
+            <Icon fill="#7B87A8" />
           </View>
         </View>
         <Text
@@ -148,7 +150,7 @@ export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
       style={{
         height: 59,
         width: "100%",
-        backgroundColor: "#111023",
+        backgroundColor: isLoop ? "#111023" : "#272727",
 
         marginBottom: 10,
         flexDirection: "row",
@@ -167,7 +169,15 @@ export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
             borderRadius: 12,
           }}
         >
-          <Icon />
+          {item.id === "social" ? (
+            isLoop ? (
+              <Icon />
+            ) : (
+              <PeopleWhite width={24} height={24} />
+            )
+          ) : (
+            <Icon fill={isLoop ? "#7B87A8" : "white"} />
+          )}
         </View>
       </View>
       <View style={{ flex: 6, justifyContent: "center" }}>
@@ -199,3 +209,4 @@ export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
     </TouchableOpacity>
   );
 });
+export const PeopleWhiteSVG = PeopleWhite;

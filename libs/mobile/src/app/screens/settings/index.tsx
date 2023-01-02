@@ -1,4 +1,5 @@
-import { Feature, isAnyMultisigWallet } from "@obi-wallet/common";
+import styled from "@emotion/native";
+import { Brand, Feature, isAnyMultisigWallet } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { FC, useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -11,7 +12,6 @@ import {
 } from "react-native";
 import codePush, { LocalPackage } from "react-native-code-push";
 import { ScrollView } from "react-native-gesture-handler";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { SvgProps } from "react-native-svg";
 
 import { RootStack, useRootNavigation } from "../../root-stack";
@@ -30,6 +30,7 @@ import { SettingsRoute } from "./settings-stack";
 export const SettingsScreen = observer(() => {
   const { configStore, walletsStore } = useStore();
   const isObi = configStore.isObi();
+  const isLoop = configStore.isLoop();
   const intl = useIntl();
   const navigation = useRootNavigation();
   const [appMetadata, setAppMetadata] = useState<LocalPackage | null>(null);
@@ -44,7 +45,7 @@ export const SettingsScreen = observer(() => {
   const isMultisigWallet = isAnyMultisigWallet(walletsStore.currentWallet);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <Container>
       <View
         style={{
           marginTop: isSmallScreenNumber(20, 61),
@@ -86,9 +87,9 @@ export const SettingsScreen = observer(() => {
           </TouchableOpacity>
 
           <View style={{ flexDirection: "column" }}>
-            <Text style={styles.heading}>
+            <Heading>
               Obi {isMultisigWallet ? <>Secure Multisig </> : null}Account
-            </Text>
+            </Heading>
             {/*<Text style={styles.subHeading}>
               Profile picture, name and mail
             </Text>*/}
@@ -202,7 +203,7 @@ export const SettingsScreen = observer(() => {
         />
 
         <Setting
-          Icon={LogoutIcon}
+          Icon={() => <LogoutIcon fill={isLoop ? "#E36B7D" : "white"} />}
           title={intl.formatMessage({
             id: "settings.logout",
             defaultMessage: "Log Out",
@@ -284,7 +285,7 @@ export const SettingsScreen = observer(() => {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </Container>
   );
 });
 
@@ -296,37 +297,56 @@ interface SettingProps {
 }
 
 function Setting({ Icon, title, subtitle, onPress }: SettingProps) {
+  const { configStore } = useStore();
+  const brand = configStore.brand;
+  const isLoop = configStore.isLoop();
   return (
-    <TouchableOpacity
-      style={[styles.flex1, styles.setting]}
-      onPress={() => onPress && onPress()}
-    >
+    <SettingButton onPress={() => onPress && onPress()} brand={brand}>
       <View
         style={{
           padding: 10,
-          backgroundColor: "#1D1C37",
+          backgroundColor: isLoop ? "#1D1C37" : "#437DFF",
           alignSelf: "flex-start",
           borderRadius: 12,
         }}
       >
-        <Icon />
+        <Icon fill={isLoop ? "#7B87A8" : "white"} />
       </View>
-      <View style={styles.titlesContainer}>
-        <Text style={[styles.heading, { fontSize: 14 }]}>{title}</Text>
-        <Text style={styles.subHeading}>{subtitle}</Text>
-      </View>
-    </TouchableOpacity>
+      <TilesContainer>
+        <Heading style={[{ fontSize: 14 }]}>{title}</Heading>
+        <SubHeading>{subtitle}</SubHeading>
+      </TilesContainer>
+    </SettingButton>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
+const Container = styled.SafeAreaView(
+  {
     flex: 1,
-    backgroundColor: "#090817",
     paddingHorizontal: 20,
   },
+  (props) => ({ backgroundColor: props.theme.colors.background })
+);
+
+const TilesContainer = styled.View({
+  paddingHorizontal: 10,
+});
+
+const Heading = styled.Text({
+  color: "#F6F5FF",
+  fontSize: isSmallScreenNumber(14, 18),
+  fontWeight: "700",
+  fontFamily: "Inter",
+  paddingBottom: 4,
+});
+const SubHeading = styled.Text({
+  color: "#F6F5FF",
+  opacity: 0.6,
+  fontSize: 12,
+});
+
+const styles = StyleSheet.create({
   setting: {
-    backgroundColor: "#111023",
     borderRadius: 12,
     padding: 20,
     flexDirection: "row",
@@ -352,25 +372,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 35,
     textTransform: "uppercase",
   },
-  heading: {
-    color: "#F6F5FF",
-    fontSize: isSmallScreenNumber(14, 18),
-    fontWeight: "700",
-    fontFamily: "Inter",
-    paddingBottom: 4,
-  },
-  subHeading: {
-    color: "#F6F5FF",
-    opacity: 0.6,
-    fontSize: 12,
-  },
   chevronRight: {
     color: "#3D4661",
   },
-  titlesContainer: {
-    paddingHorizontal: 10,
-  },
 });
+const SettingButton = styled.TouchableOpacity<{ brand: Brand }>(
+  {
+    ...styles.setting,
+    ...styles.flex1,
+  },
+  (props) => ({
+    backgroundColor: props.brand === Brand.Loop ? "#111023" : "#272727",
+  })
+);
 
 // This can't be a React component because `Stack.Navigator` doesn't want that.
 export const settingsScreens = () => {

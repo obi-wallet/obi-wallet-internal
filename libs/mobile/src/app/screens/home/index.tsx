@@ -1,4 +1,3 @@
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { chains, Feature, Text } from "@obi-wallet/common";
@@ -33,8 +32,6 @@ import NFTsIconActive from "./assets/ic_nfts_active.svg";
 import SettingsIconActive from "./assets/ic_settings_active.svg";
 import TradeIconActive from "./assets/ic_trade_active.svg";
 import NFTsIcon from "./assets/nftsIcon.svg";
-import ObiAppsActiveIcon from "./assets/obi-apps-active.svg";
-import ObiAppsIcon from "./assets/obi-apps.svg";
 import ObiAssetsActiveIcon from "./assets/obi-assets-active.svg";
 import ObiAssetsIcon from "./assets/obi-assets.svg";
 import ObiSettingsActiveIcon from "./assets/obi-settings-active.svg";

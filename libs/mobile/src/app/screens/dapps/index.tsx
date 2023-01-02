@@ -1,5 +1,16 @@
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons/faPaperclip";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import {
+  App,
+  Card,
+  isSinglesigWallet,
+  RootStore,
+  Text,
+  Tile,
+  TextInput,
+  Tiles,
+} from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { FC, useState } from "react";
 import { useIntl } from "react-intl";
@@ -10,18 +21,12 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  TextInput,
   TouchableHighlight,
   View,
 } from "react-native";
 import { SvgProps } from "react-native-svg";
 
-import { Card } from "../../card";
-import { FontAwesomeIcon } from "../../font-awesome-icon";
-import { App, isSinglesigWallet, RootStore } from "../../stores";
-import { Tile, Tiles } from "../../tiles";
-import { Text } from "../../typography";
-
+import ChevronCircleRight from "./assets/chevron_circle_right.svg";
 const styles = StyleSheet.create({
   card: {
     flex: 1,
@@ -29,14 +34,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export interface HomeProps {
+export interface DappProps {
   rootStore: RootStore;
   onAppPress: (app: App) => void;
   marginBottom?: number;
   icons: FC<SvgProps>[];
 }
 
-export const Home = observer<HomeProps>(
+export const Dapps = observer<DappProps>(
   ({ onAppPress, marginBottom, rootStore, icons }) => {
     const [
       BuyCryptoIcon,
@@ -50,6 +55,7 @@ export const Home = observer<HomeProps>(
     ] = icons;
     const { appsStore, configStore, walletsStore } = rootStore;
     const isObi = configStore.isObi();
+    const isLoop = configStore.isLoop();
     const [editMode, setEditMode] = useState(false);
     const [url, setUrl] = useState("");
     const intl = useIntl();
@@ -73,7 +79,7 @@ export const Home = observer<HomeProps>(
 
           <ScrollView style={{ flex: 1 }}>
             <Tiles>
-              {appsStore.favorites.map((app) => {
+              {appsStore.favorites.map((app: any) => {
                 return (
                   <Tile
                     onLongPress={() => {
@@ -261,37 +267,40 @@ export const Home = observer<HomeProps>(
                     width: "100%",
                   }}
                 >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      backgroundColor: "#090817",
-                      alignSelf: "center",
-                      alignItems: "center",
-                      paddingHorizontal: 20,
-                    }}
-                  >
-                    <FontAwesomeIcon
-                      icon={faPaperclip}
-                      // @ts-expect-error
-                      size={Platform.OS === "web" ? "1x" : 24}
-                      style={{ color: "#393853", marginRight: 6 }}
-                    />
-                    <View>
-                      <Text style={{ color: "#787B9C" }}>
-                        GO TO SPECIFIC LINK
-                      </Text>
-                      <Text
-                        style={{
-                          color: "white",
-                          textAlign: "center",
-                          fontSize: 10,
-                          marginBottom: 5,
-                        }}
-                      >
-                        Some apps not yet supported
-                      </Text>
+                  {isLoop && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        backgroundColor: "#090817",
+                        alignSelf: "center",
+                        alignItems: "center",
+                        paddingHorizontal: 20,
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faPaperclip}
+                        // @ts-expect-error
+                        size={Platform.OS === "web" ? "1x" : 24}
+                        style={{ color: "#393853", marginRight: 6 }}
+                      />
+
+                      <View>
+                        <Text style={{ color: "#787B9C" }}>
+                          GO TO SPECIFIC LINK
+                        </Text>
+                        <Text
+                          style={{
+                            color: "white",
+                            textAlign: "center",
+                            fontSize: 10,
+                            marginBottom: 5,
+                          }}
+                        >
+                          Some apps not yet supported
+                        </Text>
+                      </View>
                     </View>
-                  </View>
+                  )}
                 </View>
                 <View
                   style={{
@@ -305,9 +314,12 @@ export const Home = observer<HomeProps>(
 
               <View
                 style={{
-                  backgroundColor: "#6959E6",
+                  backgroundColor: isLoop ? "#6959E6" : "transparent",
+                  borderColor: isLoop ? "transparent" : "white",
+                  borderWidth: 1,
+
                   padding: 1,
-                  borderRadius: 12,
+                  borderRadius: isLoop ? 12 : 32,
                   flexDirection: "row",
                 }}
               >
@@ -315,10 +327,10 @@ export const Home = observer<HomeProps>(
                   defaultValue=""
                   style={{
                     flex: 1,
-                    backgroundColor: "#090817",
+                    backgroundColor: isLoop ? "#090817" : "#1A1A1A",
                     fontSize: 14,
                     fontWeight: "500",
-                    borderRadius: 12,
+                    borderRadius: isLoop ? 12 : 32,
                     paddingLeft: 20,
                     color: "#F6F5FF",
                   }}
@@ -338,6 +350,7 @@ export const Home = observer<HomeProps>(
                     justifyContent: "center",
                     alignItems: "center",
                   }}
+                  underlayColor="transparent"
                   onPress={() => {
                     //check if url is a valid url with protocol and domain
                     try {
@@ -376,12 +389,22 @@ export const Home = observer<HomeProps>(
                   }}
                 >
                   <Text>
-                    <FontAwesomeIcon
-                      icon={faChevronRight}
-                      // @ts-expect-error
-                      size={Platform.OS === "web" ? "1x" : 24}
-                      color="#fff"
-                    />
+                    {isObi ? (
+                      <View
+                        style={{
+                          transform: [{ rotate: "180deg" }],
+                        }}
+                      >
+                        <ChevronCircleRight />
+                      </View>
+                    ) : (
+                      <FontAwesomeIcon
+                        icon={faChevronRight}
+                        // @ts-expect-error
+                        size={Platform.OS === "web" ? "1x" : 24}
+                        color="#fff"
+                      />
+                    )}
                   </Text>
                 </TouchableHighlight>
               </View>
