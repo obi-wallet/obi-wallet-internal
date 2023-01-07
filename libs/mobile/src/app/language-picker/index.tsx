@@ -46,7 +46,7 @@ export const LanguagePicker = observer(() => {
   const { configStore } = useStore();
   const isObi = configStore.isObi();
   const theme = useTheme();
-  console.log("theme", theme, { isObi });
+
   const handleLanguageChoice = (language: Language | null) => {
     if (language) {
       languageStore.setCurrentLanguage(language);

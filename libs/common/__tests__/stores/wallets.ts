@@ -1,3 +1,4 @@
+import { Brand, Feature } from "../../src";
 import { MockKVStore } from "../../src/kv-store/mock";
 import { SerializedData as MultisigSerializedData } from "../../src/stores/multisig/serialized-data";
 import { RootStore } from "../../src/stores/root";
@@ -13,6 +14,7 @@ function createWalletsStore() {
   const rootStore = new RootStore({
     deviceLanguage: "en",
     initialConfig: {
+      brand: Brand.Obi,
       chains: {
         enabled: ["juno-1"],
         default: "juno-1",
@@ -22,8 +24,9 @@ function createWalletsStore() {
         default: "en",
       },
       features: {
-        healthChecks: false,
-        nftTab: false,
+        [Feature.AccountsTab]: false,
+        [Feature.HealthChecks]: false,
+        [Feature.NftTab]: false,
       },
     },
     KVStore: MockKVStore,

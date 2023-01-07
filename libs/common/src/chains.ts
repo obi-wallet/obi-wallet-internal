@@ -37,3 +37,49 @@ export const chains = {
 };
 
 export type Chain = keyof typeof chains;
+
+export const terraChains = {
+  "pisco-1": {
+    chainId: "pisco-1" as const,
+    label: "Terra Testnet",
+    prefix: "terra",
+    currentCodeId: 921,
+    rpcs: ["https://pisco-lcd.terra.dev"],
+    denom: "uluna",
+    startingUsdDebt: "0",
+    // TODO:
+    debtRepayAddress: "",
+    // TODO:
+    twilioPhoneNumbers: ["+19148638557"],
+    // TODO:
+    twilioUrl:
+      "https://studio.twilio.com/v2/Flows/FW278a8ada7d869a2bbfc49915dbb534f5/Executions",
+    // TODO:
+    bip44: {
+      coinType: 118,
+    },
+  },
+  "phoenix-1": {
+    chainId: "phoenix-1" as const,
+    label: "Terra",
+    prefix: "terra",
+    currentCodeId: 921,
+    // TODO:
+    rpcs: ["https://phoenix-lcd.terra.dev"],
+    denom: "uluna",
+    startingUsdDebt: "0",
+    // TODO:
+    debtRepayAddress: "",
+    // TODO:
+    twilioPhoneNumbers: ["+19148638557"],
+    // TODO:
+    twilioUrl:
+      "https://studio.twilio.com/v2/Flows/FW278a8ada7d869a2bbfc49915dbb534f5/Executions",
+    // TODO:
+    bip44: {
+      coinType: 118,
+    },
+  },
+};
+
+export type TerraChain = keyof typeof terraChains;
