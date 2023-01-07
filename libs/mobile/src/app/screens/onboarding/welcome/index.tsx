@@ -20,7 +20,6 @@ import {
 } from "../../account-picker-modal";
 import { InitialBackground } from "../../components/initial-background";
 import { BrandToggle } from "../../components/obi-mode-toggle";
-// import ObiLogo from "./assets/wallet-icon.png";
 import { OnboardingRoute, OnboardingStackParamList } from "../onboarding-stack";
 import GetStarted from "./assets/get-started.svg";
 
