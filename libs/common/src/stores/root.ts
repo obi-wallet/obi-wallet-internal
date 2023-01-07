@@ -21,6 +21,7 @@ import { InAppPurchaseInteractionStore } from "./interaction/in-app-purchase";
 import { SignInteractionStore } from "./interaction/sign";
 import { KeplrChainStore } from "./keplr-chain";
 import { LanguageStore } from "./language";
+import { ObiWalletsStore } from "./obi-wallets";
 import { WalletsStore } from "./wallets";
 
 export class RootStore {
@@ -31,6 +32,7 @@ export class RootStore {
   public readonly inAppPurchaseInteractionStore: InAppPurchaseInteractionStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly languageStore: LanguageStore;
+  public readonly obiWalletsStore: ObiWalletsStore;
   public readonly walletsStore: WalletsStore;
 
   // Hide Keplr-related stores by default
@@ -90,6 +92,9 @@ export class RootStore {
     });
     this.chainStore = new ChainStore({ configStore: this.configStore });
 
+    this.obiWalletsStore = new ObiWalletsStore({
+      kvStore: new KVStore("obi-wallets-store"),
+    });
     this.walletsStore = new WalletsStore({
       chainStore: this.chainStore,
       kvStore: new KVStore("wallets-store"),

@@ -1,4 +1,5 @@
 import {
+  Feature,
   isAnyMultisigWallet,
   MultisigWallet,
   RootStore,
@@ -11,6 +12,16 @@ export const StoreContext = createContext<RootStore>(null!);
 
 export function useStore() {
   return useContext(StoreContext);
+}
+
+export function useWalletsStore() {
+  const { configStore, walletsStore, obiWalletsStore } = useStore();
+
+  if (configStore.isFeatureEnabled(Feature.ObiWalletsStore)) {
+    return obiWalletsStore;
+  }
+
+  return walletsStore;
 }
 
 export function useMultisigWallet(): MultisigWallet {

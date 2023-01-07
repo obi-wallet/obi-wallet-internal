@@ -14,5 +14,6 @@ export const config: Config = {
     [Feature.AccountsTab]: true,
     [Feature.HealthChecks]: true,
     [Feature.NftTab]: true,
+    [Feature.ObiWalletsStore]: false,
   },
 };

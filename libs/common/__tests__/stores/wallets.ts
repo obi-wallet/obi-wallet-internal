@@ -27,6 +27,7 @@ function createWalletsStore() {
         [Feature.AccountsTab]: false,
         [Feature.HealthChecks]: false,
         [Feature.NftTab]: false,
+        [Feature.ObiWalletsStore]: false,
       },
     },
     KVStore: MockKVStore,

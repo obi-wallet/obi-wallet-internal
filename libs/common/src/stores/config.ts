@@ -12,6 +12,7 @@ export enum Feature {
   AccountsTab = "AccountsTab",
   HealthChecks = "HealthChecks",
   NftTab = "NftTab",
+  ObiWalletsStore = "ObiWalletsStore",
 }
 
 export interface Config {
