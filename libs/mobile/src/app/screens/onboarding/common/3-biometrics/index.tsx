@@ -1,5 +1,5 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { isMultisigDemoWallet, Text } from "@obi-wallet/common";
+import { isMultisigDemoWallet, MultisigWallet, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useState } from "react";
@@ -13,7 +13,7 @@ import {
   resetBiometricsKeyPair,
 } from "../../../../biometrics";
 import { Button } from "../../../../button";
-import { useMultisigWallet, useStore } from "../../../../stores";
+import { useLoopOrObiMultisigWallet, useStore } from "../../../../stores";
 import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
 import {
@@ -31,7 +31,7 @@ export type MultisigBiometricsProps = NativeStackScreenProps<
 
 export const MultisigBiometrics = observer<MultisigBiometricsProps>(
   ({ navigation }) => {
-    const wallet = useMultisigWallet();
+    const wallet = useLoopOrObiMultisigWallet();
     const isObi = useStore().configStore.isObi();
 
     const [scannedBiometrics, setScannedBiometrics] = useState(false);
@@ -41,8 +41,10 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
       setButtonDisabledDoubleclick(true);
 
       try {
+        const demoMode =
+          wallet instanceof MultisigWallet && isMultisigDemoWallet(wallet);
         const publicKey = await getBiometricsPublicKey({
-          demoMode: isMultisigDemoWallet(wallet),
+          demoMode,
         });
         await wallet.setBiometricsPublicKey({
           publicKey: {
@@ -68,6 +70,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
     useEffect(() => {
       (async () => {
         const { biometrics } = wallet.nextAdmin;
+        // @ts-expect-error TODO: keyInRecovery
         if (biometrics && wallet.keyInRecovery !== "biometrics") {
           Alert.alert(
             intl.formatMessage({

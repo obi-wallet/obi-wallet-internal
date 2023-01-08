@@ -2,6 +2,7 @@ import {
   Feature,
   isAnyMultisigWallet,
   MultisigWallet,
+  TerraMultisigWallet,
   RootStore,
 } from "@obi-wallet/common";
 import { createContext, useContext } from "react";
@@ -31,4 +32,27 @@ export function useMultisigWallet(): MultisigWallet {
     "Expected current wallet to be multisig."
   );
   return currentWallet;
+}
+
+export function useTerraMultisigWallet(): TerraMultisigWallet {
+  const { currentWallet } = useStore().obiWalletsStore;
+  invariant(currentWallet, "Expected current wallet to be terra multisig.");
+  return currentWallet;
+}
+
+export function useLoopOrObiMultisigWallet() {
+  const { configStore, obiWalletsStore, walletsStore } = useStore();
+
+  if (configStore.isFeatureEnabled(Feature.ObiWalletsStore)) {
+    const { currentWallet } = obiWalletsStore;
+    invariant(currentWallet, "Expected current wallet to be terra multisig.");
+    return currentWallet;
+  } else {
+    const { currentWallet } = walletsStore;
+    invariant(
+      isAnyMultisigWallet(currentWallet),
+      "Expected current wallet to be multisig."
+    );
+    return currentWallet;
+  }
 }

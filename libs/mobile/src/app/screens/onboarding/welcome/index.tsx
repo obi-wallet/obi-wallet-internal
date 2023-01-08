@@ -358,7 +358,9 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           onPress={action(async () => {
             if (!multisigWallet) {
               if (walletsStore instanceof ObiWalletsStore) {
-                await walletsStore.addTerraMultisigWallet();
+                if (!walletsStore.currentWallet) {
+                  await walletsStore.addTerraMultisigWallet();
+                }
               } else {
                 await walletsStore.addMultisigWallet();
               }

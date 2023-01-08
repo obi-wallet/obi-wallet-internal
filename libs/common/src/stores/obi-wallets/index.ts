@@ -5,7 +5,6 @@ import invariant from "tiny-invariant";
 
 import { ChainStore } from "../chain";
 import { WalletState } from "../wallets";
-import { AbstractWallet } from "../wallets/abstract-wallet";
 import {
   migrateSerializedData,
   SerializedData,
@@ -14,6 +13,8 @@ import {
   SerializedWallet,
 } from "./serialized-data";
 import { TerraMultisigWallet } from "./terra-multisig-wallet";
+
+export { TerraMultisigWallet };
 
 export class ObiWalletsStore {
   protected readonly chainStore: ChainStore;
@@ -24,7 +25,7 @@ export class ObiWalletsStore {
     ids: string[];
     entities: Record<
       string,
-      { wallet: AbstractWallet; serializedWallet: SerializedWallet }
+      { wallet: TerraMultisigWallet; serializedWallet: SerializedWallet }
     >;
   } = { ids: [], entities: {} };
 
