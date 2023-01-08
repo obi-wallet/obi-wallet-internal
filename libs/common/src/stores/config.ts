@@ -1,6 +1,6 @@
 import { action, makeObservable, observable } from "mobx";
 
-import { Chain } from "../chains";
+import { Chain, TerraChain } from "../chains";
 import { Language } from "../languages";
 
 export enum Brand {
@@ -20,6 +20,10 @@ export interface Config {
   chains: {
     enabled: Chain[];
     default: Chain;
+  };
+  terraChains: {
+    enabled: TerraChain[];
+    default: TerraChain;
   };
   languages: {
     enabled: Language[];

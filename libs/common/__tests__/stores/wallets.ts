@@ -19,6 +19,10 @@ function createWalletsStore() {
         enabled: ["juno-1"],
         default: "juno-1",
       },
+      terraChains: {
+        enabled: ["phoenix-1"],
+        default: "phoenix-1",
+      },
       languages: {
         enabled: ["en"],
         default: "en",

@@ -1,6 +1,7 @@
 import { Brand, Feature, WalletState } from "../../src";
 import { MockKVStore } from "../../src/kv-store/mock";
 import { RootStore } from "../../src/stores/root";
+import { SerializedData } from "../../src/stores/wallets/serialized-data";
 
 const kvStore = new MockKVStore("obi-wallets-store");
 
@@ -12,6 +13,10 @@ function createWalletsStore() {
       chains: {
         enabled: ["juno-1"],
         default: "juno-1",
+      },
+      terraChains: {
+        enabled: ["phoenix-1"],
+        default: "phoenix-1",
       },
       languages: {
         enabled: ["en"],
@@ -29,6 +34,10 @@ function createWalletsStore() {
   return rootStore.obiWalletsStore;
 }
 
+beforeEach(() => {
+  MockKVStore.reset();
+});
+
 test("Empty KVStore", async () => {
   const walletsStore = createWalletsStore();
   expect(walletsStore.state).toEqual(WalletState.LOADING);
@@ -38,5 +47,39 @@ test("Empty KVStore", async () => {
   expect(await kvStore.get("wallets")).toEqual({
     currentWalletIndex: null,
     wallets: [],
+  });
+});
+
+test("KVStore with no wallets", async () => {
+  await kvStore.set<SerializedData>("wallets", {
+    currentWalletIndex: null,
+    wallets: [],
+  });
+  const walletsStore = createWalletsStore();
+  expect(walletsStore.state).toEqual(WalletState.LOADING);
+  await walletsStore.__initPromise;
+  expect(walletsStore.currentWallet).toEqual(null);
+  expect(walletsStore.state).toEqual(WalletState.READY);
+});
+
+test("Fail on invalid data", async () => {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  jest.spyOn(console, "error").mockImplementation(() => {});
+  const invalidData = { invalid: [] };
+  await kvStore.set("wallets", invalidData);
+  const walletsStore = createWalletsStore();
+  await walletsStore.__initPromise;
+  expect(walletsStore.currentWallet).toEqual(null);
+  expect(walletsStore.state).toEqual(WalletState.INVALID);
+  expect(await kvStore.get("wallets")).toEqual(invalidData);
+});
+
+describe("TerraMultisigWallet", () => {
+  test("Empty terra multisig wallet", async () => {
+    const walletsStore = createWalletsStore();
+    await walletsStore.__initPromise;
+    const wallet = await walletsStore.addTerraMultisigWallet();
+    expect(walletsStore.currentWallet).toEqual(wallet);
+    expect(wallet.isReady).toEqual(false);
   });
 });

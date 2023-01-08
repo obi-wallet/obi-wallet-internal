@@ -1,16 +1,16 @@
 import * as t from "io-ts";
 
 import { nullable } from "../helpers";
-import * as Multisig from "../multisig/serialized-data";
+import * as TerraMultisig from "./terra-multisig-wallet/serialized-data";
 
 export const SerializedTerraMultisigWalletAnyVersion = t.type({
   type: t.literal("terra-multisig"),
-  data: Multisig.SerializedDataAnyVersion,
+  data: TerraMultisig.SerializedDataAnyVersion,
 });
 
 export const SerializedTerraMultisigWallet = t.type({
   type: t.literal("terra-multisig"),
-  data: Multisig.SerializedData,
+  data: TerraMultisig.SerializedData,
 });
 export type SerializedTerraMultisigWallet = t.TypeOf<
   typeof SerializedTerraMultisigWallet
@@ -84,7 +84,7 @@ export function migrateSerializedData(
         ) {
           return {
             type: wallet.type,
-            data: Multisig.migrateSerializedData(wallet.data),
+            data: TerraMultisig.migrateSerializedData(wallet.data),
           };
         }
         return wallet;

@@ -93,6 +93,7 @@ export class RootStore {
     this.chainStore = new ChainStore({ configStore: this.configStore });
 
     this.obiWalletsStore = new ObiWalletsStore({
+      chainStore: this.chainStore,
       kvStore: new KVStore("obi-wallets-store"),
     });
     this.walletsStore = new WalletsStore({

@@ -3,17 +3,20 @@ import { action, computed, makeObservable, observable, toJS } from "mobx";
 import { nanoid } from "nanoid/non-secure";
 import invariant from "tiny-invariant";
 
+import { ChainStore } from "../chain";
 import { WalletState } from "../wallets";
 import { AbstractWallet } from "../wallets/abstract-wallet";
 import {
   migrateSerializedData,
   SerializedData,
   SerializedDataAnyVersion,
+  SerializedTerraMultisigWallet,
   SerializedWallet,
 } from "./serialized-data";
 import { TerraMultisigWallet } from "./terra-multisig-wallet";
 
 export class ObiWalletsStore {
+  protected readonly chainStore: ChainStore;
   protected readonly kvStore: KVStore;
 
   @observable
@@ -33,7 +36,14 @@ export class ObiWalletsStore {
 
   public __initPromise: Promise<void>;
 
-  constructor({ kvStore }: { kvStore: KVStore }) {
+  constructor({
+    chainStore,
+    kvStore,
+  }: {
+    chainStore: ChainStore;
+    kvStore: KVStore;
+  }) {
+    this.chainStore = chainStore;
     this.kvStore = kvStore;
     makeObservable(this);
     this.__initPromise = this.init();
@@ -92,6 +102,24 @@ export class ObiWalletsStore {
     this.currentWalletId = id;
     return wallet;
   };
+
+  @action
+  public async addTerraMultisigWallet() {
+    const wallet: SerializedTerraMultisigWallet = {
+      type: "terra-multisig",
+      data: {
+        chain: this.chainStore.currentTerraChain,
+        currentAdmin: null,
+        nextAdmin: {
+          biometrics: null,
+          phoneNumber: null,
+          social: null,
+        },
+        proxyAddress: null,
+      },
+    };
+    return (await this.addWallet(wallet)) as TerraMultisigWallet;
+  }
 
   @action
   public getWallet(id: string) {
@@ -171,9 +199,8 @@ export class ObiWalletsStore {
       case "terra-multisig":
         return new TerraMultisigWallet({
           id,
-          // TODO: should be part of serialized wallet
-          // TODO: pass onChange
-          chain: "pisco-1",
+          serializedWallet,
+          onChange,
         });
     }
   };

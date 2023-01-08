@@ -6,6 +6,10 @@ export const config: Config = {
     enabled: ["juno-1"],
     default: "juno-1",
   },
+  terraChains: {
+    enabled: [],
+    default: "phoenix-1",
+  },
   languages: {
     enabled: ["en", "es"],
     default: "en",
