@@ -3,9 +3,6 @@ import {
   isMultisigDemoWallet,
   MultisigKey,
   Text,
-  ObiWalletsStore,
-  MultisigWallet,
-  SinglesigWallet,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { action } from "mobx";
@@ -13,11 +10,10 @@ import { observer } from "mobx-react-lite";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, Image, SafeAreaView, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import invariant from "tiny-invariant";
 
 import { Button } from "../../../button";
 import { LanguagePicker } from "../../../language-picker";
-import { useStore, useWalletsStore } from "../../../stores";
+import { useStore } from "../../../stores";
 import {
   AccountPickerModal,
   useAccountPickerModalProps,
@@ -33,25 +29,14 @@ export type WelcomeProps = NativeStackScreenProps<
 >;
 
 export const Welcome = observer<WelcomeProps>(({ navigation }) => {
-  const { configStore } = useStore();
-  const walletsStore = useWalletsStore();
+  const { configStore, walletsStore } = useStore();
   const isObi = configStore.isObi();
   const wallet = walletsStore.currentWallet;
-  // TODO:
-  const multisigWallet =
-    !(walletsStore instanceof ObiWalletsStore) &&
-    (wallet instanceof MultisigWallet || wallet instanceof SinglesigWallet) &&
-    isAnyMultisigWallet(wallet)
-      ? wallet
-      : null;
+  const multisigWallet = isAnyMultisigWallet(wallet) ? wallet : null;
   const intl = useIntl();
 
-  // TODO:
   const isInRecovery =
-    !(walletsStore instanceof ObiWalletsStore) &&
-    (wallet instanceof MultisigWallet || wallet instanceof SinglesigWallet) &&
-    isAnyMultisigWallet(wallet) &&
-    wallet.keyInRecovery !== null;
+    isAnyMultisigWallet(wallet) && wallet.keyInRecovery !== null;
 
   const accountPickerModalProps = useAccountPickerModalProps();
 
@@ -182,10 +167,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                       {
                         text: "Continue",
                         async onPress() {
-                          invariant(
-                            !(walletsStore instanceof ObiWalletsStore),
-                            "Not implemented yet"
-                          );
+                          // TODO: handle terra multisig wallet
                           const wallet =
                             multisigWallet ??
                             (await walletsStore.addMultisigWallet());
@@ -240,11 +222,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                   marginTop: 20,
                 }}
                 onPress={action(async () => {
-                  invariant(
-                    !(walletsStore instanceof ObiWalletsStore),
-                    "Not implemented yet"
-                  );
-
+                  // TODO: handle terra multisig wallet
                   if (!isMultisigDemoWallet(walletsStore.currentWallet)) {
                     await walletsStore.addMultisigDemoWallet();
                   }
@@ -357,13 +335,11 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           }}
           onPress={action(async () => {
             if (!multisigWallet) {
-              if (walletsStore instanceof ObiWalletsStore) {
-                if (!walletsStore.currentWallet) {
-                  await walletsStore.addTerraMultisigWallet();
-                }
-              } else {
-                await walletsStore.addMultisigWallet();
-              }
+              // TODO: handle terra multisig wallet
+              //   if (!walletsStore.currentWallet) {
+              //     await walletsStore.addTerraMultisigWallet();
+              //   }
+              await walletsStore.addMultisigWallet();
             }
             navigation.navigate(navigationUrl);
           })}

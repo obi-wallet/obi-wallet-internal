@@ -3,11 +3,13 @@ import { DeliverTxResponse } from "@cosmjs/stargate";
 import { Keplr } from "@keplr-wallet/provider";
 import { BACKGROUND_PORT } from "@keplr-wallet/router";
 import {
+  isAnyCosmosMultisigWallet,
   isAnyMultisigWallet,
   MessageRequesterExternal,
   PricingTier,
   RequestObiInAppPurchaseMsg,
   RequestObiSignAndBroadcastMsg,
+  WalletType,
 } from "@obi-wallet/common";
 import { useMemo } from "react";
 import invariant from "tiny-invariant";
@@ -24,15 +26,20 @@ class ConcreteKeplr extends Keplr {
 
     invariant(currentWallet, "Expected `currentWallet` to be defined.");
 
-    const msg = new RequestObiSignAndBroadcastMsg({
-      id: currentWallet.id,
-      encodeObjects: messages,
-      multisig: isAnyMultisigWallet(currentWallet)
-        ? currentWallet.currentAdmin
-        : null,
-      wrap: true,
-    });
-    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    if (currentWallet.type === WalletType.Multisig) {
+      const msg = new RequestObiSignAndBroadcastMsg({
+        id: currentWallet.id,
+        encodeObjects: messages,
+        multisig: isAnyCosmosMultisigWallet(currentWallet)
+          ? currentWallet.currentAdmin
+          : null,
+        wrap: true,
+      });
+      return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    }
+
+    // TODO: handle terra multisig
+    throw new Error("not implemented yet");
   }
 
   public async obiInAppPurchase(

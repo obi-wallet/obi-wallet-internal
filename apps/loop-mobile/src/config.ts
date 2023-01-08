@@ -1,7 +1,8 @@
-import { Brand, Config, Feature } from "@obi-wallet/common";
+import { Brand, Config, Feature, MultisigWalletType } from "@obi-wallet/common";
 
 export const config: Config = {
   brand: Brand.Loop,
+  defaultMultisigWalletType: MultisigWalletType.Cosmos,
   chains: {
     enabled: ["juno-1"],
     default: "juno-1",
@@ -18,6 +19,5 @@ export const config: Config = {
     [Feature.AccountsTab]: false,
     [Feature.HealthChecks]: false,
     [Feature.NftTab]: true,
-    [Feature.ObiWalletsStore]: false,
   },
 };

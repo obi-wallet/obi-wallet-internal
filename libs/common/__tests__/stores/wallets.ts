@@ -1,4 +1,4 @@
-import { Brand, Feature } from "../../src";
+import { Brand, Feature, MultisigWalletType } from "../../src";
 import { MockKVStore } from "../../src/kv-store/mock";
 import { SerializedData as MultisigSerializedData } from "../../src/stores/multisig/serialized-data";
 import { RootStore } from "../../src/stores/root";
@@ -15,6 +15,7 @@ function createWalletsStore() {
     deviceLanguage: "en",
     initialConfig: {
       brand: Brand.Obi,
+      defaultMultisigWalletType: MultisigWalletType.Terra,
       chains: {
         enabled: ["juno-1"],
         default: "juno-1",
@@ -31,7 +32,6 @@ function createWalletsStore() {
         [Feature.AccountsTab]: false,
         [Feature.HealthChecks]: false,
         [Feature.NftTab]: false,
-        [Feature.ObiWalletsStore]: false,
       },
     },
     KVStore: MockKVStore,
@@ -125,6 +125,16 @@ describe("MultisigWallet", () => {
     const wallet = await walletsStore.addMultisigWallet();
     expect(walletsStore.currentWallet).toEqual(wallet);
     expect(wallet.isDemo).toEqual(false);
+    expect(wallet.isReady).toEqual(false);
+  });
+});
+
+describe("TerraMultisigWallet", () => {
+  test("Empty terra multisig wallet", async () => {
+    const walletsStore = createWalletsStore();
+    await walletsStore.__initPromise;
+    const wallet = await walletsStore.addTerraMultisigWallet();
+    expect(walletsStore.currentWallet).toEqual(wallet);
     expect(wallet.isReady).toEqual(false);
   });
 });

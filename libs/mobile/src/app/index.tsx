@@ -31,7 +31,7 @@ import { SendScreen } from "./screens/send";
 import { settingsScreens } from "./screens/settings";
 import { SplashScreen } from "./screens/splash";
 import { WebViewScreen } from "./screens/web-view";
-import { useStore, useWalletsStore } from "./stores";
+import { useStore } from "./stores";
 
 export interface BaseAppProps {
   initialConfig: Config;
@@ -133,8 +133,7 @@ export const DemoModeHeader = observer(() => {
 });
 
 export const StateRenderer = observer(function StateRenderer() {
-  // const { walletsStore } = useStore();
-  const walletsStore = useWalletsStore();
+  const { walletsStore } = useStore();
 
   switch (walletsStore.state) {
     case WalletState.LOADING:

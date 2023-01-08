@@ -8,15 +8,20 @@ export enum Brand {
   Loop = "Loop",
 }
 
+export enum MultisigWalletType {
+  Cosmos = "Cosmos",
+  Terra = "Terra",
+}
+
 export enum Feature {
   AccountsTab = "AccountsTab",
   HealthChecks = "HealthChecks",
   NftTab = "NftTab",
-  ObiWalletsStore = "ObiWalletsStore",
 }
 
 export interface Config {
   brand: Brand;
+  defaultMultisigWalletType: MultisigWalletType;
   chains: {
     enabled: Chain[];
     default: Chain;

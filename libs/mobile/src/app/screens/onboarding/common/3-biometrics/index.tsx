@@ -13,7 +13,7 @@ import {
   resetBiometricsKeyPair,
 } from "../../../../biometrics";
 import { Button } from "../../../../button";
-import { useLoopOrObiMultisigWallet, useStore } from "../../../../stores";
+import { useMultisigWallet, useStore } from "../../../../stores";
 import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
 import {
@@ -31,7 +31,7 @@ export type MultisigBiometricsProps = NativeStackScreenProps<
 
 export const MultisigBiometrics = observer<MultisigBiometricsProps>(
   ({ navigation }) => {
-    const wallet = useLoopOrObiMultisigWallet();
+    const wallet = useMultisigWallet();
     const isObi = useStore().configStore.isObi();
 
     const [scannedBiometrics, setScannedBiometrics] = useState(false);
@@ -70,7 +70,6 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
     useEffect(() => {
       (async () => {
         const { biometrics } = wallet.nextAdmin;
-        // @ts-expect-error TODO: keyInRecovery
         if (biometrics && wallet.keyInRecovery !== "biometrics") {
           Alert.alert(
             intl.formatMessage({
