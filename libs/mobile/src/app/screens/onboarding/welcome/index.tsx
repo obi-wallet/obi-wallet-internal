@@ -167,7 +167,6 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                       {
                         text: "Continue",
                         async onPress() {
-                          // TODO: handle terra multisig wallet
                           const wallet =
                             multisigWallet ??
                             (await walletsStore.addMultisigWallet());
@@ -222,7 +221,6 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                   marginTop: 20,
                 }}
                 onPress={action(async () => {
-                  // TODO: handle terra multisig wallet
                   if (!isMultisigDemoWallet(walletsStore.currentWallet)) {
                     await walletsStore.addMultisigDemoWallet();
                   }
@@ -335,10 +333,6 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           }}
           onPress={action(async () => {
             if (!multisigWallet) {
-              // TODO: handle terra multisig wallet
-              //   if (!walletsStore.currentWallet) {
-              //     await walletsStore.addTerraMultisigWallet();
-              //   }
               await walletsStore.addMultisigWallet();
             }
             navigation.navigate(navigationUrl);

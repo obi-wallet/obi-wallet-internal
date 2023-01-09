@@ -122,7 +122,7 @@ describe("MultisigWallet", () => {
   test("Empty multisig wallet", async () => {
     const walletsStore = createWalletsStore();
     await walletsStore.__initPromise;
-    const wallet = await walletsStore.addMultisigWallet();
+    const wallet = await walletsStore.addCosmosMultisigWallet();
     expect(walletsStore.currentWallet).toEqual(wallet);
     expect(wallet.isDemo).toEqual(false);
     expect(wallet.isReady).toEqual(false);

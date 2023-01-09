@@ -92,6 +92,7 @@ export class RootStore {
 
     this.walletsStore = new WalletsStore({
       chainStore: this.chainStore,
+      configStore: this.configStore,
       kvStore: new KVStore("wallets-store"),
       legacyKVStores: {
         multisig: new KVStore("multisig-store"),

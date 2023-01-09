@@ -4,6 +4,7 @@ import { nanoid } from "nanoid/non-secure";
 import invariant from "tiny-invariant";
 
 import { ChainStore } from "../chain";
+import { ConfigStore, MultisigWalletType } from "../config";
 import { WalletType } from "./abstract-wallet";
 import { MultisigWallet } from "./multisig-wallet";
 import {
@@ -74,6 +75,7 @@ export function isMultisigDemoWallet(
 
 export class WalletsStore {
   protected readonly chainStore: ChainStore;
+  protected readonly configStore: ConfigStore;
   protected readonly kvStore: KVStore;
   protected readonly legacyKVStores: {
     multisig: KVStore;
@@ -103,14 +105,17 @@ export class WalletsStore {
 
   constructor({
     chainStore,
+    configStore,
     kvStore,
     legacyKVStores,
   }: {
     chainStore: ChainStore;
+    configStore: ConfigStore;
     kvStore: KVStore;
     legacyKVStores: { multisig: KVStore; singlesig: KVStore };
   }) {
     this.chainStore = chainStore;
+    this.configStore = configStore;
     this.kvStore = kvStore;
     this.legacyKVStores = legacyKVStores;
     makeObservable(this);
@@ -175,6 +180,24 @@ export class WalletsStore {
     return wallet;
   };
 
+  public async addMultisigWallet() {
+    switch (this.configStore.config.defaultMultisigWalletType) {
+      case MultisigWalletType.Cosmos:
+        return await this.addCosmosMultisigWallet();
+      case MultisigWalletType.Terra:
+        return await this.addTerraMultisigWallet();
+    }
+  }
+
+  public async addMultisigDemoWallet() {
+    switch (this.configStore.config.defaultMultisigWalletType) {
+      case MultisigWalletType.Cosmos:
+        return await this.addCosmosMultisigDemoWallet();
+      case MultisigWalletType.Terra:
+        return await this.addTerraMultisigDemoWallet();
+    }
+  }
+
   public async addTerraMultisigWallet() {
     const wallet: SerializedTerraMultisigWallet = {
       type: "terra-multisig",
@@ -211,7 +234,7 @@ export class WalletsStore {
   }
 
   @action
-  public async addMultisigWallet() {
+  public async addCosmosMultisigWallet() {
     const wallet: SerializedMultisigWallet = {
       type: "multisig",
       data: {
@@ -229,7 +252,7 @@ export class WalletsStore {
   }
 
   @action
-  public async addMultisigDemoWallet() {
+  public async addCosmosMultisigDemoWallet() {
     const wallet: SerializedMultisigDemoWallet = {
       type: "multisig-demo",
       data: {
