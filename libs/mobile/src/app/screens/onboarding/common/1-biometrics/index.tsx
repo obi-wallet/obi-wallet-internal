@@ -203,11 +203,11 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
             label={intl.formatMessage({ id: "onboarding4.biometrics.button" })}
             flavor="blue"
             LeftIcon={isObi ? undefined : Scan}
-            onPress={() => {
+            onPress={async () => {
               if (scannedBiometrics) {
                 navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
               } else {
-                scanBiometrics();
+                await scanBiometrics();
               }
             }}
             disabled={buttonDisabledDoubleclick}
