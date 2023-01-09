@@ -224,6 +224,7 @@ export const AccountScreenInner = observer(function AccountScreenInner() {
       >
         <FlatList
           data={wallet
+            // @ts-expect-error TODO: TypeScript doesn't understand that wallet and multisig match
             .getSignerTypes(multisig)
             .map((signerType) => {
               if (signerType !== "biometrics" && signerType !== "phoneNumber") {

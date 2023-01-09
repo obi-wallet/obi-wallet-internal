@@ -1,8 +1,8 @@
 import { MockKVStore } from "../../src/kv-store/mock";
-import { Brand, Feature, MultisigWalletType } from "../../src/stores/config";
+import { Brand, Feature } from "../../src/stores/config";
 import { SerializedData as MultisigSerializedData } from "../../src/stores/multisig/serialized-data";
 import { RootStore } from "../../src/stores/root";
-import { WalletState } from "../../src/stores/wallets";
+import { WalletState, WalletType } from "../../src/stores/wallets";
 import { MultisigWallet } from "../../src/stores/wallets/multisig-wallet";
 import { SerializedData } from "../../src/stores/wallets/serialized-data";
 
@@ -15,7 +15,7 @@ function createWalletsStore() {
     deviceLanguage: "en",
     initialConfig: {
       brand: Brand.Obi,
-      defaultMultisigWalletType: MultisigWalletType.Terra,
+      defaultMultisigWalletType: WalletType.TerraMultisig,
       chains: {
         enabled: ["juno-1"],
         default: "juno-1",

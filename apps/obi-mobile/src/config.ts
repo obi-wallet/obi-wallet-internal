@@ -1,8 +1,8 @@
-import { Brand, Config, Feature, MultisigWalletType } from "@obi-wallet/common";
+import { Brand, Config, Feature, WalletType } from "@obi-wallet/common";
 
 export const config: Config = {
   brand: Brand.Obi,
-  defaultMultisigWalletType: MultisigWalletType.Terra,
+  defaultMultisigWalletType: WalletType.TerraMultisig,
   chains: {
     enabled: ["juno-1", "uni-3"],
     default: "juno-1",

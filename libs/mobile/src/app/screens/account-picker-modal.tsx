@@ -14,6 +14,7 @@ export interface AccountPickerModalProps {
   visible: boolean;
   open(): void;
   close(): void;
+  showNotReadyWallets?: boolean;
 }
 
 export function useAccountPickerModalProps() {
@@ -30,7 +31,7 @@ export function useAccountPickerModalProps() {
 }
 
 export const AccountPickerModal = observer<AccountPickerModalProps>(
-  ({ visible, open, close }) => {
+  ({ visible, open, close, showNotReadyWallets }) => {
     const { walletsStore } = useStore();
 
     return (
@@ -60,7 +61,10 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
             </Text>
           </View>
           <ScrollView>
-            {walletsStore.readyWallets.map((wallet) => {
+            {(showNotReadyWallets
+              ? walletsStore.wallets
+              : walletsStore.readyWallets
+            ).map((wallet) => {
               return (
                 <TouchableOpacity
                   key={wallet.id}

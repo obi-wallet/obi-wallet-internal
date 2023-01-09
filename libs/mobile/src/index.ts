@@ -11,3 +11,4 @@ export * from "./app/root-stack";
 export * from "./app/screens/onboarding/onboarding-stack";
 export * from "./app/screens/settings/settings-stack";
 export * from "./app/screens/home/home-stack";
+export * from "./app/screens/account-picker-modal";

@@ -181,19 +181,19 @@ export class WalletsStore {
   };
 
   public async addMultisigWallet() {
-    switch (this.configStore.config.defaultMultisigWalletType) {
-      case MultisigWalletType.Cosmos:
+    switch (this.configStore.getDefaultMultisigWalletType()) {
+      case WalletType.Multisig:
         return await this.addCosmosMultisigWallet();
-      case MultisigWalletType.Terra:
+      case WalletType.TerraMultisig:
         return await this.addTerraMultisigWallet();
     }
   }
 
   public async addMultisigDemoWallet() {
-    switch (this.configStore.config.defaultMultisigWalletType) {
-      case MultisigWalletType.Cosmos:
+    switch (this.configStore.getDefaultMultisigWalletType()) {
+      case WalletType.Multisig:
         return await this.addCosmosMultisigDemoWallet();
-      case MultisigWalletType.Terra:
+      case WalletType.TerraMultisig:
         return await this.addTerraMultisigDemoWallet();
     }
   }
@@ -336,7 +336,7 @@ export class WalletsStore {
     }
   }
 
-  protected async getSerializedData(): Promise<SerializedDataAnyVersion> {
+  public async getSerializedData(): Promise<SerializedDataAnyVersion> {
     const data = await this.kvStore.get("wallets");
     if (!data) {
       return {
