@@ -1,5 +1,5 @@
-import { Brand, Feature, MultisigWalletType } from "../../src";
 import { MockKVStore } from "../../src/kv-store/mock";
+import { Brand, Feature, MultisigWalletType } from "../../src/stores/config";
 import { SerializedData as MultisigSerializedData } from "../../src/stores/multisig/serialized-data";
 import { RootStore } from "../../src/stores/root";
 import { WalletState } from "../../src/stores/wallets";
