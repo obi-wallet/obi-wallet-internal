@@ -39,6 +39,8 @@ import {
   MultisigWallet,
   RequestObiSignAndBroadcastPayload,
   SinglesigWallet,
+  TerraMultisig,
+  TerraMultisigWallet,
   Text,
   WalletType,
 } from "@obi-wallet/common";
@@ -76,7 +78,7 @@ import { ConfirmMessages } from "./confirm-messages";
 import { wrapMessages } from "./wrap-messages";
 
 export interface SignatureModalProps extends ModalProps {
-  wallet: MultisigWallet | SinglesigWallet;
+  wallet: TerraMultisigWallet | MultisigWallet | SinglesigWallet;
   innerMessages: AminoMsg[];
   messages: AminoMsg[];
   rawMessages: EncodeObject[];
@@ -94,6 +96,9 @@ export const SignatureModal = observer<SignatureModalProps>((props) => {
   if (!props.wallet.type) return null;
 
   switch (props.wallet.type) {
+    case WalletType.TerraMultisig:
+      // TODO: not implemented yet
+      return null;
     case WalletType.Multisig:
       return <SignatureModalMultisig {...props} />;
     case WalletType.Singlesig:
@@ -144,314 +149,309 @@ export const SignatureModalSinglesig = observer<SignatureModalProps>(
   }
 );
 
-export const SignatureModalMultisig = observer<SignatureModalProps>(
-  function SignatureModal({
-    wallet,
-    messages,
-    rawMessages,
-    multisig,
-    onCancel,
-    onConfirm,
-    hiddenKeyIds,
-    isOnboarding,
-    ...props
-  }: SignatureModalProps) {
-    const intl = useIntl();
-    const [signatures, setSignatures] = useState(new Map<string, Uint8Array>());
-    const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
-    const { chainStore, configStore } = useStore();
-    const { currentChainInformation } = chainStore;
-    const [settingBiometrics, setSettingBiometrics] = useState(false);
-    const isObi = configStore.isObi();
-    const isLoop = configStore.isLoop();
-    const numberOfSignatures = signatures.size;
-    const threshold = multisig?.multisig?.publicKey.value.threshold;
-    const enoughSignatures = threshold
-      ? numberOfSignatures >= parseInt(threshold, 10)
-      : false;
+export const SignatureModalMultisig = observer<
+  SignatureModalProps & { multisig?: Multisig | null }
+>(function SignatureModal({
+  wallet,
+  messages,
+  rawMessages,
+  multisig,
+  onCancel,
+  onConfirm,
+  hiddenKeyIds,
+  isOnboarding,
+  ...props
+}: SignatureModalProps) {
+  const intl = useIntl();
+  const [signatures, setSignatures] = useState(new Map<string, Uint8Array>());
+  const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
+  const { chainStore, configStore } = useStore();
+  const { currentChainInformation } = chainStore;
+  const [settingBiometrics, setSettingBiometrics] = useState(false);
+  const isObi = configStore.isObi();
+  const isLoop = configStore.isLoop();
+  const numberOfSignatures = signatures.size;
+  const threshold = multisig?.multisig?.publicKey.value.threshold;
+  const enoughSignatures = threshold
+    ? numberOfSignatures >= parseInt(threshold, 10)
+    : false;
 
-    const getMessage = useCallback(async () => {
-      const address = multisig?.multisig?.address;
+  const getMessage = useCallback(async () => {
+    const address = multisig?.multisig?.address;
 
-      const fee = {
-        amount: coins(6000, currentChainInformation.denom),
-        gas: "1280000",
-      };
+    const fee = {
+      amount: coins(6000, currentChainInformation.denom),
+      gas: "1280000",
+    };
 
-      invariant(address, "Expected `address` to exist.");
+    invariant(address, "Expected `address` to exist.");
 
-      const client = await createStargateClient(
-        currentChainInformation.chainId
-      );
+    const client = await createStargateClient(currentChainInformation.chainId);
 
-      if (!(await client.getAccount(address))) {
-        await lendFees({ chainId: currentChainInformation.chainId, address });
-      }
-
-      const account = await client.getAccount(address);
-      invariant(account, "Expected `account` to be ready.");
-
-      const signDoc: StdSignDoc = {
-        memo: "",
-        account_number: account.accountNumber.toString(),
-        chain_id: currentChainInformation.chainId,
-        fee: fee,
-        msgs: messages,
-        sequence: account.sequence.toString(),
-      };
-
-      client.disconnect();
-      return new Sha256(serializeSignDoc(signDoc)).digest();
-    }, [
-      multisig,
-      currentChainInformation.denom,
-      currentChainInformation.chainId,
-      messages,
-    ]);
-
-    function getKey({ id, title }: { id: MultisigKey; title: string }): Key[] {
-      const factor = multisig?.[id];
-      if (!factor) return [];
-
-      const alreadySigned = signatures.has(factor.address);
-      const onPress = async () => {
-        if (alreadySigned) return;
-
-        switch (id) {
-          case "biometrics": {
-            const message = await getMessage();
-            const { signature } = await createBiometricSignature({
-              payload: message,
-              demoMode: isMultisigDemoWallet(wallet),
-            });
-            const biometrics = multisig?.biometrics;
-            invariant(biometrics, "Expected device key to exist.");
-
-            setSignatures((signatures) => {
-              return new Map(signatures.set(biometrics.address, signature));
-            });
-            break;
-          }
-          case "phoneNumber":
-            phoneNumberBottomSheetRef.current?.snapToIndex(0);
-            break;
-          case "cloud":
-            console.log("Not implemented yet");
-            break;
-        }
-      };
-
-      return [
-        {
-          id,
-          title,
-          signed: alreadySigned,
-          right: alreadySigned ? <CheckIcon /> : null,
-          onPress,
-        },
-      ];
+    if (!(await client.getAccount(address))) {
+      await lendFees({ chainId: currentChainInformation.chainId, address });
     }
 
-    const data: Key[] = [
-      ...getKey({
-        id: "biometrics",
-        title: intl.formatMessage({
-          id: "signature.modal.biometricsignature",
-          defaultMessage: "Biometrics Signature",
-        }),
-      }),
-      ...getKey({
-        id: "phoneNumber",
-        title: intl.formatMessage({
-          id: "signature.modal.phonesignature",
-          defaultMessage: "Phone Number Signature",
-        }),
-      }),
-    ].filter((key) => {
-      return hiddenKeyIds ? !hiddenKeyIds.includes(key.id) : true;
-    });
-    const [loading, setLoading] = useState(false);
+    const account = await client.getAccount(address);
+    invariant(account, "Expected `account` to be ready.");
 
-    const didAutosign = useRef(false);
-    useEffect(() => {
-      (async () => {
-        if (props.visible && !didAutosign.current) {
-          didAutosign.current = true;
-          const biometrics = data.find((key) => key.id === "biometrics");
-          if (biometrics && typeof biometrics.onPress === "function") {
-            try {
-              setSettingBiometrics(true);
-              await biometrics.onPress();
-            } catch (e) {
-              // noop
-            }
-            setSettingBiometrics(false);
-          }
-        }
-      })();
-      // We really only want to do this once
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.visible]);
-
-    if (!threshold) return null;
-
-    const getSignaturePercentage = () => {
-      const percentage = (numberOfSignatures / parseInt(threshold, 10)) * 100;
-      if (percentage > 100) return "100%";
-      return `${percentage}%`;
+    const signDoc: StdSignDoc = {
+      memo: "",
+      account_number: account.accountNumber.toString(),
+      chain_id: currentChainInformation.chainId,
+      fee: fee,
+      msgs: messages,
+      sequence: account.sequence.toString(),
     };
-    return (
-      <ConfirmMessages
-        {...props}
-        loading={loading}
-        isOnboarding={isOnboarding}
-        disabled={!enoughSignatures}
-        messages={messages}
-        onCancel={onCancel}
-        onConfirm={async () => {
-          try {
-            setLoading(true);
-            await onConfirm(signatures);
-            setLoading(false);
-          } catch (e) {
-            const error = e as Error;
-            setLoading(false);
-            console.error(error);
-            Alert.alert("Error confirming signature", error.message);
-          }
-        }}
-        footer={
-          multisig?.phoneNumber ? (
-            <BottomSheet bottomSheetRef={phoneNumberBottomSheetRef}>
-              <PhoneNumberBottomSheetContent
-                payload={multisig.phoneNumber}
-                wallet={wallet}
-                getMessage={getMessage}
-                onSuccess={(signature) => {
-                  setSignatures((signatures) => {
-                    const { phoneNumber } = multisig;
-                    invariant(
-                      phoneNumber,
-                      "Expected phone number key to exist."
-                    );
-                    return new Map(
-                      signatures.set(phoneNumber.address, signature)
-                    );
-                  });
 
-                  phoneNumberBottomSheetRef.current?.close();
-                }}
-              />
-            </BottomSheet>
-          ) : null
+    client.disconnect();
+    return new Sha256(serializeSignDoc(signDoc)).digest();
+  }, [
+    multisig,
+    currentChainInformation.denom,
+    currentChainInformation.chainId,
+    messages,
+  ]);
+
+  function getKey({ id, title }: { id: MultisigKey; title: string }): Key[] {
+    const factor = multisig?.[id];
+    if (!factor) return [];
+
+    const alreadySigned = signatures.has(factor.address);
+    const onPress = async () => {
+      if (alreadySigned) return;
+
+      switch (id) {
+        case "biometrics": {
+          const message = await getMessage();
+          const { signature } = await createBiometricSignature({
+            payload: message,
+            demoMode: isMultisigDemoWallet(wallet),
+          });
+          const biometrics = multisig?.biometrics;
+          invariant(biometrics, "Expected device key to exist.");
+
+          setSignatures((signatures) => {
+            return new Map(signatures.set(biometrics.address, signature));
+          });
+          break;
         }
-      >
-        {isLoop && (
-          <View
+        case "phoneNumber":
+          phoneNumberBottomSheetRef.current?.snapToIndex(0);
+          break;
+        case "cloud":
+          console.log("Not implemented yet");
+          break;
+      }
+    };
+
+    return [
+      {
+        id,
+        title,
+        signed: alreadySigned,
+        right: alreadySigned ? <CheckIcon /> : null,
+        onPress,
+      },
+    ];
+  }
+
+  const data: Key[] = [
+    ...getKey({
+      id: "biometrics",
+      title: intl.formatMessage({
+        id: "signature.modal.biometricsignature",
+        defaultMessage: "Biometrics Signature",
+      }),
+    }),
+    ...getKey({
+      id: "phoneNumber",
+      title: intl.formatMessage({
+        id: "signature.modal.phonesignature",
+        defaultMessage: "Phone Number Signature",
+      }),
+    }),
+  ].filter((key) => {
+    return hiddenKeyIds ? !hiddenKeyIds.includes(key.id) : true;
+  });
+  const [loading, setLoading] = useState(false);
+
+  const didAutosign = useRef(false);
+  useEffect(() => {
+    (async () => {
+      if (props.visible && !didAutosign.current) {
+        didAutosign.current = true;
+        const biometrics = data.find((key) => key.id === "biometrics");
+        if (biometrics && typeof biometrics.onPress === "function") {
+          try {
+            setSettingBiometrics(true);
+            await biometrics.onPress();
+          } catch (e) {
+            // noop
+          }
+          setSettingBiometrics(false);
+        }
+      }
+    })();
+    // We really only want to do this once
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.visible]);
+
+  if (!threshold) return null;
+
+  const getSignaturePercentage = () => {
+    const percentage = (numberOfSignatures / parseInt(threshold, 10)) * 100;
+    if (percentage > 100) return "100%";
+    return `${percentage}%`;
+  };
+  return (
+    <ConfirmMessages
+      {...props}
+      loading={loading}
+      isOnboarding={isOnboarding}
+      disabled={!enoughSignatures}
+      messages={messages}
+      onCancel={onCancel}
+      onConfirm={async () => {
+        try {
+          setLoading(true);
+          await onConfirm(signatures);
+          setLoading(false);
+        } catch (e) {
+          const error = e as Error;
+          setLoading(false);
+          console.error(error);
+          Alert.alert("Error confirming signature", error.message);
+        }
+      }}
+      footer={
+        multisig?.phoneNumber ? (
+          <BottomSheet bottomSheetRef={phoneNumberBottomSheetRef}>
+            <PhoneNumberBottomSheetContent
+              payload={multisig.phoneNumber}
+              wallet={wallet}
+              getMessage={getMessage}
+              onSuccess={(signature) => {
+                setSignatures((signatures) => {
+                  const { phoneNumber } = multisig;
+                  invariant(phoneNumber, "Expected phone number key to exist.");
+                  return new Map(
+                    signatures.set(phoneNumber.address, signature)
+                  );
+                });
+
+                phoneNumberBottomSheetRef.current?.close();
+              }}
+            />
+          </BottomSheet>
+        ) : null
+      }
+    >
+      {isLoop && (
+        <View
+          style={{
+            height: 10,
+            backgroundColor: "#1E1D3A",
+            borderRadius: 10,
+          }}
+        >
+          <LinearGradient
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            colors={["#FCCFF7", "#E659D6", "#8877EA", "#86E2EE"]}
             style={{
-              height: 10,
-              backgroundColor: "#1E1D3A",
+              flex: 1,
+              width: getSignaturePercentage(),
               borderRadius: 10,
             }}
-          >
-            <LinearGradient
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              colors={["#FCCFF7", "#E659D6", "#8877EA", "#86E2EE"]}
-              style={{
-                flex: 1,
-                width: getSignaturePercentage(),
-                borderRadius: 10,
-              }}
-            />
-          </View>
-        )}
-        {isLoop && (
-          <View>
-            <Text
-              style={{
-                textAlign: "center",
-                color: "#F6F5FF",
-                fontSize: 12,
-                fontWeight: "600",
-                opacity: 0.6,
-                marginTop: 5,
-              }}
-            >
-              <FormattedMessage
-                id="signature.keysrequired"
-                defaultMessage="Keys Required"
-              />
-              : {numberOfSignatures}/
-              {multisig.multisig?.publicKey.value.threshold}{" "}
-            </Text>
-          </View>
-        )}
-        {settingBiometrics ? (
-          <View
+          />
+        </View>
+      )}
+      {isLoop && (
+        <View>
+          <Text
             style={{
-              marginVertical: 10,
-              backgroundColor: isLoop ? "#130F23" : "",
-              borderRadius: 12,
+              textAlign: "center",
+              color: "#F6F5FF",
+              fontSize: 12,
+              fontWeight: "600",
+              opacity: 0.6,
+              marginTop: 5,
+            }}
+          >
+            <FormattedMessage
+              id="signature.keysrequired"
+              defaultMessage="Keys Required"
+            />
+            : {numberOfSignatures}/
+            {multisig.multisig?.publicKey.value.threshold}{" "}
+          </Text>
+        </View>
+      )}
+      {settingBiometrics ? (
+        <View
+          style={{
+            marginVertical: 10,
+            backgroundColor: isLoop ? "#130F23" : "",
+            borderRadius: 12,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingVertical: 50,
+          }}
+        >
+          <Loader
+            style={{
+              flex: 1,
               justifyContent: "center",
               alignItems: "center",
-              paddingVertical: 50,
+              zIndex: 999,
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
+            loadingText={intl.formatMessage({
+              id: "onboarding6.loadingtext",
+              defaultMessage: "Preparing Wallet...",
+            })}
+          />
+        </View>
+      ) : (
+        <KeysList
+          data={data}
+          tiled
+          style={{
+            marginVertical: 10,
+            backgroundColor: isObi ? "transparent" : "#130F23",
+            borderRadius: 12,
+          }}
+        />
+      )}
+      {isObi && (
+        <View>
+          <Text
+            style={{
+              textAlign: "center",
+              color: "#F6F5FF",
+              fontSize: 12,
+              fontWeight: "600",
+              opacity: 0.6,
+              marginTop: 5,
             }}
           >
-            <Loader
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 999,
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-              }}
-              loadingText={intl.formatMessage({
-                id: "onboarding6.loadingtext",
-                defaultMessage: "Preparing Wallet...",
-              })}
+            <FormattedMessage
+              id="signature.keysrequired"
+              defaultMessage="Keys Required"
             />
-          </View>
-        ) : (
-          <KeysList
-            data={data}
-            tiled
-            style={{
-              marginVertical: 10,
-              backgroundColor: isObi ? "transparent" : "#130F23",
-              borderRadius: 12,
-            }}
-          />
-        )}
-        {isObi && (
-          <View>
-            <Text
-              style={{
-                textAlign: "center",
-                color: "#F6F5FF",
-                fontSize: 12,
-                fontWeight: "600",
-                opacity: 0.6,
-                marginTop: 5,
-              }}
-            >
-              <FormattedMessage
-                id="signature.keysrequired"
-                defaultMessage="Keys Required"
-              />
-              : {numberOfSignatures}/
-              {multisig.multisig?.publicKey.value.threshold}{" "}
-            </Text>
-          </View>
-        )}
-      </ConfirmMessages>
-    );
-  }
-);
+            : {numberOfSignatures}/
+            {multisig.multisig?.publicKey.value.threshold}{" "}
+          </Text>
+        </View>
+      )}
+    </ConfirmMessages>
+  );
+});
 
 function createDefaultTypes(prefix: string): AminoConverters {
   return {
@@ -655,8 +655,8 @@ export function useSignatureModalProps({
 }
 
 interface PhoneNumberBottomSheetContentProps {
-  payload: Multisig["phoneNumber"];
-  wallet: MultisigWallet | SinglesigWallet;
+  payload: TerraMultisig["phoneNumber"] | Multisig["phoneNumber"];
+  wallet: TerraMultisigWallet | MultisigWallet | SinglesigWallet;
 
   getMessage(): Promise<Uint8Array>;
 

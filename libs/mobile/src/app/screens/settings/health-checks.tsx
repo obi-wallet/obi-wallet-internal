@@ -1,7 +1,7 @@
 import { MsgMigrateContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { useTheme } from "@emotion/react";
 import {
-  isMultisigWallet,
+  isCosmosMultisigWallet,
   JunoChecks,
   MultisigWallet,
   RequestObiSignAndBroadcastMsg,
@@ -23,19 +23,19 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 
-import { useMultisigWallet, useStore } from "../../stores";
+import { useCosmosMultisigWallet, useStore } from "../../stores";
 import { Back } from "../components/back";
 import WarningIcon from "../components/keys-list/assets/warning-icon.svg";
 
 export const HealthChecksScreen = observer(() => {
   const intl = useIntl();
   const { walletsStore } = useStore();
-  const wallet = useMultisigWallet();
+  const wallet = useCosmosMultisigWallet();
   const [problems, setProblems] = useState<string[] | undefined>();
   const theme = useTheme();
   const refetchProblems = useCallback(async () => {
     const wallet = walletsStore.currentWallet;
-    if (isMultisigWallet(wallet)) {
+    if (isCosmosMultisigWallet(wallet)) {
       setProblems(await wallet.identifyProblems());
     }
   }, [walletsStore.currentWallet]);

@@ -1,4 +1,5 @@
 import { MockKVStore } from "../../src/kv-store/mock";
+import { Brand, Feature, MultisigWalletType } from "../../src/stores/config";
 import { SerializedData as MultisigSerializedData } from "../../src/stores/multisig/serialized-data";
 import { RootStore } from "../../src/stores/root";
 import { WalletState } from "../../src/stores/wallets";
@@ -13,17 +14,24 @@ function createWalletsStore() {
   const rootStore = new RootStore({
     deviceLanguage: "en",
     initialConfig: {
+      brand: Brand.Obi,
+      defaultMultisigWalletType: MultisigWalletType.Terra,
       chains: {
         enabled: ["juno-1"],
         default: "juno-1",
+      },
+      terraChains: {
+        enabled: ["phoenix-1"],
+        default: "phoenix-1",
       },
       languages: {
         enabled: ["en"],
         default: "en",
       },
       features: {
-        healthChecks: false,
-        nftTab: false,
+        [Feature.AccountsTab]: false,
+        [Feature.HealthChecks]: false,
+        [Feature.NftTab]: false,
       },
     },
     KVStore: MockKVStore,
@@ -114,9 +122,19 @@ describe("MultisigWallet", () => {
   test("Empty multisig wallet", async () => {
     const walletsStore = createWalletsStore();
     await walletsStore.__initPromise;
-    const wallet = await walletsStore.addMultisigWallet();
+    const wallet = await walletsStore.addCosmosMultisigWallet();
     expect(walletsStore.currentWallet).toEqual(wallet);
     expect(wallet.isDemo).toEqual(false);
+    expect(wallet.isReady).toEqual(false);
+  });
+});
+
+describe("TerraMultisigWallet", () => {
+  test("Empty terra multisig wallet", async () => {
+    const walletsStore = createWalletsStore();
+    await walletsStore.__initPromise;
+    const wallet = await walletsStore.addTerraMultisigWallet();
+    expect(walletsStore.currentWallet).toEqual(wallet);
     expect(wallet.isReady).toEqual(false);
   });
 });

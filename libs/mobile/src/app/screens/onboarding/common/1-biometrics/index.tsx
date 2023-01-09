@@ -1,5 +1,5 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { isMultisigDemoWallet, Text } from "@obi-wallet/common";
+import { isMultisigDemoWallet, MultisigWallet, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useState } from "react";
@@ -41,8 +41,10 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
       setButtonDisabledDoubleclick(true);
 
       try {
+        const demoMode =
+          wallet instanceof MultisigWallet && isMultisigDemoWallet(wallet);
         const publicKey = await getBiometricsPublicKey({
-          demoMode: isMultisigDemoWallet(wallet),
+          demoMode,
         });
         await wallet.setBiometricsPublicKey({
           publicKey: {
@@ -201,11 +203,11 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
             label={intl.formatMessage({ id: "onboarding4.biometrics.button" })}
             flavor="blue"
             LeftIcon={isObi ? undefined : Scan}
-            onPress={() => {
+            onPress={async () => {
               if (scannedBiometrics) {
                 navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
               } else {
-                scanBiometrics();
+                await scanBiometrics();
               }
             }}
             disabled={buttonDisabledDoubleclick}

@@ -14,7 +14,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 
 import { IconButton } from "../../../button";
-import { useMultisigWallet, useStore } from "../../../stores";
+import {
+  useCosmosMultisigWallet,
+  useMultisigWallet,
+  useStore,
+} from "../../../stores";
 import { Background } from "../../components/background";
 import { OnboardingRoute, OnboardingStackParamList } from "../onboarding-stack";
 
@@ -25,7 +29,8 @@ export type MultisigInitProps = NativeStackScreenProps<
 
 export const MultisigInit = observer<MultisigInitProps>(({ navigation }) => {
   const { chainStore } = useStore();
-  const wallet = useMultisigWallet();
+  // TODO: handle terra multisig wallet
+  const wallet = useCosmosMultisigWallet();
   const { currentChainInformation } = chainStore;
   const multisig = wallet.nextAdmin;
 

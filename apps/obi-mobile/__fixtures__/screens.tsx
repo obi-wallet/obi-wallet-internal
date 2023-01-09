@@ -66,6 +66,8 @@ function getRouteAction(
 
   if (isHomeBottomTabRoute(route)) {
     return homeRouteReset();
+  } else if (isOnboardingRoute(route)) {
+    return onboardingRouteReset();
   } else {
     return reset();
   }
@@ -74,6 +76,13 @@ function getRouteAction(
     return CommonActions.reset({
       index: 0,
       routes: [{ name: RootRoute.Home }, { name: route, params }],
+    });
+  }
+
+  function onboardingRouteReset(params: object | undefined = undefined) {
+    return CommonActions.reset({
+      index: 0,
+      routes: [{ name: route, params }],
     });
   }
 
@@ -100,5 +109,11 @@ function getRouteAction(
 function isHomeBottomTabRoute(route: Route): route is HomeBottomTabRoute {
   return Object.values(HomeBottomTabRoute).includes(
     route as unknown as HomeBottomTabRoute
+  );
+}
+
+function isOnboardingRoute(route: Route): route is OnboardingRoute {
+  return Object.values(OnboardingRoute).includes(
+    route as unknown as OnboardingRoute
   );
 }

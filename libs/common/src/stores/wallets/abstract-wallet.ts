@@ -1,6 +1,7 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
 
 export enum WalletType {
+  TerraMultisig = "TerraMultisig",
   Multisig = "Multisig",
   Singlesig = "Singlesig",
 }

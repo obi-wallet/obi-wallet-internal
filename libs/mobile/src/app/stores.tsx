@@ -1,7 +1,9 @@
 import {
+  isAnyCosmosMultisigWallet,
   isAnyMultisigWallet,
   MultisigWallet,
   RootStore,
+  TerraMultisigWallet,
 } from "@obi-wallet/common";
 import { createContext, useContext } from "react";
 import invariant from "tiny-invariant";
@@ -13,11 +15,20 @@ export function useStore() {
   return useContext(StoreContext);
 }
 
-export function useMultisigWallet(): MultisigWallet {
+export function useMultisigWallet(): TerraMultisigWallet | MultisigWallet {
   const { currentWallet } = useStore().walletsStore;
   invariant(
     isAnyMultisigWallet(currentWallet),
     "Expected current wallet to be multisig."
+  );
+  return currentWallet;
+}
+
+export function useCosmosMultisigWallet(): MultisigWallet {
+  const { currentWallet } = useStore().walletsStore;
+  invariant(
+    isAnyCosmosMultisigWallet(currentWallet),
+    "Expected current wallet to be cosmos multisig."
   );
   return currentWallet;
 }

@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import {
   Brand,
+  isAnyCosmosMultisigWallet,
   isAnyMultisigWallet,
   RequestObiSignAndBroadcastMsg,
 } from "@obi-wallet/common";
@@ -80,7 +81,10 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
 
   const { walletsStore } = useStore();
   const wallet = walletsStore.currentWallet;
-  const multisig = isAnyMultisigWallet(wallet) ? wallet.currentAdmin : null;
+  // TODO: handle terra multisig
+  const multisig = isAnyCosmosMultisigWallet(wallet)
+    ? wallet.currentAdmin
+    : null;
 
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState("");

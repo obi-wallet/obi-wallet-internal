@@ -1,5 +1,5 @@
 import {
-  isAnyMultisigWallet,
+  isAnyCosmosMultisigWallet,
   RequestObiSignAndBroadcastMsg,
 } from "@obi-wallet/common";
 import { SignInteractionModal, useStore } from "@obi-wallet/mobile";
@@ -18,7 +18,8 @@ export default () => {
             if (!walletsStore.currentWalletId) return;
             await RequestObiSignAndBroadcastMsg.send({
               id: walletsStore.currentWalletId,
-              multisig: isAnyMultisigWallet(walletsStore.currentWallet)
+              // TODO: handle terra multisig wallet
+              multisig: isAnyCosmosMultisigWallet(walletsStore.currentWallet)
                 ? walletsStore.currentWallet.nextAdmin
                 : null,
               encodeObjects: [],

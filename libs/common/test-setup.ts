@@ -2,3 +2,4 @@ import mockAsyncStorage from "@react-native-async-storage/async-storage/jest/asy
 import "@testing-library/jest-native/extend-expect";
 
 jest.mock("@react-native-async-storage/async-storage", () => mockAsyncStorage);
+jest.mock("@terra-money/terra.js", () => null);

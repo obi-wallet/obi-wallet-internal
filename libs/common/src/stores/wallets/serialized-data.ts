@@ -2,6 +2,33 @@ import * as t from "io-ts";
 
 import { nullable } from "../helpers";
 import * as Multisig from "../multisig/serialized-data";
+import * as TerraMultisig from "./terra-multisig-wallet/serialized-data";
+
+export const SerializedTerraMultisigWalletAnyVersion = t.type({
+  type: t.literal("terra-multisig"),
+  data: TerraMultisig.SerializedDataAnyVersion,
+});
+
+export const SerializedTerraMultisigWallet = t.type({
+  type: t.literal("terra-multisig"),
+  data: TerraMultisig.SerializedData,
+});
+export type SerializedTerraMultisigWallet = t.TypeOf<
+  typeof SerializedTerraMultisigWallet
+>;
+
+export const SerializedTerraMultisigDemoWalletAnyVersion = t.type({
+  type: t.literal("terra-multisig-demo"),
+  data: TerraMultisig.SerializedDataAnyVersion,
+});
+
+export const SerializedTerraMultisigDemoWallet = t.type({
+  type: t.literal("terra-multisig-demo"),
+  data: TerraMultisig.SerializedData,
+});
+export type SerializedTerraMultisigDemoWallet = t.TypeOf<
+  typeof SerializedTerraMultisigDemoWallet
+>;
 
 export const SerializedMultisigWalletAnyVersion = t.type({
   type: t.literal("multisig"),
@@ -39,6 +66,8 @@ export type SerializedSinglesigWallet = t.TypeOf<
 >;
 
 export const SerializedWalletAnyVersion = t.union([
+  SerializedTerraMultisigWalletAnyVersion,
+  SerializedTerraMultisigDemoWalletAnyVersion,
   SerializedMultisigWalletAnyVersion,
   SerializedMultisigDemoWalletAnyVersion,
   SerializedSinglesigWalletAnyVersion,
@@ -47,6 +76,8 @@ export type SerializedWalletAnyVersion = t.TypeOf<
   typeof SerializedWalletAnyVersion
 >;
 export const SerializedWallet = t.union([
+  SerializedTerraMultisigWallet,
+  SerializedTerraMultisigDemoWallet,
   SerializedMultisigWallet,
   SerializedMultisigDemoWallet,
   SerializedSinglesigWallet,
@@ -77,6 +108,16 @@ export function migrateSerializedData(
       ...serializedData,
       wallets: serializedData.wallets.map((wallet) => {
         if (
+          SerializedTerraMultisigWalletAnyVersion.is(wallet) ||
+          SerializedTerraMultisigDemoWalletAnyVersion.is(wallet)
+        ) {
+          return {
+            type: wallet.type,
+            data: TerraMultisig.migrateSerializedData(wallet.data),
+          };
+        }
+
+        if (
           SerializedMultisigWalletAnyVersion.is(wallet) ||
           SerializedMultisigDemoWalletAnyVersion.is(wallet)
         ) {
@@ -85,6 +126,7 @@ export function migrateSerializedData(
             data: Multisig.migrateSerializedData(wallet.data),
           };
         }
+
         return wallet;
       }),
     };
