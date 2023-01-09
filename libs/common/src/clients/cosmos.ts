@@ -1,7 +1,7 @@
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { StargateClient } from "@cosmjs/stargate";
 
-import { Chain, chains } from "./chains";
+import { Chain, chains } from "../chains";
 
 export async function createStargateClient(chainId: Chain) {
   const { rpcs } = chains[chainId];

@@ -123,14 +123,16 @@
   "onboarding4.error.socialkeyexists.newkey": "Generate a new key",
 
   "onboarding5.setsocialkey": "Set a Social Key",
-  "onboarding5.setsocialkey.subtext": "Enter the juno address of a trusted friend who can help you recover your account.",
+  "onboarding5.setsocialkey.subtext.cosmos": "Enter the Juno address of a trusted friend who can help you recover your account.",
+  "onboarding5.setsocialkey.subtext.terra": "Enter the Terra address of a trusted friend who can help you recover your account.",
   "onboarding5.setsocialkey.subtext2": "…or you can use the demo account for a quick start.",
   "onboarding5.useobiaccount": "Use demo Account",
   "onboarding5.recovery.setsocialkey": "Set a New Social Key",
   "onboarding5.recovery.setsocialkey.subtext2": "You're currently using the Demo account. This will remove the Demo account from your multisig and replace it with your friend's key.",
   "onboarding5.error.noactivity.title": "We don't see any activity for this address.",
   "onboarding5.error.noactivity.subtext": "Please check the address, tell your friend to use it once (such as sending coins to themselves), or try another address.",
-  "onboarding5.recovery.socialsubtext": "Enter the juno address of a trusted friend that you used when creating the wallet.",
+  "onboarding5.recovery.socialsubtext.cosmos": "Enter the Juno address of a trusted friend that you used when creating the wallet.",
+  "onboarding5.recovery.socialsubtext.terra": "Enter the Terra address of a trusted friend that you used when creating the wallet.",
 
   "onboarding5.error.socialkeyexists.yes": "Yes",
   "onboarding5.error.notactiveaddress.title": "We don't see any activity for this address.",

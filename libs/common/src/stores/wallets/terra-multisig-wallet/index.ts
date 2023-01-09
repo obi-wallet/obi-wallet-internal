@@ -4,13 +4,7 @@ import {
 } from "@terra-money/terra.js";
 import { action, computed, makeObservable, observable } from "mobx";
 
-import {
-  Multisig,
-  MultisigKey,
-  SerializedCloudPayload,
-  SerializedPhoneNumberPayload,
-  SerializedSocialPayload,
-} from "../../multisig";
+import { MultisigKey } from "../../multisig";
 import { AbstractWallet, WalletType } from "../../wallets/abstract-wallet";
 import {
   SerializedTerraMultisigWallet,
@@ -21,6 +15,9 @@ import {
   SerializedBiometricsPayload,
   SerializedMultisigPayload,
   SerializedProxyAddress,
+  SerializedCloudPayload,
+  SerializedPhoneNumberPayload,
+  SerializedSocialPayload,
 } from "./serialized-data";
 
 export type TerraMultisigThresholdPublicKey = LegacyAminoMultisigPublicKey;
@@ -45,7 +42,7 @@ export interface TerraProxyWallet {
   };
 }
 
-export type TerraMultisigKey = keyof Omit<Multisig, "multisig">;
+export type TerraMultisigKey = keyof Omit<TerraMultisig, "multisig">;
 
 export class TerraMultisigWallet extends AbstractWallet {
   protected readonly _id: string;
@@ -210,7 +207,7 @@ export class TerraMultisigWallet extends AbstractWallet {
   }
 
   @action
-  public recover(keyId: MultisigKey) {
+  public recover(keyId: TerraMultisigKey) {
     this.keyInRecovery = keyId;
     this._updateProposed = false;
   }
@@ -246,8 +243,7 @@ export class TerraMultisigWallet extends AbstractWallet {
         ...phoneNumber,
       },
       social: social && {
-        // @ts-expect-error: handle social
-        simplePublicKey: SimplePublicKey.fromAmino(social.publicKey),
+        address: SimplePublicKey.fromAmino(social.publicKey).address(),
         ...social,
       },
       cloud: null,
@@ -269,7 +265,6 @@ export class TerraMultisigWallet extends AbstractWallet {
     for (const key of this.getSignerTypes(multisig)) {
       const keyPayload = multisig[key];
       if (keyPayload) {
-        // @ts-expect-error: handle social
         publicKeys.push(SimplePublicKey.fromAmino(keyPayload.publicKey));
       }
     }

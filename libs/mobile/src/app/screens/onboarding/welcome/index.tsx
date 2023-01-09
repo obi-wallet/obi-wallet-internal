@@ -167,9 +167,17 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                       {
                         text: "Continue",
                         async onPress() {
-                          const wallet =
-                            multisigWallet ??
-                            (await walletsStore.addMultisigWallet());
+                          const wallet = await (async () => {
+                            if (
+                              multisigWallet &&
+                              multisigWallet.type ===
+                                configStore.getDefaultMultisigWalletType()
+                            ) {
+                              return multisigWallet;
+                            }
+
+                            return await walletsStore.addMultisigWallet();
+                          })();
                           await wallet.cancelRecovery();
                           wallet.recover("biometrics");
                           navigation.navigate(
@@ -221,7 +229,10 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                   marginTop: 20,
                 }}
                 onPress={action(async () => {
-                  if (!isMultisigDemoWallet(walletsStore.currentWallet)) {
+                  if (
+                    !isMultisigDemoWallet(wallet) ||
+                    wallet.type !== configStore.getDefaultMultisigWalletType()
+                  ) {
                     await walletsStore.addMultisigDemoWallet();
                   }
                   navigation.navigate(OnboardingRoute.CreateMultisigBiometrics);
@@ -332,7 +343,10 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
             marginTop: 20,
           }}
           onPress={action(async () => {
-            if (!multisigWallet) {
+            if (
+              !multisigWallet ||
+              multisigWallet.type !== configStore.getDefaultMultisigWalletType()
+            ) {
               await walletsStore.addMultisigWallet();
             }
             navigation.navigate(navigationUrl);

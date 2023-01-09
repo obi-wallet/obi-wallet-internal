@@ -120,14 +120,16 @@
   "onboarding4.error.biometrickeyexists.yes": "Ja",
 
   "onboarding5.setsocialkey": "Lege einen Social-Key fest",
-  "onboarding5.setsocialkey.subtext": "Gib die juno-Adresse eines vertrauenswüdigen Freundes ein (oder scanne sie), der dir helfen kann deinen Account wiederherzustellen. Dein Freund hat keinen Zugriff auf deinen Account.",
+  "onboarding5.setsocialkey.subtext.cosmos": "Gib die Juno-Adresse eines vertrauenswüdigen Freundes ein, der dir helfen kann deinen Account wiederherzustellen. Dein Freund hat keinen Zugriff auf deinen Account.",
+  "onboarding5.setsocialkey.subtext.terra": "Gib die Terra-Adresse eines vertrauenswüdigen Freundes ein, der dir helfen kann deinen Account wiederherzustellen. Dein Freund hat keinen Zugriff auf deinen Account.",
   "onboarding5.setsocialkey.subtext2": "…oder verwende das Demo-Konto, um direkt durchzustarten.",
   "onboarding5.useobiaccount": "Verwende Demo-Konto",
   "onboarding5.recovery.setsocialkey": "Lege einen neuen Social-Key fest",
   "onboarding5.recovery.setsocialkey.subtext2": "Du verwendest derzeit das Demo-Konto. Dies wird das Demo-Konto von deiner Multisig entfernen und es mit der Adresse deines Freundes ersetzen.",
   "onboarding5.error.noactivity.title": "Wir konnten keine Aktivität unter dieser Adresse finden.",
   "onboarding5.error.noactivity.subtext": "Bitte überprüfe die Adresse, sag deinem Freund er soll sie zumindest einmal verwenden (zum Beispiel indem er Coins an sich selbst schickt), oder versuche eine andere Adresse.",
-  "onboarding5.recovery.socialsubtext": "Gib die juno-Adresse eines vertrauenswürdigen Freundes ein, die du benutzt hast als du dein Wallet erstellt hast.",
+  "onboarding5.recovery.socialsubtext.cosmos": "Gib die Juno-Adresse eines vertrauenswürdigen Freundes ein, die du benutzt hast als du dein Wallet erstellt hast.",
+  "onboarding5.recovery.socialsubtext.terra": "Gib die Terra-Adresse eines vertrauenswürdigen Freundes ein, die du benutzt hast als du dein Wallet erstellt hast.",
 
   "onboarding4.error.socialkeyexists.title": "Du hast bereits einen Social-Key",
   "onboarding4.error.socialkeyexists.text": "Möchtest du deinen bestehenden Biometrie-Key wiederverwenden? Für:",

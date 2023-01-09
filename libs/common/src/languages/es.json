@@ -123,14 +123,14 @@
   "onboarding4.error.socialkeyexists.newkey": "Generar una nueva clave",
 
   "onboarding5.setsocialkey": "Establecer una Clave Social",
-  "onboarding5.setsocialkey.subtext": "Ingresa o escanea la dirección de Juno de un amigo de confianza que pueda ayudarte a recuperar tu cuenta. Tu amigo no puede acceder a tu cuenta",
+  "onboarding5.setsocialkey.subtext.cosmos": "Ingresa o escanea la dirección de Juno de un amigo de confianza que pueda ayudarte a recuperar tu cuenta. Tu amigo no puede acceder a tu cuenta",
   "onboarding5.setsocialkey.subtext2": "…o puedes usar la cuenta demo para avanzar",
   "onboarding5.useobiaccount": "Usar Cuenta Demo",
   "onboarding5.recovery.setsocialkey": "Set a New Social Key",
   "onboarding5.recovery.setsocialkey.subtext2": "Estás utilizando la cuenta demo. Esto removerá la cuenta demo de la cartera multisig y la reemplazará con la cuenta de tu amigo.",
   "onboarding5.error.noactivity.title": "We don't see any activity for this address.",
   "onboarding5.error.noactivity.subtext": "Please check the address, tell your friend to use it once (such as sending coins to themselves), or try another address.",
-  "onboarding5.recovery.socialsubtext": "Enter the juno address of a trusted friend that you used when creating the wallet.",
+  "onboarding5.recovery.socialsubtext.cosmos": "Enter the Juno address of a trusted friend that you used when creating the wallet.",
 
   "onboarding5.error.socialkeyexists.yes": "Sí",
   "onboarding5.error.notactiveaddress.title": "No vemos ninguna actividad para esta dirección.",

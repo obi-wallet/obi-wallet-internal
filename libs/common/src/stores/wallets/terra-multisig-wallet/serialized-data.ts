@@ -2,12 +2,6 @@ import * as t from "io-ts";
 
 import { nullable } from "../../helpers";
 
-export const SinglePublicKey = t.type({
-  type: t.string,
-  value: t.string,
-});
-export type SinglePublicKey = t.TypeOf<typeof SinglePublicKey>;
-
 export const Secp256k1PublicKey = t.type({
   type: t.literal("tendermint/PubKeySecp256k1"),
   value: t.string,
@@ -60,13 +54,14 @@ export function migrateSerializedPhoneNumberPayload(
 }
 
 export const SerializedSocialPayload = t.type({
-  publicKey: SinglePublicKey,
+  publicKey: Secp256k1PublicKey,
 });
 export type SerializedSocialPayload = t.TypeOf<typeof SerializedSocialPayload>;
 
 export const SerializedCloudPayload = t.type({
-  publicKey: SinglePublicKey,
+  publicKey: Secp256k1PublicKey,
 });
+export type SerializedCloudPayload = t.TypeOf<typeof SerializedCloudPayload>;
 
 export const SerializedMultisigPayload = t.type({
   biometrics: nullable(SerializedBiometricsPayload),

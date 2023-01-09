@@ -2,16 +2,14 @@ import { action, makeObservable, observable } from "mobx";
 
 import { Chain, TerraChain } from "../chains";
 import { Language } from "../languages";
+import { WalletType } from "./wallets";
 
 export enum Brand {
   Obi = "Obi",
   Loop = "Loop",
 }
 
-export enum MultisigWalletType {
-  Cosmos = "Cosmos",
-  Terra = "Terra",
-}
+export type MultisigWalletType = WalletType.Multisig | WalletType.TerraMultisig;
 
 export enum Feature {
   AccountsTab = "AccountsTab",
@@ -66,5 +64,9 @@ export class ConfigStore {
 
   public isLoop(): boolean {
     return this.config.brand === Brand.Loop;
+  }
+
+  public getDefaultMultisigWalletType() {
+    return this.config.defaultMultisigWalletType;
   }
 }

@@ -1,4 +1,9 @@
-import { createStargateClient, Text } from "@obi-wallet/common";
+import {
+  createLcdClient,
+  createStargateClient,
+  Text,
+  WalletType,
+} from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -33,6 +38,7 @@ export const MultisigSocial = observer<MultisigSocialProps>(
     const [fetchingPubKey, setFetchingPubKey] = useState(false);
     const obi_address = "juno17w77rnps59cnallfskg42s3ntnlhrzu2mjkr3e";
     const isObi = configStore.isObi();
+    const isTerra = wallet.type === WalletType.TerraMultisig;
     const intl = useIntl();
 
     const minAddressInputChars = 43;
@@ -40,13 +46,13 @@ export const MultisigSocial = observer<MultisigSocialProps>(
     useEffect(() => {
       if (
         address.length >= minAddressInputChars &&
-        address.startsWith("juno1")
+        address.startsWith(isTerra ? "terra1" : "juno1")
       ) {
         setVerifyButtonDisabled(false); // Enable Verify&Proceed Button if checks are okay
       } else {
         setVerifyButtonDisabled(true);
       }
-    }, [verifyButtonDisabled, address]);
+    }, [isTerra, verifyButtonDisabled, address]);
 
     useEffect(() => {
       const { social } = wallet.nextAdmin;
@@ -81,24 +87,43 @@ export const MultisigSocial = observer<MultisigSocialProps>(
     }, [intl, wallet, navigation]);
 
     async function getAccountPubkey(key: string) {
-      const client = await createStargateClient(chainStore.currentChain);
+      if (isTerra) {
+        try {
+          const client = createLcdClient(chainStore.currentTerraChain);
+          const account = await client.auth.accountInfo(key);
+          return account.getPublicKey()?.toAmino();
+        } catch (e) {
+          console.log(e);
+          Alert.alert(
+            intl.formatMessage({
+              id: "onboarding5.error.noactivity.title",
+            }),
+            intl.formatMessage({
+              id: "onboarding5.error.noactivity.subtext",
+            })
+          );
+          return null;
+        }
+      } else {
+        const client = await createStargateClient(chainStore.currentChain);
 
-      try {
-        const account = await client.getAccount(key);
-        return account?.pubkey;
-      } catch (e) {
-        console.log(e);
-        Alert.alert(
-          intl.formatMessage({
-            id: "onboarding5.error.noactivity.title",
-          }),
-          intl.formatMessage({
-            id: "onboarding5.error.noactivity.subtext",
-          })
-        );
-        return null;
-      } finally {
-        client.disconnect();
+        try {
+          const account = await client.getAccount(key);
+          return account?.pubkey;
+        } catch (e) {
+          console.log(e);
+          Alert.alert(
+            intl.formatMessage({
+              id: "onboarding5.error.noactivity.title",
+            }),
+            intl.formatMessage({
+              id: "onboarding5.error.noactivity.subtext",
+            })
+          );
+          return null;
+        } finally {
+          client.disconnect();
+        }
       }
     }
 
@@ -168,21 +193,33 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                     }}
                   >
                     {wallet.keyInRecovery === "biometrics" ? (
+                      isTerra ? (
+                        <FormattedMessage
+                          id="onboarding5.recovery.socialsubtext.terra"
+                          defaultMessage="Enter the Terra address of a trusted friend that you used when creating the wallet."
+                        />
+                      ) : (
+                        <FormattedMessage
+                          id="onboarding5.recovery.socialsubtext.cosmos"
+                          defaultMessage="Enter the Juno address of a trusted friend that you used when creating the wallet."
+                        />
+                      )
+                    ) : isTerra ? (
                       <FormattedMessage
-                        id="onboarding5.recovery.socialsubtext"
-                        defaultMessage="Enter the juno address of a trusted friend that you used when creating the wallet."
+                        id="onboarding5.setsocialkey.subtext.terra"
+                        defaultMessage="Enter the Terra address of a trusted friend who can help you recover your account."
                       />
                     ) : (
                       <FormattedMessage
-                        id="onboarding5.setsocialkey.subtext"
-                        defaultMessage="Enter the juno address of a trusted friend who can help you recover your account."
+                        id="onboarding5.setsocialkey.subtext.cosmos"
+                        defaultMessage="Enter the Juno address of a trusted friend who can help you recover your account."
                       />
                     )}
                   </Text>
                 </View>
               </View>
               <TextInput
-                placeholder="juno1234...."
+                placeholder={isTerra ? "terra1234…" : "juno1234…"}
                 style={{ marginTop: 25 }}
                 value={address}
                 onChangeText={setAddress}
@@ -233,6 +270,7 @@ export const MultisigSocial = observer<MultisigSocialProps>(
 
                   if (publicKey) {
                     await wallet.setSocialPublicKey({
+                      // @ts-expect-error TODO: TypeScript doesn't understand this specific case
                       publicKey,
                     });
                     if (wallet.keyInRecovery !== "social") {
