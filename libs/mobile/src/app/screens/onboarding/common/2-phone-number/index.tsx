@@ -31,8 +31,9 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
   ({ navigation }) => {
     const wallet = useMultisigWallet();
     const intl = useIntl();
-    const { configStore } = useStore();
+    const { configStore, chainStore } = useStore();
     const isObi = configStore.isObi();
+    const chainId = chainStore.currentChainId;
 
     useEffect(() => {
       const { phoneNumber } = wallet.nextAdmin;
@@ -297,6 +298,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                       phoneNumber,
                       securityAnswer,
                       demoMode: isMultisigDemoWallet(wallet),
+                      chainId,
                     });
                     navigation.navigate(
                       OnboardingRoute.CreateMultisigPhoneNumberConfirm,

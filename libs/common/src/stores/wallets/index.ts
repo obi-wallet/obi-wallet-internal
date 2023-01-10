@@ -4,7 +4,7 @@ import { nanoid } from "nanoid/non-secure";
 import invariant from "tiny-invariant";
 
 import { ChainStore } from "../chain";
-import { ConfigStore, MultisigWalletType } from "../config";
+import { ConfigStore } from "../config";
 import { WalletType } from "./abstract-wallet";
 import { MultisigWallet } from "./multisig-wallet";
 import {
