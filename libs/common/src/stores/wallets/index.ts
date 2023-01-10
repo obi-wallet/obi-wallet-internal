@@ -55,6 +55,12 @@ export function isAnyCosmosMultisigWallet(
   return wallet?.type === WalletType.Multisig;
 }
 
+export function isAnyTerraMultisigWallet(
+  wallet: TerraMultisigWallet | MultisigWallet | SinglesigWallet | null
+): wallet is MultisigWallet {
+  return wallet?.type === WalletType.TerraMultisig;
+}
+
 export function isMultisigWallet(
   wallet: TerraMultisigWallet | MultisigWallet | SinglesigWallet | null
 ): wallet is (TerraMultisigWallet | MultisigWallet) & { isDemo: false } {
@@ -65,6 +71,12 @@ export function isCosmosMultisigWallet(
   wallet: TerraMultisigWallet | MultisigWallet | SinglesigWallet | null
 ): wallet is MultisigWallet & { isDemo: false } {
   return isAnyCosmosMultisigWallet(wallet) && !wallet.isDemo;
+}
+
+export function isTerraMultisigWallet(
+  wallet: TerraMultisigWallet | MultisigWallet | SinglesigWallet | null
+): wallet is TerraMultisigWallet & { isDemo: false } {
+  return isAnyTerraMultisigWallet(wallet) && !wallet.isDemo;
 }
 
 export function isMultisigDemoWallet(

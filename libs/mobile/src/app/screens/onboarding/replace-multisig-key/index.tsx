@@ -36,7 +36,7 @@ export const ReplaceMultisig = observer<ReplaceMultisigProps>(
     const { chainStore, walletsStore } = useStore();
     // TODO: handle terra multisig wallet
     const wallet = useCosmosMultisigWallet();
-    const { currentChainInformation } = chainStore;
+    const { currentCosmosChainInformation } = chainStore;
 
     const multisig = wallet.currentAdmin;
     const nextMultisig = wallet.nextAdmin;
@@ -57,7 +57,7 @@ export const ReplaceMultisig = observer<ReplaceMultisigProps>(
                   (pubkey) => {
                     return pubkeyToAddress(
                       pubkey,
-                      currentChainInformation.prefix
+                      currentCosmosChainInformation.prefix
                     );
                   }
                 ),
@@ -120,7 +120,7 @@ export const ReplaceMultisig = observer<ReplaceMultisigProps>(
       sender,
       wallet.updateProposed,
       walletsStore.address,
-      currentChainInformation,
+      currentCosmosChainInformation,
     ]);
 
     useEffect(() => {
@@ -165,7 +165,8 @@ export const ReplaceMultisig = observer<ReplaceMultisigProps>(
               if (wallet.updateProposed) {
                 await wallet.finishProxySetup({
                   address: contractAddress.value,
-                  codeId: chainStore.currentChainInformation.currentCodeId,
+                  codeId:
+                    chainStore.currentCosmosChainInformation.currentCodeId,
                 });
               } else {
                 wallet.setUpdateProposed(true);

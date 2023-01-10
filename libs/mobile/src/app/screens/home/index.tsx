@@ -193,7 +193,7 @@ export function HomeScreen() {
   return (
     <HomeDrawer.Navigator
       useLegacyImplementation={true}
-      initialRouteName={chainStore.currentChainInformation.label}
+      initialRouteName={chainStore.currentCosmosChainInformation.label}
       screenOptions={{
         headerShown: false,
       }}
@@ -251,7 +251,7 @@ const CustomDrawerContent = observer((props: DrawerContentComponentProps) => {
       {networks.map((network) => {
         return (
           <DrawerItem
-            focused={chainStore.currentChain === network.chainId}
+            focused={chainStore.currentCosmosChain === network.chainId}
             key={network.chainId}
             label={network.label}
             activeTintColor="#F6F5FF"
@@ -265,7 +265,7 @@ const CustomDrawerContent = observer((props: DrawerContentComponentProps) => {
               fontWeight: "500",
             }}
             onPress={action(() => {
-              chainStore.currentChain = network.chainId;
+              chainStore.currentCosmosChain = network.chainId;
               navigation.closeDrawer();
             })}
           />

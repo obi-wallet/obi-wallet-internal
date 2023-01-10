@@ -36,7 +36,7 @@ export function MultisigPhoneNumberConfirm({
   const { params } = route;
   const { configStore, chainStore } = useStore();
   const isObi = configStore.isObi();
-  const chainId = chainStore.currentChainId;
+  const chainId = chainStore.currentChain;
   const wallet = useMultisigWallet();
   const [key, setKey] = useState("");
 

@@ -92,7 +92,7 @@ export function UsdBalance({ fontSize = 28 }: { fontSize?: number }) {
 }
 
 export function formatCoin(coin: Coin) {
-  const { denom } = getRootStore().chainStore.currentChainInformation;
+  const { denom } = getRootStore().chainStore.currentCosmosChainInformation;
   switch (coin.denom) {
     case denom: {
       const digits = 6;
@@ -166,7 +166,7 @@ export function formatCoin(coin: Coin) {
 }
 
 export function formatExtendedCoin(coin: ExtendedCoin) {
-  const { denom } = getRootStore().chainStore.currentChainInformation;
+  const { denom } = getRootStore().chainStore.currentCosmosChainInformation;
   const formattedCoin = formatCoin(coin);
 
   switch (coin.denom) {

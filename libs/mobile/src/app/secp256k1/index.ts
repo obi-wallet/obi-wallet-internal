@@ -25,7 +25,7 @@ export async function prepareWalletAndSign({
   );
 
   const { chainStore } = getRootStore();
-  const chainId = chainStore.currentChain;
+  const chainId = chainStore.currentCosmosChain;
   const { prefix, denom } = chains[chainId];
   const client = await createStargateClient(chainId);
 

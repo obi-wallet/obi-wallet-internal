@@ -39,7 +39,7 @@ export class BalancesStore {
 
   @computed
   public get balances() {
-    return this.balancesPerChain[this.chainStore.currentChain] ?? [];
+    return this.balancesPerChain[this.chainStore.currentCosmosChain] ?? [];
   }
 
   @flow
@@ -48,10 +48,10 @@ export class BalancesStore {
     if (!address) return;
 
     const client = yield* toGenerator(
-      createStargateClient(this.chainStore.currentChain)
+      createStargateClient(this.chainStore.currentCosmosChain)
     );
     const wasmClient = yield* toGenerator(
-      createCosmWasmClient(this.chainStore.currentChain)
+      createCosmWasmClient(this.chainStore.currentCosmosChain)
     );
 
     const customBalances = async () => {
@@ -109,7 +109,7 @@ export class BalancesStore {
     /// Return two contract addresses (strings) if price must be grabbed from first
     /// and then divided by second price.
     const getContractRoute = (asset: string) => {
-      switch (this.chainStore.currentChain) {
+      switch (this.chainStore.currentCosmosChain) {
         case "uni-3":
           return [
             "juno1dmwfwqvke4hew5s93ut8h4tgu6sxv67zjw0y3hskgkfpy3utnpvseqyjs7",
@@ -223,7 +223,7 @@ export class BalancesStore {
       )
     );
 
-    this.balancesPerChain[this.chainStore.currentChain] = extendedCoins;
+    this.balancesPerChain[this.chainStore.currentCosmosChain] = extendedCoins;
 
     client.disconnect();
     wasmClient.disconnect();

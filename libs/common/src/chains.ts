@@ -1,3 +1,9 @@
+const commonTwilioConfig = {
+  twilioPhoneNumbers: ["+19705509509"],
+  twilioUrl:
+    "https://studio.twilio.com/v2/Flows/FW2de98dc924361e35906dad1ed6125dc6/Executions",
+};
+
 export const chains = {
   "uni-3": {
     chainId: "uni-3" as const,
@@ -8,9 +14,7 @@ export const chains = {
     denom: "ujunox",
     startingUsdDebt: "0",
     debtRepayAddress: "juno1ruftad6eytmr3qzmf9k3eya9ah8hsnvkujkej8",
-    twilioPhoneNumbers: ["+19705509509"],
-    twilioUrl:
-      "https://studio.twilio.com/v2/Flows/FW2de98dc924361e35906dad1ed6125dc6/Executions",
+    ...commonTwilioConfig,
     bip44: {
       coinType: 118,
     },
@@ -27,9 +31,7 @@ export const chains = {
     denom: "ujuno",
     startingUsdDebt: "0",
     debtRepayAddress: "juno1ruftad6eytmr3qzmf9k3eya9ah8hsnvkujkej8",
-    twilioPhoneNumbers: ["+19148638557"],
-    twilioUrl:
-      "https://studio.twilio.com/v2/Flows/FW278a8ada7d869a2bbfc49915dbb534f5/Executions",
+    ...commonTwilioConfig,
     bip44: {
       coinType: 118,
     },
@@ -43,17 +45,14 @@ export const terraChains = {
     chainId: "pisco-1" as const,
     label: "Terra Testnet",
     prefix: "terra",
+    accountCreatorAddress:
+      "terra1f5adnacrpysy2p0aenl5df05hmmnyfe0pc3598ljnd5l0s5qjkksawdwvw",
+    accountCreatorCodeId: 6578,
     currentCodeId: 921,
     rpcs: ["https://pisco-lcd.terra.dev"],
     denom: "uluna",
     startingUsdDebt: "0",
-    // TODO:
-    debtRepayAddress: "",
-    // TODO:
-    twilioPhoneNumbers: ["+19148638557"],
-    // TODO:
-    twilioUrl:
-      "https://studio.twilio.com/v2/Flows/FW278a8ada7d869a2bbfc49915dbb534f5/Executions",
+    ...commonTwilioConfig,
     // TODO:
     bip44: {
       coinType: 118,
@@ -63,18 +62,14 @@ export const terraChains = {
     chainId: "phoenix-1" as const,
     label: "Terra",
     prefix: "terra",
-    currentCodeId: 921,
+    accountCreatorAddress:
+      "terra17m6fzkhxwtv8fl5a05ycdfcvzvclarzqwwpdtksknv7dftedgeeqryy7tn",
+    accountCreatorCodeId: 921,
     // TODO:
     rpcs: ["https://phoenix-lcd.terra.dev"],
     denom: "uluna",
     startingUsdDebt: "0",
-    // TODO:
-    debtRepayAddress: "",
-    // TODO:
-    twilioPhoneNumbers: ["+19148638557"],
-    // TODO:
-    twilioUrl:
-      "https://studio.twilio.com/v2/Flows/FW278a8ada7d869a2bbfc49915dbb534f5/Executions",
+    ...commonTwilioConfig,
     // TODO:
     bip44: {
       coinType: 118,
