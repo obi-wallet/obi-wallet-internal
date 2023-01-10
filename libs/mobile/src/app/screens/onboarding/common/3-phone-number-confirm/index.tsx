@@ -34,8 +34,9 @@ export function MultisigPhoneNumberConfirm({
   route,
 }: MultisigPhoneNumberConfirmProps) {
   const { params } = route;
-  const { configStore } = useStore();
+  const { configStore, chainStore } = useStore();
   const isObi = configStore.isObi();
+  const chainId = chainStore.currentChainId;
   const wallet = useMultisigWallet();
   const [key, setKey] = useState("");
 
@@ -183,6 +184,7 @@ export function MultisigPhoneNumberConfirm({
                     phoneNumber: params.phoneNumber,
                     securityAnswer: params.securityAnswer,
                     demoMode: isMultisigDemoWallet(wallet),
+                    chainId,
                   });
                 }}
                 disabled={resendButtonDisabled}

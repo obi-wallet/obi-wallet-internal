@@ -34,10 +34,12 @@ export async function sendPublicKeyTextMessage({
   phoneNumber,
   securityAnswer,
   demoMode,
+  chainId,
 }: {
   phoneNumber: string;
   securityAnswer: string;
   demoMode: boolean;
+  chainId: string;
 }) {
   if (demoMode) return;
 
@@ -45,6 +47,7 @@ export async function sendPublicKeyTextMessage({
     await encryptAndSendMessage({
       message: `pub:${securityAnswer}`,
       phoneNumber,
+      chainId,
     });
   } catch (e) {
     const error = e as Error;
@@ -85,11 +88,13 @@ export async function sendSignatureTextMessage({
   securityAnswer,
   message,
   demoMode,
+  chainId,
 }: {
   phoneNumber: string;
   securityAnswer: string;
   message: Uint8Array;
   demoMode: boolean;
+  chainId: string;
 }) {
   if (demoMode) {
     DEMO_PAYLOAD = message;
@@ -102,6 +107,7 @@ export async function sendSignatureTextMessage({
         "base64"
       )}`,
       phoneNumber,
+      chainId,
     });
   } catch (e) {
     const error = e as Error;
@@ -147,11 +153,13 @@ export async function parseSignatureTextMessageResponse({
 async function encryptAndSendMessage({
   message,
   phoneNumber,
+  chainId,
 }: {
   message: string;
   phoneNumber: string;
+  chainId: string;
 }) {
-  const body = await getMessageBody(message);
+  const body = await getMessageBody(`${message}:${chainId}`);
   const formData = new FormData();
   const { twilioPhoneNumbers, twilioUrl } =
     getRootStore().chainStore.currentChainInformation;

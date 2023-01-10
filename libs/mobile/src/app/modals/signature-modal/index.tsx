@@ -666,6 +666,8 @@ interface PhoneNumberBottomSheetContentProps {
 const PhoneNumberBottomSheetContent =
   observer<PhoneNumberBottomSheetContentProps>(
     ({ payload, wallet, getMessage, onSuccess }) => {
+      const { chainStore } = useStore();
+      const chainId = chainStore.currentChainId;
       const intl = useIntl();
       const { securityAnswer, setSecurityAnswer } = useSecurityQuestionInput();
 
@@ -769,6 +771,7 @@ const PhoneNumberBottomSheetContent =
                       securityAnswer,
                       message,
                       demoMode: isMultisigDemoWallet(wallet),
+                      chainId,
                     });
                   }}
                 />
@@ -836,6 +839,7 @@ const PhoneNumberBottomSheetContent =
                   securityAnswer,
                   message,
                   demoMode: isMultisigDemoWallet(wallet),
+                  chainId,
                 });
                 setSentMessage(true);
                 setMagicButtonDisabledDoubleclick(false);
