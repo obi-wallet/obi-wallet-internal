@@ -93,6 +93,7 @@
     "rooks": "*",
     "scrypt-js": "*",
     "secp256k1": "*",
-    "tiny-invariant": "*"
+    "tiny-invariant": "*",
+    "@terra-money/terra.js": "*"
   }
 }
