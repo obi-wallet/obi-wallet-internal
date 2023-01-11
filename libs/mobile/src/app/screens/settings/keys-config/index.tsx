@@ -33,6 +33,8 @@ import Keys2 from "./assets/keys2.svg";
 import Keys3 from "./assets/keys3.svg";
 import Keys4 from "./assets/keys4.svg";
 import Keys5 from "./assets/keys5.svg";
+import KeysComponent from "./KeysComponent";
+
 
 const getSVG = (number: number) => {
   switch (number) {
@@ -147,7 +149,8 @@ export const KeysConfigScreen = observer(() => {
         </Text>
       </View>
       <View style={{ flex: 3, justifyContent: "center", alignItems: "center" }}>
-        <View>{getSVG(activatedKeys)}</View>
+        <View><KeysComponent /></View>
+        {/* <View>{getSVG(activatedKeys)}</View> */}
         <Text
           style={[
             styles.heading,
@@ -357,8 +360,8 @@ function KeyConfig({ item, onClose }: KeyConfigProps) {
             backgroundColor: isLoop
               ? "#1D1C37"
               : activated
-              ? "#437DFF"
-              : "#1a1a1a",
+                ? "#437DFF"
+                : "#1a1a1a",
             borderRadius: 12,
           }}
         >
