@@ -1,5 +1,13 @@
 import { KVStore } from "@keplr-wallet/common";
-import { action, computed, makeObservable, observable, toJS } from "mobx";
+import {
+  action,
+  autorun,
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+  toJS,
+} from "mobx";
 import { nanoid } from "nanoid/non-secure";
 import invariant from "tiny-invariant";
 
@@ -55,6 +63,12 @@ export function isAnyCosmosMultisigWallet(
   return wallet?.type === WalletType.Multisig;
 }
 
+export function isAnyTerraMultisigWallet(
+  wallet: TerraMultisigWallet | MultisigWallet | SinglesigWallet | null
+): wallet is TerraMultisigWallet {
+  return wallet?.type === WalletType.TerraMultisig;
+}
+
 export function isMultisigWallet(
   wallet: TerraMultisigWallet | MultisigWallet | SinglesigWallet | null
 ): wallet is (TerraMultisigWallet | MultisigWallet) & { isDemo: false } {
@@ -65,6 +79,12 @@ export function isCosmosMultisigWallet(
   wallet: TerraMultisigWallet | MultisigWallet | SinglesigWallet | null
 ): wallet is MultisigWallet & { isDemo: false } {
   return isAnyCosmosMultisigWallet(wallet) && !wallet.isDemo;
+}
+
+export function isTerraMultisigWallet(
+  wallet: TerraMultisigWallet | MultisigWallet | SinglesigWallet | null
+): wallet is TerraMultisigWallet & { isDemo: false } {
+  return isAnyTerraMultisigWallet(wallet) && !wallet.isDemo;
 }
 
 export function isMultisigDemoWallet(
@@ -120,6 +140,18 @@ export class WalletsStore {
     this.legacyKVStores = legacyKVStores;
     makeObservable(this);
     this.__initPromise = this.init();
+
+    autorun(() => {
+      const wallet = this.currentWallet;
+      if (
+        isTerraMultisigWallet(wallet) &&
+        wallet.chain !== this.chainStore.currentTerraChain
+      ) {
+        runInAction(() => {
+          this.currentWalletId = null;
+        });
+      }
+    });
   }
 
   @computed
@@ -321,12 +353,13 @@ export class WalletsStore {
       let walletIndexToUse = currentWalletIndex;
       if (addedLegacyWallets) walletIndexToUse = walletIndexToUse ?? 0;
 
-      this.currentWalletId =
-        typeof walletIndexToUse === "number"
-          ? this._wallets.ids[walletIndexToUse]
-          : null;
-
-      this.state = WalletState.READY;
+      runInAction(() => {
+        this.currentWalletId =
+          typeof walletIndexToUse === "number"
+            ? this._wallets.ids[walletIndexToUse]
+            : null;
+        this.state = WalletState.READY;
+      });
 
       await this.save();
     } catch (e) {

@@ -256,7 +256,10 @@ export const SettingsScreen = observer(() => {
               {/*</Text>*/}
               <Text
                 onPress={() => {
-                  Linking.openURL("https://mail.loop.onl/privacy-policy/");
+                  const url = configStore.isObi()
+                    ? "https://www.obi.money/privacy-policy"
+                    : "https://mail.loop.onl/privacy-policy/";
+                  void Linking.openURL(url);
                 }}
                 style={{
                   color: "#F6F5FF",

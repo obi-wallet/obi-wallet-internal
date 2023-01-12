@@ -4,7 +4,6 @@ import { Keplr } from "@keplr-wallet/provider";
 import { BACKGROUND_PORT } from "@keplr-wallet/router";
 import {
   isAnyCosmosMultisigWallet,
-  isAnyMultisigWallet,
   MessageRequesterExternal,
   PricingTier,
   RequestObiInAppPurchaseMsg,

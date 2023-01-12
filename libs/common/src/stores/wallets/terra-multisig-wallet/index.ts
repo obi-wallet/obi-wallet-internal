@@ -4,24 +4,24 @@ import {
 } from "@terra-money/terra.js";
 import { action, computed, makeObservable, observable } from "mobx";
 
-import { MultisigKey } from "../../multisig";
 import { AbstractWallet, WalletType } from "../../wallets/abstract-wallet";
 import {
-  SerializedTerraMultisigWallet,
   SerializedTerraMultisigDemoWallet,
+  SerializedTerraMultisigWallet,
 } from "../serialized-data";
 import {
   Secp256k1PublicKey,
   SerializedBiometricsPayload,
-  SerializedMultisigPayload,
-  SerializedProxyAddress,
   SerializedNFCPayload,
   SerializedCloudPayload,
+  SerializedMultisigPayload,
   SerializedPhoneNumberPayload,
+  SerializedProxyAddress,
   SerializedSocialPayload,
 } from "./serialized-data";
 
-export type TerraMultisigThresholdPublicKey = LegacyAminoMultisigPublicKey;
+export type TerraMultisigThresholdPublicKey =
+  LegacyAminoMultisigPublicKey.Amino;
 
 export type WithAddress<T> = T & { address: string };
 
@@ -91,6 +91,11 @@ export class TerraMultisigWallet extends AbstractWallet {
 
   public get id() {
     return this._id;
+  }
+
+  @computed
+  public get chain() {
+    return this.serializedWallet.data.chain;
   }
 
   get address(): string | null {
@@ -247,7 +252,9 @@ export class TerraMultisigWallet extends AbstractWallet {
 
     return {
       multisig: multisigThresholdPublicKey && {
-        address: multisigThresholdPublicKey.address(),
+        address: LegacyAminoMultisigPublicKey.fromAmino(
+          multisigThresholdPublicKey
+        ).address(),
         publicKey: multisigThresholdPublicKey,
       },
       biometrics: biometrics && {
@@ -294,7 +301,7 @@ export class TerraMultisigWallet extends AbstractWallet {
     }
 
     const threshold = publicKeys.length >= 4 ? 2 : 1;
-    return new LegacyAminoMultisigPublicKey(threshold, publicKeys);
+    return new LegacyAminoMultisigPublicKey(threshold, publicKeys).toAmino();
   }
 
   protected get serializedCurrentAdmin() {

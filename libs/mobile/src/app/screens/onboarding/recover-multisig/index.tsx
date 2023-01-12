@@ -18,11 +18,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 
 import { IconButton } from "../../../button";
-import {
-  useCosmosMultisigWallet,
-  useMultisigWallet,
-  useStore,
-} from "../../../stores";
+import { useCosmosMultisigWallet, useStore } from "../../../stores";
 import { Background } from "../../components/background";
 import { OnboardingRoute, OnboardingStackParamList } from "../onboarding-stack";
 
@@ -36,7 +32,7 @@ export const RecoverMultisig = observer<RecoverMultisigProps>(
     const { chainStore } = useStore();
     // TODO: handle terra multisig wallet
     const wallet = useCosmosMultisigWallet();
-    const { currentChainInformation } = chainStore;
+    const { currentCosmosChainInformation } = chainStore;
 
     const multisig = wallet.currentAdmin;
     const nextMultisig = wallet.nextAdmin;
@@ -60,7 +56,7 @@ export const RecoverMultisig = observer<RecoverMultisigProps>(
                   (pubkey) => {
                     return pubkeyToAddress(
                       pubkey,
-                      currentChainInformation.prefix
+                      currentCosmosChainInformation.prefix
                     );
                   }
                 ),
@@ -123,7 +119,7 @@ export const RecoverMultisig = observer<RecoverMultisigProps>(
       sender,
       wallet.walletInRecovery,
       wallet.updateProposed,
-      currentChainInformation.prefix,
+      currentCosmosChainInformation.prefix,
     ]);
 
     useEffect(() => {
@@ -169,7 +165,8 @@ export const RecoverMultisig = observer<RecoverMultisigProps>(
               if (wallet.updateProposed) {
                 await wallet.finishProxySetup({
                   address: contractAddress.value,
-                  codeId: chainStore.currentChainInformation.currentCodeId,
+                  codeId:
+                    chainStore.currentCosmosChainInformation.currentCodeId,
                 });
               } else {
                 wallet.setUpdateProposed(true);

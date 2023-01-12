@@ -33,7 +33,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
     const intl = useIntl();
     const { configStore, chainStore } = useStore();
     const isObi = configStore.isObi();
-    const chainId = chainStore.currentChainId;
+    const chainId = chainStore.currentChain;
 
     useEffect(() => {
       const { phoneNumber } = wallet.nextAdmin;

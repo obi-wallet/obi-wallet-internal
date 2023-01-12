@@ -363,6 +363,8 @@ PODS:
     - React-Core
   - react-native-nfc-manager (3.14.2):
     - React-Core
+  - react-native-html-to-pdf (0.12.0):
+    - React-Core
   - react-native-randombytes (3.6.1):
     - React-Core
   - react-native-safe-area-context (4.4.1):
@@ -554,6 +556,7 @@ DEPENDENCIES:
   - react-native-config (from `../node_modules/react-native-config`)
   - react-native-device-crypto (from `../node_modules/react-native-device-crypto`)
   - react-native-nfc-manager (from `../node_modules/react-native-nfc-manager`)
+  - react-native-html-to-pdf (from `../node_modules/react-native-html-to-pdf`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-webview (from `../node_modules/react-native-webview`)
@@ -675,6 +678,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-device-crypto"
   react-native-nfc-manager:
     :path: "../node_modules/react-native-nfc-manager"
+  react-native-html-to-pdf:
+    :path: "../node_modules/react-native-html-to-pdf"
   react-native-randombytes:
     :path: "../node_modules/react-native-randombytes"
   react-native-safe-area-context:
@@ -784,6 +789,7 @@ SPEC CHECKSUMS:
   react-native-config: bcafda5b4c51491ee1b0e1d0c4e3905bc7b56c1b
   react-native-device-crypto: decd7475ec9f48eb66eafcbabfaa5dde01be37f9
   react-native-nfc-manager: c0e6048b119fa3ae7b02ae927d4a801b8e76f287
+  react-native-html-to-pdf: 4c5c6e26819fe202971061594058877aa9b25265
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
   react-native-webview: a71da846ed2e9085440e1d6659c04e285528834b

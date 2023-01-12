@@ -37,7 +37,7 @@ export class SinglesigWallet extends AbstractWallet {
     this.serializedWallet = serializedWallet;
     makeObservable(this);
 
-    const { coinType } = this.chainStore.currentChainInformation.bip44;
+    const { coinType } = this.chainStore.currentCosmosChainInformation.bip44;
     const bip44HDPath = {
       account: 0,
       change: 0,
@@ -62,7 +62,7 @@ export class SinglesigWallet extends AbstractWallet {
     if (!this.publicKey) return null;
     return pubkeyToAddress(
       this.publicKey,
-      this.chainStore.currentChainInformation.prefix
+      this.chainStore.currentCosmosChainInformation.prefix
     );
   }
 

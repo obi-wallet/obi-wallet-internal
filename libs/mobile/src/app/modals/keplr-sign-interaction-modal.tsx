@@ -22,7 +22,7 @@ export const KeplrSignInteractionModal = observer(() => {
         const newSignDoc = {
           ...signDocWrapper.aminoSignDoc,
           fee: {
-            amount: coins(6000, chainStore.currentChainInformation.denom),
+            amount: coins(6000, chainStore.currentCosmosChainInformation.denom),
             gas: "1280000",
           },
         };

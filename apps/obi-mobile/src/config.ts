@@ -8,7 +8,7 @@ export const config: Config = {
     default: "juno-1",
   },
   terraChains: {
-    enabled: ["phoenix-1", "pisco-1"],
+    enabled: ["phoenix-1"],
     default: "phoenix-1",
   },
   languages: {
@@ -16,8 +16,8 @@ export const config: Config = {
     default: "en",
   },
   features: {
-    [Feature.AccountsTab]: true,
-    [Feature.HealthChecks]: true,
-    [Feature.NftTab]: true,
+    [Feature.AccountsTab]: false,
+    [Feature.HealthChecks]: false,
+    [Feature.NftTab]: false,
   },
 };

@@ -1,6 +1,13 @@
-import { computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 
-import { Chain, chains, TerraChain, terraChains } from "../chains";
+import {
+  Chain,
+  chains,
+  isCosmosChain,
+  isTerraChain,
+  TerraChain,
+  terraChains,
+} from "../chains";
 import { ConfigStore } from "./config";
 import { WalletType } from "./wallets";
 
@@ -8,21 +15,21 @@ export class ChainStore {
   protected readonly configStore: ConfigStore;
 
   @observable
-  public currentChain: Chain;
+  public currentCosmosChain: Chain;
 
   @observable
   public currentTerraChain: TerraChain;
 
   constructor({ configStore }: { configStore: ConfigStore }) {
     this.configStore = configStore;
-    this.currentChain = configStore.config.chains.default;
+    this.currentCosmosChain = configStore.config.chains.default;
     this.currentTerraChain = configStore.config.terraChains.default;
     makeObservable(this);
   }
 
   @computed
-  public get currentChainInformation() {
-    return chains[this.currentChain];
+  public get currentCosmosChainInformation() {
+    return chains[this.currentCosmosChain];
   }
 
   @computed
@@ -31,12 +38,33 @@ export class ChainStore {
   }
 
   @computed
-  public get currentChainId() {
+  public get currentChain() {
     switch (this.configStore.getDefaultMultisigWalletType()) {
       case WalletType.Multisig:
-        return this.currentChain;
+        return this.currentCosmosChain;
       case WalletType.TerraMultisig:
         return this.currentTerraChain;
+    }
+  }
+
+  @action
+  public setCurrentChain(chain: Chain | TerraChain) {
+    if (isCosmosChain(chain)) {
+      this.currentCosmosChain = chain;
+    }
+
+    if (isTerraChain(chain)) {
+      this.currentTerraChain = chain;
+    }
+  }
+
+  @computed
+  public get currentChainInformation() {
+    switch (this.configStore.getDefaultMultisigWalletType()) {
+      case WalletType.Multisig:
+        return this.currentCosmosChainInformation;
+      case WalletType.TerraMultisig:
+        return this.currentTerraChainInformation;
     }
   }
 }

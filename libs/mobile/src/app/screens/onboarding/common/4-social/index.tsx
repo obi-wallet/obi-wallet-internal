@@ -105,7 +105,9 @@ export const MultisigSocial = observer<MultisigSocialProps>(
           return null;
         }
       } else {
-        const client = await createStargateClient(chainStore.currentChain);
+        const client = await createStargateClient(
+          chainStore.currentCosmosChain
+        );
 
         try {
           const account = await client.getAccount(key);

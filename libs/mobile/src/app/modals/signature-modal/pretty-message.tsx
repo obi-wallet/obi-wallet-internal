@@ -61,7 +61,7 @@ const PrettyMessageInstantiateContract = observer(
 
     if (
       value.code_id ===
-      chainStore.currentChainInformation.currentCodeId.toString()
+      chainStore.currentCosmosChainInformation.currentCodeId.toString()
     ) {
       return (
         <MessageElement

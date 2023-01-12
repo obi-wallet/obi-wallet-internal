@@ -13,9 +13,12 @@ import { IntlProvider } from "react-intl";
 import { StatusBar } from "react-native";
 import { endConnection, initConnection } from "react-native-iap";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 import { createRootStore } from "../background/root-store";
 import { StoreContext } from "./stores";
+
+const queryClient = new QueryClient();
 
 export interface ProviderProps {
   children: ReactNode;
@@ -80,8 +83,10 @@ export const Provider = observer<ProviderProps>(
             <SafeAreaProvider>
               <NavigationContainer {...navigationContainerProps}>
                 <ThemeProvider theme={getTheme(configStore.brand)}>
-                  <StatusBar barStyle="light-content" />
-                  {children}
+                  <QueryClientProvider client={queryClient}>
+                    <StatusBar barStyle="light-content" />
+                    {children}
+                  </QueryClientProvider>
                 </ThemeProvider>
               </NavigationContainer>
             </SafeAreaProvider>

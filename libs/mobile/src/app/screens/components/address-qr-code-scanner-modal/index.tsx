@@ -16,7 +16,7 @@ export const AddressQrCodeScannerModal = observer(
   ({ onClose, onScan, ...props }: AddressQrCodeScannerModalProps) => {
     const safeArea = useSafeAreaInsets();
     const { chainStore } = useStore();
-    const { prefix } = chainStore.currentChainInformation;
+    const { prefix } = chainStore.currentCosmosChainInformation;
 
     return (
       <Modal {...props}>

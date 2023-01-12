@@ -78,7 +78,7 @@ import { ConfirmMessages } from "./confirm-messages";
 import { wrapMessages } from "./wrap-messages";
 
 export interface SignatureModalProps extends ModalProps {
-  wallet: TerraMultisigWallet | MultisigWallet | SinglesigWallet;
+  wallet: MultisigWallet | SinglesigWallet;
   innerMessages: AminoMsg[];
   messages: AminoMsg[];
   rawMessages: EncodeObject[];
@@ -96,14 +96,13 @@ export const SignatureModal = observer<SignatureModalProps>((props) => {
   if (!props.wallet.type) return null;
 
   switch (props.wallet.type) {
-    case WalletType.TerraMultisig:
-      // TODO: not implemented yet
-      return null;
     case WalletType.Multisig:
       return <SignatureModalMultisig {...props} />;
     case WalletType.Singlesig:
       return <SignatureModalSinglesig {...props} />;
   }
+
+  return null;
 });
 
 export const SignatureModalSinglesig = observer<SignatureModalProps>(
@@ -166,7 +165,7 @@ export const SignatureModalMultisig = observer<
   const [signatures, setSignatures] = useState(new Map<string, Uint8Array>());
   const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
   const { chainStore, configStore } = useStore();
-  const { currentChainInformation } = chainStore;
+  const { currentCosmosChainInformation } = chainStore;
   const [settingBiometrics, setSettingBiometrics] = useState(false);
   const isObi = configStore.isObi();
   const isLoop = configStore.isLoop();
@@ -180,16 +179,21 @@ export const SignatureModalMultisig = observer<
     const address = multisig?.multisig?.address;
 
     const fee = {
-      amount: coins(6000, currentChainInformation.denom),
+      amount: coins(6000, currentCosmosChainInformation.denom),
       gas: "1280000",
     };
 
     invariant(address, "Expected `address` to exist.");
 
-    const client = await createStargateClient(currentChainInformation.chainId);
+    const client = await createStargateClient(
+      currentCosmosChainInformation.chainId
+    );
 
     if (!(await client.getAccount(address))) {
-      await lendFees({ chainId: currentChainInformation.chainId, address });
+      await lendFees({
+        chainId: currentCosmosChainInformation.chainId,
+        address,
+      });
     }
 
     const account = await client.getAccount(address);
@@ -198,7 +202,7 @@ export const SignatureModalMultisig = observer<
     const signDoc: StdSignDoc = {
       memo: "",
       account_number: account.accountNumber.toString(),
-      chain_id: currentChainInformation.chainId,
+      chain_id: currentCosmosChainInformation.chainId,
       fee: fee,
       msgs: messages,
       sequence: account.sequence.toString(),
@@ -208,8 +212,8 @@ export const SignatureModalMultisig = observer<
     return new Sha256(serializeSignDoc(signDoc)).digest();
   }, [
     multisig,
-    currentChainInformation.denom,
-    currentChainInformation.chainId,
+    currentCosmosChainInformation.denom,
+    currentCosmosChainInformation.chainId,
     messages,
   ]);
 
@@ -483,7 +487,7 @@ export function useSignatureModalProps({
   const [signatureModalVisible, setSignatureModalVisible] = useState(false);
   const [modalKey, setModalKey] = useState(0);
   const { chainStore, walletsStore } = useStore();
-  const { currentChainInformation } = chainStore;
+  const { currentCosmosChainInformation } = chainStore;
 
   const { id, multisig } = data;
   const wallet = walletsStore.getWallet(id);
@@ -504,7 +508,7 @@ export function useSignatureModalProps({
 
     return {
       key: modalKey.toString(),
-      wallet,
+      wallet: wallet as MultisigWallet | SinglesigWallet,
       visible: signatureModalVisible,
       innerMessages: innerAminoMessages,
       messages: aminoMessages,
@@ -522,10 +526,10 @@ export function useSignatureModalProps({
           if (!multisig?.multisig) return;
 
           const client = await createStargateClient(
-            currentChainInformation.chainId
+            currentCosmosChainInformation.chainId
           );
 
-          const { chainId, denom } = currentChainInformation;
+          const { chainId, denom } = currentCosmosChainInformation;
 
           console.log(messages);
 
@@ -594,10 +598,10 @@ export function useSignatureModalProps({
 
             const signer = await Secp256k1Wallet.fromKey(
               wallet.privateKey,
-              currentChainInformation.prefix
+              currentCosmosChainInformation.prefix
             );
             const client = await createSigningCosmWasmClient({
-              chainId: currentChainInformation.chainId,
+              chainId: currentCosmosChainInformation.chainId,
               signer,
             });
 
@@ -626,7 +630,7 @@ export function useSignatureModalProps({
     signatureModalVisible,
     multisig,
     data,
-    currentChainInformation,
+    currentCosmosChainInformation,
     onConfirm,
   ]);
 
@@ -667,7 +671,7 @@ const PhoneNumberBottomSheetContent =
   observer<PhoneNumberBottomSheetContentProps>(
     ({ payload, wallet, getMessage, onSuccess }) => {
       const { chainStore } = useStore();
-      const chainId = chainStore.currentChainId;
+      const chainId = chainStore.currentChain;
       const intl = useIntl();
       const { securityAnswer, setSecurityAnswer } = useSecurityQuestionInput();
 

@@ -19,6 +19,7 @@ import { ChainStore } from "./chain";
 import { Config, ConfigStore } from "./config";
 import { InAppPurchaseInteractionStore } from "./interaction/in-app-purchase";
 import { SignInteractionStore } from "./interaction/sign";
+import { TerraSignInteractionStore } from "./interaction/terra-sign";
 import { KeplrChainStore } from "./keplr-chain";
 import { LanguageStore } from "./language";
 import { WalletsStore } from "./wallets";
@@ -30,6 +31,7 @@ export class RootStore {
   public readonly configStore: ConfigStore;
   public readonly inAppPurchaseInteractionStore: InAppPurchaseInteractionStore;
   public readonly signInteractionStore: SignInteractionStore;
+  public readonly terraSignInteractionStore: TerraSignInteractionStore;
   public readonly languageStore: LanguageStore;
   public readonly walletsStore: WalletsStore;
 
@@ -82,6 +84,9 @@ export class RootStore {
     this.signInteractionStore = new SignInteractionStore(
       this.keplrInteractionStore
     );
+    this.terraSignInteractionStore = new TerraSignInteractionStore(
+      this.keplrInteractionStore
+    );
 
     this.languageStore = new LanguageStore({
       deviceLanguage,
@@ -101,6 +106,7 @@ export class RootStore {
     });
 
     this.balancesStore = new BalancesStore({
+      configStore: this.configStore,
       chainStore: this.chainStore,
       walletsStore: this.walletsStore,
     });
