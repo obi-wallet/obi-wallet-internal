@@ -1,6 +1,12 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { chains, Feature, Text } from "@obi-wallet/common";
+import {
+  chains,
+  Feature,
+  terraChains,
+  Text,
+  WalletType,
+} from "@obi-wallet/common";
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
@@ -212,9 +218,19 @@ const CustomDrawerContent = observer((props: DrawerContentComponentProps) => {
   const { chainStore, configStore } = useStore();
 
   const isLoop = configStore.isLoop();
-  const networks = Object.values(chains).filter((network) => {
-    return configStore.config.chains.enabled.includes(network.chainId);
+  const cosmosNetworks = configStore.config.chains.enabled.map((chainId) => {
+    return chains[chainId];
   });
+  const terraNetworks = configStore.config.terraChains.enabled.map(
+    (chainId) => {
+      return terraChains[chainId];
+    }
+  );
+
+  const networks =
+    configStore.getDefaultMultisigWalletType() === WalletType.Multisig
+      ? cosmosNetworks
+      : terraNetworks;
 
   return (
     <DrawerContentScrollView
@@ -251,7 +267,7 @@ const CustomDrawerContent = observer((props: DrawerContentComponentProps) => {
       {networks.map((network) => {
         return (
           <DrawerItem
-            focused={chainStore.currentCosmosChain === network.chainId}
+            focused={chainStore.currentChain === network.chainId}
             key={network.chainId}
             label={network.label}
             activeTintColor="#F6F5FF"
@@ -265,7 +281,7 @@ const CustomDrawerContent = observer((props: DrawerContentComponentProps) => {
               fontWeight: "500",
             }}
             onPress={action(() => {
-              chainStore.currentCosmosChain = network.chainId;
+              chainStore.setCurrentChain(network.chainId);
               navigation.closeDrawer();
             })}
           />

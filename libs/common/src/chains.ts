@@ -81,3 +81,11 @@ export const terraChains = {
 };
 
 export type TerraChain = keyof typeof terraChains;
+
+export function isCosmosChain(chain: Chain | TerraChain): chain is Chain {
+  return Object.keys(chains).includes(chain);
+}
+
+export function isTerraChain(chain: Chain | TerraChain): chain is TerraChain {
+  return Object.keys(terraChains).includes(chain);
+}
