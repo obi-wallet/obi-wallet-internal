@@ -101,7 +101,6 @@ const getFlavorStyles = (
       if (disabled)
         return {
           ...baseStyles,
-          fontWeight: baseStyles.text.fontWeight,
           button: {
             ...baseStyles.button,
             borderRadius: loopBorderRadius,
