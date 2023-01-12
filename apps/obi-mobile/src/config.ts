@@ -17,7 +17,7 @@ export const config: Config = {
   },
   features: {
     [Feature.AccountsTab]: true,
-    [Feature.HealthChecks]: true,
-    [Feature.NftTab]: true,
+    [Feature.HealthChecks]: false,
+    [Feature.NftTab]: false,
   },
 };
