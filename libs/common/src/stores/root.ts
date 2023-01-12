@@ -106,6 +106,7 @@ export class RootStore {
     });
 
     this.balancesStore = new BalancesStore({
+      configStore: this.configStore,
       chainStore: this.chainStore,
       walletsStore: this.walletsStore,
     });
