@@ -9,9 +9,13 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import {
   Brand,
   isAnyCosmosMultisigWallet,
+  isSinglesigWallet,
+  isTerraMultisigWallet,
   RequestObiSignAndBroadcastMsg,
+  RequestObiTerraSignAndBroadcastMsg,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { isTxError, Msg, MsgSend } from "@terra-money/terra.js";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -80,10 +84,6 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
 
   const { walletsStore } = useStore();
   const wallet = walletsStore.currentWallet;
-  // TODO: handle terra multisig
-  const multisig = isAnyCosmosMultisigWallet(wallet)
-    ? wallet.currentAdmin
-    : null;
 
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState("");
@@ -96,59 +96,6 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
       : null;
 
   const normalizedAmount = amount.replace(/,/g, ".");
-
-  function getEncodeObjects(): EncodeObject[] {
-    if (!selectedCoin || !walletsStore.type) return [];
-
-    const addressToUse =
-      address || (drinkOrBottleModalFlavor ? BARTENDER_ADDRESS : "");
-
-    const { digits } = formatExtendedCoin(selectedCoin);
-    const normalizedAmount =
-      parseFloat(amount.replace(",", ".")) * Math.pow(10, digits);
-    const msgAmount = [
-      {
-        denom: selectedCoin.denom,
-        amount: normalizedAmount.toFixed(0).toString(),
-      },
-    ];
-
-    if (!walletsStore.address) return [];
-
-    if (selectedCoin.contract) {
-      return [
-        {
-          typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-          value: {
-            sender: walletsStore.address,
-            contract: selectedCoin.contract,
-            msg: new Uint8Array(
-              Buffer.from(
-                JSON.stringify({
-                  transfer: {
-                    amount: msgAmount[0].amount,
-                    recipient: addressToUse,
-                  },
-                })
-              )
-            ),
-            funds: [],
-          },
-        },
-      ];
-    }
-
-    return [
-      {
-        typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-        value: {
-          fromAddress: walletsStore.address,
-          toAddress: addressToUse,
-          amount: msgAmount,
-        },
-      },
-    ];
-  }
 
   const [confirmModalVisible, setConfirmModalStatus] = useState<{
     visible?: boolean;
@@ -407,22 +354,118 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
           onPress={async () => {
             invariant(wallet, "Expected wallet to be defined.");
 
-            const response = await RequestObiSignAndBroadcastMsg.send({
-              id: wallet.id,
-              encodeObjects: getEncodeObjects(),
-              multisig,
-              wrap: true,
-            });
+            function getEncodeObjects(): EncodeObject[] {
+              if (!selectedCoin || !walletsStore.type) return [];
 
-            if (isDeliverTxSuccess(response)) {
-              setConfirmModalStatus({
-                visible: true,
-                success: true,
+              const addressToUse =
+                address || (drinkOrBottleModalFlavor ? BARTENDER_ADDRESS : "");
+
+              const { digits } = formatExtendedCoin(selectedCoin);
+              const normalizedAmount =
+                parseFloat(amount.replace(",", ".")) * Math.pow(10, digits);
+              const msgAmount = [
+                {
+                  denom: selectedCoin.denom,
+                  amount: normalizedAmount.toFixed(0).toString(),
+                },
+              ];
+
+              if (!walletsStore.address) return [];
+
+              if (selectedCoin.contract) {
+                return [
+                  {
+                    typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+                    value: {
+                      sender: walletsStore.address,
+                      contract: selectedCoin.contract,
+                      msg: new Uint8Array(
+                        Buffer.from(
+                          JSON.stringify({
+                            transfer: {
+                              amount: msgAmount[0].amount,
+                              recipient: addressToUse,
+                            },
+                          })
+                        )
+                      ),
+                      funds: [],
+                    },
+                  },
+                ];
+              }
+
+              return [
+                {
+                  typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+                  value: {
+                    fromAddress: walletsStore.address,
+                    toAddress: addressToUse,
+                    amount: msgAmount,
+                  },
+                },
+              ];
+            }
+
+            function getMessages(): Msg[] {
+              if (!selectedCoin) return [];
+
+              const addressToUse = address;
+              const { digits } = formatExtendedCoin(selectedCoin);
+              const normalizedAmount =
+                parseFloat(amount.replace(",", ".")) * Math.pow(10, digits);
+              const msgAmount = {
+                [selectedCoin.denom]: normalizedAmount.toFixed(0).toString(),
+              };
+
+              if (!walletsStore.address) return [];
+
+              if (selectedCoin.contract) {
+                // TODO: not implemented yet
+                return [];
+              }
+
+              return [
+                new MsgSend(walletsStore.address, addressToUse, msgAmount),
+              ];
+            }
+
+            if (
+              isAnyCosmosMultisigWallet(wallet) ||
+              isSinglesigWallet(wallet)
+            ) {
+              const response = await RequestObiSignAndBroadcastMsg.send({
+                id: wallet.id,
+                encodeObjects: getEncodeObjects(),
+                multisig: isAnyCosmosMultisigWallet(wallet)
+                  ? wallet.currentAdmin
+                  : null,
+                wrap: true,
               });
-            } else {
+
               setConfirmModalStatus({
                 visible: true,
-                success: false,
+                success: isDeliverTxSuccess(response),
+              });
+            }
+
+            if (isTerraMultisigWallet(wallet)) {
+              invariant(
+                wallet.currentAdmin,
+                "Expected `wallet.currentAdmin` to be defined."
+              );
+              const response = await RequestObiTerraSignAndBroadcastMsg.send({
+                id: wallet.id,
+                messages: getMessages().map((message) => message.toAmino()),
+                multisig: wallet.currentAdmin,
+                wrap: true,
+              });
+
+              console.log(response);
+
+              setConfirmModalStatus({
+                visible: true,
+                success: !isTxError(response),
               });
             }
           }}
@@ -566,6 +609,7 @@ interface CoinRendererProps {
   selected: boolean;
   onPress: () => void;
 }
+
 const getBrandBackground = (brand: Brand) => {
   switch (brand) {
     case Brand.Loop:
