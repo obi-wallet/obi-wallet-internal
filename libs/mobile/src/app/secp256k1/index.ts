@@ -49,6 +49,8 @@ export async function prepareWalletAndSign({
         await lendFees({ chainId, address });
       }
 
+      // TODO: here we need to wait longer as long as account does not exist
+
       if (!(await client.getAccount(address))?.pubkey) {
         const signer = await Secp256k1Wallet.fromKey(
           privateKeyUint8Array,
@@ -87,6 +89,7 @@ export async function prepareWalletAndSign({
         });
       }
 
+      // TODO: here we need to wait longer as long as status code is 404
       const account = await client.auth.accountInfo(address);
 
       if (!account.getPublicKey()) {

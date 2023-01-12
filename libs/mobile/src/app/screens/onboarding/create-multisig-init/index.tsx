@@ -4,8 +4,8 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   ChainStore,
-  isCosmosMultisigWallet,
-  isTerraMultisigWallet,
+  isAnyCosmosMultisigWallet,
+  isAnyTerraMultisigWallet,
   MultisigWallet,
   RequestObiSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastMsg,
@@ -21,7 +21,7 @@ import { MsgInstantiateContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import Long from "long";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 
@@ -40,13 +40,13 @@ export const MultisigInit = observer<MultisigInitProps>(({ navigation }) => {
   const wallet = useMultisigWallet();
 
   useEffect(() => {
-    if (isCosmosMultisigWallet(wallet)) {
+    if (isAnyCosmosMultisigWallet(wallet)) {
       void handleCosmosMultisigInit({
         chainStore,
         wallet,
       });
     }
-    if (isTerraMultisigWallet(wallet)) {
+    if (isAnyTerraMultisigWallet(wallet)) {
       void handleTerraMultisigInit({
         chainStore,
         wallet,
