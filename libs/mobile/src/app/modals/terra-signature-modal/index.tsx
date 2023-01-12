@@ -49,6 +49,7 @@ import {
   PhoneNumberConfirmKey,
   PhoneNumberRequestKey,
 } from "./keys";
+import { wrapMessages } from "./wrap-messages";
 
 export interface TerraSignatureModalProps extends ModalProps {
   wallet: TerraMultisigWallet;
@@ -456,6 +457,9 @@ export function useTerraSignatureModalProps({
     return Msg.fromAmino(data);
   });
   const messages = getWrappedMessages();
+
+  console.log(JSON.stringify(messages[0].toAmino()), null, 2);
+
   const innerMessages = rawMessages;
 
   const signatureModalProps = useMemo(() => {
@@ -519,15 +523,11 @@ export function useTerraSignatureModalProps({
     if (!multisig?.multisig?.address || !wallet.proxyAddress) {
       return [];
     }
-    // TODO: Wrapping not implemented for Terra yet
-    return [];
-    // return [
-    //   wrapMessages({
-    //     messages: data.messages,
-    //     sender: multisig.multisig.address,
-    //     contract: wallet.proxyAddress.address,
-    //   }),
-    // ];
+    return wrapMessages({
+      messages: rawMessages,
+      sender: multisig.multisig.address,
+      contract: wallet.proxyAddress.address,
+    });
   }
 }
 

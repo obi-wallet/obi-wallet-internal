@@ -1,161 +1,176 @@
 import {
-  isMsgClearAdminEncodeObject,
-  isMsgExecuteEncodeObject,
-  isMsgInstantiateContractEncodeObject,
-  isMsgMigrateEncodeObject,
-  isMsgUpdateAdminEncodeObject,
-  MsgExecuteContractEncodeObject,
-} from "@cosmjs/cosmwasm-stargate";
-import { EncodeObject } from "@cosmjs/proto-signing";
-import {
-  isMsgDelegateEncodeObject,
-  isMsgSendEncodeObject,
-  isMsgUndelegateEncodeObject,
-} from "@cosmjs/stargate";
-import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
+  Coin,
+  Coins,
+  Msg,
+  MsgBeginRedelegate,
+  MsgClearContractAdmin,
+  MsgDelegate,
+  MsgExecuteContract,
+  MsgInstantiateContract,
+  MsgMigrateContract,
+  MsgSend,
+  MsgSetWithdrawAddress,
+  MsgUndelegate,
+  MsgUpdateContractAdmin,
+  MsgWithdrawDelegatorReward,
+} from "@terra-money/terra.js";
 
 export function wrapMessages({
   messages,
   sender,
   contract,
 }: {
-  messages: EncodeObject[];
+  messages: Msg[];
   sender: string;
   contract: string;
-}): MsgExecuteContractEncodeObject {
-  const rawMessage = {
-    execute: {
-      msgs: messages.map((message) => {
-        return wrapMessage(message);
-      }),
-    },
-  };
-
-  const value: MsgExecuteContract = {
-    sender,
-    contract,
-    msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
-    funds: [],
-  };
-
-  return {
-    typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-    value,
-  };
+}): MsgExecuteContract[] {
+  return messages.map((msg) => {
+    return new MsgExecuteContract(sender, contract, {
+      execute: { universal_msg: { Legacy: wrapMessage(msg) } },
+    });
+  });
 }
 
-export function wrapMessage(message: EncodeObject) {
-  if (isMsgSendEncodeObject(message)) {
-    const { amount, toAddress } = message.value;
+export function wrapMessage(message: Msg) {
+  if (message instanceof MsgSend) {
     return {
       bank: {
         send: {
-          amount,
-          to_address: toAddress,
+          amount: message.amount.map((coin) => {
+            return {
+              denom: coin.denom,
+              amount: coin.amount.toString(),
+            };
+          }),
+          to_address: message.to_address,
         },
       },
     };
   }
 
-  if (isMsgExecuteEncodeObject(message)) {
-    const { contract, funds, msg } = message.value;
+  if (message instanceof MsgDelegate) {
+    return {
+      staking: {
+        delegate: {
+          amount: wrapCoin(message.amount),
+          validator: message.validator_address,
+        },
+      },
+    };
+  }
+
+  if (message instanceof MsgBeginRedelegate) {
+    return {
+      staking: {
+        redelegate: {
+          amount: wrapCoin(message.amount),
+          src_validator: message.validator_src_address,
+          dst_validator: message.validator_dst_address,
+        },
+      },
+    };
+  }
+
+  if (message instanceof MsgUndelegate) {
+    return {
+      staking: {
+        undelegate: {
+          amount: wrapCoin(message.amount),
+          validator: message.validator_address,
+        },
+      },
+    };
+  }
+
+  if (message instanceof MsgWithdrawDelegatorReward) {
+    return {
+      distribution: {
+        withdraw_delegator_reward: {
+          validator: message.validator_address,
+        },
+      },
+    };
+  }
+
+  if (message instanceof MsgSetWithdrawAddress) {
+    return {
+      distribution: {
+        set_withdraw_address: {
+          address: message.withdraw_address,
+        },
+      },
+    };
+  }
+
+  if (message instanceof MsgExecuteContract) {
     return {
       wasm: {
         execute: {
-          contract_addr: contract,
-          funds,
-          msg: msg ? new Buffer(msg.buffer).toString("base64") : undefined,
+          contract_addr: message.contract,
+          funds: wrapCoins(message.coins),
+          msg: message.execute_msg,
         },
       },
     };
   }
 
-  if (isMsgInstantiateContractEncodeObject(message)) {
-    const { admin, codeId, funds, label, msg } = message.value;
-
+  if (message instanceof MsgInstantiateContract) {
     return {
       wasm: {
         instantiate: {
-          admin,
-          code_id: codeId,
-          funds,
-          label,
-          msg: msg ? new Buffer(msg.buffer).toString("base64") : undefined,
+          admin: message.admin,
+          code_id: message.code_id,
+          funds: wrapCoins(message.init_coins),
+          label: message.label,
+          msg: message.init_msg,
         },
       },
     };
   }
 
-  if (isMsgMigrateEncodeObject(message)) {
-    const { contract, codeId, msg } = message.value;
-
+  if (message instanceof MsgMigrateContract) {
     return {
       wasm: {
         migrate: {
-          contract_addr: contract,
-          msg: msg ? new Buffer(msg.buffer).toString("base64") : undefined,
-          new_code_id: codeId,
+          contract_addr: message.contract,
+          msg: message.migrate_msg,
+          new_code_id: message.new_code_id,
         },
       },
     };
   }
 
-  if (isMsgUpdateAdminEncodeObject(message)) {
-    const { newAdmin, contract } = message.value;
-
+  if (message instanceof MsgUpdateContractAdmin) {
     return {
       wasm: {
         update_admin: {
-          admin: newAdmin,
-          contract_addr: contract,
+          admin: message.new_admin,
+          contract_addr: message.contract,
         },
       },
     };
   }
 
-  if (isMsgClearAdminEncodeObject(message)) {
-    const { contract } = message.value;
-
+  if (message instanceof MsgClearContractAdmin) {
     return {
       wasm: {
         clear_admin: {
-          contract_addr: contract,
+          contract_addr: message.contract,
         },
       },
     };
   }
 
-  if (isMsgDelegateEncodeObject(message)) {
-    const { amount, delegatorAddress, validatorAddress } = message.value;
+  throw new Error(`Unknown encode object of type ${message.toAmino().type}`);
+}
 
-    if (delegatorAddress) {
-      return {
-        redelegate: {
-          amount,
-          src_validator: delegatorAddress,
-          dst_validator: validatorAddress,
-        },
-      };
-    }
+function wrapCoins(coins: Coins) {
+  return coins.map(wrapCoin);
+}
 
-    return {
-      delegate: {
-        amount,
-        validator: validatorAddress,
-      },
-    };
-  }
-
-  if (isMsgUndelegateEncodeObject(message)) {
-    const { amount, validatorAddress } = message.value;
-
-    return {
-      undelegate: {
-        amount,
-        validator: validatorAddress,
-      },
-    };
-  }
-
-  throw new Error(`Unknown encode object of type ${message.typeUrl}`);
+function wrapCoin(coin: Coin) {
+  return {
+    denom: coin.denom,
+    amount: coin.amount.toString(),
+  };
 }

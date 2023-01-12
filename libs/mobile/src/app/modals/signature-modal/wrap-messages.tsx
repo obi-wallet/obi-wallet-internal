@@ -11,6 +11,7 @@ import {
   isMsgDelegateEncodeObject,
   isMsgSendEncodeObject,
   isMsgUndelegateEncodeObject,
+  isMsgWithdrawDelegatorRewardEncodeObject,
 } from "@cosmjs/stargate";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 
@@ -130,18 +131,22 @@ export function wrapMessage(message: EncodeObject) {
 
     if (delegatorAddress) {
       return {
-        redelegate: {
-          amount,
-          src_validator: delegatorAddress,
-          dst_validator: validatorAddress,
+        staking: {
+          redelegate: {
+            amount,
+            src_validator: delegatorAddress,
+            dst_validator: validatorAddress,
+          },
         },
       };
     }
 
     return {
-      delegate: {
-        amount,
-        validator: validatorAddress,
+      staking: {
+        delegate: {
+          amount,
+          validator: validatorAddress,
+        },
       },
     };
   }
@@ -150,12 +155,25 @@ export function wrapMessage(message: EncodeObject) {
     const { amount, validatorAddress } = message.value;
 
     return {
-      undelegate: {
-        amount,
-        validator: validatorAddress,
+      staking: {
+        undelegate: {
+          amount,
+          validator: validatorAddress,
+        },
       },
     };
   }
 
+  if (isMsgWithdrawDelegatorRewardEncodeObject(message)) {
+    const { validatorAddress } = message.value;
+
+    return {
+      distribution: {
+        withdraw_delegator_reward: {
+          validator: validatorAddress,
+        },
+      },
+    };
+  }
   throw new Error(`Unknown encode object of type ${message.typeUrl}`);
 }
