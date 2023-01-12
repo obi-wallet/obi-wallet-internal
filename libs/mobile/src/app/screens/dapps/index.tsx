@@ -10,6 +10,7 @@ import {
   Tile,
   TextInput,
   Tiles,
+  isAnyTerraMultisigWallet,
 } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { FC, useState } from "react";
@@ -180,7 +181,9 @@ export const Dapps = observer<DappProps>(
                 onPress={() => {
                   onAppPress({
                     label: "History",
-                    url: isSinglesigWallet(walletsStore.currentWallet)
+                    url: isAnyTerraMultisigWallet(walletsStore.currentWallet)
+                      ? `https://terrasco.pe/mainnet/contract/${walletsStore.address}`
+                      : isSinglesigWallet(walletsStore.currentWallet)
                       ? `https://mintscan.io/juno/account/${walletsStore.address}`
                       : `https://mintscan.io/juno/wasm/contract/${walletsStore.address}`,
                     icon: "https://place-hold.it/180x180",
