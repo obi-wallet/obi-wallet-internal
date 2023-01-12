@@ -6060,6 +6060,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-native-html-to-pdf@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "@types/react-native-html-to-pdf@npm:0.8.1"
+  checksum: 7104236f49c1a588fb864a20d2c8645e7a3bb0dcc097a46b4c3d859e4e01fd2ad7eed3b1ce84a11937cd32b5c9f17a43bf4138035d1339f54ceb7f4d6c589612
+  languageName: node
+  linkType: hard
+
 "@types/react-native@npm:^0.70.7":
   version: 0.70.7
   resolution: "@types/react-native@npm:0.70.7"
@@ -17859,6 +17866,7 @@ __metadata:
     "@types/ramda": ^0.28.20
     "@types/react": ^18.0.25
     "@types/react-native": ^0.70.7
+    "@types/react-native-html-to-pdf": ^0.8.1
     "@types/secp256k1": ^4.0.3
     "@typescript-eslint/eslint-plugin": ^5.45.0
     "@typescript-eslint/parser": ^5.45.0
@@ -17923,6 +17931,7 @@ __metadata:
     react-native-dotenv: ^3.4.2
     react-native-dropdown-picker: ^5.4.3
     react-native-gesture-handler: ^2.8.0
+    react-native-html-to-pdf: ^0.12.0
     react-native-iap: ^12.4.9
     react-native-keyboard-aware-scroll-view: ^0.9.5
     react-native-keychain: ^8.1.1
@@ -20113,6 +20122,13 @@ __metadata:
   version: 0.70.3
   resolution: "react-native-gradle-plugin@npm:0.70.3"
   checksum: 04a3379842bcb4709ac6b37e093a3de59acd33b28b200885843b13908fac685a77ab81d732c34090c56e5c0eec971d578b227f302bd04fe7901e8792d434f41f
+  languageName: node
+  linkType: hard
+
+"react-native-html-to-pdf@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "react-native-html-to-pdf@npm:0.12.0"
+  checksum: a5be594ccbfdd501d3ac626fb643f9a87631f1693029cd42679d08925658d03becef9a1dd02d1c38c64b93ef914b6a5f42646d36869dcdeed3d0f6ddcbf013ba
   languageName: node
   linkType: hard
 
