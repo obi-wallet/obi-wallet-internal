@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
   getBiometricsPublicKey,
@@ -16,6 +16,7 @@ import { Button } from "../../../../button";
 import { useMultisigWallet, useStore } from "../../../../stores";
 import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
+import { isSmallScreen, isSmallScreenNumber } from "../../../components/screen-size";
 import {
   OnboardingRoute,
   OnboardingStackParamList,
@@ -33,6 +34,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
   ({ navigation }) => {
     const wallet = useMultisigWallet();
     const isObi = useStore().configStore.isObi();
+    const safeInsets = useSafeAreaInsets();
 
     const [scannedBiometrics, setScannedBiometrics] = useState(false);
     const intl = useIntl();
@@ -127,7 +129,6 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
           <View>
             <Back
               style={{
-                marginTop: 20,
                 marginLeft: -5,
                 padding: 5,
                 width: 25,
@@ -138,7 +139,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
               style={{
                 justifyContent: "center",
                 alignItems: "center",
-                marginTop: 57,
+
               }}
             >
               <View
@@ -148,9 +149,9 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
                     : "rgba(86, 84, 141, 0.07)",
                   justifyContent: "center",
                   alignItems: "center",
-                  width: 296,
-                  height: 296,
-                  borderRadius: 296,
+                  width: isSmallScreenNumber(200, 296),
+                  height: isSmallScreenNumber(200, 296),
+                  borderRadius: isSmallScreenNumber(200, 296),
                 }}
               >
                 <View
@@ -158,21 +159,34 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
                     backgroundColor: isObi
                       ? "rgba(219, 222, 255,0.17)"
                       : "rgba(86, 84, 141, 0.17)",
-                    width: 224,
-                    height: 224,
                     justifyContent: "center",
                     alignItems: "center",
-                    borderRadius: 224,
+                    width: isSmallScreenNumber(140, 224),
+                    height: isSmallScreenNumber(140, 224),
+                    borderRadius: isSmallScreenNumber(140, 224),
                   }}
                 >
-                  {isObi ? <ObiFaceScanner /> : <FaceScanner />}
+                  <View style={isSmallScreen() ? {
+                    width: 70,
+                    height: 70,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  } : {
+                    width: "50%",
+                    height: "50%",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}>
+
+                    {isObi ? <ObiFaceScanner /> : <FaceScanner />}
+                  </View>
                 </View>
               </View>
             </View>
 
             <Text
               style={{
-                fontSize: 24,
+                fontSize: isSmallScreenNumber(18, 24),
                 fontWeight: "600",
                 color: "#F6F5FF",
                 marginTop: 79,
@@ -186,7 +200,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
             <Text
               style={{
                 color: isObi ? "white" : "#999CB6",
-                fontSize: 14,
+                fontSize: isSmallScreenNumber(12, 14),
                 fontWeight: "400",
                 marginTop: 10,
                 ...(isObi ? { fontFamily: "poppins-light" } : {}),
@@ -198,21 +212,22 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
               />
             </Text>
           </View>
+          <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 20 }}>
+            <Button
+              label={intl.formatMessage({ id: "onboarding4.biometrics.button" })}
+              flavor="blue"
+              LeftIcon={isObi ? undefined : Scan}
+              onPress={async () => {
+                if (scannedBiometrics) {
+                  navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
+                } else {
+                  await scanBiometrics();
+                }
+              }}
+              disabled={buttonDisabledDoubleclick}
+            />
 
-          <Button
-            label={intl.formatMessage({ id: "onboarding4.biometrics.button" })}
-            flavor="blue"
-            LeftIcon={isObi ? undefined : Scan}
-            onPress={async () => {
-              if (scannedBiometrics) {
-                navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
-              } else {
-                await scanBiometrics();
-              }
-            }}
-            disabled={buttonDisabledDoubleclick}
-            style={{ marginBottom: 20, marginTop: 20 }}
-          />
+          </View>
         </KeyboardAwareScrollView>
       </SafeAreaView>
     );

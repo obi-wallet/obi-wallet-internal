@@ -8,6 +8,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { isSmallScreenNumber } from "../screens/components/screen-size";
 
 import { useStore } from "../stores";
 
@@ -15,18 +16,18 @@ const getStyles = (isObi: boolean) =>
   StyleSheet.create({
     label: {
       color: isObi ? "white" : "#787B9C",
-      fontSize: 10,
-      marginBottom: 12,
+      fontSize: isSmallScreenNumber(9, 10),
+      marginBottom: 5,
       textTransform: "uppercase",
       ...(isObi ? { fontFamily: "poppins" } : {}),
     },
     input: {
       width: "100%",
-      height: 56,
+      height: isSmallScreenNumber(35, 56),
       borderWidth: 1,
       borderColor: isObi ? "white" : "#2F2B4C",
       paddingLeft: 20,
-      fontSize: 14,
+      fontSize: isSmallScreenNumber(9, 14),
       fontWeight: "500",
       color: "#F6F5FF",
       borderRadius: isObi ? 30 : 12,

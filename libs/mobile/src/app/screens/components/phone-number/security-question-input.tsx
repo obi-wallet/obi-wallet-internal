@@ -6,6 +6,7 @@ import { TextInputProps, View } from "react-native";
 import { DropDownPicker } from "../../../drop-down-picker";
 import { useStore } from "../../../stores";
 import { TextInput } from "../../../text-input";
+import { isSmallScreenNumber } from "../screen-size";
 
 export type SetStateCallback<S> = (prevState: S) => S;
 export type OnSecurityQuestionChange = Dispatch<SetStateCallback<string>>;
@@ -16,15 +17,15 @@ export type SecurityQuestionInputProps = {
   onSecurityAnswerChange: (securityAnswer: string) => void;
   CustomTextInput?: ComponentType<TextInputProps>;
 } & (
-  | {
+    | {
       disabled: true;
       onSecurityQuestionChange?: OnSecurityQuestionChange;
     }
-  | {
+    | {
       disabled?: false;
       onSecurityQuestionChange: OnSecurityQuestionChange;
     }
-);
+  );
 
 export function SecurityQuestionInput({
   disabled,
@@ -49,10 +50,10 @@ export function SecurityQuestionInput({
       <Text
         style={{
           color: isObi ? "white" : "#787B9C",
-          fontSize: 10,
+          fontSize: isSmallScreenNumber(9, 10),
           textTransform: "uppercase",
-          marginTop: 36,
-          marginBottom: 12,
+          marginTop: isSmallScreenNumber(20, 36),
+          marginBottom: 5,
         }}
       >
         <FormattedMessage
@@ -71,17 +72,24 @@ export function SecurityQuestionInput({
         setValue={onSecurityQuestionChange}
         setItems={setSecurityQuestions}
         listMode="SCROLLVIEW"
+        listItemLabelStyle={{
+          fontSize: isSmallScreenNumber(9, 14),
+        }}
         dropDownContainerStyle={{
           backgroundColor: isObi ? "#1E1E1E" : "#000",
         }}
         style={{
           borderRadius: isObi ? 30 : 12,
           borderColor: isObi ? "white" : "#787B9C",
+          minHeight: isSmallScreenNumber(35, 56),
         }}
         scrollViewProps={{
           persistentScrollbar: true,
           showsVerticalScrollIndicator: true,
           indicatorStyle: "white",
+        }}
+        labelStyle={{
+          fontSize: isSmallScreenNumber(9, 14),
         }}
       />
 
@@ -94,7 +102,7 @@ export function SecurityQuestionInput({
           id: "onboarding2.answerlabel",
           defaultMessage: "Type your answer here",
         })}
-        style={{ marginTop: 25 }}
+        style={{ marginTop: 15 }}
         value={securityAnswer}
         onChangeText={onSecurityAnswerChange}
         CustomTextInput={CustomTextInput}

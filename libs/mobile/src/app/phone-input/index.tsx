@@ -16,6 +16,7 @@ import CountryPicker, {
 import { DARK_THEME } from "react-native-country-picker-modal";
 import { CountryCode, Country } from "react-native-country-picker-modal";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { isSmallScreenNumber } from "../screens/components/screen-size";
 
 import { useStore } from "../stores";
 
@@ -23,20 +24,17 @@ const getStyles = (isObi: boolean) =>
   StyleSheet.create({
     label: {
       color: isObi ? "white" : "#787B9C",
-      fontSize: 10,
-      marginBottom: 12,
+      fontSize: isSmallScreenNumber(9, 10),
+      marginBottom: 5,
       textTransform: "uppercase",
     },
     wholeview: {
       flexDirection: "row",
       alignItems: "center",
       width: "100%",
-      height: 56,
+      height: isSmallScreenNumber(35, 56),
       borderWidth: 1,
       borderColor: isObi ? "white" : "#2F2B4C",
-      fontSize: 14,
-      fontWeight: 500,
-      color: "#F6F5FF",
       borderRadius: 12,
     },
     buttonview: {
@@ -50,17 +48,16 @@ const getStyles = (isObi: boolean) =>
     inputview: {
       flex: 1,
       flexDirection: "row",
-      height: 56,
+      height: isSmallScreenNumber(35, 56),
       borderColor: isObi ? "white" : "#2F2B4C",
       borderLeftWidth: 1,
-      fontSize: 14,
-      fontWeight: 500,
-      color: "#F6F5FF",
     },
     input: {
       flex: 1,
       paddingLeft: 20,
-      color: "#F6F5FF",
+      fontSize: isSmallScreenNumber(9, 14),
+      fontWeight: "500",
+      color: "#fff",
     },
     data: {
       backgroundColor: "white",
@@ -151,14 +148,13 @@ export function PhoneInput({
                   dark
                     ? DARK_THEME
                     : {
-                        // primaryColor: "blue",
-                        primaryColorVariant: "#090816",
-                        backgroundColor: theme.colors.background,
-                        onBackgroundTextColor: "#F6F5FF",
-                        fontSize: 14,
-                        filterPlaceholderTextColor: "#4B4E6E",
-                        activeOpacity: 0.7,
-                      }
+                      primaryColorVariant: "#090816",
+                      backgroundColor: theme.colors.background,
+                      onBackgroundTextColor: "#F6F5FF",
+                      fontSize: 14,
+                      filterPlaceholderTextColor: "#4B4E6E",
+                      activeOpacity: 0.7,
+                    }
                 }
                 {...{
                   allowFontScaling: fontScaling,

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, Image, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PhoneInput } from "../../../../phone-input";
 import { useMultisigWallet, useStore } from "../../../../stores";
@@ -17,6 +17,7 @@ import {
   useSecurityQuestionInput,
 } from "../../../components/phone-number/security-question-input";
 import { SendMagicSmsButton } from "../../../components/phone-number/send-magic-sms-button";
+import { isSmallScreenNumber } from "../../../components/screen-size";
 import {
   OnboardingRoute,
   OnboardingStackParamList,
@@ -33,7 +34,9 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
     const intl = useIntl();
     const { configStore, chainStore } = useStore();
     const isObi = configStore.isObi();
+    const isLoop = configStore.isLoop();
     const chainId = chainStore.currentChainId;
+    const safeInsets = useSafeAreaInsets();
 
     useEffect(() => {
       const { phoneNumber } = wallet.nextAdmin;
@@ -45,7 +48,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
         Alert.alert(
           intl.formatMessage({ id: "onboarding2.error.phonekeyexists.title" }),
           intl.formatMessage({ id: "onboarding2.error.phonekeyexists.text" }) +
-            ` ${phoneNumber.phoneNumber}?`,
+          ` ${phoneNumber.phoneNumber}?`,
           [
             {
               text: intl.formatMessage({
@@ -187,10 +190,9 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
               justifyContent: "space-between",
             }}
           >
-            <View>
+            <View >
               <Back
                 style={{
-                  marginTop: 20,
                   marginLeft: -5,
                   padding: 5,
                   width: 25,
@@ -198,20 +200,21 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
               />
               <View
                 style={{
-                  justifyContent: "flex-end",
-                  marginTop: isObi ? 10 : 43,
+                  marginTop: isObi ? 10 : isSmallScreenNumber(10, 25),
+                  paddingTop: isSmallScreenNumber(0, 32),
                 }}
+
               >
                 <View>
                   {isObi ? null : (
-                    <Image source={require("./assets/phone.png")} />
+                    <Image source={require("./assets/phone.png")} style={{ marginBottom: 20 }} />
                   )}
                   <Text
                     style={{
                       color: "#F6F5FF",
-                      fontSize: 24,
+                      fontSize: isSmallScreenNumber(18, 24),
                       fontWeight: "600",
-                      marginTop: 32,
+                      marginBottom: 10,
                     }}
                   >
                     {wallet.keyInRecovery === "phoneNumber" ? (
@@ -234,8 +237,8 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                   <Text
                     style={{
                       color: isObi ? "white" : "#999CB6",
-                      fontSize: 14,
-                      marginTop: 10,
+                      fontSize: isSmallScreenNumber(12, 14),
+
                     }}
                   >
                     {wallet.keyInRecovery === "phoneNumber" ? (
@@ -271,7 +274,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                 placeholder={intl.formatMessage({
                   id: "onboarding2.phonenrlabel",
                 })}
-                style={{ marginTop: 25 }}
+                style={{ marginTop: 15 }}
                 value={phoneNumberWithoutCountryCode}
                 onChangeText={(e) => {
                   const noCountryCode = e.replace(phoneCountryCode, "");
@@ -283,56 +286,57 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                 handlePhoneNumberCountryCode={handlePhoneNumberCountryCode}
               />
             </View>
+            <View style={{ flex: 1, justifyContent: 'flex-end', marginBottom: 20 }}>
+              <SendMagicSmsButton
+                description={intl.formatMessage({ id: "onboarding2.bottominfo" })}
+                onPress={async () => {
+                  setMagicButtonDisabledDoubleclick(true);
 
-            <SendMagicSmsButton
-              description={intl.formatMessage({ id: "onboarding2.bottominfo" })}
-              onPress={async () => {
-                setMagicButtonDisabledDoubleclick(true);
+                  const checkSecurityAnswer = await handleSecurityAnswer();
+                  const checkPhoneNumber = await handlePhoneNumber();
 
-                const checkSecurityAnswer = await handleSecurityAnswer();
-                const checkPhoneNumber = await handlePhoneNumber();
-
-                if (checkSecurityAnswer && checkPhoneNumber) {
-                  try {
-                    await sendPublicKeyTextMessage({
-                      phoneNumber,
-                      securityAnswer,
-                      demoMode: isMultisigDemoWallet(wallet),
-                      chainId,
-                    });
-                    navigation.navigate(
-                      OnboardingRoute.CreateMultisigPhoneNumberConfirm,
-                      {
+                  if (checkSecurityAnswer && checkPhoneNumber) {
+                    try {
+                      await sendPublicKeyTextMessage({
                         phoneNumber,
-                        securityQuestion,
                         securityAnswer,
-                      }
-                    );
+                        demoMode: isMultisigDemoWallet(wallet),
+                        chainId,
+                      });
+                      navigation.navigate(
+                        OnboardingRoute.CreateMultisigPhoneNumberConfirm,
+                        {
+                          phoneNumber,
+                          securityQuestion,
+                          securityAnswer,
+                        }
+                      );
+                      setMagicButtonDisabledDoubleclick(false);
+                    } catch (e) {
+                      const error = e as Error;
+                      setMagicButtonDisabledDoubleclick(false);
+                      console.error(error);
+                      Alert.alert(
+                        intl.formatMessage({
+                          id: "onboarding2.error.sendingsmsfailed",
+                        }),
+                        error.message
+                      );
+                    }
+                  } else {
                     setMagicButtonDisabledDoubleclick(false);
-                  } catch (e) {
-                    const error = e as Error;
-                    setMagicButtonDisabledDoubleclick(false);
-                    console.error(error);
-                    Alert.alert(
-                      intl.formatMessage({
-                        id: "onboarding2.error.sendingsmsfailed",
-                      }),
-                      error.message
-                    );
                   }
-                } else {
-                  setMagicButtonDisabledDoubleclick(false);
+                }}
+                disabled={
+                  magicButtonDisabledDoubleclick
+                    ? magicButtonDisabledDoubleclick
+                    : magicButtonDisabled
                 }
-              }}
-              disabled={
-                magicButtonDisabledDoubleclick
-                  ? magicButtonDisabledDoubleclick
-                  : magicButtonDisabled
-              }
-            />
+              />
+            </View>
           </View>
         </KeyboardAwareScrollView>
-      </SafeAreaView>
+      </SafeAreaView >
     );
   }
 );
