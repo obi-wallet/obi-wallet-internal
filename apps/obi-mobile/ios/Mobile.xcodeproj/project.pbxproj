@@ -107,6 +107,7 @@
 		A4A2D4B9805A42C2AF5233F4 /* Poppins-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-MediumItalic.ttf"; path = "../../../libs/mobile/src/assets/fonts/Poppins/Poppins-MediumItalic.ttf"; sourceTree = "<group>"; };
 		A4C3F2194DC2998416077EBE /* Pods-Mobile-MobileTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Mobile-MobileTests.release.xcconfig"; path = "Target Support Files/Pods-Mobile-MobileTests/Pods-Mobile-MobileTests.release.xcconfig"; sourceTree = "<group>"; };
 		A4E968698B0C45569759BB48 /* Poppins-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Regular.ttf"; path = "../../../libs/mobile/src/assets/fonts/Poppins/Poppins-Regular.ttf"; sourceTree = "<group>"; };
+		A4F792DD296E0AC8000583F3 /* Mobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Mobile.entitlements; path = Mobile/Mobile.entitlements; sourceTree = "<group>"; };
 		A8A6042534AC4770A14794C7 /* Inter-ExtraBoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraBoldItalic.otf"; path = "../../../libs/mobile/src/assets/fonts/Inter/Inter-ExtraBoldItalic.otf"; sourceTree = "<group>"; };
 		A9FB50AC247D410191AD24F6 /* Poppins-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Italic.ttf"; path = "../../../libs/mobile/src/assets/fonts/Poppins/Poppins-Italic.ttf"; sourceTree = "<group>"; };
 		BC89ADD464D64F4288E199AD /* Poppins-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-LightItalic.ttf"; path = "../../../libs/mobile/src/assets/fonts/Poppins/Poppins-LightItalic.ttf"; sourceTree = "<group>"; };
@@ -164,6 +165,7 @@
 		13B07FAE1A68108700A75B9A /* Mobile */ = {
 			isa = PBXGroup;
 			children = (
+				A4F792DD296E0AC8000583F3 /* Mobile.entitlements */,
 				483293BB28D6969D0052B2F9 /* AppCenter-Config.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -596,6 +598,7 @@
 			baseConfigurationReference = CBE522FB19B0A88D5805A687 /* Pods-Mobile-MobileTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = B364RPTB8B;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -624,6 +627,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = B364RPTB8B;
 				INFOPLIST_FILE = MobileTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -648,8 +652,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Mobile/Mobile.entitlements;
 				CURRENT_PROJECT_VERSION = 15;
-				DEVELOPMENT_TEAM = JCUQ8D698P;
+				DEVELOPMENT_TEAM = B364RPTB8B;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Mobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -662,7 +667,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = money.obi.wallet;
+				PRODUCT_BUNDLE_IDENTIFIER = moneypete.obi.wallet;
 				PRODUCT_NAME = Mobile;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -676,8 +681,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Mobile/Mobile.entitlements;
 				CURRENT_PROJECT_VERSION = 15;
-				DEVELOPMENT_TEAM = JCUQ8D698P;
+				DEVELOPMENT_TEAM = B364RPTB8B;
 				INFOPLIST_FILE = Mobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -689,7 +695,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = money.obi.wallet;
+				PRODUCT_BUNDLE_IDENTIFIER = moneypete.obi.wallet;
 				PRODUCT_NAME = Mobile;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

@@ -58,6 +58,12 @@ export const SerializedSocialPayload = t.type({
 });
 export type SerializedSocialPayload = t.TypeOf<typeof SerializedSocialPayload>;
 
+export const SerializedNFCPayload = t.type({
+  publicKey: Secp256k1PublicKey,
+});
+export type SerializedNFCPayload = t.TypeOf<typeof SerializedNFCPayload>;
+
+
 export const SerializedCloudPayload = t.type({
   publicKey: Secp256k1PublicKey,
 });
@@ -67,6 +73,7 @@ export const SerializedMultisigPayload = t.type({
   biometrics: nullable(SerializedBiometricsPayload),
   phoneNumber: nullable(SerializedPhoneNumberPayload),
   social: nullable(SerializedSocialPayload),
+  nfc: nullable(SerializedNFCPayload),
 });
 export type SerializedMultisigPayload = t.TypeOf<
   typeof SerializedMultisigPayload

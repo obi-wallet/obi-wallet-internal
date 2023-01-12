@@ -12,6 +12,7 @@ import {
   SerializedBiometricsPayload,
   SerializedPhoneNumberPayload,
   SerializedSocialPayload,
+  SerializedNFCPayload,
 } from "../multisig";
 import {
   SerializedMultisigPayload,
@@ -122,6 +123,11 @@ export class MultisigWallet extends AbstractWallet {
             publicKey: wallet.admin.social,
           }
         : null,
+      nfc: wallet.admin.nfc
+        ? {
+            publicKey: wallet.admin.nfc,
+          }
+        : null,
       cloud: null,
     });
     if (wallet.admin.social) {
@@ -202,6 +208,14 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   @action
+  public async setNFCPublicKey(payload: SerializedNFCPayload) {
+    await this.setNextAdmin({
+      ...this.nextAdmin,
+      nfc: payload,
+    });
+  }
+
+  @action
   public async finishProxySetup(address: SerializedProxyAddress) {
     this.keyInRecovery = null;
     this._walletInRecovery = null;
@@ -230,7 +244,7 @@ export class MultisigWallet extends AbstractWallet {
     multisig: SerializedMultisigPayload,
     prefix: string
   ): Multisig {
-    const { biometrics, phoneNumber, social } = multisig;
+    const { biometrics, phoneNumber, social, nfc } = multisig;
     const multisigThresholdPublicKey =
       this.createMultisigThresholdPublicKey(multisig);
 
@@ -250,6 +264,10 @@ export class MultisigWallet extends AbstractWallet {
       social: social && {
         address: pubkeyToAddress(social.publicKey, prefix),
         ...social,
+      },
+      nfc: nfc && {
+        address: pubkeyToAddress(nfc.publicKey, prefix),
+        ...nfc,
       },
       cloud: null,
       email: null,

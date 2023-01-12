@@ -118,6 +118,8 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>NFCReaderUsageDescription</key>
+	<string>Use NFC (Passport, Credit Card, YubiKey, Badge, etc.) as a source of entropy for a new deterministic keypair. No information is stored by Obi.</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

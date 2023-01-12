@@ -7,6 +7,7 @@ import {
   SerializedPhoneNumberPayload,
   SerializedProxyAddress,
   SerializedSocialPayload,
+  SerializedNFCPayload,
 } from "./serialized-data";
 
 export type MultisigThresholdPublicKey = MultisigThresholdPubkey;
@@ -21,6 +22,7 @@ export interface Multisig {
   phoneNumber: WithAddress<SerializedPhoneNumberPayload> | null;
   social: WithAddress<SerializedSocialPayload> | null;
   cloud: WithAddress<SerializedCloudPayload> | null;
+  nfc: WithAddress<SerializedNFCPayload> | null;
   email: null;
 }
 
@@ -42,5 +44,6 @@ export interface ProxyWallet {
     biometrics: Secp256k1PublicKey;
     phoneNumber: Secp256k1PublicKey;
     social?: Secp256k1PublicKey;
+    nfc?: Secp256k1PublicKey;
   };
 }

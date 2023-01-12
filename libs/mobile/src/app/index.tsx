@@ -19,6 +19,7 @@ import { MultisigBiometrics } from "./screens/onboarding/common/1-biometrics";
 import { MultisigPhoneNumber } from "./screens/onboarding/common/2-phone-number";
 import { MultisigPhoneNumberConfirm } from "./screens/onboarding/common/3-phone-number-confirm";
 import { MultisigSocial } from "./screens/onboarding/common/4-social";
+import { MultisigNFC } from "./screens/onboarding/common/5-nfc";
 import { MultisigInit } from "./screens/onboarding/create-multisig-init";
 import { LookupProxyWallets } from "./screens/onboarding/lookup-proxy-wallets";
 import { OnboardingRoute } from "./screens/onboarding/onboarding-stack";
@@ -203,6 +204,10 @@ export const StateRenderer = observer(function StateRenderer() {
           <RootStack.Screen
             name={OnboardingRoute.CreateMultisigSocial}
             component={MultisigSocial}
+          />
+          <RootStack.Screen
+            name={OnboardingRoute.CreateMultisigNFC}
+            component={MultisigNFC}
           />
           <RootStack.Screen
             name={OnboardingRoute.CreateMultisigInit}

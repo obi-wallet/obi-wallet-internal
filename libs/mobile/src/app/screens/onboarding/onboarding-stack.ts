@@ -4,6 +4,7 @@ export enum OnboardingRoute {
   CreateMultisigPhoneNumber = "CreateMultisigPhoneNumber",
   CreateMultisigPhoneNumberConfirm = "CreateMultisigPhoneNumberConfirm",
   CreateMultisigSocial = "CreateMultisigSocial",
+  CreateMultisigNFC = "CreateMultisigNFC",
   CreateMultisigInit = "CreateMultisigInit",
   ReplaceMultisig = "ReplaceMultisig",
   RecoverMultisig = "RecoverMultisig",
@@ -22,6 +23,7 @@ export interface OnboardingStackParamList
     securityAnswer: string;
   };
   [OnboardingRoute.CreateMultisigSocial]: undefined;
+  [OnboardingRoute.CreateMultisigNFC]: undefined;
   [OnboardingRoute.CreateMultisigInit]: undefined;
   [OnboardingRoute.ReplaceMultisig]: undefined;
   [OnboardingRoute.RecoverMultisig]: undefined;

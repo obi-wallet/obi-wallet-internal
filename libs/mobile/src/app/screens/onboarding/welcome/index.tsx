@@ -304,7 +304,8 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
     let navigationUrl:
       | OnboardingRoute.CreateMultisigPhoneNumber
       | OnboardingRoute.CreateMultisigSocial
-      | OnboardingRoute.CreateMultisigBiometrics;
+      | OnboardingRoute.CreateMultisigBiometrics
+      | OnboardingRoute.CreateMultisigNFC;
 
     let labelId: string;
     switch (keyInRecovery) {
@@ -315,6 +316,10 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
       case "social":
         navigationUrl = OnboardingRoute.CreateMultisigSocial;
         labelId = "recovery.continuesocial";
+        break;
+      case "nfc":
+        navigationUrl = OnboardingRoute.CreateMultisigNFC;
+        labelId = "recovery.continuenfc";
         break;
       default:
         navigationUrl = OnboardingRoute.CreateMultisigBiometrics;
