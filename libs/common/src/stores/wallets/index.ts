@@ -57,7 +57,7 @@ export function isAnyCosmosMultisigWallet(
 
 export function isAnyTerraMultisigWallet(
   wallet: TerraMultisigWallet | MultisigWallet | SinglesigWallet | null
-): wallet is MultisigWallet {
+): wallet is TerraMultisigWallet {
   return wallet?.type === WalletType.TerraMultisig;
 }
 

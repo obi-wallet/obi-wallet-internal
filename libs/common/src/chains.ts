@@ -40,6 +40,7 @@ export const chains = {
 
 export type Chain = keyof typeof chains;
 
+// TODO: fetch from https://assets.terra.money/chains.json instead
 export const terraChains = {
   "pisco-1": {
     chainId: "pisco-1" as const,
@@ -50,6 +51,7 @@ export const terraChains = {
     accountCreatorCodeId: 6578,
     currentCodeId: 921,
     rpcs: ["https://pisco-lcd.terra.dev"],
+    api: "https://pisco-api.terra.dev",
     denom: "uluna",
     startingUsdDebt: "0",
     ...commonTwilioConfig,
@@ -67,6 +69,7 @@ export const terraChains = {
     accountCreatorCodeId: 921,
     // TODO:
     rpcs: ["https://phoenix-lcd.terra.dev"],
+    api: "https://phoenix-api.terra.dev",
     denom: "uluna",
     startingUsdDebt: "0",
     ...commonTwilioConfig,

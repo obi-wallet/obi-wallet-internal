@@ -4,7 +4,12 @@ import {
   pubkeyType,
   Secp256k1Wallet,
 } from "@cosmjs/amino";
-import { chains, createStargateClient } from "@obi-wallet/common";
+import {
+  createLcdClient,
+  createStargateClient,
+  WalletType,
+} from "@obi-wallet/common";
+import { MsgSend, RawKey, SimplePublicKey } from "@terra-money/terra.js";
 import secp256k1 from "secp256k1";
 
 import { getRootStore } from "../../background/root-store";
@@ -24,36 +29,77 @@ export async function prepareWalletAndSign({
     Buffer.from(privateKey, "base64")
   );
 
-  const { chainStore } = getRootStore();
-  const chainId = chainStore.currentCosmosChain;
-  const { prefix, denom } = chains[chainId];
-  const client = await createStargateClient(chainId);
+  const { chainStore, configStore } = getRootStore();
 
-  const address = pubkeyToAddress(
-    {
-      type: pubkeyType.secp256k1,
-      value: publicKey,
-    },
-    prefix
-  );
+  switch (configStore.getDefaultMultisigWalletType()) {
+    case WalletType.Multisig: {
+      const { chainId, prefix, denom } =
+        chainStore.currentCosmosChainInformation;
+      const client = await createStargateClient(chainId);
 
-  if (!(await client.getAccount(address))) {
-    await lendFees({ chainId, address });
-  }
+      const address = pubkeyToAddress(
+        {
+          type: pubkeyType.secp256k1,
+          value: publicKey,
+        },
+        prefix
+      );
 
-  if (!(await client.getAccount(address))?.pubkey) {
-    const signer = await Secp256k1Wallet.fromKey(privateKeyUint8Array, prefix);
-    const signingClient = await createSigningStargateClient({
-      chainId,
-      signer,
-    });
-    await signingClient.sendTokens(
-      address,
-      address,
-      coins(1, denom),
-      "auto",
-      ""
-    );
+      if (!(await client.getAccount(address))) {
+        await lendFees({ chainId, address });
+      }
+
+      if (!(await client.getAccount(address))?.pubkey) {
+        const signer = await Secp256k1Wallet.fromKey(
+          privateKeyUint8Array,
+          prefix
+        );
+        const signingClient = await createSigningStargateClient({
+          chainId,
+          signer,
+        });
+        await signingClient.sendTokens(
+          address,
+          address,
+          coins(1, denom),
+          "auto",
+          ""
+        );
+      }
+      break;
+    }
+    case WalletType.TerraMultisig: {
+      const { chainId, denom } = chainStore.currentTerraChainInformation;
+
+      const client = await createLcdClient(chainId);
+
+      const address = SimplePublicKey.fromAmino({
+        type: pubkeyType.secp256k1,
+        value: publicKey,
+      }).address();
+
+      try {
+        await client.auth.accountInfo(address);
+      } catch (e) {
+        await lendFees({
+          chainId,
+          address,
+        });
+      }
+
+      const account = await client.auth.accountInfo(address);
+
+      if (!account.getPublicKey()) {
+        const key = new RawKey(Buffer.from(privateKeyUint8Array));
+        const wallet = client.wallet(key);
+        const send = new MsgSend(address, address, { [denom]: 1 });
+        // TODO: handle gas prices?
+        const tx = await wallet.createAndSignTx({ msgs: [send] });
+        await client.tx.broadcast(tx);
+      }
+
+      break;
+    }
   }
 
   return secp256k1.ecdsaSign(payload, privateKeyUint8Array);

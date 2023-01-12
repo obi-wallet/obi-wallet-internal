@@ -78,7 +78,7 @@ import { ConfirmMessages } from "./confirm-messages";
 import { wrapMessages } from "./wrap-messages";
 
 export interface SignatureModalProps extends ModalProps {
-  wallet: TerraMultisigWallet | MultisigWallet | SinglesigWallet;
+  wallet: MultisigWallet | SinglesigWallet;
   innerMessages: AminoMsg[];
   messages: AminoMsg[];
   rawMessages: EncodeObject[];
@@ -96,14 +96,13 @@ export const SignatureModal = observer<SignatureModalProps>((props) => {
   if (!props.wallet.type) return null;
 
   switch (props.wallet.type) {
-    case WalletType.TerraMultisig:
-      // TODO: not implemented yet
-      return null;
     case WalletType.Multisig:
       return <SignatureModalMultisig {...props} />;
     case WalletType.Singlesig:
       return <SignatureModalSinglesig {...props} />;
   }
+
+  return null;
 });
 
 export const SignatureModalSinglesig = observer<SignatureModalProps>(
@@ -509,7 +508,7 @@ export function useSignatureModalProps({
 
     return {
       key: modalKey.toString(),
-      wallet,
+      wallet: wallet as MultisigWallet | SinglesigWallet,
       visible: signatureModalVisible,
       innerMessages: innerAminoMessages,
       messages: aminoMessages,

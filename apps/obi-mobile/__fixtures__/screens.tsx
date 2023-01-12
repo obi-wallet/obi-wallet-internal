@@ -6,6 +6,7 @@ import {
   SettingsRoute,
   StateRenderer,
   useRootNavigation,
+  Modals,
 } from "@obi-wallet/mobile";
 import { CommonActions } from "@react-navigation/native";
 import { useEffect } from "react";
@@ -24,6 +25,7 @@ export default () => {
   const navigation = useRootNavigation();
   const [route] = useSelect("route", {
     options: routes,
+    defaultValue: OnboardingRoute.CreateMultisigInit,
   });
 
   useEffect(() => {
@@ -31,7 +33,12 @@ export default () => {
     if (routeAction) navigation.dispatch(routeAction);
   }, [navigation, route]);
 
-  return <StateRenderer />;
+  return (
+    <>
+      <StateRenderer />
+      <Modals />
+    </>
+  );
 };
 
 function getRouteParams(route: Route) {

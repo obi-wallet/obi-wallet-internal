@@ -18,11 +18,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 
 import { IconButton } from "../../../button";
-import {
-  useCosmosMultisigWallet,
-  useMultisigWallet,
-  useStore,
-} from "../../../stores";
+import { useCosmosMultisigWallet, useStore } from "../../../stores";
 import { Background } from "../../components/background";
 import { OnboardingRoute, OnboardingStackParamList } from "../onboarding-stack";
 

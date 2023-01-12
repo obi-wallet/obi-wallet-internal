@@ -47,6 +47,7 @@ import {
   produceEnv,
   RequestObiInAppPurchaseMsg,
   RequestObiSignAndBroadcastMsg,
+  RequestObiTerraSignAndBroadcastMsg,
   RootStore,
   RouterBackground,
   WalletType,
@@ -514,6 +515,7 @@ export function initBackground() {
 
   router.registerMessage(RequestObiInAppPurchaseMsg);
   router.registerMessage(RequestObiSignAndBroadcastMsg);
+  router.registerMessage(RequestObiTerraSignAndBroadcastMsg);
   router.addHandler("obi", async (env: Env, msg: Message<unknown>) => {
     const message = msg as ObiMessage;
     return await interactionService.waitApprove(

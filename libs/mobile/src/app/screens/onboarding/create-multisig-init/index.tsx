@@ -8,11 +8,15 @@ import {
   isTerraMultisigWallet,
   MultisigWallet,
   RequestObiSignAndBroadcastMsg,
+  RequestObiTerraSignAndBroadcastMsg,
   TerraMultisigWallet,
 } from "@obi-wallet/common";
 import { InstantiateMsg } from "@obi-wallet/proxy-contract";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { MsgExecuteContract } from "@terra-money/terra.js";
+import {
+  LegacyAminoMultisigPublicKey,
+  MsgExecuteContract,
+} from "@terra-money/terra.js";
 import { MsgInstantiateContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import Long from "long";
 import { observer } from "mobx-react-lite";
@@ -182,7 +186,9 @@ async function handleTerraMultisigInit({
   const { currentTerraChainInformation } = chainStore;
 
   const signerTypes = wallet.getSignerTypes(multisig);
-  const signers = multisig.multisig.publicKey.pubkeys.map((publicKey, i) => {
+  const signers = LegacyAminoMultisigPublicKey.fromAmino(
+    multisig.multisig.publicKey
+  ).pubkeys.map((publicKey, i) => {
     return {
       address: publicKey.address(),
       ty: signerTypes[i],
@@ -191,7 +197,7 @@ async function handleTerraMultisigInit({
 
   const rawMessage = {
     new_account: {
-      fee_debt: currentTerraChainInformation.startingUsdDebt,
+      fee_debt: parseInt(currentTerraChainInformation.startingUsdDebt, 10),
       gatekeeper_authorizations: {
         beneficiary_auths: [],
         message_auths: [],
@@ -212,4 +218,52 @@ async function handleTerraMultisigInit({
     msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
     funds: [],
   });
+
+  const response = await RequestObiTerraSignAndBroadcastMsg.send({
+    id: wallet.id,
+    messages: [message.toAmino()],
+    multisig,
+    cancelable: false,
+    isOnboarding: true,
+  });
+
+  try {
+    const rawLog = JSON.parse(response.raw_log) as [
+      {
+        events: [
+          {
+            type: string;
+            attributes: { key: string; value: string }[];
+          }
+        ];
+      }
+    ];
+    const instantiateEvent = rawLog[0].events.find((e) => {
+      return e.type === "instantiate";
+    });
+    invariant(
+      instantiateEvent,
+      "Expected `rawLog` to contain `instantiate` event."
+    );
+    const contractAddresses = instantiateEvent.attributes.filter((a) => {
+      return a.key === "_contract_address";
+    });
+    const codeIds = instantiateEvent.attributes.filter((a) => {
+      return a.key === "code_id";
+    });
+    invariant(
+      contractAddresses.length === codeIds.length,
+      "Expected to have the same number of `_contract_address` and `code_id` attributes."
+    );
+    invariant(
+      contractAddresses.length >= 2,
+      "Expected `instantiateEvent` to contain at least two `_contract_address` attributes."
+    );
+    await wallet.finishProxySetup({
+      address: contractAddresses[contractAddresses.length - 2].value,
+      codeId: parseInt(codeIds[codeIds.length - 2].value, 10),
+    });
+  } catch (e) {
+    console.log(response.raw_log);
+  }
 }
