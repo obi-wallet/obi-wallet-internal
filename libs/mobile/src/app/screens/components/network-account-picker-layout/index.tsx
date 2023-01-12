@@ -24,7 +24,7 @@ export const NetworkAccountPickerLayout =
   observer<NetworkAccountPickerLayoutProps>(
     function NetworkAccountPickerLayout({ children }) {
       const { chainStore } = useStore();
-      const currentNetwork = chainStore.currentCosmosChainInformation.label;
+      const currentNetwork = chainStore.currentChainInformation.label;
 
       return (
         <SafeAreaView

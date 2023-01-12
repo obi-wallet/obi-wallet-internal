@@ -1,6 +1,13 @@
-import { computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 
-import { Chain, chains, TerraChain, terraChains } from "../chains";
+import {
+  Chain,
+  chains,
+  isCosmosChain,
+  isTerraChain,
+  TerraChain,
+  terraChains,
+} from "../chains";
 import { ConfigStore } from "./config";
 import { WalletType } from "./wallets";
 
@@ -37,6 +44,17 @@ export class ChainStore {
         return this.currentCosmosChain;
       case WalletType.TerraMultisig:
         return this.currentTerraChain;
+    }
+  }
+
+  @action
+  public setCurrentChain(chain: Chain | TerraChain) {
+    if (isCosmosChain(chain)) {
+      this.currentCosmosChain = chain;
+    }
+
+    if (isTerraChain(chain)) {
+      this.currentTerraChain = chain;
     }
   }
 

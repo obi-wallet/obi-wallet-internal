@@ -90,6 +90,11 @@ export class TerraMultisigWallet extends AbstractWallet {
     return this._id;
   }
 
+  @computed
+  public get chain() {
+    return this.serializedWallet.data.chain;
+  }
+
   get address(): string | null {
     return this.proxyAddress?.address ?? null;
   }
