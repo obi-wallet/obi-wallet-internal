@@ -1,10 +1,10 @@
-import { Chain } from "@obi-wallet/common";
+import { Chain, TerraChain } from "@obi-wallet/common";
 
 export async function lendFees({
   chainId,
   address,
 }: {
-  chainId: Chain;
+  chainId: Chain | TerraChain;
   address: string;
 }) {
   const response = await fetch(

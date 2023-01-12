@@ -85,7 +85,7 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   public get proxyAddress(): SerializedProxyAddress | null {
-    return this.proxyAddresses[this.chainStore.currentChain] ?? null;
+    return this.proxyAddresses[this.chainStore.currentCosmosChain] ?? null;
   }
 
   public get walletInRecovery() {
@@ -93,7 +93,7 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   public async identifyProblems() {
-    const currentChain = this.chainStore.currentChain;
+    const currentChain = this.chainStore.currentCosmosChain;
     const { types, checks } = healthChecks[currentChain];
 
     const potentialProblems = await Promise.all(
@@ -150,7 +150,7 @@ export class MultisigWallet extends AbstractWallet {
   public get nextAdmin(): Multisig {
     return this.hydrateMultisig(
       this.serializedNextAdmin,
-      this.chainStore.currentChainInformation.prefix
+      this.chainStore.currentCosmosChainInformation.prefix
     );
   }
 
@@ -166,7 +166,7 @@ export class MultisigWallet extends AbstractWallet {
       this.serializedCurrentAdmin &&
       this.hydrateMultisig(
         this.serializedCurrentAdmin,
-        this.chainStore.currentChainInformation.prefix
+        this.chainStore.currentCosmosChainInformation.prefix
       )
     );
   }
@@ -206,7 +206,7 @@ export class MultisigWallet extends AbstractWallet {
     this.keyInRecovery = null;
     this._walletInRecovery = null;
     this._updateProposed = false;
-    this.proxyAddresses[this.chainStore.currentChain] = address;
+    this.proxyAddresses[this.chainStore.currentCosmosChain] = address;
     await this.setCurrentAdmin(this.serializedNextAdmin);
   }
 

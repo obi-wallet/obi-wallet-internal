@@ -1,3 +1,4 @@
+import { Chain, TerraChain } from "@obi-wallet/common";
 import { AES } from "crypto-js";
 import { totp } from "otplib";
 import { Alert } from "react-native";
@@ -39,7 +40,7 @@ export async function sendPublicKeyTextMessage({
   phoneNumber: string;
   securityAnswer: string;
   demoMode: boolean;
-  chainId: string;
+  chainId: Chain | TerraChain;
 }) {
   if (demoMode) return;
 
@@ -94,7 +95,7 @@ export async function sendSignatureTextMessage({
   securityAnswer: string;
   message: Uint8Array;
   demoMode: boolean;
-  chainId: string;
+  chainId: Chain | TerraChain;
 }) {
   if (demoMode) {
     DEMO_PAYLOAD = message;
@@ -103,7 +104,7 @@ export async function sendSignatureTextMessage({
 
   try {
     await encryptAndSendMessage({
-      message: `sign:${securityAnswer},${Buffer.from(message.buffer).toString(
+      message: `sign:${securityAnswer}:${Buffer.from(message.buffer).toString(
         "base64"
       )}`,
       phoneNumber,
@@ -157,7 +158,7 @@ async function encryptAndSendMessage({
 }: {
   message: string;
   phoneNumber: string;
-  chainId: string;
+  chainId: Chain | TerraChain;
 }) {
   const body = await getMessageBody(`${message}:${chainId}`);
   const formData = new FormData();

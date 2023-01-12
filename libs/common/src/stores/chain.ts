@@ -8,21 +8,21 @@ export class ChainStore {
   protected readonly configStore: ConfigStore;
 
   @observable
-  public currentChain: Chain;
+  public currentCosmosChain: Chain;
 
   @observable
   public currentTerraChain: TerraChain;
 
   constructor({ configStore }: { configStore: ConfigStore }) {
     this.configStore = configStore;
-    this.currentChain = configStore.config.chains.default;
+    this.currentCosmosChain = configStore.config.chains.default;
     this.currentTerraChain = configStore.config.terraChains.default;
     makeObservable(this);
   }
 
   @computed
-  public get currentChainInformation() {
-    return chains[this.currentChain];
+  public get currentCosmosChainInformation() {
+    return chains[this.currentCosmosChain];
   }
 
   @computed
@@ -31,12 +31,22 @@ export class ChainStore {
   }
 
   @computed
-  public get currentChainId() {
+  public get currentChain() {
     switch (this.configStore.getDefaultMultisigWalletType()) {
       case WalletType.Multisig:
-        return this.currentChain;
+        return this.currentCosmosChain;
       case WalletType.TerraMultisig:
         return this.currentTerraChain;
+    }
+  }
+
+  @computed
+  public get currentChainInformation() {
+    switch (this.configStore.getDefaultMultisigWalletType()) {
+      case WalletType.Multisig:
+        return this.currentCosmosChainInformation;
+      case WalletType.TerraMultisig:
+        return this.currentTerraChainInformation;
     }
   }
 }

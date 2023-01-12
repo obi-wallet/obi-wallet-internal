@@ -9,7 +9,6 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import {
   Brand,
   isAnyCosmosMultisigWallet,
-  isAnyMultisigWallet,
   RequestObiSignAndBroadcastMsg,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";

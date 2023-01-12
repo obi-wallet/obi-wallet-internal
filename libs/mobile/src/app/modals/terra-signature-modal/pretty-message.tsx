@@ -10,6 +10,7 @@ import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Text } from "@obi-wallet/common";
+import { Msg } from "@terra-money/terra.js";
 import { observer } from "mobx-react-lite";
 import React, { ReactNode } from "react";
 import { useIntl } from "react-intl";
@@ -19,14 +20,15 @@ import { formatCoin } from "../../balances";
 import { useStore } from "../../stores";
 import ArrowUpIcon from "./assets/arrowUpIcon.svg";
 
-export function PrettyMessage({ message }: { message: AminoMsg }) {
-  switch (message.type) {
+export function PrettyMessage({ message }: { message: Msg }) {
+  const aminoMessage = message.toAmino();
+  switch (aminoMessage.type) {
     case "cosmos-sdk/MsgSend":
-      return <PrettyMessageSend value={message.value} />;
+      return <PrettyMessageSend value={aminoMessage.value} />;
     case "wasm/MsgExecuteContract":
-      return <PrettyMessageExecuteContract message={message} />;
+      return <PrettyMessageExecuteContract message={aminoMessage} />;
     case "wasm/MsgInstantiateContract":
-      return <PrettyMessageInstantiateContract value={message.value} />;
+      return <PrettyMessageInstantiateContract value={aminoMessage.value} />;
     default:
       return <PrettyMessageUnknown />;
   }
