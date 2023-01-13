@@ -46,7 +46,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
         Alert.alert(
           intl.formatMessage({ id: "onboarding2.error.phonekeyexists.title" }),
           intl.formatMessage({ id: "onboarding2.error.phonekeyexists.text" }) +
-          ` ${phoneNumber.phoneNumber}?`,
+            ` ${phoneNumber.phoneNumber}?`,
           [
             {
               text: intl.formatMessage({
@@ -188,7 +188,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
               justifyContent: "space-between",
             }}
           >
-            <View >
+            <View>
               <Back
                 style={{
                   marginLeft: -5,
@@ -201,11 +201,13 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                   marginTop: isObi ? 10 : isSmallScreenNumber(10, 25),
                   paddingTop: isSmallScreenNumber(0, 32),
                 }}
-
               >
                 <View>
                   {isObi ? null : (
-                    <Image source={require("./assets/phone.png")} style={{ marginBottom: 20 }} />
+                    <Image
+                      source={require("./assets/phone.png")}
+                      style={{ marginBottom: 20 }}
+                    />
                   )}
                   <Text
                     style={{
@@ -236,7 +238,6 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                     style={{
                       color: isObi ? "white" : "#999CB6",
                       fontSize: isSmallScreenNumber(12, 14),
-
                     }}
                   >
                     {wallet.keyInRecovery === "phoneNumber" ? (
@@ -284,9 +285,13 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                 handlePhoneNumberCountryCode={handlePhoneNumberCountryCode}
               />
             </View>
-            <View style={{ flex: 1, justifyContent: 'flex-end', marginBottom: 20 }}>
+            <View
+              style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
+            >
               <SendMagicSmsButton
-                description={intl.formatMessage({ id: "onboarding2.bottominfo" })}
+                description={intl.formatMessage({
+                  id: "onboarding2.bottominfo",
+                })}
                 onPress={async () => {
                   setMagicButtonDisabledDoubleclick(true);
 
@@ -334,7 +339,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
             </View>
           </View>
         </KeyboardAwareScrollView>
-      </SafeAreaView >
+      </SafeAreaView>
     );
   }
 );

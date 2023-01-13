@@ -37,6 +37,7 @@
     "@react-navigation/native": "*",
     "@react-navigation/native-stack": "*",
     "@sentry/react-native": "*",
+    "@terra-money/terra.js": "*",
     "@testing-library/jest-native": "*",
     "appcenter": "*",
     "appcenter-analytics": "*",
@@ -50,6 +51,7 @@
     "invariant": "*",
     "io-ts": "*",
     "isomorphic-unfetch": "*",
+    "jscrypto": "*",
     "long": "*",
     "metro-babel-register": "*",
     "metro-config": "*",
@@ -90,12 +92,10 @@
     "react-native-svg-uri": "*",
     "react-native-url-polyfill": "*",
     "react-native-webview": "*",
+    "react-query": "*",
     "rooks": "*",
     "scrypt-js": "*",
     "secp256k1": "*",
-    "tiny-invariant": "*",
-    "@terra-money/terra.js": "*",
-    "react-query": "*",
-    "jscrypto": "*"
+    "tiny-invariant": "*"
   }
 }

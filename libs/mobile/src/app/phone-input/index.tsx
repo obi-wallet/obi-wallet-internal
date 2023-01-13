@@ -16,8 +16,8 @@ import CountryPicker, {
 import { DARK_THEME } from "react-native-country-picker-modal";
 import { CountryCode, Country } from "react-native-country-picker-modal";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { isSmallScreenNumber } from "../screens/components/screen-size";
 
+import { isSmallScreenNumber } from "../screens/components/screen-size";
 import { useStore } from "../stores";
 
 const getStyles = (isObi: boolean) =>
@@ -148,13 +148,13 @@ export function PhoneInput({
                   dark
                     ? DARK_THEME
                     : {
-                      primaryColorVariant: "#090816",
-                      backgroundColor: theme.colors.background,
-                      onBackgroundTextColor: "#F6F5FF",
-                      fontSize: isSmallScreenNumber(14, 16),
-                      filterPlaceholderTextColor: "#4B4E6E",
-                      activeOpacity: 0.7,
-                    }
+                        primaryColorVariant: "#090816",
+                        backgroundColor: theme.colors.background,
+                        onBackgroundTextColor: "#F6F5FF",
+                        fontSize: isSmallScreenNumber(14, 16),
+                        filterPlaceholderTextColor: "#4B4E6E",
+                        activeOpacity: 0.7,
+                      }
                 }
                 {...{
                   allowFontScaling: fontScaling,

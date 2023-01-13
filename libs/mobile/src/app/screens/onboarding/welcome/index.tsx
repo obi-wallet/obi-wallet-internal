@@ -70,7 +70,9 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                 opacity: 0.3,
               }}
             />
-            <Text style={{ color: "white", fontSize: isSmallScreenNumber(12, 14), }}>
+            <Text
+              style={{ color: "white", fontSize: isSmallScreenNumber(12, 14) }}
+            >
               <Text style={{ fontWeight: "600" }}>
                 <FormattedMessage
                   id="onboarding1.disclaimer"
@@ -111,7 +113,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                   style={{
                     width: "70%",
                     height: "70%",
-                    aspectRatio: 1 / 1
+                    aspectRatio: 1 / 1,
                   }}
                 />
               ) : (
@@ -154,7 +156,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           <ScrollView style={{}}>
             {renderContinueButton(multisigWallet?.keyInRecovery)}
             {isInRecovery ||
-              !configStore.isFeatureEnabled(Feature.RecoveryWorkflow) ? null : (
+            !configStore.isFeatureEnabled(Feature.RecoveryWorkflow) ? null : (
               <Button
                 label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
                 RightIcon={isObi ? undefined : GetStarted}
@@ -170,7 +172,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                       {
                         text: "Cancel",
                         // eslint-disable-next-line @typescript-eslint/no-empty-function
-                        onPress() { },
+                        onPress() {},
                       },
                       {
                         text: "Continue",
@@ -179,7 +181,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                             if (
                               multisigWallet &&
                               multisigWallet.type ===
-                              configStore.getDefaultMultisigWalletType()
+                                configStore.getDefaultMultisigWalletType()
                             ) {
                               return multisigWallet;
                             }

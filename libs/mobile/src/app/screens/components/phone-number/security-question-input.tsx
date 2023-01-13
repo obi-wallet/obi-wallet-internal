@@ -17,15 +17,15 @@ export type SecurityQuestionInputProps = {
   onSecurityAnswerChange: (securityAnswer: string) => void;
   CustomTextInput?: ComponentType<TextInputProps>;
 } & (
-    | {
+  | {
       disabled: true;
       onSecurityQuestionChange?: OnSecurityQuestionChange;
     }
-    | {
+  | {
       disabled?: false;
       onSecurityQuestionChange: OnSecurityQuestionChange;
     }
-  );
+);
 
 export function SecurityQuestionInput({
   disabled,

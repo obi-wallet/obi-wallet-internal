@@ -11,8 +11,8 @@ import {
   View,
 } from "react-native";
 import { SvgProps } from "react-native-svg";
-import { isSmallScreenNumber } from "../screens/components/screen-size";
 
+import { isSmallScreenNumber } from "../screens/components/screen-size";
 import { useStore } from "../stores";
 
 const loopFlavors = {
