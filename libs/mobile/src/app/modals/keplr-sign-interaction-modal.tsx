@@ -15,7 +15,6 @@ export const KeplrSignInteractionModal = observer(() => {
 
   return (
     <ConfirmMessages
-      innerMessages={signDocWrapper.aminoSignDoc.msgs}
       messages={signDocWrapper.aminoSignDoc.msgs}
       onConfirm={async () => {
         // TODO: simulate fees

@@ -10,6 +10,12 @@ import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Text } from "@obi-wallet/common";
+import {
+  Msg,
+  MsgExecuteContract,
+  MsgInstantiateContract,
+  MsgSend,
+} from "@terra-money/terra.js";
 import { observer } from "mobx-react-lite";
 import React, { ReactNode } from "react";
 import { useIntl } from "react-intl";
@@ -19,20 +25,29 @@ import { formatCoin } from "../../balances";
 import { useStore } from "../../stores";
 import ArrowUpIcon from "./assets/arrowUpIcon.svg";
 
-export function PrettyMessage({ message }: { message: AminoMsg }) {
+export function PrettyMessage({ message }: { message: AminoMsg | Msg.Amino }) {
   switch (message.type) {
-    case "cosmos-sdk/MsgSend":
-      return <PrettyMessageSend value={message.value} />;
-    case "wasm/MsgExecuteContract":
-      return <PrettyMessageExecuteContract message={message} />;
-    case "wasm/MsgInstantiateContract":
-      return <PrettyMessageInstantiateContract value={message.value} />;
+    case "bank/MsgSend":
+    case "cosmos-sdk/MsgSend": {
+      const msg = message as AminoMsgSend | MsgSend.Amino;
+      return <PrettyMessageSend {...msg} />;
+    }
+    case "wasm/MsgInstantiateContract": {
+      const msg = message as
+        | AminoMsgInstantiateContract
+        | MsgInstantiateContract.Amino;
+      return <PrettyMessageInstantiateContract {...msg} />;
+    }
+    case "wasm/MsgExecuteContract": {
+      const msg = message as AminoMsgExecuteContract | MsgExecuteContract.Amino;
+      return <PrettyMessageExecuteContract {...msg} />;
+    }
     default:
       return <PrettyMessageUnknown />;
   }
 }
 
-function PrettyMessageSend({ value }: { value: AminoMsgSend["value"] }) {
+function PrettyMessageSend({ value }: AminoMsgSend | MsgSend.Amino) {
   return (
     <MessageElement
       icon={<FontAwesomeIcon icon={faPaperPlane} size={33} color="white" />}
@@ -55,10 +70,11 @@ function PrettyMessageSend({ value }: { value: AminoMsgSend["value"] }) {
 }
 
 const PrettyMessageInstantiateContract = observer(
-  ({ value }: { value: AminoMsgInstantiateContract["value"] }) => {
+  ({ value }: AminoMsgInstantiateContract | MsgInstantiateContract.Amino) => {
     const { chainStore } = useStore();
     const intl = useIntl();
 
+    // TODO: handle terra
     if (
       value.code_id ===
       chainStore.currentCosmosChainInformation.currentCodeId.toString()
@@ -87,11 +103,14 @@ const PrettyMessageInstantiateContract = observer(
 );
 
 const PrettyMessageExecuteContract = observer(
-  ({ message }: { message: AminoMsg }) => {
-    const value = message.value as AminoMsgExecuteContract["value"];
+  ({ value }: AminoMsgExecuteContract | MsgExecuteContract.Amino) => {
     const intl = useIntl();
+    const message = getMessage();
 
-    if (value.msg["propose_update_admin"] !== undefined) {
+    if (
+      typeof message === "object" &&
+      message["propose_update_admin"] !== undefined
+    ) {
       return (
         <MessageElement
           icon={<ArrowUpIcon />}
@@ -103,7 +122,10 @@ const PrettyMessageExecuteContract = observer(
       );
     }
 
-    if (value.msg["confirm_update_admin"] !== undefined) {
+    if (
+      typeof message === "object" &&
+      message["confirm_update_admin"] !== undefined
+    ) {
       return (
         <MessageElement
           icon={<ArrowUpIcon />}
@@ -147,6 +169,19 @@ const PrettyMessageExecuteContract = observer(
         </Text>
       </MessageElement>
     );
+
+    function getMessage() {
+      return isAminoV1Value(value) ? value.execute_msg : value.msg;
+    }
+
+    function isAminoV1Value(
+      value: (AminoMsgExecuteContract | MsgExecuteContract.Amino)["value"]
+    ): value is MsgExecuteContract.AminoV1["value"] {
+      return (
+        typeof (value as MsgExecuteContract.AminoV1["value"]).execute_msg !==
+        "undefined"
+      );
+    }
   }
 );
 

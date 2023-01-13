@@ -3,7 +3,10 @@ import { RequestObiSignAndBroadcastPayload } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 
 import { useStore } from "../stores";
-import { SignatureModal, useSignatureModalProps } from "./signature-modal";
+import {
+  CosmosSignatureModal,
+  useSignatureModalProps,
+} from "./signature-modal";
 
 export const SignInteractionModal = observer(() => {
   const { signInteractionStore } = useStore();
@@ -27,7 +30,7 @@ const InteractionModalInner = observer(
     });
 
     return (
-      <SignatureModal
+      <CosmosSignatureModal
         {...signatureModalProps}
         visible
         onCancel={() => {

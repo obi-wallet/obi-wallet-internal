@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useQuery } from "react-query";
 
-import { useStore } from "../../stores";
+import { useStore } from "../../../stores";
 
 const RefetchOptions = {
   DEFAULT: /* onMount, onFocus */ {},
