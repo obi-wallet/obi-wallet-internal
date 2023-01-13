@@ -62,6 +62,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>We need your permission to access your Camera.</string>
+	<key>NFCReaderUsageDescription</key>
+	<string>Use NFC (Passport, Credit Card, YubiKey, Badge, etc.) as a source of entropy for a new deterministic keypair. No information is stored by Obi.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>We need your permission to access FaceID.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
