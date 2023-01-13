@@ -74,7 +74,7 @@ import {
   parseSignatureTextMessageResponse,
   sendSignatureTextMessage,
 } from "../../text-message";
-import { ConfirmMessages } from "./confirm-messages";
+import { ConfirmMessages } from "../signature-modal/confirm-messages";
 import { wrapMessages } from "./wrap-messages";
 
 export interface SignatureModalProps extends ModalProps {
@@ -123,7 +123,7 @@ export const SignatureModalSinglesig = observer<SignatureModalProps>(
         {...props}
         isOnboarding={isOnboarding}
         loading={loading}
-        messages={messages}
+        messages={props.innerMessages}
         onCancel={onCancel}
         onConfirm={async () => {
           try {
@@ -314,7 +314,7 @@ export const SignatureModalMultisig = observer<
       loading={loading}
       isOnboarding={isOnboarding}
       disabled={!enoughSignatures}
-      messages={messages}
+      messages={props.innerMessages}
       onCancel={onCancel}
       onConfirm={async () => {
         try {

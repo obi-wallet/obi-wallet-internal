@@ -42,7 +42,7 @@ import { SendMagicSmsButton } from "../../screens/components/phone-number/send-m
 import { VerifyAndProceedButton } from "../../screens/components/phone-number/verify-and-proceed-button";
 import { useStore } from "../../stores";
 import { TextInput } from "../../text-input";
-import { ConfirmMessages } from "./confirm-messages";
+import { ConfirmMessages } from "../signature-modal/confirm-messages";
 import { useGasPrices } from "./hooks";
 import {
   BiometricsKey,
@@ -266,7 +266,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
         loading={loading}
         isOnboarding={isOnboarding}
         disabled={!enoughSignatures}
-        messages={messages}
+        messages={props.innerMessages.map((message) => message.toAmino())}
         onCancel={onCancel}
         onConfirm={async () => {
           console.log(signatures);

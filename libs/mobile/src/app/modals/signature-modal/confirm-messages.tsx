@@ -1,6 +1,7 @@
 import { AminoMsg } from "@cosmjs/amino";
 import { Text } from "@obi-wallet/common";
 import Clipboard from "@react-native-clipboard/clipboard";
+import { Msg } from "@terra-money/terra.js";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -29,12 +30,14 @@ export interface ConfirmMessagesProps extends ModalProps {
   loading?: boolean;
   disabled?: boolean;
   cancelable?: boolean;
-  innerMessages: readonly AminoMsg[];
-  messages: readonly AminoMsg[];
+  messages: readonly AminoMsg[] | readonly Msg.Amino[];
   footer?: ReactNode;
   children?: ReactNode;
+
   onCancel(): void;
+
   isOnboarding?: boolean;
+
   onConfirm(): void;
 }
 
@@ -43,7 +46,6 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
     loading,
     disabled,
     cancelable = true,
-    innerMessages,
     messages,
     onCancel,
     onConfirm,
@@ -255,26 +257,28 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
     function renderTabContent() {
       switch (selectedTab) {
         case Tab.TransactionDetails:
-          return <MessageView messages={innerMessages} />;
-        case Tab.Data:
+          return <MessageView messages={messages} />;
+        case Tab.Data: {
+          const data = JSON.stringify(messages, null, 2);
           return (
             <Text
               style={{ color: "#ffffff" }}
               onLongPress={() => {
-                Clipboard.setString(JSON.stringify(innerMessages, null, 2));
+                Clipboard.setString(data);
                 Alert.alert("Data copied to the clipboard");
               }}
             >
-              {JSON.stringify(innerMessages, null, 2)}
+              {data}
             </Text>
           );
+        }
       }
     }
   }
 );
 
 interface MessageViewProps {
-  messages: readonly AminoMsg[];
+  messages: ConfirmMessagesProps["messages"];
   isObi?: boolean;
 }
 
