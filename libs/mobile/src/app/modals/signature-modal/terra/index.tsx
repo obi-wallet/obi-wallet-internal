@@ -22,18 +22,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import invariant from "tiny-invariant";
 
-import { lendFees } from "../../fee-lender-worker";
+import { lendFees } from "../../../fee-lender-worker";
 import {
   BottomSheet,
   BottomSheetRef,
-} from "../../screens/components/bottom-sheet";
-import { CheckIcon, Key } from "../../screens/components/keys-list";
-import { useStore } from "../../stores";
+} from "../../../screens/components/bottom-sheet";
+import { CheckIcon, Key } from "../../../screens/components/keys-list";
+import { useStore } from "../../../stores";
 import {
   MultisigConfirmMessages,
   MultisigConfirmMessagesProps,
-} from "../signature-modal/multisig-confirm-messages";
-import { PhoneNumberBottomSheetContent } from "../signature-modal/phone-number-bottom-sheet-content";
+} from "../multisig-confirm-messages";
+import { PhoneNumberBottomSheetContent } from "../phone-number-bottom-sheet-content";
 import { useGasPrices } from "./hooks";
 import {
   BiometricsKey,

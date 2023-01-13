@@ -8,11 +8,11 @@ import { Key, SimplePublicKey } from "@terra-money/terra.js";
 import { SHA256, Word32Array } from "jscrypto";
 import invariant from "tiny-invariant";
 
-import { createBiometricSignature } from "../../biometrics";
+import { createBiometricSignature } from "../../../biometrics";
 import {
   parseSignatureTextMessageResponse,
   sendSignatureTextMessage,
-} from "../../text-message";
+} from "../../../text-message";
 
 function createHash(payload: Buffer): Uint8Array {
   const hash = Buffer.from(

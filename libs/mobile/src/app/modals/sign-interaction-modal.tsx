@@ -4,9 +4,9 @@ import { observer } from "mobx-react-lite";
 
 import { useStore } from "../stores";
 import {
-  SignatureModal,
+  CosmosSignatureModal,
   useSignatureModalProps,
-} from "./cosmos-signature-modal";
+} from "./signature-modal";
 
 export const SignInteractionModal = observer(() => {
   const { signInteractionStore } = useStore();
@@ -30,7 +30,7 @@ const InteractionModalInner = observer(
     });
 
     return (
-      <SignatureModal
+      <CosmosSignatureModal
         {...signatureModalProps}
         visible
         onCancel={() => {

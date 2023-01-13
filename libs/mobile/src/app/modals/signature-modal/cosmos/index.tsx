@@ -47,28 +47,28 @@ import { useIntl } from "react-intl";
 import { Alert } from "react-native";
 import invariant from "tiny-invariant";
 
-import { createBiometricSignature } from "../../biometrics";
-import { createSigningCosmWasmClient } from "../../clients";
-import { lendFees } from "../../fee-lender-worker";
+import { createBiometricSignature } from "../../../biometrics";
+import { createSigningCosmWasmClient } from "../../../clients";
+import { lendFees } from "../../../fee-lender-worker";
 import {
   BottomSheet,
   BottomSheetRef,
-} from "../../screens/components/bottom-sheet";
-import { CheckIcon, Key } from "../../screens/components/keys-list";
-import { useStore } from "../../stores";
+} from "../../../screens/components/bottom-sheet";
+import { CheckIcon, Key } from "../../../screens/components/keys-list";
+import { useStore } from "../../../stores";
 import {
   parseSignatureTextMessageResponse,
   sendSignatureTextMessage,
-} from "../../text-message";
-import { ConfirmMessages } from "../signature-modal/confirm-messages";
+} from "../../../text-message";
+import { ConfirmMessages } from "../confirm-messages";
 import {
   MultisigConfirmMessages,
   MultisigConfirmMessagesProps,
-} from "../signature-modal/multisig-confirm-messages";
-import { PhoneNumberBottomSheetContent } from "../signature-modal/phone-number-bottom-sheet-content";
+} from "../multisig-confirm-messages";
+import { PhoneNumberBottomSheetContent } from "../phone-number-bottom-sheet-content";
 import { wrapMessages } from "./wrap-messages";
 
-export interface SignatureModalProps
+export interface CosmosSignatureModalProps
   extends Omit<
     MultisigConfirmMessagesProps,
     | "numberOfSignatures"
@@ -87,64 +87,67 @@ export interface SignatureModalProps
   onConfirm(signatures: Map<string, Uint8Array>): void;
 }
 
-export const SignatureModal = observer<SignatureModalProps>((props) => {
-  if (!props.wallet.type) return null;
+export const CosmosSignatureModal = observer<CosmosSignatureModalProps>(
+  (props) => {
+    if (!props.wallet.type) return null;
 
-  switch (props.wallet.type) {
-    case WalletType.Multisig:
-      return <SignatureModalMultisig {...props} />;
-    case WalletType.Singlesig:
-      return <SignatureModalSinglesig {...props} />;
-  }
+    switch (props.wallet.type) {
+      case WalletType.Multisig:
+        return <CosmosSignatureModalMultisig {...props} />;
+      case WalletType.Singlesig:
+        return <CosmosSignatureModalSinglesig {...props} />;
+    }
 
-  return null;
-});
-
-export const SignatureModalSinglesig = observer<SignatureModalProps>(
-  ({
-    messages,
-    rawMessages,
-    multisig,
-    onCancel,
-    onConfirm,
-    isOnboarding,
-    ...props
-  }) => {
-    const [loading, setLoading] = useState(false);
-    const intl = useIntl();
-
-    return (
-      <ConfirmMessages
-        {...props}
-        isOnboarding={isOnboarding}
-        loading={loading}
-        messages={props.innerMessages}
-        onCancel={onCancel}
-        onConfirm={async () => {
-          try {
-            setLoading(true);
-            await onConfirm(new Map());
-            setLoading(false);
-          } catch (e) {
-            const error = e as Error;
-            setLoading(false);
-            console.error(error);
-            Alert.alert(
-              intl.formatMessage({
-                id: "signature.error.confirmingtx",
-                defaultMessage: "Error Confirming Transaction",
-              }),
-              error.message
-            );
-          }
-        }}
-      />
-    );
+    return null;
   }
 );
 
-export const SignatureModalMultisig = observer<
-  SignatureModalProps & { multisig?: Multisig | null }
+export const CosmosSignatureModalSinglesig =
+  observer<CosmosSignatureModalProps>(
+    ({
+      messages,
+      rawMessages,
+      multisig,
+      onCancel,
+      onConfirm,
+      isOnboarding,
+      ...props
+    }) => {
+      const [loading, setLoading] = useState(false);
+      const intl = useIntl();
+
+      return (
+        <ConfirmMessages
+          {...props}
+          isOnboarding={isOnboarding}
+          loading={loading}
+          messages={props.innerMessages}
+          onCancel={onCancel}
+          onConfirm={async () => {
+            try {
+              setLoading(true);
+              await onConfirm(new Map());
+              setLoading(false);
+            } catch (e) {
+              const error = e as Error;
+              setLoading(false);
+              console.error(error);
+              Alert.alert(
+                intl.formatMessage({
+                  id: "signature.error.confirmingtx",
+                  defaultMessage: "Error Confirming Transaction",
+                }),
+                error.message
+              );
+            }
+          }}
+        />
+      );
+    }
+  );
+
+export const CosmosSignatureModalMultisig = observer<
+  CosmosSignatureModalProps & { multisig?: Multisig | null }
 >(function SignatureModalMultisig({
   wallet,
   innerMessages,
@@ -154,7 +157,7 @@ export const SignatureModalMultisig = observer<
   onConfirm,
   hiddenKeyIds,
   ...props
-}: SignatureModalProps) {
+}: CosmosSignatureModalProps) {
   const intl = useIntl();
   const [signatures, setSignatures] = useState(new Map<string, Uint8Array>());
   const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
@@ -351,7 +354,7 @@ export function useSignatureModalProps({
   data: RequestObiSignAndBroadcastPayload;
   onConfirm(response: DeliverTxResponse): Promise<void>;
 }): {
-  signatureModalProps: SignatureModalProps;
+  signatureModalProps: CosmosSignatureModalProps;
   openSignatureModal: () => void;
 } {
   const [signatureModalVisible, setSignatureModalVisible] = useState(false);

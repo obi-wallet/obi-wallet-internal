@@ -6,7 +6,7 @@ import { useStore } from "../stores";
 import {
   TerraSignatureModal,
   useTerraSignatureModalProps,
-} from "./terra-signature-modal";
+} from "./signature-modal";
 
 export const TerraSignInteractionModal = observer(() => {
   const { terraSignInteractionStore } = useStore();
