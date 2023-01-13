@@ -2731,6 +2731,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo/config-plugins@npm:^4.0.16":
+  version: 4.1.5
+  resolution: "@expo/config-plugins@npm:4.1.5"
+  dependencies:
+    "@expo/config-types": ^45.0.0
+    "@expo/json-file": 8.2.36
+    "@expo/plist": 0.0.18
+    "@expo/sdk-runtime-versions": ^1.0.0
+    "@react-native/normalize-color": ^2.0.0
+    chalk: ^4.1.2
+    debug: ^4.3.1
+    find-up: ~5.0.0
+    getenv: ^1.0.0
+    glob: 7.1.6
+    resolve-from: ^5.0.0
+    semver: ^7.3.5
+    slash: ^3.0.0
+    xcode: ^3.0.1
+    xml2js: 0.4.23
+  checksum: f631217251281b1e25949adbec175ef1362dd08d837ce676ed8350c1401b5764091ba100f76f42adb623e4cdcde5b270be77ad6606f978d419c07fd8c81b701c
+  languageName: node
+  linkType: hard
+
 "@expo/config-plugins@npm:^5.0.4":
   version: 5.0.4
   resolution: "@expo/config-plugins@npm:5.0.4"
@@ -2751,6 +2774,13 @@ __metadata:
     xcode: ^3.0.1
     xml2js: 0.4.23
   checksum: 9fc5e19a92e105d200aeb7ed28607c2e4e8dcf2b7256c8bae32b2f30ccb5139fbe4854df8c6d6db0bb80e254ddb48a82665043582e7044b4ba1888448909c818
+  languageName: node
+  linkType: hard
+
+"@expo/config-types@npm:^45.0.0":
+  version: 45.0.0
+  resolution: "@expo/config-types@npm:45.0.0"
+  checksum: 9b4866540654da61af0985ebfc975b3cb690625acf7742443a7e56263bf134b261e22719720982223407f8957d08a3646178c79f482861218882f0956d804021
   languageName: node
   linkType: hard
 
@@ -17938,6 +17968,7 @@ __metadata:
     react-native-level-fs: ^3.0.1
     react-native-linear-gradient: ^2.6.2
     react-native-modal: ^13.0.1
+    react-native-nfc-manager: ^3.14.2
     react-native-permissions: ^3.6.1
     react-native-qrcode-scanner: ^1.6.0
     react-native-qrcode-svg: ^6.1.2
@@ -20202,6 +20233,15 @@ __metadata:
     react: "*"
     react-native: ">=0.65.0"
   checksum: 15985fd6aaae7a2134ec1003c63abd384f4a17beabd0a80b74033c98eccee29161aa07150f479373fb43106cfb33b5837b7a4f1d2b721ff03b3727490c830a07
+  languageName: node
+  linkType: hard
+
+"react-native-nfc-manager@npm:^3.14.2":
+  version: 3.14.2
+  resolution: "react-native-nfc-manager@npm:3.14.2"
+  dependencies:
+    "@expo/config-plugins": ^4.0.16
+  checksum: 9ae0a169e49416aa572a29f3c462353d42f9119a651318f3f735286f4627fdad393909d7b41b2cacfb8048e9d7b7ddb801628cba9b17a12a0b46c341b6613dde
   languageName: node
   linkType: hard
 
