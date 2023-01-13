@@ -98,7 +98,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           <BrandToggle>
             <View
               style={{
-                aspectRatio: 1 / 1,
+                aspectRatio: 1,
                 alignItems: isObi ? "center" : "flex-start",
                 justifyContent: "flex-end",
               }}

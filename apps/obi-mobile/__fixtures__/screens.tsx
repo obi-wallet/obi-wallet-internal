@@ -25,7 +25,6 @@ export default () => {
   const navigation = useRootNavigation();
   const [route] = useSelect("route", {
     options: routes,
-    defaultValue: OnboardingRoute.CreateMultisigInit,
   });
 
   useEffect(() => {
