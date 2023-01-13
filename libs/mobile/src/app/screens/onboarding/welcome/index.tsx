@@ -21,6 +21,7 @@ import {
 } from "../../account-picker-modal";
 import { InitialBackground } from "../../components/initial-background";
 import { BrandToggle } from "../../components/obi-mode-toggle";
+import { isSmallScreenNumber } from "../../components/screen-size";
 import { OnboardingRoute, OnboardingStackParamList } from "../onboarding-stack";
 import GetStarted from "./assets/get-started.svg";
 
@@ -69,7 +70,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                 opacity: 0.3,
               }}
             />
-            <Text style={{ color: "white" }}>
+            <Text style={{ color: "white", fontSize: isSmallScreenNumber(12, 14), }}>
               <Text style={{ fontWeight: "600" }}>
                 <FormattedMessage
                   id="onboarding1.disclaimer"
@@ -83,7 +84,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
             </Text>
           </View>
           <View style={{ marginHorizontal: 20 }}>
-            {configStore.isLoop() ? <LanguagePicker /> : null}
+            <LanguagePicker />
           </View>
         </View>
         <AccountPickerModal {...accountPickerModalProps} />
@@ -91,7 +92,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
         <View
           style={{
             paddingHorizontal: 20,
-            paddingBottom: 20,
+            paddingBottom: 10,
             zIndex: -1,
           }}
         >
@@ -107,27 +108,32 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                 <Image
                   source={require("./assets/obi-wallet-icon.png")}
                   resizeMode="contain"
+                  style={{
+                    width: "70%",
+                    height: "70%",
+                    aspectRatio: 1 / 1
+                  }}
                 />
               ) : (
                 <Image source={require("./assets/loop.png")} />
               )}
             </View>
           </BrandToggle>
-          {isObi ? (
+          {/* {isObi ? (
             <View
               style={{ marginBottom: 10, zIndex: 2, alignItems: "flex-end" }}
             >
               <LanguagePicker />
             </View>
-          ) : null}
+          ) : null} */}
 
           <Text
             style={{
               color: "#F6F5FF",
-              fontSize: 32,
+              fontSize: isSmallScreenNumber(25, 32),
               fontWeight: "600",
-              marginTop: 32,
-              textAlign: "left",
+              marginTop: isSmallScreenNumber(25, 40),
+              textAlign: isObi ? "center" : "left",
             }}
           >
             {renderTitle()}
@@ -135,20 +141,20 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           <Text
             style={{
               color: isObi ? "white" : "#999CB6",
-              fontSize: 16,
+              fontSize: isSmallScreenNumber(12, 16),
               fontWeight: "400",
               marginTop: 12,
-              textAlign: "left",
+              textAlign: isObi ? "justify" : "left",
             }}
           >
             {renderSubTitle()}
           </Text>
         </View>
         <View style={{ width: "100%", flex: 1, paddingHorizontal: 15 }}>
-          <ScrollView style={{ marginTop: 20 }}>
+          <ScrollView style={{}}>
             {renderContinueButton(multisigWallet?.keyInRecovery)}
             {isInRecovery ||
-            !configStore.isFeatureEnabled(Feature.RecoveryWorkflow) ? null : (
+              !configStore.isFeatureEnabled(Feature.RecoveryWorkflow) ? null : (
               <Button
                 label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
                 RightIcon={isObi ? undefined : GetStarted}
@@ -164,7 +170,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                       {
                         text: "Cancel",
                         // eslint-disable-next-line @typescript-eslint/no-empty-function
-                        onPress() {},
+                        onPress() { },
                       },
                       {
                         text: "Continue",
@@ -173,7 +179,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                             if (
                               multisigWallet &&
                               multisigWallet.type ===
-                                configStore.getDefaultMultisigWalletType()
+                              configStore.getDefaultMultisigWalletType()
                             ) {
                               return multisigWallet;
                             }

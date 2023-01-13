@@ -94,6 +94,8 @@
     "scrypt-js": "*",
     "secp256k1": "*",
     "tiny-invariant": "*",
-    "@terra-money/terra.js": "*"
+    "@terra-money/terra.js": "*",
+    "react-query": "*",
+    "jscrypto": "*"
   }
 }

@@ -6,6 +6,7 @@ import { View } from "react-native";
 
 import { Button } from "../../../button";
 import { useStore } from "../../../stores";
+import { isSmallScreenNumber } from "../screen-size";
 import SMS from "./assets/sms.svg";
 
 export interface SendMagicSmsButtonProps {
@@ -32,7 +33,6 @@ export function SendMagicSmsButton({
             flex: 1,
             flexDirection: "row",
             alignItems: "center",
-            marginTop: 15,
           }}
         >
           <FontAwesomeIcon
@@ -48,7 +48,7 @@ export function SendMagicSmsButton({
               color: "#F6F5FF",
               marginLeft: 10,
               opacity: 0.7,
-              fontSize: 12,
+              fontSize: isSmallScreenNumber(10, 12),
             }}
           >
             {description}

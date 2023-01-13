@@ -18,6 +18,7 @@ import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
 import { KeyboardAvoidingView } from "../../../components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../components/phone-number/verify-and-proceed-button";
+import { isSmallScreenNumber } from "../../../components/screen-size";
 import {
   OnboardingRoute,
   OnboardingStackParamList,
@@ -90,7 +91,6 @@ export function MultisigPhoneNumberConfirm({
           <View>
             <Back
               style={{
-                marginTop: 20,
                 marginLeft: -5,
                 padding: 5,
                 width: 25,
@@ -105,7 +105,7 @@ export function MultisigPhoneNumberConfirm({
                 <Text
                   style={{
                     color: "#F6F5FF",
-                    fontSize: 24,
+                    fontSize: isSmallScreenNumber(20, 24),
                     fontWeight: "600",
                     marginTop: 32,
                   }}
@@ -130,7 +130,7 @@ export function MultisigPhoneNumberConfirm({
                 <Text
                   style={{
                     color: isObi ? "white" : "#999CB6",
-                    fontSize: 14,
+                    fontSize: isSmallScreenNumber(12, 14),
                     marginTop: 10,
                   }}
                 >

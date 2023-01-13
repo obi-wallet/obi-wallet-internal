@@ -18,6 +18,7 @@ import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
 import { KeyboardAvoidingView } from "../../../components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../components/phone-number/verify-and-proceed-button";
+import { isSmallScreenNumber } from "../../../components/screen-size";
 import {
   OnboardingRoute,
   OnboardingStackParamList,
@@ -68,7 +69,7 @@ export const MultisigSocial = observer<MultisigSocialProps>(
         Alert.alert(
           intl.formatMessage({ id: "onboarding4.error.socialkeyexists.title" }),
           intl.formatMessage({ id: "onboarding4.error.socialkeyexists.text" }) +
-            ` ${social.address}?`,
+          ` ${social.address}?`,
           [
             {
               text: intl.formatMessage({
@@ -115,7 +116,6 @@ export const MultisigSocial = observer<MultisigSocialProps>(
         }
       }
     }
-
     return (
       <KeyboardAvoidingView
         style={{
@@ -134,7 +134,6 @@ export const MultisigSocial = observer<MultisigSocialProps>(
             <View>
               <Back
                 style={{
-                  marginTop: 20,
                   marginLeft: -5,
                   padding: 5,
                   width: 25,
@@ -142,19 +141,15 @@ export const MultisigSocial = observer<MultisigSocialProps>(
               />
 
               <View
-                style={{
-                  justifyContent: "flex-end",
-                  marginTop: isObi ? 10 : 43,
-                }}
               >
                 <View>
                   {isObi ? undefined : <PeopleIcon width={70} height={70} />}
                   <Text
                     style={{
                       color: "#F6F5FF",
-                      fontSize: 24,
+                      fontSize: isSmallScreenNumber(20, 24),
                       fontWeight: "600",
-                      marginTop: 32,
+                      marginTop: isSmallScreenNumber(20, 32),
                     }}
                   >
                     {wallet.keyInRecovery === "social" ? (
@@ -176,8 +171,8 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                   </Text>
                   <Text
                     style={{
-                      color: "#999CB6",
-                      fontSize: 14,
+                      color: isObi ? "#fff" : "#999CB6",
+                      fontSize: isSmallScreenNumber(12, 14),
                       marginTop: 10,
                     }}
                   >
@@ -215,13 +210,13 @@ export const MultisigSocial = observer<MultisigSocialProps>(
               />
               <Text
                 style={{
-                  color: "#999CB6",
-                  fontSize: 14,
+                  color: isObi ? "#fff" : "#999CB6",
+                  fontSize: isSmallScreenNumber(12, 14),
                   marginTop: 10,
                 }}
               >
                 {wallet.keyInRecovery === "social" &&
-                wallet.nextAdmin?.social?.address === obi_address ? (
+                  wallet.nextAdmin?.social?.address === obi_address ? (
                   <FormattedMessage
                     id="onboarding5.recovery.setsocialkey.subtext2"
                     defaultMessage="You're currently using the demo account. This will remove the demo account from your multisig and replace it with your friend's key."
@@ -235,7 +230,7 @@ export const MultisigSocial = observer<MultisigSocialProps>(
               </Text>
 
               {wallet.keyInRecovery === "social" &&
-              wallet.nextAdmin?.social?.address === obi_address ? null : (
+                wallet.nextAdmin?.social?.address === obi_address ? null : (
                 <InlineButton
                   label={intl.formatMessage({
                     id: "onboarding5.useobiaccount",
@@ -247,7 +242,7 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                 />
               )}
             </View>
-            <View>
+            <View style={{ flex: 1, justifyContent: 'flex-end', marginBottom: 20 }}>
               <VerifyAndProceedButton
                 disabled={
                   verifyButtonDisabled ? verifyButtonDisabled : fetchingPubKey

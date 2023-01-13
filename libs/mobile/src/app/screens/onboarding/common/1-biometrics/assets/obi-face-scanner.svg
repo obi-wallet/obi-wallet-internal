@@ -1,15 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="75.419" height="75.419" viewBox="0 0 75.419 75.419">
-  <g id="Interface-Essential_FaceID_face-id" data-name="Interface-Essential / FaceID / face-id" transform="translate(-420 -1076)">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 75.419 75.419">
+  <g id="Interface-Essential_FaceID_face-id" data-name="Interface-Essential / FaceID / face-id"
+    transform="translate(-420 -1076)">
     <g id="Group_98" data-name="Group 98" transform="translate(422.5 1078.5)">
       <g id="face-id">
-        <path id="Shape_614" data-name="Shape 614" d="M422.5,1096.87v-9.185a9.185,9.185,0,0,1,9.185-9.185h9.185" transform="translate(-422.5 -1078.5)" fill="none" stroke="#437dff" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
-        <path id="Shape_615" data-name="Shape 615" d="M457.87,1096.87v-9.185a9.185,9.185,0,0,0-9.185-9.185H439.5" transform="translate(-387.451 -1078.5)" fill="none" stroke="#437dff" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
-        <path id="Shape_616" data-name="Shape 616" d="M422.5,1095.5v9.185a9.184,9.184,0,0,0,9.185,9.185h9.185" transform="translate(-422.5 -1043.451)" fill="none" stroke="#437dff" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
-        <path id="Shape_617" data-name="Shape 617" d="M457.87,1095.5v9.185a9.184,9.184,0,0,1-9.185,9.185H439.5" transform="translate(-387.451 -1043.451)" fill="none" stroke="#437dff" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
-        <path id="Shape_618" data-name="Shape 618" d="M438.623,1086v13.778a4.594,4.594,0,0,1-4.593,4.593H432.5" transform="translate(-401.883 -1063.037)" fill="none" stroke="#437dff" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
-        <path id="Shape_619" data-name="Shape 619" d="M429.5,1086v7.654" transform="translate(-408.068 -1063.037)" fill="none" stroke="#437dff" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
-        <path id="Shape_620" data-name="Shape 620" d="M439.5,1086v7.654" transform="translate(-387.451 -1063.037)" fill="none" stroke="#437dff" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
-        <path id="Shape_621" data-name="Shape 621" d="M430.233,1095a16.778,16.778,0,0,0,23.067,0" transform="translate(-406.557 -1044.482)" fill="none" stroke="#437dff" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
+        <path id="Shape_614" data-name="Shape 614"
+          d="M422.5,1096.87v-9.185a9.185,9.185,0,0,1,9.185-9.185h9.185"
+          transform="translate(-422.5 -1078.5)" fill="none" stroke="#437dff" stroke-linecap="round"
+          stroke-linejoin="round" stroke-width="5" />
+        <path id="Shape_615" data-name="Shape 615"
+          d="M457.87,1096.87v-9.185a9.185,9.185,0,0,0-9.185-9.185H439.5"
+          transform="translate(-387.451 -1078.5)" fill="none" stroke="#437dff"
+          stroke-linecap="round" stroke-linejoin="round" stroke-width="5" />
+        <path id="Shape_616" data-name="Shape 616"
+          d="M422.5,1095.5v9.185a9.184,9.184,0,0,0,9.185,9.185h9.185"
+          transform="translate(-422.5 -1043.451)" fill="none" stroke="#437dff"
+          stroke-linecap="round" stroke-linejoin="round" stroke-width="5" />
+        <path id="Shape_617" data-name="Shape 617"
+          d="M457.87,1095.5v9.185a9.184,9.184,0,0,1-9.185,9.185H439.5"
+          transform="translate(-387.451 -1043.451)" fill="none" stroke="#437dff"
+          stroke-linecap="round" stroke-linejoin="round" stroke-width="5" />
+        <path id="Shape_618" data-name="Shape 618"
+          d="M438.623,1086v13.778a4.594,4.594,0,0,1-4.593,4.593H432.5"
+          transform="translate(-401.883 -1063.037)" fill="none" stroke="#437dff"
+          stroke-linecap="round" stroke-linejoin="round" stroke-width="5" />
+        <path id="Shape_619" data-name="Shape 619" d="M429.5,1086v7.654"
+          transform="translate(-408.068 -1063.037)" fill="none" stroke="#437dff"
+          stroke-linecap="round" stroke-linejoin="round" stroke-width="5" />
+        <path id="Shape_620" data-name="Shape 620" d="M439.5,1086v7.654"
+          transform="translate(-387.451 -1063.037)" fill="none" stroke="#437dff"
+          stroke-linecap="round" stroke-linejoin="round" stroke-width="5" />
+        <path id="Shape_621" data-name="Shape 621" d="M430.233,1095a16.778,16.778,0,0,0,23.067,0"
+          transform="translate(-406.557 -1044.482)" fill="none" stroke="#437dff"
+          stroke-linecap="round" stroke-linejoin="round" stroke-width="5" />
       </g>
     </g>
   </g>
