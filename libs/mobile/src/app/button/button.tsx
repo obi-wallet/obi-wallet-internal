@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { SvgProps } from "react-native-svg";
 
+import { isSmallScreenNumber } from "../screens/components/screen-size";
 import { useStore } from "../stores";
 
 const loopFlavors = {
@@ -53,14 +54,14 @@ const baseStyles = StyleSheet.create({
     marginRight: 8,
   },
   text: {
-    fontWeight: "bold",
-    fontSize: 16,
+    fontWeight: "600",
+    fontSize: isSmallScreenNumber(12, 16),
     color: "#00000082",
   },
   button: {
-    marginVertical: 5,
+    marginVertical: isSmallScreenNumber(3, 5),
     width: "100%",
-    height: 56,
+    height: isSmallScreenNumber(46, 56),
     borderRadius: 30,
     flexDirection: "row",
     justifyContent: "center",
@@ -84,7 +85,8 @@ const getFlavorStyles = (
         ...baseStyles,
         text: {
           ...baseStyles.text,
-          fontFamily: theme.fonts.bold,
+          fontFamily: theme.fonts.light,
+          fontWeight: "normal" as const,
           color: "#fff",
         },
         button: {
@@ -99,6 +101,7 @@ const getFlavorStyles = (
       if (disabled)
         return {
           ...baseStyles,
+          fontWeight: baseStyles.text.fontWeight,
           button: {
             ...baseStyles.button,
             borderRadius: loopBorderRadius,
@@ -150,7 +153,7 @@ export function Button({
       {LeftIcon ? (
         <LeftIcon width={24} height={24} style={baseStyles.leftIcon} />
       ) : null}
-      <Text style={[baseStyles.text, flavorStyles.text]}>{label}</Text>
+      <Text style={flavorStyles.text}>{label}</Text>
       {RightIcon ? <RightIcon width={24} height={24} /> : null}
     </View>
   );

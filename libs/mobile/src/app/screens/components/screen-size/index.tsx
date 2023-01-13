@@ -22,17 +22,23 @@ export const getScreenDimensions = () => {
     SMALL_DEVICE_MAX_HEIGHT,
   };
 };
-
-export const isSmallScreenNumber = (
-  smallScreenValue: number,
-  defaultScreenValue: number
-) => {
+export const isSmallScreen = () => {
   if (
     getScreenDimensions().SCREEN_WIDTH <=
       getScreenDimensions().SMALL_DEVICE_MAX_WIDTH ||
     getScreenDimensions().SCREEN_HEIGHT <=
       getScreenDimensions().SMALL_DEVICE_MAX_HEIGHT
   ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+export const isSmallScreenNumber = (
+  smallScreenValue: number,
+  defaultScreenValue: number
+) => {
+  if (isSmallScreen()) {
     return smallScreenValue;
   } else {
     return defaultScreenValue;

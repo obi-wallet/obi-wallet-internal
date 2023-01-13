@@ -33,23 +33,7 @@ import Keys2 from "./assets/keys2.svg";
 import Keys3 from "./assets/keys3.svg";
 import Keys4 from "./assets/keys4.svg";
 import Keys5 from "./assets/keys5.svg";
-
-const getSVG = (number: number) => {
-  switch (number) {
-    case 1:
-      return <Keys1 width={isSmallScreenNumber(130, 160)} />;
-    case 2:
-      return <Keys2 width={isSmallScreenNumber(130, 160)} />;
-    case 3:
-      return <Keys3 width={isSmallScreenNumber(130, 160)} />;
-    case 4:
-      return <Keys4 width={isSmallScreenNumber(130, 160)} />;
-    case 5:
-      return <Keys5 width={isSmallScreenNumber(130, 160)} />;
-    default:
-      return <Keys1 width={isSmallScreenNumber(130, 160)} />;
-  }
-};
+import { KeysComponent } from "./keys-component";
 
 export const KeysConfigScreen = observer(() => {
   const { walletsStore, configStore } = useStore();
@@ -147,7 +131,9 @@ export const KeysConfigScreen = observer(() => {
         </Text>
       </View>
       <View style={{ flex: 3, justifyContent: "center", alignItems: "center" }}>
-        <View>{getSVG(activatedKeys)}</View>
+        <View>
+          <KeysComponent keys={activatedKeys} />
+        </View>
         <Text
           style={[
             styles.heading,
@@ -159,7 +145,7 @@ export const KeysConfigScreen = observer(() => {
             defaultMessage="Security Tier: Basic"
           />
         </Text>
-        <Text style={[styles.subHeading, { marginBottom: 0 }]}>
+        {/* <Text style={[styles.subHeading, { marginBottom: 0 }]}>
           {data.length - activatedKeys}&nbsp;
           {data.length - activatedKeys === 0 && (
             <FormattedMessage
@@ -179,7 +165,7 @@ export const KeysConfigScreen = observer(() => {
               defaultMessage="steps remaining"
             />
           )}
-        </Text>
+        </Text> */}
       </View>
       <View style={{ flex: 6 }}>
         <View style={{ marginTop: 40 }}>

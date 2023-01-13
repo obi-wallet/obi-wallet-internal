@@ -58,7 +58,7 @@
   "onboarding1.disclaimerMsg": "Obi is in alpha. Security audits are pending. Current implementations are only intended for trial purposes.",
 
   "onboarding1.welcometo.loop": "Welcome to Loop",
-  "onboarding1.welcometo.obi": "Sample wallet",
+  "onboarding1.welcometo.obi": "Welcome to Obi",
   "onboarding1.welcomesubtext": "Powered by Obi",
   "onboarding1.getstarted": "Create New Wallet",
   "onboarding1.recoverwallet": "Recover Existing Wallet",
