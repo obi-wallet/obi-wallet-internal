@@ -15,6 +15,8 @@ export enum Feature {
   AccountsTab = "AccountsTab",
   HealthChecks = "HealthChecks",
   NftTab = "NftTab",
+  RecoveryWorkflow = "RecoveryWorkflow",
+  SinglesigWallets = "SinglesigWallets",
 }
 
 export interface Config {

@@ -2,11 +2,16 @@ import { useTheme } from "@emotion/react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
-import { isAnyMultisigWallet, MultisigKey, Text } from "@obi-wallet/common";
+import {
+  Feature,
+  isAnyMultisigWallet,
+  MultisigKey,
+  Text,
+} from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -250,7 +255,11 @@ function KeyConfig({ item, onClose }: KeyConfigProps) {
         onPress={() => {
           const wallet = walletsStore.currentWallet;
           if (isAnyMultisigWallet(wallet)) {
-            wallet.recover(keyId);
+            if (configStore.isFeatureEnabled(Feature.RecoveryWorkflow)) {
+              wallet.recover(keyId);
+            } else {
+              Alert.alert("Recovery workflow not available yet.");
+            }
           }
         }}
         style={{
