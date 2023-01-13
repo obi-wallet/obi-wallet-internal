@@ -36,7 +36,10 @@ export const MultisigSocial = observer<MultisigSocialProps>(
     const [address, setAddress] = useState("");
     const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true); // Verify&Proceed Button disabled by default
     const [fetchingPubKey, setFetchingPubKey] = useState(false);
-    const obi_address = "juno17w77rnps59cnallfskg42s3ntnlhrzu2mjkr3e";
+    const obi_address =
+      configStore.getDefaultMultisigWalletType() === WalletType.Multisig
+        ? "juno17w77rnps59cnallfskg42s3ntnlhrzu2mjkr3e"
+        : "terra18aw4eedj4v3253dvj9h5ucx9uedl9ggaayktq4";
     const isObi = configStore.isObi();
     const isTerra = wallet.type === WalletType.TerraMultisig;
     const intl = useIntl();
@@ -94,14 +97,6 @@ export const MultisigSocial = observer<MultisigSocialProps>(
           return account.getPublicKey()?.toAmino();
         } catch (e) {
           console.log(e);
-          Alert.alert(
-            intl.formatMessage({
-              id: "onboarding5.error.noactivity.title",
-            }),
-            intl.formatMessage({
-              id: "onboarding5.error.noactivity.subtext",
-            })
-          );
           return null;
         }
       } else {
@@ -114,14 +109,6 @@ export const MultisigSocial = observer<MultisigSocialProps>(
           return account?.pubkey;
         } catch (e) {
           console.log(e);
-          Alert.alert(
-            intl.formatMessage({
-              id: "onboarding5.error.noactivity.title",
-            }),
-            intl.formatMessage({
-              id: "onboarding5.error.noactivity.subtext",
-            })
-          );
           return null;
         } finally {
           client.disconnect();
@@ -280,6 +267,15 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                     } else {
                       navigation.navigate(OnboardingRoute.ReplaceMultisig);
                     }
+                  } else {
+                    Alert.alert(
+                      intl.formatMessage({
+                        id: "onboarding5.error.noactivity.title",
+                      }),
+                      intl.formatMessage({
+                        id: "onboarding5.error.noactivity.subtext",
+                      })
+                    );
                   }
                 }}
               />

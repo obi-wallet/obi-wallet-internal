@@ -12,12 +12,14 @@ export const config: Config = {
     default: "phoenix-1",
   },
   languages: {
-    enabled: ["en", "de", "es"],
+    enabled: ["en"],
     default: "en",
   },
   features: {
     [Feature.AccountsTab]: false,
     [Feature.HealthChecks]: false,
     [Feature.NftTab]: false,
+    [Feature.RecoveryWorkflow]: false,
+    [Feature.SinglesigWallets]: false,
   },
 };

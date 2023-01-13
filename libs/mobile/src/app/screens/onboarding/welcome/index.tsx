@@ -1,4 +1,5 @@
 import {
+  Feature,
   isAnyMultisigWallet,
   isMultisigDemoWallet,
   MultisigKey,
@@ -146,7 +147,8 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
         <View style={{ width: "100%", flex: 1, paddingHorizontal: 15 }}>
           <ScrollView style={{ marginTop: 20 }}>
             {renderContinueButton(multisigWallet?.keyInRecovery)}
-            {isInRecovery ? null : (
+            {isInRecovery ||
+            !configStore.isFeatureEnabled(Feature.RecoveryWorkflow) ? null : (
               <Button
                 label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
                 RightIcon={isObi ? undefined : GetStarted}
@@ -202,7 +204,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                   await multisigWallet?.cancelRecovery();
                 }}
               />
-            ) : (
+            ) : configStore.isFeatureEnabled(Feature.SinglesigWallets) ? (
               <Button
                 label={intl.formatMessage({
                   id: "onboarding1.recoversinglesig",
@@ -216,7 +218,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                   navigation.navigate(OnboardingRoute.RecoverSinglesig);
                 })}
               />
-            )}
+            ) : null}
             {isInRecovery ? null : (
               <Button
                 label={intl.formatMessage({
