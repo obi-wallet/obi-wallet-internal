@@ -90,15 +90,20 @@ export async function prepareWalletAndSign({
       }
 
       // TODO: here we need to wait longer as long as status code is 404
-      const account = await client.auth.accountInfo(address);
+      try {
+        const account = await client.auth.accountInfo(address);
 
-      if (!account.getPublicKey()) {
-        const key = new RawKey(Buffer.from(privateKeyUint8Array));
-        const wallet = client.wallet(key);
-        const send = new MsgSend(address, address, { [denom]: 1 });
-        // TODO: handle gas prices?
-        const tx = await wallet.createAndSignTx({ msgs: [send] });
-        await client.tx.broadcast(tx);
+        if (!account.getPublicKey()) {
+          const key = new RawKey(Buffer.from(privateKeyUint8Array));
+          const wallet = client.wallet(key);
+          const send = new MsgSend(address, address, { [denom]: 1 });
+          // TODO: handle gas prices?
+          const tx = await wallet.createAndSignTx({ msgs: [send] });
+          await client.tx.broadcast(tx);
+        }
+      } catch (e) {
+        console.log("Could not prepare biometrics");
+        console.error(e);
       }
 
       break;
