@@ -107,7 +107,7 @@
       "options": {
         "commands": [
           "appcenter codepush release-react -a Obi-Money/obi-mobile-android -d Staging -e ./src/main.tsx",
-          "appcenter codepush release-react -a Obi-Money/obi-mobile-ios -d Staging -e ./src/main.tsx"
+          "appcenter codepush release-react -a Obi-Money/obi-mobile-ios -d Staging -e ./src/main.tsx --xcode-project-file ios/Mobile.xcodeproj/project.pbxproj -p ios/Mobile/Info.plist"
         ],
         "cwd": "apps/obi-mobile"
       }
