@@ -40,7 +40,7 @@ export class ChainStore {
   @computed
   public get currentChain() {
     switch (this.configStore.getDefaultMultisigWalletType()) {
-      case WalletType.Multisig:
+      case WalletType.CosmosMultisig:
         return this.currentCosmosChain;
       case WalletType.TerraMultisig:
         return this.currentTerraChain;
@@ -61,7 +61,7 @@ export class ChainStore {
   @computed
   public get currentChainInformation() {
     switch (this.configStore.getDefaultMultisigWalletType()) {
-      case WalletType.Multisig:
+      case WalletType.CosmosMultisig:
         return this.currentCosmosChainInformation;
       case WalletType.TerraMultisig:
         return this.currentTerraChainInformation;

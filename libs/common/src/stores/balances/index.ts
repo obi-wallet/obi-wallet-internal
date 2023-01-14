@@ -39,7 +39,7 @@ export class BalancesStore {
 
   protected get store() {
     switch (this.configStore.getDefaultMultisigWalletType()) {
-      case WalletType.Multisig:
+      case WalletType.CosmosMultisig:
         return this.cosmosBalancesStore;
       case WalletType.TerraMultisig:
         return this.terraBalancesStore;

@@ -7,7 +7,7 @@ import {
   MessageRequesterExternal,
   PricingTier,
   RequestObiInAppPurchaseMsg,
-  RequestObiSignAndBroadcastMsg,
+  RequestObiCosmosSignAndBroadcastMsg,
   WalletType,
 } from "@obi-wallet/common";
 import { useMemo } from "react";
@@ -25,8 +25,8 @@ class ConcreteKeplr extends Keplr {
 
     invariant(currentWallet, "Expected `currentWallet` to be defined.");
 
-    if (currentWallet.type === WalletType.Multisig) {
-      const msg = new RequestObiSignAndBroadcastMsg({
+    if (currentWallet.type === WalletType.CosmosMultisig) {
+      const msg = new RequestObiCosmosSignAndBroadcastMsg({
         id: currentWallet.id,
         encodeObjects: messages,
         multisig: isAnyCosmosMultisigWallet(currentWallet)

@@ -2,7 +2,7 @@ import { BACKGROUND_PORT, Message } from "@keplr-wallet/router";
 import { BlockTxBroadcastResult, Msg } from "@terra-money/terra.js";
 
 import { MessageRequesterInternal } from "../../message-requester";
-import { MultisigKey, TerraMultisig } from "../../stores";
+import { TerraMultisig, TerraMultisigKey } from "../../stores";
 
 export interface RequestObiTerraSignAndBroadcastPayload {
   readonly id: string;
@@ -10,7 +10,7 @@ export interface RequestObiTerraSignAndBroadcastPayload {
   readonly messages: Msg.Amino[];
   readonly wrap?: boolean;
   readonly cancelable?: boolean;
-  readonly hiddenKeyIds?: MultisigKey[];
+  readonly hiddenKeyIds?: TerraMultisigKey[];
   readonly isOnboarding?: boolean;
 }
 

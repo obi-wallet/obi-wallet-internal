@@ -1,8 +1,8 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
 
 export enum WalletType {
+  CosmosMultisig = "CosmosMultisig",
   TerraMultisig = "TerraMultisig",
-  Multisig = "Multisig",
   Singlesig = "Singlesig",
 }
 
@@ -17,3 +17,5 @@ export abstract class AbstractWallet {
     return address ? Bech32Address.shortenAddress(address, 20) : null;
   }
 }
+
+export type WithAddress<T> = T & { address: string };

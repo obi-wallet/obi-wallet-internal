@@ -1,7 +1,6 @@
 import {
   createLcdClient,
   isAnyMultisigWallet,
-  MultisigKey,
   RequestObiTerraSignAndBroadcastPayload,
   terra,
   TerraMultisig,
@@ -104,7 +103,13 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
       messages,
     ]);
 
-    function getKey({ id, title }: { id: MultisigKey; title: string }): Key[] {
+    function getKey({
+      id,
+      title,
+    }: {
+      id: TerraMultisigKey;
+      title: string;
+    }): Key[] {
       const factor = multisig?.[id];
       if (!factor) return [];
 

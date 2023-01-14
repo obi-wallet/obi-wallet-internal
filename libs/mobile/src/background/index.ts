@@ -46,7 +46,7 @@ import {
   PrivilegedOrigins,
   produceEnv,
   RequestObiInAppPurchaseMsg,
-  RequestObiSignAndBroadcastMsg,
+  RequestObiCosmosSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastMsg,
   RootStore,
   RouterBackground,
@@ -183,7 +183,7 @@ class KeyRingService extends AbstractKeyRingService {
     invariant(type, "Missing wallet type");
 
     switch (type) {
-      case WalletType.Multisig:
+      case WalletType.CosmosMultisig:
         return {
           algo: "multisig",
           pubKey: new Uint8Array(),
@@ -514,7 +514,7 @@ export function initBackground() {
   );
 
   router.registerMessage(RequestObiInAppPurchaseMsg);
-  router.registerMessage(RequestObiSignAndBroadcastMsg);
+  router.registerMessage(RequestObiCosmosSignAndBroadcastMsg);
   router.registerMessage(RequestObiTerraSignAndBroadcastMsg);
   router.addHandler("obi", async (env: Env, msg: Message<unknown>) => {
     const message = msg as ObiMessage;

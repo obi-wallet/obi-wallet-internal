@@ -11,7 +11,7 @@ import {
   isAnyCosmosMultisigWallet,
   isSinglesigWallet,
   isTerraMultisigWallet,
-  RequestObiSignAndBroadcastMsg,
+  RequestObiCosmosSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastMsg,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -434,7 +434,7 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
               isAnyCosmosMultisigWallet(wallet) ||
               isSinglesigWallet(wallet)
             ) {
-              const response = await RequestObiSignAndBroadcastMsg.send({
+              const response = await RequestObiCosmosSignAndBroadcastMsg.send({
                 id: wallet.id,
                 encodeObjects: getEncodeObjects(),
                 multisig: isAnyCosmosMultisigWallet(wallet)

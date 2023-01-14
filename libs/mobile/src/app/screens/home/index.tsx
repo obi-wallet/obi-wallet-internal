@@ -228,7 +228,7 @@ const CustomDrawerContent = observer((props: DrawerContentComponentProps) => {
   );
 
   const networks =
-    configStore.getDefaultMultisigWalletType() === WalletType.Multisig
+    configStore.getDefaultMultisigWalletType() === WalletType.CosmosMultisig
       ? cosmosNetworks
       : terraNetworks;
 

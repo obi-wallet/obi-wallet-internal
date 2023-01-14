@@ -1,10 +1,5 @@
 import { pubkeyType } from "@cosmjs/amino";
-import {
-  isAnyMultisigWallet,
-  isMultisigDemoWallet,
-  MultisigWallet,
-  Text,
-} from "@obi-wallet/common";
+import { isMultisigDemoWallet, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useState } from "react";

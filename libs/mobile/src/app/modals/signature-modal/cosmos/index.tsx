@@ -29,15 +29,15 @@ import {
 } from "@cosmjs/stargate";
 import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
 import {
+  CosmosMultisig,
+  CosmosMultisigKey,
+  CosmosMultisigWallet,
   createStargateClient,
   isAnyMultisigWallet,
   isMultisigDemoWallet,
   isSinglesigWallet,
   lendFees,
-  Multisig,
-  MultisigKey,
-  MultisigWallet,
-  RequestObiSignAndBroadcastPayload,
+  RequestObiCosmosSignAndBroadcastPayload,
   SinglesigWallet,
   WalletType,
 } from "@obi-wallet/common";
@@ -78,12 +78,12 @@ export interface CosmosSignatureModalProps
     | "onConfirm"
     | "footer"
   > {
-  wallet: MultisigWallet | SinglesigWallet;
+  wallet: CosmosMultisigWallet | SinglesigWallet;
   innerMessages: AminoMsg[];
   messages: AminoMsg[];
   rawMessages: EncodeObject[];
-  multisig?: Multisig | null;
-  hiddenKeyIds?: MultisigKey[];
+  multisig?: CosmosMultisig | null;
+  hiddenKeyIds?: CosmosMultisigKey[];
   onConfirm(signatures: Map<string, Uint8Array>): void;
 }
 
@@ -92,7 +92,7 @@ export const CosmosSignatureModal = observer<CosmosSignatureModalProps>(
     if (!props.wallet.type) return null;
 
     switch (props.wallet.type) {
-      case WalletType.Multisig:
+      case WalletType.CosmosMultisig:
         return <CosmosSignatureModalMultisig {...props} />;
       case WalletType.Singlesig:
         return <CosmosSignatureModalSinglesig {...props} />;
@@ -147,7 +147,7 @@ export const CosmosSignatureModalSinglesig =
   );
 
 export const CosmosSignatureModalMultisig = observer<
-  CosmosSignatureModalProps & { multisig?: Multisig | null }
+  CosmosSignatureModalProps & { multisig?: CosmosMultisig | null }
 >(function SignatureModalMultisig({
   wallet,
   innerMessages,
@@ -208,7 +208,13 @@ export const CosmosSignatureModalMultisig = observer<
     messages,
   ]);
 
-  function getKey({ id, title }: { id: MultisigKey; title: string }): Key[] {
+  function getKey({
+    id,
+    title,
+  }: {
+    id: CosmosMultisigKey;
+    title: string;
+  }): Key[] {
     const factor = multisig?.[id];
     if (!factor) return [];
 
@@ -351,7 +357,7 @@ export function useSignatureModalProps({
   data,
   onConfirm,
 }: {
-  data: RequestObiSignAndBroadcastPayload;
+  data: RequestObiCosmosSignAndBroadcastPayload;
   onConfirm(response: DeliverTxResponse): Promise<void>;
 }): {
   signatureModalProps: CosmosSignatureModalProps;
@@ -381,7 +387,7 @@ export function useSignatureModalProps({
 
     return {
       key: modalKey.toString(),
-      wallet: wallet as MultisigWallet | SinglesigWallet,
+      wallet: wallet as CosmosMultisigWallet | SinglesigWallet,
       visible: signatureModalVisible,
       innerMessages: innerAminoMessages,
       messages: aminoMessages,
@@ -455,7 +461,7 @@ export function useSignatureModalProps({
         }
 
         switch (wallet.type) {
-          case WalletType.Multisig:
+          case WalletType.CosmosMultisig:
             await handleMultisig();
             break;
           case WalletType.Singlesig: {

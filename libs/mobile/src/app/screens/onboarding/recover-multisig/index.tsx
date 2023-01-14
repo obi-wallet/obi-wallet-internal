@@ -5,7 +5,7 @@ import {
 } from "@cosmjs/cosmwasm-stargate";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { RequestObiSignAndBroadcastMsg } from "@obi-wallet/common";
+import { RequestObiCosmosSignAndBroadcastMsg } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
   MsgExecuteContract,
@@ -126,7 +126,7 @@ export const RecoverMultisig = observer<RecoverMultisigProps>(
       if (encodeObjects.length > 0) {
         (async () => {
           try {
-            const response = await RequestObiSignAndBroadcastMsg.send({
+            const response = await RequestObiCosmosSignAndBroadcastMsg.send({
               id: wallet.id,
               encodeObjects,
               multisig: sender,
