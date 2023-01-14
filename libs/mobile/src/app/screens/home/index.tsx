@@ -146,7 +146,7 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
           fontFamily: isObi ? "Poppins Light" : "Inter",
           fontSize: isObi ? 8 : 10,
           fontWeight: isObi ? "normal" : "500",
-          textTransform: "uppercase",
+          textTransform: isLoop ? "uppercase" : "none",
           marginTop: 15,
           letterSpacing: 0.6,
         },
