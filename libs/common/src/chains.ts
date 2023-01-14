@@ -45,38 +45,26 @@ export const terraChains = {
   "pisco-1": {
     chainId: "pisco-1" as const,
     label: "Terra Testnet",
-    prefix: "terra",
     accountCreatorAddress:
       "terra1f5adnacrpysy2p0aenl5df05hmmnyfe0pc3598ljnd5l0s5qjkksawdwvw",
-    accountCreatorCodeId: 6578,
-    currentCodeId: 921,
-    rpcs: ["https://pisco-lcd.terra.dev"],
+    currentCodeId: 6578,
+    lcd: "https://pisco-lcd.terra.dev",
     api: "https://pisco-api.terra.dev",
     denom: "uluna",
     startingUsdDebt: "0",
     ...commonTwilioConfig,
-    // TODO:
-    bip44: {
-      coinType: 118,
-    },
   },
   "phoenix-1": {
     chainId: "phoenix-1" as const,
     label: "Terra",
-    prefix: "terra",
     accountCreatorAddress:
       "terra17m6fzkhxwtv8fl5a05ycdfcvzvclarzqwwpdtksknv7dftedgeeqryy7tn",
-    accountCreatorCodeId: 921,
-    // TODO:
-    rpcs: ["https://phoenix-lcd.terra.dev"],
+    currentCodeId: 953,
+    lcd: "https://phoenix-lcd.terra.dev",
     api: "https://phoenix-api.terra.dev",
     denom: "uluna",
     startingUsdDebt: "0",
     ...commonTwilioConfig,
-    // TODO:
-    bip44: {
-      coinType: 118,
-    },
   },
 };
 

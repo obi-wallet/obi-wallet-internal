@@ -9,19 +9,17 @@ import {
   MultisigWallet,
   RequestObiSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastMsg,
+  terra,
   TerraMultisigWallet,
 } from "@obi-wallet/common";
 import { InstantiateMsg } from "@obi-wallet/proxy-contract";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import {
-  LegacyAminoMultisigPublicKey,
-  MsgExecuteContract,
-} from "@terra-money/terra.js";
+import { LegacyAminoMultisigPublicKey } from "@terra-money/terra.js";
 import { MsgInstantiateContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import Long from "long";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 
@@ -195,28 +193,10 @@ async function handleTerraMultisigInit({
     };
   });
 
-  const rawMessage = {
-    new_account: {
-      fee_debt: parseInt(currentTerraChainInformation.startingUsdDebt, 10),
-      gatekeeper_authorizations: {
-        beneficiary_auths: [],
-        message_auths: [],
-        session_keys: [],
-        spendlimit_auths: [],
-      },
-      owner: multisig.multisig.address,
-      signers: {
-        signers,
-      },
-      update_delay: 0,
-    },
-  };
-
-  const message = MsgExecuteContract.fromProto({
-    sender: multisig.multisig.address,
-    contract: currentTerraChainInformation.accountCreatorAddress,
-    msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
-    funds: [],
+  const message = terra.getNewAccountMessage({
+    address: multisig.multisig.address,
+    signers,
+    chainId: currentTerraChainInformation.chainId,
   });
 
   const response = await RequestObiTerraSignAndBroadcastMsg.send({
@@ -228,42 +208,8 @@ async function handleTerraMultisigInit({
   });
 
   try {
-    const rawLog = JSON.parse(response.raw_log) as [
-      {
-        events: [
-          {
-            type: string;
-            attributes: { key: string; value: string }[];
-          }
-        ];
-      }
-    ];
-    const instantiateEvent = rawLog[0].events.find((e) => {
-      return e.type === "instantiate";
-    });
-    invariant(
-      instantiateEvent,
-      "Expected `rawLog` to contain `instantiate` event."
-    );
-    const contractAddresses = instantiateEvent.attributes.filter((a) => {
-      return a.key === "_contract_address";
-    });
-    const codeIds = instantiateEvent.attributes.filter((a) => {
-      return a.key === "code_id";
-    });
-    invariant(
-      contractAddresses.length === codeIds.length,
-      "Expected to have the same number of `_contract_address` and `code_id` attributes."
-    );
-    invariant(
-      contractAddresses.length >= 2,
-      "Expected `instantiateEvent` to contain at least two `_contract_address` attributes."
-    );
-    await wallet.finishProxySetup({
-      address: contractAddresses[contractAddresses.length - 2].value,
-      codeId: parseInt(codeIds[codeIds.length - 2].value, 10),
-    });
+    await wallet.finishProxySetup(terra.parseNewAccountResponse(response));
   } catch (e) {
-    console.log(response.raw_log);
+    Alert.alert("Something went wrong");
   }
 }

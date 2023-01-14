@@ -1,24 +1,20 @@
 import {
   createLcdClient,
   isAnyMultisigWallet,
-  lendFees,
   MultisigKey,
   RequestObiTerraSignAndBroadcastPayload,
+  terra,
   TerraMultisig,
   TerraMultisigKey,
   TerraMultisigWallet,
-  terra,
 } from "@obi-wallet/common";
 import {
   BlockTxBroadcastResult,
   LegacyAminoMultisigPublicKey,
   Msg,
-  MultiSignature,
   SignatureV2,
-  SignDoc,
   Tx,
 } from "@terra-money/terra.js";
-import { AxiosError } from "axios";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
@@ -35,7 +31,6 @@ import {
   MultisigConfirmMessagesProps,
 } from "../multisig-confirm-messages";
 import { PhoneNumberBottomSheetContent } from "../phone-number-bottom-sheet-content";
-import { useGasPrices } from "./hooks";
 import {
   BiometricsKey,
   PhoneNumberConfirmKey,
@@ -81,13 +76,9 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
     const threshold = multisig?.multisig?.publicKey.value.threshold;
 
     const waitForTxInfo = useRef<Promise<void>>();
-    const transactionInformation = useRef<{
-      accountSequenceNumber: number;
-      transaction: Tx;
-      signDoc: SignDoc;
-    } | null>();
-
-    const { data: gasPrices } = useGasPrices();
+    const transactionInformation = useRef<Awaited<
+      ReturnType<typeof terra.createMultisigTransaction>
+    > | null>();
 
     async function getTransactionInformation() {
       while (!transactionInformation.current) {
@@ -98,61 +89,17 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
 
     useEffect(() => {
       waitForTxInfo.current = (async () => {
-        transactionInformation.current = null;
-        const address = multisig.multisig?.address;
-        invariant(address, "Expected `address` to exist.");
-
-        const client = await createLcdClient(
-          currentTerraChainInformation.chainId
-        );
-
-        try {
-          await client.auth.accountInfo(address);
-        } catch (e) {
-          await lendFees({
-            chainId: currentTerraChainInformation.chainId,
-            address,
-          });
-        }
-        const account = await client.auth.accountInfo(address);
-
-        try {
-          console.log(gasPrices);
-          const transaction = await client.tx.create(
-            [
-              {
-                address,
-                sequenceNumber: account.getSequenceNumber(),
-                publicKey: account.getPublicKey(),
-              },
-            ],
-            {
-              msgs: messages,
-              gasPrices,
-              gasAdjustment: 2,
-            }
-          );
-
-          const signDoc = new SignDoc(
-            currentTerraChainInformation.chainId,
-            account.getAccountNumber(),
-            account.getSequenceNumber(),
-            transaction.auth_info,
-            transaction.body
-          );
-          transactionInformation.current = {
-            accountSequenceNumber: account.getSequenceNumber(),
-            transaction,
-            signDoc,
-          };
-        } catch (e) {
-          const error = e as AxiosError;
-          console.log("Could not create transaction", error.response?.data);
-        }
+        const publicKey = multisig.multisig?.publicKey;
+        invariant(publicKey, "Expected `publicKey` to exist.");
+        const key = LegacyAminoMultisigPublicKey.fromAmino(publicKey);
+        transactionInformation.current = await terra.createMultisigTransaction({
+          key,
+          messages,
+          chainId: currentTerraChainInformation.chainId,
+        });
       })();
     }, [
-      gasPrices,
-      multisig.multisig?.address,
+      multisig.multisig?.publicKey,
       currentTerraChainInformation.chainId,
       messages,
     ]);
@@ -219,7 +166,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
       return hiddenKeyIds ? !hiddenKeyIds.includes(key.id) : true;
     });
 
-    if (!threshold || !gasPrices) return null;
+    if (!threshold) return null;
 
     return (
       <MultisigConfirmMessages
@@ -229,30 +176,15 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
         data={data}
         innerMessages={innerMessages.map((message) => message.toAmino())}
         onConfirm={async () => {
-          const { accountSequenceNumber, transaction } =
-            await getTransactionInformation();
-          const signaturesOrdered = [];
+          const { sign } = await getTransactionInformation();
+          const signaturesOrdered: SignatureV2[] = [];
           for (const key of wallet.getSignerTypes(multisig)) {
             const signature = signatures.get(key);
             if (signature) {
               signaturesOrdered.push(signature);
             }
           }
-
-          invariant(multisig.multisig, "Expected multisig to exist.");
-          const multisigPubkey = LegacyAminoMultisigPublicKey.fromAmino(
-            multisig.multisig.publicKey
-          );
-          const multiSignature = new MultiSignature(multisigPubkey);
-          multiSignature.appendSignatureV2s(signaturesOrdered);
-          transaction.appendSignatures([
-            new SignatureV2(
-              multisigPubkey,
-              multiSignature.toSignatureDescriptor(),
-              accountSequenceNumber
-            ),
-          ]);
-          await onConfirm(transaction);
+          await onConfirm(await sign(signaturesOrdered));
         }}
         footer={
           multisig?.phoneNumber ? (
