@@ -35,10 +35,10 @@ import {
   createStargateClient,
   isAnyMultisigWallet,
   isMultisigDemoWallet,
-  isSinglesigWallet,
+  isCosmosSinglesigWallet,
   lendFees,
   RequestObiCosmosSignAndBroadcastPayload,
-  SinglesigWallet,
+  CosmosSinglesigWallet,
   WalletType,
 } from "@obi-wallet/common";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
@@ -78,7 +78,7 @@ export interface CosmosSignatureModalProps
     | "onConfirm"
     | "footer"
   > {
-  wallet: CosmosMultisigWallet | SinglesigWallet;
+  wallet: CosmosMultisigWallet | CosmosSinglesigWallet;
   innerMessages: AminoMsg[];
   messages: AminoMsg[];
   rawMessages: EncodeObject[];
@@ -94,7 +94,7 @@ export const CosmosSignatureModal = observer<CosmosSignatureModalProps>(
     switch (props.wallet.type) {
       case WalletType.CosmosMultisig:
         return <CosmosSignatureModalMultisig {...props} />;
-      case WalletType.Singlesig:
+      case WalletType.CosmosSinglesig:
         return <CosmosSignatureModalSinglesig {...props} />;
     }
 
@@ -387,7 +387,7 @@ export function useSignatureModalProps({
 
     return {
       key: modalKey.toString(),
-      wallet: wallet as CosmosMultisigWallet | SinglesigWallet,
+      wallet: wallet as CosmosMultisigWallet | CosmosSinglesigWallet,
       visible: signatureModalVisible,
       innerMessages: innerAminoMessages,
       messages: aminoMessages,
@@ -464,9 +464,9 @@ export function useSignatureModalProps({
           case WalletType.CosmosMultisig:
             await handleMultisig();
             break;
-          case WalletType.Singlesig: {
+          case WalletType.CosmosSinglesig: {
             invariant(
-              isSinglesigWallet(wallet),
+              isCosmosSinglesigWallet(wallet),
               "Expected `wallet` to be singlesig wallet."
             );
 

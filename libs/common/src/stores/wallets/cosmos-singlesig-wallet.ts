@@ -5,15 +5,15 @@ import secp256k1 from "secp256k1";
 
 import { ChainStore } from "../chain";
 import { AbstractWallet, WalletType } from "./abstract-wallet";
-import { SerializedSinglesigWallet } from "./serialized-data";
+import { SerializedCosmosSinglesigWallet } from "./serialized-data";
 
-export class SinglesigWallet extends AbstractWallet {
+export class CosmosSinglesigWallet extends AbstractWallet {
   protected readonly chainStore: ChainStore;
 
   public readonly _id: string;
 
   @observable
-  protected serializedWallet: SerializedSinglesigWallet;
+  protected serializedWallet: SerializedCosmosSinglesigWallet;
 
   @observable
   public privateKey: Uint8Array | null = null;
@@ -28,8 +28,10 @@ export class SinglesigWallet extends AbstractWallet {
   }: {
     chainStore: ChainStore;
     id: string;
-    serializedWallet: SerializedSinglesigWallet;
-    onChange: (serializedWallet: SerializedSinglesigWallet) => Promise<void>;
+    serializedWallet: SerializedCosmosSinglesigWallet;
+    onChange: (
+      serializedWallet: SerializedCosmosSinglesigWallet
+    ) => Promise<void>;
   }) {
     super();
     this.chainStore = chainStore;
@@ -71,7 +73,7 @@ export class SinglesigWallet extends AbstractWallet {
   }
 
   public get type() {
-    return WalletType.Singlesig;
+    return WalletType.CosmosSinglesig;
   }
 
   public get mnemonic() {

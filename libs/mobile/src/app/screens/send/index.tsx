@@ -9,7 +9,7 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import {
   Brand,
   isAnyCosmosMultisigWallet,
-  isSinglesigWallet,
+  isCosmosSinglesigWallet,
   isTerraMultisigWallet,
   RequestObiCosmosSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastMsg,
@@ -432,7 +432,7 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
 
             if (
               isAnyCosmosMultisigWallet(wallet) ||
-              isSinglesigWallet(wallet)
+              isCosmosSinglesigWallet(wallet)
             ) {
               const response = await RequestObiCosmosSignAndBroadcastMsg.send({
                 id: wallet.id,

@@ -39,7 +39,7 @@ import {
 import {
   CommunityChainInfoRepo,
   EmbedChainInfos,
-  isSinglesigWallet,
+  isCosmosSinglesigWallet,
   KVStore,
   MessageRequesterInternalToUi,
   ObiMessage,
@@ -190,10 +190,10 @@ class KeyRingService extends AbstractKeyRingService {
           address: Bech32Address.fromBech32(address, "juno").address,
           isNanoLedger: true,
         };
-      case WalletType.Singlesig: {
+      case WalletType.CosmosSinglesig: {
         const wallet = this.rootStore.walletsStore.currentWallet;
         invariant(
-          isSinglesigWallet(wallet),
+          isCosmosSinglesigWallet(wallet),
           "Expected `wallet` to be singlesig wallet."
         );
         const publicKey = wallet.publicKey;
@@ -272,7 +272,7 @@ class KeyRingService extends AbstractKeyRingService {
     const { walletsStore } = this.rootStore;
     const wallet = walletsStore.currentWallet;
 
-    if (!isSinglesigWallet(wallet)) {
+    if (!isCosmosSinglesigWallet(wallet)) {
       Alert.alert(
         "Unsupported wallet type",
         "Only singlesig wallets are supported"

@@ -73,13 +73,24 @@ export type SerializedCosmosMultisigDemoWallet = t.TypeOf<
   typeof SerializedCosmosMultisigDemoWallet
 >;
 
-export const SerializedSinglesigWalletAnyVersion = t.type({
-  type: t.literal("singlesig"),
+export const SerializedCosmosSinglesigWalletTypeV0 = t.literal("singlesig");
+export const SerializedCosmosSinglesigWalletType =
+  t.literal("cosmos-singlesig");
+export const SerializedCosmosSinglesigWalletTypeAnyVersion = t.union([
+  SerializedCosmosSinglesigWalletTypeV0,
+  SerializedCosmosSinglesigWalletType,
+]);
+
+export const SerializedCosmosSinglesigWalletAnyVersion = t.type({
+  type: SerializedCosmosSinglesigWalletTypeAnyVersion,
   data: t.string,
 });
-export const SerializedSinglesigWallet = SerializedSinglesigWalletAnyVersion;
-export type SerializedSinglesigWallet = t.TypeOf<
-  typeof SerializedSinglesigWallet
+export const SerializedCosmosSinglesigWallet = t.type({
+  type: SerializedCosmosSinglesigWalletType,
+  data: t.string,
+});
+export type SerializedCosmosSinglesigWallet = t.TypeOf<
+  typeof SerializedCosmosSinglesigWallet
 >;
 
 export const SerializedWalletAnyVersion = t.union([
@@ -87,7 +98,7 @@ export const SerializedWalletAnyVersion = t.union([
   SerializedTerraMultisigDemoWalletAnyVersion,
   SerializedCosmosMultisigWalletAnyVersion,
   SerializedCosmosMultisigDemoWalletAnyVersion,
-  SerializedSinglesigWalletAnyVersion,
+  SerializedCosmosSinglesigWalletAnyVersion,
 ]);
 export type SerializedWalletAnyVersion = t.TypeOf<
   typeof SerializedWalletAnyVersion
@@ -97,7 +108,7 @@ export const SerializedWallet = t.union([
   SerializedTerraMultisigDemoWallet,
   SerializedCosmosMultisigWallet,
   SerializedCosmosMultisigDemoWallet,
-  SerializedSinglesigWallet,
+  SerializedCosmosSinglesigWallet,
 ]);
 export type SerializedWallet = t.TypeOf<typeof SerializedWallet>;
 
@@ -146,7 +157,10 @@ export function migrateSerializedData(
           };
         }
 
-        return wallet;
+        return {
+          type: "cosmos-singlesig",
+          data: wallet.data,
+        };
       }),
     };
   }

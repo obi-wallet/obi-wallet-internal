@@ -18,23 +18,24 @@ import {
   CosmosMultisigKey,
   CosmosMultisigWallet,
 } from "./cosmos-multisig-wallet";
+import { CosmosSinglesigWallet } from "./cosmos-singlesig-wallet";
 import {
   migrateSerializedData,
   SerializedCosmosMultisigDemoWallet,
   SerializedCosmosMultisigWallet,
   SerializedCosmosMultisigWalletAnyVersion,
+  SerializedCosmosSinglesigWalletAnyVersion,
   SerializedData,
   SerializedDataAnyVersion,
-  SerializedSinglesigWalletAnyVersion,
   SerializedTerraMultisigDemoWallet,
   SerializedTerraMultisigWallet,
   SerializedWallet,
   SerializedWalletAnyVersion,
 } from "./serialized-data";
-import { SinglesigWallet } from "./singlesig-wallet";
 import { TerraMultisigKey, TerraMultisigWallet } from "./terra-multisig-wallet";
 
 export * from "./cosmos-multisig-wallet";
+export * from "./cosmos-singlesig-wallet";
 export * from "./terra-multisig-wallet";
 
 export type MultisigKey = CosmosMultisigKey | TerraMultisigKey;
@@ -51,19 +52,19 @@ export enum WalletState {
 export {
   CosmosMultisigWallet,
   TerraMultisigWallet,
-  SinglesigWallet,
+  CosmosSinglesigWallet,
   WalletType,
 };
 
 export type Wallet =
   | CosmosMultisigWallet
   | TerraMultisigWallet
-  | SinglesigWallet;
+  | CosmosSinglesigWallet;
 
-export function isSinglesigWallet(
+export function isCosmosSinglesigWallet(
   wallet: Wallet | null
-): wallet is SinglesigWallet {
-  return wallet?.type === WalletType.Singlesig;
+): wallet is CosmosSinglesigWallet {
+  return wallet?.type === WalletType.CosmosSinglesig;
 }
 
 export function isAnyMultisigWallet(
@@ -126,7 +127,10 @@ export class WalletsStore {
     entities: Record<
       string,
       {
-        wallet: SinglesigWallet | CosmosMultisigWallet | TerraMultisigWallet;
+        wallet:
+          | CosmosSinglesigWallet
+          | CosmosMultisigWallet
+          | TerraMultisigWallet;
         serializedWallet: SerializedWallet;
       }
     >;
@@ -428,7 +432,7 @@ export class WalletsStore {
       data,
     };
     invariant(
-      SerializedSinglesigWalletAnyVersion.is(wallet),
+      SerializedCosmosSinglesigWalletAnyVersion.is(wallet),
       "Expected key `singlesig` to be of type `SerializedSinglesigWalletAnyVersion`."
     );
     await this.legacyKVStores.singlesig.set("singlesig", null);
@@ -456,16 +460,16 @@ export class WalletsStore {
           serializedWallet,
           onChange,
         });
-      case "terra-multisig":
-      case "terra-multisig-demo":
-        return new TerraMultisigWallet({
+      case "cosmos-singlesig":
+        return new CosmosSinglesigWallet({
+          chainStore: this.chainStore,
           id,
           serializedWallet,
           onChange,
         });
-      case "singlesig":
-        return new SinglesigWallet({
-          chainStore: this.chainStore,
+      case "terra-multisig":
+      case "terra-multisig-demo":
+        return new TerraMultisigWallet({
           id,
           serializedWallet,
           onChange,
