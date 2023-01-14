@@ -2,10 +2,10 @@ import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Decimal } from "@cosmjs/math/build/decimal";
 import { OfflineSigner } from "@cosmjs/proto-signing";
 import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
-import { Chain, chains } from "@obi-wallet/common";
+import { CosmosChain, cosmosChains } from "@obi-wallet/common";
 
-export async function createStargateClient(chainId: Chain) {
-  const { rpcs } = chains[chainId];
+export async function createStargateClient(chainId: CosmosChain) {
+  const { rpcs } = cosmosChains[chainId];
   for (const rpc of rpcs) {
     try {
       return await StargateClient.connect(rpc);
@@ -20,10 +20,10 @@ export async function createSigningStargateClient({
   chainId,
   signer,
 }: {
-  chainId: Chain;
+  chainId: CosmosChain;
   signer: OfflineSigner;
 }) {
-  const { denom, prefix, rpcs } = chains[chainId];
+  const { denom, prefix, rpcs } = cosmosChains[chainId];
   for (const rpc of rpcs) {
     try {
       return await SigningStargateClient.connectWithSigner(rpc, signer, {
@@ -45,10 +45,10 @@ export async function createSigningCosmWasmClient({
   chainId,
   signer,
 }: {
-  chainId: Chain;
+  chainId: CosmosChain;
   signer: OfflineSigner;
 }) {
-  const { denom, prefix, rpcs } = chains[chainId];
+  const { denom, prefix, rpcs } = cosmosChains[chainId];
   for (const rpc of rpcs) {
     try {
       return await SigningCosmWasmClient.connectWithSigner(rpc, signer, {

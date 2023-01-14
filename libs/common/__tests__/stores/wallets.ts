@@ -19,7 +19,7 @@ function createWalletsStore() {
     initialConfig: {
       brand: Brand.Obi,
       defaultMultisigWalletType: WalletType.TerraMultisig,
-      chains: {
+      cosmosChains: {
         enabled: ["juno-1"],
         default: "juno-1",
       },
@@ -100,11 +100,11 @@ test("Legacy KVStores", async () => {
     currentWalletIndex: 0,
     wallets: [
       {
-        type: "multisig",
+        type: "cosmos-multisig",
         data: multisigSerializedData,
       },
       {
-        type: "singlesig",
+        type: "cosmos-singlesig",
         data: singlesigSerializedData,
       },
     ],

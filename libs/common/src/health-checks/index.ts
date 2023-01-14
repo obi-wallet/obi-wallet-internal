@@ -1,4 +1,4 @@
-import { Chain } from "../chains";
+import { CosmosChain } from "../chains";
 import { createCosmWasmClient } from "../clients";
 import { CosmosMultisigWallet } from "../stores";
 
@@ -27,7 +27,7 @@ export const junoChecks: Record<JunoChecks, HealthCheck> = {
 };
 
 export const healthChecks: Record<
-  Chain,
+  CosmosChain,
   { types: string[]; checks: Record<string, HealthCheck> }
 > = {
   "juno-1": {

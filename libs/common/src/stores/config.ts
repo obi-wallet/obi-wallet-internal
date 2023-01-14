@@ -1,6 +1,6 @@
 import { action, makeObservable, observable } from "mobx";
 
-import { Chain, TerraChain } from "../chains";
+import { CosmosChain, TerraChain } from "../chains";
 import { Language } from "../languages";
 import { WalletType } from "./wallets";
 
@@ -24,9 +24,9 @@ export enum Feature {
 export interface Config {
   brand: Brand;
   defaultMultisigWalletType: MultisigWalletType;
-  chains: {
-    enabled: Chain[];
-    default: Chain;
+  cosmosChains: {
+    enabled: CosmosChain[];
+    default: CosmosChain;
   };
   terraChains: {
     enabled: TerraChain[];

@@ -4,7 +4,7 @@ const commonTwilioConfig = {
     "https://studio.twilio.com/v2/Flows/FW2de98dc924361e35906dad1ed6125dc6/Executions",
 };
 
-export const chains = {
+export const cosmosChains = {
   "uni-3": {
     chainId: "uni-3" as const,
     label: "Juno Testnet",
@@ -38,7 +38,7 @@ export const chains = {
   },
 };
 
-export type Chain = keyof typeof chains;
+export type CosmosChain = keyof typeof cosmosChains;
 
 // TODO: fetch from https://assets.terra.money/chains.json instead
 export const terraChains = {
@@ -70,10 +70,14 @@ export const terraChains = {
 
 export type TerraChain = keyof typeof terraChains;
 
-export function isCosmosChain(chain: Chain | TerraChain): chain is Chain {
-  return Object.keys(chains).includes(chain);
+export function isCosmosChain(
+  chain: CosmosChain | TerraChain
+): chain is CosmosChain {
+  return Object.keys(cosmosChains).includes(chain);
 }
 
-export function isTerraChain(chain: Chain | TerraChain): chain is TerraChain {
+export function isTerraChain(
+  chain: CosmosChain | TerraChain
+): chain is TerraChain {
   return Object.keys(terraChains).includes(chain);
 }

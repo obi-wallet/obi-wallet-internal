@@ -1,7 +1,7 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-  chains,
+  cosmosChains,
   Feature,
   terraChains,
   Text,
@@ -218,9 +218,11 @@ const CustomDrawerContent = observer((props: DrawerContentComponentProps) => {
   const { chainStore, configStore } = useStore();
 
   const isLoop = configStore.isLoop();
-  const cosmosNetworks = configStore.config.chains.enabled.map((chainId) => {
-    return chains[chainId];
-  });
+  const cosmosNetworks = configStore.config.cosmosChains.enabled.map(
+    (chainId) => {
+      return cosmosChains[chainId];
+    }
+  );
   const terraNetworks = configStore.config.terraChains.enabled.map(
     (chainId) => {
       return terraChains[chainId];
