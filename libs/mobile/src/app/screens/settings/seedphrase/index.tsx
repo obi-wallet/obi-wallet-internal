@@ -1,4 +1,4 @@
-import { isSinglesigWallet } from "@obi-wallet/common";
+import { isCosmosSinglesigWallet } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage } from "react-intl";
 import { Platform, Share, Text, TouchableOpacity, View } from "react-native";
@@ -11,7 +11,7 @@ import { isSmallScreenNumber } from "../../components/screen-size";
 export const Seedphrase = observer(() => {
   const { currentWallet } = useStore().walletsStore;
 
-  if (!isSinglesigWallet(currentWallet)) return null;
+  if (!isCosmosSinglesigWallet(currentWallet)) return null;
   const mnemonic = currentWallet.mnemonic;
 
   const onShare = async (text: string) => {

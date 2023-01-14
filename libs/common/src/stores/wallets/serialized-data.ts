@@ -1,7 +1,7 @@
 import * as t from "io-ts";
 
 import { nullable } from "../helpers";
-import * as Multisig from "../multisig/serialized-data";
+import * as CosmosMultisig from "./cosmos-multisig-wallet/serialized-data";
 import * as TerraMultisig from "./terra-multisig-wallet/serialized-data";
 
 export const SerializedTerraMultisigWalletAnyVersion = t.type({
@@ -30,47 +30,75 @@ export type SerializedTerraMultisigDemoWallet = t.TypeOf<
   typeof SerializedTerraMultisigDemoWallet
 >;
 
-export const SerializedMultisigWalletAnyVersion = t.type({
-  type: t.literal("multisig"),
-  data: Multisig.SerializedDataAnyVersion,
+export const SerializedCosmosMultisigWalletTypeV0 = t.literal("multisig");
+export const SerializedCosmosMultisigWalletType = t.literal("cosmos-multisig");
+export const SerializedCosmosMultisigWalletTypeAnyVersion = t.union([
+  SerializedCosmosMultisigWalletTypeV0,
+  SerializedCosmosMultisigWalletType,
+]);
+
+export const SerializedCosmosMultisigWalletAnyVersion = t.type({
+  type: SerializedCosmosMultisigWalletTypeAnyVersion,
+  data: CosmosMultisig.SerializedDataAnyVersion,
 });
 
-export const SerializedMultisigWallet = t.type({
-  type: t.literal("multisig"),
-  data: Multisig.SerializedData,
+export const SerializedCosmosMultisigWallet = t.type({
+  type: SerializedCosmosMultisigWalletType,
+  data: CosmosMultisig.SerializedData,
 });
-export type SerializedMultisigWallet = t.TypeOf<
-  typeof SerializedMultisigWallet
+export type SerializedCosmosMultisigWallet = t.TypeOf<
+  typeof SerializedCosmosMultisigWallet
 >;
 
-export const SerializedMultisigDemoWalletAnyVersion = t.type({
-  type: t.literal("multisig-demo"),
-  data: Multisig.SerializedDataAnyVersion,
+export const SerializedCosmosDemoMultisigWalletTypeV0 =
+  t.literal("multisig-demo");
+export const SerializedCosmosDemoMultisigWalletType = t.literal(
+  "cosmos-multisig-demo"
+);
+export const SerializedCosmosDemoMultisigWalletTypeAnyVersion = t.union([
+  SerializedCosmosDemoMultisigWalletTypeV0,
+  SerializedCosmosDemoMultisigWalletType,
+]);
+
+export const SerializedCosmosMultisigDemoWalletAnyVersion = t.type({
+  type: SerializedCosmosDemoMultisigWalletTypeAnyVersion,
+  data: CosmosMultisig.SerializedDataAnyVersion,
 });
 
-export const SerializedMultisigDemoWallet = t.type({
-  type: t.literal("multisig-demo"),
-  data: Multisig.SerializedData,
+export const SerializedCosmosMultisigDemoWallet = t.type({
+  type: SerializedCosmosDemoMultisigWalletType,
+  data: CosmosMultisig.SerializedData,
 });
-export type SerializedMultisigDemoWallet = t.TypeOf<
-  typeof SerializedMultisigDemoWallet
+export type SerializedCosmosMultisigDemoWallet = t.TypeOf<
+  typeof SerializedCosmosMultisigDemoWallet
 >;
 
-export const SerializedSinglesigWalletAnyVersion = t.type({
-  type: t.literal("singlesig"),
+export const SerializedCosmosSinglesigWalletTypeV0 = t.literal("singlesig");
+export const SerializedCosmosSinglesigWalletType =
+  t.literal("cosmos-singlesig");
+export const SerializedCosmosSinglesigWalletTypeAnyVersion = t.union([
+  SerializedCosmosSinglesigWalletTypeV0,
+  SerializedCosmosSinglesigWalletType,
+]);
+
+export const SerializedCosmosSinglesigWalletAnyVersion = t.type({
+  type: SerializedCosmosSinglesigWalletTypeAnyVersion,
   data: t.string,
 });
-export const SerializedSinglesigWallet = SerializedSinglesigWalletAnyVersion;
-export type SerializedSinglesigWallet = t.TypeOf<
-  typeof SerializedSinglesigWallet
+export const SerializedCosmosSinglesigWallet = t.type({
+  type: SerializedCosmosSinglesigWalletType,
+  data: t.string,
+});
+export type SerializedCosmosSinglesigWallet = t.TypeOf<
+  typeof SerializedCosmosSinglesigWallet
 >;
 
 export const SerializedWalletAnyVersion = t.union([
   SerializedTerraMultisigWalletAnyVersion,
   SerializedTerraMultisigDemoWalletAnyVersion,
-  SerializedMultisigWalletAnyVersion,
-  SerializedMultisigDemoWalletAnyVersion,
-  SerializedSinglesigWalletAnyVersion,
+  SerializedCosmosMultisigWalletAnyVersion,
+  SerializedCosmosMultisigDemoWalletAnyVersion,
+  SerializedCosmosSinglesigWalletAnyVersion,
 ]);
 export type SerializedWalletAnyVersion = t.TypeOf<
   typeof SerializedWalletAnyVersion
@@ -78,9 +106,9 @@ export type SerializedWalletAnyVersion = t.TypeOf<
 export const SerializedWallet = t.union([
   SerializedTerraMultisigWallet,
   SerializedTerraMultisigDemoWallet,
-  SerializedMultisigWallet,
-  SerializedMultisigDemoWallet,
-  SerializedSinglesigWallet,
+  SerializedCosmosMultisigWallet,
+  SerializedCosmosMultisigDemoWallet,
+  SerializedCosmosSinglesigWallet,
 ]);
 export type SerializedWallet = t.TypeOf<typeof SerializedWallet>;
 
@@ -118,16 +146,21 @@ export function migrateSerializedData(
         }
 
         if (
-          SerializedMultisigWalletAnyVersion.is(wallet) ||
-          SerializedMultisigDemoWalletAnyVersion.is(wallet)
+          SerializedCosmosMultisigWalletAnyVersion.is(wallet) ||
+          SerializedCosmosMultisigDemoWalletAnyVersion.is(wallet)
         ) {
           return {
-            type: wallet.type,
-            data: Multisig.migrateSerializedData(wallet.data),
+            type: SerializedCosmosMultisigWalletAnyVersion.is(wallet)
+              ? "cosmos-multisig"
+              : "cosmos-multisig-demo",
+            data: CosmosMultisig.migrateSerializedData(wallet.data),
           };
         }
 
-        return wallet;
+        return {
+          type: "cosmos-singlesig",
+          data: wallet.data,
+        };
       }),
     };
   }

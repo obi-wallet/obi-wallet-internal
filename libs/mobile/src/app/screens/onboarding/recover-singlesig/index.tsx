@@ -115,7 +115,7 @@ export const RecoverSinglesig = observer<RecoverSinglesigProps>(
               <VerifyAndProceedButton
                 onPress={async () => {
                   await walletsStore.addWallet({
-                    type: "singlesig",
+                    type: "cosmos-singlesig",
                     data: mnemonic,
                   });
                 }}

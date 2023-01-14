@@ -1,5 +1,5 @@
 import { DeliverTxResponse } from "@cosmjs/stargate";
-import { RequestObiSignAndBroadcastPayload } from "@obi-wallet/common";
+import { RequestObiCosmosSignAndBroadcastPayload } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 
 import { useStore } from "../stores";
@@ -19,7 +19,7 @@ export const SignInteractionModal = observer(() => {
 });
 
 const InteractionModalInner = observer(
-  ({ data }: { data: RequestObiSignAndBroadcastPayload }) => {
+  ({ data }: { data: RequestObiCosmosSignAndBroadcastPayload }) => {
     const { signInteractionStore } = useStore();
 
     const { signatureModalProps } = useSignatureModalProps({

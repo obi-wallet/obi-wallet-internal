@@ -1,7 +1,7 @@
 import {
   isAnyCosmosMultisigWallet,
   isAnyTerraMultisigWallet,
-  RequestObiSignAndBroadcastMsg,
+  RequestObiCosmosSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastMsg,
   WalletType,
 } from "@obi-wallet/common";
@@ -20,8 +20,8 @@ export default () => {
           onPress={async () => {
             if (!walletsStore.currentWalletId) return;
             switch (configStore.getDefaultMultisigWalletType()) {
-              case WalletType.Multisig:
-                await RequestObiSignAndBroadcastMsg.send({
+              case WalletType.CosmosMultisig:
+                await RequestObiCosmosSignAndBroadcastMsg.send({
                   id: walletsStore.currentWalletId,
                   multisig: isAnyCosmosMultisigWallet(
                     walletsStore.currentWallet

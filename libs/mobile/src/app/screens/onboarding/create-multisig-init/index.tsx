@@ -4,10 +4,10 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   ChainStore,
+  CosmosMultisigWallet,
   isAnyCosmosMultisigWallet,
   isAnyTerraMultisigWallet,
-  MultisigWallet,
-  RequestObiSignAndBroadcastMsg,
+  RequestObiCosmosSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastMsg,
   terra,
   TerraMultisigWallet,
@@ -91,7 +91,7 @@ async function handleCosmosMultisigInit({
   wallet,
 }: {
   chainStore: ChainStore;
-  wallet: MultisigWallet;
+  wallet: CosmosMultisigWallet;
 }) {
   const multisig = wallet.nextAdmin;
 
@@ -127,7 +127,7 @@ async function handleCosmosMultisigInit({
     value,
   };
 
-  const response = await RequestObiSignAndBroadcastMsg.send({
+  const response = await RequestObiCosmosSignAndBroadcastMsg.send({
     id: wallet.id,
     encodeObjects: [message],
     multisig,

@@ -2,19 +2,19 @@ import { DeliverTxResponse } from "@cosmjs/stargate";
 import { InteractionStore as KeplrInteractionStore } from "@keplr-wallet/stores";
 
 import {
-  RequestObiSignAndBroadcastMsg,
-  RequestObiSignAndBroadcastPayload,
+  RequestObiCosmosSignAndBroadcastMsg,
+  RequestObiCosmosSignAndBroadcastPayload,
 } from "../../background";
 import { AbstractSingletonInteractionStore } from "./abstract-singleton";
 
 export class SignInteractionStore extends AbstractSingletonInteractionStore<
-  RequestObiSignAndBroadcastPayload,
+  RequestObiCosmosSignAndBroadcastPayload,
   DeliverTxResponse
 > {
   constructor(interactionStore: KeplrInteractionStore) {
     super({
       interactionStore,
-      type: RequestObiSignAndBroadcastMsg.type(),
+      type: RequestObiCosmosSignAndBroadcastMsg.type(),
     });
   }
 }

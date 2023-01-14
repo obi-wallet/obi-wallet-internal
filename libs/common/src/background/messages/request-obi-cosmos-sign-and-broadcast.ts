@@ -3,32 +3,34 @@ import { DeliverTxResponse } from "@cosmjs/stargate";
 import { BACKGROUND_PORT, Message } from "@keplr-wallet/router";
 
 import { MessageRequesterInternal } from "../../message-requester";
-import { Multisig, MultisigKey } from "../../stores";
+import { CosmosMultisig, CosmosMultisigKey } from "../../stores";
 
-export interface RequestObiSignAndBroadcastPayload {
+export interface RequestObiCosmosSignAndBroadcastPayload {
   readonly id: string;
-  readonly multisig: Multisig | null;
+  readonly multisig: CosmosMultisig | null;
   readonly encodeObjects: EncodeObject[];
   readonly wrap?: boolean;
   readonly cancelable?: boolean;
-  readonly hiddenKeyIds?: MultisigKey[];
+  readonly hiddenKeyIds?: CosmosMultisigKey[];
   readonly isOnboarding?: boolean;
 }
 
-export class RequestObiSignAndBroadcastMsg extends Message<DeliverTxResponse> {
+export class RequestObiCosmosSignAndBroadcastMsg extends Message<DeliverTxResponse> {
   public static type() {
-    return "request-obi-sign-and-broadcast";
+    return "request-obi-cosmos-sign-and-broadcast";
   }
 
-  public static async send(payload: RequestObiSignAndBroadcastPayload) {
-    const msg = new RequestObiSignAndBroadcastMsg(payload);
+  public static async send(payload: RequestObiCosmosSignAndBroadcastPayload) {
+    const msg = new RequestObiCosmosSignAndBroadcastMsg(payload);
     return await new MessageRequesterInternal().sendMessage(
       BACKGROUND_PORT,
       msg
     );
   }
 
-  constructor(public readonly payload: RequestObiSignAndBroadcastPayload) {
+  constructor(
+    public readonly payload: RequestObiCosmosSignAndBroadcastPayload
+  ) {
     super();
   }
 
@@ -47,6 +49,6 @@ export class RequestObiSignAndBroadcastMsg extends Message<DeliverTxResponse> {
   }
 
   type(): string {
-    return RequestObiSignAndBroadcastMsg.type();
+    return RequestObiCosmosSignAndBroadcastMsg.type();
   }
 }

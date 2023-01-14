@@ -1,12 +1,12 @@
 import fetch from "isomorphic-unfetch";
 
-import { Chain, TerraChain } from "../chains";
+import { CosmosChain, TerraChain } from "../chains";
 
 export async function lendFees({
   chainId,
   address,
 }: {
-  chainId: Chain | TerraChain;
+  chainId: CosmosChain | TerraChain;
   address: string;
 }) {
   const response = await fetch(

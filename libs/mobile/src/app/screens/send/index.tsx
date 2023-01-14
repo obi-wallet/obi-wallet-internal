@@ -9,9 +9,9 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import {
   Brand,
   isAnyCosmosMultisigWallet,
-  isSinglesigWallet,
+  isCosmosSinglesigWallet,
   isTerraMultisigWallet,
-  RequestObiSignAndBroadcastMsg,
+  RequestObiCosmosSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastMsg,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -432,9 +432,9 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
 
             if (
               isAnyCosmosMultisigWallet(wallet) ||
-              isSinglesigWallet(wallet)
+              isCosmosSinglesigWallet(wallet)
             ) {
-              const response = await RequestObiSignAndBroadcastMsg.send({
+              const response = await RequestObiCosmosSignAndBroadcastMsg.send({
                 id: wallet.id,
                 encodeObjects: getEncodeObjects(),
                 multisig: isAnyCosmosMultisigWallet(wallet)

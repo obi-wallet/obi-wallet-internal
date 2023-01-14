@@ -2,8 +2,8 @@ import { Brand, Config, Feature, WalletType } from "@obi-wallet/common";
 
 export const config: Config = {
   brand: Brand.Loop,
-  defaultMultisigWalletType: WalletType.Multisig,
-  chains: {
+  defaultMultisigWalletType: WalletType.CosmosMultisig,
+  cosmosChains: {
     enabled: ["juno-1"],
     default: "juno-1",
   },

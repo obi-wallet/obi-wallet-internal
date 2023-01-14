@@ -4,41 +4,33 @@ import {
 } from "@terra-money/terra.js";
 import { action, computed, makeObservable, observable } from "mobx";
 
-import { AbstractWallet, WalletType } from "../../wallets/abstract-wallet";
+import { AbstractWallet, WalletType, WithAddress } from "../abstract-wallet";
 import {
   SerializedTerraMultisigDemoWallet,
   SerializedTerraMultisigWallet,
 } from "../serialized-data";
-import {
-  Secp256k1PublicKey,
-  SerializedBiometricsPayload,
-  SerializedCloudPayload,
-  SerializedMultisigPayload,
-  SerializedPhoneNumberPayload,
-  SerializedProxyAddress,
-  SerializedSocialPayload,
-} from "./serialized-data";
+import * as TerraSerializedData from "./serialized-data";
+
+export { TerraSerializedData };
 
 export type TerraMultisigThresholdPublicKey =
   LegacyAminoMultisigPublicKey.Amino;
 
-export type WithAddress<T> = T & { address: string };
-
 export interface TerraMultisig {
   multisig: WithAddress<{ publicKey: TerraMultisigThresholdPublicKey }> | null;
-  biometrics: WithAddress<SerializedBiometricsPayload> | null;
-  phoneNumber: WithAddress<SerializedPhoneNumberPayload> | null;
-  social: WithAddress<SerializedSocialPayload> | null;
-  cloud: WithAddress<SerializedCloudPayload> | null;
+  biometrics: WithAddress<TerraSerializedData.SerializedBiometricsPayload> | null;
+  phoneNumber: WithAddress<TerraSerializedData.SerializedPhoneNumberPayload> | null;
+  social: WithAddress<TerraSerializedData.SerializedSocialPayload> | null;
+  cloud: WithAddress<TerraSerializedData.SerializedCloudPayload> | null;
   email: null;
 }
 
 export interface TerraProxyWallet {
-  proxyAddress: SerializedProxyAddress;
+  proxyAddress: TerraSerializedData.SerializedProxyAddress;
   admin: {
-    biometrics: Secp256k1PublicKey;
-    phoneNumber: Secp256k1PublicKey;
-    social?: Secp256k1PublicKey;
+    biometrics: TerraSerializedData.Secp256k1PublicKey;
+    phoneNumber: TerraSerializedData.Secp256k1PublicKey;
+    social?: TerraSerializedData.Secp256k1PublicKey;
   };
 }
 
@@ -111,7 +103,7 @@ export class TerraMultisigWallet extends AbstractWallet {
     );
   }
 
-  public get proxyAddress(): SerializedProxyAddress | null {
+  public get proxyAddress(): TerraSerializedData.SerializedProxyAddress | null {
     return this.serializedWallet.data.proxyAddress ?? null;
   }
 
@@ -160,7 +152,9 @@ export class TerraMultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async setNextAdmin(payload: SerializedMultisigPayload) {
+  public async setNextAdmin(
+    payload: TerraSerializedData.SerializedMultisigPayload
+  ) {
     this.serializedWallet.data.nextAdmin = payload;
     await this.onChange(this.serializedWallet);
   }
@@ -173,13 +167,17 @@ export class TerraMultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async setCurrentAdmin(payload: SerializedMultisigPayload) {
+  public async setCurrentAdmin(
+    payload: TerraSerializedData.SerializedMultisigPayload
+  ) {
     this.serializedWallet.data.currentAdmin = payload;
     await this.onChange(this.serializedWallet);
   }
 
   @action
-  public async setPhoneNumberKey(payload: SerializedPhoneNumberPayload) {
+  public async setPhoneNumberKey(
+    payload: TerraSerializedData.SerializedPhoneNumberPayload
+  ) {
     await this.setNextAdmin({
       ...this.nextAdmin,
       phoneNumber: payload,
@@ -187,7 +185,9 @@ export class TerraMultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async setBiometricsPublicKey(payload: SerializedBiometricsPayload) {
+  public async setBiometricsPublicKey(
+    payload: TerraSerializedData.SerializedBiometricsPayload
+  ) {
     await this.setNextAdmin({
       ...this.nextAdmin,
       biometrics: payload,
@@ -195,7 +195,9 @@ export class TerraMultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async setSocialPublicKey(payload: SerializedSocialPayload) {
+  public async setSocialPublicKey(
+    payload: TerraSerializedData.SerializedSocialPayload
+  ) {
     await this.setNextAdmin({
       ...this.nextAdmin,
       social: payload,
@@ -203,7 +205,9 @@ export class TerraMultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async finishProxySetup(address: SerializedProxyAddress) {
+  public async finishProxySetup(
+    address: TerraSerializedData.SerializedProxyAddress
+  ) {
     this.keyInRecovery = null;
     this._walletInRecovery = null;
     this._updateProposed = false;
@@ -228,7 +232,7 @@ export class TerraMultisigWallet extends AbstractWallet {
   }
 
   protected hydrateMultisig(
-    multisig: SerializedMultisigPayload
+    multisig: TerraSerializedData.SerializedMultisigPayload
   ): TerraMultisig {
     const { biometrics, phoneNumber, social } = multisig;
     const multisigThresholdPublicKey =
@@ -258,7 +262,9 @@ export class TerraMultisigWallet extends AbstractWallet {
     };
   }
 
-  public getSignerTypes(multisig: SerializedMultisigPayload) {
+  public getSignerTypes(
+    multisig: TerraSerializedData.SerializedMultisigPayload
+  ) {
     const allKeys = ["biometrics", "phoneNumber", "social"] as const;
     return allKeys.filter((key) => {
       return multisig[key] !== null;
@@ -266,7 +272,7 @@ export class TerraMultisigWallet extends AbstractWallet {
   }
 
   protected createMultisigThresholdPublicKey(
-    multisig: SerializedMultisigPayload
+    multisig: TerraSerializedData.SerializedMultisigPayload
   ): TerraMultisigThresholdPublicKey | null {
     const publicKeys = [];
     for (const key of this.getSignerTypes(multisig)) {

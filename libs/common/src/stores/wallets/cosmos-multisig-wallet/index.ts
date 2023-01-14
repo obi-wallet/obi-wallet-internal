@@ -1,45 +1,65 @@
-import { createMultisigThresholdPubkey, pubkeyToAddress } from "@cosmjs/amino";
+import {
+  createMultisigThresholdPubkey,
+  MultisigThresholdPubkey,
+  pubkeyToAddress,
+} from "@cosmjs/amino";
 import { action, computed, makeObservable, observable } from "mobx";
 import R from "ramda";
 
-import { healthChecks } from "../../health-checks";
-import { ChainStore } from "../chain";
+import { healthChecks } from "../../../health-checks";
+import { ChainStore } from "../../chain";
+import { AbstractWallet, WalletType, WithAddress } from "../abstract-wallet";
 import {
-  Multisig,
-  MultisigKey,
-  MultisigThresholdPublicKey,
-  ProxyWallet,
-  SerializedBiometricsPayload,
-  SerializedPhoneNumberPayload,
-  SerializedSocialPayload,
-} from "../multisig";
-import {
-  SerializedMultisigPayload,
-  SerializedProxyAddress,
-} from "../multisig/serialized-data";
-import { AbstractWallet, WalletType } from "./abstract-wallet";
-import {
-  SerializedMultisigDemoWallet,
-  SerializedMultisigWallet,
-} from "./serialized-data";
+  SerializedCosmosMultisigDemoWallet,
+  SerializedCosmosMultisigWallet,
+} from "../serialized-data";
+import * as CosmosSerializedData from "./serialized-data";
 
-export class MultisigWallet extends AbstractWallet {
+export { CosmosSerializedData };
+
+export type CosmosMultisigThresholdPublicKey = MultisigThresholdPubkey;
+
+export interface CosmosMultisig {
+  multisig: WithAddress<{
+    publicKey: CosmosMultisigThresholdPublicKey;
+  }> | null;
+  biometrics: WithAddress<CosmosSerializedData.SerializedBiometricsPayload> | null;
+  phoneNumber: WithAddress<CosmosSerializedData.SerializedPhoneNumberPayload> | null;
+  social: WithAddress<CosmosSerializedData.SerializedSocialPayload> | null;
+  cloud: WithAddress<CosmosSerializedData.SerializedCloudPayload> | null;
+  email: null;
+}
+
+export type CosmosMultisigKey = keyof Omit<CosmosMultisig, "multisig">;
+
+export interface CosmosProxyWallet {
+  proxyAddress: CosmosSerializedData.SerializedProxyAddress;
+  admin: {
+    biometrics: CosmosSerializedData.Secp256k1PublicKey;
+    phoneNumber: CosmosSerializedData.Secp256k1PublicKey;
+    social?: CosmosSerializedData.Secp256k1PublicKey;
+  };
+}
+
+export class CosmosMultisigWallet extends AbstractWallet {
   protected readonly chainStore: ChainStore;
 
   protected readonly _id: string;
 
   @observable
   protected serializedWallet:
-    | SerializedMultisigWallet
-    | SerializedMultisigDemoWallet;
+    | SerializedCosmosMultisigWallet
+    | SerializedCosmosMultisigDemoWallet;
   protected onChange: (
-    serializedWallet: SerializedMultisigWallet | SerializedMultisigDemoWallet
+    serializedWallet:
+      | SerializedCosmosMultisigWallet
+      | SerializedCosmosMultisigDemoWallet
   ) => Promise<void>;
 
   @observable
-  public keyInRecovery: MultisigKey | null = null;
+  public keyInRecovery: CosmosMultisigKey | null = null;
   @observable
-  protected _walletInRecovery: ProxyWallet | null = null;
+  protected _walletInRecovery: CosmosProxyWallet | null = null;
   @observable
   protected _updateProposed = false;
 
@@ -51,9 +71,13 @@ export class MultisigWallet extends AbstractWallet {
   }: {
     chainStore: ChainStore;
     id: string;
-    serializedWallet: SerializedMultisigWallet | SerializedMultisigDemoWallet;
+    serializedWallet:
+      | SerializedCosmosMultisigWallet
+      | SerializedCosmosMultisigDemoWallet;
     onChange: (
-      serializedWallet: SerializedMultisigWallet | SerializedMultisigDemoWallet
+      serializedWallet:
+        | SerializedCosmosMultisigWallet
+        | SerializedCosmosMultisigDemoWallet
     ) => Promise<void>;
   }) {
     super();
@@ -73,7 +97,7 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   public get type() {
-    return WalletType.Multisig;
+    return WalletType.CosmosMultisig;
   }
 
   public get isReady() {
@@ -84,7 +108,7 @@ export class MultisigWallet extends AbstractWallet {
     );
   }
 
-  public get proxyAddress(): SerializedProxyAddress | null {
+  public get proxyAddress(): CosmosSerializedData.SerializedProxyAddress | null {
     return this.proxyAddresses[this.chainStore.currentCosmosChain] ?? null;
   }
 
@@ -111,7 +135,7 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async setWalletInRecovery(wallet: ProxyWallet) {
+  public async setWalletInRecovery(wallet: CosmosProxyWallet) {
     await this.setCurrentAdmin({
       biometrics: {
         publicKey: wallet.admin.biometrics,
@@ -143,11 +167,11 @@ export class MultisigWallet extends AbstractWallet {
 
   @computed
   public get isDemo() {
-    return this.serializedWallet.type === "multisig-demo";
+    return this.serializedWallet.type === "cosmos-multisig-demo";
   }
 
   @computed
-  public get nextAdmin(): Multisig {
+  public get nextAdmin(): CosmosMultisig {
     return this.hydrateMultisig(
       this.serializedNextAdmin,
       this.chainStore.currentCosmosChainInformation.prefix
@@ -155,13 +179,15 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async setNextAdmin(payload: SerializedMultisigPayload) {
+  public async setNextAdmin(
+    payload: CosmosSerializedData.SerializedMultisigPayload
+  ) {
     this.serializedWallet.data.nextAdmin = payload;
     await this.onChange(this.serializedWallet);
   }
 
   @computed
-  public get currentAdmin(): Multisig | null {
+  public get currentAdmin(): CosmosMultisig | null {
     return (
       this.serializedCurrentAdmin &&
       this.hydrateMultisig(
@@ -172,13 +198,17 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async setCurrentAdmin(payload: SerializedMultisigPayload | null) {
+  public async setCurrentAdmin(
+    payload: CosmosSerializedData.SerializedMultisigPayload | null
+  ) {
     this.serializedWallet.data.currentAdmin = payload;
     await this.onChange(this.serializedWallet);
   }
 
   @action
-  public async setPhoneNumberKey(payload: SerializedPhoneNumberPayload) {
+  public async setPhoneNumberKey(
+    payload: CosmosSerializedData.SerializedPhoneNumberPayload
+  ) {
     await this.setNextAdmin({
       ...this.nextAdmin,
       phoneNumber: payload,
@@ -186,7 +216,9 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async setBiometricsPublicKey(payload: SerializedBiometricsPayload) {
+  public async setBiometricsPublicKey(
+    payload: CosmosSerializedData.SerializedBiometricsPayload
+  ) {
     await this.setNextAdmin({
       ...this.nextAdmin,
       biometrics: payload,
@@ -194,7 +226,9 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async setSocialPublicKey(payload: SerializedSocialPayload) {
+  public async setSocialPublicKey(
+    payload: CosmosSerializedData.SerializedSocialPayload
+  ) {
     await this.setNextAdmin({
       ...this.nextAdmin,
       social: payload,
@@ -202,7 +236,9 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async finishProxySetup(address: SerializedProxyAddress) {
+  public async finishProxySetup(
+    address: CosmosSerializedData.SerializedProxyAddress
+  ) {
     this.keyInRecovery = null;
     this._walletInRecovery = null;
     this._updateProposed = false;
@@ -211,7 +247,7 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   @action
-  public recover(keyId: MultisigKey) {
+  public recover(keyId: CosmosMultisigKey) {
     this.keyInRecovery = keyId;
     this._updateProposed = false;
   }
@@ -227,9 +263,9 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   protected hydrateMultisig(
-    multisig: SerializedMultisigPayload,
+    multisig: CosmosSerializedData.SerializedMultisigPayload,
     prefix: string
-  ): Multisig {
+  ): CosmosMultisig {
     const { biometrics, phoneNumber, social } = multisig;
     const multisigThresholdPublicKey =
       this.createMultisigThresholdPublicKey(multisig);
@@ -256,7 +292,9 @@ export class MultisigWallet extends AbstractWallet {
     };
   }
 
-  public getSignerTypes(multisig: SerializedMultisigPayload) {
+  public getSignerTypes(
+    multisig: CosmosSerializedData.SerializedMultisigPayload
+  ) {
     const allKeys = ["biometrics", "phoneNumber", "social", "cloud"] as const;
     return allKeys.filter((key) => {
       return multisig[key] !== null;
@@ -264,8 +302,8 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   protected createMultisigThresholdPublicKey(
-    multisig: SerializedMultisigPayload
-  ): MultisigThresholdPublicKey | null {
+    multisig: CosmosSerializedData.SerializedMultisigPayload
+  ): CosmosMultisigThresholdPublicKey | null {
     const publicKeys = [];
     for (const key of this.getSignerTypes(multisig)) {
       const keyPayload = multisig[key];

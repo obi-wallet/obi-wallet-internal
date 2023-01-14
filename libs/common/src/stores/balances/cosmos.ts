@@ -2,7 +2,7 @@ import { JsonObject } from "@cosmjs/cosmwasm-stargate";
 import { Coin } from "@cosmjs/stargate";
 import { makeObservable, observable, runInAction } from "mobx";
 
-import { Chain } from "../../chains";
+import { CosmosChain } from "../../chains";
 import { createCosmWasmClient, createStargateClient } from "../../clients";
 import { ChainStore } from "../chain";
 import { WalletsStore } from "../wallets";
@@ -16,7 +16,7 @@ export class CosmosBalancesStore extends AbstractBalancesStore {
   protected readonly walletsStore: WalletsStore;
 
   @observable
-  public balancesPerChain: Partial<Record<Chain, ExtendedCoin[]>> = {};
+  public balancesPerChain: Partial<Record<CosmosChain, ExtendedCoin[]>> = {};
 
   constructor({
     chainStore,

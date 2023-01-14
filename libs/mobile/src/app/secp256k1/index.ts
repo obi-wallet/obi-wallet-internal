@@ -32,7 +32,7 @@ export async function prepareWalletAndSign({
   const { chainStore, configStore } = getRootStore();
 
   switch (configStore.getDefaultMultisigWalletType()) {
-    case WalletType.Multisig: {
+    case WalletType.CosmosMultisig: {
       const { chainId, prefix, denom } =
         chainStore.currentCosmosChainInformation;
       const client = await createStargateClient(chainId);

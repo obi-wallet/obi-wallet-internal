@@ -1,10 +1,10 @@
 import { MsgMigrateContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { useTheme } from "@emotion/react";
 import {
+  CosmosMultisigWallet,
   isCosmosMultisigWallet,
   JunoChecks,
-  MultisigWallet,
-  RequestObiSignAndBroadcastMsg,
+  RequestObiCosmosSignAndBroadcastMsg,
   Text,
 } from "@obi-wallet/common";
 import { MigrateMsg } from "@obi-wallet/proxy-contract";
@@ -50,7 +50,7 @@ export const HealthChecksScreen = observer(() => {
     {
       title: ReactNode;
       description?: ReactNode;
-      getOnPress: (wallet: MultisigWallet) => () => Promise<void>;
+      getOnPress: (wallet: CosmosMultisigWallet) => () => Promise<void>;
     }
   > = {
     [JunoChecks.CORRECT_ADMIN]: {
@@ -66,7 +66,7 @@ export const HealthChecksScreen = observer(() => {
           defaultMessage="The admin of your wallet is not correct."
         />
       ),
-      getOnPress: (wallet: MultisigWallet) => {
+      getOnPress: (wallet: CosmosMultisigWallet) => {
         return async () => {
           Alert.alert(
             intl.formatMessage({
@@ -91,13 +91,13 @@ export const HealthChecksScreen = observer(() => {
           defaultMessage="The code ID of your wallet is older than 1311."
         />
       ),
-      getOnPress: (wallet: MultisigWallet) => {
+      getOnPress: (wallet: CosmosMultisigWallet) => {
         return async () => {
           const multisig = wallet.currentAdmin;
           const encodeObjects = getEncodeObjects();
 
           if (encodeObjects.length > 0) {
-            const response = await RequestObiSignAndBroadcastMsg.send({
+            const response = await RequestObiCosmosSignAndBroadcastMsg.send({
               id: wallet.id,
               encodeObjects,
               multisig,

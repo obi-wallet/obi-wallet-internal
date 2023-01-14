@@ -38,7 +38,7 @@ export const MultisigSocial = observer<MultisigSocialProps>(
     const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true); // Verify&Proceed Button disabled by default
     const [fetchingPubKey, setFetchingPubKey] = useState(false);
     const obi_address =
-      configStore.getDefaultMultisigWalletType() === WalletType.Multisig
+      configStore.getDefaultMultisigWalletType() === WalletType.CosmosMultisig
         ? "juno17w77rnps59cnallfskg42s3ntnlhrzu2mjkr3e"
         : "terra18aw4eedj4v3253dvj9h5ucx9uedl9ggaayktq4";
     const isObi = configStore.isObi();

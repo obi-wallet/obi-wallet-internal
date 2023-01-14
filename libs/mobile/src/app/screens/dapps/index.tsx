@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   App,
   Card,
-  isSinglesigWallet,
+  isCosmosSinglesigWallet,
   RootStore,
   Text,
   Tile,
@@ -183,7 +183,7 @@ export const Dapps = observer<DappProps>(
                     label: "History",
                     url: isAnyTerraMultisigWallet(walletsStore.currentWallet)
                       ? `https://terrasco.pe/mainnet/contract/${walletsStore.address}`
-                      : isSinglesigWallet(walletsStore.currentWallet)
+                      : isCosmosSinglesigWallet(walletsStore.currentWallet)
                       ? `https://mintscan.io/juno/account/${walletsStore.address}`
                       : `https://mintscan.io/juno/wasm/contract/${walletsStore.address}`,
                     icon: "https://place-hold.it/180x180",

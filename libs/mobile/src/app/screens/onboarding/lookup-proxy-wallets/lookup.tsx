@@ -4,7 +4,7 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { ProxyWallet, Text } from "@obi-wallet/common";
+import { CosmosProxyWallet, Text } from "@obi-wallet/common";
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Linking, ScrollView, TouchableOpacity, View } from "react-native";
@@ -16,15 +16,14 @@ import { VerifyAndProceedButton } from "../../components/phone-number/verify-and
 
 export interface LookupProps {
   publicKey: string;
-  onSelect(wallet: ProxyWallet): void;
+  onSelect(wallet: CosmosProxyWallet): void;
   onCancel(): void;
 }
 
 export function Lookup({ publicKey, onSelect, onCancel }: LookupProps) {
-  const [wallets, setWallets] = useState<ProxyWallet[] | null>(null);
-  const [selectedWallet, setSelectedWallet] = useState<ProxyWallet | null>(
-    null
-  );
+  const [wallets, setWallets] = useState<CosmosProxyWallet[] | null>(null);
+  const [selectedWallet, setSelectedWallet] =
+    useState<CosmosProxyWallet | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -34,7 +33,7 @@ export function Lookup({ publicKey, onSelect, onCancel }: LookupProps) {
             publicKey
           )}`
         );
-        const proxyWallets = (await response.json()) as ProxyWallet[];
+        const proxyWallets = (await response.json()) as CosmosProxyWallet[];
         setWallets(proxyWallets);
       } catch (e) {
         console.log(e);

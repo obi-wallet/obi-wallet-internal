@@ -1,8 +1,8 @@
 import { action, computed, makeObservable, observable } from "mobx";
 
 import {
-  Chain,
-  chains,
+  CosmosChain,
+  cosmosChains,
   isCosmosChain,
   isTerraChain,
   TerraChain,
@@ -15,21 +15,21 @@ export class ChainStore {
   protected readonly configStore: ConfigStore;
 
   @observable
-  public currentCosmosChain: Chain;
+  public currentCosmosChain: CosmosChain;
 
   @observable
   public currentTerraChain: TerraChain;
 
   constructor({ configStore }: { configStore: ConfigStore }) {
     this.configStore = configStore;
-    this.currentCosmosChain = configStore.config.chains.default;
+    this.currentCosmosChain = configStore.config.cosmosChains.default;
     this.currentTerraChain = configStore.config.terraChains.default;
     makeObservable(this);
   }
 
   @computed
   public get currentCosmosChainInformation() {
-    return chains[this.currentCosmosChain];
+    return cosmosChains[this.currentCosmosChain];
   }
 
   @computed
@@ -40,7 +40,7 @@ export class ChainStore {
   @computed
   public get currentChain() {
     switch (this.configStore.getDefaultMultisigWalletType()) {
-      case WalletType.Multisig:
+      case WalletType.CosmosMultisig:
         return this.currentCosmosChain;
       case WalletType.TerraMultisig:
         return this.currentTerraChain;
@@ -48,7 +48,7 @@ export class ChainStore {
   }
 
   @action
-  public setCurrentChain(chain: Chain | TerraChain) {
+  public setCurrentChain(chain: CosmosChain | TerraChain) {
     if (isCosmosChain(chain)) {
       this.currentCosmosChain = chain;
     }
@@ -61,7 +61,7 @@ export class ChainStore {
   @computed
   public get currentChainInformation() {
     switch (this.configStore.getDefaultMultisigWalletType()) {
-      case WalletType.Multisig:
+      case WalletType.CosmosMultisig:
         return this.currentCosmosChainInformation;
       case WalletType.TerraMultisig:
         return this.currentTerraChainInformation;

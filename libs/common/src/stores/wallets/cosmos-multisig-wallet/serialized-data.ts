@@ -1,7 +1,7 @@
 import { pubkeyType } from "@cosmjs/amino";
 import * as t from "io-ts";
 
-import { nullable } from "../helpers";
+import { nullable } from "../../helpers";
 
 export const SinglePublicKey = t.type({
   type: t.string,

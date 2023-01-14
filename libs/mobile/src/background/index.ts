@@ -39,14 +39,14 @@ import {
 import {
   CommunityChainInfoRepo,
   EmbedChainInfos,
-  isSinglesigWallet,
+  isCosmosSinglesigWallet,
   KVStore,
   MessageRequesterInternalToUi,
   ObiMessage,
   PrivilegedOrigins,
   produceEnv,
   RequestObiInAppPurchaseMsg,
-  RequestObiSignAndBroadcastMsg,
+  RequestObiCosmosSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastMsg,
   RootStore,
   RouterBackground,
@@ -183,17 +183,17 @@ class KeyRingService extends AbstractKeyRingService {
     invariant(type, "Missing wallet type");
 
     switch (type) {
-      case WalletType.Multisig:
+      case WalletType.CosmosMultisig:
         return {
           algo: "multisig",
           pubKey: new Uint8Array(),
           address: Bech32Address.fromBech32(address, "juno").address,
           isNanoLedger: true,
         };
-      case WalletType.Singlesig: {
+      case WalletType.CosmosSinglesig: {
         const wallet = this.rootStore.walletsStore.currentWallet;
         invariant(
-          isSinglesigWallet(wallet),
+          isCosmosSinglesigWallet(wallet),
           "Expected `wallet` to be singlesig wallet."
         );
         const publicKey = wallet.publicKey;
@@ -272,7 +272,7 @@ class KeyRingService extends AbstractKeyRingService {
     const { walletsStore } = this.rootStore;
     const wallet = walletsStore.currentWallet;
 
-    if (!isSinglesigWallet(wallet)) {
+    if (!isCosmosSinglesigWallet(wallet)) {
       Alert.alert(
         "Unsupported wallet type",
         "Only singlesig wallets are supported"
@@ -514,7 +514,7 @@ export function initBackground() {
   );
 
   router.registerMessage(RequestObiInAppPurchaseMsg);
-  router.registerMessage(RequestObiSignAndBroadcastMsg);
+  router.registerMessage(RequestObiCosmosSignAndBroadcastMsg);
   router.registerMessage(RequestObiTerraSignAndBroadcastMsg);
   router.addHandler("obi", async (env: Env, msg: Message<unknown>) => {
     const message = msg as ObiMessage;

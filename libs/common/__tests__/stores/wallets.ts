@@ -1,9 +1,12 @@
 import { MockKVStore } from "../../src/kv-store/mock";
 import { Brand, Feature } from "../../src/stores/config";
-import { SerializedData as MultisigSerializedData } from "../../src/stores/multisig/serialized-data";
 import { RootStore } from "../../src/stores/root";
-import { WalletState, WalletType } from "../../src/stores/wallets";
-import { MultisigWallet } from "../../src/stores/wallets/multisig-wallet";
+import {
+  CosmosMultisigWallet,
+  WalletState,
+  WalletType,
+} from "../../src/stores/wallets";
+import { CosmosSerializedData } from "../../src/stores/wallets/cosmos-multisig-wallet";
 import { SerializedData } from "../../src/stores/wallets/serialized-data";
 
 const kvStore = new MockKVStore("wallets-store");
@@ -16,7 +19,7 @@ function createWalletsStore() {
     initialConfig: {
       brand: Brand.Obi,
       defaultMultisigWalletType: WalletType.TerraMultisig,
-      chains: {
+      cosmosChains: {
         enabled: ["juno-1"],
         default: "juno-1",
       },
@@ -32,6 +35,8 @@ function createWalletsStore() {
         [Feature.AccountsTab]: false,
         [Feature.HealthChecks]: false,
         [Feature.NftTab]: false,
+        [Feature.RecoveryWorkflow]: false,
+        [Feature.SinglesigWallets]: false,
       },
     },
     KVStore: MockKVStore,
@@ -79,7 +84,7 @@ test("Legacy KVStores", async () => {
     proxyAddresses: {},
   };
   const singlesigSerializedData = "mnemonic";
-  await multisigKVStore.set<MultisigSerializedData>(
+  await multisigKVStore.set<CosmosSerializedData.SerializedData>(
     "multisig",
     multisigSerializedData
   );
@@ -87,7 +92,7 @@ test("Legacy KVStores", async () => {
   const walletsStore = createWalletsStore();
   expect(walletsStore.state).toEqual(WalletState.LOADING);
   await walletsStore.__initPromise;
-  expect(walletsStore.currentWallet).toBeInstanceOf(MultisigWallet);
+  expect(walletsStore.currentWallet).toBeInstanceOf(CosmosMultisigWallet);
   expect(walletsStore.state).toEqual(WalletState.READY);
   expect(await multisigKVStore.get("multisig")).toBeUndefined();
   expect(await singlesigKVStore.get("singlesig")).toBeUndefined();
@@ -95,11 +100,11 @@ test("Legacy KVStores", async () => {
     currentWalletIndex: 0,
     wallets: [
       {
-        type: "multisig",
+        type: "cosmos-multisig",
         data: multisigSerializedData,
       },
       {
-        type: "singlesig",
+        type: "cosmos-singlesig",
         data: singlesigSerializedData,
       },
     ],
