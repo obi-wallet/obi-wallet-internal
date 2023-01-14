@@ -5,16 +5,16 @@ import {
   Secp256k1Wallet,
 } from "@cosmjs/amino";
 import {
-  createLcdClient,
   createStargateClient,
+  lendFees,
+  terra,
   WalletType,
 } from "@obi-wallet/common";
-import { MsgSend, RawKey, SimplePublicKey } from "@terra-money/terra.js";
+import { RawKey } from "@terra-money/terra.js";
 import secp256k1 from "secp256k1";
 
 import { getRootStore } from "../../background/root-store";
 import { createSigningStargateClient } from "../clients";
-import { lendFees } from "../fee-lender-worker";
 
 export async function prepareWalletAndSign({
   publicKey,
@@ -71,41 +71,9 @@ export async function prepareWalletAndSign({
       break;
     }
     case WalletType.TerraMultisig: {
-      const { chainId, denom } = chainStore.currentTerraChainInformation;
-
-      const client = await createLcdClient(chainId);
-
-      const address = SimplePublicKey.fromAmino({
-        type: pubkeyType.secp256k1,
-        value: publicKey,
-      }).address();
-
-      try {
-        await client.auth.accountInfo(address);
-      } catch (e) {
-        await lendFees({
-          chainId,
-          address,
-        });
-      }
-
-      // TODO: here we need to wait longer as long as status code is 404
-      try {
-        const account = await client.auth.accountInfo(address);
-
-        if (!account.getPublicKey()) {
-          const key = new RawKey(Buffer.from(privateKeyUint8Array));
-          const wallet = client.wallet(key);
-          const send = new MsgSend(address, address, { [denom]: 1 });
-          // TODO: handle gas prices?
-          const tx = await wallet.createAndSignTx({ msgs: [send] });
-          await client.tx.broadcast(tx);
-        }
-      } catch (e) {
-        console.log("Could not prepare biometrics");
-        console.error(e);
-      }
-
+      const { chainId } = chainStore.currentTerraChainInformation;
+      const key = new RawKey(Buffer.from(privateKeyUint8Array));
+      await terra.prepareKey({ key, chainId });
       break;
     }
   }

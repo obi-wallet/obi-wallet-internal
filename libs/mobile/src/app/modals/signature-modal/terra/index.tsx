@@ -1,11 +1,13 @@
 import {
   createLcdClient,
   isAnyMultisigWallet,
+  lendFees,
   MultisigKey,
   RequestObiTerraSignAndBroadcastPayload,
   TerraMultisig,
   TerraMultisigKey,
   TerraMultisigWallet,
+  terra,
 } from "@obi-wallet/common";
 import {
   BlockTxBroadcastResult,
@@ -22,7 +24,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import invariant from "tiny-invariant";
 
-import { lendFees } from "../../../fee-lender-worker";
 import {
   BottomSheet,
   BottomSheetRef,
@@ -40,7 +41,6 @@ import {
   PhoneNumberConfirmKey,
   PhoneNumberRequestKey,
 } from "./keys";
-import { wrapMessages } from "./wrap-messages";
 
 export interface TerraSignatureModalProps
   extends Omit<
@@ -393,7 +393,7 @@ export function useTerraSignatureModalProps({
     if (!multisig?.multisig?.address || !wallet.proxyAddress) {
       return [];
     }
-    return wrapMessages({
+    return terra.wrapMessages({
       messages: rawMessages,
       sender: multisig.multisig.address,
       contract: wallet.proxyAddress.address,

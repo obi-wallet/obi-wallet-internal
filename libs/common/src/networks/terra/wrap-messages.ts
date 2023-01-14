@@ -26,7 +26,11 @@ export function wrapMessages({
 }): MsgExecuteContract[] {
   return messages.map((msg) => {
     return new MsgExecuteContract(sender, contract, {
-      execute: { universal_msg: { Legacy: wrapMessage(msg) } },
+      execute: {
+        msg: Buffer.from(JSON.stringify({ legacy: wrapMessage(msg) })).toString(
+          "base64"
+        ),
+      },
     });
   });
 }

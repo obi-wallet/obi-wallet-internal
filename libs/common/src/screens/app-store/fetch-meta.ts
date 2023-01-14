@@ -1,4 +1,4 @@
-import "isomorphic-unfetch";
+import fetch from "isomorphic-unfetch";
 import { parse } from "node-html-parser";
 
 export interface Meta {
