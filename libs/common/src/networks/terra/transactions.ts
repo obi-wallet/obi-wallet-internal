@@ -17,7 +17,7 @@ import { createLcdClient } from "../../clients";
 import { lendFees } from "../../fee-lender-worker";
 import { getTxGasOptions } from "./gas-information";
 
-const SdkError = t.type({
+export const SdkError = t.type({
   code: t.number,
   message: t.string,
 });
@@ -165,11 +165,7 @@ export async function prepareAccount({
   return account;
 }
 
-function wait({ ms }: { ms: number }) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function getAccount({
+export async function getAccount({
   address,
   chainId,
 }: {
@@ -189,4 +185,8 @@ async function getAccount({
 
     throw e;
   }
+}
+
+function wait({ ms }: { ms: number }) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

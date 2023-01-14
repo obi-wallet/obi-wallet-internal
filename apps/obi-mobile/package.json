@@ -96,7 +96,6 @@
     "react-native-svg-uri": "*",
     "react-native-url-polyfill": "*",
     "react-native-webview": "*",
-    "react-query": "*",
     "rooks": "*",
     "scrypt-js": "*",
     "secp256k1": "*",
