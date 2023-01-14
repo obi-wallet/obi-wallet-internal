@@ -32,8 +32,9 @@ import {
   isSmallScreenNumber,
   isSmallScreenSubstr,
 } from "../../components/screen-size";
-import Receive from "../assets/receive.svg";
-import Send from "../assets/send.svg";
+import StakingIcon from "../assets/stakingIcon.svg";
+import { ReceiveIcon as Receive } from "./receive";
+import { SendIcon as Send } from "./send";
 
 export const Assets = observer(() => {
   const theme = useTheme();
@@ -65,6 +66,8 @@ const BalanceAndActions = observer(() => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
+  const isObi = configStore.isObi();
+
   return (
     <View
       style={{
@@ -93,7 +96,7 @@ const BalanceAndActions = observer(() => {
           flexDirection: "row",
           justifyContent: "space-around",
           alignItems: "center",
-          width: 200,
+          width: isObi ? 300 : 200,
           marginTop: isSmallScreenNumber(10, 36),
         }}
       >
@@ -109,7 +112,7 @@ const BalanceAndActions = observer(() => {
             }}
             onPress={() => navigation.navigate(RootRoute.Send)}
           >
-            <Send width={25} height={25} />
+            <Send width={25} height={25} style={{ marginLeft: -5 }} />
           </TouchableHighlight>
           <Text
             style={{
@@ -118,7 +121,7 @@ const BalanceAndActions = observer(() => {
               fontWeight: "500",
               marginTop: 10,
               letterSpacing: 0.09,
-              textTransform: "uppercase",
+              textTransform: isLoop ? "uppercase" : "none",
             }}
           >
             <FormattedMessage id="assets.send" defaultMessage="Send" />
@@ -136,7 +139,13 @@ const BalanceAndActions = observer(() => {
             }}
             onPress={() => navigation.navigate(RootRoute.Receive)}
           >
-            <Receive width={25} height={25} />
+            <Receive
+              width={25}
+              height={25}
+              style={{
+                marginTop: -5,
+              }}
+            />
           </TouchableHighlight>
           <Text
             style={{
@@ -145,37 +154,41 @@ const BalanceAndActions = observer(() => {
               fontWeight: "500",
               marginTop: 10,
               letterSpacing: 0.09,
-              textTransform: "uppercase",
+              textTransform: isLoop ? "uppercase" : "none",
             }}
           >
             <FormattedMessage id="assets.receive" defaultMessage="Receive" />
           </Text>
         </View>
-        {/*<View style={{ alignItems: "center" }}>*/}
-        {/*  <TouchableHighlight*/}
-        {/*    style={{*/}
-        {/*      width: 56,*/}
-        {/*      height: 56,*/}
-        {/*      backgroundColor: "#100F1E",*/}
-        {/*      borderRadius: 16,*/}
-        {/*      justifyContent: "center",*/}
-        {/*      alignItems: "center",*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    <Pay width={22} height={22} />*/}
-        {/*  </TouchableHighlight>*/}
-        {/*  <Text*/}
-        {/*    style={{*/}
-        {/*      color: "#F6F5FF",*/}
-        {/*      fontSize: 9,*/}
-        {/*      fontWeight: "500",*/}
-        {/*      marginTop: 10,*/}
-        {/*      letterSpacing: 0.09,*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    PAY*/}
-        {/*  </Text>*/}
-        {/*</View>*/}
+        {isObi && (
+          <View style={{ alignItems: "center" }}>
+            <TouchableHighlight
+              style={{
+                width: 56,
+                height: 56,
+                backgroundColor: isLoop ? "#100F1E" : "#437DFF",
+                borderRadius: isLoop ? 16 : 56,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onPress={() => navigation.navigate(RootRoute.Receive)}
+            >
+              <StakingIcon width={25} height={25} />
+            </TouchableHighlight>
+            <Text
+              style={{
+                color: "#F6F5FF",
+                fontSize: 9,
+                fontWeight: "500",
+                marginTop: 10,
+                letterSpacing: 0.09,
+                textTransform: isLoop ? "uppercase" : "none",
+              }}
+            >
+              <FormattedMessage id="assets.staking" defaultMessage="Staking" />
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );
