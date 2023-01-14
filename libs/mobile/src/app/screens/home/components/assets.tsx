@@ -160,7 +160,7 @@ const BalanceAndActions = observer(() => {
             <FormattedMessage id="assets.receive" defaultMessage="Receive" />
           </Text>
         </View>
-        {configStore.isFeatureEnabled(Feature.Staking) && (
+        {configStore.isFeatureEnabled(Feature.Staking) && isObi && (
           <View style={{ alignItems: "center" }}>
             <TouchableHighlight
               style={{
@@ -171,7 +171,7 @@ const BalanceAndActions = observer(() => {
                 justifyContent: "center",
                 alignItems: "center",
               }}
-              onPress={() => navigation.navigate(RootRoute.Receive)}
+              onPress={() => navigation.navigate(RootRoute.Stake)}
             >
               <StakingIcon width={25} height={25} />
             </TouchableHighlight>
@@ -280,8 +280,8 @@ const AssetsList = observer(() => {
                   color: sortAscending
                     ? "#F6F5FF"
                     : isLoop
-                    ? "#393853"
-                    : "#7E7E7E",
+                      ? "#393853"
+                      : "#7E7E7E",
                   marginLeft: 12,
                 }}
               />
