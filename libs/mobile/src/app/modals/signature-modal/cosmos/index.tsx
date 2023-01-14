@@ -33,6 +33,7 @@ import {
   isAnyMultisigWallet,
   isMultisigDemoWallet,
   isSinglesigWallet,
+  lendFees,
   Multisig,
   MultisigKey,
   MultisigWallet,
@@ -49,7 +50,6 @@ import invariant from "tiny-invariant";
 
 import { createBiometricSignature } from "../../../biometrics";
 import { createSigningCosmWasmClient } from "../../../clients";
-import { lendFees } from "../../../fee-lender-worker";
 import {
   BottomSheet,
   BottomSheetRef,
