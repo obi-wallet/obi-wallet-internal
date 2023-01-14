@@ -391,24 +391,22 @@ export const Dapps = observer<DappProps>(
                     }
                   }}
                 >
-                  <Text>
-                    {isObi ? (
-                      <View
-                        style={{
-                          transform: [{ rotate: "180deg" }],
-                        }}
-                      >
-                        <ChevronCircleRight />
-                      </View>
-                    ) : (
-                      <FontAwesomeIcon
-                        icon={faChevronRight}
-                        // @ts-expect-error
-                        size={Platform.OS === "web" ? "1x" : 24}
-                        color="#fff"
-                      />
-                    )}
-                  </Text>
+                  {isObi ? (
+                    <View
+                      style={{
+                        transform: [{ rotate: "180deg" }],
+                      }}
+                    >
+                      <ChevronCircleRight />
+                    </View>
+                  ) : (
+                    <FontAwesomeIcon
+                      icon={faChevronRight}
+                      // @ts-expect-error
+                      size={Platform.OS === "web" ? "1x" : 24}
+                      color="#fff"
+                    />
+                  )}
                 </TouchableHighlight>
               </View>
             </View>
