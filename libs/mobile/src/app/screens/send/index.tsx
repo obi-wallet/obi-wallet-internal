@@ -214,7 +214,7 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
             <TouchableOpacity
               style={{
                 width: 56,
-                height: 56,
+                height: isSmallScreenNumber(46, 56),
                 justifyContent: "center",
                 alignItems: "center",
                 padding: 5,
