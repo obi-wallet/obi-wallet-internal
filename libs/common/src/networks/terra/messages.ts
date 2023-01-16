@@ -35,12 +35,7 @@ export function getNewAccountMessage({
     },
   };
 
-  return MsgExecuteContract.fromProto({
-    sender: address,
-    contract: accountCreatorAddress,
-    msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
-    funds: [],
-  });
+  return new MsgExecuteContract(address, accountCreatorAddress, rawMessage);
 }
 
 export function parseNewAccountResponse(response: BlockTxBroadcastResult) {
@@ -101,4 +96,21 @@ export function getMigrateMessage({
     terraChains[chainId].currentCodeId,
     {}
   );
+}
+
+export function getProposeUpdateOwnerMessage({
+  sender,
+  proxyAddress,
+  newOwner,
+}: {
+  sender: string;
+  proxyAddress: string;
+  newOwner: string;
+}) {
+  const rawMessage = {
+    propose_update_owner: {
+      new_owner: newOwner,
+    },
+  };
+  return new MsgExecuteContract(sender, proxyAddress, rawMessage);
 }

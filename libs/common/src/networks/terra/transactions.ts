@@ -52,6 +52,7 @@ export async function createMultisigTransaction({
 }) {
   const client = createLcdClient(chainId);
   const address = key.address();
+
   const account = await prepareAccount({ address, chainId });
 
   try {
