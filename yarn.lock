@@ -9984,6 +9984,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dedent@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "dedent@npm:0.6.0"
+  checksum: fe2c0f5adb0b24407988e4adcd22befa0a27259091d4c40574c72da29fa6a6989e15a522ffc0f934ba6bb511b6498b315e7cdcf4a33a310cfaf1a8555a106484
+  languageName: node
+  linkType: hard
+
 "dedent@npm:^0.7.0":
   version: 0.7.0
   resolution: "dedent@npm:0.7.0"
@@ -13322,7 +13329,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"invariant@npm:2, invariant@npm:2.2.4, invariant@npm:^2.2.4":
+"invariant@npm:2, invariant@npm:2.2.4, invariant@npm:^2.2.2, invariant@npm:^2.2.4":
   version: 2.2.4
   resolution: "invariant@npm:2.2.4"
   dependencies:
@@ -16035,6 +16042,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lottie-react-native@npm:^5.1.4":
+  version: 5.1.4
+  resolution: "lottie-react-native@npm:5.1.4"
+  dependencies:
+    invariant: ^2.2.2
+    react-native-safe-modules: ^1.0.3
+  peerDependencies:
+    lottie-ios: ^3.4.0
+    react: "*"
+    react-native: ">=0.46"
+    react-native-windows: ">=0.63.x"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: 2424196c7798ce3f2e9189517bec9892f9864d6732f44ac872a5a8690368c25dd30aae99b83a17c537b3e68bf842934971ac5737b25e585977121a121a7c656a
+  languageName: node
+  linkType: hard
+
 "lowercase-keys@npm:^3.0.0":
   version: 3.0.0
   resolution: "lowercase-keys@npm:3.0.0"
@@ -17875,6 +17900,7 @@ __metadata:
     jest: ^29.3.1
     jest-react-native: ^18.0.0
     long: ^4.0.0
+    lottie-react-native: ^5.1.4
     metro: ^0.73.5
     metro-babel-register: ^0.73.5
     metro-react-native-babel-preset: ^0.73.5
@@ -20273,6 +20299,17 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: ef7c41ea59a34b114c6481fb130e66ef85e8d5b88acb46279131367761ca9fbf22cd310fe613f49b6c9b56dbd83e044be640f0532eda1d3856bf708e96335a35
+  languageName: node
+  linkType: hard
+
+"react-native-safe-modules@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "react-native-safe-modules@npm:1.0.3"
+  dependencies:
+    dedent: ^0.6.0
+  peerDependencies:
+    react-native: "*"
+  checksum: df30e1935dfb32ece9be57cd21ccbbecd058a68942536ff6c543f591e5488cc22f17093131eaabf490b6e187caa78e802a4b2e55c890af1c48a3f012dd57c9f2
   languageName: node
   linkType: hard
 
