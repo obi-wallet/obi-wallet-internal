@@ -55,6 +55,7 @@
     "isomorphic-unfetch": "*",
     "jscrypto": "*",
     "long": "*",
+    "lottie-react-native": "*",
     "metro-babel-register": "*",
     "metro-config": "*",
     "metro-react-native-babel-transformer": "*",
