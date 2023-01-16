@@ -2,20 +2,17 @@ import { pubkeyType } from "@cosmjs/amino";
 import { isMultisigDemoWallet, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
   getBiometricsPublicKey,
   resetBiometricsKeyPair,
 } from "../../../../biometrics";
-import { Button } from "../../../../button";
+import { AsyncButton } from "../../../../button";
 import { useMultisigWallet, useStore } from "../../../../stores";
 import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
@@ -40,14 +37,11 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
   ({ navigation }) => {
     const wallet = useMultisigWallet();
     const isObi = useStore().configStore.isObi();
-    const safeInsets = useSafeAreaInsets();
 
     const [scannedBiometrics, setScannedBiometrics] = useState(false);
     const intl = useIntl();
 
-    const scanBiometrics = useCallback(async () => {
-      setButtonDisabledDoubleclick(true);
-
+    async function scanBiometrics() {
       try {
         const demoMode = isMultisigDemoWallet(wallet);
         const publicKey = await getBiometricsPublicKey({
@@ -60,10 +54,8 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
           },
         });
         setScannedBiometrics(true);
-        setButtonDisabledDoubleclick(false);
       } catch (e) {
         setScannedBiometrics(false);
-        setButtonDisabledDoubleclick(false);
         await resetBiometricsKeyPair();
         const error = e as Error;
         console.error(error);
@@ -72,49 +64,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
           error.message
         );
       }
-    }, [intl, wallet]);
-
-    useEffect(() => {
-      (async () => {
-        const { biometrics } = wallet.nextAdmin;
-        if (biometrics && wallet.keyInRecovery !== "biometrics") {
-          Alert.alert(
-            intl.formatMessage({
-              id: "onboarding4.error.biometrickeyexists.title",
-            }),
-            intl.formatMessage({
-              id: "onboarding4.error.biometrickeyexists.text",
-            }),
-            [
-              {
-                text: intl.formatMessage({
-                  id: "onboarding4.error.biometrickeyexists.newkey",
-                }),
-                style: "cancel",
-                onPress: async () => {
-                  await scanBiometrics();
-                },
-              },
-              {
-                text: intl.formatMessage({
-                  id: "onboarding4.error.biometrickeyexists.yes",
-                }),
-                onPress: () => {
-                  navigation.navigate(
-                    OnboardingRoute.CreateMultisigPhoneNumber
-                  );
-                },
-              },
-            ]
-          );
-        } else {
-          await scanBiometrics();
-        }
-      })();
-    }, [intl, wallet, navigation, scanBiometrics]);
-
-    const [buttonDisabledDoubleclick, setButtonDisabledDoubleclick] =
-      useState(false);
+    }
 
     return (
       <SafeAreaView
@@ -224,7 +174,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
           <View
             style={{ flex: 1, justifyContent: "flex-end", paddingBottom: 20 }}
           >
-            <Button
+            <AsyncButton
               label={intl.formatMessage({
                 id: "onboarding4.biometrics.button",
               })}
@@ -239,7 +189,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
                   await scanBiometrics();
                 }
               }}
-              disabled={buttonDisabledDoubleclick}
+              autoPress
             />
           </View>
         </KeyboardAwareScrollView>

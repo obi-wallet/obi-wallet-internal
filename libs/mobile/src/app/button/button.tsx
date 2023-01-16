@@ -1,6 +1,6 @@
 import { Theme, useTheme } from "@emotion/react";
 import { Brand, Text } from "@obi-wallet/common";
-import { FC } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import {
   GestureResponderEvent,
   Platform,
@@ -179,4 +179,40 @@ export function Button({
       </TouchableNativeFeedback>
     );
   }
+}
+
+export interface AsyncButtonProps extends ButtonProps {
+  onPress: () => Promise<void>;
+  autoPress?: boolean;
+}
+
+export function AsyncButton({
+  onPress,
+  autoPress,
+  disabled,
+  ...props
+}: AsyncButtonProps) {
+  const [pending, setPending] = useState(false);
+
+  const onPressSingleton = useCallback(async () => {
+    setPending(true);
+    await onPress();
+    setPending(false);
+  }, [onPress]);
+
+  useEffect(() => {
+    if (autoPress) {
+      void onPressSingleton();
+    }
+    // We only want to run this initially
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <Button
+      {...props}
+      onPress={onPressSingleton}
+      disabled={pending || disabled}
+    />
+  );
 }

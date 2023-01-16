@@ -2,7 +2,7 @@ import { useTheme } from "@emotion/react";
 import { faSortAsc } from "@fortawesome/free-solid-svg-icons/faSortAsc";
 import { faSortDesc } from "@fortawesome/free-solid-svg-icons/faSortDesc";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Text } from "@obi-wallet/common";
+import { Feature, Text } from "@obi-wallet/common";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -160,7 +160,7 @@ const BalanceAndActions = observer(() => {
             <FormattedMessage id="assets.receive" defaultMessage="Receive" />
           </Text>
         </View>
-        {isObi && (
+        {configStore.isFeatureEnabled(Feature.Staking) && (
           <View style={{ alignItems: "center" }}>
             <TouchableHighlight
               style={{

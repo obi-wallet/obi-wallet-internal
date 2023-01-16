@@ -21,5 +21,6 @@ export const config: Config = {
     [Feature.NftTab]: true,
     [Feature.RecoveryWorkflow]: true,
     [Feature.SinglesigWallets]: true,
+    [Feature.Staking]: true,
   },
 };
