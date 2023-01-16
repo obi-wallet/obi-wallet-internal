@@ -19,6 +19,7 @@ export enum Feature {
   NftTab = "NftTab",
   RecoveryWorkflow = "RecoveryWorkflow",
   SinglesigWallets = "SinglesigWallets",
+  Staking = "Staking",
 }
 
 export interface Config {
