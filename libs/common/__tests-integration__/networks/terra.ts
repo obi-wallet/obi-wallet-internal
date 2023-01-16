@@ -91,4 +91,23 @@ describe("MultisigWallet", () => {
       await terra.simulateTransaction({ transaction, chainId })
     ).toBeDefined();
   });
+
+  // TODO:
+  test.skip("MsgMigrateContract", async () => {
+    const message = terra.getMigrateMessage({
+      admin: multisigKey.address(),
+      proxyAddress: proxyAddress.address,
+      chainId,
+    });
+    const { signDoc, sign } = await terra.createMultisigTransaction({
+      key: multisigKey,
+      messages: [message],
+      chainId,
+    });
+    const signature = await key.createSignatureAmino(signDoc);
+    const transaction = sign([signature]);
+    expect(
+      await terra.simulateTransaction({ transaction, chainId })
+    ).toBeDefined();
+  });
 });
