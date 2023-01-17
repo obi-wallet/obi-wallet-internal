@@ -22,5 +22,6 @@ export const config: Config = {
     [Feature.RecoveryWorkflow]: true,
     [Feature.SinglesigWallets]: true,
     [Feature.Staking]: false,
+    [Feature.InAppPurchases]: true,
   },
 };

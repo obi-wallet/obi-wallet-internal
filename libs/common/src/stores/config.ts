@@ -20,6 +20,7 @@ export enum Feature {
   RecoveryWorkflow = "RecoveryWorkflow",
   SinglesigWallets = "SinglesigWallets",
   Staking = "Staking",
+  InAppPurchases = "InAppPurchases",
 }
 
 export interface Config {

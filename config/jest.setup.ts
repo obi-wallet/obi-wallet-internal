@@ -1,0 +1,24 @@
+import "@testing-library/jest-native/extend-expect";
+import mockAsyncStorage from "@react-native-async-storage/async-storage/jest/async-storage-mock";
+import mockSafeAreaContext from "react-native-safe-area-context/jest/mock";
+
+// noinspection JSConstantReassignment
+global.crypto = require("crypto");
+
+jest.mock("@react-native-async-storage/async-storage", () => mockAsyncStorage);
+jest.mock("@fortawesome/react-native-fontawesome", () => ({
+  FontAwesomeIcon: "",
+}));
+jest.mock("react-native-safe-area-context", () => mockSafeAreaContext);
+jest.mock("react-native", () => {
+  const RN = jest.requireActual("react-native"); // use original implementation, which comes with mocks out of the box
+
+  // mock modules/components created by assigning to NativeModules
+  RN.NativeModules.SettingsManager = {
+    settings: {
+      AppleLanguages: ["en-US"],
+    },
+  };
+
+  return RN;
+});

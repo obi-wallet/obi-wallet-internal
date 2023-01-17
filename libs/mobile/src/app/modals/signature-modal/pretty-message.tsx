@@ -17,7 +17,9 @@ import {
   MsgSend,
 } from "@terra-money/terra.js";
 import { observer } from "mobx-react-lite";
+import * as R from "ramda";
 import React, { ReactNode } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
 
@@ -25,7 +27,19 @@ import { formatCoin } from "../../balances";
 import { useStore } from "../../stores";
 import ArrowUpIcon from "./assets/arrowUpIcon.svg";
 
-export function PrettyMessage({ message }: { message: AminoMsg | Msg.Amino }) {
+export interface PrettyMessageProps {
+  message: AminoMsg | Msg.Amino;
+}
+
+export function PrettyMessage({ message }: PrettyMessageProps) {
+  return (
+    <ErrorBoundary FallbackComponent={PrettyMessageUnknown}>
+      <PrettyMessageUnsafe message={message} />
+    </ErrorBoundary>
+  );
+}
+
+function PrettyMessageUnsafe({ message }: PrettyMessageProps) {
   switch (message.type) {
     case "bank/MsgSend":
     case "cosmos-sdk/MsgSend": {
@@ -74,7 +88,6 @@ const PrettyMessageInstantiateContract = observer(
     const { chainStore } = useStore();
     const intl = useIntl();
 
-    // TODO: handle terra
     if (
       value.code_id ===
       chainStore.currentCosmosChainInformation.currentCodeId.toString()
@@ -106,11 +119,9 @@ const PrettyMessageExecuteContract = observer(
   ({ value }: AminoMsgExecuteContract | MsgExecuteContract.Amino) => {
     const intl = useIntl();
     const message = getMessage();
+    const funds = getFunds();
 
-    if (
-      typeof message === "object" &&
-      message["propose_update_admin"] !== undefined
-    ) {
+    if (typeof message === "object" && R.has("propose_update_admin", message)) {
       return (
         <MessageElement
           icon={<ArrowUpIcon />}
@@ -122,10 +133,7 @@ const PrettyMessageExecuteContract = observer(
       );
     }
 
-    if (
-      typeof message === "object" &&
-      message["confirm_update_admin"] !== undefined
-    ) {
+    if (typeof message === "object" && R.has("confirm_update_admin", message)) {
       return (
         <MessageElement
           icon={<ArrowUpIcon />}
@@ -145,33 +153,35 @@ const PrettyMessageExecuteContract = observer(
         <Text style={{ color: "white" }}>
           Execute wasm contract{" "}
           <Text style={{ fontWeight: "700" }}>
-            {Bech32Address.shortenAddress(message.value.contract, 20)}
+            {Bech32Address.shortenAddress(value.contract, 20)}
           </Text>
         </Text>
         <Text style={{ color: "white" }}>
-          {message.value.funds.length > 0 && "by sending:"}
-          {message.value.funds.map(
-            (token: { amount: string; denom: "string" }) => {
-              const { amount, denom } = formatCoin(token);
-              return (
-                <Text
-                  style={{ color: "white" }}
-                  key={denom ? denom : token.denom}
-                >
-                  {amount ? amount : token.amount} {denom ? denom : token.denom}
-                </Text>
-              );
-            }
-          )}
+          {funds.length > 0 && "by sending:"}
+          {funds.map((token) => {
+            const { amount, denom } = formatCoin(token);
+            return (
+              <Text
+                style={{ color: "white" }}
+                key={denom ? denom : token.denom}
+              >
+                {amount ? amount : token.amount} {denom ? denom : token.denom}
+              </Text>
+            );
+          })}
         </Text>
         <Text style={{ color: "white" }}>
-          {JSON.stringify(message.value.msg, null, 2)}
+          {JSON.stringify(message, null, 2)}
         </Text>
       </MessageElement>
     );
 
-    function getMessage() {
+    function getMessage(): unknown {
       return isAminoV1Value(value) ? value.execute_msg : value.msg;
+    }
+
+    function getFunds() {
+      return isAminoV1Value(value) ? value.coins : value.funds;
     }
 
     function isAminoV1Value(
