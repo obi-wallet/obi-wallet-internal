@@ -1,55 +1,30 @@
 import styled from "@emotion/native";
-import { ThemeContext, useTheme } from "@emotion/react";
+import { useTheme } from "@emotion/react";
 import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
-import { width } from "@fortawesome/free-solid-svg-icons/faPaperPlane";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text, TextInput } from "@obi-wallet/common";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { FormattedMessage } from "react-intl";
 import {
   FlatList,
-  GestureResponderHandlers,
   Image,
-  ImageBackground,
-  ListRenderItemInfo,
-  RefreshControl,
   StyleProp,
-  StyleSheet,
-  StyleSheetProperties,
   TouchableHighlight,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from "react-native";
 import { GestureResponderEvent } from "react-native-modal";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import { Styles } from "react-native-svg/lib/typescript/xml";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import {
-  ExtendedCoin,
-  formatExtendedCoin,
-  UsdBalance,
-  useBalances,
-} from "../../../balances";
-import { IconButton } from "../../../button";
-import { RootRoute, RootStackParamList } from "../../../root-stack";
 import { useStore } from "../../../stores";
 import { Back } from "../../components/back";
-import { CoinIcon } from "../../components/coin-icon";
-import { NetworkAccountPickerLayout } from "../../components/network-account-picker-layout";
 import {
   isSmallScreen,
   isSmallScreenNumber,
-  isSmallScreenSubstr,
 } from "../../components/screen-size";
 import ObiLogo from "../../settings/assets/obi-logo.svg";
-import Receive from "../assets/receive.svg";
-import Send from "../assets/send.svg";
 
 export const Stake = observer(() => {
   const theme = useTheme();
@@ -132,8 +107,8 @@ function TabPill({
 }: {
   label: string;
   content: string;
-  style?: StyleProp<any>;
-  onPress: Function;
+  style?: StyleProp<ViewStyle>;
+  onPress: (event: GestureResponderEvent) => void;
   active: boolean;
 }) {
   return (
@@ -147,9 +122,9 @@ function TabPill({
           padding: 10,
           backgroundColor: "#272727",
         },
-        { ...style },
+        style,
       ]}
-      onPress={() => onPress()}
+      onPress={onPress}
     >
       <Text style={{ fontSize: 10, color: "white" }}>{label}</Text>
       <Text style={{ fontSize: 15, color: "white" }}>{content}</Text>
