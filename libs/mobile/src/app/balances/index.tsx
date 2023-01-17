@@ -1,7 +1,9 @@
 import { Coin } from "@cosmjs/amino";
-import { Text } from "@obi-wallet/common";
-import { ReactNode, useCallback, useEffect, useState } from "react";
-import { View } from "react-native";
+import { terra, Text } from "@obi-wallet/common";
+import * as R from "ramda";
+import { FC, ReactNode, useCallback, useEffect, useState } from "react";
+import { ImageRequireSource, ImageURISource, View } from "react-native";
+import { SvgProps } from "react-native-svg";
 
 import { getRootStore } from "../../background/root-store";
 import { useStore } from "../stores";
@@ -91,7 +93,42 @@ export function UsdBalance({ fontSize = 28 }: { fontSize?: number }) {
   );
 }
 
-export function formatCoin(coin: Coin) {
+export interface FormattedCoin {
+  icon: ImageURISource | ImageRequireSource | FC<SvgProps> | null;
+  denom: string;
+  digits: number;
+  label: string;
+  amount: number;
+}
+
+export function formatCoin(coin: Coin): FormattedCoin {
+  if (R.has(coin.denom, terra.tokens)) {
+    const token = terra.tokens[coin.denom as keyof typeof terra.tokens];
+    const denom =
+      R.prop("base_denom", token) ??
+      R.prop("denom", token) ??
+      R.prop("symbol", token) ??
+      coin.denom;
+
+    return {
+      icon: token.icon ? { uri: token.icon } : null,
+      denom: (() => {
+        if (denom.startsWith("u")) {
+          return denom.slice(1).toUpperCase();
+        }
+
+        if (denom.startsWith("terra1")) {
+          return "";
+        }
+
+        return denom;
+      })(),
+      digits: token.decimals,
+      label: R.prop("name", token) ?? R.prop("symbol", token) ?? coin.denom,
+      amount: parseInt(coin.amount, 10) / 10 ** token.decimals,
+    };
+  }
+
   const { denom } = getRootStore().chainStore.currentCosmosChainInformation;
   switch (coin.denom) {
     case denom: {
@@ -136,7 +173,6 @@ export function formatCoin(coin: Coin) {
         digits,
         label: "Drink",
         amount,
-        valueInUsd: 0,
       };
     }
     case "ubottle": {
@@ -148,7 +184,6 @@ export function formatCoin(coin: Coin) {
         digits,
         label: "Bottle",
         amount,
-        valueInUsd: 0,
       };
     }
     default: {

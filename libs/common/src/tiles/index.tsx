@@ -1,7 +1,7 @@
 import { FC, ReactNode } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SvgProps } from "react-native-svg";
-import SvgUri from "react-native-svg-uri";
+import { SvgUri } from "react-native-svg";
 
 import { createShadow } from "../styles";
 import { Text } from "../typography";
@@ -65,7 +65,7 @@ export function Tile({
   const getImage = () => {
     if (imgUrl) {
       if (imgUrl.endsWith(".svg")) {
-        return <SvgUri width="100%" height="100%" source={{ uri: imgUrl }} />;
+        return <SvgUri width="100%" height="100%" uri={imgUrl} />;
       }
 
       return (
