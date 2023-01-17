@@ -1,13 +1,13 @@
 import styled from "@emotion/native";
 import { ThemeContext, useTheme } from "@emotion/react";
 import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
+import { width } from "@fortawesome/free-solid-svg-icons/faPaperPlane";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text, TextInput } from "@obi-wallet/common";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import ObiLogo from '../../settings/assets/obi-logo.svg';
 import { FormattedMessage } from "react-intl";
 import {
   FlatList,
@@ -24,7 +24,10 @@ import {
   View,
 } from "react-native";
 import { GestureResponderEvent } from "react-native-modal";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { Styles } from "react-native-svg/lib/typescript/xml";
 
 import {
@@ -44,9 +47,9 @@ import {
   isSmallScreenNumber,
   isSmallScreenSubstr,
 } from "../../components/screen-size";
+import ObiLogo from "../../settings/assets/obi-logo.svg";
 import Receive from "../assets/receive.svg";
 import Send from "../assets/send.svg";
-import { width } from "@fortawesome/free-solid-svg-icons/faPaperPlane";
 
 export const Stake = observer(() => {
   const theme = useTheme();
@@ -56,7 +59,6 @@ export const Stake = observer(() => {
 
   return (
     <View
-
       style={{
         backgroundColor: theme.colors.background,
         flex: 1,
@@ -73,7 +75,7 @@ export const Stake = observer(() => {
 });
 //staking options take remaining space
 const StakingOptions = observer(() => {
-  const [selectedTab, setSelectedTab] = useState(0)
+  const [selectedTab, setSelectedTab] = useState(0);
 
   return (
     <View
@@ -82,40 +84,78 @@ const StakingOptions = observer(() => {
         marginTop: 20,
       }}
     >
-      <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity style={{ backgroundColor: "#272727", margin: 5, justifyContent: 'center', paddingHorizontal: 20, borderRadius: 7, borderWidth: selectedTab === 0 ? 1 : 0, borderColor: 'white' }}
+      <View style={{ flexDirection: "row" }}>
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#272727",
+            margin: 5,
+            justifyContent: "center",
+            paddingHorizontal: 20,
+            borderRadius: 7,
+            borderWidth: selectedTab === 0 ? 1 : 0,
+            borderColor: "white",
+          }}
           onPress={() => setSelectedTab(0)}
         >
           <FontAwesomeIcon icon={faHome} color="white" />
         </TouchableOpacity>
-        <TabPill style={{ flex: 1 }} onPress={() => setSelectedTab(1)} active={selectedTab === 1} label="My Stake" content="1,234 Luna" />
-        <TabPill style={{ flex: 1 }} onPress={() => { setSelectedTab(2) }} active={selectedTab === 2} label="Unstaking" content="1,234 Luna" />
+        <TabPill
+          style={{ flex: 1 }}
+          onPress={() => setSelectedTab(1)}
+          active={selectedTab === 1}
+          label="My Stake"
+          content="1,234 Luna"
+        />
+        <TabPill
+          style={{ flex: 1 }}
+          onPress={() => {
+            setSelectedTab(2);
+          }}
+          active={selectedTab === 2}
+          label="Unstaking"
+          content="1,234 Luna"
+        />
       </View>
       {selectedTab === 0 && <Validators />}
       {selectedTab === 1 && <MyStake />}
       {selectedTab === 2 && <Unstaking />}
-    </View>)
-})
+    </View>
+  );
+});
 
-const TabPill = ({ style, onPress, active, label, content }: { label: string, content: string, style?: StyleProp<any>, onPress: Function, active: boolean }) => {
+function TabPill({
+  style,
+  onPress,
+  active,
+  label,
+  content,
+}: {
+  label: string;
+  content: string;
+  style?: StyleProp<any>;
+  onPress: Function;
+  active: boolean;
+}) {
   return (
-    <TouchableOpacity style={[{
-      borderWidth: active ? 1 : 0,
-      borderColor: 'white',
-      borderRadius: 7,
-      margin: 5,
-      padding: 10,
-      backgroundColor: "#272727"
-    }, { ...style }]}
+    <TouchableOpacity
+      style={[
+        {
+          borderWidth: active ? 1 : 0,
+          borderColor: "white",
+          borderRadius: 7,
+          margin: 5,
+          padding: 10,
+          backgroundColor: "#272727",
+        },
+        { ...style },
+      ]}
       onPress={() => onPress()}
     >
-      <Text style={{ fontSize: 10, color: 'white' }}>{label}</Text>
-      <Text style={{ fontSize: 15, color: 'white' }}>{content}</Text>
+      <Text style={{ fontSize: 10, color: "white" }}>{label}</Text>
+      <Text style={{ fontSize: 15, color: "white" }}>{content}</Text>
     </TouchableOpacity>
-  )
+  );
 }
-
-
 
 const Balance = observer(() => {
   // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -132,40 +172,70 @@ const Balance = observer(() => {
         padding: 10,
       }}
     >
-      <Text style={{ color: 'white' }}>Available Rewards</Text>
-      <View style={{
-        flexDirection: "row",
-        marginTop: 10
-      }}>
-
+      <Text style={{ color: "white" }}>Available Rewards</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          marginTop: 10,
+        }}
+      >
         <Image source={require("../assets/lunaIcon.png")} />
-        <Text style={{ fontSize: 24, color: 'white', fontWeight: '400', marginLeft: 10 }}>123 LUNA</Text>
-      </View>
-      <TouchableHighlight style={{ backgroundColor: 'white', width: '100%', margin: 10, padding: 10, borderRadius: 32, justifyContent: 'center', alignItems: 'center' }}
-        onPress={() => {
-          console.log('withdraw')
-        }}>
-        <Text style={{ color: "#437DFF" }}>
-          Withdraw All Rewards
+        <Text
+          style={{
+            fontSize: 24,
+            color: "white",
+            fontWeight: "400",
+            marginLeft: 10,
+          }}
+        >
+          123 LUNA
         </Text>
+      </View>
+      <TouchableHighlight
+        style={{
+          backgroundColor: "white",
+          width: "100%",
+          margin: 10,
+          padding: 10,
+          borderRadius: 32,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        onPress={() => {
+          console.log("withdraw");
+        }}
+      >
+        <Text style={{ color: "#437DFF" }}>Withdraw All Rewards</Text>
       </TouchableHighlight>
     </View>
   );
 });
 
-
-const Validators = () => {
+function Validators() {
   return (
-    <View style={{ flex: 1, marginTop: 10, }}>
-      <View style={{ flexDirection: 'row' }}>
+    <View style={{ flex: 1, marginTop: 10 }}>
+      <View style={{ flexDirection: "row" }}>
         <View style={{ padding: 10 }}>
-          <Text style={{ fontSize: 15, color: 'white' }}>Validators</Text>
-          <Text style={{ fontSize: 10, color: 'white' }}>130 active validators</Text>
+          <Text style={{ fontSize: 15, color: "white" }}>Validators</Text>
+          <Text style={{ fontSize: 10, color: "white" }}>
+            130 active validators
+          </Text>
         </View>
         <View style={{ flex: 1 }}>
-          <TextInput style={{ borderColor: 'white', borderRadius: 32, borderWidth: 1, padding: 10 }} placeholder="Search" />
+          <TextInput
+            style={{
+              borderColor: "white",
+              borderRadius: 32,
+              borderWidth: 1,
+              padding: 10,
+            }}
+            placeholder="Search"
+          />
 
-          <FontAwesomeIcon icon={faSearch} style={{ position: 'absolute', right: 10, top: 12, color: 'white' }} />
+          <FontAwesomeIcon
+            icon={faSearch}
+            style={{ position: "absolute", right: 10, top: 12, color: "white" }}
+          />
         </View>
       </View>
       <ObiValidator />
@@ -175,104 +245,171 @@ const Validators = () => {
         keyExtractor={(item, index) => index.toString()}
       />
     </View>
-  )
+  );
 }
 const Container = styled.TouchableOpacity({
-  backgroundColor: '#272727',
+  backgroundColor: "#272727",
   borderRadius: 7,
   marginTop: 5,
-  padding: 10
-
-})
-const ObiValidator = () => {
-
+  padding: 10,
+});
+function ObiValidator() {
   return (
-    <Container style={{
-      borderWidth: 1,
-      borderColor: "#437DFF"
-    }}>
+    <Container
+      style={{
+        borderWidth: 1,
+        borderColor: "#437DFF",
+      }}
+    >
       <ValidatorItem obi />
-
     </Container>
-  )
+  );
 }
-const Validator = () => {
+function Validator() {
   return (
     <Container>
       <ValidatorItem />
     </Container>
-  )
+  );
 }
-const ValidatorItem = ({ obi }: { obi?: boolean }) => {
+function ValidatorItem({ obi }: { obi?: boolean }) {
   return (
-    <View style={{ flexDirection: 'row' }}>
+    <View style={{ flexDirection: "row" }}>
       <View style={{ width: 50, height: 50 }}>
-        {obi ? <ObiLogo /> : <View style={{ width: 50, height: 50, borderRadius: 50, backgroundColor: "#1a1a1a" }} />}
+        {obi ? (
+          <ObiLogo />
+        ) : (
+          <View
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 50,
+              backgroundColor: "#1a1a1a",
+            }}
+          />
+        )}
       </View>
-      <View style={{ marginLeft: 10, justifyContent: 'center' }}>
-        <Text style={{ color: 'white' }}>{obi ? "Obi Technologies" : "Other Guys"}</Text>
-        <View >
-
-          <Text style={{ color: '#7E7E7E', fontSize: 9 }}>Voting Power 1.44% • Commission 10.00%</Text>
+      <View style={{ marginLeft: 10, justifyContent: "center" }}>
+        <Text style={{ color: "white" }}>
+          {obi ? "Obi Technologies" : "Other Guys"}
+        </Text>
+        <View>
+          <Text style={{ color: "#7E7E7E", fontSize: 9 }}>
+            Voting Power 1.44% • Commission 10.00%
+          </Text>
         </View>
       </View>
-      <View style={{ flex: 1, alignItems: 'flex-end' }}>
-        <TouchableOpacity style={{ backgroundColor: 'white', borderRadius: 32 }}>
-
-          <Text style={{ color: obi ? '#437DFF' : '#1a1a1a', paddingVertical: 10, paddingHorizontal: 20 }}>stake</Text>
+      <View style={{ flex: 1, alignItems: "flex-end" }}>
+        <TouchableOpacity
+          style={{ backgroundColor: "white", borderRadius: 32 }}
+        >
+          <Text
+            style={{
+              color: obi ? "#437DFF" : "#1a1a1a",
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+            }}
+          >
+            stake
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
-  )
+  );
 }
 
-const MyStake = () => {
+function MyStake() {
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flexDirection: 'row', marginHorizontal: 20, paddingVertical: 10, marginBottom: 10, borderBottomColor: '#404040', borderBottomWidth: 1, }}>
-        <Text style={{ fontSize: 10, color: 'white' }}>
-          Validator
-        </Text>
+      <View
+        style={{
+          flexDirection: "row",
+          marginHorizontal: 20,
+          paddingVertical: 10,
+          marginBottom: 10,
+          borderBottomColor: "#404040",
+          borderBottomWidth: 1,
+        }}
+      >
+        <Text style={{ fontSize: 10, color: "white" }}>Validator</Text>
       </View>
       <FlatList
-        data={[1, 2, 3, 4,]}
+        data={[1, 2, 3, 4]}
         renderItem={({ item }) => <StakeItem />}
         keyExtractor={(item, index) => index.toString()}
       />
     </View>
-  )
+  );
 }
 
-const StakeItem = () => {
+function StakeItem() {
   return (
-    <View style={{ flexDirection: 'row', height: 50, borderBottomColor: '#404040', borderBottomWidth: 1, marginBottom: 10, marginHorizontal: 20 }}>
-      <View style={{ marginLeft: 10, justifyContent: 'center' }}>
-        <Text style={{ color: '#437dff' }}>{"Other Guys"}</Text>
+    <View
+      style={{
+        flexDirection: "row",
+        height: 50,
+        borderBottomColor: "#404040",
+        borderBottomWidth: 1,
+        marginBottom: 10,
+        marginHorizontal: 20,
+      }}
+    >
+      <View style={{ marginLeft: 10, justifyContent: "center" }}>
+        <Text style={{ color: "#437dff" }}>Other Guys</Text>
         <View>
-
-          <Text style={{ color: 'white', fontSize: 14, }}>1.2345 Luna</Text>
+          <Text style={{ color: "white", fontSize: 14 }}>1.2345 Luna</Text>
         </View>
       </View>
-      <View style={{ flex: 1, alignItems: 'flex-end' }}>
-        <TouchableOpacity style={{ backgroundColor: 'white', borderRadius: 32, justifyContent: 'center', alignItems: 'center', ...(isSmallScreen() ? { height: 35 } : {}) }}>
-          <Text style={{ color: '#1a1a1a', paddingVertical: 10, paddingHorizontal: 20 }}>Unstake</Text>
+      <View style={{ flex: 1, alignItems: "flex-end" }}>
+        <TouchableOpacity
+          style={{
+            backgroundColor: "white",
+            borderRadius: 32,
+            justifyContent: "center",
+            alignItems: "center",
+            ...(isSmallScreen() ? { height: 35 } : {}),
+          }}
+        >
+          <Text
+            style={{
+              color: "#1a1a1a",
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+            }}
+          >
+            Unstake
+          </Text>
         </TouchableOpacity>
       </View>
-    </View >
-  )
+    </View>
+  );
 }
 
-
-const Unstaking = () => {
+function Unstaking() {
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flexDirection: 'row', marginHorizontal: 20, paddingVertical: 10, marginBottom: 10, borderBottomColor: '#404040', borderBottomWidth: 1, }}>
-        <Text style={{ fontSize: 10, color: 'white', justifyContent: 'space-between', flexDirection: 'row', flex: 1 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          marginHorizontal: 20,
+          paddingVertical: 10,
+          marginBottom: 10,
+          borderBottomColor: "#404040",
+          borderBottomWidth: 1,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 10,
+            color: "white",
+            justifyContent: "space-between",
+            flexDirection: "row",
+            flex: 1,
+          }}
+        >
           Validator
         </Text>
-        <Text style={{ fontSize: 10, color: 'white' }}>
-          Release
-        </Text>
+        <Text style={{ fontSize: 10, color: "white" }}>Release</Text>
       </View>
       <FlatList
         data={[1, 2]}
@@ -280,23 +417,31 @@ const Unstaking = () => {
         keyExtractor={(item, index) => index.toString()}
       />
     </View>
-  )
+  );
 }
-const UnstakeItem = () => {
+function UnstakeItem() {
   return (
-    <View style={{ flexDirection: 'row', height: 50, borderBottomColor: '#404040', borderBottomWidth: 1, marginBottom: 10, marginHorizontal: 20 }}>
-      <View style={{ marginLeft: 10, justifyContent: 'center' }}>
-        <Text style={{ color: '#437dff' }}>{"Other Guys"}</Text>
+    <View
+      style={{
+        flexDirection: "row",
+        height: 50,
+        borderBottomColor: "#404040",
+        borderBottomWidth: 1,
+        marginBottom: 10,
+        marginHorizontal: 20,
+      }}
+    >
+      <View style={{ marginLeft: 10, justifyContent: "center" }}>
+        <Text style={{ color: "#437dff" }}>Other Guys</Text>
         <View>
-
-          <Text style={{ color: 'white', fontSize: 14, }}>1.2345 Luna</Text>
+          <Text style={{ color: "white", fontSize: 14 }}>1.2345 Luna</Text>
         </View>
       </View>
-      <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
-        <Text style={{ color: 'white' }}>
-          21 days
-        </Text>
+      <View
+        style={{ flex: 1, alignItems: "flex-end", justifyContent: "center" }}
+      >
+        <Text style={{ color: "white" }}>21 days</Text>
       </View>
-    </View >
-  )
+    </View>
+  );
 }

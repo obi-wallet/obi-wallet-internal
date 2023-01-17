@@ -49,7 +49,7 @@ import TradeIconActive from "./assets/ic_trade_active.svg";
 import NFTsIcon from "./assets/nftsIcon.svg";
 import SettingsIcon from "./assets/settingsIcon.svg";
 import TradeIcon from "./assets/tradeIcon.svg";
-import { Assets } from "./components/assets"
+import { Assets } from "./components/assets";
 import {
   HomeBottomTab,
   HomeBottomTabRoute,
