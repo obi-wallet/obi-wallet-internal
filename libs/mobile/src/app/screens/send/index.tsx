@@ -111,11 +111,6 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
   const isLoop = configStore.isLoop();
   const isObi = configStore.isObi();
 
-  const coinIconProps =
-    typeof hydratedSelectedCoin?.icon === "number"
-      ? { imageIcon: hydratedSelectedCoin.icon }
-      : { SVGIcon: hydratedSelectedCoin?.icon };
-
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}>
       <SafeAreaView
@@ -292,7 +287,7 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
                       borderRadius: 44,
                     }}
                   >
-                    <CoinIcon {...coinIconProps} />
+                    <CoinIcon source={hydratedSelectedCoin?.icon ?? null} />
                   </View>
                   <View style={{ justifyContent: "center" }}>
                     <Text
@@ -628,8 +623,6 @@ const getBrandBackground = (brand: Brand) => {
 function CoinRenderer({ item, selected, onPress }: CoinRendererProps) {
   const { denom, label, amount, valueInUsd, icon } = formatExtendedCoin(item);
   const { configStore } = useStore();
-  const coinIconProps =
-    typeof icon === "number" ? { imageIcon: icon } : { SVGIcon: icon };
   const brandColors = getBrandBackground(configStore.brand);
   return (
     <TouchableOpacity
@@ -653,7 +646,7 @@ function CoinRenderer({ item, selected, onPress }: CoinRendererProps) {
             borderRadius: 12,
           }}
         >
-          <CoinIcon {...coinIconProps} />
+          <CoinIcon source={icon} />
         </View>
         <View>
           <Text style={{ color: "#f6f5ff", fontWeight: "500" }}>{label}</Text>

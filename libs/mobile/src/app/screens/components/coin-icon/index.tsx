@@ -1,6 +1,8 @@
 import React from "react";
 import { Image, View } from "react-native";
-import { SvgProps } from "react-native-svg";
+import { SvgUri } from "react-native-svg";
+
+import { FormattedCoin } from "../../../balances";
 
 function DefaultView() {
   return (
@@ -14,23 +16,19 @@ function DefaultView() {
   );
 }
 
-export function CoinIcon({
-  imageIcon,
-  SVGIcon,
-}: {
-  imageIcon?: number;
-  SVGIcon?: React.FC<SvgProps>;
-}) {
-  if (!imageIcon && !SVGIcon) return <DefaultView />;
+export function CoinIcon({ source }: { source: FormattedCoin["icon"] }) {
+  if (!source) return <DefaultView />;
 
-  if (imageIcon)
-    return (
-      <Image
-        source={imageIcon}
-        style={{ flex: 1, width: "100%", height: "100%" }}
-      />
-    );
-  if (SVGIcon) return <SVGIcon width={36} height={36} />;
+  if (typeof source === "function") {
+    const Icon = source;
+    return <Icon width={36} height={36} />;
+  }
 
-  return <DefaultView />;
+  if (typeof source === "object" && source.uri?.endsWith(".svg")) {
+    return <SvgUri uri={source.uri} width={36} height={36} />;
+  }
+
+  return (
+    <Image source={source} style={{ flex: 1, width: "100%", height: "100%" }} />
+  );
 }

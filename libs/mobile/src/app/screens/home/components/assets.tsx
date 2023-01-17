@@ -333,8 +333,6 @@ function AssetsListItem({ item }: ListRenderItemInfo<ExtendedCoin>) {
   };
 
   const { icon, denom, label, amount, valueInUsd } = formatExtendedCoin(item);
-  const coinIconProps =
-    typeof icon === "number" ? { imageIcon: icon } : { SVGIcon: icon };
   return (
     <View
       style={{
@@ -355,7 +353,7 @@ function AssetsListItem({ item }: ListRenderItemInfo<ExtendedCoin>) {
             marginRight: 12,
           }}
         >
-          <CoinIcon {...coinIconProps} />
+          <CoinIcon source={icon} />
         </View>
       </TouchableOpacity>
       <View
