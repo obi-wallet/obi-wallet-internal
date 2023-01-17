@@ -143,7 +143,7 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
         tabBarActiveTintColor: isLoop ? "#F6F5FF" : "white",
         tabBarInactiveTintColor: isLoop ? "#4D5070" : "white",
         tabBarLabelStyle: {
-          fontFamily: isObi ? "Poppins Light" : "Inter",
+          fontFamily: isObi ? "poppins-light" : "Inter",
           fontSize: isObi ? 8 : 10,
           fontWeight: isObi ? "normal" : "500",
           textTransform: isLoop ? "uppercase" : "none",
