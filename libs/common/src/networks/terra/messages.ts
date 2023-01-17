@@ -1,6 +1,7 @@
 import {
   BlockTxBroadcastResult,
   MsgExecuteContract,
+  MsgMigrateContract,
 } from "@terra-money/terra.js";
 import invariant from "tiny-invariant";
 
@@ -34,12 +35,7 @@ export function getNewAccountMessage({
     },
   };
 
-  return MsgExecuteContract.fromProto({
-    sender: address,
-    contract: accountCreatorAddress,
-    msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
-    funds: [],
-  });
+  return new MsgExecuteContract(address, accountCreatorAddress, rawMessage);
 }
 
 export function parseNewAccountResponse(response: BlockTxBroadcastResult) {
@@ -83,4 +79,38 @@ export function parseNewAccountResponse(response: BlockTxBroadcastResult) {
     console.log(response.raw_log);
     throw e;
   }
+}
+
+export function getMigrateMessage({
+  proxyAddress,
+  admin,
+  chainId,
+}: {
+  admin: string;
+  proxyAddress: string;
+  chainId: TerraChain;
+}) {
+  return new MsgMigrateContract(
+    admin,
+    proxyAddress,
+    terraChains[chainId].currentCodeId,
+    {}
+  );
+}
+
+export function getProposeUpdateOwnerMessage({
+  sender,
+  proxyAddress,
+  newOwner,
+}: {
+  sender: string;
+  proxyAddress: string;
+  newOwner: string;
+}) {
+  const rawMessage = {
+    propose_update_owner: {
+      new_owner: newOwner,
+    },
+  };
+  return new MsgExecuteContract(sender, proxyAddress, rawMessage);
 }
