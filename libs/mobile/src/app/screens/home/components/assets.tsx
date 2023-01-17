@@ -160,7 +160,7 @@ const BalanceAndActions = observer(() => {
             <FormattedMessage id="assets.receive" defaultMessage="Receive" />
           </Text>
         </View>
-        {configStore.isFeatureEnabled(Feature.Staking) && isObi && (
+        {configStore.isFeatureEnabled(Feature.Staking) && (
           <View style={{ alignItems: "center" }}>
             <TouchableHighlight
               style={{

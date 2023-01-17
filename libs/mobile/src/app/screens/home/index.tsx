@@ -154,7 +154,7 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
       })}
       initialRouteName={HomeBottomTabRoute.Assets}
     >
-      {configStore.isFeatureEnabled(Feature.AccountsTab) && isObi ? (
+      {configStore.isFeatureEnabled(Feature.AccountsTab) ? (
         <HomeBottomTab.Screen
           name={HomeBottomTabRoute.Accounts}
           options={{
@@ -176,7 +176,7 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
         }}
         component={Assets}
       />
-      {configStore.isFeatureEnabled(Feature.NftTab) && isLoop ? (
+      {configStore.isFeatureEnabled(Feature.NftTab) ? (
         <HomeBottomTab.Screen
           name={HomeBottomTabRoute.Nfts}
           options={{
