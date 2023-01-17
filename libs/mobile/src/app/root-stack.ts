@@ -14,6 +14,7 @@ export enum RootRoute {
   WebView = "WebView",
   Send = "Send",
   Receive = "Receive",
+  Stake = "Stake",
 }
 
 export interface RootStackParamList
@@ -26,6 +27,7 @@ export interface RootStackParamList
   };
   [RootRoute.Send]: undefined;
   [RootRoute.Receive]: undefined;
+  [RootRoute.Stake]: undefined;
 }
 
 export const RootStack = createNativeStackNavigator<RootStackParamList>();

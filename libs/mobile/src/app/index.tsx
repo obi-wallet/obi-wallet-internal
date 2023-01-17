@@ -15,6 +15,7 @@ import { Modals } from "./modals";
 import { Provider, ProviderProps } from "./provider";
 import { RootRoute, RootStack } from "./root-stack";
 import { HomeScreen } from "./screens/home";
+import { Stake } from "./screens/home/components/stake";
 import { MultisigBiometrics } from "./screens/onboarding/common/1-biometrics";
 import { MultisigPhoneNumber } from "./screens/onboarding/common/2-phone-number";
 import { MultisigPhoneNumberConfirm } from "./screens/onboarding/common/3-phone-number-confirm";
@@ -170,6 +171,7 @@ export const StateRenderer = observer(function StateRenderer() {
             })}
           />
           <RootStack.Screen name={RootRoute.Send} component={SendScreen} />
+          <RootStack.Screen name={RootRoute.Stake} component={Stake} />
           <RootStack.Screen
             name={RootRoute.Receive}
             component={ReceiveScreen}

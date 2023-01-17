@@ -171,7 +171,7 @@ const BalanceAndActions = observer(() => {
                 justifyContent: "center",
                 alignItems: "center",
               }}
-              onPress={() => navigation.navigate(RootRoute.Receive)}
+              onPress={() => navigation.navigate(RootRoute.Stake)}
             >
               <StakingIcon width={25} height={25} />
             </TouchableHighlight>
