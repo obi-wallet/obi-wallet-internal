@@ -4,6 +4,8 @@ import {
   RawKey,
   SimplePublicKey,
 } from "@terra-money/terra.js";
+import { randomBytes } from "crypto";
+import secp256k1 from "secp256k1";
 
 import { terra } from "../../src";
 import { getNewAccountMessage } from "../../src/networks/terra/messages";
@@ -47,6 +49,33 @@ test("createAndSignMultisigTransaction", async () => {
     chainId,
   });
   const signature = await key.createSignatureAmino(signDoc);
+  const transaction = sign([signature]);
+  expect(
+    await terra.simulateTransaction({ transaction, chainId })
+  ).toBeDefined();
+});
+
+test("createAndSignMultisigTransaction (second key signs)", async () => {
+  const privateKeyBuffer2 = randomBytes(32);
+  const publicKeyBuffer2 = secp256k1.publicKeyCreate(privateKeyBuffer2);
+
+  const privateKey2 = Buffer.from(privateKeyBuffer2).toString("base64");
+  const publicKey2 = Buffer.from(publicKeyBuffer2).toString("base64");
+
+  const key2 = new RawKey(Buffer.from(privateKey2, "base64"));
+
+  const multisigKey2 = new LegacyAminoMultisigPublicKey(1, [
+    new SimplePublicKey(publicKey),
+    new SimplePublicKey(publicKey2),
+  ]);
+  const multisigAddress2 = multisigKey2.address();
+  const message = new MsgSend(multisigAddress2, multisigAddress2, { uluna: 1 });
+  const { signDoc, sign } = await terra.createMultisigTransaction({
+    key: multisigKey2,
+    messages: [message],
+    chainId,
+  });
+  const signature = await key2.createSignatureAmino(signDoc);
   const transaction = sign([signature]);
   expect(
     await terra.simulateTransaction({ transaction, chainId })

@@ -1,6 +1,7 @@
 import {
   createLcdClient,
   isAnyMultisigWallet,
+  lendFees,
   RequestObiTerraSignAndBroadcastPayload,
   terra,
   TerraMultisig,
@@ -9,6 +10,7 @@ import {
 } from "@obi-wallet/common";
 import {
   BlockTxBroadcastResult,
+  isTxError,
   LegacyAminoMultisigPublicKey,
   Msg,
   SignatureV2,
@@ -51,6 +53,7 @@ export interface TerraSignatureModalProps
   messages: Msg[];
   multisig: TerraMultisig;
   hiddenKeyIds?: TerraMultisigKey[];
+
   onConfirm(transaction: Tx): void;
 }
 
@@ -265,7 +268,7 @@ export function useTerraSignatureModalProps({
   });
   const messages = getWrappedMessages();
 
-  console.log(JSON.stringify(messages[0].toAmino()), null, 2);
+  console.log(JSON.stringify(messages[0].toAmino(), null, 2));
 
   const innerMessages = rawMessages;
 
@@ -294,7 +297,16 @@ export function useTerraSignatureModalProps({
 
         // TODO: handle fees estimation similar to station Tx.tsx
         try {
-          const response = await client.tx.broadcastBlock(transaction);
+          let response = await client.tx.broadcastBlock(transaction);
+          if (isTxError(response)) {
+            if (response.raw_log.includes("insufficient funds")) {
+              await lendFees({
+                chainId: currentTerraChainInformation.chainId,
+                address,
+              });
+              response = await client.tx.broadcastBlock(transaction);
+            }
+          }
           await onConfirm(response);
         } catch (e) {
           console.log(e);
