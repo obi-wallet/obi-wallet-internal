@@ -1,5 +1,5 @@
 import { Theme, ThemeProvider } from "@emotion/react";
-import { Brand, Config, messages } from "@obi-wallet/common";
+import { Brand, Config, Feature, messages } from "@obi-wallet/common";
 import { NavigationContainer } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import {
@@ -35,11 +35,12 @@ export const Provider = observer<ProviderProps>(
     const { currentLanguage } = languageStore;
 
     useEffect(() => {
+      if (!configStore.isFeatureEnabled(Feature.InAppPurchases)) return;
       void initConnection();
       return () => {
         void endConnection();
       };
-    }, []);
+    }, [configStore]);
 
     return (
       <StrictMode>
@@ -92,7 +93,7 @@ export const Provider = observer<ProviderProps>(
   }
 );
 
-function getTheme(brand: Brand): Theme {
+export function getTheme(brand: Brand): Theme {
   switch (brand) {
     case Brand.Obi: {
       return {
