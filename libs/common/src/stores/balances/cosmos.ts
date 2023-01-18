@@ -6,7 +6,11 @@ import { CosmosChain } from "../../chains";
 import { createCosmWasmClient, createStargateClient } from "../../clients";
 import { ChainStore } from "../chain";
 import { WalletsStore } from "../wallets";
-import { AbstractBalancesStore, ExtendedCoin } from "./abstract-balances-store";
+import {
+  AbstractBalancesStore,
+  Delegation,
+  ExtendedCoin,
+} from "./abstract-balances-store";
 
 const LOOP_JUNO1_ADDRESS =
   "juno1qsrercqegvs4ye0yqg93knv73ye5dc3prqwd6jcdcuj8ggp6w0us66deup";
@@ -213,5 +217,13 @@ export class CosmosBalancesStore extends AbstractBalancesStore {
 
     client.disconnect();
     wasmClient.disconnect();
+  }
+
+  public getDelegations(): Delegation[] {
+    return [];
+  }
+
+  public async fetchDelegations(): Promise<void> {
+    // TODO: not implemented yet
   }
 }

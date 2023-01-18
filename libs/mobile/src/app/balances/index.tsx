@@ -233,3 +233,24 @@ export function formatExtendedCoin(coin: ExtendedCoin) {
     }
   }
 }
+
+export function useDelegations() {
+  const { balancesStore, walletsStore } = useStore();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refreshDelegations = useCallback(async () => {
+    setRefreshing(true);
+    await balancesStore.fetchDelegations();
+    setRefreshing(false);
+  }, [balancesStore]);
+
+  useEffect(() => {
+    void refreshDelegations();
+  }, [refreshDelegations, walletsStore.address]);
+
+  return {
+    delegations: balancesStore.delegations,
+    refreshDelegations,
+    refreshing,
+  };
+}

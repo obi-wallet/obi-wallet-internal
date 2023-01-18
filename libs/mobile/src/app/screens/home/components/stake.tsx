@@ -3,9 +3,10 @@ import { useTheme } from "@emotion/react";
 import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Text, TextInput } from "@obi-wallet/common";
+import { Delegation, Text, TextInput, Validator } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import * as R from "ramda";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   Image,
@@ -18,6 +19,7 @@ import {
 import { GestureResponderEvent } from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { formatCoin, useDelegations } from "../../../balances";
 import { useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import {
@@ -28,9 +30,14 @@ import ObiLogo from "../../settings/assets/obi-logo.svg";
 
 export const Stake = observer(() => {
   const theme = useTheme();
-  const { configStore } = useStore();
   const SafeArea = useSafeAreaInsets();
-  const isLoop = configStore.isLoop();
+  const { delegations, refreshDelegations } = useDelegations();
+
+  useEffect(() => {
+    void refreshDelegations();
+  }, [refreshDelegations]);
+
+  console.log(delegations);
 
   return (
     <View
@@ -50,7 +57,21 @@ export const Stake = observer(() => {
 });
 //staking options take remaining space
 const StakingOptions = observer(() => {
+  const { chainStore } = useStore();
   const [selectedTab, setSelectedTab] = useState(0);
+  const { delegations } = useDelegations();
+
+  const total = {
+    denom: chainStore.currentTerraChainInformation.denom,
+    amount: R.sum(
+      delegations.map((delegation) => {
+        return parseInt(delegation.balance.amount, 10);
+      })
+    ).toString(),
+  };
+
+  const formatted = formatCoin(total);
+  const content = `${formatted.amount} ${formatted.denom}`;
 
   return (
     <View
@@ -79,7 +100,7 @@ const StakingOptions = observer(() => {
           onPress={() => setSelectedTab(1)}
           active={selectedTab === 1}
           label="My Stake"
-          content="1,234 Luna"
+          content={content}
         />
         <TabPill
           style={{ flex: 1 }}
@@ -88,7 +109,7 @@ const StakingOptions = observer(() => {
           }}
           active={selectedTab === 2}
           label="Unstaking"
-          content="1,234 Luna"
+          content="TODO"
         />
       </View>
       {selectedTab === 0 && <Validators />}
@@ -142,7 +163,7 @@ const Balance = observer(() => {
         justifyContent: "center",
         alignItems: "center",
         marginTop: isSmallScreenNumber(5, 15),
-        backgroundColor: isObi ? "#437DFF" : "tranparent",
+        backgroundColor: isObi ? "#437DFF" : "transparent",
         borderRadius: 7,
         padding: 10,
       }}
@@ -163,7 +184,7 @@ const Balance = observer(() => {
             marginLeft: 10,
           }}
         >
-          123 LUNA
+          TODO
         </Text>
       </View>
       <TouchableHighlight
@@ -216,7 +237,7 @@ function Validators() {
       <ObiValidator />
       <FlatList
         data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-        renderItem={({ item }) => <Validator />}
+        renderItem={({ item }) => <ValidatorContainer />}
         keyExtractor={(item, index) => index.toString()}
       />
     </View>
@@ -240,13 +261,16 @@ function ObiValidator() {
     </Container>
   );
 }
-function Validator() {
+
+// TODO:
+function ValidatorContainer() {
   return (
     <Container>
       <ValidatorItem />
     </Container>
   );
 }
+
 function ValidatorItem({ obi }: { obi?: boolean }) {
   return (
     <View style={{ flexDirection: "row" }}>
@@ -294,6 +318,8 @@ function ValidatorItem({ obi }: { obi?: boolean }) {
 }
 
 function MyStake() {
+  const { delegations } = useDelegations();
+
   return (
     <View style={{ flex: 1 }}>
       <View
@@ -309,15 +335,17 @@ function MyStake() {
         <Text style={{ fontSize: 10, color: "white" }}>Validator</Text>
       </View>
       <FlatList
-        data={[1, 2, 3, 4]}
-        renderItem={({ item }) => <StakeItem />}
-        keyExtractor={(item, index) => index.toString()}
+        data={delegations}
+        renderItem={({ item }) => <StakeItem delegation={item} />}
+        keyExtractor={(item) => item.validator.address}
       />
     </View>
   );
 }
 
-function StakeItem() {
+function StakeItem({ delegation }: { delegation: Delegation }) {
+  const formatted = formatCoin(delegation.balance);
+
   return (
     <View
       style={{
@@ -330,9 +358,11 @@ function StakeItem() {
       }}
     >
       <View style={{ marginLeft: 10, justifyContent: "center" }}>
-        <Text style={{ color: "#437dff" }}>Other Guys</Text>
+        <Text style={{ color: "#437dff" }}>{delegation.validator.label}</Text>
         <View>
-          <Text style={{ color: "white", fontSize: 14 }}>1.2345 Luna</Text>
+          <Text style={{ color: "white", fontSize: 14 }}>
+            {formatted.amount} {formatted.denom}
+          </Text>
         </View>
       </View>
       <View style={{ flex: 1, alignItems: "flex-end" }}>
