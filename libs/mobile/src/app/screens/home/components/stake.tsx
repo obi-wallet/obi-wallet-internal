@@ -328,12 +328,7 @@ function ValidatorItem({
               backgroundColor: "#1a1a1a",
             }}
             source={{
-              uri: validator.icon
-                .replace(
-                  "https://github.com/",
-                  "https://raw.githubusercontent.com/"
-                )
-                .replace("blob/", ""),
+              uri: validator.icon,
             }}
           />
         ) : (
