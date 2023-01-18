@@ -15,6 +15,7 @@ import { ChainStore } from "../chain";
 import { WalletsStore } from "../wallets";
 import {
   AbstractBalancesStore,
+  Coin,
   Delegation,
   ExtendedCoin,
   ExtendedValidator,
@@ -33,6 +34,7 @@ export class TerraBalancesStore extends AbstractBalancesStore {
   > = {};
   public validatorsPerChain: Partial<Record<TerraChain, ExtendedValidator[]>> =
     {};
+  public rewardsPerChain: Partial<Record<TerraChain, Coin[]>> = {};
 
   constructor({
     chainStore,
@@ -227,6 +229,28 @@ export class TerraBalancesStore extends AbstractBalancesStore {
 
     runInAction(() => {
       this.validatorsPerChain[this.chainStore.currentTerraChain] = validators;
+    });
+  }
+
+  public getRewards(): Coin[] {
+    return this.rewardsPerChain[this.chainStore.currentTerraChain] ?? [];
+  }
+
+  public async fetchRewards(): Promise<void> {
+    const { address } = this.walletsStore;
+    if (!address) return;
+
+    const client = await createLcdClient(this.chainStore.currentTerraChain);
+
+    const rewards = await client.distribution.rewards(address);
+    runInAction(() => {
+      this.rewardsPerChain[this.chainStore.currentTerraChain] =
+        rewards.total.map((coin) => {
+          return {
+            denom: coin.denom,
+            amount: coin.amount.toString(),
+          };
+        });
     });
   }
 }

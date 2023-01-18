@@ -63,6 +63,14 @@ export class BalancesStore {
     await this.store.fetchValidators();
   }
 
+  public get rewards() {
+    return this.store.getRewards();
+  }
+
+  public async fetchRewards() {
+    await this.store.fetchRewards();
+  }
+
   protected get store() {
     switch (this.configStore.getDefaultMultisigWalletType()) {
       case WalletType.CosmosMultisig:

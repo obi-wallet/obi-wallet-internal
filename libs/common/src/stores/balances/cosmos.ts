@@ -244,4 +244,12 @@ export class CosmosBalancesStore extends AbstractBalancesStore {
   public async fetchValidators(): Promise<void> {
     // TODO: not implemented yet
   }
+
+  public getRewards(): Coin[] {
+    return [];
+  }
+
+  public async fetchRewards(): Promise<void> {
+    // TODO: not implemented yet
+  }
 }

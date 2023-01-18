@@ -16,6 +16,7 @@ import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   FlatList,
   Image,
   StyleProp,
@@ -30,11 +31,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   formatCoin,
   useDelegations,
+  useRewards,
   useUnbondingDelegations,
   useValidators,
 } from "../../../balances";
 import { useStore } from "../../../stores";
 import { Back } from "../../components/back";
+import { CoinIcon } from "../../components/coin-icon";
 import {
   isSmallScreen,
   isSmallScreenNumber,
@@ -47,12 +50,19 @@ export const Stake = observer(() => {
   const { refreshDelegations } = useDelegations();
   const { refreshUnbondingDelegations } = useUnbondingDelegations();
   const { refreshValidators } = useValidators();
+  const { refreshRewards } = useRewards();
 
   useEffect(() => {
     void refreshDelegations();
     void refreshUnbondingDelegations();
     void refreshValidators();
-  }, [refreshDelegations, refreshUnbondingDelegations, refreshValidators]);
+    void refreshRewards();
+  }, [
+    refreshDelegations,
+    refreshUnbondingDelegations,
+    refreshValidators,
+    refreshRewards,
+  ]);
 
   return (
     <View
@@ -182,9 +192,19 @@ function TabPill({
 }
 
 const Balance = observer(() => {
-  // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const { configStore } = useStore();
+  const { chainStore, configStore } = useStore();
+  const { rewards } = useRewards();
   const isObi = configStore.isObi();
+
+  const totalRewards =
+    rewards.length > 0
+      ? rewards[0]
+      : {
+          denom: chainStore.currentTerraChainInformation.denom,
+          amount: "0",
+        };
+  const formattedRewards = formatCoin(totalRewards);
+
   return (
     <View
       style={{
@@ -203,7 +223,16 @@ const Balance = observer(() => {
           marginTop: 10,
         }}
       >
-        <Image source={require("../assets/lunaIcon.png")} />
+        <View
+          style={{
+            height: 36,
+            width: 36,
+            borderRadius: 10,
+            marginRight: 12,
+          }}
+        >
+          <CoinIcon source={formattedRewards.icon} />
+        </View>
         <Text
           style={{
             fontSize: 24,
@@ -212,7 +241,7 @@ const Balance = observer(() => {
             marginLeft: 10,
           }}
         >
-          TODO
+          {formattedRewards.amount} {formattedRewards.denom}
         </Text>
       </View>
       <TouchableHighlight
@@ -226,7 +255,7 @@ const Balance = observer(() => {
           alignItems: "center",
         }}
         onPress={() => {
-          console.log("withdraw");
+          Alert.alert("Not implemented yet");
         }}
       >
         <Text style={{ color: "#437DFF" }}>Withdraw All Rewards</Text>
@@ -294,7 +323,7 @@ function Validators() {
   );
 }
 
-const Container = styled.TouchableOpacity({
+const Container = styled.View({
   backgroundColor: "#272727",
   borderRadius: 7,
   marginTop: 5,
@@ -373,6 +402,9 @@ function ValidatorItem({
       <View style={{ alignItems: "flex-end" }}>
         <TouchableOpacity
           style={{ backgroundColor: "white", borderRadius: 32 }}
+          onPress={() => {
+            Alert.alert("Not implemented yet");
+          }}
         >
           <Text
             style={{
@@ -445,6 +477,9 @@ function StakeItem({ delegation }: { delegation: Delegation }) {
             justifyContent: "center",
             alignItems: "center",
             ...(isSmallScreen() ? { height: 35 } : {}),
+          }}
+          onPress={() => {
+            Alert.alert("Not implemented yet");
           }}
         >
           <Text

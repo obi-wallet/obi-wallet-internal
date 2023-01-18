@@ -298,3 +298,26 @@ export function useValidators() {
     refreshing,
   };
 }
+
+export function useRewards() {
+  const { balancesStore, walletsStore } = useStore();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refreshRewards = useCallback(async () => {
+    if (balancesStore.validators.length > 0) return;
+
+    setRefreshing(true);
+    await balancesStore.fetchRewards();
+    setRefreshing(false);
+  }, [balancesStore]);
+
+  useEffect(() => {
+    void refreshRewards();
+  }, [refreshRewards, walletsStore.address]);
+
+  return {
+    rewards: balancesStore.rewards,
+    refreshRewards,
+    refreshing,
+  };
+}

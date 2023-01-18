@@ -1,7 +1,10 @@
-export interface ExtendedCoin {
+export interface Coin {
   contract?: string;
   denom: string;
   amount: string;
+}
+
+export interface ExtendedCoin extends Coin {
   usdPrice: number;
 }
 
@@ -39,4 +42,6 @@ export abstract class AbstractBalancesStore {
   public abstract fetchUnbondingDelegations(): Promise<void>;
   public abstract getValidators(): ExtendedValidator[];
   public abstract fetchValidators(): Promise<void>;
+  public abstract getRewards(): Coin[];
+  public abstract fetchRewards(): Promise<void>;
 }
