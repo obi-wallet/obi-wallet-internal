@@ -21,7 +21,7 @@ export const config: Config = {
     [Feature.NftTab]: false,
     [Feature.RecoveryWorkflow]: false,
     [Feature.SinglesigWallets]: false,
-    [Feature.Staking]: false,
+    [Feature.Staking]: true,
     [Feature.InAppPurchases]: false,
   },
 };

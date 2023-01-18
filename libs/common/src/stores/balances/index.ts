@@ -4,6 +4,8 @@ import { WalletsStore, WalletType } from "../wallets";
 import { CosmosBalancesStore } from "./cosmos";
 import { TerraBalancesStore } from "./terra";
 
+export * from "./abstract-balances-store";
+
 export class BalancesStore {
   protected readonly configStore: ConfigStore;
   protected readonly cosmosBalancesStore: CosmosBalancesStore;
@@ -35,6 +37,38 @@ export class BalancesStore {
 
   public async fetchBalances() {
     await this.store.fetchBalances();
+  }
+
+  public get delegations() {
+    return this.store.getDelegations();
+  }
+
+  public async fetchDelegations() {
+    await this.store.fetchDelegations();
+  }
+
+  public get unbondingDelegations() {
+    return this.store.getUnbondingDelegations();
+  }
+
+  public async fetchUnbondingDelegations() {
+    await this.store.fetchUnbondingDelegations();
+  }
+
+  public get validators() {
+    return this.store.getValidators();
+  }
+
+  public async fetchValidators() {
+    await this.store.fetchValidators();
+  }
+
+  public get rewards() {
+    return this.store.getRewards();
+  }
+
+  public async fetchRewards() {
+    await this.store.fetchRewards();
   }
 
   protected get store() {

@@ -233,3 +233,91 @@ export function formatExtendedCoin(coin: ExtendedCoin) {
     }
   }
 }
+
+export function useDelegations() {
+  const { balancesStore, walletsStore } = useStore();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refreshDelegations = useCallback(async () => {
+    setRefreshing(true);
+    await balancesStore.fetchDelegations();
+    setRefreshing(false);
+  }, [balancesStore]);
+
+  useEffect(() => {
+    void refreshDelegations();
+  }, [refreshDelegations, walletsStore.address]);
+
+  return {
+    delegations: balancesStore.delegations,
+    refreshDelegations,
+    refreshing,
+  };
+}
+
+export function useUnbondingDelegations() {
+  const { balancesStore, walletsStore } = useStore();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refreshUnbondingDelegations = useCallback(async () => {
+    setRefreshing(true);
+    await balancesStore.fetchUnbondingDelegations();
+    setRefreshing(false);
+  }, [balancesStore]);
+
+  useEffect(() => {
+    void refreshUnbondingDelegations();
+  }, [refreshUnbondingDelegations, walletsStore.address]);
+
+  return {
+    unbondingDelegations: balancesStore.unbondingDelegations,
+    refreshUnbondingDelegations,
+    refreshing,
+  };
+}
+
+export function useValidators() {
+  const { balancesStore, walletsStore } = useStore();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refreshValidators = useCallback(async () => {
+    if (balancesStore.validators.length > 0) return;
+
+    setRefreshing(true);
+    await balancesStore.fetchValidators();
+    setRefreshing(false);
+  }, [balancesStore]);
+
+  useEffect(() => {
+    void refreshValidators();
+  }, [refreshValidators, walletsStore.address]);
+
+  return {
+    validators: balancesStore.validators,
+    refreshValidators,
+    refreshing,
+  };
+}
+
+export function useRewards() {
+  const { balancesStore, walletsStore } = useStore();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refreshRewards = useCallback(async () => {
+    if (balancesStore.validators.length > 0) return;
+
+    setRefreshing(true);
+    await balancesStore.fetchRewards();
+    setRefreshing(false);
+  }, [balancesStore]);
+
+  useEffect(() => {
+    void refreshRewards();
+  }, [refreshRewards, walletsStore.address]);
+
+  return {
+    rewards: balancesStore.rewards,
+    refreshRewards,
+    refreshing,
+  };
+}

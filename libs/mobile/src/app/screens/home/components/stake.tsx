@@ -3,10 +3,20 @@ import { useTheme } from "@emotion/react";
 import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Text, TextInput } from "@obi-wallet/common";
-import { observer } from "mobx-react-lite";
-import { useState } from "react";
 import {
+  Delegation,
+  ExtendedValidator,
+  Text,
+  TextInput,
+  UnbondingDelegation,
+} from "@obi-wallet/common";
+import Fuse from "fuse.js";
+import { DateTime } from "luxon";
+import { observer } from "mobx-react-lite";
+import * as R from "ramda";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Alert,
   FlatList,
   Image,
   StyleProp,
@@ -18,8 +28,16 @@ import {
 import { GestureResponderEvent } from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import {
+  formatCoin,
+  useDelegations,
+  useRewards,
+  useUnbondingDelegations,
+  useValidators,
+} from "../../../balances";
 import { useStore } from "../../../stores";
 import { Back } from "../../components/back";
+import { CoinIcon } from "../../components/coin-icon";
 import {
   isSmallScreen,
   isSmallScreenNumber,
@@ -28,9 +46,23 @@ import ObiLogo from "../../settings/assets/obi-logo.svg";
 
 export const Stake = observer(() => {
   const theme = useTheme();
-  const { configStore } = useStore();
   const SafeArea = useSafeAreaInsets();
-  const isLoop = configStore.isLoop();
+  const { refreshDelegations } = useDelegations();
+  const { refreshUnbondingDelegations } = useUnbondingDelegations();
+  const { refreshValidators } = useValidators();
+  const { refreshRewards } = useRewards();
+
+  useEffect(() => {
+    void refreshDelegations();
+    void refreshUnbondingDelegations();
+    void refreshValidators();
+    void refreshRewards();
+  }, [
+    refreshDelegations,
+    refreshUnbondingDelegations,
+    refreshValidators,
+    refreshRewards,
+  ]);
 
   return (
     <View
@@ -50,7 +82,34 @@ export const Stake = observer(() => {
 });
 //staking options take remaining space
 const StakingOptions = observer(() => {
+  const { chainStore } = useStore();
   const [selectedTab, setSelectedTab] = useState(0);
+  const { delegations } = useDelegations();
+  const { unbondingDelegations } = useUnbondingDelegations();
+
+  const totalDelegations = {
+    denom: chainStore.currentTerraChainInformation.denom,
+    amount: R.sum(
+      delegations.map((delegation) => {
+        return parseInt(delegation.balance.amount, 10);
+      })
+    ).toString(),
+  };
+
+  const formattedDelegations = formatCoin(totalDelegations);
+  const delegationsContent = `${formattedDelegations.amount} ${formattedDelegations.denom}`;
+
+  const totalUnbondingDelegations = {
+    denom: chainStore.currentTerraChainInformation.denom,
+    amount: R.sum(
+      unbondingDelegations.map((delegation) => {
+        return parseInt(delegation.balance.amount, 10);
+      })
+    ).toString(),
+  };
+
+  const formattedUnbondingDelegations = formatCoin(totalUnbondingDelegations);
+  const unbondingDelegationsContent = `${formattedUnbondingDelegations.amount} ${formattedUnbondingDelegations.denom}`;
 
   return (
     <View
@@ -79,7 +138,7 @@ const StakingOptions = observer(() => {
           onPress={() => setSelectedTab(1)}
           active={selectedTab === 1}
           label="My Stake"
-          content="1,234 Luna"
+          content={delegationsContent}
         />
         <TabPill
           style={{ flex: 1 }}
@@ -88,7 +147,7 @@ const StakingOptions = observer(() => {
           }}
           active={selectedTab === 2}
           label="Unstaking"
-          content="1,234 Luna"
+          content={unbondingDelegationsContent}
         />
       </View>
       {selectedTab === 0 && <Validators />}
@@ -133,16 +192,26 @@ function TabPill({
 }
 
 const Balance = observer(() => {
-  // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const { configStore } = useStore();
+  const { chainStore, configStore } = useStore();
+  const { rewards } = useRewards();
   const isObi = configStore.isObi();
+
+  const totalRewards =
+    rewards.length > 0
+      ? rewards[0]
+      : {
+          denom: chainStore.currentTerraChainInformation.denom,
+          amount: "0",
+        };
+  const formattedRewards = formatCoin(totalRewards);
+
   return (
     <View
       style={{
         justifyContent: "center",
         alignItems: "center",
         marginTop: isSmallScreenNumber(5, 15),
-        backgroundColor: isObi ? "#437DFF" : "tranparent",
+        backgroundColor: isObi ? "#437DFF" : "transparent",
         borderRadius: 7,
         padding: 10,
       }}
@@ -154,7 +223,16 @@ const Balance = observer(() => {
           marginTop: 10,
         }}
       >
-        <Image source={require("../assets/lunaIcon.png")} />
+        <View
+          style={{
+            height: 36,
+            width: 36,
+            borderRadius: 10,
+            marginRight: 12,
+          }}
+        >
+          <CoinIcon source={formattedRewards.icon} />
+        </View>
         <Text
           style={{
             fontSize: 24,
@@ -163,7 +241,7 @@ const Balance = observer(() => {
             marginLeft: 10,
           }}
         >
-          123 LUNA
+          {formattedRewards.amount} {formattedRewards.denom}
         </Text>
       </View>
       <TouchableHighlight
@@ -177,7 +255,7 @@ const Balance = observer(() => {
           alignItems: "center",
         }}
         onPress={() => {
-          console.log("withdraw");
+          Alert.alert("Not implemented yet");
         }}
       >
         <Text style={{ color: "#437DFF" }}>Withdraw All Rewards</Text>
@@ -187,24 +265,46 @@ const Balance = observer(() => {
 });
 
 function Validators() {
+  const { validators } = useValidators();
+  const [needle, setNeedle] = useState("");
+
+  const { activeValidators, fuse } = useMemo(() => {
+    const activeValidators = validators.filter((validator) => {
+      return validator.active;
+    });
+    const fuse = new Fuse(validators, { keys: ["label"], threshold: 0 });
+
+    return {
+      activeValidators,
+      fuse,
+    };
+  }, [validators]);
+
+  const validatorsToShow = needle
+    ? fuse.search(needle).map((result) => result.item)
+    : activeValidators;
+
   return (
     <View style={{ flex: 1, marginTop: 10 }}>
       <View style={{ flexDirection: "row" }}>
         <View style={{ padding: 10 }}>
           <Text style={{ fontSize: 15, color: "white" }}>Validators</Text>
           <Text style={{ fontSize: 10, color: "white" }}>
-            130 active validators
+            {activeValidators.length} active validators
           </Text>
         </View>
         <View style={{ flex: 1 }}>
           <TextInput
             style={{
-              borderColor: "white",
+              color: "#ffffff",
+              borderColor: "#ffffff",
               borderRadius: 32,
               borderWidth: 1,
               padding: 10,
             }}
             placeholder="Search"
+            onChangeText={(text) => setNeedle(text)}
+            value={needle}
           />
 
           <FontAwesomeIcon
@@ -215,20 +315,23 @@ function Validators() {
       </View>
       <ObiValidator />
       <FlatList
-        data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-        renderItem={({ item }) => <Validator />}
-        keyExtractor={(item, index) => index.toString()}
+        data={validatorsToShow}
+        renderItem={({ item }) => <ValidatorContainer validator={item} />}
+        keyExtractor={(item) => item.address}
       />
     </View>
   );
 }
-const Container = styled.TouchableOpacity({
+
+const Container = styled.View({
   backgroundColor: "#272727",
   borderRadius: 7,
   marginTop: 5,
   padding: 10,
 });
+
 function ObiValidator() {
+  return null;
   return (
     <Container
       style={{
@@ -236,23 +339,44 @@ function ObiValidator() {
         borderColor: "#437DFF",
       }}
     >
-      <ValidatorItem obi />
+      {/*<ValidatorItem obi validator={{}/>*/}
     </Container>
   );
 }
-function Validator() {
+
+// TODO:
+function ValidatorContainer({ validator }: { validator: ExtendedValidator }) {
   return (
     <Container>
-      <ValidatorItem />
+      <ValidatorItem validator={validator} />
     </Container>
   );
 }
-function ValidatorItem({ obi }: { obi?: boolean }) {
+
+function ValidatorItem({
+  obi,
+  validator,
+}: {
+  obi?: boolean;
+  validator: ExtendedValidator;
+}) {
   return (
     <View style={{ flexDirection: "row" }}>
       <View style={{ width: 50, height: 50 }}>
         {obi ? (
           <ObiLogo />
+        ) : validator.icon ? (
+          <Image
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 50,
+              backgroundColor: "#1a1a1a",
+            }}
+            source={{
+              uri: validator.icon,
+            }}
+          />
         ) : (
           <View
             style={{
@@ -264,19 +388,23 @@ function ValidatorItem({ obi }: { obi?: boolean }) {
           />
         )}
       </View>
-      <View style={{ marginLeft: 10, justifyContent: "center" }}>
-        <Text style={{ color: "white" }}>
-          {obi ? "Obi Technologies" : "Other Guys"}
+      <View style={{ marginLeft: 10, justifyContent: "center", flex: 1 }}>
+        <Text style={{ color: "white", flexWrap: "wrap" }} numberOfLines={1}>
+          {obi ? "Obi Technologies" : validator.label}a
         </Text>
         <View>
-          <Text style={{ color: "#7E7E7E", fontSize: 9 }}>
-            Voting Power 1.44% • Commission 10.00%
+          <Text style={{ color: "#7E7E7E", fontSize: 9 }} numberOfLines={1}>
+            Voting Power {validator.votingPower}% • Commission{" "}
+            {validator.commission}%
           </Text>
         </View>
       </View>
-      <View style={{ flex: 1, alignItems: "flex-end" }}>
+      <View style={{ alignItems: "flex-end" }}>
         <TouchableOpacity
           style={{ backgroundColor: "white", borderRadius: 32 }}
+          onPress={() => {
+            Alert.alert("Not implemented yet");
+          }}
         >
           <Text
             style={{
@@ -294,6 +422,8 @@ function ValidatorItem({ obi }: { obi?: boolean }) {
 }
 
 function MyStake() {
+  const { delegations } = useDelegations();
+
   return (
     <View style={{ flex: 1 }}>
       <View
@@ -309,15 +439,17 @@ function MyStake() {
         <Text style={{ fontSize: 10, color: "white" }}>Validator</Text>
       </View>
       <FlatList
-        data={[1, 2, 3, 4]}
-        renderItem={({ item }) => <StakeItem />}
-        keyExtractor={(item, index) => index.toString()}
+        data={delegations}
+        renderItem={({ item }) => <StakeItem delegation={item} />}
+        keyExtractor={(item) => item.validator.address}
       />
     </View>
   );
 }
 
-function StakeItem() {
+function StakeItem({ delegation }: { delegation: Delegation }) {
+  const formatted = formatCoin(delegation.balance);
+
   return (
     <View
       style={{
@@ -330,9 +462,11 @@ function StakeItem() {
       }}
     >
       <View style={{ marginLeft: 10, justifyContent: "center" }}>
-        <Text style={{ color: "#437dff" }}>Other Guys</Text>
+        <Text style={{ color: "#437dff" }}>{delegation.validator.label}</Text>
         <View>
-          <Text style={{ color: "white", fontSize: 14 }}>1.2345 Luna</Text>
+          <Text style={{ color: "white", fontSize: 14 }}>
+            {formatted.amount} {formatted.denom}
+          </Text>
         </View>
       </View>
       <View style={{ flex: 1, alignItems: "flex-end" }}>
@@ -343,6 +477,9 @@ function StakeItem() {
             justifyContent: "center",
             alignItems: "center",
             ...(isSmallScreen() ? { height: 35 } : {}),
+          }}
+          onPress={() => {
+            Alert.alert("Not implemented yet");
           }}
         >
           <Text
@@ -361,6 +498,8 @@ function StakeItem() {
 }
 
 function Unstaking() {
+  const { unbondingDelegations } = useUnbondingDelegations();
+
   return (
     <View style={{ flex: 1 }}>
       <View
@@ -387,14 +526,23 @@ function Unstaking() {
         <Text style={{ fontSize: 10, color: "white" }}>Release</Text>
       </View>
       <FlatList
-        data={[1, 2]}
-        renderItem={({ item }) => <UnstakeItem />}
+        data={unbondingDelegations}
+        renderItem={({ item }) => <UnstakeItem unbondingDelegation={item} />}
         keyExtractor={(item, index) => index.toString()}
       />
     </View>
   );
 }
-function UnstakeItem() {
+
+function UnstakeItem({
+  unbondingDelegation,
+}: {
+  unbondingDelegation: UnbondingDelegation;
+}) {
+  const formatted = formatCoin(unbondingDelegation.balance);
+  const releaseDate = DateTime.fromJSDate(unbondingDelegation.completionTime);
+  const remainingDays = releaseDate.diffNow("days").days;
+
   return (
     <View
       style={{
@@ -407,15 +555,19 @@ function UnstakeItem() {
       }}
     >
       <View style={{ marginLeft: 10, justifyContent: "center" }}>
-        <Text style={{ color: "#437dff" }}>Other Guys</Text>
+        <Text style={{ color: "#437dff" }}>
+          {unbondingDelegation.validator.label}
+        </Text>
         <View>
-          <Text style={{ color: "white", fontSize: 14 }}>1.2345 Luna</Text>
+          <Text style={{ color: "white", fontSize: 14 }}>
+            {formatted.amount} {formatted.denom}
+          </Text>
         </View>
       </View>
       <View
         style={{ flex: 1, alignItems: "flex-end", justifyContent: "center" }}
       >
-        <Text style={{ color: "white" }}>21 days</Text>
+        <Text style={{ color: "white" }}>{remainingDays} days</Text>
       </View>
     </View>
   );

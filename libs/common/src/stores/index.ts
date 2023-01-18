@@ -1,4 +1,5 @@
 export * from "./apps";
+export * from "./balances";
 export * from "./chain";
 export * from "./config";
 export * from "./keplr-chain";
