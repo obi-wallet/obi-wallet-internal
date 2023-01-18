@@ -1,3 +1,4 @@
+import { isTerraMultisigWallet } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 
 import { useRootNavigation } from "../../../root-stack";
@@ -14,6 +15,7 @@ export const LookupProxyWallets = observer(() => {
 
   return (
     <Lookup
+      chainId={isTerraMultisigWallet(wallet) ? "phoenix-1" : "juno-1"}
       publicKey={publicKey.value}
       onCancel={() => {
         navigate(OnboardingRoute.CreateMultisigPhoneNumber);
