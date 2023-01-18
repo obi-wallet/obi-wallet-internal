@@ -8048,6 +8048,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bignumber.js@npm:^9.1.1":
+  version: 9.1.1
+  resolution: "bignumber.js@npm:9.1.1"
+  checksum: ad243b7e2f9120b112d670bb3d674128f0bd2ca1745b0a6c9df0433bd2c0252c43e6315d944c2ac07b4c639e7496b425e46842773cf89c6a2dcd4f31e5c4b11e
+  languageName: node
+  linkType: hard
+
 "binary-extensions@npm:^2.0.0":
   version: 2.2.0
   resolution: "binary-extensions@npm:2.2.0"
@@ -17896,6 +17903,7 @@ __metadata:
     asyncstorage-down: ^4.2.0
     axios: ^0.27.2
     babel-jest: ^29.3.1
+    bignumber.js: ^9.1.1
     buffer: ^6.0.3
     crypto-browserify: ^3.12.0
     crypto-js: ^4.1.1

@@ -237,7 +237,9 @@ const Balance = observer(() => {
 function Validators() {
   const { validators } = useValidators();
 
-  console.log(validators.length);
+  const activeValidators = validators.filter((validator) => {
+    return validator.active;
+  });
 
   return (
     <View style={{ flex: 1, marginTop: 10 }}>
@@ -245,7 +247,7 @@ function Validators() {
         <View style={{ padding: 10 }}>
           <Text style={{ fontSize: 15, color: "white" }}>Validators</Text>
           <Text style={{ fontSize: 10, color: "white" }}>
-            130 active validators
+            {activeValidators.length} active validators
           </Text>
         </View>
         <View style={{ flex: 1 }}>
@@ -267,9 +269,9 @@ function Validators() {
       </View>
       <ObiValidator />
       <FlatList
-        data={validators}
+        data={activeValidators}
         renderItem={({ item }) => <ValidatorContainer validator={item} />}
-        keyExtractor={(item, index) => item.address}
+        keyExtractor={(item) => item.address}
       />
     </View>
   );
@@ -312,8 +314,6 @@ function ValidatorItem({
   obi?: boolean;
   validator: ExtendedValidator;
 }) {
-  console.log(validator.icon);
-
   return (
     <View style={{ flexDirection: "row" }}>
       <View style={{ width: 50, height: 50 }}>
@@ -348,7 +348,8 @@ function ValidatorItem({
         </Text>
         <View>
           <Text style={{ color: "#7E7E7E", fontSize: 9 }} numberOfLines={1}>
-            Voting Power TODO • Commission {validator.commission}%
+            Voting Power {validator.votingPower}% • Commission{" "}
+            {validator.commission}%
           </Text>
         </View>
       </View>

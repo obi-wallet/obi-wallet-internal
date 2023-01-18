@@ -12,7 +12,11 @@ export interface Validator {
 }
 
 export interface ExtendedValidator extends Validator {
+  votingPower: string;
   commission: string;
+  rank: number;
+  active: boolean;
+  jailed: boolean;
 }
 
 export interface Delegation {

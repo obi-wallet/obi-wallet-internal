@@ -281,6 +281,8 @@ export function useValidators() {
   const [refreshing, setRefreshing] = useState(false);
 
   const refreshValidators = useCallback(async () => {
+    if (balancesStore.validators.length > 0) return;
+
     setRefreshing(true);
     await balancesStore.fetchValidators();
     setRefreshing(false);
