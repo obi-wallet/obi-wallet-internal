@@ -167,7 +167,7 @@ export class TerraBalancesStore extends AbstractBalancesStore {
       rawValidators.map(async (validator): Promise<ExtendedValidator> => {
         return {
           icon: validator.description.identity
-            ? `https://github.com/terra-money/validator-images/blob/main/images/${validator.description.identity}.jpg`
+            ? `https://raw.githubusercontent.com/terra-money/validator-images/main/images/${validator.description.identity}.jpg`
             : null,
           label: validator.description.moniker,
           address: validator.operator_address,

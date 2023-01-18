@@ -283,6 +283,7 @@ const Container = styled.TouchableOpacity({
 });
 
 function ObiValidator() {
+  return null;
   return (
     <Container
       style={{
@@ -341,17 +342,17 @@ function ValidatorItem({
           />
         )}
       </View>
-      <View style={{ marginLeft: 10, justifyContent: "center" }}>
-        <Text style={{ color: "white" }}>
-          {obi ? "Obi Technologies" : validator.label}
+      <View style={{ marginLeft: 10, justifyContent: "center", flex: 1 }}>
+        <Text style={{ color: "white", flexWrap: "wrap" }} numberOfLines={1}>
+          {obi ? "Obi Technologies" : validator.label}a
         </Text>
         <View>
-          <Text style={{ color: "#7E7E7E", fontSize: 9 }}>
+          <Text style={{ color: "#7E7E7E", fontSize: 9 }} numberOfLines={1}>
             Voting Power TODO • Commission {validator.commission}%
           </Text>
         </View>
       </View>
-      <View style={{ flex: 1, alignItems: "flex-end" }}>
+      <View style={{ alignItems: "flex-end" }}>
         <TouchableOpacity
           style={{ backgroundColor: "white", borderRadius: 32 }}
         >
