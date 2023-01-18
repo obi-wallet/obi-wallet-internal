@@ -39,13 +39,13 @@ export const MultisigInit = observer<MultisigInitProps>(({ navigation }) => {
 
   useEffect(() => {
     if (isAnyCosmosMultisigWallet(wallet)) {
-      void handleCosmosMultisigInit({
+      void handleCosmos({
         chainStore,
         wallet,
       });
     }
     if (isAnyTerraMultisigWallet(wallet)) {
-      void handleTerraMultisigInit({
+      void handleTerra({
         chainStore,
         wallet,
       });
@@ -86,7 +86,7 @@ export const MultisigInit = observer<MultisigInitProps>(({ navigation }) => {
   );
 });
 
-async function handleCosmosMultisigInit({
+async function handleCosmos({
   chainStore,
   wallet,
 }: {
@@ -170,7 +170,7 @@ async function handleCosmosMultisigInit({
   }
 }
 
-async function handleTerraMultisigInit({
+async function handleTerra({
   chainStore,
   wallet,
 }: {
