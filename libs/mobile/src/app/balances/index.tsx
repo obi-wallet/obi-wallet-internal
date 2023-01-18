@@ -254,3 +254,24 @@ export function useDelegations() {
     refreshing,
   };
 }
+
+export function useUnbondingDelegations() {
+  const { balancesStore, walletsStore } = useStore();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refreshUnbondingDelegations = useCallback(async () => {
+    setRefreshing(true);
+    await balancesStore.fetchUnbondingDelegations();
+    setRefreshing(false);
+  }, [balancesStore]);
+
+  useEffect(() => {
+    void refreshUnbondingDelegations();
+  }, [refreshUnbondingDelegations, walletsStore.address]);
+
+  return {
+    unbondingDelegations: balancesStore.unbondingDelegations,
+    refreshUnbondingDelegations,
+    refreshing,
+  };
+}

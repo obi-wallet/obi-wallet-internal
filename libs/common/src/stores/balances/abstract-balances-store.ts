@@ -16,9 +16,17 @@ export interface Delegation {
   validator: Validator;
 }
 
+export interface UnbondingDelegation {
+  balance: { denom: string; amount: string };
+  validator: Validator;
+  completionTime: Date;
+}
+
 export abstract class AbstractBalancesStore {
   public abstract getBalances(): ExtendedCoin[];
   public abstract fetchBalances(): Promise<void>;
   public abstract getDelegations(): Delegation[];
   public abstract fetchDelegations(): Promise<void>;
+  public abstract getUnbondingDelegations(): UnbondingDelegation[];
+  public abstract fetchUnbondingDelegations(): Promise<void>;
 }

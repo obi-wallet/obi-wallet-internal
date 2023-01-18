@@ -10,6 +10,7 @@ import {
   AbstractBalancesStore,
   Delegation,
   ExtendedCoin,
+  UnbondingDelegation,
 } from "./abstract-balances-store";
 
 const LOOP_JUNO1_ADDRESS =
@@ -224,6 +225,14 @@ export class CosmosBalancesStore extends AbstractBalancesStore {
   }
 
   public async fetchDelegations(): Promise<void> {
+    // TODO: not implemented yet
+  }
+
+  public getUnbondingDelegations(): UnbondingDelegation[] {
+    return [];
+  }
+
+  public async fetchUnbondingDelegations(): Promise<void> {
     // TODO: not implemented yet
   }
 }

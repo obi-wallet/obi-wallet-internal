@@ -3,7 +3,13 @@ import { useTheme } from "@emotion/react";
 import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Delegation, Text, TextInput, Validator } from "@obi-wallet/common";
+import {
+  Delegation,
+  Text,
+  TextInput,
+  UnbondingDelegation,
+} from "@obi-wallet/common";
+import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { useEffect, useState } from "react";
@@ -19,7 +25,11 @@ import {
 import { GestureResponderEvent } from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { formatCoin, useDelegations } from "../../../balances";
+import {
+  formatCoin,
+  useDelegations,
+  useUnbondingDelegations,
+} from "../../../balances";
 import { useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import {
@@ -31,13 +41,13 @@ import ObiLogo from "../../settings/assets/obi-logo.svg";
 export const Stake = observer(() => {
   const theme = useTheme();
   const SafeArea = useSafeAreaInsets();
-  const { delegations, refreshDelegations } = useDelegations();
+  const { refreshDelegations } = useDelegations();
+  const { refreshUnbondingDelegations } = useUnbondingDelegations();
 
   useEffect(() => {
     void refreshDelegations();
-  }, [refreshDelegations]);
-
-  console.log(delegations);
+    void refreshUnbondingDelegations();
+  }, [refreshDelegations, refreshUnbondingDelegations]);
 
   return (
     <View
@@ -60,8 +70,9 @@ const StakingOptions = observer(() => {
   const { chainStore } = useStore();
   const [selectedTab, setSelectedTab] = useState(0);
   const { delegations } = useDelegations();
+  const { unbondingDelegations } = useUnbondingDelegations();
 
-  const total = {
+  const totalDelegations = {
     denom: chainStore.currentTerraChainInformation.denom,
     amount: R.sum(
       delegations.map((delegation) => {
@@ -70,8 +81,20 @@ const StakingOptions = observer(() => {
     ).toString(),
   };
 
-  const formatted = formatCoin(total);
-  const content = `${formatted.amount} ${formatted.denom}`;
+  const formattedDelegations = formatCoin(totalDelegations);
+  const delegationsContent = `${formattedDelegations.amount} ${formattedDelegations.denom}`;
+
+  const totalUnbondingDelegations = {
+    denom: chainStore.currentTerraChainInformation.denom,
+    amount: R.sum(
+      unbondingDelegations.map((delegation) => {
+        return parseInt(delegation.balance.amount, 10);
+      })
+    ).toString(),
+  };
+
+  const formattedUnbondingDelegations = formatCoin(totalUnbondingDelegations);
+  const unbondingDelegationsContent = `${formattedUnbondingDelegations.amount} ${formattedUnbondingDelegations.denom}`;
 
   return (
     <View
@@ -100,7 +123,7 @@ const StakingOptions = observer(() => {
           onPress={() => setSelectedTab(1)}
           active={selectedTab === 1}
           label="My Stake"
-          content={content}
+          content={delegationsContent}
         />
         <TabPill
           style={{ flex: 1 }}
@@ -109,7 +132,7 @@ const StakingOptions = observer(() => {
           }}
           active={selectedTab === 2}
           label="Unstaking"
-          content="TODO"
+          content={unbondingDelegationsContent}
         />
       </View>
       {selectedTab === 0 && <Validators />}
@@ -243,12 +266,14 @@ function Validators() {
     </View>
   );
 }
+
 const Container = styled.TouchableOpacity({
   backgroundColor: "#272727",
   borderRadius: 7,
   marginTop: 5,
   padding: 10,
 });
+
 function ObiValidator() {
   return (
     <Container
@@ -391,6 +416,8 @@ function StakeItem({ delegation }: { delegation: Delegation }) {
 }
 
 function Unstaking() {
+  const { unbondingDelegations } = useUnbondingDelegations();
+
   return (
     <View style={{ flex: 1 }}>
       <View
@@ -417,14 +444,23 @@ function Unstaking() {
         <Text style={{ fontSize: 10, color: "white" }}>Release</Text>
       </View>
       <FlatList
-        data={[1, 2]}
-        renderItem={({ item }) => <UnstakeItem />}
+        data={unbondingDelegations}
+        renderItem={({ item }) => <UnstakeItem unbondingDelegation={item} />}
         keyExtractor={(item, index) => index.toString()}
       />
     </View>
   );
 }
-function UnstakeItem() {
+
+function UnstakeItem({
+  unbondingDelegation,
+}: {
+  unbondingDelegation: UnbondingDelegation;
+}) {
+  const formatted = formatCoin(unbondingDelegation.balance);
+  const releaseDate = DateTime.fromJSDate(unbondingDelegation.completionTime);
+  const remainingDays = releaseDate.diffNow("days").days;
+
   return (
     <View
       style={{
@@ -437,15 +473,19 @@ function UnstakeItem() {
       }}
     >
       <View style={{ marginLeft: 10, justifyContent: "center" }}>
-        <Text style={{ color: "#437dff" }}>Other Guys</Text>
+        <Text style={{ color: "#437dff" }}>
+          {unbondingDelegation.validator.label}
+        </Text>
         <View>
-          <Text style={{ color: "white", fontSize: 14 }}>1.2345 Luna</Text>
+          <Text style={{ color: "white", fontSize: 14 }}>
+            {formatted.amount} {formatted.denom}
+          </Text>
         </View>
       </View>
       <View
         style={{ flex: 1, alignItems: "flex-end", justifyContent: "center" }}
       >
-        <Text style={{ color: "white" }}>21 days</Text>
+        <Text style={{ color: "white" }}>{remainingDays} days</Text>
       </View>
     </View>
   );

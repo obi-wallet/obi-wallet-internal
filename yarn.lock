@@ -5988,6 +5988,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/luxon@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@types/luxon@npm:3.2.0"
+  checksum: 051bfbf841c6ce98728df6538342ce4aaddfcf0ec6e8b473e0195dcfc3ba6b1fe4b3ce17f2ba6d25344f41cb70032c1debe96da9e384e5f6e639665c1e6d368c
+  languageName: node
+  linkType: hard
+
 "@types/mime@npm:*":
   version: 3.0.1
   resolution: "@types/mime@npm:3.0.1"
@@ -16099,6 +16106,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"luxon@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "luxon@npm:3.2.1"
+  checksum: 3fa3def2c5f5d3032b4c46220c4da8aeb467ac979888fc9d2557adcd22195f93516b4ad5909a75862bec8dc6ddc0953b0f38e6d2f4a8ab8450ddc531a83cf20d
+  languageName: node
+  linkType: hard
+
 "magic-string@npm:^0.25.7":
   version: 0.25.9
   resolution: "magic-string@npm:0.25.9"
@@ -17866,6 +17880,7 @@ __metadata:
     "@testing-library/react-native": ^11.5.0
     "@types/crypto-js": ^4.1.1
     "@types/jest": ^29.2.3
+    "@types/luxon": ^3.2.0
     "@types/node": ^18.11.10
     "@types/ramda": ^0.28.20
     "@types/react": ^18.0.25
@@ -17901,6 +17916,7 @@ __metadata:
     jest-react-native: ^18.0.0
     long: ^4.0.0
     lottie-react-native: ^5.1.4
+    luxon: ^3.2.1
     metro: ^0.73.5
     metro-babel-register: ^0.73.5
     metro-react-native-babel-preset: ^0.73.5

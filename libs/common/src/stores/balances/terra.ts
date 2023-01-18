@@ -1,4 +1,5 @@
 import { makeObservable, observable, runInAction } from "mobx";
+import * as R from "ramda";
 
 import { TerraChain } from "../../chains";
 import { createLcdClient } from "../../clients";
@@ -8,6 +9,7 @@ import {
   AbstractBalancesStore,
   Delegation,
   ExtendedCoin,
+  UnbondingDelegation,
 } from "./abstract-balances-store";
 
 export class TerraBalancesStore extends AbstractBalancesStore {
@@ -17,6 +19,9 @@ export class TerraBalancesStore extends AbstractBalancesStore {
   @observable
   public balancesPerChain: Partial<Record<TerraChain, ExtendedCoin[]>> = {};
   public delegationsPerChain: Partial<Record<TerraChain, Delegation[]>> = {};
+  public unbondingDelegationsPerChain: Partial<
+    Record<TerraChain, UnbondingDelegation[]>
+  > = {};
 
   constructor({
     chainStore,
@@ -91,6 +96,55 @@ export class TerraBalancesStore extends AbstractBalancesStore {
 
     runInAction(() => {
       this.delegationsPerChain[this.chainStore.currentTerraChain] = delegations;
+    });
+  }
+
+  public getUnbondingDelegations(): UnbondingDelegation[] {
+    return (
+      this.unbondingDelegationsPerChain[this.chainStore.currentTerraChain] ?? []
+    );
+  }
+
+  public async fetchUnbondingDelegations(): Promise<void> {
+    const { address } = this.walletsStore;
+    if (!address) return;
+
+    const client = await createLcdClient(this.chainStore.currentTerraChain);
+
+    // TODO: handle pagination
+    const [rawUnbondingDelegations] = await client.staking.unbondingDelegations(
+      address
+    );
+    const unbondingDelegations = R.flatten(
+      await Promise.all(
+        rawUnbondingDelegations.map(
+          async (unbondingDelegation): Promise<UnbondingDelegation[]> => {
+            const validator = await client.staking.validator(
+              unbondingDelegation.validator_address
+            );
+
+            return unbondingDelegation.entries.map((entry) => {
+              return {
+                balance: {
+                  denom: this.chainStore.currentTerraChainInformation.denom,
+                  amount: entry.initial_balance.minus(entry.balance).toString(),
+                },
+                validator: {
+                  icon: `https://github.com/terra-money/validator-images/blob/main/images/${validator.description.identity}.jpg`,
+                  label: validator.description.moniker,
+                  address: unbondingDelegation.validator_address,
+                },
+                completionTime: entry.completion_time,
+              };
+            });
+          }
+        )
+      )
+    );
+
+    runInAction(() => {
+      this.unbondingDelegationsPerChain[this.chainStore.currentTerraChain] =
+        unbondingDelegations;
     });
   }
 }
