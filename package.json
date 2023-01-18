@@ -61,6 +61,7 @@
     "eventemitter3": "^4.0.7",
     "fastestsmallesttextencoderdecoder": "^1.0.22",
     "fp-ts": "^2.13.1",
+    "fuse.js": "^6.6.2",
     "io-ts": "^2.2.19",
     "isomorphic-unfetch": "^3.1.0",
     "long": "^4.0.0",

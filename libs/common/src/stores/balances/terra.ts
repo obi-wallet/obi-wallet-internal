@@ -1,4 +1,11 @@
-import { Convert } from "@terra-money/terra.js/dist/util/convert";
+import { Validator as RawValidator } from "@terra-money/terra.js";
+import {
+  Pagination,
+  PaginationOptions,
+} from "@terra-money/terra.js/dist/client/lcd/APIRequester";
+import { BondStatus } from "@terra-money/terra.proto/cosmos/staking/v1beta1/staking";
+import { bondStatusFromJSON } from "@terra-money/terra.proto/cosmos/staking/v1beta1/staking";
+import BigNumber from "bignumber.js";
 import { makeObservable, observable, runInAction } from "mobx";
 import * as R from "ramda";
 
@@ -12,19 +19,7 @@ import {
   ExtendedCoin,
   ExtendedValidator,
   UnbondingDelegation,
-  Validator,
 } from "./abstract-balances-store";
-
-import toFixed = Convert.toFixed;
-
-import {
-  Pagination,
-  PaginationOptions,
-} from "@terra-money/terra.js/dist/client/lcd/APIRequester";
-import BigNumber from "bignumber.js";
-import { Validator as RawValidator } from "@terra-money/terra.js";
-import { BondStatus } from "@terra-money/terra.proto/cosmos/staking/v1beta1/staking";
-import { bondStatusFromJSON } from "@terra-money/terra.proto/cosmos/staking/v1beta1/staking";
 
 export class TerraBalancesStore extends AbstractBalancesStore {
   protected readonly chainStore: ChainStore;

@@ -10,10 +10,11 @@ import {
   TextInput,
   UnbondingDelegation,
 } from "@obi-wallet/common";
+import Fuse from "fuse.js";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   FlatList,
   Image,
@@ -236,10 +237,23 @@ const Balance = observer(() => {
 
 function Validators() {
   const { validators } = useValidators();
+  const [needle, setNeedle] = useState("");
 
-  const activeValidators = validators.filter((validator) => {
-    return validator.active;
-  });
+  const { activeValidators, fuse } = useMemo(() => {
+    const activeValidators = validators.filter((validator) => {
+      return validator.active;
+    });
+    const fuse = new Fuse(validators, { keys: ["label"], threshold: 0 });
+
+    return {
+      activeValidators,
+      fuse,
+    };
+  }, [validators]);
+
+  const validatorsToShow = needle
+    ? fuse.search(needle).map((result) => result.item)
+    : activeValidators;
 
   return (
     <View style={{ flex: 1, marginTop: 10 }}>
@@ -253,12 +267,15 @@ function Validators() {
         <View style={{ flex: 1 }}>
           <TextInput
             style={{
-              borderColor: "white",
+              color: "#ffffff",
+              borderColor: "#ffffff",
               borderRadius: 32,
               borderWidth: 1,
               padding: 10,
             }}
             placeholder="Search"
+            onChangeText={(text) => setNeedle(text)}
+            value={needle}
           />
 
           <FontAwesomeIcon
@@ -269,7 +286,7 @@ function Validators() {
       </View>
       <ObiValidator />
       <FlatList
-        data={activeValidators}
+        data={validatorsToShow}
         renderItem={({ item }) => <ValidatorContainer validator={item} />}
         keyExtractor={(item) => item.address}
       />
