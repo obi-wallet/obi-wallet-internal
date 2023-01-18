@@ -1,3 +1,4 @@
+import { Convert } from "@terra-money/terra.js/dist/util/convert";
 import { makeObservable, observable, runInAction } from "mobx";
 import * as R from "ramda";
 
@@ -9,8 +10,12 @@ import {
   AbstractBalancesStore,
   Delegation,
   ExtendedCoin,
+  ExtendedValidator,
   UnbondingDelegation,
+  Validator,
 } from "./abstract-balances-store";
+
+import toFixed = Convert.toFixed;
 
 export class TerraBalancesStore extends AbstractBalancesStore {
   protected readonly chainStore: ChainStore;
@@ -22,6 +27,8 @@ export class TerraBalancesStore extends AbstractBalancesStore {
   public unbondingDelegationsPerChain: Partial<
     Record<TerraChain, UnbondingDelegation[]>
   > = {};
+  public validatorsPerChain: Partial<Record<TerraChain, ExtendedValidator[]>> =
+    {};
 
   constructor({
     chainStore,
@@ -145,6 +152,34 @@ export class TerraBalancesStore extends AbstractBalancesStore {
     runInAction(() => {
       this.unbondingDelegationsPerChain[this.chainStore.currentTerraChain] =
         unbondingDelegations;
+    });
+  }
+
+  public getValidators(): ExtendedValidator[] {
+    return this.validatorsPerChain[this.chainStore.currentTerraChain] ?? [];
+  }
+
+  public async fetchValidators(): Promise<void> {
+    const client = await createLcdClient(this.chainStore.currentTerraChain);
+
+    const [rawValidators] = await client.staking.validators();
+    const validators = await Promise.all(
+      rawValidators.map(async (validator): Promise<ExtendedValidator> => {
+        return {
+          icon: validator.description.identity
+            ? `https://github.com/terra-money/validator-images/blob/main/images/${validator.description.identity}.jpg`
+            : null,
+          label: validator.description.moniker,
+          address: validator.operator_address,
+          commission: validator.commission.commission_rates.rate
+            .times(100)
+            .toFixed(0),
+        };
+      })
+    );
+
+    runInAction(() => {
+      this.validatorsPerChain[this.chainStore.currentTerraChain] = validators;
     });
   }
 }

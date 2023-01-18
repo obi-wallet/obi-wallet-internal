@@ -6,9 +6,13 @@ export interface ExtendedCoin {
 }
 
 export interface Validator {
-  icon: string;
+  icon: string | null;
   label: string;
   address: string;
+}
+
+export interface ExtendedValidator extends Validator {
+  commission: string;
 }
 
 export interface Delegation {
@@ -29,4 +33,6 @@ export abstract class AbstractBalancesStore {
   public abstract fetchDelegations(): Promise<void>;
   public abstract getUnbondingDelegations(): UnbondingDelegation[];
   public abstract fetchUnbondingDelegations(): Promise<void>;
+  public abstract getValidators(): ExtendedValidator[];
+  public abstract fetchValidators(): Promise<void>;
 }

@@ -10,6 +10,7 @@ import {
   AbstractBalancesStore,
   Delegation,
   ExtendedCoin,
+  ExtendedValidator,
   UnbondingDelegation,
 } from "./abstract-balances-store";
 
@@ -233,6 +234,14 @@ export class CosmosBalancesStore extends AbstractBalancesStore {
   }
 
   public async fetchUnbondingDelegations(): Promise<void> {
+    // TODO: not implemented yet
+  }
+
+  public getValidators(): ExtendedValidator[] {
+    return [];
+  }
+
+  public async fetchValidators(): Promise<void> {
     // TODO: not implemented yet
   }
 }

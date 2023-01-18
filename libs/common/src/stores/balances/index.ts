@@ -55,6 +55,14 @@ export class BalancesStore {
     await this.store.fetchUnbondingDelegations();
   }
 
+  public get validators() {
+    return this.store.getValidators();
+  }
+
+  public async fetchValidators() {
+    await this.store.fetchValidators();
+  }
+
   protected get store() {
     switch (this.configStore.getDefaultMultisigWalletType()) {
       case WalletType.CosmosMultisig:

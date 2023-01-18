@@ -5,6 +5,7 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   Delegation,
+  ExtendedValidator,
   Text,
   TextInput,
   UnbondingDelegation,
@@ -29,6 +30,7 @@ import {
   formatCoin,
   useDelegations,
   useUnbondingDelegations,
+  useValidators,
 } from "../../../balances";
 import { useStore } from "../../../stores";
 import { Back } from "../../components/back";
@@ -43,11 +45,13 @@ export const Stake = observer(() => {
   const SafeArea = useSafeAreaInsets();
   const { refreshDelegations } = useDelegations();
   const { refreshUnbondingDelegations } = useUnbondingDelegations();
+  const { refreshValidators } = useValidators();
 
   useEffect(() => {
     void refreshDelegations();
     void refreshUnbondingDelegations();
-  }, [refreshDelegations, refreshUnbondingDelegations]);
+    void refreshValidators();
+  }, [refreshDelegations, refreshUnbondingDelegations, refreshValidators]);
 
   return (
     <View
@@ -231,6 +235,10 @@ const Balance = observer(() => {
 });
 
 function Validators() {
+  const { validators } = useValidators();
+
+  console.log(validators.length);
+
   return (
     <View style={{ flex: 1, marginTop: 10 }}>
       <View style={{ flexDirection: "row" }}>
@@ -259,9 +267,9 @@ function Validators() {
       </View>
       <ObiValidator />
       <FlatList
-        data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-        renderItem={({ item }) => <ValidatorContainer />}
-        keyExtractor={(item, index) => index.toString()}
+        data={validators}
+        renderItem={({ item }) => <ValidatorContainer validator={item} />}
+        keyExtractor={(item, index) => item.address}
       />
     </View>
   );
@@ -282,26 +290,46 @@ function ObiValidator() {
         borderColor: "#437DFF",
       }}
     >
-      <ValidatorItem obi />
+      {/*<ValidatorItem obi validator={{}/>*/}
     </Container>
   );
 }
 
 // TODO:
-function ValidatorContainer() {
+function ValidatorContainer({ validator }: { validator: ExtendedValidator }) {
   return (
     <Container>
-      <ValidatorItem />
+      <ValidatorItem validator={validator} />
     </Container>
   );
 }
 
-function ValidatorItem({ obi }: { obi?: boolean }) {
+function ValidatorItem({
+  obi,
+  validator,
+}: {
+  obi?: boolean;
+  validator: ExtendedValidator;
+}) {
+  console.log(validator.icon);
+
   return (
     <View style={{ flexDirection: "row" }}>
       <View style={{ width: 50, height: 50 }}>
         {obi ? (
           <ObiLogo />
+        ) : validator.icon ? (
+          <Image
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 50,
+              backgroundColor: "#1a1a1a",
+            }}
+            source={{
+              uri: validator.icon,
+            }}
+          />
         ) : (
           <View
             style={{
@@ -315,11 +343,11 @@ function ValidatorItem({ obi }: { obi?: boolean }) {
       </View>
       <View style={{ marginLeft: 10, justifyContent: "center" }}>
         <Text style={{ color: "white" }}>
-          {obi ? "Obi Technologies" : "Other Guys"}
+          {obi ? "Obi Technologies" : validator.label}
         </Text>
         <View>
           <Text style={{ color: "#7E7E7E", fontSize: 9 }}>
-            Voting Power 1.44% • Commission 10.00%
+            Voting Power TODO • Commission {validator.commission}%
           </Text>
         </View>
       </View>

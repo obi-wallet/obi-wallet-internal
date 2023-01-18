@@ -275,3 +275,24 @@ export function useUnbondingDelegations() {
     refreshing,
   };
 }
+
+export function useValidators() {
+  const { balancesStore, walletsStore } = useStore();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refreshValidators = useCallback(async () => {
+    setRefreshing(true);
+    await balancesStore.fetchValidators();
+    setRefreshing(false);
+  }, [balancesStore]);
+
+  useEffect(() => {
+    void refreshValidators();
+  }, [refreshValidators, walletsStore.address]);
+
+  return {
+    validators: balancesStore.validators,
+    refreshValidators,
+    refreshing,
+  };
+}
