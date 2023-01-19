@@ -203,6 +203,14 @@ export class TerraBalancesStore extends AbstractBalancesStore {
 
     const validators = rawValidators
       .map((validator): ExtendedValidator => {
+        const promoted =
+          validator.operator_address ===
+          this.chainStore.currentTerraChainInformation.obiValidator;
+        const rank =
+          (promoted ? 2 : 0) +
+          (prioritizedValidators.includes(validator.operator_address) ? 1 : 0) +
+          Math.random();
+
         return {
           icon: validator.description.identity
             ? `https://raw.githubusercontent.com/terra-money/validator-images/main/images/${validator.description.identity}.jpg`
@@ -215,14 +223,12 @@ export class TerraBalancesStore extends AbstractBalancesStore {
           commission: validator.commission.commission_rates.rate
             .times(100)
             .toFixed(2),
+          promoted,
           active:
             bondStatusFromJSON(BondStatus[validator.status]) ===
             BondStatus.BOND_STATUS_BONDED,
           jailed: validator.jailed,
-          rank:
-            (prioritizedValidators.includes(validator.operator_address)
-              ? 1
-              : 0) + Math.random(),
+          rank,
         };
       })
       .sort((a, b) => b.rank - a.rank);

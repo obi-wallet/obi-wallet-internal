@@ -18,6 +18,7 @@ export interface ExtendedValidator extends Validator {
   votingPower: string;
   commission: string;
   rank: number;
+  promoted: boolean;
   active: boolean;
   jailed: boolean;
 }
