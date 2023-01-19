@@ -8,12 +8,7 @@ import { useStore } from "../stores";
 interface LoaderProps {
   loadingText?: string;
   style?: StyleProp<ViewStyle>;
-  animation?:
-    | string
-    | AnimationObject
-    | {
-        uri: string;
-      };
+  animation?: string | AnimationObject;
   animationStyles?: StyleProp<ViewStyle>;
 }
 
@@ -38,9 +33,7 @@ export const Loader = observer(
       if (isLoop) return <ActivityIndicator size="large" color="#8877EA" />;
       return (
         <LottieView
-          source={{
-            uri: "https://assets7.lottiefiles.com/packages/lf20_Stt1R6.json",
-          }}
+          source={require("./obi-spinner.json")}
           autoPlay
           loop
           style={{ maxHeight: 60, maxWidth: 60, width: "100%" }}
@@ -48,19 +41,24 @@ export const Loader = observer(
       );
     };
     return (
-      <View style={style}>
+      <View style={[style]}>
         {getAnimation()}
         {loadingText ? (
-          <Text
-            style={{
-              color: "#F6F5FF",
-              paddingTop: 15,
-              fontSize: 11,
-              letterSpacing: 0.25,
-            }}
-          >
-            {loadingText}
-          </Text>
+          <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+            <Text
+              style={{
+                color: "#F6F5FF",
+                paddingTop: 15,
+                fontSize: 11,
+                letterSpacing: 0.25,
+              }}
+            >
+              {loadingText}
+            </Text>
+            <View style={{ height: 11, width: 20 }}>
+              <LottieView source={require("./ellipses.json")} autoPlay loop />
+            </View>
+          </View>
         ) : null}
       </View>
     );

@@ -98,8 +98,6 @@
     "rooks": "*",
     "scrypt-js": "*",
     "secp256k1": "*",
-    "tiny-invariant": "*",
-    "@testing-library/react-native": "*",
-    "react-error-boundary": "*"
+    "tiny-invariant": "*"
   }
 }

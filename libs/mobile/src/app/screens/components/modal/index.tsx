@@ -22,14 +22,26 @@ export function Modal({ children, isVisible, onClose, ...props }: ModalProps) {
       {...props}
       style={{ maxHeight: "90%" }}
     >
-      <ModalContainer >{children}</ModalContainer>
+      <ModalContainer>{children}</ModalContainer>
     </RNModal>
   );
 }
 
-function ModalContainer({ children, style }: { children?: React.ReactNode, style?: StyleProp<View> }) {
-  const theme = useTheme()
-  return <View style={[styles.container, { backgroundColor: theme.colors.background }]}>{children}</View>;
+function ModalContainer({
+  children,
+  style,
+}: {
+  children?: React.ReactNode;
+  style?: StyleProp<View>;
+}) {
+  const theme = useTheme();
+  return (
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      {children}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

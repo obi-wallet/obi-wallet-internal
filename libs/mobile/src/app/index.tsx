@@ -105,7 +105,7 @@ const Load = observer(() => {
         right: 0,
         bottom: 0,
       }}
-      loadingText="Updating app bundle…"
+      loadingText="Updating app bundle"
       animation={require("./loader/broadcast.json")}
       animationStyles={{
         width: 300,

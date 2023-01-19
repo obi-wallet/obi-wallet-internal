@@ -34,12 +34,16 @@ export function useAccountPickerModalProps() {
 export const AccountPickerModal = observer<AccountPickerModalProps>(
   ({ visible, open, close, showNotReadyWallets }) => {
     const { walletsStore, configStore } = useStore();
-    const isObi = configStore.isObi()
-    const theme = useTheme()
+    const isObi = configStore.isObi();
+    const theme = useTheme();
 
     return (
-      <Modal isVisible={visible} onClose={close} style={{ backgroundColor: theme.colors.background }}>
-        <View style={{ flexShrink: 1, }}>
+      <Modal
+        isVisible={visible}
+        onClose={close}
+        style={{ backgroundColor: theme.colors.background }}
+      >
+        <View style={{ flexShrink: 1 }}>
           <View>
             <Text
               style={{

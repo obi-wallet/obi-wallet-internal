@@ -70,7 +70,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
         >
           {loading ? (
             <Loader
-              loadingText="Broadcasting..."
+              loadingText="Broadcasting"
               style={{
                 flex: 1,
                 justifyContent: "flex-start",
