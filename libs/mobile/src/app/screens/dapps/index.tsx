@@ -173,7 +173,16 @@ export const Dapps = observer<DappProps>(
                 onLongPress={() => {
                   setEditMode(true);
                 }}
-                ImgComponent={HistoryIcon}
+                ImgComponent={
+                  isAnyTerraMultisigWallet(walletsStore.currentWallet)
+                    ? HistoryIcon
+                    : undefined
+                }
+                source={
+                  isAnyTerraMultisigWallet(walletsStore.currentWallet)
+                    ? require("./assets/terrascope.png")
+                    : undefined
+                }
                 label={intl.formatMessage({
                   id: "apps.myhistory",
                   defaultMessage: "History",
@@ -192,21 +201,20 @@ export const Dapps = observer<DappProps>(
               />
               {isObi ? (
                 <>
-                  {/*<Tile*/}
-                  {/*  key="uniswap"*/}
-                  {/*  onLongPress={() => {*/}
-                  {/*    setEditMode(true);*/}
-                  {/*  }}*/}
-                  {/*  ImgComponent={UniSwapIcon}*/}
-                  {/*  label="Uniswap"*/}
-                  {/*  onPress={() => {*/}
-                  {/*    onAppPress({*/}
-                  {/*      label: "Uniswap",*/}
-                  {/*      url: `https://uniswap.org`,*/}
-                  {/*      icon: "https://place-hold.it/180x180",*/}
-                  {/*    });*/}
-                  {/*  }}*/}
-                  {/*/>*/}
+                  <Tile
+                    onLongPress={() => {
+                      setEditMode(true);
+                    }}
+                    source={require("./assets/coinhall.png")}
+                    label="Coinhall"
+                    onPress={() => {
+                      onAppPress({
+                        label: "Coinhall",
+                        url: "https://coinhall.org",
+                        icon: "https://place-hold.it/180x180",
+                      });
+                    }}
+                  />
                   {/*<Tile*/}
                   {/*  onLongPress={() => {*/}
                   {/*    setEditMode(true);*/}

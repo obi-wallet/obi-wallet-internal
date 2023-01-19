@@ -1,5 +1,11 @@
 import { FC, ReactNode } from "react";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  ImageSourcePropType,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SvgProps } from "react-native-svg";
 import { SvgUri } from "react-native-svg";
 
@@ -46,6 +52,7 @@ export function Tiles({ children }: { children: ReactNode }) {
 export interface TileProps {
   imgUrl?: string | null;
   ImgComponent?: FC<SvgProps>;
+  source?: ImageSourcePropType;
   label: string;
   disabled?: boolean;
   onRemove?: () => void;
@@ -56,6 +63,7 @@ export interface TileProps {
 export function Tile({
   imgUrl,
   ImgComponent,
+  source,
   label,
   disabled,
   onRemove,
@@ -63,6 +71,10 @@ export function Tile({
   onLongPress,
 }: TileProps) {
   const getImage = () => {
+    if (source) {
+      return <Image style={styles.icon} source={source} />;
+    }
+
     if (imgUrl) {
       if (imgUrl.endsWith(".svg")) {
         return <SvgUri width="100%" height="100%" uri={imgUrl} />;
