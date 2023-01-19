@@ -2,14 +2,12 @@ import { FC, ReactNode } from "react";
 import {
   Image,
   ImageRequireSource,
-  ImageSourcePropType,
   ImageURISource,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
-import { SvgProps } from "react-native-svg";
-import { SvgUri } from "react-native-svg";
+import { SvgProps, SvgUri } from "react-native-svg";
 
 import { createShadow } from "../styles";
 import { Text } from "../typography";
