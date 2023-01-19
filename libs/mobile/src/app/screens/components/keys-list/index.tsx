@@ -87,7 +87,7 @@ export const KeysList = observer(({ data, style, tiled }: KeysListProps) => {
       style={[
         style,
         isObi
-          ? { borderTopColor: "rgba(255,255,255,.3)", borderTopWidth: 1 }
+          ? { borderTopColor: "rgba(255,255,255,.3)", borderTopWidth: 1, ...(isObi ? { alignItems: 'center' } : {}) }
           : {},
       ]}
     >
@@ -130,16 +130,17 @@ export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
               borderColor: signed && isLoop ? "#89F5C2" : "transparent",
             }}
           >
-            {/* {signed ? */}
-            <LottieView
-              source={require("./assets/confirm-animation.json")}
-              autoPlay
-              style={{ width: 60, zIndex: -1, position: "absolute" }}
-            />
-            {/* : */}
-            {/* <LottieView source={require("./assets/prompt-animation.json")} autoPlay loop style={{ width: 60, zIndex: -1, position: 'absolute' }} /> */}
-            {/* } */}
-            <Icon fill="#7B87A8" />
+            {signed ?
+              <LottieView
+                source={require("./assets/confirm-animation.json")}
+                autoPlay
+                loop={false}
+                style={{ width: 60, zIndex: -1, position: "absolute" }}
+              />
+              :
+              <LottieView source={require("./assets/prompt-animation.json")} autoPlay loop style={{ width: 60, zIndex: -1, position: 'absolute' }} />
+            }
+            <Icon fill={isObi ? "#fff" : "#7B87A8"} />
           </View>
         </View>
         <Text
