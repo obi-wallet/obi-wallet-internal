@@ -166,6 +166,7 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
               marginVertical: 10,
               backgroundColor: isObi ? "transparent" : "#130F23",
               borderRadius: 12,
+              alignItems: "center",
             }}
           />
         )}

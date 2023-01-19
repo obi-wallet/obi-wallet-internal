@@ -137,7 +137,11 @@ export const KeysConfigScreen = observer(() => {
         <Text
           style={[
             styles.heading,
-            { marginTop: 0, fontSize: 18, marginBottom: 8 },
+            {
+              marginTop: 0,
+              fontSize: isSmallScreenNumber(14, 18),
+              marginBottom: 8,
+            },
           ]}
         >
           <FormattedMessage
@@ -168,7 +172,7 @@ export const KeysConfigScreen = observer(() => {
         </Text> */}
       </View>
       <View style={{ flex: 6 }}>
-        <View style={{ marginTop: 40 }}>
+        <View style={{ marginTop: 40, flex: 1 }}>
           <KeysList data={data} />
         </View>
       </View>
@@ -203,14 +207,14 @@ export const KeysConfigScreen = observer(() => {
 const styles = StyleSheet.create({
   heading: {
     color: "#F6F5FF",
-    fontSize: 24,
+    fontSize: isSmallScreenNumber(18, 24),
     fontWeight: "600",
     marginBottom: 10,
     marginTop: 30,
   },
   subHeading: {
     color: "#999CB6",
-    fontSize: 14,
+    fontSize: isSmallScreenNumber(10, 14),
     marginBottom: 31,
   },
 });
