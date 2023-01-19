@@ -1,7 +1,13 @@
 import { FC, ReactNode } from "react";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-import { SvgProps } from "react-native-svg";
-import { SvgUri } from "react-native-svg";
+import {
+  Image,
+  ImageRequireSource,
+  ImageURISource,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SvgProps, SvgUri } from "react-native-svg";
 
 import { createShadow } from "../styles";
 import { Text } from "../typography";
@@ -44,8 +50,7 @@ export function Tiles({ children }: { children: ReactNode }) {
 }
 
 export interface TileProps {
-  imgUrl?: string | null;
-  ImgComponent?: FC<SvgProps>;
+  source: ImageURISource | ImageRequireSource | FC<SvgProps>;
   label: string;
   disabled?: boolean;
   onRemove?: () => void;
@@ -54,8 +59,7 @@ export interface TileProps {
 }
 
 export function Tile({
-  imgUrl,
-  ImgComponent,
+  source,
   label,
   disabled,
   onRemove,
@@ -63,26 +67,16 @@ export function Tile({
   onLongPress,
 }: TileProps) {
   const getImage = () => {
-    if (imgUrl) {
-      if (imgUrl.endsWith(".svg")) {
-        return <SvgUri width="100%" height="100%" uri={imgUrl} />;
-      }
-
-      return (
-        <Image
-          style={styles.icon}
-          source={{
-            uri: imgUrl || "https://place-hold.it/180x180",
-          }}
-        />
-      );
+    if (typeof source === "function") {
+      const Icon = source;
+      return <Icon width="100%" height="100%" />;
     }
 
-    if (ImgComponent) {
-      return <ImgComponent width="100%" height="100%" />;
+    if (typeof source === "object" && source.uri?.endsWith(".svg")) {
+      return <SvgUri width="100%" height="100%" uri={source.uri} />;
     }
 
-    return null;
+    return <Image style={styles.icon} source={source} />;
   };
   const children = (
     <>
