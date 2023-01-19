@@ -278,14 +278,12 @@ async function handleTerra({
     try {
       const { address } = terra.parseProposeUpdateOwnerResponse(response);
       if (wallet.updateProposed) {
-        console.log("wallet finish up");
         await wallet.finishProxySetup({
           address,
           // TODO: this might not be the case, need to fetch from chain
           codeId: chainStore.currentTerraChainInformation.currentCodeId,
         });
       } else {
-        console.log("wallet update proposed, true");
         wallet.setUpdateProposed(true);
       }
     } catch (e) {
