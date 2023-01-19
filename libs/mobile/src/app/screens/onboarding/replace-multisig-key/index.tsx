@@ -22,7 +22,7 @@ import {
 } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 
@@ -57,7 +57,7 @@ export const ReplaceMultisig = observer<ReplaceMultisigProps>(
           wallet,
         });
       }
-    }, [chainStore, navigation, wallet]);
+    }, [chainStore, navigation, wallet, wallet.updateProposed]);
 
     return (
       <SafeAreaView style={{ flex: 1 }}>
@@ -217,6 +217,7 @@ async function handleCosmos({
       if (wallet.updateProposed) {
         await wallet.finishProxySetup({
           address: contractAddress.value,
+          // TODO: this might not be the case, need to fetch from chain
           codeId: chainStore.currentCosmosChainInformation.currentCodeId,
         });
       } else {
@@ -242,9 +243,6 @@ async function handleTerra({
 }) {
   const multisig = wallet.currentAdmin;
   const nextMultisig = wallet.nextAdmin;
-
-  const { currentTerraChainInformation } = chainStore;
-
   const sender = wallet.updateProposed ? nextMultisig : multisig;
 
   if (!nextMultisig.multisig?.address) return;
@@ -253,8 +251,12 @@ async function handleTerra({
 
   const messages = (() => {
     if (wallet.updateProposed) {
-      Alert.alert("not implemented yet");
-      return [];
+      return [
+        terra.getConfirmUpdateOwnerMessage({
+          sender: sender?.multisig?.address,
+          proxyAddress: wallet.address,
+        }),
+      ];
     } else {
       return [
         terra.getProposeUpdateOwnerMessage({
@@ -274,9 +276,18 @@ async function handleTerra({
     });
 
     try {
-      console.log(response.raw_log);
-      const foo = terra.parseNewAccountResponse(response);
-      console.log(foo);
+      const { address } = terra.parseProposeUpdateOwnerResponse(response);
+      if (wallet.updateProposed) {
+        console.log("wallet finish up");
+        await wallet.finishProxySetup({
+          address,
+          // TODO: this might not be the case, need to fetch from chain
+          codeId: chainStore.currentTerraChainInformation.currentCodeId,
+        });
+      } else {
+        console.log("wallet update proposed, true");
+        wallet.setUpdateProposed(true);
+      }
     } catch (e) {
       console.log(response.raw_log);
     }
