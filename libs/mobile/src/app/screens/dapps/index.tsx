@@ -87,7 +87,7 @@ export const Dapps = observer<DappProps>(
                       setEditMode(true);
                     }}
                     key={app.url}
-                    imgUrl={app.icon}
+                    source={{ uri: app.icon }}
                     label={app.label}
                     onRemove={
                       editMode
@@ -173,15 +173,10 @@ export const Dapps = observer<DappProps>(
                 onLongPress={() => {
                   setEditMode(true);
                 }}
-                ImgComponent={
-                  isAnyTerraMultisigWallet(walletsStore.currentWallet)
-                    ? HistoryIcon
-                    : undefined
-                }
                 source={
                   isAnyTerraMultisigWallet(walletsStore.currentWallet)
                     ? require("./assets/terrascope.png")
-                    : undefined
+                    : HistoryIcon
                 }
                 label={intl.formatMessage({
                   id: "apps.myhistory",

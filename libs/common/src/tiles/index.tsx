@@ -1,7 +1,9 @@
 import { FC, ReactNode } from "react";
 import {
   Image,
+  ImageRequireSource,
   ImageSourcePropType,
+  ImageURISource,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -50,9 +52,7 @@ export function Tiles({ children }: { children: ReactNode }) {
 }
 
 export interface TileProps {
-  imgUrl?: string | null;
-  ImgComponent?: FC<SvgProps>;
-  source?: ImageSourcePropType;
+  source: ImageURISource | ImageRequireSource | FC<SvgProps>;
   label: string;
   disabled?: boolean;
   onRemove?: () => void;
@@ -61,8 +61,6 @@ export interface TileProps {
 }
 
 export function Tile({
-  imgUrl,
-  ImgComponent,
   source,
   label,
   disabled,
@@ -71,30 +69,16 @@ export function Tile({
   onLongPress,
 }: TileProps) {
   const getImage = () => {
-    if (source) {
-      return <Image style={styles.icon} source={source} />;
+    if (typeof source === "function") {
+      const Icon = source;
+      return <Icon width="100%" height="100%" />;
     }
 
-    if (imgUrl) {
-      if (imgUrl.endsWith(".svg")) {
-        return <SvgUri width="100%" height="100%" uri={imgUrl} />;
-      }
-
-      return (
-        <Image
-          style={styles.icon}
-          source={{
-            uri: imgUrl || "https://place-hold.it/180x180",
-          }}
-        />
-      );
+    if (typeof source === "object" && source.uri?.endsWith(".svg")) {
+      return <SvgUri width="100%" height="100%" uri={source.uri} />;
     }
 
-    if (ImgComponent) {
-      return <ImgComponent width="100%" height="100%" />;
-    }
-
-    return null;
+    return <Image style={styles.icon} source={source} />;
   };
   const children = (
     <>
