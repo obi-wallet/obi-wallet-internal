@@ -17,7 +17,7 @@ export enum Feature {
   AccountsTab = "AccountsTab",
   HealthChecks = "HealthChecks",
   NftTab = "NftTab",
-  RecoveryWorkflow = "RecoveryWorkflow",
+  Recovery = "Recovery",
   SinglesigWallets = "SinglesigWallets",
   Staking = "Staking",
   InAppPurchases = "InAppPurchases",

@@ -31,7 +31,7 @@ const config: Config = {
     [Feature.AccountsTab]: false,
     [Feature.HealthChecks]: false,
     [Feature.NftTab]: false,
-    [Feature.RecoveryWorkflow]: false,
+    [Feature.Recovery]: false,
     [Feature.SinglesigWallets]: false,
     [Feature.Staking]: false,
     [Feature.InAppPurchases]: false,

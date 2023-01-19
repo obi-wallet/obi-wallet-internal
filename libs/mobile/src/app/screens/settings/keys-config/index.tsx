@@ -241,7 +241,7 @@ function KeyConfig({ item, onClose }: KeyConfigProps) {
         onPress={() => {
           const wallet = walletsStore.currentWallet;
           if (isAnyMultisigWallet(wallet)) {
-            if (configStore.isFeatureEnabled(Feature.RecoveryWorkflow)) {
+            if (configStore.isFeatureEnabled(Feature.Recovery)) {
               wallet.recover(keyId);
             } else {
               Alert.alert("Recovery workflow not available yet.");

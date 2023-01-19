@@ -4,6 +4,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   cosmosChains,
   Feature,
+  isTerraMultisigWallet,
+  RequestObiTerraSignAndBroadcastMsg,
+  terra,
   terraChains,
   Text,
   WalletType,
@@ -15,12 +18,16 @@ import {
   DrawerScreenProps,
 } from "@react-navigation/drawer";
 import { ParamListBase } from "@react-navigation/native";
+import { isTxError, MsgMigrateContract } from "@terra-money/terra.js";
 import { action } from "mobx";
 import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Platform, View } from "react-native";
+import { Alert, Platform, View } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
+import invariant from "tiny-invariant";
 
+import { getBiometricsKeyPair } from "../../biometrics";
 import { useStore } from "../../stores";
 import { AccountScreen } from "../account";
 import {
@@ -225,7 +232,49 @@ export const TabNavigation = observer<TabNavigationProps>(() => {
 });
 
 export function HomeScreen() {
-  const { chainStore } = useStore();
+  const { chainStore, walletsStore } = useStore();
+
+  useEffect(() => {
+    const currentWallet = walletsStore.currentWallet;
+
+    if (isTerraMultisigWallet(currentWallet) && currentWallet.isOutdated) {
+      Alert.alert("Wallet out of date", "Your wallet is out of date.", [
+        {
+          text: "Update",
+          onPress: async () => {
+            const multisig = currentWallet.currentAdmin;
+            invariant(multisig, "Expected `currentAdmin` to exist.");
+
+            const admin = multisig.multisig?.address;
+            invariant(admin, "Expected multisig address to exist.");
+
+            const proxyAddress = currentWallet.proxyAddress;
+            invariant(proxyAddress, "Expected `proxyAddress` to exist.");
+
+            const message = terra.getMigrateMessage({
+              proxyAddress: proxyAddress.address,
+              admin,
+              chainId: currentWallet.chain,
+            });
+            const response = await RequestObiTerraSignAndBroadcastMsg.send({
+              id: currentWallet.id,
+              messages: [message.toAmino()],
+              multisig,
+            });
+
+            console.log(response);
+
+            if (!isTxError(response)) {
+              await currentWallet.finishProxySetup({
+                address: proxyAddress.address,
+                codeId: terraChains[currentWallet.chain].currentCodeId,
+              });
+            }
+          },
+        },
+      ]);
+    }
+  }, [walletsStore.currentWallet]);
 
   return (
     <HomeDrawer.Navigator

@@ -156,7 +156,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           <ScrollView style={{}}>
             {renderContinueButton(multisigWallet?.keyInRecovery)}
             {isInRecovery ||
-            !configStore.isFeatureEnabled(Feature.RecoveryWorkflow) ? null : (
+            !configStore.isFeatureEnabled(Feature.Recovery) ? null : (
               <Button
                 label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
                 RightIcon={isObi ? undefined : GetStarted}

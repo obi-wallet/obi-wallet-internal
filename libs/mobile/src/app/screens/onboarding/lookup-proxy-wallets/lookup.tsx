@@ -4,7 +4,13 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { CosmosProxyWallet, Text } from "@obi-wallet/common";
+import {
+  CosmosChain,
+  CosmosProxyWallet,
+  TerraChain,
+  TerraProxyWallet,
+  Text,
+} from "@obi-wallet/common";
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Linking, ScrollView, TouchableOpacity, View } from "react-native";
@@ -15,31 +21,42 @@ import { Background } from "../../components/background";
 import { VerifyAndProceedButton } from "../../components/phone-number/verify-and-proceed-button";
 
 export interface LookupProps {
+  chainId: CosmosChain | TerraChain;
   publicKey: string;
-  onSelect(wallet: CosmosProxyWallet): void;
+  onSelect(wallet: CosmosProxyWallet | TerraProxyWallet): void;
   onCancel(): void;
 }
 
-export function Lookup({ publicKey, onSelect, onCancel }: LookupProps) {
-  const [wallets, setWallets] = useState<CosmosProxyWallet[] | null>(null);
-  const [selectedWallet, setSelectedWallet] =
-    useState<CosmosProxyWallet | null>(null);
+export function Lookup({
+  chainId,
+  publicKey,
+  onSelect,
+  onCancel,
+}: LookupProps) {
+  const [wallets, setWallets] = useState<
+    CosmosProxyWallet[] | TerraProxyWallet[] | null
+  >(null);
+  const [selectedWallet, setSelectedWallet] = useState<
+    CosmosProxyWallet | TerraProxyWallet | null
+  >(null);
 
   useEffect(() => {
     (async () => {
       try {
         const response = await fetch(
-          `https://proxy-wallets.obiwallet.workers.dev/juno-1/${encodeURIComponent(
+          `https://proxy-wallets.obiwallet.workers.dev/${chainId}/${encodeURIComponent(
             publicKey
           )}`
         );
-        const proxyWallets = (await response.json()) as CosmosProxyWallet[];
+        const proxyWallets = (await response.json()) as
+          | CosmosProxyWallet[]
+          | TerraProxyWallet[];
         setWallets(proxyWallets);
       } catch (e) {
         console.log(e);
       }
     })();
-  }, [publicKey]);
+  }, [chainId, publicKey]);
 
   if (!wallets) return null;
 
@@ -167,9 +184,20 @@ export function Lookup({ publicKey, onSelect, onCancel }: LookupProps) {
                       paddingHorizontal: 10,
                     }}
                     onPress={() => {
-                      Linking.openURL(
-                        `https://www.mintscan.io/juno/wasm/contract/${wallet.proxyAddress.address}`
-                      );
+                      switch (chainId) {
+                        case "uni-3":
+                        case "juno-1":
+                          Linking.openURL(
+                            `https://www.mintscan.io/juno/wasm/contract/${wallet.proxyAddress.address}`
+                          );
+                          break;
+                        case "pisco-1":
+                        case "phoenix-1":
+                          Linking.openURL(
+                            `https://terrasco.pe/mainnet/contract/${wallet.proxyAddress.address}`
+                          );
+                          break;
+                      }
                     }}
                   >
                     <FontAwesomeIcon

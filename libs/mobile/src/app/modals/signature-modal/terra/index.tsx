@@ -178,6 +178,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
 
     return (
       <MultisigConfirmMessages
+        key={JSON.stringify(messages)}
         {...props}
         threshold={parseInt(threshold, 10)}
         numberOfSignatures={numberOfSignatures}

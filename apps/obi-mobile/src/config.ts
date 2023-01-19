@@ -19,7 +19,7 @@ export const config: Config = {
     [Feature.AccountsTab]: false,
     [Feature.HealthChecks]: false,
     [Feature.NftTab]: false,
-    [Feature.RecoveryWorkflow]: false,
+    [Feature.Recovery]: true,
     [Feature.SinglesigWallets]: false,
     [Feature.Staking]: true,
     [Feature.InAppPurchases]: false,

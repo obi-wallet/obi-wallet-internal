@@ -59,8 +59,8 @@ export const terraChains = {
     chainId: "phoenix-1" as const,
     label: "Terra",
     accountCreatorAddress:
-      "terra17m6fzkhxwtv8fl5a05ycdfcvzvclarzqwwpdtksknv7dftedgeeqryy7tn",
-    currentCodeId: 953,
+      "terra1a9zykuft0ngvq6ug2j60hz0an2kz72c3vs73tj5m87xcm0dt8w2sdkflln",
+    currentCodeId: 1009,
     lcd: "https://phoenix-lcd.terra.dev",
     api: "https://phoenix-api.terra.dev",
     denom: "uluna",

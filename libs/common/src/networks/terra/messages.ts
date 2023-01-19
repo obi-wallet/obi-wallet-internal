@@ -67,13 +67,42 @@ export function parseNewAccountResponse(response: BlockTxBroadcastResult) {
       contractAddresses.length === codeIds.length,
       "Expected to have the same number of `_contract_address` and `code_id` attributes."
     );
-    invariant(
-      contractAddresses.length >= 2,
-      "Expected `instantiateEvent` to contain at least two `_contract_address` attributes."
-    );
     return {
-      address: contractAddresses[contractAddresses.length - 2].value,
-      codeId: parseInt(codeIds[codeIds.length - 2].value, 10),
+      address: contractAddresses[0].value,
+      codeId: parseInt(codeIds[0].value, 10),
+    };
+  } catch (e) {
+    console.log(response.raw_log);
+    throw e;
+  }
+}
+
+export function parseProposeUpdateOwnerResponse(
+  response: BlockTxBroadcastResult
+) {
+  try {
+    const rawLog = JSON.parse(response.raw_log) as [
+      {
+        events: [
+          {
+            type: string;
+            attributes: { key: string; value: string }[];
+          }
+        ];
+      }
+    ];
+    const instantiateEvent = rawLog[0].events.find((e) => {
+      return e.type === "execute";
+    });
+    invariant(
+      instantiateEvent,
+      "Expected `rawLog` to contain `execute` event."
+    );
+    const contractAddress = instantiateEvent.attributes.filter((a) => {
+      return a.key === "_contract_address";
+    });
+    return {
+      address: contractAddress[0].value,
     };
   } catch (e) {
     console.log(response.raw_log);
@@ -111,6 +140,19 @@ export function getProposeUpdateOwnerMessage({
     propose_update_owner: {
       new_owner: newOwner,
     },
+  };
+  return new MsgExecuteContract(sender, proxyAddress, rawMessage);
+}
+
+export function getConfirmUpdateOwnerMessage({
+  sender,
+  proxyAddress,
+}: {
+  sender: string;
+  proxyAddress: string;
+}) {
+  const rawMessage = {
+    confirm_update_owner: {},
   };
   return new MsgExecuteContract(sender, proxyAddress, rawMessage);
 }
