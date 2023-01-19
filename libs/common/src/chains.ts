@@ -52,6 +52,7 @@ export const terraChains = {
     api: "https://pisco-api.terra.dev",
     denom: "uluna",
     startingUsdDebt: "0",
+    obiValidator: "terravaloper1src9wvawtfl6ztxss8zu45zuxnwj4ytpnr30jn",
     ...commonTwilioConfig,
   },
   "phoenix-1": {
@@ -64,6 +65,7 @@ export const terraChains = {
     api: "https://phoenix-api.terra.dev",
     denom: "uluna",
     startingUsdDebt: "0",
+    obiValidator: "terravaloper1src9wvawtfl6ztxss8zu45zuxnwj4ytpnr30jn",
     ...commonTwilioConfig,
   },
 };

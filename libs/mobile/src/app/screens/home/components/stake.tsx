@@ -38,11 +38,11 @@ import {
 import { useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
+import { ObiLogo } from "../../components/obi-logo";
 import {
   isSmallScreen,
   isSmallScreenNumber,
 } from "../../components/screen-size";
-import ObiLogo from "../../settings/assets/obi-logo.svg";
 
 export const Stake = observer(() => {
   const theme = useTheme();
@@ -313,10 +313,9 @@ function Validators() {
           />
         </View>
       </View>
-      <ObiValidator />
       <FlatList
         data={validatorsToShow}
-        renderItem={({ item }) => <ValidatorContainer validator={item} />}
+        renderItem={({ item }) => <ValidatorItem validator={item} />}
         keyExtractor={(item) => item.address}
       />
     </View>
@@ -330,94 +329,81 @@ const Container = styled.View({
   padding: 10,
 });
 
-function ObiValidator() {
-  return null;
+function ValidatorItem({ validator }: { validator: ExtendedValidator }) {
+  const { chainStore } = useStore();
+  const obi =
+    validator.address === chainStore.currentTerraChainInformation.obiValidator;
+  const promoted = validator.promoted;
+
   return (
     <Container
-      style={{
-        borderWidth: 1,
-        borderColor: "#437DFF",
-      }}
+      style={
+        promoted
+          ? {
+              borderWidth: 1,
+              borderColor: "#437DFF",
+            }
+          : undefined
+      }
     >
-      {/*<ValidatorItem obi validator={{}/>*/}
-    </Container>
-  );
-}
-
-// TODO:
-function ValidatorContainer({ validator }: { validator: ExtendedValidator }) {
-  return (
-    <Container>
-      <ValidatorItem validator={validator} />
-    </Container>
-  );
-}
-
-function ValidatorItem({
-  obi,
-  validator,
-}: {
-  obi?: boolean;
-  validator: ExtendedValidator;
-}) {
-  return (
-    <View style={{ flexDirection: "row" }}>
-      <View style={{ width: 50, height: 50 }}>
-        {obi ? (
-          <ObiLogo />
-        ) : validator.icon ? (
-          <Image
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: 50,
-              backgroundColor: "#1a1a1a",
-            }}
-            source={{
-              uri: validator.icon,
-            }}
-          />
-        ) : (
-          <View
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: 50,
-              backgroundColor: "#1a1a1a",
-            }}
-          />
-        )}
-      </View>
-      <View style={{ marginLeft: 10, justifyContent: "center", flex: 1 }}>
-        <Text style={{ color: "white", flexWrap: "wrap" }} numberOfLines={1}>
-          {obi ? "Obi Technologies" : validator.label}a
-        </Text>
-        <View>
-          <Text style={{ color: "#7E7E7E", fontSize: 9 }} numberOfLines={1}>
-            Voting Power {validator.votingPower}% • Commission{" "}
-            {validator.commission}%
-          </Text>
+      <View style={{ flexDirection: "row" }}>
+        <View style={{ width: 50, height: 50 }}>
+          {obi ? (
+            <ObiLogo />
+          ) : validator.icon ? (
+            <Image
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 50,
+                backgroundColor: "#1a1a1a",
+              }}
+              source={{
+                uri: validator.icon,
+              }}
+            />
+          ) : (
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 50,
+                backgroundColor: "#1a1a1a",
+              }}
+            />
+          )}
         </View>
-      </View>
-      <View style={{ alignItems: "flex-end" }}>
-        <TouchableOpacity
-          style={{ backgroundColor: "white", borderRadius: 32 }}
-          onPress={() => {
-            Alert.alert("Not implemented yet");
-          }}
-        >
-          <Text
-            style={{
-              color: obi ? "#437DFF" : "#1a1a1a",
-              paddingVertical: 10,
-              paddingHorizontal: 20,
+        <View style={{ marginLeft: 10, justifyContent: "center", flex: 1 }}>
+          <Text style={{ color: "white", flexWrap: "wrap" }} numberOfLines={1}>
+            {obi ? "Obi Technologies" : validator.label}
+          </Text>
+          <View>
+            <Text style={{ color: "#7E7E7E", fontSize: 9 }} numberOfLines={1}>
+              Voting Power {validator.votingPower}% • Commission{" "}
+              {validator.commission}%
+            </Text>
+          </View>
+        </View>
+        <View style={{ alignItems: "flex-end" }}>
+          <TouchableOpacity
+            style={{ backgroundColor: "white", borderRadius: 32 }}
+            onPress={() => {
+              Alert.alert("Not implemented yet");
             }}
           >
-            stake
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                color: promoted ? "#437DFF" : "#1a1a1a",
+                paddingVertical: 10,
+                paddingHorizontal: 20,
+              }}
+            >
+              stake
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </Container>
   );
 }
 

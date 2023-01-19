@@ -17,10 +17,10 @@ import { SvgProps } from "react-native-svg";
 import { RootStack, useRootNavigation } from "../../root-stack";
 import { useStore } from "../../stores";
 import { Create } from "../account/create";
+import { ObiLogo } from "../components/obi-logo";
 import { isSmallScreenNumber } from "../components/screen-size";
 import MultiSigIcon from "./assets/edit.svg";
 import HelpAndSupport from "./assets/headset.svg";
-import ObiLogo from "./assets/obi-logo.svg";
 import LogoutIcon from "./assets/power-red.svg";
 import { HealthChecksScreen } from "./health-checks";
 import { KeysConfigScreen } from "./keys-config";
@@ -66,7 +66,6 @@ export const SettingsScreen = observer(() => {
           <TouchableOpacity
             style={{
               borderRadius: 32,
-              backgroundColor: "white",
               marginRight: 17,
             }}
             onPress={() => {

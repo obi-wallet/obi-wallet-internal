@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParamList } from "../../../root-stack";
 import { useStore } from "../../../stores";
 import { HomeBottomTabRoute } from "../../home/home-stack";
-import ObiLogo from "../../settings/assets/obi-logo.svg";
+import { ObiLogo } from "../obi-logo";
 import { isSmallScreenSubstr } from "../screen-size";
 
 export interface NetworkAccountPickerLayoutProps {
@@ -159,19 +159,12 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
             />
           </Text>
         </View>
-        <View
+        <ObiLogo
           style={{
-            borderRadius: 17.5,
-            backgroundColor: "#ffffff",
+            width: 35,
+            height: 35,
           }}
-        >
-          <ObiLogo
-            style={{
-              width: 35,
-              height: 35,
-            }}
-          />
-        </View>
+        />
       </TouchableOpacity>
     </View>
   );
