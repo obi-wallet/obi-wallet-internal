@@ -83,18 +83,7 @@ export const KeysList = observer(({ data, style, tiled }: KeysListProps) => {
   });
 
   return (
-    <View
-      style={[
-        style,
-        isObi
-          ? {
-              borderTopColor: "rgba(255,255,255,.3)",
-              borderTopWidth: 1,
-              ...(isObi ? { alignItems: "center" } : {}),
-            }
-          : {},
-      ]}
-    >
+    <View style={[style]}>
       <FlatList
         data={[...hydratedData, ...comingSoonKeys]}
         horizontal={tiled}
@@ -171,7 +160,6 @@ export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
         height: 59,
         width: "100%",
         backgroundColor: isLoop ? "#111023" : "#272727",
-
         marginBottom: 10,
         flexDirection: "row",
         borderRadius: 12,
