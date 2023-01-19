@@ -121,7 +121,7 @@ describe("MultisigWallet", () => {
     ).toBeDefined();
   });
 
-  // TODO:
+  // This fails when wallet already up-to-date.
   test.skip("MsgMigrateContract", async () => {
     const message = terra.getMigrateMessage({
       admin: multisigKey.address(),

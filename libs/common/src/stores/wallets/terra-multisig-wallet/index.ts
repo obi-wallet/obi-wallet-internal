@@ -4,6 +4,7 @@ import {
 } from "@terra-money/terra.js";
 import { action, computed, makeObservable, observable } from "mobx";
 
+import { terraChains } from "../../../chains";
 import { AbstractWallet, WalletType, WithAddress } from "../abstract-wallet";
 import {
   SerializedTerraMultisigDemoWallet,
@@ -101,6 +102,12 @@ export class TerraMultisigWallet extends AbstractWallet {
       this.keyInRecovery === null &&
       this.walletInRecovery === null
     );
+  }
+
+  @computed
+  public get isOutdated(): boolean {
+    const codeId = this.serializedWallet.data.proxyAddress?.codeId ?? null;
+    return codeId !== null && codeId < terraChains[this.chain].currentCodeId;
   }
 
   public get proxyAddress(): TerraSerializedData.SerializedProxyAddress | null {
