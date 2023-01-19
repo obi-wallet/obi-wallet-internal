@@ -1,4 +1,5 @@
-import { StyleSheet, View } from "react-native";
+import { useTheme } from "@emotion/react";
+import { StyleProp, StyleSheet, View } from "react-native";
 import RNModal, { ModalProps as RNModalProps } from "react-native-modal";
 
 export interface ModalProps extends Partial<RNModalProps> {
@@ -19,20 +20,34 @@ export function Modal({ children, isVisible, onClose, ...props }: ModalProps) {
       backdropTransitionOutTiming={MODAL_TIMING}
       backdropOpacity={0.6}
       {...props}
+      style={{ maxHeight: "90%" }}
     >
       <ModalContainer>{children}</ModalContainer>
     </RNModal>
   );
 }
 
-function ModalContainer({ children }: { children?: React.ReactNode }) {
-  return <View style={styles.container}>{children}</View>;
+function ModalContainer({
+  children,
+  style,
+}: {
+  children?: React.ReactNode;
+  style?: StyleProp<View>;
+}) {
+  const theme = useTheme();
+  return (
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      {children}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#110F1D",
     borderRadius: 12,
     padding: 20,
+    maxHeight: "100%",
   },
 });

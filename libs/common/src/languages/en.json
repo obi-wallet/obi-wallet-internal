@@ -140,7 +140,7 @@
 
   "onboarding6.preparewallet": "Prepare Multisig Wallet",
   "onboarding6.createmultisigwallet": "Create Multisig Wallet",
-  "onboarding6.loadingtext": "Preparing wallet…",
+  "onboarding6.loadingtext": "Preparing wallet",
 
   "signature.modal.confirmtx": "Confirm Transaction",
   "signature.modal.txdetails": "Tx Details",

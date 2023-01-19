@@ -138,7 +138,7 @@
 
   "onboarding6.preparewallet": "Preparar Billetera Multi-firma",
   "onboarding6.createmultisigwallet": "Crear Billetera Multi-firma",
-  "onboarding6.loadingtext": "Preparando billetera…",
+  "onboarding6.loadingtext": "Preparando billetera",
 
   "signature.modal.confirmtx": "Confirm Transaction",
   "signature.modal.txdetails": "Tx Details",

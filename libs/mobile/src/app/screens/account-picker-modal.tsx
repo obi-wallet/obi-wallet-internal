@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { isMultisigDemoWallet, Text } from "@obi-wallet/common";
@@ -32,10 +33,16 @@ export function useAccountPickerModalProps() {
 
 export const AccountPickerModal = observer<AccountPickerModalProps>(
   ({ visible, open, close, showNotReadyWallets }) => {
-    const { walletsStore } = useStore();
+    const { walletsStore, configStore } = useStore();
+    const isObi = configStore.isObi();
+    const theme = useTheme();
 
     return (
-      <Modal isVisible={visible} onClose={close}>
+      <Modal
+        isVisible={visible}
+        onClose={close}
+        style={{ backgroundColor: theme.colors.background }}
+      >
         <View style={{ flexShrink: 1 }}>
           <View>
             <Text
@@ -49,7 +56,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
             </Text>
             <Text
               style={{
-                color: "#999CB6",
+                color: isObi ? "#fff" : "#999CB6",
                 fontSize: 14,
                 marginTop: 10,
               }}
@@ -71,7 +78,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                   style={{
                     height: 79,
                     width: "100%",
-                    backgroundColor: "#111023",
+                    backgroundColor: isObi ? "#272727" : "#111023",
                     marginBottom: 20,
                     flexDirection: "row",
                     borderRadius: 12,
@@ -102,7 +109,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                     </Text>
                     <Text
                       style={{
-                        color: "#787B9C",
+                        color: isObi ? "#ffffff80" : "#999CB6",
                         fontSize: 14,
                         fontWeight: "600",
                       }}
@@ -138,7 +145,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                   >
                     <FontAwesomeIcon
                       icon={faTrash}
-                      style={{ color: "#7B87A8" }}
+                      style={{ color: isObi ? "#fff" : "#7B87A8" }}
                     />
                   </IconButton>
                 </TouchableOpacity>
@@ -156,7 +163,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
             onPress={() => close()}
             style={{ paddingVertical: 15 }}
           >
-            <Text style={{ color: "#787B9C" }}>
+            <Text style={{ color: isObi ? "#fff" : "#787B9C" }}>
               <FormattedMessage
                 id="accountpickermodal.close"
                 defaultMessage="Close"

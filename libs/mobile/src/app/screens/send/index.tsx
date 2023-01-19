@@ -45,7 +45,7 @@ import { CoinIcon } from "../components/coin-icon";
 import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
 import { isSmallScreenNumber } from "../components/screen-size";
 import { HomeBottomTabRoute } from "../home/home-stack";
-
+import ObiQr from "./assets/obiqr.svg";
 const BARTENDER_ADDRESS =
   "juno1ps9sk7fqh2f95waggk3r5un6sr7rd4gxmq4kzh73zstgkqz52wmqh2wr0s";
 
@@ -212,7 +212,7 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
                 height: isSmallScreenNumber(46, 56),
                 justifyContent: "center",
                 alignItems: "center",
-                padding: 5,
+                padding: isObi ? 0 : 5,
                 borderTopRightRadius: isObi ? 32 : 12,
                 borderBottomRightRadius: isObi ? 32 : 12,
                 borderWidth: 1,
@@ -232,11 +232,15 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
                   left: 0,
                 }}
               />
-              <FontAwesomeIcon
-                icon={faQrcode}
-                style={{ color: isLoop ? "#887CEB" : "white" }}
-                size={32}
-              />
+              {isObi ? (
+                <ObiQr />
+              ) : (
+                <FontAwesomeIcon
+                  icon={faQrcode}
+                  style={{ color: isLoop ? "#887CEB" : "white" }}
+                  size={32}
+                />
+              )}
             </TouchableOpacity>
           </View>
           <View style={{ marginTop: 35 }}>
