@@ -45,7 +45,7 @@ import { CoinIcon } from "../components/coin-icon";
 import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
 import { isSmallScreenNumber } from "../components/screen-size";
 import { HomeBottomTabRoute } from "../home/home-stack";
-import ObiQr from './assets/obiqr.svg'
+import ObiQr from "./assets/obiqr.svg";
 const BARTENDER_ADDRESS =
   "juno1ps9sk7fqh2f95waggk3r5un6sr7rd4gxmq4kzh73zstgkqz52wmqh2wr0s";
 
@@ -92,8 +92,8 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
     selectedCoin?.denom === "ubottle"
       ? "bottle"
       : selectedCoin?.denom === "udrink"
-        ? "drink"
-        : null;
+      ? "drink"
+      : null;
 
   const normalizedAmount = amount.replace(/,/g, ".");
 
@@ -127,9 +127,9 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
       >
         {qrCodeScannerModal.render()}
         {drinkOrBottleModalFlavor &&
-          (!address || address === BARTENDER_ADDRESS) &&
-          confirmModalVisible.visible &&
-          confirmModalVisible.success ? (
+        (!address || address === BARTENDER_ADDRESS) &&
+        confirmModalVisible.visible &&
+        confirmModalVisible.success ? (
           <DrinkOrBottleModal
             flavor={drinkOrBottleModalFlavor}
             visible={confirmModalVisible.visible && confirmModalVisible.success}
@@ -141,8 +141,8 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
         ) : null}
         {((drinkOrBottleModalFlavor && address !== BARTENDER_ADDRESS) ||
           !drinkOrBottleModalFlavor) &&
-          confirmModalVisible.visible &&
-          confirmModalVisible.success ? (
+        confirmModalVisible.visible &&
+        confirmModalVisible.success ? (
           <SuccessModal
             visible={confirmModalVisible.visible && confirmModalVisible.success}
             onDismiss={() => {
@@ -193,9 +193,9 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
                 drinkOrBottleModalFlavor
                   ? BARTENDER_ADDRESS
                   : intl.formatMessage({
-                    id: "send.walletaddress",
-                    defaultMessage: "Wallet Address",
-                  })
+                      id: "send.walletaddress",
+                      defaultMessage: "Wallet Address",
+                    })
               }
               style={{ flex: 1 }}
               inputStyle={{
@@ -231,12 +231,16 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
                   height: "100%",
                   left: 0,
                 }}
-              />{isObi ? <ObiQr /> :
+              />
+              {isObi ? (
+                <ObiQr />
+              ) : (
                 <FontAwesomeIcon
                   icon={faQrcode}
                   style={{ color: isLoop ? "#887CEB" : "white" }}
                   size={32}
-                />}
+                />
+              )}
             </TouchableOpacity>
           </View>
           <View style={{ marginTop: 35 }}>
@@ -534,8 +538,8 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
                 flex: 1,
                 ...(isObi
                   ? {
-                    borderRadius: 7,
-                  }
+                      borderRadius: 7,
+                    }
                   : {}),
               }}
             >

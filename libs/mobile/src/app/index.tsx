@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import {
   Config,
   isMultisigDemoWallet,
@@ -84,26 +85,37 @@ export function BaseApp({ initialConfig, providerProps }: BaseAppProps) {
       <DemoModeHeader />
       <StateRenderer />
       <Modals />
-      {updating ? (
-        <Loader
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 999,
-            position: "absolute",
-            backgroundColor: "#100F1D",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
-          loadingText="Updating app bundle…"
-        />
-      ) : null}
+      {updating ? <Load /> : null}
     </Provider>
   );
 }
+const Load = observer(() => {
+  const theme = useTheme();
+  return (
+    <Loader
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 999,
+        position: "absolute",
+        backgroundColor: theme.colors.background,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }}
+      loadingText="Updating app bundle…"
+      animation={require("./loader/broadcast.json")}
+      animationStyles={{
+        width: 300,
+        height: 300,
+        maxHeight: "100%",
+        maxWidth: "100%",
+      }}
+    />
+  );
+});
 
 export const DemoModeHeader = observer(() => {
   const { walletsStore } = useStore();

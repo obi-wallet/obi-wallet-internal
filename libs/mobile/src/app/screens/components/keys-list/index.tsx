@@ -1,4 +1,5 @@
 import { MultisigKey, Text } from "@obi-wallet/common";
+import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
 import { FC } from "react";
 import {
@@ -126,9 +127,18 @@ export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
               alignItems: "center",
               borderRadius: 36,
               borderWidth: 5,
-              borderColor: signed ? "#89F5C2" : "transparent",
+              borderColor: signed && isLoop ? "#89F5C2" : "transparent",
             }}
           >
+            {/* {signed ? */}
+            <LottieView
+              source={require("./assets/confirm-animation.json")}
+              autoPlay
+              style={{ width: 60, zIndex: -1, position: "absolute" }}
+            />
+            {/* : */}
+            {/* <LottieView source={require("./assets/prompt-animation.json")} autoPlay loop style={{ width: 60, zIndex: -1, position: 'absolute' }} /> */}
+            {/* } */}
             <Icon fill="#7B87A8" />
           </View>
         </View>

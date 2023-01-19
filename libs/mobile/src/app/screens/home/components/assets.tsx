@@ -4,6 +4,7 @@ import { faSortDesc } from "@fortawesome/free-solid-svg-icons/faSortDesc";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Feature, Text } from "@obi-wallet/common";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";

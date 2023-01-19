@@ -153,6 +153,13 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
                 id: "onboarding6.loadingtext",
                 defaultMessage: "Preparing Wallet...",
               })}
+              animation={
+                isObi
+                  ? {
+                      uri: "https://assets7.lottiefiles.com/packages/lf20_aztuzhyq.json",
+                    }
+                  : ""
+              }
             />
           </View>
         ) : (

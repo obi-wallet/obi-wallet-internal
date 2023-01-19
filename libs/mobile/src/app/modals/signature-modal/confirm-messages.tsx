@@ -1,4 +1,5 @@
 import { AminoMsg } from "@cosmjs/amino";
+import { useTheme } from "@emotion/react";
 import { Text } from "@obi-wallet/common";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { Msg } from "@terra-money/terra.js";
@@ -59,6 +60,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
     const [selectedTab, setSelectedTab] = useState(Tab.TransactionDetails);
     const { configStore } = useStore();
     const isObi = configStore.isObi();
+    const theme = useTheme();
     const isLoop = configStore.isLoop();
 
     return (
@@ -68,18 +70,26 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
         >
           {loading ? (
             <Loader
-              loadingText="Loading..."
+              loadingText="Broadcasting..."
               style={{
                 flex: 1,
-                justifyContent: "center",
+                justifyContent: "flex-start",
                 alignItems: "center",
                 zIndex: 999,
                 position: "absolute",
-                backgroundColor: "#100F1D",
+                backgroundColor: isLoop ? "#100F1D" : theme.colors.background,
                 top: 0,
                 left: 0,
                 right: 0,
                 bottom: 0,
+                paddingTop: 50,
+              }}
+              animation={require("../../loader/broadcast.json")}
+              animationStyles={{
+                width: 300,
+                height: 300,
+                maxHeight: "100%",
+                maxWidth: "100%",
               }}
             />
           ) : null}
