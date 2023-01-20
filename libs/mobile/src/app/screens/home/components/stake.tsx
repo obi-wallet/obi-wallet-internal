@@ -21,12 +21,14 @@ import {
   Alert,
   FlatList,
   Image,
+  Platform,
   StyleProp,
   TouchableHighlight,
   TouchableOpacity,
   View,
   ViewStyle,
 } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import { GestureResponderEvent } from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -40,7 +42,7 @@ import {
 import { useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
-import { Modal } from "../../components/modal";
+import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
 import { ObiLogo } from "../../components/obi-logo";
 import {
   isSmallScreen,
@@ -203,9 +205,9 @@ const Balance = observer(() => {
     rewards.length > 0
       ? rewards[0]
       : {
-          denom: chainStore.currentTerraChainInformation.denom,
-          amount: "0",
-        };
+        denom: chainStore.currentTerraChainInformation.denom,
+        amount: "0",
+      };
   const formattedRewards = formatCoin(totalRewards);
 
   return (
@@ -290,6 +292,7 @@ function Validators() {
 
   return (
     <View style={{ flex: 1, marginTop: 10 }}>
+      {/* {selectedValidator === null && ( */}
       <View style={{ flexDirection: "row" }}>
         <View style={{ padding: 10 }}>
           <Text style={{ fontSize: 15, color: "white" }}>Validators</Text>
@@ -317,6 +320,7 @@ function Validators() {
           />
         </View>
       </View>
+      {/* )} */}
       {selectedValidator === null ? (
         <FlatList
           data={validatorsToShow}
@@ -330,7 +334,12 @@ function Validators() {
           keyExtractor={(item) => item.address}
         />
       ) : (
-        <View>
+        // <ScrollView>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={200}
+        >
+
           <ValidatorItem
             validator={selectedValidator}
             onValidate={(args) => {
@@ -343,7 +352,8 @@ function Validators() {
             active
             onCancel={() => setSelectedValidator(null)}
           />
-        </View>
+        </KeyboardAvoidingView>
+        // </ScrollView>
       )}
     </View>
   );
@@ -370,7 +380,7 @@ function ValidatorItem({
   onCancel?: () => void;
 }) {
   const { chainStore } = useStore();
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState('');
   const obi =
     validator.address === chainStore.currentTerraChainInformation.obiValidator;
   const promoted = validator.promoted;
@@ -380,9 +390,9 @@ function ValidatorItem({
       style={
         promoted
           ? {
-              borderWidth: 1,
-              borderColor: "#437DFF",
-            }
+            borderWidth: 1,
+            borderColor: "#437DFF",
+          }
           : undefined
       }
     >
@@ -487,8 +497,8 @@ function ValidatorItem({
                 placeholder="0"
                 placeholderTextColor="#fff"
                 textAlign="right"
-                onChangeText={(text) => setAmount(parseInt(text) || 0)}
-                value={amount.toString()}
+                onChangeText={(text) => setAmount(text)}
+                value={amount}
                 keyboardType="numeric"
               />
             </View>
