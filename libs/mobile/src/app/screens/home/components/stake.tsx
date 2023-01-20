@@ -10,23 +10,23 @@ import {
   TextInput,
   UnbondingDelegation,
 } from "@obi-wallet/common";
-import { Extend } from "fp-ts/lib/Extend";
 import Fuse from "fuse.js";
-import { number } from "io-ts";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   FlatList,
   Image,
+  Platform,
   StyleProp,
   TouchableHighlight,
   TouchableOpacity,
   View,
   ViewStyle,
 } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import { GestureResponderEvent } from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -40,12 +40,17 @@ import {
 import { useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
-import { Modal } from "../../components/modal";
+import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
 import { ObiLogo } from "../../components/obi-logo";
 import {
   isSmallScreen,
   isSmallScreenNumber,
 } from "../../components/screen-size";
+
+const SelectedValidatorContext = createContext<{
+  selectedValidator: ExtendedValidator | null;
+  setSelectedValidator: (validator: ExtendedValidator | null) => void;
+}>(null!);
 
 export const Stake = observer(() => {
   const theme = useTheme();
@@ -54,6 +59,9 @@ export const Stake = observer(() => {
   const { refreshUnbondingDelegations } = useUnbondingDelegations();
   const { refreshValidators } = useValidators();
   const { refreshRewards } = useRewards();
+
+  const [selectedValidator, setSelectedValidator] =
+    useState<ExtendedValidator | null>(null);
 
   useEffect(() => {
     void refreshDelegations();
@@ -67,21 +75,40 @@ export const Stake = observer(() => {
     refreshRewards,
   ]);
 
-  return (
-    <View
-      style={{
-        backgroundColor: theme.colors.background,
-        flex: 1,
-        padding: 10,
-        paddingBottom: 0,
-        paddingTop: SafeArea.top,
+  const children = (
+    <SelectedValidatorContext.Provider
+      value={{
+        setSelectedValidator,
+        selectedValidator,
       }}
     >
-      <Back />
-      <Balance />
-      <StakingOptions />
-    </View>
+      <View
+        style={{
+          backgroundColor: theme.colors.background,
+          flex: 1,
+          padding: 10,
+          paddingBottom: 0,
+          paddingTop: SafeArea.top,
+        }}
+      >
+        <Back />
+        <Balance />
+        <StakingOptions />
+      </View>
+    </SelectedValidatorContext.Provider>
   );
+
+  if (selectedValidator) {
+    return (
+      <KeyboardAvoidingView style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+          {children}
+        </ScrollView>
+      </KeyboardAvoidingView>
+    );
+  }
+
+  return children;
 });
 //staking options take remaining space
 const StakingOptions = observer(() => {
@@ -270,8 +297,9 @@ const Balance = observer(() => {
 function Validators() {
   const { validators } = useValidators();
   const [needle, setNeedle] = useState("");
-  const [selectedValidator, setSelectedValidator] =
-    useState<ExtendedValidator | null>(null);
+  const { selectedValidator, setSelectedValidator } = useContext(
+    SelectedValidatorContext
+  );
   const { activeValidators, fuse } = useMemo(() => {
     const activeValidators = validators.filter((validator) => {
       return validator.active;
@@ -290,33 +318,40 @@ function Validators() {
 
   return (
     <View style={{ flex: 1, marginTop: 10 }}>
-      <View style={{ flexDirection: "row" }}>
-        <View style={{ padding: 10 }}>
-          <Text style={{ fontSize: 15, color: "white" }}>Validators</Text>
-          <Text style={{ fontSize: 10, color: "white" }}>
-            {activeValidators.length} active validators
-          </Text>
-        </View>
-        <View style={{ flex: 1 }}>
-          <TextInput
-            style={{
-              color: "#ffffff",
-              borderColor: "#ffffff",
-              borderRadius: 32,
-              borderWidth: 1,
-              padding: 10,
-            }}
-            placeholder="Search"
-            onChangeText={(text) => setNeedle(text)}
-            value={needle}
-          />
+      {selectedValidator === null && (
+        <View style={{ flexDirection: "row" }}>
+          <View style={{ padding: 10 }}>
+            <Text style={{ fontSize: 15, color: "white" }}>Validators</Text>
+            <Text style={{ fontSize: 10, color: "white" }}>
+              {activeValidators.length} active validators
+            </Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <TextInput
+              style={{
+                color: "#ffffff",
+                borderColor: "#ffffff",
+                borderRadius: 32,
+                borderWidth: 1,
+                padding: 10,
+              }}
+              placeholder="Search"
+              onChangeText={(text) => setNeedle(text)}
+              value={needle}
+            />
 
-          <FontAwesomeIcon
-            icon={faSearch}
-            style={{ position: "absolute", right: 10, top: 12, color: "white" }}
-          />
+            <FontAwesomeIcon
+              icon={faSearch}
+              style={{
+                position: "absolute",
+                right: 10,
+                top: 12,
+                color: "white",
+              }}
+            />
+          </View>
         </View>
-      </View>
+      )}
       {selectedValidator === null ? (
         <FlatList
           data={validatorsToShow}
@@ -330,20 +365,18 @@ function Validators() {
           keyExtractor={(item) => item.address}
         />
       ) : (
-        <View>
-          <ValidatorItem
-            validator={selectedValidator}
-            onValidate={(args) => {
-              Alert.alert(
-                "Stake",
-                "validating " + args.amount + " to " + args.validator.label
-              );
-              setSelectedValidator(null);
-            }}
-            active
-            onCancel={() => setSelectedValidator(null)}
-          />
-        </View>
+        <ValidatorItem
+          validator={selectedValidator}
+          onValidate={(args) => {
+            Alert.alert(
+              "Stake",
+              "validating " + args.amount + " to " + args.validator.label
+            );
+            setSelectedValidator(null);
+          }}
+          active
+          onCancel={() => setSelectedValidator(null)}
+        />
       )}
     </View>
   );
@@ -366,11 +399,11 @@ function ValidatorItem({
   validator: ExtendedValidator;
   onPress?: (validator: ExtendedValidator) => void;
   active?: boolean;
-  onValidate?: (args: { validator: ExtendedValidator; amount: number }) => void;
+  onValidate?: (args: { validator: ExtendedValidator; amount: string }) => void;
   onCancel?: () => void;
 }) {
   const { chainStore } = useStore();
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState("");
   const obi =
     validator.address === chainStore.currentTerraChainInformation.obiValidator;
   const promoted = validator.promoted;
@@ -487,8 +520,8 @@ function ValidatorItem({
                 placeholder="0"
                 placeholderTextColor="#fff"
                 textAlign="right"
-                onChangeText={(text) => setAmount(parseInt(text) || 0)}
-                value={amount.toString()}
+                onChangeText={(text) => setAmount(text)}
+                value={amount}
                 keyboardType="numeric"
               />
             </View>

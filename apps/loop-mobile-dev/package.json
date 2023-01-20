@@ -51,6 +51,7 @@
     "crypto-js": "*",
     "eventemitter3": "*",
     "fastestsmallesttextencoderdecoder": "*",
+    "fp-ts": "*",
     "fuse.js": "*",
     "invariant": "*",
     "io-ts": "*",
