@@ -1,5 +1,7 @@
 import {
   BlockTxBroadcastResult,
+  Coin,
+  MsgDelegate,
   MsgExecuteContract,
   MsgMigrateContract,
 } from "@terra-money/terra.js";
@@ -155,4 +157,22 @@ export function getConfirmUpdateOwnerMessage({
     confirm_update_owner: {},
   };
   return new MsgExecuteContract(sender, proxyAddress, rawMessage);
+}
+
+export function getStakeMessage({
+  sender,
+  validator,
+  amount,
+  chainId,
+}: {
+  sender: string;
+  validator: string;
+  amount: number;
+  chainId: TerraChain;
+}) {
+  return new MsgDelegate(
+    sender,
+    validator,
+    new Coin(terraChains[chainId].denom, amount)
+  );
 }

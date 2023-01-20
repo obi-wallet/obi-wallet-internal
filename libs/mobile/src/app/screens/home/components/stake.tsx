@@ -19,7 +19,6 @@ import {
   Alert,
   FlatList,
   Image,
-  Platform,
   StyleProp,
   TouchableHighlight,
   TouchableOpacity,
