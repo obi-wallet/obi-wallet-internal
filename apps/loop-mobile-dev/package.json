@@ -51,6 +51,7 @@
     "crypto-js": "*",
     "eventemitter3": "*",
     "fastestsmallesttextencoderdecoder": "*",
+    "fp-ts": "*",
     "fuse.js": "*",
     "invariant": "*",
     "io-ts": "*",
@@ -101,7 +102,6 @@
     "rooks": "*",
     "scrypt-js": "*",
     "secp256k1": "*",
-    "tiny-invariant": "*",
-    "fp-ts": "*"
+    "tiny-invariant": "*"
   }
 }
