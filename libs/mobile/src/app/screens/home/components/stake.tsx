@@ -10,11 +10,13 @@ import {
   TextInput,
   UnbondingDelegation,
 } from "@obi-wallet/common";
+import { Extend } from "fp-ts/lib/Extend";
 import Fuse from "fuse.js";
+import { number } from "io-ts";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
-import { useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -38,6 +40,7 @@ import {
 import { useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
+import { Modal } from "../../components/modal";
 import { ObiLogo } from "../../components/obi-logo";
 import {
   isSmallScreen,
@@ -267,7 +270,8 @@ const Balance = observer(() => {
 function Validators() {
   const { validators } = useValidators();
   const [needle, setNeedle] = useState("");
-
+  const [selectedValidator, setSelectedValidator] =
+    useState<ExtendedValidator | null>(null);
   const { activeValidators, fuse } = useMemo(() => {
     const activeValidators = validators.filter((validator) => {
       return validator.active;
@@ -313,11 +317,34 @@ function Validators() {
           />
         </View>
       </View>
-      <FlatList
-        data={validatorsToShow}
-        renderItem={({ item }) => <ValidatorItem validator={item} />}
-        keyExtractor={(item) => item.address}
-      />
+      {selectedValidator === null ? (
+        <FlatList
+          data={validatorsToShow}
+          renderItem={({ item }) => (
+            <ValidatorItem
+              validator={item}
+              onPress={setSelectedValidator}
+              active={false}
+            />
+          )}
+          keyExtractor={(item) => item.address}
+        />
+      ) : (
+        <View>
+          <ValidatorItem
+            validator={selectedValidator}
+            onValidate={(args) => {
+              Alert.alert(
+                "Stake",
+                "validating " + args.amount + " to " + args.validator.label
+              );
+              setSelectedValidator(null);
+            }}
+            active
+            onCancel={() => setSelectedValidator(null)}
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -329,8 +356,21 @@ const Container = styled.View({
   padding: 10,
 });
 
-function ValidatorItem({ validator }: { validator: ExtendedValidator }) {
+function ValidatorItem({
+  validator,
+  onPress,
+  active = false,
+  onCancel,
+  onValidate,
+}: {
+  validator: ExtendedValidator;
+  onPress?: (validator: ExtendedValidator) => void;
+  active?: boolean;
+  onValidate?: (args: { validator: ExtendedValidator; amount: number }) => void;
+  onCancel?: () => void;
+}) {
   const { chainStore } = useStore();
+  const [amount, setAmount] = useState<number>(0);
   const obi =
     validator.address === chainStore.currentTerraChainInformation.obiValidator;
   const promoted = validator.promoted;
@@ -346,7 +386,11 @@ function ValidatorItem({ validator }: { validator: ExtendedValidator }) {
           : undefined
       }
     >
-      <View style={{ flexDirection: "row" }}>
+      <TouchableOpacity
+        disabled={active}
+        style={{ flexDirection: "row" }}
+        onPress={() => (onPress ? onPress(validator) : {})}
+      >
         <View style={{ width: 50, height: 50 }}>
           {obi ? (
             <ObiLogo />
@@ -384,25 +428,78 @@ function ValidatorItem({ validator }: { validator: ExtendedValidator }) {
             </Text>
           </View>
         </View>
-        <View style={{ alignItems: "flex-end" }}>
-          <TouchableOpacity
-            style={{ backgroundColor: "white", borderRadius: 32 }}
-            onPress={() => {
-              Alert.alert("Not implemented yet");
+        {active && (
+          <View style={{ alignItems: "flex-end" }}>
+            <TouchableOpacity
+              style={{ backgroundColor: "white", borderRadius: 32 }}
+              onPress={() =>
+                onValidate ? onValidate({ validator, amount }) : {}
+              }
+            >
+              <Text
+                style={{
+                  color: promoted ? "#437DFF" : "#1a1a1a",
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                }}
+              >
+                stake
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </TouchableOpacity>
+      {active && (
+        <View style={{ marginTop: 10, marginRight: 10 }}>
+          <Text style={{ color: "white", fontSize: 10, marginBottom: 10 }}>
+            AMOUNT
+          </Text>
+          <View
+            style={{
+              borderColor: "#fff",
+              borderWidth: 1,
+              borderRadius: 7,
+              flexDirection: "row",
             }}
           >
-            <Text
-              style={{
-                color: promoted ? "#437DFF" : "#1a1a1a",
-                paddingVertical: 10,
-                paddingHorizontal: 20,
-              }}
-            >
-              stake
-            </Text>
-          </TouchableOpacity>
+            <View style={{ flex: 1, flexDirection: "row" }}>
+              <View
+                style={{
+                  width: 36,
+                  aspectRatio: 1 / 1,
+                  backgroundColor: "#000",
+                  borderRadius: 36,
+                  margin: 12,
+                }}
+              />
+              <View style={{ justifyContent: "center" }}>
+                <Text style={{ color: "#fff", fontWeight: "600" }}>Luna</Text>
+                <Text style={{ color: "#fff", fontWeight: "400" }}>123.45</Text>
+              </View>
+            </View>
+            <View style={{ flex: 1, justifyContent: "center" }}>
+              <TextInput
+                style={{
+                  color: "#ffffff",
+                  marginRight: 10,
+                  fontSize: isSmallScreenNumber(18, 24),
+                }}
+                placeholder="0"
+                placeholderTextColor="#fff"
+                textAlign="right"
+                onChangeText={(text) => setAmount(parseInt(text) || 0)}
+                value={amount.toString()}
+                keyboardType="numeric"
+              />
+            </View>
+          </View>
+          <View style={{ alignItems: "center", padding: 10 }}>
+            <TouchableOpacity onPress={() => (onCancel ? onCancel() : {})}>
+              <Text style={{ color: "#fff" }}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      )}
     </Container>
   );
 }
