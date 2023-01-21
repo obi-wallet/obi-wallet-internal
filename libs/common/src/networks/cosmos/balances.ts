@@ -3,7 +3,7 @@ import * as R from "ramda";
 
 import { CosmosChain } from "../../chains";
 import { createCosmWasmClient, createStargateClient } from "../../clients";
-import { Coin } from "../../stores/balances/abstract-balances-store";
+import { Coin } from "../common/types";
 
 const LOOP_JUNO1_ADDRESS =
   "juno1qsrercqegvs4ye0yqg93knv73ye5dc3prqwd6jcdcuj8ggp6w0us66deup";

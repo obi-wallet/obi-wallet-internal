@@ -3,11 +3,12 @@ import {
   cosmos,
   isCosmosChain,
   isTerraChain,
+  Rewards,
   terra,
   Text,
 } from "@obi-wallet/common";
 import * as R from "ramda";
-import { FC, ReactNode, useCallback, useEffect, useState } from "react";
+import { FC } from "react";
 import { ImageRequireSource, ImageURISource, View } from "react-native";
 import { SvgProps } from "react-native-svg";
 import { useQuery } from "react-query";
@@ -23,14 +24,6 @@ export interface ExtendedCoin {
   denom: string;
   amount: string;
   usdPrice: number;
-}
-
-export interface FormattedExtendedCoin {
-  icon: ReactNode;
-  denom: string;
-  digits: number;
-  label: string;
-  amount: number;
 }
 
 export function useBalances(sortAscending = true) {
@@ -303,89 +296,105 @@ export function formatExtendedCoin(coin: ExtendedCoin) {
 }
 
 export function useDelegations() {
-  const { balancesStore, walletsStore } = useStore();
-  const [refreshing, setRefreshing] = useState(false);
+  const { chainStore, walletsStore } = useStore();
+  const address = walletsStore.address;
+  const chainId = chainStore.currentChain;
+  return useQuery(
+    [
+      "delegations",
+      {
+        address,
+        chainId,
+      },
+    ],
+    async () => {
+      if (!address) return [];
 
-  const refreshDelegations = useCallback(async () => {
-    setRefreshing(true);
-    await balancesStore.fetchDelegations();
-    setRefreshing(false);
-  }, [balancesStore]);
+      if (isTerraChain(chainId)) {
+        return await terra.fetchDelegations({ address, chainId });
+      }
 
-  useEffect(() => {
-    void refreshDelegations();
-  }, [refreshDelegations, walletsStore.address]);
-
-  return {
-    delegations: balancesStore.delegations,
-    refreshDelegations,
-    refreshing,
-  };
+      return [];
+    }
+  );
 }
 
 export function useUnbondingDelegations() {
-  const { balancesStore, walletsStore } = useStore();
-  const [refreshing, setRefreshing] = useState(false);
+  const { chainStore, walletsStore } = useStore();
+  const address = walletsStore.address;
+  const chainId = chainStore.currentChain;
+  return useQuery(
+    [
+      "unbonding-delegations",
+      {
+        address,
+        chainId,
+      },
+    ],
+    async () => {
+      if (!address) return [];
 
-  const refreshUnbondingDelegations = useCallback(async () => {
-    setRefreshing(true);
-    await balancesStore.fetchUnbondingDelegations();
-    setRefreshing(false);
-  }, [balancesStore]);
+      if (isTerraChain(chainId)) {
+        return await terra.fetchUnbondingDelegations({ address, chainId });
+      }
 
-  useEffect(() => {
-    void refreshUnbondingDelegations();
-  }, [refreshUnbondingDelegations, walletsStore.address]);
-
-  return {
-    unbondingDelegations: balancesStore.unbondingDelegations,
-    refreshUnbondingDelegations,
-    refreshing,
-  };
+      return [];
+    }
+  );
 }
 
 export function useValidators() {
-  const { balancesStore, walletsStore } = useStore();
-  const [refreshing, setRefreshing] = useState(false);
+  const { chainStore } = useStore();
+  const chainId = chainStore.currentChain;
+  return useQuery(
+    [
+      "validators",
+      {
+        chainId,
+      },
+    ],
+    async () => {
+      if (isTerraChain(chainId)) {
+        return await terra.fetchValidators({ chainId });
+      }
 
-  const refreshValidators = useCallback(async () => {
-    if (balancesStore.validators.length > 0) return;
-
-    setRefreshing(true);
-    await balancesStore.fetchValidators();
-    setRefreshing(false);
-  }, [balancesStore]);
-
-  useEffect(() => {
-    void refreshValidators();
-  }, [refreshValidators, walletsStore.address]);
-
-  return {
-    validators: balancesStore.validators,
-    refreshValidators,
-    refreshing,
-  };
+      return [];
+    },
+    {
+      staleTime: 24 * 60 * 60 * 1000, // 1 day,
+    }
+  );
 }
 
 export function useRewards() {
-  const { balancesStore, walletsStore } = useStore();
-  const [refreshing, setRefreshing] = useState(false);
+  const { chainStore, walletsStore } = useStore();
+  const address = walletsStore.address;
+  const chainId = chainStore.currentChain;
+  const response = useQuery(
+    [
+      "rewards",
+      {
+        address,
+        chainId,
+      },
+    ],
+    async (): Promise<Rewards | undefined> => {
+      if (!address) return undefined;
 
-  const refreshRewards = useCallback(async () => {
-    if (balancesStore.validators.length > 0) return;
+      if (isTerraChain(chainId)) {
+        return await terra.fetchRewards({ address, chainId });
+      }
 
-    setRefreshing(true);
-    await balancesStore.fetchRewards();
-    setRefreshing(false);
-  }, [balancesStore]);
+      return undefined;
+    }
+  );
 
-  useEffect(() => {
-    void refreshRewards();
-  }, [refreshRewards, walletsStore.address]);
-
+  const fallback: Rewards = {
+    perDelegator: [],
+    total: { denom: chainStore.currentChainInformation.denom, amount: "0" },
+  };
   return {
-    rewards: balancesStore.rewards,
-    refreshRewards,
-    refreshing,
+    ...response,
+    data: response.data ?? fallback,
   };
 }
