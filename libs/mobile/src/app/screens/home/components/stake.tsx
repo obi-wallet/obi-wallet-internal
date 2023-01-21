@@ -17,7 +17,14 @@ import Fuse from "fuse.js";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  useContext,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import {
   Alert,
   FlatList,
@@ -51,23 +58,60 @@ import {
   isSmallScreenNumber,
 } from "../../components/screen-size";
 
-const SelectedValidatorContext = createContext<{
+enum StakeTab {
+  Validators = "Validators",
+  Delegations = "Delegations",
+  UnbondingDelegations = "UnbondingDelegations",
+}
+
+type StakeState = {
   selectedValidator: ExtendedValidator | null;
-  setSelectedValidator: (validator: ExtendedValidator | null) => void;
+  selectedTab: StakeTab;
+};
+const initialStakeState: StakeState = {
+  selectedValidator: null,
+  selectedTab: StakeTab.Validators,
+};
+type StakeAction =
+  | {
+      type: "set-selected-validator";
+      payload: ExtendedValidator;
+    }
+  | {
+      type: "clear-selected-validator";
+    }
+  | {
+      type: "set-selected-tab";
+      payload: StakeTab;
+    };
+
+function stakeReducer(state: StakeState, action: StakeAction): StakeState {
+  switch (action.type) {
+    case "clear-selected-validator":
+      return { ...state, selectedValidator: null };
+    case "set-selected-validator":
+      return { ...state, selectedValidator: action.payload };
+    case "set-selected-tab":
+      return { selectedValidator: null, selectedTab: action.payload };
+  }
+}
+
+const StakeStateContext = createContext<{
+  state: StakeState;
+  dispatch: Dispatch<StakeAction>;
 }>(null!);
 
 export const Stake = observer(() => {
   const theme = useTheme();
   const SafeArea = useSafeAreaInsets();
 
-  const [selectedValidator, setSelectedValidator] =
-    useState<ExtendedValidator | null>(null);
+  const [state, dispatch] = useReducer(stakeReducer, initialStakeState);
 
   const children = (
-    <SelectedValidatorContext.Provider
+    <StakeStateContext.Provider
       value={{
-        setSelectedValidator,
-        selectedValidator,
+        state,
+        dispatch,
       }}
     >
       <View
@@ -83,10 +127,10 @@ export const Stake = observer(() => {
         <Balance />
         <StakingOptions />
       </View>
-    </SelectedValidatorContext.Provider>
+    </StakeStateContext.Provider>
   );
 
-  if (selectedValidator) {
+  if (state.selectedValidator) {
     return (
       <KeyboardAvoidingView style={{ flex: 1 }}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
@@ -101,9 +145,9 @@ export const Stake = observer(() => {
 //staking options take remaining space
 const StakingOptions = observer(() => {
   const { chainStore } = useStore();
-  const [selectedTab, setSelectedTab] = useState(0);
   const { delegations } = useDelegations();
   const { unbondingDelegations } = useUnbondingDelegations();
+  const { state, dispatch } = useContext(StakeStateContext);
 
   const totalDelegations = {
     denom: chainStore.currentTerraChainInformation.denom,
@@ -144,35 +188,57 @@ const StakingOptions = observer(() => {
             justifyContent: "center",
             paddingHorizontal: 20,
             borderRadius: 7,
-            borderWidth: selectedTab === 0 ? 1 : 0,
+            borderWidth: state.selectedTab === StakeTab.Validators ? 1 : 0,
             borderColor: "white",
           }}
-          onPress={() => setSelectedTab(0)}
+          onPress={() => {
+            dispatch({
+              type: "set-selected-tab",
+              payload: StakeTab.Validators,
+            });
+          }}
         >
           <FontAwesomeIcon icon={faHome} color="white" />
         </TouchableOpacity>
         <TabPill
           style={{ flex: 1 }}
-          onPress={() => setSelectedTab(1)}
-          active={selectedTab === 1}
+          onPress={() => {
+            dispatch({
+              type: "set-selected-tab",
+              payload: StakeTab.Delegations,
+            });
+          }}
+          active={state.selectedTab === StakeTab.Delegations}
           label="My Stake"
           content={delegationsContent}
         />
         <TabPill
           style={{ flex: 1 }}
           onPress={() => {
-            setSelectedTab(2);
+            dispatch({
+              type: "set-selected-tab",
+              payload: StakeTab.UnbondingDelegations,
+            });
           }}
-          active={selectedTab === 2}
+          active={state.selectedTab === StakeTab.UnbondingDelegations}
           label="Unstaking"
           content={unbondingDelegationsContent}
         />
       </View>
-      {selectedTab === 0 && <Validators />}
-      {selectedTab === 1 && <MyStake />}
-      {selectedTab === 2 && <Unstaking />}
+      {getChildren()}
     </View>
   );
+
+  function getChildren() {
+    switch (state.selectedTab) {
+      case StakeTab.Validators:
+        return <Validators />;
+      case StakeTab.Delegations:
+        return <MyStake />;
+      case StakeTab.UnbondingDelegations:
+        return <Unstaking />;
+    }
+  }
 });
 
 function TabPill({
@@ -288,9 +354,7 @@ function Validators() {
   const wallet = useMultisigWallet();
 
   const [needle, setNeedle] = useState("");
-  const { selectedValidator, setSelectedValidator } = useContext(
-    SelectedValidatorContext
-  );
+  const { state, dispatch } = useContext(StakeStateContext);
   const { activeValidators, fuse } = useMemo(() => {
     const activeValidators = validators.filter((validator) => {
       return validator.active;
@@ -309,7 +373,7 @@ function Validators() {
 
   return (
     <View style={{ flex: 1, marginTop: 10 }}>
-      {selectedValidator === null && (
+      {state.selectedValidator ? null : (
         <View style={{ flexDirection: "row" }}>
           <View style={{ padding: 10 }}>
             <Text style={{ fontSize: 15, color: "white" }}>Validators</Text>
@@ -343,27 +407,14 @@ function Validators() {
           </View>
         </View>
       )}
-      {selectedValidator === null ? (
-        <FlatList
-          data={validatorsToShow}
-          renderItem={({ item }) => (
-            <ValidatorItem
-              validator={item}
-              onPress={setSelectedValidator}
-              active={false}
-            />
-          )}
-          keyExtractor={(item) => item.address}
-        />
-      ) : (
+      {state.selectedValidator ? (
         <ValidatorItem
-          validator={selectedValidator}
+          validator={state.selectedValidator}
           onValidate={async ({ amount, validator }) => {
             if (!isAnyTerraMultisigWallet(wallet)) return;
 
             invariant(wallet.address, "Expected wallet address to exist.");
             invariant(wallet.currentAdmin, "Expected current admin to exist.");
-            setSelectedValidator(null);
 
             try {
               const { digits } = formatExtendedCoin({
@@ -387,14 +438,29 @@ function Validators() {
                 multisig: wallet.currentAdmin,
                 wrap: true,
               });
-              setSelectedValidator(null);
+              dispatch({ type: "clear-selected-validator" });
               await refreshDelegations();
             } catch (e) {
               console.log(e);
             }
           }}
           active
-          onCancel={() => setSelectedValidator(null)}
+          onCancel={() => {
+            dispatch({ type: "clear-selected-validator" });
+          }}
+        />
+      ) : (
+        <FlatList
+          data={validatorsToShow}
+          renderItem={({ item }) => (
+            <ValidatorItem
+              validator={item}
+              onPress={(payload) => {
+                dispatch({ type: "set-selected-validator", payload });
+              }}
+            />
+          )}
+          keyExtractor={(item) => item.address}
         />
       )}
     </View>
