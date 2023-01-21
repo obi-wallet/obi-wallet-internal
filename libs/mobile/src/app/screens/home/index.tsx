@@ -237,39 +237,43 @@ export function HomeScreen() {
     const currentWallet = walletsStore.currentWallet;
 
     if (isTerraMultisigWallet(currentWallet) && currentWallet.isOutdated) {
-      Alert.alert("Wallet out of date", "Your wallet is out of date.", [
-        {
-          text: "Update",
-          onPress: async () => {
-            const multisig = currentWallet.currentAdmin;
-            invariant(multisig, "Expected `currentAdmin` to exist.");
+      Alert.alert(
+        "Verified Update Available",
+        "Update your Obi Smart Account to continue testing.",
+        [
+          {
+            text: "Update",
+            onPress: async () => {
+              const multisig = currentWallet.currentAdmin;
+              invariant(multisig, "Expected `currentAdmin` to exist.");
 
-            const admin = multisig.multisig?.address;
-            invariant(admin, "Expected multisig address to exist.");
+              const admin = multisig.multisig?.address;
+              invariant(admin, "Expected multisig address to exist.");
 
-            const proxyAddress = currentWallet.proxyAddress;
-            invariant(proxyAddress, "Expected `proxyAddress` to exist.");
+              const proxyAddress = currentWallet.proxyAddress;
+              invariant(proxyAddress, "Expected `proxyAddress` to exist.");
 
-            const message = terra.getMigrateMessage({
-              proxyAddress: proxyAddress.address,
-              admin,
-              chainId: currentWallet.chain,
-            });
-            const response = await RequestObiTerraSignAndBroadcastMsg.send({
-              id: currentWallet.id,
-              messages: [message.toAmino()],
-              multisig,
-            });
-
-            if (!isTxError(response)) {
-              await currentWallet.finishProxySetup({
-                address: proxyAddress.address,
-                codeId: terraChains[currentWallet.chain].currentCodeId,
+              const message = terra.getMigrateMessage({
+                proxyAddress: proxyAddress.address,
+                admin,
+                chainId: currentWallet.chain,
               });
-            }
+              const response = await RequestObiTerraSignAndBroadcastMsg.send({
+                id: currentWallet.id,
+                messages: [message.toAmino()],
+                multisig,
+              });
+
+              if (!isTxError(response)) {
+                await currentWallet.finishProxySetup({
+                  address: proxyAddress.address,
+                  codeId: terraChains[currentWallet.chain].currentCodeId,
+                });
+              }
+            },
           },
-        },
-      ]);
+        ]
+      );
     }
   }, [walletsStore.currentWallet]);
 
