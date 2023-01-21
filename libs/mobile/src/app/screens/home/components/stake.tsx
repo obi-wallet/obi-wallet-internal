@@ -6,6 +6,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   Delegation,
   ExtendedValidator,
+  isAnyTerraMultisigWallet,
+  RequestObiTerraSignAndBroadcastMsg,
+  terra,
   Text,
   TextInput,
   UnbondingDelegation,
@@ -28,15 +31,17 @@ import {
 import { ScrollView } from "react-native-gesture-handler";
 import { GestureResponderEvent } from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import invariant from "tiny-invariant";
 
 import {
   formatCoin,
+  formatExtendedCoin,
   useDelegations,
   useRewards,
   useUnbondingDelegations,
   useValidators,
 } from "../../../balances";
-import { useStore } from "../../../stores";
+import { useMultisigWallet, useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
@@ -295,6 +300,8 @@ const Balance = observer(() => {
 
 function Validators() {
   const { validators } = useValidators();
+  const wallet = useMultisigWallet();
+
   const [needle, setNeedle] = useState("");
   const { selectedValidator, setSelectedValidator } = useContext(
     SelectedValidatorContext
@@ -366,12 +373,39 @@ function Validators() {
       ) : (
         <ValidatorItem
           validator={selectedValidator}
-          onValidate={(args) => {
-            Alert.alert(
-              "Stake",
-              "validating " + args.amount + " to " + args.validator.label
-            );
+          onValidate={async ({ amount, validator }) => {
+            if (!isAnyTerraMultisigWallet(wallet)) return;
+
+            invariant(wallet.address, "Expected wallet address to exist.");
+            invariant(wallet.currentAdmin, "Expected current admin to exist.");
             setSelectedValidator(null);
+
+            try {
+              const { digits } = formatExtendedCoin({
+                denom: "uluna",
+                amount: "0",
+                usdPrice: 0,
+              });
+              await RequestObiTerraSignAndBroadcastMsg.send({
+                id: wallet.id,
+                messages: [
+                  terra
+                    .getStakeMessage({
+                      sender: wallet.address,
+                      validator: validator.address,
+                      amount:
+                        parseFloat(amount.replace(",", ".")) * 10 ** digits,
+                      chainId: wallet.chain,
+                    })
+                    .toAmino(),
+                ],
+                multisig: wallet.currentAdmin,
+                wrap: true,
+              });
+              setSelectedValidator(null);
+            } catch (e) {
+              console.log(e);
+            }
           }}
           active
           onCancel={() => setSelectedValidator(null)}
