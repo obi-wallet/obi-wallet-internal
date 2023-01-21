@@ -127,7 +127,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
       multisig.multisig?.publicKey,
       currentTerraChainInformation.chainId,
       messages,
-      props.onCancel,
+      props,
     ]);
 
     function getKey({

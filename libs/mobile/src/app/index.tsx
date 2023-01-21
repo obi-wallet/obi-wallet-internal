@@ -82,10 +82,15 @@ export function BaseApp({ initialConfig, providerProps }: BaseAppProps) {
 
   return (
     <Provider {...providerProps} initialConfig={initialConfig}>
-      <DemoModeHeader />
-      <StateRenderer />
-      <Modals />
-      {updating ? <Load /> : null}
+      {updating ? (
+        <Load />
+      ) : (
+        <>
+          <DemoModeHeader />
+          <StateRenderer />
+          <Modals />
+        </>
+      )}
     </Provider>
   );
 }
