@@ -13,7 +13,7 @@ import { PrettyMessage } from "../src/app/modals/signature-modal/pretty-message"
 import { Provider } from "../src/app/provider";
 
 const config: Config = {
-  brand: Brand.Loop,
+  brand: Brand.Obi,
   defaultMultisigWalletType: WalletType.TerraMultisig,
   cosmosChains: {
     enabled: ["juno-1", "uni-3"],
@@ -44,11 +44,11 @@ describe("Terra", () => {
   test("PrettyMessageSend", async () => {
     const message = new MsgSend(address, address, { uluna: 1 });
     renderPrettyMessage(message);
-    expect(screen.getByText("Send")).toBeDefined();
     expect(
-      screen.getByText("terra18aw4ee...yktq4 will receive:")
+      screen.getByText("To: terra18aw4eedj4v325...edl9ggaayktq4")
     ).toBeDefined();
-    expect(screen.getByText("0.000001 LUNA")).toBeDefined();
+
+    expect(screen.getByText("0.000001LUNA")).toBeDefined();
   });
 
   test("PrettyMessageInstantiateContract", async () => {
@@ -63,6 +63,9 @@ describe("Terra", () => {
     expect(screen.getByText("Execute Wasm Contract")).toBeDefined();
     expect(
       screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+    ).toBeDefined();
+    expect(
+      screen.getByText("Check the data tab for the full message")
     ).toBeDefined();
   });
 
