@@ -40,8 +40,6 @@ export interface Rewards {
 }
 
 export abstract class AbstractBalancesStore {
-  public abstract getBalances(): ExtendedCoin[];
-  public abstract fetchBalances(): Promise<void>;
   public abstract getDelegations(): Delegation[];
   public abstract fetchDelegations(): Promise<void>;
   public abstract getUnbondingDelegations(): UnbondingDelegation[];

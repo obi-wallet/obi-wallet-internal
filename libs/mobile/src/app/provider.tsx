@@ -13,9 +13,12 @@ import { IntlProvider } from "react-intl";
 import { StatusBar } from "react-native";
 import { endConnection, initConnection } from "react-native-iap";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 import { createRootStore } from "../background/root-store";
 import { StoreContext } from "./stores";
+
+const queryClient = new QueryClient();
 
 export interface ProviderProps {
   children: ReactNode;
@@ -44,50 +47,52 @@ export const Provider = observer<ProviderProps>(
 
     return (
       <StrictMode>
-        <StoreContext.Provider value={rootStore}>
-          <IntlProvider
-            defaultLocale="en"
-            locale={currentLanguage}
-            messages={messages[currentLanguage]}
-            formats={{
-              date: {
-                en: {
-                  month: "short",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  hour12: false,
-                  minute: "2-digit",
-                  timeZoneName: "short",
+        <QueryClientProvider client={queryClient}>
+          <StoreContext.Provider value={rootStore}>
+            <IntlProvider
+              defaultLocale="en"
+              locale={currentLanguage}
+              messages={messages[currentLanguage]}
+              formats={{
+                date: {
+                  en: {
+                    month: "short",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    hour12: false,
+                    minute: "2-digit",
+                    timeZoneName: "short",
+                  },
+                  de: {
+                    month: "short",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    hour12: false,
+                    minute: "2-digit",
+                    timeZoneName: "short",
+                  },
+                  es: {
+                    month: "short",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    hour12: false,
+                    minute: "2-digit",
+                    timeZoneName: "short",
+                  },
                 },
-                de: {
-                  month: "short",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  hour12: false,
-                  minute: "2-digit",
-                  timeZoneName: "short",
-                },
-                es: {
-                  month: "short",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  hour12: false,
-                  minute: "2-digit",
-                  timeZoneName: "short",
-                },
-              },
-            }}
-          >
-            <SafeAreaProvider>
-              <NavigationContainer {...navigationContainerProps}>
-                <ThemeProvider theme={getTheme(configStore.brand)}>
-                  <StatusBar barStyle="light-content" />
-                  {children}
-                </ThemeProvider>
-              </NavigationContainer>
-            </SafeAreaProvider>
-          </IntlProvider>
-        </StoreContext.Provider>
+              }}
+            >
+              <SafeAreaProvider>
+                <NavigationContainer {...navigationContainerProps}>
+                  <ThemeProvider theme={getTheme(configStore.brand)}>
+                    <StatusBar barStyle="light-content" />
+                    {children}
+                  </ThemeProvider>
+                </NavigationContainer>
+              </SafeAreaProvider>
+            </IntlProvider>
+          </StoreContext.Provider>
+        </QueryClientProvider>
       </StrictMode>
     );
   }

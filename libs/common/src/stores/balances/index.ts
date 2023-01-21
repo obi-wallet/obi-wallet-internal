@@ -31,14 +31,6 @@ export class BalancesStore {
     });
   }
 
-  public get balances() {
-    return this.store.getBalances();
-  }
-
-  public async fetchBalances() {
-    await this.store.fetchBalances();
-  }
-
   public get delegations() {
     return this.store.getDelegations();
   }

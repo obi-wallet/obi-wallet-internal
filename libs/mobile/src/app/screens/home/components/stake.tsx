@@ -44,8 +44,8 @@ import invariant from "tiny-invariant";
 import {
   formatCoin,
   formatExtendedCoin,
-  useBalances,
   useDelegations,
+  useRawBalances,
   useRewards,
   useUnbondingDelegations,
   useValidators,
@@ -404,8 +404,8 @@ function Validators() {
     : activeValidators;
 
   const { chainStore } = useStore();
-  const { balances, refreshBalances } = useBalances();
-  const amountToShow = balances.find((balance) => {
+  const rawBalances = useRawBalances();
+  const amountToShow = rawBalances.data?.find((balance) => {
     return balance.denom === chainStore.currentTerraChainInformation.denom;
   });
 
@@ -478,7 +478,7 @@ function Validators() {
                 wrap: true,
               });
               dispatch({ type: "clear-selected-validator" });
-              await Promise.all([refreshDelegations(), refreshBalances()]);
+              await Promise.all([refreshDelegations(), rawBalances.refetch()]);
             } catch (e) {
               console.log(e);
             }
