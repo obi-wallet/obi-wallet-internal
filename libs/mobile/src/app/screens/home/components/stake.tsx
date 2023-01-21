@@ -59,25 +59,9 @@ const SelectedValidatorContext = createContext<{
 export const Stake = observer(() => {
   const theme = useTheme();
   const SafeArea = useSafeAreaInsets();
-  const { refreshDelegations } = useDelegations();
-  const { refreshUnbondingDelegations } = useUnbondingDelegations();
-  const { refreshValidators } = useValidators();
-  const { refreshRewards } = useRewards();
 
   const [selectedValidator, setSelectedValidator] =
     useState<ExtendedValidator | null>(null);
-
-  useEffect(() => {
-    void refreshDelegations();
-    void refreshUnbondingDelegations();
-    void refreshValidators();
-    void refreshRewards();
-  }, [
-    refreshDelegations,
-    refreshUnbondingDelegations,
-    refreshValidators,
-    refreshRewards,
-  ]);
 
   const children = (
     <SelectedValidatorContext.Provider
@@ -300,6 +284,7 @@ const Balance = observer(() => {
 
 function Validators() {
   const { validators } = useValidators();
+  const { refreshDelegations } = useDelegations();
   const wallet = useMultisigWallet();
 
   const [needle, setNeedle] = useState("");
@@ -403,6 +388,7 @@ function Validators() {
                 wrap: true,
               });
               setSelectedValidator(null);
+              await refreshDelegations();
             } catch (e) {
               console.log(e);
             }
