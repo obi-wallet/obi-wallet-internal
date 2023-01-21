@@ -1,11 +1,10 @@
 import { Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useEffect, useRef, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { ReactNode, useState } from "react";
+import { FormattedMessage } from "react-intl";
 import { Alert, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
-import { Loader } from "../../loader";
 import { KeysList, KeysListProps } from "../../screens/components/keys-list";
 import { useStore } from "../../stores";
 import { ConfirmMessages, ConfirmMessagesProps } from "./confirm-messages";
@@ -32,35 +31,12 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
     data,
     ...props
   }) {
-    const intl = useIntl();
     const { configStore } = useStore();
-    const [settingBiometrics, setSettingBiometrics] = useState(false);
     const isObi = configStore.isObi();
     const isLoop = configStore.isLoop();
     const enoughSignatures = numberOfSignatures >= threshold;
 
     const [loading, setLoading] = useState(false);
-
-    const didAutosign = useRef(false);
-    useEffect(() => {
-      (async () => {
-        if (props.visible && !didAutosign.current) {
-          didAutosign.current = true;
-          const biometrics = data.find((key) => key.id === "biometrics");
-          if (biometrics && typeof biometrics.onPress === "function") {
-            try {
-              setSettingBiometrics(true);
-              await biometrics.onPress();
-            } catch (e) {
-              // noop
-            }
-            setSettingBiometrics(false);
-          }
-        }
-      })();
-      // We really only want to do this once
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.visible]);
 
     const getSignaturePercentage = () => {
       const percentage = (numberOfSignatures / threshold) * 100;
@@ -126,50 +102,16 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
             </Text>
           </View>
         )}
-        {settingBiometrics ? (
-          <View
-            style={{
-              marginVertical: 10,
-              backgroundColor: isLoop ? "#130F23" : "",
-              borderRadius: 12,
-              justifyContent: "center",
-              alignItems: "center",
-              paddingVertical: 50,
-            }}
-          >
-            <Loader
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 999,
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-              }}
-              loadingText={intl.formatMessage({
-                id: "onboarding6.loadingtext",
-                defaultMessage: "Preparing Wallet",
-              })}
-              animation={
-                isObi ? require("../../loader/obi-wallet-loading.json") : ""
-              }
-            />
-          </View>
-        ) : (
-          <KeysList
-            data={data}
-            tiled
-            style={{
-              marginVertical: 10,
-              backgroundColor: isObi ? "transparent" : "#130F23",
-              borderRadius: 12,
-              alignItems: "center",
-            }}
-          />
-        )}
+        <KeysList
+          data={data}
+          tiled
+          style={{
+            marginVertical: 10,
+            backgroundColor: isObi ? "transparent" : "#130F23",
+            borderRadius: 12,
+            alignItems: "center",
+          }}
+        />
         {isObi && (
           <View>
             <Text
