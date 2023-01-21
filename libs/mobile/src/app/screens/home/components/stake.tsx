@@ -350,13 +350,13 @@ const Balance = observer(() => {
 });
 
 function Validators() {
-  const { validators } = useValidators();
   const { refreshDelegations } = useDelegations();
   const wallet = useMultisigWallet();
 
   const [needle, setNeedle] = useState("");
   const { state, dispatch } = useContext(StakeStateContext);
 
+  const { validators } = useValidators();
   const { activeValidators, fuse } = useMemo(() => {
     const activeValidators = validators.filter((validator) => {
       return validator.active;
@@ -626,10 +626,13 @@ function ValidatorItem({
 }
 
 function MyStake() {
-  const { delegations } = useDelegations();
-  const { validators } = useValidators();
+  const { delegations, refreshDelegations } = useDelegations();
+  const { refreshUnbondingDelegations } = useUnbondingDelegations();
+  const wallet = useMultisigWallet();
+
   const { state, dispatch } = useContext(StakeStateContext);
 
+  const { validators } = useValidators();
   const selectedValidator = validators.find((validator) => {
     return validator.address === state.selectedValidator;
   });
@@ -652,8 +655,42 @@ function MyStake() {
         <ValidatorItem
           validator={selectedValidator}
           confirmLabel="Unstake"
-          onConfirm={() => {
-            Alert.alert("not implemented yet");
+          onConfirm={async ({ amount, validator }) => {
+            if (!isAnyTerraMultisigWallet(wallet)) return;
+
+            invariant(wallet.address, "Expected wallet address to exist.");
+            invariant(wallet.currentAdmin, "Expected current admin to exist.");
+
+            try {
+              const { digits } = formatExtendedCoin({
+                denom: "uluna",
+                amount: "0",
+                usdPrice: 0,
+              });
+              await RequestObiTerraSignAndBroadcastMsg.send({
+                id: wallet.id,
+                messages: [
+                  terra
+                    .getUnstakeMessage({
+                      sender: wallet.address,
+                      validator: validator.address,
+                      amount:
+                        parseFloat(amount.replace(",", ".")) * 10 ** digits,
+                      chainId: wallet.chain,
+                    })
+                    .toAmino(),
+                ],
+                multisig: wallet.currentAdmin,
+                wrap: true,
+              });
+              dispatch({ type: "clear-selected-validator" });
+              await Promise.all([
+                refreshDelegations,
+                refreshUnbondingDelegations,
+              ]);
+            } catch (e) {
+              console.log(e);
+            }
           }}
           active
           onCancel={() => {
