@@ -12,6 +12,7 @@ import {
   Text,
   TextInput,
   UnbondingDelegation,
+  Validator,
 } from "@obi-wallet/common";
 import Fuse from "fuse.js";
 import { DateTime } from "luxon";
@@ -65,7 +66,7 @@ enum StakeTab {
 }
 
 type StakeState = {
-  selectedValidator: ExtendedValidator | null;
+  selectedValidator: string | null;
   selectedTab: StakeTab;
 };
 const initialStakeState: StakeState = {
@@ -75,7 +76,7 @@ const initialStakeState: StakeState = {
 type StakeAction =
   | {
       type: "set-selected-validator";
-      payload: ExtendedValidator;
+      payload: Validator;
     }
   | {
       type: "clear-selected-validator";
@@ -90,7 +91,7 @@ function stakeReducer(state: StakeState, action: StakeAction): StakeState {
     case "clear-selected-validator":
       return { ...state, selectedValidator: null };
     case "set-selected-validator":
-      return { ...state, selectedValidator: action.payload };
+      return { ...state, selectedValidator: action.payload.address };
     case "set-selected-tab":
       return { selectedValidator: null, selectedTab: action.payload };
   }
@@ -142,7 +143,7 @@ export const Stake = observer(() => {
 
   return children;
 });
-//staking options take remaining space
+
 const StakingOptions = observer(() => {
   const { chainStore } = useStore();
   const { delegations } = useDelegations();
@@ -355,6 +356,7 @@ function Validators() {
 
   const [needle, setNeedle] = useState("");
   const { state, dispatch } = useContext(StakeStateContext);
+
   const { activeValidators, fuse } = useMemo(() => {
     const activeValidators = validators.filter((validator) => {
       return validator.active;
@@ -366,6 +368,9 @@ function Validators() {
       fuse,
     };
   }, [validators]);
+  const selectedValidator = validators.find((validator) => {
+    return validator.address === state.selectedValidator;
+  });
 
   const validatorsToShow = needle
     ? fuse.search(needle).map((result) => result.item)
@@ -373,7 +378,7 @@ function Validators() {
 
   return (
     <View style={{ flex: 1, marginTop: 10 }}>
-      {state.selectedValidator ? null : (
+      {selectedValidator ? null : (
         <View style={{ flexDirection: "row" }}>
           <View style={{ padding: 10 }}>
             <Text style={{ fontSize: 15, color: "white" }}>Validators</Text>
@@ -407,10 +412,11 @@ function Validators() {
           </View>
         </View>
       )}
-      {state.selectedValidator ? (
+      {selectedValidator ? (
         <ValidatorItem
-          validator={state.selectedValidator}
-          onValidate={async ({ amount, validator }) => {
+          validator={selectedValidator}
+          confirmLabel="Stake"
+          onConfirm={async ({ amount, validator }) => {
             if (!isAnyTerraMultisigWallet(wallet)) return;
 
             invariant(wallet.address, "Expected wallet address to exist.");
@@ -479,18 +485,17 @@ function ValidatorItem({
   onPress,
   active = false,
   onCancel,
-  onValidate,
+  onConfirm,
+  confirmLabel,
 }: {
   validator: ExtendedValidator;
   onPress?: (validator: ExtendedValidator) => void;
   active?: boolean;
-  onValidate?: (args: { validator: ExtendedValidator; amount: string }) => void;
+  onConfirm?: (args: { validator: ExtendedValidator; amount: string }) => void;
   onCancel?: () => void;
+  confirmLabel?: string;
 }) {
-  const { chainStore } = useStore();
   const [amount, setAmount] = useState("");
-  const obi =
-    validator.address === chainStore.currentTerraChainInformation.obiValidator;
   const promoted = validator.promoted;
 
   return (
@@ -510,9 +515,7 @@ function ValidatorItem({
         onPress={() => (onPress ? onPress(validator) : {})}
       >
         <View style={{ width: 50, height: 50 }}>
-          {obi ? (
-            <ObiLogo />
-          ) : validator.icon ? (
+          {validator.icon ? (
             <Image
               style={{
                 width: 50,
@@ -537,7 +540,7 @@ function ValidatorItem({
         </View>
         <View style={{ marginLeft: 10, justifyContent: "center", flex: 1 }}>
           <Text style={{ color: "white", flexWrap: "wrap" }} numberOfLines={1}>
-            {obi ? "Obi Technologies" : validator.label}
+            {validator.label}
           </Text>
           <View>
             <Text style={{ color: "#7E7E7E", fontSize: 9 }} numberOfLines={1}>
@@ -551,7 +554,7 @@ function ValidatorItem({
             <TouchableOpacity
               style={{ backgroundColor: "white", borderRadius: 32 }}
               onPress={() =>
-                onValidate ? onValidate({ validator, amount }) : {}
+                onConfirm ? onConfirm({ validator, amount }) : {}
               }
             >
               <Text
@@ -561,7 +564,7 @@ function ValidatorItem({
                   paddingHorizontal: 20,
                 }}
               >
-                stake
+                {confirmLabel}
               </Text>
             </TouchableOpacity>
           </View>
@@ -624,6 +627,12 @@ function ValidatorItem({
 
 function MyStake() {
   const { delegations } = useDelegations();
+  const { validators } = useValidators();
+  const { state, dispatch } = useContext(StakeStateContext);
+
+  const selectedValidator = validators.find((validator) => {
+    return validator.address === state.selectedValidator;
+  });
 
   return (
     <View style={{ flex: 1 }}>
@@ -639,17 +648,32 @@ function MyStake() {
       >
         <Text style={{ fontSize: 10, color: "white" }}>Validator</Text>
       </View>
-      <FlatList
-        data={delegations}
-        renderItem={({ item }) => <StakeItem delegation={item} />}
-        keyExtractor={(item) => item.validator.address}
-      />
+      {selectedValidator ? (
+        <ValidatorItem
+          validator={selectedValidator}
+          confirmLabel="Unstake"
+          onConfirm={() => {
+            Alert.alert("not implemented yet");
+          }}
+          active
+          onCancel={() => {
+            dispatch({ type: "clear-selected-validator" });
+          }}
+        />
+      ) : (
+        <FlatList
+          data={delegations}
+          renderItem={({ item }) => <StakeItem delegation={item} />}
+          keyExtractor={(item) => item.validator.address}
+        />
+      )}
     </View>
   );
 }
 
 function StakeItem({ delegation }: { delegation: Delegation }) {
   const formatted = formatCoin(delegation.balance);
+  const { state, dispatch } = useContext(StakeStateContext);
 
   return (
     <View
@@ -680,7 +704,10 @@ function StakeItem({ delegation }: { delegation: Delegation }) {
             ...(isSmallScreen() ? { height: 35 } : {}),
           }}
           onPress={() => {
-            Alert.alert("Not implemented yet");
+            dispatch({
+              type: "set-selected-validator",
+              payload: delegation.validator,
+            });
           }}
         >
           <Text
