@@ -19,6 +19,7 @@ import {
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
+import { Alert } from "react-native";
 import invariant from "tiny-invariant";
 
 import {
@@ -90,20 +91,43 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
     }
 
     useEffect(() => {
-      waitForTxInfo.current = (async () => {
-        const publicKey = multisig.multisig?.publicKey;
-        invariant(publicKey, "Expected `publicKey` to exist.");
-        const key = LegacyAminoMultisigPublicKey.fromAmino(publicKey);
-        transactionInformation.current = await terra.createMultisigTransaction({
-          key,
-          messages,
-          chainId: currentTerraChainInformation.chainId,
-        });
+      (async () => {
+        for (let i = 0; i < 10; i++) {
+          try {
+            waitForTxInfo.current = (async () => {
+              const publicKey = multisig.multisig?.publicKey;
+              invariant(publicKey, "Expected `publicKey` to exist.");
+              const key = LegacyAminoMultisigPublicKey.fromAmino(publicKey);
+              transactionInformation.current =
+                await terra.createMultisigTransaction({
+                  key,
+                  messages,
+                  chainId: currentTerraChainInformation.chainId,
+                });
+            })();
+            await waitForTxInfo.current;
+            break;
+          } catch (e) {
+            const error = e as Error;
+            if (i === 9) {
+              Alert.alert("Something went wrong", error.message, [
+                {
+                  text: "Cancel Transaction",
+                  style: "cancel",
+                  onPress: () => {
+                    props.onCancel();
+                  },
+                },
+              ]);
+            }
+          }
+        }
       })();
     }, [
       multisig.multisig?.publicKey,
       currentTerraChainInformation.chainId,
       messages,
+      props.onCancel,
     ]);
 
     function getKey({
