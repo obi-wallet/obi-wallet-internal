@@ -4,6 +4,7 @@ import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
+  Coin,
   Delegation,
   ExtendedValidator,
   isAnyTerraMultisigWallet,
@@ -43,6 +44,7 @@ import invariant from "tiny-invariant";
 import {
   formatCoin,
   formatExtendedCoin,
+  useBalances,
   useDelegations,
   useRewards,
   useUnbondingDelegations,
@@ -98,6 +100,8 @@ function stakeReducer(state: StakeState, action: StakeAction): StakeState {
 const StakeStateContext = createContext<{
   state: StakeState;
   dispatch: Dispatch<StakeAction>;
+  // Fine because we set it the value via `StakeStateContext.Provider` in `Stake`
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 }>(null!);
 
 export const Stake = observer(() => {
@@ -398,6 +402,12 @@ function Validators() {
     ? fuse.search(needle).map((result) => result.item)
     : activeValidators;
 
+  const { chainStore } = useStore();
+  const { balances, refreshBalances } = useBalances();
+  const amountToShow = balances.find((balance) => {
+    return balance.denom === chainStore.currentTerraChainInformation.denom;
+  });
+
   return (
     <View style={{ flex: 1, marginTop: 10 }}>
       {selectedValidator ? null : (
@@ -467,7 +477,7 @@ function Validators() {
                 wrap: true,
               });
               dispatch({ type: "clear-selected-validator" });
-              await refreshDelegations();
+              await Promise.all([refreshDelegations(), refreshBalances()]);
             } catch (e) {
               console.log(e);
             }
@@ -476,6 +486,7 @@ function Validators() {
           onCancel={() => {
             dispatch({ type: "clear-selected-validator" });
           }}
+          amountToShow={amountToShow}
         />
       ) : (
         <FlatList
@@ -509,6 +520,7 @@ function ValidatorItem({
   onCancel,
   onConfirm,
   confirmLabel,
+  amountToShow,
 }: {
   validator: ExtendedValidator;
   onPress?: (validator: ExtendedValidator) => void;
@@ -516,9 +528,18 @@ function ValidatorItem({
   onConfirm?: (args: { validator: ExtendedValidator; amount: string }) => void;
   onCancel?: () => void;
   confirmLabel?: string;
+  amountToShow?: Coin;
 }) {
+  const { chainStore } = useStore();
   const [amount, setAmount] = useState("");
   const promoted = validator.promoted;
+
+  const formatted = formatCoin(
+    amountToShow || {
+      denom: chainStore.currentTerraChainInformation.denom,
+      amount: "0",
+    }
+  );
 
   return (
     <Container
@@ -609,15 +630,20 @@ function ValidatorItem({
               <View
                 style={{
                   width: 36,
-                  aspectRatio: 1 / 1,
-                  backgroundColor: "#000",
+                  height: 36,
                   borderRadius: 36,
                   margin: 12,
                 }}
-              />
+              >
+                <CoinIcon source={formatted?.icon ?? null} />
+              </View>
               <View style={{ justifyContent: "center" }}>
-                <Text style={{ color: "#fff", fontWeight: "600" }}>Luna</Text>
-                <Text style={{ color: "#fff", fontWeight: "400" }}>123.45</Text>
+                <Text style={{ color: "#fff", fontWeight: "600" }}>
+                  {formatted.denom}
+                </Text>
+                <Text style={{ color: "#fff", fontWeight: "400" }}>
+                  {formatted.amount}
+                </Text>
               </View>
             </View>
             <View style={{ flex: 1, justifyContent: "center" }}>
@@ -658,6 +684,9 @@ function MyStake() {
   const selectedValidator = validators.find((validator) => {
     return validator.address === state.selectedValidator;
   });
+  const amountToShow = delegations.find((delegation) => {
+    return delegation.validator.address === state.selectedValidator;
+  })?.balance;
 
   return (
     <View style={{ flex: 1 }}>
@@ -718,6 +747,7 @@ function MyStake() {
           onCancel={() => {
             dispatch({ type: "clear-selected-validator" });
           }}
+          amountToShow={amountToShow}
         />
       ) : (
         <FlatList
@@ -732,7 +762,7 @@ function MyStake() {
 
 function StakeItem({ delegation }: { delegation: Delegation }) {
   const formatted = formatCoin(delegation.balance);
-  const { state, dispatch } = useContext(StakeStateContext);
+  const { dispatch } = useContext(StakeStateContext);
 
   return (
     <View
