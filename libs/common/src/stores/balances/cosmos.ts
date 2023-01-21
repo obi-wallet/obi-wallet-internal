@@ -11,6 +11,7 @@ import {
   Delegation,
   ExtendedCoin,
   ExtendedValidator,
+  Rewards,
   UnbondingDelegation,
 } from "./abstract-balances-store";
 
@@ -245,8 +246,14 @@ export class CosmosBalancesStore extends AbstractBalancesStore {
     // TODO: not implemented yet
   }
 
-  public getRewards(): Coin[] {
-    return [];
+  public getRewards(): Rewards {
+    return {
+      perDelegator: [],
+      total: {
+        denom: this.chainStore.currentCosmosChainInformation.denom,
+        amount: "0",
+      },
+    };
   }
 
   public async fetchRewards(): Promise<void> {

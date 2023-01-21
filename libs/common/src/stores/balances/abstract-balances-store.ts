@@ -34,6 +34,11 @@ export interface UnbondingDelegation {
   completionTime: Date;
 }
 
+export interface Rewards {
+  perDelegator: { address: string; rewards: Coin }[];
+  total: Coin;
+}
+
 export abstract class AbstractBalancesStore {
   public abstract getBalances(): ExtendedCoin[];
   public abstract fetchBalances(): Promise<void>;
@@ -43,6 +48,6 @@ export abstract class AbstractBalancesStore {
   public abstract fetchUnbondingDelegations(): Promise<void>;
   public abstract getValidators(): ExtendedValidator[];
   public abstract fetchValidators(): Promise<void>;
-  public abstract getRewards(): Coin[];
+  public abstract getRewards(): Rewards;
   public abstract fetchRewards(): Promise<void>;
 }

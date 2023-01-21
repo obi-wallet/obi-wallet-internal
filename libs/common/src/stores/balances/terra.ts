@@ -1,4 +1,4 @@
-import { Validator as RawValidator } from "@terra-money/terra.js";
+import { Coins, Validator as RawValidator } from "@terra-money/terra.js";
 import {
   Pagination,
   PaginationOptions,
@@ -19,6 +19,7 @@ import {
   Delegation,
   ExtendedCoin,
   ExtendedValidator,
+  Rewards,
   UnbondingDelegation,
 } from "./abstract-balances-store";
 
@@ -34,7 +35,7 @@ export class TerraBalancesStore extends AbstractBalancesStore {
   > = {};
   public validatorsPerChain: Partial<Record<TerraChain, ExtendedValidator[]>> =
     {};
-  public rewardsPerChain: Partial<Record<TerraChain, Coin[]>> = {};
+  public rewardsPerChain: Partial<Record<TerraChain, Rewards>> = {};
 
   constructor({
     chainStore,
@@ -238,8 +239,16 @@ export class TerraBalancesStore extends AbstractBalancesStore {
     });
   }
 
-  public getRewards(): Coin[] {
-    return this.rewardsPerChain[this.chainStore.currentTerraChain] ?? [];
+  public getRewards(): Rewards {
+    return (
+      this.rewardsPerChain[this.chainStore.currentTerraChain] ?? {
+        perDelegator: [],
+        total: {
+          denom: this.chainStore.currentTerraChainInformation.denom,
+          amount: "0",
+        },
+      }
+    );
   }
 
   public async fetchRewards(): Promise<void> {
@@ -249,14 +258,37 @@ export class TerraBalancesStore extends AbstractBalancesStore {
     const client = await createLcdClient(this.chainStore.currentTerraChain);
 
     const rewards = await client.distribution.rewards(address);
-    runInAction(() => {
-      this.rewardsPerChain[this.chainStore.currentTerraChain] =
-        rewards.total.map((coin) => {
-          return {
-            denom: coin.denom,
-            amount: coin.amount.toString(),
+
+    const handleRewards = (coins: Coins) => {
+      const mapped = coins.map((coin) => {
+        return {
+          denom: coin.denom,
+          amount: coin.amount.toString(),
+        };
+      });
+      return mapped.length > 0
+        ? mapped[0]
+        : {
+            denom: this.chainStore.currentTerraChainInformation.denom,
+            amount: "0",
           };
-        });
+    };
+
+    const perDelegator = R.values(
+      R.mapObjIndexed((rewards, address) => {
+        return {
+          address,
+          rewards: handleRewards(rewards),
+        };
+      }, rewards.rewards)
+    );
+    const total = handleRewards(rewards.total);
+
+    runInAction(() => {
+      this.rewardsPerChain[this.chainStore.currentTerraChain] = {
+        perDelegator,
+        total,
+      };
     });
   }
 }

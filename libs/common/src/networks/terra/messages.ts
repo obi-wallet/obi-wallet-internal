@@ -5,6 +5,7 @@ import {
   MsgExecuteContract,
   MsgMigrateContract,
   MsgUndelegate,
+  MsgWithdrawDelegatorReward,
 } from "@terra-money/terra.js";
 import invariant from "tiny-invariant";
 
@@ -191,4 +192,14 @@ export function getUnstakeMessage({
     validator,
     new Coin(terraChains[chainId].denom, amount)
   );
+}
+
+export function getWithdrawRewardsMessage({
+  sender,
+  validator,
+}: {
+  sender: string;
+  validator: string;
+}) {
+  return new MsgWithdrawDelegatorReward(sender, validator);
 }

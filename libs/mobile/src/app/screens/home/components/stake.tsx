@@ -27,7 +27,6 @@ import {
   useState,
 } from "react";
 import {
-  Alert,
   FlatList,
   Image,
   StyleProp,
@@ -53,7 +52,6 @@ import { useMultisigWallet, useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
-import { ObiLogo } from "../../components/obi-logo";
 import {
   isSmallScreen,
   isSmallScreenNumber,
@@ -277,17 +275,13 @@ function TabPill({
 }
 
 const Balance = observer(() => {
-  const { chainStore, configStore } = useStore();
-  const { rewards } = useRewards();
+  const { configStore } = useStore();
+  const { rewards, refreshRewards } = useRewards();
+  const wallet = useMultisigWallet();
+
   const isObi = configStore.isObi();
 
-  const totalRewards =
-    rewards.length > 0
-      ? rewards[0]
-      : {
-          denom: chainStore.currentTerraChainInformation.denom,
-          amount: "0",
-        };
+  const totalRewards = rewards.total;
   const formattedRewards = formatCoin(totalRewards);
 
   return (
@@ -339,8 +333,36 @@ const Balance = observer(() => {
           justifyContent: "center",
           alignItems: "center",
         }}
-        onPress={() => {
-          Alert.alert("Not implemented yet");
+        onPress={async () => {
+          if (!isAnyTerraMultisigWallet(wallet)) return;
+
+          const sender = wallet.address;
+          invariant(sender, "Expected wallet address to exist.");
+          invariant(wallet.currentAdmin, "Expected current admin to exist.");
+
+          try {
+            const validators = rewards.perDelegator.map((delegator) => {
+              return delegator.address;
+            });
+            const messages = validators.map((validator) => {
+              return terra.getWithdrawRewardsMessage({
+                sender,
+                validator,
+              });
+            });
+
+            await RequestObiTerraSignAndBroadcastMsg.send({
+              id: wallet.id,
+              messages: messages.map((message) => {
+                return message.toAmino();
+              }),
+              multisig: wallet.currentAdmin,
+              wrap: true,
+            });
+            await refreshRewards();
+          } catch (e) {
+            console.log(e);
+          }
         }}
       >
         <Text style={{ color: "#437DFF" }}>Withdraw All Rewards</Text>
