@@ -256,7 +256,7 @@ export class TerraBalancesStore extends AbstractBalancesStore {
               return {
                 balance: {
                   denom: this.chainStore.currentTerraChainInformation.denom,
-                  amount: entry.initial_balance.minus(entry.balance).toString(),
+                  amount: entry.balance.toString(),
                 },
                 validator: {
                   icon: `https://github.com/terra-money/validator-images/blob/main/images/${validator.description.identity}.jpg`,

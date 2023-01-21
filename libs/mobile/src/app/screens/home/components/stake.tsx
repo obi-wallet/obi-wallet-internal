@@ -337,6 +337,7 @@ const Balance = observer(() => {
           justifyContent: "center",
           alignItems: "center",
         }}
+        disabled={rewards.perDelegator.length === 0}
         onPress={async () => {
           if (!isAnyTerraMultisigWallet(wallet)) return;
 
@@ -858,7 +859,7 @@ function UnstakeItem({
 }) {
   const formatted = formatCoin(unbondingDelegation.balance);
   const releaseDate = DateTime.fromJSDate(unbondingDelegation.completionTime);
-  const remainingDays = releaseDate.diffNow("days").days;
+  const remainingDays = Math.ceil(releaseDate.diffNow("days").days);
 
   return (
     <View
