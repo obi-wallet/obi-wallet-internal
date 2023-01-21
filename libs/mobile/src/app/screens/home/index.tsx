@@ -18,16 +18,15 @@ import {
   DrawerScreenProps,
 } from "@react-navigation/drawer";
 import { ParamListBase } from "@react-navigation/native";
-import { isTxError, MsgMigrateContract } from "@terra-money/terra.js";
+import { isTxError } from "@terra-money/terra.js";
 import { action } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, Platform, View } from "react-native";
+import { Alert, Platform } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import invariant from "tiny-invariant";
 
-import { getBiometricsKeyPair } from "../../biometrics";
 import { useStore } from "../../stores";
 import { AccountScreen } from "../account";
 import {

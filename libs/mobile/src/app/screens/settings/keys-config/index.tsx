@@ -28,11 +28,6 @@ import {
   WarningIcon,
 } from "../../components/keys-list";
 import { isSmallScreenNumber } from "../../components/screen-size";
-import Keys1 from "./assets/keys1.svg";
-import Keys2 from "./assets/keys2.svg";
-import Keys3 from "./assets/keys3.svg";
-import Keys4 from "./assets/keys4.svg";
-import Keys5 from "./assets/keys5.svg";
 import { KeysComponent } from "./keys-component";
 
 export const KeysConfigScreen = observer(() => {
