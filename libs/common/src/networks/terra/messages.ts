@@ -3,7 +3,6 @@ import {
   Coin,
   MsgDelegate,
   MsgExecuteContract,
-  MsgMigrateContract,
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
 } from "@terra-money/terra.js";

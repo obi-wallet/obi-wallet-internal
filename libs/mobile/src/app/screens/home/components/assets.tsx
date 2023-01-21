@@ -196,21 +196,9 @@ const BalanceAndActions = observer(() => {
 
 const AssetsList = observer(() => {
   const [sortAscending, setSortAscending] = useState(true);
-  const {
-    balances: unsortedBalances,
-    refreshBalances,
-    refreshing,
-  } = useBalances();
+  const balances = useBalances(sortAscending);
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
-  const balances = [...unsortedBalances];
-  balances.sort((a, b) => {
-    const [first, second] = sortAscending ? [b, a] : [a, b];
-    return (
-      formatExtendedCoin(first).valueInUsd -
-      formatExtendedCoin(second).valueInUsd
-    );
-  });
 
   return (
     <View
@@ -303,15 +291,15 @@ const AssetsList = observer(() => {
 
         <FlatList
           keyExtractor={(coin) => coin.denom}
-          data={balances}
+          data={balances.data}
           renderItem={(props) => <AssetsListItem {...props} />}
           style={{
             marginTop: 28,
           }}
           refreshControl={
             <RefreshControl
-              refreshing={refreshing}
-              onRefresh={refreshBalances}
+              refreshing={balances.isFetching}
+              onRefresh={balances.refetch}
               tintColor="rgba(246, 245, 255, 0.6)"
             />
           }

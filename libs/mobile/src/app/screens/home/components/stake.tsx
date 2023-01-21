@@ -44,8 +44,8 @@ import invariant from "tiny-invariant";
 import {
   formatCoin,
   formatExtendedCoin,
-  useBalances,
   useDelegations,
+  useRawBalances,
   useRewards,
   useUnbondingDelegations,
   useValidators,
@@ -148,16 +148,16 @@ export const Stake = observer(() => {
 
 const StakingOptions = observer(() => {
   const { chainStore } = useStore();
-  const { delegations } = useDelegations();
-  const { unbondingDelegations } = useUnbondingDelegations();
+  const delegations = useDelegations();
+  const unbondingDelegations = useUnbondingDelegations();
   const { state, dispatch } = useContext(StakeStateContext);
 
   const totalDelegations = {
     denom: chainStore.currentTerraChainInformation.denom,
     amount: R.sum(
-      delegations.map((delegation) => {
+      delegations.data?.map((delegation) => {
         return parseInt(delegation.balance.amount, 10);
-      })
+      }) ?? []
     ).toString(),
   };
 
@@ -167,9 +167,9 @@ const StakingOptions = observer(() => {
   const totalUnbondingDelegations = {
     denom: chainStore.currentTerraChainInformation.denom,
     amount: R.sum(
-      unbondingDelegations.map((delegation) => {
+      unbondingDelegations.data?.map((delegation) => {
         return parseInt(delegation.balance.amount, 10);
-      })
+      }) ?? []
     ).toString(),
   };
 
@@ -280,12 +280,12 @@ function TabPill({
 
 const Balance = observer(() => {
   const { configStore } = useStore();
-  const { rewards, refreshRewards } = useRewards();
+  const rewards = useRewards();
   const wallet = useMultisigWallet();
 
   const isObi = configStore.isObi();
 
-  const totalRewards = rewards.total;
+  const totalRewards = rewards.data.total;
   const formattedRewards = formatCoin(totalRewards);
 
   return (
@@ -337,7 +337,7 @@ const Balance = observer(() => {
           justifyContent: "center",
           alignItems: "center",
         }}
-        disabled={rewards.perDelegator.length === 0}
+        disabled={rewards.data.perDelegator.length === 0}
         onPress={async () => {
           if (!isAnyTerraMultisigWallet(wallet)) return;
 
@@ -346,7 +346,7 @@ const Balance = observer(() => {
           invariant(wallet.currentAdmin, "Expected current admin to exist.");
 
           try {
-            const validators = rewards.perDelegator.map((delegator) => {
+            const validators = rewards.data.perDelegator.map((delegator) => {
               return delegator.address;
             });
             const messages = validators.map((validator) => {
@@ -364,7 +364,7 @@ const Balance = observer(() => {
               multisig: wallet.currentAdmin,
               wrap: true,
             });
-            await refreshRewards();
+            await rewards.refetch();
           } catch (e) {
             console.log(e);
           }
@@ -377,25 +377,28 @@ const Balance = observer(() => {
 });
 
 function Validators() {
-  const { refreshDelegations } = useDelegations();
+  const delegations = useDelegations();
   const wallet = useMultisigWallet();
 
   const [needle, setNeedle] = useState("");
   const { state, dispatch } = useContext(StakeStateContext);
 
-  const { validators } = useValidators();
+  const validators = useValidators();
   const { activeValidators, fuse } = useMemo(() => {
-    const activeValidators = validators.filter((validator) => {
+    const activeValidators = validators.data?.filter((validator) => {
       return validator.active;
     });
-    const fuse = new Fuse(validators, { keys: ["label"], threshold: 0 });
+    const fuse = new Fuse(validators.data ?? [], {
+      keys: ["label"],
+      threshold: 0,
+    });
 
     return {
       activeValidators,
       fuse,
     };
   }, [validators]);
-  const selectedValidator = validators.find((validator) => {
+  const selectedValidator = validators.data?.find((validator) => {
     return validator.address === state.selectedValidator;
   });
 
@@ -404,8 +407,8 @@ function Validators() {
     : activeValidators;
 
   const { chainStore } = useStore();
-  const { balances, refreshBalances } = useBalances();
-  const amountToShow = balances.find((balance) => {
+  const rawBalances = useRawBalances();
+  const amountToShow = rawBalances.data?.find((balance) => {
     return balance.denom === chainStore.currentTerraChainInformation.denom;
   });
 
@@ -416,7 +419,7 @@ function Validators() {
           <View style={{ padding: 10 }}>
             <Text style={{ fontSize: 15, color: "white" }}>Validators</Text>
             <Text style={{ fontSize: 10, color: "white" }}>
-              {activeValidators.length} active validators
+              {activeValidators?.length ?? 0} active validators
             </Text>
           </View>
           <View style={{ flex: 1 }}>
@@ -478,7 +481,7 @@ function Validators() {
                 wrap: true,
               });
               dispatch({ type: "clear-selected-validator" });
-              await Promise.all([refreshDelegations(), refreshBalances()]);
+              await Promise.all([delegations.refetch(), rawBalances.refetch()]);
             } catch (e) {
               console.log(e);
             }
@@ -675,17 +678,17 @@ function ValidatorItem({
 }
 
 function MyStake() {
-  const { delegations, refreshDelegations } = useDelegations();
-  const { refreshUnbondingDelegations } = useUnbondingDelegations();
+  const delegations = useDelegations();
+  const unbondingDelegations = useUnbondingDelegations();
   const wallet = useMultisigWallet();
 
   const { state, dispatch } = useContext(StakeStateContext);
 
-  const { validators } = useValidators();
-  const selectedValidator = validators.find((validator) => {
+  const validators = useValidators();
+  const selectedValidator = validators.data?.find((validator) => {
     return validator.address === state.selectedValidator;
   });
-  const amountToShow = delegations.find((delegation) => {
+  const amountToShow = delegations.data?.find((delegation) => {
     return delegation.validator.address === state.selectedValidator;
   })?.balance;
 
@@ -737,8 +740,8 @@ function MyStake() {
               });
               dispatch({ type: "clear-selected-validator" });
               await Promise.all([
-                refreshDelegations,
-                refreshUnbondingDelegations,
+                delegations.refetch(),
+                unbondingDelegations.refetch(),
               ]);
             } catch (e) {
               console.log(e);
@@ -752,7 +755,7 @@ function MyStake() {
         />
       ) : (
         <FlatList
-          data={delegations}
+          data={delegations.data}
           renderItem={({ item }) => <StakeItem delegation={item} />}
           keyExtractor={(item) => item.validator.address}
         />
@@ -816,7 +819,7 @@ function StakeItem({ delegation }: { delegation: Delegation }) {
 }
 
 function Unstaking() {
-  const { unbondingDelegations } = useUnbondingDelegations();
+  const unbondingDelegations = useUnbondingDelegations();
 
   return (
     <View style={{ flex: 1 }}>
@@ -844,7 +847,7 @@ function Unstaking() {
         <Text style={{ fontSize: 10, color: "white" }}>Release</Text>
       </View>
       <FlatList
-        data={unbondingDelegations}
+        data={unbondingDelegations.data}
         renderItem={({ item }) => <UnstakeItem unbondingDelegation={item} />}
         keyExtractor={(item, index) => index.toString()}
       />

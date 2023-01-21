@@ -46,6 +46,7 @@ import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
 import { isSmallScreenNumber } from "../components/screen-size";
 import { HomeBottomTabRoute } from "../home/home-stack";
 import ObiQr from "./assets/obiqr.svg";
+
 const BARTENDER_ADDRESS =
   "juno1ps9sk7fqh2f95waggk3r5un6sr7rd4gxmq4kzh73zstgkqz52wmqh2wr0s";
 
@@ -55,10 +56,10 @@ export type SendScreenProps = NativeStackScreenProps<
 >;
 
 export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
-  const { balances, refreshing, refreshBalances } = useBalances();
+  const balances = useBalances();
   const [selectedCoin, setSelectedCoin] = useState<ExtendedCoin | undefined>(
     () => {
-      return balances.length > 0 ? balances[0] : undefined;
+      return balances.data[0];
     }
   );
   const [denominationOpened, setDenominationOpened] = useState(false);
@@ -73,8 +74,8 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
   };
 
   useEffect(() => {
-    if (selectedCoin === undefined && balances.length > 0) {
-      setSelectedCoin(balances[0]);
+    if (selectedCoin === undefined && balances.data[0]) {
+      setSelectedCoin(balances.data[0]);
     }
   }, [balances, selectedCoin]);
 
@@ -575,7 +576,7 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
                 </Text>
               </View>
               <FlatList
-                data={balances}
+                data={balances.data}
                 keyExtractor={(item) => item.denom}
                 renderItem={(props) => (
                   <CoinRenderer
@@ -589,8 +590,8 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
                 )}
                 refreshControl={
                   <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={refreshBalances}
+                    refreshing={balances.isFetching}
+                    onRefresh={balances.refetch}
                     tintColor="rgba(246, 245, 255, 0.6)"
                   />
                 }

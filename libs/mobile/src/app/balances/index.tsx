@@ -1,9 +1,17 @@
 import { Coin } from "@cosmjs/amino";
-import { terra, Text } from "@obi-wallet/common";
+import {
+  cosmos,
+  isCosmosChain,
+  isTerraChain,
+  Rewards,
+  terra,
+  Text,
+} from "@obi-wallet/common";
 import * as R from "ramda";
-import { FC, ReactNode, useCallback, useEffect, useState } from "react";
+import { FC } from "react";
 import { ImageRequireSource, ImageURISource, View } from "react-native";
 import { SvgProps } from "react-native-svg";
+import { useQuery } from "react-query";
 
 import { getRootStore } from "../../background/root-store";
 import { useStore } from "../stores";
@@ -18,42 +26,95 @@ export interface ExtendedCoin {
   usdPrice: number;
 }
 
-export interface FormattedExtendedCoin {
-  icon: ReactNode;
-  denom: string;
-  digits: number;
-  label: string;
-  amount: number;
-}
+export function useBalances(sortAscending = true) {
+  const rawBalances = useRawBalances();
+  const prices = usePrices();
 
-export function useBalances() {
-  const { balancesStore, walletsStore } = useStore();
-  const [refreshing, setRefreshing] = useState(false);
-
-  const refreshBalances = useCallback(async () => {
-    setRefreshing(true);
-    await balancesStore.fetchBalances();
-    setRefreshing(false);
-  }, [balancesStore]);
-
-  useEffect(() => {
-    void refreshBalances();
-  }, [refreshBalances, walletsStore.address]);
+  const data =
+    rawBalances.data?.map((balance) => {
+      return {
+        ...balance,
+        usdPrice: prices.data?.[balance.denom] ?? 0,
+      };
+    }) ?? [];
+  data.sort((a, b) => {
+    const [first, second] = sortAscending ? [b, a] : [a, b];
+    return (
+      formatExtendedCoin(first).valueInUsd -
+      formatExtendedCoin(second).valueInUsd
+    );
+  });
 
   return {
-    balances: balancesStore.balances,
-    refreshBalances,
-    refreshing,
+    data,
+    isFetching: rawBalances.isFetching || prices.isFetching,
+    async refetch() {
+      await Promise.all([rawBalances.refetch(), prices.refetch()]);
+    },
   };
+}
+
+export function useRawBalances() {
+  const { chainStore, walletsStore } = useStore();
+  const address = walletsStore.address;
+  const chainId = chainStore.currentChain;
+  return useQuery(
+    [
+      "balances",
+      {
+        chainId,
+        address,
+      },
+    ],
+    async () => {
+      if (!address) return [];
+
+      if (isTerraChain(chainId)) {
+        return await terra.fetchBalances({ address, chainId });
+      }
+
+      if (isCosmosChain(chainId)) {
+        return await cosmos.fetchBalances({ address, chainId });
+      }
+
+      return [];
+    }
+  );
+}
+
+export function usePrices() {
+  const { chainStore } = useStore();
+  const chainId = chainStore.currentChain;
+  return useQuery(
+    [
+      "prices",
+      {
+        chainId,
+      },
+    ],
+    async () => {
+      if (isTerraChain(chainId)) {
+        return await terra.fetchPrices({ chainId });
+      }
+
+      if (isCosmosChain(chainId)) {
+        return await cosmos.fetchPrices({ chainId });
+      }
+
+      return {};
+    }
+  );
 }
 
 export function UsdBalance({ fontSize = 28 }: { fontSize?: number }) {
   const scale = fontSize / 28;
-  const { balances } = useBalances();
-  const balanceInUsd = balances.reduce(
-    (acc, coin) => acc + formatExtendedCoin(coin).valueInUsd,
-    0
+  const balances = useBalances();
+  const balanceInUsd = R.sum(
+    balances.data.map((coin) => {
+      return formatExtendedCoin(coin).valueInUsd;
+    })
   );
+
   return (
     <View
       style={{
@@ -235,89 +296,105 @@ export function formatExtendedCoin(coin: ExtendedCoin) {
 }
 
 export function useDelegations() {
-  const { balancesStore, walletsStore } = useStore();
-  const [refreshing, setRefreshing] = useState(false);
+  const { chainStore, walletsStore } = useStore();
+  const address = walletsStore.address;
+  const chainId = chainStore.currentChain;
+  return useQuery(
+    [
+      "delegations",
+      {
+        address,
+        chainId,
+      },
+    ],
+    async () => {
+      if (!address) return [];
 
-  const refreshDelegations = useCallback(async () => {
-    setRefreshing(true);
-    await balancesStore.fetchDelegations();
-    setRefreshing(false);
-  }, [balancesStore]);
+      if (isTerraChain(chainId)) {
+        return await terra.fetchDelegations({ address, chainId });
+      }
 
-  useEffect(() => {
-    void refreshDelegations();
-  }, [refreshDelegations, walletsStore.address]);
-
-  return {
-    delegations: balancesStore.delegations,
-    refreshDelegations,
-    refreshing,
-  };
+      return [];
+    }
+  );
 }
 
 export function useUnbondingDelegations() {
-  const { balancesStore, walletsStore } = useStore();
-  const [refreshing, setRefreshing] = useState(false);
+  const { chainStore, walletsStore } = useStore();
+  const address = walletsStore.address;
+  const chainId = chainStore.currentChain;
+  return useQuery(
+    [
+      "unbonding-delegations",
+      {
+        address,
+        chainId,
+      },
+    ],
+    async () => {
+      if (!address) return [];
 
-  const refreshUnbondingDelegations = useCallback(async () => {
-    setRefreshing(true);
-    await balancesStore.fetchUnbondingDelegations();
-    setRefreshing(false);
-  }, [balancesStore]);
+      if (isTerraChain(chainId)) {
+        return await terra.fetchUnbondingDelegations({ address, chainId });
+      }
 
-  useEffect(() => {
-    void refreshUnbondingDelegations();
-  }, [refreshUnbondingDelegations, walletsStore.address]);
-
-  return {
-    unbondingDelegations: balancesStore.unbondingDelegations,
-    refreshUnbondingDelegations,
-    refreshing,
-  };
+      return [];
+    }
+  );
 }
 
 export function useValidators() {
-  const { balancesStore, walletsStore } = useStore();
-  const [refreshing, setRefreshing] = useState(false);
+  const { chainStore } = useStore();
+  const chainId = chainStore.currentChain;
+  return useQuery(
+    [
+      "validators",
+      {
+        chainId,
+      },
+    ],
+    async () => {
+      if (isTerraChain(chainId)) {
+        return await terra.fetchValidators({ chainId });
+      }
 
-  const refreshValidators = useCallback(async () => {
-    if (balancesStore.validators.length > 0) return;
-
-    setRefreshing(true);
-    await balancesStore.fetchValidators();
-    setRefreshing(false);
-  }, [balancesStore]);
-
-  useEffect(() => {
-    void refreshValidators();
-  }, [refreshValidators, walletsStore.address]);
-
-  return {
-    validators: balancesStore.validators,
-    refreshValidators,
-    refreshing,
-  };
+      return [];
+    },
+    {
+      staleTime: 24 * 60 * 60 * 1000, // 1 day,
+    }
+  );
 }
 
 export function useRewards() {
-  const { balancesStore, walletsStore } = useStore();
-  const [refreshing, setRefreshing] = useState(false);
+  const { chainStore, walletsStore } = useStore();
+  const address = walletsStore.address;
+  const chainId = chainStore.currentChain;
+  const response = useQuery(
+    [
+      "rewards",
+      {
+        address,
+        chainId,
+      },
+    ],
+    async (): Promise<Rewards | undefined> => {
+      if (!address) return undefined;
 
-  const refreshRewards = useCallback(async () => {
-    if (balancesStore.validators.length > 0) return;
+      if (isTerraChain(chainId)) {
+        return await terra.fetchRewards({ address, chainId });
+      }
 
-    setRefreshing(true);
-    await balancesStore.fetchRewards();
-    setRefreshing(false);
-  }, [balancesStore]);
+      return undefined;
+    }
+  );
 
-  useEffect(() => {
-    void refreshRewards();
-  }, [refreshRewards, walletsStore.address]);
-
+  const fallback: Rewards = {
+    perDelegator: [],
+    total: { denom: chainStore.currentChainInformation.denom, amount: "0" },
+  };
   return {
-    rewards: balancesStore.rewards,
-    refreshRewards,
-    refreshing,
+    ...response,
+    data: response.data ?? fallback,
   };
 }

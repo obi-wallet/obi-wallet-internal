@@ -14,7 +14,6 @@ import { AbstractKVStore, KVStore as DefaultKVStore } from "../kv-store";
 import { MessageRequesterInternal } from "../message-requester";
 import { RouterUi } from "../router";
 import { AppsStore } from "./apps";
-import { BalancesStore } from "./balances";
 import { ChainStore } from "./chain";
 import { Config, ConfigStore } from "./config";
 import { InAppPurchaseInteractionStore } from "./interaction/in-app-purchase";
@@ -26,7 +25,6 @@ import { WalletsStore } from "./wallets";
 
 export class RootStore {
   public readonly appsStore: AppsStore;
-  public readonly balancesStore: BalancesStore;
   public readonly chainStore: ChainStore;
   public readonly configStore: ConfigStore;
   public readonly inAppPurchaseInteractionStore: InAppPurchaseInteractionStore;
@@ -103,12 +101,6 @@ export class RootStore {
         multisig: new KVStore("multisig-store"),
         singlesig: new KVStore("singlesig-store"),
       },
-    });
-
-    this.balancesStore = new BalancesStore({
-      configStore: this.configStore,
-      chainStore: this.chainStore,
-      walletsStore: this.walletsStore,
     });
 
     router.listen(APP_PORT);
