@@ -262,8 +262,6 @@ export function HomeScreen() {
               multisig,
             });
 
-            console.log(response);
-
             if (!isTxError(response)) {
               await currentWallet.finishProxySetup({
                 address: proxyAddress.address,

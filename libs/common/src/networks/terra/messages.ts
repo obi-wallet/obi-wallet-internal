@@ -121,12 +121,9 @@ export function getMigrateMessage({
   proxyAddress: string;
   chainId: TerraChain;
 }) {
-  return new MsgMigrateContract(
-    admin,
-    proxyAddress,
-    terraChains[chainId].currentCodeId,
-    {}
-  );
+  return new MsgExecuteContract(admin, proxyAddress, {
+    wrapped_migrate: { code_id: terraChains[chainId].currentCodeId },
+  });
 }
 
 export function getProposeUpdateOwnerMessage({
