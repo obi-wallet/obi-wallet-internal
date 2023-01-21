@@ -4,22 +4,32 @@ import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
+  Coin,
   Delegation,
   ExtendedValidator,
+  isAnyTerraMultisigWallet,
+  RequestObiTerraSignAndBroadcastMsg,
+  terra,
   Text,
   TextInput,
   UnbondingDelegation,
+  Validator,
 } from "@obi-wallet/common";
 import Fuse from "fuse.js";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
-  Alert,
+  createContext,
+  Dispatch,
+  useContext,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
+import {
   FlatList,
   Image,
-  Platform,
   StyleProp,
   TouchableHighlight,
   TouchableOpacity,
@@ -29,57 +39,82 @@ import {
 import { ScrollView } from "react-native-gesture-handler";
 import { GestureResponderEvent } from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import invariant from "tiny-invariant";
 
 import {
   formatCoin,
+  formatExtendedCoin,
+  useBalances,
   useDelegations,
   useRewards,
   useUnbondingDelegations,
   useValidators,
 } from "../../../balances";
-import { useStore } from "../../../stores";
+import { useMultisigWallet, useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
-import { ObiLogo } from "../../components/obi-logo";
 import {
   isSmallScreen,
   isSmallScreenNumber,
 } from "../../components/screen-size";
 
-const SelectedValidatorContext = createContext<{
-  selectedValidator: ExtendedValidator | null;
-  setSelectedValidator: (validator: ExtendedValidator | null) => void;
+enum StakeTab {
+  Validators = "Validators",
+  Delegations = "Delegations",
+  UnbondingDelegations = "UnbondingDelegations",
+}
+
+type StakeState = {
+  selectedValidator: string | null;
+  selectedTab: StakeTab;
+};
+const initialStakeState: StakeState = {
+  selectedValidator: null,
+  selectedTab: StakeTab.Validators,
+};
+type StakeAction =
+  | {
+      type: "set-selected-validator";
+      payload: Validator;
+    }
+  | {
+      type: "clear-selected-validator";
+    }
+  | {
+      type: "set-selected-tab";
+      payload: StakeTab;
+    };
+
+function stakeReducer(state: StakeState, action: StakeAction): StakeState {
+  switch (action.type) {
+    case "clear-selected-validator":
+      return { ...state, selectedValidator: null };
+    case "set-selected-validator":
+      return { ...state, selectedValidator: action.payload.address };
+    case "set-selected-tab":
+      return { selectedValidator: null, selectedTab: action.payload };
+  }
+}
+
+const StakeStateContext = createContext<{
+  state: StakeState;
+  dispatch: Dispatch<StakeAction>;
+  // Fine because we set it the value via `StakeStateContext.Provider` in `Stake`
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 }>(null!);
 
 export const Stake = observer(() => {
   const theme = useTheme();
   const SafeArea = useSafeAreaInsets();
-  const { refreshDelegations } = useDelegations();
-  const { refreshUnbondingDelegations } = useUnbondingDelegations();
-  const { refreshValidators } = useValidators();
-  const { refreshRewards } = useRewards();
 
-  const [selectedValidator, setSelectedValidator] =
-    useState<ExtendedValidator | null>(null);
-
-  useEffect(() => {
-    void refreshDelegations();
-    void refreshUnbondingDelegations();
-    void refreshValidators();
-    void refreshRewards();
-  }, [
-    refreshDelegations,
-    refreshUnbondingDelegations,
-    refreshValidators,
-    refreshRewards,
-  ]);
+  const [state, dispatch] = useReducer(stakeReducer, initialStakeState);
 
   const children = (
-    <SelectedValidatorContext.Provider
+    <StakeStateContext.Provider
       value={{
-        setSelectedValidator,
-        selectedValidator,
+        state,
+        dispatch,
       }}
     >
       <View
@@ -95,10 +130,10 @@ export const Stake = observer(() => {
         <Balance />
         <StakingOptions />
       </View>
-    </SelectedValidatorContext.Provider>
+    </StakeStateContext.Provider>
   );
 
-  if (selectedValidator) {
+  if (state.selectedValidator) {
     return (
       <KeyboardAvoidingView style={{ flex: 1 }}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
@@ -110,12 +145,12 @@ export const Stake = observer(() => {
 
   return children;
 });
-//staking options take remaining space
+
 const StakingOptions = observer(() => {
   const { chainStore } = useStore();
-  const [selectedTab, setSelectedTab] = useState(0);
   const { delegations } = useDelegations();
   const { unbondingDelegations } = useUnbondingDelegations();
+  const { state, dispatch } = useContext(StakeStateContext);
 
   const totalDelegations = {
     denom: chainStore.currentTerraChainInformation.denom,
@@ -156,35 +191,57 @@ const StakingOptions = observer(() => {
             justifyContent: "center",
             paddingHorizontal: 20,
             borderRadius: 7,
-            borderWidth: selectedTab === 0 ? 1 : 0,
+            borderWidth: state.selectedTab === StakeTab.Validators ? 1 : 0,
             borderColor: "white",
           }}
-          onPress={() => setSelectedTab(0)}
+          onPress={() => {
+            dispatch({
+              type: "set-selected-tab",
+              payload: StakeTab.Validators,
+            });
+          }}
         >
           <FontAwesomeIcon icon={faHome} color="white" />
         </TouchableOpacity>
         <TabPill
           style={{ flex: 1 }}
-          onPress={() => setSelectedTab(1)}
-          active={selectedTab === 1}
+          onPress={() => {
+            dispatch({
+              type: "set-selected-tab",
+              payload: StakeTab.Delegations,
+            });
+          }}
+          active={state.selectedTab === StakeTab.Delegations}
           label="My Stake"
           content={delegationsContent}
         />
         <TabPill
           style={{ flex: 1 }}
           onPress={() => {
-            setSelectedTab(2);
+            dispatch({
+              type: "set-selected-tab",
+              payload: StakeTab.UnbondingDelegations,
+            });
           }}
-          active={selectedTab === 2}
+          active={state.selectedTab === StakeTab.UnbondingDelegations}
           label="Unstaking"
           content={unbondingDelegationsContent}
         />
       </View>
-      {selectedTab === 0 && <Validators />}
-      {selectedTab === 1 && <MyStake />}
-      {selectedTab === 2 && <Unstaking />}
+      {getChildren()}
     </View>
   );
+
+  function getChildren() {
+    switch (state.selectedTab) {
+      case StakeTab.Validators:
+        return <Validators />;
+      case StakeTab.Delegations:
+        return <MyStake />;
+      case StakeTab.UnbondingDelegations:
+        return <Unstaking />;
+    }
+  }
 });
 
 function TabPill({
@@ -222,17 +279,13 @@ function TabPill({
 }
 
 const Balance = observer(() => {
-  const { chainStore, configStore } = useStore();
-  const { rewards } = useRewards();
+  const { configStore } = useStore();
+  const { rewards, refreshRewards } = useRewards();
+  const wallet = useMultisigWallet();
+
   const isObi = configStore.isObi();
 
-  const totalRewards =
-    rewards.length > 0
-      ? rewards[0]
-      : {
-          denom: chainStore.currentTerraChainInformation.denom,
-          amount: "0",
-        };
+  const totalRewards = rewards.total;
   const formattedRewards = formatCoin(totalRewards);
 
   return (
@@ -284,8 +337,36 @@ const Balance = observer(() => {
           justifyContent: "center",
           alignItems: "center",
         }}
-        onPress={() => {
-          Alert.alert("Not implemented yet");
+        onPress={async () => {
+          if (!isAnyTerraMultisigWallet(wallet)) return;
+
+          const sender = wallet.address;
+          invariant(sender, "Expected wallet address to exist.");
+          invariant(wallet.currentAdmin, "Expected current admin to exist.");
+
+          try {
+            const validators = rewards.perDelegator.map((delegator) => {
+              return delegator.address;
+            });
+            const messages = validators.map((validator) => {
+              return terra.getWithdrawRewardsMessage({
+                sender,
+                validator,
+              });
+            });
+
+            await RequestObiTerraSignAndBroadcastMsg.send({
+              id: wallet.id,
+              messages: messages.map((message) => {
+                return message.toAmino();
+              }),
+              multisig: wallet.currentAdmin,
+              wrap: true,
+            });
+            await refreshRewards();
+          } catch (e) {
+            console.log(e);
+          }
         }}
       >
         <Text style={{ color: "#437DFF" }}>Withdraw All Rewards</Text>
@@ -295,11 +376,13 @@ const Balance = observer(() => {
 });
 
 function Validators() {
-  const { validators } = useValidators();
+  const { refreshDelegations } = useDelegations();
+  const wallet = useMultisigWallet();
+
   const [needle, setNeedle] = useState("");
-  const { selectedValidator, setSelectedValidator } = useContext(
-    SelectedValidatorContext
-  );
+  const { state, dispatch } = useContext(StakeStateContext);
+
+  const { validators } = useValidators();
   const { activeValidators, fuse } = useMemo(() => {
     const activeValidators = validators.filter((validator) => {
       return validator.active;
@@ -311,14 +394,23 @@ function Validators() {
       fuse,
     };
   }, [validators]);
+  const selectedValidator = validators.find((validator) => {
+    return validator.address === state.selectedValidator;
+  });
 
   const validatorsToShow = needle
     ? fuse.search(needle).map((result) => result.item)
     : activeValidators;
 
+  const { chainStore } = useStore();
+  const { balances, refreshBalances } = useBalances();
+  const amountToShow = balances.find((balance) => {
+    return balance.denom === chainStore.currentTerraChainInformation.denom;
+  });
+
   return (
     <View style={{ flex: 1, marginTop: 10 }}>
-      {selectedValidator === null && (
+      {selectedValidator ? null : (
         <View style={{ flexDirection: "row" }}>
           <View style={{ padding: 10 }}>
             <Text style={{ fontSize: 15, color: "white" }}>Validators</Text>
@@ -352,30 +444,62 @@ function Validators() {
           </View>
         </View>
       )}
-      {selectedValidator === null ? (
+      {selectedValidator ? (
+        <ValidatorItem
+          validator={selectedValidator}
+          confirmLabel="Stake"
+          onConfirm={async ({ amount, validator }) => {
+            if (!isAnyTerraMultisigWallet(wallet)) return;
+
+            invariant(wallet.address, "Expected wallet address to exist.");
+            invariant(wallet.currentAdmin, "Expected current admin to exist.");
+
+            try {
+              const { digits } = formatExtendedCoin({
+                denom: "uluna",
+                amount: "0",
+                usdPrice: 0,
+              });
+              await RequestObiTerraSignAndBroadcastMsg.send({
+                id: wallet.id,
+                messages: [
+                  terra
+                    .getStakeMessage({
+                      sender: wallet.address,
+                      validator: validator.address,
+                      amount:
+                        parseFloat(amount.replace(",", ".")) * 10 ** digits,
+                      chainId: wallet.chain,
+                    })
+                    .toAmino(),
+                ],
+                multisig: wallet.currentAdmin,
+                wrap: true,
+              });
+              dispatch({ type: "clear-selected-validator" });
+              await Promise.all([refreshDelegations(), refreshBalances()]);
+            } catch (e) {
+              console.log(e);
+            }
+          }}
+          active
+          onCancel={() => {
+            dispatch({ type: "clear-selected-validator" });
+          }}
+          amountToShow={amountToShow}
+        />
+      ) : (
         <FlatList
           data={validatorsToShow}
           renderItem={({ item }) => (
             <ValidatorItem
               validator={item}
-              onPress={setSelectedValidator}
-              active={false}
+              onPress={(payload) => {
+                dispatch({ type: "set-selected-validator", payload });
+              }}
             />
           )}
           keyExtractor={(item) => item.address}
-        />
-      ) : (
-        <ValidatorItem
-          validator={selectedValidator}
-          onValidate={(args) => {
-            Alert.alert(
-              "Stake",
-              "validating " + args.amount + " to " + args.validator.label
-            );
-            setSelectedValidator(null);
-          }}
-          active
-          onCancel={() => setSelectedValidator(null)}
         />
       )}
     </View>
@@ -394,19 +518,28 @@ function ValidatorItem({
   onPress,
   active = false,
   onCancel,
-  onValidate,
+  onConfirm,
+  confirmLabel,
+  amountToShow,
 }: {
   validator: ExtendedValidator;
   onPress?: (validator: ExtendedValidator) => void;
   active?: boolean;
-  onValidate?: (args: { validator: ExtendedValidator; amount: string }) => void;
+  onConfirm?: (args: { validator: ExtendedValidator; amount: string }) => void;
   onCancel?: () => void;
+  confirmLabel?: string;
+  amountToShow?: Coin;
 }) {
   const { chainStore } = useStore();
   const [amount, setAmount] = useState("");
-  const obi =
-    validator.address === chainStore.currentTerraChainInformation.obiValidator;
   const promoted = validator.promoted;
+
+  const formatted = formatCoin(
+    amountToShow || {
+      denom: chainStore.currentTerraChainInformation.denom,
+      amount: "0",
+    }
+  );
 
   return (
     <Container
@@ -425,9 +558,7 @@ function ValidatorItem({
         onPress={() => (onPress ? onPress(validator) : {})}
       >
         <View style={{ width: 50, height: 50 }}>
-          {obi ? (
-            <ObiLogo />
-          ) : validator.icon ? (
+          {validator.icon ? (
             <Image
               style={{
                 width: 50,
@@ -452,7 +583,7 @@ function ValidatorItem({
         </View>
         <View style={{ marginLeft: 10, justifyContent: "center", flex: 1 }}>
           <Text style={{ color: "white", flexWrap: "wrap" }} numberOfLines={1}>
-            {obi ? "Obi Technologies" : validator.label}
+            {validator.label}
           </Text>
           <View>
             <Text style={{ color: "#7E7E7E", fontSize: 9 }} numberOfLines={1}>
@@ -466,7 +597,7 @@ function ValidatorItem({
             <TouchableOpacity
               style={{ backgroundColor: "white", borderRadius: 32 }}
               onPress={() =>
-                onValidate ? onValidate({ validator, amount }) : {}
+                onConfirm ? onConfirm({ validator, amount }) : {}
               }
             >
               <Text
@@ -476,7 +607,7 @@ function ValidatorItem({
                   paddingHorizontal: 20,
                 }}
               >
-                stake
+                {confirmLabel}
               </Text>
             </TouchableOpacity>
           </View>
@@ -499,15 +630,20 @@ function ValidatorItem({
               <View
                 style={{
                   width: 36,
-                  aspectRatio: 1 / 1,
-                  backgroundColor: "#000",
+                  height: 36,
                   borderRadius: 36,
                   margin: 12,
                 }}
-              />
+              >
+                <CoinIcon source={formatted?.icon ?? null} />
+              </View>
               <View style={{ justifyContent: "center" }}>
-                <Text style={{ color: "#fff", fontWeight: "600" }}>Luna</Text>
-                <Text style={{ color: "#fff", fontWeight: "400" }}>123.45</Text>
+                <Text style={{ color: "#fff", fontWeight: "600" }}>
+                  {formatted.denom}
+                </Text>
+                <Text style={{ color: "#fff", fontWeight: "400" }}>
+                  {formatted.amount}
+                </Text>
               </View>
             </View>
             <View style={{ flex: 1, justifyContent: "center" }}>
@@ -538,7 +674,19 @@ function ValidatorItem({
 }
 
 function MyStake() {
-  const { delegations } = useDelegations();
+  const { delegations, refreshDelegations } = useDelegations();
+  const { refreshUnbondingDelegations } = useUnbondingDelegations();
+  const wallet = useMultisigWallet();
+
+  const { state, dispatch } = useContext(StakeStateContext);
+
+  const { validators } = useValidators();
+  const selectedValidator = validators.find((validator) => {
+    return validator.address === state.selectedValidator;
+  });
+  const amountToShow = delegations.find((delegation) => {
+    return delegation.validator.address === state.selectedValidator;
+  })?.balance;
 
   return (
     <View style={{ flex: 1 }}>
@@ -554,17 +702,67 @@ function MyStake() {
       >
         <Text style={{ fontSize: 10, color: "white" }}>Validator</Text>
       </View>
-      <FlatList
-        data={delegations}
-        renderItem={({ item }) => <StakeItem delegation={item} />}
-        keyExtractor={(item) => item.validator.address}
-      />
+      {selectedValidator ? (
+        <ValidatorItem
+          validator={selectedValidator}
+          confirmLabel="Unstake"
+          onConfirm={async ({ amount, validator }) => {
+            if (!isAnyTerraMultisigWallet(wallet)) return;
+
+            invariant(wallet.address, "Expected wallet address to exist.");
+            invariant(wallet.currentAdmin, "Expected current admin to exist.");
+
+            try {
+              const { digits } = formatExtendedCoin({
+                denom: "uluna",
+                amount: "0",
+                usdPrice: 0,
+              });
+              await RequestObiTerraSignAndBroadcastMsg.send({
+                id: wallet.id,
+                messages: [
+                  terra
+                    .getUnstakeMessage({
+                      sender: wallet.address,
+                      validator: validator.address,
+                      amount:
+                        parseFloat(amount.replace(",", ".")) * 10 ** digits,
+                      chainId: wallet.chain,
+                    })
+                    .toAmino(),
+                ],
+                multisig: wallet.currentAdmin,
+                wrap: true,
+              });
+              dispatch({ type: "clear-selected-validator" });
+              await Promise.all([
+                refreshDelegations,
+                refreshUnbondingDelegations,
+              ]);
+            } catch (e) {
+              console.log(e);
+            }
+          }}
+          active
+          onCancel={() => {
+            dispatch({ type: "clear-selected-validator" });
+          }}
+          amountToShow={amountToShow}
+        />
+      ) : (
+        <FlatList
+          data={delegations}
+          renderItem={({ item }) => <StakeItem delegation={item} />}
+          keyExtractor={(item) => item.validator.address}
+        />
+      )}
     </View>
   );
 }
 
 function StakeItem({ delegation }: { delegation: Delegation }) {
   const formatted = formatCoin(delegation.balance);
+  const { dispatch } = useContext(StakeStateContext);
 
   return (
     <View
@@ -595,7 +793,10 @@ function StakeItem({ delegation }: { delegation: Delegation }) {
             ...(isSmallScreen() ? { height: 35 } : {}),
           }}
           onPress={() => {
-            Alert.alert("Not implemented yet");
+            dispatch({
+              type: "set-selected-validator",
+              payload: delegation.validator,
+            });
           }}
         >
           <Text

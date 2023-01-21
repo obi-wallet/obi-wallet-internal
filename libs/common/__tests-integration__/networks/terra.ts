@@ -7,7 +7,7 @@ import {
 import { randomBytes } from "crypto";
 import secp256k1 from "secp256k1";
 
-import { terra } from "../../src";
+import { terra, TerraChain, terraChains } from "../../src";
 import { getNewAccountMessage } from "../../src/networks/terra/messages";
 import { wrapMessages } from "../../src/networks/terra/wrap-messages";
 
@@ -17,7 +17,15 @@ const {
   publicKey,
   proxyAddress,
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-} = require("./terra.config.json");
+} = require("./terra.config.json") as {
+  chainId: TerraChain;
+  privateKey: string;
+  publicKey: string;
+  proxyAddress: {
+    address: string;
+    codeId: number;
+  };
+};
 
 const key = new RawKey(Buffer.from(privateKey, "base64"));
 const address = key.accAddress;
@@ -146,6 +154,25 @@ describe("MultisigWallet", () => {
       sender: multisigKey.address(),
       newOwner: "terra18aw4eedj4v3253dvj9h5ucx9uedl9ggaayktq4",
       proxyAddress: proxyAddress.address,
+    });
+    const { signDoc, sign } = await terra.createMultisigTransaction({
+      key: multisigKey,
+      messages: [message],
+      chainId,
+    });
+    const signature = await key.createSignatureAmino(signDoc);
+    const transaction = sign([signature]);
+    expect(
+      await terra.simulateTransaction({ transaction, chainId })
+    ).toBeDefined();
+  });
+
+  test("MsgDelegate", async () => {
+    const message = terra.getStakeMessage({
+      sender: multisigKey.address(),
+      validator: terraChains[chainId].obiValidator,
+      amount: 1,
+      chainId,
     });
     const { signDoc, sign } = await terra.createMultisigTransaction({
       key: multisigKey,

@@ -73,8 +73,6 @@ const comingSoonKeys: HydratedKeyListItem[] = [
 ];
 
 export const KeysList = observer(({ data, style, tiled }: KeysListProps) => {
-  const { configStore } = useStore();
-  const isObi = configStore.isObi();
   const hydratedData = data.map((key) => {
     return {
       ...key,

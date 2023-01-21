@@ -1,7 +1,11 @@
 import {
   BlockTxBroadcastResult,
+  Coin,
+  MsgDelegate,
   MsgExecuteContract,
   MsgMigrateContract,
+  MsgUndelegate,
+  MsgWithdrawDelegatorReward,
 } from "@terra-money/terra.js";
 import invariant from "tiny-invariant";
 
@@ -119,12 +123,9 @@ export function getMigrateMessage({
   proxyAddress: string;
   chainId: TerraChain;
 }) {
-  return new MsgMigrateContract(
-    admin,
-    proxyAddress,
-    terraChains[chainId].currentCodeId,
-    {}
-  );
+  return new MsgExecuteContract(admin, proxyAddress, {
+    wrapped_migrate: { code_id: terraChains[chainId].currentCodeId },
+  });
 }
 
 export function getProposeUpdateOwnerMessage({
@@ -155,4 +156,50 @@ export function getConfirmUpdateOwnerMessage({
     confirm_update_owner: {},
   };
   return new MsgExecuteContract(sender, proxyAddress, rawMessage);
+}
+
+export function getStakeMessage({
+  sender,
+  validator,
+  amount,
+  chainId,
+}: {
+  sender: string;
+  validator: string;
+  amount: number;
+  chainId: TerraChain;
+}) {
+  return new MsgDelegate(
+    sender,
+    validator,
+    new Coin(terraChains[chainId].denom, amount)
+  );
+}
+
+export function getUnstakeMessage({
+  sender,
+  validator,
+  amount,
+  chainId,
+}: {
+  sender: string;
+  validator: string;
+  amount: number;
+  chainId: TerraChain;
+}) {
+  return new MsgUndelegate(
+    sender,
+    validator,
+    new Coin(terraChains[chainId].denom, amount)
+  );
+}
+
+export function getWithdrawRewardsMessage({
+  sender,
+  validator,
+}: {
+  sender: string;
+  validator: string;
+}) {
+  return new MsgWithdrawDelegatorReward(sender, validator);
 }

@@ -60,7 +60,7 @@ export const terraChains = {
     label: "Terra",
     accountCreatorAddress:
       "terra1a9zykuft0ngvq6ug2j60hz0an2kz72c3vs73tj5m87xcm0dt8w2sdkflln",
-    currentCodeId: 1009,
+    currentCodeId: 1012,
     lcd: "https://phoenix-lcd.terra.dev",
     api: "https://phoenix-api.terra.dev",
     denom: "uluna",
