@@ -196,6 +196,7 @@ const StakingOptions = observer(() => {
             borderWidth: state.selectedTab === StakeTab.Validators ? 1 : 0,
             borderColor: "white",
           }}
+          disabled={state.selectedTab === StakeTab.Validators}
           onPress={() => {
             dispatch({
               type: "set-selected-tab",
@@ -272,6 +273,7 @@ function TabPill({
         },
         style,
       ]}
+      disabled={active}
       onPress={onPress}
     >
       <Text style={{ fontSize: 10, color: "white" }}>{label}</Text>
