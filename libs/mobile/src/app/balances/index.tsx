@@ -7,11 +7,11 @@ import {
   terra,
   Text,
 } from "@obi-wallet/common";
+import { useQuery } from "@tanstack/react-query";
 import * as R from "ramda";
 import { FC } from "react";
 import { ImageRequireSource, ImageURISource, View } from "react-native";
 import { SvgProps } from "react-native-svg";
-import { useQuery } from "react-query";
 
 import { getRootStore } from "../../background/root-store";
 import { useStore } from "../stores";

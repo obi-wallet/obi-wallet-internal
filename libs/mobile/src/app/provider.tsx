@@ -1,6 +1,7 @@
 import { Theme, ThemeProvider } from "@emotion/react";
 import { Brand, Config, Feature, messages } from "@obi-wallet/common";
 import { NavigationContainer } from "@react-navigation/native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import {
   ComponentProps,
@@ -13,7 +14,6 @@ import { IntlProvider } from "react-intl";
 import { StatusBar } from "react-native";
 import { endConnection, initConnection } from "react-native-iap";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { QueryClient, QueryClientProvider } from "react-query";
 
 import { createRootStore } from "../background/root-store";
 import { StoreContext } from "./stores";

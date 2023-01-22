@@ -8,10 +8,8 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import {
-  FlatList,
   ImageBackground,
   ListRenderItemInfo,
-  RefreshControl,
   TouchableHighlight,
   TouchableOpacity,
   View,
@@ -28,6 +26,7 @@ import { RootRoute, RootStackParamList } from "../../../root-stack";
 import { useStore } from "../../../stores";
 import { CoinIcon } from "../../components/coin-icon";
 import { NetworkAccountPickerLayout } from "../../components/network-account-picker-layout";
+import { RefreshableFlatList } from "../../components/refreshable-flat-list";
 import {
   isSmallScreenNumber,
   isSmallScreenSubstr,
@@ -289,20 +288,14 @@ const AssetsList = observer(() => {
           </View>
         </View>
 
-        <FlatList
+        <RefreshableFlatList
           keyExtractor={(coin) => coin.denom}
           data={balances.data}
           renderItem={(props) => <AssetsListItem {...props} />}
           style={{
             marginTop: 28,
           }}
-          refreshControl={
-            <RefreshControl
-              refreshing={balances.isFetching}
-              onRefresh={balances.refetch}
-              tintColor="rgba(246, 245, 255, 0.6)"
-            />
-          }
+          refetch={balances.refetch}
         />
       </View>
     </View>

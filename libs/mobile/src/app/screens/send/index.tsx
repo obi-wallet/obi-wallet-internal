@@ -19,14 +19,7 @@ import { isTxError, Msg, MsgSend } from "@terra-money/terra.js";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import {
-  Platform,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import { Platform, Text, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
@@ -43,6 +36,7 @@ import { Back } from "../components/back";
 import { BottomSheetBackdrop } from "../components/bottomSheetBackdrop";
 import { CoinIcon } from "../components/coin-icon";
 import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
+import { RefreshableFlatList } from "../components/refreshable-flat-list";
 import { isSmallScreenNumber } from "../components/screen-size";
 import { HomeBottomTabRoute } from "../home/home-stack";
 import ObiQr from "./assets/obiqr.svg";
@@ -575,7 +569,7 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
                   />
                 </Text>
               </View>
-              <FlatList
+              <RefreshableFlatList
                 data={balances.data}
                 keyExtractor={(item) => item.denom}
                 renderItem={(props) => (
@@ -588,13 +582,7 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
                     }}
                   />
                 )}
-                refreshControl={
-                  <RefreshControl
-                    refreshing={balances.isFetching}
-                    onRefresh={balances.refetch}
-                    tintColor="rgba(246, 245, 255, 0.6)"
-                  />
-                }
+                refetch={balances.refetch}
               />
             </View>
           </BottomSheetView>

@@ -54,6 +54,8 @@ import { useMultisigWallet, useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
+import { RefreshControl } from "../../components/refresh-control";
+import { RefreshableFlatList } from "../../components/refreshable-flat-list";
 import {
   isSmallScreen,
   isSmallScreenNumber,
@@ -194,6 +196,7 @@ const StakingOptions = observer(() => {
             borderWidth: state.selectedTab === StakeTab.Validators ? 1 : 0,
             borderColor: "white",
           }}
+          disabled={state.selectedTab === StakeTab.Validators}
           onPress={() => {
             dispatch({
               type: "set-selected-tab",
@@ -270,6 +273,7 @@ function TabPill({
         },
         style,
       ]}
+      disabled={active}
       onPress={onPress}
     >
       <Text style={{ fontSize: 10, color: "white" }}>{label}</Text>
@@ -327,51 +331,56 @@ const Balance = observer(() => {
           {formattedRewards.amount} {formattedRewards.denom}
         </Text>
       </View>
-      <TouchableHighlight
-        style={{
-          backgroundColor: "white",
-          width: "100%",
-          margin: 10,
-          padding: 10,
-          borderRadius: 32,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        disabled={rewards.data.perDelegator.length === 0}
-        onPress={async () => {
-          if (!isAnyTerraMultisigWallet(wallet)) return;
+      {formattedRewards.amount > 0 ? (
+        <TouchableHighlight
+          style={{
+            backgroundColor: "white",
+            width: "100%",
+            margin: 10,
+            padding: 10,
+            borderRadius: 32,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onPress={async () => {
+            if (!isAnyTerraMultisigWallet(wallet)) return;
 
-          const sender = wallet.address;
-          invariant(sender, "Expected wallet address to exist.");
-          invariant(wallet.currentAdmin, "Expected current admin to exist.");
+            const sender = wallet.address;
+            invariant(sender, "Expected wallet address to exist.");
+            invariant(wallet.currentAdmin, "Expected current admin to exist.");
 
-          try {
-            const validators = rewards.data.perDelegator.map((delegator) => {
-              return delegator.address;
-            });
-            const messages = validators.map((validator) => {
-              return terra.getWithdrawRewardsMessage({
-                sender,
-                validator,
+            try {
+              const validators = rewards.data.perDelegator
+                .filter((delegator) => {
+                  return formatCoin(delegator.rewards).amount > 0;
+                })
+                .map((delegator) => {
+                  return delegator.address;
+                });
+              const messages = validators.map((validator) => {
+                return terra.getWithdrawRewardsMessage({
+                  sender,
+                  validator,
+                });
               });
-            });
 
-            await RequestObiTerraSignAndBroadcastMsg.send({
-              id: wallet.id,
-              messages: messages.map((message) => {
-                return message.toAmino();
-              }),
-              multisig: wallet.currentAdmin,
-              wrap: true,
-            });
-            await rewards.refetch();
-          } catch (e) {
-            console.log(e);
-          }
-        }}
-      >
-        <Text style={{ color: "#437DFF" }}>Withdraw All Rewards</Text>
-      </TouchableHighlight>
+              await RequestObiTerraSignAndBroadcastMsg.send({
+                id: wallet.id,
+                messages: messages.map((message) => {
+                  return message.toAmino();
+                }),
+                multisig: wallet.currentAdmin,
+                wrap: true,
+              });
+              await rewards.refetch();
+            } catch (e) {
+              console.log(e);
+            }
+          }}
+        >
+          <Text style={{ color: "#437DFF" }}>Withdraw All Rewards</Text>
+        </TouchableHighlight>
+      ) : null}
     </View>
   );
 });
@@ -754,10 +763,11 @@ function MyStake() {
           amountToShow={amountToShow}
         />
       ) : (
-        <FlatList
+        <RefreshableFlatList
           data={delegations.data}
           renderItem={({ item }) => <StakeItem delegation={item} />}
           keyExtractor={(item) => item.validator.address}
+          refetch={delegations.refetch}
         />
       )}
     </View>
@@ -846,10 +856,11 @@ function Unstaking() {
         </Text>
         <Text style={{ fontSize: 10, color: "white" }}>Release</Text>
       </View>
-      <FlatList
+      <RefreshableFlatList
         data={unbondingDelegations.data}
         renderItem={({ item }) => <UnstakeItem unbondingDelegation={item} />}
         keyExtractor={(item, index) => index.toString()}
+        refetch={unbondingDelegations.refetch}
       />
     </View>
   );
