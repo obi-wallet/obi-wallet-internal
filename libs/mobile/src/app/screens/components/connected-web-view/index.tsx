@@ -1,7 +1,7 @@
 import EventEmitter from "eventemitter3";
 import { observer } from "mobx-react-lite";
 import { RefObject, useCallback, useEffect, useMemo } from "react";
-import { RefreshControl, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 import {
   WebView,
   WebViewMessageEvent,
@@ -12,6 +12,7 @@ import { useKeplr } from "../../../injected-provider";
 import { bundle } from "../../../injected-provider/bundle";
 import { RNInjectedKeplr } from "../../../injected-provider/injected-keplr";
 import { useStore } from "../../../stores";
+import { RefreshControl } from "../refresh-control";
 
 export interface ConnectedWebViewProps extends Omit<WebViewProps, "source"> {
   url: string;
@@ -83,7 +84,6 @@ export const ConnectedWebView = observer(
               webViewRef.current?.reload();
               setLoading(true);
             }}
-            tintColor="rgba(246, 245, 255, 0.6)"
           />
         }
       >

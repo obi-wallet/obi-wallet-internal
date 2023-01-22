@@ -54,6 +54,8 @@ import { useMultisigWallet, useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
+import { RefreshControl } from "../../components/refresh-control";
+import { RefreshableFlatList } from "../../components/refreshable-flat-list";
 import {
   isSmallScreen,
   isSmallScreenNumber,
@@ -754,10 +756,11 @@ function MyStake() {
           amountToShow={amountToShow}
         />
       ) : (
-        <FlatList
+        <RefreshableFlatList
           data={delegations.data}
           renderItem={({ item }) => <StakeItem delegation={item} />}
           keyExtractor={(item) => item.validator.address}
+          refetch={delegations.refetch}
         />
       )}
     </View>
@@ -846,10 +849,11 @@ function Unstaking() {
         </Text>
         <Text style={{ fontSize: 10, color: "white" }}>Release</Text>
       </View>
-      <FlatList
+      <RefreshableFlatList
         data={unbondingDelegations.data}
         renderItem={({ item }) => <UnstakeItem unbondingDelegation={item} />}
         keyExtractor={(item, index) => index.toString()}
+        refetch={unbondingDelegations.refetch}
       />
     </View>
   );
