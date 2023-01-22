@@ -329,51 +329,56 @@ const Balance = observer(() => {
           {formattedRewards.amount} {formattedRewards.denom}
         </Text>
       </View>
-      <TouchableHighlight
-        style={{
-          backgroundColor: "white",
-          width: "100%",
-          margin: 10,
-          padding: 10,
-          borderRadius: 32,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        disabled={rewards.data.perDelegator.length === 0}
-        onPress={async () => {
-          if (!isAnyTerraMultisigWallet(wallet)) return;
+      {formattedRewards.amount > 0 ? (
+        <TouchableHighlight
+          style={{
+            backgroundColor: "white",
+            width: "100%",
+            margin: 10,
+            padding: 10,
+            borderRadius: 32,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onPress={async () => {
+            if (!isAnyTerraMultisigWallet(wallet)) return;
 
-          const sender = wallet.address;
-          invariant(sender, "Expected wallet address to exist.");
-          invariant(wallet.currentAdmin, "Expected current admin to exist.");
+            const sender = wallet.address;
+            invariant(sender, "Expected wallet address to exist.");
+            invariant(wallet.currentAdmin, "Expected current admin to exist.");
 
-          try {
-            const validators = rewards.data.perDelegator.map((delegator) => {
-              return delegator.address;
-            });
-            const messages = validators.map((validator) => {
-              return terra.getWithdrawRewardsMessage({
-                sender,
-                validator,
+            try {
+              const validators = rewards.data.perDelegator
+                .filter((delegator) => {
+                  return formatCoin(delegator.rewards).amount > 0;
+                })
+                .map((delegator) => {
+                  return delegator.address;
+                });
+              const messages = validators.map((validator) => {
+                return terra.getWithdrawRewardsMessage({
+                  sender,
+                  validator,
+                });
               });
-            });
 
-            await RequestObiTerraSignAndBroadcastMsg.send({
-              id: wallet.id,
-              messages: messages.map((message) => {
-                return message.toAmino();
-              }),
-              multisig: wallet.currentAdmin,
-              wrap: true,
-            });
-            await rewards.refetch();
-          } catch (e) {
-            console.log(e);
-          }
-        }}
-      >
-        <Text style={{ color: "#437DFF" }}>Withdraw All Rewards</Text>
-      </TouchableHighlight>
+              await RequestObiTerraSignAndBroadcastMsg.send({
+                id: wallet.id,
+                messages: messages.map((message) => {
+                  return message.toAmino();
+                }),
+                multisig: wallet.currentAdmin,
+                wrap: true,
+              });
+              await rewards.refetch();
+            } catch (e) {
+              console.log(e);
+            }
+          }}
+        >
+          <Text style={{ color: "#437DFF" }}>Withdraw All Rewards</Text>
+        </TouchableHighlight>
+      ) : null}
     </View>
   );
 });
