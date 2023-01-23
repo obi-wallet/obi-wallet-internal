@@ -132,10 +132,10 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           <Text
             style={{
               color: "#F6F5FF",
-              fontSize: isSmallScreenNumber(25, 32),
+              fontSize: isSmallScreenNumber(30, 32),
               fontWeight: "600",
               marginTop: isSmallScreenNumber(25, 40),
-              textAlign: isObi ? "center" : "left",
+              textAlign: "left",
             }}
           >
             {renderTitle()}
