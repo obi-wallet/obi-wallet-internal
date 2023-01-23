@@ -156,7 +156,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           <ScrollView style={{}}>
             {renderContinueButton(multisigWallet?.keyInRecovery)}
             {isInRecovery ||
-            !configStore.isFeatureEnabled(Feature.Recovery) ? null : (
+              !configStore.isFeatureEnabled(Feature.Recovery) ? null : (
               <Button
                 label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
                 RightIcon={isObi ? undefined : GetStarted}
@@ -167,12 +167,12 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                 onPress={() => {
                   Alert.alert(
                     "Recover Existing Wallet",
-                    "Only use this if you have made a wallet using the Loop app before.",
+                    "Only use this if you have made a wallet using the Obi app before.",
                     [
                       {
                         text: "Cancel",
                         // eslint-disable-next-line @typescript-eslint/no-empty-function
-                        onPress() {},
+                        onPress() { },
                       },
                       {
                         text: "Continue",
@@ -181,7 +181,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                             if (
                               multisigWallet &&
                               multisigWallet.type ===
-                                configStore.getDefaultMultisigWalletType()
+                              configStore.getDefaultMultisigWalletType()
                             ) {
                               return multisigWallet;
                             }

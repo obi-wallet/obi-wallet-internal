@@ -67,6 +67,7 @@ export const SettingsScreen = observer(() => {
             style={{
               borderRadius: 32,
               marginRight: 17,
+              marginLeft: 10
             }}
             onPress={() => {
               if (timesPressed >= 4) {
@@ -186,13 +187,13 @@ export const SettingsScreen = observer(() => {
           subtitle={intl.formatMessage(
             isObi
               ? {
-                  id: "settings.helpsupport.subtext.obi",
-                  defaultMessage: "Contact Obi support.",
-                }
+                id: "settings.helpsupport.subtext.obi",
+                defaultMessage: "Contact Obi support.",
+              }
               : {
-                  id: "settings.helpsupport.subtext",
-                  defaultMessage: "Contact Loop support.",
-                }
+                id: "settings.helpsupport.subtext",
+                defaultMessage: "Contact Loop support.",
+              }
           )}
           onPress={() =>
             Linking.openURL(
