@@ -267,8 +267,8 @@ const AssetsList = observer(() => {
                   color: sortAscending
                     ? "#F6F5FF"
                     : isLoop
-                    ? "#393853"
-                    : "#7E7E7E",
+                      ? "#393853"
+                      : "#7E7E7E",
                   marginLeft: 12,
                 }}
               />
@@ -377,7 +377,7 @@ function AssetsListItem({ item }: ListRenderItemInfo<ExtendedCoin>) {
             <Text
               style={{
                 color: "#F6F5FF",
-                fontSize: 12,
+                fontSize: 14,
                 fontWeight: "500",
                 marginTop: 3,
                 textAlign: "right",
@@ -399,7 +399,7 @@ function AssetsListItem({ item }: ListRenderItemInfo<ExtendedCoin>) {
               style={{
                 color: "#F6F5FF",
                 fontSize: 14,
-                fontWeight: "normal",
+                fontWeight: "500",
                 textAlign: "right",
               }}
             >
