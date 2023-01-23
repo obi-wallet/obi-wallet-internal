@@ -1,4 +1,4 @@
-package money.obi.loop.conrad;
+package money.obi.wallet;
 
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;

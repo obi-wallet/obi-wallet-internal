@@ -37,6 +37,7 @@
     "@react-navigation/native": "*",
     "@react-navigation/native-stack": "*",
     "@sentry/react-native": "*",
+    "@tanstack/react-query": "*",
     "@terra-money/terra.js": "*",
     "@terra-money/terra.proto": "*",
     "@testing-library/jest-native": "*",
