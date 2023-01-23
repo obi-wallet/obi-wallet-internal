@@ -1,5 +1,5 @@
 import { useIntl } from "react-intl";
-import { StyleProp, ViewStyle } from "react-native";
+import { Keyboard, StyleProp, ViewStyle } from "react-native";
 
 import { Button } from "../../../button";
 import { useStore } from "../../../stores";
@@ -28,6 +28,7 @@ export function VerifyAndProceedButton({
       LeftIcon={isObi ? undefined : ShieldCheck}
       flavor={disabled ? "gray" : "blue"}
       onPress={() => {
+        Keyboard.dismiss();
         !disabled && onPress();
       }}
       disabled={disabled}

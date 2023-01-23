@@ -184,7 +184,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
 
               {children}
 
-              <View>
+              <View style={{ paddingBottom: safeArea.bottom + 20 }}>
                 {cancelable && (
                   <Button
                     flavor="blue"

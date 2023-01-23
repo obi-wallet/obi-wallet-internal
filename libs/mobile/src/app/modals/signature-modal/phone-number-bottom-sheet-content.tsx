@@ -12,6 +12,7 @@ import {
 } from "../../screens/components/phone-number/security-question-input";
 import { SendMagicSmsButton } from "../../screens/components/phone-number/send-magic-sms-button";
 import { VerifyAndProceedButton } from "../../screens/components/phone-number/verify-and-proceed-button";
+import { useStore } from "../../stores";
 import { TextInput } from "../../text-input";
 
 export interface PhoneNumberBottomSheetContentProps {
@@ -27,7 +28,8 @@ export const PhoneNumberBottomSheetContent =
     ({ securityQuestion, onRequest, onConfirm }) => {
       const intl = useIntl();
       const { securityAnswer, setSecurityAnswer } = useSecurityQuestionInput();
-
+      const { configStore } = useStore();
+      const isLoop = configStore.isLoop();
       const [sentMessage, setSentMessage] = useState(false);
       const [key, setKey] = useState("");
 
@@ -76,7 +78,7 @@ export const PhoneNumberBottomSheetContent =
             <View>
               <Text
                 style={{
-                  color: "#999CB6",
+                  color: isLoop ? "#999CB6" : "#fff",
                   fontSize: 14,
                   marginTop: 10,
                 }}
