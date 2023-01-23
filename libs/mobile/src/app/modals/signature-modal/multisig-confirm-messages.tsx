@@ -118,10 +118,10 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
               style={{
                 textAlign: "center",
                 color: "#F6F5FF",
-                fontSize: 12,
+                fontSize: numberOfSignatures >= threshold ? 14 : 12,
                 fontWeight: "600",
-                opacity: 0.6,
-                marginTop: 5,
+                opacity: numberOfSignatures >= threshold ? 1 : 0.6,
+                marginVertical: numberOfSignatures >= threshold ? 5 : 2,
               }}
             >
               <FormattedMessage

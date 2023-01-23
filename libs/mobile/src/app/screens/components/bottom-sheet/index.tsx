@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import OriginalBottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import { ReactNode, Ref } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,11 +12,12 @@ export type BottomSheetRef = OriginalBottomSheet;
 
 export function BottomSheet({ children, bottomSheetRef }: BottomSheetProps) {
   const safeArea = useSafeAreaInsets();
+  const theme = useTheme();
 
   return (
     <OriginalBottomSheet
       handleIndicatorStyle={{ backgroundColor: "#FFFFFF" }}
-      backgroundStyle={{ backgroundColor: "#100F1E" }}
+      backgroundStyle={{ backgroundColor: theme.colors.background }}
       handleStyle={{ backgroundColor: "transparent" }}
       snapPoints={["50%"]}
       enablePanDownToClose={true}

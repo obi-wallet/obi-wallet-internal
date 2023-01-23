@@ -106,7 +106,11 @@ export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
   if (tiled && item.description === "Coming Soon") return null;
 
   return tiled ? (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity
+      onPress={() => {
+        if (onPress) onPress();
+      }}
+    >
       <View style={{ padding: 10 }}>
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           <View
