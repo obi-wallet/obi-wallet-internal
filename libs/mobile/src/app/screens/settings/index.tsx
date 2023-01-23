@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import codePush, { LocalPackage } from "react-native-code-push";
 import { ScrollView } from "react-native-gesture-handler";
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import { SvgProps } from "react-native-svg";
 
 import { RootStack, useRootNavigation } from "../../root-stack";
@@ -27,6 +28,10 @@ import { KeysConfigScreen } from "./keys-config";
 import { Seedphrase } from "./seedphrase";
 import { SettingsRoute } from "./settings-stack";
 
+const options = {
+  enableVibrateFallback: true,
+  ignoreAndroidSystemSettings: false,
+};
 export const SettingsScreen = observer(() => {
   const { configStore, walletsStore } = useStore();
   const isObi = configStore.isObi();
@@ -70,6 +75,10 @@ export const SettingsScreen = observer(() => {
             }}
             onPress={() => {
               if (timesPressed >= 4) {
+                ReactNativeHapticFeedback.trigger(
+                  "notificationSuccess",
+                  options
+                );
                 configStore.toggleBrand();
                 setTimesPressed(0);
                 return;

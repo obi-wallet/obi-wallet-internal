@@ -1,7 +1,7 @@
 import { MultisigKey, Text } from "@obi-wallet/common";
 import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import {
   FlatList,
   StyleProp,
@@ -9,6 +9,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import { SvgProps } from "react-native-svg";
 
 import { useStore } from "../../../stores";
@@ -20,6 +21,10 @@ import Cloud from "./assets/cloud-icon.svg";
 import Email from "./assets/email-icon.svg";
 import PhoneNumber from "./assets/phone-number-icon.svg";
 import Warning from "./assets/warning-icon.svg";
+const options = {
+  enableVibrateFallback: true,
+  ignoreAndroidSystemSettings: false,
+};
 
 export const CheckIcon = Check;
 export const WarningIcon = Warning;
@@ -102,12 +107,18 @@ export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
   const { configStore } = useStore();
   const isObi = configStore.isObi();
   const isLoop = configStore.isLoop();
+  useEffect(() => {
+    if (signed) {
+      ReactNativeHapticFeedback.trigger("notificationSuccess", options);
+    }
+  }, [signed]);
 
   if (tiled && item.description === "Coming Soon") return null;
 
   return tiled ? (
     <TouchableOpacity
       onPress={() => {
+        !signed && ReactNativeHapticFeedback.trigger("impactLight", options);
         if (onPress) onPress();
       }}
     >
