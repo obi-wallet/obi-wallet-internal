@@ -37,6 +37,8 @@ function createWalletsStore() {
         [Feature.NftTab]: false,
         [Feature.Recovery]: false,
         [Feature.SinglesigWallets]: false,
+        [Feature.InAppPurchases]: false,
+        [Feature.Staking]: false,
       },
     },
     KVStore: MockKVStore,

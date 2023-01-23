@@ -99,7 +99,7 @@
     "tsc": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsc -b apps/loop-mobile/tsconfig.app.json"
+        "command": "tsc -b apps/loop-mobile/tsconfig.app.json apps/loop-mobile/tsconfig.spec.json"
       }
     },
     "codepush": {
