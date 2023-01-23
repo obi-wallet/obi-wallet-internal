@@ -23,7 +23,7 @@
     "tsc": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsc -b libs/proxy-contract/tsconfig.lib.json"
+        "command": "tsc -b libs/proxy-contract/tsconfig.lib.json libs/proxy-contract/tsconfig.spec.json"
       }
     }
   }

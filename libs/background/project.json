@@ -23,7 +23,7 @@
     "tsc": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsc -b libs/background/tsconfig.lib.json"
+        "command": "tsc -b libs/background/tsconfig.lib.json libs/background/tsconfig.spec.json"
       }
     }
   }
