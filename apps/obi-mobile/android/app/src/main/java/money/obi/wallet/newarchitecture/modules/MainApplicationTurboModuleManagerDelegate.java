@@ -1,4 +1,4 @@
-package money.obi.loop.conrad.newarchitecture.modules;
+package money.obi.wallet.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

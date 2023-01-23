@@ -1,4 +1,4 @@
-package money.obi.loop.conrad.newarchitecture;
+package money.obi.wallet.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import money.obi.loop.conrad.BuildConfig;
-import money.obi.loop.conrad.newarchitecture.components.MainComponentsRegistry;
-import money.obi.loop.conrad.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import money.obi.wallet.BuildConfig;
+import money.obi.wallet.newarchitecture.components.MainComponentsRegistry;
+import money.obi.wallet.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

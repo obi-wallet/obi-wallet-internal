@@ -54,3 +54,8 @@ allprojects {
         maven { url 'https://www.jitpack.io' }
     }
 }
+
+subprojects {
+    def lottieJavadoctask = tasks.findByPath(':lottie-react-native:androidJavadocs')
+    lottieJavadoctask.enabled = false
+}

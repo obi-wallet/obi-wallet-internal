@@ -1,4 +1,4 @@
-package money.obi.loop.conrad.newarchitecture.components;
+package money.obi.wallet.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
