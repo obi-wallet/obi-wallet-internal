@@ -18028,6 +18028,7 @@ __metadata:
     react-native-dotenv: ^3.4.2
     react-native-dropdown-picker: ^5.4.3
     react-native-gesture-handler: ^2.8.0
+    react-native-haptic-feedback: ^1.14.0
     react-native-html-to-pdf: ^0.12.0
     react-native-iap: ^12.4.9
     react-native-keyboard-aware-scroll-view: ^0.9.5
@@ -20223,6 +20224,15 @@ __metadata:
   version: 0.70.3
   resolution: "react-native-gradle-plugin@npm:0.70.3"
   checksum: 04a3379842bcb4709ac6b37e093a3de59acd33b28b200885843b13908fac685a77ab81d732c34090c56e5c0eec971d578b227f302bd04fe7901e8792d434f41f
+  languageName: node
+  linkType: hard
+
+"react-native-haptic-feedback@npm:^1.14.0":
+  version: 1.14.0
+  resolution: "react-native-haptic-feedback@npm:1.14.0"
+  peerDependencies:
+    react-native: ">=0.60.0"
+  checksum: 42ca8cc8ed3c95cdaad0b47b86d1f9f1e8eabdbdcea34fbf5d828bc651923be392462dd0fab8a7f37ad607464e07df88b764911e2118fb1ed9028a91ffb0e488
   languageName: node
   linkType: hard
 
