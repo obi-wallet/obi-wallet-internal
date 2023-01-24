@@ -244,7 +244,7 @@ export const AccountScreenInner = observer(function AccountScreenInner() {
                   ) : (
                     <FormattedMessage
                       id="accountscreen.key.phoneNumber"
-                      defaultMessage="Phone Number Key"
+                      defaultMessage="Phone Key"
                     />
                   ),
                 subTitle: (

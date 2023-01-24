@@ -80,7 +80,7 @@ export const KeysConfigScreen = observer(() => {
       id: "phoneNumber",
       title: intl.formatMessage({
         id: "settings.multisig.option.phonekey",
-        defaultMessage: "Phone Number Key",
+        defaultMessage: "Phone Key",
       }),
     }),
     getKey({
@@ -342,8 +342,8 @@ function KeyConfig({ item, onClose }: KeyConfigProps) {
             backgroundColor: isLoop
               ? "#1D1C37"
               : activated
-              ? "#437DFF"
-              : "#1a1a1a",
+                ? "#437DFF"
+                : "#1a1a1a",
             borderRadius: 12,
           }}
         >
