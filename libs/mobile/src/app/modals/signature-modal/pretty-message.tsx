@@ -27,7 +27,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
 
-import { formatCoin, useValidators } from "../../balances";
+import { formatCoin, useRewards, useValidators } from "../../balances";
 import { CoinIcon } from "../../screens/components/coin-icon";
 import { useStore } from "../../stores";
 import ArrowUpIcon from "./assets/arrowUpIcon.svg";
@@ -99,14 +99,19 @@ const PrettyMessageStaking = observer<
 const PrettyMessageWithdrawDelegatorReward =
   observer<MsgWithdrawDelegatorReward.Amino>(({ value }) => {
     const validators = useValidators();
+    const rewards = useRewards();
     const validator = validators.data?.find(
-      (val) => val.address === value.validator_address
+      (validator) => validator.address === value.validator_address
+    );
+    const reward = rewards.data?.perDelegator.find(
+      (delegator) => delegator.address === value.validator_address
     );
 
     return (
       <MessageElement
         icon={<ArrowUpIcon />}
         title="Withdrawing staking rewards from:"
+        coins={reward?.rewards ? [reward.rewards] : undefined}
       >
         <Text style={{ color: "white" }}>
           {validator?.label ||

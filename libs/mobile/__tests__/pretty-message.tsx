@@ -246,7 +246,6 @@ describe("Terra", () => {
       validator: terraChains["phoenix-1"].obiValidator,
     });
 
-    // TODO: That amount doesn't make much sense in this context
     test("Obi", async () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
       expect(
