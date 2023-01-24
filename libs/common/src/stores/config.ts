@@ -21,6 +21,7 @@ export enum Feature {
   SinglesigWallets = "SinglesigWallets",
   Staking = "Staking",
   InAppPurchases = "InAppPurchases",
+  BrandToggle = "BrandToggle",
 }
 
 export interface Config {
@@ -65,8 +66,10 @@ export class ConfigStore {
 
   @action
   public toggleBrand() {
-    this.config.brand =
-      this.config.brand === Brand.Obi ? Brand.Loop : Brand.Obi;
+    if (this.isFeatureEnabled(Feature.BrandToggle)) {
+      this.config.brand =
+        this.config.brand === Brand.Obi ? Brand.Loop : Brand.Obi;
+    }
   }
   @action
   public setBrand(brand: Brand) {
