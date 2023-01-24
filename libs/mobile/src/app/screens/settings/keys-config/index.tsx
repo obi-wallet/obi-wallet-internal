@@ -342,8 +342,8 @@ function KeyConfig({ item, onClose }: KeyConfigProps) {
             backgroundColor: isLoop
               ? "#1D1C37"
               : activated
-                ? "#437DFF"
-                : "#1a1a1a",
+              ? "#437DFF"
+              : "#1a1a1a",
             borderRadius: 12,
           }}
         >

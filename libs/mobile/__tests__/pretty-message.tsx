@@ -122,17 +122,13 @@ describe("Terra", () => {
 
     test("Obi", async () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
-      expect(
-        screen.getByText("Propose new owner for Obi Wallet")
-      ).toBeDefined();
+      expect(screen.getByText("Propose new key change")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
     });
 
     test("Loop", async () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
-      expect(
-        screen.getByText("Propose new owner for Obi Wallet")
-      ).toBeDefined();
+      expect(screen.getByText("Propose new key change")).toBeDefined();
     });
   });
 
@@ -144,17 +140,13 @@ describe("Terra", () => {
 
     test("Obi", async () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
-      expect(
-        screen.getByText("Confirm new owner for Obi Wallet")
-      ).toBeDefined();
+      expect(screen.getByText("Confirm new key change")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
     });
 
     test("Loop", async () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
-      expect(
-        screen.getByText("Confirm new owner for Obi Wallet")
-      ).toBeDefined();
+      expect(screen.getByText("Confirm new key change")).toBeDefined();
     });
   });
 

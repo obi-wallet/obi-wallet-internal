@@ -152,7 +152,7 @@ export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
         if (onPress) onPress();
       }}
     >
-      <View style={{ padding: 10, width: 100, }}>
+      <View style={{ padding: 10, width: 100 }}>
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           <View
             style={{
