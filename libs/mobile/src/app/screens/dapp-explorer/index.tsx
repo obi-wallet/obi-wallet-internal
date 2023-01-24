@@ -13,6 +13,7 @@ import {
   Tile,
   Tiles,
 } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useIntl } from "react-intl";
 import {
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export function DappExplorer() {
+export const DappExplorer = observer(() => {
   const rootStore = useStore();
   const navigation = useRootNavigation();
   const safeArea = useSafeAreaInsets();
@@ -320,4 +321,4 @@ export function DappExplorer() {
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
-}
+});
