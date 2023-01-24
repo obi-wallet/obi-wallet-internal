@@ -473,6 +473,10 @@ function Validators() {
                 amount: "0",
                 usdPrice: 0,
               });
+              const amountToUse =
+                parseFloat(amount.replace(",", ".")) * 10 ** digits;
+              // TODO: also check if amount is greater than balance
+              if (isNaN(amountToUse) || amountToUse <= 0) return;
               await RequestObiTerraSignAndBroadcastMsg.send({
                 id: wallet.id,
                 messages: [
@@ -480,8 +484,7 @@ function Validators() {
                     .getStakeMessage({
                       sender: wallet.address,
                       validator: validator.address,
-                      amount:
-                        parseFloat(amount.replace(",", ".")) * 10 ** digits,
+                      amount: amountToUse,
                       chainId: wallet.chain,
                     })
                     .toAmino(),
@@ -731,6 +734,10 @@ function MyStake() {
                 amount: "0",
                 usdPrice: 0,
               });
+              const amountToUse =
+                parseFloat(amount.replace(",", ".")) * 10 ** digits;
+              // TODO: also check if amount is greater than balance
+              if (isNaN(amountToUse) || amountToUse <= 0) return;
               await RequestObiTerraSignAndBroadcastMsg.send({
                 id: wallet.id,
                 messages: [
@@ -738,8 +745,7 @@ function MyStake() {
                     .getUnstakeMessage({
                       sender: wallet.address,
                       validator: validator.address,
-                      amount:
-                        parseFloat(amount.replace(",", ".")) * 10 ** digits,
+                      amount: amountToUse,
                       chainId: wallet.chain,
                     })
                     .toAmino(),
