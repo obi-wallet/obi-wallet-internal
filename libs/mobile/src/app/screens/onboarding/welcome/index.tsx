@@ -132,10 +132,10 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           <Text
             style={{
               color: "#F6F5FF",
-              fontSize: isSmallScreenNumber(25, 32),
+              fontSize: isSmallScreenNumber(30, 32),
               fontWeight: "600",
               marginTop: isSmallScreenNumber(25, 40),
-              textAlign: isObi ? "center" : "left",
+              textAlign: "left",
             }}
           >
             {renderTitle()}
@@ -167,7 +167,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                 onPress={() => {
                   Alert.alert(
                     "Recover Existing Wallet",
-                    "Only use this if you have made a wallet using the Loop app before.",
+                    "Only use this if you have made a wallet using the Obi app before.",
                     [
                       {
                         text: "Cancel",

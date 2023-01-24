@@ -377,7 +377,7 @@ function AssetsListItem({ item }: ListRenderItemInfo<ExtendedCoin>) {
             <Text
               style={{
                 color: "#F6F5FF",
-                fontSize: 12,
+                fontSize: 14,
                 fontWeight: "500",
                 marginTop: 3,
                 textAlign: "right",
@@ -399,7 +399,7 @@ function AssetsListItem({ item }: ListRenderItemInfo<ExtendedCoin>) {
               style={{
                 color: "#F6F5FF",
                 fontSize: 14,
-                fontWeight: "normal",
+                fontWeight: "500",
                 textAlign: "right",
               }}
             >

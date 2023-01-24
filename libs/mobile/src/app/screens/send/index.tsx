@@ -772,6 +772,7 @@ interface SuccessModalProps {
 }
 
 function SuccessModal({ visible, onDismiss }: SuccessModalProps) {
+  const theme = useTheme();
   return (
     <Modal isVisible={visible}>
       <View
@@ -783,23 +784,24 @@ function SuccessModal({ visible, onDismiss }: SuccessModalProps) {
       >
         <View
           style={{
-            backgroundColor: "#111023",
+            backgroundColor: theme.colors.background,
             borderRadius: 20,
             alignItems: "center",
             paddingVertical: 20,
           }}
         >
-          <Text style={{ color: "#fff", fontSize: 19 }}>
+          <Text style={{ color: "#fff", fontSize: 19, marginBottom: 10 }}>
             Transaction successful
           </Text>
-          <Button
-            flavor="blue"
-            label="Dismiss"
-            style={{ marginTop: 20 }}
-            onPress={() => {
-              onDismiss();
-            }}
-          />
+          <View style={{ marginHorizontal: 20 }}>
+            <Button
+              flavor="blue"
+              label="Dismiss"
+              onPress={() => {
+                onDismiss();
+              }}
+            />
+          </View>
         </View>
       </View>
     </Modal>
@@ -812,6 +814,7 @@ interface FailureModalProps {
 }
 
 function FailureModal({ visible, onDismiss }: FailureModalProps) {
+  const theme = useTheme();
   return (
     <Modal isVisible={visible}>
       <View
@@ -823,23 +826,24 @@ function FailureModal({ visible, onDismiss }: FailureModalProps) {
       >
         <View
           style={{
-            backgroundColor: "#111023",
+            backgroundColor: theme.colors.background,
             borderRadius: 20,
             alignItems: "center",
             paddingVertical: 20,
           }}
         >
-          <Text style={{ color: "#fff", fontSize: 19 }}>
+          <Text style={{ color: "#fff", fontSize: 19, marginBottom: 10 }}>
             Transaction failed
           </Text>
-          <Button
-            flavor="blue"
-            label="Dismiss"
-            style={{ marginTop: 20 }}
-            onPress={() => {
-              onDismiss();
-            }}
-          />
+          <View style={{ marginHorizontal: 20 }}>
+            <Button
+              flavor="blue"
+              label="Dismiss"
+              onPress={() => {
+                onDismiss();
+              }}
+            />
+          </View>
         </View>
       </View>
     </Modal>

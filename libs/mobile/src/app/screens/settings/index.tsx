@@ -67,6 +67,7 @@ export const SettingsScreen = observer(() => {
             style={{
               borderRadius: 32,
               marginRight: 17,
+              marginLeft: 10,
             }}
             onPress={() => {
               if (timesPressed >= 4) {

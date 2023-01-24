@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
+import { height } from "@fortawesome/free-solid-svg-icons/faPaperPlane";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons/faPaperclip";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
@@ -35,6 +36,7 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     justifyContent: "space-between",
+    height: "100%",
   },
 });
 
@@ -59,11 +61,14 @@ export function DappExplorer() {
 
   return (
     <SafeAreaView style={{ backgroundColor: theme.colors.background, flex: 1 }}>
-      <View
+      <KeyboardAvoidingView
         style={{
-          flex: 1,
           marginBottom: safeArea.bottom,
+          height: "100%",
+          paddingBottom: 10,
         }}
+        behavior="height"
+        keyboardVerticalOffset={20}
       >
         <Card style={styles.card}>
           {editMode ? (
@@ -142,178 +147,177 @@ export function DappExplorer() {
               ) : null}
             </Tiles>
           </ScrollView>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{ paddingVertical: 10 }}
-            keyboardVerticalOffset={100}
+        </Card>
+
+        <View
+          style={{
+            marginHorizontal: 20,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              marginBottom: 20,
+              alignItems: "center",
+              position: "relative",
+              paddingVertical: 2,
+            }}
           >
             <View
               style={{
-                marginHorizontal: 20,
+                flex: 1,
+                height: 1,
+                backgroundColor: isLoop ? "#16152B" : "#272727",
+              }}
+            />
+            <View
+              style={{
+                position: "absolute",
+                margin: "auto",
+                width: "100%",
               }}
             >
-              <View
-                style={{
-                  flexDirection: "row",
-                  marginBottom: 20,
-                  alignItems: "center",
-                  position: "relative",
-                  paddingVertical: 2,
-                }}
-              >
-                <View
-                  style={{ flex: 1, height: 1, backgroundColor: "#16152B" }}
-                />
+              {isLoop && (
                 <View
                   style={{
-                    position: "absolute",
-                    margin: "auto",
-                    width: "100%",
-                  }}
-                >
-                  {isLoop && (
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        backgroundColor: "#090817",
-                        alignSelf: "center",
-                        alignItems: "center",
-                        paddingHorizontal: 20,
-                      }}
-                    >
-                      <FontAwesomeIcon
-                        icon={faPaperclip}
-                        // @ts-expect-error
-                        size={Platform.OS === "web" ? "1x" : 24}
-                        style={{ color: "#393853", marginRight: 6 }}
-                      />
-
-                      <View>
-                        <Text style={{ color: "#787B9C" }}>
-                          GO TO SPECIFIC LINK
-                        </Text>
-                        <Text
-                          style={{
-                            color: "white",
-                            textAlign: "center",
-                            fontSize: 10,
-                            marginBottom: 5,
-                          }}
-                        >
-                          Some apps not yet supported
-                        </Text>
-                      </View>
-                    </View>
-                  )}
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    height: 1,
-                    backgroundColor: "#16152B",
-                    zIndex: -1,
-                  }}
-                />
-              </View>
-
-              <View
-                style={{
-                  backgroundColor: isLoop ? "#6959E6" : "transparent",
-                  borderColor: isLoop ? "transparent" : "white",
-                  borderWidth: 1,
-
-                  padding: 1,
-                  borderRadius: isLoop ? 12 : 32,
-                  flexDirection: "row",
-                }}
-              >
-                <TextInput
-                  defaultValue=""
-                  style={{
-                    flex: 1,
-                    backgroundColor: isLoop ? "#090817" : "#1A1A1A",
-                    fontSize: 14,
-                    fontWeight: "500",
-                    borderRadius: isLoop ? 12 : 32,
-                    paddingLeft: 20,
-                    color: "#F6F5FF",
-                  }}
-                  placeholder="Go to URL"
-                  onChangeText={(text) => {
-                    const newText = text.includes("https://")
-                      ? text
-                      : `https://${text}`;
-                    setUrl(newText.toLocaleLowerCase());
-                  }}
-                  autoCapitalize="none"
-                />
-                <TouchableHighlight
-                  style={{
-                    width: 56,
-                    height: 56,
-                    justifyContent: "center",
+                    flexDirection: "row",
+                    backgroundColor: "#090817",
+                    alignSelf: "center",
                     alignItems: "center",
-                  }}
-                  underlayColor="transparent"
-                  onPress={() => {
-                    //check if url is a valid url with protocol and domain
-                    try {
-                      const validURL = new URL(url.trim());
-                      //if validURL text has space
-                      if (
-                        validURL.toString().includes(" ") ||
-                        !validURL.toString().includes(".")
-                      ) {
-                        // noinspection ExceptionCaughtLocallyJS
-                        throw new Error("Invalid URL");
-                      }
-
-                      onAppPress({
-                        url: validURL.href,
-                        icon: "https://place-hold.it/180x180",
-                        label: url,
-                      });
-                    } catch (error) {
-                      console.log(error);
-                      // Check if it has http:// or https:// and if so remove it
-                      const newUrl = url.includes("https://")
-                        ? url.replace("https://", "")
-                        : url.includes("http://")
-                        ? url.replace("http://", "")
-                        : url;
-
-                      const searchParam = newUrl.split(" ").join("+");
-                      const newSearchUrl = `https://www.google.com/search?q=${searchParam}`;
-                      onAppPress({
-                        url: newSearchUrl,
-                        label: newUrl,
-                        icon: "https://place-hold.it/180x180",
-                      });
-                    }
+                    paddingHorizontal: 20,
                   }}
                 >
-                  {isObi ? (
-                    <View
+                  <FontAwesomeIcon
+                    icon={faPaperclip}
+                    // @ts-expect-error
+                    size={Platform.OS === "web" ? "1x" : 24}
+                    style={{ color: "#393853", marginRight: 6 }}
+                  />
+
+                  <View>
+                    <Text style={{ color: "#787B9C" }}>
+                      GO TO SPECIFIC LINK
+                    </Text>
+                    <Text
                       style={{
-                        transform: [{ rotate: "180deg" }],
+                        color: "white",
+                        textAlign: "center",
+                        fontSize: 10,
+                        marginBottom: 5,
                       }}
                     >
-                      <ChevronCircleLeft />
-                    </View>
-                  ) : (
-                    <FontAwesomeIcon
-                      icon={faChevronRight}
-                      // @ts-expect-error
-                      size={Platform.OS === "web" ? "1x" : 24}
-                      color="#fff"
-                    />
-                  )}
-                </TouchableHighlight>
-              </View>
+                      Some apps not yet supported
+                    </Text>
+                  </View>
+                </View>
+              )}
             </View>
-          </KeyboardAvoidingView>
-        </Card>
-      </View>
+            <View
+              style={{
+                flex: 1,
+                height: 1,
+                backgroundColor: isLoop ? "#16152B" : "#272727",
+                zIndex: -1,
+              }}
+            />
+          </View>
+
+          <View
+            style={{
+              backgroundColor: isLoop ? "#6959E6" : "transparent",
+              borderColor: isLoop ? "transparent" : "white",
+              borderWidth: 1,
+
+              padding: 1,
+              borderRadius: isLoop ? 12 : 32,
+              flexDirection: "row",
+            }}
+          >
+            <TextInput
+              defaultValue=""
+              style={{
+                flex: 1,
+                backgroundColor: isLoop ? "#090817" : "#1A1A1A",
+                fontSize: 14,
+                fontWeight: "500",
+                borderRadius: isLoop ? 12 : 32,
+                paddingLeft: 20,
+                color: "#F6F5FF",
+              }}
+              placeholder="Go to URL"
+              onChangeText={(text) => {
+                const newText = text.includes("https://")
+                  ? text
+                  : `https://${text}`;
+                setUrl(newText.toLocaleLowerCase());
+              }}
+              autoCapitalize="none"
+            />
+            <TouchableHighlight
+              style={{
+                width: 56,
+                height: 56,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              underlayColor="transparent"
+              onPress={() => {
+                //check if url is a valid url with protocol and domain
+                try {
+                  const validURL = new URL(url.trim());
+                  //if validURL text has space
+                  if (
+                    validURL.toString().includes(" ") ||
+                    !validURL.toString().includes(".")
+                  ) {
+                    // noinspection ExceptionCaughtLocallyJS
+                    throw new Error("Invalid URL");
+                  }
+
+                  onAppPress({
+                    url: validURL.href,
+                    icon: "https://place-hold.it/180x180",
+                    label: url,
+                  });
+                } catch (error) {
+                  console.log(error);
+                  // Check if it has http:// or https:// and if so remove it
+                  const newUrl = url.includes("https://")
+                    ? url.replace("https://", "")
+                    : url.includes("http://")
+                    ? url.replace("http://", "")
+                    : url;
+
+                  const searchParam = newUrl.split(" ").join("+");
+                  const newSearchUrl = `https://www.google.com/search?q=${searchParam}`;
+                  onAppPress({
+                    url: newSearchUrl,
+                    label: newUrl,
+                    icon: "https://place-hold.it/180x180",
+                  });
+                }
+              }}
+            >
+              {isObi ? (
+                <View
+                  style={{
+                    transform: [{ rotate: "180deg" }],
+                  }}
+                >
+                  <ChevronCircleLeft />
+                </View>
+              ) : (
+                <FontAwesomeIcon
+                  icon={faChevronRight}
+                  // @ts-expect-error
+                  size={Platform.OS === "web" ? "1x" : 24}
+                  color="#fff"
+                />
+              )}
+            </TouchableHighlight>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

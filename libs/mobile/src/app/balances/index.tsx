@@ -107,7 +107,6 @@ export function usePrices() {
 }
 
 export function UsdBalance({ fontSize = 28 }: { fontSize?: number }) {
-  const scale = fontSize / 28;
   const balances = useBalances();
   const balanceInUsd = R.sum(
     balances.data.map((coin) => {
@@ -124,7 +123,7 @@ export function UsdBalance({ fontSize = 28 }: { fontSize?: number }) {
       <Text
         style={{
           color: "#F6F5FF",
-          fontSize: 20 * scale,
+          fontSize: 28,
           fontWeight: "500",
           alignSelf: "flex-end",
           marginBottom: 2,
@@ -135,7 +134,7 @@ export function UsdBalance({ fontSize = 28 }: { fontSize?: number }) {
       <Text
         style={{
           color: "#F6F5FF",
-          fontSize: 28 * scale,
+          fontSize: 28,
           fontWeight: "500",
         }}
       >
@@ -144,8 +143,8 @@ export function UsdBalance({ fontSize = 28 }: { fontSize?: number }) {
       <Text
         style={{
           color: "#F6F5FF",
-          fontSize: 28 * scale,
-          fontWeight: "normal",
+          fontSize: 28,
+          fontWeight: "500",
         }}
       >
         {balanceInUsd.toFixed(2).split(".")[1]}
