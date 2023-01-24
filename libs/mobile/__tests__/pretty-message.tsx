@@ -43,6 +43,7 @@ function getConfig(brand: Brand) {
       [Feature.SinglesigWallets]: false,
       [Feature.Staking]: false,
       [Feature.InAppPurchases]: false,
+      [Feature.BrandToggle]: true,
     },
   };
   return config;

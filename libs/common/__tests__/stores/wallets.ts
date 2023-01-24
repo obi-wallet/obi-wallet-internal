@@ -39,6 +39,7 @@ function createWalletsStore() {
         [Feature.SinglesigWallets]: false,
         [Feature.InAppPurchases]: false,
         [Feature.Staking]: false,
+        [Feature.BrandToggle]: true,
       },
     },
     KVStore: MockKVStore,
