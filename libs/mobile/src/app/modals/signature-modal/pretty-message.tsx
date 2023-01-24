@@ -12,13 +12,13 @@ import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Text } from "@obi-wallet/common";
 import {
   Coin as TerraCoin,
-  Coins,
   Msg,
   MsgDelegate,
   MsgExecuteContract,
   MsgInstantiateContract,
   MsgSend,
   MsgUndelegate,
+  MsgWithdrawDelegatorReward,
 } from "@terra-money/terra.js";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
@@ -63,34 +63,32 @@ function PrettyMessageUnsafe({ message }: PrettyMessageProps) {
     }
     case "cosmos-sdk/MsgDelegate": {
       const msg = message as MsgDelegate.Amino;
-      return <PrettyMessageDelegate {...msg} label="Delegate to:" />;
+      return <PrettyMessageStaking {...msg} label="Staking to:" />;
     }
     case "cosmos-sdk/MsgUndelegate": {
       const msg = message as MsgUndelegate.Amino;
-      return <PrettyMessageDelegate {...msg} label="Undelegate from:" />;
+      return <PrettyMessageStaking {...msg} label="Unstaking from:" />;
+    }
+    case "distribution/MsgWithdrawDelegationReward":
+    case "cosmos-sdk/MsgWithdrawDelegationReward": {
+      const msg = message as MsgWithdrawDelegatorReward.Amino;
+      return <PrettyMessageWithdrawDelegatorReward {...msg} />;
     }
     default:
       return <PrettyMessageUnknown />;
   }
 }
-const PrettyMessageDelegate = observer<
+const PrettyMessageStaking = observer<
   (MsgDelegate.Amino | MsgUndelegate.Amino) & { label: string }
 >(({ value, label }) => {
   const validators = useValidators();
-  const { configStore } = useStore();
-  const isObi = configStore.isObi();
   const validator = validators.data?.find(
     (val) => val.address === value.validator_address
   );
 
   return (
-    <MessageElement
-      coins={makeCoinArray([value.amount])}
-      icon={<ArrowUpIcon />}
-      title={label}
-    >
+    <MessageElement coins={[value.amount]} icon={<ArrowUpIcon />} title={label}>
       <Text style={{ color: "white" }}>
-        {isObi ? <Text style={{ opacity: 0.6 }}>{label} </Text> : null}
         {validator?.label ||
           Bech32Address.shortenAddress(value.validator_address, 35)}
       </Text>
@@ -98,19 +96,39 @@ const PrettyMessageDelegate = observer<
   );
 });
 
+const PrettyMessageWithdrawDelegatorReward =
+  observer<MsgWithdrawDelegatorReward.Amino>(({ value }) => {
+    const validators = useValidators();
+    const validator = validators.data?.find(
+      (val) => val.address === value.validator_address
+    );
+
+    return (
+      <MessageElement
+        icon={<ArrowUpIcon />}
+        title="Withdrawing staking rewards from:"
+      >
+        <Text style={{ color: "white" }}>
+          {validator?.label ||
+            Bech32Address.shortenAddress(value.validator_address, 35)}
+        </Text>
+      </MessageElement>
+    );
+  });
+
 const PrettyMessageSend = observer(
   ({ value }: AminoMsgSend | MsgSend.Amino) => {
     const { configStore } = useStore();
     const isObi = configStore.isObi();
+
     return (
       <MessageElement
         icon={<FontAwesomeIcon icon={faPaperPlane} size={33} color="white" />}
-        title="Send"
-        coins={makeCoinArray([...value.amount])}
+        title={isObi ? "To:" : "Send"}
+        coins={[...value.amount]}
       >
         {isObi ? (
           <Text style={{ color: "white" }}>
-            <Text style={{ opacity: 0.6 }}>To: </Text>
             {Bech32Address.shortenAddress(value.to_address, 35)}
           </Text>
         ) : (
@@ -136,12 +154,13 @@ const PrettyMessageSend = observer(
 
 const PrettyMessageInstantiateContract = observer(
   ({ value }: AminoMsgInstantiateContract | MsgInstantiateContract.Amino) => {
-    const { chainStore, configStore } = useStore();
-    const isObi = configStore.isObi();
+    const { chainStore } = useStore();
     const intl = useIntl();
+
     if (
+      chainStore.currentChain === chainStore.currentCosmosChain &&
       value.code_id ===
-      chainStore.currentCosmosChainInformation.currentCodeId.toString()
+        chainStore.currentCosmosChainInformation.currentCodeId.toString()
     ) {
       return (
         <MessageElement
@@ -150,19 +169,7 @@ const PrettyMessageInstantiateContract = observer(
             id: "signature.modal.createobiwallet",
             defaultMessage: "Create Obi Wallet",
           })}
-          coins={makeCoinArray([
-            new TerraCoin(chainStore.currentChainInformation.denom, "0"),
-          ])}
-        >
-          <Text style={{ color: "white" }}>
-            <Text style={{ opacity: 0.6 }}>
-              {intl.formatMessage({
-                id: "signature.modal.createobiwallet",
-                defaultMessage: "Create Obi Wallet",
-              })}
-            </Text>
-          </Text>
-        </MessageElement>
+        />
       );
     }
 
@@ -173,21 +180,7 @@ const PrettyMessageInstantiateContract = observer(
           id: "signature.modal.initcontract",
           defaultMessage: "Init Contract",
         })}
-        coins={makeCoinArray([
-          new TerraCoin(chainStore.currentChainInformation.denom, "0"),
-        ])}
-      >
-        {isObi ? (
-          <Text style={{ color: "white" }}>
-            <Text style={{ opacity: 0.6 }}>
-              {intl.formatMessage({
-                id: "signature.modal.initcontract",
-                defaultMessage: "Init Contract",
-              })}
-            </Text>
-          </Text>
-        ) : null}
-      </MessageElement>
+      />
     );
   }
 );
@@ -201,6 +194,26 @@ const PrettyMessageExecuteContract = observer(
     const isLoop = configStore.isLoop();
     const isObi = configStore.isObi();
 
+    if (typeof message === "object" && R.has("propose_update_owner", message)) {
+      return (
+        <MessageElement
+          icon={<ArrowUpIcon />}
+          title="Propose new owner for Obi Wallet"
+          coins={[...funds]}
+        />
+      );
+    }
+
+    if (typeof message === "object" && R.has("confirm_update_owner", message)) {
+      return (
+        <MessageElement
+          icon={<ArrowUpIcon />}
+          title="Confirm new owner for Obi Wallet"
+          coins={[...funds]}
+        />
+      );
+    }
+
     if (typeof message === "object" && R.has("propose_update_admin", message)) {
       return (
         <MessageElement
@@ -210,16 +223,7 @@ const PrettyMessageExecuteContract = observer(
             defaultMessage: "Propose new admin for Obi Wallet",
           })}
           coins={[...funds]}
-        >
-          <Text style={{ color: "white" }}>
-            <Text style={{ opacity: 0.6 }}>
-              {intl.formatMessage({
-                id: "signature.modal.proposeupdateadmin",
-                defaultMessage: "Propose new admin for Obi Wallet",
-              })}
-            </Text>
-          </Text>
-        </MessageElement>
+        />
       );
     }
 
@@ -232,16 +236,7 @@ const PrettyMessageExecuteContract = observer(
             defaultMessage: "Confirm new admin for Obi Wallet",
           })}
           coins={[...funds]}
-        >
-          <Text style={{ color: "white" }}>
-            <Text style={{ opacity: 0.6 }}>
-              {intl.formatMessage({
-                id: "signature.modal.confirmupdateadmin",
-                defaultMessage: "Confirm new admin for Obi Wallet",
-              })}
-            </Text>
-          </Text>
-        </MessageElement>
+        />
       );
     }
 
@@ -250,20 +245,26 @@ const PrettyMessageExecuteContract = observer(
         <MessageElement
           coins={[...funds]}
           icon={<ArrowUpIcon />}
-          title="New Account"
-        >
-          <Text style={{ color: "white" }}>
-            <Text style={{ opacity: 0.6 }}>Create new ccount</Text>
-          </Text>
-        </MessageElement>
+          title="Create Obi Wallet"
+        />
       );
     }
-    console.log(Bech32Address.shortenAddress(value.contract, 35));
+
+    if (typeof message === "object" && R.has("wrapped_migrate", message)) {
+      return (
+        <MessageElement
+          coins={[...funds]}
+          icon={<ArrowUpIcon />}
+          title="Update Obi Wallet"
+        />
+      );
+    }
+
     return (
       <MessageElement
         icon={<FontAwesomeIcon icon={faPlay} size={33} color="white" />}
         title="Execute Wasm Contract"
-        coins={[...funds]}
+        coins={funds}
       >
         <View
           style={{
@@ -272,9 +273,6 @@ const PrettyMessageExecuteContract = observer(
             alignItems: isObi ? "center" : "flex-start",
           }}
         >
-          {isObi && (
-            <Text style={{ color: "white" }}>Execute Wasm Contract</Text>
-          )}
           <Text style={{ fontWeight: "700", color: "#fff" }}>
             {Bech32Address.shortenAddress(value.contract, 35)}
           </Text>
@@ -327,8 +325,6 @@ const PrettyMessageExecuteContract = observer(
 
 function PrettyMessageUnknown() {
   const intl = useIntl();
-  const { chainStore, configStore } = useStore();
-  const isObi = configStore.isObi();
   return (
     <MessageElement
       icon={<ArrowUpIcon />}
@@ -340,27 +336,7 @@ function PrettyMessageUnknown() {
         id: "signature.modal.unknownmessage.subheading",
         defaultMessage: "Please check data tab",
       })}
-      coins={[
-        new TerraCoin(chainStore.currentChainInformation.denom, "0").toAmino(),
-      ]}
-    >
-      {isObi ? (
-        <>
-          <Text style={{ color: "white" }}>
-            {intl.formatMessage({
-              id: "signature.modal.unknownmessage.heading",
-              defaultMessage: "Unknown message",
-            })}
-          </Text>
-          <Text style={{ opacity: 0.6, color: "white" }}>
-            {intl.formatMessage({
-              id: "signature.modal.unknownmessage.subheading",
-              defaultMessage: "Please check data tab",
-            })}
-          </Text>
-        </>
-      ) : null}
-    </MessageElement>
+    />
   );
 }
 
@@ -369,7 +345,7 @@ interface MessageElementProps {
   title?: string;
   subTitle?: string;
   children?: ReactNode;
-  coins?: AminoCoin[];
+  coins?: PrettyCoinsProps["coins"];
 }
 
 const MessageElement = observer<MessageElementProps>(
@@ -420,7 +396,7 @@ const MessageElement = observer<MessageElementProps>(
             borderTopWidth: 1,
           }}
         >
-          <PrettyCoins coins={makeCoinArray(coins ? [...coins] : [])} />
+          <PrettyCoins coins={coins} />
         </View>
         <View
           style={{
@@ -431,6 +407,12 @@ const MessageElement = observer<MessageElementProps>(
             paddingVertical: 20,
           }}
         >
+          <Text style={{ color: "white", opacity: 0.6 }}>
+            {title ? title : ""}
+          </Text>
+          {subTitle ? (
+            <Text style={{ opacity: 0.6, color: "white" }}>{subTitle}</Text>
+          ) : null}
           {children}
         </View>
       </View>
@@ -438,19 +420,17 @@ const MessageElement = observer<MessageElementProps>(
   }
 );
 
-const makeCoinArray = (coins: TerraCoin[] | AminoCoin[]): AminoCoin[] => {
-  return coins.map((coin) => {
-    if (typeof (coin as TerraCoin)["toAmino"] === "function") {
-      return (coin as TerraCoin).toAmino();
-    }
-    return coin as AminoCoin;
-  });
-};
+interface PrettyCoinsProps {
+  coins?: TerraCoin[] | readonly AminoCoin[];
+}
 
-const PrettyCoins = observer(({ coins }: { coins: AminoCoin[] }) => {
+const PrettyCoins = observer<PrettyCoinsProps>(({ coins }) => {
   const { chainStore } = useStore();
   const denom = chainStore.currentChainInformation.denom;
-  const coinsArray = coins.length > 0 ? coins : [{ amount: "0", denom: denom }];
+  const coinsArray =
+    coins && coins.length > 0
+      ? toAminoCoins(coins)
+      : [{ amount: "0", denom: denom }];
   return (
     <View>
       {coinsArray.map((coin) => {
@@ -469,7 +449,6 @@ const PrettyCoins = observer(({ coins }: { coins: AminoCoin[] }) => {
             </View>
             <Text style={{ color: "white", fontSize: 49 }} key={denom}>
               {amount}
-
               <Text style={{ fontSize: 16 }}>{denom}</Text>
             </Text>
           </View>
@@ -477,4 +456,15 @@ const PrettyCoins = observer(({ coins }: { coins: AminoCoin[] }) => {
       })}
     </View>
   );
+
+  function toAminoCoins(
+    coins: TerraCoin[] | readonly AminoCoin[]
+  ): AminoCoin[] {
+    return coins.map((coin) => {
+      if (typeof (coin as TerraCoin)["toAmino"] === "function") {
+        return (coin as TerraCoin).toAmino();
+      }
+      return coin as AminoCoin;
+    });
+  }
 });

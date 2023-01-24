@@ -22,81 +22,83 @@ const queryClient = new QueryClient();
 
 export interface ProviderProps {
   children: ReactNode;
-  initialConfig: Config;
+  config: Config;
   navigationContainerProps?: Omit<
     ComponentProps<typeof NavigationContainer>,
     "children"
   >;
 }
 
-export const Provider = observer<ProviderProps>(
-  ({ children, initialConfig, navigationContainerProps }) => {
-    const rootStore = useMemo(() => {
-      return createRootStore({ initialConfig });
-    }, [initialConfig]);
-    const { languageStore, configStore } = rootStore;
-    const { currentLanguage } = languageStore;
+export function Provider({
+  children,
+  config,
+  navigationContainerProps,
+}: ProviderProps) {
+  const rootStore = useMemo(() => {
+    return createRootStore({ config });
+  }, [config]);
+  const { languageStore, configStore } = rootStore;
+  const { currentLanguage } = languageStore;
 
-    useEffect(() => {
-      if (!configStore.isFeatureEnabled(Feature.InAppPurchases)) return;
-      void initConnection();
-      return () => {
-        void endConnection();
-      };
-    }, [configStore]);
+  useEffect(() => {
+    if (!configStore.isFeatureEnabled(Feature.InAppPurchases)) return;
+    void initConnection();
+    return () => {
+      void endConnection();
+    };
+  }, [configStore]);
 
-    return (
-      <StrictMode>
-        <QueryClientProvider client={queryClient}>
-          <StoreContext.Provider value={rootStore}>
-            <IntlProvider
-              defaultLocale="en"
-              locale={currentLanguage}
-              messages={messages[currentLanguage]}
-              formats={{
-                date: {
-                  en: {
-                    month: "short",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    hour12: false,
-                    minute: "2-digit",
-                    timeZoneName: "short",
-                  },
-                  de: {
-                    month: "short",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    hour12: false,
-                    minute: "2-digit",
-                    timeZoneName: "short",
-                  },
-                  es: {
-                    month: "short",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    hour12: false,
-                    minute: "2-digit",
-                    timeZoneName: "short",
-                  },
+  return (
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <StoreContext.Provider value={rootStore}>
+          <IntlProvider
+            defaultLocale="en"
+            locale={currentLanguage}
+            messages={messages[currentLanguage]}
+            formats={{
+              date: {
+                en: {
+                  month: "short",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  hour12: false,
+                  minute: "2-digit",
+                  timeZoneName: "short",
                 },
-              }}
-            >
-              <SafeAreaProvider>
-                <NavigationContainer {...navigationContainerProps}>
-                  <ThemeProvider theme={getTheme(configStore.brand)}>
-                    <StatusBar barStyle="light-content" />
-                    {children}
-                  </ThemeProvider>
-                </NavigationContainer>
-              </SafeAreaProvider>
-            </IntlProvider>
-          </StoreContext.Provider>
-        </QueryClientProvider>
-      </StrictMode>
-    );
-  }
-);
+                de: {
+                  month: "short",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  hour12: false,
+                  minute: "2-digit",
+                  timeZoneName: "short",
+                },
+                es: {
+                  month: "short",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  hour12: false,
+                  minute: "2-digit",
+                  timeZoneName: "short",
+                },
+              },
+            }}
+          >
+            <SafeAreaProvider>
+              <NavigationContainer {...navigationContainerProps}>
+                <ThemeProvider theme={getTheme(configStore.brand)}>
+                  <StatusBar barStyle="light-content" />
+                  {children}
+                </ThemeProvider>
+              </NavigationContainer>
+            </SafeAreaProvider>
+          </IntlProvider>
+        </StoreContext.Provider>
+      </QueryClientProvider>
+    </StrictMode>
+  );
+}
 
 export function getTheme(brand: Brand): Theme {
   switch (brand) {

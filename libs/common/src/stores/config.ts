@@ -46,8 +46,13 @@ export class ConfigStore {
   public config: Config;
 
   constructor({ initialConfig }: { initialConfig: Config }) {
-    makeObservable(this);
     this.config = initialConfig;
+    makeObservable(this);
+  }
+
+  @action
+  public setConfig(config: Config) {
+    this.config = config;
   }
 
   public isFeatureEnabled(feature: Feature): boolean {
