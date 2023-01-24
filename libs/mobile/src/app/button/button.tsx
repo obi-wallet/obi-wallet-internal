@@ -1,21 +1,30 @@
 import { Theme, useTheme } from "@emotion/react";
 import { Brand, Text } from "@obi-wallet/common";
+import * as R from "ramda";
 import { FC, useCallback, useEffect, useState } from "react";
 import {
   GestureResponderEvent,
   Platform,
+  StyleProp,
   StyleSheet,
+  TextStyle,
   TouchableHighlight,
   TouchableNativeFeedback,
   TouchableWithoutFeedbackProps,
   View,
+  ViewStyle,
 } from "react-native";
 import { SvgProps } from "react-native-svg";
 
 import { isSmallScreenNumber } from "../screens/components/screen-size";
 import { useStore } from "../stores";
 
-const loopFlavors = {
+type Flavor = {
+  text: TextStyle;
+  button: ViewStyle;
+};
+
+const loopFlavors: Record<string, Flavor> = {
   blue: {
     text: {
       color: "#040317",
@@ -49,6 +58,18 @@ const loopFlavors = {
     },
   },
 };
+
+const obiFlavors: Record<string, Flavor> = {
+  cancel: {
+    button: {
+      backgroundColor: "transparent",
+      borderWidth: 1,
+      borderColor: "#ffffff",
+    },
+    text: {},
+  },
+};
+
 const baseStyles = StyleSheet.create({
   leftIcon: {
     marginRight: 8,
@@ -73,13 +94,19 @@ const baseStyles = StyleSheet.create({
 
 const getFlavorStyles = (
   brand: Brand,
-  flavor: keyof typeof loopFlavors,
+  flavor: keyof typeof loopFlavors | keyof typeof obiFlavors,
   theme: Theme,
   disabled: boolean
 ) => {
   switch (brand) {
     case Brand.Obi: {
       if (disabled) return baseStyles;
+
+      const flavorStyles: Flavor = R.propOr(
+        { text: {}, button: {} },
+        flavor,
+        obiFlavors
+      );
 
       return {
         ...baseStyles,
@@ -88,11 +115,13 @@ const getFlavorStyles = (
           fontFamily: theme.fonts.light,
           fontWeight: "normal" as const,
           color: "#fff",
+          ...flavorStyles.text,
         },
         button: {
           ...baseStyles.button,
           backgroundColor: "#437DFF",
           opacity: 1,
+          ...flavorStyles.button,
         },
       };
     }
@@ -108,7 +137,11 @@ const getFlavorStyles = (
           },
         };
 
-      const flavorStyles = loopFlavors[flavor];
+      const flavorStyles: Flavor = R.propOr(
+        { text: {}, button: {} },
+        flavor,
+        loopFlavors
+      );
       return {
         ...baseStyles,
         text: {
@@ -129,11 +162,12 @@ const getFlavorStyles = (
 
 export interface ButtonProps
   extends Omit<TouchableWithoutFeedbackProps, "children"> {
-  flavor: keyof typeof loopFlavors;
+  flavor: keyof typeof loopFlavors | keyof typeof obiFlavors;
   label: string;
   disabled?: boolean;
   LeftIcon?: FC<SvgProps>;
   RightIcon?: FC<SvgProps>;
+  buttonStyle?: StyleProp<ViewStyle>;
 }
 
 export function Button({
@@ -142,6 +176,7 @@ export function Button({
   disabled = false,
   LeftIcon,
   RightIcon,
+  buttonStyle,
   ...props
 }: ButtonProps) {
   const { configStore } = useStore();
@@ -161,7 +196,7 @@ export function Button({
   const buttonProps = {
     ...props,
     children,
-    style: flavorStyles.button,
+    style: [flavorStyles.button, buttonStyle],
   };
 
   const onPress = (e: GestureResponderEvent) => {
