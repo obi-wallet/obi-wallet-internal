@@ -655,7 +655,7 @@ function ValidatorItem({
                   {formatted.denom}
                 </Text>
                 <Text style={{ color: "#fff", fontWeight: "400" }}>
-                  {formatted.amount}
+                  Balance: {formatted.amount}
                 </Text>
               </View>
             </View>
