@@ -379,31 +379,10 @@ function AssetsListItem({ item }: ListRenderItemInfo<ExtendedCoin>) {
                 color: "#F6F5FF",
                 fontSize: 14,
                 fontWeight: "500",
-                marginTop: 3,
                 textAlign: "right",
               }}
             >
-              $
-            </Text>
-            <Text
-              style={{
-                color: "#F6F5FF",
-                fontSize: 14,
-                fontWeight: "500",
-                textAlign: "right",
-              }}
-            >
-              {valueInUsd.toFixed(2).split(".")[0]}.
-            </Text>
-            <Text
-              style={{
-                color: "#F6F5FF",
-                fontSize: 14,
-                fontWeight: "500",
-                textAlign: "right",
-              }}
-            >
-              {valueInUsd.toFixed(2).split(".")[1]}
+              ${valueInUsd.toFixed(2)}
             </Text>
           </View>
 
