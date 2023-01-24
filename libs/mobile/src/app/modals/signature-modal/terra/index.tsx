@@ -162,7 +162,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
           case "phoneNumber":
             phoneNumberBottomSheetRef.current?.snapToIndex(0);
             break;
-          case "cloud":
+          default:
             console.log("Not implemented yet");
             break;
         }

@@ -12,12 +12,17 @@ import {
 import { SvgProps } from "react-native-svg";
 
 import { useStore } from "../../../stores";
+import { SendIcon } from "../../home/components/send";
 import PeopleWhite from "../../onboarding/common/4-social/assets/people-alt-twotone-24px white.svg";
 import People from "../../onboarding/common/4-social/assets/people-alt-twotone-24px.svg";
 import Biometrics from "./assets/biometrics-icon.svg";
+import BiometricsObi from "./assets/biometrics-obi-icon.svg";
 import Check from "./assets/check-icon.svg";
 import Cloud from "./assets/cloud-icon.svg";
 import Email from "./assets/email-icon.svg";
+import Ledger from "./assets/ledger-icon.svg";
+import MapPoint from "./assets/map-point-icon.svg";
+import NFC from "./assets/nfc-icon.svg";
 import PhoneNumber from "./assets/phone-number-icon.svg";
 import Warning from "./assets/warning-icon.svg";
 
@@ -29,11 +34,15 @@ export interface KeyMetaData {
 }
 
 export const keyMetaData: Record<MultisigKey, KeyMetaData> = {
-  biometrics: { Icon: Biometrics },
+  biometrics: { Icon: BiometricsObi },
   cloud: { Icon: Cloud },
   phoneNumber: { Icon: PhoneNumber },
   email: { Icon: Email },
   social: { Icon: () => <People width={24} height={24} /> },
+  nfc: { Icon: () => <NFC width={24} height={24} /> },
+  telegram: { Icon: () => <SendIcon color="#fff" width={24} height={24} /> },
+  map: { Icon: () => <MapPoint width={24} height={24} /> },
+  ledger: { Icon: () => <Ledger width={24} height={24} /> },
 };
 
 export interface Key {
@@ -69,6 +78,38 @@ const comingSoonKeys: HydratedKeyListItem[] = [
     right: <View />,
     onPress: () => null,
     Icon: Cloud,
+  },
+  {
+    id: "nfc",
+    title: "NFC Tap Key",
+    description: "Coming Soon",
+    right: <View />,
+    onPress: () => null,
+    Icon: () => <NFC width={20} height={20} />,
+  },
+  {
+    id: "telegram",
+    title: "Telegram Key",
+    description: "Coming Soon",
+    right: <View />,
+    onPress: () => null,
+    Icon: () => <SendIcon color="#fff" />,
+  },
+  {
+    id: "map",
+    title: "Map Point Key",
+    description: "Coming Soon",
+    right: <View />,
+    onPress: () => null,
+    Icon: () => <MapPoint width={20} height={20} />,
+  },
+  {
+    id: "ledger",
+    title: "Ledger Key",
+    description: "Coming Soon",
+    right: <View />,
+    onPress: () => null,
+    Icon: () => <Ledger width={20} height={20} />,
   },
 ];
 
