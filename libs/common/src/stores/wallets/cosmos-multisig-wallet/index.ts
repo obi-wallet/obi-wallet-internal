@@ -28,6 +28,10 @@ export interface CosmosMultisig {
   social: WithAddress<CosmosSerializedData.SerializedSocialPayload> | null;
   cloud: WithAddress<CosmosSerializedData.SerializedCloudPayload> | null;
   email: null;
+  nfc: null;
+  telegram: null;
+  map: null;
+  ledger: null;
 }
 
 export type CosmosMultisigKey = keyof Omit<CosmosMultisig, "multisig">;
@@ -289,6 +293,10 @@ export class CosmosMultisigWallet extends AbstractWallet {
       },
       cloud: null,
       email: null,
+      nfc: null,
+      telegram: null,
+      map: null,
+      ledger: null,
     };
   }
 
