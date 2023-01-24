@@ -1,4 +1,11 @@
-import { Brand, Config, Feature, WalletType } from "@obi-wallet/common";
+import {
+  Brand,
+  Config,
+  Feature,
+  terra,
+  terraChains,
+  WalletType,
+} from "@obi-wallet/common";
 import {
   Coin,
   Msg,
@@ -12,77 +19,274 @@ import { render, screen } from "@testing-library/react-native";
 import { PrettyMessage } from "../src/app/modals/signature-modal/pretty-message";
 import { Provider } from "../src/app/provider";
 
-const config: Config = {
-  brand: Brand.Obi,
-  defaultMultisigWalletType: WalletType.TerraMultisig,
-  cosmosChains: {
-    enabled: ["juno-1", "uni-3"],
-    default: "juno-1",
-  },
-  terraChains: {
-    enabled: ["phoenix-1"],
-    default: "phoenix-1",
-  },
-  languages: {
-    enabled: ["en"],
-    default: "en",
-  },
-  features: {
-    [Feature.AccountsTab]: false,
-    [Feature.HealthChecks]: false,
-    [Feature.NftTab]: false,
-    [Feature.Recovery]: false,
-    [Feature.SinglesigWallets]: false,
-    [Feature.Staking]: false,
-    [Feature.InAppPurchases]: false,
-  },
-};
+function getConfig(brand: Brand) {
+  const config: Config = {
+    brand,
+    defaultMultisigWalletType: WalletType.TerraMultisig,
+    cosmosChains: {
+      enabled: ["juno-1", "uni-3"],
+      default: "juno-1",
+    },
+    terraChains: {
+      enabled: ["phoenix-1"],
+      default: "phoenix-1",
+    },
+    languages: {
+      enabled: ["en"],
+      default: "en",
+    },
+    features: {
+      [Feature.AccountsTab]: false,
+      [Feature.HealthChecks]: false,
+      [Feature.NftTab]: false,
+      [Feature.Recovery]: false,
+      [Feature.SinglesigWallets]: false,
+      [Feature.Staking]: false,
+      [Feature.InAppPurchases]: false,
+    },
+  };
+  return config;
+}
 
 describe("Terra", () => {
   const address = "terra18aw4eedj4v3253dvj9h5ucx9uedl9ggaayktq4";
+  const chainId = "phoenix-1";
 
-  test("PrettyMessageSend", async () => {
+  describe("MsgSend", () => {
     const message = new MsgSend(address, address, { uluna: 1 });
-    renderPrettyMessage(message);
-    expect(screen.getByText("Send")).toBeDefined();
-    expect(
-      screen.getByText("terra18aw4ee...yktq4 will receive:")
-    ).toBeDefined();
-    expect(screen.getByText("0.000001 LUNA")).toBeDefined();
+
+    test("Obi", async () => {
+      renderPrettyMessage({ message, brand: Brand.Obi });
+      expect(screen.getByText("To:")).toBeDefined();
+      expect(
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+      ).toBeDefined();
+      expect(screen.getByText("0.000001LUNA")).toBeDefined();
+    });
+
+    test("Loop", async () => {
+      renderPrettyMessage({ message, brand: Brand.Loop });
+      expect(screen.getByText("Send")).toBeDefined();
+      expect(
+        screen.getByText("terra18aw4ee...yktq4 will receive:")
+      ).toBeDefined();
+      expect(screen.getByText("0.000001 LUNA")).toBeDefined();
+    });
   });
 
-  test("PrettyMessageInstantiateContract", async () => {
+  describe("MsgInstantiateContract", () => {
     const message = new MsgInstantiateContract(address, address, 1, {});
-    renderPrettyMessage(message);
-    expect(screen.getByText("Init Contract")).toBeDefined();
+
+    test("Obi", async () => {
+      renderPrettyMessage({ message, brand: Brand.Obi });
+      expect(screen.getByText("Init Contract")).toBeDefined();
+      expect(screen.getByText("0LUNA")).toBeDefined();
+    });
+
+    test("Loop", async () => {
+      renderPrettyMessage({ message, brand: Brand.Loop });
+      expect(screen.getByText("Init Contract")).toBeDefined();
+    });
   });
 
-  test("PrettyMessageExecuteContract", async () => {
+  describe("MsgExecuteContract", () => {
     const message = new MsgExecuteContract(address, address, {});
-    renderPrettyMessage(message);
-    expect(screen.getByText("Execute Wasm Contract")).toBeDefined();
-    expect(
-      screen.getByText("Execute wasm contract terra18aw4ee...yktq4")
-    ).toBeDefined();
+
+    test("Obi", async () => {
+      renderPrettyMessage({ message, brand: Brand.Obi });
+      expect(screen.getByText("Execute Wasm Contract")).toBeDefined();
+      expect(
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+      ).toBeDefined();
+      expect(
+        screen.getByText("Check the data tab for the full message")
+      ).toBeDefined();
+      expect(screen.getByText("0LUNA")).toBeDefined();
+    });
+
+    test("Loop", async () => {
+      renderPrettyMessage({ message, brand: Brand.Loop });
+      expect(screen.getByText("Execute Wasm Contract")).toBeDefined();
+      expect(
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+      ).toBeDefined();
+    });
   });
 
-  test.todo("PrettyMessageExecuteContract (create new obi account)");
-  test.todo("PrettyMessageExecuteContract (propose_update_admin");
-  test.todo("PrettyMessageExecuteContract (confirm_update_admin");
+  describe("MsgExecuteContract (propose_update_owner)", () => {
+    const message = terra.getProposeUpdateOwnerMessage({
+      sender: address,
+      proxyAddress: address,
+      newOwner: address,
+    });
 
-  test("PrettyMessageUnknown", async () => {
+    test("Obi", async () => {
+      renderPrettyMessage({ message, brand: Brand.Obi });
+      expect(
+        screen.getByText("Propose new owner for Obi Wallet")
+      ).toBeDefined();
+      expect(screen.getByText("0LUNA")).toBeDefined();
+    });
+
+    test("Loop", async () => {
+      renderPrettyMessage({ message, brand: Brand.Loop });
+      expect(
+        screen.getByText("Propose new owner for Obi Wallet")
+      ).toBeDefined();
+    });
+  });
+
+  describe("MsgExecuteContract (confirm_update_owner)", () => {
+    const message = terra.getConfirmUpdateOwnerMessage({
+      sender: address,
+      proxyAddress: address,
+    });
+
+    test("Obi", async () => {
+      renderPrettyMessage({ message, brand: Brand.Obi });
+      expect(
+        screen.getByText("Confirm new owner for Obi Wallet")
+      ).toBeDefined();
+      expect(screen.getByText("0LUNA")).toBeDefined();
+    });
+
+    test("Loop", async () => {
+      renderPrettyMessage({ message, brand: Brand.Loop });
+      expect(
+        screen.getByText("Confirm new owner for Obi Wallet")
+      ).toBeDefined();
+    });
+  });
+
+  describe("MsgExecuteContract (new_account)", () => {
+    const message = terra.getNewAccountMessage({
+      address,
+      signers: [],
+      chainId,
+    });
+
+    test("Obi", async () => {
+      renderPrettyMessage({ message, brand: Brand.Obi });
+      expect(screen.getByText("Create Obi Wallet")).toBeDefined();
+      expect(screen.getByText("0LUNA")).toBeDefined();
+    });
+
+    test("Loop", async () => {
+      renderPrettyMessage({ message, brand: Brand.Loop });
+      expect(screen.getByText("Create Obi Wallet")).toBeDefined();
+    });
+  });
+
+  describe("MsgExecuteContract (new_account)", () => {
+    const message = terra.getMigrateMessage({
+      proxyAddress: address,
+      admin: address,
+      chainId,
+    });
+
+    test("Obi", async () => {
+      renderPrettyMessage({ message, brand: Brand.Obi });
+      expect(screen.getByText("Update Obi Wallet")).toBeDefined();
+      expect(screen.getByText("0LUNA")).toBeDefined();
+    });
+
+    test("Loop", async () => {
+      renderPrettyMessage({ message, brand: Brand.Loop });
+      expect(screen.getByText("Update Obi Wallet")).toBeDefined();
+    });
+  });
+
+  describe("MsgDelegate", () => {
+    const message = terra.getStakeMessage({
+      sender: address,
+      validator: terraChains["phoenix-1"].obiValidator,
+      amount: 1,
+      chainId,
+    });
+
+    test("Obi", async () => {
+      renderPrettyMessage({ message, brand: Brand.Obi });
+      expect(screen.getByText("Staking to:")).toBeDefined();
+      expect(screen.getByText("0.000001LUNA")).toBeDefined();
+    });
+
+    // TODO: Loop's not showing the amount
+    test.skip("Loop", async () => {
+      renderPrettyMessage({ message, brand: Brand.Loop });
+      expect(screen.getByText("Staking to:")).toBeDefined();
+      expect(screen.getByText("0.000001LUNA")).toBeDefined();
+    });
+  });
+
+  describe("MsgUndelegate", () => {
+    const message = terra.getUnstakeMessage({
+      sender: address,
+      validator: terraChains["phoenix-1"].obiValidator,
+      amount: 1,
+      chainId,
+    });
+
+    test("Obi", async () => {
+      renderPrettyMessage({ message, brand: Brand.Obi });
+      expect(screen.getByText("Unstaking from:")).toBeDefined();
+      expect(screen.getByText("0.000001LUNA")).toBeDefined();
+    });
+
+    // TODO: Loop's not showing the amount
+    test.skip("Loop", async () => {
+      renderPrettyMessage({ message, brand: Brand.Loop });
+      expect(screen.getByText("Unstaking from:")).toBeDefined();
+      expect(screen.getByText("0.000001LUNA")).toBeDefined();
+    });
+  });
+
+  describe("MsgWithdrawDelegationReward", () => {
+    const message = terra.getWithdrawRewardsMessage({
+      sender: address,
+      validator: terraChains["phoenix-1"].obiValidator,
+    });
+
+    // TODO: That amount doesn't make much sense in this context
+    test("Obi", async () => {
+      renderPrettyMessage({ message, brand: Brand.Obi });
+      expect(
+        screen.getByText("Withdrawing staking rewards from:")
+      ).toBeDefined();
+      expect(screen.getByText("0LUNA")).toBeDefined();
+    });
+
+    // TODO: Loop's not showing the amount
+    test.skip("Loop", async () => {
+      renderPrettyMessage({ message, brand: Brand.Loop });
+      expect(
+        screen.getByText("Withdrawing staking rewards from:")
+      ).toBeDefined();
+      expect(screen.getByText("0LUNA")).toBeDefined();
+    });
+  });
+
+  describe("Unknown Message", () => {
     const message = new MsgBeginRedelegate(
       address,
       address,
       address,
-      Coin.fromAmino({ amount: "1", denom: "uluna" })
+      Coin.fromAmino({ denom: "uluna", amount: "1" })
     );
-    renderPrettyMessage(message);
-    expect(screen.getByText("Unknown message")).toBeDefined();
-    expect(screen.getByText("Please check data tab")).toBeDefined();
+
+    test("Obi", async () => {
+      renderPrettyMessage({ message, brand: Brand.Obi });
+      expect(screen.getByText("Unknown message")).toBeDefined();
+      expect(screen.getByText("Please check data tab")).toBeDefined();
+    });
+
+    test("Loop", async () => {
+      renderPrettyMessage({ message, brand: Brand.Loop });
+      expect(screen.getByText("Unknown message")).toBeDefined();
+      expect(screen.getByText("Please check data tab")).toBeDefined();
+    });
   });
 
-  test("Error Boundary", async () => {
+  describe("Error Boundary", () => {
     jest.spyOn(console, "error").mockImplementation(() => {
       // noop
     });
@@ -91,13 +295,27 @@ describe("Terra", () => {
       // @ts-expect-error Intentionally wrong
       value: {},
     });
-    renderPrettyMessage(message);
-    expect(screen.getByText("Unknown message")).toBeDefined();
+
+    test("Obi", async () => {
+      renderPrettyMessage({ message, brand: Brand.Obi });
+      expect(screen.getByText("Unknown message")).toBeDefined();
+    });
+
+    test("Loop", async () => {
+      renderPrettyMessage({ message, brand: Brand.Loop });
+      expect(screen.getByText("Unknown message")).toBeDefined();
+    });
   });
 
-  function renderPrettyMessage(message: Msg) {
+  function renderPrettyMessage({
+    message,
+    brand,
+  }: {
+    message: Msg;
+    brand: Brand;
+  }) {
     render(
-      <Provider initialConfig={config}>
+      <Provider key={brand} config={getConfig(brand)}>
         <PrettyMessage message={message.toAmino()} />
       </Provider>
     );
@@ -105,12 +323,15 @@ describe("Terra", () => {
 });
 
 describe("Cosmos", () => {
-  test.todo("PrettyMessageSend");
-  test.todo("PrettyMessageInstantiateContract");
-  test.todo("PrettyMessageInstantiateContract (Obi Wallet)");
-  test.todo("PrettyMessageExecuteContract");
-  test.todo("PrettyMessageExecuteContract (propose_update_admin");
-  test.todo("PrettyMessageExecuteContract (confirm_update_admin");
-  test.todo("PrettyMessageUnknown");
+  test.todo("MsgSend");
+  test.todo("MsgInstantiateContract");
+  test.todo("MsgInstantiateContract (New Obi wallet)");
+  test.todo("MsgExecuteContract");
+  test.todo("MsgExecuteContract (propose_update_admin)");
+  test.todo("MsgExecuteContract (confirm_update_admin)");
+  test.todo("MsgDelegate");
+  test.todo("MsgUndelegate");
+  test.todo("MsgWithdrawDelegationReward");
+  test.todo("Unknown Message");
   test.todo("Error Boundary");
 });

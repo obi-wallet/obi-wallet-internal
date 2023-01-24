@@ -46,8 +46,13 @@ export class ConfigStore {
   public config: Config;
 
   constructor({ initialConfig }: { initialConfig: Config }) {
-    makeObservable(this);
     this.config = initialConfig;
+    makeObservable(this);
+  }
+
+  @action
+  public setConfig(config: Config) {
+    this.config = config;
   }
 
   public isFeatureEnabled(feature: Feature): boolean {
@@ -62,6 +67,10 @@ export class ConfigStore {
   public toggleBrand() {
     this.config.brand =
       this.config.brand === Brand.Obi ? Brand.Loop : Brand.Obi;
+  }
+  @action
+  public setBrand(brand: Brand) {
+    this.config.brand = brand;
   }
 
   public isObi(): boolean {

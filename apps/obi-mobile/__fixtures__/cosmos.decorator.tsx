@@ -7,7 +7,7 @@ import { config } from "../src/config";
 
 export default ({ children }: { children: ReactNode }) => {
   return (
-    <Provider initialConfig={config}>
+    <Provider config={config}>
       <BrandChooser />
       {children}
     </Provider>

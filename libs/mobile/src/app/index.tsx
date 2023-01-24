@@ -37,7 +37,7 @@ import { useStore } from "./stores";
 
 export interface BaseAppProps {
   initialConfig: Config;
-  providerProps?: Omit<ProviderProps, "children" | "initialConfig">;
+  providerProps?: Omit<ProviderProps, "children" | "config">;
 }
 
 export function BaseApp({ initialConfig, providerProps }: BaseAppProps) {
@@ -81,7 +81,7 @@ export function BaseApp({ initialConfig, providerProps }: BaseAppProps) {
   }, []);
 
   return (
-    <Provider {...providerProps} initialConfig={initialConfig}>
+    <Provider {...providerProps} config={initialConfig}>
       {updating ? (
         <Load />
       ) : (

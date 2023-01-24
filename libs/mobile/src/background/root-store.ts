@@ -15,16 +15,15 @@ export function getRootStore(): RootStore {
   return rootStore.current;
 }
 
-export function createRootStore({
-  initialConfig,
-}: {
-  initialConfig: Config;
-}): RootStore {
-  if (!rootStore.current) {
+export function createRootStore({ config }: { config: Config }): RootStore {
+  if (rootStore.current) {
+    rootStore.current.configStore.setConfig(config);
+  } else {
     rootStore.current = new RootStore({
       deviceLanguage: deviceLanguage.slice(0, 2),
-      initialConfig,
+      initialConfig: config,
     });
   }
+
   return rootStore.current;
 }
