@@ -267,8 +267,8 @@ const AssetsList = observer(() => {
                   color: sortAscending
                     ? "#F6F5FF"
                     : isLoop
-                      ? "#393853"
-                      : "#7E7E7E",
+                    ? "#393853"
+                    : "#7E7E7E",
                   marginLeft: 12,
                 }}
               />

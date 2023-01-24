@@ -87,8 +87,8 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
     selectedCoin?.denom === "ubottle"
       ? "bottle"
       : selectedCoin?.denom === "udrink"
-        ? "drink"
-        : null;
+      ? "drink"
+      : null;
 
   const normalizedAmount = amount.replace(/,/g, ".");
 
@@ -122,9 +122,9 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
       >
         {qrCodeScannerModal.render()}
         {drinkOrBottleModalFlavor &&
-          (!address || address === BARTENDER_ADDRESS) &&
-          confirmModalVisible.visible &&
-          confirmModalVisible.success ? (
+        (!address || address === BARTENDER_ADDRESS) &&
+        confirmModalVisible.visible &&
+        confirmModalVisible.success ? (
           <DrinkOrBottleModal
             flavor={drinkOrBottleModalFlavor}
             visible={confirmModalVisible.visible && confirmModalVisible.success}
@@ -136,8 +136,8 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
         ) : null}
         {((drinkOrBottleModalFlavor && address !== BARTENDER_ADDRESS) ||
           !drinkOrBottleModalFlavor) &&
-          confirmModalVisible.visible &&
-          confirmModalVisible.success ? (
+        confirmModalVisible.visible &&
+        confirmModalVisible.success ? (
           <SuccessModal
             visible={confirmModalVisible.visible && confirmModalVisible.success}
             onDismiss={() => {
@@ -188,9 +188,9 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
                 drinkOrBottleModalFlavor
                   ? BARTENDER_ADDRESS
                   : intl.formatMessage({
-                    id: "send.walletaddress",
-                    defaultMessage: "Wallet Address",
-                  })
+                      id: "send.walletaddress",
+                      defaultMessage: "Wallet Address",
+                    })
               }
               style={{ flex: 1 }}
               inputStyle={{
@@ -533,8 +533,8 @@ export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
                 flex: 1,
                 ...(isObi
                   ? {
-                    borderRadius: 7,
-                  }
+                      borderRadius: 7,
+                    }
                   : {}),
               }}
             >
@@ -772,7 +772,7 @@ interface SuccessModalProps {
 }
 
 function SuccessModal({ visible, onDismiss }: SuccessModalProps) {
-  const theme = useTheme()
+  const theme = useTheme();
   return (
     <Modal isVisible={visible}>
       <View
@@ -814,7 +814,7 @@ interface FailureModalProps {
 }
 
 function FailureModal({ visible, onDismiss }: FailureModalProps) {
-  const theme = useTheme()
+  const theme = useTheme();
   return (
     <Modal isVisible={visible}>
       <View
