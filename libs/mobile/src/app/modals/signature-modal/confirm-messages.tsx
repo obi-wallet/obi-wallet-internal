@@ -185,18 +185,6 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
               {children}
 
               <View style={{ paddingBottom: safeArea.bottom + 20 }}>
-                {cancelable && (
-                  <Button
-                    flavor="blue"
-                    label={intl.formatMessage({
-                      id: "signature.modal.cancel",
-                      defaultMessage: "Cancel",
-                    })}
-                    onPress={() => {
-                      onCancel();
-                    }}
-                  />
-                )}
                 <Button
                   disabled={disabled}
                   flavor="green"
@@ -211,6 +199,18 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
                     onConfirm();
                   }}
                 />
+                {cancelable && (
+                  <Button
+                    flavor={isObi ? "cancel" : "blue"}
+                    label={intl.formatMessage({
+                      id: "signature.modal.cancel",
+                      defaultMessage: "Cancel",
+                    })}
+                    onPress={() => {
+                      onCancel();
+                    }}
+                  />
+                )}
               </View>
             </View>
           </View>
