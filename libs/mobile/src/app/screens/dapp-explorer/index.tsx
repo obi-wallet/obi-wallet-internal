@@ -69,7 +69,7 @@ export const DappExplorer = observer(() => {
           paddingBottom: 10,
         }}
         behavior="height"
-        keyboardVerticalOffset={20}
+        keyboardVerticalOffset={safeArea.bottom + 20}
       >
         <Card style={styles.card}>
           {editMode ? (
