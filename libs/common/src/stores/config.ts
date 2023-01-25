@@ -66,11 +66,10 @@ export class ConfigStore {
 
   @action
   public toggleBrand() {
-    if (this.isFeatureEnabled(Feature.BrandToggle)) {
-      this.config.brand =
-        this.config.brand === Brand.Obi ? Brand.Loop : Brand.Obi;
-    }
+    this.config.brand =
+      this.config.brand === Brand.Obi ? Brand.Loop : Brand.Obi;
   }
+
   @action
   public setBrand(brand: Brand) {
     this.config.brand = brand;

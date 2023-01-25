@@ -23,6 +23,6 @@ export const config: Config = {
     [Feature.SinglesigWallets]: false,
     [Feature.Staking]: true,
     [Feature.InAppPurchases]: false,
-    [Feature.BrandToggle]: true,
+    [Feature.BrandToggle]: false,
   },
 };
