@@ -9,9 +9,12 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import { SvgProps } from "react-native-svg";
 
+import {
+  triggerImpactLight,
+  triggerNotificationSuccess,
+} from "../../../../helpers/haptic-feedback";
 import { useStore } from "../../../stores";
 import { SendIcon } from "../../home/components/send";
 import PeopleWhite from "../../onboarding/common/4-social/assets/people-alt-twotone-24px white.svg";
@@ -26,10 +29,6 @@ import MapPoint from "./assets/map-point-icon.svg";
 import NFC from "./assets/nfc-icon.svg";
 import PhoneNumber from "./assets/phone-number-icon.svg";
 import Warning from "./assets/warning-icon.svg";
-const options = {
-  enableVibrateFallback: true,
-  ignoreAndroidSystemSettings: false,
-};
 
 export const CheckIcon = Check;
 export const WarningIcon = Warning;
@@ -150,7 +149,7 @@ export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
   const isLoop = configStore.isLoop();
   useEffect(() => {
     if (signed) {
-      ReactNativeHapticFeedback.trigger("notificationSuccess", options);
+      triggerNotificationSuccess();
     }
   }, [signed]);
 
@@ -159,8 +158,12 @@ export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
   return tiled ? (
     <TouchableOpacity
       onPress={() => {
-        !signed && ReactNativeHapticFeedback.trigger("impactLight", options);
-        if (onPress) onPress();
+        if (onPress) {
+          if (!signed) {
+            triggerImpactLight();
+          }
+          onPress();
+        }
       }}
     >
       <View style={{ padding: 10, width: 100 }}>
