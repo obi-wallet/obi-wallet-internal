@@ -99,7 +99,10 @@
     "tsc": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsc --project apps/obi-mobile/tsconfig.lib.json --project apps/obi-mobile/tsconfig.spec.json --noEmit"
+        "commands": [
+          "tsc --project apps/obi-mobile/tsconfig.app.json --noEmit",
+          "tsc --project apps/obi-mobile/tsconfig.spec.json --noEmit"
+        ]
       }
     },
     "codepush": {

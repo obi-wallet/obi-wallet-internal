@@ -99,7 +99,10 @@
     "tsc": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsc --project apps/loop-mobile-dev/tsconfig.lib.json --project apps/loop-mobile-dev/tsconfig.spec.json --noEmit"
+        "commands": [
+          "tsc --project apps/loop-mobile-dev/tsconfig.app.json --noEmit",
+          "tsc --project apps/loop-mobile-dev/tsconfig.spec.json --noEmit"
+        ]
       }
     }
   },

@@ -31,7 +31,10 @@
     "tsc": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsc --project libs/common/tsconfig.lib.json --project libs/common/tsconfig.spec.json --noEmit"
+        "commands": [
+          "tsc --project libs/common/tsconfig.lib.json --noEmit",
+          "tsc --project libs/common/tsconfig.spec.json --noEmit"
+        ]
       }
     }
   }

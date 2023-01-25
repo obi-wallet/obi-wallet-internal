@@ -23,7 +23,10 @@
     "tsc": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsc --project libs/background/tsconfig.lib.json --project libs/background/tsconfig.spec.json --noEmit"
+        "commands": [
+          "tsc --project libs/background/tsconfig.lib.json --noEmit",
+          "tsc --project libs/background/tsconfig.spec.json --noEmit"
+        ]
       }
     }
   }
