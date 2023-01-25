@@ -106,7 +106,7 @@ export function usePrices() {
   );
 }
 
-export function UsdBalance({ fontSize = 28 }: { fontSize?: number }) {
+export function UsdBalance() {
   const balances = useBalances();
   const balanceInUsd = R.sum(
     balances.data.map((coin) => {
