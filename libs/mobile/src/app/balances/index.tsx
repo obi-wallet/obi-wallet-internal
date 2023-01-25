@@ -360,7 +360,7 @@ export function useValidators() {
       return [];
     },
     {
-      staleTime: 24 * 60 * 60 * 1000, // 1 day,
+      staleTime: 1000 * 60 * 60 * 24, // 1 day,
     }
   );
 }

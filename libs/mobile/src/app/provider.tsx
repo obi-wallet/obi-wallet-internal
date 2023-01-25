@@ -1,8 +1,10 @@
 import { Theme, ThemeProvider } from "@emotion/react";
 import { Brand, Config, Feature, messages } from "@obi-wallet/common";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { observer } from "mobx-react-lite";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import {
   ComponentProps,
   ReactNode,
@@ -18,7 +20,17 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { createRootStore } from "../background/root-store";
 import { StoreContext } from "./stores";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      cacheTime: 1000 * 60 * 60 * 24, // 1 day
+    },
+  },
+});
+
+const persister = createAsyncStoragePersister({
+  storage: AsyncStorage,
+});
 
 export interface ProviderProps {
   children: ReactNode;
@@ -50,7 +62,10 @@ export function Provider({
 
   return (
     <StrictMode>
-      <QueryClientProvider client={queryClient}>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister }}
+      >
         <StoreContext.Provider value={rootStore}>
           <IntlProvider
             defaultLocale="en"
@@ -95,7 +110,7 @@ export function Provider({
             </SafeAreaProvider>
           </IntlProvider>
         </StoreContext.Provider>
-      </QueryClientProvider>
+      </PersistQueryClientProvider>
     </StrictMode>
   );
 }
