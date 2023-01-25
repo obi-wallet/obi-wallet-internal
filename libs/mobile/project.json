@@ -23,7 +23,7 @@
     "tsc": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsc -b libs/mobile/tsconfig.lib.json libs/mobile/tsconfig.spec.json"
+        "command": "tsc --project libs/mobile/tsconfig.lib.json --project libs/mobile/tsconfig.spec.json --noEmit"
       }
     }
   }
