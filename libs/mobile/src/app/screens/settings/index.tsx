@@ -18,6 +18,7 @@ import { RootStack, useRootNavigation } from "../../root-stack";
 import { useStore } from "../../stores";
 import { Create } from "../account/create";
 import { ObiLogo } from "../components/obi-logo";
+import { BrandToggle } from "../components/obi-mode-toggle";
 import { isSmallScreenNumber } from "../components/screen-size";
 import MultiSigIcon from "./assets/edit.svg";
 import HelpAndSupport from "./assets/headset.svg";
@@ -63,19 +64,11 @@ export const SettingsScreen = observer(() => {
             marginBottom: 10,
           }}
         >
-          <TouchableOpacity
+          <BrandToggle
             style={{
               borderRadius: 32,
-              marginRight: 17,
+              marginRight: 10,
               marginLeft: 10,
-            }}
-            onPress={() => {
-              if (timesPressed >= 4) {
-                configStore.toggleBrand();
-                setTimesPressed(0);
-                return;
-              }
-              setTimesPressed((count) => count + 1);
             }}
           >
             <ObiLogo
@@ -84,7 +77,7 @@ export const SettingsScreen = observer(() => {
                 height: 64,
               }}
             />
-          </TouchableOpacity>
+          </BrandToggle>
 
           <View style={{ flexDirection: "column" }}>
             <Heading>

@@ -1,7 +1,7 @@
 import { Feature } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect, useState } from "react";
-import { StyleProp, TouchableWithoutFeedback, ViewStyle } from "react-native";
+import { Pressable, StyleProp, ViewStyle } from "react-native";
 
 import { useStore } from "../../../stores";
 
@@ -24,7 +24,7 @@ export const BrandToggle = observer<BrandModeToggleProps>((props) => {
   }, [configStore, pressed]);
 
   return (
-    <TouchableWithoutFeedback
+    <Pressable
       {...props}
       onPress={() => {
         setPressed((pressed) => pressed + 1);
