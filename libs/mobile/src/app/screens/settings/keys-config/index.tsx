@@ -80,7 +80,7 @@ export const KeysConfigScreen = observer(() => {
       id: "phoneNumber",
       title: intl.formatMessage({
         id: "settings.multisig.option.phonekey",
-        defaultMessage: "Phone Number Key",
+        defaultMessage: "Phone Key",
       }),
     }),
     getKey({

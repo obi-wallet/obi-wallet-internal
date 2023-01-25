@@ -203,7 +203,7 @@ const PrettyMessageExecuteContract = observer(
       return (
         <MessageElement
           icon={<ArrowUpIcon />}
-          title="Propose new owner for Obi Wallet"
+          title="Propose key change"
           coins={[...funds]}
         />
       );
@@ -213,7 +213,7 @@ const PrettyMessageExecuteContract = observer(
       return (
         <MessageElement
           icon={<ArrowUpIcon />}
-          title="Confirm new owner for Obi Wallet"
+          title="Confirm key change"
           coins={[...funds]}
         />
       );

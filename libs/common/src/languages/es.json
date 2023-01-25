@@ -184,7 +184,7 @@
   "settings.multisig.risk.high": "Seguridad Basica",
   "settings.multisig.risk.stepremaining": "Paso restante",
   "settings.multisig.risk.stepsremaining": "Pasos restantes",
-  "settings.multisig.option.phonekey": "Clave de número de teléfono",
+  "settings.multisig.option.phonekey": "Clave de teléfono",
   "settings.multisig.option.biometricskey": "Clave de Dispositivo",
   "settings.multisig.option.socialkey": "Clave Social",
   "settings.multisig.option.emailkey": "E-mail (Próximamente)",

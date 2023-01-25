@@ -155,7 +155,7 @@
   "signature.modal.confirmupdateadmin": "Confirm new admin for Obi Wallet",
 
   "signature.modal.biometricsignature": "Device Key",
-  "signature.modal.phonesignature": "Phone Number Key",
+  "signature.modal.phonesignature": "Phone Key",
   "signature.modal.cancel": "Cancel",
   "signature.modal.confirm": "Confirm",
   "signature.pasteresponse": "Paste in the response you receive.",
@@ -186,7 +186,7 @@
   "settings.multisig.risk.high": "Security Tier: Basic",
   "settings.multisig.risk.stepremaining": "step remaining",
   "settings.multisig.risk.stepsremaining": "steps remaining",
-  "settings.multisig.option.phonekey": "Phone Number Key",
+  "settings.multisig.option.phonekey": "Phone Key",
   "settings.multisig.option.biometricskey": "Device Key",
   "settings.multisig.option.socialkey": "Social Key",
   "settings.multisig.option.emailkey": "E-Mail Key (coming soon)",
