@@ -22,6 +22,7 @@ export enum Feature {
   Staking = "Staking",
   InAppPurchases = "InAppPurchases",
   BrandToggle = "BrandToggle",
+  DemoMode = "DemoMode",
 }
 
 export interface Config {

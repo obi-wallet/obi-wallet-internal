@@ -24,5 +24,6 @@ export const config: Config = {
     [Feature.Staking]: false,
     [Feature.InAppPurchases]: true,
     [Feature.BrandToggle]: true,
+    [Feature.DemoMode]: true,
   },
 };

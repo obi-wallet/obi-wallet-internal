@@ -40,6 +40,7 @@ function createWalletsStore() {
         [Feature.InAppPurchases]: false,
         [Feature.Staking]: false,
         [Feature.BrandToggle]: false,
+        [Feature.DemoMode]: false,
       },
     },
     KVStore: MockKVStore,

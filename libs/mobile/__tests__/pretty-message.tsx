@@ -44,6 +44,7 @@ function getConfig(brand: Brand) {
       [Feature.Staking]: false,
       [Feature.InAppPurchases]: false,
       [Feature.BrandToggle]: false,
+      [Feature.DemoMode]: false,
     },
   };
   return config;

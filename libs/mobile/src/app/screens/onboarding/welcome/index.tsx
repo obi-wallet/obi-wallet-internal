@@ -227,7 +227,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                 })}
               />
             ) : null}
-            {isInRecovery ? null : (
+            {configStore.isFeatureEnabled(Feature.DemoMode) && !isInRecovery ? (
               <Button
                 label={intl.formatMessage({
                   id: "onboarding1.demo",
@@ -248,7 +248,7 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                   navigation.navigate(OnboardingRoute.CreateMultisigBiometrics);
                 })}
               />
-            )}
+            ) : null}
           </ScrollView>
         </View>
       </SafeAreaView>
