@@ -1,3 +1,4 @@
+import { Feature } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect, useState } from "react";
 import { StyleProp, TouchableWithoutFeedback, ViewStyle } from "react-native";
@@ -14,9 +15,11 @@ export const BrandToggle = observer<BrandModeToggleProps>((props) => {
   const { configStore } = useStore();
 
   useEffect(() => {
-    if (pressed >= 5) {
-      configStore.toggleBrand();
-      setPressed(0);
+    if (configStore.isFeatureEnabled(Feature.BrandToggle)) {
+      if (pressed >= 5) {
+        configStore.toggleBrand();
+        setPressed(0);
+      }
     }
   }, [configStore, pressed]);
 
