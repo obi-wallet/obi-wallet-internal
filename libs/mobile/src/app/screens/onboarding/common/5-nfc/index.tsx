@@ -24,7 +24,6 @@ import { useMultisigWallet, useStore } from "../../../../stores";
 import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
 import { KeyboardAvoidingView } from "../../../components/keyboard-avoiding-view";
-import { OnboardingScreenContainer } from "../../../components/onboarding-screen-container";
 import { VerifyAndProceedButton } from "../../../components/phone-number/verify-and-proceed-button";
 import { isSmallScreenNumber } from "../../../components/screen-size";
 import {
@@ -419,6 +418,9 @@ export const MultisigNFC = observer<MultisigNFCProps>(
                     </Text>
                     )
                     : null}
+                            <View
+              style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
+            >
                 <VerifyAndProceedButton
                   disabled={!scannedNFC}
                   onPress={async () => {
@@ -450,6 +452,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(
                     }
                   }}
                 />
+                </View>
                 <TouchableOpacity
                   style={{ alignItems: "center", paddingHorizontal: 15 }}
                   onPress={function (): void {
