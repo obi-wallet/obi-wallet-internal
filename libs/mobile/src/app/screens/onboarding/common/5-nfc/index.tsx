@@ -15,11 +15,14 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, FlatList, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import NfcManager, { Ndef, NfcEvents, RegisterTagEventOpts } from 'react-native-nfc-manager';
+import { SafeAreaView } from "react-native-safe-area-context/lib/typescript/SafeAreaView";
 
 import {
   getNFCPublicKey,
 } from "../../../../nfc";
 import { useMultisigWallet, useStore } from "../../../../stores";
+import { Background } from "../../../components/background";
+import { KeyboardAvoidingView } from "../../../components/keyboard-avoiding-view";
 import { OnboardingScreenContainer } from "../../../components/onboarding-screen-container";
 import { VerifyAndProceedButton } from "../../../components/phone-number/verify-and-proceed-button";
 import { isSmallScreenNumber } from "../../../components/screen-size";
@@ -192,7 +195,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(
           >
             {item.title}
           </Text>
-          { !scannedNFC 
+          {!scannedNFC
             ? <TouchableOpacity
               style={{
                 backgroundColor: item.enabled ? "#fff" : "aaa",
@@ -205,25 +208,25 @@ export const MultisigNFC = observer<MultisigNFCProps>(
             >{item.enabled ? <Text>Scan</Text> : <Text>Coming Soon</Text>}</TouchableOpacity>
             : item.title === selectedTagType
               ? <TouchableOpacity
-                  style={{
-                    backgroundColor: "#aaa",
-                    borderRadius: 30,
-                    paddingHorizontal: 20,
-                    paddingVertical: 10,
-                  }}
-                  disabled={true}
-                ><Text>Scanned</Text></TouchableOpacity>
-                    : <TouchableOpacity
-                      style={{
-                        backgroundColor: item.enabled ? "#fff" : "aaa",
-                        borderRadius: 30,
-                        paddingHorizontal: 20,
-                        paddingVertical: 10,
-                      }}
-                      disabled={!item.enabled}
-                      onPress={onScanPress}
-                    >{item.enabled ? <Text>Switch To</Text> : <Text>Coming Soon</Text>}</TouchableOpacity>
-            }
+                style={{
+                  backgroundColor: "#aaa",
+                  borderRadius: 30,
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
+                }}
+                disabled={true}
+              ><Text>Scanned</Text></TouchableOpacity>
+              : <TouchableOpacity
+                style={{
+                  backgroundColor: item.enabled ? "#fff" : "aaa",
+                  borderRadius: 30,
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
+                }}
+                disabled={!item.enabled}
+                onPress={onScanPress}
+              >{item.enabled ? <Text>Switch To</Text> : <Text>Coming Soon</Text>}</TouchableOpacity>
+          }
         </View>
       );
     }
@@ -297,86 +300,93 @@ export const MultisigNFC = observer<MultisigNFCProps>(
     ];
 
     return (
-      <OnboardingScreenContainer>
-        <View>
-          {isObi ? undefined : <PeopleIcon width={70} height={70} />}
+
+      <KeyboardAvoidingView
+        style={{
+          flex: 1,
+        }}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <Background />
+          <View>
+            {isObi ? undefined : <PeopleIcon width={70} height={70} />}
+            <Text
+              style={{
+                color: "#F6F5FF",
+                fontSize: isSmallScreenNumber(20, 24),
+                fontWeight: "600",
+                marginTop: isSmallScreenNumber(20, 32),
+              }}
+            >
+              {wallet.keyInRecovery === "nfc" ? (
+                <FormattedMessage
+                  id="onboarding5.recovery.setnfckey"
+                  defaultMessage="Set a New NFC Key"
+                />
+              ) : wallet.keyInRecovery === "biometrics" ? (
+                <FormattedMessage
+                  id="onboarding2.recovery.nfckey"
+                  defaultMessage="Recover your NFC Key"
+                />
+              ) : (
+                <FormattedMessage
+                  id="onboarding5.setnfckey"
+                  defaultMessage="Set up an NFC Key"
+                />
+              )}
+            </Text>
+          </View>
           <Text
             style={{
-              color: "#F6F5FF",
-              fontSize: isSmallScreenNumber(20, 24),
-              fontWeight: "600",
-              marginTop: isSmallScreenNumber(20, 32),
+              color: isObi ? "#fff" : "#999CB6",
+              fontSize: isSmallScreenNumber(12, 14),
+              marginTop: 10,
             }}
           >
-            {wallet.keyInRecovery === "nfc" ? (
-              <FormattedMessage
-                id="onboarding5.recovery.setnfckey"
-                defaultMessage="Set a New NFC Key"
-              />
-            ) : wallet.keyInRecovery === "biometrics" ? (
-              <FormattedMessage
-                id="onboarding2.recovery.nfckey"
-                defaultMessage="Recover your NFC Key"
-              />
-            ) : (
-              <FormattedMessage
-                id="onboarding5.setnfckey"
-                defaultMessage="Set up an NFC Key"
-              />
-            )}
+            Scan an NFC enabled device to create a key associated with your Obi
+            Account.
           </Text>
-        </View>
-        <Text
-          style={{
-            color: isObi ? "#fff" : "#999CB6",
-            fontSize: isSmallScreenNumber(12, 14),
-            marginTop: 10,
-          }}
-        >
-          Scan an NFC enabled device to create a key associated with your Obi
-          Account.
-        </Text>
-        <Text
-          style={{
-            color: isObi ? "#fff" : "#999CB6",
-            fontSize: isSmallScreenNumber(12, 14),
-            marginTop: 20,
-            fontWeight: "600",
-          }}
-        >
-          Obi DOES NOT store sensitive information from credit cards or
-          identification.
-        </Text>
-        {hasNfc ? (<View style={{ flex: 1, paddingVertical: isSmallScreenNumber(5, 10) }}>
-          <FlatList
-            data={NFCData}
-            renderItem={({ item }) => (
-              <ListItem item={item} onScanPress={() => {
-                setSelectedTagType(item.title);
-                item.handler();
-              }} />
-            )}
-          />
-        </View>) : null}
-        <View
-          style={{
-            marginBottom: 20,
-          }}
-        >
-          {!hasNfc
-            ? (<Text
-              style={{
-                color: "#999CB6",
-                fontSize: 14,
-                marginTop: 10,
-              }}>
-              <FormattedMessage
-                id="onboarding5.nfcunavailable"
-                defaultMessage="No NFC available on this device."
-              />
-            </Text>
-            )
-            : scannedNFC
+          <Text
+            style={{
+              color: isObi ? "#fff" : "#999CB6",
+              fontSize: isSmallScreenNumber(12, 14),
+              marginTop: 20,
+              fontWeight: "600",
+            }}
+          >
+            Obi DOES NOT store sensitive information from credit cards or
+            identification.
+          </Text>
+          {hasNfc ? (<View style={{ flex: 1, paddingVertical: isSmallScreenNumber(5, 10) }}>
+            <FlatList
+              data={NFCData}
+              renderItem={({ item }) => (
+                <ListItem item={item} onScanPress={() => {
+                  setSelectedTagType(item.title);
+                  item.handler();
+                }} />
+              )}
+            />
+          </View>) : null}
+          <View
+            style={{
+              marginBottom: 20,
+            }}
+          >
+            {!hasNfc
+              ? (<Text
+                style={{
+                  color: "#999CB6",
+                  fontSize: 14,
+                  marginTop: 10,
+                }}>
+                <FormattedMessage
+                  id="onboarding5.nfcunavailable"
+                  defaultMessage="No NFC available on this device."
+                />
+              </Text>
+              )
+              : scannedNFC
                 ? (<Text
                   style={{
                     color: "#999CB6",
@@ -392,57 +402,58 @@ export const MultisigNFC = observer<MultisigNFCProps>(
                   />
                 </Text>
                 )
-            : null }
-          <VerifyAndProceedButton
-            disabled={!scannedNFC}
-            onPress={async () => {
-              if (scannedNFC) {
-                if (wallet.keyInRecovery !== "nfc") {
-                  navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
+                : null}
+            <VerifyAndProceedButton
+              disabled={!scannedNFC}
+              onPress={async () => {
+                if (scannedNFC) {
+                  if (wallet.keyInRecovery !== "nfc") {
+                    navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
+                  } else {
+                    navigation.navigate(OnboardingRoute.ReplaceMultisig);
+                  }
                 } else {
-                  navigation.navigate(OnboardingRoute.ReplaceMultisig);
+                  Alert.alert(
+                    intl.formatMessage({
+                      id: "onboarding5.nfcnotscanned",
+                      defaultMessage: "NFC not scanned",
+                    }),
+                    intl.formatMessage({
+                      id: "onboarding5.nfcnotscannedsubtext",
+                      defaultMessage: "Please scan an NFC key.",
+                    }),
+                    [
+                      {
+                        text: intl.formatMessage({
+                          id: "onboarding5.ok",
+                          defaultMessage: "OK",
+                        }),
+                      },
+                    ]
+                  );
                 }
-              } else {
-                Alert.alert(
-                  intl.formatMessage({
-                    id: "onboarding5.nfcnotscanned",
-                    defaultMessage: "NFC not scanned",
-                  }),
-                  intl.formatMessage({
-                    id: "onboarding5.nfcnotscannedsubtext",
-                    defaultMessage: "Please scan an NFC key.",
-                  }),
-                  [
-                    {
-                      text: intl.formatMessage({
-                        id: "onboarding5.ok",
-                        defaultMessage: "OK",
-                      }),
-                    },
-                  ]
-                );
-              }
-            }}
-          />
-          <TouchableOpacity
-            style={{ alignItems: "center", paddingHorizontal: 15 }}
-            onPress={function (): void {
-              navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
-            }}
-          >
-            <Text
-              style={{
-                color: "#437DFF",
-                fontSize: isSmallScreenNumber(14, 14),
-                fontWeight: "600",
-                marginTop: 20,
+              }}
+            />
+            <TouchableOpacity
+              style={{ alignItems: "center", paddingHorizontal: 15 }}
+              onPress={function (): void {
+                navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
               }}
             >
-              Skip This Key
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </OnboardingScreenContainer>
+              <Text
+                style={{
+                  color: "#437DFF",
+                  fontSize: isSmallScreenNumber(14, 14),
+                  fontWeight: "600",
+                  marginTop: 20,
+                }}
+              >
+                Skip This Key
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     );
   }
 );
