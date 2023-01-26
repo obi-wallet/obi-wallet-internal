@@ -14,18 +14,11 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, FlatList, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import NfcManager, { Ndef, NfcEvents, RegisterTagEventOpts } from 'react-native-nfc-manager';
-import { tags } from "react-native-svg/lib/typescript/xml";
 
-import { InlineButton } from "../../../../button";
-import { Button } from "../../../../button";
 import {
   getNFCPublicKey,
 } from "../../../../nfc";
 import { useMultisigWallet, useStore } from "../../../../stores";
-import { TextInput } from "../../../../text-input";
-import { Back } from "../../../components/back";
-import { Background } from "../../../components/background";
-import { KeyboardAvoidingView } from "../../../components/keyboard-avoiding-view";
 import { OnboardingScreenContainer } from "../../../components/onboarding-screen-container";
 import { VerifyAndProceedButton } from "../../../components/phone-number/verify-and-proceed-button";
 import { isSmallScreenNumber } from "../../../components/screen-size";
@@ -39,12 +32,6 @@ export type MultisigNFCProps = NativeStackScreenProps<
   OnboardingStackParamList,
   OnboardingRoute.CreateMultisigNFC
 >;
-
-interface Details {
-  passportNumber: string;
-  dob: string;
-  expiry: string;
-}
 
 export const MultisigNFC = observer<MultisigNFCProps>(
   ({ navigation }) => {
@@ -172,7 +159,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(
     const readPassport = async () => {
       // todo
     }
-    
+
     function ListItem({
       item,
       onScanPress,
@@ -287,135 +274,135 @@ export const MultisigNFC = observer<MultisigNFCProps>(
     ];
 
     return (
-    <OnboardingScreenContainer>
-      <View>
-        {isObi ? undefined : <PeopleIcon width={70} height={70} />}
-        <Text
-          style={{
-            color: "#F6F5FF",
-            fontSize: isSmallScreenNumber(20, 24),
-            fontWeight: "600",
-            marginTop: isSmallScreenNumber(20, 32),
-          }}
-        >
-          {wallet.keyInRecovery === "nfc" ? (
-            <FormattedMessage
-              id="onboarding5.recovery.setnfckey"
-              defaultMessage="Set a New NFC Key"
-            />
-          ) : wallet.keyInRecovery === "biometrics" ? (
-            <FormattedMessage
-              id="onboarding2.recovery.nfckey"
-              defaultMessage="Recover your NFC Key"
-            />
-          ) : (
-            <FormattedMessage
-              id="onboarding5.setnfckey"
-              defaultMessage="Set up an NFC Key"
-            />
-          )}
-        </Text>
-      </View>
-      <Text
-        style={{
-          color: isObi ? "#fff" : "#999CB6",
-          fontSize: isSmallScreenNumber(12, 14),
-          marginTop: 10,
-        }}
-      >
-        Scan an NFC enabled device to create a key associated with your Obi
-        Account.
-      </Text>
-      <Text
-        style={{
-          color: isObi ? "#fff" : "#999CB6",
-          fontSize: isSmallScreenNumber(12, 14),
-          marginTop: 20,
-          fontWeight: "600",
-        }}
-      >
-        Obi DOES NOT store sensitive information from credit cards or
-        identification.
-      </Text>
-      {hasNfc ? (<View style={{ flex: 1, paddingVertical: isSmallScreenNumber(5, 10) }}>
-        <FlatList
-          data={NFCData}
-          renderItem={({ item }) => (
-            <ListItem item={item} onScanPress={() => item.handler()} />
-          )}
-        />
-      </View>) : null }
-      <View
-        style={{
-          marginBottom: 20,
-        }}
-      >
-                      {!hasNfc
-                      ? (<Text
-                        style={{
-                          color: "#999CB6",
-                          fontSize: 14,
-                          marginTop: 10,
-                        }}>
-                        <FormattedMessage
-                          id="onboarding5.nfcunavailable"
-                          defaultMessage="No NFC available on this device."
-                        />
-                      </Text>
-                      )
-                      : null}
-        <VerifyAndProceedButton
-              disabled={
-                verifyButtonDisabled ? verifyButtonDisabled : fetchingPubKey
-              }
-              onPress={async () => {
-                if (scannedNFC) {
-                  if (wallet.keyInRecovery !== "nfc") {
-                    navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
-                  } else {
-                    navigation.navigate(OnboardingRoute.ReplaceMultisig);
-                  }
-                } else {
-                  Alert.alert(
-                    intl.formatMessage({
-                      id: "onboarding5.nfcnotscanned",
-                      defaultMessage: "NFC not scanned",
-                    }),
-                    intl.formatMessage({
-                      id: "onboarding5.nfcnotscannedsubtext",
-                      defaultMessage: "Please scan an NFC key.",
-                    }),
-                    [
-                      {
-                        text: intl.formatMessage({
-                          id: "onboarding5.ok",
-                          defaultMessage: "OK",
-                        }),
-                      },
-                    ]
-                  );
-                }
-              }}
-        />
-        <TouchableOpacity
-          style={{ alignItems: "center", paddingHorizontal: 15 }}
-          onPress={function (): void {
-            Alert.alert("Not implemented");
-          }}
-        >
+      <OnboardingScreenContainer>
+        <View>
+          {isObi ? undefined : <PeopleIcon width={70} height={70} />}
           <Text
             style={{
-              color: "#437DFF",
-              fontSize: isSmallScreenNumber(14, 14),
+              color: "#F6F5FF",
+              fontSize: isSmallScreenNumber(20, 24),
               fontWeight: "600",
-              marginTop: 20,
+              marginTop: isSmallScreenNumber(20, 32),
             }}
           >
-            Skip This Key
+            {wallet.keyInRecovery === "nfc" ? (
+              <FormattedMessage
+                id="onboarding5.recovery.setnfckey"
+                defaultMessage="Set a New NFC Key"
+              />
+            ) : wallet.keyInRecovery === "biometrics" ? (
+              <FormattedMessage
+                id="onboarding2.recovery.nfckey"
+                defaultMessage="Recover your NFC Key"
+              />
+            ) : (
+              <FormattedMessage
+                id="onboarding5.setnfckey"
+                defaultMessage="Set up an NFC Key"
+              />
+            )}
           </Text>
-        </TouchableOpacity>
-      </View>
-    </OnboardingScreenContainer>
-  );
+        </View>
+        <Text
+          style={{
+            color: isObi ? "#fff" : "#999CB6",
+            fontSize: isSmallScreenNumber(12, 14),
+            marginTop: 10,
+          }}
+        >
+          Scan an NFC enabled device to create a key associated with your Obi
+          Account.
+        </Text>
+        <Text
+          style={{
+            color: isObi ? "#fff" : "#999CB6",
+            fontSize: isSmallScreenNumber(12, 14),
+            marginTop: 20,
+            fontWeight: "600",
+          }}
+        >
+          Obi DOES NOT store sensitive information from credit cards or
+          identification.
+        </Text>
+        {hasNfc ? (<View style={{ flex: 1, paddingVertical: isSmallScreenNumber(5, 10) }}>
+          <FlatList
+            data={NFCData}
+            renderItem={({ item }) => (
+              <ListItem item={item} onScanPress={() => item.handler()} />
+            )}
+          />
+        </View>) : null}
+        <View
+          style={{
+            marginBottom: 20,
+          }}
+        >
+          {!hasNfc
+            ? (<Text
+              style={{
+                color: "#999CB6",
+                fontSize: 14,
+                marginTop: 10,
+              }}>
+              <FormattedMessage
+                id="onboarding5.nfcunavailable"
+                defaultMessage="No NFC available on this device."
+              />
+            </Text>
+            )
+            : null}
+          <VerifyAndProceedButton
+            disabled={
+              verifyButtonDisabled ? verifyButtonDisabled : fetchingPubKey
+            }
+            onPress={async () => {
+              if (scannedNFC) {
+                if (wallet.keyInRecovery !== "nfc") {
+                  navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
+                } else {
+                  navigation.navigate(OnboardingRoute.ReplaceMultisig);
+                }
+              } else {
+                Alert.alert(
+                  intl.formatMessage({
+                    id: "onboarding5.nfcnotscanned",
+                    defaultMessage: "NFC not scanned",
+                  }),
+                  intl.formatMessage({
+                    id: "onboarding5.nfcnotscannedsubtext",
+                    defaultMessage: "Please scan an NFC key.",
+                  }),
+                  [
+                    {
+                      text: intl.formatMessage({
+                        id: "onboarding5.ok",
+                        defaultMessage: "OK",
+                      }),
+                    },
+                  ]
+                );
+              }
+            }}
+          />
+          <TouchableOpacity
+            style={{ alignItems: "center", paddingHorizontal: 15 }}
+            onPress={function (): void {
+              Alert.alert("Not implemented");
+            }}
+          >
+            <Text
+              style={{
+                color: "#437DFF",
+                fontSize: isSmallScreenNumber(14, 14),
+                fontWeight: "600",
+                marginTop: 20,
+              }}
+            >
+              Skip This Key
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </OnboardingScreenContainer>
+    );
   }
 );
