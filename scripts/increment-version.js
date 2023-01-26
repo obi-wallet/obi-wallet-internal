@@ -25,7 +25,9 @@ const stat = util.promisify(fs.stat);
         const buildNumberRe = /CURRENT_PROJECT_VERSION = (.+);/g;
 
         const currentVersion = versionRe.exec(input)[1];
-        const newVersion = semver.inc(currentVersion, releaseType);
+        const newVersion = releaseType
+          ? semver.inc(currentVersion, releaseType)
+          : currentVersion;
 
         const currentBuildNumber = buildNumberRe.exec(input)[1];
         const newBuildNumber = parseInt(currentBuildNumber, 10) + 1;
@@ -47,7 +49,9 @@ const stat = util.promisify(fs.stat);
         const buildNumberRe = /versionCode (.+)/;
 
         const currentVersion = versionRe.exec(input)[1];
-        const newVersion = semver.inc(currentVersion, releaseType);
+        const newVersion = releaseType
+          ? semver.inc(currentVersion, releaseType)
+          : currentVersion;
 
         const currentBuildNumber = buildNumberRe.exec(input)[1];
         const newBuildNumber = parseInt(currentBuildNumber, 10) + 1;
