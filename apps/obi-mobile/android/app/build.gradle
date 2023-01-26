@@ -230,11 +230,11 @@ android {
             keyPassword 'android'
         }
         release {
-            if (properties.getProperty('LOOP_OBI_UPLOAD_STORE_FILE')) {
-                storeFile file(properties.getProperty('LOOP_OBI_UPLOAD_STORE_FILE'))
-                storePassword properties.getProperty('LOOP_OBI_UPLOAD_STORE_PASSWORD')
-                keyAlias properties.getProperty('LOOP_OBI_UPLOAD_KEY_ALIAS')
-                keyPassword properties.getProperty('LOOP_OBI_UPLOAD_KEY_PASSWORD')
+            if (properties.getProperty('UPLOAD_STORE_FILE')) {
+                storeFile file(properties.getProperty('UPLOAD_STORE_FILE'))
+                storePassword properties.getProperty('UPLOAD_STORE_PASSWORD')
+                keyAlias properties.getProperty('UPLOAD_KEY_ALIAS')
+                keyPassword properties.getProperty('UPLOAD_KEY_PASSWORD')
             } else {
                 storeFile file('debug.keystore')
                 storePassword 'android'
