@@ -15,7 +15,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, FlatList, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import NfcManager, { Ndef, NfcEvents, RegisterTagEventOpts } from 'react-native-nfc-manager';
-import { SafeAreaView } from "react-native-safe-area-context/lib/typescript/SafeAreaView";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
   getNFCPublicKey,
