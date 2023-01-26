@@ -11,6 +11,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import PeopleIcon from "./assets/people-alt-twotone-24px.svg";
 import { InlineButton } from "../../../../button";
 import { useMultisigWallet, useStore } from "../../../../stores";
 import { TextInput } from "../../../../text-input";
@@ -23,7 +24,6 @@ import {
   OnboardingRoute,
   OnboardingStackParamList,
 } from "../../onboarding-stack";
-import PeopleIcon from "./assets/people-alt-twotone-24px.svg";
 
 export type MultisigSocialProps = NativeStackScreenProps<
   OnboardingStackParamList,

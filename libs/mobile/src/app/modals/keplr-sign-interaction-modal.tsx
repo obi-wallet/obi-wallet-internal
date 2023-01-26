@@ -2,8 +2,8 @@ import { coins } from "@cosmjs/amino";
 import { SignDocWrapper } from "@keplr-wallet/cosmos";
 import { observer } from "mobx-react-lite";
 
-import { useStore } from "../stores";
 import { ConfirmMessages } from "./signature-modal/confirm-messages";
+import { useStore } from "../stores";
 
 export const KeplrSignInteractionModal = observer(() => {
   const { chainStore, keplrSignInteractionStore } = useStore();

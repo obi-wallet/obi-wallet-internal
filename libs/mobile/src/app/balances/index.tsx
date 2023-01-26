@@ -13,11 +13,11 @@ import { FC } from "react";
 import { ImageRequireSource, ImageURISource, View } from "react-native";
 import { SvgProps } from "react-native-svg";
 
-import { getRootStore } from "../../background/root-store";
-import { useStore } from "../stores";
 import BottleIcon from "./assets/bottle.svg";
 import DrinkIcon from "./assets/drink.svg";
 import LoopIcon from "./assets/loop.svg";
+import { getRootStore } from "../../background/root-store";
+import { useStore } from "../stores";
 
 export interface ExtendedCoin {
   contract?: string;

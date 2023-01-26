@@ -1,5 +1,7 @@
 import { action, computed, makeObservable, observable } from "mobx";
 
+import { ConfigStore } from "./config";
+import { WalletType } from "./wallets";
 import {
   CosmosChain,
   cosmosChains,
@@ -8,8 +10,6 @@ import {
   TerraChain,
   terraChains,
 } from "../chains";
-import { ConfigStore } from "./config";
-import { WalletType } from "./wallets";
 
 export class ChainStore {
   protected readonly configStore: ConfigStore;

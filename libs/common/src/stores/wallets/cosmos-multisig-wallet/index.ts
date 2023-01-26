@@ -6,6 +6,7 @@ import {
 import { action, computed, makeObservable, observable } from "mobx";
 import R from "ramda";
 
+import * as CosmosSerializedData from "./serialized-data";
 import { healthChecks } from "../../../health-checks";
 import { ChainStore } from "../../chain";
 import { AbstractWallet, WalletType, WithAddress } from "../abstract-wallet";
@@ -13,7 +14,6 @@ import {
   SerializedCosmosMultisigDemoWallet,
   SerializedCosmosMultisigWallet,
 } from "../serialized-data";
-import * as CosmosSerializedData from "./serialized-data";
 
 export { CosmosSerializedData };
 

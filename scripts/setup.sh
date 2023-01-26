@@ -4,6 +4,9 @@ cd ${SCRIPT_DIR}/..;
 # Load environment variables
 export $(grep -v '^#' apps/loop-mobile/.env | xargs)
 
+# Create empty local.properties file
+touch apps/loop-mobile/android/local.properties
+
 # Create empty React Cosmos userdeps file
 touch apps/loop-mobile/cosmos.userdeps.js
 
@@ -29,6 +32,9 @@ EOF
 # Load environment variables
 export $(grep -v '^#' apps/loop-mobile-dev/.env | xargs)
 
+# Create empty local.properties file
+touch apps/loop-mobile-dev/android/local.properties
+
 # Create empty React Cosmos userdeps file
 touch apps/loop-mobile-dev/cosmos.userdeps.js
 
@@ -53,6 +59,9 @@ EOF
 
 # Load environment variables
 export $(grep -v '^#' apps/obi-mobile/.env | xargs)
+
+# Create empty local.properties file
+touch apps/obi-mobile/android/local.properties
 
 # Create empty React Cosmos userdeps file
 touch apps/obi-mobile/cosmos.userdeps.js

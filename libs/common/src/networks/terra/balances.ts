@@ -11,6 +11,7 @@ import BigNumber from "bignumber.js";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
+import { tokenPairs } from "./token-pairs";
 import { TerraChain, terraChains } from "../../chains";
 import { createLcdClient } from "../../clients";
 import {
@@ -20,7 +21,6 @@ import {
   Rewards,
   UnbondingDelegation,
 } from "../common/types";
-import { tokenPairs } from "./token-pairs";
 
 export async function fetchPrices({ chainId }: { chainId: TerraChain }) {
   const client = createLcdClient(chainId);

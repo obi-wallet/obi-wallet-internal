@@ -2,11 +2,11 @@ import { DeliverTxResponse } from "@cosmjs/stargate";
 import { RequestObiCosmosSignAndBroadcastPayload } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 
-import { useStore } from "../stores";
 import {
   CosmosSignatureModal,
   useSignatureModalProps,
 } from "./signature-modal";
+import { useStore } from "../stores";
 
 export const SignInteractionModal = observer(() => {
   const { signInteractionStore } = useStore();

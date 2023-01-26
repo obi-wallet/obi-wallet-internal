@@ -1,8 +1,8 @@
 import { KVStore, toGenerator } from "@keplr-wallet/common";
 import { action, flow, makeObservable, observable, runInAction } from "mobx";
 
-import { Language } from "../languages";
 import { ConfigStore } from "./config";
+import { Language } from "../languages";
 
 export class LanguageStore {
   protected readonly configStore: ConfigStore;

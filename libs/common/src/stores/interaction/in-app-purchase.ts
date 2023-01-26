@@ -1,10 +1,10 @@
 import { InteractionStore as KeplrInteractionStore } from "@keplr-wallet/stores";
 
+import { AbstractSingletonInteractionStore } from "./abstract-singleton";
 import {
   RequestObiInAppPurchaseMsg,
   RequestObiInAppPurchasePayload,
 } from "../../background";
-import { AbstractSingletonInteractionStore } from "./abstract-singleton";
 
 export class InAppPurchaseInteractionStore extends AbstractSingletonInteractionStore<
   RequestObiInAppPurchasePayload,

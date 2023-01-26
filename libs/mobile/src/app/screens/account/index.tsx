@@ -8,15 +8,15 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SvgProps } from "react-native-svg";
 
+import InheritanceIcon from "./assets/inheritanceIcon.svg";
+import SpendingIcon from "./assets/spendingIcon.svg";
+import { Inheritance } from "./inheritance";
+import { Spending } from "./spending";
 import { UsdBalance } from "../../balances";
 import { useMultisigWallet } from "../../stores";
 import { Background } from "../components/background";
 import { BottomSheetBackdrop } from "../components/bottomSheetBackdrop";
 import { NetworkAccountPickerLayout } from "../components/network-account-picker-layout";
-import InheritanceIcon from "./assets/inheritanceIcon.svg";
-import SpendingIcon from "./assets/spendingIcon.svg";
-import { Inheritance } from "./inheritance";
-import { Spending } from "./spending";
 
 export function AccountScreen() {
   return (

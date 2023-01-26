@@ -17,6 +17,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
+import { KeysComponent } from "./keys-component";
 import { useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import {
@@ -28,7 +29,6 @@ import {
   WarningIcon,
 } from "../../components/keys-list";
 import { isSmallScreenNumber } from "../../components/screen-size";
-import { KeysComponent } from "./keys-component";
 
 export const KeysConfigScreen = observer(() => {
   const { walletsStore, configStore } = useStore();

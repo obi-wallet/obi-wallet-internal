@@ -4,13 +4,13 @@ import {
 } from "@terra-money/terra.js";
 import { action, computed, makeObservable, observable } from "mobx";
 
+import * as TerraSerializedData from "./serialized-data";
 import { terraChains } from "../../../chains";
 import { AbstractWallet, WalletType, WithAddress } from "../abstract-wallet";
 import {
   SerializedTerraMultisigDemoWallet,
   SerializedTerraMultisigWallet,
 } from "../serialized-data";
-import * as TerraSerializedData from "./serialized-data";
 
 export { TerraSerializedData };
 

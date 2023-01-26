@@ -24,6 +24,7 @@ import Modal from "react-native-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 
+import ObiQr from "./assets/obiqr.svg";
 import { ExtendedCoin, formatExtendedCoin, useBalances } from "../../balances";
 import Bottle from "../../balances/assets/bottle.svg";
 import Drink from "../../balances/assets/drink.svg";
@@ -39,7 +40,6 @@ import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
 import { RefreshableFlatList } from "../components/refreshable-flat-list";
 import { isSmallScreenNumber } from "../components/screen-size";
 import { HomeBottomTabRoute } from "../home/home-stack";
-import ObiQr from "./assets/obiqr.svg";
 
 const BARTENDER_ADDRESS =
   "juno1ps9sk7fqh2f95waggk3r5un6sr7rd4gxmq4kzh73zstgkqz52wmqh2wr0s";

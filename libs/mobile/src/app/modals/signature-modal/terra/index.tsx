@@ -23,6 +23,11 @@ import { Alert } from "react-native";
 import invariant from "tiny-invariant";
 
 import {
+  BiometricsKey,
+  PhoneNumberConfirmKey,
+  PhoneNumberRequestKey,
+} from "./keys";
+import {
   BottomSheet,
   BottomSheetRef,
 } from "../../../screens/components/bottom-sheet";
@@ -33,11 +38,6 @@ import {
   MultisigConfirmMessagesProps,
 } from "../multisig-confirm-messages";
 import { PhoneNumberBottomSheetContent } from "../phone-number-bottom-sheet-content";
-import {
-  BiometricsKey,
-  PhoneNumberConfirmKey,
-  PhoneNumberRequestKey,
-} from "./keys";
 
 export interface TerraSignatureModalProps
   extends Omit<

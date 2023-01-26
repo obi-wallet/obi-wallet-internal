@@ -9,9 +9,9 @@ import {
 } from "react-native";
 import { useDebounce } from "rooks";
 
+import { fetchMeta } from "./fetch-meta";
 import { AppsStore } from "../../stores";
 import { Text } from "../../typography";
-import { fetchMeta } from "./fetch-meta";
 
 export { fetchMeta };
 

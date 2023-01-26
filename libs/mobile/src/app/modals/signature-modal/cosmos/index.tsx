@@ -48,6 +48,7 @@ import { useIntl } from "react-intl";
 import { Alert } from "react-native";
 import invariant from "tiny-invariant";
 
+import { wrapMessages } from "./wrap-messages";
 import { createBiometricSignature } from "../../../biometrics";
 import { createSigningCosmWasmClient } from "../../../clients";
 import {
@@ -66,7 +67,6 @@ import {
   MultisigConfirmMessagesProps,
 } from "../multisig-confirm-messages";
 import { PhoneNumberBottomSheetContent } from "../phone-number-bottom-sheet-content";
-import { wrapMessages } from "./wrap-messages";
 
 export interface CosmosSignatureModalProps
   extends Omit<

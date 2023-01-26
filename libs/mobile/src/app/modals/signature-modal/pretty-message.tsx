@@ -27,10 +27,10 @@ import { ErrorBoundary } from "react-error-boundary";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
 
+import ArrowUpIcon from "./assets/arrowUpIcon.svg";
 import { formatCoin, useRewards, useValidators } from "../../balances";
 import { CoinIcon } from "../../screens/components/coin-icon";
 import { useStore } from "../../stores";
-import ArrowUpIcon from "./assets/arrowUpIcon.svg";
 
 export interface PrettyMessageProps {
   message: AminoMsg | Msg.Amino;

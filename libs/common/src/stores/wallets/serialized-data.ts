@@ -1,8 +1,8 @@
 import * as t from "io-ts";
 
-import { nullable } from "../helpers";
 import * as CosmosMultisig from "./cosmos-multisig-wallet/serialized-data";
 import * as TerraMultisig from "./terra-multisig-wallet/serialized-data";
+import { nullable } from "../helpers";
 
 export const SerializedTerraMultisigWalletAnyVersion = t.type({
   type: t.literal("terra-multisig"),

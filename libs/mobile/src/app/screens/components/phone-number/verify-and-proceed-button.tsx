@@ -1,9 +1,9 @@
 import { useIntl } from "react-intl";
 import { Keyboard, StyleProp, ViewStyle } from "react-native";
 
+import ShieldCheck from "./assets/shield-check.svg";
 import { Button } from "../../../button";
 import { useStore } from "../../../stores";
-import ShieldCheck from "./assets/shield-check.svg";
 
 export interface VerifyAndProceedButtonProps {
   onPress: () => void;

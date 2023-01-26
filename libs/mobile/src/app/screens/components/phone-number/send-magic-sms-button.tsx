@@ -4,10 +4,10 @@ import { Text } from "@obi-wallet/common";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
 
+import SMS from "./assets/sms.svg";
 import { Button } from "../../../button";
 import { useStore } from "../../../stores";
 import { isSmallScreenNumber } from "../screen-size";
-import SMS from "./assets/sms.svg";
 
 export interface SendMagicSmsButtonProps {
   description?: string;
