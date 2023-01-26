@@ -92,6 +92,11 @@ export const SerializedSocialPayload = t.type({
 });
 export type SerializedSocialPayload = t.TypeOf<typeof SerializedSocialPayload>;
 
+export const SerializedNFCPayload = t.type({
+  publicKey: SinglePublicKey,
+});
+export type SerializedNFCPayload = t.TypeOf<typeof SerializedNFCPayload>;
+
 export const SerializedCloudPayload = t.type({
   publicKey: SinglePublicKey,
 });
@@ -101,17 +106,20 @@ export type SerializedCloudPayload = t.TypeOf<typeof SerializedCloudPayload>;
 export const SerializedMultisigPayloadV0 = t.type({
   biometrics: nullable(SerializedBiometricsPayloadV0),
   phoneNumber: nullable(SerializedPhoneNumberPayloadV0),
+  nfc: nullable(SerializedNFCPayload),
   cloud: nullable(SerializedCloudPayload),
 });
 export const SerializedMultisigPayloadV1 = t.type({
   biometrics: nullable(SerializedBiometricsPayload),
   phoneNumber: nullable(SerializedPhoneNumberPayload),
+  nfc: nullable(SerializedNFCPayload),
   cloud: nullable(SerializedCloudPayload),
 });
 export const SerializedMultisigPayload = t.type({
   biometrics: nullable(SerializedBiometricsPayload),
   phoneNumber: nullable(SerializedPhoneNumberPayload),
   cloud: nullable(SerializedCloudPayload),
+  nfc: nullable(SerializedNFCPayload),
   social: nullable(SerializedSocialPayload),
 });
 export type SerializedMultisigPayload = t.TypeOf<
@@ -143,6 +151,7 @@ export const migrateSerializedMultisigPayload = (
         serializedMultisigPayload.phoneNumber
       ),
       cloud: serializedMultisigPayload.cloud,
+      nfc: serializedMultisigPayload.nfc,
       social: null,
     };
   }

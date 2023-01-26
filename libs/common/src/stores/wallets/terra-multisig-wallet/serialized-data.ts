@@ -29,6 +29,11 @@ export function migrateSerializedBiometricsPayload(
   return serializedBiometricsPayload;
 }
 
+export const SerializedNFCPayload = t.type({
+  publicKey: Secp256k1PublicKey,
+});
+export type SerializedNFCPayload = t.TypeOf<typeof SerializedNFCPayload>;
+
 export const SerializedPhoneNumberPayload = t.type({
   publicKey: Secp256k1PublicKey,
   phoneNumber: t.string,
@@ -67,6 +72,7 @@ export const SerializedMultisigPayload = t.type({
   biometrics: nullable(SerializedBiometricsPayload),
   phoneNumber: nullable(SerializedPhoneNumberPayload),
   social: nullable(SerializedSocialPayload),
+  nfc: nullable(SerializedNFCPayload),
 });
 export type SerializedMultisigPayload = t.TypeOf<
   typeof SerializedMultisigPayload

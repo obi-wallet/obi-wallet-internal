@@ -27,6 +27,7 @@ export interface CosmosMultisig {
   phoneNumber: WithAddress<CosmosSerializedData.SerializedPhoneNumberPayload> | null;
   social: WithAddress<CosmosSerializedData.SerializedSocialPayload> | null;
   cloud: WithAddress<CosmosSerializedData.SerializedCloudPayload> | null;
+  nfc: WithAddress<CosmosSerializedData.SerializedNFCPayload> | null;
   email: null;
   nfc: null;
   telegram: null;
@@ -42,6 +43,7 @@ export interface CosmosProxyWallet {
     biometrics: CosmosSerializedData.Secp256k1PublicKey;
     phoneNumber: CosmosSerializedData.Secp256k1PublicKey;
     social?: CosmosSerializedData.Secp256k1PublicKey;
+    nfc?: CosmosSerializedData.Secp256k1PublicKey;
   };
 }
 
@@ -150,6 +152,11 @@ export class CosmosMultisigWallet extends AbstractWallet {
             publicKey: wallet.admin.social,
           }
         : null,
+      nfc: wallet.admin.nfc
+      ? {
+          publicKey: wallet.admin.nfc,
+        }
+      : null,
       cloud: null,
     });
     if (wallet.admin.social) {
@@ -230,6 +237,16 @@ export class CosmosMultisigWallet extends AbstractWallet {
   }
 
   @action
+  public async setNFCPublicKey(
+    payload: CosmosSerializedData.SerializedNFCPayload
+  ) {
+    await this.setNextAdmin({
+      ...this.nextAdmin,
+      nfc: payload,
+    });
+  }
+
+  @action
   public async setSocialPublicKey(
     payload: CosmosSerializedData.SerializedSocialPayload
   ) {
@@ -270,7 +287,7 @@ export class CosmosMultisigWallet extends AbstractWallet {
     multisig: CosmosSerializedData.SerializedMultisigPayload,
     prefix: string
   ): CosmosMultisig {
-    const { biometrics, phoneNumber, social } = multisig;
+    const { biometrics, phoneNumber, social, nfc } = multisig;
     const multisigThresholdPublicKey =
       this.createMultisigThresholdPublicKey(multisig);
 
@@ -290,6 +307,10 @@ export class CosmosMultisigWallet extends AbstractWallet {
       social: social && {
         address: pubkeyToAddress(social.publicKey, prefix),
         ...social,
+      },
+      nfc: nfc && {
+        address: pubkeyToAddress(nfc.publicKey, prefix),
+        ...nfc,
       },
       cloud: null,
       email: null,
