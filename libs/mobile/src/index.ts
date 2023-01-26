@@ -12,3 +12,5 @@ export * from "./app/screens/home/home-stack";
 export * from "./app/screens/account-picker-modal";
 export * from "./app/modals";
 export * from "./app/modals/signature-modal/pretty-message";
+export * from "./app/screens/account";
+export * from "./app/text-input";

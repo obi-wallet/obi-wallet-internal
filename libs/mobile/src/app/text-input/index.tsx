@@ -45,6 +45,7 @@ export const TextInput = observer(function TextInput({
 }: TextInputProps & {
   CustomTextInput?: ComponentType<TextInputProps>;
   label?: string;
+
   style?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
 }) {

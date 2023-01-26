@@ -1,35 +1,33 @@
-import { observer } from "mobx-react-lite";
-import { ReactNode } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Back } from "./back";
 import { Background } from "./background";
 import { KeyboardAvoidingView } from "./keyboard-avoiding-view";
-import { useStore } from "../../stores";
 
-export const OnboardingScreenContainer = observer(
-  function OnboardingScreenContainer({ children }: { children: ReactNode }) {
-    const { configStore } = useStore();
-    const isObi = configStore.isObi();
-
-    return (
-      <SafeAreaView
-        style={{ flex: 1, backgroundColor: isObi ? "#1A1A1A" : "" }}
+export function OnboardingScreenContainer({
+  children,
+  back = true,
+}: {
+  children: React.ReactNode;
+  back?: boolean;
+}) {
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        style={{
+          flex: 1,
+        }}
       >
-        <KeyboardAvoidingView
+        <Background />
+        <View
           style={{
             flex: 1,
+            paddingHorizontal: 20,
+            justifyContent: "space-between",
           }}
         >
-          <Background />
-          <View
-            style={{
-              flex: 1,
-              paddingHorizontal: 20,
-              justifyContent: "space-between",
-            }}
-          >
+          {back && (
             <Back
               style={{
                 marginLeft: -5,
@@ -37,10 +35,10 @@ export const OnboardingScreenContainer = observer(
                 width: 25,
               }}
             />
-            {children}
-          </View>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    );
-  }
-);
+          )}
+          {children}
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}

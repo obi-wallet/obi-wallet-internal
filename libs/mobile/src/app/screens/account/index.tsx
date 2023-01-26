@@ -1,73 +1,83 @@
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
-import { ComponentType, useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { FlatList, ImageBackground, View } from "react-native";
+import { FlatList, ImageBackground, View, ViewStyle } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SvgProps } from "react-native-svg";
 
-import InheritanceIcon from "./assets/inheritanceIcon.svg";
-import SpendingIcon from "./assets/spendingIcon.svg";
+// import InheritanceIcon from "./assets/inheritanceIcon.svg";
+// import SpendingIcon from "./assets/spendingIcon.svg";
+import KeyRoundIcon from "./assets/key-round-icon.svg";
+import RecoveryIcon from "./assets/recovery-icon.svg";
+import SpendingIcon from "./assets/spending-icon.svg";
+import InheritanceIcon from "./assets/inheritance-icon.svg";
 import { Inheritance } from "./inheritance";
 import { Spending } from "./spending";
 import { UsdBalance } from "../../balances";
-import { useMultisigWallet } from "../../stores";
+import { useMultisigWallet, useStore } from "../../stores";
 import { Background } from "../components/background";
 import { BottomSheetBackdrop } from "../components/bottomSheetBackdrop";
 import { NetworkAccountPickerLayout } from "../components/network-account-picker-layout";
+import { Style } from "util";
+import { Button } from "../../button";
+import { TextInput } from "../../text-input";
 
 export const AccountScreen = observer(function AccountScreen() {
   return (
     <>
       <Background />
       <NetworkAccountPickerLayout>
-        <AccountScreenInner />
+        <View style={{ flex: 1, position: "relative" }}>
+          <AccountScreenInner />
+          <View
+            style={{
+              position: "absolute",
+              zIndex: 10,
+              right: 20,
+              bottom: 20,
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#437DFF",
+                padding: 16,
+                borderRadius: 100,
+              }}
+            >
+              <FontAwesomeIcon icon={faPlus} style={{ color: "#F6F5FF" }} />
+            </TouchableOpacity>
+          </View>
+        </View>
       </NetworkAccountPickerLayout>
     </>
   );
 });
 
 export const AccountScreenInner = observer(function AccountScreenInner() {
-  const safeArea = useSafeAreaInsets();
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const [selectedMenu, setSelectedMenu] = useState("");
   const wallet = useMultisigWallet();
-
-  const triggerBottomSheet = (selection?: Option) => {
-    if (selection) {
-      setSelectedMenu(selection.name);
-      bottomSheetRef.current?.snapToIndex(0);
-    } else {
-      bottomSheetRef.current?.close();
-    }
-  };
-  const renderSelectionContent = () => {
-    switch (selectedMenu) {
-      case "spending":
-        return <Spending />;
-      case "inheritance":
-        return <Inheritance />;
-      default:
-        return null;
-    }
-  };
+  const { configStore } = useStore();
+  const isLoop = configStore.isLoop();
 
   return (
-    <View style={{ paddingHorizontal: 20 }}>
+    <View style={{ paddingHorizontal: 10, flex: 1 }}>
       <View
         style={{
-          backgroundColor: "#1C0C3F",
+          backgroundColor: isLoop ? "#1C0C3F" : "#437DFF",
           borderRadius: 16,
         }}
       >
         <ImageBackground
-          source={require("./assets/accountbg.png")}
-          style={{ padding: 20 }}
+          source={isLoop ? require("./assets/accountbg.png") : null}
+          style={{ padding: 10, position: "relative" }}
           resizeMode="cover"
           borderRadius={16}
         >
+          <TouchableOpacity style={{ position: "absolute", top: 0, left: 0 }}>
+            <KeyRoundIcon />
+          </TouchableOpacity>
           <View
             style={{
               flexDirection: "column",
@@ -107,248 +117,159 @@ export const AccountScreenInner = observer(function AccountScreenInner() {
           </View>
         </ImageBackground>
       </View>
-
-      {/*<View*/}
-      {/*  style={{*/}
-      {/*    backgroundColor: "#16152D",*/}
-      {/*    marginTop: 34,*/}
-      {/*    borderRadius: 12,*/}
-      {/*    padding: 20,*/}
-      {/*  }}*/}
-      {/*>*/}
-      {/*  <View style={{ flexDirection: "row" }}>*/}
-      {/*    <Image*/}
-      {/*      source={require("./assets/avatars/avatars-3.png")}*/}
-      {/*      style={{ height: 42, width: 42, borderRadius: 42 }}*/}
-      {/*    />*/}
-      {/*    <View*/}
-      {/*      style={{ paddingLeft: 15, flex: 1, justifyContent: "space-around" }}*/}
-      {/*    >*/}
-      {/*      <View*/}
-      {/*        style={{ flexDirection: "row", justifyContent: "space-between" }}*/}
-      {/*      >*/}
-      {/*        <Text*/}
-      {/*          style={{ color: "#F6F5FF", fontSize: 14, fontWeight: "500" }}*/}
-      {/*        >*/}
-      {/*          $4,582*/}
-      {/*        </Text>*/}
-      {/*        <FontAwesomeIcon*/}
-      {/*          icon={faCheckCircle}*/}
-      {/*          style={{ width: 16, height: 16, color: "#7AD6AE" }}*/}
-      {/*        />*/}
-      {/*      </View>*/}
-      {/*      <Text*/}
-      {/*        style={{*/}
-      {/*          color: "rgba(246, 245, 255, 0.6);",*/}
-      {/*          fontSize: 12,*/}
-      {/*          fontWeight: "400",*/}
-      {/*        }}*/}
-      {/*      >*/}
-      {/*        dungeon_master*/}
-      {/*      </Text>*/}
-      {/*    </View>*/}
-      {/*  </View>*/}
-      {/*  <View>*/}
-      {/*    <View*/}
-      {/*      style={{*/}
-      {/*        height: 6,*/}
-      {/*        backgroundColor: "#1E1D3A",*/}
-      {/*        borderRadius: 4,*/}
-      {/*        marginTop: 20,*/}
-      {/*        marginBottom: 8,*/}
-      {/*      }}*/}
-      {/*    >*/}
-      {/*      <LinearGradient*/}
-      {/*        start={{ x: 0, y: 0 }}*/}
-      {/*        end={{ x: 1, y: 0 }}*/}
-      {/*        colors={["#FCCFF7", "#E659D6", "#8877EA", "#86E2EE"]}*/}
-      {/*        style={{ flex: 1, width: "60%", borderRadius: 4 }}*/}
-      {/*      />*/}
-      {/*    </View>*/}
-      {/*    <View*/}
-      {/*      style={{ justifyContent: "space-between", flexDirection: "row" }}*/}
-      {/*    >*/}
-      {/*      <Text*/}
-      {/*        style={{*/}
-      {/*          fontSize: 11,*/}
-      {/*          fontWeight: "400",*/}
-      {/*          color: "rgba(246, 245, 255, 0.6);",*/}
-      {/*        }}*/}
-      {/*      >*/}
-      {/*        Daily Balance*/}
-      {/*      </Text>*/}
-      {/*      <View style={{ flexDirection: "row" }}>*/}
-      {/*        <Text*/}
-      {/*          style={{ fontSize: 11, fontWeight: "400", color: "#f6f5ff" }}*/}
-      {/*        >*/}
-      {/*          $80*/}
-      {/*        </Text>*/}
-      {/*        <Text*/}
-      {/*          style={{*/}
-      {/*            fontSize: 11,*/}
-      {/*            fontWeight: "400",*/}
-      {/*            color: "#f6f5ff",*/}
-      {/*            opacity: 0.6,*/}
-      {/*          }}*/}
-      {/*        >*/}
-      {/*          /100*/}
-      {/*        </Text>*/}
-      {/*      </View>*/}
-      {/*    </View>*/}
-      {/*    <View>*/}
-      {/*      <FlatList*/}
-      {/*        data={options}*/}
-      {/*        horizontal*/}
-      {/*        renderItem={(props) => (*/}
-      {/*          <Option*/}
-      {/*            item={props.item}*/}
-      {/*            onPress={() => triggerBottomSheet(props.item)}*/}
-      {/*          />*/}
-      {/*        )}*/}
-      {/*        style={{ marginTop: 20 }}*/}
-      {/*      />*/}
-      {/*    </View>*/}
-      {/*  </View>*/}
-      {/*</View>*/}
-
-      <View
-        style={{
-          justifyContent: "flex-end",
-          paddingBottom: 20,
-          marginBottom: safeArea.bottom / 2,
-          marginTop: 10,
-        }}
-      >
-        <FlatList
-          data={[]}
-          // keyExtractor={(item) => item.address}
-          renderItem={({ item }) => {
-            return null;
-
-            // return (
-            //   <View
-            //     style={{
-            //       backgroundColor: "#0F0E20",
-            //       borderRadius: 12,
-            //       marginVertical: 10,
-            //       flexDirection: "row",
-            //       padding: 20,
-            //       flex: 1,
-            //     }}
-            //   >
-            //     {/*<Image*/}
-            //     {/*  source={require("./assets/avatars/avatars-1.png")}*/}
-            //     {/*  style={{ height: 42, width: 42, borderRadius: 42 }}*/}
-            //     {/*/>*/}
-            //     <View style={{ paddingLeft: 10, flex: 1 }}>
-            //       <Text
-            //         style={{
-            //           fontSize: 14,
-            //           fontWeight: "400",
-            //           color: "#f6f5ff",
-            //         }}
-            //       >
-            //         {item.title}
-            //       </Text>
-            //       <Text
-            //         style={{
-            //           fontSize: 12,
-            //           fontWeight: "400",
-            //           color: "rgba(246, 245, 255, 0.6);",
-            //         }}
-            //       >
-            //         {item.subTitle}
-            //       </Text>
-            //     </View>
-            //     {/*<View style={{ justifyContent: "center" }}>*/}
-            //     {/*  <View*/}
-            //     {/*    style={{*/}
-            //     {/*      width: 16,*/}
-            //     {/*      height: 16,*/}
-            //     {/*      borderColor: "rgba(255,255,255,.4)",*/}
-            //     {/*      borderWidth: 1,*/}
-            //     {/*      borderRadius: 16,*/}
-            //     {/*    }}*/}
-            //     {/*  ></View>*/}
-            //     {/*</View>*/}
-            //   </View>
-            // );
-          }}
-        />
+      <View style={{ flex: 1 }}>
+        <AccountsList />
       </View>
-      <BottomSheetBackdrop
-        onPress={() => triggerBottomSheet()}
-        visible={Boolean(selectedMenu)}
-      />
-      <BottomSheet
-        handleIndicatorStyle={{ backgroundColor: "white" }}
-        backgroundStyle={{ backgroundColor: "#100F1E" }}
-        handleStyle={{ backgroundColor: "transparent" }}
-        snapPoints={selectedMenu === "inheritance" ? ["70%"] : ["40"]}
-        enablePanDownToClose={true}
-        ref={bottomSheetRef}
-        index={-1}
-        backdropComponent={() => null}
-        onClose={() => setSelectedMenu("")}
-      >
-        <BottomSheetView
-          style={{
-            flex: 1,
-            backgroundColor: "transparent",
-            position: "relative",
-          }}
-        >
-          {renderSelectionContent()}
-        </BottomSheetView>
-      </BottomSheet>
     </View>
   );
 });
 
-interface Option {
-  key: number;
-  name: string;
-  Icon: ComponentType<SvgProps>;
-}
-
-const options: Option[] = [
-  {
-    key: 0,
-    name: "spending",
-    Icon: SpendingIcon,
-  },
-  {
-    key: 1,
-    name: "inheritance",
-    Icon: InheritanceIcon,
-  },
-];
-
-interface OptionProps {
-  item: Option;
-  onPress: () => void;
-}
-
-const Option = observer(function Option({ item, onPress }: OptionProps) {
+const AccountsList = () => {
   return (
-    <TouchableOpacity
-      style={{ height: 60, justifyContent: "center", alignItems: "center" }}
-      onPress={onPress}
+    <FlatList
+      data={[1, 2]}
+      renderItem={AccountItem}
+      keyExtractor={(item) => item.toString()}
+    />
+  );
+};
+
+const AccountItem = () => {
+  return (
+    <View
+      style={{
+        borderWidth: 1,
+        borderRadius: 7,
+        borderColor: "white",
+        marginVertical: 10,
+        padding: 10,
+      }}
     >
-      <>
-        <item.Icon
+      <View style={{ flexDirection: "row" }}>
+        <View
           style={{
             width: 40,
-            height: 40,
-
-            marginHorizontal: 10,
-            marginBottom: 10,
+            aspectRatio: 1 / 1,
+            backgroundColor: "white",
+            borderRadius: 6,
           }}
         />
-        <Text style={{ fontSize: 12, color: "white", opacity: 0.6 }}>
-          {item.name}
+        <View style={{ paddingLeft: 10 }}>
+          <Text style={{ color: "white", fontSize: 18, fontWeight: "600" }}>
+            MyhotWallet
+          </Text>
+          <Text
+            style={{
+              color: "white",
+              fontSize: 12,
+              fontFamily: "Poppins-Light",
+            }}
+          >
+            parent account panterra0x
+          </Text>
+        </View>
+      </View>
+      <View
+        style={{
+          position: "absolute",
+          width: 20,
+          aspectRatio: 1 / 1,
+          backgroundColor: "white",
+          right: 5,
+          top: 5,
+          borderRadius: 100,
+        }}
+      />
+      <ProgessBar amount={70} containerStyle={{ marginVertical: 10 }} />
+      <View style={{ justifyContent: "space-around", flexDirection: "row" }}>
+        <FeatureItem Icon={SpendingIcon} label="Spending" />
+        <FeatureItem Icon={RecoveryIcon} label="Recovery" />
+        <FeatureItem Icon={InheritanceIcon} label="Inheritance" />
+      </View>
+      <View
+        style={{ backgroundColor: "#363636", borderRadius: 7, marginTop: 10 }}
+      >
+        <View style={{ height: 20, backgroundColor: "red", width: 40 }} />
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingHorizontal: 10,
+          }}
+        >
+          <Text style={{ color: "white", fontSize: 12 }}>
+            Set spending limit:
+          </Text>
+          <TextInput style={{ width: 80 }} />
+          <TextInput style={{ width: 80 }} />
+        </View>
+        <View style={{ margin: 15 }}>
+          <Button flavor="blue" label="Confirm" />
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const FeatureItem = ({ Icon, label }) => {
+  return (
+    <TouchableOpacity>
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <View
+          style={{
+            backgroundColor: "#437DFF",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: 4,
+            width: 45,
+            aspectRatio: 1 / 1,
+          }}
+        >
+          <Icon />
+        </View>
+      </View>
+      <View style={{ alignItems: "center" }}>
+        <Text style={{ color: "white", fontFamily: "Poppis-Light" }}>
+          {label}
         </Text>
-      </>
+      </View>
     </TouchableOpacity>
   );
-});
+};
+
+const ProgessBar = ({
+  amount,
+  containerStyle,
+  barStyle,
+}: {
+  amount: number;
+  containerStyle?: ViewStyle;
+  barStyle?: ViewStyle;
+}) => {
+  return (
+    <View
+      style={{
+        backgroundColor: "#363636",
+        borderRadius: 20,
+        height: 10,
+        ...(containerStyle ? containerStyle : {}),
+      }}
+    >
+      <View
+        style={{
+          backgroundColor: "#437DFF",
+          height: 10,
+          width: `${amount}%`,
+          borderRadius: 20,
+          ...(barStyle ? barStyle : {}),
+        }}
+      />
+    </View>
+  );
+};
