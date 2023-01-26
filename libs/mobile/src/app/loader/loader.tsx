@@ -17,6 +17,7 @@ export const Loader = observer(
     const { configStore } = useStore();
     const isLoop = configStore.isLoop();
     const getAnimation = () => {
+      if (isLoop) return <ActivityIndicator size="large" color="#8877EA" />;
       if (animation) {
         return (
           <LottieView
@@ -30,7 +31,6 @@ export const Loader = observer(
           />
         );
       }
-      if (isLoop) return <ActivityIndicator size="large" color="#8877EA" />;
       return (
         <LottieView
           source={require("./obi-spinner.json")}
