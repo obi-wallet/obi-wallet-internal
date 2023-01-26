@@ -29,7 +29,6 @@ export interface CosmosMultisig {
   cloud: WithAddress<CosmosSerializedData.SerializedCloudPayload> | null;
   nfc: WithAddress<CosmosSerializedData.SerializedNFCPayload> | null;
   email: null;
-  nfc: null;
   telegram: null;
   map: null;
   ledger: null;

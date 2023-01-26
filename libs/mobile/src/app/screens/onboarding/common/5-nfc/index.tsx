@@ -9,6 +9,7 @@ import {
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
+import { scan } from "ramda";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, FlatList, View } from "react-native";
@@ -41,6 +42,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(
     const [hasNfc, setHasNFC] = useState(false);
     const [reading, setReading] = useState(false);
     const [scannedNFC, setScannedNFC] = useState(false);
+    const [selectedTagType, setSelectedTagType] = useState("");
     const [address, setAddress] = useState("");
     const [passportModal, setPassportModal] = useState(false);
     const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true); // Verify&Proceed Button disabled by default
@@ -67,14 +69,14 @@ export const MultisigNFC = observer<MultisigNFCProps>(
       NfcManager.setEventListener(NfcEvents.DiscoverTag, async (tag: any) => {
         setReading(false);
         let parsed = null;
-        if (tag.ndefMessage && tag.ndefMessage.length > 0) {
+        if (await tag.ndefMessage && await tag.ndefMessage.length > 0) {
           // ndefMessage is actually an array of NdefRecords, 
           // and we can iterate through each NdefRecord, decode its payload 
           // according to its TNF & type
-          const ndefRecords = tag.ndefMessage;
-          parsed = ndefRecords.map(decodeNdefRecord);
+          const ndefRecords = await tag.ndefMessage;
+          parsed = await ndefRecords.map(decodeNdefRecord);
           const publicKey = await getNFCPublicKey({
-            demoMode, parsed
+            demoMode, parsed: JSON.stringify(parsed)
           });
           await wallet.setNFCPublicKey({
             publicKey: {
@@ -190,17 +192,36 @@ export const MultisigNFC = observer<MultisigNFCProps>(
           >
             {item.title}
           </Text>
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#fff",
-              borderRadius: 30,
-              paddingHorizontal: 20,
-              paddingVertical: 10,
-            }}
-            onPress={onScanPress}
-          >
-            <Text>Scan</Text>
-          </TouchableOpacity>
+          { !scannedNFC 
+            ? <TouchableOpacity
+              style={{
+                backgroundColor: "#fff",
+                borderRadius: 30,
+                paddingHorizontal: 20,
+                paddingVertical: 10,
+              }}
+              onPress={onScanPress}
+            ><Text>Scan</Text></TouchableOpacity>
+            : item.title === selectedTagType
+              ? <TouchableOpacity
+                  style={{
+                    backgroundColor: "#aaa",
+                    borderRadius: 30,
+                    paddingHorizontal: 20,
+                    paddingVertical: 10,
+                  }}
+                  disabled={true}
+                ><Text>Scanned</Text></TouchableOpacity>
+                    : <TouchableOpacity
+                      style={{
+                        backgroundColor: "#aaa",
+                        borderRadius: 30,
+                        paddingHorizontal: 20,
+                        paddingVertical: 10,
+                      }}
+                      disabled={true}
+                    ><Text>Switch To</Text></TouchableOpacity>
+            }
         </View>
       );
     }
@@ -328,7 +349,10 @@ export const MultisigNFC = observer<MultisigNFCProps>(
           <FlatList
             data={NFCData}
             renderItem={({ item }) => (
-              <ListItem item={item} onScanPress={() => item.handler()} />
+              <ListItem item={item} onScanPress={() => {
+                setSelectedTagType(item.title);
+                item.handler();
+              }} />
             )}
           />
         </View>) : null}
@@ -350,11 +374,25 @@ export const MultisigNFC = observer<MultisigNFCProps>(
               />
             </Text>
             )
-            : null}
+            : scannedNFC
+                ? (<Text
+                  style={{
+                    color: "#999CB6",
+                    fontSize: 14,
+                    marginTop: 10,
+                    marginLeft: 30,
+                    marginRight: 30,
+                    marginBottom: 50,
+                  }}>
+                  <FormattedMessage
+                    id="onboarding5.nfcunavailable"
+                    defaultMessage={"You've labeled your NFC device as: " + selectedTagType + " " + wallet.nextAdmin.nfc?.publicKey.value}
+                  />
+                </Text>
+                )
+            : null }
           <VerifyAndProceedButton
-            disabled={
-              verifyButtonDisabled ? verifyButtonDisabled : fetchingPubKey
-            }
+            disabled={!scannedNFC}
             onPress={async () => {
               if (scannedNFC) {
                 if (wallet.keyInRecovery !== "nfc") {
@@ -387,7 +425,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(
           <TouchableOpacity
             style={{ alignItems: "center", paddingHorizontal: 15 }}
             onPress={function (): void {
-              Alert.alert("Not implemented");
+              navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
             }}
           >
             <Text

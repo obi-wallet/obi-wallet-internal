@@ -1,5 +1,6 @@
 import { Sha256 } from "@cosmjs/crypto/build/sha";
 import { randomBytes } from "crypto";
+import { Alert } from "react-native";
 import * as Keychain from "react-native-keychain";
 import secp256k1 from "secp256k1";
 
@@ -40,10 +41,9 @@ export async function getNFCKeyPair({
       publicKey: DEMO_PUBLIC_KEY,
     };
   }
-
   const hashed = new Sha256(Buffer.from(parsed));
   const privateKeyBuffer = hashed.digest();
-  const publicKeyBuffer = secp256k1.publicKeyCreate(hashed.digest());
+  const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer);
 
   const privateKey = Buffer.from(privateKeyBuffer).toString("base64");
   const publicKey = Buffer.from(publicKeyBuffer).toString("base64");
