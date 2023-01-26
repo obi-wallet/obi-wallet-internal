@@ -13,6 +13,7 @@ import invariant from "tiny-invariant";
 
 import { ChainStore } from "../chain";
 import { ConfigStore } from "../config";
+import { nullable } from "../helpers";
 import { WalletType } from "./abstract-wallet";
 import {
   CosmosMultisigKey,
@@ -262,6 +263,7 @@ export class WalletsStore {
           biometrics: null,
           phoneNumber: null,
           social: null,
+          nfc: null,
         },
         proxyAddress: null,
       },
@@ -280,6 +282,7 @@ export class WalletsStore {
           biometrics: null,
           phoneNumber: null,
           social: null,
+          nfc: null,
         },
         proxyAddress: null,
       },
@@ -297,6 +300,7 @@ export class WalletsStore {
           biometrics: null,
           phoneNumber: null,
           social: null,
+          nfc: null,
           cloud: null,
         },
         proxyAddresses: {},
@@ -315,6 +319,7 @@ export class WalletsStore {
           biometrics: null,
           phoneNumber: null,
           social: null,
+          nfc: null,
           cloud: null,
         },
         proxyAddresses: {},

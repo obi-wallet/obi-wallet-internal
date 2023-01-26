@@ -22,6 +22,7 @@ export interface TerraMultisig {
   biometrics: WithAddress<TerraSerializedData.SerializedBiometricsPayload> | null;
   phoneNumber: WithAddress<TerraSerializedData.SerializedPhoneNumberPayload> | null;
   social: WithAddress<TerraSerializedData.SerializedSocialPayload> | null;
+  nfc: WithAddress<TerraSerializedData.SerializedNFCPayload> | null;
   cloud: WithAddress<TerraSerializedData.SerializedCloudPayload> | null;
   email: null;
 }
@@ -32,6 +33,7 @@ export interface TerraProxyWallet {
     biometrics: TerraSerializedData.Secp256k1PublicKey;
     phoneNumber: TerraSerializedData.Secp256k1PublicKey;
     social?: TerraSerializedData.Secp256k1PublicKey;
+    nfc?: TerraSerializedData.Secp256k1PublicKey;
   };
 }
 
@@ -130,6 +132,11 @@ export class TerraMultisigWallet extends AbstractWallet {
             publicKey: wallet.admin.social,
           }
         : null,
+      nfc: wallet.admin.nfc
+      ? {
+          publicKey: wallet.admin.nfc,
+        }
+      : null,
     });
     if (wallet.admin.social) {
       await this.setSocialPublicKey({
@@ -202,6 +209,16 @@ export class TerraMultisigWallet extends AbstractWallet {
   }
 
   @action
+  public async setNFCPublicKey(
+    payload: TerraSerializedData.SerializedNFCPayload
+  ) {
+    await this.setNextAdmin({
+      ...this.nextAdmin,
+      nfc: payload,
+    });
+  }
+
+  @action
   public async setSocialPublicKey(
     payload: TerraSerializedData.SerializedSocialPayload
   ) {
@@ -241,7 +258,7 @@ export class TerraMultisigWallet extends AbstractWallet {
   protected hydrateMultisig(
     multisig: TerraSerializedData.SerializedMultisigPayload
   ): TerraMultisig {
-    const { biometrics, phoneNumber, social } = multisig;
+    const { biometrics, phoneNumber, social, nfc } = multisig;
     const multisigThresholdPublicKey =
       this.createMultisigThresholdPublicKey(multisig);
 
@@ -263,6 +280,10 @@ export class TerraMultisigWallet extends AbstractWallet {
       social: social && {
         address: SimplePublicKey.fromAmino(social.publicKey).address(),
         ...social,
+      },
+      nfc: nfc && {
+        address: SimplePublicKey.fromAmino(nfc.publicKey).address(),
+        ...nfc,
       },
       cloud: null,
       email: null,
