@@ -8,25 +8,13 @@ import {
   WalletType,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { AES } from "crypto-js";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, View } from "react-native";
-import NfcManager, { Ndef, NfcEvents, RegisterTagEventOpts } from 'react-native-nfc-manager';
-import { SafeAreaView } from "react-native-safe-area-context";
-import { tags } from "react-native-svg/lib/typescript/xml";
-import { Text } from "@obi-wallet/common";
-import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
 import { Alert, FlatList, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-
-import { useStore } from "../../../../stores";
-import { OnboardingScreenContainer } from "../../../components/onboarding-screen-container";
-import { VerifyAndProceedButton } from "../../../components/phone-number/verify-and-proceed-button";
-import { isSmallScreenNumber } from "../../../components/screen-size";
-
+import NfcManager, { Ndef, NfcEvents, RegisterTagEventOpts } from 'react-native-nfc-manager';
+import { tags } from "react-native-svg/lib/typescript/xml";
 
 import { InlineButton } from "../../../../button";
 import { Button } from "../../../../button";
@@ -38,7 +26,9 @@ import { TextInput } from "../../../../text-input";
 import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
 import { KeyboardAvoidingView } from "../../../components/keyboard-avoiding-view";
+import { OnboardingScreenContainer } from "../../../components/onboarding-screen-container";
 import { VerifyAndProceedButton } from "../../../components/phone-number/verify-and-proceed-button";
+import { isSmallScreenNumber } from "../../../components/screen-size";
 import {
   OnboardingRoute,
   OnboardingStackParamList,
@@ -74,53 +64,6 @@ export const MultisigNFC = observer<MultisigNFCProps>(
     const isObi = configStore.isObi();
     const isTerra = wallet.type === WalletType.TerraMultisig;
     const intl = useIntl();
-    const NFCData = [
-    {
-      id: 1,
-      title: "Passport or ID Card",
-    },
-    {
-      id: 2,
-      title: "NFC Tag",
-    },
-    {
-      id: 3,
-      title: "Credit or Debit Card",
-    },
-    {
-      id: 4,
-      title: "YubiKey",
-    },
-  ];
-
-    /* const scanPassport = async () => {
-      setPassportModal(false);
-
-      const passportDetails = await PassportReader.scan({
-        // yes, you need to know a bunch of data up front
-        // this is data you can get from reading the MRZ zone of the passport
-        documentNumber: passportNumber,
-        dateOfBirth: dob,
-        dateOfExpiry: expiry,
-      })
-
-      Alert.alert("Passport details: ", JSON.stringify(passportDetails));
-    }
-
-    const getPassportDetails = async() => {
-      setPassportModal(true);
-    } */
-
-    useEffect(() => {
-      if (
-        address.length >= minAddressInputChars &&
-        address.startsWith(isTerra ? "terra1" : "juno1")
-      ) {
-        setVerifyButtonDisabled(false); // Enable Verify&Proceed Button if checks are okay
-      } else {
-        setVerifyButtonDisabled(true);
-      }
-    }, [isTerra, verifyButtonDisabled, address]);
 
     useEffect(() => {
       const checkIsSupported = async () => {
@@ -225,6 +168,10 @@ export const MultisigNFC = observer<MultisigNFCProps>(
       setReading(false);
       await NfcManager.unregisterTagEvent();
     }
+
+    const readPassport = async () => {
+      // todo
+    }
     
     function ListItem({
       item,
@@ -312,20 +259,63 @@ export const MultisigNFC = observer<MultisigNFCProps>(
       }
     }
 
-    return (
-    
+    const NFCData = [
+      {
+        id: 1,
+        title: "Passport or ID Card",
+        handler: readPassport,
+        enabled: false,
+      },
+      {
+        id: 2,
+        title: "NFC Tag",
+        handler: readTag,
+        enabled: true,
+      },
+      {
+        id: 3,
+        title: "Credit or Debit Card",
+        handler: readCard,
+        enabled: true,
+      },
+      {
+        id: 4,
+        title: "YubiKey",
+        handler: readYubikey,
+        enabled: true,
+      },
+    ];
+
     return (
     <OnboardingScreenContainer>
-      <Text
-        style={{
-          color: "#F6F5FF",
-          fontSize: isSmallScreenNumber(20, 24),
-          fontWeight: "600",
-          marginTop: isSmallScreenNumber(20, 32),
-        }}
-      >
-        Set an NFC Device Key
-      </Text>
+      <View>
+        {isObi ? undefined : <PeopleIcon width={70} height={70} />}
+        <Text
+          style={{
+            color: "#F6F5FF",
+            fontSize: isSmallScreenNumber(20, 24),
+            fontWeight: "600",
+            marginTop: isSmallScreenNumber(20, 32),
+          }}
+        >
+          {wallet.keyInRecovery === "nfc" ? (
+            <FormattedMessage
+              id="onboarding5.recovery.setnfckey"
+              defaultMessage="Set a New NFC Key"
+            />
+          ) : wallet.keyInRecovery === "biometrics" ? (
+            <FormattedMessage
+              id="onboarding2.recovery.nfckey"
+              defaultMessage="Recover your NFC Key"
+            />
+          ) : (
+            <FormattedMessage
+              id="onboarding5.setnfckey"
+              defaultMessage="Set up an NFC Key"
+            />
+          )}
+        </Text>
+      </View>
       <Text
         style={{
           color: isObi ? "#fff" : "#999CB6",
@@ -347,226 +337,20 @@ export const MultisigNFC = observer<MultisigNFCProps>(
         Obi DOES NOT store sensitive information from credit cards or
         identification.
       </Text>
-      <View style={{ flex: 1, paddingVertical: isSmallScreenNumber(5, 10) }}>
+      {hasNfc ? (<View style={{ flex: 1, paddingVertical: isSmallScreenNumber(5, 10) }}>
         <FlatList
           data={NFCData}
           renderItem={({ item }) => (
-            <ListItem item={item} onScanPress={() => setIsscanning(true)} />
+            <ListItem item={item} onScanPress={() => item.handler()} />
           )}
         />
-      </View>
+      </View>) : null }
       <View
         style={{
           marginBottom: 20,
         }}
       >
-        <VerifyAndProceedButton
-          onPress={function (): void {
-            Alert.alert("Not implemented");
-          }}
-        />
-        <TouchableOpacity
-          style={{ alignItems: "center", paddingHorizontal: 15 }}
-          onPress={function (): void {
-            Alert.alert("Not implemented");
-          }}
-        >
-          <Text
-            style={{
-              color: "#437DFF",
-              fontSize: isSmallScreenNumber(14, 14),
-              fontWeight: "600",
-              marginTop: 20,
-            }}
-          >
-            Skip This Key
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </OnboardingScreenContainer>
-  );
-
-/* <KeyboardAvoidingView
-        style={{
-          flex: 1,
-        }}
-      >
-        <SafeAreaView style={{ flex: 1 }}>
-          <Background />
-          { passportModal
-          ? (        <View>
-            <Text><FormattedMessage
-                        id="onboarding5.passportnumber"
-                        defaultMessage="Passport Number"
-                      /></Text>
-            <TextInput
-                value={passportNumber}
-                onChangeText={text => setPassportNumber(text)}
-                placeholder="123456789"
-            />
-            <Text><FormattedMessage
-                        id="onboarding5.dateofbirth"
-                        defaultMessage="Date of Birth (YYMMDD)"
-                      /></Text>
-            <TextInput
-                value={dob}
-                onChangeText={text => setDob(text)}
-                placeholder="96/01/15"
-            />
-            <Text><FormattedMessage
-                        id="onboarding5.expirationdate"
-                        defaultMessage="Expiration Date (YYMMDD)"
-                      /></Text>
-            <TextInput
-                value={expiry}
-                onChangeText={text => setExpiry(text)}
-                placeholder="26/01/15"
-            />
-            <Button
-              flavor="green"
-              label={intl.formatMessage({
-                id: "onboarding5.confirm",
-                defaultMessage: "Confirm",
-              })}
-            />
-        </View>)
-        :
-          (<><View
-            style={{
-              flex: 1,
-              paddingHorizontal: 20,
-              justifyContent: "space-between",
-            }}
-          >
-            <View>
-              <Back
-                style={{
-                  marginTop: 20,
-                  marginLeft: -5,
-                  padding: 5,
-                  width: 25,
-                }}
-              />
-
-              <View
-                style={{
-                  justifyContent: "flex-end",
-                  marginTop: isObi ? 10 : 43,
-                }}
-              >
-                <View>
-                  {isObi ? undefined : <PeopleIcon width={70} height={70} />}
-                  <Text
-                    style={{
-                      color: "#F6F5FF",
-                      fontSize: 24,
-                      fontWeight: "600",
-                      marginTop: 32,
-                    }}
-                  >
-                    {wallet.keyInRecovery === "nfc" ? (
-                      <FormattedMessage
-                        id="onboarding5.recovery.setnfckey"
-                        defaultMessage="Set a New NFC Key"
-                      />
-                    ) : wallet.keyInRecovery === "biometrics" ? (
-                      <FormattedMessage
-                        id="onboarding2.recovery.nfckey"
-                        defaultMessage="Recover your NFC Key"
-                      />
-                    ) : (
-                      <FormattedMessage
-                        id="onboarding5.setnfckey"
-                        defaultMessage="Set up an NFC Key"
-                      />
-                    )}
-                  </Text>
-                </View>
-                <View>
-                  <Text
-                    style={{
-                      color: "#999CB6",
-                      fontSize: 14,
-                      marginTop: 10,
-                    }}
-                  >
-                    {wallet.keyInRecovery === "nfc" ? (
-                      <FormattedMessage
-                        id="onboarding5.recovery.nfcsubtext"
-                        defaultMessage="Hold up the NFC-compatible item (passport, badge, credit card, YubiKey, etc.) that you used when creating your wallet."
-                      />
-                    ) : <FormattedMessage
-                      id="onboarding5.setnfckey.subtext.terra"
-                      defaultMessage="Hold up an NFC-compatible item (passport, badge, credit card, YubiKey, etc.). No data will be stored from your item."
-                    />
-                    }
-                  </Text>
-                </View>
-                <View>
-                  <Text
-                    style={{
-                      color: "#999CB6",
-                      fontSize: 14,
-                      marginTop: 10,
-                    }}
-                  >
-                    {hasNfc && !reading
-                      ? (<>
-                        <Button
-                          label={intl.formatMessage({
-                            id: "onboarding5.scanyubikey",
-                            defaultMessage: "Tap YubiKey",
-                          })}
-                          flavor="blue"
-                          onPress={readYubikey}
-                          disabled={false}
-                          style={[{ marginTop: 40, marginBottom: 40 }]}
-                        />
-                        <Button
-                          label={intl.formatMessage({
-                            id: "onboarding5.scanpassport",
-                            defaultMessage: "Tap Passport",
-                          })}
-                          flavor="blue"
-                          disabled={true}
-                          style={[{ marginTop: 40, marginBottom: 40 }]}
-                        />
-                        <Button
-                          label={intl.formatMessage({
-                            id: "onboarding5.scancard",
-                            defaultMessage: "Tap Card",
-                          })}
-                          flavor="blue"
-                          onPress={readCard}
-                          disabled={false}
-                          style={[{ marginTop: 40, marginBottom: 40 }]}
-                        />
-                        <Button
-                          label={intl.formatMessage({
-                            id: "onboarding5.scancard",
-                            defaultMessage: "Tap NFC Tag",
-                          })}
-                          flavor="blue"
-                          onPress={readTag}
-                          disabled={false}
-                          style={[{ marginTop: 40 }]}
-                        />
-                      </>)
-                      : null
-                    }
-                    {hasNfc && reading
-                      ? (<Button
-                        label={intl.formatMessage({
-                          id: "onboarding5.scannfcnow",
-                          defaultMessage: "Cancel NFC Scan",
-                        })}
-                        flavor="blue"
-                        onPress={cancelReadTag}
-                        disabled={false}
-                        style={[{ marginTop: 40 }]}
-                      />)
-                      : null}
-                    {!hasNfc
+                      {!hasNfc
                       ? (<Text
                         style={{
                           color: "#999CB6",
@@ -580,13 +364,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(
                       </Text>
                       )
                       : null}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-          <View>
-            <VerifyAndProceedButton
+        <VerifyAndProceedButton
               disabled={
                 verifyButtonDisabled ? verifyButtonDisabled : fetchingPubKey
               }
@@ -618,11 +396,26 @@ export const MultisigNFC = observer<MultisigNFCProps>(
                   );
                 }
               }}
-            />
-          </View>
-        </>)}
-        </SafeAreaView>
-      </KeyboardAvoidingView>
-    ); */
+        />
+        <TouchableOpacity
+          style={{ alignItems: "center", paddingHorizontal: 15 }}
+          onPress={function (): void {
+            Alert.alert("Not implemented");
+          }}
+        >
+          <Text
+            style={{
+              color: "#437DFF",
+              fontSize: isSmallScreenNumber(14, 14),
+              fontWeight: "600",
+              marginTop: 20,
+            }}
+          >
+            Skip This Key
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </OnboardingScreenContainer>
+  );
   }
 );

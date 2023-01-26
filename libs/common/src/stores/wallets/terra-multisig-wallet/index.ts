@@ -25,7 +25,6 @@ export interface TerraMultisig {
   nfc: WithAddress<TerraSerializedData.SerializedNFCPayload> | null;
   cloud: WithAddress<TerraSerializedData.SerializedCloudPayload> | null;
   email: null;
-  nfc: null;
   telegram: null;
   map: null;
   ledger: null;
@@ -291,7 +290,6 @@ export class TerraMultisigWallet extends AbstractWallet {
       },
       cloud: null,
       email: null,
-      nfc: null,
       telegram: null,
       map: null,
       ledger: null,
