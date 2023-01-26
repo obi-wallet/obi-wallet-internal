@@ -166,7 +166,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(
       item,
       onScanPress,
     }: {
-      item: { id: number; title: string };
+      item: { id: number; title: string, enabled: boolean };
       onScanPress: () => void;
     }) {
       return (
@@ -195,13 +195,14 @@ export const MultisigNFC = observer<MultisigNFCProps>(
           { !scannedNFC 
             ? <TouchableOpacity
               style={{
-                backgroundColor: "#fff",
+                backgroundColor: item.enabled ? "#fff" : "aaa",
                 borderRadius: 30,
                 paddingHorizontal: 20,
                 paddingVertical: 10,
               }}
               onPress={onScanPress}
-            ><Text>Scan</Text></TouchableOpacity>
+              disabled={!item.enabled}
+            >{item.enabled ? <Text>Scan</Text> : <Text>Coming Soon</Text>}</TouchableOpacity>
             : item.title === selectedTagType
               ? <TouchableOpacity
                   style={{
@@ -214,13 +215,14 @@ export const MultisigNFC = observer<MultisigNFCProps>(
                 ><Text>Scanned</Text></TouchableOpacity>
                     : <TouchableOpacity
                       style={{
-                        backgroundColor: "#aaa",
+                        backgroundColor: item.enabled ? "#fff" : "aaa",
                         borderRadius: 30,
                         paddingHorizontal: 20,
                         paddingVertical: 10,
                       }}
-                      disabled={true}
-                    ><Text>Switch To</Text></TouchableOpacity>
+                      disabled={!item.enabled}
+                      onPress={onScanPress}
+                    >{item.enabled ? <Text>Switch To</Text> : <Text>Coming Soon</Text>}</TouchableOpacity>
             }
         </View>
       );
@@ -380,9 +382,9 @@ export const MultisigNFC = observer<MultisigNFCProps>(
                     color: "#999CB6",
                     fontSize: 14,
                     marginTop: 10,
-                    marginLeft: 30,
-                    marginRight: 30,
-                    marginBottom: 50,
+                    marginLeft: 10,
+                    marginRight: 10,
+                    marginBottom: 40,
                   }}>
                   <FormattedMessage
                     id="onboarding5.nfcunavailable"
