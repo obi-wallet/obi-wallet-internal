@@ -8,11 +8,6 @@ import {
   SignInteractionStore as KeplrSignInteractionStore,
 } from "@keplr-wallet/stores";
 
-import { CommunityChainInfoRepo, EmbedChainInfos } from "../config";
-import { produceEnv } from "../env";
-import { AbstractKVStore, KVStore as DefaultKVStore } from "../kv-store";
-import { MessageRequesterInternal } from "../message-requester";
-import { RouterUi } from "../router";
 import { AppsStore } from "./apps";
 import { ChainStore } from "./chain";
 import { Config, ConfigStore } from "./config";
@@ -22,6 +17,11 @@ import { TerraSignInteractionStore } from "./interaction/terra-sign";
 import { KeplrChainStore } from "./keplr-chain";
 import { LanguageStore } from "./language";
 import { WalletsStore } from "./wallets";
+import { CommunityChainInfoRepo, EmbedChainInfos } from "../config";
+import { produceEnv } from "../env";
+import { AbstractKVStore, KVStore as DefaultKVStore } from "../kv-store";
+import { MessageRequesterInternal } from "../message-requester";
+import { RouterUi } from "../router";
 
 export class RootStore {
   public readonly appsStore: AppsStore;

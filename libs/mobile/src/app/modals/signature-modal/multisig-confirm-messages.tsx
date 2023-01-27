@@ -5,9 +5,9 @@ import { FormattedMessage } from "react-intl";
 import { Alert, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
+import { ConfirmMessages, ConfirmMessagesProps } from "./confirm-messages";
 import { KeysList, KeysListProps } from "../../screens/components/keys-list";
 import { useStore } from "../../stores";
-import { ConfirmMessages, ConfirmMessagesProps } from "./confirm-messages";
 
 export interface MultisigConfirmMessagesProps
   extends Omit<

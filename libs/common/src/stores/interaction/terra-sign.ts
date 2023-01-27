@@ -1,11 +1,11 @@
 import { InteractionStore as KeplrInteractionStore } from "@keplr-wallet/stores";
 import { BlockTxBroadcastResult } from "@terra-money/terra.js";
 
+import { AbstractSingletonInteractionStore } from "./abstract-singleton";
 import {
   RequestObiTerraSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastPayload,
 } from "../../background";
-import { AbstractSingletonInteractionStore } from "./abstract-singleton";
 
 export class TerraSignInteractionStore extends AbstractSingletonInteractionStore<
   RequestObiTerraSignAndBroadcastPayload,

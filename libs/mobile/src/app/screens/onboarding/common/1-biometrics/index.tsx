@@ -8,6 +8,9 @@ import { Alert, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import FaceScanner from "./assets/face-scanner.svg";
+import ObiFaceScanner from "./assets/obi-face-scanner.svg";
+import Scan from "./assets/scan.svg";
 import {
   getBiometricsPublicKey,
   resetBiometricsKeyPair,
@@ -24,9 +27,6 @@ import {
   OnboardingRoute,
   OnboardingStackParamList,
 } from "../../onboarding-stack";
-import FaceScanner from "./assets/face-scanner.svg";
-import ObiFaceScanner from "./assets/obi-face-scanner.svg";
-import Scan from "./assets/scan.svg";
 
 export type MultisigBiometricsProps = NativeStackScreenProps<
   OnboardingStackParamList,

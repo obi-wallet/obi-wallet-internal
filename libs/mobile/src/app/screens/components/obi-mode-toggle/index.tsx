@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect, useState } from "react";
 import { Pressable, StyleProp, ViewStyle } from "react-native";
 
+import { triggerNotificationSuccess } from "../../../../helpers/haptic-feedback";
 import { useStore } from "../../../stores";
 
 export interface BrandModeToggleProps {
@@ -17,6 +18,7 @@ export const BrandToggle = observer<BrandModeToggleProps>((props) => {
   useEffect(() => {
     if (configStore.isFeatureEnabled(Feature.BrandToggle)) {
       if (pressed >= 5) {
+        triggerNotificationSuccess();
         configStore.toggleBrand();
         setPressed(0);
       }

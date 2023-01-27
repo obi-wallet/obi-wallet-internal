@@ -85,6 +85,7 @@
     "react-native-dotenv": "*",
     "react-native-dropdown-picker": "*",
     "react-native-gesture-handler": "*",
+    "react-native-haptic-feedback": "*",
     "react-native-iap": "*",
     "react-native-keyboard-aware-scroll-view": "*",
     "react-native-keychain": "*",

@@ -15,6 +15,8 @@ import {
   View,
 } from "react-native";
 
+import { ReceiveIcon as Receive } from "./receive";
+import { SendIcon as Send } from "./send";
 import {
   ExtendedCoin,
   formatExtendedCoin,
@@ -32,8 +34,6 @@ import {
   isSmallScreenSubstr,
 } from "../../components/screen-size";
 import StakingIcon from "../assets/stakingIcon.svg";
-import { ReceiveIcon as Receive } from "./receive";
-import { SendIcon as Send } from "./send";
 
 export const Assets = observer(() => {
   const theme = useTheme();

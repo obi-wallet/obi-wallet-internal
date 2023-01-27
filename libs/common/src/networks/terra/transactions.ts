@@ -12,10 +12,10 @@ import {
 import { AxiosError } from "axios";
 import * as t from "io-ts";
 
+import { getTxGasOptions } from "./gas-information";
 import { TerraChain, terraChains } from "../../chains";
 import { createLcdClient } from "../../clients";
 import { lendFees } from "../../fee-lender-worker";
-import { getTxGasOptions } from "./gas-information";
 
 export const SdkError = t.type({
   code: t.number,

@@ -27,16 +27,6 @@ import { Alert, Platform } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import invariant from "tiny-invariant";
 
-import { useStore } from "../../stores";
-import { AccountScreen } from "../account";
-import {
-  getScreenDimensions,
-  isSmallScreenNumber,
-} from "../components/screen-size";
-import { DappExplorer } from "../dapp-explorer";
-import { NFTs } from "../loop-web-apps/nfts";
-import { Trade } from "../loop-web-apps/trade";
-import { SettingsScreen } from "../settings";
 import AppsIcon from "./assets/appsIcon.svg";
 import AssetsIcon from "./assets/assetsIcon.svg";
 import ObiAccountsIcon from "./assets/empty-account-icon.svg";
@@ -62,6 +52,16 @@ import {
   HomeDrawer,
   HomeDrawerRoute,
 } from "./home-stack";
+import { useStore } from "../../stores";
+import { AccountScreen } from "../account";
+import {
+  getScreenDimensions,
+  isSmallScreenNumber,
+} from "../components/screen-size";
+import { DappExplorer } from "../dapp-explorer";
+import { NFTs } from "../loop-web-apps/nfts";
+import { Trade } from "../loop-web-apps/trade";
+import { SettingsScreen } from "../settings";
 
 export type TabNavigationProps = DrawerScreenProps<ParamListBase>;
 const ActiveIconContainer = styled.View({

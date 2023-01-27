@@ -14,12 +14,6 @@ import codePush, { LocalPackage } from "react-native-code-push";
 import { ScrollView } from "react-native-gesture-handler";
 import { SvgProps } from "react-native-svg";
 
-import { RootStack, useRootNavigation } from "../../root-stack";
-import { useStore } from "../../stores";
-import { Create } from "../account/create";
-import { ObiLogo } from "../components/obi-logo";
-import { BrandToggle } from "../components/obi-mode-toggle";
-import { isSmallScreenNumber } from "../components/screen-size";
 import MultiSigIcon from "./assets/edit.svg";
 import HelpAndSupport from "./assets/headset.svg";
 import LogoutIcon from "./assets/power-red.svg";
@@ -27,6 +21,12 @@ import { HealthChecksScreen } from "./health-checks";
 import { KeysConfigScreen } from "./keys-config";
 import { Seedphrase } from "./seedphrase";
 import { SettingsRoute } from "./settings-stack";
+import { RootStack, useRootNavigation } from "../../root-stack";
+import { useStore } from "../../stores";
+import { Create } from "../account/create";
+import { ObiLogo } from "../components/obi-logo";
+import { BrandToggle } from "../components/obi-mode-toggle";
+import { isSmallScreenNumber } from "../components/screen-size";
 
 export const SettingsScreen = observer(() => {
   const { configStore, walletsStore } = useStore();

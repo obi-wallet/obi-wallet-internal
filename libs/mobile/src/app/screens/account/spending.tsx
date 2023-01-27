@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { View, Text, Switch } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import SpendingIcon from "./assets/spendingIcon.svg";
 import { Button } from "../../button";
 import { DropDownPicker } from "../../drop-down-picker";
 import { TextInput } from "../../text-input";
-import SpendingIcon from "./assets/spendingIcon.svg";
 const repeatsEvery = [
   { label: "Day", value: "day" },
   { label: "Week", value: "week" },

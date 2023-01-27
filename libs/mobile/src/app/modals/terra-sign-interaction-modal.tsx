@@ -2,11 +2,11 @@ import { RequestObiTerraSignAndBroadcastPayload } from "@obi-wallet/common";
 import { BlockTxBroadcastResult } from "@terra-money/terra.js";
 import { observer } from "mobx-react-lite";
 
-import { useStore } from "../stores";
 import {
   TerraSignatureModal,
   useTerraSignatureModalProps,
 } from "./signature-modal";
+import { useStore } from "../stores";
 
 export const TerraSignInteractionModal = observer(() => {
   const { terraSignInteractionStore } = useStore();

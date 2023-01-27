@@ -1,7 +1,7 @@
 import { MultisigKey, Text } from "@obi-wallet/common";
 import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import {
   FlatList,
   StyleProp,
@@ -11,10 +11,6 @@ import {
 } from "react-native";
 import { SvgProps } from "react-native-svg";
 
-import { useStore } from "../../../stores";
-import { SendIcon } from "../../home/components/send";
-import PeopleWhite from "../../onboarding/common/4-social/assets/people-alt-twotone-24px white.svg";
-import People from "../../onboarding/common/4-social/assets/people-alt-twotone-24px.svg";
 import Biometrics from "./assets/biometrics-icon.svg";
 import BiometricsObi from "./assets/biometrics-obi-icon.svg";
 import Check from "./assets/check-icon.svg";
@@ -25,6 +21,14 @@ import MapPoint from "./assets/map-point-icon.svg";
 import NFC from "./assets/nfc-icon.svg";
 import PhoneNumber from "./assets/phone-number-icon.svg";
 import Warning from "./assets/warning-icon.svg";
+import {
+  triggerImpactLight,
+  triggerNotificationSuccess,
+} from "../../../../helpers/haptic-feedback";
+import { useStore } from "../../../stores";
+import { SendIcon } from "../../home/components/send";
+import PeopleWhite from "../../onboarding/common/4-social/assets/people-alt-twotone-24px white.svg";
+import People from "../../onboarding/common/4-social/assets/people-alt-twotone-24px.svg";
 
 export const CheckIcon = Check;
 export const WarningIcon = Warning;
@@ -143,13 +147,23 @@ export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
   const { configStore } = useStore();
   const isObi = configStore.isObi();
   const isLoop = configStore.isLoop();
+  useEffect(() => {
+    if (signed) {
+      triggerNotificationSuccess();
+    }
+  }, [signed]);
 
   if (tiled && item.description === "Coming Soon") return null;
 
   return tiled ? (
     <TouchableOpacity
       onPress={() => {
-        if (onPress) onPress();
+        if (onPress) {
+          if (!signed) {
+            triggerImpactLight();
+          }
+          onPress();
+        }
       }}
     >
       <View style={{ padding: 10, width: 100 }}>
