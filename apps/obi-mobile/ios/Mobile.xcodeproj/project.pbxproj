@@ -665,7 +665,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = money.obi.wallet;
+				PRODUCT_BUNDLE_IDENTIFIER = money.obi.wallet.dev;
 				PRODUCT_NAME = Mobile;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
