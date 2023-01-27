@@ -5,6 +5,13 @@
   "projectType": "library",
   "tags": [],
   "targets": {
+    "cosmos": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cosmos-native",
+        "cwd": "libs/mobile"
+      }
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],

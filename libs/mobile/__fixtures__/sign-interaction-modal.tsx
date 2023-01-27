@@ -5,8 +5,9 @@ import {
   RequestObiTerraSignAndBroadcastMsg,
   WalletType,
 } from "@obi-wallet/common";
-import { Modals, useStore } from "@obi-wallet/mobile";
 import { Button, View } from "react-native";
+
+import { Modals, useStore } from "../src";
 
 // eslint-disable-next-line import/no-default-export
 export default () => {

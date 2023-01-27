@@ -89,13 +89,6 @@
         "cwd": "apps/loop-mobile"
       }
     },
-    "cosmos": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "cosmos-native",
-        "cwd": "apps/loop-mobile"
-      }
-    },
     "tsc": {
       "executor": "nx:run-commands",
       "options": {

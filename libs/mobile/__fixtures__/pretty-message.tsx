@@ -1,6 +1,5 @@
 import { useTheme } from "@emotion/react";
 import { terra } from "@obi-wallet/common";
-import { PrettyMessage } from "@obi-wallet/mobile";
 import {
   Coin,
   MsgBeginRedelegate,
@@ -11,6 +10,8 @@ import {
   MsgUndelegate,
 } from "@terra-money/terra.js";
 import { ScrollView } from "react-native-gesture-handler";
+
+import { PrettyMessage } from "../src";
 
 const { getNewAccountMessage } = terra;
 

@@ -1,7 +1,8 @@
 import { Text } from "@obi-wallet/common";
-import { useStore } from "@obi-wallet/mobile";
 import { useEffect, useState } from "react";
 import { ScrollView } from "react-native";
+
+import { useStore } from "../../src";
 
 export default () => {
   const { walletsStore } = useStore();

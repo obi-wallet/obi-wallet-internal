@@ -1,7 +1,6 @@
+import { obiMobileConfig } from "@obi-wallet/config";
 import { BaseApp } from "@obi-wallet/mobile";
 
-import { config } from "./config";
-
 export function App() {
-  return <BaseApp initialConfig={config} />;
+  return <BaseApp initialConfig={obiMobileConfig} />;
 }

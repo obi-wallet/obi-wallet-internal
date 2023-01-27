@@ -10,14 +10,9 @@ import { COSMOS_ENABLED } from "react-native-dotenv";
 import { deploymentKey } from "./app/code-push";
 import { initBackground } from "./background";
 import { initSentry } from "./background/sentry";
+import { Cosmos } from "./cosmos";
 
-export function setupMain({
-  App,
-  Cosmos,
-}: {
-  App: ComponentType;
-  Cosmos: ComponentType;
-}) {
+export function setupMain({ App }: { App: ComponentType }) {
   initSentry();
   initBackground();
 

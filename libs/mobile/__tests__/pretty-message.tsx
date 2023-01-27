@@ -1,11 +1,5 @@
-import {
-  Brand,
-  Config,
-  Feature,
-  terra,
-  terraChains,
-  WalletType,
-} from "@obi-wallet/common";
+import { Brand, terra, terraChains } from "@obi-wallet/common";
+import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
 import {
   Coin,
   Msg,
@@ -20,34 +14,12 @@ import { PrettyMessage } from "../src/app/modals/signature-modal/pretty-message"
 import { Provider } from "../src/app/provider";
 
 function getConfig(brand: Brand) {
-  const config: Config = {
-    brand,
-    defaultMultisigWalletType: WalletType.TerraMultisig,
-    cosmosChains: {
-      enabled: ["juno-1", "uni-3"],
-      default: "juno-1",
-    },
-    terraChains: {
-      enabled: ["phoenix-1"],
-      default: "phoenix-1",
-    },
-    languages: {
-      enabled: ["en"],
-      default: "en",
-    },
-    features: {
-      [Feature.AccountsTab]: false,
-      [Feature.HealthChecks]: false,
-      [Feature.NftTab]: false,
-      [Feature.Recovery]: false,
-      [Feature.SinglesigWallets]: false,
-      [Feature.Staking]: false,
-      [Feature.InAppPurchases]: false,
-      [Feature.BrandToggle]: false,
-      [Feature.DemoMode]: false,
-    },
-  };
-  return config;
+  switch (brand) {
+    case Brand.Obi:
+      return obiMobileConfig;
+    case Brand.Loop:
+      return loopMobileDevConfig;
+  }
 }
 
 describe("Terra", () => {
