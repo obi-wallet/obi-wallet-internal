@@ -653,6 +653,7 @@
 				CODE_SIGN_ENTITLEMENTS = Mobile/Mobile.entitlements;
 				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_TEAM = JCUQ8D698P;
+				DISPLAY_NAME = "Obi Dev";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Mobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -682,6 +683,7 @@
 				CODE_SIGN_ENTITLEMENTS = Mobile/Mobile.entitlements;
 				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_TEAM = JCUQ8D698P;
+				DISPLAY_NAME = Obi;
 				INFOPLIST_FILE = Mobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
