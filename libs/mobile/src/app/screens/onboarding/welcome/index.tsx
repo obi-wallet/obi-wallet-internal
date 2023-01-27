@@ -181,7 +181,8 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                             if (
                               multisigWallet &&
                               multisigWallet.type ===
-                                configStore.getDefaultMultisigWalletType()
+                                configStore.getDefaultMultisigWalletType() &&
+                              !multisigWallet.isDemo
                             ) {
                               return multisigWallet;
                             }
@@ -241,7 +242,9 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
                 onPress={action(async () => {
                   if (
                     !isMultisigDemoWallet(wallet) ||
-                    wallet.type !== configStore.getDefaultMultisigWalletType()
+                    wallet.type !==
+                      configStore.getDefaultMultisigWalletType() ||
+                    !wallet.isDemo
                   ) {
                     await walletsStore.addMultisigDemoWallet();
                   }
@@ -355,7 +358,9 @@ export const Welcome = observer<WelcomeProps>(({ navigation }) => {
           onPress={action(async () => {
             if (
               !multisigWallet ||
-              multisigWallet.type !== configStore.getDefaultMultisigWalletType()
+              multisigWallet.type !==
+                configStore.getDefaultMultisigWalletType() ||
+              multisigWallet.isDemo
             ) {
               await walletsStore.addMultisigWallet();
             }
