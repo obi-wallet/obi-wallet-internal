@@ -8,6 +8,7 @@
 
     "background": "libs/background",
     "common": "libs/common",
+    "config": "libs/config",
     "injected-provider": "libs/injected-provider",
     "mobile": "libs/mobile",
     "mobile-shim": "libs/mobile-shim",

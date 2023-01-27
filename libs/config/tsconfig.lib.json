@@ -6,10 +6,8 @@
   },
   "exclude": [
     "jest.config.ts",
-    "__tests__/**/*.ts",
-    "__tests__/**/*.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
+    "src/**/*.spec.ts",
+    "src/**/*.spec.tsx",
     "test-setup.ts"
   ],
   "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"]

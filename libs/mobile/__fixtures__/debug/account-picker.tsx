@@ -1,4 +1,4 @@
-import { AccountPickerModal } from "@obi-wallet/mobile";
+import { AccountPickerModal } from "../../src";
 
 export default () => {
   return (

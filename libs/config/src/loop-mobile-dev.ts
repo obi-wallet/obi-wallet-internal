@@ -1,10 +1,10 @@
 import { Brand, Config, Feature, WalletType } from "@obi-wallet/common";
 
-export const config: Config = {
+export const loopMobileDevConfig: Config = {
   brand: Brand.Loop,
   defaultMultisigWalletType: WalletType.CosmosMultisig,
   cosmosChains: {
-    enabled: ["juno-1"],
+    enabled: ["juno-1", "uni-3"],
     default: "juno-1",
   },
   terraChains: {
@@ -12,18 +12,18 @@ export const config: Config = {
     default: "phoenix-1",
   },
   languages: {
-    enabled: ["en", "es"],
+    enabled: ["en", "de", "es"],
     default: "en",
   },
   features: {
-    [Feature.AccountsTab]: false,
-    [Feature.HealthChecks]: false,
+    [Feature.AccountsTab]: true,
+    [Feature.HealthChecks]: true,
     [Feature.NftTab]: true,
     [Feature.Recovery]: true,
     [Feature.SinglesigWallets]: true,
-    [Feature.Staking]: false,
-    [Feature.InAppPurchases]: true,
-    [Feature.BrandToggle]: true,
+    [Feature.Staking]: true,
+    [Feature.InAppPurchases]: false,
+    [Feature.BrandToggle]: false,
     [Feature.DemoMode]: true,
   },
 };

@@ -1,3 +1,7 @@
+import { CommonActions } from "@react-navigation/native";
+import { useEffect } from "react";
+import { useSelect } from "react-cosmos/fixture";
+
 import {
   HomeBottomTabRoute,
   HomeDrawerRoute,
@@ -7,10 +11,7 @@ import {
   StateRenderer,
   useRootNavigation,
   Modals,
-} from "@obi-wallet/mobile";
-import { CommonActions } from "@react-navigation/native";
-import { useEffect } from "react";
-import { useSelect } from "react-cosmos/fixture";
+} from "../src";
 
 type Route = RootRoute | OnboardingRoute | SettingsRoute | HomeBottomTabRoute;
 

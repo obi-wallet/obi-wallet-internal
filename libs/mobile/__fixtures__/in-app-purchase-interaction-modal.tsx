@@ -1,6 +1,7 @@
 import { PricingTier, RequestObiInAppPurchaseMsg } from "@obi-wallet/common";
-import { InAppPurchaseInteractionModal } from "@obi-wallet/mobile";
 import { Button, View } from "react-native";
+
+import { InAppPurchaseInteractionModal } from "../src";
 
 // eslint-disable-next-line import/no-default-export
 export default () => {

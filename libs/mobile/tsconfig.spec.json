@@ -17,7 +17,6 @@
     "**/*.spec.js",
     "**/*.test.jsx",
     "**/*.spec.jsx",
-    "**/*.d.ts",
-    "../common/emotion.d.ts"
+    "**/*.d.ts"
   ]
 }

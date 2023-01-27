@@ -1,9 +1,8 @@
+import { loopMobileConfig } from "@obi-wallet/config";
 import { BaseApp } from "@obi-wallet/mobile";
 import analytics from "@react-native-firebase/analytics";
 import { NavigationContainerRef } from "@react-navigation/native";
 import { useRef } from "react";
-
-import { config } from "./config";
 
 export function App() {
   const routeName = useRef<string>();
@@ -12,7 +11,7 @@ export function App() {
 
   return (
     <BaseApp
-      initialConfig={config}
+      initialConfig={loopMobileConfig}
       providerProps={{
         navigationContainerProps: {
           ref: navigation,

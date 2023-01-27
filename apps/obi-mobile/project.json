@@ -89,13 +89,6 @@
         "cwd": "apps/obi-mobile"
       }
     },
-    "cosmos": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "cosmos-native",
-        "cwd": "apps/obi-mobile"
-      }
-    },
     "tsc": {
       "executor": "nx:run-commands",
       "options": {
