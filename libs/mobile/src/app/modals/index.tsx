@@ -6,6 +6,7 @@ import { InAppPurchaseInteractionModal } from "./in-app-purchase-interaction-mod
 import { KeplrSignInteractionModal } from "./keplr-sign-interaction-modal";
 import { SignInteractionModal } from "./sign-interaction-modal";
 import { TerraSignInteractionModal } from "./terra-sign-interaction-modal";
+import { WalletConnectInteractionModal } from "./wallet-connect-interaction-modal";
 import { useStore } from "../stores";
 
 export const Modals = observer(() => {
@@ -20,6 +21,7 @@ export const Modals = observer(() => {
       <SignInteractionModal />
       <TerraSignInteractionModal />
       <KeplrSignInteractionModal />
+      <WalletConnectInteractionModal />
     </>
   );
 });

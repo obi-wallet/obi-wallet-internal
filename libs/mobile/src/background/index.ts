@@ -51,6 +51,7 @@ import {
   RootStore,
   RouterBackground,
   WalletType,
+  RequestObiWalletConnectMsg,
 } from "@obi-wallet/common";
 import { Buffer } from "buffer";
 import { Alert } from "react-native";
@@ -516,6 +517,7 @@ export function initBackground() {
   router.registerMessage(RequestObiInAppPurchaseMsg);
   router.registerMessage(RequestObiCosmosSignAndBroadcastMsg);
   router.registerMessage(RequestObiTerraSignAndBroadcastMsg);
+  router.registerMessage(RequestObiWalletConnectMsg);
   router.addHandler("obi", async (env: Env, msg: Message<unknown>) => {
     const message = msg as ObiMessage;
     return await interactionService.waitApprove(

@@ -14,8 +14,10 @@ import { Config, ConfigStore } from "./config";
 import { InAppPurchaseInteractionStore } from "./interaction/in-app-purchase";
 import { SignInteractionStore } from "./interaction/sign";
 import { TerraSignInteractionStore } from "./interaction/terra-sign";
+import { WalletConnectInteractionStore } from "./interaction/wallet-connect";
 import { KeplrChainStore } from "./keplr-chain";
 import { LanguageStore } from "./language";
+import { WalletConnectStore } from "./wallet-connect";
 import { WalletsStore } from "./wallets";
 import { CommunityChainInfoRepo, EmbedChainInfos } from "../config";
 import { produceEnv } from "../env";
@@ -32,6 +34,8 @@ export class RootStore {
   public readonly terraSignInteractionStore: TerraSignInteractionStore;
   public readonly languageStore: LanguageStore;
   public readonly walletsStore: WalletsStore;
+  public readonly walletConnectInteractionStore: WalletConnectInteractionStore;
+  public readonly walletConnectStore: WalletConnectStore;
 
   // Hide Keplr-related stores by default
   protected readonly keplrChainStore: KeplrChainStore;
@@ -85,6 +89,9 @@ export class RootStore {
     this.terraSignInteractionStore = new TerraSignInteractionStore(
       this.keplrInteractionStore
     );
+    this.walletConnectInteractionStore = new WalletConnectInteractionStore(
+      this.keplrInteractionStore
+    );
 
     this.languageStore = new LanguageStore({
       deviceLanguage,
@@ -101,6 +108,11 @@ export class RootStore {
         multisig: new KVStore("multisig-store"),
         singlesig: new KVStore("singlesig-store"),
       },
+    });
+
+    this.walletConnectStore = new WalletConnectStore({
+      kvStore: new KVStore("wallet-connect-store"),
+      walletsStore: this.walletsStore,
     });
 
     router.listen(APP_PORT);

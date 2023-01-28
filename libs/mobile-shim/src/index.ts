@@ -1,3 +1,4 @@
+// import "node-libs-react-native/globals";
 import "fastestsmallesttextencoderdecoder";
 import "react-native-url-polyfill/auto";
 import { randomBytes as getRandomBytes } from "crypto";

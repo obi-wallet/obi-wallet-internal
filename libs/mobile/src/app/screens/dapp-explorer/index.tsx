@@ -1,6 +1,5 @@
 import { useTheme } from "@emotion/react";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
-import { height } from "@fortawesome/free-solid-svg-icons/faPaperPlane";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons/faPaperclip";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {

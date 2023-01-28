@@ -54,7 +54,6 @@ import { useMultisigWallet, useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
-import { RefreshControl } from "../../components/refresh-control";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";
 import {
   isSmallScreen,

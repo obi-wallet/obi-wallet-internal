@@ -35,13 +35,22 @@ import { SplashScreen } from "./screens/splash";
 import { WebViewScreen } from "./screens/web-view";
 import { useStore } from "./stores";
 
-export interface BaseAppProps {
+export type BaseAppProps = {
   initialConfig: Config;
   providerProps?: Omit<ProviderProps, "children" | "config">;
-}
+};
 
 export function BaseApp({ initialConfig, providerProps }: BaseAppProps) {
+  return (
+    <Provider {...providerProps} config={initialConfig}>
+      <BaseAppWithoutProvider />
+    </Provider>
+  );
+}
+
+export function BaseAppWithoutProvider() {
   const [updating, setUpdating] = useState(false);
+  const { walletConnectStore } = useStore();
   const appState = useRef(AppState.currentState);
   const lastUpdate = useRef(0);
 
@@ -49,51 +58,55 @@ export function BaseApp({ initialConfig, providerProps }: BaseAppProps) {
     const listener = AppState.addEventListener(
       "change",
       async (nextAppState) => {
+        const previousAppState = appState.current;
+        appState.current = nextAppState;
+
         if (
-          appState.current.match(/inactive|background|unknown/) &&
+          previousAppState.match(/inactive|background|unknown/) &&
           nextAppState === "active"
         ) {
-          const timeSinceLastUpdate = new Date().getTime() - lastUpdate.current;
-          if (timeSinceLastUpdate > 5 * 1000 && !__DEV__) {
-            if (await codePush.checkForUpdate(deploymentKey)) {
-              try {
-                await setUpdating(true);
-                await codePush.sync({
-                  deploymentKey,
-                  installMode: codePush.InstallMode.IMMEDIATE,
-                });
-              } catch (e) {
-                console.error(e);
-                await setUpdating(false);
+          await Promise.all([
+            walletConnectStore.recoverConnectors(),
+            (async () => {
+              const timeSinceLastUpdate =
+                new Date().getTime() - lastUpdate.current;
+              if (timeSinceLastUpdate > 5 * 1000 && !__DEV__) {
+                if (await codePush.checkForUpdate(deploymentKey)) {
+                  try {
+                    await setUpdating(true);
+                    await codePush.sync({
+                      deploymentKey,
+                      installMode: codePush.InstallMode.IMMEDIATE,
+                    });
+                  } catch (e) {
+                    console.error(e);
+                    await setUpdating(false);
+                  }
+                }
               }
-            }
-          }
 
-          lastUpdate.current = new Date().getTime();
+              lastUpdate.current = new Date().getTime();
+            })(),
+          ]);
         }
-
-        appState.current = nextAppState;
       }
     );
     return () => {
       listener.remove();
     };
-  }, []);
+  }, [walletConnectStore]);
+
+  if (updating) return <Load />;
 
   return (
-    <Provider {...providerProps} config={initialConfig}>
-      {updating ? (
-        <Load />
-      ) : (
-        <>
-          <DemoModeHeader />
-          <StateRenderer />
-          <Modals />
-        </>
-      )}
-    </Provider>
+    <>
+      <DemoModeHeader />
+      <StateRenderer />
+      <Modals />
+    </>
   );
 }
+
 const Load = observer(() => {
   const theme = useTheme();
   return (

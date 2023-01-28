@@ -19,8 +19,9 @@ module.exports = (async () => {
       resolver: {
         assetExts: assetExts.filter((ext) => ext !== "svg"),
         sourceExts: [...sourceExts, "svg"],
-        resolverMainFields: ["sbmodern", "browser", "main"],
+        // resolverMainFields: ["react-native", "sbmodern", "browser", "main"],
         extraNodeModules: {
+          // ...require("node-libs-react-native"),
           buffer: require.resolve("buffer/"),
           crypto: require.resolve("react-native-crypto"),
           fs: require.resolve("react-native-level-fs"),
