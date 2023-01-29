@@ -10,7 +10,7 @@ const kvStore = new KVStore("react-cosmos");
 
 enum Config {
   ObiMobile = "obi-mobile",
-  LoopMobileDev = "loop-mobile-dev",
+  LoopMobile = "loop-mobile",
 }
 
 export default observer(function CosmosDecorator({
@@ -43,7 +43,7 @@ export default observer(function CosmosDecorator({
     switch (config) {
       case Config.ObiMobile:
         return obiMobileConfig;
-      case Config.LoopMobileDev:
+      case Config.LoopMobile:
         return loopMobileDevConfig;
     }
   }
