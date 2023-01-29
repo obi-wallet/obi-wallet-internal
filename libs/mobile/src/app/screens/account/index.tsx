@@ -332,7 +332,7 @@ export const AccountScreenInner = observer(function AccountScreenInner() {
         enablePanDownToClose={true}
         ref={bottomSheetRef}
         index={-1}
-        backdropComponent={(props) => null}
+        backdropComponent={() => null}
         onClose={() => setSelectedMenu("")}
       >
         <BottomSheetView

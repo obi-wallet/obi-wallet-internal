@@ -30,7 +30,7 @@ export type WelcomeProps = NativeStackScreenProps<
   OnboardingRoute.Welcome
 >;
 
-export const Welcome = observer<WelcomeProps>(({ navigation }) => {
+export const Welcome = observer<WelcomeProps>(function Welcome({ navigation }) {
   const { configStore, walletsStore } = useStore();
   const isObi = configStore.isObi();
   const wallet = walletsStore.currentWallet;

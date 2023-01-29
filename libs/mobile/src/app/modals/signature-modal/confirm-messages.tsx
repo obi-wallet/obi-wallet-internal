@@ -43,7 +43,7 @@ export interface ConfirmMessagesProps extends ModalProps {
 }
 
 export const ConfirmMessages = observer<ConfirmMessagesProps>(
-  ({
+  function ConfirmMessages({
     loading,
     disabled,
     cancelable = true,
@@ -54,7 +54,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
     children,
     isOnboarding,
     ...props
-  }) => {
+  }) {
     const intl = useIntl();
     const safeArea = useSafeAreaInsets();
     const [selectedTab, setSelectedTab] = useState(Tab.TransactionDetails);
@@ -292,7 +292,7 @@ interface MessageViewProps {
   isObi?: boolean;
 }
 
-function MessageView({ messages, isObi = false }: MessageViewProps) {
+function MessageView({ messages }: MessageViewProps) {
   if (messages.length === 0) return null;
 
   return (

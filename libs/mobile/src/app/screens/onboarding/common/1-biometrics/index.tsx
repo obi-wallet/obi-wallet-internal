@@ -34,7 +34,7 @@ export type MultisigBiometricsProps = NativeStackScreenProps<
 >;
 
 export const MultisigBiometrics = observer<MultisigBiometricsProps>(
-  ({ navigation }) => {
+  function MultisigBiometrics({ navigation }) {
     const wallet = useMultisigWallet();
     const isObi = useStore().configStore.isObi();
 

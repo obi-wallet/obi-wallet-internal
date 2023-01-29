@@ -8,7 +8,7 @@ import { SignInteractionModal } from "./sign-interaction-modal";
 import { TerraSignInteractionModal } from "./terra-sign-interaction-modal";
 import { useStore } from "../stores";
 
-export const Modals = observer(() => {
+export const Modals = observer(function Modals() {
   const { configStore } = useStore();
 
   return (

@@ -8,7 +8,7 @@ import { useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { isSmallScreenNumber } from "../../components/screen-size";
 
-export const Seedphrase = observer(() => {
+export const Seedphrase = observer(function Seedphrase() {
   const { currentWallet } = useStore().walletsStore;
 
   if (!isCosmosSinglesigWallet(currentWallet)) return null;

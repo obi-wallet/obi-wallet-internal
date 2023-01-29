@@ -11,7 +11,9 @@ export interface BrandModeToggleProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export const BrandToggle = observer<BrandModeToggleProps>((props) => {
+export const BrandToggle = observer<BrandModeToggleProps>(function BrandToggle(
+  props
+) {
   const [pressed, setPressed] = useState(0);
   const { configStore } = useStore();
 

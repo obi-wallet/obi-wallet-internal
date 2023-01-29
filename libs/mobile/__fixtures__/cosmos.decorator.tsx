@@ -12,7 +12,7 @@ enum Config {
   LoopMobileDev = "loop-mobile-dev",
 }
 
-export default ({ children }: { children: ReactNode }) => {
+export default function CosmosDecorator({ children }: { children: ReactNode }) {
   const [config, setConfig] = useSelect<Config>("config", {
     options: Object.values(Config),
   });
@@ -20,7 +20,9 @@ export default ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     (async () => {
       const config = await kvStore.get<Config>("config");
-      if (config) setConfig(config);
+      if (config) {
+        setConfig(config);
+      }
     })();
   }, [setConfig]);
 
@@ -40,4 +42,4 @@ export default ({ children }: { children: ReactNode }) => {
         return loopMobileDevConfig;
     }
   }
-};
+}

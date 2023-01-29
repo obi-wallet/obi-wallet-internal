@@ -1,6 +1,6 @@
 import { AccountPickerModal } from "../../src";
 
-export default () => {
+export default function AccountPicker() {
   return (
     <AccountPickerModal
       visible={true}
@@ -9,7 +9,7 @@ export default () => {
       close={noop}
     />
   );
-};
+}
 
 function noop() {
   // noop

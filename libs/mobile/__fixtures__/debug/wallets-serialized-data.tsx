@@ -4,7 +4,7 @@ import { ScrollView } from "react-native";
 
 import { useStore } from "../../src";
 
-export default () => {
+export default function WalletsSerializedData() {
   const { walletsStore } = useStore();
   const [serializedData, setSerializedData] = useState("");
 
@@ -20,4 +20,4 @@ export default () => {
       <Text style={{ color: "#ffffff" }}>{serializedData}</Text>
     </ScrollView>
   );
-};
+}

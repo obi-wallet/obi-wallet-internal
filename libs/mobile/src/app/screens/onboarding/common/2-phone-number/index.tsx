@@ -29,7 +29,7 @@ export type MultisigPhoneNumberProps = NativeStackScreenProps<
 >;
 
 export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
-  ({ navigation }) => {
+  function MultisigPhoneNumber({ navigation }) {
     const wallet = useMultisigWallet();
     const intl = useIntl();
     const { configStore, chainStore } = useStore();

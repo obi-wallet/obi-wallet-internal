@@ -3,8 +3,7 @@ import { Button, View } from "react-native";
 
 import { InAppPurchaseInteractionModal } from "../src";
 
-// eslint-disable-next-line import/no-default-export
-export default () => {
+export default function InAppPurchaseInteractionModalFixture() {
   return (
     <>
       <View style={{ paddingTop: 50 }}>
@@ -26,4 +25,4 @@ export default () => {
       <InAppPurchaseInteractionModal />
     </>
   );
-};
+}

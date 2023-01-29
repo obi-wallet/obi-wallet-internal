@@ -9,7 +9,9 @@ export interface InitialBackgroundProps {
   children?: ReactNode;
 }
 
-export const InitialBackground = observer((props: InitialBackgroundProps) => {
+export const InitialBackground = observer(function InitialBackground(
+  props: InitialBackgroundProps
+) {
   const { configStore } = useStore();
   const theme = useTheme();
   const styles = {

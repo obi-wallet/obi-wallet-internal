@@ -8,35 +8,39 @@ import {
 } from "./signature-modal";
 import { useStore } from "../stores";
 
-export const TerraSignInteractionModal = observer(() => {
-  const { terraSignInteractionStore } = useStore();
-
-  const data = terraSignInteractionStore.waitingData?.data;
-
-  if (!data) return null;
-
-  return <InteractionModalInner data={data} />;
-});
-
-const InteractionModalInner = observer(
-  ({ data }: { data: RequestObiTerraSignAndBroadcastPayload }) => {
+export const TerraSignInteractionModal = observer(
+  function TerraSignInteractionModal() {
     const { terraSignInteractionStore } = useStore();
 
-    const { signatureModalProps } = useTerraSignatureModalProps({
-      data,
-      async onConfirm(response: BlockTxBroadcastResult): Promise<void> {
-        await terraSignInteractionStore.approveAndWaitEnd(response);
-      },
-    });
+    const data = terraSignInteractionStore.waitingData?.data;
 
-    return (
-      <TerraSignatureModal
-        {...signatureModalProps}
-        visible
-        onCancel={() => {
-          terraSignInteractionStore.rejectAll();
-        }}
-      />
-    );
+    if (!data) return null;
+
+    return <InteractionModalInner data={data} />;
   }
 );
+
+const InteractionModalInner = observer(function InteractionModalInner({
+  data,
+}: {
+  data: RequestObiTerraSignAndBroadcastPayload;
+}) {
+  const { terraSignInteractionStore } = useStore();
+
+  const { signatureModalProps } = useTerraSignatureModalProps({
+    data,
+    async onConfirm(response: BlockTxBroadcastResult): Promise<void> {
+      await terraSignInteractionStore.approveAndWaitEnd(response);
+    },
+  });
+
+  return (
+    <TerraSignatureModal
+      {...signatureModalProps}
+      visible
+      onCancel={() => {
+        terraSignInteractionStore.rejectAll();
+      }}
+    />
+  );
+});

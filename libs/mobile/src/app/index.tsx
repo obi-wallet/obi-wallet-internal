@@ -94,7 +94,7 @@ export function BaseApp({ initialConfig, providerProps }: BaseAppProps) {
     </Provider>
   );
 }
-const Load = observer(() => {
+const Load = observer(function Load() {
   const theme = useTheme();
   return (
     <Loader
@@ -122,7 +122,7 @@ const Load = observer(() => {
   );
 });
 
-export const DemoModeHeader = observer(() => {
+export const DemoModeHeader = observer(function DemoModeHeader() {
   const { walletsStore } = useStore();
 
   if (!isMultisigDemoWallet(walletsStore.currentWallet)) return null;

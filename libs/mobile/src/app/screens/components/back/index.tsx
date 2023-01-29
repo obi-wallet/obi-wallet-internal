@@ -12,7 +12,7 @@ export interface BackProps {
   style?: ViewStyle;
 }
 
-export const Back = observer(({ style }: BackProps) => {
+export const Back = observer(function Back({ style }: BackProps) {
   const { goBack } = useNavigation();
   const { configStore } = useStore();
   const isObi = configStore.isObi();

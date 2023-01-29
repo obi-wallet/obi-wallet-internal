@@ -54,7 +54,6 @@ import { useMultisigWallet, useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
-import { RefreshControl } from "../../components/refresh-control";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";
 import {
   isSmallScreen,
@@ -106,7 +105,7 @@ const StakeStateContext = createContext<{
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 }>(null!);
 
-export const Stake = observer(() => {
+export const Stake = observer(function Stake() {
   const theme = useTheme();
   const SafeArea = useSafeAreaInsets();
 
@@ -148,7 +147,7 @@ export const Stake = observer(() => {
   return children;
 });
 
-const StakingOptions = observer(() => {
+const StakingOptions = observer(function StakingOptions() {
   const { chainStore } = useStore();
   const delegations = useDelegations();
   const unbondingDelegations = useUnbondingDelegations();
@@ -282,7 +281,7 @@ function TabPill({
   );
 }
 
-const Balance = observer(() => {
+const Balance = observer(function Balance() {
   const { configStore } = useStore();
   const rewards = useRewards();
   const wallet = useMultisigWallet();

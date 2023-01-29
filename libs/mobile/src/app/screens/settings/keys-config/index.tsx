@@ -30,7 +30,7 @@ import {
 } from "../../components/keys-list";
 import { isSmallScreenNumber } from "../../components/screen-size";
 
-export const KeysConfigScreen = observer(() => {
+export const KeysConfigScreen = observer(function KeysConfigScreen() {
   const { walletsStore, configStore } = useStore();
   const wallet = walletsStore.currentWallet;
   const currentAdmin = isAnyMultisigWallet(wallet) ? wallet.currentAdmin : null;

@@ -22,7 +22,7 @@ const routes = [
   ...Object.values(HomeBottomTabRoute),
 ];
 
-export default () => {
+export default function Screens() {
   const navigation = useRootNavigation();
   const [route] = useSelect("route", {
     options: routes,
@@ -39,7 +39,7 @@ export default () => {
       <Modals />
     </>
   );
-};
+}
 
 function getRouteParams(route: Route) {
   switch (route) {

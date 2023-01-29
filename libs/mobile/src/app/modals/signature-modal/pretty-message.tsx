@@ -80,7 +80,7 @@ function PrettyMessageUnsafe({ message }: PrettyMessageProps) {
 }
 const PrettyMessageStaking = observer<
   (MsgDelegate.Amino | MsgUndelegate.Amino) & { label: string }
->(({ value, label }) => {
+>(function PrettyMessageStaking({ value, label }) {
   const validators = useValidators();
   const validator = validators.data?.find(
     (val) => val.address === value.validator_address
@@ -97,68 +97,72 @@ const PrettyMessageStaking = observer<
 });
 
 const PrettyMessageWithdrawDelegatorReward =
-  observer<MsgWithdrawDelegatorReward.Amino>(({ value }) => {
-    const validators = useValidators();
-    const rewards = useRewards();
-    const validator = validators.data?.find(
-      (validator) => validator.address === value.validator_address
-    );
-    const reward = rewards.data?.perDelegator.find(
-      (delegator) => delegator.address === value.validator_address
-    );
+  observer<MsgWithdrawDelegatorReward.Amino>(
+    function PrettyMessageWithdrawDelegatorReward({ value }) {
+      const validators = useValidators();
+      const rewards = useRewards();
+      const validator = validators.data?.find(
+        (validator) => validator.address === value.validator_address
+      );
+      const reward = rewards.data?.perDelegator.find(
+        (delegator) => delegator.address === value.validator_address
+      );
 
-    return (
-      <MessageElement
-        icon={<ArrowUpIcon />}
-        title="Withdrawing staking rewards from:"
-        coins={reward?.rewards ? [reward.rewards] : undefined}
-      >
-        <Text style={{ color: "white" }}>
-          {validator?.label ||
-            Bech32Address.shortenAddress(value.validator_address, 35)}
-        </Text>
-      </MessageElement>
-    );
-  });
-
-const PrettyMessageSend = observer(
-  ({ value }: AminoMsgSend | MsgSend.Amino) => {
-    const { configStore } = useStore();
-    const isObi = configStore.isObi();
-
-    return (
-      <MessageElement
-        icon={<FontAwesomeIcon icon={faPaperPlane} size={33} color="white" />}
-        title={isObi ? "To:" : "Send"}
-        coins={[...value.amount]}
-      >
-        {isObi ? (
+      return (
+        <MessageElement
+          icon={<ArrowUpIcon />}
+          title="Withdrawing staking rewards from:"
+          coins={reward?.rewards ? [reward.rewards] : undefined}
+        >
           <Text style={{ color: "white" }}>
-            {Bech32Address.shortenAddress(value.to_address, 35)}
+            {validator?.label ||
+              Bech32Address.shortenAddress(value.validator_address, 35)}
           </Text>
-        ) : (
-          <>
-            <Text style={{ color: "white" }}>
-              {Bech32Address.shortenAddress(value.to_address, 20)}
-              <Text style={{ opacity: 0.6 }}> will receive:</Text>
-            </Text>
-            {value.amount.map((coin) => {
-              const { amount, denom } = formatCoin(coin);
-              return (
-                <Text style={{ color: "white" }} key={denom}>
-                  {amount} {denom}
-                </Text>
-              );
-            })}
-          </>
-        )}
-      </MessageElement>
-    );
-  }
-);
+        </MessageElement>
+      );
+    }
+  );
+
+const PrettyMessageSend = observer(function PrettyMessageSend({
+  value,
+}: AminoMsgSend | MsgSend.Amino) {
+  const { configStore } = useStore();
+  const isObi = configStore.isObi();
+
+  return (
+    <MessageElement
+      icon={<FontAwesomeIcon icon={faPaperPlane} size={33} color="white" />}
+      title={isObi ? "To:" : "Send"}
+      coins={[...value.amount]}
+    >
+      {isObi ? (
+        <Text style={{ color: "white" }}>
+          {Bech32Address.shortenAddress(value.to_address, 35)}
+        </Text>
+      ) : (
+        <>
+          <Text style={{ color: "white" }}>
+            {Bech32Address.shortenAddress(value.to_address, 20)}
+            <Text style={{ opacity: 0.6 }}> will receive:</Text>
+          </Text>
+          {value.amount.map((coin) => {
+            const { amount, denom } = formatCoin(coin);
+            return (
+              <Text style={{ color: "white" }} key={denom}>
+                {amount} {denom}
+              </Text>
+            );
+          })}
+        </>
+      )}
+    </MessageElement>
+  );
+});
 
 const PrettyMessageInstantiateContract = observer(
-  ({ value }: AminoMsgInstantiateContract | MsgInstantiateContract.Amino) => {
+  function PrettyMessageInstantiateContract({
+    value,
+  }: AminoMsgInstantiateContract | MsgInstantiateContract.Amino) {
     const { chainStore } = useStore();
     const intl = useIntl();
 
@@ -191,7 +195,9 @@ const PrettyMessageInstantiateContract = observer(
 );
 
 const PrettyMessageExecuteContract = observer(
-  ({ value }: AminoMsgExecuteContract | MsgExecuteContract.Amino) => {
+  function PrettyMessageExecuteContract({
+    value,
+  }: AminoMsgExecuteContract | MsgExecuteContract.Amino) {
     const intl = useIntl();
     const message = getMessage();
     const funds = getFunds();
@@ -353,83 +359,87 @@ interface MessageElementProps {
   coins?: PrettyCoinsProps["coins"];
 }
 
-const MessageElement = observer<MessageElementProps>(
-  ({ icon, title, subTitle, children, coins }) => {
-    const { configStore } = useStore();
-    const isLoop = configStore.isLoop();
+const MessageElement = observer<MessageElementProps>(function MessageElement({
+  icon,
+  title,
+  subTitle,
+  children,
+  coins,
+}) {
+  const { configStore } = useStore();
+  const isLoop = configStore.isLoop();
 
-    return isLoop ? (
+  return isLoop ? (
+    <View
+      style={{
+        minHeight: 50,
+        flexDirection: "row",
+        borderBottomColor: "rgba(255,255,255, 0.6)",
+        borderBottomWidth: 1,
+        paddingVertical: 15,
+        paddingHorizontal: 10,
+      }}
+    >
+      <View style={{ justifyContent: "flex-start", alignItems: "center" }}>
+        {icon}
+      </View>
+      <View
+        style={{ flex: 1, justifyContent: "space-around", paddingLeft: 10 }}
+      >
+        <Text
+          style={{
+            color: "white",
+            fontWeight: "600",
+            fontSize: 16,
+            marginBottom: 10,
+          }}
+        >
+          {title ? title : ""}
+        </Text>
+        {subTitle ? (
+          <Text style={{ color: "white", opacity: 0.6 }}>{subTitle}</Text>
+        ) : null}
+        {children}
+      </View>
+    </View>
+  ) : (
+    <View>
       <View
         style={{
-          minHeight: 50,
-          flexDirection: "row",
-          borderBottomColor: "rgba(255,255,255, 0.6)",
-          borderBottomWidth: 1,
-          paddingVertical: 15,
-          paddingHorizontal: 10,
+          alignItems: "center",
+          paddingVertical: 20,
+          borderColor: "#2C2C2C",
+          borderTopWidth: 1,
         }}
       >
-        <View style={{ justifyContent: "flex-start", alignItems: "center" }}>
-          {icon}
-        </View>
-        <View
-          style={{ flex: 1, justifyContent: "space-around", paddingLeft: 10 }}
-        >
-          <Text
-            style={{
-              color: "white",
-              fontWeight: "600",
-              fontSize: 16,
-              marginBottom: 10,
-            }}
-          >
-            {title ? title : ""}
-          </Text>
-          {subTitle ? (
-            <Text style={{ color: "white", opacity: 0.6 }}>{subTitle}</Text>
-          ) : null}
-          {children}
-        </View>
+        <PrettyCoins coins={coins} />
       </View>
-    ) : (
-      <View>
-        <View
-          style={{
-            alignItems: "center",
-            paddingVertical: 20,
-            borderColor: "#2C2C2C",
-            borderTopWidth: 1,
-          }}
-        >
-          <PrettyCoins coins={coins} />
-        </View>
-        <View
-          style={{
-            alignItems: "center",
-            borderColor: "#2C2C2C",
-            borderTopWidth: 1,
-            borderBottomWidth: 1,
-            paddingVertical: 20,
-          }}
-        >
-          <Text style={{ color: "white", opacity: 0.6 }}>
-            {title ? title : ""}
-          </Text>
-          {subTitle ? (
-            <Text style={{ opacity: 0.6, color: "white" }}>{subTitle}</Text>
-          ) : null}
-          {children}
-        </View>
+      <View
+        style={{
+          alignItems: "center",
+          borderColor: "#2C2C2C",
+          borderTopWidth: 1,
+          borderBottomWidth: 1,
+          paddingVertical: 20,
+        }}
+      >
+        <Text style={{ color: "white", opacity: 0.6 }}>
+          {title ? title : ""}
+        </Text>
+        {subTitle ? (
+          <Text style={{ opacity: 0.6, color: "white" }}>{subTitle}</Text>
+        ) : null}
+        {children}
       </View>
-    );
-  }
-);
+    </View>
+  );
+});
 
 interface PrettyCoinsProps {
   coins?: TerraCoin[] | readonly AminoCoin[];
 }
 
-const PrettyCoins = observer<PrettyCoinsProps>(({ coins }) => {
+const PrettyCoins = observer<PrettyCoinsProps>(function PrettyCoins({ coins }) {
   const { chainStore } = useStore();
   const denom = chainStore.currentChainInformation.denom;
   const coinsArray =

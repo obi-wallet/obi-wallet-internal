@@ -8,7 +8,7 @@ import {
 } from "./signature-modal";
 import { useStore } from "../stores";
 
-export const SignInteractionModal = observer(() => {
+export const SignInteractionModal = observer(function SignInteractionModal() {
   const { signInteractionStore } = useStore();
 
   const data = signInteractionStore.waitingData?.data;
@@ -18,25 +18,27 @@ export const SignInteractionModal = observer(() => {
   return <InteractionModalInner data={data} />;
 });
 
-const InteractionModalInner = observer(
-  ({ data }: { data: RequestObiCosmosSignAndBroadcastPayload }) => {
-    const { signInteractionStore } = useStore();
+const InteractionModalInner = observer(function InteractionModalInner({
+  data,
+}: {
+  data: RequestObiCosmosSignAndBroadcastPayload;
+}) {
+  const { signInteractionStore } = useStore();
 
-    const { signatureModalProps } = useSignatureModalProps({
-      data,
-      async onConfirm(response: DeliverTxResponse): Promise<void> {
-        await signInteractionStore.approveAndWaitEnd(response);
-      },
-    });
+  const { signatureModalProps } = useSignatureModalProps({
+    data,
+    async onConfirm(response: DeliverTxResponse): Promise<void> {
+      await signInteractionStore.approveAndWaitEnd(response);
+    },
+  });
 
-    return (
-      <CosmosSignatureModal
-        {...signatureModalProps}
-        visible
-        onCancel={() => {
-          signInteractionStore.rejectAll();
-        }}
-      />
-    );
-  }
-);
+  return (
+    <CosmosSignatureModal
+      {...signatureModalProps}
+      visible
+      onCancel={() => {
+        signInteractionStore.rejectAll();
+      }}
+    />
+  );
+});

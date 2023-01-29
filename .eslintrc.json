@@ -1,11 +1,20 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
-  "plugins": ["@nrwl/nx", "mobx", "import", "react", "unicorn"],
+  "plugins": ["@nrwl/nx", "mobx", "import", "react", "react-hooks", "unicorn"],
+  "settings": {
+    "react": {
+      "componentWrapperFunctions": ["observer"]
+    }
+  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "extends": ["plugin:mobx/recommended"],
+      "extends": [
+        "plugin:mobx/recommended",
+        "plugin:react/recommended",
+        "plugin:react/jsx-runtime"
+      ],
       "rules": {
         "@nrwl/nx/enforce-module-boundaries": [
           "error",
@@ -37,6 +46,7 @@
         ],
 
         "mobx/missing-observer": "off",
+        "mobx/no-anonymous-observer": "error",
 
         "react/function-component-definition": [
           "error",

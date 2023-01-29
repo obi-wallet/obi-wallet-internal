@@ -35,7 +35,7 @@ import {
 } from "../../components/screen-size";
 import StakingIcon from "../assets/stakingIcon.svg";
 
-export const Assets = observer(() => {
+export const Assets = observer(function Assets() {
   const theme = useTheme();
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
@@ -61,7 +61,7 @@ export const Assets = observer(() => {
   );
 });
 
-const BalanceAndActions = observer(() => {
+const BalanceAndActions = observer(function BalanceAndActions() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
@@ -193,7 +193,7 @@ const BalanceAndActions = observer(() => {
   );
 });
 
-const AssetsList = observer(() => {
+const AssetsList = observer(function AssetsList() {
   const [sortAscending, setSortAscending] = useState(true);
   const balances = useBalances(sortAscending);
   const { configStore } = useStore();

@@ -37,7 +37,7 @@ export type RecoverMultisigProps = NativeStackScreenProps<
 >;
 
 export const RecoverMultisig = observer<RecoverMultisigProps>(
-  ({ navigation }) => {
+  function RecoverMultisig({ navigation }) {
     const { chainStore } = useStore();
     const wallet = useMultisigWallet();
 

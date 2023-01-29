@@ -25,7 +25,7 @@ export type WebViewScreenProps = NativeStackScreenProps<
 >;
 
 export const WebViewScreen = observer<WebViewScreenProps>(
-  ({ navigation, route }) => {
+  function WebViewScreen({ navigation, route }) {
     const { app } = route.params;
     const [currentUrl, setCurrentUrl] = useState(app.url);
     const [loading, setLoading] = useState(false);
@@ -149,7 +149,10 @@ export const WebViewScreen = observer<WebViewScreenProps>(
   }
 );
 
-const FavButton = observer<{ title: string; url: string }>(({ title, url }) => {
+const FavButton = observer<{ title: string; url: string }>(function FavButton({
+  title,
+  url,
+}) {
   const { appsStore, configStore } = useStore();
   const isLoop = configStore.isLoop();
   const isFavorite = appsStore.hasFavorite(url);

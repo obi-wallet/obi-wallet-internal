@@ -1,4 +1,5 @@
 import { Config, RootStore } from "@obi-wallet/common";
+import { useEffect } from "react";
 import { NativeModules, Platform } from "react-native";
 import invariant from "tiny-invariant";
 
@@ -15,10 +16,12 @@ export function getRootStore(): RootStore {
   return rootStore.current;
 }
 
-export function createRootStore({ config }: { config: Config }): RootStore {
-  if (rootStore.current) {
-    rootStore.current.configStore.setConfig(config);
-  } else {
+export function useCreateRootStore({ config }: { config: Config }): RootStore {
+  useEffect(() => {
+    rootStore.current?.configStore.setConfig(config);
+  }, [config]);
+
+  if (!rootStore.current) {
     rootStore.current = new RootStore({
       deviceLanguage: deviceLanguage.slice(0, 2),
       initialConfig: config,

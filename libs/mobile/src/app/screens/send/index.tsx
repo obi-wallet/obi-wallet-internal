@@ -49,7 +49,9 @@ export type SendScreenProps = NativeStackScreenProps<
   RootRoute.Send
 >;
 
-export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
+export const SendScreen = observer<SendScreenProps>(function SendScreen({
+  navigation,
+}) {
   const balances = useBalances();
   const [selectedCoin, setSelectedCoin] = useState<ExtendedCoin | undefined>(
     () => {

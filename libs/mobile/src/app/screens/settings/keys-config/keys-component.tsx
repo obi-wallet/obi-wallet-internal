@@ -11,7 +11,9 @@ import Svg, {
 
 import { useStore } from "../../../stores";
 
-export const KeysComponent = observer((props: SvgProps & { keys: number }) => {
+export const KeysComponent = observer(function KeysComponent(
+  props: SvgProps & { keys: number }
+) {
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
   const { keys } = props;

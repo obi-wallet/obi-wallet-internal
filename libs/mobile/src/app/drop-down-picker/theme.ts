@@ -1,8 +1,8 @@
 import { StyleSheet } from "react-native";
-// @ts-expect-error
+// @ts-expect-error react-native-dropdown-picker/src has no types
 import Colors from "react-native-dropdown-picker/src/constants/colors";
 
-// @ts-expect-error
+// @ts-expect-error react-native-dropdown-picker/src has no types
 export { ICONS } from "react-native-dropdown-picker/src/themes/dark";
 
 // eslint-disable-next-line import/no-default-export

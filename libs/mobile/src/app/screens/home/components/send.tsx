@@ -4,7 +4,9 @@ import Svg, { SvgProps, Path } from "react-native-svg";
 
 import { useStore } from "../../../stores";
 
-export const SendIcon = observer((props: SvgProps & { color?: string }) => {
+export const SendIcon = observer(function SendIcon(
+  props: SvgProps & { color?: string }
+) {
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
   const getColor = () => {
