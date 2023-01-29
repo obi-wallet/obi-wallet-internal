@@ -1,11 +1,21 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
-  "plugins": ["@nrwl/nx", "mobx", "import", "react", "unicorn"],
+  "plugins": ["@nrwl/nx", "mobx", "import", "react", "react-hooks", "unicorn"],
+  "settings": {
+    "react": {
+      "componentWrapperFunctions": ["observer"]
+    }
+  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "extends": ["plugin:mobx/recommended"],
+      "extends": [
+        "plugin:mobx/recommended",
+        "plugin:react/recommended",
+        "plugin:react/jsx-runtime",
+        "plugin:react-hooks/recommended"
+      ],
       "rules": {
         "@nrwl/nx/enforce-module-boundaries": [
           "error",
@@ -22,6 +32,23 @@
         ],
 
         "import/no-default-export": "error",
+        "import/no-extraneous-dependencies": [
+          "error",
+          {
+            "devDependencies": [
+              "{apps,libs}/*/{__fixtures__,__tests__,__tests-integration__,scripts}/**/*",
+              "apps/*/metro.config.js",
+              "jest*.[jt]s"
+            ],
+            "optionalDependencies": false
+          }
+        ],
+        "import/no-useless-path-segments": [
+          "error",
+          {
+            "noUselessIndex": true
+          }
+        ],
         "import/order": [
           "error",
           {
@@ -36,7 +63,8 @@
           }
         ],
 
-        "mobx/missing-observer": "off",
+        "mobx/missing-observer": "error",
+        "mobx/no-anonymous-observer": "error",
 
         "react/function-component-definition": [
           "error",

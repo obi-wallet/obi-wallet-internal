@@ -1,4 +1,5 @@
 import { Text, TextInput as OriginalTextInput } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import { ComponentType } from "react";
 import {
   StyleProp,
@@ -35,7 +36,7 @@ const getStyles = (isObi: boolean) =>
     },
   });
 
-export function TextInput({
+export const TextInput = observer(function TextInput({
   label,
   style,
   inputStyle,
@@ -60,4 +61,4 @@ export function TextInput({
       />
     </View>
   );
-}
+});

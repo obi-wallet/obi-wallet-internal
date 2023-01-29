@@ -6,7 +6,7 @@ import { useRootNavigation } from "../../../root-stack";
 import { useMultisigWallet } from "../../../stores";
 import { OnboardingRoute } from "../onboarding-stack";
 
-export const LookupProxyWallets = observer(() => {
+export const LookupProxyWallets = observer(function LookupProxyWallets() {
   const wallet = useMultisigWallet();
   const { navigate } = useRootNavigation();
   const publicKey = wallet.nextAdmin.phoneNumber?.publicKey;

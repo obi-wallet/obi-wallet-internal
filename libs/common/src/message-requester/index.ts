@@ -20,7 +20,7 @@ export class MessageRequester implements AbstractMessageRequester {
     msg: M
   ): Promise<M extends Message<infer R> ? R : never> {
     msg.validateBasic();
-    // @ts-expect-error
+    // @ts-expect-error overriding read-only property.
     msg["origin"] = this.sender.origin;
 
     if (this.eventEmitter.listenerCount("message") === 0) {

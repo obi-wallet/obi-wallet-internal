@@ -18,7 +18,7 @@ import Cloud from "./assets/cloud-icon.svg";
 import Email from "./assets/email-icon.svg";
 import Ledger from "./assets/ledger-icon.svg";
 import MapPoint from "./assets/map-point-icon.svg";
-import NFC from "./assets/nfc-icon.svg";
+import Nfc from "./assets/nfc-icon.svg";
 import PhoneNumber from "./assets/phone-number-icon.svg";
 import Warning from "./assets/warning-icon.svg";
 import {
@@ -43,7 +43,7 @@ export const keyMetaData: Record<MultisigKey, KeyMetaData> = {
   phoneNumber: { Icon: PhoneNumber },
   email: { Icon: Email },
   social: { Icon: () => <People width={24} height={24} /> },
-  nfc: { Icon: () => <NFC width={24} height={24} /> },
+  nfc: { Icon: () => <Nfc width={24} height={24} /> },
   telegram: { Icon: () => <SendIcon color="#fff" width={24} height={24} /> },
   map: { Icon: () => <MapPoint width={24} height={24} /> },
   ledger: { Icon: () => <Ledger width={24} height={24} /> },
@@ -89,7 +89,7 @@ const comingSoonKeys: HydratedKeyListItem[] = [
     description: "Coming Soon",
     right: <View />,
     onPress: () => null,
-    Icon: () => <NFC width={20} height={20} />,
+    Icon: () => <Nfc width={20} height={20} />,
   },
   {
     id: "telegram",
@@ -117,7 +117,11 @@ const comingSoonKeys: HydratedKeyListItem[] = [
   },
 ];
 
-export const KeysList = observer(({ data, style, tiled }: KeysListProps) => {
+export const KeysList = observer(function KeysList({
+  data,
+  style,
+  tiled,
+}: KeysListProps) {
   const hydratedData = data.map((key) => {
     return {
       ...key,
@@ -142,7 +146,10 @@ export interface KeyListItemProps {
   tiled?: boolean;
 }
 
-export const KeyListItem = observer(({ item, tiled }: KeyListItemProps) => {
+export const KeyListItem = observer(function KeyListItem({
+  item,
+  tiled,
+}: KeyListItemProps) {
   const { title, description, Icon, right, onPress, signed } = item;
   const { configStore } = useStore();
   const isObi = configStore.isObi();

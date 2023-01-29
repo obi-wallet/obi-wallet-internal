@@ -4,4 +4,6 @@ libs/mobile/src/app/injected-provider/bundle.ts
 # Built app
 apps/*/android
 apps/*/ios
-apps/*/cosmos.userdeps.js
+
+# React Cosmos
+cosmos.userdeps.js

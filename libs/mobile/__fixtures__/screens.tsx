@@ -1,4 +1,5 @@
 import { CommonActions } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { useSelect } from "react-cosmos/fixture";
 
@@ -22,7 +23,7 @@ const routes = [
   ...Object.values(HomeBottomTabRoute),
 ];
 
-export default () => {
+export default observer(function Screens() {
   const navigation = useRootNavigation();
   const [route] = useSelect("route", {
     options: routes,
@@ -39,7 +40,7 @@ export default () => {
       <Modals />
     </>
   );
-};
+});
 
 function getRouteParams(route: Route) {
   switch (route) {

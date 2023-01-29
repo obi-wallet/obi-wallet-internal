@@ -1,4 +1,5 @@
 import { BlurView } from "@react-native-community/blur";
+import { observer } from "mobx-react-lite";
 import React from "react";
 import {
   Platform,
@@ -14,7 +15,7 @@ interface BottomSheetBackdropProps {
   visible: boolean;
 }
 
-export function BottomSheetBackdrop({
+export const BottomSheetBackdrop = observer(function BottomSheetBackdrop({
   style,
   onPress,
   visible,
@@ -44,4 +45,4 @@ export function BottomSheetBackdrop({
       ) : null}
     </TouchableOpacity>
   );
-}
+});

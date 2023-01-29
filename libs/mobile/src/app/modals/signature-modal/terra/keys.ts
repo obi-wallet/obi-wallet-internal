@@ -68,7 +68,7 @@ export class PhoneNumberConfirmKey extends Key {
     this.wallet = wallet;
   }
 
-  async sign(payload: Buffer): Promise<Buffer> {
+  async sign(): Promise<Buffer> {
     const demoMode = isMultisigDemoWallet(this.wallet);
     const response = await parseSignatureTextMessageResponse({
       key: this.key,

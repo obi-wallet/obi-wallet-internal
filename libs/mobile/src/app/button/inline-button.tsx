@@ -1,4 +1,5 @@
 import { Text } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import {
   Platform,
   StyleSheet,
@@ -35,7 +36,10 @@ export interface InlineButtonProps
   label: string;
 }
 
-export function InlineButton({ label, ...props }: InlineButtonProps) {
+export const InlineButton = observer(function InlineButton({
+  label,
+  ...props
+}: InlineButtonProps) {
   const { configStore } = useStore();
   const isObi = configStore.isObi();
   const baseStyles = getBaseStyles(isObi);
@@ -56,4 +60,4 @@ export function InlineButton({ label, ...props }: InlineButtonProps) {
       </TouchableNativeFeedback>
     );
   }
-}
+});

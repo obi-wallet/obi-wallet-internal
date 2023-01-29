@@ -37,7 +37,7 @@ export type ReplaceMultisigProps = NativeStackScreenProps<
 >;
 
 export const ReplaceMultisig = observer<ReplaceMultisigProps>(
-  ({ navigation }) => {
+  function ReplaceMultisig({ navigation }) {
     const { chainStore } = useStore();
     const wallet = useMultisigWallet();
 

@@ -32,7 +32,7 @@ export function useAccountPickerModalProps() {
 }
 
 export const AccountPickerModal = observer<AccountPickerModalProps>(
-  ({ visible, open, close, showNotReadyWallets }) => {
+  function AccountPickerModal({ visible, close, showNotReadyWallets }) {
     const { walletsStore, configStore } = useStore();
     const isObi = configStore.isObi();
     const theme = useTheme();

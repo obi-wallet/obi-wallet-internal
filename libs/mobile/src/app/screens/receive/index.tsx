@@ -9,7 +9,7 @@ import { useStore } from "../../stores";
 import { Back } from "../components/back";
 import { isSmallScreenNumber } from "../components/screen-size";
 
-export const ReceiveScreen = observer(() => {
+export const ReceiveScreen = observer(function ReceiveScreen() {
   const { walletsStore, configStore } = useStore();
   const isLoop = configStore.isLoop();
   const theme = useTheme();

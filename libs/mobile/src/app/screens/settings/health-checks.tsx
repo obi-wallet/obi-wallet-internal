@@ -27,7 +27,7 @@ import { useCosmosMultisigWallet, useStore } from "../../stores";
 import { Back } from "../components/back";
 import WarningIcon from "../components/keys-list/assets/warning-icon.svg";
 
-export const HealthChecksScreen = observer(() => {
+export const HealthChecksScreen = observer(function HealthChecksScreen() {
   const intl = useIntl();
   const { walletsStore } = useStore();
   const wallet = useCosmosMultisigWallet();
@@ -66,7 +66,7 @@ export const HealthChecksScreen = observer(() => {
           defaultMessage="The admin of your wallet is not correct."
         />
       ),
-      getOnPress: (wallet: CosmosMultisigWallet) => {
+      getOnPress: () => {
         return async () => {
           Alert.alert(
             intl.formatMessage({
@@ -128,7 +128,7 @@ export const HealthChecksScreen = observer(() => {
 
             const value: MsgMigrateContract = {
               sender: multisig.multisig.address,
-              // @ts-expect-error
+              // @ts-expect-error should be passed as a string
               codeId: Long.fromInt(1311).toString(),
               contract: wallet.proxyAddress.address,
               msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
 });
 
 // TODO: extract common component (keys-list, account-picker-modal)
-function ListItem({
+const ListItem = observer(function ListItem({
   item,
 }: {
   item: {
@@ -286,4 +286,4 @@ function ListItem({
       </View>
     </TouchableOpacity>
   );
-}
+});

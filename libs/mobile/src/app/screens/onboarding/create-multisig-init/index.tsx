@@ -33,7 +33,9 @@ export type MultisigInitProps = NativeStackScreenProps<
   OnboardingRoute.CreateMultisigInit
 >;
 
-export const MultisigInit = observer<MultisigInitProps>(({ navigation }) => {
+export const MultisigInit = observer<MultisigInitProps>(function MultisigInit({
+  navigation,
+}) {
   const { chainStore } = useStore();
   const wallet = useMultisigWallet();
 
@@ -114,7 +116,7 @@ async function handleCosmos({
   const value: MsgInstantiateContract = {
     sender: multisig.multisig.address,
     admin: multisig.multisig.address,
-    // @ts-expect-error
+    // @ts-expect-error should be passed as a string
     codeId: Long.fromInt(
       currentCosmosChainInformation.currentCodeId
     ).toString(),

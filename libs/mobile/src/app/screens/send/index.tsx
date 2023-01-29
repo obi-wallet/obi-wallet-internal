@@ -49,7 +49,9 @@ export type SendScreenProps = NativeStackScreenProps<
   RootRoute.Send
 >;
 
-export const SendScreen = observer<SendScreenProps>(({ navigation }) => {
+export const SendScreen = observer<SendScreenProps>(function SendScreen({
+  navigation,
+}) {
   const balances = useBalances();
   const [selectedCoin, setSelectedCoin] = useState<ExtendedCoin | undefined>(
     () => {
@@ -613,7 +615,11 @@ const getBrandBackground = (brand: Brand) => {
   }
 };
 
-function CoinRenderer({ item, selected, onPress }: CoinRendererProps) {
+const CoinRenderer = observer(function CoinRenderer({
+  item,
+  selected,
+  onPress,
+}: CoinRendererProps) {
   const { denom, label, amount, valueInUsd, icon } = formatExtendedCoin(item);
   const { configStore } = useStore();
   const brandColors = getBrandBackground(configStore.brand);
@@ -672,7 +678,7 @@ function CoinRenderer({ item, selected, onPress }: CoinRendererProps) {
       </View>
     </TouchableOpacity>
   );
-}
+});
 
 interface DrinkOrBottleModalProps {
   visible?: boolean;
@@ -680,7 +686,7 @@ interface DrinkOrBottleModalProps {
   flavor: "bottle" | "drink";
 }
 
-function DrinkOrBottleModal({
+const DrinkOrBottleModal = observer(function DrinkOrBottleModal({
   visible,
   onDismiss,
   flavor,
@@ -764,14 +770,17 @@ function DrinkOrBottleModal({
       </View>
     </Modal>
   );
-}
+});
 
 interface SuccessModalProps {
   visible?: boolean;
   onDismiss: () => void;
 }
 
-function SuccessModal({ visible, onDismiss }: SuccessModalProps) {
+const SuccessModal = observer(function SuccessModal({
+  visible,
+  onDismiss,
+}: SuccessModalProps) {
   const theme = useTheme();
   return (
     <Modal isVisible={visible}>
@@ -806,14 +815,17 @@ function SuccessModal({ visible, onDismiss }: SuccessModalProps) {
       </View>
     </Modal>
   );
-}
+});
 
 interface FailureModalProps {
   visible?: boolean;
   onDismiss: () => void;
 }
 
-function FailureModal({ visible, onDismiss }: FailureModalProps) {
+const FailureModal = observer(function FailureModal({
+  visible,
+  onDismiss,
+}: FailureModalProps) {
   const theme = useTheme();
   return (
     <Modal isVisible={visible}>
@@ -848,4 +860,4 @@ function FailureModal({ visible, onDismiss }: FailureModalProps) {
       </View>
     </Modal>
   );
-}
+});

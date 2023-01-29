@@ -9,13 +9,14 @@ import {
   MsgSend,
   MsgUndelegate,
 } from "@terra-money/terra.js";
+import { observer } from "mobx-react-lite";
 import { ScrollView } from "react-native-gesture-handler";
 
 import { PrettyMessage } from "../src";
 
 const { getNewAccountMessage } = terra;
 
-export default () => {
+export default observer(function PrettyMessages() {
   const address = "terra18aw4eedj4v3253dvj9h5ucx9uedl9ggaayktq4";
   const messageSend = new MsgSend(address, address, { uluna: 1000000 });
   const messageDelegate = new MsgDelegate(
@@ -64,4 +65,4 @@ export default () => {
       <PrettyMessage message={initMessage.toAmino()} />
     </ScrollView>
   );
-};
+});

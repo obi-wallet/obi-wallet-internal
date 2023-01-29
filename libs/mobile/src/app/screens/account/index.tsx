@@ -18,7 +18,7 @@ import { Background } from "../components/background";
 import { BottomSheetBackdrop } from "../components/bottomSheetBackdrop";
 import { NetworkAccountPickerLayout } from "../components/network-account-picker-layout";
 
-export function AccountScreen() {
+export const AccountScreen = observer(function AccountScreen() {
   return (
     <>
       <Background />
@@ -27,7 +27,7 @@ export function AccountScreen() {
       </NetworkAccountPickerLayout>
     </>
   );
-}
+});
 
 export const AccountScreenInner = observer(function AccountScreenInner() {
   const safeArea = useSafeAreaInsets();
@@ -332,7 +332,7 @@ export const AccountScreenInner = observer(function AccountScreenInner() {
         enablePanDownToClose={true}
         ref={bottomSheetRef}
         index={-1}
-        backdropComponent={(props) => null}
+        backdropComponent={() => null}
         onClose={() => setSelectedMenu("")}
       >
         <BottomSheetView
@@ -373,7 +373,7 @@ interface OptionProps {
   onPress: () => void;
 }
 
-function Option({ item, onPress }: OptionProps) {
+const Option = observer(function Option({ item, onPress }: OptionProps) {
   return (
     <TouchableOpacity
       style={{ height: 60, justifyContent: "center", alignItems: "center" }}
@@ -395,4 +395,4 @@ function Option({ item, onPress }: OptionProps) {
       </>
     </TouchableOpacity>
   );
-}
+});

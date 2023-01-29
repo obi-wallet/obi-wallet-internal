@@ -2,9 +2,10 @@ import { loopMobileConfig } from "@obi-wallet/config";
 import { BaseApp } from "@obi-wallet/mobile";
 import analytics from "@react-native-firebase/analytics";
 import { NavigationContainerRef } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
 import { useRef } from "react";
 
-export function App() {
+export const App = observer(function App() {
   const routeName = useRef<string>();
   const navigation =
     useRef<NavigationContainerRef<ReactNavigation.RootParamList>>(null);
@@ -35,4 +36,4 @@ export function App() {
       }}
     />
   );
-}
+});

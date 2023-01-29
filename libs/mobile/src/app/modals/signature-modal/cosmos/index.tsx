@@ -88,7 +88,7 @@ export interface CosmosSignatureModalProps
 }
 
 export const CosmosSignatureModal = observer<CosmosSignatureModalProps>(
-  (props) => {
+  function CosmosSignatureModal(props) {
     if (!props.wallet.type) return null;
 
     switch (props.wallet.type) {
@@ -103,48 +103,43 @@ export const CosmosSignatureModal = observer<CosmosSignatureModalProps>(
 );
 
 export const CosmosSignatureModalSinglesig =
-  observer<CosmosSignatureModalProps>(
-    ({
-      messages,
-      rawMessages,
-      multisig,
-      onCancel,
-      onConfirm,
-      isOnboarding,
-      ...props
-    }) => {
-      const [loading, setLoading] = useState(false);
-      const intl = useIntl();
+  observer<CosmosSignatureModalProps>(function CosmosSignatureModalSinglesig({
+    onCancel,
+    onConfirm,
+    isOnboarding,
+    ...props
+  }) {
+    const [loading, setLoading] = useState(false);
+    const intl = useIntl();
 
-      return (
-        <ConfirmMessages
-          {...props}
-          isOnboarding={isOnboarding}
-          loading={loading}
-          messages={props.innerMessages}
-          onCancel={onCancel}
-          onConfirm={async () => {
-            try {
-              setLoading(true);
-              await onConfirm(new Map());
-              setLoading(false);
-            } catch (e) {
-              const error = e as Error;
-              setLoading(false);
-              console.error(error);
-              Alert.alert(
-                intl.formatMessage({
-                  id: "signature.error.confirmingtx",
-                  defaultMessage: "Error Confirming Transaction",
-                }),
-                error.message
-              );
-            }
-          }}
-        />
-      );
-    }
-  );
+    return (
+      <ConfirmMessages
+        {...props}
+        isOnboarding={isOnboarding}
+        loading={loading}
+        messages={props.innerMessages}
+        onCancel={onCancel}
+        onConfirm={async () => {
+          try {
+            setLoading(true);
+            await onConfirm(new Map());
+            setLoading(false);
+          } catch (e) {
+            const error = e as Error;
+            setLoading(false);
+            console.error(error);
+            Alert.alert(
+              intl.formatMessage({
+                id: "signature.error.confirmingtx",
+                defaultMessage: "Error Confirming Transaction",
+              }),
+              error.message
+            );
+          }
+        }}
+      />
+    );
+  });
 
 export const CosmosSignatureModalMultisig = observer<
   CosmosSignatureModalProps & { multisig?: CosmosMultisig | null }

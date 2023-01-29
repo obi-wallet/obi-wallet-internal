@@ -59,6 +59,8 @@ import invariant from "tiny-invariant";
 
 import { getRootStore } from "./root-store";
 
+// Since this is basically forked code, we disable various eslint rules for this class.
+/* eslint-disable @typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment */
 class KeyRingService extends AbstractKeyRingService {
   protected interactionService!: InteractionService;
 
@@ -461,6 +463,7 @@ class KeyRingService extends AbstractKeyRingService {
     throw new Error("Method not implemented.");
   }
 }
+/* eslint-enable @typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment */
 
 export function initBackground() {
   let keyRingService: KeyRingService;

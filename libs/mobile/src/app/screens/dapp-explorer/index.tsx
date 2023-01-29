@@ -1,6 +1,5 @@
 import { useTheme } from "@emotion/react";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
-import { height } from "@fortawesome/free-solid-svg-icons/faPaperPlane";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons/faPaperclip";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
@@ -41,7 +40,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const DappExplorer = observer(() => {
+export const DappExplorer = observer(function DappExplorer() {
   const rootStore = useStore();
   const navigation = useRootNavigation();
   const safeArea = useSafeAreaInsets();
@@ -190,7 +189,7 @@ export const DappExplorer = observer(() => {
                 >
                   <FontAwesomeIcon
                     icon={faPaperclip}
-                    // @ts-expect-error
+                    // @ts-expect-error web platform is not correctly handled by FontAwesomeIcon's types
                     size={Platform.OS === "web" ? "1x" : 24}
                     style={{ color: "#393853", marginRight: 6 }}
                   />
@@ -310,7 +309,7 @@ export const DappExplorer = observer(() => {
               ) : (
                 <FontAwesomeIcon
                   icon={faChevronRight}
-                  // @ts-expect-error
+                  // @ts-expect-error web platform is not correctly handled by FontAwesomeIcon's types
                   size={Platform.OS === "web" ? "1x" : 24}
                   color="#fff"
                 />

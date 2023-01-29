@@ -25,7 +25,7 @@ export type WebViewScreenProps = NativeStackScreenProps<
 >;
 
 export const WebViewScreen = observer<WebViewScreenProps>(
-  ({ navigation, route }) => {
+  function WebViewScreen({ navigation, route }) {
     const { app } = route.params;
     const [currentUrl, setCurrentUrl] = useState(app.url);
     const [loading, setLoading] = useState(false);
@@ -149,7 +149,10 @@ export const WebViewScreen = observer<WebViewScreenProps>(
   }
 );
 
-const FavButton = observer<{ title: string; url: string }>(({ title, url }) => {
+const FavButton = observer<{ title: string; url: string }>(function FavButton({
+  title,
+  url,
+}) {
   const { appsStore, configStore } = useStore();
   const isLoop = configStore.isLoop();
   const isFavorite = appsStore.hasFavorite(url);
@@ -210,7 +213,11 @@ const FavButton = observer<{ title: string; url: string }>(({ title, url }) => {
   );
 });
 
-export function RefreshButton({ onPress }: { onPress: () => void }) {
+export const RefreshButton = observer(function RefreshButton({
+  onPress,
+}: {
+  onPress: () => void;
+}) {
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
   return (
@@ -225,9 +232,13 @@ export function RefreshButton({ onPress }: { onPress: () => void }) {
       label="Refresh"
     />
   );
-}
+});
 
-export function ShareButton({ url }: { url: string }) {
+export const ShareButton = observer(function ShareButton({
+  url,
+}: {
+  url: string;
+}) {
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
   const onShare = async () => {
@@ -262,9 +273,9 @@ export function ShareButton({ url }: { url: string }) {
       label="Share"
     />
   );
-}
+});
 
-export function SheetButton({
+export const SheetButton = observer(function SheetButton({
   onPress,
   IconComponent,
   label,
@@ -295,4 +306,4 @@ export function SheetButton({
       </Text>
     </View>
   );
-}
+});

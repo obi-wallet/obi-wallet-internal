@@ -4,7 +4,7 @@ import Svg, { SvgProps, Path } from "react-native-svg";
 
 import { useStore } from "../../../stores";
 
-export const ReceiveIcon = observer((props: SvgProps) => {
+export const ReceiveIcon = observer(function ReceiveIcon(props: SvgProps) {
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
   return (

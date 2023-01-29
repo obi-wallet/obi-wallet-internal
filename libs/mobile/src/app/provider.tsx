@@ -6,20 +6,14 @@ import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persi
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { observer } from "mobx-react-lite";
-import {
-  ComponentProps,
-  ReactNode,
-  StrictMode,
-  useEffect,
-  useMemo,
-} from "react";
+import { ComponentProps, ReactNode, StrictMode, useEffect } from "react";
 import { IntlProvider } from "react-intl";
 import { StatusBar } from "react-native";
 import { endConnection, initConnection } from "react-native-iap";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { StoreContext } from "./stores";
-import { createRootStore } from "../background/root-store";
+import { useCreateRootStore } from "../background/root-store";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,77 +36,77 @@ export interface ProviderProps {
   >;
 }
 
-export const Provider = observer<ProviderProps>(
-  ({ children, config, navigationContainerProps }) => {
-    const rootStore = useMemo(() => {
-      return createRootStore({ config });
-    }, [config]);
-    const { languageStore, configStore } = rootStore;
-    const { currentLanguage } = languageStore;
+export const Provider = observer<ProviderProps>(function Provider({
+  children,
+  config,
+  navigationContainerProps,
+}) {
+  const rootStore = useCreateRootStore({ config });
+  const { languageStore, configStore } = rootStore;
+  const { currentLanguage } = languageStore;
 
-    useEffect(() => {
-      if (!configStore.isFeatureEnabled(Feature.InAppPurchases)) return;
-      void initConnection();
-      return () => {
-        void endConnection();
-      };
-    }, [configStore]);
+  useEffect(() => {
+    if (!configStore.isFeatureEnabled(Feature.InAppPurchases)) return;
+    void initConnection();
+    return () => {
+      void endConnection();
+    };
+  }, [configStore]);
 
-    return (
-      <StrictMode>
-        <PersistQueryClientProvider
-          client={queryClient}
-          persistOptions={{ persister }}
-        >
-          <StoreContext.Provider value={rootStore}>
-            <IntlProvider
-              defaultLocale="en"
-              locale={currentLanguage}
-              messages={messages[currentLanguage]}
-              formats={{
-                date: {
-                  en: {
-                    month: "short",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    hour12: false,
-                    minute: "2-digit",
-                    timeZoneName: "short",
-                  },
-                  de: {
-                    month: "short",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    hour12: false,
-                    minute: "2-digit",
-                    timeZoneName: "short",
-                  },
-                  es: {
-                    month: "short",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    hour12: false,
-                    minute: "2-digit",
-                    timeZoneName: "short",
-                  },
+  return (
+    <StrictMode>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister }}
+      >
+        <StoreContext.Provider value={rootStore}>
+          <IntlProvider
+            defaultLocale="en"
+            locale={currentLanguage}
+            messages={messages[currentLanguage]}
+            formats={{
+              date: {
+                en: {
+                  month: "short",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  hour12: false,
+                  minute: "2-digit",
+                  timeZoneName: "short",
                 },
-              }}
-            >
-              <SafeAreaProvider>
-                <NavigationContainer {...navigationContainerProps}>
-                  <ThemeProvider theme={getTheme(configStore.brand)}>
-                    <StatusBar barStyle="light-content" />
-                    {children}
-                  </ThemeProvider>
-                </NavigationContainer>
-              </SafeAreaProvider>
-            </IntlProvider>
-          </StoreContext.Provider>
-        </PersistQueryClientProvider>
-      </StrictMode>
-    );
-  }
-);
+                de: {
+                  month: "short",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  hour12: false,
+                  minute: "2-digit",
+                  timeZoneName: "short",
+                },
+                es: {
+                  month: "short",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  hour12: false,
+                  minute: "2-digit",
+                  timeZoneName: "short",
+                },
+              },
+            }}
+          >
+            <SafeAreaProvider>
+              <NavigationContainer {...navigationContainerProps}>
+                <ThemeProvider theme={getTheme(configStore.brand)}>
+                  <StatusBar barStyle="light-content" />
+                  {children}
+                </ThemeProvider>
+              </NavigationContainer>
+            </SafeAreaProvider>
+          </IntlProvider>
+        </StoreContext.Provider>
+      </PersistQueryClientProvider>
+    </StrictMode>
+  );
+});
 
 export function getTheme(brand: Brand): Theme {
   switch (brand) {

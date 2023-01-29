@@ -12,55 +12,58 @@ interface LoaderProps {
   animationStyles?: StyleProp<ViewStyle>;
 }
 
-export const Loader = observer(
-  ({ loadingText, style, animation, animationStyles }: LoaderProps) => {
-    const { configStore } = useStore();
-    const isLoop = configStore.isLoop();
-    const getAnimation = () => {
-      if (isLoop) return <ActivityIndicator size="large" color="#8877EA" />;
-      if (animation) {
-        return (
-          <LottieView
-            source={animation}
-            autoPlay
-            loop
-            style={[
-              { maxHeight: 60, maxWidth: 60, width: "100%" },
-              animationStyles,
-            ]}
-          />
-        );
-      }
+export const Loader = observer(function Loader({
+  loadingText,
+  style,
+  animation,
+  animationStyles,
+}: LoaderProps) {
+  const { configStore } = useStore();
+  const isLoop = configStore.isLoop();
+  const getAnimation = () => {
+    if (isLoop) return <ActivityIndicator size="large" color="#8877EA" />;
+    if (animation) {
       return (
         <LottieView
-          source={require("./obi-spinner.json")}
+          source={animation}
           autoPlay
           loop
-          style={{ maxHeight: 60, maxWidth: 60, width: "100%" }}
+          style={[
+            { maxHeight: 60, maxWidth: 60, width: "100%" },
+            animationStyles,
+          ]}
         />
       );
-    };
+    }
     return (
-      <View style={[style]}>
-        {getAnimation()}
-        {loadingText ? (
-          <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-            <Text
-              style={{
-                color: "#F6F5FF",
-                paddingTop: 15,
-                fontSize: 11,
-                letterSpacing: 0.25,
-              }}
-            >
-              {loadingText}
-            </Text>
-            <View style={{ height: 11, width: 20 }}>
-              <LottieView source={require("./ellipses.json")} autoPlay loop />
-            </View>
-          </View>
-        ) : null}
-      </View>
+      <LottieView
+        source={require("./obi-spinner.json")}
+        autoPlay
+        loop
+        style={{ maxHeight: 60, maxWidth: 60, width: "100%" }}
+      />
     );
-  }
-);
+  };
+  return (
+    <View style={[style]}>
+      {getAnimation()}
+      {loadingText ? (
+        <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+          <Text
+            style={{
+              color: "#F6F5FF",
+              paddingTop: 15,
+              fontSize: 11,
+              letterSpacing: 0.25,
+            }}
+          >
+            {loadingText}
+          </Text>
+          <View style={{ height: 11, width: 20 }}>
+            <LottieView source={require("./ellipses.json")} autoPlay loop />
+          </View>
+        </View>
+      ) : null}
+    </View>
+  );
+});

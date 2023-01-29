@@ -3,13 +3,7 @@ import { Brand, Feature, isAnyMultisigWallet } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { FC, useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import {
-  Linking,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Linking, StyleSheet, Text, View } from "react-native";
 import codePush, { LocalPackage } from "react-native-code-push";
 import { ScrollView } from "react-native-gesture-handler";
 import { SvgProps } from "react-native-svg";
@@ -28,14 +22,13 @@ import { ObiLogo } from "../components/obi-logo";
 import { BrandToggle } from "../components/obi-mode-toggle";
 import { isSmallScreenNumber } from "../components/screen-size";
 
-export const SettingsScreen = observer(() => {
+export const SettingsScreen = observer(function SettingsScreen() {
   const { configStore, walletsStore } = useStore();
   const isObi = configStore.isObi();
   const isLoop = configStore.isLoop();
   const intl = useIntl();
   const navigation = useRootNavigation();
   const [appMetadata, setAppMetadata] = useState<LocalPackage | null>(null);
-  const [timesPressed, setTimesPressed] = useState<number>(0);
 
   useEffect(() => {
     void (async () => {
@@ -292,7 +285,12 @@ interface SettingProps {
   onPress?: () => void;
 }
 
-function Setting({ Icon, title, subtitle, onPress }: SettingProps) {
+const Setting = observer(function Setting({
+  Icon,
+  title,
+  subtitle,
+  onPress,
+}: SettingProps) {
   const { configStore } = useStore();
   const brand = configStore.brand;
   const isLoop = configStore.isLoop();
@@ -314,7 +312,7 @@ function Setting({ Icon, title, subtitle, onPress }: SettingProps) {
       </TilesContainer>
     </SettingButton>
   );
-}
+});
 
 const Container = styled.SafeAreaView(
   {

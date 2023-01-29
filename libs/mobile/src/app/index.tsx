@@ -40,7 +40,10 @@ export interface BaseAppProps {
   providerProps?: Omit<ProviderProps, "children" | "config">;
 }
 
-export function BaseApp({ initialConfig, providerProps }: BaseAppProps) {
+export const BaseApp = observer(function BaseApp({
+  initialConfig,
+  providerProps,
+}: BaseAppProps) {
   const [updating, setUpdating] = useState(false);
   const appState = useRef(AppState.currentState);
   const lastUpdate = useRef(0);
@@ -93,8 +96,8 @@ export function BaseApp({ initialConfig, providerProps }: BaseAppProps) {
       )}
     </Provider>
   );
-}
-const Load = observer(() => {
+});
+const Load = observer(function Load() {
   const theme = useTheme();
   return (
     <Loader
@@ -122,7 +125,7 @@ const Load = observer(() => {
   );
 });
 
-export const DemoModeHeader = observer(() => {
+export const DemoModeHeader = observer(function DemoModeHeader() {
   const { walletsStore } = useStore();
 
   if (!isMultisigDemoWallet(walletsStore.currentWallet)) return null;

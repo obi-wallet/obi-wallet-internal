@@ -13,7 +13,11 @@ export interface AddressQrCodeScannerModalProps extends ModalProps {
 }
 
 export const AddressQrCodeScannerModal = observer(
-  ({ onClose, onScan, ...props }: AddressQrCodeScannerModalProps) => {
+  function AddressQrCodeScannerModal({
+    onClose,
+    onScan,
+    ...props
+  }: AddressQrCodeScannerModalProps) {
     const safeArea = useSafeAreaInsets();
     const { chainStore } = useStore();
     const { prefix } = chainStore.currentCosmosChainInformation;

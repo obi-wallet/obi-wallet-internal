@@ -40,7 +40,7 @@ const allLanguages = [
   },
 ];
 
-export const LanguagePicker = observer(() => {
+export const LanguagePicker = observer(function LanguagePicker() {
   const languageStore = useStore().languageStore;
   const { currentLanguage, enabledLanguages } = languageStore;
   const { configStore } = useStore();

@@ -25,7 +25,11 @@ export interface PhoneNumberBottomSheetContentProps {
 
 export const PhoneNumberBottomSheetContent =
   observer<PhoneNumberBottomSheetContentProps>(
-    ({ securityQuestion, onRequest, onConfirm }) => {
+    function PhoneNumberBottomSheetContent({
+      securityQuestion,
+      onRequest,
+      onConfirm,
+    }) {
       const intl = useIntl();
       const { securityAnswer, setSecurityAnswer } = useSecurityQuestionInput();
       const { configStore } = useStore();

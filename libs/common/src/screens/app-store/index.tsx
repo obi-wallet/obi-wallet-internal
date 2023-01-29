@@ -28,14 +28,14 @@ export interface AppStoreProps {
 }
 
 export const AppStore: FunctionComponent<AppStoreProps> = observer(
-  ({ appsStore, onAfterAppAdded }) => {
+  function AppStore({ appsStore, onAfterAppAdded }) {
     const [url, setUrl] = useState("");
 
     function setUrlWithProtocol(url: string) {
       setUrl(`https://${url}`);
     }
 
-    // @ts-ignore Some type issues with rooks
+    // @ts-expect-error Some type issues with rooks
     const setUrlDebounce = useDebounce(setUrlWithProtocol, 500);
 
     const [title, setTitle] = useState("");

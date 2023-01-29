@@ -54,7 +54,6 @@ import { useMultisigWallet, useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
-import { RefreshControl } from "../../components/refresh-control";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";
 import {
   isSmallScreen,
@@ -106,7 +105,7 @@ const StakeStateContext = createContext<{
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 }>(null!);
 
-export const Stake = observer(() => {
+export const Stake = observer(function Stake() {
   const theme = useTheme();
   const SafeArea = useSafeAreaInsets();
 
@@ -148,7 +147,7 @@ export const Stake = observer(() => {
   return children;
 });
 
-const StakingOptions = observer(() => {
+const StakingOptions = observer(function StakingOptions() {
   const { chainStore } = useStore();
   const delegations = useDelegations();
   const unbondingDelegations = useUnbondingDelegations();
@@ -247,7 +246,7 @@ const StakingOptions = observer(() => {
   }
 });
 
-function TabPill({
+const TabPill = observer(function TabPill({
   style,
   onPress,
   active,
@@ -280,9 +279,9 @@ function TabPill({
       <Text style={{ fontSize: 15, color: "white" }}>{content}</Text>
     </TouchableOpacity>
   );
-}
+});
 
-const Balance = observer(() => {
+const Balance = observer(function Balance() {
   const { configStore } = useStore();
   const rewards = useRewards();
   const wallet = useMultisigWallet();
@@ -385,7 +384,7 @@ const Balance = observer(() => {
   );
 });
 
-function Validators() {
+const Validators = observer(function Validators() {
   const delegations = useDelegations();
   const wallet = useMultisigWallet();
 
@@ -520,7 +519,7 @@ function Validators() {
       )}
     </View>
   );
-}
+});
 
 const Container = styled.View({
   backgroundColor: "#272727",
@@ -529,7 +528,7 @@ const Container = styled.View({
   padding: 10,
 });
 
-function ValidatorItem({
+const ValidatorItem = observer(function ValidatorItem({
   validator,
   onPress,
   active = false,
@@ -687,9 +686,9 @@ function ValidatorItem({
       )}
     </Container>
   );
-}
+});
 
-function MyStake() {
+const MyStake = observer(function MyStake() {
   const delegations = useDelegations();
   const unbondingDelegations = useUnbondingDelegations();
   const wallet = useMultisigWallet();
@@ -778,9 +777,13 @@ function MyStake() {
       )}
     </View>
   );
-}
+});
 
-function StakeItem({ delegation }: { delegation: Delegation }) {
+const StakeItem = observer(function StakeItem({
+  delegation,
+}: {
+  delegation: Delegation;
+}) {
   const formatted = formatCoin(delegation.balance);
   const { dispatch } = useContext(StakeStateContext);
 
@@ -832,9 +835,9 @@ function StakeItem({ delegation }: { delegation: Delegation }) {
       </View>
     </View>
   );
-}
+});
 
-function Unstaking() {
+const Unstaking = observer(function Unstaking() {
   const unbondingDelegations = useUnbondingDelegations();
 
   return (
@@ -870,9 +873,9 @@ function Unstaking() {
       />
     </View>
   );
-}
+});
 
-function UnstakeItem({
+const UnstakeItem = observer(function UnstakeItem({
   unbondingDelegation,
 }: {
   unbondingDelegation: UnbondingDelegation;
@@ -909,4 +912,4 @@ function UnstakeItem({
       </View>
     </View>
   );
-}
+});

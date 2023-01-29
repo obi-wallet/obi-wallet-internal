@@ -11,6 +11,7 @@ import {
   TerraProxyWallet,
   Text,
 } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Linking, ScrollView, TouchableOpacity, View } from "react-native";
@@ -27,7 +28,7 @@ export interface LookupProps {
   onCancel(): void;
 }
 
-export function Lookup({
+export const Lookup = observer(function Lookup({
   chainId,
   publicKey,
   onSelect,
@@ -244,4 +245,4 @@ export function Lookup({
       </View>
     </SafeAreaView>
   );
-}
+});

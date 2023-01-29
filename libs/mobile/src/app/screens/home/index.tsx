@@ -69,168 +69,170 @@ const ActiveIconContainer = styled.View({
   borderRadius: 9,
   padding: 5,
 });
-export const TabNavigation = observer<TabNavigationProps>(() => {
-  const intl = useIntl();
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
-  const isObi = configStore.isObi();
+export const TabNavigation = observer<TabNavigationProps>(
+  function TabNavigation() {
+    const intl = useIntl();
+    const { configStore } = useStore();
+    const isLoop = configStore.isLoop();
+    const isObi = configStore.isObi();
 
-  return (
-    <HomeBottomTab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused }) => {
-          const routeName = route.name as HomeBottomTabRoute;
-          switch (routeName) {
-            case HomeBottomTabRoute.Accounts:
-              return focused ? (
-                <ActiveIconContainer>
-                  <ObiAccountsActiveIcon width={28} height={28} />
-                </ActiveIconContainer>
-              ) : (
-                <ObiAccountsIcon width={32} height={32} />
-              );
-            case HomeBottomTabRoute.Assets:
-              if (isLoop)
-                return focused ? <AssetsIconActive /> : <AssetsIcon />;
-              return focused ? (
-                <ActiveIconContainer>
-                  <ObiAssetsActiveIcon width={28} height={28} />
-                </ActiveIconContainer>
-              ) : (
-                <ObiAssetsIcon width={32} height={32} />
-              );
-            case HomeBottomTabRoute.Apps:
-              if (isLoop) return focused ? <AppsIconActive /> : <AppsIcon />;
-              return focused ? (
-                <ActiveIconContainer>
-                  <ObiAppsIconActive width={28} height={28} />
-                </ActiveIconContainer>
-              ) : (
-                <ObiAppsIcon width={28} height={28} />
-              );
-            case HomeBottomTabRoute.Nfts:
-              return focused ? <NFTsIconActive /> : <NFTsIcon />;
-            case HomeBottomTabRoute.Trade:
-              return focused ? <TradeIconActive /> : <TradeIcon />;
-            case HomeBottomTabRoute.Settings:
-              if (isLoop)
-                return focused ? <SettingsIconActive /> : <SettingsIcon />;
-              return focused ? (
-                <ActiveIconContainer>
-                  <ObiSettingsActiveIcon width={28} height={28} />
-                </ActiveIconContainer>
-              ) : (
-                <ObiSettingsIcon width={28} height={28} />
-              );
-          }
-        },
-        tabBarStyle: {
-          backgroundColor: isLoop ? "#17162C" : "#437DFF",
-          borderTopColor: "#1E1D33",
-          borderTopWidth: 1,
-          paddingTop: 20,
-          paddingBottom: Platform.select({
-            ios: isSmallScreenNumber(
-              getScreenDimensions().SCREEN_HEIGHT <= 667 ? 10 : 25,
-              27
-            ),
-            android: 10,
-          }),
-          height: Platform.select({
-            ios: isSmallScreenNumber(
-              getScreenDimensions().SCREEN_HEIGHT <= 667 ? 65 : 82,
-              85
-            ),
-            android: 65,
-          }),
-        },
-        headerShown: false,
-        tabBarHideOnKeyboard: true,
-        tabBarActiveTintColor: isLoop ? "#F6F5FF" : "white",
-        tabBarInactiveTintColor: isLoop ? "#4D5070" : "white",
-        tabBarLabelStyle: {
-          fontFamily: isObi ? "poppins-light" : "Inter",
-          fontSize: isObi ? 8 : 10,
-          fontWeight: isObi ? "normal" : "500",
-          textTransform: isLoop ? "uppercase" : "none",
-          marginTop: 15,
-          letterSpacing: 0.6,
-        },
-        lazy: false,
-      })}
-      initialRouteName={HomeBottomTabRoute.Assets}
-    >
-      {configStore.isFeatureEnabled(Feature.AccountsTab) ? (
+    return (
+      <HomeBottomTab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused }) => {
+            const routeName = route.name as HomeBottomTabRoute;
+            switch (routeName) {
+              case HomeBottomTabRoute.Accounts:
+                return focused ? (
+                  <ActiveIconContainer>
+                    <ObiAccountsActiveIcon width={28} height={28} />
+                  </ActiveIconContainer>
+                ) : (
+                  <ObiAccountsIcon width={32} height={32} />
+                );
+              case HomeBottomTabRoute.Assets:
+                if (isLoop)
+                  return focused ? <AssetsIconActive /> : <AssetsIcon />;
+                return focused ? (
+                  <ActiveIconContainer>
+                    <ObiAssetsActiveIcon width={28} height={28} />
+                  </ActiveIconContainer>
+                ) : (
+                  <ObiAssetsIcon width={32} height={32} />
+                );
+              case HomeBottomTabRoute.Apps:
+                if (isLoop) return focused ? <AppsIconActive /> : <AppsIcon />;
+                return focused ? (
+                  <ActiveIconContainer>
+                    <ObiAppsIconActive width={28} height={28} />
+                  </ActiveIconContainer>
+                ) : (
+                  <ObiAppsIcon width={28} height={28} />
+                );
+              case HomeBottomTabRoute.Nfts:
+                return focused ? <NFTsIconActive /> : <NFTsIcon />;
+              case HomeBottomTabRoute.Trade:
+                return focused ? <TradeIconActive /> : <TradeIcon />;
+              case HomeBottomTabRoute.Settings:
+                if (isLoop)
+                  return focused ? <SettingsIconActive /> : <SettingsIcon />;
+                return focused ? (
+                  <ActiveIconContainer>
+                    <ObiSettingsActiveIcon width={28} height={28} />
+                  </ActiveIconContainer>
+                ) : (
+                  <ObiSettingsIcon width={28} height={28} />
+                );
+            }
+          },
+          tabBarStyle: {
+            backgroundColor: isLoop ? "#17162C" : "#437DFF",
+            borderTopColor: "#1E1D33",
+            borderTopWidth: 1,
+            paddingTop: 20,
+            paddingBottom: Platform.select({
+              ios: isSmallScreenNumber(
+                getScreenDimensions().SCREEN_HEIGHT <= 667 ? 10 : 25,
+                27
+              ),
+              android: 10,
+            }),
+            height: Platform.select({
+              ios: isSmallScreenNumber(
+                getScreenDimensions().SCREEN_HEIGHT <= 667 ? 65 : 82,
+                85
+              ),
+              android: 65,
+            }),
+          },
+          headerShown: false,
+          tabBarHideOnKeyboard: true,
+          tabBarActiveTintColor: isLoop ? "#F6F5FF" : "white",
+          tabBarInactiveTintColor: isLoop ? "#4D5070" : "white",
+          tabBarLabelStyle: {
+            fontFamily: isObi ? "poppins-light" : "Inter",
+            fontSize: isObi ? 8 : 10,
+            fontWeight: isObi ? "normal" : "500",
+            textTransform: isLoop ? "uppercase" : "none",
+            marginTop: 15,
+            letterSpacing: 0.6,
+          },
+          lazy: false,
+        })}
+        initialRouteName={HomeBottomTabRoute.Assets}
+      >
+        {configStore.isFeatureEnabled(Feature.AccountsTab) ? (
+          <HomeBottomTab.Screen
+            name={HomeBottomTabRoute.Accounts}
+            options={{
+              title: intl.formatMessage({
+                id: "menu.accounts",
+                defaultMessage: "Accounts",
+              }),
+            }}
+            component={AccountScreen}
+          />
+        ) : null}
         <HomeBottomTab.Screen
-          name={HomeBottomTabRoute.Accounts}
+          name={HomeBottomTabRoute.Assets}
           options={{
             title: intl.formatMessage({
-              id: "menu.accounts",
-              defaultMessage: "Accounts",
+              id: "menu.assets",
+              defaultMessage: "Assets",
             }),
           }}
-          component={AccountScreen}
+          component={Assets}
         />
-      ) : null}
-      <HomeBottomTab.Screen
-        name={HomeBottomTabRoute.Assets}
-        options={{
-          title: intl.formatMessage({
-            id: "menu.assets",
-            defaultMessage: "Assets",
-          }),
-        }}
-        component={Assets}
-      />
-      {configStore.isFeatureEnabled(Feature.NftTab) ? (
+        {configStore.isFeatureEnabled(Feature.NftTab) ? (
+          <HomeBottomTab.Screen
+            name={HomeBottomTabRoute.Nfts}
+            options={{
+              title: intl.formatMessage({
+                id: "menu.nfts",
+                defaultMessage: "NFTs",
+              }),
+            }}
+            component={NFTs}
+          />
+        ) : null}
         <HomeBottomTab.Screen
-          name={HomeBottomTabRoute.Nfts}
+          name={HomeBottomTabRoute.Apps}
           options={{
             title: intl.formatMessage({
-              id: "menu.nfts",
-              defaultMessage: "NFTs",
+              id: "menu.apps",
+              defaultMessage: "Apps",
             }),
           }}
-          component={NFTs}
+          component={DappExplorer}
         />
-      ) : null}
-      <HomeBottomTab.Screen
-        name={HomeBottomTabRoute.Apps}
-        options={{
-          title: intl.formatMessage({
-            id: "menu.apps",
-            defaultMessage: "Apps",
-          }),
-        }}
-        component={DappExplorer}
-      />
-      {isLoop && (
+        {isLoop && (
+          <HomeBottomTab.Screen
+            name={HomeBottomTabRoute.Trade}
+            options={{
+              title: intl.formatMessage({
+                id: "menu.trade",
+                defaultMessage: "Trade",
+              }),
+            }}
+            component={Trade}
+          />
+        )}
         <HomeBottomTab.Screen
-          name={HomeBottomTabRoute.Trade}
+          name={HomeBottomTabRoute.Settings}
           options={{
             title: intl.formatMessage({
-              id: "menu.trade",
-              defaultMessage: "Trade",
+              id: "menu.settings",
+              defaultMessage: "Settings",
             }),
           }}
-          component={Trade}
+          component={SettingsScreen}
         />
-      )}
-      <HomeBottomTab.Screen
-        name={HomeBottomTabRoute.Settings}
-        options={{
-          title: intl.formatMessage({
-            id: "menu.settings",
-            defaultMessage: "Settings",
-          }),
-        }}
-        component={SettingsScreen}
-      />
-    </HomeBottomTab.Navigator>
-  );
-});
+      </HomeBottomTab.Navigator>
+    );
+  }
+);
 
-export function HomeScreen() {
+export const HomeScreen = observer(function HomeScreen() {
   const { chainStore, walletsStore } = useStore();
 
   useEffect(() => {
@@ -292,9 +294,11 @@ export function HomeScreen() {
       />
     </HomeDrawer.Navigator>
   );
-}
+});
 
-const CustomDrawerContent = observer((props: DrawerContentComponentProps) => {
+const CustomDrawerContent = observer(function CustomDrawerContent(
+  props: DrawerContentComponentProps
+) {
   const { navigation } = props;
   const { chainStore, configStore } = useStore();
 

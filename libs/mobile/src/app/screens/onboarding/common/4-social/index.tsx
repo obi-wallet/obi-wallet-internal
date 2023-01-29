@@ -31,7 +31,7 @@ export type MultisigSocialProps = NativeStackScreenProps<
 >;
 
 export const MultisigSocial = observer<MultisigSocialProps>(
-  ({ navigation }) => {
+  function MultisigSocial({ navigation }) {
     const { chainStore, configStore } = useStore();
     const wallet = useMultisigWallet();
     const [address, setAddress] = useState("");

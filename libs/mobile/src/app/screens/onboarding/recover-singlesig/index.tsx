@@ -23,7 +23,7 @@ export type RecoverSinglesigProps = NativeStackScreenProps<
 >;
 
 export const RecoverSinglesig = observer<RecoverSinglesigProps>(
-  ({ navigation }) => {
+  function RecoverSinglesig({ navigation }) {
     const [mnemonic, setMnemonic] = useState("");
     const [generateDisabled, setGenerateDisabled] = useState(false);
     const { walletsStore } = useStore();

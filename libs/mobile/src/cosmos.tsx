@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import { ComponentProps } from "react";
 import { NativeFixtureLoader } from "react-cosmos/native";
 import invariant from "tiny-invariant";
@@ -7,7 +8,7 @@ const pkg:
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   | Record<string, never> = require("../cosmos.userdeps.js");
 
-export function Cosmos() {
+export const Cosmos = observer(function Cosmos() {
   if (!isNativeFixtureLoaderProps(pkg)) {
     invariant(
       false,
@@ -17,7 +18,7 @@ export function Cosmos() {
   }
 
   return <NativeFixtureLoader {...pkg} />;
-}
+});
 
 function isNativeFixtureLoaderProps(
   pkg: ComponentProps<typeof NativeFixtureLoader> | Record<string, never>

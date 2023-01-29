@@ -1,10 +1,10 @@
 import { PricingTier, RequestObiInAppPurchaseMsg } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import { Button, View } from "react-native";
 
 import { InAppPurchaseInteractionModal } from "../src";
 
-// eslint-disable-next-line import/no-default-export
-export default () => {
+export default observer(function InAppPurchaseInteractionModalFixture() {
   return (
     <>
       <View style={{ paddingTop: 50 }}>
@@ -26,4 +26,4 @@ export default () => {
       <InAppPurchaseInteractionModal />
     </>
   );
-};
+});

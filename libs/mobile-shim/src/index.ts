@@ -7,7 +7,7 @@ global.Buffer = global.Buffer ?? require("buffer/").Buffer;
 
 // This has to be before crypto
 global.process = global.process ?? require("process");
-// @ts-expect-error
+// @ts-expect-error Overriding read-only property.
 global.process["version"] = "16.15.0";
 
 // noinspection JSConstantReassignment
@@ -31,7 +31,7 @@ global.crypto.getRandomValues = (values) => {
   const randomBytes = getRandomBytes(values.byteLength);
 
   const TypedArrayConstructor = values.constructor;
-  // @ts-expect-error
+  // @ts-expect-error No idea why TypeScript complains here
   const randomValues = new TypedArrayConstructor(
     randomBytes.buffer,
     randomBytes.byteOffset,

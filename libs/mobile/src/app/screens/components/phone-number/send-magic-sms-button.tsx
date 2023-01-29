@@ -1,6 +1,7 @@
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
 
@@ -15,7 +16,7 @@ export interface SendMagicSmsButtonProps {
   onPress: () => void;
 }
 
-export function SendMagicSmsButton({
+export const SendMagicSmsButton = observer(function SendMagicSmsButton({
   description,
 
   onPress,
@@ -66,7 +67,7 @@ export function SendMagicSmsButton({
         style={{
           marginVertical: 20,
         }}
-        onPress={(e) => {
+        onPress={() => {
           if (!disabled) {
             onPress();
           }
@@ -74,4 +75,4 @@ export function SendMagicSmsButton({
       />
     </View>
   );
-}
+});
