@@ -1,4 +1,4 @@
-import invariant from "invariant";
+import invariant from "tiny-invariant";
 
 export function envInvariant(name: string, variable: unknown) {
   invariant(

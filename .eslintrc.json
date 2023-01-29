@@ -31,6 +31,23 @@
         ],
 
         "import/no-default-export": "error",
+        "import/no-extraneous-dependencies": [
+          "error",
+          {
+            "devDependencies": [
+              "{apps,libs}/*/{__fixtures__,__tests__,__tests-integration__,scripts}/**/*",
+              "apps/*/metro.config.js",
+              "jest*.[jt]s"
+            ],
+            "optionalDependencies": false
+          }
+        ],
+        "import/no-useless-path-segments": [
+          "error",
+          {
+            "noUselessIndex": true
+          }
+        ],
         "import/order": [
           "error",
           {
