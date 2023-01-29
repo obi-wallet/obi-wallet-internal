@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { StyleSheet, View, ViewProps } from "react-native";
 
@@ -10,7 +11,7 @@ const cardStyles = StyleSheet.create({
   },
 });
 
-export function Card({
+export const Card = observer(function Card({
   children,
   style,
   ...props
@@ -22,4 +23,4 @@ export function Card({
       {children}
     </View>
   );
-}
+});

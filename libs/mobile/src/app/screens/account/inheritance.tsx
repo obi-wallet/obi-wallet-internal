@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 import { View, Text, Switch } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,7 +12,7 @@ const repeatsEvery = [
   { label: "Week", value: "week" },
   { label: "Month", value: "month" },
 ];
-export function Inheritance() {
+export const Inheritance = observer(function Inheritance() {
   const safeArea = useSafeAreaInsets();
   const [repeatOpened, setRepeatOpened] = useState(false);
   const [repeats, setRepeats] = useState(repeatsEvery[0].value);
@@ -119,4 +120,4 @@ export function Inheritance() {
       </View>
     </View>
   );
-}
+});

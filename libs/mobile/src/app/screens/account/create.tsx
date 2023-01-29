@@ -1,13 +1,14 @@
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text, TextInput } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import { TouchableHighlight, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Back } from "../components/back";
 import { Background } from "../components/background";
 
-export function Create() {
+export const Create = observer(function Create() {
   const safeArea = useSafeAreaInsets();
 
   return (
@@ -116,4 +117,4 @@ export function Create() {
       </View>
     </View>
   );
-}
+});

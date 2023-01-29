@@ -1,10 +1,13 @@
+import { observer } from "mobx-react-lite";
 import { Image, StyleProp, View, ViewStyle } from "react-native";
 
 export interface BackgroundProps {
   style: StyleProp<ViewStyle>;
 }
 
-export function Background({ style }: BackgroundProps) {
+export const Background = observer(function Background({
+  style,
+}: BackgroundProps) {
   return (
     <View
       style={[
@@ -28,4 +31,4 @@ export function Background({ style }: BackgroundProps) {
       </View>
     </View>
   );
-}
+});

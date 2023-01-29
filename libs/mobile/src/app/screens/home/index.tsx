@@ -232,7 +232,7 @@ export const TabNavigation = observer<TabNavigationProps>(
   }
 );
 
-export function HomeScreen() {
+export const HomeScreen = observer(function HomeScreen() {
   const { chainStore, walletsStore } = useStore();
 
   useEffect(() => {
@@ -294,7 +294,7 @@ export function HomeScreen() {
       />
     </HomeDrawer.Navigator>
   );
-}
+});
 
 const CustomDrawerContent = observer(function CustomDrawerContent(
   props: DrawerContentComponentProps

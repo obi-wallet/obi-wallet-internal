@@ -292,7 +292,9 @@ interface MessageViewProps {
   isObi?: boolean;
 }
 
-function MessageView({ messages }: MessageViewProps) {
+const MessageView = observer(function MessageView({
+  messages,
+}: MessageViewProps) {
   if (messages.length === 0) return null;
 
   return (
@@ -302,4 +304,4 @@ function MessageView({ messages }: MessageViewProps) {
       })}
     </>
   );
-}
+});

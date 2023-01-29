@@ -5,11 +5,12 @@ import {
   RequestObiTerraSignAndBroadcastMsg,
   WalletType,
 } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import { Button, View } from "react-native";
 
 import { Modals, useStore } from "../src";
 
-export default function SignInteractionModal() {
+export default observer(function SignInteractionModal() {
   const { configStore, walletsStore } = useStore();
 
   return (
@@ -48,4 +49,4 @@ export default function SignInteractionModal() {
       <Modals />
     </>
   );
-}
+});

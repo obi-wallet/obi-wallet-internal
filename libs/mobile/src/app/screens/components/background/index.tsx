@@ -1,9 +1,10 @@
 import { useTheme } from "@emotion/react";
+import { observer } from "mobx-react-lite";
 import { Image, View } from "react-native";
 
 import { useStore } from "../../../stores";
 
-export function Background() {
+export const Background = observer(function Background() {
   const theme = useTheme();
   const { configStore } = useStore();
   const isObi = configStore.isObi();
@@ -34,4 +35,4 @@ export function Background() {
       )}
     </View>
   );
-}
+});

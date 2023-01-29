@@ -1,4 +1,5 @@
 import { Text, TextInput as OriginalTextInput } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import { ComponentType, Dispatch, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { TextInputProps, View } from "react-native";
@@ -27,7 +28,7 @@ export type SecurityQuestionInputProps = {
     }
 );
 
-export function SecurityQuestionInput({
+export const SecurityQuestionInput = observer(function SecurityQuestionInput({
   disabled,
   securityQuestion,
   onSecurityQuestionChange = () => {
@@ -112,7 +113,7 @@ export function SecurityQuestionInput({
       />
     </View>
   );
-}
+});
 
 export function useSecurityQuestionInput() {
   const [securityQuestion, setSecurityQuestion] = useState(

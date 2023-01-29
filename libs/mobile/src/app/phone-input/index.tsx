@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { Text, TextInput as OriginalTextInput } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import { ComponentType, useEffect, useState } from "react";
 import {
   StyleProp,
@@ -65,7 +66,7 @@ const getStyles = (isObi: boolean) =>
     },
   });
 
-export function PhoneInput({
+export const PhoneInput = observer(function PhoneInput({
   label,
   style,
   inputStyle,
@@ -198,4 +199,4 @@ export function PhoneInput({
       </CountryModalProvider>
     </View>
   );
-}
+});

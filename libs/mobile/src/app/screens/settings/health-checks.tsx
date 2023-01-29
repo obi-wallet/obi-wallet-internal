@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
 });
 
 // TODO: extract common component (keys-list, account-picker-modal)
-function ListItem({
+const ListItem = observer(function ListItem({
   item,
 }: {
   item: {
@@ -286,4 +286,4 @@ function ListItem({
       </View>
     </TouchableOpacity>
   );
-}
+});

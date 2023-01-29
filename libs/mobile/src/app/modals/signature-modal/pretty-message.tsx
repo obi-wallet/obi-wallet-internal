@@ -36,15 +36,19 @@ export interface PrettyMessageProps {
   message: AminoMsg | Msg.Amino;
 }
 
-export function PrettyMessage({ message }: PrettyMessageProps) {
+export const PrettyMessage = observer(function PrettyMessage({
+  message,
+}: PrettyMessageProps) {
   return (
     <ErrorBoundary FallbackComponent={PrettyMessageUnknown}>
       <PrettyMessageUnsafe message={message} />
     </ErrorBoundary>
   );
-}
+});
 
-function PrettyMessageUnsafe({ message }: PrettyMessageProps) {
+const PrettyMessageUnsafe = observer(function PrettyMessageUnsafe({
+  message,
+}: PrettyMessageProps) {
   switch (message.type) {
     case "bank/MsgSend":
     case "cosmos-sdk/MsgSend": {
@@ -77,7 +81,7 @@ function PrettyMessageUnsafe({ message }: PrettyMessageProps) {
     default:
       return <PrettyMessageUnknown />;
   }
-}
+});
 const PrettyMessageStaking = observer<
   (MsgDelegate.Amino | MsgUndelegate.Amino) & { label: string }
 >(function PrettyMessageStaking({ value, label }) {
@@ -334,7 +338,7 @@ const PrettyMessageExecuteContract = observer(
   }
 );
 
-function PrettyMessageUnknown() {
+const PrettyMessageUnknown = observer(function PrettyMessageUnknown() {
   const intl = useIntl();
   return (
     <MessageElement
@@ -349,7 +353,7 @@ function PrettyMessageUnknown() {
       })}
     />
   );
-}
+});
 
 interface MessageElementProps {
   icon?: ReactNode;

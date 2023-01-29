@@ -285,7 +285,12 @@ interface SettingProps {
   onPress?: () => void;
 }
 
-function Setting({ Icon, title, subtitle, onPress }: SettingProps) {
+const Setting = observer(function Setting({
+  Icon,
+  title,
+  subtitle,
+  onPress,
+}: SettingProps) {
   const { configStore } = useStore();
   const brand = configStore.brand;
   const isLoop = configStore.isLoop();
@@ -307,7 +312,7 @@ function Setting({ Icon, title, subtitle, onPress }: SettingProps) {
       </TilesContainer>
     </SettingButton>
   );
-}
+});
 
 const Container = styled.SafeAreaView(
   {

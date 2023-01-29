@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import { FC, ReactNode } from "react";
 import {
   Image,
@@ -45,9 +46,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export function Tiles({ children }: { children: ReactNode }) {
+export const Tiles = observer(function Tiles({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return <View style={styles.container}>{children}</View>;
-}
+});
 
 export interface TileProps {
   source: ImageURISource | ImageRequireSource | FC<SvgProps>;
@@ -58,7 +63,7 @@ export interface TileProps {
   onLongPress: () => void;
 }
 
-export function Tile({
+export const Tile = observer(function Tile({
   source,
   label,
   disabled,
@@ -103,7 +108,7 @@ export function Tile({
       {children}
     </TouchableOpacity>
   );
-}
+});
 
 const removeButtonStyles = StyleSheet.create({
   button: {
@@ -130,10 +135,14 @@ const removeButtonStyles = StyleSheet.create({
   },
 });
 
-function RemoveButton({ onPress }: { onPress: () => void }) {
+const RemoveButton = observer(function RemoveButton({
+  onPress,
+}: {
+  onPress: () => void;
+}) {
   return (
     <TouchableOpacity style={removeButtonStyles.button} onPress={onPress}>
       <Text style={removeButtonStyles.text}>✖</Text>
     </TouchableOpacity>
   );
-}
+});

@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 import RNModal, { ModalProps as RNModalProps } from "react-native-modal";
@@ -10,7 +11,12 @@ export interface ModalProps extends Partial<RNModalProps> {
 
 export const MODAL_TIMING = 500;
 
-export function Modal({ children, isVisible, onClose, ...props }: ModalProps) {
+export const Modal = observer(function Modal({
+  children,
+  isVisible,
+  onClose,
+  ...props
+}: ModalProps) {
   return (
     <RNModal
       isVisible={isVisible}
@@ -26,9 +32,13 @@ export function Modal({ children, isVisible, onClose, ...props }: ModalProps) {
       <ModalContainer>{children}</ModalContainer>
     </RNModal>
   );
-}
+});
 
-function ModalContainer({ children }: { children: ReactNode }) {
+const ModalContainer = observer(function ModalContainer({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const theme = useTheme();
   return (
     <View
@@ -37,7 +47,7 @@ function ModalContainer({ children }: { children: ReactNode }) {
       {children}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

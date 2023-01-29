@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import { useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Image, Text, View } from "react-native";
@@ -6,7 +7,7 @@ import { WebView } from "react-native-webview";
 
 import { ConnectedWebView } from "../components/connected-web-view";
 
-export function Trade() {
+export const Trade = observer(function Trade() {
   const safeArea = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const webViewRef = useRef<WebView>(null);
@@ -52,4 +53,4 @@ export function Trade() {
       )}
     </View>
   );
-}
+});

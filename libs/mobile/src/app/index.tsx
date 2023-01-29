@@ -40,7 +40,10 @@ export interface BaseAppProps {
   providerProps?: Omit<ProviderProps, "children" | "config">;
 }
 
-export function BaseApp({ initialConfig, providerProps }: BaseAppProps) {
+export const BaseApp = observer(function BaseApp({
+  initialConfig,
+  providerProps,
+}: BaseAppProps) {
   const [updating, setUpdating] = useState(false);
   const appState = useRef(AppState.currentState);
   const lastUpdate = useRef(0);
@@ -93,7 +96,7 @@ export function BaseApp({ initialConfig, providerProps }: BaseAppProps) {
       )}
     </Provider>
   );
-}
+});
 const Load = observer(function Load() {
   const theme = useTheme();
   return (

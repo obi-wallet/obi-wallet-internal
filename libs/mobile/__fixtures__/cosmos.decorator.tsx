@@ -1,5 +1,6 @@
 import { KVStore } from "@obi-wallet/common";
 import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
+import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect } from "react";
 import { useSelect } from "react-cosmos/fixture";
 
@@ -12,7 +13,11 @@ enum Config {
   LoopMobileDev = "loop-mobile-dev",
 }
 
-export default function CosmosDecorator({ children }: { children: ReactNode }) {
+export default observer(function CosmosDecorator({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const [config, setConfig] = useSelect<Config>("config", {
     options: Object.values(Config),
   });
@@ -42,4 +47,4 @@ export default function CosmosDecorator({ children }: { children: ReactNode }) {
         return loopMobileDevConfig;
     }
   }
-}
+});

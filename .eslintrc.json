@@ -45,7 +45,7 @@
           }
         ],
 
-        "mobx/missing-observer": "off",
+        "mobx/missing-observer": "error",
         "mobx/no-anonymous-observer": "error",
 
         "react/function-component-definition": [

@@ -225,7 +225,10 @@ interface KeyConfigProps {
   onClose: () => void;
 }
 
-function KeyConfig({ item, onClose }: KeyConfigProps) {
+const KeyConfig = observer(function KeyConfig({
+  item,
+  onClose,
+}: KeyConfigProps) {
   const { id, title, activated } = item;
   const { Icon } = keyMetaData[id];
   const { walletsStore, configStore } = useStore();
@@ -419,4 +422,4 @@ function KeyConfig({ item, onClose }: KeyConfigProps) {
       </View>
     </View>
   );
-}
+});

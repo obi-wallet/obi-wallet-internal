@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import OriginalBottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
+import { observer } from "mobx-react-lite";
 import { ReactNode, Ref } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -10,7 +11,10 @@ export interface BottomSheetProps {
 
 export type BottomSheetRef = OriginalBottomSheet;
 
-export function BottomSheet({ children, bottomSheetRef }: BottomSheetProps) {
+export const BottomSheet = observer(function BottomSheet({
+  children,
+  bottomSheetRef,
+}: BottomSheetProps) {
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
 
@@ -36,4 +40,4 @@ export function BottomSheet({ children, bottomSheetRef }: BottomSheetProps) {
       </BottomSheetView>
     </OriginalBottomSheet>
   );
-}
+});

@@ -1,5 +1,6 @@
 import { Theme, useTheme } from "@emotion/react";
 import { Brand, Text } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { FC, useCallback, useEffect, useState } from "react";
 import {
@@ -170,7 +171,7 @@ export interface ButtonProps
   buttonStyle?: StyleProp<ViewStyle>;
 }
 
-export function Button({
+export const Button = observer(function Button({
   flavor,
   label,
   disabled = false,
@@ -214,14 +215,14 @@ export function Button({
       </TouchableNativeFeedback>
     );
   }
-}
+});
 
 export interface AsyncButtonProps extends ButtonProps {
   onPress: () => Promise<void>;
   autoPress?: boolean;
 }
 
-export function AsyncButton({
+export const AsyncButton = observer(function AsyncButton({
   onPress,
   autoPress,
   disabled,
@@ -250,4 +251,4 @@ export function AsyncButton({
       disabled={pending || disabled}
     />
   );
-}
+});

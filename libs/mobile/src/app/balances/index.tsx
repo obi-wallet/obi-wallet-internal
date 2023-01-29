@@ -8,6 +8,7 @@ import {
   Text,
 } from "@obi-wallet/common";
 import { useQuery } from "@tanstack/react-query";
+import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { FC } from "react";
 import { ImageRequireSource, ImageURISource, View } from "react-native";
@@ -106,7 +107,7 @@ export function usePrices() {
   );
 }
 
-export function UsdBalance() {
+export const UsdBalance = observer(function UsdBalance() {
   const balances = useBalances();
   const balanceInUsd = R.sum(
     balances.data.map((coin) => {
@@ -151,7 +152,7 @@ export function UsdBalance() {
       </Text>
     </View>
   );
-}
+});
 
 export interface FormattedCoin {
   icon: ImageURISource | ImageRequireSource | FC<SvgProps> | null;

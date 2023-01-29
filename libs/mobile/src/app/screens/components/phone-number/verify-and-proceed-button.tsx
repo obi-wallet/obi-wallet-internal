@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
 import { Keyboard, StyleProp, ViewStyle } from "react-native";
 
@@ -11,7 +12,7 @@ export interface VerifyAndProceedButtonProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export function VerifyAndProceedButton({
+export const VerifyAndProceedButton = observer(function VerifyAndProceedButton({
   onPress,
   disabled,
   style,
@@ -35,4 +36,4 @@ export function VerifyAndProceedButton({
       style={[{ marginBottom: 20 }, style]}
     />
   );
-}
+});

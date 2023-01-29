@@ -213,7 +213,11 @@ const FavButton = observer<{ title: string; url: string }>(function FavButton({
   );
 });
 
-export function RefreshButton({ onPress }: { onPress: () => void }) {
+export const RefreshButton = observer(function RefreshButton({
+  onPress,
+}: {
+  onPress: () => void;
+}) {
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
   return (
@@ -228,9 +232,13 @@ export function RefreshButton({ onPress }: { onPress: () => void }) {
       label="Refresh"
     />
   );
-}
+});
 
-export function ShareButton({ url }: { url: string }) {
+export const ShareButton = observer(function ShareButton({
+  url,
+}: {
+  url: string;
+}) {
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
   const onShare = async () => {
@@ -265,9 +273,9 @@ export function ShareButton({ url }: { url: string }) {
       label="Share"
     />
   );
-}
+});
 
-export function SheetButton({
+export const SheetButton = observer(function SheetButton({
   onPress,
   IconComponent,
   label,
@@ -298,4 +306,4 @@ export function SheetButton({
       </Text>
     </View>
   );
-}
+});

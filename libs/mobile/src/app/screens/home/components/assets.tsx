@@ -302,7 +302,9 @@ const AssetsList = observer(function AssetsList() {
   );
 });
 
-function AssetsListItem({ item }: ListRenderItemInfo<ExtendedCoin>) {
+const AssetsListItem = observer(function AssetsListItem({
+  item,
+}: ListRenderItemInfo<ExtendedCoin>) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const onTouchAsset = (amount: number) => {
@@ -401,4 +403,4 @@ function AssetsListItem({ item }: ListRenderItemInfo<ExtendedCoin>) {
       </View>
     </View>
   );
-}
+});

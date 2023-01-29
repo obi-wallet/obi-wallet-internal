@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import {
   Text as OriginalText,
@@ -7,7 +8,7 @@ import {
   TextProps,
 } from "react-native";
 
-export function Text({
+export const Text = observer(function Text({
   children,
   style,
   ...props
@@ -27,9 +28,9 @@ export function Text({
       {children}
     </OriginalText>
   );
-}
+});
 
-export function TextInput({
+export const TextInput = observer(function TextInput({
   style,
 
   ...props
@@ -46,4 +47,4 @@ export function TextInput({
       {...props}
     />
   );
-}
+});
