@@ -7,3 +7,4 @@ export * from "./root";
 export * from "./wallets";
 
 export * from "./wallets/multisig-key";
+export * from "./drafts";

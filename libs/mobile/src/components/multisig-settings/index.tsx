@@ -26,11 +26,15 @@ import { KeysComponent } from "../../app/screens/settings/keys-config/keys-compo
 import { useStore } from "../../app/stores";
 
 export interface MultisigSettingsProps {
-  multisigKey: MultisigKey;
+  draftId: string;
 }
 
 export const MultisigSettings = observer<MultisigSettingsProps>(
-  function MultisigSettings({ multisigKey }) {
+  function MultisigSettings({ draftId }) {
+    const { draftsStore } = useStore();
+    const draft = draftsStore.get<MultisigKey>({ id: draftId });
+
+    const multisigKey = draft.value;
     const { configStore } = useStore();
     const bottomSheetRef = useRef<BottomSheet>(null);
     const [selectedType, setSelectedType] = useState<KeyType | null>(null);

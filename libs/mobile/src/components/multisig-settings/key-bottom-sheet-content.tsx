@@ -31,7 +31,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
 
     const safeArea = useSafeAreaInsets();
 
-    const getRecoverButton = (keyId: KeyType) => {
+    const getRecoverButton = () => {
       return (
         <TouchableOpacity
           onPress={() => {
@@ -59,10 +59,15 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
               ...(isObi ? { color: "white" } : {}),
             }}
           >
-            <FormattedMessage
-              id="settings.multisig.modal.replacenow"
-              defaultMessage="Replace now"
-            />
+            {/* TODO: Key metadata: check if key replaceable */}
+            {activated ? (
+              <FormattedMessage
+                id="settings.multisig.modal.replacenow"
+                defaultMessage="Replace now"
+              />
+            ) : (
+              "Add now"
+            )}
           </Text>
         </TouchableOpacity>
       );
@@ -199,7 +204,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
           ) : null}
         </View>
         <View style={{ alignItems: "center" }}>
-          {type !== KeyType.Device ? <>{getRecoverButton(type)}</> : null}
+          {getRecoverButton()}
           <TouchableOpacity
             onPress={() => onClose()}
             style={{ paddingVertical: 15, paddingHorizontal: 63 }}
