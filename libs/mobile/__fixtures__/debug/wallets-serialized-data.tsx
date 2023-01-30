@@ -1,11 +1,10 @@
 import { Text } from "@obi-wallet/common";
-import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { ScrollView } from "react-native";
 
 import { useStore } from "../../src";
 
-export default observer(function WalletsSerializedData() {
+export default function WalletsSerializedData() {
   const { walletsStore } = useStore();
   const [serializedData, setSerializedData] = useState("");
 
@@ -21,4 +20,4 @@ export default observer(function WalletsSerializedData() {
       <Text style={{ color: "#ffffff" }}>{serializedData}</Text>
     </ScrollView>
   );
-});
+}
