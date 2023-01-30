@@ -38,7 +38,7 @@ export * from "./cosmos-multisig-wallet";
 export * from "./cosmos-singlesig-wallet";
 export * from "./terra-multisig-wallet";
 
-export type MultisigKey = CosmosMultisigKey | TerraMultisigKey;
+export type MultisigKeyType = CosmosMultisigKey | TerraMultisigKey;
 
 export enum WalletState {
   /** We are still loading the data from the KV stores. */

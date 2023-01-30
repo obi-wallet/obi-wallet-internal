@@ -1,4 +1,4 @@
-import { MultisigKey, Text } from "@obi-wallet/common";
+import { MultisigKey, MultisigKeyType, Text } from "@obi-wallet/common";
 import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
 import { FC, useEffect } from "react";
@@ -37,7 +37,7 @@ export interface KeyMetaData {
   Icon: FC<SvgProps>;
 }
 
-export const keyMetaData: Record<MultisigKey, KeyMetaData> = {
+export const keyMetaData: Record<MultisigKeyType, KeyMetaData> = {
   biometrics: { Icon: BiometricsObi },
   cloud: { Icon: Cloud },
   phoneNumber: { Icon: PhoneNumber },
@@ -50,7 +50,7 @@ export const keyMetaData: Record<MultisigKey, KeyMetaData> = {
 };
 
 export interface Key {
-  id: MultisigKey;
+  id: MultisigKeyType;
   title: string;
   description?: string;
   right?: React.ReactNode;

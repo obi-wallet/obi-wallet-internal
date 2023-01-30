@@ -2,7 +2,7 @@ import {
   Feature,
   isAnyMultisigWallet,
   isMultisigDemoWallet,
-  MultisigKey,
+  MultisigKeyType,
   Text,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -313,7 +313,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({ navigation }) {
     }
   }
 
-  function renderContinueButton(keyInRecovery?: MultisigKey | null) {
+  function renderContinueButton(keyInRecovery?: MultisigKeyType | null) {
     let navigationUrl:
       | OnboardingRoute.CreateMultisigPhoneNumber
       | OnboardingRoute.CreateMultisigSocial

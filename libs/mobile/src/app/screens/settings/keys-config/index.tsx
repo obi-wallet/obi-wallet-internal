@@ -5,7 +5,7 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import {
   Feature,
   isAnyMultisigWallet,
-  MultisigKey,
+  MultisigKeyType,
   Text,
 } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
@@ -51,7 +51,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
     id,
     title,
   }: {
-    id: MultisigKey;
+    id: MultisigKeyType;
     title: string;
   }): Key & { activated: boolean; disabled: boolean } {
     const activated = currentAdmin?.[id] !== null;
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
 });
 
 interface KeyListItem {
-  id: MultisigKey;
+  id: MultisigKeyType;
   title: string;
   activated: boolean;
 }
@@ -237,7 +237,7 @@ const KeyConfig = observer(function KeyConfig({
 
   const safeArea = useSafeAreaInsets();
 
-  const getRecoverButton = (keyId: MultisigKey) => {
+  const getRecoverButton = (keyId: MultisigKeyType) => {
     return (
       <TouchableOpacity
         onPress={() => {
@@ -276,7 +276,7 @@ const KeyConfig = observer(function KeyConfig({
     );
   };
 
-  const getModalText = (keyId: MultisigKey) => {
+  const getModalText = (keyId: MultisigKeyType) => {
     switch (keyId) {
       case "phoneNumber":
         return (
