@@ -126,7 +126,9 @@
     {
       "files": ["__fixtures__/**/*.{ts,tsx,js,jsx}"],
       "rules": {
-        "import/no-default-export": "off"
+        "import/no-default-export": "off",
+
+        "mobx/missing-observer": "off"
       }
     }
   ]
