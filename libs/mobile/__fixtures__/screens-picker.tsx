@@ -22,7 +22,7 @@ const routes = [
   ...Object.values(HomeBottomTabRoute),
 ];
 
-export default function Screens() {
+export default function ScreensPicker() {
   const navigation = useRootNavigation();
   const [route] = useSelect("route", {
     options: routes,

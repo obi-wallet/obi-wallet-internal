@@ -34,6 +34,7 @@ import { settingsScreens } from "./screens/settings";
 import { SplashScreen } from "./screens/splash";
 import { WebViewScreen } from "./screens/web-view";
 import { useStore } from "./stores";
+import { keyScreens } from "../screens/keys/key-screens";
 
 export interface BaseAppProps {
   initialConfig: Config;
@@ -197,6 +198,7 @@ export const StateRenderer = observer(function StateRenderer() {
             component={ReceiveScreen}
           />
           {settingsScreens()}
+          {keyScreens()}
         </RootStack.Group>
       );
     } else {
@@ -246,6 +248,7 @@ export const StateRenderer = observer(function StateRenderer() {
             name={OnboardingRoute.LookupProxyWallets}
             component={LookupProxyWallets}
           />
+          {keyScreens()}
         </RootStack.Group>
       );
     }
