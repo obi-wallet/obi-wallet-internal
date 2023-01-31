@@ -1,6 +1,7 @@
 import { DeviceKeyScreen } from "./device";
 import { KeyRoute } from "./key-stack";
 import { PhoneKeyConfirmScreen, PhoneKeyRequestScreen } from "./phone";
+import { SocialKeyScreen } from "./social";
 import { RootStack } from "../../app/root-stack";
 
 export const keyScreens = () => {
@@ -22,6 +23,12 @@ export const keyScreens = () => {
         name={KeyRoute.PhoneKeyConfirm}
         key={KeyRoute.PhoneKeyConfirm}
         component={PhoneKeyConfirmScreen}
+        options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name={KeyRoute.SocialKey}
+        key={KeyRoute.SocialKey}
+        component={SocialKeyScreen}
         options={{ headerShown: false }}
       />
     </RootStack.Group>

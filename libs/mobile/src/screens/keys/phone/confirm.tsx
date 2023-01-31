@@ -40,10 +40,10 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
         onSubmit={() => {
           switch (params.flow) {
             case KeyFlow.CreateWallet:
-              // TODO: navigate to social key
+              navigation.navigate(KeyRoute.SocialKey, params);
               break;
             case KeyFlow.ReplaceKey:
-              // TODO: navigate to repalce multisig
+              // TODO: navigate to ReplaceMultisig
               break;
             case KeyFlow.RecoverWallet:
               // TODO: navigate to lookup proxy wallets

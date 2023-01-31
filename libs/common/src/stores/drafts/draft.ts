@@ -18,7 +18,11 @@ export class Draft<T extends Draftable> {
     makeObservable(this);
   }
 
-  public get value(): T {
+  public get original() {
+    return this._original;
+  }
+
+  public get value() {
     return this._value;
   }
 

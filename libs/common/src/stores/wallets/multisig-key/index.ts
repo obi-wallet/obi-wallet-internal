@@ -4,6 +4,7 @@ import { action, makeObservable, observable } from "mobx";
 import { KeyType, SerializedKey } from "./keys";
 import { SerializedDeviceKeyPayload } from "./keys/device";
 import { SerializedPhoneKeyPayload } from "./keys/phone";
+import { SerializedSocialKeyPayload } from "./keys/social";
 import { Draftable } from "../../drafts/draft";
 import { Entities } from "../../entities";
 
@@ -33,6 +34,10 @@ export class MultisigKey implements Draftable {
     return this.keys.some((key) => key.type === type);
   }
 
+  public getKeyOfType(type: KeyType) {
+    return this.keys.find((key) => key.type === type);
+  }
+
   @action
   public setDeviceKey(payload: SerializedDeviceKeyPayload) {
     this.setKey({
@@ -45,6 +50,14 @@ export class MultisigKey implements Draftable {
   public setPhoneKey(payload: SerializedPhoneKeyPayload) {
     this.setKey({
       type: KeyType.Phone,
+      payload,
+    });
+  }
+
+  @action
+  public setSocialKey(payload: SerializedSocialKeyPayload) {
+    this.setKey({
+      type: KeyType.Social,
       payload,
     });
   }
