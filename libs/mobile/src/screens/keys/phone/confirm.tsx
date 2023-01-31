@@ -22,7 +22,7 @@ import {
   parsePublicKeyTextMessageResponse,
   sendPublicKeyTextMessage,
 } from "../../../app/text-message";
-import { KeyRoute, KeyStackParamList } from "../key-stack";
+import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -38,14 +38,14 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
       <PhoneKeyConfirm
         {...params}
         onSubmit={() => {
-          switch (params.flavor) {
-            case "create":
+          switch (params.flow) {
+            case KeyFlow.CreateWallet:
               // TODO: navigate to social key
               break;
-            case "recover-phone":
+            case KeyFlow.ReplaceKey:
               // TODO: navigate to repalce multisig
               break;
-            case "recover-other":
+            case KeyFlow.RecoverWallet:
               // TODO: navigate to lookup proxy wallets
               break;
           }
@@ -57,8 +57,7 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
 
 export interface PhoneKeyConfirmProps {
   draftId: string;
-  // TODO:
-  flavor: "recover-phone" | "recover-other" | "create";
+  flow: KeyFlow;
   demoMode: boolean;
 
   phoneNumber: string;
@@ -71,7 +70,7 @@ export interface PhoneKeyConfirmProps {
 export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
   function PhoneKeyConfirm({
     draftId,
-    flavor,
+    flow,
     demoMode,
     phoneNumber,
     securityQuestion,
@@ -159,12 +158,12 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                       marginTop: 32,
                     }}
                   >
-                    {flavor === "recover-phone" ? (
+                    {flow === KeyFlow.ReplaceKey ? (
                       <FormattedMessage
                         id="onboarding2.recovery.authyourkeys"
                         defaultMessage="Create a Replacement Phone Number Key"
                       />
-                    ) : flavor === "recover-other" ? (
+                    ) : flow === KeyFlow.RecoverWallet ? (
                       <FormattedMessage
                         id="onboarding2.recovery.phonenumber"
                         defaultMessage="Recover your Phone Number Key"
@@ -283,7 +282,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                       demoMode,
                     });
                     if (publicKey) {
-                      draft.value.setPhoneNumberKey({
+                      draft.value.setPhoneKey({
                         publicKey: {
                           type: pubkeyType.secp256k1,
                           value: publicKey,

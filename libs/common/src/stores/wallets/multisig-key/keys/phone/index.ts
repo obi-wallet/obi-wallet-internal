@@ -7,6 +7,7 @@ export const SerializedPhoneKeyPayload = t.type({
   phoneNumber: t.string,
   securityQuestion: t.string,
 });
+
 export type SerializedPhoneKeyPayload = t.TypeOf<
   typeof SerializedPhoneKeyPayload
 >;

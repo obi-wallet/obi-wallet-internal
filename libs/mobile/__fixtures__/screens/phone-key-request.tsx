@@ -4,6 +4,7 @@ import { ReactNode, useEffect } from "react";
 import { Alert } from "react-native";
 
 import { useStore } from "../../src/app/stores";
+import { KeyFlow } from "../../src/screens/keys";
 import {
   PhoneKeyRequest,
   PhoneKeyRequestProps,
@@ -36,12 +37,12 @@ function mockAction(message: string) {
   };
 }
 
-function renderFlavor(flavor: PhoneKeyRequestProps["flavor"]) {
+function renderFlavor(flow: PhoneKeyRequestProps["flow"]) {
   return (
     <MultisigDraft>
       <PhoneKeyRequest
         draftId={draftId}
-        flavor={flavor}
+        flow={flow}
         demoMode
         onSubmit={mockAction("onSubmit")}
       />
@@ -50,7 +51,7 @@ function renderFlavor(flavor: PhoneKeyRequestProps["flavor"]) {
 }
 
 export default {
-  recoverPhone: renderFlavor("recover-phone"),
-  recoverOther: renderFlavor("recover-other"),
-  create: renderFlavor("create"),
+  [KeyFlow.CreateWallet]: renderFlavor(KeyFlow.CreateWallet),
+  [KeyFlow.RecoverWallet]: renderFlavor(KeyFlow.RecoverWallet),
+  [KeyFlow.ReplaceKey]: renderFlavor(KeyFlow.ReplaceKey),
 };

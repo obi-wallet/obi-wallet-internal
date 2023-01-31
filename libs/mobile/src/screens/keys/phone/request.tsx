@@ -19,7 +19,7 @@ import { SendMagicSmsButton } from "../../../app/screens/components/phone-number
 import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
 import { useStore } from "../../../app/stores";
 import { sendPublicKeyTextMessage } from "../../../app/text-message";
-import { KeyRoute, KeyStackParamList } from "../key-stack";
+import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type PhoneKeyRequestScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -44,13 +44,12 @@ export const PhoneKeyRequestScreen = observer<PhoneKeyRequestScreenProps>(
 
 export interface PhoneKeyRequestProps {
   draftId: string;
-  // TODO:
-  flavor: "recover-phone" | "recover-other" | "create";
+  flow: KeyFlow;
   demoMode: boolean;
 
   onSubmit(payload: {
     draftId: string;
-    flavor: "recover-phone" | "recover-other" | "create";
+    flow: KeyFlow;
     demoMode: boolean;
     phoneNumber: string;
     securityQuestion: string;
@@ -59,7 +58,7 @@ export interface PhoneKeyRequestProps {
 }
 
 export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
-  function PhoneKeyRequest({ draftId, demoMode, flavor, onSubmit }) {
+  function PhoneKeyRequest({ draftId, demoMode, flow, onSubmit }) {
     const intl = useIntl();
     const { configStore, chainStore } = useStore();
     const isObi = configStore.isObi();
@@ -215,12 +214,12 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                       marginBottom: 10,
                     }}
                   >
-                    {flavor === "recover-phone" ? (
+                    {flow === KeyFlow.ReplaceKey ? (
                       <FormattedMessage
                         id="onboarding2.recovery.authyourkeys"
                         defaultMessage="Create a New Phone Number Key"
                       />
-                    ) : flavor === "recover-other" ? (
+                    ) : flow === KeyFlow.RecoverWallet ? (
                       <FormattedMessage
                         id="onboarding2.recovery.phonenumber"
                         defaultMessage="Recover Your Old Phone Number Key"
@@ -238,7 +237,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                       fontSize: isSmallScreenNumber(12, 14),
                     }}
                   >
-                    {flavor === "recover-phone" ? (
+                    {flow === KeyFlow.ReplaceKey ? (
                       <FormattedMessage
                         id="onboarding2.recovery.authyourkeyssubtext"
                         defaultMessage="Please answer a security question. It can be the same as your old answer, or different."
@@ -306,7 +305,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                       });
                       onSubmit({
                         draftId,
-                        flavor,
+                        flow,
                         demoMode,
                         phoneNumber,
                         securityQuestion,

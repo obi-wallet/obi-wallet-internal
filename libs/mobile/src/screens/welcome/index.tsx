@@ -15,7 +15,7 @@ import {
 import { Button } from "../../app/button";
 import GetStarted from "../../app/screens/onboarding/welcome/assets/get-started.svg";
 import { WelcomeLayout } from "../../components/welcome-layout";
-import { KeyRoute } from "../keys";
+import { KeyFlow, KeyRoute } from "../keys";
 
 export type WelcomeScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -32,29 +32,37 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });
-      // TODO: actually device key first
-      navigation.navigate(KeyRoute.PhoneKeyRequest, {
+      navigation.navigate(KeyRoute.DeviceKey, {
         draftId,
-        flavor: "create",
+        flow: KeyFlow.CreateWallet,
         demoMode: false,
       });
     }
 
     function onRecover() {
-      // TODO:
+      const newMultisigKey = new MultisigKey();
+      const draftId = draftsStore.create({
+        original: newMultisigKey,
+      });
+      navigation.navigate(KeyRoute.DeviceKey, {
+        draftId,
+        flow: KeyFlow.RecoverWallet,
+        demoMode: false,
+      });
     }
+
     function onRecoverSinglesig() {
       // TODO:
     }
+
     function onEnterDemoMode() {
       const newMultisigKey = new MultisigKey();
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });
-      // TODO: actually device key first
-      navigation.navigate(KeyRoute.PhoneKeyRequest, {
+      navigation.navigate(KeyRoute.DeviceKey, {
         draftId,
-        flavor: "create",
+        flow: KeyFlow.CreateWallet,
         demoMode: true,
       });
     }

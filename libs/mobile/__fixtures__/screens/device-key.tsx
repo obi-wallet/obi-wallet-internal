@@ -4,11 +4,7 @@ import { ReactNode, useEffect } from "react";
 import { Alert } from "react-native";
 
 import { useStore } from "../../src/app/stores";
-import { KeyFlow } from "../../src/screens/keys";
-import {
-  PhoneKeyConfirm,
-  PhoneKeyConfirmProps,
-} from "../../src/screens/keys/phone";
+import { DeviceKey } from "../../src/screens/keys/device";
 
 // TODO: create hook for that
 const draftId = "multisigSettingsFixture";
@@ -37,24 +33,8 @@ function mockAction(message: string) {
   };
 }
 
-function renderFlavor(flow: PhoneKeyConfirmProps["flow"]) {
-  return (
-    <MultisigDraft>
-      <PhoneKeyConfirm
-        draftId={draftId}
-        flow={flow}
-        demoMode
-        phoneNumber="123"
-        securityAnswer="foo"
-        securityQuestion="bar"
-        onSubmit={mockAction("onSubmit")}
-      />
-    </MultisigDraft>
-  );
-}
-
-export default {
-  [KeyFlow.CreateWallet]: renderFlavor(KeyFlow.CreateWallet),
-  [KeyFlow.RecoverWallet]: renderFlavor(KeyFlow.RecoverWallet),
-  [KeyFlow.ReplaceKey]: renderFlavor(KeyFlow.ReplaceKey),
-};
+export default (
+  <MultisigDraft>
+    <DeviceKey draftId={draftId} demoMode onSubmit={mockAction("onSubmit")} />
+  </MultisigDraft>
+);
