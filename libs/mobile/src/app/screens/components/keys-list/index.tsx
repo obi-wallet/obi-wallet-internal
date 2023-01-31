@@ -37,8 +37,14 @@ export interface KeyMetaData {
   Icon: FC<SvgProps>;
 }
 
+const BioIcon = observer(function BioIcon(props) {
+  const { configStore } = useStore();
+  const isObi = configStore.isObi();
+  return isObi ? <BiometricsObi {...props} /> : <Biometrics {...props} />;
+});
+
 export const keyMetaData: Record<MultisigKey, KeyMetaData> = {
-  biometrics: { Icon: BiometricsObi },
+  biometrics: { Icon: BioIcon },
   cloud: { Icon: Cloud },
   phoneNumber: { Icon: PhoneNumber },
   email: { Icon: Email },
