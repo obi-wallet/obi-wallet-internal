@@ -1,4 +1,5 @@
-import { Text } from "@obi-wallet/common";
+import { pubkeyType } from "@cosmjs/amino";
+import { MultisigKey, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -8,6 +9,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { InlineButton } from "../../../app/button";
+import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
@@ -29,8 +31,27 @@ export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<
 
 export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
   function PhoneKeyConfirmScreen({ route }) {
+    const navigation = useRootNavigation();
     const { params } = route;
-    return <PhoneKeyConfirm {...params} />;
+
+    return (
+      <PhoneKeyConfirm
+        {...params}
+        onSubmit={() => {
+          switch (params.flavor) {
+            case "create":
+              // TODO: navigate to social key
+              break;
+            case "recover-phone":
+              // TODO: navigate to repalce multisig
+              break;
+            case "recover-other":
+              // TODO: navigate to lookup proxy wallets
+              break;
+          }
+        }}
+      />
+    );
   }
 );
 
@@ -43,6 +64,8 @@ export interface PhoneKeyConfirmProps {
   phoneNumber: string;
   securityQuestion: string;
   securityAnswer: string;
+
+  onSubmit(): void;
 }
 
 export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
@@ -53,8 +76,10 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
     phoneNumber,
     securityQuestion,
     securityAnswer,
+    onSubmit,
   }) {
-    const { configStore, chainStore } = useStore();
+    const { configStore, chainStore, draftsStore } = useStore();
+    const draft = draftsStore.get<MultisigKey>({ id: draftId });
     const isObi = configStore.isObi();
     const chainId = chainStore.currentChain;
     // const wallet = useMultisigWallet();
@@ -258,30 +283,16 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                       demoMode,
                     });
                     if (publicKey) {
-                      // TODO:
-                      // await wallet.setPhoneNumberKey({
-                      //   publicKey: {
-                      //     type: pubkeyType.secp256k1,
-                      //     value: publicKey,
-                      //   },
-                      //   phoneNumber,
-                      //   securityQuestion,
-                      // });
+                      draft.value.setPhoneNumberKey({
+                        publicKey: {
+                          type: pubkeyType.secp256k1,
+                          value: publicKey,
+                        },
+                        phoneNumber,
+                        securityQuestion,
+                      });
                       setVerifyButtonDisabledDoubleclick(false);
-                      // switch (wallet.keyInRecovery) {
-                      //   case "biometrics":
-                      //     navigation.navigate(
-                      //       OnboardingRoute.LookupProxyWallets
-                      //     );
-                      //     break;
-                      //   case "phoneNumber":
-                      //     navigation.navigate(OnboardingRoute.ReplaceMultisig);
-                      //     break;
-                      //   default:
-                      //     navigation.navigate(
-                      //       OnboardingRoute.CreateMultisigSocial
-                      //     );
-                      // }
+                      onSubmit();
                     } else {
                       setVerifyButtonDisabledDoubleclick(false);
                     }

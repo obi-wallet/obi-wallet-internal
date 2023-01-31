@@ -27,7 +27,6 @@ import { OnboardingRoute } from "./screens/onboarding/onboarding-stack";
 import { RecoverMultisig } from "./screens/onboarding/recover-multisig";
 import { RecoverSinglesig } from "./screens/onboarding/recover-singlesig";
 import { ReplaceMultisig } from "./screens/onboarding/replace-multisig-key";
-import { Welcome } from "./screens/onboarding/welcome";
 import { ReceiveScreen } from "./screens/receive";
 import { SendScreen } from "./screens/send";
 import { settingsScreens } from "./screens/settings";
@@ -35,6 +34,7 @@ import { SplashScreen } from "./screens/splash";
 import { WebViewScreen } from "./screens/web-view";
 import { useStore } from "./stores";
 import { keyScreens } from "../screens/keys/key-screens";
+import { WelcomeScreen } from "../screens/welcome";
 
 export interface BaseAppProps {
   initialConfig: Config;
@@ -210,7 +210,7 @@ export const StateRenderer = observer(function StateRenderer() {
         >
           <RootStack.Screen
             name={OnboardingRoute.Welcome}
-            component={Welcome}
+            component={WelcomeScreen}
           />
           <RootStack.Screen
             name={OnboardingRoute.CreateMultisigBiometrics}

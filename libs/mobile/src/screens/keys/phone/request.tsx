@@ -8,6 +8,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { PhoneInput } from "../../../app/phone-input";
+import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import {
@@ -27,8 +28,17 @@ export type PhoneKeyRequestScreenProps = NativeStackScreenProps<
 
 export const PhoneKeyRequestScreen = observer<PhoneKeyRequestScreenProps>(
   function PhoneKeyRequestScreen({ route }) {
+    const navigation = useRootNavigation();
     const { params } = route;
-    return <PhoneKeyRequest {...params} />;
+
+    return (
+      <PhoneKeyRequest
+        {...params}
+        onSubmit={(payload) => {
+          navigation.navigate(KeyRoute.PhoneKeyConfirm, payload);
+        }}
+      />
+    );
   }
 );
 
@@ -37,11 +47,19 @@ export interface PhoneKeyRequestProps {
   // TODO:
   flavor: "recover-phone" | "recover-other" | "create";
   demoMode: boolean;
+
+  onSubmit(payload: {
+    draftId: string;
+    flavor: "recover-phone" | "recover-other" | "create";
+    demoMode: boolean;
+    phoneNumber: string;
+    securityQuestion: string;
+    securityAnswer: string;
+  }): void;
 }
 
 export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
-  function PhoneKeyRequest({ draftId, demoMode, flavor }) {
-    // const wallet = useMultisigWallet();
+  function PhoneKeyRequest({ draftId, demoMode, flavor, onSubmit }) {
     const intl = useIntl();
     const { configStore, chainStore } = useStore();
     const isObi = configStore.isObi();
@@ -286,15 +304,14 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                         demoMode,
                         chainId,
                       });
-                      // TODO:
-                      // navigation.navigate(
-                      //   OnboardingRoute.CreateMultisigPhoneNumberConfirm,
-                      //   {
-                      //     phoneNumber,
-                      //     securityQuestion,
-                      //     securityAnswer,
-                      //   }
-                      // );
+                      onSubmit({
+                        draftId,
+                        flavor,
+                        demoMode,
+                        phoneNumber,
+                        securityQuestion,
+                        securityAnswer,
+                      });
                       setMagicButtonDisabledDoubleclick(false);
                     } catch (e) {
                       const error = e as Error;

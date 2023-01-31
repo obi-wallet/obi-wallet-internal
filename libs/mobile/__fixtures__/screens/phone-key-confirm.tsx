@@ -1,6 +1,7 @@
 import { MultisigKey } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect } from "react";
+import { Alert } from "react-native";
 
 import { useStore } from "../../src/app/stores";
 import {
@@ -29,6 +30,12 @@ export const MultisigDraft = observer<{ children: ReactNode }>(
   }
 );
 
+function mockAction(message: string) {
+  return () => {
+    Alert.alert(message);
+  };
+}
+
 function renderFlavor(flavor: PhoneKeyConfirmProps["flavor"]) {
   return (
     <MultisigDraft>
@@ -39,6 +46,7 @@ function renderFlavor(flavor: PhoneKeyConfirmProps["flavor"]) {
         phoneNumber="123"
         securityAnswer="foo"
         securityQuestion="bar"
+        onSubmit={mockAction("onSubmit")}
       />
     </MultisigDraft>
   );
