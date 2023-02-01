@@ -5,7 +5,6 @@ import { Chain } from "../../chains";
 export enum WalletType {
   Multisig = "Multisig",
   CosmosMultisig = "CosmosMultisig",
-  CosmosSinglesig = "CosmosSinglesig",
   TerraMultisig = "TerraMultisig",
 }
 

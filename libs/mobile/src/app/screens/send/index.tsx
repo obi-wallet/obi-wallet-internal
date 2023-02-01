@@ -9,7 +9,6 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import {
   Brand,
   isAnyCosmosMultisigWallet,
-  isCosmosSinglesigWallet,
   isTerraMultisigWallet,
   RequestObiCosmosSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastMsg,

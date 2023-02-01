@@ -20,7 +20,7 @@ export const AddressQrCodeScannerModal = observer(
   }: AddressQrCodeScannerModalProps) {
     const safeArea = useSafeAreaInsets();
     const { chainStore } = useStore();
-    const { prefix } = chainStore.currentCosmosChainInformation;
+    const { prefix } = chainStore.currentChainInformation;
 
     return (
       <Modal {...props}>

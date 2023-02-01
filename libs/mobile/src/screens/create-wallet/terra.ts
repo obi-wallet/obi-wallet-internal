@@ -4,6 +4,7 @@ import {
   MultisigKey,
   RequestObiTerraSignAndBroadcastMsg,
   terra,
+  TerraChain,
   WalletsStore,
 } from "@obi-wallet/common";
 import { Alert } from "react-native";
@@ -11,13 +12,13 @@ import { Alert } from "react-native";
 export async function handleTerra({
   draft,
   demoMode,
-  chainStore,
   walletsStore,
+  chainId,
 }: {
   draft: Draft<MultisigKey>;
   demoMode: boolean;
-  chainStore: ChainStore;
   walletsStore: WalletsStore;
+  chainId: TerraChain;
 }) {
   const multisigKey = draft.value;
   // TODO: shuffle?
@@ -34,7 +35,7 @@ export async function handleTerra({
   const message = terra.getNewAccountMessage({
     address: multisigPublicKey.address(),
     signers,
-    chainId: chainStore.currentTerraChain,
+    chainId,
   });
 
   const response = await RequestObiTerraSignAndBroadcastMsg.send({
@@ -47,7 +48,7 @@ export async function handleTerra({
 
   try {
     const serializedData = {
-      chain: chainStore.currentChain,
+      chain: chainId,
       owner: multisigKey.serialize(),
       proxyAddress: terra.parseNewAccountResponse(response),
     };

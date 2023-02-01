@@ -4,10 +4,8 @@ export enum OnboardingRoute {
   CreateMultisigBiometrics = "CreateMultisigBiometrics",
   CreateMultisigPhoneNumber = "CreateMultisigPhoneNumber",
   CreateMultisigPhoneNumberConfirm = "CreateMultisigPhoneNumberConfirm",
-  CreateMultisigSocial = "CreateMultisigSocial",
   ReplaceMultisig = "ReplaceMultisig",
   RecoverMultisig = "RecoverMultisig",
-  RecoverSinglesig = "RecoverSinglesig",
   LookupProxyWallets = "LookupProxyWallets",
 }
 
@@ -25,9 +23,7 @@ export interface OnboardingStackParamList
     securityQuestion: string;
     securityAnswer: string;
   };
-  [OnboardingRoute.CreateMultisigSocial]: undefined;
   [OnboardingRoute.ReplaceMultisig]: undefined;
   [OnboardingRoute.RecoverMultisig]: undefined;
-  [OnboardingRoute.RecoverSinglesig]: undefined;
   [OnboardingRoute.LookupProxyWallets]: undefined;
 }

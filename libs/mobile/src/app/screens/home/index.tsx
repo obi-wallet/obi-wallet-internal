@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   cosmosChains,
   Feature,
+  isCosmosChain,
   isTerraMultisigWallet,
   RequestObiTerraSignAndBroadcastMsg,
   terra,
@@ -276,7 +277,7 @@ export const HomeScreen = observer(function HomeScreen() {
   return (
     <HomeDrawer.Navigator
       useLegacyImplementation={true}
-      initialRouteName={chainStore.currentCosmosChainInformation.label}
+      initialRouteName={chainStore.currentChainInformation.label}
       screenOptions={{
         headerShown: false,
       }}
@@ -297,21 +298,13 @@ const CustomDrawerContent = observer(function CustomDrawerContent(
   const { chainStore, configStore } = useStore();
 
   const isLoop = configStore.isLoop();
-  const cosmosNetworks = configStore.config.cosmosChains.enabled.map(
-    (chainId) => {
+  const networks = configStore.config.chains.enabled.map((chainId) => {
+    if (isCosmosChain(chainId)) {
       return cosmosChains[chainId];
-    }
-  );
-  const terraNetworks = configStore.config.terraChains.enabled.map(
-    (chainId) => {
+    } else {
       return terraChains[chainId];
     }
-  );
-
-  const networks =
-    configStore.getDefaultMultisigWalletType() === WalletType.CosmosMultisig
-      ? cosmosNetworks
-      : terraNetworks;
+  });
 
   return (
     <DrawerContentScrollView

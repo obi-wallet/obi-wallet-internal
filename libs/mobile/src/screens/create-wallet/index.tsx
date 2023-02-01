@@ -1,4 +1,4 @@
-import { KeyType, MultisigKey, WalletType } from "@obi-wallet/common";
+import { isCosmosChain, KeyType, MultisigKey } from "@obi-wallet/common";
 import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -26,30 +26,28 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
     const navigation = useRootNavigation();
     const { params } = route;
 
-    const { chainStore, configStore, draftsStore, walletsStore } = useStore();
+    const { draftsStore, walletsStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({ id: params.draftId });
 
     return (
       <CreateWallet
         {...params}
         onSubmit={async () => {
-          switch (configStore.getDefaultMultisigWalletType()) {
-            case WalletType.CosmosMultisig:
-              await handleCosmos({
-                draft,
-                chainStore,
-                walletsStore,
-                demoMode: params.demoMode,
-              });
-              break;
-            case WalletType.TerraMultisig:
-              await handleTerra({
-                draft,
-                chainStore,
-                walletsStore,
-                demoMode: params.demoMode,
-              });
-              break;
+          const chainId = draft.value.chain;
+          if (isCosmosChain(chainId)) {
+            await handleCosmos({
+              draft,
+              walletsStore,
+              demoMode: params.demoMode,
+              chainId,
+            });
+          } else {
+            await handleTerra({
+              draft,
+              walletsStore,
+              demoMode: params.demoMode,
+              chainId,
+            });
           }
 
           // TODO: instead: always all routes but reset when login state changes

@@ -135,7 +135,6 @@ export type SerializedWalletAnyVersion = t.TypeOf<
 export const SerializedWallet = t.union([
   SerializedMultisigWallet,
   SerializedMultisigDemoWallet,
-  SerializedCosmosSinglesigWallet,
 ]);
 export type SerializedWallet = t.TypeOf<typeof SerializedWallet>;
 
@@ -186,12 +185,10 @@ export function migrateSerializedData(
             data,
           });
         }
-      } else if (SerializedCosmosSinglesigWalletAnyVersion.is(wallet)) {
-        wallets.push({
-          type: "cosmos-singlesig",
-          data: wallet.data,
-        });
-      } else {
+      } else if (
+        SerializedMultisigWallet.is(wallet) ||
+        SerializedMultisigDemoWallet.is(wallet)
+      ) {
         wallets.push(wallet);
       }
     });

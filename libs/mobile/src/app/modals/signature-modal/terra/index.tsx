@@ -1,10 +1,12 @@
 import {
   createLcdClient,
+  isTerraChain,
   KeyType,
   lendFees,
   MultisigKey,
   RequestObiTerraSignAndBroadcastPayload,
   terra,
+  terraChains,
 } from "@obi-wallet/common";
 import {
   BlockTxBroadcastResult,
@@ -71,7 +73,10 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
     );
     const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
     const { chainStore } = useStore();
-    const { currentTerraChainInformation } = chainStore;
+    const chainId = chainStore.currentChain;
+
+    invariant(isTerraChain(chainId), "Expected Terra chain.");
+
     const numberOfSignatures = signatures.size;
     const threshold = multisigKey.threshold;
 
@@ -97,7 +102,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
                 await terra.createMultisigTransaction({
                   key,
                   messages,
-                  chainId: currentTerraChainInformation.chainId,
+                  chainId,
                 });
             })();
             await waitForTxInfo.current;
@@ -118,7 +123,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
           }
         }
       })();
-    }, [multisigKey, currentTerraChainInformation.chainId, messages, props]);
+    }, [multisigKey, chainId, messages, props]);
 
     function getKey({ type, title }: { type: KeyType; title: string }): Key[] {
       const factor = multisigKey.getKeyOfType(type);
@@ -220,7 +225,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
                   const { signDoc } = await getTransactionInformation();
                   const phoneNumberRequestKey = new PhoneNumberRequestKey({
                     securityAnswer,
-                    chainId: currentTerraChainInformation.chainId,
+                    chainId,
                     multisigKey,
                     demoMode,
                   });
@@ -269,7 +274,8 @@ export function useTerraSignatureModalProps({
   const [signatureModalVisible, setSignatureModalVisible] = useState(false);
   const [modalKey, setModalKey] = useState(0);
   const { chainStore } = useStore();
-  const { currentTerraChainInformation } = chainStore;
+  const chainId = chainStore.currentChain;
+  invariant(isTerraChain(chainId), "Expected terra chain.");
 
   const multisigKey = MultisigKey.deserialize({
     chain: chainStore.currentChain,
@@ -304,9 +310,7 @@ export function useTerraSignatureModalProps({
         setModalKey((value) => value + 1);
       },
       async onConfirm(transaction: Tx) {
-        const client = await createLcdClient(
-          currentTerraChainInformation.chainId
-        );
+        const client = await createLcdClient(chainId);
 
         // TODO: handle fees estimation similar to station Tx.tsx
         try {
@@ -314,7 +318,7 @@ export function useTerraSignatureModalProps({
           if (isTxError(response)) {
             if (response.raw_log.includes("insufficient funds")) {
               await lendFees({
-                chainId: currentTerraChainInformation.chainId,
+                chainId,
                 address: sender,
               });
               response = await client.tx.broadcastBlock(transaction);
@@ -330,15 +334,15 @@ export function useTerraSignatureModalProps({
       },
     };
   }, [
+    modalKey,
     multisigKey,
-    sender,
+    data,
+    signatureModalVisible,
     innerMessages,
     messages,
-    modalKey,
-    signatureModalVisible,
-    data,
-    currentTerraChainInformation,
     onConfirm,
+    chainId,
+    sender,
   ]);
 
   return {

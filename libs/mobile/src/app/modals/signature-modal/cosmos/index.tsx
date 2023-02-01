@@ -24,7 +24,9 @@ import {
 import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
 import {
   cosmos,
+  cosmosChains,
   createStargateClient,
+  isCosmosChain,
   KeyType,
   lendFees,
   MultisigKey,
@@ -93,27 +95,32 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
     const [signatures, setSignatures] = useState(new Map<string, Uint8Array>());
     const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
     const { chainStore } = useStore();
-    const { currentCosmosChainInformation } = chainStore;
     const numberOfSignatures = signatures.size;
     const threshold = multisigKey.threshold;
+
+    const chainId = chainStore.currentChain;
+    invariant(
+      isCosmosChain(chainId),
+      "Expected current chain to be cosmos chain."
+    );
+
+    const currentChainInformation = cosmosChains[chainId];
 
     const getMessage = useCallback(async () => {
       const address = multisigKey.address;
 
       const fee = {
-        amount: coins(6000, currentCosmosChainInformation.denom),
+        amount: coins(6000, currentChainInformation.denom),
         gas: "1280000",
       };
 
       invariant(address, "Expected `address` to exist.");
 
-      const client = await createStargateClient(
-        currentCosmosChainInformation.chainId
-      );
+      const client = await createStargateClient(chainId);
 
       if (!(await client.getAccount(address))) {
         await lendFees({
-          chainId: currentCosmosChainInformation.chainId,
+          chainId,
           address,
         });
       }
@@ -124,7 +131,7 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
       const signDoc: StdSignDoc = {
         memo: "",
         account_number: account.accountNumber.toString(),
-        chain_id: currentCosmosChainInformation.chainId,
+        chain_id: chainId,
         fee: fee,
         msgs: messages,
         sequence: account.sequence.toString(),
@@ -132,12 +139,7 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
 
       client.disconnect();
       return new Sha256(serializeSignDoc(signDoc)).digest();
-    }, [
-      multisigKey,
-      currentCosmosChainInformation.denom,
-      currentCosmosChainInformation.chainId,
-      messages,
-    ]);
+    }, [multisigKey.address, currentChainInformation.denom, chainId, messages]);
 
     function getKey({ type, title }: { type: KeyType; title: string }): Key[] {
       const factor = multisigKey.getKeyOfType(type);
@@ -224,7 +226,7 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
               signaturesPerAddress.set(
                 cosmos.getAddress({
                   publicKey: key.payload.publicKey,
-                  chainId: currentCosmosChainInformation.chainId,
+                  chainId: chainId,
                 }),
                 signature
               );
@@ -245,7 +247,7 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
                     securityAnswer,
                     message,
                     demoMode,
-                    chainId: currentCosmosChainInformation.chainId,
+                    chainId,
                   });
                 }}
                 onConfirm={async (key) => {
@@ -304,7 +306,13 @@ export function useSignatureModalProps({
   const [signatureModalVisible, setSignatureModalVisible] = useState(false);
   const [modalKey, setModalKey] = useState(0);
   const { chainStore } = useStore();
-  const { currentCosmosChainInformation } = chainStore;
+
+  const chainId = chainStore.currentChain;
+  invariant(
+    isCosmosChain(chainId),
+    "Expected current chain to be cosmos chain."
+  );
+  const currentChainInformation = cosmosChains[chainId];
 
   const multisigKey = MultisigKey.deserialize({
     chain: chainStore.currentChain,
@@ -345,11 +353,8 @@ export function useSignatureModalProps({
         async function handleMultisig() {
           if (!multisigKey) return;
 
-          const client = await createStargateClient(
-            currentCosmosChainInformation.chainId
-          );
-
-          const { chainId, denom } = currentCosmosChainInformation;
+          const { chainId, denom } = currentChainInformation;
+          const client = await createStargateClient(chainId);
 
           console.log(messages);
 
@@ -451,7 +456,7 @@ export function useSignatureModalProps({
     data.hiddenKeyTypes,
     data.isOnboarding,
     signatureModalVisible,
-    currentCosmosChainInformation,
+    currentChainInformation,
     onConfirm,
   ]);
 

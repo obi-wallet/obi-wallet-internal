@@ -20,11 +20,9 @@ import { Stake } from "./screens/home/components/stake";
 import { MultisigBiometrics } from "./screens/onboarding/common/1-biometrics";
 import { MultisigPhoneNumber } from "./screens/onboarding/common/2-phone-number";
 import { MultisigPhoneNumberConfirm } from "./screens/onboarding/common/3-phone-number-confirm";
-import { MultisigSocial } from "./screens/onboarding/common/4-social";
 import { LookupProxyWallets } from "./screens/onboarding/lookup-proxy-wallets";
 import { OnboardingRoute } from "./screens/onboarding/onboarding-stack";
 import { RecoverMultisig } from "./screens/onboarding/recover-multisig";
-import { RecoverSinglesig } from "./screens/onboarding/recover-singlesig";
 import { ReplaceMultisig } from "./screens/onboarding/replace-multisig-key";
 import { ReceiveScreen } from "./screens/receive";
 import { SendScreen } from "./screens/send";
@@ -226,20 +224,12 @@ export const StateRenderer = observer(function StateRenderer() {
             component={MultisigPhoneNumberConfirm}
           />
           <RootStack.Screen
-            name={OnboardingRoute.CreateMultisigSocial}
-            component={MultisigSocial}
-          />
-          <RootStack.Screen
             name={OnboardingRoute.ReplaceMultisig}
             component={ReplaceMultisig}
           />
           <RootStack.Screen
             name={OnboardingRoute.RecoverMultisig}
             component={RecoverMultisig}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.RecoverSinglesig}
-            component={RecoverSinglesig}
           />
           <RootStack.Screen
             name={OnboardingRoute.LookupProxyWallets}

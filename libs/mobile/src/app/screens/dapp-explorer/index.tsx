@@ -6,7 +6,6 @@ import {
   App,
   Card,
   isAnyTerraMultisigWallet,
-  isCosmosSinglesigWallet,
   Text,
   TextInput,
   Tile,
@@ -122,8 +121,6 @@ export const DappExplorer = observer(function DappExplorer() {
                     label: "History",
                     url: isAnyTerraMultisigWallet(walletsStore.currentWallet)
                       ? `https://terrasco.pe/mainnet/contract/${walletsStore.address}`
-                      : isCosmosSinglesigWallet(walletsStore.currentWallet)
-                      ? `https://mintscan.io/juno/account/${walletsStore.address}`
                       : `https://mintscan.io/juno/wasm/contract/${walletsStore.address}`,
                     icon: "https://place-hold.it/180x180",
                   });

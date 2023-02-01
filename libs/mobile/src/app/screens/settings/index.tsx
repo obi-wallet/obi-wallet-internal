@@ -13,7 +13,6 @@ import HelpAndSupport from "./assets/headset.svg";
 import LogoutIcon from "./assets/power-red.svg";
 import { HealthChecksScreen } from "./health-checks";
 import { KeysConfigScreen } from "./keys-config";
-import { Seedphrase } from "./seedphrase";
 import { SettingsRoute } from "./settings-stack";
 import { RootStack, useRootNavigation } from "../../root-stack";
 import { useStore } from "../../stores";
@@ -135,22 +134,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
               />
             ) : null}
           </>
-        ) : (
-          <Setting
-            Icon={MultiSigIcon}
-            title={intl.formatMessage({
-              id: "settings.singlesigsettings",
-              defaultMessage: "Seedphrase",
-            })}
-            subtitle={intl.formatMessage({
-              id: "settings.singlesigsettings.subtext",
-              defaultMessage: "Export your seedphrase.",
-            })}
-            onPress={() =>
-              navigation.navigate(SettingsRoute.SinglesigSeedphrase)
-            }
-          />
-        )}
+        ) : null}
         <View
           style={[
             styles.flex1,
@@ -400,12 +384,6 @@ export const settingsScreens = () => {
         name={SettingsRoute.MultisigHealthChecks}
         key={SettingsRoute.MultisigHealthChecks}
         component={HealthChecksScreen}
-        options={{ headerShown: false }}
-      />
-      <RootStack.Screen
-        name={SettingsRoute.SinglesigSeedphrase}
-        key={SettingsRoute.SinglesigSeedphrase}
-        component={Seedphrase}
         options={{ headerShown: false }}
       />
     </RootStack.Group>

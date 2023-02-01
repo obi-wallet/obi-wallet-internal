@@ -1,22 +1,26 @@
 import {
   ChainStore,
   cosmos,
+  CosmosChain,
+  cosmosChains,
   Draft,
+  isCosmosChain,
   MultisigKey,
   RequestObiCosmosSignAndBroadcastMsg,
   WalletsStore,
 } from "@obi-wallet/common";
+import invariant from "tiny-invariant";
 
 export async function handleCosmos({
   draft,
   demoMode,
-  chainStore,
   walletsStore,
+  chainId,
 }: {
   draft: Draft<MultisigKey>;
   demoMode: boolean;
-  chainStore: ChainStore;
   walletsStore: WalletsStore;
+  chainId: CosmosChain;
 }) {
   const multisigKey = draft.value;
   // TODO: shuffle?
@@ -29,7 +33,7 @@ export async function handleCosmos({
     return {
       address: cosmos.getAddress({
         publicKey,
-        chainId: chainStore.currentCosmosChain,
+        chainId,
       }),
       ty: multisigKey.signerTypes[i],
     };
@@ -37,13 +41,13 @@ export async function handleCosmos({
 
   const owner = cosmos.getAddress({
     publicKey: multisigPublicKey,
-    chainId: chainStore.currentCosmosChain,
+    chainId,
   });
 
   const message = cosmos.getNewAccountMessage({
     address: owner,
     signers,
-    chainId: chainStore.currentCosmosChain,
+    chainId,
   });
 
   const response = await RequestObiCosmosSignAndBroadcastMsg.send({
@@ -55,12 +59,15 @@ export async function handleCosmos({
   });
 
   try {
+    const { currentCodeId } = cosmosChains[chainId];
+
     const serializedData = {
-      chain: chainStore.currentChain,
+      chain: chainId,
       owner: multisigKey.serialize(),
       proxyAddress: {
         ...cosmos.parseNewAccountResponse(response),
-        codeId: chainStore.currentCosmosChainInformation.currentCodeId,
+        // TODO: get from response
+        codeId: currentCodeId,
       },
     };
     if (demoMode) {

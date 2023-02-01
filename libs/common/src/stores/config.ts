@@ -1,7 +1,7 @@
 import { action, makeObservable, observable } from "mobx";
 
 import { WalletType } from "./wallets";
-import { CosmosChain, TerraChain } from "../chains";
+import { Chain, CosmosChain, TerraChain } from "../chains";
 import { Language } from "../languages";
 
 export enum Brand {
@@ -18,7 +18,6 @@ export enum Feature {
   HealthChecks = "HealthChecks",
   NftTab = "NftTab",
   Recovery = "Recovery",
-  SinglesigWallets = "SinglesigWallets",
   Staking = "Staking",
   InAppPurchases = "InAppPurchases",
   BrandToggle = "BrandToggle",
@@ -27,15 +26,15 @@ export enum Feature {
 
 export interface Config {
   brand: Brand;
+  // TODO: replace with default chain
+  // @deprecated
   defaultMultisigWalletType: MultisigWalletType;
-  cosmosChains: {
-    enabled: CosmosChain[];
-    default: CosmosChain;
+
+  chains: {
+    enabled: Chain[];
+    default: Chain;
   };
-  terraChains: {
-    enabled: TerraChain[];
-    default: TerraChain;
-  };
+
   languages: {
     enabled: Language[];
     default: Language;

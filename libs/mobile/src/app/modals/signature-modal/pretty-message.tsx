@@ -9,7 +9,7 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons/faPlay";
 import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { Text } from "@obi-wallet/common";
+import { cosmosChains, isCosmosChain, Text } from "@obi-wallet/common";
 import {
   Coin as TerraCoin,
   Msg,
@@ -171,9 +171,9 @@ const PrettyMessageInstantiateContract = observer(
     const intl = useIntl();
 
     if (
-      chainStore.currentChain === chainStore.currentCosmosChain &&
+      isCosmosChain(chainStore.currentChain) &&
       value.code_id ===
-        chainStore.currentCosmosChainInformation.currentCodeId.toString()
+        cosmosChains[chainStore.currentChain].currentCodeId.toString()
     ) {
       return (
         <MessageElement

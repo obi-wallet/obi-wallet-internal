@@ -156,19 +156,6 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
             );
           }}
         />
-        {configStore.isFeatureEnabled(Feature.SinglesigWallets) ? (
-          <Button
-            label={intl.formatMessage({
-              id: "onboarding1.recoversinglesig",
-            })}
-            RightIcon={isObi ? undefined : GetStarted}
-            flavor="blue"
-            style={{
-              marginTop: 20,
-            }}
-            onPress={onRecoverSinglesig}
-          />
-        ) : null}
         {configStore.isFeatureEnabled(Feature.DemoMode) ? (
           <Button
             label={intl.formatMessage({

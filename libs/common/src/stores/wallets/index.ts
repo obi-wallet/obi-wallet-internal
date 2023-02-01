@@ -11,18 +11,14 @@ import {
 import invariant from "tiny-invariant";
 
 import { WalletType } from "./abstract-wallet";
-import { CosmosSinglesigWallet } from "./cosmos-singlesig-wallet";
 import { MultisigWallet } from "./multisig-wallet";
 import {
   migrateSerializedData,
-  SerializedCosmosMultisigWalletAnyVersion,
-  SerializedCosmosSinglesigWalletAnyVersion,
   SerializedData,
   SerializedDataAnyVersion,
   SerializedMultisigDemoWallet,
   SerializedMultisigWallet,
   SerializedWallet,
-  SerializedWalletAnyVersion,
 } from "./serialized-data";
 import {
   CosmosChain,
@@ -35,7 +31,6 @@ import { ConfigStore } from "../config";
 import { Entities } from "../entities";
 
 export * from "./cosmos-multisig-wallet";
-export * from "./cosmos-singlesig-wallet";
 export * from "./terra-multisig-wallet";
 
 export enum WalletState {
@@ -47,15 +42,9 @@ export enum WalletState {
   READY = "READY",
 }
 
-export { MultisigWallet, CosmosSinglesigWallet, WalletType };
+export { MultisigWallet, WalletType };
 
-export type Wallet = MultisigWallet | CosmosSinglesigWallet;
-
-export function isCosmosSinglesigWallet(
-  wallet: Wallet | null
-): wallet is CosmosSinglesigWallet {
-  return wallet?.type === WalletType.CosmosSinglesig;
-}
+export type Wallet = MultisigWallet;
 
 export function isAnyMultisigWallet(
   wallet: Wallet | null
@@ -103,14 +92,10 @@ export class WalletsStore {
   protected readonly chainStore: ChainStore;
   protected readonly configStore: ConfigStore;
   protected readonly kvStore: KVStore;
-  protected readonly legacyKVStores: {
-    multisig: KVStore;
-    singlesig: KVStore;
-  };
 
   @observable
   protected _wallets: Entities<{
-    wallet: CosmosSinglesigWallet | MultisigWallet;
+    wallet: Wallet;
     serializedWallet: SerializedWallet;
   }>;
   @observable
@@ -124,27 +109,21 @@ export class WalletsStore {
     chainStore,
     configStore,
     kvStore,
-    legacyKVStores,
   }: {
     chainStore: ChainStore;
     configStore: ConfigStore;
     kvStore: KVStore;
-    legacyKVStores: { multisig: KVStore; singlesig: KVStore };
   }) {
     this.chainStore = chainStore;
     this.configStore = configStore;
     this.kvStore = kvStore;
-    this.legacyKVStores = legacyKVStores;
     this._wallets = new Entities();
     makeObservable(this);
     this.__initPromise = this.init();
 
     autorun(() => {
       const wallet = this.currentWallet;
-      if (
-        isTerraMultisigWallet(wallet) &&
-        wallet.chain !== this.chainStore.currentTerraChain
-      ) {
+      if (wallet?.chain !== this.chainStore.currentChain) {
         runInAction(() => {
           this.currentWalletId = null;
         });
@@ -254,33 +233,17 @@ export class WalletsStore {
 
   protected async init() {
     try {
-      const [serializedData, ...legacyWallets] = await Promise.all([
-        this.getSerializedData(),
-        this.getSerializedLegacyMultisigData(),
-        this.getSerializedLegacySinglesigData(),
-      ]);
-
-      let addedLegacyWallets = false;
-      legacyWallets.forEach((legacyData) => {
-        if (legacyData) {
-          serializedData.wallets.push(legacyData);
-          addedLegacyWallets = true;
-        }
-      });
+      const serializedData = await this.getSerializedData();
 
       const { currentWalletIndex, wallets } =
         migrateSerializedData(serializedData);
 
       wallets.forEach(this.addWalletWithoutSave);
 
-      // If legacy wallets were added, fall back to first wallet
-      let walletIndexToUse = currentWalletIndex;
-      if (addedLegacyWallets) walletIndexToUse = walletIndexToUse ?? 0;
-
       runInAction(() => {
         this.currentWalletId =
-          typeof walletIndexToUse === "number"
-            ? this._wallets.ids[walletIndexToUse]
+          typeof currentWalletIndex === "number"
+            ? this._wallets.ids[currentWalletIndex]
             : null;
         this.state = WalletState.READY;
       });
@@ -309,38 +272,6 @@ export class WalletsStore {
     return data;
   }
 
-  protected async getSerializedLegacyMultisigData(): Promise<SerializedWalletAnyVersion | null> {
-    const data = await this.legacyKVStores.multisig.get("multisig");
-    if (!data) return null;
-
-    const wallet = {
-      type: "multisig",
-      data,
-    };
-    invariant(
-      SerializedCosmosMultisigWalletAnyVersion.is(wallet),
-      "Expected key `multisig` to be of type `SerializedMultisigWalletAnyVersion`."
-    );
-    await this.legacyKVStores.multisig.set("multisig", null);
-    return wallet;
-  }
-
-  protected async getSerializedLegacySinglesigData(): Promise<SerializedWalletAnyVersion | null> {
-    const data = await this.legacyKVStores.singlesig.get("singlesig");
-    if (!data) return null;
-
-    const wallet = {
-      type: "singlesig",
-      data,
-    };
-    invariant(
-      SerializedCosmosSinglesigWalletAnyVersion.is(wallet),
-      "Expected key `singlesig` to be of type `SerializedSinglesigWalletAnyVersion`."
-    );
-    await this.legacyKVStores.singlesig.set("singlesig", null);
-    return wallet;
-  }
-
   protected createWallet = ({
     id,
     serializedWallet,
@@ -357,13 +288,6 @@ export class WalletsStore {
       case "multisig":
       case "multisig-demo":
         return new MultisigWallet({
-          id,
-          serializedWallet,
-          onChange,
-        });
-      case "cosmos-singlesig":
-        return new CosmosSinglesigWallet({
-          chainStore: this.chainStore,
           id,
           serializedWallet,
           onChange,

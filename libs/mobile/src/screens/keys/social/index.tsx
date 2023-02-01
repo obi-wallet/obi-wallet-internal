@@ -2,12 +2,14 @@ import {
   cosmos,
   createLcdClient,
   createStargateClient,
+  isCosmosChain,
   KeyType,
   MultisigKey,
   terra,
   Text,
   WalletType,
 } from "@obi-wallet/common";
+import { Pubkey } from "@cosmjs/amino";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -81,13 +83,19 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
 
   const minAddressInputChars = 43;
 
-  const toAddress = isTerra ? terra.getAddress : cosmos.getAddress;
+  const chainId = chainStore.currentChain;
+  const toAddress = isCosmosChain(chainId)
+    ? ({ publicKey }: { publicKey: Pubkey }) =>
+        cosmos.getAddress({
+          publicKey,
+          chainId,
+        })
+    : terra.getAddress;
   const currentSocialKey = draft.original.getKeyOfType(KeyType.Social);
   const currentlyUsesObi =
     currentSocialKey &&
     toAddress({
       publicKey: currentSocialKey.payload.publicKey,
-      chainId: chainStore.currentCosmosChain,
     }) === obiAddress;
 
   useEffect(() => {
@@ -106,17 +114,9 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
   ]);
 
   async function getAccountPubkey(key: string) {
-    if (isTerra) {
-      try {
-        const client = createLcdClient(chainStore.currentTerraChain);
-        const account = await client.auth.accountInfo(key);
-        return account.getPublicKey()?.toAmino();
-      } catch (e) {
-        console.log(e);
-        return null;
-      }
-    } else {
-      const client = await createStargateClient(chainStore.currentCosmosChain);
+    const chainId = chainStore.currentChain;
+    if (isCosmosChain(chainId)) {
+      const client = await createStargateClient(chainId);
 
       try {
         const account = await client.getAccount(key);
@@ -126,6 +126,15 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
         return null;
       } finally {
         client.disconnect();
+      }
+    } else {
+      try {
+        const client = createLcdClient(chainId);
+        const account = await client.auth.accountInfo(key);
+        return account.getPublicKey()?.toAmino();
+      } catch (e) {
+        console.log(e);
+        return null;
       }
     }
   }

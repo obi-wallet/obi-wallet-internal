@@ -100,10 +100,6 @@ export class RootStore {
       chainStore: this.chainStore,
       configStore: this.configStore,
       kvStore: new KVStore("wallets-store"),
-      legacyKVStores: {
-        multisig: new KVStore("multisig-store"),
-        singlesig: new KVStore("singlesig-store"),
-      },
     });
 
     router.listen(APP_PORT);
