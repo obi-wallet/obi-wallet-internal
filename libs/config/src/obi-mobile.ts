@@ -2,7 +2,6 @@ import { Brand, Config, Feature, WalletType } from "@obi-wallet/common";
 
 export const obiMobileConfig: Config = {
   brand: Brand.Obi,
-  defaultMultisigWalletType: WalletType.TerraMultisig,
   chains: {
     enabled: ["phoenix-1"],
     default: "phoenix-1",

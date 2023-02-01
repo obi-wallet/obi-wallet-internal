@@ -1,7 +1,7 @@
 import { action, makeObservable, observable } from "mobx";
 
 import { WalletType } from "./wallets";
-import { Chain, CosmosChain, TerraChain } from "../chains";
+import { Chain } from "../chains";
 import { Language } from "../languages";
 
 export enum Brand {
@@ -26,9 +26,6 @@ export enum Feature {
 
 export interface Config {
   brand: Brand;
-  // TODO: replace with default chain
-  // @deprecated
-  defaultMultisigWalletType: MultisigWalletType;
 
   chains: {
     enabled: Chain[];
@@ -81,9 +78,5 @@ export class ConfigStore {
 
   public isLoop(): boolean {
     return this.config.brand === Brand.Loop;
-  }
-
-  public getDefaultMultisigWalletType() {
-    return this.config.defaultMultisigWalletType;
   }
 }

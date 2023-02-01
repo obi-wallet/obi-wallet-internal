@@ -3,6 +3,7 @@ import {
   createLcdClient,
   createStargateClient,
   isCosmosChain,
+  isTerraChain,
   KeyType,
   MultisigKey,
   terra,
@@ -73,8 +74,7 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
   const [address, setAddress] = useState("");
   const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true); // Verify&Proceed Button disabled by default
   const [fetchingPubKey, setFetchingPubKey] = useState(false);
-  const isTerra =
-    configStore.getDefaultMultisigWalletType() === WalletType.TerraMultisig;
+  const isTerra = isTerraChain(chainStore.currentChain);
   const obiAddress = isTerra
     ? "terra18aw4eedj4v3253dvj9h5ucx9uedl9ggaayktq4"
     : "juno17w77rnps59cnallfskg42s3ntnlhrzu2mjkr3e";
