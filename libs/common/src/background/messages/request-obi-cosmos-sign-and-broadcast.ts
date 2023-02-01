@@ -3,7 +3,7 @@ import { DeliverTxResponse } from "@cosmjs/stargate";
 import { BACKGROUND_PORT, Message } from "@keplr-wallet/router";
 
 import { MessageRequesterInternal } from "../../message-requester";
-import { SerializedMultisigKey } from "../../stores";
+import { SerializedMultisigKey, KeyType } from "../../stores";
 
 export interface RequestObiCosmosSignAndBroadcastPayload {
   readonly multisigKey: SerializedMultisigKey | null;
