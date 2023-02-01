@@ -1,6 +1,5 @@
 import { Chain } from "../chains";
 import { createCosmWasmClient } from "../clients";
-import { cosmos } from "../networks";
 import { MultisigWallet } from "../stores";
 
 export type HealthCheck = (wallet: MultisigWallet) => Promise<boolean>;
@@ -12,12 +11,7 @@ export enum JunoChecks {
 
 export const junoChecks: Record<JunoChecks, HealthCheck> = {
   [JunoChecks.CORRECT_ADMIN]: async (wallet: MultisigWallet) => {
-    const currentOwner = cosmos.getAddress({
-      publicKey: cosmos.createMultisigPublicKey({
-        multisigKey: wallet.owner,
-      }),
-      chainId: "juno-1",
-    });
+    const currentOwner = wallet.owner.address;
     const client = await createCosmWasmClient("juno-1");
     const { admin } = await client.getContract(wallet.address);
     if (!admin) return false;

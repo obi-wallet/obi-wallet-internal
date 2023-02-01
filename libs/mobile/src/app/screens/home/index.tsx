@@ -252,7 +252,7 @@ export const HomeScreen = observer(function HomeScreen() {
 
               const message = terra.getMigrateMessage({
                 proxyAddress: proxyAddress.address,
-                admin: currentWallet.ownerAddress,
+                admin: currentWallet.owner.address,
                 chainId: currentWallet.chain as TerraChain,
               });
               const response = await RequestObiTerraSignAndBroadcastMsg.send({

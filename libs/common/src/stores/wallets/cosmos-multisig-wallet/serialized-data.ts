@@ -238,7 +238,7 @@ export function migrateSerializedData(
 
   const chain = mainnetProxyAddress ? "juno-1" : "uni-3";
 
-  const multisigKey = new MultisigKey();
+  const multisigKey = new MultisigKey({ chain });
   if (currentAdmin.biometrics) {
     multisigKey.setDeviceKey(currentAdmin.biometrics);
   }

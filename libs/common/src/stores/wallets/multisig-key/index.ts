@@ -4,6 +4,8 @@ import { KeyType, SerializedKey, SerializedMultisigKey } from "./keys";
 import { SerializedDeviceKeyPayload } from "./keys/device";
 import { SerializedPhoneKeyPayload } from "./keys/phone";
 import { SerializedSocialKeyPayload } from "./keys/social";
+import { Chain, isTerraChain } from "../../../chains";
+import { cosmos, terra } from "../../../networks";
 import { Draftable } from "../../drafts/draft";
 import { Entities } from "../../entities";
 
@@ -12,14 +14,22 @@ export { KeyType, SerializedMultisigKey };
 // Chain-agnostic multisig key
 export class MultisigKey implements Draftable {
   @observable
+  protected _chain: Chain;
+
+  @observable
   protected _keys: Entities<SerializedKey>;
 
   @observable
   protected _threshold = 0;
 
-  constructor() {
+  constructor({ chain }: { chain: Chain }) {
+    this._chain = chain;
     this._keys = new Entities();
     makeObservable(this);
+  }
+
+  public get chain() {
+    return this._chain;
   }
 
   public get keys() {
@@ -28,6 +38,24 @@ export class MultisigKey implements Draftable {
 
   public get threshold() {
     return this._threshold;
+  }
+
+  @computed
+  public get address() {
+    if (isTerraChain(this.chain)) {
+      const multisigPublicKey = terra.createMultisigPublicKey({
+        multisigKey: this,
+      });
+      return multisigPublicKey.address();
+    } else {
+      const multisigPublicKey = cosmos.createMultisigPublicKey({
+        multisigKey: this,
+      });
+      return cosmos.getAddress({
+        publicKey: multisigPublicKey,
+        chainId: this.chain,
+      });
+    }
   }
 
   @action
@@ -97,7 +125,7 @@ export class MultisigKey implements Draftable {
   }
 
   public clone() {
-    const clone = new MultisigKey();
+    const clone = new MultisigKey({ chain: this.chain });
     clone._threshold = this._threshold;
     clone._keys = this._keys.clone();
     return clone as this;
@@ -109,8 +137,14 @@ export class MultisigKey implements Draftable {
     );
   }
 
-  public static deserialize(serialized: SerializedMultisigKey) {
-    const multisigKey = new MultisigKey();
+  public static deserialize({
+    chain,
+    serialized,
+  }: {
+    chain: Chain;
+    serialized: SerializedMultisigKey;
+  }) {
+    const multisigKey = new MultisigKey({ chain });
     multisigKey._threshold = serialized.threshold;
     serialized.keys.forEach((key) => {
       multisigKey._keys.add({ entity: key });

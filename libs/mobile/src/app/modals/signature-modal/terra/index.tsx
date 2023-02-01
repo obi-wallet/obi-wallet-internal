@@ -271,8 +271,11 @@ export function useTerraSignatureModalProps({
   const { chainStore } = useStore();
   const { currentTerraChainInformation } = chainStore;
 
-  const multisigKey = MultisigKey.deserialize(data.multisigKey);
-  const sender = terra.createMultisigPublicKey({ multisigKey }).address();
+  const multisigKey = MultisigKey.deserialize({
+    chain: chainStore.currentChain,
+    serialized: data.multisigKey,
+  });
+  const sender = multisigKey.address;
 
   const rawMessages = data.messages.map((data) => {
     return Msg.fromAmino(data);

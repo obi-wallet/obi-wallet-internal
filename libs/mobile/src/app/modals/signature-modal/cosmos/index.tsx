@@ -2,7 +2,11 @@ import { AminoMsg, coins, serializeSignDoc, StdSignDoc } from "@cosmjs/amino";
 import { createWasmAminoConverters } from "@cosmjs/cosmwasm-stargate";
 import { wasmTypes } from "@cosmjs/cosmwasm-stargate/build/modules";
 import { Sha256 } from "@cosmjs/crypto/build/sha";
-import { EncodeObject, Registry, TxBodyEncodeObject } from "@cosmjs/proto-signing";
+import {
+  EncodeObject,
+  Registry,
+  TxBodyEncodeObject,
+} from "@cosmjs/proto-signing";
 import {
   AminoConverters,
   AminoTypes,
@@ -14,37 +18,43 @@ import {
   createIbcAminoConverters,
   createStakingAminoConverters,
   defaultRegistryTypes,
-  DeliverTxResponse, makeMultisignedTx
+  DeliverTxResponse,
+  makeMultisignedTx,
 } from "@cosmjs/stargate";
 import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
+import {
+  cosmos,
+  createStargateClient,
+  KeyType,
+  lendFees,
+  MultisigKey,
+  RequestObiCosmosSignAndBroadcastPayload,
+} from "@obi-wallet/common";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { observer } from "mobx-react-lite";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { Alert } from "react-native";
 import invariant from "tiny-invariant";
+
+import { wrapMessages } from "./wrap-messages";
 import { createBiometricSignature } from "../../../biometrics";
-import { BottomSheet, BottomSheetRef } from "../../../screens/components/bottom-sheet";
+import {
+  BottomSheet,
+  BottomSheetRef,
+} from "../../../screens/components/bottom-sheet";
 import { CheckIcon, Key } from "../../../screens/components/keys-list";
 import { useStore } from "../../../stores";
-import { ConfirmMessages } from "../confirm-messages";
-import { MultisigConfirmMessages, MultisigConfirmMessagesProps } from "../multisig-confirm-messages";
-import { KeyType } from "@obi-wallet/common";
 import {
-  createStargateClient,
-  isAnyMultisigWallet,
-  isMultisigDemoWallet,
-  isCosmosSinglesigWallet,
-  lendFees,
-  RequestObiCosmosSignAndBroadcastPayload,
-  CosmosSinglesigWallet,
-  WalletType,
-  MultisigKey, cosmos
-  KeyType
-} from "@obi-wallet/common";
+  parseSignatureTextMessageResponse,
+  sendSignatureTextMessage,
+} from "../../../text-message";
+import { ConfirmMessages } from "../confirm-messages";
+import {
+  MultisigConfirmMessages,
+  MultisigConfirmMessagesProps,
+} from "../multisig-confirm-messages";
 import { PhoneNumberBottomSheetContent } from "../phone-number-bottom-sheet-content";
-import { parseSignatureTextMessageResponse, sendSignatureTextMessage } from "../../../text-message";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { wrapMessages } from "./wrap-messages";
 
 type CosmosMultisigWallet = unknown;
 type CosmosMultisig = unknown;
@@ -148,13 +158,7 @@ export const CosmosSignatureModalMultisig = observer<
   const threshold = multisigKey.threshold;
 
   const getMessage = useCallback(async () => {
-    const multisigPublicKey = cosmos.createMultisigPublicKey({
-      multisigKey,
-    });
-    const address = cosmos.getAddress({
-      publicKey: multisigPublicKey,
-      chainId: currentCosmosChainInformation.chainId,
-    });
+    const address = multisigKey.address;
 
     const fee = {
       amount: coins(6000, currentCosmosChainInformation.denom),
@@ -195,13 +199,7 @@ export const CosmosSignatureModalMultisig = observer<
     messages,
   ]);
 
-  function getKey({
-    type,
-    title,
-  }: {
-    type: KeyType;
-    title: string;
-  }): Key[] {
+  function getKey({ type, title }: { type: KeyType; title: string }): Key[] {
     const factor = multisigKey.getKeyOfType(type);
     if (!factor) return [];
 
@@ -220,7 +218,9 @@ export const CosmosSignatureModalMultisig = observer<
           invariant(biometrics, "Expected device key to exist.");
 
           setSignatures((signatures) => {
-            return new Map(signatures.set(biometrics.payload.publicKey.value, signature));
+            return new Map(
+              signatures.set(biometrics.payload.publicKey.value, signature)
+            );
           });
           break;
         }
@@ -260,7 +260,9 @@ export const CosmosSignatureModalMultisig = observer<
       }),
     }),
   ].filter((key) => {
-    return hiddenKeyTypes ? !hiddenKeyTypes.includes(key.type as KeyType) : true;
+    return hiddenKeyTypes
+      ? !hiddenKeyTypes.includes(key.type as KeyType)
+      : true;
   });
 
   if (!threshold) return null;
@@ -279,7 +281,13 @@ export const CosmosSignatureModalMultisig = observer<
         for (const key of multisigKey.keys) {
           const signature = signatures.get(key.payload.publicKey.value);
           if (signature) {
-            signaturesPerAddress.set(cosmos.getAddress({ publicKey: key.payload.publicKey, chainId: currentCosmosChainInformation.chainId }), signature);
+            signaturesPerAddress.set(
+              cosmos.getAddress({
+                publicKey: key.payload.publicKey,
+                chainId: currentCosmosChainInformation.chainId,
+              }),
+              signature
+            );
           }
         }
 
@@ -308,7 +316,10 @@ export const CosmosSignatureModalMultisig = observer<
                 if (signature) {
                   setSignatures((signatures) => {
                     return new Map(
-                      signatures.set(phoneKey.payload.publicKey.value, signature)
+                      signatures.set(
+                        phoneKey.payload.publicKey.value,
+                        signature
+                      )
                     );
                   });
                   phoneNumberBottomSheetRef.current?.close();
@@ -354,12 +365,19 @@ export function useSignatureModalProps({
   const { chainStore, walletsStore } = useStore();
   const { currentCosmosChainInformation } = chainStore;
 
-  const multisigKey = data.multisigKey ? MultisigKey.deserialize(data.multisigKey) : null;
+  const multisigKey = data.multisigKey
+    ? MultisigKey.deserialize({
+        chain: chainStore.currentChain,
+        serialized: data.multisigKey,
+      })
+    : null;
 
   const wrappedEncodeObjects = getWrappedEncodeObjects();
   const innerEncodeObjects = data.encodeObjects;
 
-  const signatureModalProps = useMemo((): CosmosSignatureModalProps & { key: string } => {
+  const signatureModalProps = useMemo((): CosmosSignatureModalProps & {
+    key: string;
+  } => {
     const innerAminoMessages = innerEncodeObjects.map((encodeObject) => {
       return aminoTypes.toAmino(encodeObject);
     });
@@ -409,10 +427,7 @@ export function useSignatureModalProps({
           const multisigPublicKey = cosmos.createMultisigPublicKey({
             multisigKey,
           });
-          const address = cosmos.getAddress({
-            publicKey: multisigPublicKey,
-            chainId: currentCosmosChainInformation.chainId,
-          });
+          const address = multisigKey.address;
 
           const feeAmount = 6000;
           const fee = {
@@ -511,13 +526,7 @@ export function useSignatureModalProps({
   function getWrappedEncodeObjects(): EncodeObject[] {
     if (!data.proxyAddress || !multisigKey) return data.encodeObjects;
 
-    const multisigPublicKey = cosmos.createMultisigPublicKey({
-      multisigKey,
-    });
-    const sender = cosmos.getAddress({
-      publicKey: multisigPublicKey,
-      chainId: currentCosmosChainInformation.chainId,
-    });
+    const sender = multisigKey.address;
 
     return [
       wrapMessages({

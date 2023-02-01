@@ -25,10 +25,12 @@ export type WelcomeScreenProps = NativeStackScreenProps<
 export const WelcomeScreen = observer<WelcomeScreenProps>(
   function WelcomeScreen() {
     const navigation = useRootNavigation();
-    const { draftsStore } = useStore();
+    const { chainStore, draftsStore } = useStore();
 
     function onCreate() {
-      const newMultisigKey = new MultisigKey();
+      const newMultisigKey = new MultisigKey({
+        chain: chainStore.currentChain,
+      });
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });
@@ -40,7 +42,9 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     }
 
     function onRecover() {
-      const newMultisigKey = new MultisigKey();
+      const newMultisigKey = new MultisigKey({
+        chain: chainStore.currentChain,
+      });
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });
@@ -56,7 +60,9 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     }
 
     function onEnterDemoMode() {
-      const newMultisigKey = new MultisigKey();
+      const newMultisigKey = new MultisigKey({
+        chain: chainStore.currentChain,
+      });
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });

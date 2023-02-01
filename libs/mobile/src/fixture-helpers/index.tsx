@@ -21,14 +21,14 @@ export const MultisigDraft = {
   Container: observer<{ children: ReactNode }>(function MultisigDraft({
     children,
   }) {
-    const { draftsStore } = useStore();
+    const { chainStore, draftsStore } = useStore();
     const draft = draftsStore.get({ id: multisigDraftId });
     const securityQuestions = useSecurityQuestions();
 
     useEffect(() => {
       (async () => {
         if (!draft) {
-          const original = new MultisigKey();
+          const original = new MultisigKey({ chain: chainStore.currentChain });
           original.setDeviceKey({
             publicKey: {
               type: pubkeyType.secp256k1,
@@ -53,7 +53,7 @@ export const MultisigDraft = {
           });
         }
       })();
-    }, [draft, draftsStore, securityQuestions]);
+    }, [draft, chainStore, draftsStore, securityQuestions]);
 
     return draft ? <>{children}</> : null;
   }),

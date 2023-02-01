@@ -137,7 +137,7 @@ export function migrateSerializedData(
     const currentAdmin = serializedData.currentAdmin;
     if (!proxyAddress || !currentAdmin) return null;
 
-    const multisigKey = new MultisigKey();
+    const multisigKey = new MultisigKey({ chain: serializedData.chain });
     if (currentAdmin.biometrics) {
       multisigKey.setDeviceKey(currentAdmin.biometrics);
     }
