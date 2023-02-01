@@ -7,7 +7,6 @@ import {
   Coin,
   Delegation,
   ExtendedValidator,
-  isAnyTerraMultisigWallet,
   RequestObiTerraSignAndBroadcastMsg,
   terra,
   Text,
@@ -346,7 +345,8 @@ const Balance = observer(function Balance() {
             alignItems: "center",
           }}
           onPress={async () => {
-            if (!isAnyTerraMultisigWallet(wallet)) return;
+            // TODO:
+            // if (!isAnyTerraMultisigWallet(wallet)) return;
 
             const sender = wallet.address;
             invariant(sender, "Expected wallet address to exist.");
@@ -465,7 +465,8 @@ const Validators = observer(function Validators() {
           validator={selectedValidator}
           confirmLabel="Stake"
           onConfirm={async ({ amount, validator }) => {
-            if (!isAnyTerraMultisigWallet(wallet)) return;
+            // TODO:
+            // if (!isAnyTerraMultisigWallet(wallet)) return;
 
             invariant(wallet.address, "Expected wallet address to exist.");
             // invariant(wallet.currentAdmin, "Expected current admin to exist.");
@@ -726,7 +727,8 @@ const MyStake = observer(function MyStake() {
           validator={selectedValidator}
           confirmLabel="Unstake"
           onConfirm={async ({ amount, validator }) => {
-            if (!isAnyTerraMultisigWallet(wallet)) return;
+            // TODO:
+            // if (!isAnyTerraMultisigWallet(wallet)) return;
 
             invariant(wallet.address, "Expected wallet address to exist.");
             // invariant(wallet.currentAdmin, "Expected current admin to exist.");

@@ -3,9 +3,7 @@ import { DeliverTxResponse } from "@cosmjs/stargate";
 import { Keplr } from "@keplr-wallet/provider";
 import { BACKGROUND_PORT } from "@keplr-wallet/router";
 import {
-  isAnyCosmosMultisigWallet,
-  isAnyMultisigWallet,
-  isMultisigDemoWallet,
+  isCosmosChain,
   MessageRequesterExternal,
   PricingTier,
   RequestObiCosmosSignAndBroadcastMsg,
@@ -26,14 +24,12 @@ class ConcreteKeplr extends Keplr {
 
     invariant(currentWallet, "Expected `currentWallet` to be defined.");
 
-    if (isAnyCosmosMultisigWallet(currentWallet)) {
+    if (isCosmosChain(currentWallet.chain)) {
       const msg = new RequestObiCosmosSignAndBroadcastMsg({
         multisigKey: currentWallet.owner.serialize(),
-        demoMode: isMultisigDemoWallet(currentWallet),
+        demoMode: currentWallet.isDemo,
         encodeObjects: messages,
-        proxyAddress: isAnyMultisigWallet(currentWallet)
-          ? currentWallet.proxyAddress.address
-          : undefined,
+        proxyAddress: currentWallet.proxyAddress.address,
       });
       return await this.requester.sendMessage(BACKGROUND_PORT, msg);
     }

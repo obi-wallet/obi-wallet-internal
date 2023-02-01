@@ -7,8 +7,6 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   ChainStore,
-  isAnyCosmosMultisigWallet,
-  isAnyTerraMultisigWallet,
   RequestObiCosmosSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastMsg,
   terra,
@@ -40,19 +38,20 @@ export const RecoverMultisig = observer<RecoverMultisigProps>(
     const wallet = useMultisigWallet();
 
     useEffect(() => {
-      if (isAnyCosmosMultisigWallet(wallet)) {
-        void handleCosmos({
-          chainStore,
-          navigation,
-        });
-      }
-
-      if (isAnyTerraMultisigWallet(wallet)) {
-        void handleTerra({
-          chainStore,
-          navigation,
-        });
-      }
+      // TODO:
+      // if (isAnyCosmosMultisigWallet(wallet)) {
+      //   void handleCosmos({
+      //     chainStore,
+      //     navigation,
+      //   });
+      // }
+      //
+      // if (isAnyTerraMultisigWallet(wallet)) {
+      //   void handleTerra({
+      //     chainStore,
+      //     navigation,
+      //   });
+      // }
     });
 
     return (

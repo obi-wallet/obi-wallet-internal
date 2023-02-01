@@ -8,8 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import {
   Brand,
-  isAnyCosmosMultisigWallet,
-  isTerraMultisigWallet,
+  isCosmosChain,
   RequestObiCosmosSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastMsg,
 } from "@obi-wallet/common";
@@ -425,7 +424,8 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
               ];
             }
 
-            if (isAnyCosmosMultisigWallet(wallet)) {
+            const chain = wallet.chain;
+            if (isCosmosChain(chain)) {
               const response = await RequestObiCosmosSignAndBroadcastMsg.send({
                 multisigKey: wallet.owner.serialize(),
                 demoMode: wallet.isDemo,
@@ -437,17 +437,13 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
                 visible: true,
                 success: isDeliverTxSuccess(response),
               });
-            }
-
-            if (isTerraMultisigWallet(wallet)) {
+            } else {
               const response = await RequestObiTerraSignAndBroadcastMsg.send({
                 multisigKey: wallet.owner.serialize(),
                 demoMode: wallet.isDemo,
                 messages: getMessages().map((message) => message.toAmino()),
                 proxyAddress: wallet.proxyAddress.address,
               });
-
-              console.log(response);
 
               setConfirmModalStatus({
                 visible: true,

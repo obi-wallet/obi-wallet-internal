@@ -1,5 +1,4 @@
-import { pubkeyType } from "@cosmjs/amino";
-import { isMultisigDemoWallet, Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -192,7 +191,7 @@ export const MultisigPhoneNumberConfirm = observer(
                     await sendPublicKeyTextMessage({
                       phoneNumber: params.phoneNumber,
                       securityAnswer: params.securityAnswer,
-                      demoMode: isMultisigDemoWallet(wallet),
+                      demoMode: wallet.isDemo,
                       chainId,
                     });
                   }}
@@ -241,7 +240,7 @@ export const MultisigPhoneNumberConfirm = observer(
                     setVerifyButtonDisabledDoubleclick(true);
                     const publicKey = await parsePublicKeyTextMessageResponse({
                       key,
-                      demoMode: isMultisigDemoWallet(wallet),
+                      demoMode: wallet.isDemo,
                     });
                     if (publicKey) {
                       // await wallet.setPhoneNumberKey({

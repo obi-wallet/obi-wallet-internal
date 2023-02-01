@@ -2,7 +2,7 @@ import { useTheme } from "@emotion/react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
-import { Feature, isAnyMultisigWallet, Text } from "@obi-wallet/common";
+import { Feature, Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";

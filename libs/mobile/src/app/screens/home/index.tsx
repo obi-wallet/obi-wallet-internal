@@ -5,13 +5,12 @@ import {
   cosmosChains,
   Feature,
   isCosmosChain,
-  isTerraMultisigWallet,
+  isTerraChain,
   RequestObiTerraSignAndBroadcastMsg,
   terra,
   TerraChain,
   terraChains,
   Text,
-  WalletType,
 } from "@obi-wallet/common";
 import {
   DrawerContentComponentProps,
@@ -240,7 +239,11 @@ export const HomeScreen = observer(function HomeScreen() {
   useEffect(() => {
     const currentWallet = walletsStore.currentWallet;
 
-    if (isTerraMultisigWallet(currentWallet) && currentWallet.isOutdated) {
+    if (
+      currentWallet &&
+      isTerraChain(currentWallet.chain) &&
+      currentWallet.isOutdated
+    ) {
       Alert.alert(
         "Verified Update Available",
         "Update your Obi Smart Account to continue testing.",

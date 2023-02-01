@@ -1,6 +1,5 @@
 import {
   cosmosChains,
-  isAnyMultisigWallet,
   isCosmosChain,
   isTerraChain,
   MultisigWallet,
@@ -20,10 +19,7 @@ export function useStore() {
 export function useMultisigWallet(): MultisigWallet {
   const { walletsStore } = useStore();
   const { currentWallet } = walletsStore;
-  invariant(
-    isAnyMultisigWallet(currentWallet),
-    "Expected current wallet to be multisig."
-  );
+  invariant(currentWallet, "Expected current wallet to be multisig.");
   return currentWallet;
 }
 

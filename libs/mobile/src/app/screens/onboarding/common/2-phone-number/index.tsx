@@ -1,8 +1,8 @@
-import { isMultisigDemoWallet, Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { Alert, Image, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -303,7 +303,7 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                       await sendPublicKeyTextMessage({
                         phoneNumber,
                         securityAnswer,
-                        demoMode: isMultisigDemoWallet(wallet),
+                        demoMode: wallet.isDemo,
                         chainId,
                       });
                       navigation.navigate(

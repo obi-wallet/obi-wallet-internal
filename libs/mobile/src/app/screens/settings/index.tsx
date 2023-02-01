@@ -1,5 +1,5 @@
 import styled from "@emotion/native";
-import { Brand, Feature, isAnyMultisigWallet } from "@obi-wallet/common";
+import { Brand, Feature } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { FC, useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -35,7 +35,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
     })();
   }, []);
 
-  const isMultisigWallet = isAnyMultisigWallet(walletsStore.currentWallet);
+  const isMultisigWallet = walletsStore.currentWallet !== null;
 
   return (
     <Container>

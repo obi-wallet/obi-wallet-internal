@@ -1,3 +1,4 @@
+import { Pubkey } from "@cosmjs/amino";
 import {
   cosmos,
   createLcdClient,
@@ -10,7 +11,6 @@ import {
   Text,
   WalletType,
 } from "@obi-wallet/common";
-import { Pubkey } from "@cosmjs/amino";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";

@@ -1,10 +1,5 @@
 import { useTheme } from "@emotion/react";
-import {
-  Config,
-  isMultisigDemoWallet,
-  Text,
-  WalletState,
-} from "@obi-wallet/common";
+import { Config, Text, WalletState } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { AppState, View } from "react-native";
@@ -127,8 +122,8 @@ const Load = observer(function Load() {
 export const DemoModeHeader = observer(function DemoModeHeader() {
   const { walletsStore } = useStore();
 
-  // TODO: this doesn't work like this anymore
-  if (!isMultisigDemoWallet(walletsStore.currentWallet)) return null;
+  // TODO: fix
+  return null;
 
   return (
     <View

@@ -1,4 +1,3 @@
-import { isTerraMultisigWallet } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 
 import { Lookup } from "./lookup";

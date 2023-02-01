@@ -20,12 +20,6 @@ import {
   SerializedMultisigWallet,
   SerializedWallet,
 } from "./serialized-data";
-import {
-  CosmosChain,
-  isCosmosChain,
-  isTerraChain,
-  TerraChain,
-} from "../../chains";
 import { ChainStore } from "../chain";
 import { ConfigStore } from "../config";
 import { Entities } from "../entities";
@@ -45,48 +39,6 @@ export enum WalletState {
 export { MultisigWallet, WalletType };
 
 export type Wallet = MultisigWallet;
-
-export function isAnyMultisigWallet(
-  wallet: Wallet | null
-): wallet is MultisigWallet {
-  return wallet?.type === WalletType.Multisig;
-}
-
-export function isAnyCosmosMultisigWallet(
-  wallet: Wallet | null
-): wallet is MultisigWallet & { chain: CosmosChain } {
-  return isAnyMultisigWallet(wallet) && isCosmosChain(wallet.chain);
-}
-
-export function isAnyTerraMultisigWallet(
-  wallet: Wallet | null
-): wallet is MultisigWallet & { chain: TerraChain } {
-  return isAnyMultisigWallet(wallet) && isTerraChain(wallet.chain);
-}
-
-export function isMultisigWallet(
-  wallet: Wallet | null
-): wallet is MultisigWallet & { isDemo: false } {
-  return isAnyMultisigWallet(wallet) && !wallet.isDemo;
-}
-
-export function isCosmosMultisigWallet(
-  wallet: Wallet | null
-): wallet is MultisigWallet & { isDemo: false } {
-  return isAnyCosmosMultisigWallet(wallet) && !wallet.isDemo;
-}
-
-export function isTerraMultisigWallet(
-  wallet: Wallet | null
-): wallet is MultisigWallet & { isDemo: false } {
-  return isAnyTerraMultisigWallet(wallet) && !wallet.isDemo;
-}
-
-export function isMultisigDemoWallet(
-  wallet: Wallet | null
-): wallet is MultisigWallet & { isDemo: true } {
-  return isAnyMultisigWallet(wallet) && wallet.isDemo;
-}
 
 export class WalletsStore {
   protected readonly chainStore: ChainStore;

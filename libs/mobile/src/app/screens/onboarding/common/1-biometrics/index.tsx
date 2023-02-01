@@ -1,5 +1,4 @@
-import { pubkeyType } from "@cosmjs/amino";
-import { isMultisigDemoWallet, Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -43,7 +42,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
 
     async function scanBiometrics() {
       try {
-        const demoMode = isMultisigDemoWallet(wallet);
+        const demoMode = wallet.isDemo;
         const publicKey = await getBiometricsPublicKey({
           demoMode,
         });
