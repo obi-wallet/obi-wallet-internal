@@ -49,6 +49,7 @@ import { Alert } from "react-native";
 import invariant from "tiny-invariant";
 
 import { createBiometricSignature } from "../../../biometrics";
+import { createNFCSignature } from "../../../nfc";
 import { createSigningCosmWasmClient } from "../../../clients";
 import {
   BottomSheet,

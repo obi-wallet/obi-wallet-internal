@@ -106,6 +106,8 @@
     "rooks": "*",
     "scrypt-js": "*",
     "secp256k1": "*",
-    "tiny-invariant": "*"
+    "tiny-invariant": "*",
+    "@tanstack/query-async-storage-persister": "*",
+    "@tanstack/react-query-persist-client": "*"
   }
 }

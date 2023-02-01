@@ -7,6 +7,7 @@ import {
   TerraMultisig,
   TerraMultisigKey,
   TerraMultisigWallet,
+  isMultisigDemoWallet,
 } from "@obi-wallet/common";
 import {
   BlockTxBroadcastResult,
@@ -21,6 +22,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { Alert } from "react-native";
 import invariant from "tiny-invariant";
+import { assembleNFCSignature, checkIsSupported, decodeNdefRecord, startReading } from "../../../nfc";
+import NfcManager, { Ndef, NfcEvents, RegisterTagEventOpts } from 'react-native-nfc-manager';
 
 import {
   BottomSheet,
@@ -37,6 +40,7 @@ import {
   BiometricsKey,
   PhoneNumberConfirmKey,
   PhoneNumberRequestKey,
+  NFCKey,
 } from "./keys";
 
 export interface TerraSignatureModalProps
@@ -161,6 +165,27 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
           }
           case "phoneNumber":
             phoneNumberBottomSheetRef.current?.snapToIndex(0);
+            break;
+          case "nfc":
+            let supported = await checkIsSupported();
+            invariant(supported, "NFC key exists but not supported by device.");
+            NfcManager.setEventListener(NfcEvents.DiscoverTag, async (tag: any) => {
+              if (await tag.ndefMessage && await tag.ndefMessage.length > 0) {
+                const ndefRecords = await tag.ndefMessage;
+                let parsed = await ndefRecords.map(decodeNdefRecord);
+                const nfcKey = new NFCKey({
+                  wallet,
+                  multisig,
+                  boostEntropy: true,
+                  parsed,
+                });
+                const signature = await NFCKey.createSignatureAmino(signDoc);
+                setSignatures((signatures) => {
+                  return new Map(signatures.set(id, signature));
+                });
+              } 
+            });
+            startReading("Tap your NFC device to sign this transaction.");
             break;
           default:
             console.log("Not implemented yet");

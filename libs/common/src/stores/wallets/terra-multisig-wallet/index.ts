@@ -3,6 +3,7 @@ import {
   SimplePublicKey,
 } from "@terra-money/terra.js";
 import { action, computed, makeObservable, observable } from "mobx";
+import { randomBytes } from 'react-native-randombytes';
 
 import { terraChains } from "../../../chains";
 import { AbstractWallet, WalletType, WithAddress } from "../abstract-wallet";
@@ -17,6 +18,13 @@ export { TerraSerializedData };
 export type TerraMultisigThresholdPublicKey =
   LegacyAminoMultisigPublicKey.Amino;
 
+  const array = new Uint32Array(10);
+self.crypto.getRandomValues(array);
+
+console.log("Your lucky numbers:");
+for (const num of array) {
+  console.log(num);
+}
 export interface TerraMultisig {
   multisig: WithAddress<{ publicKey: TerraMultisigThresholdPublicKey }> | null;
   biometrics: WithAddress<TerraSerializedData.SerializedBiometricsPayload> | null;
@@ -28,6 +36,7 @@ export interface TerraMultisig {
   telegram: null;
   map: null;
   ledger: null;
+  localEntropy: Buffer;
 }
 
 export interface TerraProxyWallet {
@@ -40,7 +49,7 @@ export interface TerraProxyWallet {
   };
 }
 
-export type TerraMultisigKey = keyof Omit<TerraMultisig, "multisig">;
+export type TerraMultisigKey = keyof Omit<TerraMultisig, "multisig" | "localEntropy">;
 
 export class TerraMultisigWallet extends AbstractWallet {
   protected readonly _id: string;
@@ -95,6 +104,10 @@ export class TerraMultisigWallet extends AbstractWallet {
 
   get address(): string | null {
     return this.proxyAddress?.address ?? null;
+  }
+
+  get localEntropy(): Buffer | null {
+    return this.localEntropy ?? null;
   }
 
   get type(): WalletType {
@@ -293,6 +306,7 @@ export class TerraMultisigWallet extends AbstractWallet {
       telegram: null,
       map: null,
       ledger: null,
+      localEntropy: randomBytes(21),
     };
   }
 

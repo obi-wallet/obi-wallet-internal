@@ -3,6 +3,7 @@ import {
   MultisigThresholdPubkey,
   pubkeyToAddress,
 } from "@cosmjs/amino";
+import { randomBytes } from "crypto";
 import { action, computed, makeObservable, observable } from "mobx";
 import R from "ramda";
 
@@ -32,9 +33,10 @@ export interface CosmosMultisig {
   telegram: null;
   map: null;
   ledger: null;
+  localEntropy: Buffer;
 }
 
-export type CosmosMultisigKey = keyof Omit<CosmosMultisig, "multisig">;
+export type CosmosMultisigKey = keyof Omit<CosmosMultisig, "multisig"| "localEntropy">;
 
 export interface CosmosProxyWallet {
   proxyAddress: CosmosSerializedData.SerializedProxyAddress;
@@ -103,6 +105,10 @@ export class CosmosMultisigWallet extends AbstractWallet {
 
   public get type() {
     return WalletType.CosmosMultisig;
+  }
+
+  public get localEntropy(): Buffer | null {
+    return this.localEntropy ?? null;
   }
 
   public get isReady() {
@@ -313,10 +319,10 @@ export class CosmosMultisigWallet extends AbstractWallet {
       },
       cloud: null,
       email: null,
-      nfc: null,
       telegram: null,
       map: null,
       ledger: null,
+      localEntropy: randomBytes(21),
     };
   }
 

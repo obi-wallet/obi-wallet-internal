@@ -9,6 +9,7 @@ import { SHA256, Word32Array } from "jscrypto";
 import invariant from "tiny-invariant";
 
 import { createBiometricSignature } from "../../../biometrics";
+import { checkIsSupported, createNFCSignature, startReading } from "../../../nfc";
 import {
   parseSignatureTextMessageResponse,
   sendSignatureTextMessage,
@@ -118,5 +119,45 @@ export class PhoneNumberRequestKey extends Key {
       chainId: this.chainId,
     });
     return new Buffer("");
+  }
+}
+
+export class NFCKey extends Key {
+  protected readonly wallet: TerraMultisigWallet;
+  protected boostEntropy: boolean;
+  protected localEntropy: Buffer;
+  protected parsed: string;
+
+  constructor({
+    wallet,
+    multisig,
+    boostEntropy,
+    parsed,
+  }: {
+    wallet: TerraMultisigWallet;
+    multisig: TerraMultisig;
+    boostEntropy: boolean;
+    parsed: string[];
+  }) {
+    const nfc = multisig.nfc;
+    invariant(nfc, "Expected NFC key to exist.");
+    super(SimplePublicKey.fromAmino(nfc.publicKey));
+    this.wallet = wallet;
+    this.boostEntropy = boostEntropy;
+    this.localEntropy = this.wallet.nextAdmin?.localEntropy;
+    this.parsed = JSON.stringify(parsed);
+  }
+
+  async sign(payload: Buffer): Promise<Buffer> {
+    const demoMode = isMultisigDemoWallet(this.wallet);
+    const { signature } = await createNFCSignature({
+      payload: createHash(payload),
+      demoMode,
+      parsed: this.parsed,
+      boostEntropy: this.boostEntropy,
+      localEntropy: this.localEntropy,
+
+    });
+    return Buffer.from(signature);
   }
 }
