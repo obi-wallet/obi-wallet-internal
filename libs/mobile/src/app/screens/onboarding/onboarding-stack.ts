@@ -1,5 +1,6 @@
 export enum OnboardingRoute {
   Welcome = "Welcome",
+  CreateWallet = "CreateWallet",
   CreateMultisigBiometrics = "CreateMultisigBiometrics",
   CreateMultisigPhoneNumber = "CreateMultisigPhoneNumber",
   CreateMultisigPhoneNumberConfirm = "CreateMultisigPhoneNumberConfirm",
@@ -14,6 +15,10 @@ export enum OnboardingRoute {
 export interface OnboardingStackParamList
   extends Record<string, object | undefined> {
   [OnboardingRoute.Welcome]: undefined;
+  [OnboardingRoute.CreateWallet]: {
+    draftId: string;
+    demoMode: boolean;
+  };
   [OnboardingRoute.CreateMultisigBiometrics]: undefined;
   [OnboardingRoute.CreateMultisigPhoneNumber]: undefined;
   [OnboardingRoute.CreateMultisigPhoneNumberConfirm]: {

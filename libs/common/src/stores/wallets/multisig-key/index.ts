@@ -72,6 +72,7 @@ export class MultisigKey implements Draftable {
     this._keys.add({
       entity: serializedKey,
     });
+    this._threshold = Math.max(1, this._threshold);
   }
 
   public clone() {

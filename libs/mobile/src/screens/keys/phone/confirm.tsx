@@ -16,6 +16,7 @@ import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-a
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
 import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
 import InsuranceLogo from "../../../app/screens/onboarding/common/3-phone-number-confirm/assets/insurance-logo.svg";
+import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
 import { useStore } from "../../../app/stores";
 import { TextInput } from "../../../app/text-input";
 import {
@@ -40,7 +41,7 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
         onSubmit={() => {
           switch (params.flow) {
             case KeyFlow.CreateWallet:
-              navigation.navigate(KeyRoute.SocialKey, params);
+              navigation.navigate(OnboardingRoute.CreateWallet, params);
               break;
             case KeyFlow.ReplaceKey:
               // TODO: navigate to ReplaceMultisig

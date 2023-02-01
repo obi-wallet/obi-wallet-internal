@@ -5,6 +5,7 @@ import {
   Text,
   WalletState,
 } from "@obi-wallet/common";
+import { useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { AppState, View } from "react-native";
@@ -14,7 +15,7 @@ import { deploymentKey } from "./code-push";
 import { Loader } from "./loader";
 import { Modals } from "./modals";
 import { Provider, ProviderProps } from "./provider";
-import { RootRoute, RootStack } from "./root-stack";
+import { RootRoute, RootStack, useRootNavigation } from "./root-stack";
 import { HomeScreen } from "./screens/home";
 import { Stake } from "./screens/home/components/stake";
 import { MultisigBiometrics } from "./screens/onboarding/common/1-biometrics";
@@ -33,6 +34,7 @@ import { settingsScreens } from "./screens/settings";
 import { SplashScreen } from "./screens/splash";
 import { WebViewScreen } from "./screens/web-view";
 import { useStore } from "./stores";
+import { CreateWalletScreen } from "../screens/create-wallet";
 import { keyScreens } from "../screens/keys/key-screens";
 import { WelcomeScreen } from "../screens/welcome";
 
@@ -129,6 +131,7 @@ const Load = observer(function Load() {
 export const DemoModeHeader = observer(function DemoModeHeader() {
   const { walletsStore } = useStore();
 
+  // TODO: this doesn't work like this anymore
   if (!isMultisigDemoWallet(walletsStore.currentWallet)) return null;
 
   return (
@@ -247,6 +250,10 @@ export const StateRenderer = observer(function StateRenderer() {
           <RootStack.Screen
             name={OnboardingRoute.LookupProxyWallets}
             component={LookupProxyWallets}
+          />
+          <RootStack.Screen
+            name={OnboardingRoute.CreateWallet}
+            component={CreateWalletScreen}
           />
           {keyScreens()}
         </RootStack.Group>

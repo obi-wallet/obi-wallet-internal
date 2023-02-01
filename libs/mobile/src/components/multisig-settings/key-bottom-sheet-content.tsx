@@ -14,11 +14,15 @@ export interface KeyBottomSheetContentProps {
   type: KeyType;
   multisigKey: MultisigKey;
 
+  action?: {
+    label: string;
+    onPress(): void;
+  };
   onClose(): void;
 }
 
 export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
-  function KeyBottomSheetContent({ type, multisigKey, onClose }) {
+  function KeyBottomSheetContent({ type, multisigKey, action, onClose }) {
     const keyMetaData = useKeyMetaData();
 
     const { label, Icon } = keyMetaData.metaData[type];
@@ -32,17 +36,13 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
     const safeArea = useSafeAreaInsets();
 
     const getRecoverButton = () => {
+      if (!action) return null;
+
       return (
         <TouchableOpacity
           onPress={() => {
-            // const wallet = walletsStore.currentWallet;
-            // if (isAnyMultisigWallet(wallet)) {
-            //   if (configStore.isFeatureEnabled(Feature.Recovery)) {
-            //     wallet.recover(keyId);
-            //   } else {
-            //     Alert.alert("Recovery workflow not available yet.");
-            //   }
-            // }
+            action.onPress();
+            onClose();
           }}
           style={{
             paddingVertical: 5,
@@ -59,15 +59,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
               ...(isObi ? { color: "white" } : {}),
             }}
           >
-            {/* TODO: Key metadata: check if key replaceable */}
-            {activated ? (
-              <FormattedMessage
-                id="settings.multisig.modal.replacenow"
-                defaultMessage="Replace now"
-              />
-            ) : (
-              "Add now"
-            )}
+            {action.label}
           </Text>
         </TouchableOpacity>
       );

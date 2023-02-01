@@ -1,12 +1,5 @@
-import { Alert } from "react-native";
-
+import { mockAction } from "../../src/fixture-helpers";
 import { Welcome } from "../../src/screens/welcome";
-
-function mockAction(message: string) {
-  return () => {
-    Alert.alert(message);
-  };
-}
 
 export default (
   <Welcome

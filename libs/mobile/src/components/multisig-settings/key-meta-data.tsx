@@ -25,7 +25,7 @@ enum ComingSoonKeyType {
 export function useKeyMetaData() {
   const intl = useIntl();
 
-  const keys = [KeyType.Phone, KeyType.Device, KeyType.Social];
+  const keys = [KeyType.Device, KeyType.Phone, KeyType.Social];
   const comingSoonKeys = [
     ComingSoonKeyType.Email,
     ComingSoonKeyType.Cloud,

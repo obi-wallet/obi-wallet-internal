@@ -1,12 +1,12 @@
 import { mockAction, MultisigDraft } from "../../src/fixture-helpers";
-import { DeviceKey } from "../../src/screens/keys/device";
+import { CreateWallet } from "../../src/screens/create-wallet";
 
 export default (
   <MultisigDraft.Container>
-    <DeviceKey
+    <CreateWallet
       draftId={MultisigDraft.draftId}
-      demoMode
       onSubmit={mockAction("onSubmit")}
+      onAddSocial={mockAction("onAddSocial")}
     />
   </MultisigDraft.Container>
 );

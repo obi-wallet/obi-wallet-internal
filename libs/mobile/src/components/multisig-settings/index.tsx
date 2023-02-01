@@ -7,12 +7,15 @@ import {
   Text,
 } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
-import { useRef, useState } from "react";
+import { ReactNode, useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { KeyBottomSheetContent } from "./key-bottom-sheet-content";
+import {
+  KeyBottomSheetContent,
+  KeyBottomSheetContentProps,
+} from "./key-bottom-sheet-content";
 import { useKeyMetaData } from "./key-meta-data";
 import { Back } from "../../app/screens/components/back";
 import {
@@ -26,11 +29,15 @@ import { KeysComponent } from "../../app/screens/settings/keys-config/keys-compo
 import { useStore } from "../../app/stores";
 
 export interface MultisigSettingsProps {
+  children?: ReactNode;
+  title: string;
+  subTitle: string;
   draftId: string;
+  actions: Partial<Record<KeyType, KeyBottomSheetContentProps["action"]>>;
 }
 
 export const MultisigSettings = observer<MultisigSettingsProps>(
-  function MultisigSettings({ draftId }) {
+  function MultisigSettings({ children, draftId, title, subTitle, actions }) {
     const { draftsStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
@@ -90,31 +97,47 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
       <SafeAreaView
         style={{
           backgroundColor: theme.colors.background,
+          paddingHorizontal: 20,
           flex: 1,
-          paddingHorizontal: 16,
-          paddingTop: 20,
         }}
       >
-        <View style={{ flex: 2 }}>
-          <Back style={{ alignSelf: "flex-start" }} />
-          <Text style={styles.heading}>
-            <FormattedMessage
-              id="settings.multisig.title"
-              defaultMessage="Manage Multisig"
-            />
-          </Text>
-          <Text style={styles.subHeading}>
-            <FormattedMessage
-              id="settings.multisig.subtitle"
-              defaultMessage="Add/edit keys to improve security. Tap on any of the following"
-            />
-          </Text>
+        <View>
+          <Back
+            style={{
+              marginLeft: -5,
+              padding: 5,
+              width: 25,
+            }}
+          />
+          <Text style={styles.heading}>{title}</Text>
+          <Text style={styles.subHeading}>{subTitle}</Text>
         </View>
         <View
-          style={{ flex: 3, justifyContent: "center", alignItems: "center" }}
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 20,
+          }}
         >
-          <View>
+          <View
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <KeysComponent keys={activatedKeys} />
+            <Text
+              style={[
+                styles.heading,
+                {
+                  position: "absolute",
+                  fontSize: 24,
+                },
+              ]}
+            >
+              {multisigKey.threshold}/{activatedKeys}
+            </Text>
           </View>
           <Text
             style={[
@@ -131,25 +154,11 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
               defaultMessage="Security Tier: Basic"
             />
           </Text>
-          <Text
-            style={[
-              styles.heading,
-              {
-                marginTop: 0,
-                fontSize: isSmallScreenNumber(14, 18),
-                marginBottom: 8,
-              },
-            ]}
-          >
-            {/* TODO: Design */}
-            Threshold: {multisigKey.threshold}
-          </Text>
         </View>
-        <View style={{ flex: 6 }}>
-          <View style={{ marginTop: 40, flex: 1 }}>
-            <KeysList data={data} />
-          </View>
+        <View style={{ flex: 1, marginTop: 20 }}>
+          <KeysList data={data} />
         </View>
+        <View>{children}</View>
         <BottomSheet
           handleIndicatorStyle={{ backgroundColor: "white" }}
           backgroundStyle={{ backgroundColor: isLoop ? "#100F1E" : "#272727" }}
@@ -169,6 +178,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
             {selectedType ? (
               <KeyBottomSheetContent
                 type={selectedType}
+                action={actions[selectedType]}
                 multisigKey={multisigKey}
                 onClose={() => {
                   triggerBottomSheet(-1);
@@ -188,11 +198,10 @@ const styles = StyleSheet.create({
     fontSize: isSmallScreenNumber(18, 24),
     fontWeight: "600",
     marginBottom: 10,
-    marginTop: 30,
+    marginTop: 10,
   },
   subHeading: {
     color: "#999CB6",
     fontSize: isSmallScreenNumber(10, 14),
-    marginBottom: 31,
   },
 });
