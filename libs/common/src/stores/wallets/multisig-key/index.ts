@@ -1,5 +1,4 @@
-// Chain-agnostic multisig key
-import { action, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 
 import { KeyType, SerializedKey } from "./keys";
 import { SerializedDeviceKeyPayload } from "./keys/device";
@@ -10,6 +9,7 @@ import { Entities } from "../../entities";
 
 export { KeyType };
 
+// Chain-agnostic multisig key
 export class MultisigKey implements Draftable {
   @observable
   protected _keys: Entities<SerializedKey>;
@@ -75,6 +75,11 @@ export class MultisigKey implements Draftable {
     this._threshold = Math.max(1, this._threshold);
   }
 
+  @computed
+  public get signerTypes() {
+    return this.keys.map((key) => key.type);
+  }
+
   public clone() {
     const clone = new MultisigKey();
     clone._threshold = this._threshold;
@@ -87,8 +92,4 @@ export class MultisigKey implements Draftable {
       this._threshold === other._threshold && this._keys.equals(other._keys)
     );
   }
-
-  // TODO: add device key
-  // TODO: add social key
-  // TODO: remove key
 }
