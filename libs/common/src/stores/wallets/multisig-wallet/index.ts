@@ -2,6 +2,7 @@ import { action, computed, makeObservable, observable } from "mobx";
 
 import * as MultisigSerializedData from "./serialized-data";
 import { cosmosChains, isTerraChain, terraChains } from "../../../chains";
+import { cosmos, terra } from "../../../networks";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
 import { MultisigKey } from "../multisig-key";
 import {
@@ -51,6 +52,24 @@ export class MultisigWallet extends AbstractWallet {
 
   get address(): string {
     return this.proxyAddress.address;
+  }
+
+  @computed
+  get ownerAddress(): string {
+    if (isTerraChain(this.chain)) {
+      const multisigPublicKey = terra.createMultisigPublicKey({
+        multisigKey: this.owner,
+      });
+      return multisigPublicKey.address();
+    } else {
+      const multisigPublicKey = cosmos.createMultisigPublicKey({
+        multisigKey: this.owner,
+      });
+      return cosmos.getAddress({
+        publicKey: multisigPublicKey,
+        chainId: this.chain,
+      });
+    }
   }
 
   get type(): WalletType {

@@ -247,15 +247,12 @@ export const HomeScreen = observer(function HomeScreen() {
           {
             text: "Update",
             onPress: async () => {
-              const admin = multisig.multisig?.address;
-              invariant(admin, "Expected multisig address to exist.");
-
               const proxyAddress = currentWallet.proxyAddress;
               invariant(proxyAddress, "Expected `proxyAddress` to exist.");
 
               const message = terra.getMigrateMessage({
                 proxyAddress: proxyAddress.address,
-                admin,
+                admin: currentWallet.ownerAddress,
                 chainId: currentWallet.chain as TerraChain,
               });
               const response = await RequestObiTerraSignAndBroadcastMsg.send({
