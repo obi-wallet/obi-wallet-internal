@@ -3,13 +3,13 @@ import { DeliverTxResponse } from "@cosmjs/stargate";
 import { Keplr } from "@keplr-wallet/provider";
 import { BACKGROUND_PORT } from "@keplr-wallet/router";
 import {
+  isAnyCosmosMultisigWallet,
   isAnyMultisigWallet,
   isMultisigDemoWallet,
   MessageRequesterExternal,
   PricingTier,
   RequestObiCosmosSignAndBroadcastMsg,
   RequestObiInAppPurchaseMsg,
-  WalletType,
 } from "@obi-wallet/common";
 import { useMemo } from "react";
 import invariant from "tiny-invariant";
@@ -26,11 +26,9 @@ class ConcreteKeplr extends Keplr {
 
     invariant(currentWallet, "Expected `currentWallet` to be defined.");
 
-    if (currentWallet.type === WalletType.CosmosMultisig) {
+    if (isAnyCosmosMultisigWallet(currentWallet)) {
       const msg = new RequestObiCosmosSignAndBroadcastMsg({
-        multisigKey: isAnyMultisigWallet(currentWallet)
-          ? currentWallet.owner.serialize()
-          : null,
+        multisigKey: currentWallet.owner.serialize(),
         demoMode: isMultisigDemoWallet(currentWallet),
         encodeObjects: messages,
         proxyAddress: isAnyMultisigWallet(currentWallet)

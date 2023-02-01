@@ -6,7 +6,7 @@ import { MessageRequesterInternal } from "../../message-requester";
 import { SerializedMultisigKey, KeyType } from "../../stores";
 
 export interface RequestObiCosmosSignAndBroadcastPayload {
-  readonly multisigKey: SerializedMultisigKey | null;
+  readonly multisigKey: SerializedMultisigKey;
   readonly encodeObjects: EncodeObject[];
   readonly demoMode: boolean;
   readonly proxyAddress?: string;

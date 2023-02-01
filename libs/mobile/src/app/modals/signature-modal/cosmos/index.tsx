@@ -34,7 +34,6 @@ import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { observer } from "mobx-react-lite";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
-import { Alert } from "react-native";
 import invariant from "tiny-invariant";
 
 import { wrapMessages } from "./wrap-messages";
@@ -49,16 +48,11 @@ import {
   parseSignatureTextMessageResponse,
   sendSignatureTextMessage,
 } from "../../../text-message";
-import { ConfirmMessages } from "../confirm-messages";
 import {
   MultisigConfirmMessages,
   MultisigConfirmMessagesProps,
 } from "../multisig-confirm-messages";
 import { PhoneNumberBottomSheetContent } from "../phone-number-bottom-sheet-content";
-
-type CosmosMultisigWallet = unknown;
-type CosmosMultisig = unknown;
-type CosmosMultisigKey = unknown;
 
 export interface CosmosSignatureModalProps
   extends Omit<
@@ -70,11 +64,9 @@ export interface CosmosSignatureModalProps
     | "onConfirm"
     | "footer"
   > {
-  multisigKey: MultisigKey | null;
+  multisigKey: MultisigKey;
   innerMessages: AminoMsg[];
   messages: AminoMsg[];
-  // TODO: needed?
-  rawMessages: EncodeObject[];
   hiddenKeyTypes?: KeyType[];
   demoMode: boolean;
 
@@ -83,255 +75,204 @@ export interface CosmosSignatureModalProps
 
 export const CosmosSignatureModal = observer<CosmosSignatureModalProps>(
   function CosmosSignatureModal(props) {
-    // TODO: probably makes sense to split those up
-    return null;
-    //   if (!props.wallet.type) return null;
-    //
-    //   switch (props.wallet.type) {
-    //     case WalletType.CosmosMultisig:
-    //       return <CosmosSignatureModalMultisig {...props} />;
-    //     case WalletType.CosmosSinglesig:
-    //       return <CosmosSignatureModalSinglesig {...props} />;
-    //   }
-    //
-    //   return null;
+    return <CosmosSignatureModalMultisig {...props} />;
   }
 );
 
-export const CosmosSignatureModalSinglesig =
-  observer<CosmosSignatureModalProps>(function CosmosSignatureModalSinglesig({
-    onCancel,
+export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
+  function SignatureModalMultisig({
+    multisigKey,
+    innerMessages,
+    messages,
     onConfirm,
-    isOnboarding,
+    hiddenKeyTypes,
+    demoMode,
     ...props
   }) {
-    const [loading, setLoading] = useState(false);
     const intl = useIntl();
+    const [signatures, setSignatures] = useState(new Map<string, Uint8Array>());
+    const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
+    const { chainStore } = useStore();
+    const { currentCosmosChainInformation } = chainStore;
+    const numberOfSignatures = signatures.size;
+    const threshold = multisigKey.threshold;
 
-    return (
-      <ConfirmMessages
-        {...props}
-        isOnboarding={isOnboarding}
-        loading={loading}
-        messages={props.innerMessages}
-        onCancel={onCancel}
-        onConfirm={async () => {
-          try {
-            setLoading(true);
-            await onConfirm(new Map());
-            setLoading(false);
-          } catch (e) {
-            const error = e as Error;
-            setLoading(false);
-            console.error(error);
-            Alert.alert(
-              intl.formatMessage({
-                id: "signature.error.confirmingtx",
-                defaultMessage: "Error Confirming Transaction",
-              }),
-              error.message
-            );
+    const getMessage = useCallback(async () => {
+      const address = multisigKey.address;
+
+      const fee = {
+        amount: coins(6000, currentCosmosChainInformation.denom),
+        gas: "1280000",
+      };
+
+      invariant(address, "Expected `address` to exist.");
+
+      const client = await createStargateClient(
+        currentCosmosChainInformation.chainId
+      );
+
+      if (!(await client.getAccount(address))) {
+        await lendFees({
+          chainId: currentCosmosChainInformation.chainId,
+          address,
+        });
+      }
+
+      const account = await client.getAccount(address);
+      invariant(account, "Expected `account` to be ready.");
+
+      const signDoc: StdSignDoc = {
+        memo: "",
+        account_number: account.accountNumber.toString(),
+        chain_id: currentCosmosChainInformation.chainId,
+        fee: fee,
+        msgs: messages,
+        sequence: account.sequence.toString(),
+      };
+
+      client.disconnect();
+      return new Sha256(serializeSignDoc(signDoc)).digest();
+    }, [
+      multisigKey,
+      currentCosmosChainInformation.denom,
+      currentCosmosChainInformation.chainId,
+      messages,
+    ]);
+
+    function getKey({ type, title }: { type: KeyType; title: string }): Key[] {
+      const factor = multisigKey.getKeyOfType(type);
+      if (!factor) return [];
+
+      const alreadySigned = signatures.has(factor.payload.publicKey.value);
+      const onPress = async () => {
+        if (alreadySigned) return;
+
+        switch (type) {
+          case KeyType.Device: {
+            const message = await getMessage();
+            const { signature } = await createBiometricSignature({
+              payload: message,
+              demoMode,
+            });
+            const biometrics = multisigKey.getKeyOfType(KeyType.Device);
+            invariant(biometrics, "Expected device key to exist.");
+
+            setSignatures((signatures) => {
+              return new Map(
+                signatures.set(biometrics.payload.publicKey.value, signature)
+              );
+            });
+            break;
           }
-        }}
-      />
-    );
-  });
+          case KeyType.Phone:
+            phoneNumberBottomSheetRef.current?.snapToIndex(0);
+            break;
+          default:
+            console.log("Not implemented yet");
+            break;
+        }
+      };
 
-export const CosmosSignatureModalMultisig = observer<
-  CosmosSignatureModalProps & { multisigKey: MultisigKey }
->(function SignatureModalMultisig({
-  multisigKey,
-  innerMessages,
-  messages,
-  rawMessages,
-  onConfirm,
-  hiddenKeyTypes,
-  demoMode,
-  ...props
-}) {
-  const intl = useIntl();
-  const [signatures, setSignatures] = useState(new Map<string, Uint8Array>());
-  const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
-  const { chainStore } = useStore();
-  const { currentCosmosChainInformation } = chainStore;
-  const numberOfSignatures = signatures.size;
-  const threshold = multisigKey.threshold;
-
-  const getMessage = useCallback(async () => {
-    const address = multisigKey.address;
-
-    const fee = {
-      amount: coins(6000, currentCosmosChainInformation.denom),
-      gas: "1280000",
-    };
-
-    invariant(address, "Expected `address` to exist.");
-
-    const client = await createStargateClient(
-      currentCosmosChainInformation.chainId
-    );
-
-    if (!(await client.getAccount(address))) {
-      await lendFees({
-        chainId: currentCosmosChainInformation.chainId,
-        address,
-      });
+      return [
+        {
+          type: type,
+          title,
+          signed: alreadySigned,
+          right: alreadySigned ? <CheckIcon /> : null,
+          onPress,
+        },
+      ];
     }
 
-    const account = await client.getAccount(address);
-    invariant(account, "Expected `account` to be ready.");
-
-    const signDoc: StdSignDoc = {
-      memo: "",
-      account_number: account.accountNumber.toString(),
-      chain_id: currentCosmosChainInformation.chainId,
-      fee: fee,
-      msgs: messages,
-      sequence: account.sequence.toString(),
-    };
-
-    client.disconnect();
-    return new Sha256(serializeSignDoc(signDoc)).digest();
-  }, [
-    multisigKey,
-    currentCosmosChainInformation.denom,
-    currentCosmosChainInformation.chainId,
-    messages,
-  ]);
-
-  function getKey({ type, title }: { type: KeyType; title: string }): Key[] {
-    const factor = multisigKey.getKeyOfType(type);
-    if (!factor) return [];
-
-    const alreadySigned = signatures.has(factor.payload.publicKey.value);
-    const onPress = async () => {
-      if (alreadySigned) return;
-
-      switch (type) {
-        case KeyType.Device: {
-          const message = await getMessage();
-          const { signature } = await createBiometricSignature({
-            payload: message,
-            demoMode,
-          });
-          const biometrics = multisigKey.getKeyOfType(KeyType.Device);
-          invariant(biometrics, "Expected device key to exist.");
-
-          setSignatures((signatures) => {
-            return new Map(
-              signatures.set(biometrics.payload.publicKey.value, signature)
-            );
-          });
-          break;
-        }
-        case KeyType.Phone:
-          phoneNumberBottomSheetRef.current?.snapToIndex(0);
-          break;
-        default:
-          console.log("Not implemented yet");
-          break;
-      }
-    };
-
-    return [
-      {
-        type: type,
-        title,
-        signed: alreadySigned,
-        right: alreadySigned ? <CheckIcon /> : null,
-        onPress,
-      },
-    ];
-  }
-
-  const data: Key[] = [
-    ...getKey({
-      type: KeyType.Device,
-      title: intl.formatMessage({
-        id: "signature.modal.biometricsignature",
-        defaultMessage: "Biometrics Signature",
+    const data: Key[] = [
+      ...getKey({
+        type: KeyType.Device,
+        title: intl.formatMessage({
+          id: "signature.modal.biometricsignature",
+          defaultMessage: "Biometrics Signature",
+        }),
       }),
-    }),
-    ...getKey({
-      type: KeyType.Phone,
-      title: intl.formatMessage({
-        id: "signature.modal.phonesignature",
-        defaultMessage: "Phone Number Signature",
+      ...getKey({
+        type: KeyType.Phone,
+        title: intl.formatMessage({
+          id: "signature.modal.phonesignature",
+          defaultMessage: "Phone Number Signature",
+        }),
       }),
-    }),
-  ].filter((key) => {
-    return hiddenKeyTypes
-      ? !hiddenKeyTypes.includes(key.type as KeyType)
-      : true;
-  });
+    ].filter((key) => {
+      return hiddenKeyTypes
+        ? !hiddenKeyTypes.includes(key.type as KeyType)
+        : true;
+    });
 
-  if (!threshold) return null;
+    if (!threshold) return null;
 
-  const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+    const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
 
-  return (
-    <MultisigConfirmMessages
-      {...props}
-      threshold={threshold}
-      numberOfSignatures={numberOfSignatures}
-      data={data}
-      innerMessages={innerMessages}
-      onConfirm={async () => {
-        const signaturesPerAddress = new Map();
-        for (const key of multisigKey.keys) {
-          const signature = signatures.get(key.payload.publicKey.value);
-          if (signature) {
-            signaturesPerAddress.set(
-              cosmos.getAddress({
-                publicKey: key.payload.publicKey,
-                chainId: currentCosmosChainInformation.chainId,
-              }),
-              signature
-            );
-          }
-        }
-
-        await onConfirm(signaturesPerAddress);
-      }}
-      footer={
-        phoneKey ? (
-          <BottomSheet bottomSheetRef={phoneNumberBottomSheetRef}>
-            <PhoneNumberBottomSheetContent
-              securityQuestion={phoneKey.payload.securityQuestion}
-              onRequest={async (securityAnswer) => {
-                const message = await getMessage();
-                await sendSignatureTextMessage({
-                  phoneNumber: phoneKey.payload.phoneNumber,
-                  securityAnswer,
-                  message,
-                  demoMode,
+    return (
+      <MultisigConfirmMessages
+        {...props}
+        threshold={threshold}
+        numberOfSignatures={numberOfSignatures}
+        data={data}
+        innerMessages={innerMessages}
+        onConfirm={async () => {
+          const signaturesPerAddress = new Map();
+          for (const key of multisigKey.keys) {
+            const signature = signatures.get(key.payload.publicKey.value);
+            if (signature) {
+              signaturesPerAddress.set(
+                cosmos.getAddress({
+                  publicKey: key.payload.publicKey,
                   chainId: currentCosmosChainInformation.chainId,
-                });
-              }}
-              onConfirm={async (key) => {
-                const signature = await parseSignatureTextMessageResponse({
-                  key,
-                  demoMode,
-                });
-                if (signature) {
-                  setSignatures((signatures) => {
-                    return new Map(
-                      signatures.set(
-                        phoneKey.payload.publicKey.value,
-                        signature
-                      )
-                    );
+                }),
+                signature
+              );
+            }
+          }
+
+          await onConfirm(signaturesPerAddress);
+        }}
+        footer={
+          phoneKey ? (
+            <BottomSheet bottomSheetRef={phoneNumberBottomSheetRef}>
+              <PhoneNumberBottomSheetContent
+                securityQuestion={phoneKey.payload.securityQuestion}
+                onRequest={async (securityAnswer) => {
+                  const message = await getMessage();
+                  await sendSignatureTextMessage({
+                    phoneNumber: phoneKey.payload.phoneNumber,
+                    securityAnswer,
+                    message,
+                    demoMode,
+                    chainId: currentCosmosChainInformation.chainId,
                   });
-                  phoneNumberBottomSheetRef.current?.close();
-                }
-              }}
-            />
-          </BottomSheet>
-        ) : null
-      }
-    />
-  );
-});
+                }}
+                onConfirm={async (key) => {
+                  const signature = await parseSignatureTextMessageResponse({
+                    key,
+                    demoMode,
+                  });
+                  if (signature) {
+                    setSignatures((signatures) => {
+                      return new Map(
+                        signatures.set(
+                          phoneKey.payload.publicKey.value,
+                          signature
+                        )
+                      );
+                    });
+                    phoneNumberBottomSheetRef.current?.close();
+                  }
+                }}
+              />
+            </BottomSheet>
+          ) : null
+        }
+      />
+    );
+  }
+);
 
 function createDefaultTypes(prefix: string): AminoConverters {
   return {
@@ -362,15 +303,13 @@ export function useSignatureModalProps({
 } {
   const [signatureModalVisible, setSignatureModalVisible] = useState(false);
   const [modalKey, setModalKey] = useState(0);
-  const { chainStore, walletsStore } = useStore();
+  const { chainStore } = useStore();
   const { currentCosmosChainInformation } = chainStore;
 
-  const multisigKey = data.multisigKey
-    ? MultisigKey.deserialize({
-        chain: chainStore.currentChain,
-        serialized: data.multisigKey,
-      })
-    : null;
+  const multisigKey = MultisigKey.deserialize({
+    chain: chainStore.currentChain,
+    serialized: data.multisigKey,
+  });
 
   const wrappedEncodeObjects = getWrappedEncodeObjects();
   const innerEncodeObjects = data.encodeObjects;
@@ -395,7 +334,6 @@ export function useSignatureModalProps({
       visible: signatureModalVisible,
       innerMessages: innerAminoMessages,
       messages: aminoMessages,
-      rawMessages: messages,
       cancelable: data.cancelable,
       hiddenKeyTypes: data.hiddenKeyTypes,
       isOnboarding: data.isOnboarding,
@@ -467,40 +405,37 @@ export function useSignatureModalProps({
           await onConfirm(result);
         }
 
-        if (multisigKey) {
-          await handleMultisig();
-        } else {
-          // TODO: fixme
-          // invariant(
-          //   isCosmosSinglesigWallet(wallet),
-          //   "Expected `wallet` to be singlesig wallet."
-          // );
-          //
-          // invariant(
-          //   wallet.privateKey,
-          //   "Expected `wallet.privateKey` to exist."
-          // );
-          //
-          // const signer = await Secp256k1Wallet.fromKey(
-          //   wallet.privateKey,
-          //   currentCosmosChainInformation.prefix
-          // );
-          // const client = await createSigningCosmWasmClient({
-          //   chainId: currentCosmosChainInformation.chainId,
-          //   signer,
-          // });
-          //
-          // invariant(wallet.address, "Expected `wallet.address` to exist.");
-          //
-          // const result = await client.signAndBroadcast(
-          //   wallet.address,
-          //   messages,
-          //   "auto"
-          // );
-          //
-          // client.disconnect();
-          // await onConfirm(result);
-        }
+        await handleMultisig();
+        // TODO: fixme
+        // invariant(
+        //   isCosmosSinglesigWallet(wallet),
+        //   "Expected `wallet` to be singlesig wallet."
+        // );
+        //
+        // invariant(
+        //   wallet.privateKey,
+        //   "Expected `wallet.privateKey` to exist."
+        // );
+        //
+        // const signer = await Secp256k1Wallet.fromKey(
+        //   wallet.privateKey,
+        //   currentCosmosChainInformation.prefix
+        // );
+        // const client = await createSigningCosmWasmClient({
+        //   chainId: currentCosmosChainInformation.chainId,
+        //   signer,
+        // });
+        //
+        // invariant(wallet.address, "Expected `wallet.address` to exist.");
+        //
+        // const result = await client.signAndBroadcast(
+        //   wallet.address,
+        //   messages,
+        //   "auto"
+        // );
+        //
+        // client.disconnect();
+        // await onConfirm(result);
 
         setSignatureModalVisible(false);
         setModalKey((value) => value + 1);
@@ -510,8 +445,12 @@ export function useSignatureModalProps({
     innerEncodeObjects,
     wrappedEncodeObjects,
     modalKey,
+    multisigKey,
+    data.demoMode,
+    data.cancelable,
+    data.hiddenKeyTypes,
+    data.isOnboarding,
     signatureModalVisible,
-    data,
     currentCosmosChainInformation,
     onConfirm,
   ]);
@@ -524,7 +463,7 @@ export function useSignatureModalProps({
   };
 
   function getWrappedEncodeObjects(): EncodeObject[] {
-    if (!data.proxyAddress || !multisigKey) return data.encodeObjects;
+    if (!data.proxyAddress) return data.encodeObjects;
 
     const sender = multisigKey.address;
 
