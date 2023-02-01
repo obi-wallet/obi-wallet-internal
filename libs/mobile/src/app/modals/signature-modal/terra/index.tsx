@@ -143,6 +143,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
               multisigKey,
               demoMode,
             });
+
             const signature = await biometricsKey.createSignatureAmino(signDoc);
 
             setSignatures((signatures) => {
@@ -214,6 +215,9 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
               signaturesOrdered.push(signature);
             }
           }
+
+          console.log(signaturesOrdered);
+
           await onConfirm(await sign(signaturesOrdered));
         }}
         footer={

@@ -18,7 +18,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useRootNavigation, useStore } from "../../..";
+import { SettingsRoute, useRootNavigation, useStore } from "../../..";
 import { InlineButton } from "../../../app/button";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
@@ -46,10 +46,10 @@ export const SocialKeyScreen = observer<SocialKeyScreenProps>(
           switch (params.flow) {
             case KeyFlow.CreateWallet:
             case KeyFlow.RecoverWallet:
-              // TODO: go to CreateMultisigInit
+              // TODO:
               break;
             case KeyFlow.ReplaceKey:
-              // TODO: go to ReplaceMultisig
+              navigation.navigate(SettingsRoute.MultisigSettings);
               break;
           }
         }}
@@ -236,12 +236,7 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
                 marginTop: 10,
               }}
             >
-              {flow === KeyFlow.ReplaceKey && currentlyUsesObi ? (
-                <FormattedMessage
-                  id="onboarding5.recovery.setsocialkey.subtext2"
-                  defaultMessage="You're currently using the demo account. This will remove the demo account from your multisig and replace it with your friend's key."
-                />
-              ) : flow !== KeyFlow.RecoverWallet ? (
+              {flow !== KeyFlow.RecoverWallet ? (
                 <FormattedMessage
                   id="onboarding5.setsocialkey.subtext2"
                   defaultMessage="…or you can use the demo account if you don't trust any of your friends"
@@ -249,17 +244,15 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
               ) : null}
             </Text>
 
-            {flow === KeyFlow.ReplaceKey && currentlyUsesObi ? null : (
-              <InlineButton
-                label={intl.formatMessage({
-                  id: "onboarding5.useobiaccount",
-                })}
-                style={{ alignSelf: "flex-start", marginTop: 10 }}
-                onPress={() => {
-                  setAddress(obiAddress);
-                }}
-              />
-            )}
+            <InlineButton
+              label={intl.formatMessage({
+                id: "onboarding5.useobiaccount",
+              })}
+              style={{ alignSelf: "flex-start", marginTop: 10 }}
+              onPress={() => {
+                setAddress(obiAddress);
+              }}
+            />
           </View>
           <View
             style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}

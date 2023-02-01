@@ -24,6 +24,7 @@ import {
   sendPublicKeyTextMessage,
 } from "../../../app/text-message";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
+import { SettingsRoute } from "@obi-wallet/mobile";
 
 export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -44,7 +45,7 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
               navigation.navigate(OnboardingRoute.CreateWallet, params);
               break;
             case KeyFlow.ReplaceKey:
-              // TODO: navigate to ReplaceMultisig
+              navigation.navigate(SettingsRoute.MultisigSettings);
               break;
             case KeyFlow.RecoverWallet:
               // TODO: navigate to lookup proxy wallets

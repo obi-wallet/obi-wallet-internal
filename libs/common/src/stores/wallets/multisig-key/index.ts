@@ -100,6 +100,20 @@ export class MultisigKey implements Draftable {
   }
 
   @action
+  public removeSocialKey() {
+    this.removeKeyOfType(KeyType.Social);
+  }
+
+  @action
+  protected removeKeyOfType(type: KeyType) {
+    this._keys.removeBy({
+      predicate(key) {
+        return key.type === type;
+      },
+    });
+  }
+
+  @action
   protected setKey(serializedKey: SerializedKey) {
     this._keys.removeBy({
       predicate(key) {

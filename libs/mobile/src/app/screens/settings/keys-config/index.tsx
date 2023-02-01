@@ -1,423 +1,103 @@
-import { useTheme } from "@emotion/react";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
-import { Feature, Text } from "@obi-wallet/common";
+import { isCosmosChain, KeyType, MultisigKey } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
-import { useRef, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useEffect } from "react";
+import { useIntl } from "react-intl";
+import { View } from "react-native";
 
-import { KeysComponent } from "./keys-component";
-import { useStore } from "../../../stores";
-import { Back } from "../../components/back";
-import {
-  CheckIcon,
-  Key,
-  keyMetaData,
-  KeysList,
-  PeopleWhiteSVG,
-  WarningIcon,
-} from "../../components/keys-list";
-import { isSmallScreenNumber } from "../../components/screen-size";
+import { MultisigSettings } from "../../../../components/multisig-settings";
+import { KeyFlow, KeyRoute } from "../../../../screens/keys";
+import { Button } from "../../../button";
+import { useRootNavigation } from "../../../root-stack";
+import { useMultisigWallet, useStore } from "../../../stores";
+import { handleTerra } from "./terra";
 
 export const KeysConfigScreen = observer(function KeysConfigScreen() {
-  // TODO:
-  return null;
+  const { draftsStore } = useStore();
+  const wallet = useMultisigWallet();
+  const navigation = useRootNavigation();
+  const intl = useIntl();
 
-  // const { walletsStore, configStore } = useStore();
-  // const wallet = walletsStore.currentWallet;
-  // const currentAdmin = isAnyMultisigWallet(wallet) ? wallet.currentAdmin : null;
-  // const bottomSheetRef = useRef<BottomSheet>(null);
-  // const [selectedItem, setSelectedItem] = useState<KeyListItem | null>(null);
-  // const theme = useTheme();
-  // const isLoop = configStore.isLoop();
-  //
-  // const triggerBottomSheet = (index: number) => {
-  //   if (index === -1) {
-  //     bottomSheetRef.current?.close();
-  //   } else {
-  //     bottomSheetRef.current?.snapToIndex(index);
-  //   }
-  // };
-  //
-  // function getKey({
-  //   id,
-  //   title,
-  // }: {
-  //   id: MultisigKeyType;
-  //   title: string;
-  // }): Key & { activated: boolean; disabled: boolean } {
-  //   const activated = currentAdmin?.[id] !== null;
-  //   const disabled = false;
-  //   return {
-  //     id,
-  //     title,
-  //     activated,
-  //     disabled,
-  //     right: activated ? <CheckIcon /> : <WarningIcon />,
-  //     onPress: () => {
-  //       triggerBottomSheet(0);
-  //       setSelectedItem({
-  //         id,
-  //         title,
-  //         activated,
-  //       });
-  //     },
-  //   };
-  // }
-  //
-  // const intl = useIntl();
-  //
-  // const data: (Key & { activated: boolean })[] = [
-  //   getKey({
-  //     id: "phoneNumber",
-  //     title: intl.formatMessage({
-  //       id: "settings.multisig.option.phonekey",
-  //       defaultMessage: "Phone Key",
-  //     }),
-  //   }),
-  //   getKey({
-  //     id: "biometrics",
-  //     title: intl.formatMessage({
-  //       id: "settings.multisig.option.biometricskey",
-  //       defaultMessage: "Biometrics Key",
-  //     }),
-  //   }),
-  //   getKey({
-  //     id: "social",
-  //     title: intl.formatMessage({
-  //       id: "settings.multisig.option.socialkey",
-  //       defaultMessage: "Social Key",
-  //     }),
-  //   }),
-  // ];
-  //
-  // const activatedKeys = data.filter((item) => item.activated).length;
-  //
-  // return (
-  //   <SafeAreaView
-  //     style={{
-  //       backgroundColor: theme.colors.background,
-  //       flex: 1,
-  //       paddingHorizontal: 16,
-  //       paddingTop: 20,
-  //     }}
-  //   >
-  //     <View style={{ flex: 2 }}>
-  //       <Back style={{ alignSelf: "flex-start" }} />
-  //       <Text style={styles.heading}>
-  //         <FormattedMessage
-  //           id="settings.multisig.title"
-  //           defaultMessage="Manage Multisig"
-  //         />
-  //       </Text>
-  //       <Text style={styles.subHeading}>
-  //         <FormattedMessage
-  //           id="settings.multisig.subtitle"
-  //           defaultMessage="Add/edit keys to improve security. Tap on any of the following"
-  //         />
-  //       </Text>
-  //     </View>
-  //     <View style={{ flex: 3, justifyContent: "center", alignItems: "center" }}>
-  //       <View>
-  //         <KeysComponent keys={activatedKeys} />
-  //       </View>
-  //       <Text
-  //         style={[
-  //           styles.heading,
-  //           {
-  //             marginTop: 0,
-  //             fontSize: isSmallScreenNumber(14, 18),
-  //             marginBottom: 8,
-  //           },
-  //         ]}
-  //       >
-  //         <FormattedMessage
-  //           id="settings.multisig.risk.high"
-  //           defaultMessage="Security Tier: Basic"
-  //         />
-  //       </Text>
-  //       {/* <Text style={[styles.subHeading, { marginBottom: 0 }]}>
-  //         {data.length - activatedKeys}&nbsp;
-  //         {data.length - activatedKeys === 0 && (
-  //           <FormattedMessage
-  //             id="settings.multisig.risk.stepsremaining"
-  //             defaultMessage="steps remaining"
-  //           />
-  //         )}
-  //         {data.length - activatedKeys === 1 && (
-  //           <FormattedMessage
-  //             id="settings.multisig.risk.stepsremaining"
-  //             defaultMessage="step remaining"
-  //           />
-  //         )}
-  //         {data.length - activatedKeys >= 1 && (
-  //           <FormattedMessage
-  //             id="settings.multisig.risk.stepsremaining"
-  //             defaultMessage="steps remaining"
-  //           />
-  //         )}
-  //       </Text> */}
-  //     </View>
-  //     <View style={{ flex: 6 }}>
-  //       <View style={{ marginTop: 40, flex: 1 }}>
-  //         <KeysList data={data} />
-  //       </View>
-  //     </View>
-  //     <BottomSheet
-  //       handleIndicatorStyle={{ backgroundColor: "white" }}
-  //       backgroundStyle={{ backgroundColor: isLoop ? "#100F1E" : "#272727" }}
-  //       handleStyle={{ backgroundColor: "transparent" }}
-  //       snapPoints={["50%"]}
-  //       enablePanDownToClose={true}
-  //       ref={bottomSheetRef}
-  //       index={-1}
-  //     >
-  //       <BottomSheetView
-  //         style={{
-  //           flex: 1,
-  //           backgroundColor: "transparent",
-  //           position: "relative",
-  //         }}
-  //       >
-  //         {selectedItem && (
-  //           <KeyConfig
-  //             item={selectedItem}
-  //             onClose={() => triggerBottomSheet(-1)}
-  //           />
-  //         )}
-  //       </BottomSheetView>
-  //     </BottomSheet>
-  //   </SafeAreaView>
-  // );
+  const draftId = `multisig-settings/${wallet.id}`;
+  const draft = draftsStore.get<MultisigKey>({ id: draftId });
+
+  useEffect(() => {
+    if (!draft) {
+      draftsStore.create({
+        id: draftId,
+        original: wallet.owner,
+      });
+    }
+  }, [draft, draftId, draftsStore, wallet.owner]);
+
+  if (!draft) return null;
+
+  // TODO: show banner if dirty
+  // TODO: highlight changed keys
+
+  return (
+    <MultisigSettings
+      draftId={draftId}
+      title={intl.formatMessage({
+        id: "settings.multisig.title",
+        defaultMessage: "Manage Multisig",
+      })}
+      subTitle={intl.formatMessage({
+        id: "settings.multisig.subtitle",
+        defaultMessage:
+          "Add/edit keys to improve security. Tap on any of the following",
+      })}
+      actions={{
+        [KeyType.Phone]: {
+          label: "Replace",
+          onPress: () => {
+            navigation.navigate(KeyRoute.PhoneKeyRequest, {
+              draftId,
+              flow: KeyFlow.ReplaceKey,
+              demoMode: wallet.isDemo,
+            });
+          },
+        },
+        [KeyType.Social]: draft.value.hasKeyOfType(KeyType.Social)
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeSocialKey();
+              },
+            }
+          : {
+              label: "Add",
+              onPress: () => {
+                navigation.navigate(KeyRoute.SocialKey, {
+                  draftId,
+                  flow: KeyFlow.ReplaceKey,
+                  demoMode: wallet.isDemo,
+                });
+              },
+            },
+      }}
+    >
+      {draft.isDirty ? (
+        <View style={{ paddingTop: 10 }}>
+          <Button
+            flavor="blue"
+            label="Confirm Changes"
+            onPress={async () => {
+              await handleTerra({
+                draft,
+                wallet,
+              });
+              console.log("Confirm");
+            }}
+          />
+          <Button
+            flavor="cancel"
+            label="Cancel"
+            onPress={() => {
+              draft.reset();
+            }}
+          />
+        </View>
+      ) : null}
+    </MultisigSettings>
+  );
 });
-
-const styles = StyleSheet.create({
-  heading: {
-    color: "#F6F5FF",
-    fontSize: isSmallScreenNumber(18, 24),
-    fontWeight: "600",
-    marginBottom: 10,
-    marginTop: 30,
-  },
-  subHeading: {
-    color: "#999CB6",
-    fontSize: isSmallScreenNumber(10, 14),
-    marginBottom: 31,
-  },
-});
-
-// interface KeyListItem {
-//   id: MultisigKeyType;
-//   title: string;
-//   activated: boolean;
-// }
-
-// interface KeyConfigProps {
-//   item: KeyListItem;
-//   onClose: () => void;
-// }
-
-// const KeyConfig = observer(function KeyConfig({
-//   item,
-//   onClose,
-// }: KeyConfigProps) {
-//   const { id, title, activated } = item;
-//   const { Icon } = keyMetaData[id];
-//   const { walletsStore, configStore } = useStore();
-//   const isLoop = configStore.isLoop();
-//   const isObi = configStore.isObi();
-//
-//   const safeArea = useSafeAreaInsets();
-//
-//   const getRecoverButton = (keyId: MultisigKeyType) => {
-//     return (
-//       <TouchableOpacity
-//         onPress={() => {
-//           // const wallet = walletsStore.currentWallet;
-//           // if (isAnyMultisigWallet(wallet)) {
-//           //   if (configStore.isFeatureEnabled(Feature.Recovery)) {
-//           //     wallet.recover(keyId);
-//           //   } else {
-//           //     Alert.alert("Recovery workflow not available yet.");
-//           //   }
-//           // }
-//         }}
-//         style={{
-//           paddingVertical: 5,
-//           width: "100%",
-//           backgroundColor: isLoop ? "#59D6E6" : "#437DFF",
-//           borderRadius: 12,
-//           alignItems: "center",
-//         }}
-//       >
-//         <Text
-//           style={{
-//             fontSize: 15,
-//             fontWeight: "700",
-//             ...(isObi ? { color: "white" } : {}),
-//           }}
-//         >
-//           {/** ToDo: i18n - Building sentences dynamically is not feasible with translations, as the word-order is different in other languages. */}
-//           {/** "Replace {title} now" ...not possible */}
-//           <FormattedMessage
-//             id="settings.multisig.modal.replacenow"
-//             defaultMessage="Replace now"
-//           />
-//         </Text>
-//       </TouchableOpacity>
-//     );
-//   };
-//
-//   const getModalText = (keyId: MultisigKeyType) => {
-//     switch (keyId) {
-//       case "phoneNumber":
-//         return (
-//           <FormattedMessage
-//             id="settings.multisig.modal.phone.text"
-//             defaultMessage="This key can authorize messages via SMS or WhatsApp messages sent directly to your phone number."
-//           />
-//         );
-//       case "biometrics":
-//         return (
-//           <FormattedMessage
-//             id="settings.multisig.modal.biometrics.text"
-//             defaultMessage="This key is held on your device, in a secure element or secure keychain."
-//           />
-//         );
-//       case "social":
-//         return (
-//           <FormattedMessage
-//             id="settings.multisig.modal.social.text"
-//             defaultMessage="This key belongs to a trusted contact or to Obi and can help you recover your account. It cannot access your account on its own."
-//           />
-//         );
-//       default:
-//         return null;
-//     }
-//   };
-//
-//   return (
-//     <View
-//       style={{
-//         flex: 1,
-//         justifyContent: "space-between",
-//         paddingBottom: safeArea.bottom,
-//         paddingHorizontal: 20,
-//         marginTop: 20,
-//       }}
-//     >
-//       <View
-//         style={{
-//           flexDirection: "row",
-//           justifyContent: "space-between",
-//           alignItems: "center",
-//         }}
-//       >
-//         <View
-//           style={{
-//             padding: 10,
-//             backgroundColor: isLoop ? "#1D1C37" : "#437DFF",
-//             alignSelf: "flex-start",
-//             borderRadius: 12,
-//           }}
-//         >
-//           {item.id === "social" ? (
-//             isLoop ? (
-//               <Icon />
-//             ) : (
-//               <PeopleWhiteSVG width={24} height={24} />
-//             )
-//           ) : (
-//             <Icon fill={isLoop ? "#7B87A8" : "white"} />
-//           )}
-//         </View>
-//         <View
-//           style={{
-//             padding: 10,
-//             backgroundColor: isLoop
-//               ? "#1D1C37"
-//               : activated
-//               ? "#437DFF"
-//               : "#1a1a1a",
-//             borderRadius: 12,
-//           }}
-//         >
-//           <Text
-//             style={{
-//               color: isLoop ? (activated ? "#89F5C2" : "#999CB6") : "white",
-//               fontSize: 18,
-//               fontWeight: "600",
-//             }}
-//           >
-//             {activated && (
-//               <FormattedMessage id="general.active" defaultMessage="Active" />
-//             )}
-//             {!activated && (
-//               <FormattedMessage
-//                 id="general.notactive"
-//                 defaultMessage="Not Active"
-//               />
-//             )}
-//           </Text>
-//         </View>
-//       </View>
-//       <View>
-//         <Text
-//           style={{
-//             fontSize: 16,
-//             fontWeight: "600",
-//             color: "#f6f5ff",
-//             marginBottom: 10,
-//           }}
-//         >
-//           {title}
-//         </Text>
-//         <Text style={{ color: "rgba(246, 245, 255, 0.6)" }}>
-//           {getModalText(item.id)}
-//         </Text>
-//       </View>
-//       <View style={{ flexDirection: "row", alignItems: "center" }}>
-//         {item.id !== "biometrics" ? (
-//           <>
-//             <FontAwesomeIcon
-//               icon={faInfoCircle}
-//               style={{ color: "rgba(246, 245, 255, 0.6)", marginRight: 10 }}
-//             />
-//             <Text
-//               style={{
-//                 flex: 1,
-//                 fontSize: 12,
-//                 color: "rgba(246, 245, 255, 0.6)",
-//               }}
-//             >
-//               <FormattedMessage
-//                 id="settings.multisig.modal.info"
-//                 defaultMessage="In case this key is stolen/lost or for any other reason, you can replace it with a new one."
-//               />
-//             </Text>
-//           </>
-//         ) : null}
-//       </View>
-//       <View style={{ alignItems: "center" }}>
-//         {item.id !== "biometrics" ? <>{getRecoverButton(item.id)}</> : null}
-//         <TouchableOpacity
-//           onPress={() => onClose()}
-//           style={{ paddingVertical: 15, paddingHorizontal: 63 }}
-//         >
-//           <Text style={{ color: "#787B9C" }}>
-//             <FormattedMessage
-//               id="settings.multisig.modal.close"
-//               defaultMessage="Close"
-//             />
-//           </Text>
-//         </TouchableOpacity>
-//       </View>
-//     </View>
-//   );
-// });

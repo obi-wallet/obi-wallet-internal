@@ -1,4 +1,4 @@
-import { makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 
 export interface Draftable {
   clone(): this;
@@ -7,10 +7,10 @@ export interface Draftable {
 
 export class Draft<T extends Draftable> {
   @observable
-  protected readonly _original: T;
+  protected _original: T;
 
   @observable
-  protected readonly _value: T;
+  protected _value: T;
 
   constructor({ original }: { original: T }) {
     this._original = original;
@@ -28,5 +28,10 @@ export class Draft<T extends Draftable> {
 
   public get isDirty() {
     return !this._original.equals(this._value);
+  }
+
+  @action
+  public reset() {
+    this._value = this._original.clone();
   }
 }
