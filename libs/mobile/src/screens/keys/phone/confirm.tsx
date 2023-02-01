@@ -17,6 +17,7 @@ import { VerifyAndProceedButton } from "../../../app/screens/components/phone-nu
 import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
 import InsuranceLogo from "../../../app/screens/onboarding/common/3-phone-number-confirm/assets/insurance-logo.svg";
 import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
+import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 import { useStore } from "../../../app/stores";
 import { TextInput } from "../../../app/text-input";
 import {
@@ -24,7 +25,6 @@ import {
   sendPublicKeyTextMessage,
 } from "../../../app/text-message";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
-import { SettingsRoute } from "@obi-wallet/mobile";
 
 export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<
   KeyStackParamList,

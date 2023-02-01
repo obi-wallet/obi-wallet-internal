@@ -1,15 +1,16 @@
-import { isCosmosChain, KeyType, MultisigKey } from "@obi-wallet/common";
+import { useTheme } from "@emotion/react";
+import { KeyType, MultisigKey } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
 
+import { handleTerra } from "./terra";
 import { MultisigSettings } from "../../../../components/multisig-settings";
 import { KeyFlow, KeyRoute } from "../../../../screens/keys";
-import { Button } from "../../../button";
+import { AsyncButton, Button } from "../../../button";
 import { useRootNavigation } from "../../../root-stack";
 import { useMultisigWallet, useStore } from "../../../stores";
-import { handleTerra } from "./terra";
 
 export const KeysConfigScreen = observer(function KeysConfigScreen() {
   const { draftsStore } = useStore();
@@ -29,7 +30,22 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
     }
   }, [draft, draftId, draftsStore, wallet.owner]);
 
+  useEffect(() => {
+    if (draft && !draft.original.equals(wallet.owner)) {
+      draft.commit({ original: wallet.owner });
+    }
+  });
+
+  const [loading, setLoading] = useState(false);
+  const theme = useTheme();
+
   if (!draft) return null;
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }} />
+    );
+  }
 
   // TODO: show banner if dirty
   // TODO: highlight changed keys
@@ -78,15 +94,21 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
     >
       {draft.isDirty ? (
         <View style={{ paddingTop: 10 }}>
-          <Button
+          <AsyncButton
             flavor="blue"
             label="Confirm Changes"
             onPress={async () => {
-              await handleTerra({
-                draft,
-                wallet,
-              });
-              console.log("Confirm");
+              setLoading(true);
+              try {
+                await handleTerra({
+                  draft,
+                  wallet,
+                });
+              } catch (e) {
+                // noop
+              } finally {
+                setLoading(false);
+              }
             }}
           />
           <Button

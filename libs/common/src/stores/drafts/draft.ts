@@ -34,4 +34,10 @@ export class Draft<T extends Draftable> {
   public reset() {
     this._value = this._original.clone();
   }
+
+  @action
+  public commit({ original }: { original: T }) {
+    this._original = original;
+    this.reset();
+  }
 }
