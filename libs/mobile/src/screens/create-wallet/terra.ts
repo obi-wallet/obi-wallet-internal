@@ -24,7 +24,6 @@ export async function handleTerra({
 
   const multisigPublicKey = terra.createMultisigPublicKey({ multisigKey });
 
-  const { currentTerraChainInformation } = chainStore;
   const signers = multisigPublicKey.pubkeys.map((publicKey, i) => {
     return {
       address: publicKey.address(),
@@ -35,7 +34,7 @@ export async function handleTerra({
   const message = terra.getNewAccountMessage({
     address: multisigPublicKey.address(),
     signers,
-    chainId: currentTerraChainInformation.chainId,
+    chainId: chainStore.currentTerraChain,
   });
 
   const response = await RequestObiTerraSignAndBroadcastMsg.send({

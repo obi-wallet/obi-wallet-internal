@@ -1,4 +1,3 @@
-import { MsgInstantiateContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import {
   ChainStore,
   cosmos,
@@ -7,9 +6,6 @@ import {
   RequestObiCosmosSignAndBroadcastMsg,
   WalletsStore,
 } from "@obi-wallet/common";
-import { InstantiateMsg } from "@obi-wallet/proxy-contract";
-import { MsgInstantiateContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
-import invariant from "tiny-invariant";
 
 export async function handleCosmos({
   draft,
@@ -29,43 +25,26 @@ export async function handleCosmos({
     multisigKey,
   });
 
-  const { currentCosmosChainInformation } = chainStore;
+  const signers = multisigPublicKey.value.pubkeys.map((publicKey, i) => {
+    return {
+      address: cosmos.getAddress({
+        publicKey,
+        chainId: chainStore.currentCosmosChain,
+      }),
+      ty: multisigKey.signerTypes[i],
+    };
+  });
 
   const owner = cosmos.getAddress({
     publicKey: multisigPublicKey,
-    chainId: currentCosmosChainInformation.chainId,
+    chainId: chainStore.currentCosmosChain,
   });
 
-  const rawMessage: InstantiateMsg = {
-    fee_lend_repay_wallet: currentCosmosChainInformation.debtRepayAddress,
-    home_network: currentCosmosChainInformation.chainId,
-    hot_wallets: [],
-    owner,
-    signer_types: multisigKey.signerTypes,
-    signers: multisigPublicKey.value.pubkeys.map((publicKey) => {
-      return cosmos.getAddress({
-        publicKey,
-        chainId: currentCosmosChainInformation.chainId,
-      });
-    }),
-    uusd_fee_debt: currentCosmosChainInformation.startingUsdDebt,
-  };
-
-  const value: MsgInstantiateContract = {
-    sender: owner,
-    admin: owner,
-    // @ts-expect-error should be passed as a string
-    codeId: Long.fromInt(
-      currentCosmosChainInformation.currentCodeId
-    ).toString(),
-    label: "Obi Proxy",
-    msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
-    funds: [],
-  };
-  const message: MsgInstantiateContractEncodeObject = {
-    typeUrl: "/cosmwasm.wasm.v1.MsgInstantiateContract",
-    value,
-  };
+  const message = cosmos.getNewAccountMessage({
+    address: owner,
+    signers,
+    chainId: chainStore.currentCosmosChain,
+  });
 
   const response = await RequestObiCosmosSignAndBroadcastMsg.send({
     multisigKey: multisigKey.serialize(),
@@ -76,36 +55,11 @@ export async function handleCosmos({
   });
 
   try {
-    invariant(response.rawLog, "Expected `response` to have `rawLog`.");
-    const rawLog = JSON.parse(response.rawLog) as [
-      {
-        events: [
-          {
-            type: string;
-            attributes: { key: string; value: string }[];
-          }
-        ];
-      }
-    ];
-    const instantiateEvent = rawLog[0].events.find((e) => {
-      return e.type === "instantiate";
-    });
-    invariant(
-      instantiateEvent,
-      "Expected `rawLog` to contain `instantiate` event."
-    );
-    const contractAddress = instantiateEvent.attributes.find((a) => {
-      return a.key === "_contract_address";
-    });
-    invariant(
-      contractAddress,
-      "Expected `instantiateEvent` to contain `_contract_address` attribute."
-    );
     const serializedData = {
       chain: chainStore.currentChain,
       owner: multisigKey.serialize(),
       proxyAddress: {
-        address: contractAddress.value,
+        ...cosmos.parseNewAccountResponse(response),
         codeId: chainStore.currentCosmosChainInformation.currentCodeId,
       },
     };
