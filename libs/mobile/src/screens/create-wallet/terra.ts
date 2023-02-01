@@ -6,10 +6,6 @@ import {
   terra,
   WalletsStore,
 } from "@obi-wallet/common";
-import {
-  LegacyAminoMultisigPublicKey,
-  SimplePublicKey,
-} from "@terra-money/terra.js";
 import { Alert } from "react-native";
 
 export async function handleTerra({
@@ -26,16 +22,7 @@ export async function handleTerra({
   const multisigKey = draft.value;
   // TODO: shuffle?
 
-  console.log(multisigKey.signerTypes);
-
-  const publicKeys = [];
-  for (const key of multisigKey.keys) {
-    publicKeys.push(SimplePublicKey.fromAmino(key.payload.publicKey));
-  }
-  const multisigPublicKey = new LegacyAminoMultisigPublicKey(
-    multisigKey.threshold,
-    publicKeys
-  );
+  const multisigPublicKey = terra.createMultisigPublicKey({ multisigKey });
 
   const { currentTerraChainInformation } = chainStore;
   const signers = multisigPublicKey.pubkeys.map((publicKey, i) => {
@@ -50,8 +37,6 @@ export async function handleTerra({
     signers,
     chainId: currentTerraChainInformation.chainId,
   });
-
-  console.log(message);
 
   const response = await RequestObiTerraSignAndBroadcastMsg.send({
     multisigKey: multisigKey.serialize(),

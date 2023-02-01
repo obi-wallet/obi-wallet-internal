@@ -5,7 +5,6 @@ import {
   Text,
   WalletState,
 } from "@obi-wallet/common";
-import { useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { AppState, View } from "react-native";
@@ -15,14 +14,13 @@ import { deploymentKey } from "./code-push";
 import { Loader } from "./loader";
 import { Modals } from "./modals";
 import { Provider, ProviderProps } from "./provider";
-import { RootRoute, RootStack, useRootNavigation } from "./root-stack";
+import { RootRoute, RootStack } from "./root-stack";
 import { HomeScreen } from "./screens/home";
 import { Stake } from "./screens/home/components/stake";
 import { MultisigBiometrics } from "./screens/onboarding/common/1-biometrics";
 import { MultisigPhoneNumber } from "./screens/onboarding/common/2-phone-number";
 import { MultisigPhoneNumberConfirm } from "./screens/onboarding/common/3-phone-number-confirm";
 import { MultisigSocial } from "./screens/onboarding/common/4-social";
-import { MultisigInit } from "./screens/onboarding/create-multisig-init";
 import { LookupProxyWallets } from "./screens/onboarding/lookup-proxy-wallets";
 import { OnboardingRoute } from "./screens/onboarding/onboarding-stack";
 import { RecoverMultisig } from "./screens/onboarding/recover-multisig";
@@ -230,10 +228,6 @@ export const StateRenderer = observer(function StateRenderer() {
           <RootStack.Screen
             name={OnboardingRoute.CreateMultisigSocial}
             component={MultisigSocial}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.CreateMultisigInit}
-            component={MultisigInit}
           />
           <RootStack.Screen
             name={OnboardingRoute.ReplaceMultisig}

@@ -1,11 +1,13 @@
 import { KeyType, MultisigKey, WalletType } from "@obi-wallet/common";
+import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 
+import { handleCosmos } from "./cosmos";
 import { handleTerra } from "./terra";
 import { Button } from "../../app/button";
-import { useRootNavigation } from "../../app/root-stack";
+import { RootRoute, useRootNavigation } from "../../app/root-stack";
 import {
   OnboardingRoute,
   OnboardingStackParamList,
@@ -31,13 +33,14 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
       <CreateWallet
         {...params}
         onSubmit={async () => {
-          // TODO: Basically what we do in MultisigInit, but working with a draft
-          // Create wallet after success
-          // Then clean up all that stuff with currentAdmin vs. nextAdmin I guess
-
           switch (configStore.getDefaultMultisigWalletType()) {
             case WalletType.CosmosMultisig:
-              // TODO:
+              await handleCosmos({
+                draft,
+                chainStore,
+                walletsStore,
+                demoMode: params.demoMode,
+              });
               break;
             case WalletType.TerraMultisig:
               await handleTerra({
@@ -48,6 +51,18 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
               });
               break;
           }
+
+          // TODO: instead: always all routes but reset when login state changes
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [
+                {
+                  name: RootRoute.Home,
+                },
+              ],
+            })
+          );
         }}
         onAddSocial={() => {
           navigation.navigate(KeyRoute.SocialKey, {
