@@ -2,15 +2,15 @@ import { BACKGROUND_PORT, Message } from "@keplr-wallet/router";
 import { BlockTxBroadcastResult, Msg } from "@terra-money/terra.js";
 
 import { MessageRequesterInternal } from "../../message-requester";
-import { TerraMultisig, TerraMultisigKey } from "../../stores";
+import { SerializedMultisigKey, KeyType } from "../../stores";
 
 export interface RequestObiTerraSignAndBroadcastPayload {
-  readonly id: string;
-  readonly multisig: TerraMultisig;
+  readonly multisigKey: SerializedMultisigKey;
   readonly messages: Msg.Amino[];
-  readonly wrap?: boolean;
+  readonly demoMode: boolean;
+  readonly proxyAddress?: string;
   readonly cancelable?: boolean;
-  readonly hiddenKeyIds?: TerraMultisigKey[];
+  readonly hiddenKeyTypes?: KeyType[];
   readonly isOnboarding?: boolean;
 }
 
@@ -32,17 +32,7 @@ export class RequestObiTerraSignAndBroadcastMsg extends Message<BlockTxBroadcast
   }
 
   validateBasic(): void {
-    if (!this.payload.id) {
-      throw new Error("id not set");
-    }
-
-    if (!this.payload.multisig) {
-      throw new Error("multisig not set");
-    }
-
-    if (!this.payload.messages) {
-      throw new Error("messages not set");
-    }
+    // noop
   }
 
   route(): string {

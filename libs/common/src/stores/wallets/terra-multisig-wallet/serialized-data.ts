@@ -1,6 +1,8 @@
 import * as t from "io-ts";
 
 import { nullable } from "../../helpers";
+import { MultisigKey } from "../multisig-key";
+import * as Multisig from "../multisig-wallet/serialized-data";
 
 export const Secp256k1PublicKey = t.type({
   type: t.literal("tendermint/PubKeySecp256k1"),
@@ -119,8 +121,6 @@ export const SerializedData = t.type({
   currentAdmin: nullable(SerializedMultisigPayload),
   proxyAddress: nullable(SerializedProxyAddress),
 });
-export type SerializedData = t.TypeOf<typeof SerializedData>;
-
 export const SerializedDataAnyVersion = t.union([
   SerializedData,
   SerializedData,
@@ -131,6 +131,29 @@ export type SerializedDataAnyVersion = t.TypeOf<
 
 export function migrateSerializedData(
   serializedData: SerializedDataAnyVersion
-): SerializedData {
-  return serializedData;
+): Multisig.SerializedData | null {
+  if (SerializedData.is(serializedData)) {
+    const proxyAddress = serializedData.proxyAddress;
+    const currentAdmin = serializedData.currentAdmin;
+    if (!proxyAddress || !currentAdmin) return null;
+
+    const multisigKey = new MultisigKey();
+    if (currentAdmin.biometrics) {
+      multisigKey.setDeviceKey(currentAdmin.biometrics);
+    }
+    if (currentAdmin.phoneNumber) {
+      multisigKey.setPhoneKey(currentAdmin.phoneNumber);
+    }
+    if (currentAdmin.social) {
+      multisigKey.setSocialKey(currentAdmin.social);
+    }
+
+    return {
+      chain: serializedData.chain,
+      owner: multisigKey.serialize(),
+      proxyAddress,
+    };
+  }
+
+  return null;
 }

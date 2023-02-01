@@ -3,15 +3,15 @@ import { DeliverTxResponse } from "@cosmjs/stargate";
 import { BACKGROUND_PORT, Message } from "@keplr-wallet/router";
 
 import { MessageRequesterInternal } from "../../message-requester";
-import { CosmosMultisig, CosmosMultisigKey } from "../../stores";
+import { SerializedMultisigKey } from "../../stores";
 
 export interface RequestObiCosmosSignAndBroadcastPayload {
-  readonly id: string;
-  readonly multisig: CosmosMultisig | null;
+  readonly multisigKey: SerializedMultisigKey | null;
   readonly encodeObjects: EncodeObject[];
-  readonly wrap?: boolean;
+  readonly demoMode: boolean;
+  readonly proxyAddress?: string;
   readonly cancelable?: boolean;
-  readonly hiddenKeyIds?: CosmosMultisigKey[];
+  readonly hiddenKeyTypes?: KeyType[];
   readonly isOnboarding?: boolean;
 }
 
@@ -35,13 +35,7 @@ export class RequestObiCosmosSignAndBroadcastMsg extends Message<DeliverTxRespon
   }
 
   validateBasic(): void {
-    if (!this.payload.id) {
-      throw new Error("id not set");
-    }
-
-    if (!this.payload.encodeObjects) {
-      throw new Error("encodeObjects not set");
-    }
+    // noop
   }
 
   route(): string {

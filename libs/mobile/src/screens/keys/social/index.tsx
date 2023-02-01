@@ -265,7 +265,7 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
                 setFetchingPubKey(false);
 
                 if (publicKey) {
-                  draft.value.setDeviceKey({
+                  draft.value.setSocialKey({
                     // @ts-expect-error TODO: TypeScript doesn't understand this specific case
                     publicKey,
                   });

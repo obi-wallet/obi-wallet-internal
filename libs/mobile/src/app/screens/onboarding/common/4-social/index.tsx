@@ -58,37 +58,37 @@ export const MultisigSocial = observer<MultisigSocialProps>(
       }
     }, [isTerra, verifyButtonDisabled, address]);
 
-    useEffect(() => {
-      const { social } = wallet.nextAdmin;
-
-      if (
-        social &&
-        wallet.keyInRecovery !== "social" &&
-        wallet.keyInRecovery !== "biometrics"
-      ) {
-        Alert.alert(
-          intl.formatMessage({ id: "onboarding4.error.socialkeyexists.title" }),
-          intl.formatMessage({ id: "onboarding4.error.socialkeyexists.text" }) +
-            ` ${social.address}?`,
-          [
-            {
-              text: intl.formatMessage({
-                id: "onboarding4.error.socialkeyexists.newkey",
-              }),
-              style: "cancel",
-            },
-            {
-              text: intl.formatMessage({
-                id: "general.yes",
-              }),
-              onPress: () => {
-                navigation.navigate(OnboardingRoute.CreateMultisigInit);
-              },
-            },
-          ]
-        );
-      }
-    }, [intl, wallet, navigation]);
+    // useEffect(() => {
+    //   const { social } = wallet.nextAdmin;
+    //
+    //   if (
+    //     social &&
+    //     wallet.keyInRecovery !== "social" &&
+    //     wallet.keyInRecovery !== "biometrics"
+    //   ) {
+    //     Alert.alert(
+    //       intl.formatMessage({ id: "onboarding4.error.socialkeyexists.title" }),
+    //       intl.formatMessage({ id: "onboarding4.error.socialkeyexists.text" }) +
+    //         ` ${social.address}?`,
+    //       [
+    //         {
+    //           text: intl.formatMessage({
+    //             id: "onboarding4.error.socialkeyexists.newkey",
+    //           }),
+    //           style: "cancel",
+    //         },
+    //         {
+    //           text: intl.formatMessage({
+    //             id: "general.yes",
+    //           }),
+    //           onPress: () => {
+    //             navigation.navigate(OnboardingRoute.CreateMultisigInit);
+    //           },
+    //         },
+    //       ]
+    //     );
+    //   }
+    // }, [intl, wallet, navigation]);
 
     async function getAccountPubkey(key: string) {
       if (isTerra) {
@@ -151,22 +151,22 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                       marginTop: isSmallScreenNumber(20, 32),
                     }}
                   >
-                    {wallet.keyInRecovery === "social" ? (
-                      <FormattedMessage
-                        id="onboarding5.recovery.setsocialkey"
-                        defaultMessage="Set a New Social Key"
-                      />
-                    ) : wallet.keyInRecovery === "biometrics" ? (
-                      <FormattedMessage
-                        id="onboarding2.recovery.social"
-                        defaultMessage="Recover your Social Key"
-                      />
-                    ) : (
-                      <FormattedMessage
-                        id="onboarding5.setsocialkey"
-                        defaultMessage="Set a Social Key"
-                      />
-                    )}
+                    {/*{wallet.keyInRecovery === "social" ? (*/}
+                    {/*  <FormattedMessage*/}
+                    {/*    id="onboarding5.recovery.setsocialkey"*/}
+                    {/*    defaultMessage="Set a New Social Key"*/}
+                    {/*  />*/}
+                    {/*) : wallet.keyInRecovery === "biometrics" ? (*/}
+                    {/*  <FormattedMessage*/}
+                    {/*    id="onboarding2.recovery.social"*/}
+                    {/*    defaultMessage="Recover your Social Key"*/}
+                    {/*  />*/}
+                    {/*) : (*/}
+                    {/*  <FormattedMessage*/}
+                    {/*    id="onboarding5.setsocialkey"*/}
+                    {/*    defaultMessage="Set a Social Key"*/}
+                    {/*  />*/}
+                    {/*)}*/}
                   </Text>
                   <Text
                     style={{
@@ -175,29 +175,29 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                       marginTop: 10,
                     }}
                   >
-                    {wallet.keyInRecovery === "biometrics" ? (
-                      isTerra ? (
-                        <FormattedMessage
-                          id="onboarding5.recovery.socialsubtext.terra"
-                          defaultMessage="Enter the Terra address of a trusted friend that you used when creating the wallet."
-                        />
-                      ) : (
-                        <FormattedMessage
-                          id="onboarding5.recovery.socialsubtext.cosmos"
-                          defaultMessage="Enter the Juno address of a trusted friend that you used when creating the wallet."
-                        />
-                      )
-                    ) : isTerra ? (
-                      <FormattedMessage
-                        id="onboarding5.setsocialkey.subtext.terra"
-                        defaultMessage="Enter the Terra address of a trusted friend who can help you recover your account."
-                      />
-                    ) : (
-                      <FormattedMessage
-                        id="onboarding5.setsocialkey.subtext.cosmos"
-                        defaultMessage="Enter the Juno address of a trusted friend who can help you recover your account."
-                      />
-                    )}
+                    {/*{wallet.keyInRecovery === "biometrics" ? (*/}
+                    {/*  isTerra ? (*/}
+                    {/*    <FormattedMessage*/}
+                    {/*      id="onboarding5.recovery.socialsubtext.terra"*/}
+                    {/*      defaultMessage="Enter the Terra address of a trusted friend that you used when creating the wallet."*/}
+                    {/*    />*/}
+                    {/*  ) : (*/}
+                    {/*    <FormattedMessage*/}
+                    {/*      id="onboarding5.recovery.socialsubtext.cosmos"*/}
+                    {/*      defaultMessage="Enter the Juno address of a trusted friend that you used when creating the wallet."*/}
+                    {/*    />*/}
+                    {/*  )*/}
+                    {/*) : isTerra ? (*/}
+                    {/*  <FormattedMessage*/}
+                    {/*    id="onboarding5.setsocialkey.subtext.terra"*/}
+                    {/*    defaultMessage="Enter the Terra address of a trusted friend who can help you recover your account."*/}
+                    {/*  />*/}
+                    {/*) : (*/}
+                    {/*  <FormattedMessage*/}
+                    {/*    id="onboarding5.setsocialkey.subtext.cosmos"*/}
+                    {/*    defaultMessage="Enter the Juno address of a trusted friend who can help you recover your account."*/}
+                    {/*  />*/}
+                    {/*)}*/}
                   </Text>
                 </View>
               </View>
@@ -214,32 +214,32 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                   marginTop: 10,
                 }}
               >
-                {wallet.keyInRecovery === "social" &&
-                wallet.nextAdmin?.social?.address === obi_address ? (
-                  <FormattedMessage
-                    id="onboarding5.recovery.setsocialkey.subtext2"
-                    defaultMessage="You're currently using the demo account. This will remove the demo account from your multisig and replace it with your friend's key."
-                  />
-                ) : wallet.keyInRecovery !== "biometrics" ? (
-                  <FormattedMessage
-                    id="onboarding5.setsocialkey.subtext2"
-                    defaultMessage="…or you can use the demo account if you don't trust any of your friends"
-                  />
-                ) : null}
+                {/*{wallet.keyInRecovery === "social" &&*/}
+                {/*wallet.nextAdmin?.social?.address === obi_address ? (*/}
+                {/*  <FormattedMessage*/}
+                {/*    id="onboarding5.recovery.setsocialkey.subtext2"*/}
+                {/*    defaultMessage="You're currently using the demo account. This will remove the demo account from your multisig and replace it with your friend's key."*/}
+                {/*  />*/}
+                {/*) : wallet.keyInRecovery !== "biometrics" ? (*/}
+                {/*  <FormattedMessage*/}
+                {/*    id="onboarding5.setsocialkey.subtext2"*/}
+                {/*    defaultMessage="…or you can use the demo account if you don't trust any of your friends"*/}
+                {/*  />*/}
+                {/*) : null}*/}
               </Text>
 
-              {wallet.keyInRecovery === "social" &&
-              wallet.nextAdmin?.social?.address === obi_address ? null : (
-                <InlineButton
-                  label={intl.formatMessage({
-                    id: "onboarding5.useobiaccount",
-                  })}
-                  style={{ alignSelf: "flex-start", marginTop: 10 }}
-                  onPress={() => {
-                    setAddress(obi_address);
-                  }}
-                />
-              )}
+              {/*{wallet.keyInRecovery === "social" &&*/}
+              {/*wallet.nextAdmin?.social?.address === obi_address ? null : (*/}
+              {/*  <InlineButton*/}
+              {/*    label={intl.formatMessage({*/}
+              {/*      id: "onboarding5.useobiaccount",*/}
+              {/*    })}*/}
+              {/*    style={{ alignSelf: "flex-start", marginTop: 10 }}*/}
+              {/*    onPress={() => {*/}
+              {/*      setAddress(obi_address);*/}
+              {/*    }}*/}
+              {/*  />*/}
+              {/*)}*/}
             </View>
             <View
               style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
@@ -254,15 +254,15 @@ export const MultisigSocial = observer<MultisigSocialProps>(
                   setFetchingPubKey(false);
 
                   if (publicKey) {
-                    await wallet.setSocialPublicKey({
-                      // @ts-expect-error TODO: TypeScript doesn't understand this specific case
-                      publicKey,
-                    });
-                    if (wallet.keyInRecovery !== "social") {
-                      navigation.navigate(OnboardingRoute.CreateMultisigInit);
-                    } else {
-                      navigation.navigate(OnboardingRoute.ReplaceMultisig);
-                    }
+                    // await wallet.setSocialPublicKey({
+                    //   // @ts-expect-error TODO: TypeScript doesn't understand this specific case
+                    //   publicKey,
+                    // });
+                    // if (wallet.keyInRecovery !== "social") {
+                    //   navigation.navigate(OnboardingRoute.CreateMultisigInit);
+                    // } else {
+                    //   navigation.navigate(OnboardingRoute.ReplaceMultisig);
+                    // }
                   } else {
                     Alert.alert(
                       intl.formatMessage({

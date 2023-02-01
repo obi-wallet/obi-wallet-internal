@@ -24,21 +24,23 @@ const InteractionModalInner = observer(function InteractionModalInner({
   data: RequestObiCosmosSignAndBroadcastPayload;
 }) {
   const { signInteractionStore } = useStore();
+  // TODO:
+  return null;
 
-  const { signatureModalProps } = useSignatureModalProps({
-    data,
-    async onConfirm(response: DeliverTxResponse): Promise<void> {
-      await signInteractionStore.approveAndWaitEnd(response);
-    },
-  });
-
-  return (
-    <CosmosSignatureModal
-      {...signatureModalProps}
-      visible
-      onCancel={() => {
-        signInteractionStore.rejectAll();
-      }}
-    />
-  );
+  // const { signatureModalProps } = useSignatureModalProps({
+  //   data,
+  //   async onConfirm(response: DeliverTxResponse): Promise<void> {
+  //     await signInteractionStore.approveAndWaitEnd(response);
+  //   },
+  // });
+  //
+  // return (
+  //   <CosmosSignatureModal
+  //     {...signatureModalProps}
+  //     visible
+  //     onCancel={() => {
+  //       signInteractionStore.rejectAll();
+  //     }}
+  //   />
+  // );
 });

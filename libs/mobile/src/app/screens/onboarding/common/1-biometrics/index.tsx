@@ -47,12 +47,12 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
         const publicKey = await getBiometricsPublicKey({
           demoMode,
         });
-        await wallet.setBiometricsPublicKey({
-          publicKey: {
-            type: pubkeyType.secp256k1,
-            value: publicKey,
-          },
-        });
+        // await wallet.setBiometricsPublicKey({
+        //   publicKey: {
+        //     type: pubkeyType.secp256k1,
+        //     value: publicKey,
+        //   },
+        // });
         setScannedBiometrics(true);
       } catch (e) {
         setScannedBiometrics(false);

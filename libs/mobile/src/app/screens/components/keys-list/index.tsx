@@ -1,7 +1,7 @@
-import { MultisigKey, MultisigKeyType, Text } from "@obi-wallet/common";
+import { KeyType, Text } from "@obi-wallet/common";
 import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
-import { FC, useEffect } from "react";
+import { ComponentType, ReactNode, useEffect } from "react";
 import {
   FlatList,
   StyleProp,
@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { SvgProps } from "react-native-svg";
 
-import Biometrics from "./assets/biometrics-icon.svg";
 import BiometricsObi from "./assets/biometrics-obi-icon.svg";
 import Check from "./assets/check-icon.svg";
 import Cloud from "./assets/cloud-icon.svg";
@@ -21,6 +20,10 @@ import MapPoint from "./assets/map-point-icon.svg";
 import Nfc from "./assets/nfc-icon.svg";
 import PhoneNumber from "./assets/phone-number-icon.svg";
 import Warning from "./assets/warning-icon.svg";
+import {
+  ComingSoonKeyType,
+  useKeyMetaData,
+} from "../../../../components/multisig-settings/key-meta-data";
 import {
   triggerImpactLight,
   triggerNotificationSuccess,
@@ -34,10 +37,10 @@ export const CheckIcon = Check;
 export const WarningIcon = Warning;
 
 export interface KeyMetaData {
-  Icon: FC<SvgProps>;
+  Icon: ComponentType<SvgProps>;
 }
 
-export const keyMetaData: Record<MultisigKeyType, KeyMetaData> = {
+export const keyMetaData: Record<string, KeyMetaData> = {
   biometrics: { Icon: BiometricsObi },
   cloud: { Icon: Cloud },
   phoneNumber: { Icon: PhoneNumber },
@@ -50,10 +53,10 @@ export const keyMetaData: Record<MultisigKeyType, KeyMetaData> = {
 };
 
 export interface Key {
-  id: MultisigKeyType;
+  type: KeyType | ComingSoonKeyType;
   title: string;
   description?: string;
-  right?: React.ReactNode;
+  right?: ReactNode;
   signed?: boolean;
   onPress?: () => void;
 }
@@ -68,7 +71,7 @@ export interface KeysListProps {
 
 const comingSoonKeys: HydratedKeyListItem[] = [
   {
-    id: "email",
+    type: ComingSoonKeyType.Email,
     title: "E-mail Key",
     description: "Coming Soon",
     right: <View />,
@@ -76,7 +79,7 @@ const comingSoonKeys: HydratedKeyListItem[] = [
     Icon: Email,
   },
   {
-    id: "cloud",
+    type: ComingSoonKeyType.Cloud,
     title: "Cloud Key",
     description: "Coming Soon",
     right: <View />,
@@ -84,7 +87,7 @@ const comingSoonKeys: HydratedKeyListItem[] = [
     Icon: Cloud,
   },
   {
-    id: "nfc",
+    type: ComingSoonKeyType.Nfc,
     title: "NFC Tap Key",
     description: "Coming Soon",
     right: <View />,
@@ -92,7 +95,7 @@ const comingSoonKeys: HydratedKeyListItem[] = [
     Icon: () => <Nfc width={20} height={20} />,
   },
   {
-    id: "telegram",
+    type: ComingSoonKeyType.Telegram,
     title: "Telegram Key",
     description: "Coming Soon",
     right: <View />,
@@ -100,7 +103,7 @@ const comingSoonKeys: HydratedKeyListItem[] = [
     Icon: () => <SendIcon color="#fff" />,
   },
   {
-    id: "map",
+    type: ComingSoonKeyType.Map,
     title: "Map Point Key",
     description: "Coming Soon",
     right: <View />,
@@ -108,7 +111,7 @@ const comingSoonKeys: HydratedKeyListItem[] = [
     Icon: () => <MapPoint width={20} height={20} />,
   },
   {
-    id: "ledger",
+    type: ComingSoonKeyType.Ledger,
     title: "Ledger Key",
     description: "Coming Soon",
     right: <View />,
@@ -122,10 +125,11 @@ export const KeysList = observer(function KeysList({
   style,
   tiled,
 }: KeysListProps) {
+  const { metaData } = useKeyMetaData();
   const hydratedData = data.map((key) => {
     return {
       ...key,
-      ...keyMetaData[key.id],
+      ...metaData[key.type],
     };
   });
 
@@ -134,7 +138,7 @@ export const KeysList = observer(function KeysList({
       <FlatList
         data={[...hydratedData, ...comingSoonKeys]}
         horizontal={tiled}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.type}
         renderItem={(props) => <KeyListItem {...props} tiled={tiled} />}
       />
     </View>
@@ -242,7 +246,7 @@ export const KeyListItem = observer(function KeyListItem({
             borderRadius: 12,
           }}
         >
-          {item.id === "social" ? (
+          {item.type === KeyType.Social ? (
             isLoop ? (
               <Icon />
             ) : (

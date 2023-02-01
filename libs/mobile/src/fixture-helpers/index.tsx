@@ -53,7 +53,7 @@ export const MultisigDraft = {
           });
         }
       })();
-    }, [draft, draftsStore]);
+    }, [draft, draftsStore, securityQuestions]);
 
     return draft ? <>{children}</> : null;
   }),

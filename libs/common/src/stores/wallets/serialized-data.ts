@@ -1,8 +1,35 @@
 import * as t from "io-ts";
 
 import * as CosmosMultisig from "./cosmos-multisig-wallet/serialized-data";
+import * as Multisig from "./multisig-wallet/serialized-data";
 import * as TerraMultisig from "./terra-multisig-wallet/serialized-data";
 import { nullable } from "../helpers";
+
+export const SerializedMultisigWalletAnyVersion = t.type({
+  type: t.literal("multisig"),
+  data: Multisig.SerializedDataAnyVersion,
+});
+
+export const SerializedMultisigWallet = t.type({
+  type: t.literal("multisig"),
+  data: Multisig.SerializedData,
+});
+export type SerializedMultisigWallet = t.TypeOf<
+  typeof SerializedMultisigWallet
+>;
+
+export const SerializedMultisigDemoWalletAnyVersion = t.type({
+  type: t.literal("multisig-demo"),
+  data: Multisig.SerializedDataAnyVersion,
+});
+
+export const SerializedMultisigDemoWallet = t.type({
+  type: t.literal("multisig-demo"),
+  data: Multisig.SerializedData,
+});
+export type SerializedMultisigDemoWallet = t.TypeOf<
+  typeof SerializedMultisigDemoWallet
+>;
 
 export const SerializedTerraMultisigWalletAnyVersion = t.type({
   type: t.literal("terra-multisig"),
@@ -99,15 +126,15 @@ export const SerializedWalletAnyVersion = t.union([
   SerializedCosmosMultisigWalletAnyVersion,
   SerializedCosmosMultisigDemoWalletAnyVersion,
   SerializedCosmosSinglesigWalletAnyVersion,
+  SerializedMultisigWalletAnyVersion,
+  SerializedMultisigDemoWalletAnyVersion,
 ]);
 export type SerializedWalletAnyVersion = t.TypeOf<
   typeof SerializedWalletAnyVersion
 >;
 export const SerializedWallet = t.union([
-  SerializedTerraMultisigWallet,
-  SerializedTerraMultisigDemoWallet,
-  SerializedCosmosMultisigWallet,
-  SerializedCosmosMultisigDemoWallet,
+  SerializedMultisigWallet,
+  SerializedMultisigDemoWallet,
   SerializedCosmosSinglesigWallet,
 ]);
 export type SerializedWallet = t.TypeOf<typeof SerializedWallet>;
@@ -132,36 +159,46 @@ export function migrateSerializedData(
   serializedData: SerializedDataAnyVersion
 ): SerializedData {
   if (SerializedDataV0.is(serializedData)) {
-    return {
-      ...serializedData,
-      wallets: serializedData.wallets.map((wallet) => {
-        if (
-          SerializedTerraMultisigWalletAnyVersion.is(wallet) ||
-          SerializedTerraMultisigDemoWalletAnyVersion.is(wallet)
-        ) {
-          return {
-            type: wallet.type,
-            data: TerraMultisig.migrateSerializedData(wallet.data),
-          };
-        }
+    const wallets: SerializedWallet[] = [];
 
-        if (
-          SerializedCosmosMultisigWalletAnyVersion.is(wallet) ||
-          SerializedCosmosMultisigDemoWalletAnyVersion.is(wallet)
-        ) {
-          return {
-            type: SerializedCosmosMultisigWalletAnyVersion.is(wallet)
-              ? "cosmos-multisig"
-              : "cosmos-multisig-demo",
-            data: CosmosMultisig.migrateSerializedData(wallet.data),
-          };
+    serializedData.wallets.forEach((wallet) => {
+      if (
+        SerializedTerraMultisigWalletAnyVersion.is(wallet) ||
+        SerializedTerraMultisigDemoWalletAnyVersion.is(wallet)
+      ) {
+        const isDemo = SerializedTerraMultisigDemoWalletAnyVersion.is(wallet);
+        const data = TerraMultisig.migrateSerializedData(wallet.data);
+        if (data) {
+          wallets.push({
+            type: isDemo ? "multisig-demo" : "multisig",
+            data,
+          });
         }
-
-        return {
+      } else if (
+        SerializedCosmosMultisigWalletAnyVersion.is(wallet) ||
+        SerializedCosmosMultisigDemoWalletAnyVersion.is(wallet)
+      ) {
+        const isDemo = SerializedCosmosMultisigDemoWalletAnyVersion.is(wallet);
+        const data = CosmosMultisig.migrateSerializedData(wallet.data);
+        if (data) {
+          wallets.push({
+            type: isDemo ? "multisig-demo" : "multisig",
+            data,
+          });
+        }
+      } else if (SerializedCosmosSinglesigWalletAnyVersion.is(wallet)) {
+        wallets.push({
           type: "cosmos-singlesig",
           data: wallet.data,
-        };
-      }),
+        });
+      } else {
+        wallets.push(wallet);
+      }
+    });
+
+    return {
+      ...serializedData,
+      wallets,
     };
   }
 

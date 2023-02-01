@@ -1,9 +1,9 @@
 import { MsgMigrateContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { useTheme } from "@emotion/react";
 import {
-  CosmosMultisigWallet,
-  isCosmosMultisigWallet,
+  healthChecks,
   JunoChecks,
+  MultisigWallet,
   RequestObiCosmosSignAndBroadcastMsg,
   Text,
 } from "@obi-wallet/common";
@@ -11,6 +11,7 @@ import { MigrateMsg } from "@obi-wallet/proxy-contract";
 import { MsgMigrateContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import Long from "long";
 import { observer } from "mobx-react-lite";
+import * as R from "ramda";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
@@ -23,22 +24,34 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 
-import { useCosmosMultisigWallet, useStore } from "../../stores";
+import { useMultisigWallet } from "../../stores";
 import { Back } from "../components/back";
 import WarningIcon from "../components/keys-list/assets/warning-icon.svg";
 
 export const HealthChecksScreen = observer(function HealthChecksScreen() {
   const intl = useIntl();
-  const { walletsStore } = useStore();
-  const wallet = useCosmosMultisigWallet();
+  const wallet = useMultisigWallet();
   const [problems, setProblems] = useState<string[] | undefined>();
   const theme = useTheme();
   const refetchProblems = useCallback(async () => {
-    const wallet = walletsStore.currentWallet;
-    if (isCosmosMultisigWallet(wallet)) {
-      setProblems(await wallet.identifyProblems());
-    }
-  }, [walletsStore.currentWallet]);
+    const currentChain = wallet.chain;
+    const { types, checks } = healthChecks[currentChain];
+
+    const potentialProblems = await Promise.all(
+      R.map(async (type) => {
+        const isProblem = !(await checks[type](wallet));
+        return {
+          type,
+          isProblem,
+        };
+      }, types)
+    );
+    setProblems(
+      potentialProblems
+        .filter(({ isProblem }) => isProblem)
+        .map(({ type }) => type)
+    );
+  }, [wallet]);
 
   useEffect(() => {
     setProblems(undefined);
@@ -50,7 +63,7 @@ export const HealthChecksScreen = observer(function HealthChecksScreen() {
     {
       title: ReactNode;
       description?: ReactNode;
-      getOnPress: (wallet: CosmosMultisigWallet) => () => Promise<void>;
+      getOnPress: (wallet: MultisigWallet) => () => Promise<void>;
     }
   > = {
     [JunoChecks.CORRECT_ADMIN]: {
@@ -91,16 +104,15 @@ export const HealthChecksScreen = observer(function HealthChecksScreen() {
           defaultMessage="The code ID of your wallet is older than 1311."
         />
       ),
-      getOnPress: (wallet: CosmosMultisigWallet) => {
+      getOnPress: (wallet: MultisigWallet) => {
         return async () => {
-          const multisig = wallet.currentAdmin;
           const encodeObjects = getEncodeObjects();
 
           if (encodeObjects.length > 0) {
             const response = await RequestObiCosmosSignAndBroadcastMsg.send({
-              id: wallet.id,
+              multisigKey: wallet.owner.serialize(),
+              demoMode: wallet.isDemo,
               encodeObjects,
-              multisig,
             });
 
             try {
@@ -108,10 +120,7 @@ export const HealthChecksScreen = observer(function HealthChecksScreen() {
                 wallet.proxyAddress?.address,
                 "Expected proxy address to exist."
               );
-              await wallet.finishProxySetup({
-                address: wallet.proxyAddress.address,
-                codeId: 1311,
-              });
+              await wallet.setProxyCodeId(1311);
               await refetchProblems();
             } catch (e) {
               console.log(response.rawLog);
@@ -119,25 +128,27 @@ export const HealthChecksScreen = observer(function HealthChecksScreen() {
           }
 
           function getEncodeObjects() {
-            const multisig = wallet.currentAdmin;
+            // TODO: fix me
+            // const multisig = wallet.currentAdmin;
+            //
+            // if (!multisig?.multisig?.address || !wallet.proxyAddress?.address)
+            //   return [];
+            return [];
 
-            if (!multisig?.multisig?.address || !wallet.proxyAddress?.address)
-              return [];
-
-            const rawMessage: MigrateMsg = {};
-
-            const value: MsgMigrateContract = {
-              sender: multisig.multisig.address,
-              // @ts-expect-error should be passed as a string
-              codeId: Long.fromInt(1311).toString(),
-              contract: wallet.proxyAddress.address,
-              msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
-            };
-            const message: MsgMigrateContractEncodeObject = {
-              typeUrl: "/cosmwasm.wasm.v1.MsgMigrateContract",
-              value,
-            };
-            return [message];
+            // const rawMessage: MigrateMsg = {};
+            //
+            // const value: MsgMigrateContract = {
+            //   sender: multisig.multisig.address,
+            //   // @ts-expect-error should be passed as a string
+            //   codeId: Long.fromInt(1311).toString(),
+            //   contract: wallet.proxyAddress.address,
+            //   msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
+            // };
+            // const message: MsgMigrateContractEncodeObject = {
+            //   typeUrl: "/cosmwasm.wasm.v1.MsgMigrateContract",
+            //   value,
+            // };
+            // return [message];
           }
         };
       },

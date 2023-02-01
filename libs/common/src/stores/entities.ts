@@ -8,7 +8,7 @@ export type EntityId = string;
 
 export class Entities<T> implements Draftable {
   @observable
-  protected ids: EntityId[] = [];
+  protected _ids: EntityId[] = [];
 
   @observable
   protected _entities: Record<EntityId, T> = {};
@@ -17,8 +17,12 @@ export class Entities<T> implements Draftable {
     makeObservable(this);
   }
 
+  public get ids(): readonly EntityId[] {
+    return this._ids;
+  }
+
   @computed
-  public get entities() {
+  public get entities(): readonly T[] {
     return this.ids.map((id) => this._entities[id]);
   }
 
@@ -28,15 +32,15 @@ export class Entities<T> implements Draftable {
 
   @action
   public add({ entity, id }: { entity: T; id?: EntityId }) {
-    const idToUse = id ?? this.generateId();
-    this.ids.push(idToUse);
+    const idToUse = id ?? Entities.generateId();
+    this._ids.push(idToUse);
     this._entities[idToUse] = entity;
     return idToUse;
   }
 
   @action
   public removeBy({ predicate }: { predicate: (entity: T) => boolean }) {
-    const idsToRemove = this.ids.filter((id) => predicate(this._entities[id]));
+    const idsToRemove = this._ids.filter((id) => predicate(this._entities[id]));
     idsToRemove.forEach((id) => {
       this.remove({ id });
     });
@@ -44,13 +48,13 @@ export class Entities<T> implements Draftable {
 
   @action
   public remove({ id }: { id: EntityId }) {
-    this.ids = this.ids.filter((idToKeep) => idToKeep !== id);
+    this._ids = this._ids.filter((idToKeep) => idToKeep !== id);
     this._entities = R.omit([id], this._entities);
   }
 
   public clone() {
     const clone = new Entities<T>();
-    clone.ids = [...this.ids];
+    clone._ids = [...this._ids];
     clone._entities = { ...this._entities };
     return clone as this;
   }
@@ -59,7 +63,7 @@ export class Entities<T> implements Draftable {
     return R.equals(this.entities, other.entities);
   }
 
-  protected generateId(): EntityId {
+  public static generateId(): EntityId {
     return nanoid();
   }
 }

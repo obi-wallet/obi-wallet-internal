@@ -13,7 +13,7 @@ import PhoneNumber from "../../app/screens/components/keys-list/assets/phone-num
 import { SendIcon } from "../../app/screens/home/components/send";
 import People from "../../app/screens/onboarding/common/4-social/assets/people-alt-twotone-24px.svg";
 
-enum ComingSoonKeyType {
+export enum ComingSoonKeyType {
   Cloud = "cloud",
   Email = "email",
   Nfc = "nfc",

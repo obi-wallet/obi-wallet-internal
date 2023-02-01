@@ -36,36 +36,36 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
     const isObi = configStore.isObi();
     const chainId = chainStore.currentChain;
 
-    useEffect(() => {
-      const { phoneNumber } = wallet.nextAdmin;
-      if (
-        phoneNumber &&
-        wallet.keyInRecovery !== "biometrics" &&
-        wallet.keyInRecovery !== "phoneNumber"
-      ) {
-        Alert.alert(
-          intl.formatMessage({ id: "onboarding2.error.phonekeyexists.title" }),
-          intl.formatMessage({ id: "onboarding2.error.phonekeyexists.text" }) +
-            ` ${phoneNumber.phoneNumber}?`,
-          [
-            {
-              text: intl.formatMessage({
-                id: "onboarding2.error.phonekeyexists.generatenew",
-              }),
-              style: "cancel",
-            },
-            {
-              text: intl.formatMessage({
-                id: "onboarding2.error.phonekeyexists.yes",
-              }),
-              onPress: () => {
-                navigation.navigate(OnboardingRoute.CreateMultisigSocial);
-              },
-            },
-          ]
-        );
-      }
-    }, [intl, wallet, navigation]);
+    // useEffect(() => {
+    //   const { phoneNumber } = wallet.nextAdmin;
+    //   if (
+    //     phoneNumber &&
+    //     wallet.keyInRecovery !== "biometrics" &&
+    //     wallet.keyInRecovery !== "phoneNumber"
+    //   ) {
+    //     Alert.alert(
+    //       intl.formatMessage({ id: "onboarding2.error.phonekeyexists.title" }),
+    //       intl.formatMessage({ id: "onboarding2.error.phonekeyexists.text" }) +
+    //         ` ${phoneNumber.phoneNumber}?`,
+    //       [
+    //         {
+    //           text: intl.formatMessage({
+    //             id: "onboarding2.error.phonekeyexists.generatenew",
+    //           }),
+    //           style: "cancel",
+    //         },
+    //         {
+    //           text: intl.formatMessage({
+    //             id: "onboarding2.error.phonekeyexists.yes",
+    //           }),
+    //           onPress: () => {
+    //             navigation.navigate(OnboardingRoute.CreateMultisigSocial);
+    //           },
+    //         },
+    //       ]
+    //     );
+    //   }
+    // }, [intl, wallet, navigation]);
 
     const {
       securityQuestion,
@@ -217,22 +217,22 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                       marginBottom: 10,
                     }}
                   >
-                    {wallet.keyInRecovery === "phoneNumber" ? (
-                      <FormattedMessage
-                        id="onboarding2.recovery.authyourkeys"
-                        defaultMessage="Create a New Phone Number Key"
-                      />
-                    ) : wallet.keyInRecovery === "biometrics" ? (
-                      <FormattedMessage
-                        id="onboarding2.recovery.phonenumber"
-                        defaultMessage="Recover Your Old Phone Number Key"
-                      />
-                    ) : (
-                      <FormattedMessage
-                        id="onboarding2.authyourkeys"
-                        defaultMessage="Create a Phone Number Key"
-                      />
-                    )}
+                    {/*{wallet.keyInRecovery === "phoneNumber" ? (*/}
+                    {/*  <FormattedMessage*/}
+                    {/*    id="onboarding2.recovery.authyourkeys"*/}
+                    {/*    defaultMessage="Create a New Phone Number Key"*/}
+                    {/*  />*/}
+                    {/*) : wallet.keyInRecovery === "biometrics" ? (*/}
+                    {/*  <FormattedMessage*/}
+                    {/*    id="onboarding2.recovery.phonenumber"*/}
+                    {/*    defaultMessage="Recover Your Old Phone Number Key"*/}
+                    {/*  />*/}
+                    {/*) : (*/}
+                    {/*  <FormattedMessage*/}
+                    {/*    id="onboarding2.authyourkeys"*/}
+                    {/*    defaultMessage="Create a Phone Number Key"*/}
+                    {/*  />*/}
+                    {/*)}*/}
                   </Text>
                   <Text
                     style={{
@@ -240,17 +240,17 @@ export const MultisigPhoneNumber = observer<MultisigPhoneNumberProps>(
                       fontSize: isSmallScreenNumber(12, 14),
                     }}
                   >
-                    {wallet.keyInRecovery === "phoneNumber" ? (
-                      <FormattedMessage
-                        id="onboarding2.recovery.authyourkeyssubtext"
-                        defaultMessage="Please answer a security question. It can be the same as your old answer, or different."
-                      />
-                    ) : (
-                      <FormattedMessage
-                        id="onboarding2.authyourkeyssubtext"
-                        defaultMessage="Please answer a security question."
-                      />
-                    )}
+                    {/*{wallet.keyInRecovery === "phoneNumber" ? (*/}
+                    {/*  <FormattedMessage*/}
+                    {/*    id="onboarding2.recovery.authyourkeyssubtext"*/}
+                    {/*    defaultMessage="Please answer a security question. It can be the same as your old answer, or different."*/}
+                    {/*  />*/}
+                    {/*) : (*/}
+                    {/*  <FormattedMessage*/}
+                    {/*    id="onboarding2.authyourkeyssubtext"*/}
+                    {/*    defaultMessage="Please answer a security question."*/}
+                    {/*  />*/}
+                    {/*)}*/}
                   </Text>
                 </View>
               </View>

@@ -24,7 +24,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
     const navigation = useRootNavigation();
     const { params } = route;
 
-    const { chainStore, configStore, draftsStore } = useStore();
+    const { chainStore, configStore, draftsStore, walletsStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({ id: params.draftId });
 
     return (
@@ -43,6 +43,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
               await handleTerra({
                 draft,
                 chainStore,
+                walletsStore,
                 demoMode: params.demoMode,
               });
               break;

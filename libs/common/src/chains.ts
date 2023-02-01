@@ -85,3 +85,5 @@ export function isTerraChain(
 ): chain is TerraChain {
   return Object.keys(terraChains).includes(chain);
 }
+
+export type Chain = CosmosChain | TerraChain;

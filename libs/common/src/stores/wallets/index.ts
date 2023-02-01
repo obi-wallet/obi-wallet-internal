@@ -8,37 +8,35 @@ import {
   runInAction,
   toJS,
 } from "mobx";
-import { nanoid } from "nanoid/non-secure";
 import invariant from "tiny-invariant";
 
 import { WalletType } from "./abstract-wallet";
-import {
-  CosmosMultisigKey,
-  CosmosMultisigWallet,
-} from "./cosmos-multisig-wallet";
 import { CosmosSinglesigWallet } from "./cosmos-singlesig-wallet";
+import { MultisigWallet } from "./multisig-wallet";
 import {
   migrateSerializedData,
-  SerializedCosmosMultisigDemoWallet,
-  SerializedCosmosMultisigWallet,
   SerializedCosmosMultisigWalletAnyVersion,
   SerializedCosmosSinglesigWalletAnyVersion,
   SerializedData,
   SerializedDataAnyVersion,
-  SerializedTerraMultisigDemoWallet,
-  SerializedTerraMultisigWallet,
+  SerializedMultisigDemoWallet,
+  SerializedMultisigWallet,
   SerializedWallet,
   SerializedWalletAnyVersion,
 } from "./serialized-data";
-import { TerraMultisigKey, TerraMultisigWallet } from "./terra-multisig-wallet";
+import {
+  CosmosChain,
+  isCosmosChain,
+  isTerraChain,
+  TerraChain,
+} from "../../chains";
 import { ChainStore } from "../chain";
 import { ConfigStore } from "../config";
+import { Entities } from "../entities";
 
 export * from "./cosmos-multisig-wallet";
 export * from "./cosmos-singlesig-wallet";
 export * from "./terra-multisig-wallet";
-
-export type MultisigKeyType = CosmosMultisigKey | TerraMultisigKey;
 
 export enum WalletState {
   /** We are still loading the data from the KV stores. */
@@ -49,17 +47,9 @@ export enum WalletState {
   READY = "READY",
 }
 
-export {
-  CosmosMultisigWallet,
-  TerraMultisigWallet,
-  CosmosSinglesigWallet,
-  WalletType,
-};
+export { MultisigWallet, CosmosSinglesigWallet, WalletType };
 
-export type Wallet =
-  | CosmosMultisigWallet
-  | TerraMultisigWallet
-  | CosmosSinglesigWallet;
+export type Wallet = MultisigWallet | CosmosSinglesigWallet;
 
 export function isCosmosSinglesigWallet(
   wallet: Wallet | null
@@ -69,46 +59,43 @@ export function isCosmosSinglesigWallet(
 
 export function isAnyMultisigWallet(
   wallet: Wallet | null
-): wallet is CosmosMultisigWallet | TerraMultisigWallet {
-  return (
-    wallet?.type === WalletType.CosmosMultisig ||
-    wallet?.type === WalletType.TerraMultisig
-  );
+): wallet is MultisigWallet {
+  return wallet?.type === WalletType.Multisig;
 }
 
 export function isAnyCosmosMultisigWallet(
   wallet: Wallet | null
-): wallet is CosmosMultisigWallet {
-  return wallet?.type === WalletType.CosmosMultisig;
+): wallet is MultisigWallet & { chain: CosmosChain } {
+  return isAnyMultisigWallet(wallet) && isCosmosChain(wallet.chain);
 }
 
 export function isAnyTerraMultisigWallet(
   wallet: Wallet | null
-): wallet is TerraMultisigWallet {
-  return wallet?.type === WalletType.TerraMultisig;
+): wallet is MultisigWallet & { chain: TerraChain } {
+  return isAnyMultisigWallet(wallet) && isTerraChain(wallet.chain);
 }
 
 export function isMultisigWallet(
   wallet: Wallet | null
-): wallet is (CosmosMultisigWallet | TerraMultisigWallet) & { isDemo: false } {
+): wallet is MultisigWallet & { isDemo: false } {
   return isAnyMultisigWallet(wallet) && !wallet.isDemo;
 }
 
 export function isCosmosMultisigWallet(
   wallet: Wallet | null
-): wallet is CosmosMultisigWallet & { isDemo: false } {
+): wallet is MultisigWallet & { isDemo: false } {
   return isAnyCosmosMultisigWallet(wallet) && !wallet.isDemo;
 }
 
 export function isTerraMultisigWallet(
   wallet: Wallet | null
-): wallet is TerraMultisigWallet & { isDemo: false } {
+): wallet is MultisigWallet & { isDemo: false } {
   return isAnyTerraMultisigWallet(wallet) && !wallet.isDemo;
 }
 
 export function isMultisigDemoWallet(
   wallet: Wallet | null
-): wallet is (CosmosMultisigWallet | TerraMultisigWallet) & { isDemo: true } {
+): wallet is MultisigWallet & { isDemo: true } {
   return isAnyMultisigWallet(wallet) && wallet.isDemo;
 }
 
@@ -122,22 +109,10 @@ export class WalletsStore {
   };
 
   @observable
-  protected _wallets: {
-    ids: string[];
-    entities: Record<
-      string,
-      {
-        wallet:
-          | CosmosSinglesigWallet
-          | CosmosMultisigWallet
-          | TerraMultisigWallet;
-        serializedWallet: SerializedWallet;
-      }
-    >;
-  } = {
-    ids: [],
-    entities: {},
-  };
+  protected _wallets: Entities<{
+    wallet: CosmosSinglesigWallet | MultisigWallet;
+    serializedWallet: SerializedWallet;
+  }>;
   @observable
   public currentWalletId: string | null = null;
   @observable
@@ -160,6 +135,7 @@ export class WalletsStore {
     this.configStore = configStore;
     this.kvStore = kvStore;
     this.legacyKVStores = legacyKVStores;
+    this._wallets = new Entities();
     makeObservable(this);
     this.__initPromise = this.init();
 
@@ -179,7 +155,7 @@ export class WalletsStore {
   @computed
   public get currentWallet() {
     if (this.currentWalletId === null) return null;
-    return this._wallets.entities[this.currentWalletId].wallet;
+    return this._wallets.get({ id: this.currentWalletId }).wallet;
   }
 
   public get type(): WalletType | null {
@@ -199,7 +175,7 @@ export class WalletsStore {
 
   @computed
   public get wallets() {
-    return this._wallets.ids.map((id) => this._wallets.entities[id].wallet);
+    return this._wallets.entities.map((entity) => entity.wallet);
   }
 
   @computed
@@ -209,9 +185,7 @@ export class WalletsStore {
 
   @computed
   protected get serializedWallets() {
-    return this._wallets.ids.map(
-      (id) => this._wallets.entities[id].serializedWallet
-    );
+    return this._wallets.entities.map((entity) => entity.serializedWallet);
   }
 
   @action
@@ -223,115 +197,43 @@ export class WalletsStore {
 
   @action
   protected addWalletWithoutSave = (serializedWallet: SerializedWallet) => {
-    const id = nanoid();
+    const id = Entities.generateId();
     const wallet = this.createWallet({ id, serializedWallet });
-    this._wallets.ids.push(id);
-    this._wallets.entities[id] = {
-      wallet,
-      serializedWallet,
-    };
+    this._wallets.add({ id, entity: { wallet, serializedWallet } });
     this.currentWalletId = id;
     return wallet;
   };
 
-  public async addMultisigWallet() {
-    switch (this.configStore.getDefaultMultisigWalletType()) {
-      case WalletType.CosmosMultisig:
-        return await this.addCosmosMultisigWallet();
-      case WalletType.TerraMultisig:
-        return await this.addTerraMultisigWallet();
-    }
-  }
-
-  public async addMultisigDemoWallet() {
-    switch (this.configStore.getDefaultMultisigWalletType()) {
-      case WalletType.CosmosMultisig:
-        return await this.addCosmosMultisigDemoWallet();
-      case WalletType.TerraMultisig:
-        return await this.addTerraMultisigDemoWallet();
-    }
-  }
-
-  public async addTerraMultisigWallet() {
-    const wallet: SerializedTerraMultisigWallet = {
-      type: "terra-multisig",
-      data: {
-        chain: this.chainStore.currentTerraChain,
-        currentAdmin: null,
-        nextAdmin: {
-          biometrics: null,
-          phoneNumber: null,
-          social: null,
-        },
-        proxyAddress: null,
-      },
+  @action
+  public async addMultisigWallet(
+    serializedData: SerializedMultisigWallet["data"]
+  ) {
+    const wallet: SerializedMultisigWallet = {
+      type: "multisig",
+      data: serializedData,
     };
-    return (await this.addWallet(wallet)) as TerraMultisigWallet;
+    return (await this.addWallet(wallet)) as MultisigWallet;
   }
 
   @action
-  public async addTerraMultisigDemoWallet() {
-    const wallet: SerializedTerraMultisigDemoWallet = {
-      type: "terra-multisig-demo",
-      data: {
-        chain: this.chainStore.currentTerraChain,
-        currentAdmin: null,
-        nextAdmin: {
-          biometrics: null,
-          phoneNumber: null,
-          social: null,
-        },
-        proxyAddress: null,
-      },
+  public async addMultisigDemoWallet(
+    serializedData: SerializedMultisigDemoWallet["data"]
+  ) {
+    const wallet: SerializedMultisigDemoWallet = {
+      type: "multisig-demo",
+      data: serializedData,
     };
-    return (await this.addWallet(wallet)) as TerraMultisigWallet;
-  }
-
-  @action
-  public async addCosmosMultisigWallet() {
-    const wallet: SerializedCosmosMultisigWallet = {
-      type: "cosmos-multisig",
-      data: {
-        currentAdmin: null,
-        nextAdmin: {
-          biometrics: null,
-          phoneNumber: null,
-          social: null,
-          cloud: null,
-        },
-        proxyAddresses: {},
-      },
-    };
-    return (await this.addWallet(wallet)) as CosmosMultisigWallet;
-  }
-
-  @action
-  public async addCosmosMultisigDemoWallet() {
-    const wallet: SerializedCosmosMultisigDemoWallet = {
-      type: "cosmos-multisig-demo",
-      data: {
-        currentAdmin: null,
-        nextAdmin: {
-          biometrics: null,
-          phoneNumber: null,
-          social: null,
-          cloud: null,
-        },
-        proxyAddresses: {},
-      },
-    };
-    return (await this.addWallet(wallet)) as CosmosMultisigWallet;
+    return (await this.addWallet(wallet)) as MultisigWallet;
   }
 
   @action
   public getWallet(id: string) {
-    return this._wallets.entities[id].wallet;
+    return this._wallets.get({ id }).wallet;
   }
 
   @action
   public async removeWallet(id: string) {
-    this._wallets.ids.splice(this._wallets.ids.indexOf(id), 1);
-    delete this._wallets.entities[id];
+    this._wallets.remove({ id });
     if (this.currentWalletId === id) {
       this.currentWalletId = null;
     }
@@ -447,15 +349,14 @@ export class WalletsStore {
     serializedWallet: SerializedWallet;
   }) => {
     const onChange = async (serializedWallet: SerializedWallet) => {
-      this._wallets.entities[id].serializedWallet = serializedWallet;
+      this._wallets.get({ id }).serializedWallet = serializedWallet;
       await this.save();
     };
 
     switch (serializedWallet.type) {
-      case "cosmos-multisig":
-      case "cosmos-multisig-demo":
-        return new CosmosMultisigWallet({
-          chainStore: this.chainStore,
+      case "multisig":
+      case "multisig-demo":
+        return new MultisigWallet({
           id,
           serializedWallet,
           onChange,
@@ -463,13 +364,6 @@ export class WalletsStore {
       case "cosmos-singlesig":
         return new CosmosSinglesigWallet({
           chainStore: this.chainStore,
-          id,
-          serializedWallet,
-          onChange,
-        });
-      case "terra-multisig":
-      case "terra-multisig-demo":
-        return new TerraMultisigWallet({
           id,
           serializedWallet,
           onChange,

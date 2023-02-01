@@ -7,23 +7,27 @@ import { useMultisigWallet } from "../../../stores";
 import { OnboardingRoute } from "../onboarding-stack";
 
 export const LookupProxyWallets = observer(function LookupProxyWallets() {
-  const wallet = useMultisigWallet();
-  const { navigate } = useRootNavigation();
-  const publicKey = wallet.nextAdmin.phoneNumber?.publicKey;
+  // TODO:
+  return null;
 
-  if (!publicKey) return null;
-
-  return (
-    <Lookup
-      chainId={isTerraMultisigWallet(wallet) ? "phoenix-1" : "juno-1"}
-      publicKey={publicKey.value}
-      onCancel={() => {
-        navigate(OnboardingRoute.CreateMultisigPhoneNumber);
-      }}
-      onSelect={async (recoveryWallet) => {
-        await wallet.setWalletInRecovery(recoveryWallet);
-        navigate(OnboardingRoute.RecoverMultisig);
-      }}
-    />
-  );
+  //   const wallet = useMultisigWallet();
+  //   const { navigate } = useRootNavigation();
+  //   const publicKey = wallet.nextAdmin.phoneNumber?.publicKey;
+  //
+  //   if (!publicKey) return null;
+  //
+  //   return (
+  //     <Lookup
+  //       chainId={isTerraMultisigWallet(wallet) ? "phoenix-1" : "juno-1"}
+  //       publicKey={publicKey.value}
+  //       onCancel={() => {
+  //         navigate(OnboardingRoute.CreateMultisigPhoneNumber);
+  //       }}
+  //       onSelect={async (recoveryWallet) => {
+  //         // TODO:
+  //         // await wallet.setWalletInRecovery(recoveryWallet);
+  //         // navigate(OnboardingRoute.RecoverMultisig);
+  //       }}
+  //     />
+  //   );
 });

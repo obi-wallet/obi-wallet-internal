@@ -34,6 +34,8 @@ export const SerializedKey = t.union([
 export type SerializedKey = t.TypeOf<typeof SerializedKey>;
 
 export const SerializedMultisigKey = t.type({
-  keys: t.array(SerializedKey),
+  keys: t.readonly(t.array(SerializedKey)),
   threshold: t.number,
 });
+
+export type SerializedMultisigKey = t.TypeOf<typeof SerializedMultisigKey>;

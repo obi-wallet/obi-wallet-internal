@@ -7,13 +7,11 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   ChainStore,
-  CosmosMultisigWallet,
   isAnyCosmosMultisigWallet,
   isAnyTerraMultisigWallet,
   RequestObiCosmosSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastMsg,
   terra,
-  TerraMultisigWallet,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
@@ -46,7 +44,6 @@ export const RecoverMultisig = observer<RecoverMultisigProps>(
         void handleCosmos({
           chainStore,
           navigation,
-          wallet,
         });
       }
 
@@ -54,160 +51,9 @@ export const RecoverMultisig = observer<RecoverMultisigProps>(
         void handleTerra({
           chainStore,
           navigation,
-          wallet,
         });
       }
     });
-
-    const { currentCosmosChainInformation } = chainStore;
-
-    const multisig = wallet.currentAdmin;
-    const nextMultisig = wallet.nextAdmin;
-
-    const sender = wallet.updateProposed ? nextMultisig : multisig;
-
-    const encodeObjects = useMemo(() => {
-      if (!multisig?.multisig?.address) return [];
-      if (!nextMultisig.multisig?.address) return [];
-      if (!sender?.multisig?.address) return [];
-
-      const contract = wallet.walletInRecovery?.proxyAddress.address;
-      if (!contract) return [];
-
-      if (wallet.updateProposed) {
-        return [
-          wrapRawMessage({
-            rawMessage: {
-              confirm_update_admin: {
-                signers: nextMultisig.multisig.publicKey.value.pubkeys.map(
-                  (pubkey) => {
-                    return pubkeyToAddress(
-                      pubkey,
-                      currentCosmosChainInformation.prefix
-                    );
-                  }
-                ),
-              },
-            },
-            sender: sender.multisig.address,
-            contract,
-          }),
-        ];
-      } else {
-        const value: MsgUpdateAdmin = {
-          sender: sender.multisig.address,
-          newAdmin: nextMultisig.multisig.address,
-          contract,
-        };
-        const message: MsgUpdateAdminEncodeObject = {
-          typeUrl: "/cosmwasm.wasm.v1.MsgUpdateAdmin",
-          value,
-        };
-
-        return [
-          wrapRawMessage({
-            rawMessage: {
-              propose_update_admin: {
-                new_admin: nextMultisig.multisig.address,
-              },
-            },
-            sender: sender.multisig.address,
-            contract,
-          }),
-          ...(multisig.multisig.address === nextMultisig.multisig.address
-            ? []
-            : [message]),
-        ];
-      }
-
-      function wrapRawMessage({
-        rawMessage,
-        contract,
-        sender,
-      }: {
-        rawMessage: unknown;
-        contract: string;
-        sender: string;
-      }): MsgExecuteContractEncodeObject {
-        const value: MsgExecuteContract = {
-          sender,
-          contract,
-          msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
-          funds: [],
-        };
-        return {
-          typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-          value,
-        };
-      }
-    }, [
-      multisig,
-      nextMultisig,
-      sender,
-      wallet.walletInRecovery,
-      wallet.updateProposed,
-      currentCosmosChainInformation.prefix,
-    ]);
-
-    useEffect(() => {
-      if (encodeObjects.length > 0) {
-        (async () => {
-          try {
-            const response = await RequestObiCosmosSignAndBroadcastMsg.send({
-              id: wallet.id,
-              encodeObjects,
-              multisig: sender,
-              hiddenKeyIds: wallet.updateProposed ? [] : ["biometrics"],
-            });
-
-            try {
-              invariant(
-                response.rawLog,
-                "Expected `response` to have `rawLog`."
-              );
-              const rawLog = JSON.parse(response.rawLog) as [
-                {
-                  events: [
-                    {
-                      type: string;
-                      attributes: { key: string; value: string }[];
-                    }
-                  ];
-                }
-              ];
-              const executeEvent = rawLog[0].events.find((e) => {
-                return e.type === "execute";
-              });
-              invariant(
-                executeEvent,
-                "Expected `rawLog` to contain `execute` event."
-              );
-              const contractAddress = executeEvent.attributes.find((a) => {
-                return a.key === "_contract_address";
-              });
-              invariant(
-                contractAddress,
-                "Expected `executeEvent` to contain `_contract_address` attribute."
-              );
-              if (wallet.updateProposed) {
-                await wallet.finishProxySetup({
-                  address: contractAddress.value,
-                  codeId:
-                    chainStore.currentCosmosChainInformation.currentCodeId,
-                });
-              } else {
-                wallet.setUpdateProposed(true);
-              }
-            } catch (e) {
-              console.log(response.rawLog);
-            }
-          } catch (e) {
-            console.log(e);
-            navigation.goBack();
-          }
-        })();
-      }
-    }, [chainStore, encodeObjects, sender, navigation, wallet]);
 
     return (
       <SafeAreaView style={{ flex: 1 }}>
@@ -247,204 +93,201 @@ export const RecoverMultisig = observer<RecoverMultisigProps>(
 async function handleCosmos({
   chainStore,
   navigation,
-  wallet,
 }: {
   chainStore: ChainStore;
   navigation: RecoverMultisigProps["navigation"];
-  wallet: CosmosMultisigWallet;
 }) {
-  const multisig = wallet.currentAdmin;
-  const nextMultisig = wallet.nextAdmin;
-
-  const { currentCosmosChainInformation } = chainStore;
-
-  const sender = wallet.updateProposed ? nextMultisig : multisig;
-
-  if (!multisig?.multisig?.address) return;
-  if (!nextMultisig.multisig?.address) return;
-  if (!sender?.multisig?.address) return;
-
-  const contract = wallet.walletInRecovery?.proxyAddress.address;
-  if (!contract) return;
-
-  const encodeObjects = (() => {
-    if (wallet.updateProposed) {
-      return [
-        wrapRawMessage({
-          rawMessage: {
-            confirm_update_admin: {
-              signers: nextMultisig.multisig.publicKey.value.pubkeys.map(
-                (pubkey) => {
-                  return pubkeyToAddress(
-                    pubkey,
-                    currentCosmosChainInformation.prefix
-                  );
-                }
-              ),
-            },
-          },
-          sender: sender.multisig.address,
-          contract,
-        }),
-      ];
-    } else {
-      const value: MsgUpdateAdmin = {
-        sender: sender.multisig.address,
-        newAdmin: nextMultisig.multisig.address,
-        contract,
-      };
-      const message: MsgUpdateAdminEncodeObject = {
-        typeUrl: "/cosmwasm.wasm.v1.MsgUpdateAdmin",
-        value,
-      };
-
-      return [
-        wrapRawMessage({
-          rawMessage: {
-            propose_update_admin: {
-              new_admin: nextMultisig.multisig.address,
-            },
-          },
-          sender: sender.multisig.address,
-          contract,
-        }),
-        ...(multisig.multisig.address === nextMultisig.multisig.address
-          ? []
-          : [message]),
-      ];
-    }
-
-    function wrapRawMessage({
-      rawMessage,
-      contract,
-      sender,
-    }: {
-      rawMessage: unknown;
-      contract: string;
-      sender: string;
-    }): MsgExecuteContractEncodeObject {
-      const value: MsgExecuteContract = {
-        sender,
-        contract,
-        msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
-        funds: [],
-      };
-      return {
-        typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-        value,
-      };
-    }
-  })();
-
-  try {
-    const response = await RequestObiCosmosSignAndBroadcastMsg.send({
-      id: wallet.id,
-      encodeObjects,
-      multisig: sender,
-    });
-
-    try {
-      invariant(response.rawLog, "Expected `response` to have `rawLog`.");
-      const rawLog = JSON.parse(response.rawLog) as [
-        {
-          events: [
-            {
-              type: string;
-              attributes: { key: string; value: string }[];
-            }
-          ];
-        }
-      ];
-      const executeEvent = rawLog[0].events.find((e) => {
-        return e.type === "execute";
-      });
-      invariant(executeEvent, "Expected `rawLog` to contain `execute` event.");
-      const contractAddress = executeEvent.attributes.find((a) => {
-        return a.key === "_contract_address";
-      });
-      invariant(
-        contractAddress,
-        "Expected `executeEvent` to contain `_contract_address` attribute."
-      );
-      if (wallet.updateProposed) {
-        await wallet.finishProxySetup({
-          address: contractAddress.value,
-          // TODO: this might not be the case, need to fetch from chain
-          codeId: chainStore.currentCosmosChainInformation.currentCodeId,
-        });
-      } else {
-        wallet.setUpdateProposed(true);
-      }
-    } catch (e) {
-      console.log(response.rawLog);
-    }
-  } catch (e) {
-    console.log(e);
-    navigation.goBack();
-  }
+  // TODO:
+  // const multisig = wallet.currentAdmin;
+  // const nextMultisig = wallet.nextAdmin;
+  //
+  // const { currentCosmosChainInformation } = chainStore;
+  //
+  // const sender = wallet.updateProposed ? nextMultisig : multisig;
+  //
+  // if (!multisig?.multisig?.address) return;
+  // if (!nextMultisig.multisig?.address) return;
+  // if (!sender?.multisig?.address) return;
+  //
+  // const contract = wallet.walletInRecovery?.proxyAddress.address;
+  // if (!contract) return;
+  //
+  // const encodeObjects = (() => {
+  //   if (wallet.updateProposed) {
+  //     return [
+  //       wrapRawMessage({
+  //         rawMessage: {
+  //           confirm_update_admin: {
+  //             signers: nextMultisig.multisig.publicKey.value.pubkeys.map(
+  //               (pubkey) => {
+  //                 return pubkeyToAddress(
+  //                   pubkey,
+  //                   currentCosmosChainInformation.prefix
+  //                 );
+  //               }
+  //             ),
+  //           },
+  //         },
+  //         sender: sender.multisig.address,
+  //         contract,
+  //       }),
+  //     ];
+  //   } else {
+  //     const value: MsgUpdateAdmin = {
+  //       sender: sender.multisig.address,
+  //       newAdmin: nextMultisig.multisig.address,
+  //       contract,
+  //     };
+  //     const message: MsgUpdateAdminEncodeObject = {
+  //       typeUrl: "/cosmwasm.wasm.v1.MsgUpdateAdmin",
+  //       value,
+  //     };
+  //
+  //     return [
+  //       wrapRawMessage({
+  //         rawMessage: {
+  //           propose_update_admin: {
+  //             new_admin: nextMultisig.multisig.address,
+  //           },
+  //         },
+  //         sender: sender.multisig.address,
+  //         contract,
+  //       }),
+  //       ...(multisig.multisig.address === nextMultisig.multisig.address
+  //         ? []
+  //         : [message]),
+  //     ];
+  //   }
+  //
+  //   function wrapRawMessage({
+  //     rawMessage,
+  //     contract,
+  //     sender,
+  //   }: {
+  //     rawMessage: unknown;
+  //     contract: string;
+  //     sender: string;
+  //   }): MsgExecuteContractEncodeObject {
+  //     const value: MsgExecuteContract = {
+  //       sender,
+  //       contract,
+  //       msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
+  //       funds: [],
+  //     };
+  //     return {
+  //       typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+  //       value,
+  //     };
+  //   }
+  // })();
+  //
+  // try {
+  //   const response = await RequestObiCosmosSignAndBroadcastMsg.send({
+  //     id: wallet.id,
+  //     encodeObjects,
+  //     multisig: sender,
+  //   });
+  //
+  //   try {
+  //     invariant(response.rawLog, "Expected `response` to have `rawLog`.");
+  //     const rawLog = JSON.parse(response.rawLog) as [
+  //       {
+  //         events: [
+  //           {
+  //             type: string;
+  //             attributes: { key: string; value: string }[];
+  //           }
+  //         ];
+  //       }
+  //     ];
+  //     const executeEvent = rawLog[0].events.find((e) => {
+  //       return e.type === "execute";
+  //     });
+  //     invariant(executeEvent, "Expected `rawLog` to contain `execute` event.");
+  //     const contractAddress = executeEvent.attributes.find((a) => {
+  //       return a.key === "_contract_address";
+  //     });
+  //     invariant(
+  //       contractAddress,
+  //       "Expected `executeEvent` to contain `_contract_address` attribute."
+  //     );
+  //     if (wallet.updateProposed) {
+  //       await wallet.finishProxySetup({
+  //         address: contractAddress.value,
+  //         // TODO: this might not be the case, need to fetch from chain
+  //         codeId: chainStore.currentCosmosChainInformation.currentCodeId,
+  //       });
+  //     } else {
+  //       wallet.setUpdateProposed(true);
+  //     }
+  //   } catch (e) {
+  //     console.log(response.rawLog);
+  //   }
+  // } catch (e) {
+  //   console.log(e);
+  //   navigation.goBack();
+  // }
 }
 
 async function handleTerra({
   chainStore,
   navigation,
-  wallet,
 }: {
   chainStore: ChainStore;
   navigation: RecoverMultisigProps["navigation"];
-  wallet: TerraMultisigWallet;
 }) {
-  const multisig = wallet.currentAdmin;
-  const nextMultisig = wallet.nextAdmin;
-  const sender = wallet.updateProposed ? nextMultisig : multisig;
-
-  if (!nextMultisig.multisig?.address) return;
-  if (!sender?.multisig?.address) return;
-
-  const contract = wallet.walletInRecovery?.proxyAddress.address;
-  if (!contract) return;
-
-  const messages = (() => {
-    if (wallet.updateProposed) {
-      return [
-        terra.getConfirmUpdateOwnerMessage({
-          sender: sender?.multisig?.address,
-          proxyAddress: contract,
-        }),
-      ];
-    } else {
-      return [
-        terra.getProposeUpdateOwnerMessage({
-          sender: sender?.multisig?.address,
-          proxyAddress: contract,
-          newOwner: nextMultisig?.multisig?.address,
-        }),
-      ];
-    }
-  })();
-
-  try {
-    const response = await RequestObiTerraSignAndBroadcastMsg.send({
-      id: wallet.id,
-      messages: messages.map((message) => message.toAmino()),
-      multisig: sender,
-    });
-
-    try {
-      const { address } = terra.parseProposeUpdateOwnerResponse(response);
-      if (wallet.updateProposed) {
-        await wallet.finishProxySetup({
-          address,
-          // TODO: this might not be the case, need to fetch from chain
-          codeId: chainStore.currentTerraChainInformation.currentCodeId,
-        });
-      } else {
-        wallet.setUpdateProposed(true);
-      }
-    } catch (e) {
-      console.log(response.raw_log);
-    }
-  } catch (e) {
-    console.log(e);
-    navigation.goBack();
-  }
+  // const nextMultisig = wallet.nextAdmin;
+  // // @ts-expect-error FIXME:
+  // const sender = wallet.updateProposed ? nextMultisig : multisig;
+  //
+  // if (!nextMultisig.multisig?.address) return;
+  // if (!sender?.multisig?.address) return;
+  //
+  // const contract = wallet.walletInRecovery?.proxyAddress.address;
+  // if (!contract) return;
+  //
+  // const messages = (() => {
+  //   if (wallet.updateProposed) {
+  //     return [
+  //       terra.getConfirmUpdateOwnerMessage({
+  //         sender: sender?.multisig?.address,
+  //         proxyAddress: contract,
+  //       }),
+  //     ];
+  //   } else {
+  //     return [
+  //       terra.getProposeUpdateOwnerMessage({
+  //         sender: sender?.multisig?.address,
+  //         proxyAddress: contract,
+  //         newOwner: nextMultisig?.multisig?.address,
+  //       }),
+  //     ];
+  //   }
+  // })();
+  //
+  // try {
+  //   const response = await RequestObiTerraSignAndBroadcastMsg.send({
+  //     multisigKey: wallet.owner.serialize(),
+  //     demoMode: wallet.isDemo,
+  //     messages: messages.map((message) => message.toAmino()),
+  //   });
+  //
+  //   try {
+  //     const { address } = terra.parseProposeUpdateOwnerResponse(response);
+  //     if (wallet.updateProposed) {
+  //       await wallet.finishProxySetup({
+  //         address,
+  //         // TODO: this might not be the case, need to fetch from chain
+  //         codeId: chainStore.currentTerraChainInformation.currentCodeId,
+  //       });
+  //     } else {
+  //       wallet.setUpdateProposed(true);
+  //     }
+  //   } catch (e) {
+  //     console.log(response.raw_log);
+  //   }
+  // } catch (e) {
+  //   console.log(e);
+  //   navigation.goBack();
+  // }
 }

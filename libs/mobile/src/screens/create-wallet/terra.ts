@@ -4,7 +4,7 @@ import {
   MultisigKey,
   RequestObiTerraSignAndBroadcastMsg,
   terra,
-  TerraMultisigWallet,
+  WalletsStore,
 } from "@obi-wallet/common";
 import {
   LegacyAminoMultisigPublicKey,
@@ -14,12 +14,14 @@ import { Alert } from "react-native";
 
 export async function handleTerra({
   draft,
-  chainStore,
   demoMode,
+  chainStore,
+  walletsStore,
 }: {
   draft: Draft<MultisigKey>;
-  chainStore: ChainStore;
   demoMode: boolean;
+  chainStore: ChainStore;
+  walletsStore: WalletsStore;
 }) {
   const multisigKey = draft.value;
   // TODO: shuffle?
@@ -35,19 +37,14 @@ export async function handleTerra({
     publicKeys
   );
 
-  // const multisig = wallet.nextAdmin;
-  //
-  // if (!multisig.multisig?.address) return;
-  //
   const { currentTerraChainInformation } = chainStore;
-  //
   const signers = multisigPublicKey.pubkeys.map((publicKey, i) => {
     return {
       address: publicKey.address(),
       ty: multisigKey.signerTypes[i],
     };
   });
-  //
+
   const message = terra.getNewAccountMessage({
     address: multisigPublicKey.address(),
     signers,
@@ -56,17 +53,26 @@ export async function handleTerra({
 
   console.log(message);
 
-  // const response = await RequestObiTerraSignAndBroadcastMsg.send({
-  //   id: wallet.id,
-  //   messages: [message.toAmino()],
-  //   multisig,
-  //   cancelable: false,
-  //   isOnboarding: true,
-  // });
-  //
-  // try {
-  //   await wallet.finishProxySetup(terra.parseNewAccountResponse(response));
-  // } catch (e) {
-  //   Alert.alert("Something went wrong");
-  // }
+  const response = await RequestObiTerraSignAndBroadcastMsg.send({
+    multisigKey: multisigKey.serialize(),
+    messages: [message.toAmino()],
+    demoMode,
+    cancelable: false,
+    isOnboarding: true,
+  });
+
+  try {
+    const serializedData = {
+      chain: chainStore.currentChain,
+      owner: multisigKey.serialize(),
+      proxyAddress: terra.parseNewAccountResponse(response),
+    };
+    if (demoMode) {
+      await walletsStore.addMultisigDemoWallet(serializedData);
+    } else {
+      await walletsStore.addMultisigWallet(serializedData);
+    }
+  } catch (e) {
+    Alert.alert("Something went wrong");
+  }
 }

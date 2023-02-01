@@ -117,22 +117,22 @@ export const MultisigPhoneNumberConfirm = observer(
                       marginTop: 32,
                     }}
                   >
-                    {wallet.keyInRecovery === "phoneNumber" ? (
-                      <FormattedMessage
-                        id="onboarding2.recovery.authyourkeys"
-                        defaultMessage="Create a Replacement Phone Number Key"
-                      />
-                    ) : wallet.keyInRecovery === "biometrics" ? (
-                      <FormattedMessage
-                        id="onboarding2.recovery.phonenumber"
-                        defaultMessage="Recover your Phone Number Key"
-                      />
-                    ) : (
-                      <FormattedMessage
-                        id="onboarding3.authyourkeys"
-                        defaultMessage="Authenticate Your Keys"
-                      />
-                    )}
+                    {/*{wallet.keyInRecovery === "phoneNumber" ? (*/}
+                    {/*  <FormattedMessage*/}
+                    {/*    id="onboarding2.recovery.authyourkeys"*/}
+                    {/*    defaultMessage="Create a Replacement Phone Number Key"*/}
+                    {/*  />*/}
+                    {/*) : wallet.keyInRecovery === "biometrics" ? (*/}
+                    {/*  <FormattedMessage*/}
+                    {/*    id="onboarding2.recovery.phonenumber"*/}
+                    {/*    defaultMessage="Recover your Phone Number Key"*/}
+                    {/*  />*/}
+                    {/*) : (*/}
+                    {/*  <FormattedMessage*/}
+                    {/*    id="onboarding3.authyourkeys"*/}
+                    {/*    defaultMessage="Authenticate Your Keys"*/}
+                    {/*  />*/}
+                    {/*)}*/}
                   </Text>
                   <Text
                     style={{
@@ -244,29 +244,29 @@ export const MultisigPhoneNumberConfirm = observer(
                       demoMode: isMultisigDemoWallet(wallet),
                     });
                     if (publicKey) {
-                      await wallet.setPhoneNumberKey({
-                        publicKey: {
-                          type: pubkeyType.secp256k1,
-                          value: publicKey,
-                        },
-                        phoneNumber: params.phoneNumber,
-                        securityQuestion: params.securityQuestion,
-                      });
+                      // await wallet.setPhoneNumberKey({
+                      //   publicKey: {
+                      //     type: pubkeyType.secp256k1,
+                      //     value: publicKey,
+                      //   },
+                      //   phoneNumber: params.phoneNumber,
+                      //   securityQuestion: params.securityQuestion,
+                      // });
                       setVerifyButtonDisabledDoubleclick(false);
-                      switch (wallet.keyInRecovery) {
-                        case "biometrics":
-                          navigation.navigate(
-                            OnboardingRoute.LookupProxyWallets
-                          );
-                          break;
-                        case "phoneNumber":
-                          navigation.navigate(OnboardingRoute.ReplaceMultisig);
-                          break;
-                        default:
-                          navigation.navigate(
-                            OnboardingRoute.CreateMultisigSocial
-                          );
-                      }
+                      // switch (wallet.keyInRecovery) {
+                      //   case "biometrics":
+                      //     navigation.navigate(
+                      //       OnboardingRoute.LookupProxyWallets
+                      //     );
+                      //     break;
+                      //   case "phoneNumber":
+                      //     navigation.navigate(OnboardingRoute.ReplaceMultisig);
+                      //     break;
+                      //   default:
+                      //     navigation.navigate(
+                      //       OnboardingRoute.CreateMultisigSocial
+                      //     );
+                      // }
                     } else {
                       setVerifyButtonDisabledDoubleclick(false);
                     }

@@ -52,546 +52,549 @@ export type SendScreenProps = NativeStackScreenProps<
 export const SendScreen = observer<SendScreenProps>(function SendScreen({
   navigation,
 }) {
-  const balances = useBalances();
-  const [selectedCoin, setSelectedCoin] = useState<ExtendedCoin | undefined>(
-    () => {
-      return balances.data[0];
-    }
-  );
-  const [denominationOpened, setDenominationOpened] = useState(false);
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const triggerBottomSheet = (open: boolean) => {
-    if (open) {
-      setDenominationOpened(true);
-      bottomSheetRef.current?.snapToIndex(0);
-    } else {
-      bottomSheetRef.current?.close();
-    }
-  };
+  // TODO:
+  return null;
 
-  useEffect(() => {
-    if (selectedCoin === undefined && balances.data[0]) {
-      setSelectedCoin(balances.data[0]);
-    }
-  }, [balances, selectedCoin]);
-
-  const hydratedSelectedCoin = selectedCoin
-    ? formatExtendedCoin(selectedCoin)
-    : null;
-
-  const { walletsStore } = useStore();
-  const wallet = walletsStore.currentWallet;
-
-  const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState("");
-
-  const drinkOrBottleModalFlavor =
-    selectedCoin?.denom === "ubottle"
-      ? "bottle"
-      : selectedCoin?.denom === "udrink"
-      ? "drink"
-      : null;
-
-  const normalizedAmount = amount.replace(/,/g, ".");
-
-  const [confirmModalVisible, setConfirmModalStatus] = useState<{
-    visible?: boolean;
-    success?: boolean;
-  }>({});
-
-  const intl = useIntl();
-  const qrCodeScannerModal = useAddressQrCodeScannerModal((address) => {
-    setAddress(address);
-  });
-  const theme = useTheme();
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
-  const isObi = configStore.isObi();
-
-  return (
-    <KeyboardAvoidingView style={{ flex: 1 }}>
-      <SafeAreaView
-        style={{
-          backgroundColor: theme.colors.background,
-          flex: 1,
-          justifyContent: "space-between",
-          paddingHorizontal: 20,
-          paddingVertical: Platform.select({
-            ios: isSmallScreenNumber(20, 20),
-            android: isSmallScreenNumber(30, 30),
-          }),
-        }}
-      >
-        {qrCodeScannerModal.render()}
-        {drinkOrBottleModalFlavor &&
-        (!address || address === BARTENDER_ADDRESS) &&
-        confirmModalVisible.visible &&
-        confirmModalVisible.success ? (
-          <DrinkOrBottleModal
-            flavor={drinkOrBottleModalFlavor}
-            visible={confirmModalVisible.visible && confirmModalVisible.success}
-            onDismiss={() => {
-              setConfirmModalStatus({ visible: false });
-              navigation.navigate(HomeBottomTabRoute.Assets);
-            }}
-          />
-        ) : null}
-        {((drinkOrBottleModalFlavor && address !== BARTENDER_ADDRESS) ||
-          !drinkOrBottleModalFlavor) &&
-        confirmModalVisible.visible &&
-        confirmModalVisible.success ? (
-          <SuccessModal
-            visible={confirmModalVisible.visible && confirmModalVisible.success}
-            onDismiss={() => {
-              setConfirmModalStatus({ visible: false });
-              navigation.navigate(HomeBottomTabRoute.Assets);
-            }}
-          />
-        ) : null}
-        {confirmModalVisible.visible && !confirmModalVisible.success ? (
-          <FailureModal
-            visible={
-              confirmModalVisible.visible && !confirmModalVisible.success
-            }
-            onDismiss={() => {
-              setConfirmModalStatus({ visible: false });
-            }}
-          />
-        ) : null}
-
-        <View>
-          <View style={{ flexDirection: "row" }}>
-            <Back style={{ alignSelf: "flex-start", zIndex: 2 }} />
-            <Text
-              style={{
-                width: "100%",
-                textAlign: "center",
-                marginLeft: -20,
-                color: "#F6F5FF",
-                fontWeight: "600",
-              }}
-            >
-              <FormattedMessage id="send.send" defaultMessage="Send" />
-            </Text>
-          </View>
-          <View
-            style={{
-              marginTop: 55,
-              flexDirection: "row",
-              alignItems: "flex-end",
-            }}
-          >
-            <TextInput
-              label={intl.formatMessage({
-                id: "send.to",
-                defaultMessage: "To",
-              })}
-              placeholder={
-                drinkOrBottleModalFlavor
-                  ? BARTENDER_ADDRESS
-                  : intl.formatMessage({
-                      id: "send.walletaddress",
-                      defaultMessage: "Wallet Address",
-                    })
-              }
-              style={{ flex: 1 }}
-              inputStyle={{
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-                borderRightWidth: 0,
-              }}
-              value={address}
-              onChangeText={setAddress}
-            />
-            <TouchableOpacity
-              style={{
-                width: 56,
-                height: isSmallScreenNumber(46, 56),
-                justifyContent: "center",
-                alignItems: "center",
-                padding: isObi ? 0 : 5,
-                borderTopRightRadius: isObi ? 32 : 12,
-                borderBottomRightRadius: isObi ? 32 : 12,
-                borderWidth: 1,
-                borderColor: isLoop ? "#2F2B4C" : "white",
-                borderLeftWidth: 0,
-              }}
-              onPress={() => {
-                qrCodeScannerModal.open();
-              }}
-            >
-              <View
-                style={{
-                  position: "absolute",
-                  width: 1,
-                  backgroundColor: isLoop ? "#2F2B4C" : "white",
-                  height: "100%",
-                  left: 0,
-                }}
-              />
-              {isObi ? (
-                <ObiQr />
-              ) : (
-                <FontAwesomeIcon
-                  icon={faQrcode}
-                  style={{ color: isLoop ? "#887CEB" : "white" }}
-                  size={32}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
-          <View style={{ marginTop: 35 }}>
-            <Text
-              style={{
-                color: isLoop ? "#787B9C" : "white",
-                textTransform: "uppercase",
-                fontSize: 10,
-                marginBottom: 12,
-              }}
-            >
-              <FormattedMessage id="send.amount" defaultMessage="Amount" />
-            </Text>
-            <View
-              style={{
-                borderWidth: 1,
-                borderRadius: 12,
-                borderColor: isLoop ? "#2F2B4C" : "white",
-                padding: 4,
-                flexDirection: "row",
-              }}
-            >
-              <TouchableOpacity
-                style={{
-                  borderRadius: 12,
-                  flex: 2,
-                  backgroundColor: isLoop ? "#17162C" : "#272727",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  paddingVertical: 12,
-                  paddingLeft: 12,
-                }}
-                onPress={() => triggerBottomSheet(true)}
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "flex-start",
-                    flex: 3,
-                  }}
-                >
-                  <View
-                    style={{
-                      width: 44,
-                      height: 44,
-                      marginRight: 12,
-                      borderRadius: 44,
-                    }}
-                  >
-                    <CoinIcon source={hydratedSelectedCoin?.icon ?? null} />
-                  </View>
-                  <View style={{ justifyContent: "center" }}>
-                    <Text
-                      style={{
-                        color: "#F6F5FF",
-                        fontWeight: "500",
-                        fontSize: 14,
-                      }}
-                    >
-                      {hydratedSelectedCoin?.denom}
-                    </Text>
-                    <Text style={{ color: isLoop ? "#999CB6" : "white" }}>
-                      {hydratedSelectedCoin?.amount}
-                    </Text>
-                  </View>
-                </View>
-                <View style={{ flex: 1, alignItems: "center" }}>
-                  <FontAwesomeIcon
-                    icon={faAngleDown}
-                    style={{ color: isLoop ? "#7B87A8" : "white" }}
-                  />
-                </View>
-              </TouchableOpacity>
-              <TextInput
-                keyboardType="numeric"
-                style={{
-                  alignSelf: "center",
-                  borderColor: "transparent",
-                  flex: 1,
-                  paddingLeft: 20,
-                  paddingRight: 10,
-                }}
-                inputStyle={{
-                  borderColor: "transparent",
-                  textAlign: "right",
-                  fontSize: 18,
-                  fontWeight: "500",
-                }}
-                placeholder="0"
-                value={amount}
-                onChangeText={setAmount}
-              />
-            </View>
-          </View>
-        </View>
-        <Button
-          flavor="blue"
-          label={intl.formatMessage({
-            id: "send.next",
-            defaultMessage: "Next",
-          })}
-          disabled={
-            !(address || drinkOrBottleModalFlavor) ||
-            !amount ||
-            Number(normalizedAmount) <= 0 ||
-            (drinkOrBottleModalFlavor && Number(normalizedAmount) < 1) ||
-            !selectedCoin
-          }
-          onPress={async () => {
-            invariant(wallet, "Expected wallet to be defined.");
-
-            function getEncodeObjects(): EncodeObject[] {
-              if (!selectedCoin || !walletsStore.type) return [];
-
-              const addressToUse =
-                address || (drinkOrBottleModalFlavor ? BARTENDER_ADDRESS : "");
-
-              const { digits } = formatExtendedCoin(selectedCoin);
-              const normalizedAmount =
-                parseFloat(amount.replace(",", ".")) * Math.pow(10, digits);
-              const msgAmount = [
-                {
-                  denom: selectedCoin.denom,
-                  amount: normalizedAmount.toFixed(0).toString(),
-                },
-              ];
-
-              if (!walletsStore.address) return [];
-
-              if (selectedCoin.contract) {
-                return [
-                  {
-                    typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-                    value: {
-                      sender: walletsStore.address,
-                      contract: selectedCoin.contract,
-                      msg: new Uint8Array(
-                        Buffer.from(
-                          JSON.stringify({
-                            transfer: {
-                              amount: msgAmount[0].amount,
-                              recipient: addressToUse,
-                            },
-                          })
-                        )
-                      ),
-                      funds: [],
-                    },
-                  },
-                ];
-              }
-
-              return [
-                {
-                  typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-                  value: {
-                    fromAddress: walletsStore.address,
-                    toAddress: addressToUse,
-                    amount: msgAmount,
-                  },
-                },
-              ];
-            }
-
-            function getMessages(): Msg[] {
-              if (!selectedCoin) return [];
-
-              const addressToUse = address;
-              const { digits } = formatExtendedCoin(selectedCoin);
-              const normalizedAmount =
-                parseFloat(amount.replace(",", ".")) * Math.pow(10, digits);
-              const msgAmount = {
-                [selectedCoin.denom]: normalizedAmount.toFixed(0).toString(),
-              };
-
-              if (!walletsStore.address) return [];
-
-              if (selectedCoin.contract) {
-                // TODO: not implemented yet
-                return [];
-              }
-
-              return [
-                new MsgSend(walletsStore.address, addressToUse, msgAmount),
-              ];
-            }
-
-            if (
-              isAnyCosmosMultisigWallet(wallet) ||
-              isCosmosSinglesigWallet(wallet)
-            ) {
-              const response = await RequestObiCosmosSignAndBroadcastMsg.send({
-                id: wallet.id,
-                encodeObjects: getEncodeObjects(),
-                multisig: isAnyCosmosMultisigWallet(wallet)
-                  ? wallet.currentAdmin
-                  : null,
-                wrap: true,
-              });
-
-              setConfirmModalStatus({
-                visible: true,
-                success: isDeliverTxSuccess(response),
-              });
-            }
-
-            if (isTerraMultisigWallet(wallet)) {
-              invariant(
-                wallet.currentAdmin,
-                "Expected `wallet.currentAdmin` to be defined."
-              );
-              const response = await RequestObiTerraSignAndBroadcastMsg.send({
-                id: wallet.id,
-                messages: getMessages().map((message) => message.toAmino()),
-                multisig: wallet.currentAdmin,
-                wrap: true,
-              });
-
-              console.log(response);
-
-              setConfirmModalStatus({
-                visible: true,
-                success: !isTxError(response),
-              });
-            }
-          }}
-        />
-        <BottomSheetBackdrop
-          onPress={() => triggerBottomSheet(false)}
-          visible={denominationOpened}
-        />
-        <BottomSheet
-          handleIndicatorStyle={{ backgroundColor: "white" }}
-          backgroundStyle={{ backgroundColor: isLoop ? "#100F1E" : "#1a1a1a" }}
-          handleStyle={{ backgroundColor: "transparent" }}
-          snapPoints={["60"]}
-          enablePanDownToClose={true}
-          ref={bottomSheetRef}
-          index={-1}
-          backdropComponent={() => null}
-          onClose={() => {
-            setDenominationOpened(false);
-          }}
-        >
-          <BottomSheetView
-            style={{
-              flex: 1,
-              backgroundColor: "transparent",
-              position: "relative",
-              paddingHorizontal: isLoop ? 20 : 5,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                paddingBottom: 10,
-                paddingLeft: 10,
-              }}
-            >
-              <View>
-                <Text
-                  style={{ fontSize: 16, fontWeight: "600", color: "#f6f5ff" }}
-                >
-                  <FormattedMessage
-                    id="send.denomination"
-                    defaultMessage="Denomination"
-                  />
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: "#f6f5ff",
-                    opacity: isLoop ? 0.6 : 1,
-                  }}
-                >
-                  <FormattedMessage
-                    id="send.selectcoin"
-                    defaultMessage="Select the coin you'd like to send"
-                  />
-                </Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => triggerBottomSheet(false)}
-                style={{ alignSelf: "flex-start" }}
-              >
-                <FontAwesomeIcon icon={faTimes} style={{ color: "#F6F5FF" }} />
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                backgroundColor: isLoop ? "transparent" : "#272727",
-                flex: 1,
-                ...(isObi
-                  ? {
-                      borderRadius: 7,
-                    }
-                  : {}),
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  padding: 10,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: isLoop ? "#f6f5ff" : "white",
-                    opacity: isLoop ? 0.6 : 1,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  <FormattedMessage id="send.name" defaultMessage="Name" />
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: isLoop ? "#f6f5ff" : "white",
-                    opacity: isLoop ? 0.6 : 1,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  <FormattedMessage
-                    id="send.holdings"
-                    defaultMessage="Holdings"
-                  />
-                </Text>
-              </View>
-              <RefreshableFlatList
-                data={balances.data}
-                keyExtractor={(item) => item.denom}
-                renderItem={(props) => (
-                  <CoinRenderer
-                    {...props}
-                    selected={props.item.denom === selectedCoin?.denom}
-                    onPress={() => {
-                      triggerBottomSheet(false);
-                      setSelectedCoin(props.item);
-                    }}
-                  />
-                )}
-                refetch={balances.refetch}
-              />
-            </View>
-          </BottomSheetView>
-        </BottomSheet>
-      </SafeAreaView>
-    </KeyboardAvoidingView>
-  );
+  // const balances = useBalances();
+  // const [selectedCoin, setSelectedCoin] = useState<ExtendedCoin | undefined>(
+  //   () => {
+  //     return balances.data[0];
+  //   }
+  // );
+  // const [denominationOpened, setDenominationOpened] = useState(false);
+  // const bottomSheetRef = useRef<BottomSheet>(null);
+  // const triggerBottomSheet = (open: boolean) => {
+  //   if (open) {
+  //     setDenominationOpened(true);
+  //     bottomSheetRef.current?.snapToIndex(0);
+  //   } else {
+  //     bottomSheetRef.current?.close();
+  //   }
+  // };
+  //
+  // useEffect(() => {
+  //   if (selectedCoin === undefined && balances.data[0]) {
+  //     setSelectedCoin(balances.data[0]);
+  //   }
+  // }, [balances, selectedCoin]);
+  //
+  // const hydratedSelectedCoin = selectedCoin
+  //   ? formatExtendedCoin(selectedCoin)
+  //   : null;
+  //
+  // const { walletsStore } = useStore();
+  // const wallet = walletsStore.currentWallet;
+  //
+  // const [address, setAddress] = useState("");
+  // const [amount, setAmount] = useState("");
+  //
+  // const drinkOrBottleModalFlavor =
+  //   selectedCoin?.denom === "ubottle"
+  //     ? "bottle"
+  //     : selectedCoin?.denom === "udrink"
+  //     ? "drink"
+  //     : null;
+  //
+  // const normalizedAmount = amount.replace(/,/g, ".");
+  //
+  // const [confirmModalVisible, setConfirmModalStatus] = useState<{
+  //   visible?: boolean;
+  //   success?: boolean;
+  // }>({});
+  //
+  // const intl = useIntl();
+  // const qrCodeScannerModal = useAddressQrCodeScannerModal((address) => {
+  //   setAddress(address);
+  // });
+  // const theme = useTheme();
+  // const { configStore } = useStore();
+  // const isLoop = configStore.isLoop();
+  // const isObi = configStore.isObi();
+  //
+  // return (
+  //   <KeyboardAvoidingView style={{ flex: 1 }}>
+  //     <SafeAreaView
+  //       style={{
+  //         backgroundColor: theme.colors.background,
+  //         flex: 1,
+  //         justifyContent: "space-between",
+  //         paddingHorizontal: 20,
+  //         paddingVertical: Platform.select({
+  //           ios: isSmallScreenNumber(20, 20),
+  //           android: isSmallScreenNumber(30, 30),
+  //         }),
+  //       }}
+  //     >
+  //       {qrCodeScannerModal.render()}
+  //       {drinkOrBottleModalFlavor &&
+  //       (!address || address === BARTENDER_ADDRESS) &&
+  //       confirmModalVisible.visible &&
+  //       confirmModalVisible.success ? (
+  //         <DrinkOrBottleModal
+  //           flavor={drinkOrBottleModalFlavor}
+  //           visible={confirmModalVisible.visible && confirmModalVisible.success}
+  //           onDismiss={() => {
+  //             setConfirmModalStatus({ visible: false });
+  //             navigation.navigate(HomeBottomTabRoute.Assets);
+  //           }}
+  //         />
+  //       ) : null}
+  //       {((drinkOrBottleModalFlavor && address !== BARTENDER_ADDRESS) ||
+  //         !drinkOrBottleModalFlavor) &&
+  //       confirmModalVisible.visible &&
+  //       confirmModalVisible.success ? (
+  //         <SuccessModal
+  //           visible={confirmModalVisible.visible && confirmModalVisible.success}
+  //           onDismiss={() => {
+  //             setConfirmModalStatus({ visible: false });
+  //             navigation.navigate(HomeBottomTabRoute.Assets);
+  //           }}
+  //         />
+  //       ) : null}
+  //       {confirmModalVisible.visible && !confirmModalVisible.success ? (
+  //         <FailureModal
+  //           visible={
+  //             confirmModalVisible.visible && !confirmModalVisible.success
+  //           }
+  //           onDismiss={() => {
+  //             setConfirmModalStatus({ visible: false });
+  //           }}
+  //         />
+  //       ) : null}
+  //
+  //       <View>
+  //         <View style={{ flexDirection: "row" }}>
+  //           <Back style={{ alignSelf: "flex-start", zIndex: 2 }} />
+  //           <Text
+  //             style={{
+  //               width: "100%",
+  //               textAlign: "center",
+  //               marginLeft: -20,
+  //               color: "#F6F5FF",
+  //               fontWeight: "600",
+  //             }}
+  //           >
+  //             <FormattedMessage id="send.send" defaultMessage="Send" />
+  //           </Text>
+  //         </View>
+  //         <View
+  //           style={{
+  //             marginTop: 55,
+  //             flexDirection: "row",
+  //             alignItems: "flex-end",
+  //           }}
+  //         >
+  //           <TextInput
+  //             label={intl.formatMessage({
+  //               id: "send.to",
+  //               defaultMessage: "To",
+  //             })}
+  //             placeholder={
+  //               drinkOrBottleModalFlavor
+  //                 ? BARTENDER_ADDRESS
+  //                 : intl.formatMessage({
+  //                     id: "send.walletaddress",
+  //                     defaultMessage: "Wallet Address",
+  //                   })
+  //             }
+  //             style={{ flex: 1 }}
+  //             inputStyle={{
+  //               borderTopRightRadius: 0,
+  //               borderBottomRightRadius: 0,
+  //               borderRightWidth: 0,
+  //             }}
+  //             value={address}
+  //             onChangeText={setAddress}
+  //           />
+  //           <TouchableOpacity
+  //             style={{
+  //               width: 56,
+  //               height: isSmallScreenNumber(46, 56),
+  //               justifyContent: "center",
+  //               alignItems: "center",
+  //               padding: isObi ? 0 : 5,
+  //               borderTopRightRadius: isObi ? 32 : 12,
+  //               borderBottomRightRadius: isObi ? 32 : 12,
+  //               borderWidth: 1,
+  //               borderColor: isLoop ? "#2F2B4C" : "white",
+  //               borderLeftWidth: 0,
+  //             }}
+  //             onPress={() => {
+  //               qrCodeScannerModal.open();
+  //             }}
+  //           >
+  //             <View
+  //               style={{
+  //                 position: "absolute",
+  //                 width: 1,
+  //                 backgroundColor: isLoop ? "#2F2B4C" : "white",
+  //                 height: "100%",
+  //                 left: 0,
+  //               }}
+  //             />
+  //             {isObi ? (
+  //               <ObiQr />
+  //             ) : (
+  //               <FontAwesomeIcon
+  //                 icon={faQrcode}
+  //                 style={{ color: isLoop ? "#887CEB" : "white" }}
+  //                 size={32}
+  //               />
+  //             )}
+  //           </TouchableOpacity>
+  //         </View>
+  //         <View style={{ marginTop: 35 }}>
+  //           <Text
+  //             style={{
+  //               color: isLoop ? "#787B9C" : "white",
+  //               textTransform: "uppercase",
+  //               fontSize: 10,
+  //               marginBottom: 12,
+  //             }}
+  //           >
+  //             <FormattedMessage id="send.amount" defaultMessage="Amount" />
+  //           </Text>
+  //           <View
+  //             style={{
+  //               borderWidth: 1,
+  //               borderRadius: 12,
+  //               borderColor: isLoop ? "#2F2B4C" : "white",
+  //               padding: 4,
+  //               flexDirection: "row",
+  //             }}
+  //           >
+  //             <TouchableOpacity
+  //               style={{
+  //                 borderRadius: 12,
+  //                 flex: 2,
+  //                 backgroundColor: isLoop ? "#17162C" : "#272727",
+  //                 flexDirection: "row",
+  //                 alignItems: "center",
+  //                 justifyContent: "space-between",
+  //                 paddingVertical: 12,
+  //                 paddingLeft: 12,
+  //               }}
+  //               onPress={() => triggerBottomSheet(true)}
+  //             >
+  //               <View
+  //                 style={{
+  //                   flexDirection: "row",
+  //                   justifyContent: "flex-start",
+  //                   flex: 3,
+  //                 }}
+  //               >
+  //                 <View
+  //                   style={{
+  //                     width: 44,
+  //                     height: 44,
+  //                     marginRight: 12,
+  //                     borderRadius: 44,
+  //                   }}
+  //                 >
+  //                   <CoinIcon source={hydratedSelectedCoin?.icon ?? null} />
+  //                 </View>
+  //                 <View style={{ justifyContent: "center" }}>
+  //                   <Text
+  //                     style={{
+  //                       color: "#F6F5FF",
+  //                       fontWeight: "500",
+  //                       fontSize: 14,
+  //                     }}
+  //                   >
+  //                     {hydratedSelectedCoin?.denom}
+  //                   </Text>
+  //                   <Text style={{ color: isLoop ? "#999CB6" : "white" }}>
+  //                     {hydratedSelectedCoin?.amount}
+  //                   </Text>
+  //                 </View>
+  //               </View>
+  //               <View style={{ flex: 1, alignItems: "center" }}>
+  //                 <FontAwesomeIcon
+  //                   icon={faAngleDown}
+  //                   style={{ color: isLoop ? "#7B87A8" : "white" }}
+  //                 />
+  //               </View>
+  //             </TouchableOpacity>
+  //             <TextInput
+  //               keyboardType="numeric"
+  //               style={{
+  //                 alignSelf: "center",
+  //                 borderColor: "transparent",
+  //                 flex: 1,
+  //                 paddingLeft: 20,
+  //                 paddingRight: 10,
+  //               }}
+  //               inputStyle={{
+  //                 borderColor: "transparent",
+  //                 textAlign: "right",
+  //                 fontSize: 18,
+  //                 fontWeight: "500",
+  //               }}
+  //               placeholder="0"
+  //               value={amount}
+  //               onChangeText={setAmount}
+  //             />
+  //           </View>
+  //         </View>
+  //       </View>
+  //       <Button
+  //         flavor="blue"
+  //         label={intl.formatMessage({
+  //           id: "send.next",
+  //           defaultMessage: "Next",
+  //         })}
+  //         disabled={
+  //           !(address || drinkOrBottleModalFlavor) ||
+  //           !amount ||
+  //           Number(normalizedAmount) <= 0 ||
+  //           (drinkOrBottleModalFlavor && Number(normalizedAmount) < 1) ||
+  //           !selectedCoin
+  //         }
+  //         onPress={async () => {
+  //           invariant(wallet, "Expected wallet to be defined.");
+  //
+  //           function getEncodeObjects(): EncodeObject[] {
+  //             if (!selectedCoin || !walletsStore.type) return [];
+  //
+  //             const addressToUse =
+  //               address || (drinkOrBottleModalFlavor ? BARTENDER_ADDRESS : "");
+  //
+  //             const { digits } = formatExtendedCoin(selectedCoin);
+  //             const normalizedAmount =
+  //               parseFloat(amount.replace(",", ".")) * Math.pow(10, digits);
+  //             const msgAmount = [
+  //               {
+  //                 denom: selectedCoin.denom,
+  //                 amount: normalizedAmount.toFixed(0).toString(),
+  //               },
+  //             ];
+  //
+  //             if (!walletsStore.address) return [];
+  //
+  //             if (selectedCoin.contract) {
+  //               return [
+  //                 {
+  //                   typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+  //                   value: {
+  //                     sender: walletsStore.address,
+  //                     contract: selectedCoin.contract,
+  //                     msg: new Uint8Array(
+  //                       Buffer.from(
+  //                         JSON.stringify({
+  //                           transfer: {
+  //                             amount: msgAmount[0].amount,
+  //                             recipient: addressToUse,
+  //                           },
+  //                         })
+  //                       )
+  //                     ),
+  //                     funds: [],
+  //                   },
+  //                 },
+  //               ];
+  //             }
+  //
+  //             return [
+  //               {
+  //                 typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+  //                 value: {
+  //                   fromAddress: walletsStore.address,
+  //                   toAddress: addressToUse,
+  //                   amount: msgAmount,
+  //                 },
+  //               },
+  //             ];
+  //           }
+  //
+  //           function getMessages(): Msg[] {
+  //             if (!selectedCoin) return [];
+  //
+  //             const addressToUse = address;
+  //             const { digits } = formatExtendedCoin(selectedCoin);
+  //             const normalizedAmount =
+  //               parseFloat(amount.replace(",", ".")) * Math.pow(10, digits);
+  //             const msgAmount = {
+  //               [selectedCoin.denom]: normalizedAmount.toFixed(0).toString(),
+  //             };
+  //
+  //             if (!walletsStore.address) return [];
+  //
+  //             if (selectedCoin.contract) {
+  //               // TODO: not implemented yet
+  //               return [];
+  //             }
+  //
+  //             return [
+  //               new MsgSend(walletsStore.address, addressToUse, msgAmount),
+  //             ];
+  //           }
+  //
+  //           if (
+  //             isAnyCosmosMultisigWallet(wallet) ||
+  //             isCosmosSinglesigWallet(wallet)
+  //           ) {
+  //             const response = await RequestObiCosmosSignAndBroadcastMsg.send({
+  //               id: wallet.id,
+  //               encodeObjects: getEncodeObjects(),
+  //               multisig: isAnyCosmosMultisigWallet(wallet)
+  //                 ? wallet.currentAdmin
+  //                 : null,
+  //               wrap: true,
+  //             });
+  //
+  //             setConfirmModalStatus({
+  //               visible: true,
+  //               success: isDeliverTxSuccess(response),
+  //             });
+  //           }
+  //
+  //           if (isTerraMultisigWallet(wallet)) {
+  //             invariant(
+  //               wallet.currentAdmin,
+  //               "Expected `wallet.currentAdmin` to be defined."
+  //             );
+  //             const response = await RequestObiTerraSignAndBroadcastMsg.send({
+  //               id: wallet.id,
+  //               messages: getMessages().map((message) => message.toAmino()),
+  //               multisig: wallet.currentAdmin,
+  //               wrap: true,
+  //             });
+  //
+  //             console.log(response);
+  //
+  //             setConfirmModalStatus({
+  //               visible: true,
+  //               success: !isTxError(response),
+  //             });
+  //           }
+  //         }}
+  //       />
+  //       <BottomSheetBackdrop
+  //         onPress={() => triggerBottomSheet(false)}
+  //         visible={denominationOpened}
+  //       />
+  //       <BottomSheet
+  //         handleIndicatorStyle={{ backgroundColor: "white" }}
+  //         backgroundStyle={{ backgroundColor: isLoop ? "#100F1E" : "#1a1a1a" }}
+  //         handleStyle={{ backgroundColor: "transparent" }}
+  //         snapPoints={["60"]}
+  //         enablePanDownToClose={true}
+  //         ref={bottomSheetRef}
+  //         index={-1}
+  //         backdropComponent={() => null}
+  //         onClose={() => {
+  //           setDenominationOpened(false);
+  //         }}
+  //       >
+  //         <BottomSheetView
+  //           style={{
+  //             flex: 1,
+  //             backgroundColor: "transparent",
+  //             position: "relative",
+  //             paddingHorizontal: isLoop ? 20 : 5,
+  //           }}
+  //         >
+  //           <View
+  //             style={{
+  //               flexDirection: "row",
+  //               justifyContent: "space-between",
+  //               alignItems: "center",
+  //               paddingBottom: 10,
+  //               paddingLeft: 10,
+  //             }}
+  //           >
+  //             <View>
+  //               <Text
+  //                 style={{ fontSize: 16, fontWeight: "600", color: "#f6f5ff" }}
+  //               >
+  //                 <FormattedMessage
+  //                   id="send.denomination"
+  //                   defaultMessage="Denomination"
+  //                 />
+  //               </Text>
+  //               <Text
+  //                 style={{
+  //                   fontSize: 12,
+  //                   color: "#f6f5ff",
+  //                   opacity: isLoop ? 0.6 : 1,
+  //                 }}
+  //               >
+  //                 <FormattedMessage
+  //                   id="send.selectcoin"
+  //                   defaultMessage="Select the coin you'd like to send"
+  //                 />
+  //               </Text>
+  //             </View>
+  //             <TouchableOpacity
+  //               onPress={() => triggerBottomSheet(false)}
+  //               style={{ alignSelf: "flex-start" }}
+  //             >
+  //               <FontAwesomeIcon icon={faTimes} style={{ color: "#F6F5FF" }} />
+  //             </TouchableOpacity>
+  //           </View>
+  //           <View
+  //             style={{
+  //               backgroundColor: isLoop ? "transparent" : "#272727",
+  //               flex: 1,
+  //               ...(isObi
+  //                 ? {
+  //                     borderRadius: 7,
+  //                   }
+  //                 : {}),
+  //             }}
+  //           >
+  //             <View
+  //               style={{
+  //                 flexDirection: "row",
+  //                 justifyContent: "space-between",
+  //                 padding: 10,
+  //               }}
+  //             >
+  //               <Text
+  //                 style={{
+  //                   fontSize: 12,
+  //                   color: isLoop ? "#f6f5ff" : "white",
+  //                   opacity: isLoop ? 0.6 : 1,
+  //                   textTransform: "uppercase",
+  //                 }}
+  //               >
+  //                 <FormattedMessage id="send.name" defaultMessage="Name" />
+  //               </Text>
+  //               <Text
+  //                 style={{
+  //                   fontSize: 12,
+  //                   color: isLoop ? "#f6f5ff" : "white",
+  //                   opacity: isLoop ? 0.6 : 1,
+  //                   textTransform: "uppercase",
+  //                 }}
+  //               >
+  //                 <FormattedMessage
+  //                   id="send.holdings"
+  //                   defaultMessage="Holdings"
+  //                 />
+  //               </Text>
+  //             </View>
+  //             <RefreshableFlatList
+  //               data={balances.data}
+  //               keyExtractor={(item) => item.denom}
+  //               renderItem={(props) => (
+  //                 <CoinRenderer
+  //                   {...props}
+  //                   selected={props.item.denom === selectedCoin?.denom}
+  //                   onPress={() => {
+  //                     triggerBottomSheet(false);
+  //                     setSelectedCoin(props.item);
+  //                   }}
+  //                 />
+  //               )}
+  //               refetch={balances.refetch}
+  //             />
+  //           </View>
+  //         </BottomSheetView>
+  //       </BottomSheet>
+  //     </SafeAreaView>
+  //   </KeyboardAvoidingView>
+  // );
 });
 
 interface CoinRendererProps {

@@ -59,6 +59,10 @@ export class CosmosSinglesigWallet extends AbstractWallet {
     };
   }
 
+  public get chain() {
+    return this.chainStore.currentCosmosChain;
+  }
+
   @computed
   public get address() {
     if (!this.publicKey) return null;

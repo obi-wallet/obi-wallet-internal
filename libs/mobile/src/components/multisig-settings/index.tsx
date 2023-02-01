@@ -1,11 +1,6 @@
 import { useTheme } from "@emotion/react";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
-import {
-  KeyType,
-  MultisigKey,
-  MultisigKeyType,
-  Text,
-} from "@obi-wallet/common";
+import { KeyType, MultisigKey, Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -66,19 +61,8 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
 
       const metaData = keyMetaData.metaData[type];
 
-      const id = ((): MultisigKeyType => {
-        switch (type) {
-          case KeyType.Device:
-            return "biometrics";
-          case KeyType.Phone:
-            return "phoneNumber";
-          case KeyType.Social:
-            return "social";
-        }
-      })();
-
       return {
-        id,
+        type,
         title: metaData.label,
         activated,
         disabled,
