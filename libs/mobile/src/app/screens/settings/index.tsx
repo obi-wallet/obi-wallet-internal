@@ -1,5 +1,6 @@
 import styled from "@emotion/native";
 import { Brand, Feature } from "@obi-wallet/common";
+import { CommonActions } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { FC, useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -20,6 +21,7 @@ import { Create } from "../account/create";
 import { ObiLogo } from "../components/obi-logo";
 import { BrandToggle } from "../components/obi-mode-toggle";
 import { isSmallScreenNumber } from "../components/screen-size";
+import { OnboardingRoute } from "../onboarding/onboarding-stack";
 
 export const SettingsScreen = observer(function SettingsScreen() {
   const { configStore, walletsStore } = useStore();
@@ -184,6 +186,12 @@ export const SettingsScreen = observer(function SettingsScreen() {
           })}
           onPress={async () => {
             await walletsStore.logout();
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{ name: OnboardingRoute.Welcome }],
+              })
+            );
           }}
         />
 

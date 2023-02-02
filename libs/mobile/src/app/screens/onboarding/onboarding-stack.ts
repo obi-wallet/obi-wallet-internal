@@ -1,7 +1,6 @@
 export enum OnboardingRoute {
   Welcome = "Welcome",
   CreateWallet = "CreateWallet",
-  RecoverMultisig = "RecoverMultisig",
   LookupProxyWallets = "LookupProxyWallets",
 }
 
@@ -12,7 +11,6 @@ export interface OnboardingStackParamList
     draftId: string;
     demoMode: boolean;
   };
-  [OnboardingRoute.RecoverMultisig]: undefined;
   [OnboardingRoute.LookupProxyWallets]: {
     draftId: string;
     demoMode: boolean;

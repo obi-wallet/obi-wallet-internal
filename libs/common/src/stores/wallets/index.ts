@@ -8,6 +8,7 @@ import {
   runInAction,
   toJS,
 } from "mobx";
+import * as R from "ramda";
 import invariant from "tiny-invariant";
 
 import { WalletType } from "./abstract-wallet";
@@ -217,11 +218,43 @@ export class WalletsStore {
       };
     }
 
+    if (SerializedDataAnyVersion.is(data)) return data;
+
     invariant(
-      SerializedDataAnyVersion.is(data),
-      "Expected key `wallets` to be of type `SerializedDataAnyVersion`."
+      R.has("currentWalletIndex", data),
+      "Expected key `data.currentWalletIndex` to be present."
     );
-    return data;
+    invariant(
+      R.has("wallets", data),
+      "Expected key `data.wallets` to be present."
+    );
+
+    const currentWalletIndex = data.currentWalletIndex;
+    const wallets = data.wallets;
+
+    invariant(
+      Array.isArray(wallets),
+      "Expected key `data.wallets` to be an array."
+    );
+
+    const validWallets = wallets.filter((wallet) => {
+      return SerializedWallet.is(wallet);
+    });
+
+    const newCurrentWalletIndex = (() => {
+      if (typeof currentWalletIndex === "number" && validWallets.length > 0) {
+        let index = R.min(currentWalletIndex, validWallets.length - 1);
+        index -= wallets.length - validWallets.length;
+        return index;
+      }
+
+      return null;
+    })();
+
+    return {
+      currentWalletIndex: newCurrentWalletIndex,
+      wallets: validWallets,
+    };
   }
 
   protected createWallet = ({

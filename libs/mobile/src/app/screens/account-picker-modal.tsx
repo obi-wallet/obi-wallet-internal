@@ -2,6 +2,7 @@ import { useTheme } from "@emotion/react";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text } from "@obi-wallet/common";
+import { CommonActions } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -9,12 +10,16 @@ import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
 
 import { Modal, MODAL_TIMING } from "./components/modal";
 import { IconButton } from "../button";
+import { RootRoute, RootStack, useRootNavigation } from "../root-stack";
 import { useStore } from "../stores";
 
 export interface AccountPickerModalProps {
   visible: boolean;
+
   open(): void;
+
   close(): void;
+
   showNotReadyWallets?: boolean;
 }
 
@@ -33,6 +38,7 @@ export function useAccountPickerModalProps() {
 
 export const AccountPickerModal = observer<AccountPickerModalProps>(
   function AccountPickerModal({ visible, close, showNotReadyWallets }) {
+    const navigation = useRootNavigation();
     const { walletsStore, configStore } = useStore();
     const isObi = configStore.isObi();
     const theme = useTheme();
@@ -88,6 +94,12 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                     close();
                     setTimeout(() => {
                       void walletsStore.setCurrentWallet(wallet.id);
+                      navigation.dispatch(
+                        CommonActions.reset({
+                          index: 0,
+                          routes: [{ name: RootRoute.Home }],
+                        })
+                      );
                     }, MODAL_TIMING);
                   }}
                 >

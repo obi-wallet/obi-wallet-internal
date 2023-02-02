@@ -14,6 +14,7 @@ import {
   OnboardingRoute,
   OnboardingStackParamList,
 } from "../../app/screens/onboarding/onboarding-stack";
+import { getMultisigSettingsDraftId } from "../../app/screens/settings/keys-config";
 import { SettingsRoute } from "../../app/screens/settings/settings-stack";
 import { useStore } from "../../app/stores";
 
@@ -106,6 +107,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
           draftsStore.create({
             original: wallet.owner,
             value: draft.value,
+            id: getMultisigSettingsDraftId(wallet),
           });
 
           navigation.navigate(SettingsRoute.MultisigSettings);

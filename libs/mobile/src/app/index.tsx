@@ -13,7 +13,6 @@ import { RootRoute, RootStack } from "./root-stack";
 import { HomeScreen } from "./screens/home";
 import { Stake } from "./screens/home/components/stake";
 import { OnboardingRoute } from "./screens/onboarding/onboarding-stack";
-import { RecoverMultisig } from "./screens/onboarding/recover-multisig";
 import { ReceiveScreen } from "./screens/receive";
 import { SendScreen } from "./screens/send";
 import { settingsScreens } from "./screens/settings";
@@ -162,6 +161,11 @@ export const StateRenderer = observer(function StateRenderer() {
               fontFamily: "Inter",
             },
           }}
+          initialRouteName={
+            walletsStore.currentWallet
+              ? RootRoute.Home
+              : OnboardingRoute.Welcome
+          }
         >
           {getScreens()}
         </RootStack.Navigator>
@@ -170,53 +174,34 @@ export const StateRenderer = observer(function StateRenderer() {
   }
 
   function getScreens() {
-    if (walletsStore.currentWallet?.isReady) {
-      return (
-        <RootStack.Group>
-          <RootStack.Screen name={RootRoute.Home} component={HomeScreen} />
-          <RootStack.Screen
-            name={RootRoute.WebView}
-            component={WebViewScreen}
-            options={({ route }) => ({
-              title: route.params.app.label,
-            })}
-          />
-          <RootStack.Screen name={RootRoute.Send} component={SendScreen} />
-          <RootStack.Screen name={RootRoute.Stake} component={Stake} />
-          <RootStack.Screen
-            name={RootRoute.Receive}
-            component={ReceiveScreen}
-          />
-          {settingsScreens()}
-          {keyScreens()}
-        </RootStack.Group>
-      );
-    } else {
-      return (
-        <RootStack.Group
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <RootStack.Screen
-            name={OnboardingRoute.Welcome}
-            component={WelcomeScreen}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.RecoverMultisig}
-            component={RecoverMultisig}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.LookupProxyWallets}
-            component={LookupProxyWalletsScreen}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.CreateWallet}
-            component={CreateWalletScreen}
-          />
-          {keyScreens()}
-        </RootStack.Group>
-      );
-    }
+    return (
+      <RootStack.Group>
+        <RootStack.Screen name={RootRoute.Home} component={HomeScreen} />
+        <RootStack.Screen
+          name={RootRoute.WebView}
+          component={WebViewScreen}
+          options={({ route }) => ({
+            title: route.params.app.label,
+          })}
+        />
+        <RootStack.Screen name={RootRoute.Send} component={SendScreen} />
+        <RootStack.Screen name={RootRoute.Stake} component={Stake} />
+        <RootStack.Screen name={RootRoute.Receive} component={ReceiveScreen} />
+        <RootStack.Screen
+          name={OnboardingRoute.Welcome}
+          component={WelcomeScreen}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.LookupProxyWallets}
+          component={LookupProxyWalletsScreen}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.CreateWallet}
+          component={CreateWalletScreen}
+        />
+        {settingsScreens()}
+        {keyScreens()}
+      </RootStack.Group>
+    );
   }
 });

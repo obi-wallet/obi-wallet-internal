@@ -48,7 +48,7 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
               navigation.navigate(SettingsRoute.MultisigSettings);
               break;
             case KeyFlow.RecoverWallet:
-              // TODO: navigate to lookup proxy wallets
+              navigation.navigate(OnboardingRoute.LookupProxyWallets, params);
               break;
           }
         }}
