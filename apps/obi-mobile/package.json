@@ -78,7 +78,7 @@
     "react-cosmos": "*",
     "react-error-boundary": "*",
     "react-intl": "*",
-    "react-native": "0.70.6",
+    "react-native": "0.71.0",
     "react-native-asset": "*",
     "react-native-camera": "*",
     "react-native-code-push": "*",
