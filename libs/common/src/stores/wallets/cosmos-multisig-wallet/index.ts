@@ -341,7 +341,13 @@ export class CosmosMultisigWallet extends AbstractWallet {
   public getSignerTypes(
     multisig: CosmosSerializedData.SerializedMultisigPayload
   ) {
-    const allKeys = ["biometrics", "phoneNumber", "social", "cloud"] as const;
+    const allKeys = [
+      "biometrics",
+      "phoneNumber",
+      "social",
+      "cloud",
+      "nfc",
+    ] as const;
     return allKeys.filter((key) => {
       return multisig[key] !== null;
     });

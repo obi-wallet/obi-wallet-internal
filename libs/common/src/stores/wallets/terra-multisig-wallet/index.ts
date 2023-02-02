@@ -2,9 +2,8 @@ import {
   LegacyAminoMultisigPublicKey,
   SimplePublicKey,
 } from "@terra-money/terra.js";
+import { randomBytes } from "crypto";
 import { action, computed, makeObservable, observable } from "mobx";
-import { randomBytes } from "react-native-randombytes";
-
 import { terraChains } from "../../../chains";
 import { AbstractWallet, WalletType, WithAddress } from "../abstract-wallet";
 import {

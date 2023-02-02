@@ -189,7 +189,6 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
                     parsed,
                   });
                   const signature = await nfcKey.createSignatureAmino(signDoc);
-                  console.warn("We have arrived here.");
                   setSignatures((signatures) => {
                     return new Map(signatures.set(id, signature));
                   });

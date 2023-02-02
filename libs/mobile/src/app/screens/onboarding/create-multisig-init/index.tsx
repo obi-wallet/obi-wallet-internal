@@ -208,8 +208,10 @@ async function handleTerra({
   });
 
   try {
+    Alert.alert("The full response is: ", JSON.stringify(response));
     await wallet.finishProxySetup(terra.parseNewAccountResponse(response));
   } catch (e) {
-    Alert.alert("Something went wrong");
+    const error = e as Error;
+    Alert.alert("Something went wrong: ", error.message);
   }
 }
