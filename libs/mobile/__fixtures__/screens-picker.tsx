@@ -51,12 +51,6 @@ function getRouteParams(route: Route) {
           icon: null,
         },
       };
-    case OnboardingRoute.CreateMultisigPhoneNumberConfirm:
-      return {
-        phoneNumber: "+123456789",
-        securityQuestion: "birthplace",
-        securityAnswer: "Wonderland",
-      };
     case HomeBottomTabRoute.Settings:
       return {
         screen: RootRoute.Home,

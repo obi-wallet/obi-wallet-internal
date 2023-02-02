@@ -3,15 +3,18 @@ import { ComponentType } from "react";
 import { useIntl } from "react-intl";
 import { SvgProps } from "react-native-svg";
 
-import BiometricsObi from "../../app/screens/components/keys-list/assets/biometrics-obi-icon.svg";
-import Cloud from "../../app/screens/components/keys-list/assets/cloud-icon.svg";
-import Email from "../../app/screens/components/keys-list/assets/email-icon.svg";
-import Ledger from "../../app/screens/components/keys-list/assets/ledger-icon.svg";
-import MapPoint from "../../app/screens/components/keys-list/assets/map-point-icon.svg";
-import Nfc from "../../app/screens/components/keys-list/assets/nfc-icon.svg";
-import PhoneNumber from "../../app/screens/components/keys-list/assets/phone-number-icon.svg";
-import { SendIcon } from "../../app/screens/home/components/send";
-import People from "../../app/screens/onboarding/common/4-social/assets/people-alt-twotone-24px.svg";
+import Cloud from "./assets/cloud.svg";
+import DeviceLoop from "./assets/device-loop.svg";
+import DeviceObi from "./assets/device-obi.svg";
+import Email from "./assets/email.svg";
+import Ledger from "./assets/ledger.svg";
+import Map from "./assets/map.svg";
+import Nfc from "./assets/nfc.svg";
+import Phone from "./assets/phone.svg";
+import { useStore } from "../../app/stores";
+import SocialLoop from "../../assets/social-loop.svg";
+import SocialObi from "../../assets/social-obi.svg";
+import { SendIcon as Telegram } from "../../components/send-icon";
 
 export enum ComingSoonKeyType {
   Cloud = "cloud",
@@ -24,6 +27,8 @@ export enum ComingSoonKeyType {
 
 export function useKeyMetaData() {
   const intl = useIntl();
+  const { configStore } = useStore();
+  const isLoop = configStore.isLoop();
 
   const keys = [KeyType.Device, KeyType.Phone, KeyType.Social];
   const comingSoonKeys = [
@@ -47,21 +52,21 @@ export function useKeyMetaData() {
         id: "settings.multisig.option.biometricskey",
         defaultMessage: "Biometrics Key",
       }),
-      Icon: BiometricsObi,
+      Icon: isLoop ? DeviceLoop : DeviceObi,
     },
     [KeyType.Phone]: {
       label: intl.formatMessage({
         id: "settings.multisig.option.phonekey",
         defaultMessage: "Phone Key",
       }),
-      Icon: PhoneNumber,
+      Icon: Phone,
     },
     [KeyType.Social]: {
       label: intl.formatMessage({
         id: "settings.multisig.option.socialkey",
         defaultMessage: "Social Key",
       }),
-      Icon: People,
+      Icon: isLoop ? SocialLoop : SocialObi,
     },
 
     [ComingSoonKeyType.Cloud]: {
@@ -78,11 +83,11 @@ export function useKeyMetaData() {
     },
     [ComingSoonKeyType.Telegram]: {
       label: "Telegram Key",
-      Icon: SendIcon as ComponentType<SvgProps>,
+      Icon: Telegram as ComponentType<SvgProps>,
     },
     [ComingSoonKeyType.Map]: {
       label: "Map Point Key",
-      Icon: MapPoint,
+      Icon: Map,
     },
     [ComingSoonKeyType.Ledger]: {
       label: "Ledger Key",

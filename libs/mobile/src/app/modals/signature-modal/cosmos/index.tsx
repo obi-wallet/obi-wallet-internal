@@ -141,7 +141,7 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
       return new Sha256(serializeSignDoc(signDoc)).digest();
     }, [multisigKey.address, currentChainInformation.denom, chainId, messages]);
 
-    function getKey({ type, title }: { type: KeyType; title: string }): Key[] {
+    function getKey({ type }: { type: KeyType }): Key[] {
       const factor = multisigKey.getKeyOfType(type);
       if (!factor) return [];
 
@@ -178,7 +178,6 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
       return [
         {
           type: type,
-          title,
           signed: alreadySigned,
           right: alreadySigned ? <CheckIcon /> : null,
           onPress,
@@ -189,17 +188,9 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
     const data: Key[] = [
       ...getKey({
         type: KeyType.Device,
-        title: intl.formatMessage({
-          id: "signature.modal.biometricsignature",
-          defaultMessage: "Biometrics Signature",
-        }),
       }),
       ...getKey({
         type: KeyType.Phone,
-        title: intl.formatMessage({
-          id: "signature.modal.phonesignature",
-          defaultMessage: "Phone Number Signature",
-        }),
       }),
     ].filter((key) => {
       return hiddenKeyTypes

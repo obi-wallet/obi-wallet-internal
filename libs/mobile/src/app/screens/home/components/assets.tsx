@@ -16,7 +16,7 @@ import {
 } from "react-native";
 
 import { ReceiveIcon as Receive } from "./receive";
-import { SendIcon as Send } from "./send";
+import { SendIcon as Send } from "../../../../components/send-icon";
 import {
   ExtendedCoin,
   formatExtendedCoin,
@@ -111,7 +111,12 @@ const BalanceAndActions = observer(function BalanceAndActions() {
             }}
             onPress={() => navigation.navigate(RootRoute.Send)}
           >
-            <Send width={25} height={25} style={{ marginLeft: -5 }} />
+            <Send
+              width={25}
+              height={25}
+              viewBox=""
+              style={{ marginLeft: -5 }}
+            />
           </TouchableHighlight>
           <Text
             style={{
@@ -141,6 +146,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
             <Receive
               width={25}
               height={25}
+              viewBox=""
               style={{
                 marginTop: -5,
               }}

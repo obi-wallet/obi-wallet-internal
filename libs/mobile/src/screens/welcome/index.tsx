@@ -55,10 +55,6 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       });
     }
 
-    function onRecoverSinglesig() {
-      // TODO:
-    }
-
     function onEnterDemoMode() {
       const newMultisigKey = new MultisigKey({
         chain: chainStore.currentChain,
@@ -77,7 +73,6 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       <Welcome
         onCreate={onCreate}
         onRecover={onRecover}
-        onRecoverSinglesig={onRecoverSinglesig}
         onEnterDemoMode={onEnterDemoMode}
       />
     );
@@ -89,15 +84,12 @@ export interface WelcomeProps {
 
   onRecover(): void;
 
-  onRecoverSinglesig(): void;
-
   onEnterDemoMode(): void;
 }
 
 export const Welcome = observer<WelcomeProps>(function Welcome({
   onCreate,
   onRecover,
-  onRecoverSinglesig,
   onEnterDemoMode,
 }) {
   const { configStore, walletsStore } = useStore();

@@ -8,6 +8,7 @@ import { Alert, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import InsuranceLogo from "./assets/insurance-logo.svg";
 import { InlineButton } from "../../../app/button";
 import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
@@ -15,7 +16,6 @@ import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
 import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
-import InsuranceLogo from "../../../app/screens/onboarding/common/3-phone-number-confirm/assets/insurance-logo.svg";
 import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
 import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 import { useStore } from "../../../app/stores";

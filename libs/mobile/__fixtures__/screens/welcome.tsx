@@ -5,7 +5,6 @@ export default (
   <Welcome
     onCreate={mockAction("onCreate")}
     onRecover={mockAction("onRecover")}
-    onRecoverSinglesig={mockAction("onRecoverSinglesig")}
     onEnterDemoMode={mockAction("onEnterDemoMode")}
   />
 );

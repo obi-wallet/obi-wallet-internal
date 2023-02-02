@@ -24,9 +24,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 
+import WarningIcon from "../../../assets/warning.svg";
 import { useMultisigWallet } from "../../stores";
 import { Back } from "../components/back";
-import WarningIcon from "../components/keys-list/assets/warning-icon.svg";
 
 export const HealthChecksScreen = observer(function HealthChecksScreen() {
   const intl = useIntl();

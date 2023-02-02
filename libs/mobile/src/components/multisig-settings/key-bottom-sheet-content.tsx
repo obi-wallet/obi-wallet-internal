@@ -7,7 +7,6 @@ import { TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useKeyMetaData } from "./key-meta-data";
-import { PeopleWhiteSVG } from "../../app/screens/components/keys-list";
 import { useStore } from "../../app/stores";
 
 export interface KeyBottomSheetContentProps {
@@ -118,15 +117,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
               borderRadius: 12,
             }}
           >
-            {type === KeyType.Social ? (
-              isLoop ? (
-                <Icon />
-              ) : (
-                <PeopleWhiteSVG width={24} height={24} />
-              )
-            ) : (
-              <Icon fill={isLoop ? "#7B87A8" : "white"} />
-            )}
+            <Icon fill={isLoop ? "#7B87A8" : "white"} width={24} height={24} />
           </View>
           <View
             style={{

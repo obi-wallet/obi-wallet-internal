@@ -202,7 +202,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                 <View>
                   {isObi ? null : (
                     <Image
-                      source={require("../../../app/screens/onboarding/common/2-phone-number/assets/phone.png")}
+                      source={require("./assets/phone.png")}
                       style={{ marginBottom: 20 }}
                     />
                   )}

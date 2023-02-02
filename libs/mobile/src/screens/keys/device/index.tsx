@@ -8,6 +8,9 @@ import { Alert, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import FaceScanner from "./assets/face-scanner.svg";
+import ObiFaceScanner from "./assets/obi-face-scanner.svg";
+import Scan from "./assets/scan.svg";
 import {
   getBiometricsPublicKey,
   resetBiometricsKeyPair,
@@ -20,9 +23,6 @@ import {
   isSmallScreen,
   isSmallScreenNumber,
 } from "../../../app/screens/components/screen-size";
-import FaceScanner from "../../../app/screens/onboarding/common/1-biometrics/assets/face-scanner.svg";
-import ObiFaceScanner from "../../../app/screens/onboarding/common/1-biometrics/assets/obi-face-scanner.svg";
-import Scan from "../../../app/screens/onboarding/common/1-biometrics/assets/scan.svg";
 import { useStore } from "../../../app/stores";
 import { KeyRoute, KeyStackParamList } from "../key-stack";
 

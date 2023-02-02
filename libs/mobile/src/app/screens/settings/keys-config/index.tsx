@@ -1,10 +1,11 @@
 import { useTheme } from "@emotion/react";
-import { KeyType, MultisigKey } from "@obi-wallet/common";
+import { isCosmosChain, KeyType, MultisigKey } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
 
+import { handleCosmos } from "./cosmos";
 import { handleTerra } from "./terra";
 import { MultisigSettings } from "../../../../components/multisig-settings";
 import { KeyFlow, KeyRoute } from "../../../../screens/keys";
@@ -99,11 +100,20 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
             label="Confirm Changes"
             onPress={async () => {
               setLoading(true);
+              const chainId = wallet.chain;
               try {
-                await handleTerra({
-                  draft,
-                  wallet,
-                });
+                if (isCosmosChain(chainId)) {
+                  await handleCosmos({
+                    draft,
+                    wallet,
+                    chainId,
+                  });
+                } else {
+                  await handleTerra({
+                    draft,
+                    wallet,
+                  });
+                }
               } catch (e) {
                 // noop
               } finally {

@@ -125,7 +125,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
       })();
     }, [multisigKey, chainId, messages, props]);
 
-    function getKey({ type, title }: { type: KeyType; title: string }): Key[] {
+    function getKey({ type }: { type: KeyType }): Key[] {
       const factor = multisigKey.getKeyOfType(type);
       if (!factor) return [];
 
@@ -165,7 +165,6 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
       return [
         {
           type,
-          title,
           signed: alreadySigned,
           right: alreadySigned ? <CheckIcon /> : null,
           onPress,
@@ -176,17 +175,9 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
     const data: Key[] = [
       ...getKey({
         type: KeyType.Device,
-        title: intl.formatMessage({
-          id: "signature.modal.biometricsignature",
-          defaultMessage: "Biometrics Signature",
-        }),
       }),
       ...getKey({
         type: KeyType.Phone,
-        title: intl.formatMessage({
-          id: "signature.modal.phonesignature",
-          defaultMessage: "Phone Number Signature",
-        }),
       }),
     ].filter((key) => {
       return hiddenKeyTypes

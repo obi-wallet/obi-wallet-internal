@@ -59,11 +59,8 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
       const activated = multisigKey.hasKeyOfType(type);
       const disabled = false;
 
-      const metaData = keyMetaData.metaData[type];
-
       return {
         type,
-        title: metaData.label,
         activated,
         disabled,
         right: activated ? <CheckIcon /> : <WarningIcon />,

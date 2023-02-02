@@ -11,15 +11,8 @@ import {
 } from "react-native";
 import { SvgProps } from "react-native-svg";
 
-import BiometricsObi from "./assets/biometrics-obi-icon.svg";
-import Check from "./assets/check-icon.svg";
-import Cloud from "./assets/cloud-icon.svg";
-import Email from "./assets/email-icon.svg";
-import Ledger from "./assets/ledger-icon.svg";
-import MapPoint from "./assets/map-point-icon.svg";
-import Nfc from "./assets/nfc-icon.svg";
-import PhoneNumber from "./assets/phone-number-icon.svg";
-import Warning from "./assets/warning-icon.svg";
+import Check from "../../../../assets/check.svg";
+import Warning from "../../../../assets/warning.svg";
 import {
   ComingSoonKeyType,
   useKeyMetaData,
@@ -29,32 +22,18 @@ import {
   triggerNotificationSuccess,
 } from "../../../../helpers/haptic-feedback";
 import { useStore } from "../../../stores";
-import { SendIcon } from "../../home/components/send";
-import PeopleWhite from "../../onboarding/common/4-social/assets/people-alt-twotone-24px white.svg";
-import People from "../../onboarding/common/4-social/assets/people-alt-twotone-24px.svg";
 
 export const CheckIcon = Check;
 export const WarningIcon = Warning;
 
 export interface KeyMetaData {
+  label: string;
   Icon: ComponentType<SvgProps>;
 }
 
-export const keyMetaData: Record<string, KeyMetaData> = {
-  biometrics: { Icon: BiometricsObi },
-  cloud: { Icon: Cloud },
-  phoneNumber: { Icon: PhoneNumber },
-  email: { Icon: Email },
-  social: { Icon: () => <People width={24} height={24} /> },
-  nfc: { Icon: () => <Nfc width={24} height={24} /> },
-  telegram: { Icon: () => <SendIcon color="#fff" width={24} height={24} /> },
-  map: { Icon: () => <MapPoint width={24} height={24} /> },
-  ledger: { Icon: () => <Ledger width={24} height={24} /> },
-};
-
 export interface Key {
   type: KeyType | ComingSoonKeyType;
-  title: string;
+  label?: string;
   description?: string;
   right?: ReactNode;
   signed?: boolean;
@@ -69,74 +48,33 @@ export interface KeysListProps {
   tiled?: boolean;
 }
 
-const comingSoonKeys: HydratedKeyListItem[] = [
-  {
-    type: ComingSoonKeyType.Email,
-    title: "E-mail Key",
-    description: "Coming Soon",
-    right: <View />,
-    onPress: () => null,
-    Icon: Email,
-  },
-  {
-    type: ComingSoonKeyType.Cloud,
-    title: "Cloud Key",
-    description: "Coming Soon",
-    right: <View />,
-    onPress: () => null,
-    Icon: Cloud,
-  },
-  {
-    type: ComingSoonKeyType.Nfc,
-    title: "NFC Tap Key",
-    description: "Coming Soon",
-    right: <View />,
-    onPress: () => null,
-    Icon: () => <Nfc width={20} height={20} />,
-  },
-  {
-    type: ComingSoonKeyType.Telegram,
-    title: "Telegram Key",
-    description: "Coming Soon",
-    right: <View />,
-    onPress: () => null,
-    Icon: () => <SendIcon color="#fff" />,
-  },
-  {
-    type: ComingSoonKeyType.Map,
-    title: "Map Point Key",
-    description: "Coming Soon",
-    right: <View />,
-    onPress: () => null,
-    Icon: () => <MapPoint width={20} height={20} />,
-  },
-  {
-    type: ComingSoonKeyType.Ledger,
-    title: "Ledger Key",
-    description: "Coming Soon",
-    right: <View />,
-    onPress: () => null,
-    Icon: () => <Ledger width={20} height={20} />,
-  },
-];
-
 export const KeysList = observer(function KeysList({
   data,
   style,
   tiled,
 }: KeysListProps) {
-  const { metaData } = useKeyMetaData();
+  const { metaData, comingSoonKeys } = useKeyMetaData();
   const hydratedData = data.map((key) => {
     return {
-      ...key,
       ...metaData[key.type],
+      ...key,
     };
   });
 
   return (
     <View style={[style]}>
       <FlatList
-        data={[...hydratedData, ...comingSoonKeys]}
+        data={[
+          ...hydratedData,
+          ...comingSoonKeys.map((type) => {
+            return {
+              ...metaData[type],
+              type,
+              description: "Coming Soon",
+              right: null,
+            };
+          }),
+        ]}
         horizontal={tiled}
         keyExtractor={(item) => item.type}
         renderItem={(props) => <KeyListItem {...props} tiled={tiled} />}
@@ -154,7 +92,7 @@ export const KeyListItem = observer(function KeyListItem({
   item,
   tiled,
 }: KeyListItemProps) {
-  const { title, description, Icon, right, onPress, signed } = item;
+  const { label, description, Icon, right, onPress, signed } = item;
   const { configStore } = useStore();
   const isObi = configStore.isObi();
   const isLoop = configStore.isLoop();
@@ -206,7 +144,7 @@ export const KeyListItem = observer(function KeyListItem({
                 style={{ width: 60, zIndex: -1, position: "absolute" }}
               />
             )}
-            <Icon fill={isObi ? "#fff" : "#7B87A8"} />
+            <Icon fill={isObi ? "#fff" : "#7B87A8"} width={24} height={24} />
           </View>
         </View>
         <Text
@@ -219,7 +157,7 @@ export const KeyListItem = observer(function KeyListItem({
             textAlign: "center",
           }}
         >
-          {title}
+          {label}
         </Text>
       </View>
     </TouchableOpacity>
@@ -246,15 +184,7 @@ export const KeyListItem = observer(function KeyListItem({
             borderRadius: 12,
           }}
         >
-          {item.type === KeyType.Social ? (
-            isLoop ? (
-              <Icon />
-            ) : (
-              <PeopleWhite width={24} height={24} />
-            )
-          ) : (
-            <Icon fill={isLoop ? "#7B87A8" : "white"} />
-          )}
+          <Icon fill={isLoop ? "#7B87A8" : "white"} width={24} height={24} />
         </View>
       </View>
       <View style={{ flex: 6, justifyContent: "center" }}>
@@ -265,7 +195,7 @@ export const KeyListItem = observer(function KeyListItem({
             fontWeight: "600",
           }}
         >
-          {title}
+          {label}
         </Text>
         {description ? (
           <Text
@@ -286,4 +216,3 @@ export const KeyListItem = observer(function KeyListItem({
     </TouchableOpacity>
   );
 });
-export const PeopleWhiteSVG = PeopleWhite;

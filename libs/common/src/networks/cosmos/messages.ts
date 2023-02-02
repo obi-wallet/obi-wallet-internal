@@ -79,3 +79,34 @@ export function parseNewAccountResponse(response: DeliverTxResponse) {
     throw e;
   }
 }
+
+export function parseProposeUpdateOwnerResponse(response: DeliverTxResponse) {
+  try {
+    invariant(response.rawLog, "Expected `response` to have `rawLog`.");
+    const rawLog = JSON.parse(response.rawLog) as [
+      {
+        events: [
+          {
+            type: string;
+            attributes: { key: string; value: string }[];
+          }
+        ];
+      }
+    ];
+    const executeEvent = rawLog[0].events.find((e) => {
+      return e.type === "execute";
+    });
+    invariant(executeEvent, "Expected `rawLog` to contain `execute` event.");
+    const contractAddress = executeEvent.attributes.find((a) => {
+      return a.key === "_contract_address";
+    });
+    invariant(
+      contractAddress,
+      "Expected `executeEvent` to contain `_contract_address` attribute."
+    );
+    return { contractAddress: contractAddress.value };
+  } catch (e) {
+    console.log(response.rawLog);
+    throw e;
+  }
+}

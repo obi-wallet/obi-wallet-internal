@@ -9,7 +9,6 @@ import {
   MultisigKey,
   terra,
   Text,
-  WalletType,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -25,8 +24,8 @@ import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
 import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
-import PeopleIcon from "../../../app/screens/onboarding/common/4-social/assets/people-alt-twotone-24px.svg";
 import { TextInput } from "../../../app/text-input";
+import SocialLoop from "../../../assets/social-loop.svg";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type SocialKeyScreenProps = NativeStackScreenProps<
@@ -164,7 +163,7 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
 
             <View>
               <View>
-                {isObi ? undefined : <PeopleIcon width={70} height={70} />}
+                {isObi ? undefined : <SocialLoop width={70} height={70} />}
                 <Text
                   style={{
                     color: "#F6F5FF",

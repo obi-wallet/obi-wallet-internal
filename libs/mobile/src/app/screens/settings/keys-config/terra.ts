@@ -32,7 +32,6 @@ export async function handleTerra({
     try {
       terra.parseProposeUpdateOwnerResponse(response);
     } catch (e) {
-      console.log(response.raw_log);
       await proposeUpdateOwner();
     }
   }
@@ -52,7 +51,6 @@ export async function handleTerra({
     try {
       terra.parseProposeUpdateOwnerResponse(response);
     } catch (e) {
-      console.log(response.raw_log);
       await confirmUpdateOwner();
     }
   }

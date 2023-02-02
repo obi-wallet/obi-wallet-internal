@@ -12,13 +12,9 @@ import { Provider, ProviderProps } from "./provider";
 import { RootRoute, RootStack } from "./root-stack";
 import { HomeScreen } from "./screens/home";
 import { Stake } from "./screens/home/components/stake";
-import { MultisigBiometrics } from "./screens/onboarding/common/1-biometrics";
-import { MultisigPhoneNumber } from "./screens/onboarding/common/2-phone-number";
-import { MultisigPhoneNumberConfirm } from "./screens/onboarding/common/3-phone-number-confirm";
 import { LookupProxyWallets } from "./screens/onboarding/lookup-proxy-wallets";
 import { OnboardingRoute } from "./screens/onboarding/onboarding-stack";
 import { RecoverMultisig } from "./screens/onboarding/recover-multisig";
-import { ReplaceMultisig } from "./screens/onboarding/replace-multisig-key";
 import { ReceiveScreen } from "./screens/receive";
 import { SendScreen } from "./screens/send";
 import { settingsScreens } from "./screens/settings";
@@ -205,22 +201,6 @@ export const StateRenderer = observer(function StateRenderer() {
           <RootStack.Screen
             name={OnboardingRoute.Welcome}
             component={WelcomeScreen}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.CreateMultisigBiometrics}
-            component={MultisigBiometrics}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.CreateMultisigPhoneNumber}
-            component={MultisigPhoneNumber}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.CreateMultisigPhoneNumberConfirm}
-            component={MultisigPhoneNumberConfirm}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.ReplaceMultisig}
-            component={ReplaceMultisig}
           />
           <RootStack.Screen
             name={OnboardingRoute.RecoverMultisig}
