@@ -26,6 +26,7 @@ import {
   PhoneNumberConfirmKey,
   PhoneNumberRequestKey,
 } from "./keys";
+import { existsKeyOnDevice } from "../../../biometrics";
 import {
   BottomSheet,
   BottomSheetRef,
@@ -125,9 +126,9 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
       })();
     }, [multisigKey, chainId, messages, props]);
 
-    function getKey({ type }: { type: KeyType }): Key[] {
+    function getKey({ type }: { type: KeyType }): Key {
       const factor = multisigKey.getKeyOfType(type);
-      if (!factor) return [];
+      invariant(factor, "Expected key to exist.");
 
       const alreadySigned = signatures.has(factor.payload.publicKey.value);
       const onPress = async () => {
@@ -137,8 +138,6 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
 
         switch (type) {
           case KeyType.Device: {
-            const biometrics = multisigKey.getKeyOfType(KeyType.Device);
-            invariant(biometrics, "Expected device key to exist.");
             const biometricsKey = new BiometricsKey({
               multisigKey,
             });
@@ -147,7 +146,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
 
             setSignatures((signatures) => {
               return new Map(
-                signatures.set(biometrics.payload.publicKey.value, signature)
+                signatures.set(factor.payload.publicKey.value, signature)
               );
             });
             break;
@@ -161,32 +160,57 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
         }
       };
 
-      return [
-        {
-          type,
-          signed: alreadySigned,
-          right: alreadySigned ? <CheckIcon /> : null,
-          onPress,
-        },
-      ];
+      return {
+        type,
+        signed: alreadySigned,
+        right: alreadySigned ? <CheckIcon /> : null,
+        onPress,
+      };
     }
 
+    const [usableKeys, setUsableKeys] = useState<KeyType[] | null>(null);
+
+    useEffect(() => {
+      (async () => {
+        const usableKeys = [];
+
+        const deviceKey = multisigKey.getKeyOfType(KeyType.Device);
+        const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+
+        if (
+          deviceKey &&
+          (await existsKeyOnDevice({
+            publicKey: deviceKey.payload.publicKey.value,
+          }))
+        ) {
+          usableKeys.push(KeyType.Device);
+        }
+
+        if (phoneKey) {
+          usableKeys.push(KeyType.Phone);
+        }
+
+        setUsableKeys(usableKeys);
+      })();
+    }, [multisigKey]);
+
+    if (!threshold || !usableKeys) return null;
+
+    const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+
     const data: Key[] = [
-      ...getKey({
+      getKey({
         type: KeyType.Device,
       }),
-      ...getKey({
+      getKey({
         type: KeyType.Phone,
       }),
     ].filter((key) => {
-      return hiddenKeyTypes
-        ? !hiddenKeyTypes.includes(key.type as KeyType)
-        : true;
+      return (
+        usableKeys.includes(key.type as KeyType) &&
+        !(hiddenKeyTypes || []).includes(key.type as KeyType)
+      );
     });
-
-    if (!threshold) return null;
-
-    const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
 
     return (
       <MultisigConfirmMessages

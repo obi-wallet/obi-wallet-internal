@@ -34,12 +34,15 @@ import {
 } from "@obi-wallet/common";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { observer } from "mobx-react-lite";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import invariant from "tiny-invariant";
 
 import { wrapMessages } from "./wrap-messages";
-import { createBiometricsSignature } from "../../../biometrics";
+import {
+  createBiometricsSignature,
+  existsKeyOnDevice,
+} from "../../../biometrics";
 import {
   BottomSheet,
   BottomSheetRef,
@@ -91,7 +94,6 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
     demoMode,
     ...props
   }) {
-    const intl = useIntl();
     const [signatures, setSignatures] = useState(new Map<string, Uint8Array>());
     const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
     const { chainStore } = useStore();
@@ -141,9 +143,9 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
       return new Sha256(serializeSignDoc(signDoc)).digest();
     }, [multisigKey.address, currentChainInformation.denom, chainId, messages]);
 
-    function getKey({ type }: { type: KeyType }): Key[] {
+    function getKey({ type }: { type: KeyType }): Key {
       const factor = multisigKey.getKeyOfType(type);
-      if (!factor) return [];
+      invariant(factor, "Expected key to exist.");
 
       const alreadySigned = signatures.has(factor.payload.publicKey.value);
       const onPress = async () => {
@@ -176,32 +178,57 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
         }
       };
 
-      return [
-        {
-          type: type,
-          signed: alreadySigned,
-          right: alreadySigned ? <CheckIcon /> : null,
-          onPress,
-        },
-      ];
+      return {
+        type: type,
+        signed: alreadySigned,
+        right: alreadySigned ? <CheckIcon /> : null,
+        onPress,
+      };
     }
 
+    const [usableKeys, setUsableKeys] = useState<KeyType[] | null>(null);
+
+    useEffect(() => {
+      (async () => {
+        const usableKeys = [];
+
+        const deviceKey = multisigKey.getKeyOfType(KeyType.Device);
+        const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+
+        if (
+          deviceKey &&
+          (await existsKeyOnDevice({
+            publicKey: deviceKey.payload.publicKey.value,
+          }))
+        ) {
+          usableKeys.push(KeyType.Device);
+        }
+
+        if (phoneKey) {
+          usableKeys.push(KeyType.Phone);
+        }
+
+        setUsableKeys(usableKeys);
+      })();
+    }, [multisigKey]);
+
+    if (!threshold || !usableKeys) return null;
+
+    const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+
     const data: Key[] = [
-      ...getKey({
+      getKey({
         type: KeyType.Device,
       }),
-      ...getKey({
+      getKey({
         type: KeyType.Phone,
       }),
     ].filter((key) => {
-      return hiddenKeyTypes
-        ? !hiddenKeyTypes.includes(key.type as KeyType)
-        : true;
+      return (
+        usableKeys.includes(key.type as KeyType) &&
+        !(hiddenKeyTypes || []).includes(key.type as KeyType)
+      );
     });
-
-    if (!threshold) return null;
-
-    const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
 
     return (
       <MultisigConfirmMessages
