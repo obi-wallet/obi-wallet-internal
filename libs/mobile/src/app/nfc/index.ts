@@ -178,18 +178,16 @@ export async function startReading(alertMessage: string) {
 }
 
 export async function assembleNFCPublicKey(
-  tag: any,
+  parsed: string,
   demoMode: boolean,
   localEntropy: Buffer
 ): Promise<string> {
   // ndefMessage is actually an array of NdefRecords,
   // and we can iterate through each NdefRecord, decode its payload
   // according to its TNF & type
-  const ndefRecords = await tag.ndefMessage;
-  let parsed = await ndefRecords.map(decodeNdefRecord);
   const publicKey = await getNFCPublicKey({
     demoMode,
-    parsed: JSON.stringify(parsed),
+    parsed,
     boostEntropy: true,
     localEntropy: localEntropy,
   });

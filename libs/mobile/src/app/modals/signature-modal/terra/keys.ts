@@ -141,7 +141,7 @@ export class NFCKey extends Key {
     wallet: TerraMultisigWallet;
     multisig: TerraMultisig;
     boostEntropy: boolean;
-    parsed: string[];
+    parsed: string;
   }) {
     const nfc = multisig.nfc;
     invariant(nfc, "Expected NFC key to exist.");
@@ -149,7 +149,7 @@ export class NFCKey extends Key {
     this.wallet = wallet;
     this.boostEntropy = boostEntropy;
     this.localEntropy = this.wallet.nextAdmin?.localEntropy;
-    this.parsed = JSON.stringify(parsed);
+    this.parsed = parsed;
   }
 
   async sign(payload: Buffer): Promise<Buffer> {

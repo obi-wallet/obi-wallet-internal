@@ -182,6 +182,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
                 ) {
                   const ndefRecords = await tag.ndefMessage;
                   let parsed = await ndefRecords.map(decodeNdefRecord);
+                  parsed = JSON.stringify(parsed);
                   const nfcKey = new NFCKey({
                     wallet,
                     multisig,

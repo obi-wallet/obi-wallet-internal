@@ -26,7 +26,6 @@ import {
   checkIsSupported,
   decodeNdefRecord,
   getNFCKeyPair,
-  getNFCPublicKey,
   startReading,
 } from "../../../../nfc";
 import { useMultisigWallet, useStore } from "../../../../stores";
@@ -79,11 +78,14 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
     NfcManager.setEventListener(NfcEvents.DiscoverTag, async (tag: any) => {
       setReading(false);
       if ((await tag.ndefMessage) && (await tag.ndefMessage.length) > 0) {
+        const ndefRecords = await tag.ndefMessage;
+        let parsed_data = await ndefRecords.map(decodeNdefRecord);
+        setParsed(JSON.stringify(parsed_data));
         await wallet.setNFCPublicKey({
           publicKey: {
             type: pubkeyType.secp256k1,
             value: await assembleNFCPublicKey(
-              tag,
+              parsed,
               demoMode,
               wallet.nextAdmin.localEntropy
             ),
@@ -423,7 +425,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
                   navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
                   getNFCKeyPair({
                     demoMode,
-                    parsed: JSON.stringify(parsed),
+                    parsed,
                     boostEntropy: true,
                     localEntropy: wallet.localEntropy,
                   }).then((keypair) => {
