@@ -352,10 +352,47 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
                         marginTop: 10,
                       }}
                     >
-                      <FormattedMessage
-                        id="onboarding5.nfcunavailable"
-                        defaultMessage="No NFC available on this device."
-                      />
+                      <View>
+                        <FormattedMessage
+                          id="onboarding5.nfcunavailable"
+                          defaultMessage="No NFC available on this device."
+                        />
+                        <TouchableOpacity
+                          style={{ alignItems: "center", paddingHorizontal: 15 }}
+                          onPress={function (): void {
+                            if (wallet.localEntropy) {
+                              navigation.navigate(
+                                OnboardingRoute.CreateMultisigPhoneNumber
+                              );
+                              getNFCKeyPair({
+                                demoMode,
+                                parsed: "fakeparseddata",
+                                boostEntropy: true,
+                                localEntropy: wallet.localEntropy,
+                              }).then((keypair) => {
+                                const { privateKey, publicKey } = keypair;
+                                prepareWalletAndOptionallySign({
+                                  publicKey,
+                                  privateKey,
+                                });
+                              });
+                            } else {
+                              console.warn("Local entropy not set");
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: "#437DFF",
+                              fontSize: isSmallScreenNumber(14, 14),
+                              fontWeight: "600",
+                              marginTop: 20,
+                            }}
+                          >
+                            Test NFC Key
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
                     </Text>
                   ) : scannedNFC ? (
                     <Text
