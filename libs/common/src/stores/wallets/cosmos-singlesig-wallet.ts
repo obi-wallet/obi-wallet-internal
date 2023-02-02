@@ -3,9 +3,9 @@ import { Mnemonic } from "@keplr-wallet/crypto";
 import { computed, makeObservable, observable } from "mobx";
 import secp256k1 from "secp256k1";
 
-import { ChainStore } from "../chain";
 import { AbstractWallet, WalletType } from "./abstract-wallet";
 import { SerializedCosmosSinglesigWallet } from "./serialized-data";
+import { ChainStore } from "../chain";
 
 export class CosmosSinglesigWallet extends AbstractWallet {
   protected readonly chainStore: ChainStore;

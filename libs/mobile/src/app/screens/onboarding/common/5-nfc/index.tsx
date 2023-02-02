@@ -373,7 +373,8 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
                         defaultMessage={
                           "You've labeled your NFC device as: " +
                           selectedTagType +
-                          ". This key is boosted with both local and remote brute force shields. It controls address: " + wallet.nextAdmin?.nfc?.address
+                          ". This key is boosted with both local and remote brute force shields. It controls address: " +
+                          wallet.nextAdmin?.nfc?.address
                         }
                       />
                     </Text>
@@ -422,7 +423,9 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
               style={{ alignItems: "center", paddingHorizontal: 15 }}
               onPress={function (): void {
                 if (wallet.localEntropy) {
-                  navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
+                  navigation.navigate(
+                    OnboardingRoute.CreateMultisigPhoneNumber
+                  );
                   getNFCKeyPair({
                     demoMode,
                     parsed,
@@ -434,7 +437,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
                       publicKey,
                       privateKey,
                     });
-                  })
+                  });
                 } else {
                   console.warn("Local entropy not set");
                 }

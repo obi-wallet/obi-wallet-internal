@@ -11,8 +11,6 @@ import {
 import { nanoid } from "nanoid/non-secure";
 import invariant from "tiny-invariant";
 
-import { ChainStore } from "../chain";
-import { ConfigStore } from "../config";
 import { WalletType } from "./abstract-wallet";
 import {
   CosmosMultisigKey,
@@ -33,6 +31,8 @@ import {
   SerializedWalletAnyVersion,
 } from "./serialized-data";
 import { TerraMultisigKey, TerraMultisigWallet } from "./terra-multisig-wallet";
+import { ChainStore } from "../chain";
+import { ConfigStore } from "../config";
 
 export * from "./cosmos-multisig-wallet";
 export * from "./cosmos-singlesig-wallet";

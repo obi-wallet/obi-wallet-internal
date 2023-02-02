@@ -1,8 +1,8 @@
 import { action, makeObservable, observable } from "mobx";
 
+import { WalletType } from "./wallets";
 import { CosmosChain, TerraChain } from "../chains";
 import { Language } from "../languages";
-import { WalletType } from "./wallets";
 
 export enum Brand {
   Obi = "Obi",
