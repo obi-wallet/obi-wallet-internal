@@ -141,7 +141,6 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
             invariant(biometrics, "Expected device key to exist.");
             const biometricsKey = new BiometricsKey({
               multisigKey,
-              demoMode,
             });
 
             const signature = await biometricsKey.createSignatureAmino(signDoc);

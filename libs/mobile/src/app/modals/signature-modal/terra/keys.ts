@@ -3,7 +3,7 @@ import { Key, SimplePublicKey } from "@terra-money/terra.js";
 import { SHA256, Word32Array } from "jscrypto";
 import invariant from "tiny-invariant";
 
-import { createBiometricSignature } from "../../../biometrics";
+import { createBiometricsSignature } from "../../../biometrics";
 import {
   parseSignatureTextMessageResponse,
   sendSignatureTextMessage,
@@ -18,25 +18,19 @@ function createHash(payload: Buffer): Uint8Array {
 }
 
 export class BiometricsKey extends Key {
-  protected readonly demoMode: boolean;
+  protected readonly deviceKeyPublicKey: string;
 
-  constructor({
-    multisigKey,
-    demoMode,
-  }: {
-    multisigKey: MultisigKey;
-    demoMode: boolean;
-  }) {
+  constructor({ multisigKey }: { multisigKey: MultisigKey }) {
     const biometrics = multisigKey.getKeyOfType(KeyType.Device);
     invariant(biometrics, "Expected device key to exist.");
     super(SimplePublicKey.fromAmino(biometrics.payload.publicKey));
-    this.demoMode = demoMode;
+    this.deviceKeyPublicKey = biometrics.payload.publicKey.value;
   }
 
   async sign(payload: Buffer): Promise<Buffer> {
-    const { signature } = await createBiometricSignature({
+    const { signature } = await createBiometricsSignature({
       payload: createHash(payload),
-      demoMode: this.demoMode,
+      publicKey: this.deviceKeyPublicKey,
     });
     return Buffer.from(signature);
   }

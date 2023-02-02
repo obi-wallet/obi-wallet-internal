@@ -1,6 +1,7 @@
 import { randomBytes } from "crypto";
 import * as Keychain from "react-native-keychain";
 import secp256k1 from "secp256k1";
+import invariant from "tiny-invariant";
 
 import { prepareWalletAndSign } from "../secp256k1";
 
@@ -23,15 +24,87 @@ export async function getBiometricsPublicKey({
 }
 
 export async function getBiometricsPrivateKey({
+  publicKey,
+}: {
+  publicKey: string;
+}) {
+  const credentials = await fetchCredentialsFromKeyChain({
+    service: `${BIOMETRICS_KEY}/${publicKey}`,
+  });
+
+  if (credentials) return credentials.password;
+
+  const fallbackCredentials = await fetchCredentialsFromKeyChain({
+    service: BIOMETRICS_KEY,
+  });
+
+  if (fallbackCredentials && fallbackCredentials.username === publicKey) {
+    await saveCredentialsToKeyChain({
+      service: `${BIOMETRICS_KEY}/${publicKey}`,
+      username: publicKey,
+      password: fallbackCredentials.password,
+    });
+    return fallbackCredentials.password;
+  }
+
+  invariant(false, "Key not found on device.");
+}
+
+export async function getBiometricsKeyPair({
   demoMode,
 }: {
   demoMode: boolean;
 }) {
-  const { privateKey } = await getBiometricsKeyPair({ demoMode });
-  return privateKey;
+  if (demoMode) {
+    return {
+      privateKey: DEMO_PRIVATE_KEY,
+      publicKey: DEMO_PUBLIC_KEY,
+    };
+  }
+
+  const credentials = await fetchCredentialsFromKeyChain({
+    service: BIOMETRICS_KEY,
+  });
+
+  if (credentials) {
+    return {
+      publicKey: credentials.username,
+      privateKey: credentials.password,
+    };
+  } else {
+    // Fake-AuthPrompt (set+get) to trigger Prompt at initial App-Start
+    await Keychain.resetGenericPassword({ service: "fake-prompt" });
+    await saveCredentialsToKeyChain({
+      service: "fake-prompt",
+      username: "fake1",
+      password: "fake2",
+    });
+
+    const privateKeyBuffer = randomBytes(32);
+    const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer);
+
+    const privateKey = Buffer.from(privateKeyBuffer).toString("base64");
+    const publicKey = Buffer.from(publicKeyBuffer).toString("base64");
+
+    await saveCredentialsToKeyChain({
+      service: BIOMETRICS_KEY,
+      username: publicKey,
+      password: privateKey,
+    });
+    await saveCredentialsToKeyChain({
+      service: `${BIOMETRICS_KEY}/${publicKey}`,
+      username: publicKey,
+      password: privateKey,
+    });
+
+    return {
+      publicKey,
+      privateKey,
+    };
+  }
 }
 
-export async function getBiometricsKeyPair({
+export async function deprecated__getBiometricsKeyPair({
   demoMode,
 }: {
   demoMode: boolean;
@@ -92,17 +165,44 @@ export async function getBiometricsKeyPair({
   }
 }
 
-export async function createBiometricSignature({
+export async function createBiometricsSignature({
   payload,
-  demoMode,
+  publicKey,
 }: {
   payload: Uint8Array;
-  demoMode: boolean;
+  publicKey: string;
 }) {
-  const { publicKey, privateKey } = await getBiometricsKeyPair({ demoMode });
+  const privateKey = await getBiometricsPrivateKey({ publicKey });
   return await prepareWalletAndSign({
     publicKey,
     privateKey,
     payload,
+  });
+}
+
+async function fetchCredentialsFromKeyChain({ service }: { service: string }) {
+  return await Keychain.getGenericPassword({
+    authenticationPrompt: {
+      title: "Authentication Required",
+    },
+    service,
+    accessControl:
+      Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
+  });
+}
+
+async function saveCredentialsToKeyChain({
+  service,
+  username,
+  password,
+}: {
+  service: string;
+  username: string;
+  password: string;
+}) {
+  return await Keychain.setGenericPassword(username, password, {
+    service,
+    accessControl:
+      Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
   });
 }

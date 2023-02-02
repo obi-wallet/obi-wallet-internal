@@ -39,7 +39,7 @@ import { useIntl } from "react-intl";
 import invariant from "tiny-invariant";
 
 import { wrapMessages } from "./wrap-messages";
-import { createBiometricSignature } from "../../../biometrics";
+import { createBiometricsSignature } from "../../../biometrics";
 import {
   BottomSheet,
   BottomSheetRef,
@@ -151,13 +151,14 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
 
         switch (type) {
           case KeyType.Device: {
-            const message = await getMessage();
-            const { signature } = await createBiometricSignature({
-              payload: message,
-              demoMode,
-            });
             const biometrics = multisigKey.getKeyOfType(KeyType.Device);
             invariant(biometrics, "Expected device key to exist.");
+
+            const message = await getMessage();
+            const { signature } = await createBiometricsSignature({
+              payload: message,
+              publicKey: biometrics.payload.publicKey.value,
+            });
 
             setSignatures((signatures) => {
               return new Map(

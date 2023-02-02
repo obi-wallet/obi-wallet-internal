@@ -32,7 +32,9 @@ export const MultisigDraft = {
           original.setDeviceKey({
             publicKey: {
               type: pubkeyType.secp256k1,
-              value: await getBiometricsPublicKey({ demoMode: true }),
+              value: await getBiometricsPublicKey({
+                demoMode: true,
+              }),
             },
           });
           original.setPhoneKey({
