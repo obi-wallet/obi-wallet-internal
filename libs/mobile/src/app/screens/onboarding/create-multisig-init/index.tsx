@@ -208,7 +208,6 @@ async function handleTerra({
   });
 
   try {
-    Alert.alert("The full response is: ", JSON.stringify(response));
     await wallet.finishProxySetup(terra.parseNewAccountResponse(response));
   } catch (e) {
     const error = e as Error;

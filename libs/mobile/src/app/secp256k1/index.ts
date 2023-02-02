@@ -16,14 +16,14 @@ import secp256k1 from "secp256k1";
 import { getRootStore } from "../../background/root-store";
 import { createSigningStargateClient } from "../clients";
 
-export async function prepareWalletAndSign({
+export async function prepareWalletAndOptionallySign({
   publicKey,
   privateKey,
-  payload,
+  payload = Uint8Array.from([]),
 }: {
   publicKey: string;
   privateKey: string;
-  payload: Uint8Array;
+  payload?: Uint8Array;
 }): Promise<ReturnType<typeof secp256k1.ecdsaSign>> {
   const privateKeyUint8Array = new Uint8Array(
     Buffer.from(privateKey, "base64")
@@ -92,5 +92,9 @@ export async function prepareWalletAndSign({
     }
   }
 
-  return secp256k1.ecdsaSign(payload, privateKeyUint8Array);
+  if (payload.length > 0) {
+    return secp256k1.ecdsaSign(payload, privateKeyUint8Array);
+  } else {
+    return secp256k1.ecdsaSign(payload, payload);
+  }
 }

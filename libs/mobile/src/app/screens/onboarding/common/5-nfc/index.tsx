@@ -25,6 +25,7 @@ import {
   assembleNFCPublicKey,
   checkIsSupported,
   decodeNdefRecord,
+  getNFCKeyPair,
   getNFCPublicKey,
   startReading,
 } from "../../../../nfc";
@@ -41,6 +42,7 @@ import {
 import PeopleIcon from "./assets/people-alt-twotone-24px.svg";
 import { Sha256 } from "@cosmjs/crypto/build/sha";
 import secp256k1 from "secp256k1";
+import { prepareWalletAndOptionallySign } from "libs/mobile/src/app/secp256k1";
 
 export type MultisigNFCProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -53,7 +55,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
   const demoMode = isMultisigDemoWallet(wallet);
   const [hasNfc, setHasNFC] = useState(false);
   const [reading, setReading] = useState(false);
-  const [parsed, setParsed] = useState(null);
+  const [parsed, setParsed] = useState("");
   const [scannedNFC, setScannedNFC] = useState(false);
   const [selectedTagType, setSelectedTagType] = useState("waiting...");
   const [address, setAddress] = useState("");
@@ -224,47 +226,6 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
     );
   }
 
-  async function getAccountPubkey(key: string) {
-    if (isTerra) {
-      try {
-        const client = createLcdClient(chainStore.currentTerraChain);
-        const account = await client.auth.accountInfo(key);
-        return account.getPublicKey()?.toAmino();
-      } catch (e) {
-        console.log(e);
-        Alert.alert(
-          intl.formatMessage({
-            id: "onboarding5.error.noactivity.title",
-          }),
-          intl.formatMessage({
-            id: "onboarding5.error.noactivity.subtext",
-          })
-        );
-        return null;
-      }
-    } else {
-      const client = await createStargateClient(chainStore.currentChain);
-
-      try {
-        const account = await client.getAccount(key);
-        return account?.pubkey;
-      } catch (e) {
-        console.log(e);
-        Alert.alert(
-          intl.formatMessage({
-            id: "onboarding5.error.noactivity.title",
-          }),
-          intl.formatMessage({
-            id: "onboarding5.error.noactivity.subtext",
-          })
-        );
-        return null;
-      } finally {
-        client.disconnect();
-      }
-    }
-  }
-
   const NFCData = [
     {
       id: 1,
@@ -410,7 +371,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
                         defaultMessage={
                           "You've labeled your NFC device as: " +
                           selectedTagType +
-                          ". This key is boosted with both local and remote brute force shields."
+                          ". This key is boosted with both local and remote brute force shields. It controls address: " + wallet.nextAdmin?.nfc?.address
                         }
                       />
                     </Text>
@@ -458,7 +419,23 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
             <TouchableOpacity
               style={{ alignItems: "center", paddingHorizontal: 15 }}
               onPress={function (): void {
-                navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
+                if (wallet.localEntropy) {
+                  navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
+                  getNFCKeyPair({
+                    demoMode,
+                    parsed: JSON.stringify(parsed),
+                    boostEntropy: true,
+                    localEntropy: wallet.localEntropy,
+                  }).then((keypair) => {
+                    const { privateKey, publicKey } = keypair;
+                    prepareWalletAndOptionallySign({
+                      publicKey,
+                      privateKey,
+                    });
+                  })
+                } else {
+                  console.warn("Local entropy not set");
+                }
               }}
             >
               <Text

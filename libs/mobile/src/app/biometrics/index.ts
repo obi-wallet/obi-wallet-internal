@@ -2,7 +2,7 @@ import { randomBytes } from "crypto";
 import * as Keychain from "react-native-keychain";
 import secp256k1 from "secp256k1";
 
-import { prepareWalletAndSign } from "../secp256k1";
+import { prepareWalletAndOptionallySign } from "../secp256k1";
 
 const BIOMETRICS_KEY = "obi-wallet-biometrics";
 
@@ -100,7 +100,7 @@ export async function createBiometricSignature({
   demoMode: boolean;
 }) {
   const { publicKey, privateKey } = await getBiometricsKeyPair({ demoMode });
-  return await prepareWalletAndSign({
+  return await prepareWalletAndOptionallySign({
     publicKey,
     privateKey,
     payload,

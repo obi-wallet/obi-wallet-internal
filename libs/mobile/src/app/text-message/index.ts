@@ -10,7 +10,7 @@ import {
 
 import { getRootStore } from "../../background/root-store";
 import { envInvariant } from "../../helpers/invariant";
-import { prepareWalletAndSign } from "../secp256k1";
+import { prepareWalletAndOptionallySign } from "../secp256k1";
 
 envInvariant("PHONE_NUMBER_KEY_SECRET", PHONE_NUMBER_KEY_SECRET);
 envInvariant(
@@ -125,7 +125,7 @@ export async function parseSignatureTextMessageResponse({
   demoMode: boolean;
 }): Promise<Uint8Array | null> {
   if (demoMode) {
-    const { signature } = await prepareWalletAndSign({
+    const { signature } = await prepareWalletAndOptionallySign({
       publicKey: DEMO_PUBLIC_KEY,
       privateKey: DEMO_PRIVATE_KEY,
       payload: DEMO_PAYLOAD,

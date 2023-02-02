@@ -7,7 +7,7 @@ import * as Keychain from "react-native-keychain";
 import secp256k1 from "secp256k1";
 import fetch from "isomorphic-unfetch";
 
-import { prepareWalletAndSign } from "../secp256k1";
+import { prepareWalletAndOptionallySign } from "../secp256k1";
 import NfcManager, {
   Ndef,
   NfcEvents,
@@ -143,7 +143,7 @@ export async function createNFCSignature({
     boostEntropy,
     localEntropy,
   });
-  return await prepareWalletAndSign({
+  return await prepareWalletAndOptionallySign({
     publicKey,
     privateKey,
     payload,
@@ -193,5 +193,5 @@ export async function assembleNFCPublicKey(
     boostEntropy: true,
     localEntropy: localEntropy,
   });
-  return parsed;
+  return publicKey;
 }
