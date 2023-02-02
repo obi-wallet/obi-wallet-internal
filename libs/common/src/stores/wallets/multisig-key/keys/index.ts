@@ -15,15 +15,21 @@ export const SerializedDeviceKey = t.type({
   payload: SerializedDeviceKeyPayload,
 });
 
+export type SerializedDeviceKey = t.TypeOf<typeof SerializedDeviceKey>;
+
 export const SerializedPhoneKey = t.type({
   type: t.literal(KeyType.Phone),
   payload: SerializedPhoneKeyPayload,
 });
 
+export type SerializedPhoneKey = t.TypeOf<typeof SerializedPhoneKey>;
+
 export const SerializedSocialKey = t.type({
   type: t.literal(KeyType.Social),
   payload: SerializedSocialKeyPayload,
 });
+
+export type SerializedSocialKey = t.TypeOf<typeof SerializedSocialKey>;
 
 export const SerializedKey = t.union([
   SerializedDeviceKey,

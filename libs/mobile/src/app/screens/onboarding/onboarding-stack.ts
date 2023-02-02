@@ -13,5 +13,8 @@ export interface OnboardingStackParamList
     demoMode: boolean;
   };
   [OnboardingRoute.RecoverMultisig]: undefined;
-  [OnboardingRoute.LookupProxyWallets]: undefined;
+  [OnboardingRoute.LookupProxyWallets]: {
+    draftId: string;
+    demoMode: boolean;
+  };
 }

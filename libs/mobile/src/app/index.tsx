@@ -12,7 +12,6 @@ import { Provider, ProviderProps } from "./provider";
 import { RootRoute, RootStack } from "./root-stack";
 import { HomeScreen } from "./screens/home";
 import { Stake } from "./screens/home/components/stake";
-import { LookupProxyWallets } from "./screens/onboarding/lookup-proxy-wallets";
 import { OnboardingRoute } from "./screens/onboarding/onboarding-stack";
 import { RecoverMultisig } from "./screens/onboarding/recover-multisig";
 import { ReceiveScreen } from "./screens/receive";
@@ -23,6 +22,7 @@ import { WebViewScreen } from "./screens/web-view";
 import { useStore } from "./stores";
 import { CreateWalletScreen } from "../screens/create-wallet";
 import { keyScreens } from "../screens/keys/key-screens";
+import { LookupProxyWalletsScreen } from "../screens/lookup-proxy-wallets";
 import { WelcomeScreen } from "../screens/welcome";
 
 export interface BaseAppProps {
@@ -208,7 +208,7 @@ export const StateRenderer = observer(function StateRenderer() {
           />
           <RootStack.Screen
             name={OnboardingRoute.LookupProxyWallets}
-            component={LookupProxyWallets}
+            component={LookupProxyWalletsScreen}
           />
           <RootStack.Screen
             name={OnboardingRoute.CreateWallet}

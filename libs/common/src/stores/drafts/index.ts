@@ -17,12 +17,14 @@ export class DraftsStore {
 
   public create<T extends Draftable>({
     original,
+    value,
     id,
   }: {
     original: T;
+    value?: T;
     id?: EntityId;
   }) {
-    const draft = new Draft({ original });
+    const draft = new Draft({ original, value });
     return this._drafts.add({ entity: draft, id });
   }
 

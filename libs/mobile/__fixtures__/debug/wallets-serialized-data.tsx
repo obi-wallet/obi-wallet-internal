@@ -1,6 +1,6 @@
 import { Text } from "@obi-wallet/common";
 import { useEffect, useState } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, Share, TouchableOpacity } from "react-native";
 
 import { useStore } from "../../src";
 
@@ -17,7 +17,15 @@ export default function WalletsSerializedData() {
 
   return (
     <ScrollView>
-      <Text style={{ color: "#ffffff" }}>{serializedData}</Text>
+      <TouchableOpacity
+        onPress={() => {
+          void Share.share({
+            message: serializedData,
+          });
+        }}
+      >
+        <Text style={{ color: "#ffffff" }}>{serializedData}</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }

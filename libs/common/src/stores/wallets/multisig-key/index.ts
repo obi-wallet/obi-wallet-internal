@@ -9,6 +9,8 @@ import { cosmos, terra } from "../../../networks";
 import { Draftable } from "../../drafts/draft";
 import { Entities } from "../../entities";
 
+export * as MultisigKeySerializedData from "./keys";
+
 export { KeyType, SerializedMultisigKey };
 
 // Chain-agnostic multisig key

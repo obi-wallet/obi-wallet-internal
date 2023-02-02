@@ -12,9 +12,9 @@ export class Draft<T extends Draftable> {
   @observable
   protected _value: T;
 
-  constructor({ original }: { original: T }) {
+  constructor({ original, value }: { original: T; value?: T }) {
     this._original = original;
-    this._value = original.clone();
+    this._value = value ?? original.clone();
     makeObservable(this);
   }
 
