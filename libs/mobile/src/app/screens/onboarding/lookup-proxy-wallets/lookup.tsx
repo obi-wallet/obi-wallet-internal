@@ -13,8 +13,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import * as A from "./api-types";
 import { IconButton } from "../../../button";
-import { Background } from "../../components/background";
 import { VerifyAndProceedButton } from "../../components/phone-number/verify-and-proceed-button";
+import { OnboardingScreenContainer } from "../../components/onboarding-screen-container";
+import { useStore } from "../../../stores";
+import { isSmallScreenNumber } from "../../components/screen-size";
 
 export interface LookupProps {
   chainId: CosmosChain | TerraChain;
@@ -29,6 +31,8 @@ export const Lookup = observer(function Lookup({
   onSelect,
   onCancel,
 }: LookupProps) {
+  const { configStore } = useStore();
+  const isObi = configStore.isObi();
   const [wallets, setWallets] = useState<A.SerializedProxyWallet[] | null>(
     null
   );
@@ -60,187 +64,178 @@ export const Lookup = observer(function Lookup({
   if (!wallets) return null;
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Background />
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: 20,
-          justifyContent: "space-between",
-        }}
-      >
-        <View style={{ flexShrink: 1 }}>
-          <IconButton
-            style={{
-              marginTop: 20,
-              marginLeft: -5,
-              padding: 5,
-              width: 25,
-            }}
-            onPress={() => {
-              onCancel();
-            }}
-          >
-            <FontAwesomeIcon
-              icon={faChevronLeft}
-              style={{ color: "#7B87A8" }}
-            />
-          </IconButton>
-          <View style={{ justifyContent: "flex-end", marginTop: 43 }}>
-            <View>
-              <Text
-                style={{
-                  color: "#F6F5FF",
-                  fontSize: 24,
-                  fontWeight: "600",
-                  marginTop: 32,
-                }}
-              >
+    <OnboardingScreenContainer>
+      <View style={{ flexShrink: 1 }}>
+        <View
+          style={{
+            justifyContent: "flex-end",
+            marginTop: isObi ? 0 : 43,
+          }}
+        >
+          <View>
+            <Text
+              style={{
+                color: "#F6F5FF",
+                fontSize: isSmallScreenNumber(18, 24),
+                fontWeight: "600",
+                marginTop: isObi ? 0 : 32,
+              }}
+            >
+              <FormattedMessage
+                id="recovery.choosewallet.title"
+                defaultMessage="Choose an existing wallet"
+              />
+            </Text>
+            <Text
+              style={{
+                color: isObi ? "white" : "#999CB6",
+                fontSize: 14,
+                marginVertical: 10,
+              }}
+            >
+              {wallets.length > 0 ? (
                 <FormattedMessage
-                  id="recovery.choosewallet.title"
-                  defaultMessage="Choose an existing wallet"
+                  id="recovery.choosewallet.subtext"
+                  defaultMessage="We found the following Obi Wallets associated with your phone number and security answer. Select the one you want to recover."
                 />
-              </Text>
-              <Text
+              ) : (
+                <FormattedMessage
+                  id="recovery.choosewallet.subtextnone"
+                  defaultMessage="We found no Obi Wallets associated with your phone number and security answer. Please try a different combination."
+                />
+              )}
+            </Text>
+          </View>
+        </View>
+        <ScrollView>
+          {wallets.map((wallet) => {
+            const active = wallet === selectedWallet;
+
+            return (
+              <TouchableOpacity
+                key={wallet.proxyAddress.address}
                 style={{
-                  color: "#999CB6",
-                  fontSize: 14,
-                  marginTop: 10,
+                  height: 79,
+                  width: "100%",
+                  backgroundColor: isObi ? "#272727" : "#111023",
+                  marginBottom: 20,
+                  flexDirection: "row",
+                  borderRadius: 12,
+                  paddingHorizontal: 10,
+                  ...(isObi && active
+                    ? {
+                        borderWidth: 1,
+                        borderColor: "white",
+                      }
+                    : {}),
+                }}
+                onPress={() => {
+                  setSelectedWallet((selectedWallet) => {
+                    return selectedWallet === wallet ? null : wallet;
+                  });
                 }}
               >
-                {wallets.length > 0 ? (
-                  <FormattedMessage
-                    id="recovery.choosewallet.subtext"
-                    defaultMessage="We found the following Obi Wallets associated with your phone number and security answer. Select the one you want to recover."
-                  />
-                ) : (
-                  <FormattedMessage
-                    id="recovery.choosewallet.subtextnone"
-                    defaultMessage="We found no Obi Wallets associated with your phone number and security answer. Please try a different combination."
-                  />
-                )}
-              </Text>
-            </View>
-          </View>
-          <ScrollView>
-            {wallets.map((wallet) => {
-              const active = wallet === selectedWallet;
-
-              return (
-                <TouchableOpacity
-                  key={wallet.proxyAddress.address}
+                <View
                   style={{
-                    height: 79,
-                    width: "100%",
-                    backgroundColor: "#111023",
-                    marginBottom: 20,
-                    flexDirection: "row",
-                    borderRadius: 12,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingHorizontal: 10,
+                  }}
+                >
+                  <FontAwesomeIcon
+                    icon={active ? faCircleCheck : faCircle}
+                    style={{ color: isObi ? "white" : "#7B87A8" }}
+                  />
+                </View>
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    paddingHorizontal: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#F6F5FF",
+                      fontSize: 14,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {Bech32Address.shortenAddress(
+                      wallet.proxyAddress.address,
+                      20
+                    )}
+                  </Text>
+                </View>
+                <IconButton
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
                     paddingHorizontal: 10,
                   }}
                   onPress={() => {
-                    setSelectedWallet((selectedWallet) => {
-                      return selectedWallet === wallet ? null : wallet;
-                    });
+                    switch (chainId) {
+                      case "uni-3":
+                      case "juno-1":
+                        Linking.openURL(
+                          `https://www.mintscan.io/juno/wasm/contract/${wallet.proxyAddress.address}`
+                        );
+                        break;
+                      case "pisco-1":
+                      case "phoenix-1":
+                        Linking.openURL(
+                          `https://terrasco.pe/mainnet/contract/${wallet.proxyAddress.address}`
+                        );
+                        break;
+                    }
                   }}
                 >
-                  <View
-                    style={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      paddingHorizontal: 10,
-                    }}
-                  >
-                    <FontAwesomeIcon
-                      icon={active ? faCircleCheck : faCircle}
-                      style={{ color: "#7B87A8" }}
-                    />
-                  </View>
-                  <View
-                    style={{
-                      flex: 1,
-                      justifyContent: "center",
-                      paddingHorizontal: 10,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "#F6F5FF",
-                        fontSize: 14,
-                        fontWeight: "600",
-                      }}
-                    >
-                      {Bech32Address.shortenAddress(
-                        wallet.proxyAddress.address,
-                        20
-                      )}
-                    </Text>
-                  </View>
-                  <IconButton
-                    style={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      paddingHorizontal: 10,
-                    }}
-                    onPress={() => {
-                      switch (chainId) {
-                        case "uni-3":
-                        case "juno-1":
-                          Linking.openURL(
-                            `https://www.mintscan.io/juno/wasm/contract/${wallet.proxyAddress.address}`
-                          );
-                          break;
-                        case "pisco-1":
-                        case "phoenix-1":
-                          Linking.openURL(
-                            `https://terrasco.pe/mainnet/contract/${wallet.proxyAddress.address}`
-                          );
-                          break;
-                      }
-                    }}
-                  >
-                    <FontAwesomeIcon
-                      icon={faShare}
-                      style={{ color: "#7B87A8" }}
-                    />
-                  </IconButton>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        </View>
-        <View
-          style={{
-            marginTop: 20,
-            flexShrink: 0,
+                  <FontAwesomeIcon
+                    icon={faShare}
+                    style={{ color: isObi ? "white" : "#7B87A8" }}
+                  />
+                </IconButton>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
+      <View
+        style={{
+          marginTop: 20,
+          flexShrink: 0,
+        }}
+      >
+        <VerifyAndProceedButton
+          disabled={!selectedWallet}
+          onPress={() => {
+            if (selectedWallet) {
+              onSelect(selectedWallet);
+            }
           }}
-        >
-          <VerifyAndProceedButton
-            disabled={!selectedWallet}
+          style={{ marginBottom: 0 }}
+        />
+        <View style={{ alignItems: "center" }}>
+          <TouchableOpacity
             onPress={() => {
-              if (selectedWallet) {
-                onSelect(selectedWallet);
-              }
+              onCancel();
             }}
-            style={{ marginBottom: 0 }}
-          />
-          <View style={{ alignItems: "center" }}>
-            <TouchableOpacity
-              onPress={() => {
-                onCancel();
+            style={{ paddingVertical: 15, paddingHorizontal: 15 }}
+          >
+            <Text
+              style={{
+                color: isObi ? "white" : "#787B9C",
+                textAlign: "center",
               }}
-              style={{ paddingVertical: 15, paddingHorizontal: 15 }}
             >
-              <Text style={{ color: "#787B9C", textAlign: "center" }}>
-                <FormattedMessage
-                  id="recovery.choosewallet.tryagain"
-                  defaultMessage="Try a different combination"
-                />
-              </Text>
-            </TouchableOpacity>
-          </View>
+              <FormattedMessage
+                id="recovery.choosewallet.tryagain"
+                defaultMessage="Try a different combination"
+              />
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+    </OnboardingScreenContainer>
   );
 });
