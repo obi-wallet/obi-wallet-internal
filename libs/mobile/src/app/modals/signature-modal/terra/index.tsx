@@ -22,8 +22,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { Alert } from "react-native";
 import invariant from "tiny-invariant";
-import { assembleNFCSignature, checkIsSupported, decodeNdefRecord, startReading } from "../../../nfc";
-import NfcManager, { Ndef, NfcEvents, RegisterTagEventOpts } from 'react-native-nfc-manager';
+import { checkIsSupported, decodeNdefRecord, startReading } from "../../../nfc";
+import NfcManager, {
+  Ndef,
+  NfcEvents,
+  RegisterTagEventOpts,
+} from "react-native-nfc-manager";
 
 import {
   BottomSheet,
@@ -169,22 +173,29 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
           case "nfc":
             let supported = await checkIsSupported();
             invariant(supported, "NFC key exists but not supported by device.");
-            NfcManager.setEventListener(NfcEvents.DiscoverTag, async (tag: any) => {
-              if (await tag.ndefMessage && await tag.ndefMessage.length > 0) {
-                const ndefRecords = await tag.ndefMessage;
-                let parsed = await ndefRecords.map(decodeNdefRecord);
-                const nfcKey = new NFCKey({
-                  wallet,
-                  multisig,
-                  boostEntropy: true,
-                  parsed,
-                });
-                const signature = await NFCKey.createSignatureAmino(signDoc);
-                setSignatures((signatures) => {
-                  return new Map(signatures.set(id, signature));
-                });
-              } 
-            });
+            NfcManager.setEventListener(
+              NfcEvents.DiscoverTag,
+              async (tag: any) => {
+                if (
+                  (await tag.ndefMessage) &&
+                  (await tag.ndefMessage.length) > 0
+                ) {
+                  const ndefRecords = await tag.ndefMessage;
+                  let parsed = await ndefRecords.map(decodeNdefRecord);
+                  const nfcKey = new NFCKey({
+                    wallet,
+                    multisig,
+                    boostEntropy: true,
+                    parsed,
+                  });
+                  const signature = await nfcKey.createSignatureAmino(signDoc);
+                  console.warn("We have arrived here.");
+                  setSignatures((signatures) => {
+                    return new Map(signatures.set(id, signature));
+                  });
+                }
+              }
+            );
             startReading("Tap your NFC device to sign this transaction.");
             break;
           default:
@@ -217,6 +228,13 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
         title: intl.formatMessage({
           id: "signature.modal.phonesignature",
           defaultMessage: "Phone Number Signature",
+        }),
+      }),
+      ...getKey({
+        id: "nfc",
+        title: intl.formatMessage({
+          id: "signature.modal.nfc",
+          defaultMessage: "NFC Key",
         }),
       }),
     ].filter((key) => {

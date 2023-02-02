@@ -39,7 +39,9 @@
     "@react-navigation/native-stack": "*",
     "@robinbobin/react-native-google-drive-api-wrapper": "*",
     "@sentry/react-native": "*",
+    "@tanstack/query-async-storage-persister": "*",
     "@tanstack/react-query": "*",
+    "@tanstack/react-query-persist-client": "*",
     "@terra-money/terra.js": "*",
     "@terra-money/terra.proto": "*",
     "@testing-library/jest-native": "*",
@@ -106,8 +108,6 @@
     "rooks": "*",
     "scrypt-js": "*",
     "secp256k1": "*",
-    "tiny-invariant": "*",
-    "@tanstack/query-async-storage-persister": "*",
-    "@tanstack/react-query-persist-client": "*"
+    "tiny-invariant": "*"
   }
 }

@@ -182,9 +182,7 @@ export const MultisigBiometrics = observer<MultisigBiometricsProps>(
               LeftIcon={isObi ? undefined : Scan}
               onPress={async () => {
                 if (scannedBiometrics) {
-                  navigation.navigate(
-                    OnboardingRoute.CreateMultisigNFC
-                  );
+                  navigation.navigate(OnboardingRoute.CreateMultisigNFC);
                 } else {
                   await scanBiometrics();
                 }

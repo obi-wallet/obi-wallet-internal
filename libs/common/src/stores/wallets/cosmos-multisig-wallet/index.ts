@@ -36,7 +36,10 @@ export interface CosmosMultisig {
   localEntropy: Buffer;
 }
 
-export type CosmosMultisigKey = keyof Omit<CosmosMultisig, "multisig"| "localEntropy">;
+export type CosmosMultisigKey = keyof Omit<
+  CosmosMultisig,
+  "multisig" | "localEntropy"
+>;
 
 export interface CosmosProxyWallet {
   proxyAddress: CosmosSerializedData.SerializedProxyAddress;
@@ -158,10 +161,10 @@ export class CosmosMultisigWallet extends AbstractWallet {
           }
         : null,
       nfc: wallet.admin.nfc
-      ? {
-          publicKey: wallet.admin.nfc,
-        }
-      : null,
+        ? {
+            publicKey: wallet.admin.nfc,
+          }
+        : null,
       cloud: null,
     });
     if (wallet.admin.social) {
@@ -296,6 +299,15 @@ export class CosmosMultisigWallet extends AbstractWallet {
     const multisigThresholdPublicKey =
       this.createMultisigThresholdPublicKey(multisig);
 
+    const localEntropy = randomBytes(3);
+    // 24 bits (3 bytes) is probably too much, so let's zero
+    // out the first three bits with a bitwise AND.
+    // This can be customized as needed, perhaps by device
+    // later, to increase/decrease the recovery
+    // brute force difficulty. For example, 0b00111111
+    // would double the difficulty.
+    localEntropy[0] &= 0b00011111;
+
     return {
       multisig: multisigThresholdPublicKey && {
         address: pubkeyToAddress(multisigThresholdPublicKey, prefix),
@@ -322,7 +334,7 @@ export class CosmosMultisigWallet extends AbstractWallet {
       telegram: null,
       map: null,
       ledger: null,
-      localEntropy: randomBytes(21),
+      localEntropy: localEntropy,
     };
   }
 

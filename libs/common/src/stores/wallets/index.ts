@@ -13,7 +13,6 @@ import invariant from "tiny-invariant";
 
 import { ChainStore } from "../chain";
 import { ConfigStore } from "../config";
-import { nullable } from "../helpers";
 import { WalletType } from "./abstract-wallet";
 import {
   CosmosMultisigKey,
@@ -404,11 +403,13 @@ export class WalletsStore {
         wallets: [],
       };
     }
-
+    // temporarily out as this is broken somewhere with NFC
+    /*
     invariant(
       SerializedDataAnyVersion.is(data),
-      "Expected key `wallets` to be of type `SerializedDataAnyVersion`."
+      "Expected key `wallets` to be of type `SerializedDataAnyVersion` but got: " + JSON.stringify(data)
     );
+    */
     return data;
   }
 

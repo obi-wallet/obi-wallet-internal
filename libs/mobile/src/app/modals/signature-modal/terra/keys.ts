@@ -9,7 +9,11 @@ import { SHA256, Word32Array } from "jscrypto";
 import invariant from "tiny-invariant";
 
 import { createBiometricSignature } from "../../../biometrics";
-import { checkIsSupported, createNFCSignature, startReading } from "../../../nfc";
+import {
+  checkIsSupported,
+  createNFCSignature,
+  startReading,
+} from "../../../nfc";
 import {
   parseSignatureTextMessageResponse,
   sendSignatureTextMessage,
@@ -156,7 +160,6 @@ export class NFCKey extends Key {
       parsed: this.parsed,
       boostEntropy: this.boostEntropy,
       localEntropy: this.localEntropy,
-
     });
     return Buffer.from(signature);
   }

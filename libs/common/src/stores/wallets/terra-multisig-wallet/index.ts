@@ -3,7 +3,7 @@ import {
   SimplePublicKey,
 } from "@terra-money/terra.js";
 import { action, computed, makeObservable, observable } from "mobx";
-import { randomBytes } from 'react-native-randombytes';
+import { randomBytes } from "react-native-randombytes";
 
 import { terraChains } from "../../../chains";
 import { AbstractWallet, WalletType, WithAddress } from "../abstract-wallet";
@@ -18,7 +18,7 @@ export { TerraSerializedData };
 export type TerraMultisigThresholdPublicKey =
   LegacyAminoMultisigPublicKey.Amino;
 
-  const array = new Uint32Array(10);
+const array = new Uint32Array(10);
 self.crypto.getRandomValues(array);
 
 console.log("Your lucky numbers:");
@@ -49,7 +49,10 @@ export interface TerraProxyWallet {
   };
 }
 
-export type TerraMultisigKey = keyof Omit<TerraMultisig, "multisig" | "localEntropy">;
+export type TerraMultisigKey = keyof Omit<
+  TerraMultisig,
+  "multisig" | "localEntropy"
+>;
 
 export class TerraMultisigWallet extends AbstractWallet {
   protected readonly _id: string;
@@ -149,10 +152,10 @@ export class TerraMultisigWallet extends AbstractWallet {
           }
         : null,
       nfc: wallet.admin.nfc
-      ? {
-          publicKey: wallet.admin.nfc,
-        }
-      : null,
+        ? {
+            publicKey: wallet.admin.nfc,
+          }
+        : null,
     });
     if (wallet.admin.social) {
       await this.setSocialPublicKey({
