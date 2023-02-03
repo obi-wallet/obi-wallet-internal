@@ -393,8 +393,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
                         defaultMessage={
                           "You've labeled your NFC device as: " +
                           selectedTagType +
-                          ". This key is boosted with both local and remote brute force shields. It controls address: " +
-                          wallet.nextAdmin?.nfc?.address
+                          ". This key is boosted with both local and remote brute force shields."
                         }
                       />
                     </Text>
