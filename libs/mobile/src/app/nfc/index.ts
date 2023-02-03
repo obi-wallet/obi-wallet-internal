@@ -1,21 +1,12 @@
-import { pubkeyType } from "@cosmjs/amino";
-
 import { Sha256 } from "@cosmjs/crypto/build/sha";
-import { randomBytes } from "crypto";
-import { Alert } from "react-native";
-import * as Keychain from "react-native-keychain";
-import secp256k1 from "secp256k1";
 import fetch from "isomorphic-unfetch";
-
-import { prepareWalletAndOptionallySign } from "../secp256k1";
 import NfcManager, {
   Ndef,
-  NfcEvents,
   RegisterTagEventOpts,
 } from "react-native-nfc-manager";
-import { PartSetHeader } from "@terra-money/terra.proto/tendermint/types/types";
-import { parseProposeUpdateOwnerResponse } from "libs/common/src/networks/terra/messages";
-import { CosmosMultisigWallet, TerraMultisigWallet } from "@obi-wallet/common";
+import secp256k1 from "secp256k1";
+
+import { prepareWalletAndOptionallySign } from "../secp256k1";
 
 const DEMO_PUBLIC_KEY = "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI";
 const DEMO_PRIVATE_KEY = "jrfHogEDo91xaC0Kym/BMheAhlm5z93fVwMT8mKTGy4=";
@@ -71,7 +62,16 @@ export async function getNFCKeyPair({
   boostEntropy: boolean;
   localEntropy: string;
 }) {
-  console.warn("Getting NFC keypair with: " + demoMode + " " + parsed + " " + boostEntropy + " " + localEntropy);
+  console.warn(
+    "Getting NFC keypair with: " +
+      demoMode +
+      " " +
+      parsed +
+      " " +
+      boostEntropy +
+      " " +
+      localEntropy
+  );
   if (demoMode) {
     return {
       privateKey: DEMO_PRIVATE_KEY,
@@ -79,9 +79,7 @@ export async function getNFCKeyPair({
     };
   }
   /// boost with local secret
-  const hashed = new Sha256(
-    Buffer.from(parsed + localEntropy)
-  );
+  const hashed = new Sha256(Buffer.from(parsed + localEntropy));
   const privateKeyBuffer = hashed.digest();
   const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer);
   /// now boost with remote secret
@@ -101,9 +99,7 @@ export async function getNFCKeyPair({
     }
     const { salted } = await response.json();
     if (response.ok) {
-      const rehashed = new Sha256(
-        Buffer.from(salted + localEntropy)
-      );
+      const rehashed = new Sha256(Buffer.from(salted + localEntropy));
       const saltedPrivateKeyBuffer = rehashed.digest();
       const saltedPublicKeyBuffer = secp256k1.publicKeyCreate(
         saltedPrivateKeyBuffer
@@ -179,7 +175,7 @@ export async function startReading(alertMessage: string) {
 }
 
 export async function parseNFCData(tag: any): Promise<string> {
-  let ndefRecords = await tag.ndefMessage;
-  let parsed = await ndefRecords.map(decodeNdefRecord);
+  const ndefRecords = await tag.ndefMessage;
+  const parsed = await ndefRecords.map(decodeNdefRecord);
   return JSON.stringify(parsed);
 }

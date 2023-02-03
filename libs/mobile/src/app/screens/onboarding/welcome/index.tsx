@@ -12,6 +12,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, Image, SafeAreaView, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
+import GetStarted from "./assets/get-started.svg";
 import { Button } from "../../../button";
 import { LanguagePicker } from "../../../language-picker";
 import { useStore } from "../../../stores";
@@ -23,7 +24,6 @@ import { InitialBackground } from "../../components/initial-background";
 import { BrandToggle } from "../../components/obi-mode-toggle";
 import { isSmallScreenNumber } from "../../components/screen-size";
 import { OnboardingRoute, OnboardingStackParamList } from "../onboarding-stack";
-import GetStarted from "./assets/get-started.svg";
 
 export type WelcomeProps = NativeStackScreenProps<
   OnboardingStackParamList,

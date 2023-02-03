@@ -35,10 +35,7 @@ export interface CosmosMultisig {
   ledger: null;
 }
 
-export type CosmosMultisigKey = keyof Omit<
-  CosmosMultisig,
-  "multisig"
->;
+export type CosmosMultisigKey = keyof Omit<CosmosMultisig, "multisig">;
 
 export interface CosmosProxyWallet {
   proxyAddress: CosmosSerializedData.SerializedProxyAddress;
@@ -203,7 +200,7 @@ export class CosmosMultisigWallet extends AbstractWallet {
   public get nextAdmin(): CosmosMultisig {
     return this.hydrateMultisig(
       this.serializedNextAdmin,
-      this.chainStore.currentCosmosChainInformation.prefix,
+      this.chainStore.currentCosmosChainInformation.prefix
     );
   }
 
@@ -221,7 +218,7 @@ export class CosmosMultisigWallet extends AbstractWallet {
       this.serializedCurrentAdmin &&
       this.hydrateMultisig(
         this.serializedCurrentAdmin,
-        this.chainStore.currentCosmosChainInformation.prefix,
+        this.chainStore.currentCosmosChainInformation.prefix
       )
     );
   }
@@ -303,7 +300,7 @@ export class CosmosMultisigWallet extends AbstractWallet {
 
   protected hydrateMultisig(
     multisig: CosmosSerializedData.SerializedMultisigPayload,
-    prefix: string,
+    prefix: string
   ): CosmosMultisig {
     const { biometrics, phoneNumber, social, nfc } = multisig;
     const multisigThresholdPublicKey =

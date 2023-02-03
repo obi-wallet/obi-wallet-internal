@@ -4,9 +4,9 @@ import { useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { ViewStyle } from "react-native";
 
+import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
 import { IconButton } from "../../../button";
 import { useStore } from "../../../stores";
-import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
 
 export interface BackProps {
   style?: ViewStyle;

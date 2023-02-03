@@ -28,10 +28,10 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { RootRoute, useRootNavigation } from "../../root-stack";
-import { useStore } from "../../stores";
 import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
 import HistoryIcon from "./assets/history.svg";
+import { RootRoute, useRootNavigation } from "../../root-stack";
+import { useStore } from "../../stores";
 
 const styles = StyleSheet.create({
   card: {

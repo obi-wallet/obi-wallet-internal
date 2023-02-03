@@ -1,4 +1,5 @@
 import { pubkeyType } from "@cosmjs/amino";
+import { Sha256 } from "@cosmjs/crypto/build/sha";
 import { RequestVerifyADR36AminoSignDoc } from "@keplr-wallet/background";
 import {
   createLcdClient,
@@ -20,7 +21,10 @@ import NfcManager, {
   RegisterTagEventOpts,
 } from "react-native-nfc-manager";
 import { SafeAreaView } from "react-native-safe-area-context";
+import secp256k1 from "secp256k1";
+import invariant from "tiny-invariant";
 
+import PeopleIcon from "./assets/people-alt-twotone-24px.svg";
 import {
   checkIsSupported,
   decodeNdefRecord,
@@ -28,6 +32,7 @@ import {
   parseNFCData,
   startReading,
 } from "../../../../nfc";
+import { prepareWalletAndOptionallySign } from "../../../../secp256k1";
 import { useMultisigWallet, useStore } from "../../../../stores";
 import { Back } from "../../../components/back";
 import { Background } from "../../../components/background";
@@ -38,11 +43,6 @@ import {
   OnboardingRoute,
   OnboardingStackParamList,
 } from "../../onboarding-stack";
-import PeopleIcon from "./assets/people-alt-twotone-24px.svg";
-import { Sha256 } from "@cosmjs/crypto/build/sha";
-import secp256k1 from "secp256k1";
-import { prepareWalletAndOptionallySign } from "libs/mobile/src/app/secp256k1";
-import invariant from "tiny-invariant";
 
 export type MultisigNFCProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -385,17 +385,19 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
                     localEntropy: wallet.getLocalEntropy,
                   }).then((keypair) => {
                     const { privateKey, publicKey } = keypair;
-                    wallet.setNFCPublicKey({
-                      publicKey: {
-                        type: pubkeyType.secp256k1,
-                        value: publicKey,
-                      },
-                    }).then(() => {
-                      prepareWalletAndOptionallySign({
-                        publicKey,
-                        privateKey,
+                    wallet
+                      .setNFCPublicKey({
+                        publicKey: {
+                          type: pubkeyType.secp256k1,
+                          value: publicKey,
+                        },
+                      })
+                      .then(() => {
+                        prepareWalletAndOptionallySign({
+                          publicKey,
+                          privateKey,
+                        });
                       });
-                    });
                   });
                   if (wallet.keyInRecovery !== "nfc") {
                     navigation.navigate(
@@ -440,7 +442,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
                   marginTop: 20,
                 }}
               >
-                {"Skip This Key"}
+                Skip This Key
               </Text>
             </TouchableOpacity>
           </View>

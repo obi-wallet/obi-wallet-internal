@@ -17,8 +17,8 @@ import { StatusBar } from "react-native";
 import { endConnection, initConnection } from "react-native-iap";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { createRootStore } from "../background/root-store";
 import { StoreContext } from "./stores";
+import { createRootStore } from "../background/root-store";
 
 const queryClient = new QueryClient({
   defaultOptions: {

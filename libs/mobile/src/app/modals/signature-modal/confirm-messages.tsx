@@ -16,11 +16,11 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { PrettyMessage } from "./pretty-message";
 import { Button } from "../../button";
 import { Loader } from "../../loader";
 import { Background } from "../../screens/components/background";
 import { useStore } from "../../stores";
-import { PrettyMessage } from "./pretty-message";
 
 enum Tab {
   TransactionDetails,

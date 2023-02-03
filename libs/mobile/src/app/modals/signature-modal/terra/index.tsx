@@ -21,14 +21,25 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { Alert } from "react-native";
-import invariant from "tiny-invariant";
-import { checkIsSupported, decodeNdefRecord, parseNFCData, startReading } from "../../../nfc";
 import NfcManager, {
   Ndef,
   NfcEvents,
   RegisterTagEventOpts,
 } from "react-native-nfc-manager";
+import invariant from "tiny-invariant";
 
+import {
+  BiometricsKey,
+  PhoneNumberConfirmKey,
+  PhoneNumberRequestKey,
+  NFCKey,
+} from "./keys";
+import {
+  checkIsSupported,
+  decodeNdefRecord,
+  parseNFCData,
+  startReading,
+} from "../../../nfc";
 import {
   BottomSheet,
   BottomSheetRef,
@@ -40,12 +51,6 @@ import {
   MultisigConfirmMessagesProps,
 } from "../multisig-confirm-messages";
 import { PhoneNumberBottomSheetContent } from "../phone-number-bottom-sheet-content";
-import {
-  BiometricsKey,
-  PhoneNumberConfirmKey,
-  PhoneNumberRequestKey,
-  NFCKey,
-} from "./keys";
 
 export interface TerraSignatureModalProps
   extends Omit<
@@ -170,8 +175,8 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
           case "phoneNumber":
             phoneNumberBottomSheetRef.current?.snapToIndex(0);
             break;
-          case "nfc":
-            let supported = await checkIsSupported();
+          case "nfc": {
+            const supported = await checkIsSupported();
             invariant(supported, "NFC key exists but not supported by device.");
             NfcManager.setEventListener(
               NfcEvents.DiscoverTag,
@@ -181,7 +186,10 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
                   (await tag.ndefMessage.length) > 0
                 ) {
                   const parsedNFCDataJson = await parseNFCData(tag);
-                  console.warn("Associated NFC address is " + wallet.nextAdmin?.nfc?.address);
+                  console.warn(
+                    "Associated NFC address is " +
+                      wallet.nextAdmin?.nfc?.address
+                  );
                   const nfcKey = new NFCKey({
                     wallet,
                     multisig,
@@ -197,6 +205,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
             );
             startReading("Tap your NFC device to sign this transaction.");
             break;
+          }
           default:
             console.log("Not implemented yet");
             break;

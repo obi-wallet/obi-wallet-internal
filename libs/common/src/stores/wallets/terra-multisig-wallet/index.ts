@@ -19,7 +19,7 @@ export type TerraMultisigThresholdPublicKey =
   LegacyAminoMultisigPublicKey.Amino;
 
 const array = new Uint32Array(10);
-self.crypto.getRandomValues(array);
+global.crypto.getRandomValues(array);
 
 console.log("Your lucky numbers:");
 for (const num of array) {
@@ -48,10 +48,7 @@ export interface TerraProxyWallet {
   };
 }
 
-export type TerraMultisigKey = keyof Omit<
-  TerraMultisig,
-  "multisig"
->;
+export type TerraMultisigKey = keyof Omit<TerraMultisig, "multisig">;
 
 export class TerraMultisigWallet extends AbstractWallet {
   protected readonly _id: string;
@@ -191,9 +188,7 @@ export class TerraMultisigWallet extends AbstractWallet {
 
   @computed
   public get nextAdmin(): TerraMultisig {
-    return this.hydrateMultisig(
-      this.serializedNextAdmin,
-    );
+    return this.hydrateMultisig(this.serializedNextAdmin);
   }
 
   @action
@@ -207,9 +202,7 @@ export class TerraMultisigWallet extends AbstractWallet {
   public get currentAdmin(): TerraMultisig | null {
     return (
       this.serializedCurrentAdmin &&
-      this.hydrateMultisig(
-        this.serializedCurrentAdmin,
-      )
+      this.hydrateMultisig(this.serializedCurrentAdmin)
     );
   }
 
@@ -289,7 +282,7 @@ export class TerraMultisigWallet extends AbstractWallet {
   }
 
   protected hydrateMultisig(
-    multisig: TerraSerializedData.SerializedMultisigPayload,
+    multisig: TerraSerializedData.SerializedMultisigPayload
   ): TerraMultisig {
     const { biometrics, phoneNumber, social, nfc } = multisig;
     const multisigThresholdPublicKey =

@@ -4,8 +4,8 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { Image } from "react-native";
 
-import { useStore } from "../stores";
 import { DropDownPicker } from "./drop-down-picker";
+import { useStore } from "../stores";
 
 const allLanguages = [
   {

@@ -7,6 +7,7 @@ import { Alert, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import InsuranceLogo from "./assets/insurance-logo.svg";
 import { InlineButton } from "../../../../button";
 import { useMultisigWallet, useStore } from "../../../../stores";
 import { TextInput } from "../../../../text-input";
@@ -23,7 +24,6 @@ import {
   OnboardingRoute,
   OnboardingStackParamList,
 } from "../../onboarding-stack";
-import InsuranceLogo from "./assets/insurance-logo.svg";
 
 export type MultisigPhoneNumberConfirmProps = NativeStackScreenProps<
   OnboardingStackParamList,

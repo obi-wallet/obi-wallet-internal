@@ -1,10 +1,10 @@
 import { isTerraMultisigWallet } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 
+import { Lookup } from "./lookup";
 import { useRootNavigation } from "../../../root-stack";
 import { useMultisigWallet } from "../../../stores";
 import { OnboardingRoute } from "../onboarding-stack";
-import { Lookup } from "./lookup";
 
 export const LookupProxyWallets = observer(() => {
   const wallet = useMultisigWallet();
