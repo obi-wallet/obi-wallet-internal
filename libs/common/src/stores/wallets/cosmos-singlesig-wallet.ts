@@ -76,8 +76,8 @@ export class CosmosSinglesigWallet extends AbstractWallet {
     return WalletType.CosmosSinglesig;
   }
 
-  public get localEntropy(): Buffer | null {
-    return this.localEntropy ?? null;
+  public get localEntropy(): Buffer {
+    return this.localEntropy;
   }
 
   public get mnemonic() {

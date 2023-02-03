@@ -11,7 +11,6 @@ export abstract class AbstractWallet {
   public abstract get type(): WalletType;
   public abstract get address(): string | null;
   public abstract get isReady(): boolean;
-  public abstract get localEntropy(): Buffer | null;
 
   public get shortenedAddress(): string | null {
     const address = this.address;

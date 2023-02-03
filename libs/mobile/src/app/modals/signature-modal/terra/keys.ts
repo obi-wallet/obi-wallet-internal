@@ -129,7 +129,7 @@ export class PhoneNumberRequestKey extends Key {
 export class NFCKey extends Key {
   protected readonly wallet: TerraMultisigWallet;
   protected boostEntropy: boolean;
-  protected localEntropy: Buffer;
+  protected localEntropy: string;
   protected parsed: string;
 
   constructor({
@@ -148,7 +148,7 @@ export class NFCKey extends Key {
     super(SimplePublicKey.fromAmino(nfc.publicKey));
     this.wallet = wallet;
     this.boostEntropy = boostEntropy;
-    this.localEntropy = this.wallet.nextAdmin?.localEntropy;
+    this.localEntropy = this.wallet.getLocalEntropy;
     this.parsed = parsed;
   }
 

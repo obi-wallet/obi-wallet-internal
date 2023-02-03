@@ -36,7 +36,6 @@ export interface TerraMultisig {
   telegram: null;
   map: null;
   ledger: null;
-  localEntropy: Buffer;
 }
 
 export interface TerraProxyWallet {
@@ -51,11 +50,13 @@ export interface TerraProxyWallet {
 
 export type TerraMultisigKey = keyof Omit<
   TerraMultisig,
-  "multisig" | "localEntropy"
+  "multisig"
 >;
 
 export class TerraMultisigWallet extends AbstractWallet {
   protected readonly _id: string;
+
+  protected readonly localEntropy: string;
 
   @observable
   public keyInRecovery: TerraMultisigKey | null = null;
@@ -92,6 +93,15 @@ export class TerraMultisigWallet extends AbstractWallet {
     super();
     this._id = id;
     this.serializedWallet = serializedWallet;
+    const localEntropyBytes = randomBytes(3);
+    // 24 bits (3 bytes) is probably too much, so let's zero
+    // out the first three bits with a bitwise AND.
+    // This can be customized as needed, perhaps by device
+    // later, to increase/decrease the recovery
+    // brute force difficulty. For example, 0b00111111
+    // would double the difficulty.
+    localEntropyBytes[0] &= 0b00011111;
+    this.localEntropy = localEntropyBytes.toString("base64");
     this.onChange = onChange;
     makeObservable(this);
   }
@@ -109,12 +119,12 @@ export class TerraMultisigWallet extends AbstractWallet {
     return this.proxyAddress?.address ?? null;
   }
 
-  get localEntropy(): Buffer | null {
-    return this.localEntropy ?? null;
-  }
-
   get type(): WalletType {
     return WalletType.TerraMultisig;
+  }
+
+  get getLocalEntropy() {
+    return this.localEntropy;
   }
 
   get isReady(): boolean {
@@ -181,7 +191,9 @@ export class TerraMultisigWallet extends AbstractWallet {
 
   @computed
   public get nextAdmin(): TerraMultisig {
-    return this.hydrateMultisig(this.serializedNextAdmin);
+    return this.hydrateMultisig(
+      this.serializedNextAdmin,
+    );
   }
 
   @action
@@ -195,7 +207,9 @@ export class TerraMultisigWallet extends AbstractWallet {
   public get currentAdmin(): TerraMultisig | null {
     return (
       this.serializedCurrentAdmin &&
-      this.hydrateMultisig(this.serializedCurrentAdmin)
+      this.hydrateMultisig(
+        this.serializedCurrentAdmin,
+      )
     );
   }
 
@@ -275,7 +289,7 @@ export class TerraMultisigWallet extends AbstractWallet {
   }
 
   protected hydrateMultisig(
-    multisig: TerraSerializedData.SerializedMultisigPayload
+    multisig: TerraSerializedData.SerializedMultisigPayload,
   ): TerraMultisig {
     const { biometrics, phoneNumber, social, nfc } = multisig;
     const multisigThresholdPublicKey =
@@ -309,7 +323,6 @@ export class TerraMultisigWallet extends AbstractWallet {
       telegram: null,
       map: null,
       ledger: null,
-      localEntropy: randomBytes(21),
     };
   }
 

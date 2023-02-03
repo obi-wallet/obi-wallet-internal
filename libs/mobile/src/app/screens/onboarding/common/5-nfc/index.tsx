@@ -22,10 +22,10 @@ import NfcManager, {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
-  assembleNFCPublicKey,
   checkIsSupported,
   decodeNdefRecord,
   getNFCKeyPair,
+  parseNFCData,
   startReading,
 } from "../../../../nfc";
 import { useMultisigWallet, useStore } from "../../../../stores";
@@ -42,6 +42,7 @@ import PeopleIcon from "./assets/people-alt-twotone-24px.svg";
 import { Sha256 } from "@cosmjs/crypto/build/sha";
 import secp256k1 from "secp256k1";
 import { prepareWalletAndOptionallySign } from "libs/mobile/src/app/secp256k1";
+import invariant from "tiny-invariant";
 
 export type MultisigNFCProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -78,19 +79,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
     NfcManager.setEventListener(NfcEvents.DiscoverTag, async (tag: any) => {
       setReading(false);
       if ((await tag.ndefMessage) && (await tag.ndefMessage.length) > 0) {
-        const ndefRecords = await tag.ndefMessage;
-        let parsed_data = await ndefRecords.map(decodeNdefRecord);
-        setParsed(JSON.stringify(parsed_data));
-        await wallet.setNFCPublicKey({
-          publicKey: {
-            type: pubkeyType.secp256k1,
-            value: await assembleNFCPublicKey(
-              parsed,
-              demoMode,
-              wallet.nextAdmin.localEntropy
-            ),
-          },
-        });
+        setParsed(await parseNFCData(tag));
         setScannedNFC(true);
       }
     });
@@ -352,47 +341,41 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
                         marginTop: 10,
                       }}
                     >
-                      <View>
-                        <FormattedMessage
-                          id="onboarding5.nfcunavailable"
-                          defaultMessage="No NFC available on this device."
-                        />
-                        <TouchableOpacity
-                          style={{ alignItems: "center", paddingHorizontal: 15 }}
-                          onPress={function (): void {
-                            if (wallet.localEntropy) {
-                              navigation.navigate(
-                                OnboardingRoute.CreateMultisigPhoneNumber
-                              );
-                              getNFCKeyPair({
-                                demoMode,
-                                parsed: "fakeparseddata",
-                                boostEntropy: true,
-                                localEntropy: wallet.localEntropy,
-                              }).then((keypair) => {
-                                const { privateKey, publicKey } = keypair;
-                                prepareWalletAndOptionallySign({
-                                  publicKey,
-                                  privateKey,
-                                });
-                              });
-                            } else {
-                              console.warn("Local entropy not set");
-                            }
+                      <FormattedMessage
+                        id="onboarding5.nfcunavailable"
+                        defaultMessage="No NFC available on this device."
+                      />
+                      <TouchableOpacity
+                        style={{ alignItems: "center", paddingHorizontal: 15 }}
+                        onPress={function (): void {
+                          navigation.navigate(
+                            OnboardingRoute.CreateMultisigPhoneNumber
+                          );
+                          getNFCKeyPair({
+                            demoMode,
+                            parsed: "fakeparseddata",
+                            boostEntropy: true,
+                            localEntropy: wallet.getLocalEntropy,
+                          }).then((keypair) => {
+                            const { privateKey, publicKey } = keypair;
+                            prepareWalletAndOptionallySign({
+                              publicKey,
+                              privateKey,
+                            });
+                          });
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: "#437DFF",
+                            fontSize: isSmallScreenNumber(14, 14),
+                            fontWeight: "600",
+                            marginTop: 20,
                           }}
                         >
-                          <Text
-                            style={{
-                              color: "#437DFF",
-                              fontSize: isSmallScreenNumber(14, 14),
-                              fontWeight: "600",
-                              marginTop: 20,
-                            }}
-                          >
-                            Test NFC Key
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
+                          Test NFC Key
+                        </Text>
+                      </TouchableOpacity>
                     </Text>
                   ) : scannedNFC ? (
                     <Text
@@ -427,6 +410,25 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
               disabled={!scannedNFC}
               onPress={async () => {
                 if (scannedNFC) {
+                  getNFCKeyPair({
+                    demoMode,
+                    parsed,
+                    boostEntropy: true,
+                    localEntropy: wallet.getLocalEntropy,
+                  }).then((keypair) => {
+                    const { privateKey, publicKey } = keypair;
+                    wallet.setNFCPublicKey({
+                      publicKey: {
+                        type: pubkeyType.secp256k1,
+                        value: publicKey,
+                      },
+                    }).then(() => {
+                      prepareWalletAndOptionallySign({
+                        publicKey,
+                        privateKey,
+                      });
+                    });
+                  });
                   if (wallet.keyInRecovery !== "nfc") {
                     navigation.navigate(
                       OnboardingRoute.CreateMultisigPhoneNumber
@@ -459,25 +461,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
             <TouchableOpacity
               style={{ alignItems: "center", paddingHorizontal: 15 }}
               onPress={function (): void {
-                if (wallet.localEntropy) {
-                  navigation.navigate(
-                    OnboardingRoute.CreateMultisigPhoneNumber
-                  );
-                  getNFCKeyPair({
-                    demoMode,
-                    parsed,
-                    boostEntropy: true,
-                    localEntropy: wallet.localEntropy,
-                  }).then((keypair) => {
-                    const { privateKey, publicKey } = keypair;
-                    prepareWalletAndOptionallySign({
-                      publicKey,
-                      privateKey,
-                    });
-                  });
-                } else {
-                  console.warn("Local entropy not set");
-                }
+                navigation.navigate(OnboardingRoute.CreateMultisigPhoneNumber);
               }}
             >
               <Text

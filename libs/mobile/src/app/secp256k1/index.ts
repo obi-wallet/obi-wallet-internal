@@ -24,7 +24,8 @@ export async function prepareWalletAndOptionallySign({
   publicKey: string;
   privateKey: string;
   payload?: Uint8Array;
-}): Promise<ReturnType<typeof secp256k1.ecdsaSign>> {
+}): Promise<ReturnType<typeof secp256k1.ecdsaSign> | null> {
+  console.warn("prepareWalletAndOptionallySign with pubkey " + publicKey);
   const privateKeyUint8Array = new Uint8Array(
     Buffer.from(privateKey, "base64")
   );
@@ -37,7 +38,6 @@ export async function prepareWalletAndOptionallySign({
         const { chainId, prefix, denom } =
           chainStore.currentCosmosChainInformation;
         const client = await createStargateClient(chainId);
-
         const address = pubkeyToAddress(
           {
             type: pubkeyType.secp256k1,
@@ -91,10 +91,9 @@ export async function prepareWalletAndOptionallySign({
       }
     }
   }
-
   if (payload.length > 0) {
     return secp256k1.ecdsaSign(payload, privateKeyUint8Array);
   } else {
-    return secp256k1.ecdsaSign(payload, payload);
+    return null;
   }
 }

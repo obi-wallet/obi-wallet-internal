@@ -29,7 +29,7 @@ export async function getNFCPublicKey({
   demoMode: boolean;
   boostEntropy: boolean;
   parsed: string;
-  localEntropy: Buffer;
+  localEntropy: string;
 }) {
   const { publicKey } = await getNFCKeyPair({
     demoMode,
@@ -49,7 +49,7 @@ export async function getNFCPrivateKey({
   demoMode: boolean;
   parsed: string;
   boostEntropy: boolean;
-  localEntropy: Buffer;
+  localEntropy: string;
 }) {
   const { privateKey } = await getNFCKeyPair({
     demoMode,
@@ -69,8 +69,9 @@ export async function getNFCKeyPair({
   demoMode: boolean;
   parsed: string;
   boostEntropy: boolean;
-  localEntropy: Buffer;
+  localEntropy: string;
 }) {
+  console.warn("Getting NFC keypair with: " + demoMode + " " + parsed + " " + boostEntropy + " " + localEntropy);
   if (demoMode) {
     return {
       privateKey: DEMO_PRIVATE_KEY,
@@ -79,7 +80,7 @@ export async function getNFCKeyPair({
   }
   /// boost with local secret
   const hashed = new Sha256(
-    Buffer.from(parsed + localEntropy.toString("base64"))
+    Buffer.from(parsed + localEntropy)
   );
   const privateKeyBuffer = hashed.digest();
   const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer);
@@ -101,7 +102,7 @@ export async function getNFCKeyPair({
     const { salted } = await response.json();
     if (response.ok) {
       const rehashed = new Sha256(
-        Buffer.from(salted + localEntropy.toString("base64"))
+        Buffer.from(salted + localEntropy)
       );
       const saltedPrivateKeyBuffer = rehashed.digest();
       const saltedPublicKeyBuffer = secp256k1.publicKeyCreate(
@@ -135,7 +136,7 @@ export async function createNFCSignature({
   demoMode: boolean;
   parsed: string;
   boostEntropy: boolean;
-  localEntropy: Buffer;
+  localEntropy: string;
 }) {
   const { publicKey, privateKey } = await getNFCKeyPair({
     demoMode,
@@ -177,19 +178,8 @@ export async function startReading(alertMessage: string) {
   await NfcManager.registerTagEvent(options);
 }
 
-export async function assembleNFCPublicKey(
-  parsed: string,
-  demoMode: boolean,
-  localEntropy: Buffer
-): Promise<string> {
-  // ndefMessage is actually an array of NdefRecords,
-  // and we can iterate through each NdefRecord, decode its payload
-  // according to its TNF & type
-  const publicKey = await getNFCPublicKey({
-    demoMode,
-    parsed,
-    boostEntropy: true,
-    localEntropy: localEntropy,
-  });
-  return publicKey;
+export async function parseNFCData(tag: any): Promise<string> {
+  let ndefRecords = await tag.ndefMessage;
+  let parsed = await ndefRecords.map(decodeNdefRecord);
+  return JSON.stringify(parsed);
 }

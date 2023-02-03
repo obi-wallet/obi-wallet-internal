@@ -22,7 +22,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { Alert } from "react-native";
 import invariant from "tiny-invariant";
-import { checkIsSupported, decodeNdefRecord, startReading } from "../../../nfc";
+import { checkIsSupported, decodeNdefRecord, parseNFCData, startReading } from "../../../nfc";
 import NfcManager, {
   Ndef,
   NfcEvents,
@@ -180,14 +180,13 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
                   (await tag.ndefMessage) &&
                   (await tag.ndefMessage.length) > 0
                 ) {
-                  const ndefRecords = await tag.ndefMessage;
-                  let parsed = await ndefRecords.map(decodeNdefRecord);
-                  parsed = JSON.stringify(parsed);
+                  const parsedNFCDataJson = await parseNFCData(tag);
+                  console.warn("Associated NFC address is " + wallet.nextAdmin?.nfc?.address);
                   const nfcKey = new NFCKey({
                     wallet,
                     multisig,
                     boostEntropy: true,
-                    parsed,
+                    parsed: parsedNFCDataJson,
                   });
                   const signature = await nfcKey.createSignatureAmino(signDoc);
                   setSignatures((signatures) => {

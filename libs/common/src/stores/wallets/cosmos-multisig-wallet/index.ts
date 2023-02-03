@@ -33,12 +33,11 @@ export interface CosmosMultisig {
   telegram: null;
   map: null;
   ledger: null;
-  localEntropy: Buffer;
 }
 
 export type CosmosMultisigKey = keyof Omit<
   CosmosMultisig,
-  "multisig" | "localEntropy"
+  "multisig"
 >;
 
 export interface CosmosProxyWallet {
@@ -55,6 +54,8 @@ export class CosmosMultisigWallet extends AbstractWallet {
   protected readonly chainStore: ChainStore;
 
   protected readonly _id: string;
+
+  protected readonly localEntropy: string;
 
   @observable
   protected serializedWallet:
@@ -95,6 +96,15 @@ export class CosmosMultisigWallet extends AbstractWallet {
     this._id = id;
     this.serializedWallet = serializedWallet;
     this.onChange = onChange;
+    const localEntropyBytes = randomBytes(3);
+    // 24 bits (3 bytes) is probably too much, so let's zero
+    // out the first three bits with a bitwise AND.
+    // This can be customized as needed, perhaps by device
+    // later, to increase/decrease the recovery
+    // brute force difficulty. For example, 0b00111111
+    // would double the difficulty.
+    localEntropyBytes[0] &= 0b00011111;
+    this.localEntropy = localEntropyBytes.toString("base64");
     makeObservable(this);
   }
 
@@ -110,8 +120,8 @@ export class CosmosMultisigWallet extends AbstractWallet {
     return WalletType.CosmosMultisig;
   }
 
-  public get localEntropy(): Buffer | null {
-    return this.localEntropy ?? null;
+  public get getLocalEntropy() {
+    return this.localEntropy;
   }
 
   public get isReady() {
@@ -193,7 +203,7 @@ export class CosmosMultisigWallet extends AbstractWallet {
   public get nextAdmin(): CosmosMultisig {
     return this.hydrateMultisig(
       this.serializedNextAdmin,
-      this.chainStore.currentCosmosChainInformation.prefix
+      this.chainStore.currentCosmosChainInformation.prefix,
     );
   }
 
@@ -211,7 +221,7 @@ export class CosmosMultisigWallet extends AbstractWallet {
       this.serializedCurrentAdmin &&
       this.hydrateMultisig(
         this.serializedCurrentAdmin,
-        this.chainStore.currentCosmosChainInformation.prefix
+        this.chainStore.currentCosmosChainInformation.prefix,
       )
     );
   }
@@ -293,20 +303,11 @@ export class CosmosMultisigWallet extends AbstractWallet {
 
   protected hydrateMultisig(
     multisig: CosmosSerializedData.SerializedMultisigPayload,
-    prefix: string
+    prefix: string,
   ): CosmosMultisig {
     const { biometrics, phoneNumber, social, nfc } = multisig;
     const multisigThresholdPublicKey =
       this.createMultisigThresholdPublicKey(multisig);
-
-    const localEntropy = randomBytes(3);
-    // 24 bits (3 bytes) is probably too much, so let's zero
-    // out the first three bits with a bitwise AND.
-    // This can be customized as needed, perhaps by device
-    // later, to increase/decrease the recovery
-    // brute force difficulty. For example, 0b00111111
-    // would double the difficulty.
-    localEntropy[0] &= 0b00011111;
 
     return {
       multisig: multisigThresholdPublicKey && {
@@ -334,7 +335,6 @@ export class CosmosMultisigWallet extends AbstractWallet {
       telegram: null,
       map: null,
       ledger: null,
-      localEntropy: localEntropy,
     };
   }
 
