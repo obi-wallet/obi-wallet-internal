@@ -1,6 +1,7 @@
 import { Coin } from "@cosmjs/amino";
 import {
   cosmos,
+  cosmosChains,
   isCosmosChain,
   isTerraChain,
   Rewards,
@@ -190,109 +191,116 @@ export function formatCoin(coin: Coin): FormattedCoin {
     };
   }
 
-  const { denom } = getRootStore().chainStore.currentCosmosChainInformation;
-  switch (coin.denom) {
-    case denom: {
-      const digits = 6;
-      const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
-      return {
-        icon: denom.includes("ujuno") ? require("./assets/juno.png") : null,
-        denom: denom.slice(1).toUpperCase(),
-        digits,
-        label: denom[1].toUpperCase() + denom.slice(2),
-        amount,
-      };
-    }
-    case "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034": {
-      const digits = 6;
-      const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
-      return {
-        icon: require("./assets/usdc.png"),
-        denom: "axlUSDC",
-        digits,
-        label: "USDC (Axelar)",
-        amount,
-      };
-    }
-    case "uloop": {
-      const digits = 6;
-      const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
-      return {
-        icon: LoopIcon,
-        denom: "LOOP",
-        digits,
-        label: "Loop",
-        amount,
-      };
-    }
-    case "udrink": {
-      const digits = 6;
-      const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
-      return {
-        icon: DrinkIcon,
-        denom: "DRINK",
-        digits,
-        label: "Drink",
-        amount,
-      };
-    }
-    case "ubottle": {
-      const digits = 6;
-      const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
-      return {
-        icon: BottleIcon,
-        denom: "BOTTLE",
-        digits,
-        label: "Bottle",
-        amount,
-      };
-    }
-    default: {
-      const digits = 6;
-      const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
-      return {
-        icon: null,
-        denom: coin.denom,
-        digits: 6,
-        label: "Unknown Token",
-        amount: amount,
-      };
+  const { currentChain } = getRootStore().chainStore;
+
+  if (isCosmosChain(currentChain)) {
+    const { denom } = cosmosChains[currentChain];
+
+    switch (coin.denom) {
+      case denom: {
+        const digits = 6;
+        const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
+        return {
+          icon: denom.includes("ujuno") ? require("./assets/juno.png") : null,
+          denom: denom.slice(1).toUpperCase(),
+          digits,
+          label: denom[1].toUpperCase() + denom.slice(2),
+          amount,
+        };
+      }
+      case "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034": {
+        const digits = 6;
+        const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
+        return {
+          icon: require("./assets/usdc.png"),
+          denom: "axlUSDC",
+          digits,
+          label: "USDC (Axelar)",
+          amount,
+        };
+      }
+      case "uloop": {
+        const digits = 6;
+        const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
+        return {
+          icon: LoopIcon,
+          denom: "LOOP",
+          digits,
+          label: "Loop",
+          amount,
+        };
+      }
+      case "udrink": {
+        const digits = 6;
+        const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
+        return {
+          icon: DrinkIcon,
+          denom: "DRINK",
+          digits,
+          label: "Drink",
+          amount,
+        };
+      }
+      case "ubottle": {
+        const digits = 6;
+        const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
+        return {
+          icon: BottleIcon,
+          denom: "BOTTLE",
+          digits,
+          label: "Bottle",
+          amount,
+        };
+      }
     }
   }
+
+  const digits = 6;
+  const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
+  return {
+    icon: null,
+    denom: coin.denom,
+    digits: 6,
+    label: "Unknown Token",
+    amount: amount,
+  };
 }
 
 export function formatExtendedCoin(coin: ExtendedCoin) {
-  const { denom } = getRootStore().chainStore.currentCosmosChainInformation;
   const formattedCoin = formatCoin(coin);
+  const { currentChain } = getRootStore().chainStore;
 
-  switch (coin.denom) {
-    case denom: {
-      const usdValue = coin.usdPrice / Math.pow(10, formattedCoin.digits);
-      return {
-        ...formattedCoin,
-        valueInUsd: formattedCoin.amount * usdValue,
-      };
-    }
-    case "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034": {
-      return {
-        ...formattedCoin,
-        valueInUsd: formattedCoin.amount,
-      };
-    }
-    case "uloop": {
-      const usdValue = coin.usdPrice / Math.pow(10, formattedCoin.digits);
-      return {
-        ...formattedCoin,
-        valueInUsd: usdValue * formattedCoin.amount,
-      };
-    }
-    default: {
-      return {
-        ...formattedCoin,
-        valueInUsd: formattedCoin.amount * coin.usdPrice,
-      };
+  if (isCosmosChain(currentChain)) {
+    const { denom } = cosmosChains[currentChain];
+
+    switch (coin.denom) {
+      case denom: {
+        const usdValue = coin.usdPrice / Math.pow(10, formattedCoin.digits);
+        return {
+          ...formattedCoin,
+          valueInUsd: formattedCoin.amount * usdValue,
+        };
+      }
+      case "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034": {
+        return {
+          ...formattedCoin,
+          valueInUsd: formattedCoin.amount,
+        };
+      }
+      case "uloop": {
+        const usdValue = coin.usdPrice / Math.pow(10, formattedCoin.digits);
+        return {
+          ...formattedCoin,
+          valueInUsd: usdValue * formattedCoin.amount,
+        };
+      }
     }
   }
+
+  return {
+    ...formattedCoin,
+    valueInUsd: formattedCoin.amount * coin.usdPrice,
+  };
 }
 
 export function useDelegations() {

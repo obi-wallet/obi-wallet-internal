@@ -1,8 +1,8 @@
-import { CosmosChain } from "../chains";
+import { Chain } from "../chains";
 import { createCosmWasmClient } from "../clients";
-import { CosmosMultisigWallet } from "../stores";
+import { MultisigWallet } from "../stores";
 
-export type HealthCheck = (wallet: CosmosMultisigWallet) => Promise<boolean>;
+export type HealthCheck = (wallet: MultisigWallet) => Promise<boolean>;
 
 export enum JunoChecks {
   CORRECT_ADMIN = "CORRECT_ADMIN",
@@ -10,15 +10,14 @@ export enum JunoChecks {
 }
 
 export const junoChecks: Record<JunoChecks, HealthCheck> = {
-  [JunoChecks.CORRECT_ADMIN]: async (wallet: CosmosMultisigWallet) => {
-    const currentAdmin = wallet.currentAdmin?.multisig?.address;
+  [JunoChecks.CORRECT_ADMIN]: async (wallet: MultisigWallet) => {
+    const currentOwner = wallet.owner.address;
     const client = await createCosmWasmClient("juno-1");
-    if (!wallet.address) return false;
     const { admin } = await client.getContract(wallet.address);
     if (!admin) return false;
     const account = await client.getAccount(admin);
     if (!account) return false;
-    return currentAdmin === account.address;
+    return currentOwner === account.address;
   },
   [JunoChecks.CODE_ID_AT_LEAST_1311]: async (wallet) => {
     const codeId = wallet.proxyAddress?.codeId;
@@ -27,7 +26,7 @@ export const junoChecks: Record<JunoChecks, HealthCheck> = {
 };
 
 export const healthChecks: Record<
-  CosmosChain,
+  Chain,
   { types: string[]; checks: Record<string, HealthCheck> }
 > = {
   "juno-1": {
@@ -35,6 +34,14 @@ export const healthChecks: Record<
     checks: junoChecks,
   },
   "uni-3": {
+    types: [],
+    checks: {},
+  },
+  "pisco-1": {
+    types: [],
+    checks: {},
+  },
+  "phoenix-1": {
     types: [],
     checks: {},
   },

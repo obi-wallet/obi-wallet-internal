@@ -11,6 +11,7 @@ import {
 import { AppsStore } from "./apps";
 import { ChainStore } from "./chain";
 import { Config, ConfigStore } from "./config";
+import { DraftsStore } from "./drafts";
 import { InAppPurchaseInteractionStore } from "./interaction/in-app-purchase";
 import { SignInteractionStore } from "./interaction/sign";
 import { TerraSignInteractionStore } from "./interaction/terra-sign";
@@ -27,6 +28,7 @@ export class RootStore {
   public readonly appsStore: AppsStore;
   public readonly chainStore: ChainStore;
   public readonly configStore: ConfigStore;
+  public readonly draftsStore: DraftsStore;
   public readonly inAppPurchaseInteractionStore: InAppPurchaseInteractionStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly terraSignInteractionStore: TerraSignInteractionStore;
@@ -76,6 +78,7 @@ export class RootStore {
 
     this.appsStore = new AppsStore({ kvStore: new KVStore("apps-store") });
     this.configStore = new ConfigStore({ initialConfig });
+    this.draftsStore = new DraftsStore();
     this.inAppPurchaseInteractionStore = new InAppPurchaseInteractionStore(
       this.keplrInteractionStore
     );
@@ -97,10 +100,6 @@ export class RootStore {
       chainStore: this.chainStore,
       configStore: this.configStore,
       kvStore: new KVStore("wallets-store"),
-      legacyKVStores: {
-        multisig: new KVStore("multisig-store"),
-        singlesig: new KVStore("singlesig-store"),
-      },
     });
 
     router.listen(APP_PORT);

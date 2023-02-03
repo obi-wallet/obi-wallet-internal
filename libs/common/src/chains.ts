@@ -45,6 +45,7 @@ export const terraChains = {
   "pisco-1": {
     chainId: "pisco-1" as const,
     label: "Terra Testnet",
+    prefix: "terra",
     accountCreatorAddress:
       "terra1f5adnacrpysy2p0aenl5df05hmmnyfe0pc3598ljnd5l0s5qjkksawdwvw",
     currentCodeId: 6578,
@@ -58,6 +59,7 @@ export const terraChains = {
   "phoenix-1": {
     chainId: "phoenix-1" as const,
     label: "Terra",
+    prefix: "terra",
     accountCreatorAddress:
       "terra1a9zykuft0ngvq6ug2j60hz0an2kz72c3vs73tj5m87xcm0dt8w2sdkflln",
     currentCodeId: 1014,
@@ -83,3 +85,5 @@ export function isTerraChain(
 ): chain is TerraChain {
   return Object.keys(terraChains).includes(chain);
 }
+
+export type Chain = CosmosChain | TerraChain;

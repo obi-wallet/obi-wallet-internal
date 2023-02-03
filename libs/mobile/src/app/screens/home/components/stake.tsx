@@ -7,7 +7,7 @@ import {
   Coin,
   Delegation,
   ExtendedValidator,
-  isAnyTerraMultisigWallet,
+  isTerraChain,
   RequestObiTerraSignAndBroadcastMsg,
   terra,
   Text,
@@ -50,7 +50,11 @@ import {
   useUnbondingDelegations,
   useValidators,
 } from "../../../balances";
-import { useMultisigWallet, useStore } from "../../../stores";
+import {
+  useMultisigWallet,
+  useStore,
+  useCurrentTerraChainInformation,
+} from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
@@ -148,13 +152,13 @@ export const Stake = observer(function Stake() {
 });
 
 const StakingOptions = observer(function StakingOptions() {
-  const { chainStore } = useStore();
   const delegations = useDelegations();
   const unbondingDelegations = useUnbondingDelegations();
   const { state, dispatch } = useContext(StakeStateContext);
+  const currentTerraChainInformation = useCurrentTerraChainInformation();
 
   const totalDelegations = {
-    denom: chainStore.currentTerraChainInformation.denom,
+    denom: currentTerraChainInformation.denom,
     amount: R.sum(
       delegations.data?.map((delegation) => {
         return parseInt(delegation.balance.amount, 10);
@@ -166,7 +170,7 @@ const StakingOptions = observer(function StakingOptions() {
   const delegationsContent = `${formattedDelegations.amount} ${formattedDelegations.denom}`;
 
   const totalUnbondingDelegations = {
-    denom: chainStore.currentTerraChainInformation.denom,
+    denom: currentTerraChainInformation.denom,
     amount: R.sum(
       unbondingDelegations.data?.map((delegation) => {
         return parseInt(delegation.balance.amount, 10);
@@ -342,11 +346,10 @@ const Balance = observer(function Balance() {
             alignItems: "center",
           }}
           onPress={async () => {
-            if (!isAnyTerraMultisigWallet(wallet)) return;
+            const chainId = wallet.chain;
+            invariant(isTerraChain(chainId), "Expected Terra chain.");
 
             const sender = wallet.address;
-            invariant(sender, "Expected wallet address to exist.");
-            invariant(wallet.currentAdmin, "Expected current admin to exist.");
 
             try {
               const validators = rewards.data.perDelegator
@@ -364,12 +367,12 @@ const Balance = observer(function Balance() {
               });
 
               await RequestObiTerraSignAndBroadcastMsg.send({
-                id: wallet.id,
+                multisigKey: wallet.owner,
                 messages: messages.map((message) => {
                   return message.toAmino();
                 }),
-                multisig: wallet.currentAdmin,
-                wrap: true,
+                demoMode: wallet.isDemo,
+                proxyAddress: wallet.address,
               });
               await rewards.refetch();
             } catch (e) {
@@ -414,10 +417,10 @@ const Validators = observer(function Validators() {
     ? fuse.search(needle).map((result) => result.item)
     : activeValidators;
 
-  const { chainStore } = useStore();
+  const currentTerraChainInformation = useCurrentTerraChainInformation();
   const rawBalances = useRawBalances();
   const amountToShow = rawBalances.data?.find((balance) => {
-    return balance.denom === chainStore.currentTerraChainInformation.denom;
+    return balance.denom === currentTerraChainInformation.denom;
   });
 
   return (
@@ -461,10 +464,8 @@ const Validators = observer(function Validators() {
           validator={selectedValidator}
           confirmLabel="Stake"
           onConfirm={async ({ amount, validator }) => {
-            if (!isAnyTerraMultisigWallet(wallet)) return;
-
-            invariant(wallet.address, "Expected wallet address to exist.");
-            invariant(wallet.currentAdmin, "Expected current admin to exist.");
+            const chainId = wallet.chain;
+            invariant(isTerraChain(chainId), "Expected Terra chain.");
 
             try {
               const { digits } = formatExtendedCoin({
@@ -477,19 +478,19 @@ const Validators = observer(function Validators() {
               // TODO: also check if amount is greater than balance
               if (isNaN(amountToUse) || amountToUse <= 0) return;
               await RequestObiTerraSignAndBroadcastMsg.send({
-                id: wallet.id,
+                multisigKey: wallet.owner,
                 messages: [
                   terra
                     .getStakeMessage({
                       sender: wallet.address,
                       validator: validator.address,
                       amount: amountToUse,
-                      chainId: wallet.chain,
+                      chainId,
                     })
                     .toAmino(),
                 ],
-                multisig: wallet.currentAdmin,
-                wrap: true,
+                demoMode: wallet.isDemo,
+                proxyAddress: wallet.address,
               });
               dispatch({ type: "clear-selected-validator" });
               await Promise.all([delegations.refetch(), rawBalances.refetch()]);
@@ -545,13 +546,13 @@ const ValidatorItem = observer(function ValidatorItem({
   confirmLabel?: string;
   amountToShow?: Coin;
 }) {
-  const { chainStore } = useStore();
+  const currentTerraChainInformation = useCurrentTerraChainInformation();
   const [amount, setAmount] = useState("");
   const promoted = validator.promoted;
 
   const formatted = formatCoin(
     amountToShow || {
-      denom: chainStore.currentTerraChainInformation.denom,
+      denom: currentTerraChainInformation.denom,
       amount: "0",
     }
   );
@@ -722,10 +723,8 @@ const MyStake = observer(function MyStake() {
           validator={selectedValidator}
           confirmLabel="Unstake"
           onConfirm={async ({ amount, validator }) => {
-            if (!isAnyTerraMultisigWallet(wallet)) return;
-
-            invariant(wallet.address, "Expected wallet address to exist.");
-            invariant(wallet.currentAdmin, "Expected current admin to exist.");
+            const chainId = wallet.chain;
+            invariant(isTerraChain(chainId), "Expected Terra chain.");
 
             try {
               const { digits } = formatExtendedCoin({
@@ -738,19 +737,19 @@ const MyStake = observer(function MyStake() {
               // TODO: also check if amount is greater than balance
               if (isNaN(amountToUse) || amountToUse <= 0) return;
               await RequestObiTerraSignAndBroadcastMsg.send({
-                id: wallet.id,
+                multisigKey: wallet.owner,
                 messages: [
                   terra
                     .getUnstakeMessage({
                       sender: wallet.address,
                       validator: validator.address,
                       amount: amountToUse,
-                      chainId: wallet.chain,
+                      chainId,
                     })
                     .toAmino(),
                 ],
-                multisig: wallet.currentAdmin,
-                wrap: true,
+                demoMode: wallet.isDemo,
+                proxyAddress: wallet.address,
               });
               dispatch({ type: "clear-selected-validator" });
               await Promise.all([

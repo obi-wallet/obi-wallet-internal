@@ -3,7 +3,6 @@ import { observer } from "mobx-react-lite";
 import { Platform } from "react-native";
 
 import { InAppPurchaseInteractionModal } from "./in-app-purchase-interaction-modal";
-import { KeplrSignInteractionModal } from "./keplr-sign-interaction-modal";
 import { SignInteractionModal } from "./sign-interaction-modal";
 import { TerraSignInteractionModal } from "./terra-sign-interaction-modal";
 import { useStore } from "../stores";
@@ -19,7 +18,6 @@ export const Modals = observer(function Modals() {
       ) : null}
       <SignInteractionModal />
       <TerraSignInteractionModal />
-      <KeplrSignInteractionModal />
     </>
   );
 });

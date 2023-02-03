@@ -1,7 +1,6 @@
 export { BaseApp, StateRenderer } from "./app";
 export { AddressQrCodeScannerModal } from "./app/screens/components/address-qr-code-scanner-modal";
 export { InAppPurchaseInteractionModal } from "./app/modals/in-app-purchase-interaction-modal";
-export { LookupProxyWallets } from "./app/screens/onboarding/lookup-proxy-wallets";
 export { SendScreen } from "./app/screens/send";
 export { Provider } from "./app/provider";
 export { useStore } from "./app/stores";

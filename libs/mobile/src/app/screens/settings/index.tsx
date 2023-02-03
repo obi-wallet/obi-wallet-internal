@@ -1,5 +1,6 @@
 import styled from "@emotion/native";
-import { Brand, Feature, isAnyMultisigWallet } from "@obi-wallet/common";
+import { Brand, Feature } from "@obi-wallet/common";
+import { CommonActions } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { FC, useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -13,7 +14,6 @@ import HelpAndSupport from "./assets/headset.svg";
 import LogoutIcon from "./assets/power-red.svg";
 import { HealthChecksScreen } from "./health-checks";
 import { KeysConfigScreen } from "./keys-config";
-import { Seedphrase } from "./seedphrase";
 import { SettingsRoute } from "./settings-stack";
 import { RootStack, useRootNavigation } from "../../root-stack";
 import { useStore } from "../../stores";
@@ -21,6 +21,7 @@ import { Create } from "../account/create";
 import { ObiLogo } from "../components/obi-logo";
 import { BrandToggle } from "../components/obi-mode-toggle";
 import { isSmallScreenNumber } from "../components/screen-size";
+import { OnboardingRoute } from "../onboarding/onboarding-stack";
 
 export const SettingsScreen = observer(function SettingsScreen() {
   const { configStore, walletsStore } = useStore();
@@ -36,7 +37,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
     })();
   }, []);
 
-  const isMultisigWallet = isAnyMultisigWallet(walletsStore.currentWallet);
+  const isMultisigWallet = walletsStore.currentWallet !== null;
 
   return (
     <Container>
@@ -135,22 +136,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
               />
             ) : null}
           </>
-        ) : (
-          <Setting
-            Icon={MultiSigIcon}
-            title={intl.formatMessage({
-              id: "settings.singlesigsettings",
-              defaultMessage: "Seedphrase",
-            })}
-            subtitle={intl.formatMessage({
-              id: "settings.singlesigsettings.subtext",
-              defaultMessage: "Export your seedphrase.",
-            })}
-            onPress={() =>
-              navigation.navigate(SettingsRoute.SinglesigSeedphrase)
-            }
-          />
-        )}
+        ) : null}
         <View
           style={[
             styles.flex1,
@@ -200,6 +186,12 @@ export const SettingsScreen = observer(function SettingsScreen() {
           })}
           onPress={async () => {
             await walletsStore.logout();
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{ name: OnboardingRoute.Welcome }],
+              })
+            );
           }}
         />
 
@@ -400,12 +392,6 @@ export const settingsScreens = () => {
         name={SettingsRoute.MultisigHealthChecks}
         key={SettingsRoute.MultisigHealthChecks}
         component={HealthChecksScreen}
-        options={{ headerShown: false }}
-      />
-      <RootStack.Screen
-        name={SettingsRoute.SinglesigSeedphrase}
-        key={SettingsRoute.SinglesigSeedphrase}
-        component={Seedphrase}
         options={{ headerShown: false }}
       />
     </RootStack.Group>

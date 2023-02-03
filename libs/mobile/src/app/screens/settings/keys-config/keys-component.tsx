@@ -50,12 +50,6 @@ export const KeysComponent = observer(function KeysComponent(
           ry={47.5}
           fill={getBackgroundColor(keys)}
         />
-        <Path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M69.715 77.815v-4.2a10.5 10.5 0 1 1 21 0v4.2a4.2 4.2 0 0 1 4.2 4.2v10.5a4.2 4.2 0 0 1-4.2 4.2h-21a4.2 4.2 0 0 1-4.2-4.2v-10.5a4.2 4.2 0 0 1 4.2-4.2Zm16.8-4.2v4.2h-12.6v-4.2a6.3 6.3 0 1 1 12.6 0Z"
-          fill="#000"
-        />
       </G>
       <Defs>
         <ClipPath id="a">

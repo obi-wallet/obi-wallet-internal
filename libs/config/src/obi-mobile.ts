@@ -1,13 +1,8 @@
-import { Brand, Config, Feature, WalletType } from "@obi-wallet/common";
+import { Brand, Config, Feature } from "@obi-wallet/common";
 
 export const obiMobileConfig: Config = {
   brand: Brand.Obi,
-  defaultMultisigWalletType: WalletType.TerraMultisig,
-  cosmosChains: {
-    enabled: ["juno-1", "uni-3"],
-    default: "juno-1",
-  },
-  terraChains: {
+  chains: {
     enabled: ["phoenix-1"],
     default: "phoenix-1",
   },
@@ -20,7 +15,6 @@ export const obiMobileConfig: Config = {
     [Feature.HealthChecks]: false,
     [Feature.NftTab]: false,
     [Feature.Recovery]: true,
-    [Feature.SinglesigWallets]: false,
     [Feature.Staking]: true,
     [Feature.InAppPurchases]: false,
     [Feature.BrandToggle]: false,

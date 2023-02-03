@@ -1,24 +1,21 @@
 import {
   createLcdClient,
-  isAnyMultisigWallet,
+  isTerraChain,
+  KeyType,
   lendFees,
+  MultisigKey,
   RequestObiTerraSignAndBroadcastPayload,
   terra,
-  TerraMultisig,
-  TerraMultisigKey,
-  TerraMultisigWallet,
 } from "@obi-wallet/common";
 import {
   BlockTxBroadcastResult,
   isTxError,
-  LegacyAminoMultisigPublicKey,
   Msg,
   SignatureV2,
   Tx,
 } from "@terra-money/terra.js";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useIntl } from "react-intl";
 import { Alert } from "react-native";
 import invariant from "tiny-invariant";
 
@@ -27,6 +24,7 @@ import {
   PhoneNumberConfirmKey,
   PhoneNumberRequestKey,
 } from "./keys";
+import { existsKeyOnDevice } from "../../../biometrics";
 import {
   BottomSheet,
   BottomSheetRef,
@@ -49,34 +47,36 @@ export interface TerraSignatureModalProps
     | "onConfirm"
     | "footer"
   > {
-  wallet: TerraMultisigWallet;
+  multisigKey: MultisigKey;
   innerMessages: Msg[];
   messages: Msg[];
-  multisig: TerraMultisig;
-  hiddenKeyIds?: TerraMultisigKey[];
+  hiddenKeyTypes?: KeyType[];
+  demoMode: boolean;
 
   onConfirm(transaction: Tx): void;
 }
 
 export const TerraSignatureModal = observer<TerraSignatureModalProps>(
   function TerraSignatureModal({
-    wallet,
+    multisigKey,
     innerMessages,
     messages,
-    multisig,
     onConfirm,
-    hiddenKeyIds,
+    hiddenKeyTypes,
+    demoMode,
     ...props
   }: TerraSignatureModalProps) {
-    const intl = useIntl();
     const [signatures, setSignatures] = useState(
-      new Map<TerraMultisigKey, SignatureV2>()
+      new Map<string, SignatureV2>()
     );
     const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
     const { chainStore } = useStore();
-    const { currentTerraChainInformation } = chainStore;
+    const chainId = chainStore.currentChain;
+
+    invariant(isTerraChain(chainId), "Expected Terra chain.");
+
     const numberOfSignatures = signatures.size;
-    const threshold = multisig?.multisig?.publicKey.value.threshold;
+    const threshold = multisigKey.threshold;
 
     const waitForTxInfo = useRef<Promise<void>>();
     const transactionInformation = useRef<Awaited<
@@ -95,14 +95,12 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
         for (let i = 0; i < 10; i++) {
           try {
             waitForTxInfo.current = (async () => {
-              const publicKey = multisig.multisig?.publicKey;
-              invariant(publicKey, "Expected `publicKey` to exist.");
-              const key = LegacyAminoMultisigPublicKey.fromAmino(publicKey);
+              const key = terra.createMultisigPublicKey({ multisigKey });
               transactionInformation.current =
                 await terra.createMultisigTransaction({
                   key,
                   messages,
-                  chainId: currentTerraChainInformation.chainId,
+                  chainId,
                 });
             })();
             await waitForTxInfo.current;
@@ -123,43 +121,34 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
           }
         }
       })();
-    }, [
-      multisig.multisig?.publicKey,
-      currentTerraChainInformation.chainId,
-      messages,
-      props,
-    ]);
+    }, [multisigKey, chainId, messages, props]);
 
-    function getKey({
-      id,
-      title,
-    }: {
-      id: TerraMultisigKey;
-      title: string;
-    }): Key[] {
-      const factor = multisig?.[id];
-      if (!factor) return [];
+    function getKey({ type }: { type: KeyType }): Key {
+      const factor = multisigKey.getKeyOfType(type);
+      invariant(factor, "Expected key to exist.");
 
-      const alreadySigned = signatures.has(id);
+      const alreadySigned = signatures.has(factor.payload.publicKey.value);
       const onPress = async () => {
         if (alreadySigned) return;
 
         const { signDoc } = await getTransactionInformation();
 
-        switch (id) {
-          case "biometrics": {
+        switch (type) {
+          case KeyType.Device: {
             const biometricsKey = new BiometricsKey({
-              wallet,
-              multisig,
+              multisigKey,
             });
+
             const signature = await biometricsKey.createSignatureAmino(signDoc);
 
             setSignatures((signatures) => {
-              return new Map(signatures.set(id, signature));
+              return new Map(
+                signatures.set(factor.payload.publicKey.value, signature)
+              );
             });
             break;
           }
-          case "phoneNumber":
+          case KeyType.Phone:
             phoneNumberBottomSheetRef.current?.snapToIndex(0);
             break;
           default:
@@ -168,75 +157,92 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
         }
       };
 
-      return [
-        {
-          id,
-          title,
-          signed: alreadySigned,
-          right: alreadySigned ? <CheckIcon /> : null,
-          onPress,
-        },
-      ];
+      return {
+        type,
+        signed: alreadySigned,
+        right: alreadySigned ? <CheckIcon /> : null,
+        onPress,
+      };
     }
 
+    const [usableKeys, setUsableKeys] = useState<KeyType[] | null>(null);
+
+    useEffect(() => {
+      (async () => {
+        const usableKeys = [];
+
+        const deviceKey = multisigKey.getKeyOfType(KeyType.Device);
+        const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+
+        if (
+          deviceKey &&
+          (await existsKeyOnDevice({
+            publicKey: deviceKey.payload.publicKey.value,
+          }))
+        ) {
+          usableKeys.push(KeyType.Device);
+        }
+
+        if (phoneKey) {
+          usableKeys.push(KeyType.Phone);
+        }
+
+        setUsableKeys(usableKeys);
+      })();
+    }, [multisigKey]);
+
+    if (!threshold || !usableKeys) return null;
+
+    const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+
     const data: Key[] = [
-      ...getKey({
-        id: "biometrics",
-        title: intl.formatMessage({
-          id: "signature.modal.biometricsignature",
-          defaultMessage: "Biometrics Signature",
-        }),
+      getKey({
+        type: KeyType.Device,
       }),
-      ...getKey({
-        id: "phoneNumber",
-        title: intl.formatMessage({
-          id: "signature.modal.phonesignature",
-          defaultMessage: "Phone Number Signature",
-        }),
+      getKey({
+        type: KeyType.Phone,
       }),
     ].filter((key) => {
-      return hiddenKeyIds ? !hiddenKeyIds.includes(key.id) : true;
+      return (
+        usableKeys.includes(key.type as KeyType) &&
+        !(hiddenKeyTypes || []).includes(key.type as KeyType)
+      );
     });
-
-    if (!threshold) return null;
 
     return (
       <MultisigConfirmMessages
         key={JSON.stringify(messages)}
         {...props}
-        threshold={parseInt(threshold, 10)}
+        threshold={multisigKey.threshold}
         numberOfSignatures={numberOfSignatures}
         data={data}
         innerMessages={innerMessages.map((message) => message.toAmino())}
         onConfirm={async () => {
           const { sign } = await getTransactionInformation();
           const signaturesOrdered: SignatureV2[] = [];
-          for (const key of wallet.getSignerTypes(multisig)) {
-            const signature = signatures.get(key);
+          for (const key of multisigKey.keys) {
+            const signature = signatures.get(key.payload.publicKey.value);
             if (signature) {
               signaturesOrdered.push(signature);
             }
           }
+
+          console.log(signaturesOrdered);
+
           await onConfirm(await sign(signaturesOrdered));
         }}
         footer={
-          multisig?.phoneNumber ? (
+          phoneKey ? (
             <BottomSheet bottomSheetRef={phoneNumberBottomSheetRef}>
               <PhoneNumberBottomSheetContent
-                securityQuestion={multisig.phoneNumber.securityQuestion}
+                securityQuestion={phoneKey.payload.securityQuestion}
                 onRequest={async (securityAnswer) => {
-                  invariant(
-                    multisig.phoneNumber,
-                    "Expected phoneNumber key to exist"
-                  );
-
                   const { signDoc } = await getTransactionInformation();
                   const phoneNumberRequestKey = new PhoneNumberRequestKey({
-                    phoneNumber: multisig.phoneNumber.phoneNumber,
                     securityAnswer,
-                    chainId: currentTerraChainInformation.chainId,
-                    wallet,
-                    multisig,
+                    chainId,
+                    multisigKey,
+                    demoMode,
                   });
                   await phoneNumberRequestKey.createSignatureAmino(signDoc);
                 }}
@@ -244,19 +250,19 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
                   const { signDoc } = await getTransactionInformation();
                   const phoneNumberRequestKey = new PhoneNumberConfirmKey({
                     key,
-                    wallet,
-                    multisig,
+                    multisigKey,
+                    demoMode,
                   });
                   const signature =
                     await phoneNumberRequestKey.createSignatureAmino(signDoc);
                   if (signature) {
                     setSignatures((signatures) => {
-                      const { phoneNumber } = multisig;
-                      invariant(
-                        phoneNumber,
-                        "Expected phone number key to exist."
+                      return new Map(
+                        signatures.set(
+                          phoneKey.payload.publicKey.value,
+                          signature
+                        )
                       );
-                      return new Map(signatures.set("phoneNumber", signature));
                     });
                     phoneNumberBottomSheetRef.current?.close();
                   }
@@ -282,11 +288,15 @@ export function useTerraSignatureModalProps({
 } {
   const [signatureModalVisible, setSignatureModalVisible] = useState(false);
   const [modalKey, setModalKey] = useState(0);
-  const { chainStore, walletsStore } = useStore();
-  const { currentTerraChainInformation } = chainStore;
+  const { chainStore } = useStore();
+  const chainId = chainStore.currentChain;
+  invariant(isTerraChain(chainId), "Expected terra chain.");
 
-  const { id, multisig } = data;
-  const wallet = walletsStore.getWallet(id) as TerraMultisigWallet;
+  const multisigKey = MultisigKey.deserialize({
+    chain: chainStore.currentChain,
+    serialized: data.multisigKey,
+  });
+  const sender = multisigKey.address;
 
   const rawMessages = data.messages.map((data) => {
     return Msg.fromAmino(data);
@@ -297,28 +307,25 @@ export function useTerraSignatureModalProps({
 
   const innerMessages = rawMessages;
 
-  const signatureModalProps = useMemo(() => {
+  const signatureModalProps = useMemo((): TerraSignatureModalProps & {
+    key: string;
+  } => {
     return {
       key: modalKey.toString(),
-      wallet,
+      multisigKey,
+      demoMode: data.demoMode,
       visible: signatureModalVisible,
       innerMessages,
       messages,
-      multisig,
       cancelable: data.cancelable,
-      hiddenKeyIds: data.hiddenKeyIds,
+      hiddenKeyTypes: data.hiddenKeyTypes,
       isOnboarding: data.isOnboarding,
       onCancel() {
         setSignatureModalVisible(false);
         setModalKey((value) => value + 1);
       },
       async onConfirm(transaction: Tx) {
-        const client = await createLcdClient(
-          currentTerraChainInformation.chainId
-        );
-
-        const address = multisig.multisig?.address;
-        invariant(address, "Expected multisig address to exist.");
+        const client = await createLcdClient(chainId);
 
         // TODO: handle fees estimation similar to station Tx.tsx
         try {
@@ -326,8 +333,8 @@ export function useTerraSignatureModalProps({
           if (isTxError(response)) {
             if (response.raw_log.includes("insufficient funds")) {
               await lendFees({
-                chainId: currentTerraChainInformation.chainId,
-                address,
+                chainId,
+                address: sender,
               });
               response = await client.tx.broadcastBlock(transaction);
             }
@@ -342,15 +349,15 @@ export function useTerraSignatureModalProps({
       },
     };
   }, [
+    modalKey,
+    multisigKey,
+    data,
+    signatureModalVisible,
     innerMessages,
     messages,
-    modalKey,
-    wallet,
-    signatureModalVisible,
-    multisig,
-    data,
-    currentTerraChainInformation,
     onConfirm,
+    chainId,
+    sender,
   ]);
 
   return {
@@ -361,16 +368,12 @@ export function useTerraSignatureModalProps({
   };
 
   function getWrappedMessages(): Msg[] {
-    if (!isAnyMultisigWallet(wallet) || !data.wrap) return rawMessages;
+    if (!data.proxyAddress) return rawMessages;
 
-    const multisig = data.multisig;
-    if (!multisig?.multisig?.address || !wallet.proxyAddress) {
-      return [];
-    }
     return terra.wrapMessages({
       messages: rawMessages,
-      sender: multisig.multisig.address,
-      contract: wallet.proxyAddress.address,
+      sender,
+      contract: data.proxyAddress,
     });
   }
 }

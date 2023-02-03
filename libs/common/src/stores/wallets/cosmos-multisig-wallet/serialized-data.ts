@@ -2,6 +2,8 @@ import { pubkeyType } from "@cosmjs/amino";
 import * as t from "io-ts";
 
 import { nullable } from "../../helpers";
+import { MultisigKey } from "../multisig-key";
+import * as Multisig from "../multisig-wallet/serialized-data";
 
 export const SinglePublicKey = t.type({
   type: t.string,
@@ -209,18 +211,48 @@ export type SerializedDataAnyVersion = t.TypeOf<
 
 export function migrateSerializedData(
   serializedData: SerializedDataAnyVersion
-): SerializedData {
-  if (SerializedDataV0.is(serializedData)) {
-    return {
-      nextAdmin: migrateSerializedMultisigPayload(serializedData.nextAdmin),
-      currentAdmin: serializedData.currentAdmin
-        ? migrateSerializedMultisigPayload(serializedData.currentAdmin)
-        : null,
-      proxyAddresses: {
-        "uni-3": migrateSerializedProxyAddress(serializedData.proxyAddress),
-      },
-    };
+): Multisig.SerializedData | null {
+  const serializedDataV1 = ((): SerializedData => {
+    if (SerializedDataV0.is(serializedData)) {
+      return {
+        nextAdmin: migrateSerializedMultisigPayload(serializedData.nextAdmin),
+        currentAdmin: serializedData.currentAdmin
+          ? migrateSerializedMultisigPayload(serializedData.currentAdmin)
+          : null,
+        proxyAddresses: {
+          "uni-3": migrateSerializedProxyAddress(serializedData.proxyAddress),
+        },
+      };
+    }
+
+    return serializedData;
+  })();
+
+  const proxyAddresses = serializedDataV1.proxyAddresses;
+  const mainnetProxyAddress = proxyAddresses["juno-1"];
+  const testnetProxyAddress = proxyAddresses["uni-3"];
+  const proxyAddress = mainnetProxyAddress || testnetProxyAddress;
+  const currentAdmin = serializedDataV1.currentAdmin;
+
+  if (!proxyAddress || !currentAdmin) return null;
+
+  const chain = mainnetProxyAddress ? "juno-1" : "uni-3";
+
+  const multisigKey = new MultisigKey({ chain });
+  if (currentAdmin.biometrics) {
+    multisigKey.setDeviceKey(currentAdmin.biometrics);
+  }
+  if (currentAdmin.phoneNumber) {
+    multisigKey.setPhoneKey(currentAdmin.phoneNumber);
+  }
+  if (currentAdmin.social) {
+    // @ts-expect-error TODO: review
+    multisigKey.setSocialKey(currentAdmin.social);
   }
 
-  return serializedData;
+  return {
+    chain,
+    owner: multisigKey.serialize(),
+    proxyAddress,
+  };
 }

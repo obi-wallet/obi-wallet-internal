@@ -54,9 +54,6 @@ export const AccountScreenInner = observer(function AccountScreenInner() {
     }
   };
 
-  const multisig = wallet.currentAdmin;
-  if (!multisig) return null;
-
   return (
     <View style={{ paddingHorizontal: 20 }}>
       <View
@@ -223,100 +220,59 @@ export const AccountScreenInner = observer(function AccountScreenInner() {
         }}
       >
         <FlatList
-          data={wallet
-            // @ts-expect-error TODO: TypeScript doesn't understand that wallet and multisig match
-            .getSignerTypes(multisig)
-            .map((signerType) => {
-              if (signerType !== "biometrics" && signerType !== "phoneNumber") {
-                return null;
-              }
-
-              const signer = multisig?.[signerType];
-              if (!signer) return null;
-
-              return {
-                title:
-                  signerType === "biometrics" ? (
-                    <FormattedMessage
-                      id="accountscreen.key.biometrics"
-                      defaultMessage="Device Key"
-                    />
-                  ) : (
-                    <FormattedMessage
-                      id="accountscreen.key.phoneNumber"
-                      defaultMessage="Phone Key"
-                    />
-                  ),
-                subTitle: (
-                  <FormattedMessage
-                    id="accountscreen.accountname"
-                    defaultMessage="Obi Smart Account"
-                  />
-                ),
-                address: signer.address,
-              };
-            })
-            .filter(
-              (
-                item
-              ): item is {
-                address: string;
-                title: JSX.Element;
-                subTitle: JSX.Element;
-              } => {
-                return item !== null;
-              }
-            )}
-          keyExtractor={(item) => item.address}
+          data={[]}
+          // keyExtractor={(item) => item.address}
           renderItem={({ item }) => {
-            return (
-              <View
-                style={{
-                  backgroundColor: "#0F0E20",
-                  borderRadius: 12,
-                  marginVertical: 10,
-                  flexDirection: "row",
-                  padding: 20,
-                  flex: 1,
-                }}
-              >
-                {/*<Image*/}
-                {/*  source={require("./assets/avatars/avatars-1.png")}*/}
-                {/*  style={{ height: 42, width: 42, borderRadius: 42 }}*/}
-                {/*/>*/}
-                <View style={{ paddingLeft: 10, flex: 1 }}>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: "400",
-                      color: "#f6f5ff",
-                    }}
-                  >
-                    {item.title}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontWeight: "400",
-                      color: "rgba(246, 245, 255, 0.6);",
-                    }}
-                  >
-                    {item.subTitle}
-                  </Text>
-                </View>
-                {/*<View style={{ justifyContent: "center" }}>*/}
-                {/*  <View*/}
-                {/*    style={{*/}
-                {/*      width: 16,*/}
-                {/*      height: 16,*/}
-                {/*      borderColor: "rgba(255,255,255,.4)",*/}
-                {/*      borderWidth: 1,*/}
-                {/*      borderRadius: 16,*/}
-                {/*    }}*/}
-                {/*  ></View>*/}
-                {/*</View>*/}
-              </View>
-            );
+            return null;
+
+            // return (
+            //   <View
+            //     style={{
+            //       backgroundColor: "#0F0E20",
+            //       borderRadius: 12,
+            //       marginVertical: 10,
+            //       flexDirection: "row",
+            //       padding: 20,
+            //       flex: 1,
+            //     }}
+            //   >
+            //     {/*<Image*/}
+            //     {/*  source={require("./assets/avatars/avatars-1.png")}*/}
+            //     {/*  style={{ height: 42, width: 42, borderRadius: 42 }}*/}
+            //     {/*/>*/}
+            //     <View style={{ paddingLeft: 10, flex: 1 }}>
+            //       <Text
+            //         style={{
+            //           fontSize: 14,
+            //           fontWeight: "400",
+            //           color: "#f6f5ff",
+            //         }}
+            //       >
+            //         {item.title}
+            //       </Text>
+            //       <Text
+            //         style={{
+            //           fontSize: 12,
+            //           fontWeight: "400",
+            //           color: "rgba(246, 245, 255, 0.6);",
+            //         }}
+            //       >
+            //         {item.subTitle}
+            //       </Text>
+            //     </View>
+            //     {/*<View style={{ justifyContent: "center" }}>*/}
+            //     {/*  <View*/}
+            //     {/*    style={{*/}
+            //     {/*      width: 16,*/}
+            //     {/*      height: 16,*/}
+            //     {/*      borderColor: "rgba(255,255,255,.4)",*/}
+            //     {/*      borderWidth: 1,*/}
+            //     {/*      borderRadius: 16,*/}
+            //     {/*    }}*/}
+            //     {/*  ></View>*/}
+            //     {/*</View>*/}
+            //   </View>
+            // );
           }}
         />
       </View>

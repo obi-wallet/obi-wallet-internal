@@ -5,10 +5,11 @@ import {
   Secp256k1Wallet,
 } from "@cosmjs/amino";
 import {
+  cosmosChains,
   createStargateClient,
+  isCosmosChain,
   lendFees,
   terra,
-  WalletType,
 } from "@obi-wallet/common";
 import { RawKey } from "@terra-money/terra.js";
 import secp256k1 from "secp256k1";
@@ -29,54 +30,47 @@ export async function prepareWalletAndSign({
     Buffer.from(privateKey, "base64")
   );
 
-  const { chainStore, configStore } = getRootStore();
+  const { chainStore } = getRootStore();
 
   async function prepareWallet() {
-    switch (configStore.getDefaultMultisigWalletType()) {
-      case WalletType.CosmosMultisig: {
-        const { chainId, prefix, denom } =
-          chainStore.currentCosmosChainInformation;
-        const client = await createStargateClient(chainId);
+    if (isCosmosChain(chainStore.currentChain)) {
+      const { chainId, prefix, denom } = cosmosChains[chainStore.currentChain];
+      const client = await createStargateClient(chainId);
 
-        const address = pubkeyToAddress(
-          {
-            type: pubkeyType.secp256k1,
-            value: publicKey,
-          },
+      const address = pubkeyToAddress(
+        {
+          type: pubkeyType.secp256k1,
+          value: publicKey,
+        },
+        prefix
+      );
+
+      if (!(await client.getAccount(address))) {
+        await lendFees({ chainId, address });
+      }
+
+      // TODO: here we need to wait longer as long as account does not exist
+
+      if (!(await client.getAccount(address))?.pubkey) {
+        const signer = await Secp256k1Wallet.fromKey(
+          privateKeyUint8Array,
           prefix
         );
-
-        if (!(await client.getAccount(address))) {
-          await lendFees({ chainId, address });
-        }
-
-        // TODO: here we need to wait longer as long as account does not exist
-
-        if (!(await client.getAccount(address))?.pubkey) {
-          const signer = await Secp256k1Wallet.fromKey(
-            privateKeyUint8Array,
-            prefix
-          );
-          const signingClient = await createSigningStargateClient({
-            chainId,
-            signer,
-          });
-          await signingClient.sendTokens(
-            address,
-            address,
-            coins(1, denom),
-            "auto",
-            ""
-          );
-        }
-        break;
+        const signingClient = await createSigningStargateClient({
+          chainId,
+          signer,
+        });
+        await signingClient.sendTokens(
+          address,
+          address,
+          coins(1, denom),
+          "auto",
+          ""
+        );
       }
-      case WalletType.TerraMultisig: {
-        const { chainId } = chainStore.currentTerraChainInformation;
-        const key = new RawKey(Buffer.from(privateKeyUint8Array));
-        await terra.prepareKey({ key, chainId });
-        break;
-      }
+    } else {
+      const key = new RawKey(Buffer.from(privateKeyUint8Array));
+      await terra.prepareKey({ key, chainId: chainStore.currentChain });
     }
   }
 

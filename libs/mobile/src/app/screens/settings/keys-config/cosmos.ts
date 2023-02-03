@@ -1,0 +1,126 @@
+import {
+  MsgExecuteContractEncodeObject,
+  MsgUpdateAdminEncodeObject,
+} from "@cosmjs/cosmwasm-stargate";
+import {
+  cosmos,
+  CosmosChain,
+  Draft,
+  MultisigKey,
+  MultisigWallet,
+  RequestObiCosmosSignAndBroadcastMsg,
+} from "@obi-wallet/common";
+import {
+  MsgExecuteContract,
+  MsgUpdateAdmin,
+} from "cosmjs-types/cosmwasm/wasm/v1/tx";
+
+export async function handleCosmos({
+  draft,
+  wallet,
+  chainId,
+}: {
+  draft: Draft<MultisigKey>;
+  wallet: MultisigWallet;
+  chainId: CosmosChain;
+}) {
+  const currentOwner = draft.original;
+  const newOwner = draft.value;
+
+  async function proposeUpdateOwner() {
+    const value: MsgUpdateAdmin = {
+      sender: currentOwner.address,
+      newAdmin: newOwner.address,
+      contract: wallet.address,
+    };
+    const message: MsgUpdateAdminEncodeObject = {
+      typeUrl: "/cosmwasm.wasm.v1.MsgUpdateAdmin",
+      value,
+    };
+
+    const encodeObjects = [
+      wrapRawMessage({
+        rawMessage: {
+          propose_update_admin: {
+            new_admin: newOwner.address,
+          },
+        },
+        sender: currentOwner.address,
+        contract: wallet.address,
+      }),
+      ...(currentOwner.address === newOwner.address ? [] : [message]),
+    ];
+
+    const response = await RequestObiCosmosSignAndBroadcastMsg.send({
+      multisigKey: currentOwner.serialize(),
+      encodeObjects,
+      demoMode: wallet.isDemo,
+    });
+
+    try {
+      cosmos.parseProposeUpdateOwnerResponse(response);
+    } catch (e) {
+      await proposeUpdateOwner();
+    }
+  }
+
+  async function confirmUpdateOwner() {
+    const multisigPublicKey = cosmos.createMultisigPublicKey({
+      multisigKey: newOwner,
+    });
+
+    const encodeObjects = [
+      wrapRawMessage({
+        rawMessage: {
+          confirm_update_admin: {
+            signers: multisigPublicKey.value.pubkeys.map((publicKey) => {
+              return cosmos.getAddress({
+                publicKey,
+                chainId,
+              });
+            }),
+          },
+        },
+        sender: newOwner.address,
+        contract: wallet.address,
+      }),
+    ];
+
+    const response = await RequestObiCosmosSignAndBroadcastMsg.send({
+      multisigKey: newOwner.serialize(),
+      encodeObjects,
+      demoMode: wallet.isDemo,
+    });
+
+    try {
+      cosmos.parseProposeUpdateOwnerResponse(response);
+    } catch (e) {
+      await confirmUpdateOwner();
+    }
+  }
+
+  await proposeUpdateOwner();
+  await confirmUpdateOwner();
+  await wallet.setOwner(newOwner);
+}
+
+function wrapRawMessage({
+  rawMessage,
+  contract,
+  sender,
+}: {
+  rawMessage: unknown;
+  contract: string;
+  sender: string;
+}): MsgExecuteContractEncodeObject {
+  const value: MsgExecuteContract = {
+    sender,
+    contract,
+    msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
+    funds: [],
+  };
+  return {
+    typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+    value,
+  };
+}

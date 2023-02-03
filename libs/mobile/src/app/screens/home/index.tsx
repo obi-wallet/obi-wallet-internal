@@ -4,12 +4,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   cosmosChains,
   Feature,
-  isTerraMultisigWallet,
+  isCosmosChain,
+  isTerraChain,
   RequestObiTerraSignAndBroadcastMsg,
   terra,
+  TerraChain,
   terraChains,
   Text,
-  WalletType,
 } from "@obi-wallet/common";
 import {
   DrawerContentComponentProps,
@@ -238,7 +239,11 @@ export const HomeScreen = observer(function HomeScreen() {
   useEffect(() => {
     const currentWallet = walletsStore.currentWallet;
 
-    if (isTerraMultisigWallet(currentWallet) && currentWallet.isOutdated) {
+    if (
+      currentWallet &&
+      isTerraChain(currentWallet.chain) &&
+      currentWallet.isOutdated
+    ) {
       Alert.alert(
         "Verified Update Available",
         "Update your Obi Smart Account to continue testing.",
@@ -246,31 +251,24 @@ export const HomeScreen = observer(function HomeScreen() {
           {
             text: "Update",
             onPress: async () => {
-              const multisig = currentWallet.currentAdmin;
-              invariant(multisig, "Expected `currentAdmin` to exist.");
-
-              const admin = multisig.multisig?.address;
-              invariant(admin, "Expected multisig address to exist.");
-
               const proxyAddress = currentWallet.proxyAddress;
               invariant(proxyAddress, "Expected `proxyAddress` to exist.");
 
               const message = terra.getMigrateMessage({
                 proxyAddress: proxyAddress.address,
-                admin,
-                chainId: currentWallet.chain,
+                admin: currentWallet.owner.address,
+                chainId: currentWallet.chain as TerraChain,
               });
               const response = await RequestObiTerraSignAndBroadcastMsg.send({
-                id: currentWallet.id,
+                multisigKey: currentWallet.owner.serialize(),
+                demoMode: currentWallet.isDemo,
                 messages: [message.toAmino()],
-                multisig,
               });
 
               if (!isTxError(response)) {
-                await currentWallet.finishProxySetup({
-                  address: proxyAddress.address,
-                  codeId: terraChains[currentWallet.chain].currentCodeId,
-                });
+                await currentWallet.setProxyCodeId(
+                  terraChains[currentWallet.chain as TerraChain].currentCodeId
+                );
               }
             },
           },
@@ -282,7 +280,7 @@ export const HomeScreen = observer(function HomeScreen() {
   return (
     <HomeDrawer.Navigator
       useLegacyImplementation={true}
-      initialRouteName={chainStore.currentCosmosChainInformation.label}
+      initialRouteName={chainStore.currentChainInformation.label}
       screenOptions={{
         headerShown: false,
       }}
@@ -303,21 +301,13 @@ const CustomDrawerContent = observer(function CustomDrawerContent(
   const { chainStore, configStore } = useStore();
 
   const isLoop = configStore.isLoop();
-  const cosmosNetworks = configStore.config.cosmosChains.enabled.map(
-    (chainId) => {
+  const networks = configStore.config.chains.enabled.map((chainId) => {
+    if (isCosmosChain(chainId)) {
       return cosmosChains[chainId];
-    }
-  );
-  const terraNetworks = configStore.config.terraChains.enabled.map(
-    (chainId) => {
+    } else {
       return terraChains[chainId];
     }
-  );
-
-  const networks =
-    configStore.getDefaultMultisigWalletType() === WalletType.CosmosMultisig
-      ? cosmosNetworks
-      : terraNetworks;
+  });
 
   return (
     <DrawerContentScrollView

@@ -1,14 +1,9 @@
-import {
-  isMultisigDemoWallet,
-  TerraChain,
-  TerraMultisig,
-  TerraMultisigWallet,
-} from "@obi-wallet/common";
+import { KeyType, MultisigKey, TerraChain } from "@obi-wallet/common";
 import { Key, SimplePublicKey } from "@terra-money/terra.js";
 import { SHA256, Word32Array } from "jscrypto";
 import invariant from "tiny-invariant";
 
-import { createBiometricSignature } from "../../../biometrics";
+import { createBiometricsSignature } from "../../../biometrics";
 import {
   parseSignatureTextMessageResponse,
   sendSignatureTextMessage,
@@ -23,26 +18,19 @@ function createHash(payload: Buffer): Uint8Array {
 }
 
 export class BiometricsKey extends Key {
-  protected readonly wallet: TerraMultisigWallet;
+  protected readonly deviceKeyPublicKey: string;
 
-  constructor({
-    wallet,
-    multisig,
-  }: {
-    wallet: TerraMultisigWallet;
-    multisig: TerraMultisig;
-  }) {
-    const biometrics = multisig.biometrics;
+  constructor({ multisigKey }: { multisigKey: MultisigKey }) {
+    const biometrics = multisigKey.getKeyOfType(KeyType.Device);
     invariant(biometrics, "Expected device key to exist.");
-    super(SimplePublicKey.fromAmino(biometrics.publicKey));
-    this.wallet = wallet;
+    super(SimplePublicKey.fromAmino(biometrics.payload.publicKey));
+    this.deviceKeyPublicKey = biometrics.payload.publicKey.value;
   }
 
   async sign(payload: Buffer): Promise<Buffer> {
-    const demoMode = isMultisigDemoWallet(this.wallet);
-    const { signature } = await createBiometricSignature({
+    const { signature } = await createBiometricsSignature({
       payload: createHash(payload),
-      demoMode,
+      publicKey: this.deviceKeyPublicKey,
     });
     return Buffer.from(signature);
   }
@@ -50,29 +38,28 @@ export class BiometricsKey extends Key {
 
 export class PhoneNumberConfirmKey extends Key {
   protected readonly key: string;
-  protected readonly wallet: TerraMultisigWallet;
+  protected readonly demoMode: boolean;
 
   constructor({
     key,
-    wallet,
-    multisig,
+    multisigKey,
+    demoMode,
   }: {
     key: string;
-    wallet: TerraMultisigWallet;
-    multisig: TerraMultisig;
+    multisigKey: MultisigKey;
+    demoMode: boolean;
   }) {
-    const phoneNumberKey = multisig.phoneNumber;
+    const phoneNumberKey = multisigKey.getKeyOfType(KeyType.Phone);
     invariant(phoneNumberKey, "Expected phone number key to exist.");
-    super(SimplePublicKey.fromAmino(phoneNumberKey.publicKey));
+    super(SimplePublicKey.fromAmino(phoneNumberKey.payload.publicKey));
     this.key = key;
-    this.wallet = wallet;
+    this.demoMode = demoMode;
   }
 
   async sign(): Promise<Buffer> {
-    const demoMode = isMultisigDemoWallet(this.wallet);
     const response = await parseSignatureTextMessageResponse({
       key: this.key,
-      demoMode,
+      demoMode: this.demoMode,
     });
     if (!response) throw new Error("Signing failed");
     return Buffer.from(response);
@@ -83,33 +70,30 @@ export class PhoneNumberRequestKey extends Key {
   protected readonly phoneNumber: string;
   protected readonly securityAnswer: string;
   protected readonly chainId: TerraChain;
-
-  protected readonly wallet: TerraMultisigWallet;
+  protected readonly demoMode: boolean;
 
   constructor({
-    phoneNumber,
     securityAnswer,
     chainId,
-    wallet,
-    multisig,
+    multisigKey,
+    demoMode,
   }: {
-    phoneNumber: string;
     securityAnswer: string;
     chainId: TerraChain;
-    wallet: TerraMultisigWallet;
-    multisig: TerraMultisig;
+    multisigKey: MultisigKey;
+    demoMode: boolean;
   }) {
-    const phoneNumberKey = multisig.phoneNumber;
+    const phoneNumberKey = multisigKey.getKeyOfType(KeyType.Phone);
     invariant(phoneNumberKey, "Expected phone number key to exist.");
-    super(SimplePublicKey.fromAmino(phoneNumberKey.publicKey));
-    this.phoneNumber = phoneNumber;
+    super(SimplePublicKey.fromAmino(phoneNumberKey.payload.publicKey));
+    this.phoneNumber = phoneNumberKey.payload.phoneNumber;
     this.securityAnswer = securityAnswer;
     this.chainId = chainId;
-    this.wallet = wallet;
+    this.demoMode = demoMode;
   }
 
   async sign(payload: Buffer): Promise<Buffer> {
-    const demoMode = isMultisigDemoWallet(this.wallet);
+    const demoMode = this.demoMode;
     await sendSignatureTextMessage({
       phoneNumber: this.phoneNumber,
       securityAnswer: this.securityAnswer,

@@ -5,8 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   App,
   Card,
-  isAnyTerraMultisigWallet,
-  isCosmosSinglesigWallet,
+  isTerraChain,
   Text,
   TextInput,
   Tile,
@@ -109,7 +108,8 @@ export const DappExplorer = observer(function DappExplorer() {
                   setEditMode(true);
                 }}
                 source={
-                  isAnyTerraMultisigWallet(walletsStore.currentWallet)
+                  walletsStore.currentWallet &&
+                  isTerraChain(walletsStore.currentWallet.chain)
                     ? require("./assets/terrascope.png")
                     : HistoryIcon
                 }
@@ -120,11 +120,11 @@ export const DappExplorer = observer(function DappExplorer() {
                 onPress={() => {
                   onAppPress({
                     label: "History",
-                    url: isAnyTerraMultisigWallet(walletsStore.currentWallet)
-                      ? `https://terrasco.pe/mainnet/contract/${walletsStore.address}`
-                      : isCosmosSinglesigWallet(walletsStore.currentWallet)
-                      ? `https://mintscan.io/juno/account/${walletsStore.address}`
-                      : `https://mintscan.io/juno/wasm/contract/${walletsStore.address}`,
+                    url:
+                      walletsStore.currentWallet &&
+                      isTerraChain(walletsStore.currentWallet.chain)
+                        ? `https://terrasco.pe/mainnet/contract/${walletsStore.address}`
+                        : `https://mintscan.io/juno/wasm/contract/${walletsStore.address}`,
                     icon: "https://place-hold.it/180x180",
                   });
                 }}

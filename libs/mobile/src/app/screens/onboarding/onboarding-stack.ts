@@ -1,30 +1,26 @@
+import { MultisigWalletSerializedData } from "@obi-wallet/common";
+
 export enum OnboardingRoute {
   Welcome = "Welcome",
-  CreateMultisigBiometrics = "CreateMultisigBiometrics",
-  CreateMultisigPhoneNumber = "CreateMultisigPhoneNumber",
-  CreateMultisigPhoneNumberConfirm = "CreateMultisigPhoneNumberConfirm",
-  CreateMultisigSocial = "CreateMultisigSocial",
-  CreateMultisigInit = "CreateMultisigInit",
-  ReplaceMultisig = "ReplaceMultisig",
-  RecoverMultisig = "RecoverMultisig",
-  RecoverSinglesig = "RecoverSinglesig",
+  CreateWallet = "CreateWallet",
+  RecoverWallet = "RecoverWallet",
   LookupProxyWallets = "LookupProxyWallets",
 }
 
 export interface OnboardingStackParamList
   extends Record<string, object | undefined> {
   [OnboardingRoute.Welcome]: undefined;
-  [OnboardingRoute.CreateMultisigBiometrics]: undefined;
-  [OnboardingRoute.CreateMultisigPhoneNumber]: undefined;
-  [OnboardingRoute.CreateMultisigPhoneNumberConfirm]: {
-    phoneNumber: string;
-    securityQuestion: string;
-    securityAnswer: string;
+  [OnboardingRoute.CreateWallet]: {
+    draftId: string;
+    demoMode: boolean;
   };
-  [OnboardingRoute.CreateMultisigSocial]: undefined;
-  [OnboardingRoute.CreateMultisigInit]: undefined;
-  [OnboardingRoute.ReplaceMultisig]: undefined;
-  [OnboardingRoute.RecoverMultisig]: undefined;
-  [OnboardingRoute.RecoverSinglesig]: undefined;
-  [OnboardingRoute.LookupProxyWallets]: undefined;
+  [OnboardingRoute.RecoverWallet]: {
+    draftId: string;
+    demoMode: boolean;
+    serializedData?: MultisigWalletSerializedData.SerializedData;
+  };
+  [OnboardingRoute.LookupProxyWallets]: {
+    draftId: string;
+    demoMode: boolean;
+  };
 }

@@ -1,10 +1,5 @@
 import { useTheme } from "@emotion/react";
-import {
-  Config,
-  isMultisigDemoWallet,
-  Text,
-  WalletState,
-} from "@obi-wallet/common";
+import { Config, Text, WalletState } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { AppState, View } from "react-native";
@@ -17,23 +12,18 @@ import { Provider, ProviderProps } from "./provider";
 import { RootRoute, RootStack } from "./root-stack";
 import { HomeScreen } from "./screens/home";
 import { Stake } from "./screens/home/components/stake";
-import { MultisigBiometrics } from "./screens/onboarding/common/1-biometrics";
-import { MultisigPhoneNumber } from "./screens/onboarding/common/2-phone-number";
-import { MultisigPhoneNumberConfirm } from "./screens/onboarding/common/3-phone-number-confirm";
-import { MultisigSocial } from "./screens/onboarding/common/4-social";
-import { MultisigInit } from "./screens/onboarding/create-multisig-init";
-import { LookupProxyWallets } from "./screens/onboarding/lookup-proxy-wallets";
 import { OnboardingRoute } from "./screens/onboarding/onboarding-stack";
-import { RecoverMultisig } from "./screens/onboarding/recover-multisig";
-import { RecoverSinglesig } from "./screens/onboarding/recover-singlesig";
-import { ReplaceMultisig } from "./screens/onboarding/replace-multisig-key";
-import { Welcome } from "./screens/onboarding/welcome";
 import { ReceiveScreen } from "./screens/receive";
 import { SendScreen } from "./screens/send";
 import { settingsScreens } from "./screens/settings";
 import { SplashScreen } from "./screens/splash";
 import { WebViewScreen } from "./screens/web-view";
 import { useStore } from "./stores";
+import { CreateWalletScreen } from "../screens/create-wallet";
+import { keyScreens } from "../screens/keys/key-screens";
+import { LookupProxyWalletsScreen } from "../screens/lookup-proxy-wallets";
+import { RecoverWalletScreen } from "../screens/recover-wallet";
+import { WelcomeScreen } from "../screens/welcome";
 
 export interface BaseAppProps {
   initialConfig: Config;
@@ -128,7 +118,8 @@ const Load = observer(function Load() {
 export const DemoModeHeader = observer(function DemoModeHeader() {
   const { walletsStore } = useStore();
 
-  if (!isMultisigDemoWallet(walletsStore.currentWallet)) return null;
+  // TODO: fix
+  return null;
 
   return (
     <View
@@ -171,6 +162,11 @@ export const StateRenderer = observer(function StateRenderer() {
               fontFamily: "Inter",
             },
           }}
+          initialRouteName={
+            walletsStore.currentWallet
+              ? RootRoute.Home
+              : OnboardingRoute.Welcome
+          }
         >
           {getScreens()}
         </RootStack.Navigator>
@@ -179,75 +175,38 @@ export const StateRenderer = observer(function StateRenderer() {
   }
 
   function getScreens() {
-    if (walletsStore.currentWallet?.isReady) {
-      return (
-        <RootStack.Group>
-          <RootStack.Screen name={RootRoute.Home} component={HomeScreen} />
-          <RootStack.Screen
-            name={RootRoute.WebView}
-            component={WebViewScreen}
-            options={({ route }) => ({
-              title: route.params.app.label,
-            })}
-          />
-          <RootStack.Screen name={RootRoute.Send} component={SendScreen} />
-          <RootStack.Screen name={RootRoute.Stake} component={Stake} />
-          <RootStack.Screen
-            name={RootRoute.Receive}
-            component={ReceiveScreen}
-          />
-          {settingsScreens()}
-        </RootStack.Group>
-      );
-    } else {
-      return (
-        <RootStack.Group
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <RootStack.Screen
-            name={OnboardingRoute.Welcome}
-            component={Welcome}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.CreateMultisigBiometrics}
-            component={MultisigBiometrics}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.CreateMultisigPhoneNumber}
-            component={MultisigPhoneNumber}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.CreateMultisigPhoneNumberConfirm}
-            component={MultisigPhoneNumberConfirm}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.CreateMultisigSocial}
-            component={MultisigSocial}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.CreateMultisigInit}
-            component={MultisigInit}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.ReplaceMultisig}
-            component={ReplaceMultisig}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.RecoverMultisig}
-            component={RecoverMultisig}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.RecoverSinglesig}
-            component={RecoverSinglesig}
-          />
-          <RootStack.Screen
-            name={OnboardingRoute.LookupProxyWallets}
-            component={LookupProxyWallets}
-          />
-        </RootStack.Group>
-      );
-    }
+    return (
+      <RootStack.Group>
+        <RootStack.Screen name={RootRoute.Home} component={HomeScreen} />
+        <RootStack.Screen
+          name={RootRoute.WebView}
+          component={WebViewScreen}
+          options={({ route }) => ({
+            title: route.params.app.label,
+          })}
+        />
+        <RootStack.Screen name={RootRoute.Send} component={SendScreen} />
+        <RootStack.Screen name={RootRoute.Stake} component={Stake} />
+        <RootStack.Screen name={RootRoute.Receive} component={ReceiveScreen} />
+        <RootStack.Screen
+          name={OnboardingRoute.Welcome}
+          component={WelcomeScreen}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.LookupProxyWallets}
+          component={LookupProxyWalletsScreen}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.CreateWallet}
+          component={CreateWalletScreen}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.RecoverWallet}
+          component={RecoverWalletScreen}
+        />
+        {settingsScreens()}
+        {keyScreens()}
+      </RootStack.Group>
+    );
   }
 });

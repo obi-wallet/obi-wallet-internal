@@ -8,9 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import {
   Brand,
-  isAnyCosmosMultisigWallet,
-  isCosmosSinglesigWallet,
-  isTerraMultisigWallet,
+  isCosmosChain,
   RequestObiCosmosSignAndBroadcastMsg,
   RequestObiTerraSignAndBroadcastMsg,
 } from "@obi-wallet/common";
@@ -426,38 +424,26 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
               ];
             }
 
-            if (
-              isAnyCosmosMultisigWallet(wallet) ||
-              isCosmosSinglesigWallet(wallet)
-            ) {
+            const chain = wallet.chain;
+            if (isCosmosChain(chain)) {
               const response = await RequestObiCosmosSignAndBroadcastMsg.send({
-                id: wallet.id,
+                multisigKey: wallet.owner.serialize(),
+                demoMode: wallet.isDemo,
                 encodeObjects: getEncodeObjects(),
-                multisig: isAnyCosmosMultisigWallet(wallet)
-                  ? wallet.currentAdmin
-                  : null,
-                wrap: true,
+                proxyAddress: wallet.proxyAddress.address,
               });
 
               setConfirmModalStatus({
                 visible: true,
                 success: isDeliverTxSuccess(response),
               });
-            }
-
-            if (isTerraMultisigWallet(wallet)) {
-              invariant(
-                wallet.currentAdmin,
-                "Expected `wallet.currentAdmin` to be defined."
-              );
+            } else {
               const response = await RequestObiTerraSignAndBroadcastMsg.send({
-                id: wallet.id,
+                multisigKey: wallet.owner.serialize(),
+                demoMode: wallet.isDemo,
                 messages: getMessages().map((message) => message.toAmino()),
-                multisig: wallet.currentAdmin,
-                wrap: true,
+                proxyAddress: wallet.proxyAddress.address,
               });
-
-              console.log(response);
 
               setConfirmModalStatus({
                 visible: true,
