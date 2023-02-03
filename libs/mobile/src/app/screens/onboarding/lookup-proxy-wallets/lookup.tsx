@@ -61,7 +61,14 @@ export const Lookup = observer(function Lookup({
     })();
   }, [chainId, publicKey]);
 
-  if (!wallets) return null;
+  if (!wallets) {
+    // TODO: loading spinner instead
+    return (
+      <OnboardingScreenContainer>
+        <></>
+      </OnboardingScreenContainer>
+    );
+  }
 
   return (
     <OnboardingScreenContainer>
