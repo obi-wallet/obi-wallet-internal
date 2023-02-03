@@ -1,14 +1,14 @@
 import { Sha256 } from "@cosmjs/crypto/build/sha";
-import secp256k1 from "secp256k1";
+import { randomBytes } from "crypto";
 import fetch from "isomorphic-unfetch";
-
-import { prepareWalletAndOptionallySign } from "../secp256k1";
 import NfcManager, {
   Ndef,
   RegisterTagEventOpts,
   TagEvent,
 } from "react-native-nfc-manager";
-import { randomBytes } from "crypto";
+import secp256k1 from "secp256k1";
+
+import { prepareWalletAndSign } from "../secp256k1";
 
 const DEMO_PUBLIC_KEY = "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI";
 const DEMO_PRIVATE_KEY = "jrfHogEDo91xaC0Kym/BMheAhlm5z93fVwMT8mKTGy4=";
@@ -142,7 +142,7 @@ export async function createNFCSignature({
     boostEntropy,
     localEntropy,
   });
-  return await prepareWalletAndOptionallySign({
+  return await prepareWalletAndSign({
     publicKey,
     privateKey,
     payload,

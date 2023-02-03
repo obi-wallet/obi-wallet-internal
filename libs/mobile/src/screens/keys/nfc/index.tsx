@@ -200,22 +200,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
                     marginTop: isSmallScreenNumber(20, 32),
                   }}
                 >
-                  {/*{wallet.keyInRecovery === "nfc" ? (*/}
-                  {/*  <FormattedMessage*/}
-                  {/*    id="onboarding5.recovery.setnfckey"*/}
-                  {/*    defaultMessage="Set a New NFC Key"*/}
-                  {/*  />*/}
-                  {/*) : wallet.keyInRecovery === "biometrics" ? (*/}
-                  {/*  <FormattedMessage*/}
-                  {/*    id="onboarding2.recovery.nfckey"*/}
-                  {/*    defaultMessage="Recover your NFC Key"*/}
-                  {/*  />*/}
-                  {/*) : (*/}
-                  {/*  <FormattedMessage*/}
-                  {/*    id="onboarding5.setnfckey"*/}
-                  {/*    defaultMessage="Set up an NFC Key"*/}
-                  {/*  />*/}
-                  {/*)}*/}
+                  Set up an NFC Key
                 </Text>
                 <Text
                   style={{
