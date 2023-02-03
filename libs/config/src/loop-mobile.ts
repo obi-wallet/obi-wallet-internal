@@ -18,6 +18,6 @@ export const loopMobileConfig: Config = {
     [Feature.Staking]: false,
     [Feature.InAppPurchases]: true,
     [Feature.BrandToggle]: true,
-    [Feature.DemoMode]: true,
+    [Feature.DemoMode]: false,
   },
 };
