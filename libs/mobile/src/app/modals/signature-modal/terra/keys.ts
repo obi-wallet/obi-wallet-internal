@@ -21,7 +21,7 @@ export class BiometricsKey extends Key {
   protected readonly deviceKeyPublicKey: string;
 
   constructor({ multisigKey }: { multisigKey: MultisigKey }) {
-    const biometrics = multisigKey.getKeyOfType(KeyType.Device);
+    const biometrics = multisigKey.getUsableKeyOfType(KeyType.Device);
     invariant(biometrics, "Expected device key to exist.");
     super(SimplePublicKey.fromAmino(biometrics.payload.publicKey));
     this.deviceKeyPublicKey = biometrics.payload.publicKey.value;
@@ -49,7 +49,7 @@ export class PhoneNumberConfirmKey extends Key {
     multisigKey: MultisigKey;
     demoMode: boolean;
   }) {
-    const phoneNumberKey = multisigKey.getKeyOfType(KeyType.Phone);
+    const phoneNumberKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
     invariant(phoneNumberKey, "Expected phone number key to exist.");
     super(SimplePublicKey.fromAmino(phoneNumberKey.payload.publicKey));
     this.key = key;
@@ -83,7 +83,7 @@ export class PhoneNumberRequestKey extends Key {
     multisigKey: MultisigKey;
     demoMode: boolean;
   }) {
-    const phoneNumberKey = multisigKey.getKeyOfType(KeyType.Phone);
+    const phoneNumberKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
     invariant(phoneNumberKey, "Expected phone number key to exist.");
     super(SimplePublicKey.fromAmino(phoneNumberKey.payload.publicKey));
     this.phoneNumber = phoneNumberKey.payload.phoneNumber;

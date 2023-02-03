@@ -1,7 +1,13 @@
 import { action, computed, makeObservable, observable } from "mobx";
 
-import { KeyType, SerializedKey, SerializedMultisigKey } from "./keys";
+import {
+  KeyType,
+  SerializedKey,
+  SerializedMultisigKey,
+  SerializedPendingRecoveryKey,
+} from "./keys";
 import { SerializedDeviceKeyPayload } from "./keys/device";
+import { SerializedNfcKeyPayload } from "./keys/nfc";
 import { SerializedPhoneKeyPayload } from "./keys/phone";
 import { SerializedSocialKeyPayload } from "./keys/social";
 import { Chain, isTerraChain } from "../../../chains";
@@ -19,7 +25,7 @@ export class MultisigKey implements Draftable {
   protected _chain: Chain;
 
   @observable
-  protected _keys: Entities<SerializedKey>;
+  protected _keys: Entities<SerializedKey | SerializedPendingRecoveryKey>;
 
   @observable
   protected _threshold = 0;
@@ -66,15 +72,35 @@ export class MultisigKey implements Draftable {
   }
 
   public hasKeyOfType(type: KeyType) {
-    return this.keys.some((key) => key.type === type);
+    return this.keys.some((key) => {
+      return getTypeOfKey(key) === type;
+    });
   }
 
   public getKeyOfType<T extends KeyType>(
     type: T
-  ): (SerializedKey & { type: T }) | undefined {
-    return this.keys.find((key) => key.type === type) as
-      | (SerializedKey & { type: T })
+  ):
+    | (
+        | (SerializedKey & { type: T })
+        | (SerializedPendingRecoveryKey & { payload: { type: T } })
+      )
+    | undefined {
+    return this.keys.find((key) => {
+      return getTypeOfKey(key) === type;
+    }) as
+      | (
+          | (SerializedKey & { type: T })
+          | (SerializedPendingRecoveryKey & { payload: { type: T } })
+        )
       | undefined;
+  }
+
+  public getUsableKeyOfType<T extends KeyType>(
+    type: T
+  ): (SerializedKey & { type: T }) | undefined {
+    return this.keys.find((key) => {
+      return SerializedKey.is(key) && key.type === type;
+    }) as (SerializedKey & { type: T }) | undefined;
   }
 
   @action
@@ -107,10 +133,23 @@ export class MultisigKey implements Draftable {
   }
 
   @action
+  public setNfcKey(payload: SerializedNfcKeyPayload) {
+    this.setKey({
+      type: KeyType.Nfc,
+      payload,
+    });
+  }
+
+  @action
+  public removeNfcKey() {
+    this.removeKeyOfType(KeyType.Nfc);
+  }
+
+  @action
   protected removeKeyOfType(type: KeyType) {
     this._keys.removeBy({
       predicate(key) {
-        return key.type === type;
+        return getTypeOfKey(key) === type;
       },
     });
   }
@@ -119,7 +158,7 @@ export class MultisigKey implements Draftable {
   protected setKey(serializedKey: SerializedKey) {
     this._keys.removeBy({
       predicate(key) {
-        return key.type === serializedKey.type;
+        return getTypeOfKey(key) === serializedKey.type;
       },
     });
     this._keys.add({
@@ -130,7 +169,7 @@ export class MultisigKey implements Draftable {
 
   @computed
   public get signerTypes() {
-    return this.keys.map((key) => key.type);
+    return this.keys.map((key) => getTypeOfKey(key));
   }
 
   public serialize(): SerializedMultisigKey {
@@ -166,5 +205,15 @@ export class MultisigKey implements Draftable {
       multisigKey._keys.add({ entity: key });
     });
     return multisigKey;
+  }
+}
+
+function getTypeOfKey(
+  key: SerializedKey | SerializedPendingRecoveryKey
+): string {
+  if (SerializedKey.is(key)) {
+    return key.type;
+  } else {
+    return key.payload.type;
   }
 }

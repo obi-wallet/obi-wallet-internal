@@ -19,7 +19,6 @@ import { SendIcon as Telegram } from "../../components/send-icon";
 export enum ComingSoonKeyType {
   Cloud = "cloud",
   Email = "email",
-  Nfc = "nfc",
   Telegram = "telegram",
   Map = "map",
   Ledger = "ledger",
@@ -30,11 +29,10 @@ export function useKeyMetaData() {
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
 
-  const keys = [KeyType.Device, KeyType.Phone, KeyType.Social];
+  const keys = [KeyType.Device, KeyType.Phone, KeyType.Social, KeyType.Nfc];
   const comingSoonKeys = [
     ComingSoonKeyType.Email,
     ComingSoonKeyType.Cloud,
-    ComingSoonKeyType.Nfc,
     ComingSoonKeyType.Telegram,
     ComingSoonKeyType.Map,
     ComingSoonKeyType.Ledger,
@@ -68,6 +66,10 @@ export function useKeyMetaData() {
       }),
       Icon: isLoop ? SocialLoop : SocialObi,
     },
+    [KeyType.Nfc]: {
+      label: "NFC Tap Key",
+      Icon: Nfc,
+    },
 
     [ComingSoonKeyType.Cloud]: {
       label: "Cloud Key",
@@ -76,10 +78,6 @@ export function useKeyMetaData() {
     [ComingSoonKeyType.Email]: {
       label: "E-mail Key",
       Icon: Email,
-    },
-    [ComingSoonKeyType.Nfc]: {
-      label: "NFC Tap Key",
-      Icon: Nfc,
     },
     [ComingSoonKeyType.Telegram]: {
       label: "Telegram Key",

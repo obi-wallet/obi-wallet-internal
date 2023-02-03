@@ -9,6 +9,8 @@ export default (
         mockAction("onSubmit")();
       }}
       onAddSocial={mockAction("onAddSocial")}
+      onAddNfc={mockAction("onAddNfc")}
+      onRecoverNfc={mockAction("onRecoverNfc")}
     />
   </MultisigDraft.Container>
 );

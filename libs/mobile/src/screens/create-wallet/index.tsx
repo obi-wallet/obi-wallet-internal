@@ -67,6 +67,12 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             flow: KeyFlow.CreateWallet,
           });
         }}
+        onAddNfc={() => {
+          navigation.navigate(KeyRoute.NfcKey, {
+            ...params,
+            flow: KeyFlow.CreateWallet,
+          });
+        }}
       />
     );
   }
@@ -77,23 +83,49 @@ export interface CreateWalletProps {
 
   onSubmit(): void;
   onAddSocial(): void;
+  onAddNfc(): void;
 }
 
 export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   draftId,
   onSubmit,
+  onAddNfc,
   onAddSocial,
 }) {
+  const { draftsStore } = useStore();
+  const draft = draftsStore.get<MultisigKey>({ id: draftId });
+
+  const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
+  const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
+
   return (
     <MultisigSettings
       draftId={draftId}
       title="Create Wallet"
       subTitle="Add keys to improve security."
       actions={{
-        [KeyType.Social]: {
-          label: "Add",
-          onPress: onAddSocial,
-        },
+        [KeyType.Social]: hasSocialKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeSocialKey();
+              },
+            }
+          : {
+              label: "Add",
+              onPress: onAddSocial,
+            },
+        [KeyType.Nfc]: hasNfcKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeNfcKey();
+              },
+            }
+          : {
+              label: "Add",
+              onPress: onAddNfc,
+            },
       }}
     >
       <View style={{ paddingTop: 10 }}>

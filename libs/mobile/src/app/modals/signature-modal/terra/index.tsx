@@ -124,7 +124,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
     }, [multisigKey, chainId, messages, props]);
 
     function getKey({ type }: { type: KeyType }): Key {
-      const factor = multisigKey.getKeyOfType(type);
+      const factor = multisigKey.getUsableKeyOfType(type);
       invariant(factor, "Expected key to exist.");
 
       const alreadySigned = signatures.has(factor.payload.publicKey.value);
@@ -171,8 +171,8 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
       (async () => {
         const usableKeys = [];
 
-        const deviceKey = multisigKey.getKeyOfType(KeyType.Device);
-        const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+        const deviceKey = multisigKey.getUsableKeyOfType(KeyType.Device);
+        const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
 
         if (
           deviceKey &&
@@ -193,7 +193,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
 
     if (!threshold || !usableKeys) return null;
 
-    const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+    const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
 
     const data: Key[] = [
       getKey({
