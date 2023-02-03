@@ -13,9 +13,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import * as A from "./api-types";
 import { IconButton } from "../../../button";
-import { VerifyAndProceedButton } from "../../components/phone-number/verify-and-proceed-button";
-import { OnboardingScreenContainer } from "../../components/onboarding-screen-container";
 import { useStore } from "../../../stores";
+import { OnboardingScreenContainer } from "../../components/onboarding-screen-container";
+import { VerifyAndProceedButton } from "../../components/phone-number/verify-and-proceed-button";
 import { isSmallScreenNumber } from "../../components/screen-size";
 
 export interface LookupProps {
