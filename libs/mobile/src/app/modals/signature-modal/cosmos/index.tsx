@@ -143,7 +143,7 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
     }, [multisigKey.address, currentChainInformation.denom, chainId, messages]);
 
     function getKey({ type }: { type: KeyType }): Key {
-      const factor = multisigKey.getKeyOfType(type);
+      const factor = multisigKey.getUsableKeyOfType(type);
       invariant(factor, "Expected key to exist.");
 
       const alreadySigned = signatures.has(factor.payload.publicKey.value);
@@ -152,7 +152,7 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
 
         switch (type) {
           case KeyType.Device: {
-            const biometrics = multisigKey.getKeyOfType(KeyType.Device);
+            const biometrics = multisigKey.getUsableKeyOfType(KeyType.Device);
             invariant(biometrics, "Expected device key to exist.");
 
             const message = await getMessage();
@@ -191,8 +191,8 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
       (async () => {
         const usableKeys = [];
 
-        const deviceKey = multisigKey.getKeyOfType(KeyType.Device);
-        const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+        const deviceKey = multisigKey.getUsableKeyOfType(KeyType.Device);
+        const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
 
         if (
           deviceKey &&
@@ -213,7 +213,7 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
 
     if (!threshold || !usableKeys) return null;
 
-    const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+    const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
 
     const data: Key[] = [
       getKey({

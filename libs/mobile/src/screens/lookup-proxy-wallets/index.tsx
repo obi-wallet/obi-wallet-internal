@@ -29,7 +29,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
     const { draftsStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({ id: params.draftId });
 
-    const phoneKey = draft.value.keys.find((key) => key.type === KeyType.Phone);
+    const phoneKey = draft.value.getUsableKeyOfType(KeyType.Phone);
 
     invariant(phoneKey, "Phone key is required");
 
@@ -41,8 +41,10 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
           navigation.goBack();
         }}
         onSelect={async (serializedProxyWallet) => {
-          const newDeviceKey = draft.value.getKeyOfType(KeyType.Device);
-          const recoveredPhoneKey = draft.value.getKeyOfType(KeyType.Phone);
+          const newDeviceKey = draft.value.getUsableKeyOfType(KeyType.Device);
+          const recoveredPhoneKey = draft.value.getUsableKeyOfType(
+            KeyType.Phone
+          );
 
           invariant(newDeviceKey, "Device key is required");
           invariant(recoveredPhoneKey, "Phone key is required");
@@ -52,11 +54,11 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
             owner: {
               threshold: parseInt(serializedProxyWallet.owner.threshold, 10),
               keys: serializedProxyWallet.owner.keys.map(
-                (key): MultisigKeySerializedData.SerializedKey => {
-                  // TODO: When adding new keys that need extra information, we probably need to map them to a "dummy" key type to mark the key as not recovered yet.
-                  // Then we remove all keys with dummy type from draft.value and redirect the user to the recovery screen.
-                  // Dummy keys then get options "recover" or "remove".
-
+                (
+                  key
+                ):
+                  | MultisigKeySerializedData.SerializedKey
+                  | MultisigKeySerializedData.SerializedPendingRecoveryKey => {
                   switch (key.type) {
                     case KeyType.Device: {
                       return {
@@ -87,6 +89,14 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
                       return {
                         type: KeyType.Social,
                         payload: {
+                          publicKey:
+                            key.publicKey as MultisigKeySerializedData.SerializedDeviceKey["payload"]["publicKey"],
+                        },
+                      };
+                    case KeyType.Nfc:
+                      return {
+                        payload: {
+                          type: KeyType.Nfc,
                           publicKey:
                             key.publicKey as MultisigKeySerializedData.SerializedDeviceKey["payload"]["publicKey"],
                         },
