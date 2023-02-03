@@ -22,6 +22,7 @@ import { useStore } from "./stores";
 import { CreateWalletScreen } from "../screens/create-wallet";
 import { keyScreens } from "../screens/keys/key-screens";
 import { LookupProxyWalletsScreen } from "../screens/lookup-proxy-wallets";
+import { RecoverWalletScreen } from "../screens/recover-wallet";
 import { WelcomeScreen } from "../screens/welcome";
 
 export interface BaseAppProps {
@@ -198,6 +199,10 @@ export const StateRenderer = observer(function StateRenderer() {
         <RootStack.Screen
           name={OnboardingRoute.CreateWallet}
           component={CreateWalletScreen}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.RecoverWallet}
+          component={RecoverWalletScreen}
         />
         {settingsScreens()}
         {keyScreens()}

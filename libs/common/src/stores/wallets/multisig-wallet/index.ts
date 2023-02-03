@@ -1,6 +1,6 @@
 import { action, computed, makeObservable, observable } from "mobx";
 
-import * as MultisigSerializedData from "./serialized-data";
+import * as MultisigWalletSerializedData from "./serialized-data";
 import { cosmosChains, isTerraChain, terraChains } from "../../../chains";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
 import { MultisigKey } from "../multisig-key";
@@ -9,7 +9,7 @@ import {
   SerializedMultisigWallet,
 } from "../serialized-data";
 
-export { MultisigSerializedData };
+export { MultisigWalletSerializedData };
 
 export class MultisigWallet extends AbstractWallet {
   protected readonly _id: string;
@@ -70,7 +70,7 @@ export class MultisigWallet extends AbstractWallet {
     return codeId !== null && codeId < currentCodeId;
   }
 
-  public get proxyAddress(): MultisigSerializedData.SerializedProxyAddress {
+  public get proxyAddress(): MultisigWalletSerializedData.SerializedProxyAddress {
     return this.serializedWallet.data.proxyAddress;
   }
 

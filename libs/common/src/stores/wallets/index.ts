@@ -27,6 +27,7 @@ import { Entities } from "../entities";
 
 export * from "./cosmos-multisig-wallet";
 export * from "./terra-multisig-wallet";
+export * from "./multisig-wallet";
 
 export enum WalletState {
   /** We are still loading the data from the KV stores. */

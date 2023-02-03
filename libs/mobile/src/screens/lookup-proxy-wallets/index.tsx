@@ -100,17 +100,17 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
             proxyAddress: serializedProxyWallet.proxyAddress,
           };
 
-          const wallet = params.demoMode
-            ? await walletsStore.addMultisigDemoWallet(serializedData)
-            : await walletsStore.addMultisigWallet(serializedData);
-
-          draftsStore.create({
-            original: wallet.owner,
-            value: draft.value,
-            id: getMultisigSettingsDraftId(wallet),
+          const newOwner = MultisigKey.deserialize({
+            chain: serializedData.chain,
+            serialized: serializedData.owner,
           });
+          draft.commit({ original: newOwner });
+          draft.value.setDeviceKey(newDeviceKey.payload);
 
-          navigation.navigate(SettingsRoute.MultisigSettings);
+          navigation.navigate(OnboardingRoute.RecoverWallet, {
+            ...params,
+            serializedData,
+          });
         }}
       />
     );

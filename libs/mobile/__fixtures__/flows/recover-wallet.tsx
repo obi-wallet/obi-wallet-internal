@@ -41,6 +41,10 @@ const routes = [
     name: OnboardingRoute.LookupProxyWallets,
     params: commonParams,
   },
+  {
+    name: OnboardingRoute.RecoverWallet,
+    params: commonParams,
+  },
 ];
 
 function Step({ step }: { step: number }) {
@@ -76,4 +80,5 @@ export default {
   "Step 3: Phone Key Request": <Step step={2} />,
   "Step 4: Phone Key Confirm": <Step step={3} />,
   "Step 5: Lookup Proxy Wallets": <Step step={4} />,
+  "Step 6: Recover Wallet": <Step step={5} />,
 };
