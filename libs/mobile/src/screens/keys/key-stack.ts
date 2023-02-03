@@ -31,5 +31,7 @@ export interface KeyStackParamList extends ParamListBase {
     securityAnswer: string;
   };
   [KeyRoute.SocialKey]: CommonKeyParams;
-  [KeyRoute.NfcKey]: CommonKeyParams;
+  [KeyRoute.NfcKey]: CommonKeyParams & {
+    targetPublicKey?: string;
+  };
 }

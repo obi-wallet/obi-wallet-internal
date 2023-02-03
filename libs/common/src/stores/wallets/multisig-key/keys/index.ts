@@ -61,6 +61,12 @@ export const SerializedKey = t.union([
 
 export type SerializedKey = t.TypeOf<typeof SerializedKey>;
 
+export function isUsableKey(
+  key: SerializedKey | SerializedPendingRecoveryKey
+): key is SerializedKey {
+  return SerializedKey.is(key);
+}
+
 export const SerializedMultisigKey = t.type({
   keys: t.readonly(
     t.array(t.union([SerializedKey, SerializedPendingRecoveryKey]))

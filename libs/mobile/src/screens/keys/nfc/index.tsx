@@ -61,6 +61,7 @@ export const NfcKeyScreen = observer<NfcKeyScreenProps>(function NfcKeyScreen({
 export interface NfcKeyProps {
   draftId: string;
   demoMode: boolean;
+  targetPublicKey?: string;
 
   onSubmit(): void;
 }
@@ -68,6 +69,7 @@ export interface NfcKeyProps {
 export const NfcKey = observer<NfcKeyProps>(function NfcKey({
   draftId,
   demoMode,
+  targetPublicKey,
   onSubmit,
 }) {
   const { configStore, draftsStore } = useStore();
@@ -83,6 +85,9 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
     tagType: string;
     parsed: string;
   } | null>(null);
+
+  // TODO: if target public key is passed, we are recovering an existing NFC key
+  const isRecovering = typeof targetPublicKey === "string";
 
   useEffect(() => {
     (async () => {
