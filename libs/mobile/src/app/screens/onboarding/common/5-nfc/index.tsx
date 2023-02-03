@@ -240,7 +240,7 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
       id: 4,
       title: "YubiKey",
       handler: readYubikey,
-      enabled: true,
+      enabled: false,
     },
   ];
 
@@ -345,37 +345,6 @@ export const MultisigNFC = observer<MultisigNFCProps>(({ navigation }) => {
                         id="onboarding5.nfcunavailable"
                         defaultMessage="No NFC available on this device."
                       />
-                      <TouchableOpacity
-                        style={{ alignItems: "center", paddingHorizontal: 15 }}
-                        onPress={function (): void {
-                          navigation.navigate(
-                            OnboardingRoute.CreateMultisigPhoneNumber
-                          );
-                          getNFCKeyPair({
-                            demoMode,
-                            parsed: "fakeparseddata",
-                            boostEntropy: true,
-                            localEntropy: wallet.getLocalEntropy,
-                          }).then((keypair) => {
-                            const { privateKey, publicKey } = keypair;
-                            prepareWalletAndOptionallySign({
-                              publicKey,
-                              privateKey,
-                            });
-                          });
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: "#437DFF",
-                            fontSize: isSmallScreenNumber(14, 14),
-                            fontWeight: "600",
-                            marginTop: 20,
-                          }}
-                        >
-                          Test NFC Key
-                        </Text>
-                      </TouchableOpacity>
                     </Text>
                   ) : scannedNFC ? (
                     <Text
