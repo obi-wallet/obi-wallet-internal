@@ -5,6 +5,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { View } from "react-native";
+import invariant from "tiny-invariant";
 
 import { AsyncButton } from "../../app/button";
 import { RootRoute, useRootNavigation } from "../../app/root-stack";
@@ -48,6 +49,8 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
         onSubmit={async () => {
           setLoading(true);
 
+          invariant(params.serializedData, "Missing serializedData param.");
+
           const wallet = params.demoMode
             ? await walletsStore.addMultisigDemoWallet(params.serializedData)
             : await walletsStore.addMultisigWallet(params.serializedData);
@@ -73,7 +76,6 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
           }
 
           await walletsStore.setCurrentWallet(wallet.id);
-          // TODO: instead: always all routes but reset when login state changes
           navigation.dispatch(
             CommonActions.reset({
               index: 0,

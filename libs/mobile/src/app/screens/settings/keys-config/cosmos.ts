@@ -73,7 +73,7 @@ export async function handleCosmos({
       wrapRawMessage({
         rawMessage: {
           confirm_update_admin: {
-            signers: multisigPublicKey.value.pubkeys.map((publicKey, i) => {
+            signers: multisigPublicKey.value.pubkeys.map((publicKey) => {
               return cosmos.getAddress({
                 publicKey,
                 chainId,

@@ -35,7 +35,10 @@ export const PhoneKeyRequestScreen = observer<PhoneKeyRequestScreenProps>(
       <PhoneKeyRequest
         {...params}
         onSubmit={(payload) => {
-          navigation.navigate(KeyRoute.PhoneKeyConfirm, payload);
+          navigation.navigate(KeyRoute.PhoneKeyConfirm, {
+            ...params,
+            ...payload,
+          });
         }}
       />
     );
@@ -43,14 +46,10 @@ export const PhoneKeyRequestScreen = observer<PhoneKeyRequestScreenProps>(
 );
 
 export interface PhoneKeyRequestProps {
-  draftId: string;
   flow: KeyFlow;
   demoMode: boolean;
 
   onSubmit(payload: {
-    draftId: string;
-    flow: KeyFlow;
-    demoMode: boolean;
     phoneNumber: string;
     securityQuestion: string;
     securityAnswer: string;
@@ -58,7 +57,7 @@ export interface PhoneKeyRequestProps {
 }
 
 export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
-  function PhoneKeyRequest({ draftId, demoMode, flow, onSubmit }) {
+  function PhoneKeyRequest({ demoMode, flow, onSubmit }) {
     const intl = useIntl();
     const { configStore, chainStore } = useStore();
     const isObi = configStore.isObi();
@@ -214,7 +213,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                       marginBottom: 10,
                     }}
                   >
-                    {flow === KeyFlow.ReplaceKey ? (
+                    {flow === KeyFlow.EditWallet ? (
                       <FormattedMessage
                         id="onboarding2.recovery.authyourkeys"
                         defaultMessage="Create a New Phone Number Key"
@@ -237,7 +236,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                       fontSize: isSmallScreenNumber(12, 14),
                     }}
                   >
-                    {flow === KeyFlow.ReplaceKey ? (
+                    {flow === KeyFlow.EditWallet ? (
                       <FormattedMessage
                         id="onboarding2.recovery.authyourkeyssubtext"
                         defaultMessage="Please answer a security question. It can be the same as your old answer, or different."
@@ -304,9 +303,6 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                         chainId,
                       });
                       onSubmit({
-                        draftId,
-                        flow,
-                        demoMode,
                         phoneNumber,
                         securityQuestion,
                         securityAnswer,

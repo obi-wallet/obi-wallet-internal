@@ -18,7 +18,7 @@ import { AsyncButton, Button } from "../../../button";
 import { useRootNavigation } from "../../../root-stack";
 import { useMultisigWallet, useStore } from "../../../stores";
 
-export function getMultisigSettingsDraftId(wallet: Wallet) {
+function getMultisigSettingsDraftId(wallet: Wallet) {
   return `multisig-settings/${wallet.id}`;
 }
 
@@ -78,7 +78,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
           onPress: () => {
             navigation.navigate(KeyRoute.PhoneKeyRequest, {
               draftId,
-              flow: KeyFlow.ReplaceKey,
+              flow: KeyFlow.EditWallet,
               demoMode: wallet.isDemo,
             });
           },
@@ -95,7 +95,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
               onPress: () => {
                 navigation.navigate(KeyRoute.SocialKey, {
                   draftId,
-                  flow: KeyFlow.ReplaceKey,
+                  flow: KeyFlow.EditWallet,
                   demoMode: wallet.isDemo,
                 });
               },

@@ -1,13 +1,9 @@
-import { Pubkey } from "@cosmjs/amino";
 import {
-  cosmos,
   createLcdClient,
   createStargateClient,
   isCosmosChain,
   isTerraChain,
-  KeyType,
   MultisigKey,
-  terra,
   Text,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -17,7 +13,12 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { SettingsRoute, useRootNavigation, useStore } from "../../..";
+import {
+  OnboardingRoute,
+  SettingsRoute,
+  useRootNavigation,
+  useStore,
+} from "../../..";
 import { InlineButton } from "../../../app/button";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
@@ -44,10 +45,12 @@ export const SocialKeyScreen = observer<SocialKeyScreenProps>(
         onSubmit={() => {
           switch (params.flow) {
             case KeyFlow.CreateWallet:
-            case KeyFlow.RecoverWallet:
-              // TODO:
+              navigation.navigate(OnboardingRoute.CreateWallet, params);
               break;
-            case KeyFlow.ReplaceKey:
+            case KeyFlow.RecoverWallet:
+              navigation.navigate(OnboardingRoute.RecoverWallet, params);
+              break;
+            case KeyFlow.EditWallet:
               navigation.navigate(SettingsRoute.MultisigSettings);
               break;
           }
@@ -81,21 +84,6 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
   const intl = useIntl();
 
   const minAddressInputChars = 43;
-
-  const chainId = chainStore.currentChain;
-  const toAddress = isCosmosChain(chainId)
-    ? ({ publicKey }: { publicKey: Pubkey }) =>
-        cosmos.getAddress({
-          publicKey,
-          chainId,
-        })
-    : terra.getAddress;
-  const currentSocialKey = draft.original.getKeyOfType(KeyType.Social);
-  const currentlyUsesObi =
-    currentSocialKey &&
-    toAddress({
-      publicKey: currentSocialKey.payload.publicKey,
-    }) === obiAddress;
 
   useEffect(() => {
     if (
@@ -172,7 +160,7 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
                     marginTop: isSmallScreenNumber(20, 32),
                   }}
                 >
-                  {flow === KeyFlow.ReplaceKey ? (
+                  {flow === KeyFlow.EditWallet ? (
                     <FormattedMessage
                       id="onboarding5.recovery.setsocialkey"
                       defaultMessage="Set a New Social Key"

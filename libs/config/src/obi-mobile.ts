@@ -1,4 +1,4 @@
-import { Brand, Config, Feature, WalletType } from "@obi-wallet/common";
+import { Brand, Config, Feature } from "@obi-wallet/common";
 
 export const obiMobileConfig: Config = {
   brand: Brand.Obi,

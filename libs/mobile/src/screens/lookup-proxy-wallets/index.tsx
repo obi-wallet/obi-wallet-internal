@@ -14,8 +14,6 @@ import {
   OnboardingRoute,
   OnboardingStackParamList,
 } from "../../app/screens/onboarding/onboarding-stack";
-import { getMultisigSettingsDraftId } from "../../app/screens/settings/keys-config";
-import { SettingsRoute } from "../../app/screens/settings/settings-stack";
 import { useStore } from "../../app/stores";
 
 export type LookupProxyWalletsScreen = NativeStackScreenProps<
@@ -28,7 +26,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
     const navigation = useRootNavigation();
     const { params } = route;
 
-    const { draftsStore, walletsStore } = useStore();
+    const { draftsStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({ id: params.draftId });
 
     const phoneKey = draft.value.keys.find((key) => key.type === KeyType.Phone);
@@ -55,7 +53,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
               threshold: parseInt(serializedProxyWallet.owner.threshold, 10),
               keys: serializedProxyWallet.owner.keys.map(
                 (key): MultisigKeySerializedData.SerializedKey => {
-                  // TODO: When adding new keys, we probably need to map them to a "dummy" key type to mark the key as not recovered yet.
+                  // TODO: When adding new keys that need extra information, we probably need to map them to a "dummy" key type to mark the key as not recovered yet.
                   // Then we remove all keys with dummy type from draft.value and redirect the user to the recovery screen.
                   // Dummy keys then get options "recover" or "remove".
 

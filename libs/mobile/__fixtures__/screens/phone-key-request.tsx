@@ -8,12 +8,7 @@ import {
 function renderFlavor(flow: PhoneKeyRequestProps["flow"]) {
   return (
     <MultisigDraft.Container>
-      <PhoneKeyRequest
-        draftId={MultisigDraft.draftId}
-        flow={flow}
-        demoMode
-        onSubmit={mockAction("onSubmit")}
-      />
+      <PhoneKeyRequest flow={flow} demoMode onSubmit={mockAction("onSubmit")} />
     </MultisigDraft.Container>
   );
 }
@@ -21,5 +16,5 @@ function renderFlavor(flow: PhoneKeyRequestProps["flow"]) {
 export default {
   [KeyFlow.CreateWallet]: renderFlavor(KeyFlow.CreateWallet),
   [KeyFlow.RecoverWallet]: renderFlavor(KeyFlow.RecoverWallet),
-  [KeyFlow.ReplaceKey]: renderFlavor(KeyFlow.ReplaceKey),
+  [KeyFlow.EditWallet]: renderFlavor(KeyFlow.EditWallet),
 };

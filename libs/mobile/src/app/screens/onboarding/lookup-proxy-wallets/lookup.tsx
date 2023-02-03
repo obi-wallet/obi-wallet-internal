@@ -1,6 +1,5 @@
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
@@ -9,7 +8,6 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Linking, ScrollView, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import * as A from "./api-types";
 import { IconButton } from "../../../button";

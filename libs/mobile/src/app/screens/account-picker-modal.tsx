@@ -10,7 +10,7 @@ import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
 
 import { Modal, MODAL_TIMING } from "./components/modal";
 import { IconButton } from "../button";
-import { RootRoute, RootStack, useRootNavigation } from "../root-stack";
+import { RootRoute, useRootNavigation } from "../root-stack";
 import { useStore } from "../stores";
 
 export interface AccountPickerModalProps {

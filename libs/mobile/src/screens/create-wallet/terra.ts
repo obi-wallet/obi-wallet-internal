@@ -1,5 +1,4 @@
 import {
-  ChainStore,
   Draft,
   MultisigKey,
   RequestObiTerraSignAndBroadcastMsg,

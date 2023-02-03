@@ -50,7 +50,6 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             });
           }
 
-          // TODO: instead: always all routes but reset when login state changes
           navigation.dispatch(
             CommonActions.reset({
               index: 0,

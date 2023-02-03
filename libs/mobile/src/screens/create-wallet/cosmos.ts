@@ -1,15 +1,12 @@
 import {
-  ChainStore,
   cosmos,
   CosmosChain,
   cosmosChains,
   Draft,
-  isCosmosChain,
   MultisigKey,
   RequestObiCosmosSignAndBroadcastMsg,
   WalletsStore,
 } from "@obi-wallet/common";
-import invariant from "tiny-invariant";
 
 export async function handleCosmos({
   draft,

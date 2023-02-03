@@ -24,5 +24,5 @@ function renderFlavor(flow: PhoneKeyConfirmProps["flow"]) {
 export default {
   [KeyFlow.CreateWallet]: renderFlavor(KeyFlow.CreateWallet),
   [KeyFlow.RecoverWallet]: renderFlavor(KeyFlow.RecoverWallet),
-  [KeyFlow.ReplaceKey]: renderFlavor(KeyFlow.ReplaceKey),
+  [KeyFlow.EditWallet]: renderFlavor(KeyFlow.EditWallet),
 };

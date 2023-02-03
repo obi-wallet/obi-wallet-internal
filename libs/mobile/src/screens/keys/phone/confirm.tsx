@@ -44,7 +44,7 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
             case KeyFlow.CreateWallet:
               navigation.navigate(OnboardingRoute.CreateWallet, params);
               break;
-            case KeyFlow.ReplaceKey:
+            case KeyFlow.EditWallet:
               navigation.navigate(SettingsRoute.MultisigSettings);
               break;
             case KeyFlow.RecoverWallet:
@@ -160,7 +160,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                       marginTop: 32,
                     }}
                   >
-                    {flow === KeyFlow.ReplaceKey ? (
+                    {flow === KeyFlow.EditWallet ? (
                       <FormattedMessage
                         id="onboarding2.recovery.authyourkeys"
                         defaultMessage="Create a Replacement Phone Number Key"

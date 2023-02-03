@@ -35,7 +35,6 @@ import {
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useIntl } from "react-intl";
 import invariant from "tiny-invariant";
 
 import { wrapMessages } from "./wrap-messages";

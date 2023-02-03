@@ -1,3 +1,4 @@
+import { MultisigWalletSerializedData } from "@obi-wallet/common";
 import { ParamListBase } from "@react-navigation/native";
 
 export enum KeyRoute {
@@ -8,20 +9,16 @@ export enum KeyRoute {
 }
 
 export enum KeyFlow {
-  // TODO: rename to Create new wallet
   CreateWallet = "CreateWallet",
-  // TODO: rename to Customize existing wallet
-  ReplaceKey = "ReplaceKey",
-  // TODO: rename to Recover existing wallet
-  // Basically goes device > phone > lookup, and then you move to the Customize flow.
-  // "Unrecoverable keys", e.g. the previous device key, can be interpreted as a "non-signable" Public key
+  EditWallet = "EditWallet",
   RecoverWallet = "RecoverWallet",
 }
 
 interface CommonKeyParams {
-  draftId: string;
   flow: KeyFlow;
+  draftId: string;
   demoMode: boolean;
+  serializedData?: MultisigWalletSerializedData.SerializedData;
 }
 
 export interface KeyStackParamList extends ParamListBase {

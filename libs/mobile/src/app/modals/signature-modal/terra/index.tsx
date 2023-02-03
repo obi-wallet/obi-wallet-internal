@@ -6,7 +6,6 @@ import {
   MultisigKey,
   RequestObiTerraSignAndBroadcastPayload,
   terra,
-  terraChains,
 } from "@obi-wallet/common";
 import {
   BlockTxBroadcastResult,
@@ -17,7 +16,6 @@ import {
 } from "@terra-money/terra.js";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useIntl } from "react-intl";
 import { Alert } from "react-native";
 import invariant from "tiny-invariant";
 
@@ -68,7 +66,6 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
     demoMode,
     ...props
   }: TerraSignatureModalProps) {
-    const intl = useIntl();
     const [signatures, setSignatures] = useState(
       new Map<string, SignatureV2>()
     );
