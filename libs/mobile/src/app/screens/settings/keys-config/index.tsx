@@ -60,6 +60,9 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
   // TODO: show banner if dirty
   // TODO: highlight changed keys
 
+  const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
+  const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
+
   return (
     <MultisigSettings
       draftId={draftId}
@@ -83,7 +86,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
             });
           },
         },
-        [KeyType.Social]: draft.value.hasKeyOfType(KeyType.Social)
+        [KeyType.Social]: hasSocialKey
           ? {
               label: "Remove",
               onPress: () => {
@@ -94,6 +97,23 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
               label: "Add",
               onPress: () => {
                 navigation.navigate(KeyRoute.SocialKey, {
+                  draftId,
+                  flow: KeyFlow.EditWallet,
+                  demoMode: wallet.isDemo,
+                });
+              },
+            },
+        [KeyType.Nfc]: hasNfcKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeNfcKey();
+              },
+            }
+          : {
+              label: "Add",
+              onPress: () => {
+                navigation.navigate(KeyRoute.NfcKey, {
                   draftId,
                   flow: KeyFlow.EditWallet,
                   demoMode: wallet.isDemo,

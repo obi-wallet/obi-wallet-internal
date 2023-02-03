@@ -104,26 +104,28 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
       title="Create Wallet"
       subTitle="Add keys to improve security."
       actions={{
-        [KeyType.Social]: {
-          label: hasSocialKey ? "Remove" : "Add",
-          onPress: () => {
-            if (hasSocialKey) {
-              draft.value.removeSocialKey();
-            } else {
-              onAddSocial();
+        [KeyType.Social]: hasSocialKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeSocialKey();
+              },
             }
-          },
-        },
-        [KeyType.Nfc]: {
-          label: hasNfcKey ? "Remove" : "Add",
-          onPress: () => {
-            if (hasNfcKey) {
-              draft.value.removeNfcKey();
-            } else {
-              onAddNfc();
+          : {
+              label: "Add",
+              onPress: onAddSocial,
+            },
+        [KeyType.Nfc]: hasNfcKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeNfcKey();
+              },
             }
-          },
-        },
+          : {
+              label: "Add",
+              onPress: onAddNfc,
+            },
       }}
     >
       <View style={{ paddingTop: 10 }}>
