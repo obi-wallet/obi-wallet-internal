@@ -10,13 +10,13 @@ import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
 
-import { handleCosmos } from "./cosmos";
-import { handleTerra } from "./terra";
 import { MultisigSettings } from "../../../../components/multisig-settings";
 import { KeyFlow, KeyRoute } from "../../../../screens/keys";
 import { AsyncButton, Button } from "../../../button";
 import { useRootNavigation } from "../../../root-stack";
 import { useMultisigWallet, useStore } from "../../../stores";
+import { handleCosmos } from "./cosmos";
+import { handleTerra } from "./terra";
 
 function getMultisigSettingsDraftId(wallet: Wallet) {
   return `multisig-settings/${wallet.id}`;

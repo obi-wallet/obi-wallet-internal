@@ -1,6 +1,7 @@
 import { KeyType, MultisigKey, TerraChain } from "@obi-wallet/common";
 import { Key, SimplePublicKey } from "@terra-money/terra.js";
 import { SHA256, Word32Array } from "jscrypto";
+import secp256k1 from "secp256k1";
 import invariant from "tiny-invariant";
 
 import { createBiometricsSignature } from "../../../biometrics";
@@ -102,5 +103,26 @@ export class PhoneNumberRequestKey extends Key {
       chainId: this.chainId,
     });
     return new Buffer("");
+  }
+}
+
+export class EmailKey extends Key {
+  protected readonly privateKey: string;
+
+  constructor({ multisigKey, recoveryKey }: {
+    multisigKey: MultisigKey,
+    recoveryKey: string,
+  }) {
+    const email = multisigKey.getKeyOfType(KeyType.Device);
+    invariant(email, "Expected device key to exist.");
+    super(SimplePublicKey.fromAmino(email.payload.publicKey));
+  }
+
+  async sign(payload: Buffer): Promise<Buffer> {
+    const privateKeyUint8Array = new Uint8Array(
+      Buffer.from(this.privateKey, "base64")
+    );
+    const { signature } = secp256k1.ecdsaSign(payload, privateKeyUint8Array);
+    return Buffer.from(signature);
   }
 }
