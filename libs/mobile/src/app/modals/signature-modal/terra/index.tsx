@@ -17,14 +17,17 @@ import {
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Alert } from "react-native";
+import NfcManager, { NfcEvents, OnDiscoverTag } from "react-native-nfc-manager";
 import invariant from "tiny-invariant";
 
 import {
   BiometricsKey,
+  NfcKey,
   PhoneNumberConfirmKey,
   PhoneNumberRequestKey,
 } from "./keys";
 import { existsKeyOnDevice } from "../../../biometrics";
+import { checkIsSupported, parseNFCData, startReading } from "../../../nfc";
 import {
   BottomSheet,
   BottomSheetRef,
@@ -151,6 +154,37 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
           case KeyType.Phone:
             phoneNumberBottomSheetRef.current?.snapToIndex(0);
             break;
+          case KeyType.Nfc: {
+            const onDiscoverTag: OnDiscoverTag = async (tag) => {
+              if (tag.ndefMessage && tag.ndefMessage.length > 0) {
+                const parsed = parseNFCData(tag);
+
+                console.warn(
+                  `Associated NFC address is ${terra.getAddress({
+                    publicKey: factor.payload.publicKey,
+                  })}`
+                );
+
+                const nfcKey = new NfcKey({
+                  multisigKey,
+                  parsed,
+                  demoMode,
+                });
+
+                const signature = await nfcKey.createSignatureAmino(signDoc);
+
+                setSignatures((signatures) => {
+                  return new Map(
+                    signatures.set(factor.payload.publicKey.value, signature)
+                  );
+                });
+              }
+            };
+
+            NfcManager.setEventListener(NfcEvents.DiscoverTag, onDiscoverTag);
+            await startReading("Tap your NFC device to sign this transaction.");
+            break;
+          }
           default:
             console.log("Not implemented yet");
             break;
@@ -173,6 +207,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
 
         const deviceKey = multisigKey.getUsableKeyOfType(KeyType.Device);
         const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
+        const nfcKey = multisigKey.getUsableKeyOfType(KeyType.Nfc);
 
         if (
           deviceKey &&
@@ -187,6 +222,10 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
           usableKeys.push(KeyType.Phone);
         }
 
+        if (nfcKey && (await checkIsSupported())) {
+          usableKeys.push(KeyType.Nfc);
+        }
+
         setUsableKeys(usableKeys);
       })();
     }, [multisigKey]);
@@ -195,19 +234,13 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
 
     const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
 
-    const data: Key[] = [
-      getKey({
-        type: KeyType.Device,
-      }),
-      getKey({
-        type: KeyType.Phone,
-      }),
-    ].filter((key) => {
-      return (
-        usableKeys.includes(key.type as KeyType) &&
-        !(hiddenKeyTypes || []).includes(key.type as KeyType)
-      );
-    });
+    const data: Key[] = usableKeys
+      .map((type) => {
+        return getKey({ type });
+      })
+      .filter((key) => {
+        return !(hiddenKeyTypes || []).includes(key.type as KeyType);
+      });
 
     return (
       <MultisigConfirmMessages
