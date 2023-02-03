@@ -4,6 +4,7 @@ import { SHA256, Word32Array } from "jscrypto";
 import invariant from "tiny-invariant";
 
 import { createBiometricsSignature } from "../../../biometrics";
+import { createNFCSignature } from "../../../nfc";
 import {
   parseSignatureTextMessageResponse,
   sendSignatureTextMessage,
@@ -102,5 +103,42 @@ export class PhoneNumberRequestKey extends Key {
       chainId: this.chainId,
     });
     return new Buffer("");
+  }
+}
+
+export class NfcKey extends Key {
+  protected localEntropy: string;
+
+  protected parsed: string;
+
+  protected demoMode: boolean;
+
+  constructor({
+    multisigKey,
+    parsed,
+    demoMode,
+  }: {
+    multisigKey: MultisigKey;
+    parsed: string;
+    demoMode: boolean;
+  }) {
+    const nfcKey = multisigKey.getUsableKeyOfType(KeyType.Nfc);
+    invariant(nfcKey, "Expected NFC key to exist.");
+    super(SimplePublicKey.fromAmino(nfcKey.payload.publicKey));
+    this.localEntropy = nfcKey.payload.localEntropy;
+    this.parsed = parsed;
+    this.demoMode = demoMode;
+  }
+
+  async sign(payload: Buffer): Promise<Buffer> {
+    const { signature } = await createNFCSignature({
+      payload: createHash(payload),
+      demoMode: this.demoMode,
+      parsed: this.parsed,
+      boostEntropy: true,
+      localEntropy: this.localEntropy,
+    });
+
+    return Buffer.from(signature);
   }
 }

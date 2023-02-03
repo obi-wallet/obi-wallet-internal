@@ -7,9 +7,6 @@ export $(grep -v '^#' apps/loop-mobile/.env | xargs)
 # Create empty local.properties file
 touch apps/loop-mobile/android/local.properties
 
-# Create empty React Cosmos userdeps file
-touch apps/loop-mobile/cosmos.userdeps.js
-
 # Create apps/loop-mobile/ios/Mobile/AppCenter-Config.plist
 tee apps/loop-mobile/ios/Mobile/AppCenter-Config.plist <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -35,9 +32,6 @@ export $(grep -v '^#' apps/obi-mobile/.env | xargs)
 # Create empty local.properties file
 touch apps/obi-mobile/android/local.properties
 
-# Create empty React Cosmos userdeps file
-touch apps/obi-mobile/cosmos.userdeps.js
-
 # Create apps/obi-mobile/ios/Mobile/AppCenter-Config.plist
 tee apps/obi-mobile/ios/Mobile/AppCenter-Config.plist <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -56,6 +50,9 @@ tee apps/obi-mobile/android/app/src/main/assets/appcenter-config.json <<EOF
   "app_secret": "${ANDROID_APP_CENTER_SECRET}"
 }
 EOF
+
+# Create empty React Cosmos userdeps file
+touch libs/mobile/cosmos.userdeps.js
 
 # Build provider
 bash scripts/build-provider.sh
