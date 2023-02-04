@@ -90,7 +90,9 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   draftId,
   onSubmit,
   onAddSocial,
+  onAddEmail,
 }) {
+
   return (
     <MultisigSettings
       draftId={draftId}
