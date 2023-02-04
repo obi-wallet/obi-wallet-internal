@@ -107,7 +107,7 @@ export class PhoneNumberRequestKey extends Key {
 }
 
 export class EmailKey extends Key {
-  protected readonly privateKey: string;
+  protected readonly recoveryKey: string;
 
   constructor({ multisigKey, recoveryKey }: {
     multisigKey: MultisigKey,
@@ -116,11 +116,12 @@ export class EmailKey extends Key {
     const email = multisigKey.getKeyOfType(KeyType.Device);
     invariant(email, "Expected device key to exist.");
     super(SimplePublicKey.fromAmino(email.payload.publicKey));
+    this.recoveryKey = recoveryKey;
   }
 
   async sign(payload: Buffer): Promise<Buffer> {
     const privateKeyUint8Array = new Uint8Array(
-      Buffer.from(this.privateKey, "base64")
+      Buffer.from(this.recoveryKey, "base64")
     );
     const { signature } = secp256k1.ecdsaSign(payload, privateKeyUint8Array);
     return Buffer.from(signature);

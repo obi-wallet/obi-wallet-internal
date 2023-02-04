@@ -89,9 +89,9 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   useEffect(() => {
     if (generatedAddress === "") {
       const privateKeyBuffer = randomBytes(32);
-      const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer);
+      const publicKeyBuffer = Buffer.from(secp256k1.publicKeyCreate(privateKeyBuffer)).toString("base64");
       setRecoveryKey(privateKeyBuffer.toString("base64"));
-      setPublicKey(publicKeyBuffer.toString());
+      setPublicKey(publicKeyBuffer);
       setGeneratedAddress(pubkeyToAddress({
         type: pubkeyType.secp256k1,
         value: publicKeyBuffer,

@@ -1,9 +1,9 @@
-import { RootStack } from "../../app/root-stack";
 import { DeviceKeyScreen } from "./device";
 import { EmailKeyScreen } from "./email";
 import { KeyRoute } from "./key-stack";
 import { PhoneKeyConfirmScreen, PhoneKeyRequestScreen } from "./phone";
 import { SocialKeyScreen } from "./social";
+import { RootStack } from "../../app/root-stack";
 
 export const keyScreens = () => {
   return (

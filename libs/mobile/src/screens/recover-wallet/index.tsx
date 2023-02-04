@@ -113,7 +113,7 @@ export interface RecoverWalletProps {
 }
 
 export const RecoverWallet = observer<RecoverWalletProps>(
-  function RecoverWallet({ draftId, onSubmit, onAddSocial }) {
+  function RecoverWallet({ draftId, onSubmit, onAddSocial, onAddEmail }) {
     return (
       <MultisigSettings
         draftId={draftId}
