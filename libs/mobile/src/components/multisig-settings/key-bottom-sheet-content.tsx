@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { KeyType, MultisigKey, Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage } from "react-intl";
-import { TouchableOpacity, View } from "react-native";
+import { Alert, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useKeyMetaData } from "./key-meta-data";
@@ -34,7 +34,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
 
     const safeArea = useSafeAreaInsets();
 
-    const getRecoverButton = () => {
+    const getRecoverButton = () => {      
       if (!action) return null;
 
       return (
@@ -85,6 +85,13 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
             <FormattedMessage
               id="settings.multisig.modal.social.text"
               defaultMessage="This key belongs to a trusted contact or to Obi and can help you recover your account. It cannot access your account on its own."
+            />
+          );
+        case KeyType.Email:
+          return (
+            <FormattedMessage
+              id="settings.multisig.modal.email.text"
+              defaultMessage="This key is kept in an email account for one-time recovery use. Future versions will use seamless zero-knowledge email recovery."
             />
           );
         default:
@@ -187,7 +194,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
           ) : null}
         </View>
         <View style={{ alignItems: "center" }}>
-          {getRecoverButton()}
+          { getRecoverButton()}
           <TouchableOpacity
             onPress={() => onClose()}
             style={{ paddingVertical: 15, paddingHorizontal: 63 }}

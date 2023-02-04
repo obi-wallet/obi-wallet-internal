@@ -1,6 +1,7 @@
 import * as t from "io-ts";
 
 import { SerializedDeviceKeyPayload } from "./device";
+import { SerializedEmailKeyPayload } from "./email";
 import { SerializedPhoneKeyPayload } from "./phone";
 import { SerializedSocialKeyPayload } from "./social";
 
@@ -8,6 +9,7 @@ export enum KeyType {
   Device = "device",
   Phone = "phone",
   Social = "social",
+  Email = "email",
 }
 
 export const SerializedDeviceKey = t.type({
@@ -31,10 +33,18 @@ export const SerializedSocialKey = t.type({
 
 export type SerializedSocialKey = t.TypeOf<typeof SerializedSocialKey>;
 
+export const SerializedEmailKey = t.type({
+  type: t.literal(KeyType.Email),
+  payload: SerializedEmailKeyPayload,
+});
+
+export type SerializedEmailKey = t.TypeOf<typeof SerializedEmailKey>;
+
 export const SerializedKey = t.union([
   SerializedDeviceKey,
   SerializedPhoneKey,
   SerializedSocialKey,
+  SerializedEmailKey,
 ]);
 
 export type SerializedKey = t.TypeOf<typeof SerializedKey>;

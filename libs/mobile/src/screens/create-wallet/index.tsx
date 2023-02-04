@@ -67,6 +67,12 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             flow: KeyFlow.CreateWallet,
           });
         }}
+        onAddEmail={() => {
+          navigation.navigate(KeyRoute.EmailKey, {
+            ...params,
+            flow: KeyFlow.CreateWallet,
+          });
+        }}
       />
     );
   }
@@ -77,6 +83,7 @@ export interface CreateWalletProps {
 
   onSubmit(): void;
   onAddSocial(): void;
+  onAddEmail(): void;
 }
 
 export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
@@ -93,6 +100,10 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
         [KeyType.Social]: {
           label: "Add",
           onPress: onAddSocial,
+        },
+        [KeyType.Email]: {
+          label: "Add",
+          onPress: onAddEmail,
         },
       }}
     >

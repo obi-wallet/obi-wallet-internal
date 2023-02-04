@@ -30,9 +30,8 @@ export function useKeyMetaData() {
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
 
-  const keys = [KeyType.Device, KeyType.Phone, KeyType.Social];
+  const keys = [KeyType.Device, KeyType.Phone, KeyType.Social, KeyType.Email];
   const comingSoonKeys = [
-    ComingSoonKeyType.Email,
     ComingSoonKeyType.Cloud,
     ComingSoonKeyType.Nfc,
     ComingSoonKeyType.Telegram,
@@ -68,14 +67,16 @@ export function useKeyMetaData() {
       }),
       Icon: isLoop ? SocialLoop : SocialObi,
     },
-
+    [KeyType.Email]: {
+      label: intl.formatMessage({
+        id: "settings.multisig.option.emailkey",
+        defaultMessage: "Email Recovery Key",
+      }),
+      Icon: Email,
+    },
     [ComingSoonKeyType.Cloud]: {
       label: "Cloud Key",
       Icon: Cloud,
-    },
-    [ComingSoonKeyType.Email]: {
-      label: "E-mail Key",
-      Icon: Email,
     },
     [ComingSoonKeyType.Nfc]: {
       label: "NFC Tap Key",

@@ -2,6 +2,7 @@ import { action, computed, makeObservable, observable } from "mobx";
 
 import { KeyType, SerializedKey, SerializedMultisigKey } from "./keys";
 import { SerializedDeviceKeyPayload } from "./keys/device";
+import { SerializedEmailKeyPayload } from "./keys/email";
 import { SerializedPhoneKeyPayload } from "./keys/phone";
 import { SerializedSocialKeyPayload } from "./keys/social";
 import { Chain, isTerraChain } from "../../../chains";
@@ -102,8 +103,21 @@ export class MultisigKey implements Draftable {
   }
 
   @action
+  public setEmailKey(payload: SerializedEmailKeyPayload) {
+    this.setKey({
+      type: KeyType.Email,
+      payload,
+    });
+  }
+
+  @action
   public removeSocialKey() {
     this.removeKeyOfType(KeyType.Social);
+  }
+
+  @action
+  public removeEmailKey() {
+    this.removeKeyOfType(KeyType.Email);
   }
 
   @action
