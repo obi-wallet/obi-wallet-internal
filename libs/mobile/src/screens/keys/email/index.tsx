@@ -115,7 +115,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   }
 
   function encodeForMailto(text: string): string {
-    return encodeURIComponent(text).replace(/%20/g, '+');
+    return encodeURIComponent(text).replace(/%20/g, '%20');
   }
 
   return (
@@ -209,7 +209,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                     // @ts-expect-error TODO: TypeScript doesn't understand this specific case
                     publicKey,
                   });
-                  Linking.openURL(`mailto:mailto@${email}?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
+                  Linking.openURL(`mailto:${email}?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
                     "This is a v1 recovery key. You are sending it to yourself; Obi can never access its contents. " +
                     "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
                     "DO NOT DELETE this email unless you are saving its contents to a password manager or physical location. In future versions " +
