@@ -14,3 +14,4 @@ export * from "./app/modals";
 export * from "./app/modals/signature-modal/pretty-message";
 export * from "./app/screens/account";
 export * from "./app/text-input";
+export * from "./app/screens/components/toggle-switch";

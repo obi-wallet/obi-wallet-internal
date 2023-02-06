@@ -1,4 +1,10 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronDown,
+  faChevronUp,
+  faPlus,
+  faCaretUp,
+  faCaretDown,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
@@ -24,6 +30,8 @@ import { NetworkAccountPickerLayout } from "../components/network-account-picker
 import { Style } from "util";
 import { Button } from "../../button";
 import { TextInput } from "../../text-input";
+import { useState } from "react";
+import { ToggleSwitch } from "../components/toggle-switch";
 
 export const AccountScreen = observer(function AccountScreen() {
   return (
@@ -57,7 +65,6 @@ export const AccountScreen = observer(function AccountScreen() {
 });
 
 export const AccountScreenInner = observer(function AccountScreenInner() {
-  const wallet = useMultisigWallet();
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
 
@@ -125,16 +132,39 @@ export const AccountScreenInner = observer(function AccountScreenInner() {
 });
 
 const AccountsList = () => {
+  const [itemOpened, setItemOpened] = useState<number | null>(null);
+  console.log({ itemOpened });
   return (
     <FlatList
       data={[1, 2]}
-      renderItem={AccountItem}
+      renderItem={(element) => {
+        console.log({ element });
+        return (
+          <AccountItem
+            onOpenToggle={(selected) =>
+              selected === itemOpened
+                ? setItemOpened(null)
+                : setItemOpened(selected)
+            }
+            isOpen={Number(itemOpened) === Number(element.item)}
+            account={element.item}
+          />
+        );
+      }}
       keyExtractor={(item) => item.toString()}
     />
   );
 };
 
-const AccountItem = () => {
+const AccountItem = ({
+  isOpen,
+  onOpenToggle,
+  account,
+}: {
+  isOpen: boolean;
+  account: number;
+  onOpenToggle: (item: number) => void;
+}) => {
   return (
     <View
       style={{
@@ -162,7 +192,6 @@ const AccountItem = () => {
             style={{
               color: "white",
               fontSize: 12,
-              fontFamily: "Poppins-Light",
             }}
           >
             parent account panterra0x
@@ -178,36 +207,56 @@ const AccountItem = () => {
           right: 5,
           top: 5,
           borderRadius: 100,
+          justifyContent: "center",
+          alignItems: "center",
         }}
-      />
-      <ProgessBar amount={70} containerStyle={{ marginVertical: 10 }} />
-      <View style={{ justifyContent: "space-around", flexDirection: "row" }}>
-        <FeatureItem Icon={SpendingIcon} label="Spending" />
-        <FeatureItem Icon={RecoveryIcon} label="Recovery" />
-        <FeatureItem Icon={InheritanceIcon} label="Inheritance" />
-      </View>
-      <View
-        style={{ backgroundColor: "#363636", borderRadius: 7, marginTop: 10 }}
       >
-        <View style={{ height: 20, backgroundColor: "red", width: 40 }} />
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            paddingHorizontal: 10,
-          }}
-        >
-          <Text style={{ color: "white", fontSize: 12 }}>
-            Set spending limit:
-          </Text>
-          <TextInput style={{ width: 80 }} />
-          <TextInput style={{ width: 80 }} />
-        </View>
-        <View style={{ margin: 15 }}>
-          <Button flavor="blue" label="Confirm" />
-        </View>
+        <TouchableOpacity onPress={() => onOpenToggle(account)}>
+          <FontAwesomeIcon icon={isOpen ? faCaretUp : faCaretDown} />
+        </TouchableOpacity>
       </View>
+      <ProgessBar amount={70} containerStyle={{ marginVertical: 10 }} />
+      {isOpen && (
+        <>
+          <View
+            style={{ justifyContent: "space-around", flexDirection: "row" }}
+          >
+            <FeatureItem Icon={SpendingIcon} label="Spending" />
+            <FeatureItem Icon={RecoveryIcon} label="Recovery" />
+            <FeatureItem Icon={InheritanceIcon} label="Inheritance" />
+          </View>
+          <View
+            style={{
+              backgroundColor: "#363636",
+              borderRadius: 7,
+              marginTop: 10,
+            }}
+          >
+            <View
+              style={{ height: 20, width: 40, marginTop: 10, marginLeft: 10 }}
+            >
+              <ToggleSwitch onChange={(isOn) => console.log({ isOn })} />
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                paddingHorizontal: 10,
+              }}
+            >
+              <Text style={{ color: "white", fontSize: 12 }}>
+                Set spending limit:
+              </Text>
+              <TextInput style={{ width: 80 }} />
+              <TextInput style={{ width: 80 }} />
+            </View>
+            <View style={{ margin: 15 }}>
+              <Button flavor="blue" label="Confirm" />
+            </View>
+          </View>
+        </>
+      )}
     </View>
   );
 };
@@ -235,9 +284,7 @@ const FeatureItem = ({ Icon, label }) => {
         </View>
       </View>
       <View style={{ alignItems: "center" }}>
-        <Text style={{ color: "white", fontFamily: "Poppis-Light" }}>
-          {label}
-        </Text>
+        <Text style={{ color: "white" }}>{label}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -273,3 +320,4 @@ const ProgessBar = ({
     </View>
   );
 };
+export * from "./create-account";

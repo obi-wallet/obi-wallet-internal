@@ -18,6 +18,8 @@ export function OnboardingScreenContainer({
         style={{
           flex: 1,
         }}
+        behavior="padding"
+        keyboardVerticalOffset={-70}
       >
         <Background />
         <View

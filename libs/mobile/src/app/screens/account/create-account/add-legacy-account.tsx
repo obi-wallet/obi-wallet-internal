@@ -1,7 +1,7 @@
 import { Text } from "@obi-wallet/common";
 import { TextInput } from "@obi-wallet/mobile";
 import { ReactNode, useState, FC } from "react";
-import { Touchable, View, Image } from "react-native";
+import { Touchable, View, Image, ScrollView } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Button } from "../../../button";
 import { OnboardingScreenContainer } from "../../components/onboarding-screen-container";
@@ -85,10 +85,10 @@ export const AddLegacyAccountScreen = () => {
   };
   return (
     <OnboardingScreenContainer back={false}>
-      <View
+      <ScrollView
         style={{
           flex: 1,
-          alignItems: "center",
+
           marginTop: 20,
         }}
       >
@@ -112,7 +112,7 @@ export const AddLegacyAccountScreen = () => {
             />
           </>
         )}
-      </View>
+      </ScrollView>
       <View style={{ paddingVertical: 20 }}>
         <Button flavor="obi" onPress={() => {}} label="Confirm" />
         <Button flavor="cancel" onPress={() => {}} label="Go Back" />
