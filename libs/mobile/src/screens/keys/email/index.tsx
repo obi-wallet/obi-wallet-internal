@@ -155,17 +155,17 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                 >
                   {flow === KeyFlow.EditWallet ? (
                     <FormattedMessage
-                      id="onboarding5.recovery.setsocialkey"
+                      id="onboarding5.recovery.setemailkey"
                       defaultMessage="Set a New Email Recovery Key"
                     />
                   ) : flow === KeyFlow.RecoverWallet ? (
                     <FormattedMessage
-                      id="onboarding2.recovery.social"
+                      id="onboarding2.recovery.email"
                       defaultMessage="Recover your Email Key"
                     />
                   ) : (
                     <FormattedMessage
-                      id="onboarding5.setsocialkey"
+                      id="onboarding5.setemailkey"
                       defaultMessage="Set an Email Recovery Key"
                     />
                   )}
@@ -179,19 +179,20 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                 >
                   {flow === KeyFlow.RecoverWallet ? (
                     <FormattedMessage
-                      id="onboarding5.recovery.socialsubtext.cosmos"
-                      defaultMessage="Enter an email address. This is not stored; you will email your recovery key here."
+                      id="onboarding5.recovery.emailsubtext.cosmos"
+                      defaultMessage="Enter your recovery key from your email. (This is one-time use and will be replaced with a new recovery key.)"
                     />
                   ) : <FormattedMessage
-                      id="onboarding5.setsocialkey.subtext.terra"
-                      defaultMessage="Enter your recovery key from your email. (This is one-time use and will be replaced with a new recovery key.)"
+                      id="onboarding5.setemailkey.subtext.terra"
+                      defaultMessage="Enter an email address. This is not stored; you will email your recovery key here."
                       />
                   }
                 </Text>
               </View>
             </View>
             <TextInput
-              placeholder={isTerra ? "terra1234…" : "juno1234…"}
+              placeholder="email address"
+              autoCapitalize="none"
               style={{ marginTop: 25 }}
               value={email}
               onChangeText={setEmail}

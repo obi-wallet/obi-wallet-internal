@@ -99,13 +99,13 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
       title="Create Wallet"
       subTitle="Add keys to improve security."
       actions={{
-        [KeyType.Social]: {
-          label: "Add",
-          onPress: onAddSocial,
-        },
         [KeyType.Email]: {
           label: "Add",
           onPress: onAddEmail,
+        },
+        [KeyType.Social]: {
+          label: "Add",
+          onPress: onAddSocial,
         },
       }}
     >

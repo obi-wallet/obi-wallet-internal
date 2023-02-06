@@ -7,6 +7,7 @@ export default (
       draftId={MultisigDraft.draftId}
       onSubmit={mockAction("onSubmit")}
       onAddSocial={mockAction("onAddSocial")}
+      onAddEmail={mockAction("onAddEmail")}
     />
   </MultisigDraft.Container>
 );
