@@ -4,8 +4,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, FlatList, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Alert, FlatList, TouchableOpacity, View } from "react-native";
 import NfcManager, { NfcEvents, OnDiscoverTag } from "react-native-nfc-manager";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -382,7 +381,7 @@ const ListItem = observer(function ListItem({
           disabled={!item.enabled}
         >
           {item.enabled ? (
-            <Text>Scan</Text>
+            <Text style={{ color: "#000" }}>Scan</Text>
           ) : (
             <Text style={{ color: "#fff" }}>Coming Soon</Text>
           )}
