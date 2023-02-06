@@ -26,3 +26,14 @@ export function createMultisigPublicKey({
 
   return new LegacyAminoMultisigPublicKey(multisigKey.threshold, publicKeys);
 }
+
+export function getSigners({ multisigKey }: { multisigKey: MultisigKey }) {
+  const multisigPublicKey = createMultisigPublicKey({ multisigKey });
+
+  return multisigPublicKey.pubkeys.map((publicKey, i) => {
+    return {
+      address: publicKey.address(),
+      ty: multisigKey.signerTypes[i],
+    };
+  });
+}
