@@ -12,14 +12,14 @@ import { useState } from "react";
 import { View } from "react-native";
 import invariant from "tiny-invariant";
 
+import { handleCosmos } from "./cosmos";
+import { handleTerra } from "./terra";
 import { AsyncButton } from "../../app/button";
 import { RootRoute, useRootNavigation } from "../../app/root-stack";
 import {
   OnboardingRoute,
   OnboardingStackParamList,
 } from "../../app/screens/onboarding/onboarding-stack";
-import { handleCosmos } from "../../app/screens/settings/keys-config/cosmos";
-import { handleTerra } from "../../app/screens/settings/keys-config/terra";
 import { useStore } from "../../app/stores";
 import { MultisigSettings } from "../../components/multisig-settings";
 import { KeyFlow, KeyRoute } from "../keys";
@@ -56,41 +56,43 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
 
           invariant(params.serializedData, "Missing serializedData param.");
 
-          const wallet = params.demoMode
-            ? await walletsStore.addMultisigDemoWallet(params.serializedData)
-            : await walletsStore.addMultisigWallet(params.serializedData);
-
           const chainId = draft.value.chain;
           try {
             if (isCosmosChain(chainId)) {
               await handleCosmos({
                 draft,
-                wallet,
+                serializedData: params.serializedData,
+                demoMode: params.demoMode,
                 chainId,
               });
             } else {
               await handleTerra({
                 draft,
-                wallet,
+                serializedData: params.serializedData,
+                demoMode: params.demoMode,
               });
             }
+
+            const wallet = params.demoMode
+              ? await walletsStore.addMultisigDemoWallet(params.serializedData)
+              : await walletsStore.addMultisigWallet(params.serializedData);
+            await wallet.setOwner(draft.value);
+
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [
+                  {
+                    name: RootRoute.Home,
+                  },
+                ],
+              })
+            );
           } catch (e) {
             // noop
           } finally {
             setLoading(false);
           }
-
-          await walletsStore.setCurrentWallet(wallet.id);
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [
-                {
-                  name: RootRoute.Home,
-                },
-              ],
-            })
-          );
         }}
         onAddSocial={() => {
           navigation.navigate(KeyRoute.SocialKey, {
