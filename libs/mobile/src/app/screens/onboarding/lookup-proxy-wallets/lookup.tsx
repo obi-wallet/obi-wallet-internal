@@ -62,6 +62,7 @@ export const Lookup = observer(function Lookup({
             }),
             headers: {
               "Api-Version": "v1",
+              "Content-Type": "application/json",
             },
           }
         );
