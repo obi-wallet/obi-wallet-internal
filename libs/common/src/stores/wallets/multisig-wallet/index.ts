@@ -1,13 +1,13 @@
 import { action, computed, makeObservable, observable } from "mobx";
 
 import * as MultisigWalletSerializedData from "./serialized-data";
-import { cosmosChains, isTerraChain, terraChains } from "../../../chains";
-import { AbstractWallet, WalletType } from "../abstract-wallet";
-import { MultisigKey } from "../multisig-key";
 import {
   SerializedMultisigDemoWallet,
   SerializedMultisigWallet,
-} from "../serialized-data";
+} from "./serialized-data";
+import { cosmosChains, isTerraChain, terraChains } from "../../../chains";
+import { AbstractWallet, WalletType } from "../abstract-wallet";
+import { MultisigKey } from "../multisig-key";
 
 export { MultisigWalletSerializedData };
 

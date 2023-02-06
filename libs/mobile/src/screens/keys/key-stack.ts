@@ -19,7 +19,7 @@ interface CommonKeyParams {
   flow: KeyFlow;
   draftId: string;
   demoMode: boolean;
-  serializedData?: MultisigWalletSerializedData.SerializedData;
+  serializedData?: MultisigWalletSerializedData.SerializedMultisigWalletData;
 }
 
 export interface KeyStackParamList extends ParamListBase {
