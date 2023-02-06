@@ -22,17 +22,9 @@ export async function handleTerra({
   const multisigKey = draft.value;
   // TODO: shuffle?
 
-  const multisigPublicKey = terra.createMultisigPublicKey({ multisigKey });
-
-  const signers = multisigPublicKey.pubkeys.map((publicKey, i) => {
-    return {
-      address: publicKey.address(),
-      ty: multisigKey.signerTypes[i],
-    };
-  });
-
+  const signers = terra.getSigners({ multisigKey });
   const message = terra.getNewAccountMessage({
-    address: multisigPublicKey.address(),
+    address: multisigKey.address,
     signers,
     chainId,
   });

@@ -140,6 +140,8 @@ describe("MultisigWallet", () => {
       admin: multisigKey.address(),
       proxyAddress: proxyAddress.address,
       chainId,
+      signers: [],
+      codeId: proxyAddress.codeId,
     });
     const { signDoc, sign } = await terra.createMultisigTransaction({
       key: multisigKey,
@@ -158,7 +160,9 @@ describe("MultisigWallet", () => {
     const message = terra.getProposeUpdateOwnerMessage({
       sender: multisigKey.address(),
       newOwner: "terra18aw4eedj4v3253dvj9h5ucx9uedl9ggaayktq4",
+      signers: [],
       proxyAddress: proxyAddress.address,
+      codeId: proxyAddress.codeId,
     });
     const { signDoc, sign } = await terra.createMultisigTransaction({
       key: multisigKey,
