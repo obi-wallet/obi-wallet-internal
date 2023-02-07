@@ -19,7 +19,7 @@ export async function handleTerra({
   const newOwner = draft.value;
 
   async function proposeUpdateOwner() {
-    const signers = terra.getSigners({ multisigKey: currentOwner });
+    const signers = terra.getSigners({ multisigKey: newOwner });
     const message = terra.getProposeUpdateOwnerMessage({
       sender: currentOwner.address,
       proxyAddress: serializedData.proxyAddress.address,

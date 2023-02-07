@@ -62,6 +62,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
 
   const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
   const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
+  const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
 
   return (
     <MultisigSettings
@@ -114,6 +115,23 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
               label: "Add",
               onPress: () => {
                 navigation.navigate(KeyRoute.NfcKey, {
+                  draftId,
+                  flow: KeyFlow.EditWallet,
+                  demoMode: wallet.isDemo,
+                });
+              },
+            },
+        [KeyType.Cloud]: hasCloudKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeCloudKey();
+              },
+            }
+          : {
+              label: "Add",
+              onPress: () => {
+                navigation.navigate(KeyRoute.CloudKey, {
                   draftId,
                   flow: KeyFlow.EditWallet,
                   demoMode: wallet.isDemo,

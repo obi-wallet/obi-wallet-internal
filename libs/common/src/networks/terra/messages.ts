@@ -129,7 +129,7 @@ export function getMigrateMessage({
   return new MsgExecuteContract(admin, proxyAddress, {
     wrapped_migrate: {
       code_id: terraChains[chainId].currentCodeId,
-      ...(codeId > 1081
+      ...(codeId >= 1081
         ? {
             signers: {
               signers,
@@ -156,7 +156,7 @@ export function getProposeUpdateOwnerMessage({
   const rawMessage = {
     propose_update_owner: {
       new_owner: newOwner,
-      ...(codeId > 1081
+      ...(codeId >= 1081
         ? {
             signers: {
               signers,
