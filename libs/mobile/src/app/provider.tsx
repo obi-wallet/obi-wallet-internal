@@ -1,5 +1,6 @@
 import { Theme, ThemeProvider } from "@emotion/react";
 import { Brand, Config, Feature, messages } from "@obi-wallet/common";
+import { loopTheme, obiTheme } from "@obi-wallet/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
@@ -110,29 +111,9 @@ export const Provider = observer<ProviderProps>(function Provider({
 
 export function getTheme(brand: Brand): Theme {
   switch (brand) {
-    case Brand.Obi: {
-      return {
-        colors: {
-          background: "#1a1a1a",
-        },
-        fonts: {
-          bold: "poppins-bold",
-          regular: "poppins-regular",
-          light: "poppins-light",
-        },
-      };
-    }
-    case Brand.Loop: {
-      return {
-        colors: {
-          background: "#090817",
-        },
-        fonts: {
-          bold: "Inter-Bold",
-          regular: "Inter-Regular",
-          light: "Inter-Light",
-        },
-      };
-    }
+    case Brand.Obi:
+      return obiTheme;
+    case Brand.Loop:
+      return loopTheme;
   }
 }

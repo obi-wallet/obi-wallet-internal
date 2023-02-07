@@ -10,17 +10,11 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "files": [
-    "../../node_modules/@nrwl/react-native/typings/svg.d.ts",
-    "../theme/emotion.d.ts"
-  ],
+  "files": [],
   "include": [],
   "references": [
     {
       "path": "./tsconfig.lib.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
     }
   ]
 }
