@@ -11,6 +11,8 @@ export default (
       onAddSocial={mockAction("onAddSocial")}
       onAddNfc={mockAction("onAddNfc")}
       onRecoverNfc={mockAction("onRecoverNfc")}
+      onAddCloud={mockAction("onAddCloud")}
+      onRecoverCloud={mockAction("onRecoverCloud")}
     />
   </MultisigDraft.Container>
 );
