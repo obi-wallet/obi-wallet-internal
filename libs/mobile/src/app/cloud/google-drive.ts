@@ -128,6 +128,14 @@ async function getUserInfo() {
   }
 }
 
+export async function signOut() {
+  try {
+    await GoogleSignin.signOut();
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 async function signIn() {
   try {
     await GoogleSignin.hasPlayServices();

@@ -7,14 +7,16 @@ import { useIntl } from "react-intl";
 import { FlatList, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { getCloudKeyPair } from "../../../app/cloud/google-drive";
+import { getCloudKeyPair, signOut } from "../../../app/cloud/google-drive";
 import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
+import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
+import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 import { useStore } from "../../../app/stores";
-import { KeyRoute, KeyStackParamList } from "../key-stack";
+import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type CloudKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -26,26 +28,24 @@ export const CloudKeyScreen = observer<CloudKeyScreenProps>(
     const navigation = useRootNavigation();
     const { params } = route;
 
-    return null;
-
-    // return (
-    //   <NfcKey
-    //     {...params}
-    //     onSubmit={() => {
-    //       switch (params.flow) {
-    //         case KeyFlow.CreateWallet:
-    //           navigation.navigate(OnboardingRoute.CreateWallet, params);
-    //           break;
-    //         case KeyFlow.RecoverWallet:
-    //           navigation.navigate(OnboardingRoute.RecoverWallet, params);
-    //           break;
-    //         case KeyFlow.EditWallet:
-    //           navigation.navigate(SettingsRoute.MultisigSettings);
-    //           break;
-    //       }
-    //     }}
-    //   />
-    // );
+    return (
+      <CloudKey
+        {...params}
+        onSubmit={() => {
+          switch (params.flow) {
+            case KeyFlow.CreateWallet:
+              navigation.navigate(OnboardingRoute.CreateWallet, params);
+              break;
+            case KeyFlow.RecoverWallet:
+              navigation.navigate(OnboardingRoute.RecoverWallet, params);
+              break;
+            case KeyFlow.EditWallet:
+              navigation.navigate(SettingsRoute.MultisigSettings);
+              break;
+          }
+        }}
+      />
+    );
   }
 );
 
@@ -80,6 +80,7 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
   const isRecovering = typeof targetPublicKey === "string";
 
   const handleGoogleDrive = async () => {
+    await signOut();
     const { publicKey, privateKey } = await getCloudKeyPair({
       demoMode: demoMode,
     });
