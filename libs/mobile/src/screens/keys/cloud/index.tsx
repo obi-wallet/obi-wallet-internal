@@ -4,7 +4,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useRef, useState } from "react";
 import { useIntl } from "react-intl";
-import { FlatList, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { getCloudKeyPair, signOut } from "../../../app/cloud/google-drive";
@@ -65,18 +65,9 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
 }) {
   const { configStore, draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
-  const intl = useIntl();
   const selectedTagType = useRef<string>("");
-  const [reading, setReading] = useState(false);
-
   const isObi = configStore.isObi();
 
-  const [parsed, setParsed] = useState<{
-    tagType: string;
-    parsed: string;
-  } | null>(null);
-
-  // TODO: if target public key is passed, we are recovering an existing Cloud key
   const isRecovering = typeof targetPublicKey === "string";
 
   const handleGoogleDrive = async () => {
@@ -84,15 +75,34 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
     const { publicKey, privateKey } = await getCloudKeyPair({
       demoMode: demoMode,
     });
-    await draft.value.setCloudKey({
-      provider: "google-drive",
-      publicKey: {
-        type: pubkeyType.secp256k1,
-        value: publicKey,
-      },
-      privateKey,
-    });
-    onSubmit();
+
+    if (isRecovering) {
+      if (targetPublicKey === publicKey) {
+        await draft.value.recoverCloudKey({
+          provider: "google-drive",
+          publicKey: {
+            type: pubkeyType.secp256k1,
+            value: publicKey,
+          },
+          privateKey,
+        });
+      } else {
+        Alert.alert(
+          "Error",
+          "We could not find the key with that cloud provider / account combination."
+        );
+      }
+    } else {
+      await draft.value.setCloudKey({
+        provider: "google-drive",
+        publicKey: {
+          type: pubkeyType.secp256k1,
+          value: publicKey,
+        },
+        privateKey,
+      });
+      onSubmit();
+    }
   };
 
   const cloudData = [
@@ -161,7 +171,9 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
                     marginTop: isSmallScreenNumber(20, 32),
                   }}
                 >
-                  Set up a Cloud Key
+                  {isRecovering
+                    ? "Recover your Cloud Key"
+                    : "Set up a Cloud Key"}
                 </Text>
                 <Text
                   style={{
@@ -170,7 +182,9 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
                     marginTop: 10,
                   }}
                 >
-                  Generate a key and save it to the cloud.
+                  {isRecovering
+                    ? "Import your key from the cloud"
+                    : "Generate a key and save it to the cloud."}
                 </Text>
                 <FlatList
                   data={cloudData}
@@ -186,42 +200,6 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
                     />
                   )}
                 />
-                <View>
-                  {/*{!hasCloud ? (*/}
-                  {/*  <Text*/}
-                  {/*    style={{*/}
-                  {/*      color: "#fff",*/}
-                  {/*      fontSize: 14,*/}
-                  {/*      marginTop: 10,*/}
-                  {/*    }}*/}
-                  {/*  >*/}
-                  {/*    <FormattedMessage*/}
-                  {/*      id="onboarding5.nfcunavailable"*/}
-                  {/*      defaultMessage="No NFC available on this device."*/}
-                  {/*    />*/}
-                  {/*  </Text>*/}
-                  {/*) : parsed ? (*/}
-                  {/*  <Text*/}
-                  {/*    style={{*/}
-                  {/*      color: "#999CB6",*/}
-                  {/*      fontSize: 14,*/}
-                  {/*      marginTop: 10,*/}
-                  {/*      marginLeft: 10,*/}
-                  {/*      marginRight: 10,*/}
-                  {/*      marginBottom: 40,*/}
-                  {/*    }}*/}
-                  {/*  >*/}
-                  {/*    <FormattedMessage*/}
-                  {/*      id="onboarding5.nfctagtype"*/}
-                  {/*      defaultMessage={*/}
-                  {/*        "You've labeled your NFC device as: " +*/}
-                  {/*        selectedTagType +*/}
-                  {/*        ". This key is boosted with both local and remote brute force shields."*/}
-                  {/*      }*/}
-                  {/*    />*/}
-                  {/*  </Text>*/}
-                  {/*) : null}*/}
-                </View>
               </View>
             </View>
           </View>

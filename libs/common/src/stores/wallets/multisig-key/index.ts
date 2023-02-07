@@ -155,6 +155,13 @@ export class MultisigKey implements Draftable {
   }
 
   @action
+  public recoverCloudKey(payload: SerializedCloudKeyPayload) {
+    // TODO: as soon as we allow multiple cloud keys, we need to replace the one
+    // with the matching public key.
+    this.setCloudKey(payload);
+  }
+
+  @action
   public removeCloudKey() {
     this.removeKeyOfType(KeyType.Cloud);
   }
