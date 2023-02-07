@@ -22,6 +22,7 @@ import invariant from "tiny-invariant";
 
 import {
   BiometricsKey,
+  CloudKey,
   NfcKey,
   PhoneNumberConfirmKey,
   PhoneNumberRequestKey,
@@ -138,9 +139,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
 
         switch (type) {
           case KeyType.Device: {
-            const biometricsKey = new BiometricsKey({
-              multisigKey,
-            });
+            const biometricsKey = new BiometricsKey({ multisigKey });
 
             const signature = await biometricsKey.createSignatureAmino(signDoc);
 
@@ -185,6 +184,18 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
             await startReading("Tap your NFC device to sign this transaction.");
             break;
           }
+          case KeyType.Cloud: {
+            const cloudKey = new CloudKey({ multisigKey });
+
+            const signature = await cloudKey.createSignatureAmino(signDoc);
+
+            setSignatures((signatures) => {
+              return new Map(
+                signatures.set(factor.payload.publicKey.value, signature)
+              );
+            });
+            break;
+          }
           default:
             console.log("Not implemented yet");
             break;
@@ -208,6 +219,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
         const deviceKey = multisigKey.getUsableKeyOfType(KeyType.Device);
         const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
         const nfcKey = multisigKey.getUsableKeyOfType(KeyType.Nfc);
+        const cloudKey = multisigKey.getUsableKeyOfType(KeyType.Cloud);
 
         if (
           deviceKey &&
@@ -224,6 +236,10 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
 
         if (nfcKey && (await checkIsSupported())) {
           usableKeys.push(KeyType.Nfc);
+        }
+
+        if (cloudKey) {
+          usableKeys.push(KeyType.Cloud);
         }
 
         setUsableKeys(usableKeys);
@@ -259,8 +275,6 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
               signaturesOrdered.push(signature);
             }
           }
-
-          console.log(signaturesOrdered);
 
           await onConfirm(await sign(signaturesOrdered));
         }}
