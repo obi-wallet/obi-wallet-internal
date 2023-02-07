@@ -68,7 +68,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
       draftId={draftId}
       title={intl.formatMessage({
         id: "settings.multisig.title",
-        defaultMessage: "Manage Multisig",
+        defaultMessage: "Manage Multi-Key",
       })}
       subTitle={intl.formatMessage({
         id: "settings.multisig.subtitle",
