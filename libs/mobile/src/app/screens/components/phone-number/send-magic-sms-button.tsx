@@ -64,9 +64,6 @@ export const SendMagicSmsButton = observer(function SendMagicSmsButton({
         LeftIcon={isObi ? undefined : SMS}
         flavor="blue"
         disabled={disabled}
-        style={{
-          marginVertical: 20,
-        }}
         onPress={() => {
           if (!disabled) {
             onPress();

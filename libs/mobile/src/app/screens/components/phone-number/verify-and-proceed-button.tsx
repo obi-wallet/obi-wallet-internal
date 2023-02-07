@@ -9,13 +9,11 @@ import { useStore } from "../../../stores";
 export interface VerifyAndProceedButtonProps {
   onPress: () => void;
   disabled?: boolean;
-  style?: StyleProp<ViewStyle>;
 }
 
 export const VerifyAndProceedButton = observer(function VerifyAndProceedButton({
   onPress,
   disabled,
-  style,
 }: VerifyAndProceedButtonProps) {
   const intl = useIntl();
   const { configStore } = useStore();
@@ -33,7 +31,6 @@ export const VerifyAndProceedButton = observer(function VerifyAndProceedButton({
         !disabled && onPress();
       }}
       disabled={disabled}
-      style={[{ marginBottom: 20 }, style]}
     />
   );
 });

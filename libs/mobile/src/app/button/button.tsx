@@ -162,7 +162,7 @@ const getFlavorStyles = (
 };
 
 export interface ButtonProps
-  extends Omit<TouchableWithoutFeedbackProps, "children"> {
+  extends Omit<TouchableWithoutFeedbackProps, "children" | "style"> {
   flavor: keyof typeof loopFlavors | keyof typeof obiFlavors;
   label: string;
   disabled?: boolean;
