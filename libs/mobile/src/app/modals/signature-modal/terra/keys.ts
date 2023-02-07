@@ -1,5 +1,5 @@
 import { KeyType, MultisigKey, TerraChain } from "@obi-wallet/common";
-import { Key, SimplePublicKey } from "@terra-money/terra.js";
+import { Key, RawKey, SimplePublicKey } from "@terra-money/terra.js";
 import { SHA256, Word32Array } from "jscrypto";
 import invariant from "tiny-invariant";
 
@@ -34,6 +34,14 @@ export class BiometricsKey extends Key {
       publicKey: this.deviceKeyPublicKey,
     });
     return Buffer.from(signature);
+  }
+}
+
+export class CloudKey extends RawKey {
+  constructor({ multisigKey }: { multisigKey: MultisigKey }) {
+    const cloudKey = multisigKey.getUsableKeyOfType(KeyType.Cloud);
+    invariant(cloudKey, "Expected cloud key to exist.");
+    super(Buffer.from(cloudKey.payload.privateKey, "base64"));
   }
 }
 
