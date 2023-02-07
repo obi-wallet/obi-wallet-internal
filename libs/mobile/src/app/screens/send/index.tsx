@@ -747,7 +747,6 @@ const DrinkOrBottleModal = observer(function DrinkOrBottleModal({
           <Button
             flavor="blue"
             label="Dismiss"
-            style={{ marginTop: 20 }}
             onPress={() => {
               onDismiss();
             }}

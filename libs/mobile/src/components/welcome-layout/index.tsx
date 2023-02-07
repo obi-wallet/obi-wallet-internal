@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
@@ -9,7 +10,6 @@ import { useStore } from "../..";
 import { LanguagePicker } from "../../app/language-picker";
 import { InitialBackground } from "../../app/screens/components/initial-background";
 import { BrandToggle } from "../../app/screens/components/obi-mode-toggle";
-import { isSmallScreenNumber } from "../../app/screens/components/screen-size";
 
 export interface WelcomeLayoutProps {
   title: string;
@@ -21,6 +21,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
   function WelcomeLayout({ title, subTitle, children }) {
     const { configStore } = useStore();
     const isObi = configStore.isObi();
+    const theme = useTheme();
 
     return (
       <InitialBackground>
@@ -32,13 +33,12 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
           <View
             style={{
               position: "absolute",
-              top: 40,
+              top: theme.spacing["64"],
               left: 0,
               right: 0,
-              marginBottom: 10,
             }}
           >
-            <View style={{ padding: 10, marginBottom: 10 }}>
+            <View style={{ padding: theme.spacing["12"] }}>
               <View
                 style={{
                   position: "absolute",
@@ -52,11 +52,11 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
               />
               <Text
                 style={{
+                  ...theme.typography.footnote,
                   color: "white",
-                  fontSize: isSmallScreenNumber(12, 14),
                 }}
               >
-                <Text style={{ fontWeight: "600" }}>
+                <Text style={{ fontWeight: theme.fontWeights.bold }}>
                   <FormattedMessage
                     id="onboarding1.disclaimer"
                     defaultMessage="Disclaimer:"
@@ -68,15 +68,14 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
                 />
               </Text>
             </View>
-            <View style={{ marginHorizontal: 20 }}>
+            <View style={{ marginHorizontal: theme.spacing["24"] }}>
               {isObi ? null : <LanguagePicker />}
             </View>
           </View>
 
           <View
             style={{
-              paddingHorizontal: 20,
-              paddingBottom: 10,
+              paddingHorizontal: theme.spacing["16"],
               zIndex: -1,
             }}
           >
@@ -107,7 +106,11 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
             </BrandToggle>
             {isObi ? (
               <View
-                style={{ marginBottom: 10, zIndex: 2, alignItems: "flex-end" }}
+                style={{
+                  marginBottom: theme.spacing["12"],
+                  zIndex: 2,
+                  alignItems: "flex-end",
+                }}
               >
                 <LanguagePicker />
               </View>
@@ -115,29 +118,33 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
 
             <Text
               style={{
+                ...theme.typography.largeTitle,
                 color: "#F6F5FF",
-                fontSize: isSmallScreenNumber(30, 32),
-                fontWeight: "600",
-                marginTop: isSmallScreenNumber(25, 40),
-                textAlign: "left",
+                marginTop: theme.spacing["24"],
               }}
             >
               {title}
             </Text>
             <Text
               style={{
+                ...theme.typography.subhead,
                 color: isObi ? "white" : "#999CB6",
-                fontSize: isSmallScreenNumber(12, 16),
                 fontWeight: "400",
-                marginTop: 12,
+                marginTop: theme.spacing["12"],
                 textAlign: isObi ? "justify" : "left",
               }}
             >
               {subTitle}
             </Text>
           </View>
-          <View style={{ width: "100%", flex: 1, paddingHorizontal: 15 }}>
-            <ScrollView style={{}}>{children}</ScrollView>
+          <View
+            style={{
+              flex: 1,
+              paddingHorizontal: theme.spacing["16"],
+              marginTop: theme.spacing["12"],
+            }}
+          >
+            <ScrollView>{children}</ScrollView>
           </View>
         </SafeAreaView>
       </InitialBackground>

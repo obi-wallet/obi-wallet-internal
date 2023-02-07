@@ -234,7 +234,6 @@ export const Lookup = observer(function Lookup({
               onSelect(selectedWallet);
             }
           }}
-          style={{ marginBottom: 0 }}
         />
         <View style={{ alignItems: "center" }}>
           <TouchableOpacity

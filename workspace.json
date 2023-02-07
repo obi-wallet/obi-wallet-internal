@@ -11,6 +11,7 @@
     "injected-provider": "libs/injected-provider",
     "mobile": "libs/mobile",
     "mobile-shim": "libs/mobile-shim",
-    "proxy-contract": "libs/proxy-contract"
+    "proxy-contract": "libs/proxy-contract",
+    "theme": "libs/theme"
   }
 }

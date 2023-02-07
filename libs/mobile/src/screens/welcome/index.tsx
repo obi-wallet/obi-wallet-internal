@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { Feature, MultisigKey } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -95,6 +96,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
   const { configStore, walletsStore } = useStore();
   const isObi = configStore.isObi();
   const intl = useIntl();
+  const theme = useTheme();
 
   const accountPickerModalProps = useAccountPickerModalProps();
 
@@ -118,8 +120,8 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
           label={intl.formatMessage({ id: "onboarding1.getstarted" })}
           RightIcon={isObi ? undefined : GetStarted}
           flavor="green"
-          style={{
-            marginTop: 20,
+          buttonStyle={{
+            marginTop: theme.spacing[4],
           }}
           onPress={onCreate}
         />
@@ -127,8 +129,8 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
           label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
           RightIcon={isObi ? undefined : GetStarted}
           flavor="blue"
-          style={{
-            marginTop: 20,
+          buttonStyle={{
+            marginTop: theme.spacing[4],
           }}
           onPress={() => {
             Alert.alert(
@@ -156,8 +158,8 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
             })}
             RightIcon={isObi ? undefined : GetStarted}
             flavor="blue"
-            style={{
-              marginTop: 20,
+            buttonStyle={{
+              marginTop: theme.spacing[4],
             }}
             onPress={onEnterDemoMode}
           />

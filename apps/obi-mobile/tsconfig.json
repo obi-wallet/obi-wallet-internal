@@ -13,7 +13,10 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "files": ["../../node_modules/@nrwl/react-native/typings/svg.d.ts"],
+  "files": [
+    "../../node_modules/@nrwl/react-native/typings/svg.d.ts",
+    "../../libs/theme/emotion.d.ts"
+  ],
   "include": [],
   "references": [
     {
