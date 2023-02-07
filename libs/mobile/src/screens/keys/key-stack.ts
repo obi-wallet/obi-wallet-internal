@@ -7,6 +7,7 @@ export enum KeyRoute {
   PhoneKeyConfirm = "PhoneKeyConfirm",
   SocialKey = "SocialKey",
   NfcKey = "NfcKey",
+  CloudKey = "CloudKey",
 }
 
 export enum KeyFlow {
@@ -32,6 +33,9 @@ export interface KeyStackParamList extends ParamListBase {
   };
   [KeyRoute.SocialKey]: CommonKeyParams;
   [KeyRoute.NfcKey]: CommonKeyParams & {
+    targetPublicKey?: string;
+  };
+  [KeyRoute.CloudKey]: CommonKeyParams & {
     targetPublicKey?: string;
   };
 }

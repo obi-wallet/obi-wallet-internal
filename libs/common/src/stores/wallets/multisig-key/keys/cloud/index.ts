@@ -5,6 +5,7 @@ import { Secp256k1PublicKey } from "../public-key";
 export const SerializedCloudKeyProvider = t.literal("google-drive");
 
 export const SerializedCloudKeyPayload = t.type({
+  provider: SerializedCloudKeyProvider,
   publicKey: Secp256k1PublicKey,
   privateKey: t.string,
 });

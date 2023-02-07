@@ -1,14 +1,12 @@
 import { mockAction, MultisigDraft } from "../../src/fixture-helpers";
-import { CreateWallet } from "../../src/screens/create-wallet";
+import { CloudKey } from "../../src/screens/keys/cloud";
 
 export default (
   <MultisigDraft.Container>
-    <CreateWallet
+    <CloudKey
       draftId={MultisigDraft.draftId}
+      demoMode
       onSubmit={mockAction("onSubmit")}
-      onAddSocial={mockAction("onAddSocial")}
-      onAddNfc={mockAction("onAddNfc")}
-      onAddCloud={mockAction("onAddCloud")}
     />
   </MultisigDraft.Container>
 );
