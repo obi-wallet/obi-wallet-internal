@@ -73,6 +73,12 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             flow: KeyFlow.CreateWallet,
           });
         }}
+        onAddCloud={() => {
+          navigation.navigate(KeyRoute.CloudKey, {
+            ...params,
+            flow: KeyFlow.CreateWallet,
+          });
+        }}
       />
     );
   }
@@ -84,6 +90,7 @@ export interface CreateWalletProps {
   onSubmit(): void;
   onAddSocial(): void;
   onAddNfc(): void;
+  onAddCloud(): void;
 }
 
 export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
@@ -91,12 +98,14 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   onSubmit,
   onAddNfc,
   onAddSocial,
+  onAddCloud,
 }) {
   const { draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
   const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
   const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
+  const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
 
   return (
     <MultisigSettings
@@ -125,6 +134,17 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
           : {
               label: "Add",
               onPress: onAddNfc,
+            },
+        [KeyType.Cloud]: hasCloudKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeCloudKey();
+              },
+            }
+          : {
+              label: "Add",
+              onPress: onAddCloud,
             },
       }}
     >

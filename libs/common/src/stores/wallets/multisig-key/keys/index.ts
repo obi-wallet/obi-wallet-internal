@@ -1,5 +1,6 @@
 import * as t from "io-ts";
 
+import { SerializedCloudKeyPayload } from "./cloud";
 import { SerializedDeviceKeyPayload } from "./device";
 import { SerializedNfcKeyPayload } from "./nfc";
 import { SerializedPhoneKeyPayload } from "./phone";
@@ -11,6 +12,7 @@ export enum KeyType {
   Phone = "phone",
   Social = "social",
   Nfc = "nfc",
+  Cloud = "cloud",
 }
 
 export const SerializedDeviceKey = t.type({
@@ -41,6 +43,13 @@ export const SerializedNfcKey = t.type({
 
 export type SerializedNfcKey = t.TypeOf<typeof SerializedNfcKey>;
 
+export const SerializedCloudKey = t.type({
+  type: t.literal(KeyType.Cloud),
+  payload: SerializedCloudKeyPayload,
+});
+
+export type SerializedCloudKey = t.TypeOf<typeof SerializedCloudKey>;
+
 export const SerializedPendingRecoveryKey = t.type({
   payload: t.type({
     type: t.string,
@@ -57,6 +66,7 @@ export const SerializedKey = t.union([
   SerializedPhoneKey,
   SerializedSocialKey,
   SerializedNfcKey,
+  SerializedCloudKey,
 ]);
 
 export type SerializedKey = t.TypeOf<typeof SerializedKey>;

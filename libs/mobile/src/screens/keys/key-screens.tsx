@@ -1,3 +1,4 @@
+import { CloudKeyScreen } from "./cloud";
 import { DeviceKeyScreen } from "./device";
 import { KeyRoute } from "./key-stack";
 import { NfcKeyScreen } from "./nfc";
@@ -36,6 +37,12 @@ export const keyScreens = () => {
         name={KeyRoute.NfcKey}
         key={KeyRoute.NfcKey}
         component={NfcKeyScreen}
+        options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name={KeyRoute.CloudKey}
+        key={KeyRoute.CloudKey}
+        component={CloudKeyScreen}
         options={{ headerShown: false }}
       />
     </RootStack.Group>

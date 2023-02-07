@@ -6,6 +6,7 @@ import {
   SerializedMultisigKey,
   SerializedPendingRecoveryKey,
 } from "./keys";
+import { SerializedCloudKeyPayload } from "./keys/cloud";
 import { SerializedDeviceKeyPayload } from "./keys/device";
 import { SerializedNfcKeyPayload } from "./keys/nfc";
 import { SerializedPhoneKeyPayload } from "./keys/phone";
@@ -143,6 +144,26 @@ export class MultisigKey implements Draftable {
   @action
   public removeNfcKey() {
     this.removeKeyOfType(KeyType.Nfc);
+  }
+
+  @action
+  public setCloudKey(payload: SerializedCloudKeyPayload) {
+    this.setKey({
+      type: KeyType.Cloud,
+      payload,
+    });
+  }
+
+  @action
+  public recoverCloudKey(payload: SerializedCloudKeyPayload) {
+    // TODO: as soon as we allow multiple cloud keys, we need to replace the one
+    // with the matching public key.
+    this.setCloudKey(payload);
+  }
+
+  @action
+  public removeCloudKey() {
+    this.removeKeyOfType(KeyType.Cloud);
   }
 
   @action

@@ -113,6 +113,19 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
             targetPublicKey,
           });
         }}
+        onAddCloud={() => {
+          navigation.navigate(KeyRoute.CloudKey, {
+            ...params,
+            flow: KeyFlow.RecoverWallet,
+          });
+        }}
+        onRecoverCloud={({ targetPublicKey }) => {
+          navigation.navigate(KeyRoute.CloudKey, {
+            ...params,
+            flow: KeyFlow.RecoverWallet,
+            targetPublicKey,
+          });
+        }}
       />
     );
   }
@@ -125,6 +138,8 @@ export interface RecoverWalletProps {
   onAddSocial(): void;
   onAddNfc(): void;
   onRecoverNfc(payload: { targetPublicKey: string }): void;
+  onAddCloud(): void;
+  onRecoverCloud(payload: { targetPublicKey: string }): void;
 }
 
 export const RecoverWallet = observer<RecoverWalletProps>(
@@ -134,12 +149,15 @@ export const RecoverWallet = observer<RecoverWalletProps>(
     onAddSocial,
     onAddNfc,
     onRecoverNfc,
+    onAddCloud,
+    onRecoverCloud,
   }) {
     const { draftsStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
     const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
     const nfcKey = draft.value.getKeyOfType(KeyType.Nfc);
+    const cloudKey = draft.value.getKeyOfType(KeyType.Cloud);
 
     function getNfcKeyActions() {
       if (nfcKey) {
@@ -168,6 +186,33 @@ export const RecoverWallet = observer<RecoverWalletProps>(
       }
     }
 
+    function getCloudKeyActions() {
+      if (cloudKey) {
+        if (MultisigKeySerializedData.isUsableKey(cloudKey)) {
+          return {
+            label: "Remove",
+            onPress: () => {
+              draft.value.removeCloudKey();
+            },
+          };
+        } else {
+          return {
+            label: "Recover",
+            onPress: () => {
+              onRecoverCloud({
+                targetPublicKey: cloudKey.payload.publicKey.value,
+              });
+            },
+          };
+        }
+      } else {
+        return {
+          label: "Add",
+          onPress: onAddCloud,
+        };
+      }
+    }
+
     return (
       <MultisigSettings
         draftId={draftId}
@@ -186,6 +231,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
                 onPress: onAddSocial,
               },
           [KeyType.Nfc]: getNfcKeyActions(),
+          [KeyType.Cloud]: getCloudKeyActions(),
         }}
       >
         <View style={{ paddingTop: 10 }}>
