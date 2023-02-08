@@ -32,6 +32,7 @@ import {
   MultisigKey,
   RequestObiCosmosSignAndBroadcastPayload,
 } from "@obi-wallet/common";
+import { useQueryClient } from "@tanstack/react-query";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -96,6 +97,7 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
     const [signatures, setSignatures] = useState(new Map<string, Uint8Array>());
     const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
     const { chainStore } = useStore();
+    const queryClient = useQueryClient();
     const numberOfSignatures = signatures.size;
     const threshold = multisigKey.threshold;
 
@@ -159,6 +161,8 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
             const { signature } = await createBiometricsSignature({
               payload: message,
               publicKey: biometrics.payload.publicKey.value,
+              chainId,
+              queryClient,
             });
 
             setSignatures((signatures) => {
@@ -272,6 +276,8 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
                   const signature = await parseSignatureTextMessageResponse({
                     key,
                     demoMode,
+                    chainId,
+                    queryClient,
                   });
                   if (signature) {
                     setSignatures((signatures) => {

@@ -18,12 +18,12 @@ export function getBalancesQuery({
     queryFn: async () => {
       if (!address) return [];
 
-      if (isTerraChain(chainId)) {
-        return await terra.fetchBalances({ address, chainId });
-      }
-
       if (isCosmosChain(chainId)) {
         return await cosmos.fetchBalances({ address, chainId });
+      }
+
+      if (isTerraChain(chainId)) {
+        return await terra.fetchBalances({ address, chainId });
       }
 
       return [];
@@ -35,12 +35,12 @@ export function getPricesQuery({ chainId }: { chainId: Chain }) {
   return {
     queryKey: ["prices", { chainId }],
     queryFn: async () => {
-      if (isTerraChain(chainId)) {
-        return await terra.fetchPrices({ chainId });
-      }
-
       if (isCosmosChain(chainId)) {
         return await cosmos.fetchPrices({ chainId });
+      }
+
+      if (isTerraChain(chainId)) {
+        return await terra.fetchPrices({ chainId });
       }
 
       return {};

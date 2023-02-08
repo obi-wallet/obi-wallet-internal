@@ -7,6 +7,7 @@ import {
   RequestObiTerraSignAndBroadcastPayload,
   terra,
 } from "@obi-wallet/common";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   BlockTxBroadcastResult,
   isTxError,
@@ -75,6 +76,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
     );
     const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
     const { chainStore } = useStore();
+    const queryClient = useQueryClient();
     const chainId = chainStore.currentChain;
 
     invariant(isTerraChain(chainId), "Expected Terra chain.");
@@ -139,7 +141,10 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
 
         switch (type) {
           case KeyType.Device: {
-            const biometricsKey = new BiometricsKey({ multisigKey });
+            const biometricsKey = new BiometricsKey({
+              multisigKey,
+              queryClient,
+            });
 
             const signature = await biometricsKey.createSignatureAmino(signDoc);
 
@@ -168,6 +173,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
                   multisigKey,
                   parsed,
                   demoMode,
+                  queryClient,
                 });
 
                 const signature = await nfcKey.createSignatureAmino(signDoc);
@@ -299,6 +305,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
                     key,
                     multisigKey,
                     demoMode,
+                    queryClient,
                   });
                   const signature =
                     await phoneNumberRequestKey.createSignatureAmino(signDoc);
