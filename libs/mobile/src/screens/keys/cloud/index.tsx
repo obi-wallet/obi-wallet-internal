@@ -1,6 +1,7 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { MultisigKey, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useRef, useState } from "react";
 import { useIntl } from "react-intl";
@@ -16,6 +17,7 @@ import { isSmallScreenNumber } from "../../../app/screens/components/screen-size
 import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
 import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 import { useStore } from "../../../app/stores";
+import { getPrepareKeyQuery } from "../../../queries/keys";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type CloudKeyScreenProps = NativeStackScreenProps<
@@ -65,7 +67,8 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
 }) {
   const { configStore, draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
-  const selectedTagType = useRef<string>("");
+  const selectedTagType = useRef("");
+  const queryClient = useQueryClient();
   const isObi = configStore.isObi();
 
   const isRecovering = typeof targetPublicKey === "string";
@@ -101,8 +104,16 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
         },
         privateKey,
       });
-      onSubmit();
     }
+
+    void queryClient.prefetchQuery(
+      getPrepareKeyQuery({
+        chainId: draft.value.chain,
+        publicKey,
+        privateKey,
+      })
+    );
+    onSubmit();
   };
 
   const cloudData = [

@@ -1,6 +1,7 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { MultisigKey, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -24,6 +25,7 @@ import { isSmallScreenNumber } from "../../../app/screens/components/screen-size
 import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
 import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 import { useStore } from "../../../app/stores";
+import { getPrepareKeyQuery } from "../../../queries/keys";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type NfcKeyScreenProps = NativeStackScreenProps<
@@ -75,6 +77,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
   const intl = useIntl();
   const selectedTagType = useRef<string>("");
+  const queryClient = useQueryClient();
   const [reading, setReading] = useState(false);
 
   const isObi = configStore.isObi();
@@ -292,7 +295,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
               onPress={async () => {
                 if (parsed) {
                   const localEntropy = generateLocalEntropy();
-                  const { publicKey } = await getNFCKeyPair({
+                  const { publicKey, privateKey } = await getNFCKeyPair({
                     demoMode,
                     parsed: parsed.parsed,
                     boostEntropy: true,
@@ -305,6 +308,13 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
                     },
                     localEntropy,
                   });
+                  void queryClient.prefetchQuery(
+                    getPrepareKeyQuery({
+                      chainId: draft.value.chain,
+                      publicKey,
+                      privateKey,
+                    })
+                  );
                   onSubmit();
                 } else {
                   Alert.alert(
