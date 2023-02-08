@@ -1,6 +1,7 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { MultisigKey, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -12,6 +13,7 @@ import FaceScanner from "./assets/face-scanner.svg";
 import ObiFaceScanner from "./assets/obi-face-scanner.svg";
 import Scan from "./assets/scan.svg";
 import {
+  getBiometricsKeyPair,
   getBiometricsPublicKey,
   resetBiometricsKeyPair,
 } from "../../../app/biometrics";
@@ -24,6 +26,7 @@ import {
   isSmallScreenNumber,
 } from "../../../app/screens/components/screen-size";
 import { useStore } from "../../../app/stores";
+import { getPrepareKeyQuery } from "../../../queries/keys";
 import { KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type DeviceKeyScreenProps = NativeStackScreenProps<
@@ -61,6 +64,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 }) {
   const { configStore, draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
+  const queryClient = useQueryClient();
   const isObi = configStore.isObi();
 
   const [scannedBiometrics, setScannedBiometrics] = useState(false);
@@ -68,7 +72,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 
   async function scanBiometrics() {
     try {
-      const publicKey = await getBiometricsPublicKey({
+      const { publicKey, privateKey } = await getBiometricsKeyPair({
         demoMode,
       });
       draft.value.setDeviceKey({
@@ -77,6 +81,13 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
           value: publicKey,
         },
       });
+      void queryClient.prefetchQuery(
+        getPrepareKeyQuery({
+          chainId: draft.value.chain,
+          publicKey,
+          privateKey,
+        })
+      );
       setScannedBiometrics(true);
     } catch (e) {
       setScannedBiometrics(false);

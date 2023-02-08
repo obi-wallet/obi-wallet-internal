@@ -46,12 +46,14 @@ export interface KeysListProps {
   data: Key[];
   style?: StyleProp<ViewStyle>;
   tiled?: boolean;
+  animate?: boolean;
 }
 
 export const KeysList = observer(function KeysList({
   data,
   style,
   tiled,
+  animate,
 }: KeysListProps) {
   const { metaData, comingSoonKeys } = useKeyMetaData();
   const hydratedData = data.map((key) => {
@@ -77,7 +79,9 @@ export const KeysList = observer(function KeysList({
         ]}
         horizontal={tiled}
         keyExtractor={(item) => item.type}
-        renderItem={(props) => <KeyListItem {...props} tiled={tiled} />}
+        renderItem={(props) => (
+          <KeyListItem {...props} tiled={tiled} animate={animate} />
+        )}
       />
     </View>
   );
@@ -86,11 +90,13 @@ export const KeysList = observer(function KeysList({
 export interface KeyListItemProps {
   item: HydratedKeyListItem;
   tiled?: boolean;
+  animate?: boolean;
 }
 
 export const KeyListItem = observer(function KeyListItem({
   item,
   tiled,
+  animate,
 }: KeyListItemProps) {
   const { label, description, Icon, right, onPress, signed } = item;
   const { configStore } = useStore();
@@ -140,7 +146,7 @@ export const KeyListItem = observer(function KeyListItem({
               <LottieView
                 source={require("./assets/prompt-animation.json")}
                 autoPlay
-                loop
+                loop={animate}
                 style={{ width: 60, zIndex: -1, position: "absolute" }}
               />
             )}

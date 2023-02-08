@@ -1,4 +1,5 @@
-import { CosmosChain, TerraChain } from "@obi-wallet/common";
+import { Chain, CosmosChain, TerraChain } from "@obi-wallet/common";
+import { QueryClient } from "@tanstack/react-query";
 import { AES } from "crypto-js";
 import { totp } from "otplib";
 import { Alert } from "react-native";
@@ -120,15 +121,21 @@ export async function sendSignatureTextMessage({
 export async function parseSignatureTextMessageResponse({
   key,
   demoMode,
+  chainId,
+  queryClient,
 }: {
   key: string;
   demoMode: boolean;
+  chainId: Chain;
+  queryClient: QueryClient;
 }): Promise<Uint8Array | null> {
   if (demoMode) {
     const { signature } = await prepareWalletAndSign({
       publicKey: DEMO_PUBLIC_KEY,
       privateKey: DEMO_PRIVATE_KEY,
       payload: DEMO_PAYLOAD,
+      chainId,
+      queryClient,
     });
     return signature;
   }

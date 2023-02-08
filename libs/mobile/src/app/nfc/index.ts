@@ -1,4 +1,6 @@
 import { Sha256 } from "@cosmjs/crypto/build/sha";
+import { Chain } from "@obi-wallet/common";
+import { QueryClient } from "@tanstack/react-query";
 import { randomBytes } from "crypto";
 import fetch from "isomorphic-unfetch";
 import NfcManager, {
@@ -129,12 +131,16 @@ export async function createNFCSignature({
   parsed,
   boostEntropy,
   localEntropy,
+  chainId,
+  queryClient,
 }: {
   payload: Uint8Array;
   demoMode: boolean;
   parsed: string;
   boostEntropy: boolean;
   localEntropy: string;
+  chainId: Chain;
+  queryClient: QueryClient;
 }) {
   const { publicKey, privateKey } = await getNFCKeyPair({
     demoMode,
@@ -146,6 +152,8 @@ export async function createNFCSignature({
     publicKey,
     privateKey,
     payload,
+    chainId,
+    queryClient,
   });
 }
 
