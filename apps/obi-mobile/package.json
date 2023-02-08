@@ -46,6 +46,8 @@
     "@terra-money/terra.proto": "*",
     "@testing-library/jest-native": "*",
     "@testing-library/react-native": "*",
+    "@walletconnect/client": "*",
+    "@walletconnect/types": "*",
     "appcenter": "*",
     "appcenter-analytics": "*",
     "appcenter-crashes": "*",

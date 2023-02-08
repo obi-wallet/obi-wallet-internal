@@ -11,6 +11,7 @@ import {
   RequestObiCosmosSignAndBroadcastMsg,
   RequestObiInAppPurchaseMsg,
   RequestObiTerraSignAndBroadcastMsg,
+  RequestObiWalletConnectMsg,
   RouterBackground,
 } from "@obi-wallet/common";
 import { Buffer } from "buffer";
@@ -70,6 +71,7 @@ export function initBackground() {
   router.registerMessage(RequestObiInAppPurchaseMsg);
   router.registerMessage(RequestObiCosmosSignAndBroadcastMsg);
   router.registerMessage(RequestObiTerraSignAndBroadcastMsg);
+  router.registerMessage(RequestObiWalletConnectMsg);
   router.addHandler("obi", async (env: Env, msg: Message<unknown>) => {
     const message = msg as ObiMessage;
     return await interactionService.waitApprove(
