@@ -30,63 +30,78 @@ export interface BaseAppProps {
   providerProps?: Omit<ProviderProps, "children" | "config">;
 }
 
-export const BaseApp = observer(function BaseApp({
+export const BaseApp = observer<BaseAppProps>(function BaseApp({
   initialConfig,
   providerProps,
-}: BaseAppProps) {
-  const [updating, setUpdating] = useState(false);
-  const appState = useRef(AppState.currentState);
-  const lastUpdate = useRef(0);
-
-  useEffect(() => {
-    const listener = AppState.addEventListener(
-      "change",
-      async (nextAppState) => {
-        if (
-          appState.current.match(/inactive|background|unknown/) &&
-          nextAppState === "active"
-        ) {
-          const timeSinceLastUpdate = new Date().getTime() - lastUpdate.current;
-          if (timeSinceLastUpdate > 5 * 1000 && !__DEV__) {
-            if (await codePush.checkForUpdate(deploymentKey)) {
-              try {
-                await setUpdating(true);
-                await codePush.sync({
-                  deploymentKey,
-                  installMode: codePush.InstallMode.IMMEDIATE,
-                });
-              } catch (e) {
-                console.error(e);
-                await setUpdating(false);
-              }
-            }
-          }
-
-          lastUpdate.current = new Date().getTime();
-        }
-
-        appState.current = nextAppState;
-      }
-    );
-    return () => {
-      listener.remove();
-    };
-  }, []);
-
+}) {
   return (
     <Provider {...providerProps} config={initialConfig}>
-      {updating ? (
-        <Load />
-      ) : (
-        <>
-          <DemoModeHeader />
-          <StateRenderer />
-          <Modals />
-        </>
-      )}
+      <BaseAppWithoutProvider />
     </Provider>
   );
 });
+
+export const BaseAppWithoutProvider = observer(
+  function BaseAppWithoutProvider() {
+    const [updating, setUpdating] = useState(false);
+    const { walletConnectStore } = useStore();
+    const appState = useRef(AppState.currentState);
+    const lastUpdate = useRef(0);
+
+    useEffect(() => {
+      const listener = AppState.addEventListener(
+        "change",
+        async (nextAppState) => {
+          const previousAppState = appState.current;
+          appState.current = nextAppState;
+
+          if (
+            previousAppState.match(/inactive|background|unknown/) &&
+            nextAppState === "active"
+          ) {
+            await Promise.all([
+              walletConnectStore.recoverConnectors(),
+              (async () => {
+                const timeSinceLastUpdate =
+                  new Date().getTime() - lastUpdate.current;
+                if (timeSinceLastUpdate > 5 * 1000 && !__DEV__) {
+                  if (await codePush.checkForUpdate(deploymentKey)) {
+                    try {
+                      await setUpdating(true);
+                      await codePush.sync({
+                        deploymentKey,
+                        installMode: codePush.InstallMode.IMMEDIATE,
+                      });
+                    } catch (e) {
+                      console.error(e);
+                      await setUpdating(false);
+                    }
+                  }
+                }
+
+                lastUpdate.current = new Date().getTime();
+              })(),
+            ]);
+          }
+        }
+      );
+      return () => {
+        listener.remove();
+      };
+    }, [walletConnectStore]);
+
+    if (updating) return <Load />;
+
+    return (
+      <>
+        <DemoModeHeader />
+        <StateRenderer />
+        <Modals />
+      </>
+    );
+  }
+);
+
 const Load = observer(function Load() {
   const theme = useTheme();
   return (
