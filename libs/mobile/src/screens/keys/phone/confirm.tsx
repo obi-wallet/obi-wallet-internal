@@ -201,6 +201,10 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                 style={{ marginTop: 25 }}
                 value={key}
                 onChangeText={(e) => {
+                  if (e === "" && key.length === 1) {
+                    setKey("");
+                    return;
+                  }
                   const reg = /^\d+$/;
                   if (reg.test(e)) {
                     setKey(e);
