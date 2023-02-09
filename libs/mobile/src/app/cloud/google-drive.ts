@@ -12,12 +12,7 @@ import secp256k1 from "secp256k1";
 GoogleSignin.configure({
   iosClientId:
     "1039458055047-gpjb5ifisblq42br1eq2pubq3l8rmub4.apps.googleusercontent.com",
-  scopes: [
-    "https://www.googleapis.com/auth/drive.appdata",
-    "https://www.googleapis.com/auth/drive.appfolder",
-    "https://www.googleapis.com/auth/drive.file",
-    "https://www.googleapis.com/auth/drive.resource",
-  ],
+  scopes: ["https://www.googleapis.com/auth/drive.appdata"],
 });
 
 const CLOUD_KEY = "key.json";
@@ -68,9 +63,10 @@ async function fetchKeyPairFromCloud({ name }: { name: string }) {
   const gDrive = await createGDrive();
 
   try {
-    const { files } = await gDrive.files.list(
-      new ListQueryBuilder().e("name", name)
-    );
+    const { files } = await gDrive.files.list({
+      name,
+      spaces: ["appDataFolder"],
+    });
     return await gDrive.files.getJson(files[0].id);
   } catch (e) {
     return null;
@@ -99,9 +95,13 @@ async function saveKeyPairToCloud({
     )
     .setRequestBody({
       name,
+      parents: ["appDataFolder"],
     });
   await gDrive.files.createIfNotExists(
-    new ListQueryBuilder().e("name", name),
+    {
+      name,
+      spaces: ["appDataFolder"],
+    },
     uploader
   );
 }
