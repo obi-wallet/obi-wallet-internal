@@ -1,5 +1,5 @@
 export { BaseApp, StateRenderer } from "./app";
-export { AddressQrCodeScannerModal } from "./app/screens/components/address-qr-code-scanner-modal";
+export { QrCodeScannerModal } from "./app/screens/components/qr-code-scanner-modal";
 export { InAppPurchaseInteractionModal } from "./app/modals/in-app-purchase-interaction-modal";
 export { SendScreen } from "./app/screens/send";
 export { Provider } from "./app/provider";

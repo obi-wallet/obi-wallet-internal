@@ -28,7 +28,7 @@ const InteractionModalInner = observer(function InteractionModalInner({
   return (
     <Modal visible={true}>
       <SafeAreaView style={{ flex: 1, backgroundColor: "#1a1a1a" }}>
-        <OnboardingScreenContainer>
+        <View style={{ paddingHorizontal: 20, flex: 1 }}>
           <Text
             style={{
               textAlign: "center",
@@ -115,7 +115,7 @@ const InteractionModalInner = observer(function InteractionModalInner({
               }}
             />
           </View>
-        </OnboardingScreenContainer>
+        </View>
       </SafeAreaView>
     </Modal>
   );

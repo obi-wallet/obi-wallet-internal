@@ -34,8 +34,8 @@ import Wcqr from "./assets/wcqr.svg";
 import { InlineButton, Button as ObiButton } from "../../button";
 import { RootRoute, useRootNavigation } from "../../root-stack";
 import { useStore } from "../../stores";
-import { useAddressQrCodeScannerModal } from "../components/address-qr-code-scanner-modal";
 import { parseDynamicLinkURL } from "../components/connected-web-view";
+import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
 
 const styles = StyleSheet.create({
   card: {
@@ -52,7 +52,7 @@ export const DappExplorer = observer(function DappExplorer() {
   const [showConnections, setShowConnections] = useState(false);
   const { walletConnectStore } = rootStore;
 
-  const qrCodeScannerModal = useAddressQrCodeScannerModal((data) => {
+  const qrCodeScannerModal = useQrCodeScannerModal((data) => {
     if (data.startsWith("https://terrastation.page.link")) {
       const payload = parseDynamicLinkURL(data)?.searchParams.get("payload");
       if (payload) {
