@@ -1,8 +1,13 @@
-import { isCosmosChain, KeyType, MultisigKey } from "@obi-wallet/common";
+import {
+  Chain,
+  KeyType,
+  MultisigKey,
+  MultisigWalletSerializedData,
+} from "@obi-wallet/common";
 import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 
 import { handleCosmos } from "./cosmos";
 import { handleTerra } from "./terra";
@@ -34,32 +39,48 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
         {...params}
         onSubmit={async () => {
           const chainId = draft.value.chain;
-          if (isCosmosChain(chainId)) {
-            await handleCosmos({
-              draft,
-              walletsStore,
-              demoMode: params.demoMode,
-              chainId,
-            });
-          } else {
-            await handleTerra({
-              draft,
-              walletsStore,
-              demoMode: params.demoMode,
-              chainId,
-            });
-          }
 
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [
-                {
-                  name: RootRoute.Home,
-                },
-              ],
-            })
-          );
+          try {
+            const serializedData = await Chain.select<
+              Promise<MultisigWalletSerializedData.SerializedMultisigWalletData>
+            >({
+              chainId,
+              onCosmosChain(chainId) {
+                return handleCosmos({
+                  draft,
+                  demoMode: params.demoMode,
+                  chainId,
+                });
+              },
+              onTerraChain(chainId) {
+                return handleTerra({
+                  draft,
+                  demoMode: params.demoMode,
+                  chainId,
+                });
+              },
+            });
+
+            if (params.demoMode) {
+              await walletsStore.addMultisigDemoWallet(serializedData);
+            } else {
+              await walletsStore.addMultisigWallet(serializedData);
+            }
+
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [
+                  {
+                    name: RootRoute.Home,
+                  },
+                ],
+              })
+            );
+          } catch (e) {
+            const error = e as Error;
+            Alert.alert("Something went wrong", error.message);
+          }
         }}
         onAddSocial={() => {
           navigation.navigate(KeyRoute.SocialKey, {

@@ -5,18 +5,15 @@ import {
   Draft,
   MultisigKey,
   RequestObiCosmosSignAndBroadcastMsg,
-  WalletsStore,
 } from "@obi-wallet/common";
 
 export async function handleCosmos({
   draft,
   demoMode,
-  walletsStore,
   chainId,
 }: {
   draft: Draft<MultisigKey>;
   demoMode: boolean;
-  walletsStore: WalletsStore;
   chainId: CosmosChain;
 }) {
   const multisigKey = draft.value;
@@ -51,14 +48,13 @@ export async function handleCosmos({
     multisigKey: multisigKey.serialize(),
     encodeObjects: [message],
     demoMode,
-    cancelable: false,
     isOnboarding: true,
   });
 
   try {
     const { currentCodeId } = cosmosChains[chainId];
 
-    const serializedData = {
+    return {
       chain: chainId,
       owner: multisigKey.serialize(),
       proxyAddress: {
@@ -67,12 +63,7 @@ export async function handleCosmos({
         codeId: currentCodeId,
       },
     };
-    if (demoMode) {
-      await walletsStore.addMultisigDemoWallet(serializedData);
-    } else {
-      await walletsStore.addMultisigWallet(serializedData);
-    }
   } catch (e) {
-    console.log(response.rawLog);
+    throw new Error(response.rawLog);
   }
 }
