@@ -83,6 +83,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
   const isObi = configStore.isObi();
 
   const [hasNfc, setHasNfc] = useState(false);
+  const [scannedNfc, setScannedNfc] = useState(false);
   const [parsed, setParsed] = useState<{
     tagType: string;
     parsed: string;
@@ -102,6 +103,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
             tagType: selectedTagType.current,
             parsed: parseNFCData(tag),
           });
+          setScannedNfc(true);
           await NfcManager.unregisterTagEvent();
         }
       };
@@ -170,7 +172,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
       id: 4,
       title: "YubiKey",
       handler: readYubikey,
-      enabled: false,
+      enabled: true,
     },
   ];
 
@@ -242,7 +244,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
                             item.handler();
                           }}
                           selectedTagType={selectedTagType.current}
-                          scannedNfc={false}
+                          scannedNfc={scannedNfc}
                         />
                       )}
                     />
@@ -277,7 +279,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
                         id="onboarding5.nfctagtype"
                         defaultMessage={
                           "You've labeled your NFC device as: " +
-                          selectedTagType +
+                          selectedTagType.current +
                           ". This key is boosted with both local and remote brute force shields."
                         }
                       />

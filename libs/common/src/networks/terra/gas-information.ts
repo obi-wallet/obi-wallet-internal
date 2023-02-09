@@ -13,7 +13,7 @@ export async function getTxGasOptions({
   chainId: TerraChain;
 }): Promise<TxGasOptions> {
   const baseURL = terraChains[chainId].api;
-  const path = "/gas-prices";
+  const path = "/v1/txs/gas_prices";
 
   const c = cache[chainId];
   if (c) return c;
