@@ -174,7 +174,7 @@ export class MultisigKey implements Draftable {
   public removeCloudKey() {
     this.removeKeyOfType(KeyType.Cloud);
   }
-  
+
   @action
   public removeEmailKey() {
     this.removeKeyOfType(KeyType.Email);

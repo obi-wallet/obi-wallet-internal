@@ -13,7 +13,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
-import { Linking } from 'react-native';
+import { Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import secp256k1 from "secp256k1";
 
@@ -89,13 +89,20 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   useEffect(() => {
     if (generatedAddress === "") {
       const privateKeyBuffer = randomBytes(32);
-      const publicKeyBuffer = Buffer.from(secp256k1.publicKeyCreate(privateKeyBuffer)).toString("base64");
+      const publicKeyBuffer = Buffer.from(
+        secp256k1.publicKeyCreate(privateKeyBuffer)
+      ).toString("base64");
       setRecoveryKey(privateKeyBuffer.toString("base64"));
       setPublicKey(publicKeyBuffer);
-      setGeneratedAddress(pubkeyToAddress({
-        type: pubkeyType.secp256k1,
-        value: publicKeyBuffer,
-      }, "terra"));
+      setGeneratedAddress(
+        pubkeyToAddress(
+          {
+            type: pubkeyType.secp256k1,
+            value: publicKeyBuffer,
+          },
+          "terra"
+        )
+      );
     }
     if (isValidEmail(email)) {
       setVerifyButtonDisabled(false); // Enable Verify&Proceed Button if checks are okay
@@ -110,12 +117,14 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   ]);
 
   function isValidEmail(email: string): boolean {
-    const regexp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+    const regexp = new RegExp(
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
     return regexp.test(email);
   }
 
   function encodeForMailto(text: string): string {
-    return encodeURIComponent(text).replace(/%20/g, '%20');
+    return encodeURIComponent(text).replace(/%20/g, "%20");
   }
 
   return (
@@ -182,11 +191,12 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                       id="onboarding5.recovery.emailsubtext.cosmos"
                       defaultMessage="Enter your recovery key from your email. (This is one-time use and will be replaced with a new recovery key.)"
                     />
-                  ) : <FormattedMessage
+                  ) : (
+                    <FormattedMessage
                       id="onboarding5.setemailkey.subtext.terra"
                       defaultMessage="Enter an email address. This is not stored; you will email your recovery key here."
-                      />
-                  }
+                    />
+                  )}
                 </Text>
               </View>
             </View>
@@ -209,12 +219,15 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                     // @ts-expect-error TODO: TypeScript doesn't understand this specific case
                     publicKey,
                   });
-                  Linking.openURL(`mailto:${email}?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
-                    "This is a v1 recovery key. You are sending it to yourself; Obi can never access its contents. " +
-                    "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
-                    "DO NOT DELETE this email unless you are saving its contents to a password manager or physical location. In future versions " +
-                    "of Obi, email recovery will use zero-knowledge proofs, and so saving an email will be unnecessary.  " + recoveryKey
-                  )}`);
+                  Linking.openURL(
+                    `mailto:${email}?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
+                      "This is a v1 recovery key. You are sending it to yourself; Obi can never access its contents. " +
+                        "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
+                        "DO NOT DELETE this email unless you are saving its contents to a password manager or physical location. In future versions " +
+                        "of Obi, email recovery will use zero-knowledge proofs, and so saving an email will be unnecessary.  " +
+                        recoveryKey
+                    )}`
+                  );
                   onSubmit();
                 } else {
                   Alert.alert(

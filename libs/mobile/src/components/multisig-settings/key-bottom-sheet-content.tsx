@@ -34,7 +34,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
 
     const safeArea = useSafeAreaInsets();
 
-    const getRecoverButton = () => {      
+    const getRecoverButton = () => {
       if (!action) return null;
 
       return (
@@ -194,7 +194,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
           ) : null}
         </View>
         <View style={{ alignItems: "center" }}>
-          { getRecoverButton()}
+          {getRecoverButton()}
           <TouchableOpacity
             onPress={() => onClose()}
             style={{ paddingVertical: 15, paddingHorizontal: 63 }}

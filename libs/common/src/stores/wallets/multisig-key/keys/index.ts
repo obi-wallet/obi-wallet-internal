@@ -59,16 +59,16 @@ export const SerializedPendingRecoveryKey = t.type({
   }),
 });
 
-export type SerializedPendingRecoveryKey = t.TypeOf<
-  typeof SerializedPendingRecoveryKey
->;
-=======
 export const SerializedEmailKey = t.type({
   type: t.literal(KeyType.Email),
   payload: SerializedEmailKeyPayload,
 });
 
 export type SerializedEmailKey = t.TypeOf<typeof SerializedEmailKey>;
+
+export type SerializedPendingRecoveryKey = t.TypeOf<
+  typeof SerializedPendingRecoveryKey
+>;
 
 export const SerializedKey = t.union([
   SerializedDeviceKey,

@@ -136,7 +136,6 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
   const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
   const hasEmailKey = draft.value.hasKeyOfType(KeyType.Email);
-}) {
 
   return (
     <MultisigSettings
@@ -188,8 +187,7 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
               label: "Add",
               onPress: onAddEmail,
             },
-        },
-      }}
+        }}
     >
       <View style={{ paddingTop: 10 }}>
         <Button flavor="blue" label="Create Wallet" onPress={onSubmit} />

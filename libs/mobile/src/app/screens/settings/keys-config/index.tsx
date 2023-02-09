@@ -139,22 +139,22 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
               },
             },
         [KeyType.Email]: draft.value.hasKeyOfType(KeyType.Email)
-            ? {
-                label: "Remove",
-                onPress: () => {
-                  draft.value.removeEmailKey();
-                },
-              }
-            : {
-                label: "Add",
-                onPress: () => {
-                  navigation.navigate(KeyRoute.EmailKey, {
-                    draftId,
-                    flow: KeyFlow.EditWallet,
-                    demoMode: wallet.isDemo,
-                  });
-                },
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeEmailKey();
               },
+            }
+          : {
+              label: "Add",
+              onPress: () => {
+                navigation.navigate(KeyRoute.EmailKey, {
+                  draftId,
+                  flow: KeyFlow.EditWallet,
+                  demoMode: wallet.isDemo,
+                });
+              },
+            },
       }}
     >
       {draft.isDirty ? (

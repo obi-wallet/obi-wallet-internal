@@ -187,8 +187,8 @@
   "settings.multisig.option.phonekey": "Clave de teléfono",
   "settings.multisig.option.biometricskey": "Clave de Dispositivo",
   "settings.multisig.option.socialkey": "Clave Social",
-  "settings.multisig.option.emailkey": "E-mail (Próximamente)",
-  "settings.multisig.option.cloudkey": "Cloud (Próximamente)",
+  "settings.multisig.option.emailkey": "E-mail",
+  "settings.multisig.option.cloudkey": "Cloud",
 
   "apps.kado": "Compra Cripto",
   "apps.gettickets": "Get Tickets",

@@ -183,9 +183,12 @@ export class NfcKey extends Key {
 export class EmailKey extends Key {
   protected readonly recoveryKey: string;
 
-  constructor({ multisigKey, recoveryKey }: {
-    multisigKey: MultisigKey,
-    recoveryKey: string,
+  constructor({
+    multisigKey,
+    recoveryKey,
+  }: {
+    multisigKey: MultisigKey;
+    recoveryKey: string;
   }) {
     const email = multisigKey.getKeyOfType(KeyType.Device);
     invariant(email, "Expected device key to exist.");
