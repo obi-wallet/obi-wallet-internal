@@ -142,9 +142,18 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
               flex: 1,
               paddingHorizontal: theme.spacing["16"],
               marginTop: theme.spacing["12"],
+              width: "100%",
+              paddingBottom: 20,
             }}
           >
-            <ScrollView>{children}</ScrollView>
+            <ScrollView
+              contentContainerStyle={{
+                flex: 1,
+                justifyContent: "flex-end",
+              }}
+            >
+              {children}
+            </ScrollView>
           </View>
         </SafeAreaView>
       </InitialBackground>
