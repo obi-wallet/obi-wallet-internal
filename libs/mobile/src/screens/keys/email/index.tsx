@@ -216,8 +216,10 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
               onPress={async () => {
                 if (publicKey) {
                   draft.value.setEmailKey({
-                    // @ts-expect-error TODO: TypeScript doesn't understand this specific case
-                    publicKey,
+                    publicKey: {
+                      type: pubkeyType.secp256k1,
+                      value: publicKey,
+                    },
                   });
                   Linking.openURL(
                     `mailto:${email}?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
@@ -228,7 +230,21 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                         recoveryKey
                     )}`
                   );
-                  onSubmit();
+                  Alert.alert(
+                    'Confirm Email Sent',
+                    'Never enter the one-time key you received anywhere unless you need it for recovery. Have you sent the email to yourself?',
+                    [
+                      {
+                        text: 'No',
+                        style: 'cancel',
+                      },
+                      {
+                        text: 'Yes, I sent the email to myself',
+                        onPress: () => onSubmit(),
+                      },
+                    ],
+                    { cancelable: false }
+                  );
                 } else {
                   Alert.alert(
                     intl.formatMessage({
