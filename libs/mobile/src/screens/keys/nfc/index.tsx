@@ -170,7 +170,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
       id: 4,
       title: "YubiKey",
       handler: readYubikey,
-      enabled: false,
+      enabled: true,
     },
   ];
 
@@ -277,7 +277,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
                         id="onboarding5.nfctagtype"
                         defaultMessage={
                           "You've labeled your NFC device as: " +
-                          selectedTagType +
+                          selectedTagType.current +
                           ". This key is boosted with both local and remote brute force shields."
                         }
                       />
