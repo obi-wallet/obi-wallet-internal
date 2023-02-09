@@ -82,11 +82,16 @@ export async function getNFCKeyPair({
       publicKey: DEMO_PUBLIC_KEY,
     };
   }
-  /// boost with local secret
-  const hashed = new Sha256(Buffer.from(parsed + localEntropy));
+  // hash - can't boost yet or brute forcing will require remote calls for every attempt
+  // todo: consider the vulnerability that a compromised endpoint could now try to brute force
+  // though doing so is potentially just burning money as
+  // 1) perhaps the NFC data has far too much entropy to brute force, and
+  // 2) finding a valid result is unlikely to pay out, just compromise 1 key
+  // Still, we should at some point find a solution
+  const hashed = new Sha256(Buffer.from(parsed));
   const privateKeyBuffer = hashed.digest();
   const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer);
-  /// now boost with remote secret
+  // now boost with remote secret
   if (boostEntropy) {
     const response = await fetch(
       "https://4a1uedngw7.execute-api.us-east-1.amazonaws.com",
