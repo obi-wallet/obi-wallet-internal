@@ -161,7 +161,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
           case KeyType.Nfc: {
             const onDiscoverTag: OnDiscoverTag = async (tag) => {
               if (tag.ndefMessage && tag.ndefMessage.length > 0) {
-                const parsed = await parseNFCData(tag);
+                const parsed = parseNFCData(tag);
 
                 console.warn(
                   `Associated NFC address is ${terra.getAddress({
