@@ -5,7 +5,6 @@ import QRCodeScanner from "react-native-qrcode-scanner";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "../../../button";
-import { useStore } from "../../../stores";
 
 export interface QrCodeScannerModalProps extends ModalProps {
   onScan: (address: string) => void;
@@ -48,10 +47,13 @@ export const QrCodeScannerModal = observer(function QrCodeScannerModal({
   );
 });
 
-export function useQrCodeScannerModal(onScan: (scannedData: string) => void) {
+export function useQrCodeScannerModal(
+  onScan: (params: { data: string; close(): void }) => void
+) {
   const [visible, setVisible] = useState(false);
 
   return {
+    visible,
     open() {
       setVisible(true);
     },
@@ -60,8 +62,12 @@ export function useQrCodeScannerModal(onScan: (scannedData: string) => void) {
         <QrCodeScannerModal
           visible={visible}
           onScan={(data) => {
-            onScan(data);
-            setVisible(false);
+            onScan({
+              data,
+              close() {
+                setVisible(false);
+              },
+            });
           }}
           onClose={() => {
             setVisible(false);

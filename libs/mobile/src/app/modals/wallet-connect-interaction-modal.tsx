@@ -37,7 +37,7 @@ const InteractionModalInner = observer(function InteractionModalInner({
               fontSize: 18,
             }}
           >
-            Wallect Connect
+            Wallet Connect
           </Text>
           <View style={{ flex: 1 }}>
             <View

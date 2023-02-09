@@ -99,9 +99,10 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
   const { chainStore } = useStore();
   const { prefix } = chainStore.currentChainInformation;
   const intl = useIntl();
-  const qrCodeScannerModal = useQrCodeScannerModal((data) => {
+  const qrCodeScannerModal = useQrCodeScannerModal(({ data, close }) => {
     if (data.startsWith(prefix)) {
       setAddress(address);
+      close();
     }
   });
   const theme = useTheme();

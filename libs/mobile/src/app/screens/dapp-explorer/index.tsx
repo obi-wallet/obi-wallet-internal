@@ -52,16 +52,14 @@ export const DappExplorer = observer(function DappExplorer() {
   const [showConnections, setShowConnections] = useState(false);
   const { walletConnectStore } = rootStore;
 
-  const qrCodeScannerModal = useQrCodeScannerModal((data) => {
+  const qrCodeScannerModal = useQrCodeScannerModal(({ data, close }) => {
     if (data.startsWith("https://terrastation.page.link")) {
       const payload = parseDynamicLinkURL(data)?.searchParams.get("payload");
       if (payload) {
-        console.log("Payload:", payload);
+        close();
         void walletConnectStore.addConnector(payload);
       }
-      return;
     }
-    console.log("QR Data:", data);
   });
 
   return (
