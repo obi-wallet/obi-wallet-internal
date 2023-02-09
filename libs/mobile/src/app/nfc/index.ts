@@ -20,17 +20,20 @@ export async function getNFCPublicKey({
   parsed,
   boostEntropy,
   localEntropy,
+  targetPubkey,
 }: {
   demoMode: boolean;
   boostEntropy: boolean;
   parsed: string;
   localEntropy: string;
+  targetPubkey: string | null;
 }) {
   const { publicKey } = await getNFCKeyPair({
     demoMode,
     parsed,
     boostEntropy,
     localEntropy,
+    targetPubkey,
   });
   return publicKey;
 }
@@ -40,17 +43,20 @@ export async function getNFCPrivateKey({
   parsed,
   boostEntropy,
   localEntropy,
+  targetPubkey,
 }: {
   demoMode: boolean;
   parsed: string;
   boostEntropy: boolean;
-  localEntropy: string;
+  localEntropy: string | null;
+  targetPubkey: string | null;
 }) {
   const { privateKey } = await getNFCKeyPair({
     demoMode,
     parsed,
     boostEntropy,
     localEntropy,
+    targetPubkey,
   });
   return privateKey;
 }
@@ -60,11 +66,13 @@ export async function getNFCKeyPair({
   parsed,
   boostEntropy,
   localEntropy,
+  targetPubkey,
 }: {
   demoMode: boolean;
   parsed: string;
   boostEntropy: boolean;
-  localEntropy: string;
+  localEntropy: string | null;
+  targetPubkey: string | null;
 }) {
   console.warn(
     "Getting NFC keypair with: " +
@@ -82,11 +90,15 @@ export async function getNFCKeyPair({
       publicKey: DEMO_PUBLIC_KEY,
     };
   }
-  /// boost with local secret
-  const hashed = new Sha256(Buffer.from(parsed + localEntropy));
+  // hash - can't boost yet or brute forcing will require remote calls for every attempt
+  // todo: consider the vulnerability that a compromised endpoint could now try to brute force
+  // though doing so is potentially just burning money as
+  // 1) perhaps the NFC data has far too much entropy to brute force, and
+  // 2) finding a valid result is unlikely to pay out, just compromise 1 key
+  // Still, we should at some point find a solution
+  const hashed = new Sha256(Buffer.from(parsed));
   const privateKeyBuffer = hashed.digest();
-  const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer);
-  /// now boost with remote secret
+  // now boost with remote secret
   if (boostEntropy) {
     const response = await fetch(
       "https://4a1uedngw7.execute-api.us-east-1.amazonaws.com",
@@ -103,15 +115,44 @@ export async function getNFCKeyPair({
     }
     const { salted } = await response.json();
     if (response.ok) {
-      const rehashed = new Sha256(Buffer.from(salted + localEntropy));
-      const saltedPrivateKeyBuffer = rehashed.digest();
-      const saltedPublicKeyBuffer = secp256k1.publicKeyCreate(
-        saltedPrivateKeyBuffer
-      );
+      // Now add a tiny bit of local entropy
+      if (localEntropy == null) {
+        for (
+          let localEntropyBin = 0b000000000000000000000000;
+          localEntropyBin <= 0b111111111111111111111111111;
+          localEntropyBin++
+        ) {
+          const buf = Buffer.allocUnsafe(3);
+          buf.writeInt32BE(1234);
+          const str = buf.toString("base64");
+          const guessHash = new Sha256(Buffer.from(salted + str));
+          const guessPrivateKeyBuffer = guessHash.digest();
+          const guessPublicKeyBuffer = secp256k1.publicKeyCreate(
+            guessPrivateKeyBuffer
+          );
+          const publicKey =
+            Buffer.from(guessPublicKeyBuffer).toString("base64");
+          if (publicKey === targetPubkey) {
+            const privateKey = Buffer.from(guessPrivateKeyBuffer).toString(
+              "base64"
+            );
+            return { privateKey, publicKey, localEntropyBin };
+          }
+        }
+        throw Error("Brute force failed");
+      } else {
+        const rehashed = new Sha256(Buffer.from(salted + localEntropy));
+        const saltedPrivateKeyBuffer = rehashed.digest();
+        const saltedPublicKeyBuffer = secp256k1.publicKeyCreate(
+          saltedPrivateKeyBuffer
+        );
 
-      const privateKey = Buffer.from(saltedPrivateKeyBuffer).toString("base64");
-      const publicKey = Buffer.from(saltedPublicKeyBuffer).toString("base64");
-      return { privateKey, publicKey };
+        const privateKey = Buffer.from(saltedPrivateKeyBuffer).toString(
+          "base64"
+        );
+        const publicKey = Buffer.from(saltedPublicKeyBuffer).toString("base64");
+        return { privateKey, publicKey };
+      }
     } else {
       // todo: implement retry
       console.warn("Entropy boost failed");
@@ -119,6 +160,7 @@ export async function getNFCKeyPair({
       throw Error("Entropy boost failed");
     }
   } else {
+    const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer);
     const privateKey = Buffer.from(privateKeyBuffer).toString("base64");
     const publicKey = Buffer.from(publicKeyBuffer).toString("base64");
     return { privateKey, publicKey };
@@ -147,6 +189,7 @@ export async function createNFCSignature({
     parsed,
     boostEntropy,
     localEntropy,
+    targetPubkey: null,
   });
   return await prepareWalletAndSign({
     publicKey,

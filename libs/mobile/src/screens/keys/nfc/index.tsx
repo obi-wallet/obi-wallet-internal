@@ -299,7 +299,8 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
                     demoMode,
                     parsed: parsed.parsed,
                     boostEntropy: true,
-                    localEntropy,
+                    localEntropy: isRecovering ? null : localEntropy,
+                    targetPubkey: isRecovering ? targetPublicKey : null,
                   });
                   draft.value.setNfcKey({
                     publicKey: {
