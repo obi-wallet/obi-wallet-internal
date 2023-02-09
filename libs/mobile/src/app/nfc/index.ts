@@ -203,6 +203,7 @@ function getYubikeyOTP(parsed: string): string {
         break;
       }
     }
+    console.warn("Parsed substring is " + parsed.substring(otpLoc, endLoc));
     return parsed.substring(otpLoc, endLoc);
   }
 }
@@ -211,25 +212,22 @@ export function parseNFCData(tag: TagEvent): string {
   const ndefRecords = tag.ndefMessage;
   const parsed = ndefRecords.map(decodeNdefRecord);
   const parsedString = JSON.stringify(parsed);
-  const yubikeyOTP = getYubikeyOTP(parsedString)
+  const yubikeyOTP = getYubikeyOTP(parsedString);
   if (yubikeyOTP.length > 0) {
     // TODO: more robust yubikey verification is possible, potentially not using OTP
     // or by running a special verification/signing service
     const nonce = randomBytes(32).toString("hex");
     // nonce required to make the request unique
     // TODO: yubico runs api2, api3, api4, api5... add these as backups
-    let apiUrl = `https://api.yubico.com/wsapi/2.0/verify?id=1&otp=${yubikeyOTP}&nonce=${nonce}`;
-    fetch(
-      apiUrl,
-      {
-        method: "GET",
-      }
-    ).then((response) => {
+    const apiUrl = `https://api.yubico.com/wsapi/2.0/verify?id=1&otp=${yubikeyOTP}&nonce=${nonce}`;
+    fetch(apiUrl, {
+      method: "GET",
+    }).then((response) => {
       console.warn("raw response: ", JSON.stringify(response));
       if (response.status !== 200) {
         throw Error("Yubikey verification failed");
       }
-      response.json().then((data) => {;
+      response.json().then((data) => {
         if (!data.ok) {
           throw Error("Yubikey verification failed");
         }
@@ -243,7 +241,9 @@ export function parseNFCData(tag: TagEvent): string {
           throw Error("Mismatched OTP in response");
         }
         if (data.status != "OK") {
-          throw Error("Instead of OK response from Yubikey, received: " + data.status);
+          throw Error(
+            "Instead of OK response from Yubikey, received: " + data.status
+          );
         }
         /// TODO
         /* if (!checkYubihash(data.h)) {
@@ -252,7 +252,7 @@ export function parseNFCData(tag: TagEvent): string {
       });
       console.warn("Yubikey verification passed!");
     });
-    return JSON.stringify(yubikeyOTP).slice(0,-32);
+    return yubikeyOTP.slice(0, -32);
   } else {
     return JSON.stringify(parsed);
   }
