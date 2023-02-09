@@ -26,7 +26,10 @@ export const AddressQrCodeScannerModal = observer(
       <Modal {...props}>
         <QRCodeScanner
           onRead={({ data }) => {
-            if (data.startsWith(prefix)) {
+            if (
+              data.startsWith("https://terrastation.page.link") ||
+              data.startsWith(prefix)
+            ) {
               onScan(data);
             }
           }}
@@ -67,8 +70,8 @@ export function useAddressQrCodeScannerModal(
       return (
         <AddressQrCodeScannerModal
           visible={visible}
-          onScan={(address) => {
-            onScan(address);
+          onScan={(data) => {
+            onScan(data);
             setVisible(false);
           }}
           onClose={() => {

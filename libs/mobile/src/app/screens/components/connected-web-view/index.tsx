@@ -22,7 +22,7 @@ const tryNewURL = (str: string): URL | undefined => {
   }
 };
 
-const parseDynamicLinkURL = (value: string): URL | undefined => {
+export const parseDynamicLinkURL = (value: string): URL | undefined => {
   const url = tryNewURL(value);
   const link = url?.searchParams.get("link");
   if (link) return tryNewURL(link);
@@ -80,9 +80,7 @@ export const ConnectedWebView = observer(function ConnectedWebView({
 
   useEffect(() => {
     for (const data of permissionStore.waitingDatas) {
-      console.log("trying to approve");
       permissionStore.approve(data.id);
-      console.log("approved");
     }
   }, [permissionStore, permissionStore.waitingDatas]);
 

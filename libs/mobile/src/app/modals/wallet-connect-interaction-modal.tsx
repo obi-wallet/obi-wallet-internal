@@ -1,14 +1,11 @@
-import {
-  RequestObiWalletConnectMsg,
-  RequestObiWalletConnectPayload,
-  Text,
-} from "@obi-wallet/common";
+import { RequestObiWalletConnectPayload, Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
-import { Modal } from "react-native";
+import { Modal, SafeAreaView, View } from "react-native";
 
 import { Button } from "../button";
+import { OnboardingScreenContainer } from "../screens/components/onboarding-screen-container";
+import Wc from "../screens/dapp-explorer/assets/wallet-connect.svg";
 import { useStore } from "../stores";
-
 export const WalletConnectInteractionModal = observer(
   function WalletConnectInteractionModal() {
     const { walletConnectInteractionStore } = useStore();
@@ -28,25 +25,98 @@ const InteractionModalInner = observer(function InteractionModalInner({
 }) {
   const { walletConnectInteractionStore } = useStore();
 
-  console.log("INTERACTION", data);
-
   return (
-    <Modal visible>
-      <Text>Do you want to connect to {data.peerMeta.name}</Text>
-      <Button
-        flavor="blue"
-        label="Yes"
-        onPress={() => {
-          walletConnectInteractionStore.approveAndWaitEnd();
-        }}
-      />
-      <Button
-        flavor="blue"
-        label="No"
-        onPress={() => {
-          walletConnectInteractionStore.reject();
-        }}
-      />
+    <Modal visible={true}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#1a1a1a" }}>
+        <OnboardingScreenContainer>
+          <Text
+            style={{
+              textAlign: "center",
+              color: "white",
+              fontWeight: "600",
+              fontSize: 18,
+            }}
+          >
+            Wallect Connect
+          </Text>
+          <View style={{ flex: 1 }}>
+            <View
+              style={{
+                maxHeight: 150,
+                paddingVertical: 50,
+              }}
+            >
+              <Wc />
+            </View>
+            <Text style={{ color: "#fff", textAlign: "center" }}>
+              {data.peerMeta.name} requested to connect your wallet
+            </Text>
+            <View
+              style={{
+                backgroundColor: "#272727",
+                marginVertical: 20,
+                borderRadius: 7,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#fff",
+                  padding: 10,
+                }}
+              >
+                URL:{"  "}
+                <Text
+                  style={{
+                    opacity: 0.5,
+                    fontSize: 12,
+                  }}
+                >
+                  {data.peerMeta.url}
+                </Text>
+              </Text>
+            </View>
+            <View
+              style={{
+                backgroundColor: "#272727",
+                padding: 10,
+                borderRadius: 7,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#fff",
+                }}
+              >
+                Description:
+              </Text>
+              <Text
+                style={{
+                  color: "#fff",
+                  opacity: 0.5,
+                }}
+              >
+                {data.peerMeta.description}
+              </Text>
+            </View>
+          </View>
+          <View>
+            <Button
+              flavor="blue"
+              label="Allow"
+              onPress={() => {
+                walletConnectInteractionStore.approveAndWaitEnd();
+              }}
+            />
+            <Button
+              flavor="cancel"
+              label="Deny"
+              onPress={() => {
+                walletConnectInteractionStore.reject();
+              }}
+            />
+          </View>
+        </OnboardingScreenContainer>
+      </SafeAreaView>
     </Modal>
   );
 });
