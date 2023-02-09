@@ -87,3 +87,21 @@ export function isTerraChain(
 }
 
 export type Chain = CosmosChain | TerraChain;
+
+export const Chain = {
+  select<T>({
+    chainId,
+    onCosmosChain,
+    onTerraChain,
+  }: {
+    chainId: Chain;
+    onCosmosChain(chainId: CosmosChain): T;
+    onTerraChain(chainId: TerraChain): T;
+  }) {
+    if (isCosmosChain(chainId)) {
+      return onCosmosChain(chainId);
+    } else {
+      return onTerraChain(chainId);
+    }
+  },
+};
