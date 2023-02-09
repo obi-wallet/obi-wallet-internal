@@ -189,10 +189,73 @@ export async function startReading(alertMessage: string) {
   await NfcManager.registerTagEvent(options);
 }
 
+function getYubikeyOTP(parsed: string): string {
+  const lookupString = "my.yubico.com/yk/#";
+  const urlLoc = parsed.indexOf(lookupString);
+  if (urlLoc === -1) {
+    return "";
+  } else {
+    const otpLoc = urlLoc + lookupString.length;
+    let endLoc = otpLoc;
+    for (let i = otpLoc; i < parsed.length; i++) {
+      if (!/^[cbdefghijklnrtuv]*$/.test(parsed.charAt(i))) {
+        endLoc = i;
+        break;
+      }
+    }
+    console.warn("Parsed substring is " + parsed.substring(otpLoc, endLoc));
+    return parsed.substring(otpLoc, endLoc);
+  }
+}
+
 export function parseNFCData(tag: TagEvent): string {
   const ndefRecords = tag.ndefMessage;
   const parsed = ndefRecords.map(decodeNdefRecord);
-  return JSON.stringify(parsed);
+  const parsedString = JSON.stringify(parsed);
+  const yubikeyOTP = getYubikeyOTP(parsedString);
+  if (yubikeyOTP.length > 0) {
+    // TODO: more robust yubikey verification is possible, potentially not using OTP
+    // or by running a special verification/signing service
+    const nonce = randomBytes(32).toString("hex");
+    // nonce required to make the request unique
+    // TODO: yubico runs api2, api3, api4, api5... add these as backups
+    const apiUrl = `https://api.yubico.com/wsapi/2.0/verify?id=1&otp=${yubikeyOTP}&nonce=${nonce}`;
+    fetch(apiUrl, {
+      method: "GET",
+    }).then((response) => {
+      console.warn("raw response: ", JSON.stringify(response));
+      if (response.status !== 200) {
+        throw Error("Yubikey verification failed");
+      }
+      response.json().then((data) => {
+        if (!data.ok) {
+          throw Error("Yubikey verification failed");
+        }
+        if (data.status === "REPLAYED_OTP") {
+          throw Error("Yubikey OTP already used");
+        }
+        if (data.nonce != nonce) {
+          throw Error("Mismatched nonce in response");
+        }
+        if (data.otp != parsed) {
+          throw Error("Mismatched OTP in response");
+        }
+        if (data.status != "OK") {
+          throw Error(
+            "Instead of OK response from Yubikey, received: " + data.status
+          );
+        }
+        /// TODO
+        /* if (!checkYubihash(data.h)) {
+          throw Error("Hash check failed");
+        } */
+      });
+      console.warn("Yubikey verification passed!");
+    });
+    return yubikeyOTP.slice(0, -32);
+  } else {
+    return JSON.stringify(parsed);
+  }
 }
 
 export function generateLocalEntropy() {
