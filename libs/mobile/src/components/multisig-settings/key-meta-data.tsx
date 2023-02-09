@@ -34,9 +34,9 @@ export function useKeyMetaData() {
     KeyType.Social,
     KeyType.Nfc,
     KeyType.Cloud,
+    KeyType.Email,
   ];
   const comingSoonKeys = [
-    ComingSoonKeyType.Email,
     ComingSoonKeyType.Telegram,
     ComingSoonKeyType.Map,
     ComingSoonKeyType.Ledger,
@@ -79,8 +79,11 @@ export function useKeyMetaData() {
       label: "Cloud Key",
       Icon: Cloud,
     },
-    [ComingSoonKeyType.Email]: {
-      label: "E-mail Key",
+    [KeyType.Email]: {
+      label: intl.formatMessage({
+        id: "settings.multisig.option.emailkey",
+        defaultMessage: "Email Recovery Key",
+      }),
       Icon: Email,
     },
     [ComingSoonKeyType.Telegram]: {

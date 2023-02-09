@@ -189,7 +189,7 @@
   "settings.multisig.option.phonekey": "Phone Key",
   "settings.multisig.option.biometricskey": "Device Key",
   "settings.multisig.option.socialkey": "Social Key",
-  "settings.multisig.option.emailkey": "E-Mail Key (coming soon)",
+  "settings.multisig.option.emailkey": "E-Mail Key",
   "settings.multisig.option.cloudkey": "Cloud Key (coming soon)",
 
   "apps.kado": "Buy with Card",

@@ -2,6 +2,7 @@ import { Chain, KeyType, MultisigKey, TerraChain } from "@obi-wallet/common";
 import { QueryClient } from "@tanstack/react-query";
 import { Key, RawKey, SimplePublicKey } from "@terra-money/terra.js";
 import { SHA256, Word32Array } from "jscrypto";
+import secp256k1 from "secp256k1";
 import invariant from "tiny-invariant";
 
 import { createBiometricsSignature } from "../../../biometrics";
@@ -175,7 +176,28 @@ export class NfcKey extends Key {
       chainId: this.chainId,
       queryClient: this.queryClient,
     });
+    return Buffer.from(signature);
+  }
+}
 
+export class EmailKey extends Key {
+  protected readonly recoveryKey: string;
+
+  constructor({ multisigKey, recoveryKey }: {
+    multisigKey: MultisigKey,
+    recoveryKey: string,
+  }) {
+    const email = multisigKey.getKeyOfType(KeyType.Device);
+    invariant(email, "Expected device key to exist.");
+    super(SimplePublicKey.fromAmino(email.payload.publicKey));
+    this.recoveryKey = recoveryKey;
+  }
+
+  async sign(payload: Buffer): Promise<Buffer> {
+    const privateKeyUint8Array = new Uint8Array(
+      Buffer.from(this.recoveryKey, "base64")
+    );
+    const { signature } = secp256k1.ecdsaSign(payload, privateKeyUint8Array);
     return Buffer.from(signature);
   }
 }

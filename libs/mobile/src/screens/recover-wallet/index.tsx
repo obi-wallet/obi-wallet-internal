@@ -106,6 +106,12 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
             flow: KeyFlow.RecoverWallet,
           });
         }}
+        onAddEmail={() => {
+          navigation.navigate(KeyRoute.EmailKey, {
+            ...params,
+            flow: KeyFlow.RecoverWallet,
+          });
+        }}
         onRecoverNfc={({ targetPublicKey }) => {
           navigation.navigate(KeyRoute.NfcKey, {
             ...params,
@@ -140,6 +146,7 @@ export interface RecoverWalletProps {
   onRecoverNfc(payload: { targetPublicKey: string }): void;
   onAddCloud(): void;
   onRecoverCloud(payload: { targetPublicKey: string }): void;
+  onAddEmail(): void;
 }
 
 export const RecoverWallet = observer<RecoverWalletProps>(
@@ -212,7 +219,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
         };
       }
     }
-
+    
     return (
       <MultisigSettings
         draftId={draftId}
@@ -232,6 +239,18 @@ export const RecoverWallet = observer<RecoverWalletProps>(
               },
           [KeyType.Nfc]: getNfcKeyActions(),
           [KeyType.Cloud]: getCloudKeyActions(),
+          [KeyType.Email]: {
+            ? {
+                label: "Remove",
+                onPress: () => {
+                  draft.value.removeEmailKey();
+                },
+              }
+            : {
+                label: "Add",
+                onPress: onAddEmail,
+              },
+          },
         }}
       >
         <View style={{ paddingTop: 10 }}>
