@@ -30,11 +30,11 @@ import { Button } from "../../button";
 import { RootRoute, RootStackParamList } from "../../root-stack";
 import { useStore } from "../../stores";
 import { TextInput } from "../../text-input";
-import { useAddressQrCodeScannerModal } from "../components/address-qr-code-scanner-modal";
 import { Back } from "../components/back";
 import { BottomSheetBackdrop } from "../components/bottomSheetBackdrop";
 import { CoinIcon } from "../components/coin-icon";
 import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
+import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
 import { RefreshableFlatList } from "../components/refreshable-flat-list";
 import { isSmallScreenNumber } from "../components/screen-size";
 import { HomeBottomTabRoute } from "../home/home-stack";
@@ -96,10 +96,14 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
     visible?: boolean;
     success?: boolean;
   }>({});
-
+  const { chainStore } = useStore();
+  const { prefix } = chainStore.currentChainInformation;
   const intl = useIntl();
-  const qrCodeScannerModal = useAddressQrCodeScannerModal((address) => {
-    setAddress(address);
+  const qrCodeScannerModal = useQrCodeScannerModal(({ data, close }) => {
+    if (data.startsWith(prefix)) {
+      setAddress(address);
+      close();
+    }
   });
   const theme = useTheme();
   const { configStore } = useStore();

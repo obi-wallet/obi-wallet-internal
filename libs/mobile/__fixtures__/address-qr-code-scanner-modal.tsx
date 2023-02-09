@@ -1,10 +1,10 @@
-import { AddressQrCodeScannerModal } from "../src";
+import { QrCodeScannerModal } from "../src";
 
 export default (
-  <AddressQrCodeScannerModal
+  <QrCodeScannerModal
     visible
-    onScan={(address) => {
-      console.log("onScan", address);
+    onScan={(data) => {
+      console.log("onScan", data);
     }}
     onClose={() => {
       console.log("onClose");
