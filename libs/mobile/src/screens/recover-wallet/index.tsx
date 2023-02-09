@@ -158,11 +158,14 @@ export const RecoverWallet = observer<RecoverWalletProps>(
     onRecoverNfc,
     onAddCloud,
     onRecoverCloud,
+    onAddEmail,
   }) {
     const { draftsStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
     const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
+    const hasEmailKey = draft.value.hasKeyOfType(KeyType.Email);
+
     const nfcKey = draft.value.getKeyOfType(KeyType.Nfc);
     const cloudKey = draft.value.getKeyOfType(KeyType.Cloud);
 
@@ -239,7 +242,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
               },
           [KeyType.Nfc]: getNfcKeyActions(),
           [KeyType.Cloud]: getCloudKeyActions(),
-          [KeyType.Email]: {
+          [KeyType.Email]: hasEmailKey
             ? {
                 label: "Remove",
                 onPress: () => {
@@ -250,7 +253,6 @@ export const RecoverWallet = observer<RecoverWalletProps>(
                 label: "Add",
                 onPress: onAddEmail,
               },
-          },
         }}
       >
         <View style={{ paddingTop: 10 }}>
