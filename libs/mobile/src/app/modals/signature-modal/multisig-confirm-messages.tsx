@@ -105,6 +105,7 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
         <KeysList
           data={data}
           tiled
+          animate={!enoughSignatures}
           style={{
             marginVertical: 10,
             backgroundColor: isObi ? "transparent" : "#130F23",

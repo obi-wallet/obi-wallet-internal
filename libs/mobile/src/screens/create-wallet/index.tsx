@@ -1,8 +1,13 @@
-import { isCosmosChain, KeyType, MultisigKey } from "@obi-wallet/common";
+import {
+  Chain,
+  KeyType,
+  MultisigKey,
+  MultisigWalletSerializedData,
+} from "@obi-wallet/common";
 import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 
 import { handleCosmos } from "./cosmos";
 import { handleTerra } from "./terra";
@@ -34,35 +39,63 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
         {...params}
         onSubmit={async () => {
           const chainId = draft.value.chain;
-          if (isCosmosChain(chainId)) {
-            await handleCosmos({
-              draft,
-              walletsStore,
-              demoMode: params.demoMode,
-              chainId,
-            });
-          } else {
-            await handleTerra({
-              draft,
-              walletsStore,
-              demoMode: params.demoMode,
-              chainId,
-            });
-          }
 
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [
-                {
-                  name: RootRoute.Home,
-                },
-              ],
-            })
-          );
+          try {
+            const serializedData = await Chain.select<
+              Promise<MultisigWalletSerializedData.SerializedMultisigWalletData>
+            >({
+              chainId,
+              onCosmosChain(chainId) {
+                return handleCosmos({
+                  draft,
+                  demoMode: params.demoMode,
+                  chainId,
+                });
+              },
+              onTerraChain(chainId) {
+                return handleTerra({
+                  draft,
+                  demoMode: params.demoMode,
+                  chainId,
+                });
+              },
+            });
+
+            if (params.demoMode) {
+              await walletsStore.addMultisigDemoWallet(serializedData);
+            } else {
+              await walletsStore.addMultisigWallet(serializedData);
+            }
+
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [
+                  {
+                    name: RootRoute.Home,
+                  },
+                ],
+              })
+            );
+          } catch (e) {
+            const error = e as Error;
+            Alert.alert("Something went wrong", error.message);
+          }
         }}
         onAddSocial={() => {
           navigation.navigate(KeyRoute.SocialKey, {
+            ...params,
+            flow: KeyFlow.CreateWallet,
+          });
+        }}
+        onAddNfc={() => {
+          navigation.navigate(KeyRoute.NfcKey, {
+            ...params,
+            flow: KeyFlow.CreateWallet,
+          });
+        }}
+        onAddCloud={() => {
+          navigation.navigate(KeyRoute.CloudKey, {
             ...params,
             flow: KeyFlow.CreateWallet,
           });
@@ -83,14 +116,26 @@ export interface CreateWalletProps {
 
   onSubmit(): void;
   onAddSocial(): void;
+  onAddNfc(): void;
+  onAddCloud(): void;
   onAddEmail(): void;
 }
 
 export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   draftId,
   onSubmit,
+  onAddNfc,
   onAddSocial,
+  onAddCloud,
   onAddEmail,
+}) {
+  const { draftsStore } = useStore();
+  const draft = draftsStore.get<MultisigKey>({ id: draftId });
+
+  const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
+  const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
+  const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
+  const hasEmailKey = draft.value.hasKeyOfType(KeyType.Email);
 }) {
 
   return (
@@ -99,13 +144,50 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
       title="Create Wallet"
       subTitle="Add keys to improve security."
       actions={{
-        [KeyType.Email]: {
-          label: "Add",
-          onPress: onAddEmail,
-        },
-        [KeyType.Social]: {
-          label: "Add",
-          onPress: onAddSocial,
+        [KeyType.Social]: hasSocialKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeSocialKey();
+              },
+            }
+          : {
+              label: "Add",
+              onPress: onAddSocial,
+            },
+        [KeyType.Nfc]: hasNfcKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeNfcKey();
+              },
+            }
+          : {
+              label: "Add",
+              onPress: onAddNfc,
+            },
+        [KeyType.Cloud]: hasCloudKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeCloudKey();
+              },
+            }
+          : {
+              label: "Add",
+              onPress: onAddCloud,
+            },
+        [KeyType.Email]: hasEmailKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeEmailKey();
+              },
+            }
+          : {
+              label: "Add",
+              onPress: onAddEmail,
+            },
         },
       }}
     >

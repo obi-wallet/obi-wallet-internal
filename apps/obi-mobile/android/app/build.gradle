@@ -144,7 +144,7 @@ android {
         applicationId "money.obi.wallet"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 20
+        versionCode 21
         versionName "0.10.1"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         resValue "string", "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
@@ -245,9 +245,14 @@ android {
     }
     buildTypes {
         debug {
+            applicationIdSuffix ".dev"
+            resValue "string", "server_client_id", "1039458055047-kch683if52f39vfcgk52u1c5apcbbeor.apps.googleusercontent.com"
+
             signingConfig signingConfigs.debug
         }
         release {
+            resValue "string", "server_client_id", "1039458055047-nmhdlh18pgjp7alih1teonbi7p16ushg.apps.googleusercontent.com"
+
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.release

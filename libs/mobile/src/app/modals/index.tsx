@@ -5,6 +5,7 @@ import { Platform } from "react-native";
 import { InAppPurchaseInteractionModal } from "./in-app-purchase-interaction-modal";
 import { SignInteractionModal } from "./sign-interaction-modal";
 import { TerraSignInteractionModal } from "./terra-sign-interaction-modal";
+import { WalletConnectInteractionModal } from "./wallet-connect-interaction-modal";
 import { useStore } from "../stores";
 
 export const Modals = observer(function Modals() {
@@ -18,6 +19,7 @@ export const Modals = observer(function Modals() {
       ) : null}
       <SignInteractionModal />
       <TerraSignInteractionModal />
+      <WalletConnectInteractionModal />
     </>
   );
 });

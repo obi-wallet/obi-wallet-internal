@@ -367,7 +367,7 @@ const Balance = observer(function Balance() {
               });
 
               await RequestObiTerraSignAndBroadcastMsg.send({
-                multisigKey: wallet.owner,
+                multisigKey: wallet.owner.serialize(),
                 messages: messages.map((message) => {
                   return message.toAmino();
                 }),
@@ -478,7 +478,7 @@ const Validators = observer(function Validators() {
               // TODO: also check if amount is greater than balance
               if (isNaN(amountToUse) || amountToUse <= 0) return;
               await RequestObiTerraSignAndBroadcastMsg.send({
-                multisigKey: wallet.owner,
+                multisigKey: wallet.owner.serialize(),
                 messages: [
                   terra
                     .getStakeMessage({
@@ -737,7 +737,7 @@ const MyStake = observer(function MyStake() {
               // TODO: also check if amount is greater than balance
               if (isNaN(amountToUse) || amountToUse <= 0) return;
               await RequestObiTerraSignAndBroadcastMsg.send({
-                multisigKey: wallet.owner,
+                multisigKey: wallet.owner.serialize(),
                 messages: [
                   terra
                     .getUnstakeMessage({

@@ -60,12 +60,16 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
   // TODO: show banner if dirty
   // TODO: highlight changed keys
 
+  const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
+  const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
+  const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
+
   return (
     <MultisigSettings
       draftId={draftId}
       title={intl.formatMessage({
         id: "settings.multisig.title",
-        defaultMessage: "Manage Multisig",
+        defaultMessage: "Manage Multi-Key",
       })}
       subTitle={intl.formatMessage({
         id: "settings.multisig.subtitle",
@@ -83,7 +87,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
             });
           },
         },
-        [KeyType.Social]: draft.value.hasKeyOfType(KeyType.Social)
+        [KeyType.Social]: hasSocialKey
           ? {
               label: "Remove",
               onPress: () => {
@@ -94,6 +98,40 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
               label: "Add",
               onPress: () => {
                 navigation.navigate(KeyRoute.SocialKey, {
+                  draftId,
+                  flow: KeyFlow.EditWallet,
+                  demoMode: wallet.isDemo,
+                });
+              },
+            },
+        [KeyType.Nfc]: hasNfcKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeNfcKey();
+              },
+            }
+          : {
+              label: "Add",
+              onPress: () => {
+                navigation.navigate(KeyRoute.NfcKey, {
+                  draftId,
+                  flow: KeyFlow.EditWallet,
+                  demoMode: wallet.isDemo,
+                });
+              },
+            },
+        [KeyType.Cloud]: hasCloudKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeCloudKey();
+              },
+            }
+          : {
+              label: "Add",
+              onPress: () => {
+                navigation.navigate(KeyRoute.CloudKey, {
                   draftId,
                   flow: KeyFlow.EditWallet,
                   demoMode: wallet.isDemo,

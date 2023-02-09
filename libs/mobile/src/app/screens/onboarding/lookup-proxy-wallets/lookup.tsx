@@ -3,7 +3,14 @@ import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { CosmosChain, TerraChain, Text } from "@obi-wallet/common";
+import {
+  CosmosChain,
+  cosmosChains,
+  isCosmosChain,
+  TerraChain,
+  terraChains,
+  Text,
+} from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -40,13 +47,22 @@ export const Lookup = observer(function Lookup({
   useEffect(() => {
     (async () => {
       try {
+        const currentCodeId = isCosmosChain(chainId)
+          ? cosmosChains[chainId].currentCodeId
+          : terraChains[chainId].currentCodeId;
+
         const response = await fetch(
-          `https://proxy-wallets.obiwallet.workers.dev/${chainId}/${encodeURIComponent(
-            publicKey
-          )}`,
+          `https://proxy-wallets.obiwallet.workers.dev`,
           {
+            method: "POST",
+            body: JSON.stringify({
+              chainId,
+              publicKey,
+              currentCodeId,
+            }),
             headers: {
               "Api-Version": "v1",
+              "Content-Type": "application/json",
             },
           }
         );
@@ -218,7 +234,6 @@ export const Lookup = observer(function Lookup({
               onSelect(selectedWallet);
             }
           }}
-          style={{ marginBottom: 0 }}
         />
         <View style={{ alignItems: "center" }}>
           <TouchableOpacity

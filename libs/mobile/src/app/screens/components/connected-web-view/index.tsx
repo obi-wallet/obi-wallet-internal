@@ -14,6 +14,21 @@ import { RNInjectedKeplr } from "../../../injected-provider/injected-keplr";
 import { useStore } from "../../../stores";
 import { RefreshControl } from "../refresh-control";
 
+const tryNewURL = (str: string): URL | undefined => {
+  try {
+    return new URL(str);
+  } catch {
+    return undefined;
+  }
+};
+
+export const parseDynamicLinkURL = (value: string): URL | undefined => {
+  const url = tryNewURL(value);
+  const link = url?.searchParams.get("link");
+  if (link) return tryNewURL(link);
+  return undefined;
+};
+
 export interface ConnectedWebViewProps extends Omit<WebViewProps, "source"> {
   url: string;
   webViewRef: RefObject<WebView>;
@@ -28,6 +43,7 @@ export const ConnectedWebView = observer(function ConnectedWebView({
   setLoading,
   ...props
 }: ConnectedWebViewProps) {
+  const { walletConnectStore } = useStore();
   const keplr = useKeplr({ url });
   const code = bundle;
 
@@ -64,9 +80,7 @@ export const ConnectedWebView = observer(function ConnectedWebView({
 
   useEffect(() => {
     for (const data of permissionStore.waitingDatas) {
-      console.log("trying to approve");
       permissionStore.approve(data.id);
-      console.log("approved");
     }
   }, [permissionStore, permissionStore.waitingDatas]);
 
@@ -88,9 +102,25 @@ export const ConnectedWebView = observer(function ConnectedWebView({
     >
       <WebView
         {...props}
+        originWhitelist={["*"]}
         source={{ uri: url }}
         injectedJavaScriptBeforeContentLoaded={code}
         onMessage={onMessage}
+        onShouldStartLoadWithRequest={(e) => {
+          if (e.url.startsWith("terrastation://")) {
+            return false;
+          }
+          if (e.url.startsWith("https://terrastation.page.link")) {
+            const payload = parseDynamicLinkURL(e.url)?.searchParams.get(
+              "payload"
+            );
+            if (payload) {
+              void walletConnectStore.addConnector(payload);
+            }
+            return false;
+          }
+          return true;
+        }}
         ref={webViewRef}
       />
     </ScrollView>

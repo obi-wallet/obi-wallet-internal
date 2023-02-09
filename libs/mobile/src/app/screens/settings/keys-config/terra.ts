@@ -17,10 +17,13 @@ export async function handleTerra({
   const newOwner = draft.value;
 
   async function proposeUpdateOwner() {
+    const signers = terra.getSigners({ multisigKey: newOwner });
     const message = terra.getProposeUpdateOwnerMessage({
       sender: currentOwner.address,
       proxyAddress: wallet.address,
       newOwner: newOwner.address,
+      signers,
+      codeId: wallet.proxyAddress.codeId,
     });
 
     const response = await RequestObiTerraSignAndBroadcastMsg.send({

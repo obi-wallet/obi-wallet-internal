@@ -1,6 +1,8 @@
+import { CloudKeyScreen } from "./cloud";
 import { DeviceKeyScreen } from "./device";
 import { EmailKeyScreen } from "./email";
 import { KeyRoute } from "./key-stack";
+import { NfcKeyScreen } from "./nfc";
 import { PhoneKeyConfirmScreen, PhoneKeyRequestScreen } from "./phone";
 import { SocialKeyScreen } from "./social";
 import { RootStack } from "../../app/root-stack";
@@ -30,6 +32,18 @@ export const keyScreens = () => {
         name={KeyRoute.SocialKey}
         key={KeyRoute.SocialKey}
         component={SocialKeyScreen}
+        options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name={KeyRoute.NfcKey}
+        key={KeyRoute.NfcKey}
+        component={NfcKeyScreen}
+        options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name={KeyRoute.CloudKey}
+        key={KeyRoute.CloudKey}
+        component={CloudKeyScreen}
         options={{ headerShown: false }}
       />
       <RootStack.Screen

@@ -62,7 +62,7 @@ export const terraChains = {
     prefix: "terra",
     accountCreatorAddress:
       "terra1a9zykuft0ngvq6ug2j60hz0an2kz72c3vs73tj5m87xcm0dt8w2sdkflln",
-    currentCodeId: 1014,
+    currentCodeId: 1081,
     lcd: "https://terra2-api.dalnim.finance/",
     api: "https://phoenix-api.terra.dev",
     denom: "uluna",
@@ -87,3 +87,21 @@ export function isTerraChain(
 }
 
 export type Chain = CosmosChain | TerraChain;
+
+export const Chain = {
+  select<T>({
+    chainId,
+    onCosmosChain,
+    onTerraChain,
+  }: {
+    chainId: Chain;
+    onCosmosChain(chainId: CosmosChain): T;
+    onTerraChain(chainId: TerraChain): T;
+  }) {
+    if (isCosmosChain(chainId)) {
+      return onCosmosChain(chainId);
+    } else {
+      return onTerraChain(chainId);
+    }
+  },
+};

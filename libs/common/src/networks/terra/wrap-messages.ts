@@ -112,7 +112,9 @@ export function wrapMessage(message: Msg) {
         execute: {
           contract_addr: message.contract,
           funds: wrapCoins(message.coins),
-          msg: message.execute_msg,
+          msg: Buffer.from(JSON.stringify(message.execute_msg)).toString(
+            "base64"
+          ),
         },
       },
     };

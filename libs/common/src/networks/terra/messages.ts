@@ -117,13 +117,26 @@ export function getMigrateMessage({
   proxyAddress,
   admin,
   chainId,
+  signers,
+  codeId,
 }: {
   admin: string;
   proxyAddress: string;
   chainId: TerraChain;
+  signers: { address: string; ty: string }[];
+  codeId: number;
 }) {
   return new MsgExecuteContract(admin, proxyAddress, {
-    wrapped_migrate: { code_id: terraChains[chainId].currentCodeId },
+    wrapped_migrate: {
+      code_id: terraChains[chainId].currentCodeId,
+      ...(codeId >= 1081
+        ? {
+            signers: {
+              signers,
+            },
+          }
+        : {}),
+    },
   });
 }
 
@@ -131,14 +144,25 @@ export function getProposeUpdateOwnerMessage({
   sender,
   proxyAddress,
   newOwner,
+  signers,
+  codeId,
 }: {
   sender: string;
   proxyAddress: string;
   newOwner: string;
+  signers: { address: string; ty: string }[];
+  codeId: number;
 }) {
   const rawMessage = {
     propose_update_owner: {
       new_owner: newOwner,
+      ...(codeId >= 1081
+        ? {
+            signers: {
+              signers,
+            },
+          }
+        : {}),
     },
   };
   return new MsgExecuteContract(sender, proxyAddress, rawMessage);

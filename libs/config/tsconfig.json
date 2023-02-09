@@ -10,7 +10,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "files": [],
+  "files": ["../theme/emotion.d.ts"],
   "include": [],
   "references": [
     {

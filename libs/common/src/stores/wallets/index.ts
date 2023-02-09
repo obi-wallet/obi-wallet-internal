@@ -1,4 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
+import * as t from "io-ts";
 import {
   action,
   autorun,
@@ -14,19 +15,19 @@ import invariant from "tiny-invariant";
 import { WalletType } from "./abstract-wallet";
 import { MultisigWallet } from "./multisig-wallet";
 import {
-  migrateSerializedData,
-  SerializedData,
-  SerializedDataAnyVersion,
   SerializedMultisigDemoWallet,
   SerializedMultisigWallet,
+  SerializedMultisigWalletData,
+} from "./multisig-wallet/serialized-data";
+import {
+  MigratableSerializedData,
+  SerializedData,
   SerializedWallet,
 } from "./serialized-data";
 import { ChainStore } from "../chain";
 import { ConfigStore } from "../config";
 import { Entities } from "../entities";
 
-export * from "./cosmos-multisig-wallet";
-export * from "./terra-multisig-wallet";
 export * from "./multisig-wallet";
 
 export enum WalletState {
@@ -138,9 +139,7 @@ export class WalletsStore {
   };
 
   @action
-  public async addMultisigWallet(
-    serializedData: SerializedMultisigWallet["data"]
-  ) {
+  public async addMultisigWallet(serializedData: SerializedMultisigWalletData) {
     const wallet: SerializedMultisigWallet = {
       type: "multisig",
       data: serializedData,
@@ -150,7 +149,7 @@ export class WalletsStore {
 
   @action
   public async addMultisigDemoWallet(
-    serializedData: SerializedMultisigDemoWallet["data"]
+    serializedData: SerializedMultisigWalletData
   ) {
     const wallet: SerializedMultisigDemoWallet = {
       type: "multisig-demo",
@@ -190,7 +189,7 @@ export class WalletsStore {
       const serializedData = await this.getSerializedData();
 
       const { currentWalletIndex, wallets } =
-        migrateSerializedData(serializedData);
+        MigratableSerializedData.migrate(serializedData);
 
       wallets.forEach(this.addWalletWithoutSave);
 
@@ -210,7 +209,9 @@ export class WalletsStore {
     }
   }
 
-  public async getSerializedData(): Promise<SerializedDataAnyVersion> {
+  public async getSerializedData(): Promise<
+    t.TypeOf<typeof MigratableSerializedData.anyVersion>
+  > {
     const data = await this.kvStore.get("wallets");
     if (!data) {
       return {
@@ -219,7 +220,7 @@ export class WalletsStore {
       };
     }
 
-    if (SerializedDataAnyVersion.is(data)) return data;
+    if (MigratableSerializedData.anyVersion.is(data)) return data;
 
     invariant(
       R.has("currentWalletIndex", data),

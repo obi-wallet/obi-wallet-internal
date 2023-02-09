@@ -192,9 +192,6 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
                     id: "signature.modal.confirm",
                     defaultMessage: "Confirm",
                   })}
-                  style={{
-                    marginVertical: 20,
-                  }}
                   onPress={() => {
                     onConfirm();
                   }}

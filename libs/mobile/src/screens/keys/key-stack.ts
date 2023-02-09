@@ -7,6 +7,8 @@ export enum KeyRoute {
   PhoneKeyRequest = "PhoneKeyRequest",
   PhoneKeyConfirm = "PhoneKeyConfirm",
   SocialKey = "SocialKey",
+  NfcKey = "NfcKey",
+  CloudKey = "CloudKey",
 }
 
 export enum KeyFlow {
@@ -19,7 +21,7 @@ interface CommonKeyParams {
   flow: KeyFlow;
   draftId: string;
   demoMode: boolean;
-  serializedData?: MultisigWalletSerializedData.SerializedData;
+  serializedData?: MultisigWalletSerializedData.SerializedMultisigWalletData;
 }
 
 export interface KeyStackParamList extends ParamListBase {
@@ -32,4 +34,10 @@ export interface KeyStackParamList extends ParamListBase {
     securityAnswer: string;
   };
   [KeyRoute.SocialKey]: CommonKeyParams;
+  [KeyRoute.NfcKey]: CommonKeyParams & {
+    targetPublicKey?: string;
+  };
+  [KeyRoute.CloudKey]: CommonKeyParams & {
+    targetPublicKey?: string;
+  };
 }

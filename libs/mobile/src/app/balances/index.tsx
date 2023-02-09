@@ -1,9 +1,7 @@
 import { Coin } from "@cosmjs/amino";
 import {
-  cosmos,
   cosmosChains,
   isCosmosChain,
-  isTerraChain,
   Rewards,
   terra,
   Text,
@@ -19,6 +17,14 @@ import BottleIcon from "./assets/bottle.svg";
 import DrinkIcon from "./assets/drink.svg";
 import LoopIcon from "./assets/loop.svg";
 import { getRootStore } from "../../background/root-store";
+import {
+  getBalancesQuery,
+  getDelegationsQuery,
+  getPricesQuery,
+  getRewardsQuery,
+  getUnbondingDelegations,
+  getValidatorsQuery,
+} from "../../queries";
 import { useStore } from "../stores";
 
 export interface ExtendedCoin {
@@ -60,52 +66,13 @@ export function useRawBalances() {
   const { chainStore, walletsStore } = useStore();
   const address = walletsStore.address;
   const chainId = chainStore.currentChain;
-  return useQuery(
-    [
-      "balances",
-      {
-        chainId,
-        address,
-      },
-    ],
-    async () => {
-      if (!address) return [];
-
-      if (isTerraChain(chainId)) {
-        return await terra.fetchBalances({ address, chainId });
-      }
-
-      if (isCosmosChain(chainId)) {
-        return await cosmos.fetchBalances({ address, chainId });
-      }
-
-      return [];
-    }
-  );
+  return useQuery(getBalancesQuery({ chainId, address }));
 }
 
 export function usePrices() {
   const { chainStore } = useStore();
   const chainId = chainStore.currentChain;
-  return useQuery(
-    [
-      "prices",
-      {
-        chainId,
-      },
-    ],
-    async () => {
-      if (isTerraChain(chainId)) {
-        return await terra.fetchPrices({ chainId });
-      }
-
-      if (isCosmosChain(chainId)) {
-        return await cosmos.fetchPrices({ chainId });
-      }
-
-      return {};
-    }
-  );
+  return useQuery(getPricesQuery({ chainId }));
 }
 
 export const UsdBalance = observer(function UsdBalance() {
@@ -307,95 +274,27 @@ export function useDelegations() {
   const { chainStore, walletsStore } = useStore();
   const address = walletsStore.address;
   const chainId = chainStore.currentChain;
-  return useQuery(
-    [
-      "delegations",
-      {
-        address,
-        chainId,
-      },
-    ],
-    async () => {
-      if (!address) return [];
-
-      if (isTerraChain(chainId)) {
-        return await terra.fetchDelegations({ address, chainId });
-      }
-
-      return [];
-    }
-  );
+  return useQuery(getDelegationsQuery({ chainId, address }));
 }
 
 export function useUnbondingDelegations() {
   const { chainStore, walletsStore } = useStore();
   const address = walletsStore.address;
   const chainId = chainStore.currentChain;
-  return useQuery(
-    [
-      "unbonding-delegations",
-      {
-        address,
-        chainId,
-      },
-    ],
-    async () => {
-      if (!address) return [];
-
-      if (isTerraChain(chainId)) {
-        return await terra.fetchUnbondingDelegations({ address, chainId });
-      }
-
-      return [];
-    }
-  );
+  return useQuery(getUnbondingDelegations({ chainId, address }));
 }
 
 export function useValidators() {
   const { chainStore } = useStore();
   const chainId = chainStore.currentChain;
-  return useQuery(
-    [
-      "validators",
-      {
-        chainId,
-      },
-    ],
-    async () => {
-      if (isTerraChain(chainId)) {
-        return await terra.fetchValidators({ chainId });
-      }
-
-      return [];
-    },
-    {
-      staleTime: 1000 * 60 * 60 * 24, // 1 day,
-    }
-  );
+  return useQuery(getValidatorsQuery({ chainId }));
 }
 
 export function useRewards() {
   const { chainStore, walletsStore } = useStore();
   const address = walletsStore.address;
   const chainId = chainStore.currentChain;
-  const response = useQuery(
-    [
-      "rewards",
-      {
-        address,
-        chainId,
-      },
-    ],
-    async (): Promise<Rewards | undefined> => {
-      if (!address) return undefined;
-
-      if (isTerraChain(chainId)) {
-        return await terra.fetchRewards({ address, chainId });
-      }
-
-      return undefined;
-    }
-  );
+  const response = useQuery(getRewardsQuery({ chainId, address }));
 
   const fallback: Rewards = {
     perDelegator: [],

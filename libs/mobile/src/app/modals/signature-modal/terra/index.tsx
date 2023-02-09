@@ -7,6 +7,7 @@ import {
   RequestObiTerraSignAndBroadcastPayload,
   terra,
 } from "@obi-wallet/common";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   BlockTxBroadcastResult,
   isTxError,
@@ -17,14 +18,18 @@ import {
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Alert } from "react-native";
+import NfcManager, { NfcEvents, OnDiscoverTag } from "react-native-nfc-manager";
 import invariant from "tiny-invariant";
 
 import {
   BiometricsKey,
+  CloudKey,
+  NfcKey,
   PhoneNumberConfirmKey,
   PhoneNumberRequestKey,
 } from "./keys";
 import { existsKeyOnDevice } from "../../../biometrics";
+import { checkIsSupported, parseNFCData, startReading } from "../../../nfc";
 import {
   BottomSheet,
   BottomSheetRef,
@@ -71,6 +76,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
     );
     const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
     const { chainStore } = useStore();
+    const queryClient = useQueryClient();
     const chainId = chainStore.currentChain;
 
     invariant(isTerraChain(chainId), "Expected Terra chain.");
@@ -124,7 +130,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
     }, [multisigKey, chainId, messages, props]);
 
     function getKey({ type }: { type: KeyType }): Key {
-      const factor = multisigKey.getKeyOfType(type);
+      const factor = multisigKey.getUsableKeyOfType(type);
       invariant(factor, "Expected key to exist.");
 
       const alreadySigned = signatures.has(factor.payload.publicKey.value);
@@ -137,6 +143,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
           case KeyType.Device: {
             const biometricsKey = new BiometricsKey({
               multisigKey,
+              queryClient,
             });
 
             const signature = await biometricsKey.createSignatureAmino(signDoc);
@@ -151,6 +158,50 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
           case KeyType.Phone:
             phoneNumberBottomSheetRef.current?.snapToIndex(0);
             break;
+          case KeyType.Nfc: {
+            const onDiscoverTag: OnDiscoverTag = async (tag) => {
+              if (tag.ndefMessage && tag.ndefMessage.length > 0) {
+                const parsed = parseNFCData(tag);
+
+                console.warn(
+                  `Associated NFC address is ${terra.getAddress({
+                    publicKey: factor.payload.publicKey,
+                  })}`
+                );
+
+                const nfcKey = new NfcKey({
+                  multisigKey,
+                  parsed,
+                  demoMode,
+                  queryClient,
+                });
+
+                const signature = await nfcKey.createSignatureAmino(signDoc);
+
+                setSignatures((signatures) => {
+                  return new Map(
+                    signatures.set(factor.payload.publicKey.value, signature)
+                  );
+                });
+              }
+            };
+
+            NfcManager.setEventListener(NfcEvents.DiscoverTag, onDiscoverTag);
+            await startReading("Tap your NFC device to sign this transaction.");
+            break;
+          }
+          case KeyType.Cloud: {
+            const cloudKey = new CloudKey({ multisigKey });
+
+            const signature = await cloudKey.createSignatureAmino(signDoc);
+
+            setSignatures((signatures) => {
+              return new Map(
+                signatures.set(factor.payload.publicKey.value, signature)
+              );
+            });
+            break;
+          }
           default:
             console.log("Not implemented yet");
             break;
@@ -171,8 +222,10 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
       (async () => {
         const usableKeys = [];
 
-        const deviceKey = multisigKey.getKeyOfType(KeyType.Device);
-        const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+        const deviceKey = multisigKey.getUsableKeyOfType(KeyType.Device);
+        const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
+        const nfcKey = multisigKey.getUsableKeyOfType(KeyType.Nfc);
+        const cloudKey = multisigKey.getUsableKeyOfType(KeyType.Cloud);
 
         if (
           deviceKey &&
@@ -187,27 +240,29 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
           usableKeys.push(KeyType.Phone);
         }
 
+        if (nfcKey && (await checkIsSupported())) {
+          usableKeys.push(KeyType.Nfc);
+        }
+
+        if (cloudKey) {
+          usableKeys.push(KeyType.Cloud);
+        }
+
         setUsableKeys(usableKeys);
       })();
     }, [multisigKey]);
 
     if (!threshold || !usableKeys) return null;
 
-    const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+    const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
 
-    const data: Key[] = [
-      getKey({
-        type: KeyType.Device,
-      }),
-      getKey({
-        type: KeyType.Phone,
-      }),
-    ].filter((key) => {
-      return (
-        usableKeys.includes(key.type as KeyType) &&
-        !(hiddenKeyTypes || []).includes(key.type as KeyType)
-      );
-    });
+    const data: Key[] = usableKeys
+      .map((type) => {
+        return getKey({ type });
+      })
+      .filter((key) => {
+        return !(hiddenKeyTypes || []).includes(key.type as KeyType);
+      });
 
     return (
       <MultisigConfirmMessages
@@ -226,8 +281,6 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
               signaturesOrdered.push(signature);
             }
           }
-
-          console.log(signaturesOrdered);
 
           await onConfirm(await sign(signaturesOrdered));
         }}
@@ -252,6 +305,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
                     key,
                     multisigKey,
                     demoMode,
+                    queryClient,
                   });
                   const signature =
                     await phoneNumberRequestKey.createSignatureAmino(signDoc);

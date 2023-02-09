@@ -254,10 +254,15 @@ export const HomeScreen = observer(function HomeScreen() {
               const proxyAddress = currentWallet.proxyAddress;
               invariant(proxyAddress, "Expected `proxyAddress` to exist.");
 
+              const signers = terra.getSigners({
+                multisigKey: currentWallet.owner,
+              });
               const message = terra.getMigrateMessage({
                 proxyAddress: proxyAddress.address,
                 admin: currentWallet.owner.address,
                 chainId: currentWallet.chain as TerraChain,
+                signers,
+                codeId: proxyAddress.codeId,
               });
               const response = await RequestObiTerraSignAndBroadcastMsg.send({
                 multisigKey: currentWallet.owner.serialize(),

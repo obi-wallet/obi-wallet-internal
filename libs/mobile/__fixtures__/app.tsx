@@ -1,10 +1,3 @@
-import { Modals, StateRenderer } from "../src";
-import { DemoModeHeader } from "../src/app";
+import { BaseAppWithoutProvider } from "../src/app";
 
-export default (
-  <>
-    <DemoModeHeader />
-    <StateRenderer />
-    <Modals />
-  </>
-);
+export default <BaseAppWithoutProvider />;

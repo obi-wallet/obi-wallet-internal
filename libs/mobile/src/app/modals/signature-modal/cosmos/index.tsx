@@ -32,6 +32,7 @@ import {
   MultisigKey,
   RequestObiCosmosSignAndBroadcastPayload,
 } from "@obi-wallet/common";
+import { useQueryClient } from "@tanstack/react-query";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -96,6 +97,7 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
     const [signatures, setSignatures] = useState(new Map<string, Uint8Array>());
     const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
     const { chainStore } = useStore();
+    const queryClient = useQueryClient();
     const numberOfSignatures = signatures.size;
     const threshold = multisigKey.threshold;
 
@@ -143,7 +145,7 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
     }, [multisigKey.address, currentChainInformation.denom, chainId, messages]);
 
     function getKey({ type }: { type: KeyType }): Key {
-      const factor = multisigKey.getKeyOfType(type);
+      const factor = multisigKey.getUsableKeyOfType(type);
       invariant(factor, "Expected key to exist.");
 
       const alreadySigned = signatures.has(factor.payload.publicKey.value);
@@ -152,13 +154,15 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
 
         switch (type) {
           case KeyType.Device: {
-            const biometrics = multisigKey.getKeyOfType(KeyType.Device);
+            const biometrics = multisigKey.getUsableKeyOfType(KeyType.Device);
             invariant(biometrics, "Expected device key to exist.");
 
             const message = await getMessage();
             const { signature } = await createBiometricsSignature({
               payload: message,
               publicKey: biometrics.payload.publicKey.value,
+              chainId,
+              queryClient,
             });
 
             setSignatures((signatures) => {
@@ -191,8 +195,8 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
       (async () => {
         const usableKeys = [];
 
-        const deviceKey = multisigKey.getKeyOfType(KeyType.Device);
-        const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+        const deviceKey = multisigKey.getUsableKeyOfType(KeyType.Device);
+        const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
 
         if (
           deviceKey &&
@@ -213,7 +217,7 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
 
     if (!threshold || !usableKeys) return null;
 
-    const phoneKey = multisigKey.getKeyOfType(KeyType.Phone);
+    const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
 
     const data: Key[] = [
       getKey({
@@ -272,6 +276,8 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
                   const signature = await parseSignatureTextMessageResponse({
                     key,
                     demoMode,
+                    chainId,
+                    queryClient,
                   });
                   if (signature) {
                     setSignatures((signatures) => {
