@@ -222,7 +222,7 @@ export class WalletConnectStore {
 
             try {
               const response = await RequestObiTerraSignAndBroadcastMsg.send({
-                multisigKey,
+                multisigKey: multisigKey.serialize(),
                 messages: messages.map((msg) => msg.toAmino()),
                 demoMode: wallet.isDemo,
                 proxyAddress: wallet.address,
