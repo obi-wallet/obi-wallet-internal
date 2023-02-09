@@ -31,7 +31,7 @@ function createWalletConnect(connectorOpts: IWalletConnectOptions) {
       description: "Obi Wallet",
       url: "https://obi.money/",
       icons: [],
-      name: "Obi Wallet",
+      name: "Station",
     },
   });
 }
