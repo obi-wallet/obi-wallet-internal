@@ -12,7 +12,7 @@ import { randomBytes } from "crypto";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, View } from "react-native";
+import { Alert, TouchableOpacity, View } from "react-native";
 import { Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import secp256k1 from "secp256k1";
@@ -37,6 +37,11 @@ export type EmailKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
   KeyRoute.EmailKey
 >;
+
+enum Tab {
+  EmailKeyV1,
+  EmailKeyZK,
+}
 
 export const EmailKeyScreen = observer<EmailKeyScreenProps>(
   function EmailKeyScreen({ route }) {
@@ -78,6 +83,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   const { chainStore, configStore, draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
   const [email, setEmail] = useState("");
+  const [selectedTab, setSelectedTab] = useState(Tab.EmailKeyV1);
   const [recoveryKey, setRecoveryKey] = useState("");
   const [publicKey, setPublicKey] = useState("");
   const [generatedAddress, setGeneratedAddress] = useState("");
@@ -118,6 +124,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
 
   function isValidEmail(email: string): boolean {
     const regexp = new RegExp(
+      /* eslint-disable-next-line no-useless-escape */
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
     return regexp.test(email);
@@ -125,6 +132,89 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
 
   function encodeForMailto(text: string): string {
     return encodeURIComponent(text).replace(/%20/g, "%20");
+  }
+
+  function renderTabButton({
+    tab,
+    label,
+    isObi = false,
+  }: {
+    tab: Tab;
+    label: string;
+    isObi?: boolean;
+  }) {
+    return (
+      <View style={{ flex: 1 }}>
+        <TouchableOpacity
+          onPress={() => {
+            setSelectedTab(tab);
+          }}
+          style={{
+            flex: 1,
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            borderTopLeftRadius: tab === Tab.EmailKeyV1 ? 12 : 0,
+            borderTopRightRadius: tab === Tab.EmailKeyZK ? 12 : 0,
+            ...(selectedTab === tab && !isObi
+              ? { backgroundColor: "#130F23" }
+              : {}),
+          }}
+        >
+          <Text
+            style={{
+              color: selectedTab === tab && !isObi ? "#89F5C2" : "white",
+              textDecorationLine:
+                selectedTab === tab && !isObi ? "underline" : "none",
+              ...(selectedTab === tab && isObi
+                ? { fontWeight: "700" }
+                : { fontFamily: "poppins-light" }),
+            }}
+          >
+            {label}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  function renderTabContent() {
+    switch (selectedTab) {
+      case Tab.EmailKeyV1:
+        return (
+          <View>
+            <Text
+              style={{
+                color: isObi ? "#fff" : "#999CB6",
+                fontSize: isSmallScreenNumber(12, 14),
+                marginTop: 10,
+              }}
+            >
+              {flow === KeyFlow.RecoverWallet ? (
+                <FormattedMessage
+                  id="onboarding5.recovery.emailsubtext.cosmos"
+                  defaultMessage="Enter your recovery key from your email. (This is one-time use and will be replaced with a new recovery key.)"
+                />
+              ) : (
+                <FormattedMessage
+                  id="onboarding5.setemailkey.subtext.terra"
+                  defaultMessage="Enter an email address. This is not stored; you will email your recovery key here."
+                />
+              )}
+            </Text>
+            <TextInput
+              placeholder="email address"
+              autoCapitalize="none"
+              style={{ marginTop: 25 }}
+              value={email}
+              onChangeText={setEmail}
+            />
+          </View>
+        );
+      case Tab.EmailKeyZK: {
+        return <Text style={{ color: "#ffffff" }}>Coming soon...</Text>;
+      }
+    }
   }
 
   return (
@@ -150,63 +240,66 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                 width: 25,
               }}
             />
-
+            {isObi ? undefined : <SocialLoop width={70} height={70} />}
             <View>
-              <View>
-                {isObi ? undefined : <SocialLoop width={70} height={70} />}
-                <Text
-                  style={{
-                    color: "#F6F5FF",
-                    fontSize: isSmallScreenNumber(20, 24),
-                    fontWeight: "600",
-                    marginTop: isSmallScreenNumber(20, 32),
-                  }}
-                >
-                  {flow === KeyFlow.EditWallet ? (
-                    <FormattedMessage
-                      id="onboarding5.recovery.setemailkey"
-                      defaultMessage="Set a New Email Recovery Key"
-                    />
-                  ) : flow === KeyFlow.RecoverWallet ? (
-                    <FormattedMessage
-                      id="onboarding2.recovery.email"
-                      defaultMessage="Recover your Email Key"
-                    />
-                  ) : (
-                    <FormattedMessage
-                      id="onboarding5.setemailkey"
-                      defaultMessage="Set an Email Recovery Key"
-                    />
-                  )}
-                </Text>
-                <Text
-                  style={{
-                    color: isObi ? "#fff" : "#999CB6",
-                    fontSize: isSmallScreenNumber(12, 14),
-                    marginTop: 10,
-                  }}
-                >
-                  {flow === KeyFlow.RecoverWallet ? (
-                    <FormattedMessage
-                      id="onboarding5.recovery.emailsubtext.cosmos"
-                      defaultMessage="Enter your recovery key from your email. (This is one-time use and will be replaced with a new recovery key.)"
-                    />
-                  ) : (
-                    <FormattedMessage
-                      id="onboarding5.setemailkey.subtext.terra"
-                      defaultMessage="Enter an email address. This is not stored; you will email your recovery key here."
-                    />
-                  )}
-                </Text>
-              </View>
+              <Text
+                style={{
+                  color: "#F6F5FF",
+                  fontSize: isSmallScreenNumber(20, 24),
+                  fontWeight: "600",
+                  marginTop: isSmallScreenNumber(20, 32),
+                  textAlign: "center",
+                }}
+              >
+                {flow === KeyFlow.EditWallet ? (
+                  <FormattedMessage
+                    id="onboarding5.recovery.setemailkey"
+                    defaultMessage="Set a New Email Recovery Key"
+                  />
+                ) : flow === KeyFlow.RecoverWallet ? (
+                  <FormattedMessage
+                    id="onboarding2.recovery.email"
+                    defaultMessage="Recover your Email Key"
+                  />
+                ) : (
+                  <FormattedMessage
+                    id="onboarding5.setemailkey"
+                    defaultMessage="Set an Email Recovery Key"
+                  />
+                )}
+              </Text>
             </View>
-            <TextInput
-              placeholder="email address"
-              autoCapitalize="none"
-              style={{ marginTop: 25 }}
-              value={email}
-              onChangeText={setEmail}
-            />
+            <View
+              style={{
+                flexDirection: "row",
+                height: 50,
+                ...(isObi && {
+                  borderBottomColor: "rgba(250,250,250,.2)",
+                  borderBottomWidth: 1,
+                }),
+                marginTop: 50,
+                marginBottom: 20,
+                marginHorizontal: isObi ? 10 : 0,
+              }}
+            >
+              {renderTabButton({
+                tab: Tab.EmailKeyV1,
+                label: intl.formatMessage({
+                  id: "keys.email.tabs.simplekey",
+                  defaultMessage: "Simple 1 Use Key",
+                }),
+                isObi,
+              })}
+              {renderTabButton({
+                tab: Tab.EmailKeyZK,
+                label: intl.formatMessage({
+                  id: "keys.email.tabs.zkkey",
+                  defaultMessage: "Zero Knowledge Key",
+                }),
+                isObi,
+              })}
+            </View>
+            <View>{renderTabContent()}</View>
           </View>
           <View
             style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
@@ -231,15 +324,15 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                     )}`
                   );
                   Alert.alert(
-                    'Confirm Email Sent',
-                    'Never enter the one-time key you received anywhere unless you need it for recovery. Have you sent the email to yourself?',
+                    "Confirm Email Sent",
+                    "Never enter the one-time key you received anywhere unless you need it for recovery. Have you sent the email to yourself?",
                     [
                       {
-                        text: 'No',
-                        style: 'cancel',
+                        text: "No",
+                        style: "cancel",
                       },
                       {
-                        text: 'Yes, I sent the email to myself',
+                        text: "Yes, I sent the email to myself",
                         onPress: () => onSubmit(),
                       },
                     ],

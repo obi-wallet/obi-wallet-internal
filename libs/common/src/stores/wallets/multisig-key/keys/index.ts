@@ -2,8 +2,8 @@ import * as t from "io-ts";
 
 import { SerializedCloudKeyPayload } from "./cloud";
 import { SerializedDeviceKeyPayload } from "./device";
-import { SerializedNfcKeyPayload } from "./nfc";
 import { SerializedEmailKeyPayload } from "./email";
+import { SerializedNfcKeyPayload } from "./nfc";
 import { SerializedPhoneKeyPayload } from "./phone";
 import { Secp256k1PublicKey } from "./public-key";
 import { SerializedSocialKeyPayload } from "./social";

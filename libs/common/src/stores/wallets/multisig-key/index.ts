@@ -8,8 +8,8 @@ import {
 } from "./keys";
 import { SerializedCloudKeyPayload } from "./keys/cloud";
 import { SerializedDeviceKeyPayload } from "./keys/device";
-import { SerializedNfcKeyPayload } from "./keys/nfc";
 import { SerializedEmailKeyPayload } from "./keys/email";
+import { SerializedNfcKeyPayload } from "./keys/nfc";
 import { SerializedPhoneKeyPayload } from "./keys/phone";
 import { SerializedSocialKeyPayload } from "./keys/social";
 import { Chain, isTerraChain } from "../../../chains";

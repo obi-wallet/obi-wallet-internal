@@ -222,7 +222,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
         };
       }
     }
-    
+
     return (
       <MultisigSettings
         draftId={draftId}

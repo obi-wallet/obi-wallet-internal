@@ -187,7 +187,7 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
               label: "Add",
               onPress: onAddEmail,
             },
-        }}
+      }}
     >
       <View style={{ paddingTop: 10 }}>
         <Button flavor="blue" label="Create Wallet" onPress={onSubmit} />
