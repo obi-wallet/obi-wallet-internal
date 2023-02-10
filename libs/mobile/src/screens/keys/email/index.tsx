@@ -1,19 +1,11 @@
 import { pubkeyToAddress, pubkeyType } from "@cosmjs/amino";
-import {
-  createLcdClient,
-  createStargateClient,
-  isCosmosChain,
-  isTerraChain,
-  MultisigKey,
-  Text,
-} from "@obi-wallet/common";
+import { isTerraChain, MultisigKey, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { randomBytes } from "crypto";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, TouchableOpacity, View } from "react-native";
-import { Linking } from "react-native";
+import { Alert, Linking, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import secp256k1 from "secp256k1";
 
@@ -23,7 +15,6 @@ import {
   useRootNavigation,
   useStore,
 } from "../../..";
-import { InlineButton } from "../../../app/button";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
