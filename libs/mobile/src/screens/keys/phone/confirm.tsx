@@ -3,13 +3,12 @@ import { MultisigKey, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage } from "react-intl";
 import { Alert, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import InsuranceLogo from "./assets/insurance-logo.svg";
-import { InlineButton } from "../../../app/button";
 import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
@@ -19,11 +18,11 @@ import { isSmallScreenNumber } from "../../../app/screens/components/screen-size
 import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
 import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 import { useStore } from "../../../app/stores";
-import { TextInput } from "../../../app/text-input";
 import {
   parsePublicKeyTextMessageResponse,
   sendPublicKeyTextMessage,
 } from "../../../app/text-message";
+import { PhoneOneTimeCodeInput } from "../../../components/phone";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<
@@ -83,7 +82,6 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
     const draft = draftsStore.get<MultisigKey>({ id: draftId });
     const isObi = configStore.isObi();
     const chainId = chainStore.currentChain;
-    // const wallet = useMultisigWallet();
     const [key, setKey] = useState("");
 
     const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true); // Magic Button disabled by default
@@ -91,21 +89,6 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
       verifyButtonDisabledDoubleclick,
       setVerifyButtonDisabledDoubleclick,
     ] = useState(false); // Magic Button disable on button-click
-
-    const [resendButtonDisabled, setResendButtonDisabled] = useState(false);
-    const [resendCounter, setResendCounter] = useState(0);
-    const [resendButtonHit, setResendButtonHit] = useState(false);
-
-    useEffect(() => {
-      if (resendCounter > 0) {
-        setResendButtonDisabled(true);
-        setTimeout(() => {
-          setResendCounter((counter) => counter - 1);
-        }, 1000);
-      } else {
-        setResendButtonDisabled(false);
-      }
-    }, [resendCounter]);
 
     const minInputCharsSMSCode = 8;
 
@@ -117,8 +100,6 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
         setVerifyButtonDisabledDoubleclick(false);
       }
     }, [verifyButtonDisabled, setVerifyButtonDisabled, key]);
-
-    const intl = useIntl();
 
     return (
       <KeyboardAvoidingView
@@ -192,87 +173,21 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                   </Text>
                 </View>
               </View>
-              <TextInput
-                placeholder={intl.formatMessage({
-                  id: "onboarding3.smscodelabel",
-                })}
-                textContentType="oneTimeCode"
-                keyboardType="number-pad"
-                style={{ marginTop: 25 }}
+
+              <PhoneOneTimeCodeInput
+                phoneNumber={phoneNumber}
+                phoneNumberMightBeIncorrect
                 value={key}
-                onChangeText={(e) => {
-                  const reg = /^\d+$/;
-                  if (reg.test(e)) {
-                    setKey(e);
-                  }
+                setValue={setKey}
+                onResend={async () => {
+                  await sendPublicKeyTextMessage({
+                    phoneNumber,
+                    securityAnswer,
+                    demoMode,
+                    chainId,
+                  });
                 }}
               />
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 24,
-                }}
-              >
-                <Text
-                  style={{ color: "rgba(246, 245, 255, 0.6)", fontSize: 12 }}
-                >
-                  <FormattedMessage
-                    id="onboarding3.noresponselabel"
-                    defaultMessage="Didn’t receive a response?"
-                  />
-                </Text>
-
-                <InlineButton
-                  label={intl.formatMessage({ id: "onboarding3.sendagain" })}
-                  onPress={async () => {
-                    setResendCounter(20);
-                    setResendButtonHit(true);
-
-                    setKey("");
-                    await sendPublicKeyTextMessage({
-                      phoneNumber,
-                      securityAnswer,
-                      demoMode,
-                      chainId,
-                    });
-                  }}
-                  disabled={resendButtonDisabled}
-                />
-              </View>
-
-              {resendButtonDisabled && (
-                <Text
-                  style={{
-                    color: "rgba(246, 245, 255, 0.6)",
-                    fontSize: 12,
-                    marginVertical: 10,
-                  }}
-                >
-                  <FormattedMessage
-                    id="onboarding3.sendagain.info.counter"
-                    defaultMessage="Your Magic SMS has been resent! Give it some time to arrive. You can try again in "
-                  />
-                  &nbsp;{resendCounter}{" "}
-                  {resendCounter > 0 ? "seconds" : "second"}.
-                </Text>
-              )}
-
-              {resendButtonHit && (
-                <Text
-                  style={{
-                    color: "rgba(246, 245, 255, 0.6)",
-                    fontSize: 12,
-                    marginVertical: 10,
-                  }}
-                >
-                  <FormattedMessage
-                    id="onboarding3.sendagain.info.checknumber"
-                    defaultMessage="If you haven't received the SMS please check if your phone number is correct:"
-                  />{" "}
-                  {phoneNumber}.
-                </Text>
-              )}
             </View>
             <View style={{ marginVertical: 20 }}>
               <VerifyAndProceedButton

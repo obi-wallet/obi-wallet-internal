@@ -7,7 +7,6 @@ import { Alert, Image, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { PhoneInput } from "../../../app/phone-input";
 import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
@@ -19,6 +18,7 @@ import { SendMagicSmsButton } from "../../../app/screens/components/phone-number
 import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
 import { useStore } from "../../../app/stores";
 import { sendPublicKeyTextMessage } from "../../../app/text-message";
+import { PhoneNumberInput } from "../../../components/phone";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type PhoneKeyRequestScreenProps = NativeStackScreenProps<
@@ -262,7 +262,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                 }}
               />
 
-              <PhoneInput
+              <PhoneNumberInput
                 label={intl.formatMessage({ id: "onboarding2.phonenr" })}
                 keyboardType="phone-pad"
                 textContentType="telephoneNumber"

@@ -261,6 +261,7 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
           phoneKey ? (
             <BottomSheet bottomSheetRef={phoneNumberBottomSheetRef}>
               <PhoneNumberBottomSheetContent
+                phoneNumber={phoneKey.payload.phoneNumber}
                 securityQuestion={phoneKey.payload.securityQuestion}
                 onRequest={async (securityAnswer) => {
                   const message = await getMessage();

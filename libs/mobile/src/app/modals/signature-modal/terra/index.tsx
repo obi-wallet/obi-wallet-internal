@@ -288,6 +288,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
           phoneKey ? (
             <BottomSheet bottomSheetRef={phoneNumberBottomSheetRef}>
               <PhoneNumberBottomSheetContent
+                phoneNumber={phoneKey.payload.phoneNumber}
                 securityQuestion={phoneKey.payload.securityQuestion}
                 onRequest={async (securityAnswer) => {
                   const { signDoc } = await getTransactionInformation();
