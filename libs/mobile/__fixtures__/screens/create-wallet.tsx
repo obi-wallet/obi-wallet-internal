@@ -9,6 +9,7 @@ export default (
       onAddSocial={mockAction("onAddSocial")}
       onAddNfc={mockAction("onAddNfc")}
       onAddCloud={mockAction("onAddCloud")}
+      onAddEmail={mockAction("onAddEmail")}
     />
   </MultisigDraft.Container>
 );

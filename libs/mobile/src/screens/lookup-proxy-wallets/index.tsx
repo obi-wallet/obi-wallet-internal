@@ -102,6 +102,14 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
                             key.publicKey as MultisigKeySerializedData.SerializedDeviceKey["payload"]["publicKey"],
                         },
                       };
+                    case KeyType.Email:
+                      return {
+                        payload: {
+                          type: key.type,
+                          publicKey:
+                            key.publicKey as MultisigKeySerializedData.SerializedDeviceKey["payload"]["publicKey"],
+                        },
+                      };
                   }
                 }
               ),

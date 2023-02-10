@@ -1,12 +1,12 @@
 import { mockAction, MultisigDraft } from "../../src/fixture-helpers";
 import { KeyFlow } from "../../src/screens/keys";
-import { SocialKeyProps } from "../../src/screens/keys/social";
-import { SocialKey } from "../../src/screens/keys/social";
+import { EmailKeyProps } from "../../src/screens/keys/email";
+import { EmailKey } from "../../src/screens/keys/email";
 
-function renderFlavor(flow: SocialKeyProps["flow"]) {
+function renderFlavor(flow: EmailKeyProps["flow"]) {
   return (
     <MultisigDraft.Container>
-      <SocialKey
+      <EmailKey
         draftId={MultisigDraft.draftId}
         flow={flow}
         onSubmit={mockAction("onSubmit")}

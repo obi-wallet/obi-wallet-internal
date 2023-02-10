@@ -8,6 +8,7 @@ import {
 } from "./keys";
 import { SerializedCloudKeyPayload } from "./keys/cloud";
 import { SerializedDeviceKeyPayload } from "./keys/device";
+import { SerializedEmailKeyPayload } from "./keys/email";
 import { SerializedNfcKeyPayload } from "./keys/nfc";
 import { SerializedPhoneKeyPayload } from "./keys/phone";
 import { SerializedSocialKeyPayload } from "./keys/social";
@@ -129,6 +130,14 @@ export class MultisigKey implements Draftable {
   }
 
   @action
+  public setEmailKey(payload: SerializedEmailKeyPayload) {
+    this.setKey({
+      type: KeyType.Email,
+      payload,
+    });
+  }
+
+  @action
   public removeSocialKey() {
     this.removeKeyOfType(KeyType.Social);
   }
@@ -164,6 +173,11 @@ export class MultisigKey implements Draftable {
   @action
   public removeCloudKey() {
     this.removeKeyOfType(KeyType.Cloud);
+  }
+
+  @action
+  public removeEmailKey() {
+    this.removeKeyOfType(KeyType.Email);
   }
 
   @action

@@ -3,6 +3,7 @@ import { ParamListBase } from "@react-navigation/native";
 
 export enum KeyRoute {
   DeviceKey = "DeviceKey",
+  EmailKey = "EmailKey",
   PhoneKeyRequest = "PhoneKeyRequest",
   PhoneKeyConfirm = "PhoneKeyConfirm",
   SocialKey = "SocialKey",
@@ -25,6 +26,7 @@ interface CommonKeyParams {
 
 export interface KeyStackParamList extends ParamListBase {
   [KeyRoute.DeviceKey]: CommonKeyParams;
+  [KeyRoute.EmailKey]: CommonKeyParams;
   [KeyRoute.PhoneKeyRequest]: CommonKeyParams;
   [KeyRoute.PhoneKeyConfirm]: CommonKeyParams & {
     phoneNumber: string;

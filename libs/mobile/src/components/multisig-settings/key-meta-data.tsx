@@ -17,7 +17,6 @@ import SocialObi from "../../assets/social-obi.svg";
 import { SendIcon as Telegram } from "../../components/send-icon";
 
 export enum ComingSoonKeyType {
-  Email = "email",
   Telegram = "telegram",
   Map = "map",
   Ledger = "ledger",
@@ -34,9 +33,9 @@ export function useKeyMetaData() {
     KeyType.Social,
     KeyType.Nfc,
     KeyType.Cloud,
+    KeyType.Email,
   ];
   const comingSoonKeys = [
-    ComingSoonKeyType.Email,
     ComingSoonKeyType.Telegram,
     ComingSoonKeyType.Map,
     ComingSoonKeyType.Ledger,
@@ -66,7 +65,7 @@ export function useKeyMetaData() {
     [KeyType.Social]: {
       label: intl.formatMessage({
         id: "settings.multisig.option.socialkey",
-        defaultMessage: "Social Key",
+        defaultMessage: "Social Recovery Key",
       }),
       Icon: isLoop ? SocialLoop : SocialObi,
     },
@@ -74,13 +73,15 @@ export function useKeyMetaData() {
       label: "NFC Tap Key",
       Icon: Nfc,
     },
-
     [KeyType.Cloud]: {
       label: "Cloud Key",
       Icon: Cloud,
     },
-    [ComingSoonKeyType.Email]: {
-      label: "E-mail Key",
+    [KeyType.Email]: {
+      label: intl.formatMessage({
+        id: "settings.multisig.option.emailkey",
+        defaultMessage: "Email Recovery Key",
+      }),
       Icon: Email,
     },
     [ComingSoonKeyType.Telegram]: {
