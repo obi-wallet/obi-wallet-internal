@@ -1,11 +1,11 @@
 import {
-  createLcdClient,
   isTerraChain,
   KeyType,
   lendFees,
   MultisigKey,
   RequestObiTerraSignAndBroadcastPayload,
   terra,
+  withLcdClient,
 } from "@obi-wallet/common";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -380,18 +380,20 @@ export function useTerraSignatureModalProps({
         setModalKey((value) => value + 1);
       },
       async onConfirm(transaction: Tx) {
-        const client = await createLcdClient(chainId);
-
         // TODO: handle fees estimation similar to station Tx.tsx
         try {
-          let response = await client.tx.broadcastBlock(transaction);
+          let response = await withLcdClient(chainId, async (client) => {
+            return await client.tx.broadcastBlock(transaction);
+          });
           if (isTxError(response)) {
             if (response.raw_log.includes("insufficient funds")) {
               await lendFees({
                 chainId,
                 address: sender,
               });
-              response = await client.tx.broadcastBlock(transaction);
+              response = await withLcdClient(chainId, async (client) => {
+                return await client.tx.broadcastBlock(transaction);
+              });
             }
           }
           await onConfirm(response);
