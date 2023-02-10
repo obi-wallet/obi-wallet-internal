@@ -134,7 +134,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
   const readCard = async () => {
     setReading(true);
     await startReading(
-      "Hold a credit, debit, or other card near the top back of your phone to use it as entropy for a new deterministic keypair. No information is stored by Obi."
+      "Hold a credit, debit, or other card near the top back of your phone to use it as entropy for a new deterministic keypair. NOTE: some cards' NFC capabilities may be too weak for iOS devices. No information is stored by Obi."
     );
   };
 
