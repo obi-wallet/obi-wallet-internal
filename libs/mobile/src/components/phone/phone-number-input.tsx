@@ -18,8 +18,8 @@ import { DARK_THEME } from "react-native-country-picker-modal";
 import { CountryCode, Country } from "react-native-country-picker-modal";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import { isSmallScreenNumber } from "../screens/components/screen-size";
-import { useStore } from "../stores";
+import { isSmallScreenNumber } from "../../app/screens/components/screen-size";
+import { useStore } from "../../app/stores";
 
 const getStyles = (isObi: boolean) =>
   StyleSheet.create({
@@ -66,7 +66,7 @@ const getStyles = (isObi: boolean) =>
     },
   });
 
-export const PhoneInput = observer(function PhoneInput({
+export const PhoneNumberInput = observer(function PhoneNumberInput({
   label,
   style,
   inputStyle,
