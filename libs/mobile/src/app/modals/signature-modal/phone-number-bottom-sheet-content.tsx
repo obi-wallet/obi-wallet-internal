@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
 
-import { InlineButton } from "../../button";
+import { PhoneOneTimeCodeInput } from "../../../components/phone";
 import {
   SecurityQuestionInput,
   useSecurityQuestionInput,
@@ -13,9 +13,9 @@ import {
 import { SendMagicSmsButton } from "../../screens/components/phone-number/send-magic-sms-button";
 import { VerifyAndProceedButton } from "../../screens/components/phone-number/verify-and-proceed-button";
 import { useStore } from "../../stores";
-import { TextInput } from "../../text-input";
 
 export interface PhoneNumberBottomSheetContentProps {
+  phoneNumber: string;
   securityQuestion: string;
 
   onRequest(securityAnswer: string): Promise<void>;
@@ -26,6 +26,7 @@ export interface PhoneNumberBottomSheetContentProps {
 export const PhoneNumberBottomSheetContent =
   observer<PhoneNumberBottomSheetContentProps>(
     function PhoneNumberBottomSheetContent({
+      phoneNumber,
       securityQuestion,
       onRequest,
       onConfirm,
@@ -92,44 +93,16 @@ export const PhoneNumberBottomSheetContent =
                   defaultMessage="Paste in the response you received."
                 />
               </Text>
-              <TextInput
-                placeholder={intl.formatMessage({
-                  id: "signature.smscodelabel",
-                  defaultMessage: "8-Digits SMS-Code",
-                })}
-                textContentType="oneTimeCode"
-                keyboardType="number-pad"
-                style={{ marginTop: 25 }}
-                value={key}
-                onChangeText={setKey}
-                CustomTextInput={BottomSheetTextInput}
-              />
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 24,
-                }}
-              >
-                <Text
-                  style={{ color: "rgba(246, 245, 255, 0.6)", fontSize: 12 }}
-                >
-                  <FormattedMessage
-                    id="signature.noresponselabel"
-                    defaultMessage="Didn't receive a response?"
-                  />
-                </Text>
 
-                <InlineButton
-                  label={intl.formatMessage({
-                    id: "signature.sendagain",
-                    defaultMessage: "Resend",
-                  })}
-                  onPress={async () => {
-                    await onRequest(securityAnswer);
-                  }}
-                />
-              </View>
+              <PhoneOneTimeCodeInput
+                phoneNumber={phoneNumber}
+                phoneNumberMightBeIncorrect={false}
+                value={key}
+                setValue={setKey}
+                onResend={async () => {
+                  await onRequest(securityAnswer);
+                }}
+              />
             </View>
 
             <VerifyAndProceedButton
