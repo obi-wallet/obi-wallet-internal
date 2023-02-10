@@ -14,7 +14,7 @@ import * as t from "io-ts";
 
 import { getTxGasOptions } from "./gas-information";
 import { TerraChain, terraChains } from "../../chains";
-import { createLcdClient } from "../../clients";
+import { withLcdClient } from "../../clients";
 import { lendFees } from "../../fee-lender-worker";
 
 export const SdkError = t.type({
@@ -31,13 +31,14 @@ export async function createAndSignSinglesigTransaction({
   messages: Msg[];
   chainId: TerraChain;
 }) {
-  const client = createLcdClient(chainId);
-  const wallet = client.wallet(key);
+  return await withLcdClient(chainId, async (client) => {
+    const wallet = client.wallet(key);
 
-  await prepareKey({ key, chainId });
+    await prepareKey({ key, chainId });
 
-  return await wallet.createAndSignTx({
-    msgs: messages,
+    return await wallet.createAndSignTx({
+      msgs: messages,
+    });
   });
 }
 
@@ -50,49 +51,50 @@ export async function createMultisigTransaction({
   messages: Msg[];
   chainId: TerraChain;
 }) {
-  const client = createLcdClient(chainId);
   const address = key.address();
 
   const account = await prepareAccount({ address, chainId });
 
   try {
-    const transaction = await client.tx.create(
-      [
+    return await withLcdClient(chainId, async (client) => {
+      const transaction = await client.tx.create(
+        [
+          {
+            address,
+            sequenceNumber: account.getSequenceNumber(),
+            publicKey: account.getPublicKey(),
+          },
+        ],
         {
-          address,
-          sequenceNumber: account.getSequenceNumber(),
-          publicKey: account.getPublicKey(),
+          msgs: messages,
+          ...(await getTxGasOptions({ chainId })),
+        }
+      );
+
+      const signDoc = new SignDoc(
+        chainId,
+        account.getAccountNumber(),
+        account.getSequenceNumber(),
+        transaction.auth_info,
+        transaction.body
+      );
+
+      return {
+        signDoc,
+        sign(signatures: SignatureV2[]) {
+          const multiSignature = new MultiSignature(key);
+          multiSignature.appendSignatureV2s(signatures);
+          transaction.appendSignatures([
+            new SignatureV2(
+              key,
+              multiSignature.toSignatureDescriptor(),
+              account.getSequenceNumber()
+            ),
+          ]);
+          return transaction;
         },
-      ],
-      {
-        msgs: messages,
-        ...(await getTxGasOptions({ chainId })),
-      }
-    );
-
-    const signDoc = new SignDoc(
-      chainId,
-      account.getAccountNumber(),
-      account.getSequenceNumber(),
-      transaction.auth_info,
-      transaction.body
-    );
-
-    return {
-      signDoc,
-      sign(signatures: SignatureV2[]) {
-        const multiSignature = new MultiSignature(key);
-        multiSignature.appendSignatureV2s(signatures);
-        transaction.appendSignatures([
-          new SignatureV2(
-            key,
-            multiSignature.toSignatureDescriptor(),
-            account.getSequenceNumber()
-          ),
-        ]);
-        return transaction;
-      },
-    };
+      };
+    });
   } catch (e) {
     const error = e as AxiosError;
     const data = error.response?.data;
@@ -112,8 +114,9 @@ export async function simulateTransaction({
   transaction: Tx;
   chainId: TerraChain;
 }) {
-  const client = createLcdClient(chainId);
-  return await client.tx.estimateGas(transaction);
+  return await withLcdClient(chainId, async (client) => {
+    return await client.tx.estimateGas(transaction);
+  });
 }
 
 export async function prepareKey({
@@ -123,20 +126,21 @@ export async function prepareKey({
   key: Key;
   chainId: TerraChain;
 }) {
-  const client = createLcdClient(chainId);
   const address = key.accAddress;
 
   let account: Account | null = await prepareAccount({ address, chainId });
 
   if (!account?.getPublicKey()) {
-    const wallet = client.wallet(key);
-    const { denom } = terraChains[chainId];
-    const send = new MsgSend(address, address, { [denom]: 1 });
-    const tx = await wallet.createAndSignTx({
-      msgs: [send],
-      ...(await getTxGasOptions({ chainId })),
+    return await withLcdClient(chainId, async (client) => {
+      const wallet = client.wallet(key);
+      const { denom } = terraChains[chainId];
+      const send = new MsgSend(address, address, { [denom]: 1 });
+      const tx = await wallet.createAndSignTx({
+        msgs: [send],
+        ...(await getTxGasOptions({ chainId })),
+      });
+      await client.tx.broadcastBlock(tx);
     });
-    await client.tx.broadcastBlock(tx);
   }
 
   while (!account?.getPublicKey()) {
@@ -173,9 +177,10 @@ export async function getAccount({
   address: string;
   chainId: TerraChain;
 }): Promise<Account | null> {
-  const client = createLcdClient(chainId);
   try {
-    return await client.auth.accountInfo(address);
+    return await withLcdClient(chainId, async (client) => {
+      return await client.auth.accountInfo(address);
+    });
   } catch (e) {
     const error = e as AxiosError;
     const data = error.response?.data;

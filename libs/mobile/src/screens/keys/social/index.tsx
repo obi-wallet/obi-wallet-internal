@@ -1,10 +1,10 @@
 import {
-  createLcdClient,
   createStargateClient,
   isCosmosChain,
   isTerraChain,
   MultisigKey,
   Text,
+  withLcdClient,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -116,8 +116,9 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
       }
     } else {
       try {
-        const client = createLcdClient(chainId);
-        const account = await client.auth.accountInfo(key);
+        const account = await withLcdClient(chainId, async (client) => {
+          return await client.auth.accountInfo(key);
+        });
         return account.getPublicKey()?.toAmino();
       } catch (e) {
         console.log(e);
