@@ -185,13 +185,13 @@ export const SettingsScreen = observer(function SettingsScreen() {
             defaultMessage: "Save your keys before logging out.",
           })}
           onPress={async () => {
-            await walletsStore.logout();
             navigation.dispatch(
               CommonActions.reset({
                 index: 0,
                 routes: [{ name: OnboardingRoute.Welcome }],
               })
             );
+            await walletsStore.logout();
           }}
         />
 
