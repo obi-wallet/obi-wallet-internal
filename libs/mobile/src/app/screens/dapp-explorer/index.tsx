@@ -315,12 +315,44 @@ const AppsScreen = observer(function AppsScreen() {
                 onLongPress={() => {
                   setEditMode(true);
                 }}
+                source={require("./assets/astroport.png")}
+                label="Astroport"
+                onPress={() => {
+                  onAppPress({
+                    label: "Astroport",
+                    url: "https://app.astroport.fi",
+                    icon: "https://place-hold.it/180x180",
+                  });
+                }}
+              />
+            ) : null}
+            {isObi ? (
+              <Tile
+                onLongPress={() => {
+                  setEditMode(true);
+                }}
                 source={require("./assets/coinhall.png")}
                 label="Coinhall"
                 onPress={() => {
                   onAppPress({
                     label: "Coinhall",
                     url: "https://coinhall.org",
+                    icon: "https://place-hold.it/180x180",
+                  });
+                }}
+              />
+            ) : null}
+            {isObi ? (
+              <Tile
+                onLongPress={() => {
+                  setEditMode(true);
+                }}
+                source={require("./assets/terra-poker.png")}
+                label="Terra Poker"
+                onPress={() => {
+                  onAppPress({
+                    label: "Terra Poker",
+                    url: "https://terrapoker.games",
                     icon: "https://place-hold.it/180x180",
                   });
                 }}
