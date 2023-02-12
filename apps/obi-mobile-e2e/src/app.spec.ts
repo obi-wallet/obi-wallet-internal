@@ -2,6 +2,7 @@ import { device, element, by, expect } from "detox";
 
 describe("ObiMobile", () => {
   beforeEach(async () => {
+    await device.launchApp();
     await device.reloadReactNative();
   });
 

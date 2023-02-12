@@ -1,16 +1,20 @@
 {
-  "testRunner": "jest",
-  "runnerConfig": "jest.config.json",
+  "testRunner": {
+    "$0": "jest",
+    "args": {
+      "config": "jest.config.ts"
+    }
+  },
   "apps": {
     "ios.debug": {
       "type": "ios.app",
-      "build": "cd ../../apps/obi-mobile/ios && xcodebuild -workspace ObiMobile.xcworkspace -scheme ObiMobile -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13' -derivedDataPath ./build -quiet",
-      "binaryPath": "../../apps/obi-mobile/ios/build/Build/Products/Debug-iphonesimulator/ObiMobile.app"
+      "build": "cd ../../apps/obi-mobile/ios && xcodebuild -workspace Mobile.xcworkspace -scheme Mobile -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation)' -derivedDataPath ./build -quiet",
+      "binaryPath": "../../apps/obi-mobile/ios/build/Build/Products/Debug-iphonesimulator/Mobile.app"
     },
     "ios.release": {
       "type": "ios.app",
-      "build": "cd ../../apps/obi-mobile/ios && xcodebuild -workspace ObiMobile.xcworkspace -scheme ObiMobile -configuration Release -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13' -derivedDataPath ./build -quiet",
-      "binaryPath": "../../apps/obi-mobile/ios/build/Build/Products/Release-iphonesimulator/ObiMobile.app"
+      "build": "cd ../../apps/obi-mobile/ios && xcodebuild -workspace Mobile.xcworkspace -scheme Mobile -configuration Release -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation)' -derivedDataPath ./build -quiet",
+      "binaryPath": "../../apps/obi-mobile/ios/build/Build/Products/Release-iphonesimulator/Mobile.app"
     },
 
     "android.debug": {
@@ -28,7 +32,7 @@
     "simulator": {
       "type": "ios.simulator",
       "device": {
-        "type": "iPhone 13"
+        "type": "iPhone SE (3rd generation)"
       }
     },
     "emulator": {
