@@ -37,6 +37,7 @@
           {
             "devDependencies": [
               "{apps,libs}/*/{__fixtures__,__tests__,__tests-integration__,scripts}/**/*",
+              "apps/*-e2e/**/*",
               "apps/*/metro.config.js",
               "jest*.[jt]s"
             ],
