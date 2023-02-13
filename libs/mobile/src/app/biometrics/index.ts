@@ -1,6 +1,7 @@
 import { Chain, KVStore } from "@obi-wallet/common";
 import { QueryClient } from "@tanstack/react-query";
 import { randomBytes } from "crypto";
+import { isEmulator } from "react-native-device-info";
 import * as Keychain from "react-native-keychain";
 import secp256k1 from "secp256k1";
 import invariant from "tiny-invariant";
@@ -149,13 +150,18 @@ export async function createBiometricsSignature({
 }
 
 async function fetchCredentialsFromKeyChain({ service }: { service: string }) {
+  const isEmu = await isEmulator();
   const credentials = await Keychain.getGenericPassword({
     authenticationPrompt: {
       title: "Authentication Required",
     },
     service,
-    accessControl:
-      Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
+    ...(isEmu
+      ? {}
+      : {
+          accessControl:
+            Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
+        }),
   });
   if (credentials) {
     await kvStore.set(credentials.username, true);
@@ -172,10 +178,15 @@ async function saveCredentialsToKeyChain({
   username: string;
   password: string;
 }) {
+  const isEmu = await isEmulator();
   const result = await Keychain.setGenericPassword(username, password, {
     service,
-    accessControl:
-      Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
+    ...(isEmu
+      ? {}
+      : {
+          accessControl:
+            Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
+        }),
   });
   await kvStore.set(username, true);
   return result;
