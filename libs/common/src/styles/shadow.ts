@@ -1,6 +1,6 @@
 import { Platform } from "react-native";
 
-export function createShadow(shadowRadius: number) {
+export function createShadow(shadowRadius: number, opacity = 0.5) {
   return {
     ...Platform.select({
       android: {
@@ -9,7 +9,7 @@ export function createShadow(shadowRadius: number) {
       default: {
         shadowColor: "#000000",
         shadowRadius,
-        shadowOpacity: 0.16,
+        shadowOpacity: opacity,
       },
     }),
   };

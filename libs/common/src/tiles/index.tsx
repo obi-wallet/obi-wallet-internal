@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 7,
-    ...createShadow(10),
+    ...createShadow(10, 0.25),
   },
   icon: {
     width: "100%",
