@@ -113,3 +113,5 @@ GoogleService-Info.plist
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+apps/obi-mobile-e2e/artifacts

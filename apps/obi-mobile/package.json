@@ -95,6 +95,7 @@
     "react-native-iap": "*",
     "react-native-keyboard-aware-scroll-view": "*",
     "react-native-keychain": "*",
+    "react-native-launch-arguments": "*",
     "react-native-linear-gradient": "*",
     "react-native-modal": "*",
     "react-native-nfc-manager": "*",

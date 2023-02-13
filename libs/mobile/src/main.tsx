@@ -6,11 +6,13 @@ import { AppRegistry, LogBox } from "react-native";
 import "react-native-gesture-handler";
 import codePush from "react-native-code-push";
 import { COSMOS_ENABLED } from "react-native-dotenv";
+import { LaunchArguments } from "react-native-launch-arguments";
 
 import { deploymentKey } from "./app/code-push";
 import { initBackground } from "./background";
 import { initSentry } from "./background/sentry";
 import { Cosmos } from "./cosmos";
+import { FixturePicker } from "./fixture-helpers/fixture-picker";
 
 export function setupMain({ App }: { App: ComponentType }) {
   initSentry();
@@ -28,6 +30,10 @@ export function setupMain({ App }: { App: ComponentType }) {
   ]);
 
   AppRegistry.registerComponent("Mobile", () => {
+    const launchArguments = LaunchArguments.value<{ fixture?: string }>();
+
+    if (typeof launchArguments.fixture === "string") return FixturePicker;
+
     if (__DEV__ && COSMOS_ENABLED === "true") return Cosmos;
 
     let Component = Sentry.wrap(App);
