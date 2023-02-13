@@ -14,7 +14,7 @@
     "lint:prettier": "prettier --check .",
     "lint:tsc": "yarn _runAll --target=tsc",
     "setup": "bash scripts/setup.sh",
-    "test": " yarn _runAll --target=test"
+    "test": "NODE_OPTIONS=--experimental-vm-modules yarn _runAll --target=test"
   },
   "resolutions": {
     "@types/react": "^18.0.27"
