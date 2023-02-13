@@ -314,8 +314,7 @@ dependencies {
     }
 
 
-    androidTestImplementation(project(path: ":detox"))
-
+    // androidTestImplementation(project(path: ":detox"))
 }
 
 if (isNewArchitectureEnabled()) {
