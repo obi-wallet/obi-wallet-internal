@@ -12,7 +12,7 @@ const stat = util.promisify(fs.stat);
   const releaseType = process.argv[2];
 
   const appsPath = path.join(__dirname, "../apps");
-  const directories = await readdir(appsPath);
+  const directories = ["loop-mobile", "obi-mobile"];
   await Promise.all(
     directories.map(async (directory) => {
       const appPath = path.join(appsPath, directory);
