@@ -17,7 +17,8 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules yarn _runAll --target=test"
   },
   "resolutions": {
-    "@types/react": "^18.0.27"
+    "@ledgerhq/hw-app-eth": "6.30.0",
+    "@types/react": "^18.0.22"
   },
   "dependencies": {
     "@cosmjs/amino": "^0.29.5",

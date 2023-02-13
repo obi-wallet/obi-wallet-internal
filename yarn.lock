@@ -3480,12 +3480,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ledgerhq/cryptoassets@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "@ledgerhq/cryptoassets@npm:8.0.0"
+"@ledgerhq/cryptoassets@npm:^6.37.0":
+  version: 6.37.0
+  resolution: "@ledgerhq/cryptoassets@npm:6.37.0"
   dependencies:
     invariant: 2
-  checksum: 41a1d45138ee6a383f32dc926c63d5a00127de2280fa7446dbb1912983ae31a18c8929ed8fe913d1cc62ff39b11f02722ea79cb2bdaa2a1783091bbb81195437
+  checksum: 2418c1751740e976d1509b7ce6da447cc3a0f05e1498db252bab70c635881658c8a4a4eaba39cfbc98f4ad373a355689131eb6f844d3a4fe2f6b2af9ddbd6e90
   languageName: node
   linkType: hard
 
@@ -3520,32 +3520,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ledgerhq/errors@npm:^6.12.3":
+"@ledgerhq/errors@npm:^6.12.0, @ledgerhq/errors@npm:^6.12.3":
   version: 6.12.3
   resolution: "@ledgerhq/errors@npm:6.12.3"
   checksum: 3284cbc85dc2df24f17a6e3899eb5afdff96e63d073b5914906c45ed8f1a93c7daa1e2b847d621610a1088b63c0abb9379e6b6ca395144c2d50855a4606c1d3f
   languageName: node
   linkType: hard
 
-"@ledgerhq/hw-app-eth@npm:^6.29.3":
-  version: 6.31.0
-  resolution: "@ledgerhq/hw-app-eth@npm:6.31.0"
+"@ledgerhq/hw-app-eth@npm:6.30.0":
+  version: 6.30.0
+  resolution: "@ledgerhq/hw-app-eth@npm:6.30.0"
   dependencies:
     "@ethersproject/abi": ^5.5.0
     "@ethersproject/rlp": ^5.5.0
-    "@ledgerhq/cryptoassets": ^8.0.0
-    "@ledgerhq/errors": ^6.12.3
-    "@ledgerhq/hw-transport": ^6.28.0
-    "@ledgerhq/hw-transport-mocker": ^6.27.11
+    "@ledgerhq/cryptoassets": ^6.37.0
+    "@ledgerhq/errors": ^6.12.0
+    "@ledgerhq/hw-transport": ^6.27.7
+    "@ledgerhq/hw-transport-mocker": ^6.27.7
     "@ledgerhq/logs": ^6.10.1
     axios: ^0.26.1
     bignumber.js: ^9.1.0
     crypto-js: ^4.1.1
-  checksum: d02ef09864d3a64b8b19ef3629868caac33c65b40dd0a6ce137eccb20c8e4ae78b9fa8a66d712ad851562378d837f793d465cd2251f8ff8fee3a2f8803999353
+  checksum: 325359798ad3fba6d7c6c41cadc9d113961a09d1c4a0a97482a441a7e77e3ff3f5bc8501a8e5eebd6411642f7ddcf3c30f93ed0c6fb15f32daf24ba92f93950d
   languageName: node
   linkType: hard
 
-"@ledgerhq/hw-transport-mocker@npm:^6.27.11":
+"@ledgerhq/hw-transport-mocker@npm:^6.27.7":
   version: 6.27.11
   resolution: "@ledgerhq/hw-transport-mocker@npm:6.27.11"
   dependencies:
@@ -3590,7 +3590,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ledgerhq/hw-transport@npm:^6.20.0, @ledgerhq/hw-transport@npm:^6.28.0":
+"@ledgerhq/hw-transport@npm:^6.20.0, @ledgerhq/hw-transport@npm:^6.27.7, @ledgerhq/hw-transport@npm:^6.28.0":
   version: 6.28.0
   resolution: "@ledgerhq/hw-transport@npm:6.28.0"
   dependencies:
@@ -5527,7 +5527,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.0.27":
+"@types/react@npm:^18.0.22":
   version: 18.0.28
   resolution: "@types/react@npm:18.0.28"
   dependencies:
