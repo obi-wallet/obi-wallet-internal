@@ -4,52 +4,28 @@
   "sourceRoot": "apps/obi-mobile-e2e/src",
   "projectType": "application",
   "targets": {
-    "build-ios": {
-      "executor": "@nrwl/detox:build",
+    "build-ios-small": {
+      "executor": "nx:run-commands",
       "options": {
-        "detoxConfiguration": "ios.sim.debug"
-      },
-      "configurations": {
-        "production": {
-          "detoxConfiguration": "ios.sim.release"
-        }
+        "command": "nx run-ios obi-mobile --simulator='iPhone SE (3rd generation)'"
       }
     },
-    "test-ios": {
+    "build-ios-large": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx run-ios obi-mobile --simulator='iPhone 14 Pro Max'"
+      }
+    },
+    "test-ios-small": {
       "executor": "@nrwl/detox:test",
       "options": {
-        "detoxConfiguration": "ios.sim.debug",
-        "buildTarget": "obi-mobile-e2e:build-ios"
-      },
-      "configurations": {
-        "production": {
-          "detoxConfiguration": "ios.sim.release",
-          "buildTarget": "obi-mobile-e2e:build-ios:production"
-        }
+        "detoxConfiguration": "ios.sim.debug.small"
       }
     },
-    "build-android": {
-      "executor": "@nrwl/detox:build",
-      "options": {
-        "detoxConfiguration": "android.emu.debug"
-      },
-      "configurations": {
-        "production": {
-          "detoxConfiguration": "android.emu.release"
-        }
-      }
-    },
-    "test-android": {
+    "test-ios-large": {
       "executor": "@nrwl/detox:test",
       "options": {
-        "detoxConfiguration": "android.emu.debug",
-        "buildTarget": "obi-mobile-e2e:build-ios"
-      },
-      "configurations": {
-        "production": {
-          "detoxConfiguration": "android.emu.release",
-          "buildTarget": "obi-mobile-e2e:build-ios:production"
-        }
+        "detoxConfiguration": "ios.sim.debug.large"
       }
     },
     "lint": {
