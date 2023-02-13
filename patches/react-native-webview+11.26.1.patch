@@ -1,0 +1,16 @@
+diff --git a/node_modules/react-native-webview/apple/RNCWebView.m b/node_modules/react-native-webview/apple/RNCWebView.m
+index 7570d8d..820f332 100644
+--- a/node_modules/react-native-webview/apple/RNCWebView.m
++++ b/node_modules/react-native-webview/apple/RNCWebView.m
+@@ -422,9 +422,9 @@ RCTAutoInsetsProtocol>
+   return wkWebViewConfig;
+ }
+ 
+-- (void)didMoveToWindow
++- (void)didMoveToSuperview
+ {
+-  if (self.window != nil && _webView == nil) {
++  if (_webView == nil) {
+     WKWebViewConfiguration *wkWebViewConfig = [self setUpWkWebViewConfig];
+ #if !TARGET_OS_OSX
+     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration: wkWebViewConfig];

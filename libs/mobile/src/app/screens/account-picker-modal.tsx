@@ -4,11 +4,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text } from "@obi-wallet/common";
 import { CommonActions } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
 
-import { Modal, MODAL_TIMING } from "./components/modal";
+import { Modal } from "./components/modal";
 import { IconButton } from "../button";
 import { RootRoute, useRootNavigation } from "../root-stack";
 import { useStore } from "../stores";
@@ -42,11 +42,18 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
     const { walletsStore, configStore } = useStore();
     const isObi = configStore.isObi();
     const theme = useTheme();
+    const onClose = useRef<() => Promise<void>>();
 
     return (
       <Modal
         isVisible={visible}
         onClose={close}
+        onModalHide={async () => {
+          if (typeof onClose.current === "function") {
+            await onClose.current();
+            onClose.current = undefined;
+          }
+        }}
         style={{ backgroundColor: theme.colors.background }}
       >
         <View style={{ flexShrink: 1 }}>
@@ -91,16 +98,16 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                     paddingHorizontal: 10,
                   }}
                   onPress={() => {
-                    close();
-                    setTimeout(() => {
-                      void walletsStore.setCurrentWallet(wallet.id);
+                    onClose.current = async () => {
+                      await walletsStore.setCurrentWallet(wallet.id);
                       navigation.dispatch(
                         CommonActions.reset({
                           index: 0,
                           routes: [{ name: RootRoute.Home }],
                         })
                       );
-                    }, MODAL_TIMING);
+                    };
+                    close();
                   }}
                 >
                   <View

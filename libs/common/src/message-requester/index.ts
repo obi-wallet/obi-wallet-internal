@@ -23,7 +23,10 @@ export class MessageRequester implements AbstractMessageRequester {
     // @ts-expect-error overriding read-only property.
     msg["origin"] = this.sender.origin;
 
-    if (this.eventEmitter.listenerCount("message") === 0) {
+    if (
+      this.eventEmitter.listenerCount("message") === 0 &&
+      msg.type() !== "get-chain-infos"
+    ) {
       throw new Error(`There is no router to send for message ${msg.type()}`);
     }
 

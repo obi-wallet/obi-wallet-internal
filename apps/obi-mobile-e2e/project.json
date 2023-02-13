@@ -1,0 +1,41 @@
+{
+  "name": "obi-mobile-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/obi-mobile-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "build-ios-small": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx run-ios obi-mobile --simulator='iPhone SE (3rd generation)'"
+      }
+    },
+    "build-ios-large": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx run-ios obi-mobile --simulator='iPhone 14 Pro Max'"
+      }
+    },
+    "test-ios-small": {
+      "executor": "@nrwl/detox:test",
+      "options": {
+        "detoxConfiguration": "ios.sim.debug.small"
+      }
+    },
+    "test-ios-large": {
+      "executor": "@nrwl/detox:test",
+      "options": {
+        "detoxConfiguration": "ios.sim.debug.large"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/obi-mobile-e2e/**/*.{ts,tsx,js,jsx}"]
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["obi-mobile"]
+}

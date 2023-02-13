@@ -114,13 +114,13 @@ export function getRewardsQuery({
   return {
     queryKey: ["rewards", { chainId, address }],
     queryFn: async () => {
-      if (!address) return undefined;
+      if (!address) return null;
 
       if (isTerraChain(chainId)) {
         return await terra.fetchRewards({ address, chainId });
       }
 
-      return undefined;
+      return null;
     },
   };
 }

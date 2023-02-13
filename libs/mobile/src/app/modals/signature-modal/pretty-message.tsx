@@ -22,7 +22,7 @@ import {
 } from "@terra-money/terra.js";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useIntl } from "react-intl";
 import { View } from "react-native";

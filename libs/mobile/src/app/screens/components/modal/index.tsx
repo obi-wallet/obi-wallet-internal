@@ -9,7 +9,7 @@ export interface ModalProps extends Partial<RNModalProps> {
   onClose: () => void;
 }
 
-export const MODAL_TIMING = 500;
+const MODAL_TIMING = 500;
 
 export const Modal = observer(function Modal({
   children,
