@@ -1,5 +1,5 @@
 import { pubkeyToAddress, pubkeyType } from "@cosmjs/amino";
-import { isTerraChain, MultisigKey, Text } from "@obi-wallet/common";
+import { MultisigKey, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { randomBytes } from "crypto";
 import { observer } from "mobx-react-lite";
@@ -79,7 +79,6 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   const [publicKey, setPublicKey] = useState("");
   const [generatedAddress, setGeneratedAddress] = useState("");
   const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true); // Verify&Proceed Button disabled by default
-  const isTerra = isTerraChain(chainStore.currentChain);
   const isObi = configStore.isObi();
   const intl = useIntl();
 
@@ -196,6 +195,8 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
             <TextInput
               placeholder="email address"
               autoCapitalize="none"
+              autoComplete="email"
+              inputMode="email"
               style={{ marginTop: 25 }}
               value={email}
               onChangeText={setEmail}
