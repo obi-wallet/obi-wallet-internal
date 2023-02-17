@@ -98,13 +98,13 @@ describe("Terra", () => {
 
     test("Obi", async () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
-      expect(screen.getByText("Propose key change")).toBeDefined();
+      expect(screen.getByText("Update Multikey (step 1 of 2)")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
     });
 
     test("Loop", async () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
-      expect(screen.getByText("Propose key change")).toBeDefined();
+      expect(screen.getByText("Update Multikey (step 1 of 2)")).toBeDefined();
     });
   });
 
@@ -116,13 +116,13 @@ describe("Terra", () => {
 
     test("Obi", async () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
-      expect(screen.getByText("Confirm key change")).toBeDefined();
+      expect(screen.getByText("Confirm Update (step 2 of 2)")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
     });
 
     test("Loop", async () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
-      expect(screen.getByText("Confirm key change")).toBeDefined();
+      expect(screen.getByText("Confirm Update (step 2 of 2)")).toBeDefined();
     });
   });
 
