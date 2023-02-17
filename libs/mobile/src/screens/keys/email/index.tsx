@@ -290,12 +290,6 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                   ).toString("base64");
                   const privateKey = privateKeyBuffer.toString("base64");
 
-                  draft.value.setEmailKey({
-                    publicKey: {
-                      type: pubkeyType.secp256k1,
-                      value: publicKey,
-                    },
-                  });
                   await Linking.openURL(
                     `mailto:${
                       data.email
@@ -317,7 +311,15 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                       },
                       {
                         text: "Yes, I sent the email to myself",
-                        onPress: () => onSubmit(),
+                        onPress: () => {
+                          draft.value.setEmailKey({
+                            publicKey: {
+                              type: pubkeyType.secp256k1,
+                              value: publicKey,
+                            },
+                          });
+                          onSubmit();
+                        },
                       },
                     ],
                     { cancelable: false }
