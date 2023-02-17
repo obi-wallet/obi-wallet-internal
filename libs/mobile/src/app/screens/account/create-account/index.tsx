@@ -54,6 +54,7 @@ export const CreateAccountScreen = () => {
         >
           {data.map((item) => (
             <TouchableOpacity
+              key={item.id}
               style={{
                 width: 95,
                 height: 95,
@@ -62,7 +63,10 @@ export const CreateAccountScreen = () => {
                 borderColor: "white",
                 backgroundColor: "#272727",
               }}
-              onPress={() => setSelected(item.id)}
+              onPress={() => {
+                console.log("pressed");
+                setSelected(item.id);
+              }}
             />
           ))}
         </View>

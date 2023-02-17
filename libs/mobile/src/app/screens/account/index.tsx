@@ -146,7 +146,7 @@ const AccountsList = () => {
                 ? setItemOpened(null)
                 : setItemOpened(selected)
             }
-            isOpen={Number(itemOpened) === Number(element.item)}
+            isOpen={true}
             account={element.item}
           />
         );
@@ -157,7 +157,7 @@ const AccountsList = () => {
 };
 
 const AccountItem = ({
-  isOpen,
+  isOpen = true,
   onOpenToggle,
   account,
 }: {
@@ -235,7 +235,7 @@ const AccountItem = ({
             <View
               style={{ height: 20, width: 40, marginTop: 10, marginLeft: 10 }}
             >
-              <ToggleSwitch onChange={(isOn) => console.log({ isOn })} />
+              <ToggleSwitch active onChange={(isOn) => console.log({ isOn })} />
             </View>
             <View
               style={{
