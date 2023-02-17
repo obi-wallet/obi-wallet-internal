@@ -5,7 +5,9 @@ export default (
   <Lookup
     chainId="phoenix-1"
     publicKey="AlLObpH8f6ea7ogc32Jpc2aLcZi3/O0K8zXw7OkZCA98"
-    onSelect={mockAction("onSelect")}
+    onSelect={async () => {
+      mockAction("onSelect");
+    }}
     onCancel={mockAction("onCancel")}
   />
 );

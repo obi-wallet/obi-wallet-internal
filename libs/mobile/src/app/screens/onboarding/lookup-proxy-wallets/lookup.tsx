@@ -26,7 +26,7 @@ import { isSmallScreenNumber } from "../../components/screen-size";
 export interface LookupProps {
   chainId: CosmosChain | TerraChain;
   publicKey: string;
-  onSelect(wallet: A.SerializedProxyWallet): void;
+  onSelect(wallet: A.SerializedProxyWallet): Promise<void>;
   onCancel(): void;
 }
 
@@ -229,9 +229,9 @@ export const Lookup = observer(function Lookup({
       >
         <VerifyAndProceedButton
           disabled={!selectedWallet}
-          onPress={() => {
+          onPress={async () => {
             if (selectedWallet) {
-              onSelect(selectedWallet);
+              await onSelect(selectedWallet);
             }
           }}
         />
