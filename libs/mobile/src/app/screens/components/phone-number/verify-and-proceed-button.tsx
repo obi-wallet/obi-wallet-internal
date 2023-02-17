@@ -1,13 +1,13 @@
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
-import { Keyboard, StyleProp, ViewStyle } from "react-native";
+import { Keyboard } from "react-native";
 
 import ShieldCheck from "./assets/shield-check.svg";
-import { Button } from "../../../button";
+import { AsyncButton } from "../../../button";
 import { useStore } from "../../../stores";
 
 export interface VerifyAndProceedButtonProps {
-  onPress: () => void;
+  onPress: () => Promise<void>;
   disabled?: boolean;
 }
 
@@ -19,16 +19,18 @@ export const VerifyAndProceedButton = observer(function VerifyAndProceedButton({
   const { configStore } = useStore();
   const isObi = configStore.isObi();
   return (
-    <Button
+    <AsyncButton
       label={intl.formatMessage({
         id: "onboarding3.verifyandproceed",
         defaultMessage: "Verify & Proceed",
       })}
       LeftIcon={isObi ? undefined : ShieldCheck}
       flavor={disabled ? "gray" : "blue"}
-      onPress={() => {
+      onPress={async () => {
         Keyboard.dismiss();
-        !disabled && onPress();
+        if (!disabled) {
+          await onPress();
+        }
       }}
       disabled={disabled}
     />

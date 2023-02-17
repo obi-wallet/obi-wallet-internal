@@ -1,13 +1,16 @@
-import { pubkeyToAddress, pubkeyType } from "@cosmjs/amino";
+import { pubkeyType } from "@cosmjs/amino";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { MultisigKey, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { randomBytes } from "crypto";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, Linking, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import secp256k1 from "secp256k1";
+import * as yup from "yup";
 
 import {
   OnboardingRoute,
@@ -66,59 +69,26 @@ export interface EmailKeyProps {
   onSubmit(): void;
 }
 
+const schema = yup
+  .object({
+    email: yup.string().email().required(),
+  })
+  .required();
+
 export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   draftId,
   flow,
   onSubmit,
 }) {
-  const { chainStore, configStore, draftsStore } = useStore();
+  const { configStore, draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
-  const [email, setEmail] = useState("");
   const [selectedTab, setSelectedTab] = useState(Tab.EmailKeyV1);
-  const [recoveryKey, setRecoveryKey] = useState("");
-  const [publicKey, setPublicKey] = useState("");
-  const [generatedAddress, setGeneratedAddress] = useState("");
-  const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true); // Verify&Proceed Button disabled by default
   const isObi = configStore.isObi();
   const intl = useIntl();
 
-  useEffect(() => {
-    if (generatedAddress === "") {
-      const privateKeyBuffer = randomBytes(32);
-      const publicKeyBuffer = Buffer.from(
-        secp256k1.publicKeyCreate(privateKeyBuffer)
-      ).toString("base64");
-      setRecoveryKey(privateKeyBuffer.toString("base64"));
-      setPublicKey(publicKeyBuffer);
-      setGeneratedAddress(
-        pubkeyToAddress(
-          {
-            type: pubkeyType.secp256k1,
-            value: publicKeyBuffer,
-          },
-          "terra"
-        )
-      );
-    }
-    if (isValidEmail(email)) {
-      setVerifyButtonDisabled(false); // Enable Verify&Proceed Button if checks are okay
-    } else {
-      setVerifyButtonDisabled(true);
-    }
-  }, [
-    verifyButtonDisabled,
-    email,
-    chainStore.currentChainInformation.prefix,
-    generatedAddress,
-  ]);
-
-  function isValidEmail(email: string): boolean {
-    const regexp = new RegExp(
-      /* eslint-disable-next-line no-useless-escape */
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
-    return regexp.test(email);
-  }
+  const { control, handleSubmit, formState } = useForm({
+    resolver: yupResolver(schema),
+  });
 
   function encodeForMailto(text: string): string {
     return encodeURIComponent(text).replace(/%20/g, "%20");
@@ -172,7 +142,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
     switch (selectedTab) {
       case Tab.EmailKeyV1:
         return (
-          <View>
+          <>
             <Text
               style={{
                 color: isObi ? "#fff" : "#999CB6",
@@ -192,19 +162,33 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                 />
               )}
             </Text>
-            <TextInput
-              placeholder="email address"
-              autoCapitalize="none"
-              autoComplete="email"
-              inputMode="email"
-              style={{ marginTop: 25 }}
-              value={email}
-              onChangeText={setEmail}
+            <Controller
+              name="email"
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  placeholder="email address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  inputMode="email"
+                  style={{ marginTop: 25 }}
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                />
+              )}
             />
-          </View>
+          </>
         );
       case Tab.EmailKeyZK: {
-        return <Text style={{ color: "#ffffff" }}>Coming soon...</Text>;
+        return (
+          <Text style={{ color: "#ffffff", marginTop: 10 }}>
+            Coming soon...
+          </Text>
+        );
       }
     }
   }
@@ -297,22 +281,30 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
             style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
           >
             <VerifyAndProceedButton
-              disabled={verifyButtonDisabled}
-              onPress={async () => {
-                if (publicKey) {
+              disabled={!formState.isValid}
+              onPress={handleSubmit(async (data) => {
+                try {
+                  const privateKeyBuffer = randomBytes(32);
+                  const publicKey = Buffer.from(
+                    secp256k1.publicKeyCreate(privateKeyBuffer)
+                  ).toString("base64");
+                  const privateKey = privateKeyBuffer.toString("base64");
+
                   draft.value.setEmailKey({
                     publicKey: {
                       type: pubkeyType.secp256k1,
                       value: publicKey,
                     },
                   });
-                  Linking.openURL(
-                    `mailto:${email}?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
+                  await Linking.openURL(
+                    `mailto:${
+                      data.email
+                    }?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
                       "This is a v1 recovery key. You are sending it to yourself; Obi can never access its contents. " +
                         "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
                         "DO NOT DELETE this email unless you are saving its contents to a password manager or physical location. In future versions " +
                         "of Obi, email recovery will use zero-knowledge proofs, and so saving an email will be unnecessary.  " +
-                        recoveryKey
+                        privateKey
                     )}`
                   );
                   Alert.alert(
@@ -330,17 +322,11 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                     ],
                     { cancelable: false }
                   );
-                } else {
-                  Alert.alert(
-                    intl.formatMessage({
-                      id: "onboarding5.error.noactivity.title",
-                    }),
-                    intl.formatMessage({
-                      id: "onboarding5.error.noactivity.subtext",
-                    })
-                  );
+                } catch (e) {
+                  console.error(e);
+                  // noop
                 }
-              }}
+              })}
             />
           </View>
         </View>
