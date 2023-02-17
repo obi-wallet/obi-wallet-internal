@@ -213,7 +213,7 @@ const PrettyMessageExecuteContract = observer(
       return (
         <MessageElement
           icon={<ArrowUpIcon />}
-          title="Propose key change"
+          title="Update Multikey (step 1 of 2)"
           coins={[...funds]}
         />
       );
@@ -223,7 +223,7 @@ const PrettyMessageExecuteContract = observer(
       return (
         <MessageElement
           icon={<ArrowUpIcon />}
-          title="Confirm key change"
+          title="Confirm Update (step 2 of 2)"
           coins={[...funds]}
         />
       );
@@ -235,7 +235,7 @@ const PrettyMessageExecuteContract = observer(
           icon={<ArrowUpIcon />}
           title={intl.formatMessage({
             id: "signature.modal.proposeupdateadmin",
-            defaultMessage: "Propose new admin for Obi Wallet",
+            defaultMessage: "Update Multikey (step 1 of 2)",
           })}
           coins={[...funds]}
         />
@@ -248,7 +248,7 @@ const PrettyMessageExecuteContract = observer(
           icon={<ArrowUpIcon />}
           title={intl.formatMessage({
             id: "signature.modal.confirmupdateadmin",
-            defaultMessage: "Confirm new admin for Obi Wallet",
+            defaultMessage: "Confirm Update (step 2 of 2)",
           })}
           coins={[...funds]}
         />

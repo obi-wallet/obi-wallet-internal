@@ -151,8 +151,8 @@
   "signature.modal.unknownmessage.heading": "Unbekannte Nachricht",
   "signature.modal.unknownmessage.subheading": "Bitte Daten-Tab prüfen",
   "signature.modal.initcontract": "Init Contract",
-  "signature.modal.proposeupdateadmin": "Neuen Admin für Obi Wallet vorschlagen",
-  "signature.modal.confirmupdateadmin": "Neuen Admin für Obi Wallet bestätigen",
+  "signature.modal.proposeupdateadmin": "Update Multikey (step 1 of 2)",
+  "signature.modal.confirmupdateadmin": "Confirm Update (step 2 of 2)",
 
   "signature.modal.biometricsignature": "Biometrischer Key",
   "signature.modal.phonesignature": "Telefonnummer Key",
