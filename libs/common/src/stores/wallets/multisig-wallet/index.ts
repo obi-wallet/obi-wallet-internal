@@ -7,6 +7,7 @@ import {
 } from "./serialized-data";
 import { cosmosChains, isTerraChain, terraChains } from "../../../chains";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
+import { GatekeeperConfig } from "../gatekeeper-config";
 import { MultisigKey } from "../multisig-key";
 
 export { MultisigWalletSerializedData };
@@ -18,6 +19,11 @@ export class MultisigWallet extends AbstractWallet {
   protected serializedWallet:
     | SerializedMultisigWallet
     | SerializedMultisigDemoWallet;
+
+  // TODO: move into MigratableSerializedMultisigWalletData as soon as the interface stabilizes
+  @observable
+  public gatekeeperConfig: GatekeeperConfig;
+
   protected onChange: (
     serializedWallet: SerializedMultisigWallet | SerializedMultisigDemoWallet
   ) => Promise<void>;
@@ -36,6 +42,7 @@ export class MultisigWallet extends AbstractWallet {
     super();
     this._id = id;
     this.serializedWallet = serializedWallet;
+    this.gatekeeperConfig = new GatekeeperConfig();
     this.onChange = onChange;
     makeObservable(this);
   }
