@@ -101,7 +101,7 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
   const intl = useIntl();
   const qrCodeScannerModal = useQrCodeScannerModal(({ data, close }) => {
     if (data.startsWith(prefix)) {
-      setAddress(address);
+      setAddress(data);
       close();
     }
   });
