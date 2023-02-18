@@ -2,7 +2,13 @@ import * as t from "io-ts";
 
 import { Duration, Percentage } from "../../helpers";
 
+export const AccountMetaData = t.type({
+  name: t.string,
+  icon: t.string,
+});
+
 export const Beneficiary = t.type({
+  meta: AccountMetaData,
   address: t.string,
   dormancyThreshold: Duration,
   dripSchedule: t.type({
