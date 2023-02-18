@@ -1,4 +1,5 @@
-import { action, makeObservable, observable } from "mobx";
+import * as E from "fp-ts/Either";
+import { action, computed, makeObservable, observable } from "mobx";
 
 import {
   Beneficiary,
@@ -7,6 +8,7 @@ import {
 } from "./serialized-data";
 import { Draftable } from "../../drafts/draft";
 import { Entities } from "../../entities";
+import { ArrayIndex } from "../../helpers";
 
 export class GatekeeperConfig implements Draftable {
   @observable
@@ -14,6 +16,8 @@ export class GatekeeperConfig implements Draftable {
 
   @observable
   protected _flexAccounts: Entities<FlexAccount>;
+  @observable
+  protected currentFlexAccountId: string | null = null;
 
   constructor() {
     this._beneficiaries = new Entities();
@@ -27,6 +31,18 @@ export class GatekeeperConfig implements Draftable {
 
   public get flexAccounts() {
     return this._flexAccounts.entities;
+  }
+
+  public get currentFlexAccount() {
+    if (this.currentFlexAccountId === null) return null;
+    return this._flexAccounts.get({ id: this.currentFlexAccountId });
+  }
+
+  @computed
+  public get currentFlexAccountIndex() {
+    if (this.currentFlexAccountId === null) return null;
+    const index = this._flexAccounts.ids.indexOf(this.currentFlexAccountId);
+    return E.getOrElseW(() => null)(ArrayIndex.decode(index));
   }
 
   @action
@@ -65,6 +81,7 @@ export class GatekeeperConfig implements Draftable {
     return {
       beneficiaries: this.beneficiaries,
       flexAccounts: this.flexAccounts,
+      currentFlexAccountIndex: this.currentFlexAccountIndex,
     };
   }
 

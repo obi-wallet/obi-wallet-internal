@@ -13,7 +13,7 @@ import {
   MigratableSerializedMultisigDemoWallet,
   MigratableSerializedMultisigWallet,
 } from "./multisig-wallet/serialized-data";
-import { Migratable, migratable, nullable } from "../helpers";
+import { ArrayIndex, Migratable, migratable, nullable } from "../helpers";
 
 export const SerializedWallet = t.union([
   MigratableSerializedMultisigWallet.currentVersion,
@@ -23,7 +23,7 @@ export type SerializedWallet = t.TypeOf<typeof SerializedWallet>;
 
 export const MigratableSerializedData = migratable(
   t.type({
-    currentWalletIndex: nullable(t.number),
+    currentWalletIndex: nullable(ArrayIndex),
     wallets: t.array(
       t.union([
         MigratableSerializedTerraMultisigWallet.anyVersion,
@@ -38,7 +38,7 @@ export const MigratableSerializedData = migratable(
   })
 ).addMigration({
   nextVersion: t.type({
-    currentWalletIndex: nullable(t.number),
+    currentWalletIndex: nullable(ArrayIndex),
     wallets: t.array(SerializedWallet),
   }),
   migrate(data) {

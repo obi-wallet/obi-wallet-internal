@@ -1,6 +1,7 @@
 import * as t from "io-ts";
 
 import {
+  ArrayIndex,
   DateFromISOString,
   Duration,
   nullable,
@@ -49,6 +50,7 @@ export type FlexAccount = t.TypeOf<typeof FlexAccount>;
 export const SerializedGatekeeperConfig = t.type({
   beneficiaries: t.readonlyArray(Beneficiary),
   flexAccounts: t.readonlyArray(FlexAccount),
+  currentFlexAccountIndex: nullable(ArrayIndex),
 });
 
 export type SerializedGatekeeperConfig = t.TypeOf<

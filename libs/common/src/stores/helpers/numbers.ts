@@ -1,7 +1,7 @@
 import * as t from "io-ts";
 
 export interface PercentageBrand {
-  readonly Percentage: unique symbol; // use `unique symbol` here to ensure uniqueness across modules / packages
+  readonly Percentage: unique symbol;
 }
 
 export const Percentage = t.brand(
