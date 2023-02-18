@@ -1,5 +1,5 @@
 import * as t from "io-ts";
 
-export function nullable<A>(type: t.Type<A>) {
+export function nullable<T extends t.Mixed>(type: T) {
   return t.union([type, t.null]);
 }
