@@ -1,5 +1,4 @@
-import * as E from "fp-ts/Either";
-import { action, computed, makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 
 import {
   Beneficiary,
@@ -8,41 +7,22 @@ import {
 } from "./serialized-data";
 import { Draftable } from "../../drafts/draft";
 import { Entities } from "../../entities";
-import { ArrayIndex } from "../../helpers";
 
 export class GatekeeperConfig implements Draftable {
   @observable
   protected _beneficiaries: Entities<Beneficiary>;
 
   @observable
-  protected _flexAccounts: Entities<FlexAccount>;
-  @observable
-  protected currentFlexAccountId: string | null = null;
+  public flexAccounts: Entities<FlexAccount>;
 
   constructor() {
     this._beneficiaries = new Entities();
-    this._flexAccounts = new Entities();
+    this.flexAccounts = new Entities();
     makeObservable(this);
   }
 
   public get beneficiaries() {
     return this._beneficiaries.entities;
-  }
-
-  public get flexAccounts() {
-    return this._flexAccounts.entities;
-  }
-
-  public get currentFlexAccount() {
-    if (this.currentFlexAccountId === null) return null;
-    return this._flexAccounts.get({ id: this.currentFlexAccountId });
-  }
-
-  @computed
-  public get currentFlexAccountIndex() {
-    if (this.currentFlexAccountId === null) return null;
-    const index = this._flexAccounts.ids.indexOf(this.currentFlexAccountId);
-    return E.getOrElseW(() => null)(ArrayIndex.decode(index));
   }
 
   @action
@@ -63,14 +43,14 @@ export class GatekeeperConfig implements Draftable {
 
   @action
   public addFlexAccount(flexAccount: FlexAccount) {
-    this._flexAccounts.add({
+    this.flexAccounts.add({
       entity: flexAccount,
     });
   }
 
   @action
   public removeFlexAccountByAddress({ address }: { address: string }) {
-    this._flexAccounts.removeBy({
+    this.flexAccounts.removeBy({
       predicate(flexAccount) {
         return flexAccount.address === address;
       },
@@ -80,8 +60,7 @@ export class GatekeeperConfig implements Draftable {
   public serialize(): SerializedGatekeeperConfig {
     return {
       beneficiaries: this.beneficiaries,
-      flexAccounts: this.flexAccounts,
-      currentFlexAccountIndex: this.currentFlexAccountIndex,
+      flexAccounts: this.flexAccounts.entities,
     };
   }
 
@@ -94,7 +73,7 @@ export class GatekeeperConfig implements Draftable {
   public equals(other: GatekeeperConfig) {
     return (
       this._beneficiaries.equals(other._beneficiaries) &&
-      this._flexAccounts.equals(other._flexAccounts)
+      this.flexAccounts.equals(other.flexAccounts)
     );
   }
 
@@ -104,7 +83,7 @@ export class GatekeeperConfig implements Draftable {
       gatekeeperConfig._beneficiaries.add({ entity: beneficiary });
     });
     data.flexAccounts.forEach((flexAccount) => {
-      gatekeeperConfig._flexAccounts.add({ entity: flexAccount });
+      gatekeeperConfig.flexAccounts.add({ entity: flexAccount });
     });
     return gatekeeperConfig;
   }

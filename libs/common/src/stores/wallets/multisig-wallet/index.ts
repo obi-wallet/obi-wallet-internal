@@ -1,3 +1,4 @@
+import * as E from "fp-ts/Either";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import * as MultisigWalletSerializedData from "./serialized-data";
@@ -6,6 +7,7 @@ import {
   SerializedMultisigWallet,
 } from "./serialized-data";
 import { cosmosChains, isTerraChain, terraChains } from "../../../chains";
+import { ArrayIndex } from "../../helpers";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
 import { GatekeeperConfig } from "../gatekeeper-config";
 import { MultisigKey } from "../multisig-key";
@@ -23,6 +25,9 @@ export class MultisigWallet extends AbstractWallet {
   // TODO: move into MigratableSerializedMultisigWalletData as soon as the interface stabilizes
   @observable
   public gatekeeperConfig: GatekeeperConfig;
+
+  @observable
+  public currentAccountId: string | null = null;
 
   protected onChange: (
     serializedWallet: SerializedMultisigWallet | SerializedMultisigDemoWallet
@@ -92,6 +97,29 @@ export class MultisigWallet extends AbstractWallet {
       chain: this.chain,
       serialized: this.serializedWallet.data.owner,
     });
+  }
+
+  @computed
+  public get accounts() {
+    return this.gatekeeperConfig.flexAccounts;
+  }
+
+  @computed
+  public get currentAccount() {
+    if (!this.currentAccountId) return null;
+    return this.accounts.get({ id: this.currentAccountId });
+  }
+
+  @action
+  public async setCurrentAccount(id: string) {
+    this.currentAccountId = id;
+  }
+
+  @computed
+  public get currentAccountIndex() {
+    if (!this.currentAccountId) return null;
+    const index = this.accounts.ids.indexOf(this.currentAccountId);
+    return E.getOrElseW(() => null)(ArrayIndex.decode(index));
   }
 
   @action

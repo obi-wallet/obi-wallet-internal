@@ -90,7 +90,7 @@ export class WalletsStore {
 
   @computed
   public get currentWallet() {
-    if (this.currentWalletId === null) return null;
+    if (!this.currentWalletId) return null;
     return this._wallets.get({ id: this.currentWalletId }).wallet;
   }
 
