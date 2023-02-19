@@ -19,9 +19,17 @@ export const ImportLegacyAccountScreen =
         <Button
           flavor="blue"
           label="Import Station Account"
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate(AccountsRoute.ImportStationAccount);
+          }}
         />
-        <Button flavor="blue" label="Create Keplr Account" onPress={() => {}} />
+        <Button
+          flavor="blue"
+          label="Import Keplr Account"
+          onPress={() => {
+            navigation.navigate(AccountsRoute.ImportKeplrAccount);
+          }}
+        />
       </View>
     );
   });

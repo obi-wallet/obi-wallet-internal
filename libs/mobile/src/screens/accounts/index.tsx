@@ -5,7 +5,9 @@ import { AccountsRoute, AccountsStack } from "./accounts-stack";
 import { AddAccountScreen } from "./add-account";
 import { CreateBeneficiaryAccountScreen } from "./create-beneficiary-account";
 import { CreateFlexAccountScreen } from "./create-flex-account";
+import { ImportKeplrAccountScreen } from "./import-keplr-account";
 import { ImportLegacyAccountScreen } from "./import-legacy-account";
+import { ImportStationAccountScreen } from "./import-station-account";
 
 export const AccountsScreen = observer(function AccountsScreen() {
   return (
@@ -36,6 +38,14 @@ export const AccountsScreen = observer(function AccountsScreen() {
       <AccountsStack.Screen
         name={AccountsRoute.ImportLegacyAccount}
         component={ImportLegacyAccountScreen}
+      />
+      <AccountsStack.Screen
+        name={AccountsRoute.ImportStationAccount}
+        component={ImportStationAccountScreen}
+      />
+      <AccountsStack.Screen
+        name={AccountsRoute.ImportKeplrAccount}
+        component={ImportKeplrAccountScreen}
       />
     </AccountsStack.Navigator>
   );
