@@ -5,8 +5,10 @@ import * as MultisigWalletSerializedData from "./serialized-data";
 import {
   SerializedMultisigDemoWallet,
   SerializedMultisigWallet,
+  SinglesigWallet,
 } from "./serialized-data";
 import { cosmosChains, isTerraChain, terraChains } from "../../../chains";
+import { Entities } from "../../entities";
 import { ArrayIndex } from "../../helpers";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
 import { GatekeeperConfig } from "../gatekeeper-config";
@@ -25,6 +27,9 @@ export class MultisigWallet extends AbstractWallet {
   // TODO: move into MigratableSerializedMultisigWalletData as soon as the interface stabilizes
   @observable
   public gatekeeperConfig: GatekeeperConfig;
+
+  @observable
+  protected _singlesigAccounts: Entities<SinglesigWallet>;
 
   @observable
   public currentAccountId: string | null = null;
@@ -48,6 +53,7 @@ export class MultisigWallet extends AbstractWallet {
     this._id = id;
     this.serializedWallet = serializedWallet;
     this.gatekeeperConfig = new GatekeeperConfig();
+    this._singlesigAccounts = new Entities();
     this.onChange = onChange;
     makeObservable(this);
   }
@@ -101,7 +107,10 @@ export class MultisigWallet extends AbstractWallet {
 
   @computed
   public get accounts() {
-    return this.gatekeeperConfig.flexAccounts;
+    return Entities.merge(
+      this._singlesigAccounts,
+      this.gatekeeperConfig.flexAccounts
+    );
   }
 
   @computed
