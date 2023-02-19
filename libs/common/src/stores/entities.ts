@@ -66,4 +66,17 @@ export class Entities<T> implements Draftable {
   public static generateId(): EntityId {
     return nanoid();
   }
+
+  public static merge<T, U>(
+    entities1: Entities<T>,
+    entities2: Entities<U>
+  ): Entities<T | U> {
+    const merged = new Entities<T | U>();
+    merged._ids = [...entities1._ids, ...entities2._ids];
+    merged._entities = {
+      ...entities1._entities,
+      ...entities2._entities,
+    };
+    return merged;
+  }
 }

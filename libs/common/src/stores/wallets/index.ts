@@ -1,4 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
+import * as E from "fp-ts/Either";
 import * as t from "io-ts";
 import {
   action,
@@ -27,6 +28,7 @@ import {
 import { ChainStore } from "../chain";
 import { ConfigStore } from "../config";
 import { Entities } from "../entities";
+import { ArrayIndex } from "../helpers";
 
 export * from "./multisig-wallet";
 
@@ -54,7 +56,7 @@ export class WalletsStore {
     serializedWallet: SerializedWallet;
   }>;
   @observable
-  public currentWalletId: string | null = null;
+  protected currentWalletId: string | null = null;
   @observable
   public state: WalletState = WalletState.LOADING;
 
@@ -88,7 +90,7 @@ export class WalletsStore {
 
   @computed
   public get currentWallet() {
-    if (this.currentWalletId === null) return null;
+    if (!this.currentWalletId) return null;
     return this._wallets.get({ id: this.currentWalletId }).wallet;
   }
 
@@ -104,7 +106,7 @@ export class WalletsStore {
   public get currentWalletIndex() {
     if (!this.currentWalletId) return null;
     const index = this._wallets.ids.indexOf(this.currentWalletId);
-    return index === -1 ? null : index;
+    return E.getOrElseW(() => null)(ArrayIndex.decode(index));
   }
 
   @computed
@@ -244,10 +246,10 @@ export class WalletsStore {
     });
 
     const newCurrentWalletIndex = (() => {
-      if (typeof currentWalletIndex === "number" && validWallets.length > 0) {
+      if (ArrayIndex.is(currentWalletIndex) && validWallets.length > 0) {
         let index = R.min(currentWalletIndex, validWallets.length - 1);
         index -= wallets.length - validWallets.length;
-        return index;
+        return E.getOrElseW(() => null)(ArrayIndex.decode(index));
       }
 
       return null;

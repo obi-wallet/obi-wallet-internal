@@ -1,12 +1,17 @@
+import * as E from "fp-ts/Either";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import * as MultisigWalletSerializedData from "./serialized-data";
 import {
   SerializedMultisigDemoWallet,
   SerializedMultisigWallet,
+  SinglesigWallet,
 } from "./serialized-data";
 import { cosmosChains, isTerraChain, terraChains } from "../../../chains";
+import { Entities } from "../../entities";
+import { ArrayIndex } from "../../helpers";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
+import { GatekeeperConfig } from "../gatekeeper-config";
 import { MultisigKey } from "../multisig-key";
 
 export { MultisigWalletSerializedData };
@@ -18,6 +23,17 @@ export class MultisigWallet extends AbstractWallet {
   protected serializedWallet:
     | SerializedMultisigWallet
     | SerializedMultisigDemoWallet;
+
+  // TODO: move into MigratableSerializedMultisigWalletData as soon as the interface stabilizes
+  @observable
+  public gatekeeperConfig: GatekeeperConfig;
+
+  @observable
+  protected _singlesigAccounts: Entities<SinglesigWallet>;
+
+  @observable
+  public currentAccountId: string | null = null;
+
   protected onChange: (
     serializedWallet: SerializedMultisigWallet | SerializedMultisigDemoWallet
   ) => Promise<void>;
@@ -36,6 +52,8 @@ export class MultisigWallet extends AbstractWallet {
     super();
     this._id = id;
     this.serializedWallet = serializedWallet;
+    this.gatekeeperConfig = new GatekeeperConfig();
+    this._singlesigAccounts = new Entities();
     this.onChange = onChange;
     makeObservable(this);
   }
@@ -85,6 +103,32 @@ export class MultisigWallet extends AbstractWallet {
       chain: this.chain,
       serialized: this.serializedWallet.data.owner,
     });
+  }
+
+  @computed
+  public get accounts() {
+    return Entities.merge(
+      this._singlesigAccounts,
+      this.gatekeeperConfig.flexAccounts
+    );
+  }
+
+  @computed
+  public get currentAccount() {
+    if (!this.currentAccountId) return null;
+    return this.accounts.get({ id: this.currentAccountId });
+  }
+
+  @action
+  public async setCurrentAccount(id: string) {
+    this.currentAccountId = id;
+  }
+
+  @computed
+  public get currentAccountIndex() {
+    if (!this.currentAccountId) return null;
+    const index = this.accounts.ids.indexOf(this.currentAccountId);
+    return E.getOrElseW(() => null)(ArrayIndex.decode(index));
   }
 
   @action

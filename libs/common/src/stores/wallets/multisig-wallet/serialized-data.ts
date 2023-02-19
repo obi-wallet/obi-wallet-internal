@@ -2,6 +2,7 @@ import * as t from "io-ts";
 
 import { migratable } from "../../helpers";
 import { SerializedMultisigKey } from "../multisig-key/keys";
+import { Secp256k1PublicKey } from "../multisig-key/keys/public-key";
 
 export const MigratableSerializedProxyAddress = migratable(
   t.type({
@@ -20,6 +21,13 @@ export const Chain = t.union([
   t.literal("pisco-1"),
   t.literal("phoenix-1"),
 ]);
+
+export const SinglesigWallet = t.type({
+  publicKey: Secp256k1PublicKey,
+  privateKey: t.string,
+});
+
+export type SinglesigWallet = t.TypeOf<typeof SinglesigWallet>;
 
 export const MigratableSerializedMultisigWalletData = migratable(
   t.type({
