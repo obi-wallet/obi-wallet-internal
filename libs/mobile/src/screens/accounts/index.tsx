@@ -5,6 +5,7 @@ import { AccountsRoute, AccountsStack } from "./accounts-stack";
 import { AddAccountScreen } from "./add-account";
 import { CreateBeneficiaryAccountScreen } from "./create-beneficiary-account";
 import { CreateFlexAccountScreen } from "./create-flex-account";
+import { ImportLegacyAccountScreen } from "./import-legacy-account";
 
 export const AccountsScreen = observer(function AccountsScreen() {
   return (
@@ -31,6 +32,10 @@ export const AccountsScreen = observer(function AccountsScreen() {
       <AccountsStack.Screen
         name={AccountsRoute.CreateBeneficiaryAccount}
         component={CreateBeneficiaryAccountScreen}
+      />
+      <AccountsStack.Screen
+        name={AccountsRoute.ImportLegacyAccount}
+        component={ImportLegacyAccountScreen}
       />
     </AccountsStack.Navigator>
   );

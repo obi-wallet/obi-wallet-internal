@@ -5,6 +5,7 @@ export enum AccountsRoute {
   AddAccount = "AddAccount",
   CreateFlexAccount = "CreateFlexAccount",
   CreateBeneficiaryAccount = "CreateBeneficiaryAccount",
+  ImportLegacyAccount = "ImportLegacyAccount",
 }
 
 export interface AccountsStackParamList
@@ -13,6 +14,7 @@ export interface AccountsStackParamList
   [AccountsRoute.AddAccount]: undefined;
   [AccountsRoute.CreateFlexAccount]: undefined;
   [AccountsRoute.CreateBeneficiaryAccount]: undefined;
+  [AccountsRoute.ImportLegacyAccount]: undefined;
 }
 
 export const AccountsStack =

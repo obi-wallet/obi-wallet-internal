@@ -32,7 +32,7 @@ export const AddAccountScreen = observer<AddAccountScreenProps>(
           flavor="blue"
           label="Import Legacy Account"
           onPress={() => {
-            console.log("add");
+            navigation.navigate(AccountsRoute.ImportLegacyAccount);
           }}
         />
       </View>
