@@ -25,7 +25,7 @@ export const AddAccountScreen = observer<AddAccountScreenProps>(
           flavor="blue"
           label="Inheritance"
           onPress={() => {
-            console.log("add");
+            navigation.navigate(AccountsRoute.CreateBeneficiaryAccount);
           }}
         />
         <Button
