@@ -1,14 +1,16 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 export enum AccountsRoute {
-  Overview = "Overview",
+  AccountsOverview = "AccountsOverview",
   AddAccount = "AddAccount",
+  CreateFlexAccount = "CreateFlexAccount",
 }
 
 export interface AccountsStackParamList
   extends Record<string, object | undefined> {
-  [AccountsRoute.Overview]: undefined;
+  [AccountsRoute.AccountsOverview]: undefined;
   [AccountsRoute.AddAccount]: undefined;
+  [AccountsRoute.CreateFlexAccount]: undefined;
 }
 
 export const AccountsStack =

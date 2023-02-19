@@ -5,20 +5,20 @@ import { View } from "react-native";
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import { Button } from "../../app/button";
 
-export type AccountsOverviewScreenProps = NativeStackScreenProps<
+export type CreateFlexAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
-  AccountsRoute.AccountsOverview
+  AccountsRoute.CreateFlexAccount
 >;
 
-export const AccountsOverviewScreen = observer<AccountsOverviewScreenProps>(
-  function AccountsOverviewScreen({ navigation }) {
+export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
+  function CreateFlexAccountScreen({ navigation }) {
     return (
       <View style={{ marginTop: 100 }}>
         <Button
           flavor="blue"
-          label="Add"
+          label="Create Flex Account"
           onPress={() => {
-            navigation.navigate(AccountsRoute.AddAccount);
+            navigation.navigate(AccountsRoute.AccountsOverview);
           }}
         />
       </View>

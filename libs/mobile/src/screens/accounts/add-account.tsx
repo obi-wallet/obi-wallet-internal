@@ -1,38 +1,41 @@
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 
-import { getGatekeeperConfigDraftId } from "./draft-id";
+import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import { Button } from "../../app/button";
-import { useMultisigWallet } from "../../app/stores";
 
-export const AddAccountScreen = observer(function AddAccountScreen() {
-  const wallet = useMultisigWallet();
-  const draftId = getGatekeeperConfigDraftId(wallet);
-  console.log(draftId);
+export type AddAccountScreenProps = NativeStackScreenProps<
+  AccountsStackParamList,
+  AccountsRoute.AddAccount
+>;
 
-  return (
-    <View style={{ marginTop: 100 }}>
-      <Button
-        flavor="blue"
-        label="Create Flex Account"
-        onPress={() => {
-          console.log("add");
-        }}
-      />
-      <Button
-        flavor="blue"
-        label="Inheritance"
-        onPress={() => {
-          console.log("add");
-        }}
-      />
-      <Button
-        flavor="blue"
-        label="Import Legacy Account"
-        onPress={() => {
-          console.log("add");
-        }}
-      />
-    </View>
-  );
-});
+export const AddAccountScreen = observer<AddAccountScreenProps>(
+  function AddAccountScreen({ navigation }) {
+    return (
+      <View style={{ marginTop: 100 }}>
+        <Button
+          flavor="blue"
+          label="Create Flex Account"
+          onPress={() => {
+            navigation.navigate(AccountsRoute.CreateFlexAccount);
+          }}
+        />
+        <Button
+          flavor="blue"
+          label="Inheritance"
+          onPress={() => {
+            console.log("add");
+          }}
+        />
+        <Button
+          flavor="blue"
+          label="Import Legacy Account"
+          onPress={() => {
+            console.log("add");
+          }}
+        />
+      </View>
+    );
+  }
+);
