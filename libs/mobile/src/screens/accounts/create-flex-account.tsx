@@ -1,10 +1,12 @@
+import { GatekeeperConfig } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
+import { getGatekeeperConfigDraftId } from "./draft-id";
 import { Button } from "../../app/button";
-import { useMultisigWallet } from "../../app/stores";
+import { useMultisigWallet, useStore } from "../../app/stores";
 
 export type CreateFlexAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
@@ -13,7 +15,11 @@ export type CreateFlexAccountScreenProps = NativeStackScreenProps<
 
 export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
   function CreateFlexAccountScreen({ navigation }) {
+    const { draftsStore } = useStore();
     const wallet = useMultisigWallet();
+    const gatekeeperConfig = draftsStore.get<GatekeeperConfig>({
+      id: getGatekeeperConfigDraftId(wallet),
+    });
 
     return (
       <View style={{ marginTop: 100 }}>
@@ -21,8 +27,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
           flavor="blue"
           label="Create Flex Account"
           onPress={() => {
-            // TODO: use draft instead
-            wallet.gatekeeperConfig.flexAccounts.add({
+            gatekeeperConfig.value.flexAccounts.add({
               entity: {
                 meta: {
                   icon: "",

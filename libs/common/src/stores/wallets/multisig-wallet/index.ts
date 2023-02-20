@@ -12,6 +12,7 @@ import { Entities } from "../../entities";
 import { ArrayIndex } from "../../helpers";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
 import { GatekeeperConfig } from "../gatekeeper-config";
+import { Beneficiary, FlexAccount } from "../gatekeeper-config/serialized-data";
 import { MultisigKey } from "../multisig-key";
 
 export { MultisigWalletSerializedData };
@@ -105,18 +106,18 @@ export class MultisigWallet extends AbstractWallet {
     });
   }
 
-  @computed
-  public get accounts() {
-    return Entities.merge(
-      this._singlesigAccounts,
-      this.gatekeeperConfig.flexAccounts
+  public getAccounts(gatekeeperConfig = this.gatekeeperConfig) {
+    return Entities.merge<Beneficiary | FlexAccount | SinglesigWallet>(
+      gatekeeperConfig.beneficiaries,
+      gatekeeperConfig.flexAccounts,
+      this._singlesigAccounts
     );
   }
 
   @computed
   public get currentAccount() {
     if (!this.currentAccountId) return null;
-    return this.accounts.get({ id: this.currentAccountId });
+    return this.getAccounts().get({ id: this.currentAccountId });
   }
 
   @action
@@ -127,7 +128,7 @@ export class MultisigWallet extends AbstractWallet {
   @computed
   public get currentAccountIndex() {
     if (!this.currentAccountId) return null;
-    const index = this.accounts.ids.indexOf(this.currentAccountId);
+    const index = this.getAccounts().ids.indexOf(this.currentAccountId);
     return E.getOrElseW(() => null)(ArrayIndex.decode(index));
   }
 

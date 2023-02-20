@@ -49,9 +49,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
   const [loading, setLoading] = useState(false);
   const theme = useTheme();
 
-  if (!draft) return null;
-
-  if (loading) {
+  if (!draft || loading) {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }} />
     );

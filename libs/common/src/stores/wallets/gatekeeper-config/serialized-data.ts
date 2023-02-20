@@ -5,6 +5,8 @@ import {
   Duration,
   nullable,
   Percentage,
+  UnsafeDuration,
+  UnsafePercentage,
 } from "../../helpers";
 import { Secp256k1PublicKey } from "../multisig-key/keys/public-key";
 
@@ -13,15 +15,28 @@ export const AccountMetaData = t.type({
   icon: t.string,
 });
 
-export const Beneficiary = t.type({
+export const UnsafeBeneficiary = t.type({
   meta: AccountMetaData,
   address: t.string,
-  dormancyThreshold: Duration,
+  dormancyThreshold: UnsafeDuration,
   dripSchedule: t.type({
-    rate: Percentage,
-    period: Duration,
+    rate: UnsafePercentage,
+    period: UnsafeDuration,
   }),
 });
+
+export type UnsafeBeneficiary = t.TypeOf<typeof UnsafeBeneficiary>;
+
+export const Beneficiary = t.intersection([
+  UnsafeBeneficiary,
+  t.type({
+    dormancyThreshold: Duration,
+    dripSchedule: t.type({
+      rate: Percentage,
+      period: Duration,
+    }),
+  }),
+]);
 
 export type Beneficiary = t.TypeOf<typeof Beneficiary>;
 
