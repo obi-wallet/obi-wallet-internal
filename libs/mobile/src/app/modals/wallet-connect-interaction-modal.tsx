@@ -3,9 +3,9 @@ import { observer } from "mobx-react-lite";
 import { Modal, SafeAreaView, View } from "react-native";
 
 import { Button } from "../button";
-import { OnboardingScreenContainer } from "../screens/components/onboarding-screen-container";
 import Wc from "../screens/dapp-explorer/assets/wallet-connect.svg";
 import { useStore } from "../stores";
+
 export const WalletConnectInteractionModal = observer(
   function WalletConnectInteractionModal() {
     const { walletConnectInteractionStore } = useStore();

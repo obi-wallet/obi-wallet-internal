@@ -1,5 +1,4 @@
 import { observer } from "mobx-react-lite";
-import * as React from "react";
 import Svg, { SvgProps, Path } from "react-native-svg";
 
 import { useStore } from "../../app/stores";

@@ -296,7 +296,7 @@ export class WalletConnectStore {
     });
 
     connector.on("disconnect", async (error, payload) => {
-      console.log("EVENT", "disconnect");
+      console.log("EVENT", "disconnect", payload);
 
       if (error) {
         throw error;

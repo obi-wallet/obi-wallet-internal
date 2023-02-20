@@ -2,7 +2,6 @@ import { Chain, KeyType, MultisigKey, TerraChain } from "@obi-wallet/common";
 import { QueryClient } from "@tanstack/react-query";
 import { Key, RawKey, SimplePublicKey } from "@terra-money/terra.js";
 import { SHA256, Word32Array } from "jscrypto";
-import secp256k1 from "secp256k1";
 import invariant from "tiny-invariant";
 
 import { createBiometricsSignature } from "../../../biometrics";
