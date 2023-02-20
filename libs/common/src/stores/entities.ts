@@ -67,16 +67,10 @@ export class Entities<T> implements Draftable {
     return nanoid();
   }
 
-  public static merge<T, U>(
-    entities1: Entities<T>,
-    entities2: Entities<U>
-  ): Entities<T | U> {
-    const merged = new Entities<T | U>();
-    merged._ids = [...entities1._ids, ...entities2._ids];
-    merged._entities = {
-      ...entities1._entities,
-      ...entities2._entities,
-    };
+  public static merge<T>(...entities: Entities<T>[]): Entities<T> {
+    const merged = new Entities<T>();
+    merged._ids = ([] as Array<string>).concat(...entities.map((e) => e._ids));
+    merged._entities = R.mergeAll(entities.map((e) => e._entities));
     return merged;
   }
 }

@@ -1,40 +1,49 @@
+import * as E from "fp-ts/Either";
+import { pipe } from "fp-ts/function";
 import { action, makeObservable, observable } from "mobx";
 
 import {
   Beneficiary,
   FlexAccount,
   SerializedGatekeeperConfig,
+  UnsafeBeneficiary,
 } from "./serialized-data";
 import { Draftable } from "../../drafts/draft";
 import { Entities } from "../../entities";
 
 export class GatekeeperConfig implements Draftable {
   @observable
-  protected _beneficiaries: Entities<Beneficiary>;
+  public beneficiaries: Entities<Beneficiary>;
 
   @observable
   public flexAccounts: Entities<FlexAccount>;
 
   constructor() {
-    this._beneficiaries = new Entities();
+    this.beneficiaries = new Entities();
     this.flexAccounts = new Entities();
     makeObservable(this);
   }
 
-  public get beneficiaries() {
-    return this._beneficiaries.entities;
-  }
-
   @action
-  public addBeneficiary(beneficiary: Beneficiary) {
-    this._beneficiaries.add({
-      entity: beneficiary,
-    });
+  public addBeneficiary(beneficiary: UnsafeBeneficiary) {
+    pipe(
+      Beneficiary.decode(beneficiary),
+      E.match(
+        (errors) => {
+          console.error("Invalid Beneficiary", errors);
+        },
+        (entity) => {
+          this.beneficiaries.add({
+            entity,
+          });
+        }
+      )
+    );
   }
 
   @action
   public removeBeneficiaryByAddress({ address }: { address: string }) {
-    this._beneficiaries.removeBy({
+    this.beneficiaries.removeBy({
       predicate(beneficiary) {
         return beneficiary.address === address;
       },
@@ -59,20 +68,20 @@ export class GatekeeperConfig implements Draftable {
 
   public serialize(): SerializedGatekeeperConfig {
     return {
-      beneficiaries: this.beneficiaries,
+      beneficiaries: this.beneficiaries.entities,
       flexAccounts: this.flexAccounts.entities,
     };
   }
 
   public clone() {
     const clone = new GatekeeperConfig();
-    clone._beneficiaries = this._beneficiaries.clone();
+    clone.beneficiaries = this.beneficiaries.clone();
     return clone as this;
   }
 
   public equals(other: GatekeeperConfig) {
     return (
-      this._beneficiaries.equals(other._beneficiaries) &&
+      this.beneficiaries.equals(other.beneficiaries) &&
       this.flexAccounts.equals(other.flexAccounts)
     );
   }
@@ -80,7 +89,7 @@ export class GatekeeperConfig implements Draftable {
   public static deserialize(data: SerializedGatekeeperConfig) {
     const gatekeeperConfig = new GatekeeperConfig();
     data.beneficiaries.forEach((beneficiary) => {
-      gatekeeperConfig._beneficiaries.add({ entity: beneficiary });
+      gatekeeperConfig.beneficiaries.add({ entity: beneficiary });
     });
     data.flexAccounts.forEach((flexAccount) => {
       gatekeeperConfig.flexAccounts.add({ entity: flexAccount });

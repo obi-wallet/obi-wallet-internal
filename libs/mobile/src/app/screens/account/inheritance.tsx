@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { useState } from "react";
+import { useState } from "react";
 import { View, Text, Switch } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 

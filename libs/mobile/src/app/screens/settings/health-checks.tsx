@@ -1,4 +1,3 @@
-import { MsgMigrateContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { useTheme } from "@emotion/react";
 import {
   healthChecks,
@@ -7,9 +6,6 @@ import {
   RequestObiCosmosSignAndBroadcastMsg,
   Text,
 } from "@obi-wallet/common";
-import { MigrateMsg } from "@obi-wallet/proxy-contract";
-import { MsgMigrateContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
-import Long from "long";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { ReactNode, useCallback, useEffect, useState } from "react";

@@ -14,7 +14,6 @@ import ObiFaceScanner from "./assets/obi-face-scanner.svg";
 import Scan from "./assets/scan.svg";
 import {
   getBiometricsKeyPair,
-  getBiometricsPublicKey,
   resetBiometricsKeyPair,
 } from "../../../app/biometrics";
 import { AsyncButton } from "../../../app/button";

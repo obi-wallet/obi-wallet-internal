@@ -2,10 +2,7 @@ import {
   GoogleSignin,
   statusCodes,
 } from "@react-native-google-signin/google-signin";
-import {
-  GDrive,
-  ListQueryBuilder,
-} from "@robinbobin/react-native-google-drive-api-wrapper";
+import { GDrive } from "@robinbobin/react-native-google-drive-api-wrapper";
 import { randomBytes } from "crypto";
 import secp256k1 from "secp256k1";
 
