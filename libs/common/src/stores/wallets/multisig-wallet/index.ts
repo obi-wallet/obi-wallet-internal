@@ -114,6 +114,13 @@ export class MultisigWallet extends AbstractWallet {
     );
   }
 
+  @action
+  public addSinglesigAccount(singlesig: SinglesigWallet) {
+    this._singlesigAccounts.add({
+      entity: singlesig,
+    });
+  }
+
   @computed
   public get currentAccount() {
     if (!this.currentAccountId) return null;
