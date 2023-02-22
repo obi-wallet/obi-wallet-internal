@@ -1,10 +1,10 @@
-import * as t from "io-ts";
+import { z } from "zod";
 
 import { Secp256k1PublicKey } from "../public-key";
 
-export const SerializedNfcKeyPayload = t.type({
+export const SerializedNfcKeyPayload = z.object({
   publicKey: Secp256k1PublicKey,
-  localEntropy: t.string,
+  localEntropy: z.string(),
 });
 
-export type SerializedNfcKeyPayload = t.TypeOf<typeof SerializedNfcKeyPayload>;
+export type SerializedNfcKeyPayload = z.infer<typeof SerializedNfcKeyPayload>;

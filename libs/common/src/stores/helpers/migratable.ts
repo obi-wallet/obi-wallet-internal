@@ -1,62 +1,41 @@
-import * as t from "io-ts";
+import { z } from "zod";
 
-export interface Migratable<
-  AnyVersion extends t.Any,
-  CurrentVersion extends t.Any
-> {
-  anyVersion: AnyVersion;
-  currentVersion: CurrentVersion;
-  migrate: (data: t.TypeOf<AnyVersion>) => t.TypeOf<CurrentVersion>;
-  addMigration: <NextVersion extends t.Any>({
-    nextVersion,
-    migrate,
-  }: {
-    nextVersion: NextVersion;
-    migrate: (data: t.TypeOf<CurrentVersion>) => t.TypeOf<NextVersion>;
-  }) => Migratable<t.UnionC<[AnyVersion, NextVersion]>, NextVersion>;
-}
-
-export function migratable<T extends t.Any>(type: T): Migratable<T, T> {
+export function migratable<T extends z.ZodTypeAny>(schema: T) {
   return genericMigratable({
-    anyVersion: type,
-    currentVersion: type,
+    anyVersion: schema,
+    currentVersion: schema,
     migrate: (data) => data,
   });
 
   function genericMigratable<
-    AnyVersion extends t.Any,
-    CurrentVersion extends t.Any
+    Any extends z.ZodTypeAny,
+    Current extends z.ZodTypeAny
   >({
     anyVersion,
     currentVersion,
     migrate,
   }: {
-    anyVersion: AnyVersion;
-    currentVersion: CurrentVersion;
-    migrate: (data: t.TypeOf<AnyVersion>) => t.TypeOf<CurrentVersion>;
-  }): Migratable<AnyVersion, CurrentVersion> {
+    anyVersion: Any;
+    currentVersion: Current;
+    migrate: (data: z.infer<Any>) => z.infer<Current>;
+  }) {
     const previousMigrate = migrate;
 
     return {
-      anyVersion,
-      currentVersion,
-      migrate,
-      addMigration: <NextVersion extends t.Any>({
-        nextVersion,
+      schema: anyVersion.transform(migrate),
+      addMigration: <Next extends z.ZodTypeAny>({
+        nextSchema,
         migrate,
       }: {
-        nextVersion: NextVersion;
-        migrate: (data: t.TypeOf<CurrentVersion>) => t.TypeOf<NextVersion>;
+        nextSchema: Next;
+        migrate: (data: z.infer<Current>) => z.infer<Next>;
       }) => {
-        return genericMigratable<
-          t.UnionC<[AnyVersion, NextVersion]>,
-          NextVersion
-        >({
-          anyVersion: t.union([anyVersion, nextVersion]),
-          currentVersion: nextVersion,
+        return genericMigratable<z.ZodUnion<[Any, Next]>, Next>({
+          anyVersion: anyVersion.or(nextSchema),
+          currentVersion: nextSchema,
           migrate(data) {
-            if (nextVersion.is(data)) return data;
-            if (currentVersion.is(data)) return migrate(data);
+            if (nextSchema.safeParse(data).success) return data;
+            if (currentVersion.safeParse(data).success) return migrate(data);
             return migrate(previousMigrate(data));
           },
         });

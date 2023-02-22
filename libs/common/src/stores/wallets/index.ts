@@ -1,6 +1,4 @@
 import { KVStore } from "@keplr-wallet/common";
-import * as E from "fp-ts/Either";
-import * as t from "io-ts";
 import {
   action,
   autorun,
@@ -12,6 +10,7 @@ import {
 } from "mobx";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
 import { WalletType } from "./abstract-wallet";
 import { MultisigWallet } from "./multisig-wallet";
@@ -107,8 +106,7 @@ export class WalletsStore {
   @computed
   public get currentWalletIndex() {
     if (!this.currentWalletId) return null;
-    const index = this._wallets.ids.indexOf(this.currentWalletId);
-    return E.getOrElseW(() => null)(ArrayIndex.decode(index));
+    return this._wallets.ids.indexOf(this.currentWalletId);
   }
 
   @computed
@@ -193,7 +191,7 @@ export class WalletsStore {
       const serializedData = await this.getSerializedData();
 
       const { currentWalletIndex, wallets } =
-        MigratableSerializedData.migrate(serializedData);
+        MigratableSerializedData.schema.parse(serializedData);
 
       wallets.forEach(this.addWalletWithoutSave);
 
@@ -214,7 +212,7 @@ export class WalletsStore {
   }
 
   public async getSerializedData(): Promise<
-    t.TypeOf<typeof MigratableSerializedData.anyVersion>
+    z.input<typeof MigratableSerializedData.schema>
   > {
     const data = await this.kvStore.get("wallets");
     if (!data) {
@@ -224,43 +222,47 @@ export class WalletsStore {
       };
     }
 
-    if (MigratableSerializedData.anyVersion.is(data)) return data;
+    try {
+      return MigratableSerializedData.schema.parse(data);
+    } catch (e) {
+      invariant(
+        R.has("currentWalletIndex", data),
+        "Expected key `data.currentWalletIndex` to be present."
+      );
+      invariant(
+        R.has("wallets", data),
+        "Expected key `data.wallets` to be present."
+      );
 
-    invariant(
-      R.has("currentWalletIndex", data),
-      "Expected key `data.currentWalletIndex` to be present."
-    );
-    invariant(
-      R.has("wallets", data),
-      "Expected key `data.wallets` to be present."
-    );
+      const currentWalletIndex = data.currentWalletIndex;
+      const wallets = data.wallets;
 
-    const currentWalletIndex = data.currentWalletIndex;
-    const wallets = data.wallets;
+      invariant(
+        Array.isArray(wallets),
+        "Expected key `data.wallets` to be an array."
+      );
 
-    invariant(
-      Array.isArray(wallets),
-      "Expected key `data.wallets` to be an array."
-    );
+      const validWallets = wallets.filter((wallet) => {
+        const result = SerializedWallet.safeParse(wallet);
+        return result.success;
+      });
 
-    const validWallets = wallets.filter((wallet) => {
-      return SerializedWallet.is(wallet);
-    });
+      const newCurrentWalletIndex = (() => {
+        const result = ArrayIndex.safeParse(currentWalletIndex);
+        if (result.success && validWallets.length > 0) {
+          let index = R.min(result.data, validWallets.length - 1);
+          index -= wallets.length - validWallets.length;
+          return index;
+        }
 
-    const newCurrentWalletIndex = (() => {
-      if (ArrayIndex.is(currentWalletIndex) && validWallets.length > 0) {
-        let index = R.min(currentWalletIndex, validWallets.length - 1);
-        index -= wallets.length - validWallets.length;
-        return E.getOrElseW(() => null)(ArrayIndex.decode(index));
-      }
+        return null;
+      })();
 
-      return null;
-    })();
-
-    return {
-      currentWalletIndex: newCurrentWalletIndex,
-      wallets: validWallets,
-    };
+      return {
+        currentWalletIndex: newCurrentWalletIndex,
+        wallets: validWallets,
+      };
+    }
   }
 
   protected createWallet = ({

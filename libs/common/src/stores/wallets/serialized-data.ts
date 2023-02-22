@@ -1,4 +1,4 @@
-import * as t from "io-ts";
+import { z } from "zod";
 
 import {
   MigratableSerializedCosmosMultisigDemoWallet,
@@ -13,54 +13,51 @@ import {
   MigratableSerializedMultisigDemoWallet,
   MigratableSerializedMultisigWallet,
 } from "./multisig-wallet/serialized-data";
-import { ArrayIndex, Migratable, migratable, nullable } from "../helpers";
+import { ArrayIndex, migratable } from "../helpers";
 
-export const SerializedWallet = t.union([
-  MigratableSerializedMultisigWallet.currentVersion,
-  MigratableSerializedMultisigDemoWallet.currentVersion,
+export const SerializedWallet = z.union([
+  MigratableSerializedMultisigWallet.schema,
+  MigratableSerializedMultisigDemoWallet.schema,
 ]);
-export type SerializedWallet = t.TypeOf<typeof SerializedWallet>;
+export type SerializedWallet = z.infer<typeof SerializedWallet>;
 
 export const MigratableSerializedData = migratable(
-  t.type({
-    currentWalletIndex: nullable(ArrayIndex),
-    wallets: t.array(
-      t.union([
-        MigratableSerializedTerraMultisigWallet.anyVersion,
-        MigratableSerializedTerraMultisigDemoWallet.anyVersion,
-        MigratableSerializedCosmosMultisigWallet.anyVersion,
-        MigratableSerializedCosmosMultisigDemoWallet.anyVersion,
-        MigratableCosmosSinglesigWallet.anyVersion,
-        MigratableSerializedMultisigWallet.anyVersion,
-        MigratableSerializedMultisigDemoWallet.anyVersion,
+  z.object({
+    currentWalletIndex: ArrayIndex.nullable(),
+    wallets: z.array(
+      z.union([
+        MigratableSerializedTerraMultisigWallet.schema,
+        MigratableSerializedTerraMultisigDemoWallet.schema,
+        MigratableSerializedCosmosMultisigWallet.schema,
+        MigratableSerializedCosmosMultisigDemoWallet.schema,
+        MigratableCosmosSinglesigWallet.schema,
+        MigratableSerializedMultisigWallet.schema,
+        MigratableSerializedMultisigDemoWallet.schema,
       ])
     ),
   })
 ).addMigration({
-  nextVersion: t.type({
-    currentWalletIndex: nullable(ArrayIndex),
-    wallets: t.array(SerializedWallet),
+  nextSchema: z.object({
+    currentWalletIndex: ArrayIndex.nullable(),
+    wallets: z.array(SerializedWallet),
   }),
   migrate(data) {
     const wallets: SerializedWallet[] = [];
 
     data.wallets.forEach((wallet) => {
-      if (handleType(MigratableSerializedTerraMultisigWallet)) return;
-      if (handleType(MigratableSerializedTerraMultisigDemoWallet)) return;
-      if (handleType(MigratableSerializedCosmosMultisigWallet)) return;
-      if (handleType(MigratableSerializedCosmosMultisigDemoWallet)) return;
-      if (handleType(MigratableSerializedMultisigWallet)) return;
-      if (handleType(MigratableSerializedMultisigDemoWallet)) return;
+      if (handleType(MigratableSerializedTerraMultisigWallet.schema)) return;
+      if (handleType(MigratableSerializedTerraMultisigDemoWallet.schema))
+        return;
+      if (handleType(MigratableSerializedCosmosMultisigWallet.schema)) return;
+      if (handleType(MigratableSerializedCosmosMultisigDemoWallet.schema))
+        return;
+      if (handleType(MigratableSerializedMultisigWallet.schema)) return;
+      if (handleType(MigratableSerializedMultisigDemoWallet.schema)) return;
 
-      function handleType<
-        AnyVersion extends t.Any,
-        CurrentVersion extends t.Any
-      >(type: Migratable<AnyVersion, CurrentVersion>) {
-        if (type.anyVersion.is(wallet)) {
-          const migratedWallet = type.migrate(wallet);
-          if (migratedWallet) {
-            wallets.push(migratedWallet);
-          }
+      function handleType<T extends z.ZodTypeAny>(type: T) {
+        const result = type.safeParse(wallet);
+        if (result.success && result.data) {
+          wallets.push(result.data);
           return true;
         }
         return false;
@@ -74,6 +71,4 @@ export const MigratableSerializedData = migratable(
   },
 });
 
-export type SerializedData = t.TypeOf<
-  typeof MigratableSerializedData.currentVersion
->;
+export type SerializedData = z.infer<typeof MigratableSerializedData.schema>;

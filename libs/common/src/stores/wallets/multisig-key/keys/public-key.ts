@@ -1,7 +1,8 @@
-import * as t from "io-ts";
+import { z } from "zod";
 
-export const Secp256k1PublicKey = t.type({
-  type: t.literal("tendermint/PubKeySecp256k1"),
-  value: t.string,
+export const Secp256k1PublicKey = z.object({
+  type: z.literal("tendermint/PubKeySecp256k1"),
+  value: z.string(),
 });
-export type Secp256k1PublicKey = t.TypeOf<typeof Secp256k1PublicKey>;
+
+export type Secp256k1PublicKey = z.infer<typeof Secp256k1PublicKey>;

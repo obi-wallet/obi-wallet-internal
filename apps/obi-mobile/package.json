@@ -59,11 +59,8 @@
     "crypto-js": "*",
     "eventemitter3": "*",
     "fastestsmallesttextencoderdecoder": "*",
-    "fp-ts": "*",
     "fuse.js": "*",
     "invariant": "*",
-    "io-ts": "*",
-    "io-ts-types": "*",
     "isomorphic-unfetch": "*",
     "jscrypto": "*",
     "long": "*",
@@ -119,7 +116,7 @@
     "scrypt-js": "*",
     "secp256k1": "*",
     "tiny-invariant": "*",
-    "yup": "*"
+    "zod": "*"
   },
   "devDependencies": {
     "@nrwl/react-native": "*"

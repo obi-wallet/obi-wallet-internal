@@ -10,16 +10,16 @@ import {
   Tx,
 } from "@terra-money/terra.js";
 import { AxiosError } from "axios";
-import * as t from "io-ts";
+import { z } from "zod";
 
 import { getTxGasOptions } from "./gas-information";
 import { TerraChain, terraChains } from "../../chains";
 import { withLcdClient } from "../../clients";
 import { lendFees } from "../../fee-lender-worker";
 
-export const SdkError = t.type({
-  code: t.number,
-  message: t.string,
+export const SdkError = z.object({
+  code: z.number(),
+  message: z.string(),
 });
 
 export async function createAndSignSinglesigTransaction({
@@ -99,8 +99,9 @@ export async function createMultisigTransaction({
     const error = e as AxiosError;
     const data = error.response?.data;
 
-    if (SdkError.is(data)) {
-      console.error(data.message);
+    const result = SdkError.safeParse(data);
+    if (result.success) {
+      console.error(result.data.message);
     }
 
     throw e;
@@ -185,7 +186,8 @@ export async function getAccount({
     const error = e as AxiosError;
     const data = error.response?.data;
 
-    if (SdkError.is(data) && data.message.includes("code = NotFound")) {
+    const result = SdkError.safeParse(data);
+    if (result.success && result.data.message.includes("code = NotFound")) {
       return null;
     }
 

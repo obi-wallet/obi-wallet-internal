@@ -1,45 +1,18 @@
-import * as t from "io-ts";
+import { z } from "zod";
 
-export const UnsafeDurationInDays = t.type({
-  days: t.number,
+export const DurationInDays = z.object({
+  days: z.number().int(),
 });
 
-export const DurationInDays = t.intersection([
-  UnsafeDurationInDays,
-  t.type({
-    days: t.Int,
-  }),
-]);
-
-export const UnsafeDurationInMonths = t.type({
-  months: t.number,
+export const DurationInMonths = z.object({
+  months: z.number().int(),
 });
 
-export const DurationInMonths = t.intersection([
-  UnsafeDurationInMonths,
-  t.type({
-    months: t.Int,
-  }),
-]);
-
-export const UnsafeDurationInYears = t.type({
-  years: t.number,
+export const DurationInYears = z.object({
+  years: z.number().int(),
 });
 
-export const DurationInYears = t.intersection([
-  UnsafeDurationInYears,
-  t.type({
-    years: t.Int,
-  }),
-]);
-
-export const UnsafeDuration = t.union([
-  UnsafeDurationInDays,
-  UnsafeDurationInMonths,
-  UnsafeDurationInYears,
-]);
-
-export const Duration = t.union([
+export const Duration = z.union([
   DurationInDays,
   DurationInMonths,
   DurationInYears,

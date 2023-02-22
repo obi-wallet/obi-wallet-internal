@@ -18,6 +18,7 @@
     "@fortawesome/react-fontawesome": "*",
     "@fortawesome/react-native-fontawesome": "*",
     "@gorhom/bottom-sheet": "*",
+    "@hookform/resolvers": "*",
     "@jest/create-cache-key-function": "*",
     "@keplr-wallet/background": "*",
     "@keplr-wallet/common": "*",
@@ -62,7 +63,6 @@
     "fastestsmallesttextencoderdecoder": "*",
     "fuse.js": "*",
     "invariant": "*",
-    "io-ts": "*",
     "isomorphic-unfetch": "*",
     "jscrypto": "*",
     "long": "*",
@@ -82,6 +82,7 @@
     "react": "*",
     "react-cosmos": "*",
     "react-error-boundary": "*",
+    "react-hook-form": "*",
     "react-intl": "*",
     "react-native": "0.71.2",
     "react-native-asset": "*",
@@ -115,7 +116,8 @@
     "rooks": "*",
     "scrypt-js": "*",
     "secp256k1": "*",
-    "tiny-invariant": "*"
+    "tiny-invariant": "*",
+    "zod": "*"
   },
   "devDependencies": {
     "@nrwl/react-native": "*"

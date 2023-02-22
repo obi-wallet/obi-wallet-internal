@@ -1,15 +1,15 @@
-import * as t from "io-ts";
+import { z } from "zod";
 
 import { Secp256k1PublicKey } from "../public-key";
 
-export const SerializedCloudKeyProvider = t.literal("google-drive");
+export const SerializedCloudKeyProvider = z.literal("google-drive");
 
-export const SerializedCloudKeyPayload = t.type({
+export const SerializedCloudKeyPayload = z.object({
   provider: SerializedCloudKeyProvider,
   publicKey: Secp256k1PublicKey,
-  privateKey: t.string,
+  privateKey: z.string(),
 });
 
-export type SerializedCloudKeyPayload = t.TypeOf<
+export type SerializedCloudKeyPayload = z.infer<
   typeof SerializedCloudKeyPayload
 >;

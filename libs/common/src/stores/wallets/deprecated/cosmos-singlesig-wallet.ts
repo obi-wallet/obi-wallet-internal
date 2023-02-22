@@ -1,30 +1,19 @@
-import * as t from "io-ts";
+import { z } from "zod";
 
 import { migratable } from "../../helpers";
 
 export const MigratableCosmosSinglesigWalletType = migratable(
-  t.literal("singlesig")
+  z.literal("singlesig")
 ).addMigration({
-  nextVersion: t.literal("cosmos-singlesig"),
+  nextSchema: z.literal("cosmos-singlesig"),
   migrate() {
     return "cosmos-singlesig" as const;
   },
 });
 
 export const MigratableCosmosSinglesigWallet = migratable(
-  t.type({
-    type: MigratableCosmosSinglesigWalletType.anyVersion,
-    data: t.string,
+  z.object({
+    type: MigratableCosmosSinglesigWalletType.schema,
+    data: z.string(),
   })
-).addMigration({
-  nextVersion: t.type({
-    type: MigratableCosmosSinglesigWalletType.currentVersion,
-    data: t.string,
-  }),
-  migrate(data) {
-    return {
-      type: MigratableCosmosSinglesigWalletType.migrate(data.type),
-      data: data.data,
-    };
-  },
-});
+);

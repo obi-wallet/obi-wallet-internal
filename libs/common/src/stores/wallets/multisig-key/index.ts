@@ -1,6 +1,7 @@
 import { action, computed, makeObservable, observable } from "mobx";
 
 import {
+  isUsableKey,
   KeyType,
   SerializedKey,
   SerializedMultisigKey,
@@ -101,7 +102,7 @@ export class MultisigKey implements Draftable {
     type: T
   ): (SerializedKey & { type: T }) | undefined {
     return this.keys.find((key) => {
-      return SerializedKey.is(key) && key.type === type;
+      return isUsableKey(key) && key.type === type;
     }) as (SerializedKey & { type: T }) | undefined;
   }
 
@@ -209,7 +210,7 @@ export class MultisigKey implements Draftable {
 
   public serialize(): SerializedMultisigKey {
     return {
-      keys: this.keys,
+      keys: [...this.keys],
       threshold: this._threshold,
     };
   }
@@ -246,7 +247,7 @@ export class MultisigKey implements Draftable {
 function getTypeOfKey(
   key: SerializedKey | SerializedPendingRecoveryKey
 ): string {
-  if (SerializedKey.is(key)) {
+  if (isUsableKey(key)) {
     return key.type;
   } else {
     return key.payload.type;

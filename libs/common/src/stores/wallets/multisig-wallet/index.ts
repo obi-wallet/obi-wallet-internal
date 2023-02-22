@@ -1,4 +1,3 @@
-import * as E from "fp-ts/Either";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import * as MultisigWalletSerializedData from "./serialized-data";
@@ -9,7 +8,6 @@ import {
 } from "./serialized-data";
 import { cosmosChains, isTerraChain, terraChains } from "../../../chains";
 import { Entities } from "../../entities";
-import { ArrayIndex } from "../../helpers";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
 import { GatekeeperConfig } from "../gatekeeper-config";
 import { Beneficiary, FlexAccount } from "../gatekeeper-config/serialized-data";
@@ -135,8 +133,7 @@ export class MultisigWallet extends AbstractWallet {
   @computed
   public get currentAccountIndex() {
     if (!this.currentAccountId) return null;
-    const index = this.getAccounts().ids.indexOf(this.currentAccountId);
-    return E.getOrElseW(() => null)(ArrayIndex.decode(index));
+    return this.getAccounts().ids.indexOf(this.currentAccountId);
   }
 
   @action
