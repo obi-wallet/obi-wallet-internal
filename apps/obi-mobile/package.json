@@ -116,7 +116,6 @@
     "scrypt-js": "*",
     "secp256k1": "*",
     "tiny-invariant": "*",
-    "yup": "*",
     "zod": "*"
   },
   "devDependencies": {

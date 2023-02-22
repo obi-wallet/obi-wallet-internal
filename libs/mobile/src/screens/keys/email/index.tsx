@@ -1,5 +1,5 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { MultisigKey, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { randomBytes } from "crypto";
@@ -10,7 +10,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, Linking, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import secp256k1 from "secp256k1";
-import * as yup from "yup";
+import { z } from "zod";
 
 import {
   OnboardingRoute,
@@ -69,11 +69,9 @@ export interface EmailKeyProps {
   onSubmit(): void;
 }
 
-const schema = yup
-  .object({
-    email: yup.string().email().required(),
-  })
-  .required();
+const schema = z.object({
+  email: z.string().email(),
+});
 
 export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   draftId,
@@ -87,7 +85,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   const intl = useIntl();
 
   const { control, handleSubmit, formState } = useForm({
-    resolver: yupResolver(schema),
+    resolver: zodResolver(schema),
   });
 
   function encodeForMailto(text: string): string {
