@@ -1,13 +1,13 @@
-import * as t from "io-ts";
+import { z } from "zod";
 
 import { Secp256k1PublicKey } from "../public-key";
 
-export const SerializedPhoneKeyPayload = t.type({
+export const SerializedPhoneKeyPayload = z.object({
   publicKey: Secp256k1PublicKey,
-  phoneNumber: t.string,
-  securityQuestion: t.string,
+  phoneNumber: z.string(),
+  securityQuestion: z.string(),
 });
 
-export type SerializedPhoneKeyPayload = t.TypeOf<
+export type SerializedPhoneKeyPayload = z.infer<
   typeof SerializedPhoneKeyPayload
 >;

@@ -1,98 +1,64 @@
-import * as t from "io-ts";
+import { z } from "zod";
 
 import { migratable } from "../../helpers";
 import { SerializedMultisigKey } from "../multisig-key/keys";
 import { Secp256k1PublicKey } from "../multisig-key/keys/public-key";
 
 export const MigratableSerializedProxyAddress = migratable(
-  t.type({
-    address: t.string,
-    codeId: t.number,
+  z.object({
+    address: z.string(),
+    codeId: z.number().int().positive(),
   })
 );
 
-export type SerializedProxyAddress = t.TypeOf<
-  typeof MigratableSerializedProxyAddress.currentVersion
+export type SerializedProxyAddress = z.infer<
+  typeof MigratableSerializedProxyAddress.schema
 >;
 
-export const Chain = t.union([
-  t.literal("uni-3"),
-  t.literal("juno-1"),
-  t.literal("pisco-1"),
-  t.literal("phoenix-1"),
+export const Chain = z.union([
+  z.literal("uni-3"),
+  z.literal("juno-1"),
+  z.literal("pisco-1"),
+  z.literal("phoenix-1"),
 ]);
 
-export const SinglesigWallet = t.type({
+export const SinglesigWallet = z.object({
   publicKey: Secp256k1PublicKey,
-  privateKey: t.string,
+  privateKey: z.string(),
 });
 
-export type SinglesigWallet = t.TypeOf<typeof SinglesigWallet>;
+export type SinglesigWallet = z.infer<typeof SinglesigWallet>;
 
 export const MigratableSerializedMultisigWalletData = migratable(
-  t.type({
+  z.object({
     chain: Chain,
     owner: SerializedMultisigKey,
-    proxyAddress: MigratableSerializedProxyAddress.anyVersion,
+    proxyAddress: MigratableSerializedProxyAddress.schema,
   })
-).addMigration({
-  nextVersion: t.type({
-    chain: Chain,
-    owner: SerializedMultisigKey,
-    proxyAddress: MigratableSerializedProxyAddress.currentVersion,
-  }),
-  migrate(data) {
-    return {
-      ...data,
-      proxyAddress: MigratableSerializedProxyAddress.migrate(data.proxyAddress),
-    };
-  },
-});
+);
 
-export type SerializedMultisigWalletData = t.TypeOf<
-  typeof MigratableSerializedMultisigWalletData.currentVersion
+export type SerializedMultisigWalletData = z.infer<
+  typeof MigratableSerializedMultisigWalletData.schema
 >;
 
 export const MigratableSerializedMultisigWallet = migratable(
-  t.type({
-    type: t.literal("multisig"),
-    data: MigratableSerializedMultisigWalletData.anyVersion,
+  z.object({
+    type: z.literal("multisig"),
+    data: MigratableSerializedMultisigWalletData.schema,
   })
-).addMigration({
-  nextVersion: t.type({
-    type: t.literal("multisig"),
-    data: MigratableSerializedMultisigWalletData.currentVersion,
-  }),
-  migrate(data) {
-    return {
-      ...data,
-      data: MigratableSerializedMultisigWalletData.migrate(data.data),
-    };
-  },
-});
+);
 
-export type SerializedMultisigWallet = t.TypeOf<
-  typeof MigratableSerializedMultisigWallet.currentVersion
+export type SerializedMultisigWallet = z.infer<
+  typeof MigratableSerializedMultisigWallet.schema
 >;
 
 export const MigratableSerializedMultisigDemoWallet = migratable(
-  t.type({
-    type: t.literal("multisig-demo"),
-    data: MigratableSerializedMultisigWalletData.anyVersion,
+  z.object({
+    type: z.literal("multisig-demo"),
+    data: MigratableSerializedMultisigWalletData.schema,
   })
-).addMigration({
-  nextVersion: t.type({
-    type: t.literal("multisig-demo"),
-    data: MigratableSerializedMultisigWalletData.currentVersion,
-  }),
-  migrate(data) {
-    return {
-      ...data,
-      data: MigratableSerializedMultisigWalletData.migrate(data.data),
-    };
-  },
-});
+);
 
-export type SerializedMultisigDemoWallet = t.TypeOf<
-  typeof MigratableSerializedMultisigDemoWallet.currentVersion
+export type SerializedMultisigDemoWallet = z.infer<
+  typeof MigratableSerializedMultisigDemoWallet.schema
 >;

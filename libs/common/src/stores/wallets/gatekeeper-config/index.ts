@@ -1,12 +1,9 @@
-import * as E from "fp-ts/Either";
-import { pipe } from "fp-ts/function";
 import { action, makeObservable, observable } from "mobx";
 
 import {
   Beneficiary,
   FlexAccount,
   SerializedGatekeeperConfig,
-  UnsafeBeneficiary,
 } from "./serialized-data";
 import { Draftable } from "../../drafts/draft";
 import { Entities } from "../../entities";
@@ -25,20 +22,10 @@ export class GatekeeperConfig implements Draftable {
   }
 
   @action
-  public addBeneficiary(beneficiary: UnsafeBeneficiary) {
-    pipe(
-      Beneficiary.decode(beneficiary),
-      E.match(
-        (errors) => {
-          console.error("Invalid Beneficiary", errors);
-        },
-        (entity) => {
-          this.beneficiaries.add({
-            entity,
-          });
-        }
-      )
-    );
+  public addBeneficiary(beneficiary: Beneficiary) {
+    this.beneficiaries.add({
+      entity: beneficiary,
+    });
   }
 
   @action
@@ -68,8 +55,8 @@ export class GatekeeperConfig implements Draftable {
 
   public serialize(): SerializedGatekeeperConfig {
     return {
-      beneficiaries: this.beneficiaries.entities,
-      flexAccounts: this.flexAccounts.entities,
+      beneficiaries: [...this.beneficiaries.entities],
+      flexAccounts: [...this.flexAccounts.entities],
     };
   }
 

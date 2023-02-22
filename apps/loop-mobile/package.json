@@ -62,7 +62,6 @@
     "fastestsmallesttextencoderdecoder": "*",
     "fuse.js": "*",
     "invariant": "*",
-    "io-ts": "*",
     "isomorphic-unfetch": "*",
     "jscrypto": "*",
     "long": "*",

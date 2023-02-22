@@ -1,7 +1,7 @@
 import { pubkeyType } from "@cosmjs/amino";
-import * as t from "io-ts";
+import { z } from "zod";
 
-import { migratable, nullable } from "../../helpers";
+import { migratable } from "../../helpers";
 import { MultisigKey } from "../multisig-key";
 import {
   MigratableSerializedMultisigDemoWallet,
@@ -9,22 +9,22 @@ import {
   MigratableSerializedMultisigWalletData,
 } from "../multisig-wallet/serialized-data";
 
-export const SinglePublicKey = t.type({
-  type: t.string,
-  value: t.string,
+export const SinglePublicKey = z.object({
+  type: z.string(),
+  value: z.string(),
 });
 
-export const Secp256k1PublicKey = t.type({
-  type: t.literal(pubkeyType.secp256k1),
-  value: t.string,
+export const Secp256k1PublicKey = z.object({
+  type: z.literal(pubkeyType.secp256k1),
+  value: z.string(),
 });
 
 export const MigratableSerializedBiometricsPayload = migratable(
-  t.type({
-    publicKey: t.string,
+  z.object({
+    publicKey: z.string(),
   })
 ).addMigration({
-  nextVersion: t.type({
+  nextSchema: z.object({
     publicKey: Secp256k1PublicKey,
   }),
   migrate(data) {
@@ -38,16 +38,16 @@ export const MigratableSerializedBiometricsPayload = migratable(
 });
 
 export const MigratableSerializedPhoneNumberPayload = migratable(
-  t.type({
-    publicKey: t.string,
-    phoneNumber: t.string,
-    securityQuestion: t.string,
+  z.object({
+    publicKey: z.string(),
+    phoneNumber: z.string(),
+    securityQuestion: z.string(),
   })
 ).addMigration({
-  nextVersion: t.type({
+  nextSchema: z.object({
     publicKey: Secp256k1PublicKey,
-    phoneNumber: t.string,
-    securityQuestion: t.string,
+    phoneNumber: z.string(),
+    securityQuestion: z.string(),
   }),
   migrate(data) {
     return {
@@ -60,61 +60,37 @@ export const MigratableSerializedPhoneNumberPayload = migratable(
   },
 });
 
-export const SerializedSocialPayload = t.type({
+export const SerializedSocialPayload = z.object({
   publicKey: SinglePublicKey,
 });
 
 export const MigratableSerializedMultisigPayload = migratable(
-  t.type({
-    biometrics: nullable(MigratableSerializedBiometricsPayload.anyVersion),
-    phoneNumber: nullable(MigratableSerializedPhoneNumberPayload.anyVersion),
-    cloud: t.null,
+  z.object({
+    biometrics: MigratableSerializedBiometricsPayload.schema.nullable(),
+    phoneNumber: MigratableSerializedPhoneNumberPayload.schema.nullable(),
+    cloud: z.null(),
   })
-)
-  .addMigration({
-    nextVersion: t.type({
-      biometrics: nullable(MigratableSerializedBiometricsPayload.anyVersion),
-      phoneNumber: nullable(MigratableSerializedPhoneNumberPayload.anyVersion),
-      cloud: t.null,
-      social: nullable(SerializedSocialPayload),
-    }),
-    migrate(data) {
-      return {
-        ...data,
-        social: null,
-      };
-    },
-  })
-  .addMigration({
-    nextVersion: t.type({
-      biometrics: nullable(
-        MigratableSerializedBiometricsPayload.currentVersion
-      ),
-      phoneNumber: nullable(
-        MigratableSerializedPhoneNumberPayload.currentVersion
-      ),
-      cloud: t.null,
-      social: nullable(SerializedSocialPayload),
-    }),
-    migrate(data) {
-      return {
-        ...data,
-        biometrics: data.biometrics
-          ? MigratableSerializedBiometricsPayload.migrate(data.biometrics)
-          : null,
-        phoneNumber: data.phoneNumber
-          ? MigratableSerializedPhoneNumberPayload.migrate(data.phoneNumber)
-          : null,
-      };
-    },
-  });
+).addMigration({
+  nextSchema: z.object({
+    biometrics: MigratableSerializedBiometricsPayload.schema.nullable(),
+    phoneNumber: MigratableSerializedPhoneNumberPayload.schema.nullable(),
+    cloud: z.null(),
+    social: SerializedSocialPayload.nullable(),
+  }),
+  migrate(data) {
+    return {
+      ...data,
+      social: null,
+    };
+  },
+});
 
 export const MigratableSerializedProxyAddress = migratable(
-  t.string
+  z.string()
 ).addMigration({
-  nextVersion: t.type({
-    address: t.string,
-    codeId: t.number,
+  nextSchema: z.object({
+    address: z.string(),
+    codeId: z.number(),
   }),
   migrate(data) {
     return {
@@ -124,131 +100,98 @@ export const MigratableSerializedProxyAddress = migratable(
   },
 });
 
-export const SerializedProxyAddressPerChain = t.partial({
-  "uni-3": nullable(MigratableSerializedProxyAddress.currentVersion),
-  "juno-1": nullable(MigratableSerializedProxyAddress.currentVersion),
-});
+export const SerializedProxyAddressPerChain = z
+  .object({
+    "uni-3": MigratableSerializedProxyAddress.schema.nullable(),
+    "juno-1": MigratableSerializedProxyAddress.schema.nullable(),
+  })
+  .partial();
 
 export const MigratableSerializedCosmosMultisigWalletData = migratable(
-  t.type({
-    nextAdmin: MigratableSerializedMultisigPayload.anyVersion,
-    currentAdmin: nullable(MigratableSerializedMultisigPayload.anyVersion),
-    proxyAddress: nullable(MigratableSerializedProxyAddress.anyVersion),
+  z.object({
+    nextAdmin: MigratableSerializedMultisigPayload.schema,
+    currentAdmin: MigratableSerializedMultisigPayload.schema.nullable(),
+    proxyAddress: MigratableSerializedProxyAddress.schema.nullable(),
   })
 ).addMigration({
-  nextVersion: t.type({
-    nextAdmin: MigratableSerializedMultisigPayload.currentVersion,
-    currentAdmin: nullable(MigratableSerializedMultisigPayload.currentVersion),
+  nextSchema: z.object({
+    nextAdmin: MigratableSerializedMultisigPayload.schema,
+    currentAdmin: MigratableSerializedMultisigPayload.schema.nullable(),
     proxyAddresses: SerializedProxyAddressPerChain,
   }),
   migrate(data) {
     return {
-      nextAdmin: MigratableSerializedMultisigPayload.migrate(data.nextAdmin),
-      currentAdmin: data.currentAdmin
-        ? MigratableSerializedMultisigPayload.migrate(data.currentAdmin)
-        : null,
+      ...data,
       proxyAddresses: {
-        "uni-3": data.proxyAddress
-          ? MigratableSerializedProxyAddress.migrate(data.proxyAddress)
-          : null,
+        "uni-3": data.proxyAddress,
       },
     };
   },
 });
 
-export type SerializedCosmosMultisigWalletData = t.TypeOf<
-  typeof MigratableSerializedCosmosMultisigWalletData.currentVersion
+export type SerializedCosmosMultisigWalletData = z.infer<
+  typeof MigratableSerializedCosmosMultisigWalletData.schema
 >;
 
 export const MigratableSerializedCosmosMultisigWalletType = migratable(
-  t.literal("multisig")
+  z.literal("multisig")
 ).addMigration({
-  nextVersion: t.literal("cosmos-multisig"),
+  nextSchema: z.literal("cosmos-multisig"),
   migrate() {
     return "cosmos-multisig" as const;
   },
 });
 
 export const MigratableSerializedCosmosMultisigWallet = migratable(
-  t.type({
-    type: MigratableSerializedCosmosMultisigWalletType.anyVersion,
-    data: MigratableSerializedCosmosMultisigWalletData.anyVersion,
+  z.object({
+    type: MigratableSerializedCosmosMultisigWalletType.schema,
+    data: MigratableSerializedCosmosMultisigWalletData.schema,
   })
-)
-  .addMigration({
-    nextVersion: t.type({
-      type: MigratableSerializedCosmosMultisigWalletType.currentVersion,
-      data: MigratableSerializedCosmosMultisigWalletData.currentVersion,
-    }),
-    migrate(data) {
+).addMigration({
+  nextSchema: MigratableSerializedMultisigWallet.schema.nullable(),
+  migrate(data) {
+    const multisigWalletData = migrateSerializedData(data.data);
+    if (multisigWalletData) {
       return {
-        type: MigratableSerializedCosmosMultisigWalletType.migrate(data.type),
-        data: MigratableSerializedCosmosMultisigWalletData.migrate(data.data),
+        type: "multisig" as const,
+        data: multisigWalletData,
       };
-    },
-  })
-  .addMigration({
-    nextVersion: nullable(MigratableSerializedMultisigWallet.currentVersion),
-    migrate(data) {
-      const multisigWalletData = migrateSerializedData(data.data);
-      if (multisigWalletData) {
-        return MigratableSerializedMultisigWallet.migrate({
-          type: "multisig",
-          data: multisigWalletData,
-        });
-      }
-      return null;
-    },
-  });
+    }
+    return null;
+  },
+});
 
 export const MigratableSerializedCosmosMultisigDemoWalletType = migratable(
-  t.literal("multisig-demo")
+  z.literal("multisig-demo")
 ).addMigration({
-  nextVersion: t.literal("cosmos-multisig-demo"),
+  nextSchema: z.literal("cosmos-multisig-demo"),
   migrate() {
     return "cosmos-multisig-demo" as const;
   },
 });
 
 export const MigratableSerializedCosmosMultisigDemoWallet = migratable(
-  t.type({
-    type: MigratableSerializedCosmosMultisigDemoWalletType.anyVersion,
-    data: MigratableSerializedCosmosMultisigWalletData.anyVersion,
+  z.object({
+    type: MigratableSerializedCosmosMultisigDemoWalletType.schema,
+    data: MigratableSerializedCosmosMultisigWalletData.schema,
   })
-)
-  .addMigration({
-    nextVersion: t.type({
-      type: MigratableSerializedCosmosMultisigDemoWalletType.currentVersion,
-      data: MigratableSerializedCosmosMultisigWalletData.currentVersion,
-    }),
-    migrate(data) {
+).addMigration({
+  nextSchema: MigratableSerializedMultisigDemoWallet.schema.nullable(),
+  migrate(data) {
+    const multisigWalletData = migrateSerializedData(data.data);
+    if (multisigWalletData) {
       return {
-        type: MigratableSerializedCosmosMultisigDemoWalletType.migrate(
-          data.type
-        ),
-        data: MigratableSerializedCosmosMultisigWalletData.migrate(data.data),
+        type: "multisig-demo" as const,
+        data: multisigWalletData,
       };
-    },
-  })
-  .addMigration({
-    nextVersion: nullable(
-      MigratableSerializedMultisigDemoWallet.currentVersion
-    ),
-    migrate(data) {
-      const multisigWalletData = migrateSerializedData(data.data);
-      if (multisigWalletData) {
-        return MigratableSerializedMultisigDemoWallet.migrate({
-          type: "multisig-demo",
-          data: multisigWalletData,
-        });
-      }
-      return null;
-    },
-  });
+    }
+    return null;
+  },
+});
 
 export function migrateSerializedData(
   serializedData: SerializedCosmosMultisigWalletData
-): t.TypeOf<typeof MigratableSerializedMultisigWalletData.anyVersion> | null {
+): z.input<typeof MigratableSerializedMultisigWalletData.schema> | null {
   const proxyAddresses = serializedData.proxyAddresses;
   const mainnetProxyAddress = proxyAddresses["juno-1"];
   const testnetProxyAddress = proxyAddresses["uni-3"];

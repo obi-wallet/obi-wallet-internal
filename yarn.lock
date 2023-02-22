@@ -11402,13 +11402,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fp-ts@npm:^2.13.1":
-  version: 2.13.1
-  resolution: "fp-ts@npm:2.13.1"
-  checksum: 618e0028aca9ff1d52b86f438499ccab149825bdab14c678d22c3e2ccbf9d36fd1f26d463bf0ae1e63f5cd79dd54c8218af2cca0daeea68b039307b751ae9563
-  languageName: node
-  linkType: hard
-
 "fraction.js@npm:^4.2.0":
   version: 4.2.0
   resolution: "fraction.js@npm:4.2.0"
@@ -12778,27 +12771,6 @@ __metadata:
   dependencies:
     loose-envify: ^1.0.0
   checksum: cc3182d793aad82a8d1f0af697b462939cb46066ec48bbf1707c150ad5fad6406137e91a262022c269702e01621f35ef60269f6c0d7fd178487959809acdfb14
-  languageName: node
-  linkType: hard
-
-"io-ts-types@npm:^0.5.19":
-  version: 0.5.19
-  resolution: "io-ts-types@npm:0.5.19"
-  peerDependencies:
-    fp-ts: ^2.0.0
-    io-ts: ^2.0.0
-    monocle-ts: ^2.0.0
-    newtype-ts: ^0.3.2
-  checksum: 4cf8688b9fd3878bebc332f9cdf612e72ce45bcc8ab4a534d413a4f80564458482bc1c86eed997ca566e65ac85790d3c7a8ccb511f8c17108cd647e070db7790
-  languageName: node
-  linkType: hard
-
-"io-ts@npm:^2.2.20":
-  version: 2.2.20
-  resolution: "io-ts@npm:2.2.20"
-  peerDependencies:
-    fp-ts: ^2.5.0
-  checksum: 72517bf72ab1ad61b81960cb37f46e7a9f6dc84235b7d9b62f346ca84120dd89134b652fc3a0b9751129331084fd3e059349561bb96587d91ba7b40985fe7aac
   languageName: node
   linkType: hard
 
@@ -16319,15 +16291,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monocle-ts@npm:^2.3.13":
-  version: 2.3.13
-  resolution: "monocle-ts@npm:2.3.13"
-  peerDependencies:
-    fp-ts: ^2.5.0
-  checksum: dddfa5706fe1fdb068606f5ac5215a00e723d155407de491bb53591264e281ec0ea1735759db93686d9daf676b105660bf2c656ebcd51626a4bfbb8de9accb3c
-  languageName: node
-  linkType: hard
-
 "ms-rest@npm:2.5.6":
   version: 2.5.6
   resolution: "ms-rest@npm:2.5.6"
@@ -16480,16 +16443,6 @@ __metadata:
   version: 2.0.2
   resolution: "netmask@npm:2.0.2"
   checksum: c65cb8d3f7ea5669edddb3217e4c96910a60d0d9a4b52d9847ff6b28b2d0277cd8464eee0ef85133cdee32605c57940cacdd04a9a019079b091b6bba4cb0ec22
-  languageName: node
-  linkType: hard
-
-"newtype-ts@npm:^0.3.5":
-  version: 0.3.5
-  resolution: "newtype-ts@npm:0.3.5"
-  peerDependencies:
-    fp-ts: ^2.0.0
-    monocle-ts: ^2.0.0
-  checksum: 3168c0386313156f4ecf9160eec48d5506aa372d3406f6a05fde9f75b8f9549b149dea53574e9b2f201190c01fe49af8c9554481b319f0b616a4413f89af3d16
   languageName: node
   linkType: hard
 
@@ -16968,10 +16921,7 @@ __metadata:
     eslint-plugin-unicorn: ^45.0.2
     eventemitter3: ^4.0.7
     fastestsmallesttextencoderdecoder: ^1.0.22
-    fp-ts: ^2.13.1
     fuse.js: ^6.6.2
-    io-ts: ^2.2.20
-    io-ts-types: ^0.5.19
     isomorphic-unfetch: ^4.0.2
     jest: ^29.4.2
     jest-circus: ^29.4.2
@@ -16989,9 +16939,7 @@ __metadata:
     mobx: ^6.8.0
     mobx-react-lite: ^3.4.0
     mobx-utils: ^6.0.5
-    monocle-ts: ^2.3.13
     nanoid: ^3.3.4
-    newtype-ts: ^0.3.5
     node-html-parser: ^5.4.2
     nx: ^15.6.3
     os-browserify: ^0.3.0
@@ -17060,6 +17008,7 @@ __metadata:
     webpack-cli: ^5.0.1
     yargs-parser: ^21.1.1
     yup: ^1.0.0
+    zod: ^3.20.6
   languageName: unknown
   linkType: soft
 
@@ -23547,5 +23496,12 @@ __metadata:
     toposort: ^2.0.2
     type-fest: ^2.19.0
   checksum: 5944fd677c70e0d6b5ea82bd11e992d91339c8f33efddafd52dc812514309bd17ad61b7604cfac39fed52a5f23ca65b97a0b8cb1bd7186da5ad6e731ebdce7c7
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.20.6":
+  version: 3.20.6
+  resolution: "zod@npm:3.20.6"
+  checksum: 804b1934b8b5e2fa3750bec90043e8118b201f330b9957b8b768389a971acadf812d2060cf62921086512dab4af691d10490acb03333da58fc485c0791893c89
   languageName: node
   linkType: hard

@@ -1,13 +1,3 @@
-import * as t from "io-ts";
+import { z } from "zod";
 
-export interface ArrayIndexBrand {
-  readonly ArrayIndex: unique symbol;
-}
-
-export const ArrayIndex = t.brand(
-  t.Integer,
-  (n): n is t.Branded<number, ArrayIndexBrand> => {
-    return n >= 0;
-  },
-  "ArrayIndex"
-);
+export const ArrayIndex = z.number().int().nonnegative();

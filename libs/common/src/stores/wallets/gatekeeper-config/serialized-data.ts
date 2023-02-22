@@ -1,71 +1,51 @@
-import * as t from "io-ts";
+import { z } from "zod";
 
-import {
-  DateFromISOString,
-  Duration,
-  nullable,
-  Percentage,
-  UnsafeDuration,
-  UnsafePercentage,
-} from "../../helpers";
+import { Duration, Percentage } from "../../helpers";
 import { Secp256k1PublicKey } from "../multisig-key/keys/public-key";
 
-export const AccountMetaData = t.type({
-  name: t.string,
-  icon: t.string,
+export const AccountMetaData = z.object({
+  name: z.string(),
+  icon: z.string(),
 });
 
-export const UnsafeBeneficiary = t.type({
+export const Beneficiary = z.object({
   meta: AccountMetaData,
-  address: t.string,
-  dormancyThreshold: UnsafeDuration,
-  dripSchedule: t.type({
-    rate: UnsafePercentage,
-    period: UnsafeDuration,
+  address: z.string(),
+  dormancyThreshold: Duration,
+  dripSchedule: z.object({
+    rate: Percentage,
+    period: Duration,
   }),
 });
 
-export type UnsafeBeneficiary = t.TypeOf<typeof UnsafeBeneficiary>;
+export type Beneficiary = z.infer<typeof Beneficiary>;
 
-export const Beneficiary = t.intersection([
-  UnsafeBeneficiary,
-  t.type({
-    dormancyThreshold: Duration,
-    dripSchedule: t.type({
-      rate: Percentage,
-      period: Duration,
-    }),
-  }),
-]);
-
-export type Beneficiary = t.TypeOf<typeof Beneficiary>;
-
-export const SpendLimit = t.type({
-  amount: t.number,
+export const SpendLimit = z.object({
+  amount: z.number(),
   period: Duration,
 });
 
-export const AutoSign = t.type({
-  endTime: DateFromISOString,
+export const AutoSign = z.object({
+  endTime: z.string().datetime(),
   // TODO: serialized revoke tx ready to broadcast. Although that might not need to be persisted actually.
 });
 
-export const FlexAccount = t.type({
+export const FlexAccount = z.object({
   meta: AccountMetaData,
-  address: t.string,
+  address: z.string(),
   publicKey: Secp256k1PublicKey,
-  privateKey: t.string,
-  spendLimit: nullable(SpendLimit),
-  autoSign: nullable(AutoSign),
+  privateKey: z.string(),
+  spendLimit: SpendLimit.nullable(),
+  autoSign: AutoSign.nullable(),
 });
 
-export type FlexAccount = t.TypeOf<typeof FlexAccount>;
+export type FlexAccount = z.infer<typeof FlexAccount>;
 
-export const SerializedGatekeeperConfig = t.type({
-  beneficiaries: t.readonlyArray(Beneficiary),
-  flexAccounts: t.readonlyArray(FlexAccount),
+export const SerializedGatekeeperConfig = z.object({
+  beneficiaries: z.array(Beneficiary),
+  flexAccounts: z.array(FlexAccount),
 });
 
-export type SerializedGatekeeperConfig = t.TypeOf<
+export type SerializedGatekeeperConfig = z.infer<
   typeof SerializedGatekeeperConfig
 >;
