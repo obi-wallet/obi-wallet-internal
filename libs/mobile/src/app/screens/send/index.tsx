@@ -18,6 +18,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Modal from "react-native-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
@@ -33,7 +34,6 @@ import { TextInput } from "../../text-input";
 import { Back } from "../components/back";
 import { BottomSheetBackdrop } from "../components/bottomSheetBackdrop";
 import { CoinIcon } from "../components/coin-icon";
-import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
 import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
 import { RefreshableFlatList } from "../components/refreshable-flat-list";
 import { isSmallScreenNumber } from "../components/screen-size";
@@ -111,7 +111,7 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
   const isObi = configStore.isObi();
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }}>
+    <KeyboardAwareScrollView contentContainerStyle={{ flex: 1 }}>
       <SafeAreaView
         style={{
           backgroundColor: theme.colors.background,
@@ -580,7 +580,7 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
           </BottomSheetView>
         </BottomSheet>
       </SafeAreaView>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 });
 

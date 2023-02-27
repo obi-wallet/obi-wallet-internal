@@ -11,6 +11,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
@@ -22,7 +23,6 @@ import {
 import { InlineButton } from "../../../app/button";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
-import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
 import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
 import { TextInput } from "../../../app/text-input";
@@ -127,8 +127,8 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
     }
   }
   return (
-    <KeyboardAvoidingView
-      style={{
+    <KeyboardAwareScrollView
+      contentContainerStyle={{
         flex: 1,
       }}
     >
@@ -275,6 +275,6 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
           </View>
         </View>
       </SafeAreaView>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 });

@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, Linking, TouchableOpacity, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 import secp256k1 from "secp256k1";
 import { z } from "zod";
@@ -20,7 +21,6 @@ import {
 } from "../../..";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
-import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
 import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
 import { TextInput } from "../../../app/text-input";
@@ -192,8 +192,8 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   }
 
   return (
-    <KeyboardAvoidingView
-      style={{
+    <KeyboardAwareScrollView
+      contentContainerStyle={{
         flex: 1,
       }}
     >
@@ -331,6 +331,6 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
           </View>
         </View>
       </SafeAreaView>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 });

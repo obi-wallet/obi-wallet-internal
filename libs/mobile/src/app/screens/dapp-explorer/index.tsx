@@ -17,7 +17,6 @@ import { useState } from "react";
 import { useIntl } from "react-intl";
 import {
   Button,
-  KeyboardAvoidingView,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -26,6 +25,7 @@ import {
   View,
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
@@ -64,19 +64,14 @@ export const DappExplorer = observer(function DappExplorer() {
 
   return (
     <SafeAreaView style={{ backgroundColor: theme.colors.background, flex: 1 }}>
-      <KeyboardAvoidingView
-        style={{
-          marginBottom: safeArea.bottom,
-          height: "100%",
-          paddingBottom: 10,
+      <KeyboardAwareScrollView
+        contentContainerStyle={{
+          flex: 1,
         }}
-        behavior="height"
-        keyboardVerticalOffset={safeArea.bottom + 20}
       >
         <View
           style={{
             flexDirection: "row",
-            // backgroundColor: "yellow",
             justifyContent: "space-between",
             alignItems: "center",
             paddingHorizontal: 10,
@@ -146,7 +141,7 @@ export const DappExplorer = observer(function DappExplorer() {
           </TouchableOpacity>
         </View>
         {showConnections ? <ConnectionsScreen /> : <AppsScreen />}
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 });
@@ -438,10 +433,10 @@ const AppsScreen = observer(function AppsScreen() {
             backgroundColor: isLoop ? "#6959E6" : "transparent",
             borderColor: isLoop ? "transparent" : "white",
             borderWidth: 1,
-
             padding: 1,
             borderRadius: isLoop ? 12 : 32,
             flexDirection: "row",
+            marginBottom: 20,
           }}
         >
           <TextInput

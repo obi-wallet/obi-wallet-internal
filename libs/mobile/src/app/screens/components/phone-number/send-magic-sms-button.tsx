@@ -27,11 +27,15 @@ export const SendMagicSmsButton = observer(function SendMagicSmsButton({
   const isObi = configStore.isObi();
 
   return (
-    <View>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "flex-end",
+      }}
+    >
       {description ? (
         <View
           style={{
-            flex: 1,
             flexDirection: "row",
             alignItems: "center",
           }}

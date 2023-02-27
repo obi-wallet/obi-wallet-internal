@@ -1,11 +1,11 @@
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Back } from "./back";
 import { Background } from "./background";
-import { KeyboardAvoidingView } from "./keyboard-avoiding-view";
 import { useStore } from "../../stores";
 
 export const OnboardingScreenContainer = observer(
@@ -17,8 +17,8 @@ export const OnboardingScreenContainer = observer(
       <SafeAreaView
         style={{ flex: 1, backgroundColor: isObi ? "#1A1A1A" : "" }}
       >
-        <KeyboardAvoidingView
-          style={{
+        <KeyboardAwareScrollView
+          contentContainerStyle={{
             flex: 1,
           }}
         >
@@ -39,7 +39,7 @@ export const OnboardingScreenContainer = observer(
             />
             {children}
           </View>
-        </KeyboardAvoidingView>
+        </KeyboardAwareScrollView>
       </SafeAreaView>
     );
   }

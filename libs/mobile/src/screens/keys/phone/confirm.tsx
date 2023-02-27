@@ -12,7 +12,6 @@ import InsuranceLogo from "./assets/insurance-logo.svg";
 import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
-import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
 import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
 import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
@@ -102,8 +101,8 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
     }, [verifyButtonDisabled, setVerifyButtonDisabled, key]);
 
     return (
-      <KeyboardAvoidingView
-        style={{
+      <KeyboardAwareScrollView
+        contentContainerStyle={{
           flex: 1,
         }}
       >
@@ -231,7 +230,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
             </View>
           </KeyboardAwareScrollView>
         </SafeAreaView>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     );
   }
 );

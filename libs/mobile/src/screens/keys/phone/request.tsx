@@ -170,12 +170,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <Background />
-        <KeyboardAwareScrollView
-          style={{
-            flex: 1,
-          }}
-          contentContainerStyle={{ flexGrow: 1 }}
-        >
+        <KeyboardAwareScrollView contentContainerStyle={{ flex: 1 }}>
           <View
             style={{
               flexGrow: 1,
