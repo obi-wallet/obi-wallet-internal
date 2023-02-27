@@ -13,7 +13,12 @@ import { GatekeeperConfig } from "../gatekeeper-config";
 import { Beneficiary, FlexAccount } from "../gatekeeper-config/serialized-data";
 import { MultisigKey } from "../multisig-key";
 
-export { MultisigWalletSerializedData };
+export {
+  Beneficiary,
+  FlexAccount,
+  SinglesigWallet,
+  MultisigWalletSerializedData,
+};
 
 export class MultisigWallet extends AbstractWallet {
   protected readonly _id: string;

@@ -4,7 +4,15 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { GatekeeperConfig, Text, TextInput } from "@obi-wallet/common";
+import {
+  GatekeeperConfig,
+  EntityId,
+  Text,
+  TextInput,
+  Beneficiary,
+  FlexAccount,
+  SinglesigWallet,
+} from "@obi-wallet/common";
 import Slider from "@react-native-community/slider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -23,7 +31,6 @@ import {
 import * as Animatable from "react-native-animatable";
 import { SvgProps } from "react-native-svg";
 import { useDebouncedValue } from "rooks";
-
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import KeyRoundIcon from "./assets/key-round-icon.svg";
@@ -48,17 +55,6 @@ export type AccountsOverviewScreenProps = NativeStackScreenProps<
 
 export const AccountsOverviewScreen = observer<AccountsOverviewScreenProps>(
   function AccountsOverviewScreen({ navigation }) {
-    const { draftsStore } = useStore();
-    const wallet = useMultisigWallet();
-
-    const draftId = getGatekeeperConfigDraftId(wallet);
-    const draft = draftsStore.get<GatekeeperConfig>({
-      id: draftId,
-    });
-
-    const accounts = wallet.getAccounts(draft.value);
-    console.log(accounts);
-
     return (
       <>
         <Background />
@@ -79,6 +75,9 @@ export const AccountsOverviewScreen = observer<AccountsOverviewScreenProps>(
                   padding: 16,
                   borderRadius: 100,
                 }}
+                onPress={() => {
+                  navigation.navigate(AccountsRoute.AddAccount);
+                }}
               >
                 <FontAwesomeIcon icon={faPlus} style={{ color: "#F6F5FF" }} />
               </TouchableOpacity>
@@ -86,19 +85,6 @@ export const AccountsOverviewScreen = observer<AccountsOverviewScreenProps>(
           </View>
         </NetworkAccountPickerLayout>
       </>
-    );
-
-    return (
-      <View style={{ marginTop: 100 }}>
-        <Text>{JSON.stringify(accounts, null, 2)}</Text>
-        <Button
-          flavor="blue"
-          label="Add"
-          onPress={() => {
-            navigation.navigate(AccountsRoute.AddAccount);
-          }}
-        />
-      </View>
     );
   }
 );
@@ -173,28 +159,44 @@ const AccountScreenInner = observer(function AccountScreenInner() {
 });
 
 const AccountsList = observer(function AccountsList() {
-  const [itemOpened, setItemOpened] = useState<number | null>(null);
-  console.log({ itemOpened });
+  const { draftsStore } = useStore();
+  const wallet = useMultisigWallet();
+
+  const draftId = getGatekeeperConfigDraftId(wallet);
+  const draft = draftsStore.get<GatekeeperConfig>({
+    id: draftId,
+  });
+
+  const accounts = wallet.getAccounts(draft.value);
+  const [itemOpened, setItemOpened] = useState<EntityId | null>(null);
+
+  const data = accounts.ids.map((id) => {
+    return {
+      id,
+      account: accounts.get({ id }),
+    };
+  });
+
   return (
     <FlatList
-      data={[1, 2]}
+      data={data}
       renderItem={(element) => {
         return (
           <AccountItem
-            onOpenToggle={(selected) => {
+            onOpenToggle={() => {
               LayoutAnimation.configureNext(
                 LayoutAnimation.Presets.easeInEaseOut
               );
-              selected === itemOpened
+              itemOpened === element.item.id
                 ? setItemOpened(null)
-                : setItemOpened(selected);
+                : setItemOpened(element.item.id);
             }}
-            isOpen={Number(itemOpened) === Number(element.item)}
-            account={element.item}
+            isOpen={itemOpened === element.item.id}
+            account={element.item.account}
           />
         );
       }}
-      keyExtractor={(item) => item.toString()}
+      keyExtractor={(item) => item.id}
     />
   );
 });
@@ -205,8 +207,8 @@ const AccountItem = observer(function AccountItem({
   account,
 }: {
   isOpen: boolean;
-  account: number;
-  onOpenToggle: (item: number) => void;
+  account: Beneficiary | FlexAccount | SinglesigWallet;
+  onOpenToggle: () => void;
 }) {
   const [isOn, setIsOn] = useState(true);
   const [amount, setAmount] = useState(10);
@@ -266,7 +268,7 @@ const AccountItem = observer(function AccountItem({
           alignItems: "center",
         }}
       >
-        <TouchableOpacity onPress={() => onOpenToggle(account)}>
+        <TouchableOpacity onPress={onOpenToggle}>
           <FontAwesomeIcon icon={isOpen ? faCaretUp : faCaretDown} />
         </TouchableOpacity>
       </View>
