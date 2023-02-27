@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -12,8 +13,9 @@ export function OnboardingScreenContainer({
   children: React.ReactNode;
   back?: boolean;
 }) {
+  const theme = useTheme();
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <KeyboardAvoidingView
         style={{
           flex: 1,

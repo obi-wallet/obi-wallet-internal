@@ -1,12 +1,11 @@
 import { Text } from "@obi-wallet/common";
 import { TextInput } from "@obi-wallet/mobile";
-import { ReactNode, useState, FC } from "react";
-import { Touchable, View, Image, ScrollView } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { useState, FC } from "react";
+import { View, ScrollView } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { Button } from "../../../button";
 import { OnboardingScreenContainer } from "../../components/onboarding-screen-container";
-import { isSmallScreenNumber } from "../../components/screen-size";
-import { Avatar } from "./index";
+
 import KeplrIcon from "../assets/keplr.svg";
 import StationIcon from "../assets/station.svg";
 import { SvgProps } from "react-native-svg";

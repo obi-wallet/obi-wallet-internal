@@ -16,7 +16,7 @@ import CountryPicker, {
 } from "react-native-country-picker-modal";
 import { DARK_THEME } from "react-native-country-picker-modal";
 import { CountryCode, Country } from "react-native-country-picker-modal";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native";
 
 import { isSmallScreenNumber } from "../../app/screens/components/screen-size";
 import { useStore } from "../../app/stores";

@@ -1,7 +1,7 @@
 import { Text } from "@obi-wallet/common";
 import { useState } from "react";
-import { Touchable, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { View } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { Button } from "../../../button";
 import { OnboardingScreenContainer } from "../../components/onboarding-screen-container";
 

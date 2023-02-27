@@ -25,7 +25,7 @@ import {
   TouchableHighlight,
   View,
 } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
     height: "100%",
+    backgroundColor: "blue",
   },
 });
 
@@ -61,17 +62,17 @@ export const DappExplorer = observer(function DappExplorer() {
       }
     }
   });
+  console.log({ safeArea });
 
   return (
     <SafeAreaView style={{ backgroundColor: theme.colors.background, flex: 1 }}>
       <KeyboardAvoidingView
         style={{
-          marginBottom: safeArea.bottom,
-          height: "100%",
-          paddingBottom: 10,
+          flex: 1,
+          backgroundColor: "yellow",
         }}
         behavior="height"
-        keyboardVerticalOffset={safeArea.bottom + 20}
+        keyboardVerticalOffset={safeArea.bottom}
       >
         <View
           style={{
@@ -364,13 +365,13 @@ const AppsScreen = observer(function AppsScreen() {
 
       <View
         style={{
-          marginHorizontal: 20,
+          padding: 20,
+          backgroundColor: "#272727",
         }}
       >
         <View
           style={{
             flexDirection: "row",
-            marginBottom: 20,
             alignItems: "center",
             position: "relative",
             paddingVertical: 2,

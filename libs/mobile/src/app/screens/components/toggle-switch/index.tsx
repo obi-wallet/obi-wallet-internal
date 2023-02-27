@@ -22,6 +22,12 @@ export const ToggleSwitch = ({
     }
   }, [active]);
 
+  useEffect(() => {
+    if (active) {
+      animationRef.current?.play(70, 70);
+    }
+  }, []);
+
   const toggleAnimation = () => {
     if (isOn) {
       animationRef.current?.play(115, 240);
