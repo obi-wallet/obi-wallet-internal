@@ -32,6 +32,7 @@ const legacyAccountTypeMetaData = {
   },
 };
 
+// TODO: handle Juno
 export const ImportLegacyAccountScreen =
   observer<ImportLegacyAccountScreenProps>(function ImportLegacyAccountScreen({
     navigation,
