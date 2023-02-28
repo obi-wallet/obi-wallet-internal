@@ -7,7 +7,12 @@ import {
 import { randomBytes } from "crypto";
 import secp256k1 from "secp256k1";
 
-import { terra, TerraChain, terraChains } from "../../src";
+import {
+  generateSec256k1KeyPair,
+  terra,
+  TerraChain,
+  terraChains,
+} from "../../src";
 import { getNewAccountMessage } from "../../src/networks/terra/messages";
 import { wrapMessages } from "../../src/networks/terra/wrap-messages";
 
@@ -69,12 +74,8 @@ test("createAndSignMultisigTransaction", async () => {
 });
 
 test("createAndSignMultisigTransaction (second key signs)", async () => {
-  const privateKeyBuffer2 = randomBytes(32);
-  const publicKeyBuffer2 = secp256k1.publicKeyCreate(privateKeyBuffer2);
-
-  const privateKey2 = Buffer.from(privateKeyBuffer2).toString("base64");
-  const publicKey2 = Buffer.from(publicKeyBuffer2).toString("base64");
-
+  const { publicKey: publicKey2, privateKey: privateKey2 } =
+    generateSec256k1KeyPair();
   const key2 = new RawKey(Buffer.from(privateKey2, "base64"));
 
   const multisigKey2 = new LegacyAminoMultisigPublicKey(1, [
