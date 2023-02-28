@@ -24,6 +24,7 @@ export type CreateFlexAccountScreenProps = NativeStackScreenProps<
   AccountsRoute.CreateFlexAccount
 >;
 
+// TODO: validate form
 export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
   function CreateFlexAccountScreen({ navigation }) {
     const { draftsStore } = useStore();
@@ -113,34 +114,5 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
         </View>
       </OnboardingScreenContainer>
     );
-
-    // return (
-    //   <View style={{ marginTop: 100 }}>
-    //     <Button
-    //       flavor="blue"
-    //       label="Create Flex Account"
-    //       onPress={() => {
-    //         gatekeeperConfig.value.flexAccounts.add({
-    //           entity: {
-    //             meta: {
-    //               icon: "",
-    //               name: "name",
-    //             },
-    //             address: "0x123",
-    //             autoSign: null,
-    //             spendLimit: null,
-    //             privateKey: "123",
-    //             publicKey: {
-    //               type: "tendermint/PubKeySecp256k1",
-    //               value: "123",
-    //             },
-    //           },
-    //         });
-    //
-    //         navigation.navigate(AccountsRoute.AccountsOverview);
-    //       }}
-    //     />
-    //   </View>
-    // );
   }
 );

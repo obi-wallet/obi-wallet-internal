@@ -76,6 +76,7 @@
         ],
         "react/jsx-curly-brace-presence": ["error", "never"],
         "react/jsx-pascal-case": "error",
+        "react/no-unescaped-entities": "off",
 
         "unicorn/filename-case": [
           "error",
