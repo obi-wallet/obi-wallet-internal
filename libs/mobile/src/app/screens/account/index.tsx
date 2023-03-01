@@ -351,6 +351,10 @@ const InheritanceAccountItem = ({
   onOpenToggle: (item: number) => void;
   setActive: () => void;
 }) => {
+  const inheritancePeriodicity = ["Monthly", "Annually"];
+  const [selectedPeriodicity, setSelectedPeriodicity] = useState(
+    inheritancePeriodicity[0]
+  );
   return (
     <AccountContainer
       isOpen={false}
@@ -406,6 +410,7 @@ const InheritanceAccountItem = ({
                 keyboardType={"numeric"}
               />
             </View>
+
             <View
               style={{
                 flexDirection: "row",
@@ -438,6 +443,25 @@ const InheritanceAccountItem = ({
                 value={"12"}
                 keyboardType={"numeric"}
               />
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                flex: 1,
+                justifyContent: "space-around",
+                marginTop: 30,
+              }}
+            >
+              {inheritancePeriodicity.map((item) => (
+                <Pill
+                  label={item}
+                  active={item === selectedPeriodicity}
+                  key={item}
+                  onPress={() => {
+                    setSelectedPeriodicity(item);
+                  }}
+                />
+              ))}
             </View>
             <View style={{ margin: 15 }}>
               <Button flavor="blue" label="Confirm" />
