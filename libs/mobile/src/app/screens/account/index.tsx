@@ -1,6 +1,4 @@
 import {
-  faChevronDown,
-  faChevronUp,
   faPlus,
   faCaretUp,
   faCaretDown,
@@ -14,29 +12,24 @@ import {
   ImageBackground,
   LayoutAnimation,
   Platform,
+  TextStyle,
   UIManager,
   View,
   ViewStyle,
 } from "react-native";
 import { TouchableOpacity, TextInput } from "react-native";
-import { Animated } from "react-native";
 import KeyRoundIcon from "./assets/key-round-icon.svg";
-import RecoveryIcon from "./assets/recovery-icon.svg";
-import SpendingIcon from "./assets/spending-icon.svg";
-import InheritanceIcon from "./assets/inheritance-icon.svg";
 import { UsdBalance } from "../../balances";
 import { useStore } from "../../stores";
 import { Background } from "../components/background";
 import { NetworkAccountPickerLayout } from "../components/network-account-picker-layout";
-import { Style } from "util";
 import { Button } from "../../button";
-import { ReactNode, useEffect, useRef, useState } from "react";
-import { ToggleSwitch } from "../components/toggle-switch";
-import { SvgProps } from "react-native-svg";
+import { useState } from "react";
+
 import Slider from "@react-native-community/slider";
 import * as Animatable from "react-native-animatable";
 import { useDebouncedValue } from "rooks";
-import { values } from "ramda";
+import { StyleProp } from "react-native";
 
 export const AccountScreen = observer(function AccountScreen() {
   return (
@@ -87,7 +80,7 @@ export const AccountScreenInner = observer(function AccountScreenInner() {
           resizeMode="cover"
           borderRadius={16}
         >
-          <TouchableOpacity style={{ position: "absolute", top: 0, left: 0 }}>
+          <TouchableOpacity style={{ position: "absolute", top: 6, left: 6 }}>
             <KeyRoundIcon />
           </TouchableOpacity>
           <View
@@ -138,23 +131,51 @@ export const AccountScreenInner = observer(function AccountScreenInner() {
 
 const AccountsList = () => {
   const [itemOpened, setItemOpened] = useState<number | null>(null);
+  const [activeAccount, setActiveAccount] = useState<number | null>(null);
   console.log({ itemOpened });
   return (
     <FlatList
-      data={[1, 2]}
+      data={[1, 2, 3, 4, 5, 6]}
       renderItem={(element) => {
+        console.log({ element });
+        if (element.item < 3)
+          return (
+            <FlexAccountItem
+              onOpenToggle={(selected) => {
+                LayoutAnimation.configureNext(
+                  LayoutAnimation.Presets.easeInEaseOut
+                );
+                selected === itemOpened
+                  ? setItemOpened(null)
+                  : setItemOpened(selected);
+              }}
+              isOpen={Number(itemOpened) === Number(element.item)}
+              account={element.item}
+              active={activeAccount === element.item}
+              setActive={() => setActiveAccount(element.item)}
+            />
+          );
+        if (element.item === 3)
+          return (
+            <InheritanceAccountItem
+              onOpenToggle={(selected) => {
+                LayoutAnimation.configureNext(
+                  LayoutAnimation.Presets.easeInEaseOut
+                );
+                selected === itemOpened
+                  ? setItemOpened(null)
+                  : setItemOpened(selected);
+              }}
+              isOpen={Number(itemOpened) === Number(element.item)}
+              account={element.item}
+              active={activeAccount === element.item}
+              setActive={() => setActiveAccount(element.item)}
+            />
+          );
         return (
-          <AccountItem
-            onOpenToggle={(selected) => {
-              LayoutAnimation.configureNext(
-                LayoutAnimation.Presets.easeInEaseOut
-              );
-              selected === itemOpened
-                ? setItemOpened(null)
-                : setItemOpened(selected);
-            }}
-            isOpen={Number(itemOpened) === Number(element.item)}
-            account={element.item}
+          <LegacyAccountItem
+            active={activeAccount === element.item}
+            setActive={() => setActiveAccount(element.item)}
           />
         );
       }}
@@ -162,41 +183,27 @@ const AccountsList = () => {
     />
   );
 };
-
-const AccountItem = ({
-  isOpen = true,
-  onOpenToggle,
-  account,
+const LegacyAccountItem = ({
+  active = false,
+  setActive,
 }: {
-  isOpen: boolean;
-  account: number;
-  onOpenToggle: (item: number) => void;
+  active: boolean;
+  setActive: () => void;
 }) => {
-  const [isOn, setIsOn] = useState(true);
-  const [amount, setAmount] = useState<Number>(10);
-  const [timeOpened, setTimeOpened] = useState(false);
-  const periodicity = ["Daily", "Weekly", "Monthly", "Yearly"];
-  const [selectedPeriod, setSelectedPeriod] = useState(periodicity[0]);
-
-  const [debouncedAmount, immediatelyUpdateDebouncedValue] =
-    useDebouncedValue<Number>(amount, 50);
-  if (
-    Platform.OS === "android" &&
-    UIManager.setLayoutAnimationEnabledExperimental
-  ) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-  }
-
   return (
-    <Animatable.View
-      duration={400}
+    <TouchableOpacity
       style={{
         borderWidth: 1,
         borderRadius: 7,
-        borderColor: "white",
+        borderColor: active ? "white" : "transparent",
+        backgroundColor: "#272727",
         marginVertical: 10,
         padding: 10,
       }}
+      onPress={() => {
+        setActive();
+      }}
+      disabled={active}
     >
       <View style={{ flexDirection: "row" }}>
         <View
@@ -209,35 +216,304 @@ const AccountItem = ({
         />
         <View style={{ paddingLeft: 10 }}>
           <Text style={{ color: "white", fontSize: 18, fontWeight: "600" }}>
-            MyhotWallet
+            $45.00
           </Text>
           <Text
             style={{
-              color: "white",
               fontSize: 12,
+              color: "#7E7E7E",
             }}
           >
-            parent account panterra0x
+            terra3e243r3d94d943di394d49di23d94ij
           </Text>
         </View>
       </View>
-      <View
-        style={{
-          position: "absolute",
-          width: 20,
-          aspectRatio: 1 / 1,
-          backgroundColor: "white",
-          right: 5,
-          top: 5,
-          borderRadius: 100,
-          justifyContent: "center",
-          alignItems: "center",
+    </TouchableOpacity>
+  );
+};
+const AccountContainer = ({
+  children,
+  isOpen,
+  onOpenToggle,
+  account,
+  title,
+  subTitle,
+  titleStyles = {},
+  subTitleStyles = {},
+  active = false,
+  setActive,
+}: {
+  children?: React.ReactNode;
+  isOpen: boolean;
+  onOpenToggle: (selected: number) => void;
+  account: number;
+  title: string;
+  subTitle: string;
+  titleStyles?: StyleProp<TextStyle>;
+  subTitleStyles?: StyleProp<TextStyle>;
+  active?: boolean;
+  setActive: () => void;
+  collapsible?: boolean;
+}) => {
+  // const [isOpen, setIsOpen] = useState(false);
+  return (
+    <Animatable.View
+      duration={400}
+      style={{
+        borderWidth: 1,
+        borderRadius: 7,
+        borderColor: active ? "white" : "transparent",
+        backgroundColor: "#272727",
+        marginVertical: 10,
+        padding: 10,
+      }}
+    >
+      <TouchableOpacity
+        style={{ flexDirection: "row" }}
+        onPress={() => {
+          setActive && setActive();
         }}
+        disabled={active}
       >
-        <TouchableOpacity onPress={() => onOpenToggle(account)}>
-          <FontAwesomeIcon icon={isOpen ? faCaretUp : faCaretDown} />
+        <View
+          style={{
+            width: 40,
+            aspectRatio: 1 / 1,
+            backgroundColor: "white",
+            borderRadius: 6,
+          }}
+        />
+        <View style={{ paddingLeft: 10 }}>
+          <Text
+            style={[
+              {
+                color: "white",
+                fontSize: 18,
+                fontWeight: "600",
+              },
+              titleStyles,
+            ]}
+          >
+            {title}
+          </Text>
+          <Text
+            style={[
+              {
+                fontSize: 12,
+              },
+              subTitleStyles,
+            ]}
+          >
+            {subTitle}
+          </Text>
+        </View>
+      </TouchableOpacity>
+
+      {children && (
+        <TouchableOpacity
+          onPress={() => onOpenToggle(account)}
+          style={{
+            position: "absolute",
+            right: 5,
+            top: 5,
+            paddingLeft: 10,
+            paddingBottom: 10,
+          }}
+        >
+          <View
+            style={{
+              width: 20,
+              aspectRatio: 1 / 1,
+              backgroundColor: "white",
+              borderRadius: 100,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <FontAwesomeIcon icon={isOpen ? faCaretUp : faCaretDown} />
+          </View>
         </TouchableOpacity>
-      </View>
+      )}
+      {children}
+    </Animatable.View>
+  );
+};
+const InheritanceAccountItem = ({
+  isOpen = true,
+  onOpenToggle,
+  account,
+  active = false,
+  setActive,
+}: {
+  isOpen: boolean;
+  account: number;
+  active: boolean;
+  onOpenToggle: (item: number) => void;
+  setActive: () => void;
+}) => {
+  return (
+    <AccountContainer
+      isOpen={false}
+      onOpenToggle={onOpenToggle}
+      account={account}
+      title={"Inheritor Account"}
+      subTitle={"Inheritance"}
+      subTitleStyles={{
+        color: "white",
+      }}
+      active={active}
+      setActive={setActive}
+    >
+      <>
+        {isOpen && (
+          <Animatable.View
+            duration={400}
+            animation={isOpen ? "fadeIn" : "fadeOut"}
+            style={{
+              backgroundColor: "#363636",
+              borderRadius: 7,
+              marginTop: 10,
+              paddingVertical: 10,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                marginHorizontal: 35,
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: "white",
+                  marginRight: 10,
+                  flex: 1,
+                }}
+              >
+                Inheritance triggers after how many months of inactivity?
+              </Text>
+              <TextInput
+                style={{
+                  backgroundColor: "#272727",
+                  borderRadius: 7,
+                  paddingHorizontal: 10,
+                  color: "white",
+                  fontSize: 26,
+                  fontFamily: "Poppins",
+                }}
+                value={"12"}
+                keyboardType={"numeric"}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                marginHorizontal: 35,
+                alignItems: "center",
+                marginTop: 30,
+                justifyContent: "space-between",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: "white",
+                  marginRight: 10,
+                  flex: 1,
+                }}
+              >
+                Recipient receives funds at the following rate (%):
+              </Text>
+              <TextInput
+                style={{
+                  backgroundColor: "#272727",
+                  borderRadius: 7,
+                  paddingHorizontal: 10,
+                  color: "white",
+                  fontSize: 26,
+                  fontFamily: "Poppins",
+                  alignSelf: "flex-end",
+                }}
+                value={"12"}
+                keyboardType={"numeric"}
+              />
+            </View>
+            <View style={{ margin: 15 }}>
+              <Button flavor="blue" label="Confirm" />
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    color: "#437DFF",
+                    textAlign: "center",
+                    margin: 10,
+                  }}
+                >
+                  Delete Flex Account
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Animatable.View>
+        )}
+      </>
+    </AccountContainer>
+  );
+};
+const FlexRules = ["Strict", "Limited", "Unlocked"];
+
+const FlexAccountItem = ({
+  isOpen = true,
+  onOpenToggle,
+  account,
+  active = false,
+  setActive,
+}: {
+  isOpen: boolean;
+  account: number;
+  active: boolean;
+  setActive: () => void;
+  onOpenToggle: (item: number) => void;
+}) => {
+  const [amount, setAmount] = useState<Number>(10);
+  const [timeOpened, setTimeOpened] = useState(false);
+  const periodicity = ["Daily", "Weekly", "Monthly", "Yearly"];
+  const [selectedPeriod, setSelectedPeriod] = useState(periodicity[0]);
+  const [activeFlexRule, setActiveFlexRule] = useState(FlexRules[1]);
+
+  const [debouncedAmount, immediatelyUpdateDebouncedValue] =
+    useDebouncedValue<Number>(amount, 50);
+  if (
+    Platform.OS === "android" &&
+    UIManager.setLayoutAnimationEnabledExperimental
+  ) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+  const getRuleText = () => {
+    switch (activeFlexRule) {
+      case "Unlocked":
+        return "WARNING: No keys required to sign transactions. This setting will revert after 30:00 minutes or until session expires.";
+      case "Strict":
+        return "All transactions will require X keys to complete.";
+      case "Limited":
+        return "Transactions under limit amount only require one key.";
+    }
+  };
+
+  return (
+    <AccountContainer
+      isOpen={isOpen}
+      onOpenToggle={onOpenToggle}
+      account={account}
+      title={"MyhotWallet"}
+      subTitle={`${activeFlexRule} Flex Account ${
+        activeFlexRule === FlexRules[2] ? ` ⏱ 29:58` : ""
+      }`}
+      subTitleStyles={{
+        color: activeFlexRule === FlexRules[2] ? "#FFE200" : "white",
+      }}
+      active={active}
+      setActive={setActive}
+    >
       <ProgessBar amount={70} containerStyle={{ marginVertical: 10 }} />
       <Animatable.View
         duration={400}
@@ -251,7 +527,14 @@ const AccountItem = ({
                 marginTop: 10,
               }}
             >
-              <Text style={{ color: "#fff", margin: 5, fontSize: 12 }}>
+              <Text
+                style={{
+                  color: "#fff",
+                  margin: 5,
+                  fontSize: 12,
+                  marginBottom: 20,
+                }}
+              >
                 Flex Rules
               </Text>
               <View
@@ -261,16 +544,28 @@ const AccountItem = ({
                   justifyContent: "space-around",
                 }}
               >
-                <Pill label="Strict" />
-                <Pill label="Limited" active />
-                <Pill label="Unlocked" />
+                {FlexRules.map((fr) => (
+                  <Pill
+                    label={fr}
+                    active={fr === activeFlexRule}
+                    key={fr}
+                    onPress={() => {
+                      setActiveFlexRule(fr);
+                    }}
+                  />
+                ))}
               </View>
               <View style={{ padding: 10 }}>
                 <Text style={{ color: "#fff", fontSize: 12 }}>
-                  Transactions under limit amount only require one key.
+                  {getRuleText()}
                 </Text>
               </View>
-              <View style={{ alignItems: "center" }}>
+              <View
+                style={{
+                  alignItems: "center",
+                  opacity: activeFlexRule === FlexRules[1] ? 1 : 0.5,
+                }}
+              >
                 <View style={{ flexDirection: "row" }}>
                   {!timeOpened ? (
                     <>
@@ -283,8 +578,10 @@ const AccountItem = ({
                           padding: 5,
                           paddingHorizontal: 20,
                           fontSize: 25,
+                          fontFamily: "Poppins",
                         }}
                         value={`$${amount}`}
+                        editable={activeFlexRule === FlexRules[1]}
                         onChangeText={(value) => {
                           const res = value.replace(/[^0-9.]/g, "");
                           console.log({ res });
@@ -298,6 +595,7 @@ const AccountItem = ({
                           padding: 10,
                         }}
                         onPress={() => setTimeOpened(true)}
+                        disabled={activeFlexRule !== FlexRules[1]}
                       >
                         <Text style={{ color: "#fff" }}>{selectedPeriod}</Text>
                         <FontAwesomeIcon
@@ -354,7 +652,8 @@ const AccountItem = ({
                     // console.log("slider", value);
                     setAmount(value);
                   }}
-                  value={debouncedAmount || 0}
+                  disabled={activeFlexRule !== FlexRules[1]}
+                  value={(debouncedAmount || 0) as number}
                   onSlidingComplete={(value) => {
                     console.log("slider", value);
                   }}
@@ -378,11 +677,19 @@ const AccountItem = ({
           </>
         )}
       </Animatable.View>
-    </Animatable.View>
+    </AccountContainer>
   );
 };
 
-const Pill = ({ label, active }: { label: string; active?: boolean }) => {
+const Pill = ({
+  label,
+  active,
+  onPress,
+}: {
+  label: string;
+  active?: boolean;
+  onPress?: () => void;
+}) => {
   return (
     <TouchableOpacity
       style={{
@@ -391,43 +698,9 @@ const Pill = ({ label, active }: { label: string; active?: boolean }) => {
         paddingHorizontal: 20,
         paddingVertical: 10,
       }}
+      onPress={onPress}
     >
       <Text style={{ color: "#fff", fontSize: 12 }}>{label}</Text>
-    </TouchableOpacity>
-  );
-};
-
-const FeatureItem = ({
-  Icon,
-  label,
-}: {
-  Icon: React.FC<SvgProps>;
-  label: string;
-}) => {
-  return (
-    <TouchableOpacity>
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: "#437DFF",
-            justifyContent: "center",
-            alignItems: "center",
-            borderRadius: 4,
-            width: 45,
-            aspectRatio: 1 / 1,
-          }}
-        >
-          <Icon />
-        </View>
-      </View>
-      <View style={{ alignItems: "center" }}>
-        <Text style={{ color: "white" }}>{label}</Text>
-      </View>
     </TouchableOpacity>
   );
 };

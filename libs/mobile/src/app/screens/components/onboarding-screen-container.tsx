@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Back } from "./back";
@@ -16,12 +17,10 @@ export function OnboardingScreenContainer({
   const theme = useTheme();
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <KeyboardAvoidingView
-        style={{
+      <KeyboardAwareScrollView
+        contentContainerStyle={{
           flex: 1,
         }}
-        behavior="padding"
-        keyboardVerticalOffset={-70}
       >
         <Background />
         <View
@@ -42,7 +41,7 @@ export function OnboardingScreenContainer({
           )}
           {children}
         </View>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

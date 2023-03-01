@@ -84,6 +84,7 @@
     "react-hook-form": "*",
     "react-intl": "*",
     "react-native": "0.71.2",
+    "react-native-animatable": "*",
     "react-native-asset": "*",
     "react-native-camera": "*",
     "react-native-code-push": "*",
@@ -117,9 +118,7 @@
     "scrypt-js": "*",
     "secp256k1": "*",
     "tiny-invariant": "*",
-    
-    "zod": "*",
-    "react-native-animatable": "*"
+    "zod": "*"
   },
   "devDependencies": {
     "@nrwl/react-native": "*"
