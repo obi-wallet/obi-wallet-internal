@@ -42,7 +42,7 @@ export const CreateBeneficiaryAccountScreen =
             }}
           >
             <Text style={{ color: "white", fontSize: 16, marginBottom: 15 }}>
-              Add Inheritance
+              Add Beneficiary
             </Text>
             <Avatar />
             <TextInput

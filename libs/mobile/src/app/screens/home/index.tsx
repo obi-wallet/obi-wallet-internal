@@ -53,8 +53,8 @@ import {
   HomeDrawer,
   HomeDrawerRoute,
 } from "./home-stack";
+import { AccountsScreen } from "../../../screens/accounts";
 import { useStore } from "../../stores";
-import { AccountScreen } from "../account";
 import {
   getScreenDimensions,
   isSmallScreenNumber,
@@ -171,7 +171,7 @@ export const TabNavigation = observer<TabNavigationProps>(
                 defaultMessage: "Accounts",
               }),
             }}
-            component={AccountScreen}
+            component={AccountsScreen}
           />
         ) : null}
         <HomeBottomTab.Screen

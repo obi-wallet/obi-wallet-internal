@@ -11,7 +11,7 @@ export const obiMobileConfig: Config = {
     default: "en",
   },
   features: {
-    [Feature.AccountsTab]: false,
+    [Feature.AccountsTab]: true,
     [Feature.HealthChecks]: false,
     [Feature.NftTab]: false,
     [Feature.Recovery]: true,
