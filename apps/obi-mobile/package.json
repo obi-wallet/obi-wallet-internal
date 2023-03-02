@@ -35,6 +35,7 @@
     "@react-native-community/blur": "*",
     "@react-native-community/slider": "*",
     "@react-native-google-signin/google-signin": "*",
+    "@react-native-picker/picker": "*",
     "@react-navigation/bottom-tabs": "*",
     "@react-navigation/drawer": "*",
     "@react-navigation/native": "*",

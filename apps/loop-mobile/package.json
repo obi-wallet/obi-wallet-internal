@@ -37,6 +37,7 @@
     "@react-native-firebase/analytics": "*",
     "@react-native-firebase/app": "*",
     "@react-native-google-signin/google-signin": "*",
+    "@react-native-picker/picker": "*",
     "@react-navigation/bottom-tabs": "*",
     "@react-navigation/drawer": "*",
     "@react-navigation/native": "*",
