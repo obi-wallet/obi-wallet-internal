@@ -88,6 +88,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
 
               gatekeeperConfig.value.flexAccounts.add({
                 entity: {
+                  type: "flex-account",
                   meta: {
                     icon: "",
                     name,

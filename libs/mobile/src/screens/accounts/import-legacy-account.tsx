@@ -9,7 +9,6 @@ import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import KeplrIcon from "./assets/keplr.svg";
 import StationIcon from "./assets/station.svg";
 import { Button } from "../../app/button";
-import { OnboardingScreenContainer } from "../../app/screens/components/onboarding-screen-container";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
 
 export type ImportLegacyAccountScreenProps = NativeStackScreenProps<
@@ -53,8 +52,9 @@ export const ImportLegacyAccountScreen =
                 style={{
                   color: "white",
                   fontSize: 16,
-                  marginBottom: 15,
+                  marginVertical: 15,
                   fontWeight: "bold",
+                  textAlign: "center",
                 }}
               >
                 Import Keplr Account
@@ -81,8 +81,9 @@ export const ImportLegacyAccountScreen =
                 style={{
                   color: "white",
                   fontSize: 16,
-                  marginBottom: 15,
+                  marginVertical: 15,
                   fontWeight: "bold",
+                  textAlign: "center",
                 }}
               >
                 Import Station Account
@@ -104,7 +105,7 @@ export const ImportLegacyAccountScreen =
         }
         default:
           return (
-            <Text style={{ fontSize: 14, color: "white" }}>
+            <Text style={{ fontSize: 14, color: "white", textAlign: "center" }}>
               Select which type of account you would like to import
             </Text>
           );
@@ -119,7 +120,14 @@ export const ImportLegacyAccountScreen =
             marginTop: 20,
           }}
         >
-          <Text style={{ color: "white", fontSize: 16, marginBottom: 15 }}>
+          <Text
+            style={{
+              color: "white",
+              fontSize: 16,
+              marginBottom: 15,
+              textAlign: "center",
+            }}
+          >
             Choose Account Type
           </Text>
           <View

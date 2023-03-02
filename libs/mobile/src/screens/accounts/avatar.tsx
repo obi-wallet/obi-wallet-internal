@@ -1,6 +1,8 @@
 import { observer } from "mobx-react-lite";
 import { TouchableOpacity } from "react-native";
-import { View } from "react-native";
+import { Image, View } from "react-native";
+
+import Pencil from "./assets/pencil.svg";
 
 export const Avatar = observer(function Avatar() {
   return (
@@ -14,16 +16,21 @@ export const Avatar = observer(function Avatar() {
         backgroundColor: "#272727",
       }}
     >
+      <Image
+        source={require("./assets/fire.png")}
+        style={{ maxHeight: "100%", maxWidth: "100%" }}
+      />
       <TouchableOpacity
         style={{
           width: 20,
           height: 20,
-          backgroundColor: "white",
           position: "absolute",
           right: 5,
           top: 5,
         }}
-      />
+      >
+        <Pencil />
+      </TouchableOpacity>
     </View>
   );
 });

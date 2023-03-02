@@ -118,7 +118,7 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   @action
-  public addSinglesigAccount(singlesig: SinglesigWallet) {
+  public addSinglesigWallet(singlesig: SinglesigWallet) {
     this._singlesigAccounts.add({
       entity: singlesig,
     });

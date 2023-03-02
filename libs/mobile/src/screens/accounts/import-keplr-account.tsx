@@ -57,7 +57,8 @@ export const ImportKeplrAccountScreen = observer<ImportKeplrAccountScreenProps>(
                 'Expected key to be of type "tendermint/PubKeySecp256k1"'
               );
 
-              wallet.addSinglesigAccount({
+              wallet.addSinglesigWallet({
+                type: "singlesig-wallet",
                 publicKey,
                 privateKey: key.privateKey.toString("base64"),
               });

@@ -23,6 +23,7 @@ export const Chain = z.union([
 ]);
 
 export const SinglesigWallet = z.object({
+  type: z.literal("singlesig-wallet"),
   publicKey: Secp256k1PublicKey,
   privateKey: z.string(),
 });

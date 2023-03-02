@@ -90,6 +90,7 @@ export const CreateBeneficiaryAccountScreen =
               flavor="obi"
               onPress={() => {
                 gatekeeperConfig.value.addBeneficiary({
+                  type: "beneficiary",
                   meta: {
                     icon: "",
                     name,
