@@ -5,7 +5,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text } from "@obi-wallet/common";
+import Slider from "@react-native-community/slider";
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import {
   FlatList,
@@ -18,18 +20,16 @@ import {
   ViewStyle,
 } from "react-native";
 import { TouchableOpacity, TextInput } from "react-native";
+import { StyleProp } from "react-native";
+import * as Animatable from "react-native-animatable";
+import { useDebouncedValue } from "rooks";
+
 import KeyRoundIcon from "./assets/key-round-icon.svg";
 import { UsdBalance } from "../../balances";
+import { Button } from "../../button";
 import { useStore } from "../../stores";
 import { Background } from "../components/background";
 import { NetworkAccountPickerLayout } from "../components/network-account-picker-layout";
-import { Button } from "../../button";
-import { useState } from "react";
-
-import Slider from "@react-native-community/slider";
-import * as Animatable from "react-native-animatable";
-import { useDebouncedValue } from "rooks";
-import { StyleProp } from "react-native";
 
 export const AccountScreen = observer(function AccountScreen() {
   return (
@@ -129,7 +129,7 @@ export const AccountScreenInner = observer(function AccountScreenInner() {
   );
 });
 
-const AccountsList = () => {
+const AccountsList = observer(function AccountsList() {
   const [itemOpened, setItemOpened] = useState<number | null>(null);
   const [activeAccount, setActiveAccount] = useState<number | null>(null);
   console.log({ itemOpened });
@@ -182,14 +182,14 @@ const AccountsList = () => {
       keyExtractor={(item) => item.toString()}
     />
   );
-};
-const LegacyAccountItem = ({
+});
+const LegacyAccountItem = observer(function LegacyAccountItem({
   active = false,
   setActive,
 }: {
   active: boolean;
   setActive: () => void;
-}) => {
+}) {
   return (
     <TouchableOpacity
       style={{
@@ -230,8 +230,8 @@ const LegacyAccountItem = ({
       </View>
     </TouchableOpacity>
   );
-};
-const AccountContainer = ({
+});
+const AccountContainer = observer(function AccountContainer({
   children,
   isOpen,
   onOpenToggle,
@@ -254,7 +254,7 @@ const AccountContainer = ({
   active?: boolean;
   setActive: () => void;
   collapsible?: boolean;
-}) => {
+}) {
   // const [isOpen, setIsOpen] = useState(false);
   return (
     <Animatable.View
@@ -337,8 +337,8 @@ const AccountContainer = ({
       {children}
     </Animatable.View>
   );
-};
-const InheritanceAccountItem = ({
+});
+const InheritanceAccountItem = observer(function InheritanceAccountItem({
   isOpen = true,
   onOpenToggle,
   account,
@@ -350,7 +350,7 @@ const InheritanceAccountItem = ({
   active: boolean;
   onOpenToggle: (item: number) => void;
   setActive: () => void;
-}) => {
+}) {
   const inheritancePeriodicity = ["Monthly", "Annually"];
   const [selectedPeriodicity, setSelectedPeriodicity] = useState(
     inheritancePeriodicity[0]
@@ -360,8 +360,8 @@ const InheritanceAccountItem = ({
       isOpen={false}
       onOpenToggle={onOpenToggle}
       account={account}
-      title={"Inheritor Account"}
-      subTitle={"Inheritance"}
+      title="Inheritor Account"
+      subTitle="Inheritance"
       subTitleStyles={{
         color: "white",
       }}
@@ -406,8 +406,8 @@ const InheritanceAccountItem = ({
                   fontSize: 26,
                   fontFamily: "Poppins",
                 }}
-                value={"12"}
-                keyboardType={"numeric"}
+                value="12"
+                keyboardType="numeric"
               />
             </View>
 
@@ -440,8 +440,8 @@ const InheritanceAccountItem = ({
                   fontFamily: "Poppins",
                   alignSelf: "flex-end",
                 }}
-                value={"12"}
-                keyboardType={"numeric"}
+                value="12"
+                keyboardType="numeric"
               />
             </View>
             <View
@@ -482,10 +482,10 @@ const InheritanceAccountItem = ({
       </>
     </AccountContainer>
   );
-};
+});
 const FlexRules = ["Strict", "Limited", "Unlocked"];
 
-const FlexAccountItem = ({
+const FlexAccountItem = observer(function FlexAccountItem({
   isOpen = true,
   onOpenToggle,
   account,
@@ -497,15 +497,15 @@ const FlexAccountItem = ({
   active: boolean;
   setActive: () => void;
   onOpenToggle: (item: number) => void;
-}) => {
-  const [amount, setAmount] = useState<Number>(10);
+}) {
+  const [amount, setAmount] = useState<number>(10);
   const [timeOpened, setTimeOpened] = useState(false);
   const periodicity = ["Daily", "Weekly", "Monthly", "Yearly"];
   const [selectedPeriod, setSelectedPeriod] = useState(periodicity[0]);
   const [activeFlexRule, setActiveFlexRule] = useState(FlexRules[1]);
 
   const [debouncedAmount, immediatelyUpdateDebouncedValue] =
-    useDebouncedValue<Number>(amount, 50);
+    useDebouncedValue<number>(amount, 50);
   if (
     Platform.OS === "android" &&
     UIManager.setLayoutAnimationEnabledExperimental
@@ -528,7 +528,7 @@ const FlexAccountItem = ({
       isOpen={isOpen}
       onOpenToggle={onOpenToggle}
       account={account}
-      title={"MyhotWallet"}
+      title="MyhotWallet"
       subTitle={`${activeFlexRule} Flex Account ${
         activeFlexRule === FlexRules[2] ? ` ⏱ 29:58` : ""
       }`}
@@ -703,9 +703,9 @@ const FlexAccountItem = ({
       </Animatable.View>
     </AccountContainer>
   );
-};
+});
 
-const Pill = ({
+const Pill = observer(function Pill({
   label,
   active,
   onPress,
@@ -713,7 +713,7 @@ const Pill = ({
   label: string;
   active?: boolean;
   onPress?: () => void;
-}) => {
+}) {
   return (
     <TouchableOpacity
       style={{
@@ -727,9 +727,9 @@ const Pill = ({
       <Text style={{ color: "#fff", fontSize: 12 }}>{label}</Text>
     </TouchableOpacity>
   );
-};
+});
 
-const ProgessBar = ({
+const ProgessBar = observer(function ProgessBar({
   amount,
   containerStyle,
   barStyle,
@@ -737,7 +737,7 @@ const ProgessBar = ({
   amount: number;
   containerStyle?: ViewStyle;
   barStyle?: ViewStyle;
-}) => {
+}) {
   return (
     <View
       style={{
@@ -758,5 +758,5 @@ const ProgessBar = ({
       />
     </View>
   );
-};
+});
 export * from "./create-account";

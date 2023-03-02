@@ -1,10 +1,12 @@
 import LottieView from "lottie-react-native";
-import SwitchAnimation from "./toggle-animation.json";
-import { TouchableOpacity, ViewStyle } from "react-native";
+import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
+import { TouchableOpacity, ViewStyle } from "react-native";
 import { onChange } from "react-native-reanimated";
 
-export const ToggleSwitch = ({
+import SwitchAnimation from "./toggle-animation.json";
+
+export const ToggleSwitch = observer(function ToggleSwitch({
   active,
   styles,
   onChange,
@@ -12,7 +14,7 @@ export const ToggleSwitch = ({
   active: boolean;
   styles?: ViewStyle;
   onChange?: (active: boolean) => void;
-}) => {
+}) {
   const animationRef = useRef<LottieView>(null);
   const [isOn, setIsOn] = useState(active);
   useEffect(() => {
@@ -64,4 +66,4 @@ export const ToggleSwitch = ({
       />
     </TouchableOpacity>
   );
-};
+});

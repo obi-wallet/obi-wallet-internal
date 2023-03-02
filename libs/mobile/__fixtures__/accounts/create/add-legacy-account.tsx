@@ -1,5 +1,3 @@
-import { AddLegacyAccountScreen } from "@obi-wallet/mobile";
+import { AddLegacyAccountScreen } from "../../../src/app/screens/account/create-account/add-legacy-account";
 
-export default () => {
-  return <AddLegacyAccountScreen />;
-};
+export default <AddLegacyAccountScreen />;

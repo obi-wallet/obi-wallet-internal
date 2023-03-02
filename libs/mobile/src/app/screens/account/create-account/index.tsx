@@ -1,10 +1,12 @@
 import { Text } from "@obi-wallet/common";
+import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { View } from "react-native";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, Image } from "react-native";
+
 import { Button } from "../../../button";
 import { OnboardingScreenContainer } from "../../components/onboarding-screen-container";
-
+import Pencil from "../assets/pencil.svg";
 const data = [
   {
     id: 1,
@@ -29,7 +31,7 @@ const data = [
   },
 ];
 
-export const CreateAccountScreen = () => {
+export const CreateAccountScreen = observer(function CreateAccountScreen() {
   const [selected, setSelected] = useState(1);
   const selectedItem = data.find((item) => item.id === selected);
 
@@ -85,17 +87,17 @@ export const CreateAccountScreen = () => {
         </Text>
       </View>
       <View style={{ paddingVertical: 20 }}>
-        <Button flavor="obi" onPress={() => {}} label="Confirm" />
-        <Button flavor="cancel" onPress={() => {}} label="Go Back" />
+        <Button flavor="obi" label="Confirm" />
+        <Button flavor="cancel" label="Go Back" />
       </View>
     </OnboardingScreenContainer>
   );
-};
+});
 
 export * from "./create-flex";
 export * from "./add-beneficiary";
 export * from "./add-legacy-account";
-export const Avatar = () => {
+export const Avatar = observer(function Avatar() {
   return (
     <View
       style={{
@@ -107,17 +109,22 @@ export const Avatar = () => {
         backgroundColor: "#272727",
       }}
     >
+      <Image
+        source={require("../assets/fire.png")}
+        style={{ maxHeight: "100%", maxWidth: "100%" }}
+      />
       <TouchableOpacity
         style={{
           width: 20,
           height: 20,
-          backgroundColor: "white",
+
           position: "absolute",
           right: 5,
           top: 5,
         }}
-        onPress={() => {}}
-      />
+      >
+        <Pencil />
+      </TouchableOpacity>
     </View>
   );
-};
+});

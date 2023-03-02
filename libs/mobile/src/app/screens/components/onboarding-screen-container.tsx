@@ -7,41 +7,45 @@ import { Back } from "./back";
 import { Background } from "./background";
 import { KeyboardAvoidingView } from "./keyboard-avoiding-view";
 
-export function OnboardingScreenContainer({
-  children,
-  back = true,
-}: {
-  children: React.ReactNode;
-  back?: boolean;
-}) {
-  const theme = useTheme();
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <KeyboardAwareScrollView
-        contentContainerStyle={{
-          flex: 1,
-        }}
+export const OnboardingScreenContainer = observer(
+  function OnboardingScreenContainer({
+    children,
+    back = true,
+  }: {
+    children: React.ReactNode;
+    back?: boolean;
+  }) {
+    const theme = useTheme();
+    return (
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: theme.colors.background }}
       >
-        <Background />
-        <View
-          style={{
+        <KeyboardAwareScrollView
+          contentContainerStyle={{
             flex: 1,
-            paddingHorizontal: 20,
-            justifyContent: "space-between",
           }}
         >
-          {back && (
-            <Back
-              style={{
-                marginLeft: -5,
-                padding: 5,
-                width: 25,
-              }}
-            />
-          )}
-          {children}
-        </View>
-      </KeyboardAwareScrollView>
-    </SafeAreaView>
-  );
-}
+          <Background />
+          <View
+            style={{
+              flex: 1,
+              paddingHorizontal: 20,
+              justifyContent: "space-between",
+            }}
+          >
+            {back && (
+              <Back
+                style={{
+                  marginLeft: -5,
+                  padding: 5,
+                  width: 25,
+                }}
+              />
+            )}
+            {children}
+          </View>
+        </KeyboardAwareScrollView>
+      </SafeAreaView>
+    );
+  }
+);

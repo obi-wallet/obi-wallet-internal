@@ -1,5 +1,2 @@
-import { CreateAccountScreen } from "@obi-wallet/mobile";
-
-export default () => {
-  return <CreateAccountScreen />;
-};
+import { CreateAccountScreen } from "../../../src/app/screens/account/create-account";
+export default <CreateAccountScreen />;

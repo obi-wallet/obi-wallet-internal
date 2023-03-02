@@ -1,5 +1,3 @@
-import { AddBeneficiaryAccountScreen } from "@obi-wallet/mobile";
+import { AddBeneficiaryAccountScreen } from "../../../src/app/screens/account/create-account/add-beneficiary";
 
-export default () => {
-  return <AddBeneficiaryAccountScreen />;
-};
+export default <AddBeneficiaryAccountScreen />;

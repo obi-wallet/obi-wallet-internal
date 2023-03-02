@@ -1,5 +1,3 @@
-import { CreateFlexAccountScreen } from "@obi-wallet/mobile";
+import { CreateFlexAccountScreen } from "../../../src/app/screens/account/create-account";
 
-export default () => {
-  return <CreateFlexAccountScreen />;
-};
+export default <CreateFlexAccountScreen />;
