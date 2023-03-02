@@ -1,8 +1,10 @@
+import { useTheme } from "@emotion/react";
 import { Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useState, FC } from "react";
 import { View, ScrollView } from "react-native";
 import { TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { SvgProps } from "react-native-svg";
 
 import { Button } from "../../../button";
@@ -15,7 +17,7 @@ export const AddLegacyAccountScreen = observer(
   function AddLegacyAccountScreen() {
     //accountType state
     const [accountType, setAccountType] = useState<string | null>(null);
-
+    const theme = useTheme();
     const getAccountTypeText = () => {
       switch (accountType) {
         case "Keplr": {
@@ -25,8 +27,9 @@ export const AddLegacyAccountScreen = observer(
                 style={{
                   color: "white",
                   fontSize: 16,
-                  marginBottom: 15,
+                  marginVertical: 15,
                   fontWeight: "bold",
+                  textAlign: "center",
                 }}
               >
                 Import Keplr Account
@@ -53,8 +56,9 @@ export const AddLegacyAccountScreen = observer(
                 style={{
                   color: "white",
                   fontSize: 16,
-                  marginBottom: 15,
+                  marginVertical: 15,
                   fontWeight: "bold",
+                  textAlign: "center",
                 }}
               >
                 Import Station Account
@@ -85,7 +89,12 @@ export const AddLegacyAccountScreen = observer(
       }
     };
     return (
-      <OnboardingScreenContainer back={false}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: theme.colors.background,
+        }}
+      >
         <ScrollView
           style={{
             flex: 1,
@@ -93,7 +102,14 @@ export const AddLegacyAccountScreen = observer(
             marginTop: 20,
           }}
         >
-          <Text style={{ color: "white", fontSize: 16, marginBottom: 15 }}>
+          <Text
+            style={{
+              color: "white",
+              fontSize: 16,
+              marginBottom: 15,
+              textAlign: "center",
+            }}
+          >
             Choose Account Type
           </Text>
           <AccountSelector selected={accountType} onSelected={setAccountType} />
@@ -115,7 +131,7 @@ export const AddLegacyAccountScreen = observer(
           <Button flavor="obi" label="Confirm" />
           <Button flavor="cancel" label="Go Back" />
         </View>
-      </OnboardingScreenContainer>
+      </SafeAreaView>
     );
   }
 );

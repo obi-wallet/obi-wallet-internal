@@ -1,6 +1,8 @@
+import { useTheme } from "@emotion/react";
 import { Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar } from ".";
 import { Button } from "../../../button";
@@ -10,8 +12,14 @@ import { isSmallScreenNumber } from "../../components/screen-size";
 
 export const AddBeneficiaryAccountScreen = observer(
   function AddBeneficiaryAccountScreen() {
+    const theme = useTheme();
     return (
-      <OnboardingScreenContainer back={false}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: theme.colors.background,
+        }}
+      >
         <View
           style={{
             flex: 1,
@@ -63,7 +71,7 @@ export const AddBeneficiaryAccountScreen = observer(
           <Button flavor="obi" label="Confirm" />
           <Button flavor="cancel" label="Go Back" />
         </View>
-      </OnboardingScreenContainer>
+      </SafeAreaView>
     );
   }
 );

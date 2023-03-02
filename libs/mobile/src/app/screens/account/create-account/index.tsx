@@ -1,8 +1,11 @@
+import { useTheme } from "@emotion/react";
 import { Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { View } from "react-native";
 import { TouchableOpacity, Image } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "../../../button";
 import { OnboardingScreenContainer } from "../../components/onboarding-screen-container";
@@ -34,9 +37,15 @@ const data = [
 export const CreateAccountScreen = observer(function CreateAccountScreen() {
   const [selected, setSelected] = useState(1);
   const selectedItem = data.find((item) => item.id === selected);
-
+  const theme = useTheme();
   return (
-    <OnboardingScreenContainer back={false}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: theme.colors.background,
+        paddingHorizontal: 20,
+      }}
+    >
       <View
         style={{
           flex: 1,
@@ -90,7 +99,7 @@ export const CreateAccountScreen = observer(function CreateAccountScreen() {
         <Button flavor="obi" label="Confirm" />
         <Button flavor="cancel" label="Go Back" />
       </View>
-    </OnboardingScreenContainer>
+    </SafeAreaView>
   );
 });
 

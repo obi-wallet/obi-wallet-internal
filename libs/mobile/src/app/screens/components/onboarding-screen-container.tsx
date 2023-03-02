@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
