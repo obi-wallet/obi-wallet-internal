@@ -10,6 +10,7 @@ import KeplrIcon from "./assets/keplr.svg";
 import StationIcon from "./assets/station.svg";
 import { Button } from "../../app/button";
 import { OnboardingScreenContainer } from "../../app/screens/components/onboarding-screen-container";
+import { ScreenContainer } from "../../app/screens/components/screen-container";
 
 export type ImportLegacyAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
@@ -111,7 +112,7 @@ export const ImportLegacyAccountScreen =
     };
 
     return (
-      <OnboardingScreenContainer>
+      <ScreenContainer>
         <ScrollView
           style={{
             flex: 1,
@@ -144,7 +145,7 @@ export const ImportLegacyAccountScreen =
           </View>
           {getAccountTypeText()}
         </ScrollView>
-        <View style={{ paddingVertical: 20 }}>
+        <View style={{ marginTop: 20 }}>
           <Button
             flavor="obi"
             onPress={() => {
@@ -167,7 +168,7 @@ export const ImportLegacyAccountScreen =
             label="Cancel"
           />
         </View>
-      </OnboardingScreenContainer>
+      </ScreenContainer>
     );
   });
 

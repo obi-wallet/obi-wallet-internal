@@ -8,7 +8,7 @@ import invariant from "tiny-invariant";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import { Button } from "../../app/button";
-import { OnboardingScreenContainer } from "../../app/screens/components/onboarding-screen-container";
+import { ScreenContainer } from "../../app/screens/components/screen-container";
 import { useMultisigWallet } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
 
@@ -23,7 +23,7 @@ export const ImportKeplrAccountScreen = observer<ImportKeplrAccountScreenProps>(
     const [mnemonic, setMnemonic] = useState("");
 
     return (
-      <OnboardingScreenContainer>
+      <ScreenContainer>
         <View
           style={{
             flex: 1,
@@ -42,7 +42,7 @@ export const ImportKeplrAccountScreen = observer<ImportKeplrAccountScreenProps>(
             onChangeText={setMnemonic}
           />
         </View>
-        <View style={{ paddingVertical: 20 }}>
+        <View style={{ marginTop: 20 }}>
           <Button
             flavor="obi"
             onPress={() => {
@@ -74,7 +74,7 @@ export const ImportKeplrAccountScreen = observer<ImportKeplrAccountScreenProps>(
             label="Cancel"
           />
         </View>
-      </OnboardingScreenContainer>
+      </ScreenContainer>
     );
   }
 );

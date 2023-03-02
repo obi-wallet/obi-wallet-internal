@@ -6,7 +6,7 @@ import { TouchableOpacity, View } from "react-native";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import { Button } from "../../app/button";
-import { OnboardingScreenContainer } from "../../app/screens/components/onboarding-screen-container";
+import { ScreenContainer } from "../../app/screens/components/screen-container";
 
 export type AddAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
@@ -54,7 +54,7 @@ export const AddAccountScreen = observer<AddAccountScreenProps>(
     const selectedItem = accountTypeMetaData[selected];
 
     return (
-      <OnboardingScreenContainer>
+      <ScreenContainer>
         <View
           style={{
             flex: 1,
@@ -103,7 +103,7 @@ export const AddAccountScreen = observer<AddAccountScreenProps>(
             {selectedItem.description}
           </Text>
         </View>
-        <View style={{ paddingVertical: 20 }}>
+        <View style={{ marginTop: 20 }}>
           <Button
             flavor="obi"
             onPress={() => {
@@ -119,7 +119,7 @@ export const AddAccountScreen = observer<AddAccountScreenProps>(
             label="Cancel"
           />
         </View>
-      </OnboardingScreenContainer>
+      </ScreenContainer>
     );
   }
 );

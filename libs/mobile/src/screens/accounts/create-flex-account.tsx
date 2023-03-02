@@ -15,7 +15,7 @@ import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import { Avatar } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { Button } from "../../app/button";
-import { OnboardingScreenContainer } from "../../app/screens/components/onboarding-screen-container";
+import { ScreenContainer } from "../../app/screens/components/screen-container";
 import { useMultisigWallet, useStore } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
 
@@ -36,7 +36,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
     const [name, setName] = useState("");
 
     return (
-      <OnboardingScreenContainer>
+      <ScreenContainer>
         <View
           style={{
             flex: 1,
@@ -61,7 +61,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
             settings from the Accounts tab once it is created.
           </Text>
         </View>
-        <View style={{ paddingVertical: 20 }}>
+        <View style={{ marginTop: 20 }}>
           <Button
             flavor="obi"
             onPress={() => {
@@ -112,7 +112,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
             label="Cancel"
           />
         </View>
-      </OnboardingScreenContainer>
+      </ScreenContainer>
     );
   }
 );

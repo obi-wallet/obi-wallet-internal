@@ -1,5 +1,4 @@
-import { GatekeeperConfig } from "@obi-wallet/common";
-import { Text } from "@obi-wallet/common";
+import { GatekeeperConfig, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -9,7 +8,7 @@ import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import { Avatar } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { Button } from "../../app/button";
-import { OnboardingScreenContainer } from "../../app/screens/components/onboarding-screen-container";
+import { ScreenContainer } from "../../app/screens/components/screen-container";
 import { isSmallScreenNumber } from "../../app/screens/components/screen-size";
 import { useMultisigWallet, useStore } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
@@ -34,7 +33,7 @@ export const CreateBeneficiaryAccountScreen =
       const [address, setAddress] = useState("");
 
       return (
-        <OnboardingScreenContainer>
+        <ScreenContainer>
           <View
             style={{
               flex: 1,
@@ -86,7 +85,7 @@ export const CreateBeneficiaryAccountScreen =
               see the balance of the funds they inherited.
             </Text>
           </View>
-          <View style={{ paddingVertical: 20 }}>
+          <View style={{ marginTop: 20 }}>
             <Button
               flavor="obi"
               onPress={() => {
@@ -119,7 +118,7 @@ export const CreateBeneficiaryAccountScreen =
               label="Cancel"
             />
           </View>
-        </OnboardingScreenContainer>
+        </ScreenContainer>
       );
     }
   );

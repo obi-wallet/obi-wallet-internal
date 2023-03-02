@@ -96,6 +96,11 @@
               },
               {
                 "name": "react-native",
+                "importNames": ["Modal"],
+                "message": "Please use Modal from `src/components/modal` instead."
+              },
+              {
+                "name": "react-native",
                 "importNames": ["SafeAreaView"],
                 "message": "Please use SafeAreaView from `react-native-safe-area-context` instead."
               },
