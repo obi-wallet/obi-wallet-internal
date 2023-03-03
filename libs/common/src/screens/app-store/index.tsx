@@ -35,7 +35,6 @@ export const AppStore: FunctionComponent<AppStoreProps> = observer(
       setUrl(`https://${url}`);
     }
 
-    // @ts-expect-error Some type issues with rooks
     const setUrlDebounce = useDebounce(setUrlWithProtocol, 500);
 
     const [title, setTitle] = useState("");

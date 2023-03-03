@@ -585,10 +585,7 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
     },
     [draft]
   );
-  // @ts-expect-error useDebounce typing is weird
-  const debouncedSetAmount = useDebounce(setAmount, 50) as (
-    amount: number
-  ) => void;
+  const debouncedSetAmount = useDebounce(setAmount, 50);
 
   const [timeOpened, setTimeOpened] = useState(false);
   const periodicity = [
