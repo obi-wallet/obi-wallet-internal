@@ -36,17 +36,19 @@ const getStyles = (isObi: boolean) =>
     },
   });
 
-export const TextInput = observer(function TextInput({
+export const TextInput = observer<
+  TextInputProps & {
+    CustomTextInput?: ComponentType<TextInputProps>;
+    label?: string;
+    style?: StyleProp<ViewStyle>;
+    inputStyle?: StyleProp<TextStyle>;
+  }
+>(function TextInput({
   label,
   style,
   inputStyle,
   CustomTextInput = OriginalTextInput,
   ...props
-}: TextInputProps & {
-  CustomTextInput?: ComponentType<TextInputProps>;
-  label?: string;
-  style?: StyleProp<ViewStyle>;
-  inputStyle?: StyleProp<TextStyle>;
 }) {
   const { configStore } = useStore();
   const isObi = configStore.isObi();

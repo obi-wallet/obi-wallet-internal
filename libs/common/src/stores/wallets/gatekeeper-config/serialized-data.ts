@@ -9,6 +9,7 @@ export const AccountMetaData = z.object({
 });
 
 export const Beneficiary = z.object({
+  type: z.literal("beneficiary"),
   meta: AccountMetaData,
   address: z.string(),
   dormancyThreshold: Duration,
@@ -31,6 +32,7 @@ export const AutoSign = z.object({
 });
 
 export const FlexAccount = z.object({
+  type: z.literal("flex-account"),
   meta: AccountMetaData,
   address: z.string(),
   publicKey: Secp256k1PublicKey,

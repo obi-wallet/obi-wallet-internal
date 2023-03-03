@@ -8,18 +8,18 @@ import { ReactNode, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   Alert,
-  Modal,
   ModalProps,
   ScrollView,
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PrettyMessage } from "./pretty-message";
+import { Modal } from "../../../components/modal";
 import { Button } from "../../button";
 import { Loader } from "../../loader";
 import { Background } from "../../screens/components/background";
+import { ScreenContainer } from "../../screens/components/screen-container";
 import { useStore } from "../../stores";
 
 enum Tab {
@@ -56,7 +56,6 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
     ...props
   }) {
     const intl = useIntl();
-    const safeArea = useSafeAreaInsets();
     const [selectedTab, setSelectedTab] = useState(Tab.TransactionDetails);
     const { configStore } = useStore();
     const isObi = configStore.isObi();
@@ -65,9 +64,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
 
     return (
       <Modal {...props}>
-        <View
-          style={{ flex: 1, ...(isObi ? { backgroundColor: "#1A1A1A" } : {}) }}
-        >
+        <ScreenContainer>
           {loading ? (
             <Loader
               loadingText="Broadcasting"
@@ -99,10 +96,8 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
           <View
             style={{
               height: 50,
-              marginTop: safeArea.top,
               justifyContent: "center",
               alignItems: "center",
-              marginHorizontal: 20,
             }}
           >
             {isOnboarding ? (
@@ -124,7 +119,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
             )}
           </View>
 
-          <View style={{ marginHorizontal: 20, flex: 1 }}>
+          <View style={{ flex: 1 }}>
             <View
               style={{
                 flexDirection: "row",
@@ -184,36 +179,34 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
 
               {children}
 
-              <View style={{ paddingBottom: safeArea.bottom + 20 }}>
+              <Button
+                disabled={disabled}
+                flavor="green"
+                label={intl.formatMessage({
+                  id: "signature.modal.confirm",
+                  defaultMessage: "Confirm",
+                })}
+                onPress={() => {
+                  onConfirm();
+                }}
+              />
+              {cancelable && (
                 <Button
-                  disabled={disabled}
-                  flavor="green"
+                  flavor={isObi ? "cancel" : "blue"}
                   label={intl.formatMessage({
-                    id: "signature.modal.confirm",
-                    defaultMessage: "Confirm",
+                    id: "signature.modal.cancel",
+                    defaultMessage: "Cancel",
                   })}
                   onPress={() => {
-                    onConfirm();
+                    onCancel();
                   }}
                 />
-                {cancelable && (
-                  <Button
-                    flavor={isObi ? "cancel" : "blue"}
-                    label={intl.formatMessage({
-                      id: "signature.modal.cancel",
-                      defaultMessage: "Cancel",
-                    })}
-                    onPress={() => {
-                      onCancel();
-                    }}
-                  />
-                )}
-              </View>
+              )}
             </View>
           </View>
 
           {footer}
-        </View>
+        </ScreenContainer>
       </Modal>
     );
 

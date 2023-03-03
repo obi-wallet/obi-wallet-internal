@@ -1,4 +1,5 @@
 {
+  "name": "obi-mobile",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/obi-mobile/src",
   "projectType": "application",

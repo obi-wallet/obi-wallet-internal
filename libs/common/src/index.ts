@@ -13,6 +13,7 @@ export * from "./message-requester";
 export * from "./networks";
 export * from "./router";
 export * from "./screens";
+export * from "./sec256k1";
 export * from "./stores";
 export * from "./styles";
 export * from "./tiles";

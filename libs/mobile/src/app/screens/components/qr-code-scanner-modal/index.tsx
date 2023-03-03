@@ -1,9 +1,10 @@
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { Modal, ModalProps } from "react-native";
+import { ModalProps } from "react-native";
 import QRCodeScanner from "react-native-qrcode-scanner";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Modal } from "../../../../components/modal";
 import { Button } from "../../../button";
 
 export interface QrCodeScannerModalProps extends ModalProps {
@@ -37,7 +38,6 @@ export const QrCodeScannerModal = observer(function QrCodeScannerModal({
         bottomViewStyle={{
           paddingHorizontal: 20,
           position: "absolute",
-          marginVertical: safeArea.left,
           bottom: safeArea.bottom,
         }}
         reactivate

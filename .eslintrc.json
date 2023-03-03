@@ -76,6 +76,7 @@
         ],
         "react/jsx-curly-brace-presence": ["error", "never"],
         "react/jsx-pascal-case": "error",
+        "react/no-unescaped-entities": "off",
 
         "unicorn/filename-case": [
           "error",
@@ -92,6 +93,11 @@
                 "name": "react-native",
                 "importNames": ["KeyboardAvoidingView"],
                 "message": "Please use KeyboardAvoidingView from `src/app/screens/components/keyboard-avoding-view` instead."
+              },
+              {
+                "name": "react-native",
+                "importNames": ["Modal"],
+                "message": "Please use Modal from `src/components/modal` instead."
               },
               {
                 "name": "react-native",

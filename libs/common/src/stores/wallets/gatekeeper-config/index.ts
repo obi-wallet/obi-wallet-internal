@@ -63,6 +63,7 @@ export class GatekeeperConfig implements Draftable {
   public clone() {
     const clone = new GatekeeperConfig();
     clone.beneficiaries = this.beneficiaries.clone();
+    clone.flexAccounts = this.flexAccounts.clone();
     return clone as this;
   }
 

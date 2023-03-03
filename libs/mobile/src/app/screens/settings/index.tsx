@@ -17,7 +17,6 @@ import { KeysConfigScreen } from "./keys-config";
 import { SettingsRoute } from "./settings-stack";
 import { RootStack, useRootNavigation } from "../../root-stack";
 import { useStore } from "../../stores";
-import { Create } from "../account/create";
 import { ObiLogo } from "../components/obi-logo";
 import { BrandToggle } from "../components/obi-mode-toggle";
 import { isSmallScreenNumber } from "../components/screen-size";
@@ -376,12 +375,6 @@ const SettingButton = styled.TouchableOpacity<{ brand: Brand }>(
 export const settingsScreens = () => {
   return (
     <RootStack.Group>
-      <RootStack.Screen
-        name={SettingsRoute.AddSubAccount}
-        key={SettingsRoute.AddSubAccount}
-        component={Create}
-        options={{ headerShown: false }}
-      />
       <RootStack.Screen
         name={SettingsRoute.MultisigSettings}
         key={SettingsRoute.MultisigSettings}

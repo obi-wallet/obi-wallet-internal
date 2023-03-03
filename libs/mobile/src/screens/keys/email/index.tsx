@@ -1,15 +1,13 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MultisigKey, Text } from "@obi-wallet/common";
+import { generateSec256k1KeyPair, MultisigKey, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { randomBytes } from "crypto";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, Linking, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import secp256k1 from "secp256k1";
 import { z } from "zod";
 
 import {
@@ -282,11 +280,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
               disabled={!formState.isValid}
               onPress={handleSubmit(async (data) => {
                 try {
-                  const privateKeyBuffer = randomBytes(32);
-                  const publicKey = Buffer.from(
-                    secp256k1.publicKeyCreate(privateKeyBuffer)
-                  ).toString("base64");
-                  const privateKey = privateKeyBuffer.toString("base64");
+                  const { publicKey, privateKey } = generateSec256k1KeyPair();
 
                   await Linking.openURL(
                     `mailto:${

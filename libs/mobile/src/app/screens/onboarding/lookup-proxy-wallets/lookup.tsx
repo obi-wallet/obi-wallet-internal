@@ -77,11 +77,7 @@ export const Lookup = observer(function Lookup({
 
   if (!wallets) {
     // TODO: loading spinner instead
-    return (
-      <OnboardingScreenContainer>
-        <></>
-      </OnboardingScreenContainer>
-    );
+    return <OnboardingScreenContainer />;
   }
 
   return (
@@ -240,7 +236,7 @@ export const Lookup = observer(function Lookup({
             onPress={() => {
               onCancel();
             }}
-            style={{ paddingVertical: 15, paddingHorizontal: 15 }}
+            style={{ paddingTop: 15, paddingHorizontal: 15 }}
           >
             <Text
               style={{

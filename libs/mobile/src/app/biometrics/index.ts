@@ -1,9 +1,7 @@
-import { Chain, KVStore } from "@obi-wallet/common";
+import { Chain, generateSec256k1KeyPair, KVStore } from "@obi-wallet/common";
 import { QueryClient } from "@tanstack/react-query";
-import { randomBytes } from "crypto";
 import { isEmulator } from "react-native-device-info";
 import * as Keychain from "react-native-keychain";
-import secp256k1 from "secp256k1";
 import invariant from "tiny-invariant";
 
 import { prepareWalletAndSign } from "../secp256k1";
@@ -104,11 +102,7 @@ export async function getBiometricsKeyPair({
       password: "fake2",
     });
 
-    const privateKeyBuffer = randomBytes(32);
-    const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer);
-
-    const privateKey = Buffer.from(privateKeyBuffer).toString("base64");
-    const publicKey = Buffer.from(publicKeyBuffer).toString("base64");
+    const { publicKey, privateKey } = generateSec256k1KeyPair();
 
     await saveCredentialsToKeyChain({
       service: BIOMETRICS_KEY,
