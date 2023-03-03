@@ -203,6 +203,7 @@ const AccountsList = observer(function AccountsList() {
 
   const accounts = wallet.getAccounts(draft.value);
   const [itemOpened, setItemOpened] = useState<EntityId | null>(null);
+  // TODO:
   const [activeAccount, setActiveAccount] = useState<EntityId | null>(null);
 
   const data = accounts.ids.map((id) => {
@@ -246,11 +247,25 @@ const AccountsList = observer(function AccountsList() {
               }
             }}
             onChange={(account) => {
-              if (account.type === "flex-account") {
-                draft.value.flexAccounts.update({
-                  id: element.item.id,
-                  entity: account,
-                });
+              switch (account.type) {
+                case "beneficiary":
+                  draft.value.beneficiaries.update({
+                    id: element.item.id,
+                    entity: account,
+                  });
+                  break;
+                case "flex-account":
+                  draft.value.flexAccounts.update({
+                    id: element.item.id,
+                    entity: account,
+                  });
+                  break;
+                case "singlesig-wallet":
+                  wallet.singlesigWallets.update({
+                    id: element.item.id,
+                    entity: account,
+                  });
+                  break;
               }
             }}
           />
@@ -291,6 +306,12 @@ const AccountItem = observer<AccountItemProps>(function AccountItem({
 
 interface BeneficiaryItemProps extends AbstractAccountItemProps {
   account: Beneficiary;
+  onChange: (account: Beneficiary) => void;
+}
+
+enum BeneficiaryPeriodicity {
+  Monthly = "Monthly",
+  Annually = "Annually",
 }
 
 const BeneficiaryItem = observer<BeneficiaryItemProps>(
@@ -301,11 +322,65 @@ const BeneficiaryItem = observer<BeneficiaryItemProps>(
     active,
     onSetActive,
     onDelete,
+    onChange,
   }) {
-    const inheritancePeriodicity = ["Monthly", "Annually"];
-    const [selectedPeriodicity, setSelectedPeriodicity] = useState(
-      inheritancePeriodicity[0]
-    );
+    const [draft] = useState(() => {
+      return new Draft({
+        original: new DraftableObject(account),
+      });
+    });
+
+    useEffect(() => {
+      if (!R.equals(draft.original.value, account)) {
+        draft.commit({ original: new DraftableObject(account) });
+      }
+    }, [account, draft]);
+
+    const dormancyThreshold = (() => {
+      const threshold = draft.value.value.dormancyThreshold;
+      if (R.has("days", threshold)) return Math.floor(threshold.days / 30);
+      if (R.has("months", threshold)) return threshold.months;
+      if (R.has("years", threshold)) return threshold.years * 12;
+      return 0;
+    })();
+    const setDormancyThreshold = (threshold: number) => {
+      runInAction(() => {
+        draft.value.value.dormancyThreshold = { months: threshold };
+      });
+    };
+
+    const dripRate = Math.floor(draft.value.value.dripSchedule.rate * 100);
+    const setDripRate = (rate: number) => {
+      runInAction(() => {
+        draft.value.value.dripSchedule.rate = rate / 100;
+      });
+    };
+
+    const inheritancePeriodicity = [
+      BeneficiaryPeriodicity.Monthly,
+      BeneficiaryPeriodicity.Annually,
+    ];
+    const selectedPeriodicity = (() => {
+      const period = draft.value.value.dripSchedule.period;
+      if (R.equals(period, { months: 1 }))
+        return BeneficiaryPeriodicity.Monthly;
+      if (R.equals(period, { years: 1 }))
+        return BeneficiaryPeriodicity.Annually;
+      return inheritancePeriodicity[0];
+    })();
+    const setSelectedPeriodicity = (periodicity: BeneficiaryPeriodicity) => {
+      runInAction(() => {
+        switch (periodicity) {
+          case BeneficiaryPeriodicity.Monthly:
+            draft.value.value.dripSchedule.period = { months: 1 };
+            break;
+          case BeneficiaryPeriodicity.Annually:
+            draft.value.value.dripSchedule.period = { years: 1 };
+            break;
+        }
+      });
+    };
+
     return (
       <AccountContainer
         isOpen={isOpen}
@@ -356,7 +431,11 @@ const BeneficiaryItem = observer<BeneficiaryItemProps>(
                     fontSize: 26,
                     fontFamily: "Poppins",
                   }}
-                  value="12"
+                  value={dormancyThreshold.toString()}
+                  onChangeText={(value) => {
+                    const res = value.replace(/[^0-9.]/g, "");
+                    setDormancyThreshold(Number(res));
+                  }}
                   keyboardType="numeric"
                 />
               </View>
@@ -390,7 +469,11 @@ const BeneficiaryItem = observer<BeneficiaryItemProps>(
                     fontFamily: "Poppins",
                     alignSelf: "flex-end",
                   }}
-                  value="12"
+                  value={(dripRate ?? 0).toString()}
+                  onChangeText={(value) => {
+                    const res = value.replace(/[^0-9.]/g, "");
+                    setDripRate(Number(res));
+                  }}
                   keyboardType="numeric"
                 />
               </View>
@@ -414,7 +497,24 @@ const BeneficiaryItem = observer<BeneficiaryItemProps>(
                 ))}
               </View>
               <View style={{ margin: 15 }}>
-                <Button flavor="blue" label="Confirm" />
+                {draft.isDirty ? (
+                  <>
+                    <Button
+                      flavor="blue"
+                      label="Confirm"
+                      onPress={() => {
+                        onChange(draft.value.value);
+                      }}
+                    />
+                    <Button
+                      flavor="cancel"
+                      label="Cancel"
+                      onPress={() => {
+                        draft.reset();
+                      }}
+                    />
+                  </>
+                ) : null}
                 <TouchableOpacity onPress={onDelete}>
                   <Text
                     style={{
@@ -728,7 +828,7 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
                         editable={nextFlexRule === FlexAccountRule.Limited}
                         onChangeText={(value) => {
                           const res = value.replace(/[^0-9.]/g, "");
-                          debouncedSetAmount(parseInt(res, 10));
+                          debouncedSetAmount(Number(res));
                         }}
                       />
                       <TouchableOpacity
@@ -845,7 +945,8 @@ const SinglesigWalletItem = observer<SinglesigWalletItemProps>(
           />
           <View style={{ paddingLeft: 10 }}>
             <Text style={{ color: "white", fontSize: 18, fontWeight: "600" }}>
-              $45.00
+              {/* TODO: */}
+              $0.00
             </Text>
             <Text
               style={{
