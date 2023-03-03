@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import {
   Beneficiary,
+  Draft,
+  DraftableObject,
   EntityId,
   FlexAccount,
   GatekeeperConfig,
@@ -18,7 +20,9 @@ import {
 import Slider from "@react-native-community/slider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { DateTime } from "luxon";
+import { runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
+import * as R from "ramda";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import {
@@ -34,7 +38,7 @@ import {
   ViewStyle,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
-import { useDebouncedValue } from "rooks";
+import { useDebounce } from "rooks";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import KeyRoundIcon from "./assets/key-round-icon.svg";
@@ -243,7 +247,7 @@ const AccountsList = observer(function AccountsList() {
             }}
             onChange={(account) => {
               if (account.type === "flex-account") {
-                draft.value.flexAccounts.add({
+                draft.value.flexAccounts.update({
                   id: element.item.id,
                   entity: account,
                 });
@@ -456,8 +460,36 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
   active = false,
   onSetActive,
   onDelete,
+  onChange,
 }) {
-  const [amount, setAmount] = useState(10);
+  const [draft] = useState(() => {
+    return new Draft({
+      original: new DraftableObject(account),
+    });
+  });
+
+  useEffect(() => {
+    if (!R.equals(draft.original.value, account)) {
+      draft.commit({ original: new DraftableObject(account) });
+    }
+  }, [account, draft]);
+
+  const amount = draft.value.value.spendLimit?.amount;
+  const setAmount = useCallback(
+    (amount: number) => {
+      runInAction(() => {
+        if (draft.value.value.spendLimit) {
+          draft.value.value.spendLimit.amount = amount;
+        }
+      });
+    },
+    [draft]
+  );
+  // @ts-expect-error useDebounce typing is weird
+  const debouncedSetAmount = useDebounce(setAmount, 50) as (
+    amount: number
+  ) => void;
+
   const [timeOpened, setTimeOpened] = useState(false);
   const periodicity = [
     FlexAccountPeriodicity.Daily,
@@ -465,48 +497,119 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
     FlexAccountPeriodicity.Monthly,
     FlexAccountPeriodicity.Yearly,
   ];
-  const [selectedPeriod, setSelectedPeriod] = useState(periodicity[0]);
+  const selectedPeriod = (() => {
+    const period = draft.value.value.spendLimit?.period;
+    if (R.equals(period, { days: 1 })) return FlexAccountPeriodicity.Daily;
+    if (R.equals(period, { days: 7 })) return FlexAccountPeriodicity.Weekly;
+    if (R.equals(period, { months: 1 })) return FlexAccountPeriodicity.Monthly;
+    if (R.equals(period, { years: 1 })) return FlexAccountPeriodicity.Yearly;
+    return periodicity[0];
+  })();
+  const setSelectedPeriod = (period: FlexAccountPeriodicity) => {
+    runInAction(() => {
+      if (!draft.value.value.spendLimit) return;
+
+      switch (period) {
+        case FlexAccountPeriodicity.Daily:
+          draft.value.value.spendLimit.period = { days: 1 };
+          break;
+        case FlexAccountPeriodicity.Weekly:
+          draft.value.value.spendLimit.period = { days: 7 };
+          break;
+        case FlexAccountPeriodicity.Monthly:
+          draft.value.value.spendLimit.period = { months: 1 };
+          break;
+        case FlexAccountPeriodicity.Yearly:
+          draft.value.value.spendLimit.period = { years: 1 };
+          break;
+      }
+    });
+  };
+
   const flexRules = [
     FlexAccountRule.Strict,
     FlexAccountRule.Limited,
     FlexAccountRule.Unlocked,
   ];
 
-  const [debouncedAmount] = useDebouncedValue(amount, 50);
-
   const getRemainingTime = useCallback(() => {
-    if (!account.autoSign) return null;
+    if (!draft.original.value.autoSign) return null;
 
-    const remainingTime = DateTime.fromISO(account.autoSign?.endTime).diff(
-      DateTime.now(),
-      "seconds"
-    );
+    const remainingTime = DateTime.fromISO(
+      draft.original.value.autoSign?.endTime
+    ).diff(DateTime.now(), "seconds");
     return remainingTime.toMillis() >= 0 ? remainingTime : null;
-  }, [account.autoSign]);
+  }, [draft.original.value.autoSign]);
 
   const [remainingTime, setRemainingTime] = useState(getRemainingTime);
 
   const getActiveFlexRule = useCallback(() => {
-    if (account.autoSign && getRemainingTime()) {
+    if (draft.original.value.autoSign && getRemainingTime()) {
       return FlexAccountRule.Unlocked;
-    } else if (account.spendLimit) {
+    } else if (draft.original.value.spendLimit) {
       return FlexAccountRule.Limited;
     } else {
       return FlexAccountRule.Strict;
     }
-  }, [account.autoSign, account.spendLimit, getRemainingTime]);
-  const [activeFlexRule, setActiveFlexRule] = useState(getActiveFlexRule);
+  }, [
+    draft.original.value.autoSign,
+    draft.original.value.spendLimit,
+    getRemainingTime,
+  ]);
+
+  const getNextFlexRule = useCallback(() => {
+    if (draft.value.value.autoSign) {
+      return FlexAccountRule.Unlocked;
+    } else if (draft.value.value.spendLimit) {
+      return FlexAccountRule.Limited;
+    } else {
+      return FlexAccountRule.Strict;
+    }
+  }, [draft.value.value.autoSign, draft.value.value.spendLimit]);
+  const activeFlexRule = getActiveFlexRule();
+  const nextFlexRule = getNextFlexRule();
+
+  const setNextFlexRule = useCallback(
+    (rule: FlexAccountRule) => {
+      runInAction(() => {
+        if (getNextFlexRule() === rule) return;
+
+        switch (rule) {
+          case FlexAccountRule.Strict:
+            draft.value.value.spendLimit = null;
+            draft.value.value.autoSign = null;
+            break;
+          case FlexAccountRule.Limited:
+            draft.value.value.autoSign = null;
+            draft.value.value.spendLimit = draft.value.value.spendLimit ?? {
+              amount: 0,
+              period: {
+                days: 1,
+              },
+            };
+            break;
+          case FlexAccountRule.Unlocked:
+            draft.value.value.autoSign = {
+              endTime: DateTime.now().plus({ minutes: 30 }).toISO(),
+            };
+            break;
+        }
+
+        setRemainingTime(getRemainingTime());
+      });
+    },
+    [draft, getNextFlexRule, getRemainingTime, setRemainingTime]
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveFlexRule(getActiveFlexRule());
       setRemainingTime(getRemainingTime());
     }, 1000);
     return () => clearInterval(interval);
-  }, [getActiveFlexRule, getRemainingTime]);
+  }, [getRemainingTime]);
 
   const getRuleText = () => {
-    switch (activeFlexRule) {
+    switch (nextFlexRule) {
       case FlexAccountRule.Unlocked:
         return "WARNING: No keys required to sign transactions. This setting will revert after 30:00 minutes or until session expires.";
       case FlexAccountRule.Strict:
@@ -520,12 +623,13 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
     <AccountContainer
       isOpen={isOpen}
       onOpenToggle={onOpenToggle}
-      title={account.meta.name}
+      title={draft.value.value.meta.name}
       subTitle={`${activeFlexRule} Flex Account${
         remainingTime ? ` ⏱ ${remainingTime.toFormat("m:ss")}` : ""
       }`}
       subTitleStyles={{
-        color: activeFlexRule === flexRules[2] ? "#FFE200" : "white",
+        color:
+          activeFlexRule === FlexAccountRule.Unlocked ? "#FFE200" : "white",
       }}
       active={active}
       onSetActive={onSetActive}
@@ -563,10 +667,10 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
                 {flexRules.map((fr) => (
                   <Pill
                     label={fr}
-                    active={fr === activeFlexRule}
+                    active={fr === nextFlexRule}
                     key={fr}
                     onPress={() => {
-                      setActiveFlexRule(fr);
+                      setNextFlexRule(fr);
                     }}
                   />
                 ))}
@@ -579,48 +683,11 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
               <View
                 style={{
                   alignItems: "center",
-                  opacity: activeFlexRule === flexRules[1] ? 1 : 0.5,
+                  opacity: nextFlexRule === FlexAccountRule.Limited ? 1 : 0.5,
                 }}
               >
                 <View style={{ flexDirection: "row" }}>
-                  {!timeOpened ? (
-                    <>
-                      <TextInput
-                        style={{
-                          backgroundColor: "#272727",
-                          borderWidth: 0,
-                          borderRadius: 10,
-                          color: "#fff",
-                          padding: 5,
-                          paddingHorizontal: 20,
-                          fontSize: 25,
-                          fontFamily: "Poppins",
-                        }}
-                        value={`$${amount}`}
-                        editable={activeFlexRule === flexRules[1]}
-                        onChangeText={(value) => {
-                          const res = value.replace(/[^0-9.]/g, "");
-                          console.log({ res });
-                          setAmount(Number(res));
-                        }}
-                      />
-                      <TouchableOpacity
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          padding: 10,
-                        }}
-                        onPress={() => setTimeOpened(true)}
-                        disabled={activeFlexRule !== flexRules[1]}
-                      >
-                        <Text style={{ color: "#fff" }}>{selectedPeriod}</Text>
-                        <FontAwesomeIcon
-                          icon={faCaretDown}
-                          style={{ color: "#fff" }}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  ) : (
+                  {timeOpened ? (
                     <>
                       {periodicity.map((period) => (
                         <TouchableOpacity
@@ -644,6 +711,42 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
                         </TouchableOpacity>
                       ))}
                     </>
+                  ) : (
+                    <>
+                      <TextInput
+                        style={{
+                          backgroundColor: "#272727",
+                          borderWidth: 0,
+                          borderRadius: 10,
+                          color: "#fff",
+                          padding: 5,
+                          paddingHorizontal: 20,
+                          fontSize: 25,
+                          fontFamily: "Poppins",
+                        }}
+                        value={`$${amount ?? 0}`}
+                        editable={nextFlexRule === FlexAccountRule.Limited}
+                        onChangeText={(value) => {
+                          const res = value.replace(/[^0-9.]/g, "");
+                          debouncedSetAmount(parseInt(res, 10));
+                        }}
+                      />
+                      <TouchableOpacity
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          padding: 10,
+                        }}
+                        onPress={() => setTimeOpened(true)}
+                        disabled={nextFlexRule !== FlexAccountRule.Limited}
+                      >
+                        <Text style={{ color: "#fff" }}>{selectedPeriod}</Text>
+                        <FontAwesomeIcon
+                          icon={faCaretDown}
+                          style={{ color: "#fff" }}
+                        />
+                      </TouchableOpacity>
+                    </>
                   )}
                 </View>
               </View>
@@ -665,14 +768,31 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
                   minimumValue={0}
                   step={1}
                   onValueChange={(value) => {
-                    setAmount(value);
+                    debouncedSetAmount(value);
                   }}
-                  disabled={activeFlexRule !== flexRules[1]}
-                  value={(debouncedAmount || 0) as number}
+                  disabled={nextFlexRule !== FlexAccountRule.Limited}
+                  value={(amount || 0) as number}
                 />
               </View>
               <View style={{ margin: 15 }}>
-                <Button flavor="blue" label="Confirm" />
+                {draft.isDirty ? (
+                  <>
+                    <Button
+                      flavor="blue"
+                      label="Confirm"
+                      onPress={() => {
+                        onChange(draft.value.value);
+                      }}
+                    />
+                    <Button
+                      flavor="cancel"
+                      label="Cancel"
+                      onPress={() => {
+                        draft.reset();
+                      }}
+                    />
+                  </>
+                ) : null}
                 <TouchableOpacity onPress={onDelete}>
                   <Text
                     style={{

@@ -39,6 +39,11 @@ export class Entities<T> implements Draftable {
   }
 
   @action
+  public update({ entity, id }: { entity: T; id: EntityId }) {
+    this._entities[id] = entity;
+  }
+
+  @action
   public removeBy({ predicate }: { predicate: (entity: T) => boolean }) {
     const idsToRemove = this._ids.filter((id) => predicate(this._entities[id]));
     idsToRemove.forEach((id) => {
