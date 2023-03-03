@@ -5,6 +5,7 @@ import {
   MultisigKey,
   terra,
 } from "@obi-wallet/common";
+import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect } from "react";
 import { Alert } from "react-native";
@@ -122,7 +123,7 @@ export const GatekeeperConfigDraft = {
       draft.value.addFlexAccount({
         type: "flex-account",
         meta: {
-          name: "Flex Account",
+          name: "Strict Flex Account",
           icon: "",
         },
         address,
@@ -133,6 +134,48 @@ export const GatekeeperConfigDraft = {
         privateKey: privateKey,
         spendLimit: null,
         autoSign: null,
+      });
+      draft.value.addFlexAccount({
+        type: "flex-account",
+        meta: {
+          name: "Limited Flex Account",
+          icon: "",
+        },
+        address,
+        publicKey: {
+          type: "tendermint/PubKeySecp256k1",
+          value: publicKey,
+        },
+        privateKey: privateKey,
+        spendLimit: {
+          period: {
+            days: 1,
+          },
+          amount: 10,
+        },
+        autoSign: null,
+      });
+      draft.value.addFlexAccount({
+        type: "flex-account",
+        meta: {
+          name: "Unlocked Flex Account",
+          icon: "",
+        },
+        address,
+        publicKey: {
+          type: "tendermint/PubKeySecp256k1",
+          value: publicKey,
+        },
+        privateKey: privateKey,
+        spendLimit: {
+          period: {
+            days: 1,
+          },
+          amount: 10,
+        },
+        autoSign: {
+          endTime: DateTime.local().plus({ minutes: 30 }).toISO(),
+        },
       });
       wallet.addSinglesigWallet({
         type: "singlesig-wallet",

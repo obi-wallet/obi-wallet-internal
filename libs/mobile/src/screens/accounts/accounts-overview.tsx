@@ -17,8 +17,9 @@ import {
 } from "@obi-wallet/common";
 import Slider from "@react-native-community/slider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import {
   FlatList,
@@ -417,17 +418,39 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
     FlexAccountRule.Limited,
     FlexAccountRule.Unlocked,
   ];
-  const [activeFlexRule, setActiveFlexRule] = useState(() => {
-    if (account.autoSign) {
+
+  const [debouncedAmount] = useDebouncedValue(amount, 50);
+
+  const getRemainingTime = useCallback(() => {
+    if (!account.autoSign) return null;
+
+    const remainingTime = DateTime.fromISO(account.autoSign?.endTime).diff(
+      DateTime.now(),
+      "seconds"
+    );
+    return remainingTime.toMillis() >= 0 ? remainingTime : null;
+  }, [account.autoSign]);
+
+  const [remainingTime, setRemainingTime] = useState(getRemainingTime);
+
+  const getActiveFlexRule = useCallback(() => {
+    if (account.autoSign && getRemainingTime()) {
       return FlexAccountRule.Unlocked;
     } else if (account.spendLimit) {
       return FlexAccountRule.Limited;
     } else {
       return FlexAccountRule.Strict;
     }
-  });
+  }, [account.autoSign, account.spendLimit, getRemainingTime]);
+  const [activeFlexRule, setActiveFlexRule] = useState(getActiveFlexRule);
 
-  const [debouncedAmount] = useDebouncedValue(amount, 50);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveFlexRule(getActiveFlexRule());
+      setRemainingTime(getRemainingTime());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [getActiveFlexRule, getRemainingTime]);
 
   const getRuleText = () => {
     switch (activeFlexRule) {
@@ -445,8 +468,8 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
       isOpen={isOpen}
       onOpenToggle={onOpenToggle}
       title={account.meta.name}
-      subTitle={`${activeFlexRule} Flex Account ${
-        activeFlexRule === flexRules[2] ? ` ⏱ 29:58` : ""
+      subTitle={`${activeFlexRule} Flex Account${
+        remainingTime ? ` ⏱ ${remainingTime.toFormat("m:ss")}` : ""
       }`}
       subTitleStyles={{
         color: activeFlexRule === flexRules[2] ? "#FFE200" : "white",
