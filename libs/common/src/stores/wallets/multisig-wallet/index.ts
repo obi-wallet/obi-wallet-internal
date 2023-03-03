@@ -33,7 +33,7 @@ export class MultisigWallet extends AbstractWallet {
   public gatekeeperConfig: GatekeeperConfig;
 
   @observable
-  protected _singlesigAccounts: Entities<SinglesigWallet>;
+  public singlesigWallets: Entities<SinglesigWallet>;
 
   @observable
   public currentAccountId: string | null = null;
@@ -57,7 +57,7 @@ export class MultisigWallet extends AbstractWallet {
     this._id = id;
     this.serializedWallet = serializedWallet;
     this.gatekeeperConfig = new GatekeeperConfig();
-    this._singlesigAccounts = new Entities();
+    this.singlesigWallets = new Entities();
     this.onChange = onChange;
     makeObservable(this);
   }
@@ -113,13 +113,13 @@ export class MultisigWallet extends AbstractWallet {
     return Entities.merge<Beneficiary | FlexAccount | SinglesigWallet>(
       gatekeeperConfig.beneficiaries,
       gatekeeperConfig.flexAccounts,
-      this._singlesigAccounts
+      this.singlesigWallets
     );
   }
 
   @action
   public addSinglesigWallet(singlesig: SinglesigWallet) {
-    this._singlesigAccounts.add({
+    this.singlesigWallets.add({
       entity: singlesig,
     });
   }

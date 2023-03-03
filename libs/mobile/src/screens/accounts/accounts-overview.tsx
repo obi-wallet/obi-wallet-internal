@@ -94,8 +94,15 @@ export const AccountsOverviewScreen = observer<AccountsOverviewScreenProps>(
 );
 
 const AccountScreenInner = observer(function AccountScreenInner() {
-  const { configStore } = useStore();
+  const { configStore, draftsStore } = useStore();
   const isLoop = configStore.isLoop();
+
+  const wallet = useMultisigWallet();
+
+  const draftId = getGatekeeperConfigDraftId(wallet);
+  const draft = draftsStore.get<GatekeeperConfig>({
+    id: draftId,
+  });
 
   return (
     <View style={{ paddingHorizontal: 10, flex: 1 }}>
@@ -158,6 +165,25 @@ const AccountScreenInner = observer(function AccountScreenInner() {
       <View style={{ flex: 1 }}>
         <AccountsList />
       </View>
+      {draft.isDirty ? (
+        <View style={{ margin: 15 }}>
+          <Button
+            flavor="blue"
+            label="Confirm"
+            onPress={() => {
+              // TODO:
+              draft.commit({ original: draft.value });
+            }}
+          />
+          <Button
+            flavor="cancel"
+            label="Cancel"
+            onPress={() => {
+              draft.reset();
+            }}
+          />
+        </View>
+      ) : null}
     </View>
   );
 });
@@ -202,6 +228,27 @@ const AccountsList = observer(function AccountsList() {
             }}
             active={activeAccount === element.item.id}
             account={element.item.account}
+            onDelete={() => {
+              switch (element.item.account.type) {
+                case "beneficiary":
+                  draft.value.beneficiaries.remove({ id: element.item.id });
+                  break;
+                case "flex-account":
+                  draft.value.flexAccounts.remove({ id: element.item.id });
+                  break;
+                case "singlesig-wallet":
+                  wallet.singlesigWallets.remove({ id: element.item.id });
+                  break;
+              }
+            }}
+            onChange={(account) => {
+              if (account.type === "flex-account") {
+                draft.value.flexAccounts.add({
+                  id: element.item.id,
+                  entity: account,
+                });
+              }
+            }}
           />
         );
       }}
@@ -215,10 +262,13 @@ interface AbstractAccountItemProps {
   onSetActive: () => void;
   isOpen: boolean;
   onOpenToggle: () => void;
+  onDelete: () => void;
 }
 
 interface AccountItemProps extends AbstractAccountItemProps {
   account: Beneficiary | FlexAccount | SinglesigWallet;
+  onDelete: () => void;
+  onChange: (account: Beneficiary | FlexAccount | SinglesigWallet) => void;
 }
 
 const AccountItem = observer<AccountItemProps>(function AccountItem({
@@ -246,6 +296,7 @@ const BeneficiaryItem = observer<BeneficiaryItemProps>(
     account,
     active,
     onSetActive,
+    onDelete,
   }) {
     const inheritancePeriodicity = ["Monthly", "Annually"];
     const [selectedPeriodicity, setSelectedPeriodicity] = useState(
@@ -360,7 +411,7 @@ const BeneficiaryItem = observer<BeneficiaryItemProps>(
               </View>
               <View style={{ margin: 15 }}>
                 <Button flavor="blue" label="Confirm" />
-                <TouchableOpacity>
+                <TouchableOpacity onPress={onDelete}>
                   <Text
                     style={{
                       color: "#437DFF",
@@ -368,7 +419,7 @@ const BeneficiaryItem = observer<BeneficiaryItemProps>(
                       margin: 10,
                     }}
                   >
-                    Delete Flex Account
+                    Delete Beneficiary
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -382,6 +433,7 @@ const BeneficiaryItem = observer<BeneficiaryItemProps>(
 
 interface FlexAccountItemProps extends AbstractAccountItemProps {
   account: FlexAccount;
+  onChange: (account: FlexAccount) => void;
 }
 
 enum FlexAccountPeriodicity {
@@ -403,6 +455,7 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
   account,
   active = false,
   onSetActive,
+  onDelete,
 }) {
   const [amount, setAmount] = useState(10);
   const [timeOpened, setTimeOpened] = useState(false);
@@ -620,7 +673,7 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
               </View>
               <View style={{ margin: 15 }}>
                 <Button flavor="blue" label="Confirm" />
-                <TouchableOpacity>
+                <TouchableOpacity onPress={onDelete}>
                   <Text
                     style={{
                       color: "#437DFF",

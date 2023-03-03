@@ -177,6 +177,9 @@ export const GatekeeperConfigDraft = {
           endTime: DateTime.local().plus({ minutes: 30 }).toISO(),
         },
       });
+
+      draft.commit({ original: draft.value });
+
       wallet.addSinglesigWallet({
         type: "singlesig-wallet",
         publicKey: {
