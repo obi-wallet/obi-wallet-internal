@@ -62,7 +62,7 @@ export const terraChains = {
     prefix: "terra",
     accountCreatorAddress:
       "terra1a9zykuft0ngvq6ug2j60hz0an2kz72c3vs73tj5m87xcm0dt8w2sdkflln",
-    currentCodeId: 1081,
+    currentCodeId: 1216,
     lcds: [
       "https://terra2-api.dalnim.finance",
       "https://phoenix-lcd.terra.dev",
