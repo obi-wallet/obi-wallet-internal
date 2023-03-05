@@ -272,7 +272,8 @@ export const HomeScreen = observer(function HomeScreen() {
 
               if (!isTxError(response)) {
                 await currentWallet.setProxyCodeId(
-                  terraChains[currentWallet.chain as TerraChain].currentCodeId
+                  terraChains[currentWallet.chain as TerraChain].currentCodeIds
+                    .userAccount
                 );
               }
             },

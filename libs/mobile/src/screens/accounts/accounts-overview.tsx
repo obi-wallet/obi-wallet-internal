@@ -12,6 +12,7 @@ import {
   EntityId,
   FlexAccount,
   GatekeeperConfig,
+  RequestObiTerraSignAndBroadcastMsg,
   SinglesigWallet,
   terra,
   Text,
@@ -19,6 +20,7 @@ import {
 } from "@obi-wallet/common";
 import Slider from "@react-native-community/slider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
@@ -39,6 +41,7 @@ import {
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { useDebounce } from "rooks";
+import invariant from "tiny-invariant";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import KeyRoundIcon from "./assets/key-round-icon.svg";
@@ -48,6 +51,7 @@ import { Button } from "../../app/button";
 import { Background } from "../../app/screens/components/background";
 import { NetworkAccountPickerLayout } from "../../app/screens/components/network-account-picker-layout";
 import { useMultisigWallet, useStore } from "../../app/stores";
+import { getGatekeeperContractAddressesQuery } from "../../queries/gatekeeper";
 
 if (
   Platform.OS === "android" &&
@@ -107,6 +111,8 @@ const AccountScreenInner = observer(function AccountScreenInner() {
   const draft = draftsStore.get<GatekeeperConfig>({
     id: draftId,
   });
+
+  const queryClient = useQueryClient();
 
   return (
     <View style={{ paddingHorizontal: 10, flex: 1 }}>
@@ -174,7 +180,32 @@ const AccountScreenInner = observer(function AccountScreenInner() {
           <Button
             flavor="blue"
             label="Confirm"
-            onPress={() => {
+            onPress={async () => {
+              const { spendLimitGatekeeper } = await queryClient.fetchQuery(
+                getGatekeeperContractAddressesQuery({
+                  chainId: wallet.chain,
+                  address: wallet.address,
+                })
+              );
+
+              invariant(
+                spendLimitGatekeeper,
+                "Spend limit gatekeeper address is not set"
+              );
+
+              const messages = terra.getUpdateGatekeeperMessages({
+                currentGatekeeperConfig: draft.original,
+                newGatekeeperConfig: draft.value,
+                proxyAddress: wallet.owner.address,
+                spendLimitGatekeeper,
+              });
+
+              const response = await RequestObiTerraSignAndBroadcastMsg.send({
+                multisigKey: wallet.owner.serialize(),
+                demoMode: wallet.isDemo,
+                messages: messages.map((message) => message.toAmino()),
+              });
+
               // TODO:
               draft.commit({ original: draft.value });
             }}

@@ -9,7 +9,7 @@ import {
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
-import { Draft, GatekeeperConfig, withLcdClient } from "../..";
+import { GatekeeperConfig } from "../..";
 import { TerraChain, terraChains } from "../../chains";
 
 export function getNewAccountMessage({
@@ -130,7 +130,10 @@ export function getMigrateMessage({
 }) {
   return new MsgExecuteContract(admin, proxyAddress, {
     wrapped_migrate: {
-      code_id: terraChains[chainId].currentCodeId,
+      code_id: terraChains[chainId].currentCodeIds.userAccount,
+      gatekeeper_code_ids: {
+        spendlimit: terraChains[chainId].currentCodeIds.spendLimitGatekeeper,
+      },
       ...(codeId >= 1081
         ? {
             signers: {

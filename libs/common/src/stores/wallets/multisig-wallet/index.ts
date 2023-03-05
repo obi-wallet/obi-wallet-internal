@@ -87,7 +87,7 @@ export class MultisigWallet extends AbstractWallet {
   public get isOutdated(): boolean {
     const codeId = this.serializedWallet.data.proxyAddress.codeId ?? null;
     const currentCodeId = isTerraChain(this.chain)
-      ? terraChains[this.chain].currentCodeId
+      ? terraChains[this.chain].currentCodeIds.userAccount
       : cosmosChains[this.chain].currentCodeId;
     return codeId !== null && codeId < currentCodeId;
   }
