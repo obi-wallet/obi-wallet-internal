@@ -6,8 +6,10 @@ import {
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
 } from "@terra-money/terra.js";
+import * as R from "ramda";
 import invariant from "tiny-invariant";
 
+import { Draft, GatekeeperConfig, withLcdClient } from "../..";
 import { TerraChain, terraChains } from "../../chains";
 
 export function getNewAccountMessage({
@@ -225,4 +227,129 @@ export function getWithdrawRewardsMessage({
   validator: string;
 }) {
   return new MsgWithdrawDelegatorReward(sender, validator);
+}
+
+export function getUpdateGatekeeperMessages({
+  currentGatekeeperConfig,
+  newGatekeeperConfig,
+  proxyAddress,
+  spendLimitGatekeeper,
+}: {
+  currentGatekeeperConfig: GatekeeperConfig;
+  newGatekeeperConfig: GatekeeperConfig;
+  proxyAddress: string;
+  spendLimitGatekeeper: string;
+}) {
+  function handleFlexAccounts() {
+    const messages: MsgExecuteContract[] = [];
+
+    const previousFlexAccountAddresses =
+      currentGatekeeperConfig.flexAccounts.entities.map((flexAccount) => {
+        return flexAccount.address;
+      });
+    const nextFlexAccountAddresses =
+      newGatekeeperConfig.flexAccounts.entities.map((flexAccount) => {
+        return flexAccount.address;
+      });
+
+    const removedAddresses = R.difference(
+      previousFlexAccountAddresses,
+      nextFlexAccountAddresses
+    );
+
+    newGatekeeperConfig.flexAccounts.entities.forEach((flexAccount) => {
+      const previousFlexAccount =
+        currentGatekeeperConfig.flexAccounts.entities.find(
+          (previousFlexAccount) => {
+            return previousFlexAccount.address === flexAccount.address;
+          }
+        );
+
+      if (
+        previousFlexAccount &&
+        R.equals(
+          R.omit(["autoSign"], previousFlexAccount),
+          R.omit(["autoSign"], flexAccount)
+        )
+      ) {
+        return;
+      }
+
+      const additionalProperties = (() => {
+        if (flexAccount.spendLimit) {
+          const { period } = flexAccount.spendLimit;
+
+          const periodProperties = (() => {
+            if (R.has("days", period)) {
+              return {
+                period_multiple: period.days,
+                period_type: "days",
+              };
+            } else if (R.has("months", period)) {
+              return {
+                period_multiple: period.months,
+                period_type: "months",
+              };
+            } else {
+              return {
+                period_multiple: period.years * 12,
+                period_type: "months",
+              };
+            }
+          })();
+
+          const amount = `${1_000_000 * flexAccount.spendLimit.amount}`;
+
+          return {
+            ...periodProperties,
+            spend_limits: [
+              {
+                amount,
+                current_balance: "0",
+                denom:
+                  "ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4",
+                limit_remaining: amount,
+              },
+            ],
+          };
+        } else {
+          return {
+            period_multiple: 0,
+            period_type: "days",
+            spend_limits: [],
+          };
+        }
+      })();
+
+      const rawMessage = {
+        upsert_permissioned_address: {
+          new_permissioned_address: {
+            address: flexAccount.address,
+            cooldown: 0,
+            inheritance_records: [],
+            offset: 0,
+            ...additionalProperties,
+          },
+        },
+      };
+      messages.push(
+        new MsgExecuteContract(proxyAddress, spendLimitGatekeeper, rawMessage)
+      );
+    });
+
+    removedAddresses.forEach((address) => {
+      const rawMessage = {
+        rm_permissioned_address: {
+          doomed_permissioned_address: address,
+        },
+      };
+      messages.push(
+        new MsgExecuteContract(proxyAddress, spendLimitGatekeeper, rawMessage)
+      );
+    });
+
+    return messages;
+  }
+
+  return [...handleFlexAccounts()];
 }

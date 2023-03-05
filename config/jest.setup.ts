@@ -25,7 +25,10 @@ jest.mock("react-native", () => {
 
 // To avoid ESM issues
 jest.mock("nanoid/non-secure", () => {
+  let i = 0;
   return {
-    nanoid: {},
+    nanoid() {
+      return i++;
+    },
   };
 });
