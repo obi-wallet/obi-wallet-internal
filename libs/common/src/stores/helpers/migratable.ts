@@ -30,8 +30,9 @@ export function migratable<T extends z.ZodTypeAny>(schema: T) {
         nextSchema: Next;
         migrate: (data: z.infer<Current>) => z.infer<Next>;
       }) => {
-        return genericMigratable<z.ZodUnion<[Any, Next]>, Next>({
-          anyVersion: anyVersion.or(nextSchema),
+        return genericMigratable<z.ZodUnion<[Next, Any]>, Next>({
+          // Order is important here. We want to check the next schema first
+          anyVersion: nextSchema.or(anyVersion),
           currentVersion: nextSchema,
           migrate(data) {
             if (nextSchema.safeParse(data).success) return data;
