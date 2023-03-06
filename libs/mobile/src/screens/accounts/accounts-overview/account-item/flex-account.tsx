@@ -9,7 +9,7 @@ import * as R from "ramda";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { TouchableOpacity, View, ViewStyle } from "react-native";
 import * as Animatable from "react-native-animatable";
-import { useDebounce } from "rooks";
+import { useThrottle } from "rooks";
 
 import { AbstractAccountItemProps, AccountContainer, Pill } from "./common";
 import { PermissionedAddressesContext } from "../permissioned-address-context";
@@ -59,7 +59,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
       },
       [account, onChange]
     );
-    const debouncedSetAmount = useDebounce(setAmount, 50);
+    const [throttledSetAmount, isReady] = useThrottle(setAmount, 50);
 
     const [timeOpened, setTimeOpened] = useState(false);
     const periodicity = [
@@ -344,7 +344,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                           editable={nextFlexRule === FlexAccountRule.Limited}
                           onChangeText={(value) => {
                             const res = value.replace(/[^0-9.]/g, "");
-                            debouncedSetAmount(Number(res));
+                            throttledSetAmount(Number(res));
                           }}
                         />
                         <TouchableOpacity
@@ -386,7 +386,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                     minimumValue={0}
                     step={1}
                     onValueChange={(value) => {
-                      debouncedSetAmount(value);
+                      throttledSetAmount(Number(value));
                     }}
                     disabled={nextFlexRule !== FlexAccountRule.Limited}
                     value={(amount || 0) as number}
