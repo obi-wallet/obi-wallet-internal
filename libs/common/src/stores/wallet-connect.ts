@@ -9,7 +9,7 @@ import { action, computed, makeObservable, observable, toJS } from "mobx";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
-import { WalletsStore } from "./wallets";
+import { SerializedWalletMeta, WalletMeta, WalletsStore } from "./wallets";
 import {
   RequestObiTerraSignAndBroadcastMsg,
   RequestObiWalletConnectMsg,
@@ -41,7 +41,7 @@ type HandshakeTopic = string;
 
 export interface ConnectInformation {
   connector: WalletConnect;
-  walletMeta: RequestObiWalletConnectPayload["walletMeta"];
+  walletMeta: WalletMeta;
 }
 
 // TODO: add walletConnectID to terra chain (mainnet 1, testnet 0)
@@ -98,7 +98,7 @@ export class WalletConnectStore {
         HandshakeTopic,
         {
           session: IWalletConnectSession;
-          walletMeta: ConnectInformation["walletMeta"];
+          walletMeta: SerializedWalletMeta;
         }
       >
     >("sessions");
@@ -109,7 +109,10 @@ export class WalletConnectStore {
         const connector = createWalletConnect({
           session: info.session,
         });
-        this.recoverConnector({ connector, walletMeta: info.walletMeta });
+        this.recoverConnector({
+          connector,
+          walletMeta: this.walletsStore.deserializeWalletMeta(info.walletMeta),
+        });
       }, data);
     } catch (e) {
       // noop
@@ -167,14 +170,14 @@ export class WalletConnectStore {
         HandshakeTopic,
         {
           session: IWalletConnectSession;
-          walletMeta: ConnectInformation["walletMeta"];
+          walletMeta: SerializedWalletMeta;
         }
       ][],
       Record<
         HandshakeTopic,
         {
           session: IWalletConnectSession;
-          walletMeta: ConnectInformation["walletMeta"];
+          walletMeta: SerializedWalletMeta;
         }
       >
     >(
@@ -182,7 +185,10 @@ export class WalletConnectStore {
       R.filter(([_, info]) => info.connector.connected),
       R.map(([topic, info]) => [
         topic,
-        { session: info.connector.session, walletMeta: info.walletMeta },
+        {
+          session: info.connector.session,
+          walletMeta: this.walletsStore.serializeWalletMeta(info.walletMeta),
+        },
       ]),
       R.fromPairs
     )(this._connectors);

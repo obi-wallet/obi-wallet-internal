@@ -26,7 +26,7 @@ import {
 } from "./serialized-data";
 import { ChainStore } from "../chain";
 import { ConfigStore } from "../config";
-import { Entities } from "../entities";
+import { Entities, EntityId } from "../entities";
 import { ArrayIndex } from "../helpers";
 
 export * from "./multisig-key";
@@ -45,6 +45,22 @@ export enum WalletState {
 export { MultisigWallet, WalletType };
 
 export type Wallet = MultisigWallet;
+
+export interface WalletMeta {
+  walletId: EntityId;
+  currentAccount: {
+    type: "flex-account" | "singlesig-wallet";
+    id: EntityId;
+  } | null;
+}
+
+export interface SerializedWalletMeta {
+  walletIndex: number;
+  currentAccount: {
+    type: "flex-account" | "singlesig-wallet";
+    index: number;
+  } | null;
+}
 
 export class WalletsStore {
   protected readonly chainStore: ChainStore;
@@ -100,10 +116,14 @@ export class WalletsStore {
     return this.currentWallet?.address ?? null;
   }
 
+  public getWalletIndex(id: string) {
+    return this._wallets.ids.indexOf(id);
+  }
+
   @computed
   public get currentWalletIndex() {
     if (!this.currentWalletId) return null;
-    return this._wallets.ids.indexOf(this.currentWalletId);
+    return this.getWalletIndex(this.currentWalletId);
   }
 
   @computed
@@ -274,6 +294,25 @@ export class WalletsStore {
         return MultisigWallet.deserialize({ id, serializedWallet, onChange });
     }
   };
+
+  public serializeWalletMeta(meta: WalletMeta): SerializedWalletMeta {
+    return {
+      walletIndex: this.getWalletIndex(meta.walletId),
+      currentAccount:
+        this.getWallet(meta.walletId)?.serializeAccount(meta.currentAccount) ??
+        null,
+    };
+  }
+
+  public deserializeWalletMeta(meta: SerializedWalletMeta): WalletMeta {
+    const walletId = this._wallets.ids[meta.walletIndex];
+    return {
+      walletId,
+      currentAccount: this.getWallet(walletId).deserializeAccount(
+        meta.currentAccount
+      ),
+    };
+  }
 
   protected async save() {
     const serializedData: SerializedData = {
