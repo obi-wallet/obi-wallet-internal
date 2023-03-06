@@ -122,6 +122,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
               flexAccounts: [],
             },
             singlesigWallets: [],
+            currentAccount: null,
           };
 
           const newOwner = MultisigKey.deserialize({

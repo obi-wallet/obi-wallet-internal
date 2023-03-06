@@ -67,6 +67,7 @@ export async function handleCosmos({
         flexAccounts: [],
       },
       singlesigWallets: [],
+      currentAccount: null,
     };
   } catch (e) {
     throw new Error(response.rawLog);

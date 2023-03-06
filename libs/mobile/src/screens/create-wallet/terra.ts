@@ -42,6 +42,7 @@ export async function handleTerra({
         flexAccounts: [],
       },
       singlesigWallets: [],
+      currentAccount: null,
     };
   } catch (e) {
     throw new Error(response.raw_log);

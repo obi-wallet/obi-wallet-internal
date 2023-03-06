@@ -14,7 +14,7 @@ import {
   isTerraChain,
   terraChains,
 } from "../../../chains";
-import { Entities } from "../../entities";
+import { Entities, EntityId } from "../../entities";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
 import { GatekeeperConfig } from "../gatekeeper-config";
 import { Beneficiary, FlexAccount } from "../gatekeeper-config/serialized-data";
@@ -48,6 +48,12 @@ export class MultisigWallet extends AbstractWallet {
 
   @observable
   public readonly proxyAddress: SerializedProxyAddress;
+
+  @observable
+  protected _currentAccount: {
+    type: "flex-account" | "singlesig-wallet";
+    id: EntityId;
+  } | null = null;
 
   protected onChange: () => Promise<void>;
 
@@ -109,24 +115,33 @@ export class MultisigWallet extends AbstractWallet {
     );
   }
 
-  // TODO:
-  // @computed
-  // public get currentAccount() {
-  //   if (!this.currentAccountId) return null;
-  //   return this.getAccounts().get({ id: this.currentAccountId });
-  // }
-  //
-  // @action
-  // public async setCurrentAccount(id: string) {
-  //   this.currentAccountId = id;
-  // }
-  //
-  // @computed
-  // public get currentAccountIndex() {
-  //   if (!this.currentAccountId) return null;
-  //   return this.getAccounts().ids.indexOf(this.currentAccountId);
-  // }
-  //
+  public get currentAccountId() {
+    return this._currentAccount?.id ?? null;
+  }
+
+  @computed
+  public get currentAccount() {
+    if (!this._currentAccount) return null;
+    return this.getAccounts().get({ id: this._currentAccount.id });
+  }
+
+  @action
+  public async setCurrentAccount(id: EntityId | null) {
+    if (id && this.gatekeeperConfig.flexAccounts.ids.includes(id)) {
+      this._currentAccount = {
+        type: "flex-account",
+        id,
+      };
+    } else if (id && this.singlesigWallets.ids.includes(id)) {
+      this._currentAccount = {
+        type: "singlesig-wallet",
+        id,
+      };
+    } else {
+      this._currentAccount = null;
+    }
+    await this.save();
+  }
 
   public get owner() {
     return this._owner;
@@ -171,9 +186,28 @@ export class MultisigWallet extends AbstractWallet {
       data: {
         chain: this.chain,
         owner: this._owner.serialize(),
+        proxyAddress: this.proxyAddress,
         gatekeeperConfig: this._gatekeeperConfig.serialize(),
         singlesigWallets: this._singlesigWallets.serialize(),
-        proxyAddress: this.proxyAddress,
+        currentAccount: (() => {
+          if (!this._currentAccount) return null;
+          switch (this._currentAccount.type) {
+            case "flex-account":
+              return {
+                type: "flex-account",
+                index: this._gatekeeperConfig.flexAccounts.ids.indexOf(
+                  this._currentAccount.id
+                ),
+              };
+            case "singlesig-wallet":
+              return {
+                type: "singlesig-wallet",
+                index: this._singlesigWallets.ids.indexOf(
+                  this._currentAccount.id
+                ),
+              };
+          }
+        })(),
       },
     };
   }
@@ -204,11 +238,29 @@ export class MultisigWallet extends AbstractWallet {
     wallet._singlesigWallets = Entities.deserialize(
       serializedWallet.data.singlesigWallets
     );
+    wallet._currentAccount = (() => {
+      if (!serializedWallet.data.currentAccount) return null;
+      switch (serializedWallet.data.currentAccount.type) {
+        case "flex-account":
+          return {
+            type: "flex-account",
+            id: wallet.gatekeeperConfig.flexAccounts.ids[
+              serializedWallet.data.currentAccount.index
+            ],
+          };
+        case "singlesig-wallet":
+          return {
+            type: "singlesig-wallet",
+            id: wallet.singlesigWallets.ids[
+              serializedWallet.data.currentAccount.index
+            ],
+          };
+      }
+    })();
     return wallet;
   }
 
   protected async save() {
-    console.log("saving", JSON.stringify(this.serialize(), null, 2));
     await this.onChange();
   }
 }

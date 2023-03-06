@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { migratable } from "../../helpers";
+import { ArrayIndex, migratable } from "../../helpers";
 import { GatekeeperConfig } from "../gatekeeper-config";
 import { SerializedGatekeeperConfig } from "../gatekeeper-config/serialized-data";
 import { SerializedMultisigKey } from "../multisig-key/keys";
@@ -38,23 +38,48 @@ export const MigratableSerializedMultisigWalletData = migratable(
     owner: SerializedMultisigKey,
     proxyAddress: MigratableSerializedProxyAddress.schema,
   })
-).addMigration({
-  nextSchema: z.object({
-    chain: Chain,
-    owner: SerializedMultisigKey,
-    proxyAddress: MigratableSerializedProxyAddress.schema,
-    gatekeeperConfig: SerializedGatekeeperConfig,
-    singlesigWallets: z.array(SinglesigWallet),
-  }),
-  migrate(data) {
-    const gatekeeperConfig = new GatekeeperConfig();
-    return {
-      ...data,
-      gatekeeperConfig: gatekeeperConfig.serialize(),
-      singlesigWallets: [],
-    };
-  },
-});
+)
+  .addMigration({
+    nextSchema: z.object({
+      chain: Chain,
+      owner: SerializedMultisigKey,
+      proxyAddress: MigratableSerializedProxyAddress.schema,
+      gatekeeperConfig: SerializedGatekeeperConfig,
+      singlesigWallets: z.array(SinglesigWallet),
+    }),
+    migrate(data) {
+      const gatekeeperConfig = new GatekeeperConfig();
+      return {
+        ...data,
+        gatekeeperConfig: gatekeeperConfig.serialize(),
+        singlesigWallets: [],
+      };
+    },
+  })
+  .addMigration({
+    nextSchema: z.object({
+      chain: Chain,
+      owner: SerializedMultisigKey,
+      proxyAddress: MigratableSerializedProxyAddress.schema,
+      gatekeeperConfig: SerializedGatekeeperConfig,
+      singlesigWallets: z.array(SinglesigWallet),
+      currentAccount: z
+        .object({
+          type: z.union([
+            z.literal("flex-account"),
+            z.literal("singlesig-wallet"),
+          ]),
+          index: ArrayIndex,
+        })
+        .nullable(),
+    }),
+    migrate(data) {
+      return {
+        ...data,
+        currentAccount: null,
+      };
+    },
+  });
 
 export type SerializedMultisigWalletData = z.infer<
   typeof MigratableSerializedMultisigWalletData.schema

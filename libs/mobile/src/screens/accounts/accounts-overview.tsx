@@ -50,8 +50,10 @@ import KeyRoundIcon from "./assets/key-round-icon.svg";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { UsdBalance } from "../../app/balances";
 import { Button } from "../../app/button";
+import { useRootNavigation } from "../../app/root-stack";
 import { Background } from "../../app/screens/components/background";
 import { NetworkAccountPickerLayout } from "../../app/screens/components/network-account-picker-layout";
+import { SettingsRoute } from "../../app/screens/settings/settings-stack";
 import { useMultisigWallet, useStore } from "../../app/stores";
 import { getGatekeeperContractAddressesQuery } from "../../queries/gatekeeper";
 
@@ -106,6 +108,7 @@ export const AccountsOverviewScreen = observer<AccountsOverviewScreenProps>(
 const AccountScreenInner = observer(function AccountScreenInner() {
   const { configStore, draftsStore } = useStore();
   const isLoop = configStore.isLoop();
+  const navigation = useRootNavigation();
 
   const wallet = useMultisigWallet();
 
@@ -118,10 +121,13 @@ const AccountScreenInner = observer(function AccountScreenInner() {
 
   return (
     <View style={{ paddingHorizontal: 10, flex: 1 }}>
-      <View
+      <TouchableOpacity
         style={{
           backgroundColor: isLoop ? "#1C0C3F" : "#437DFF",
           borderRadius: 16,
+        }}
+        onPress={async () => {
+          await wallet.setCurrentAccount(null);
         }}
       >
         <ImageBackground
@@ -132,7 +138,18 @@ const AccountScreenInner = observer(function AccountScreenInner() {
           resizeMode="cover"
           borderRadius={16}
         >
-          <TouchableOpacity style={{ position: "absolute", top: 6, left: 6 }}>
+          <TouchableOpacity
+            style={{
+              position: "absolute",
+              top: 6,
+              left: 6,
+              zIndex: 999,
+            }}
+            hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}
+            onPress={() => {
+              navigation.navigate(SettingsRoute.MultisigSettings);
+            }}
+          >
             <KeyRoundIcon />
           </TouchableOpacity>
           <View
@@ -173,7 +190,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
             </View>
           </View>
         </ImageBackground>
-      </View>
+      </TouchableOpacity>
       <View style={{ flex: 1 }}>
         <AccountsList />
       </View>
@@ -241,8 +258,11 @@ const AccountsList = observer(function AccountsList() {
 
   const accounts = wallet.getAccounts(draft.value);
   const [itemOpened, setItemOpened] = useState<EntityId | null>(null);
-  // TODO:
-  const [activeAccount, setActiveAccount] = useState<EntityId | null>(null);
+
+  const activeAccount = wallet.currentAccountId;
+  const setActiveAccount = async (id: EntityId) => {
+    await wallet.setCurrentAccount(id);
+  };
 
   const data = accounts.ids.map((id) => {
     return {
@@ -266,8 +286,8 @@ const AccountsList = observer(function AccountsList() {
                 : setItemOpened(element.item.id);
             }}
             isOpen={itemOpened === element.item.id}
-            onSetActive={() => {
-              setActiveAccount(element.item.id);
+            onSetActive={async () => {
+              await setActiveAccount(element.item.id);
             }}
             active={activeAccount === element.item.id}
             account={element.item.account}
@@ -316,7 +336,7 @@ const AccountsList = observer(function AccountsList() {
 
 interface AbstractAccountItemProps {
   active: boolean;
-  onSetActive: () => void;
+  onSetActive: () => Promise<void>;
   isOpen: boolean;
   onOpenToggle: () => void;
   onDelete: () => void;
@@ -1101,9 +1121,8 @@ const AccountContainer = observer<{
             position: "absolute",
             right: 5,
             top: 5,
-            paddingLeft: 10,
-            paddingBottom: 10,
           }}
+          hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}
         >
           <View
             style={{
