@@ -20,13 +20,20 @@ import {
 } from "@obi-wallet/common";
 import Slider from "@react-native-community/slider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { isTxError } from "@terra-money/terra.js";
 import { DateTime } from "luxon";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { FormattedMessage } from "react-intl";
 import {
   Alert,
@@ -53,11 +60,13 @@ import { UsdBalance, useUsdBalance } from "../../app/balances";
 import { Button } from "../../app/button";
 import { useRootNavigation } from "../../app/root-stack";
 import { Background } from "../../app/screens/components/background";
-import { CoinIcon } from "../../app/screens/components/coin-icon";
 import { NetworkAccountPickerLayout } from "../../app/screens/components/network-account-picker-layout";
 import { SettingsRoute } from "../../app/screens/settings/settings-stack";
 import { useMultisigWallet, useStore } from "../../app/stores";
-import { getGatekeeperContractAddressesQuery } from "../../queries/gatekeeper";
+import {
+  getGatekeeperContractAddressesQuery,
+  getPermissionedAddressesQuery,
+} from "../../queries/gatekeeper";
 
 if (
   Platform.OS === "android" &&
@@ -107,6 +116,10 @@ export const AccountsOverviewScreen = observer<AccountsOverviewScreenProps>(
   }
 );
 
+const PermissionedAddressesContext = createContext<
+  Awaited<ReturnType<typeof terra.fetchPermissionedAddresses>> | undefined
+>(undefined);
+
 const AccountScreenInner = observer(function AccountScreenInner() {
   const { configStore, draftsStore } = useStore();
   const isLoop = configStore.isLoop();
@@ -119,133 +132,141 @@ const AccountScreenInner = observer(function AccountScreenInner() {
     id: draftId,
   });
 
-  const queryClient = useQueryClient();
+  const { data: gatekeeperContractAddresses } = useQuery(
+    getGatekeeperContractAddressesQuery({
+      chainId: wallet.chain,
+      address: wallet.address,
+    })
+  );
+  const spendLimitGatekeeper =
+    gatekeeperContractAddresses?.spendLimitGatekeeper;
+  const { data: permissionedAddresses } = useQuery(
+    getPermissionedAddressesQuery({
+      chainId: wallet.chain,
+      spendLimitGatekeeper,
+    })
+  );
 
   return (
-    <View style={{ paddingHorizontal: 10, flex: 1 }}>
-      <TouchableOpacity
-        style={{
-          backgroundColor: isLoop ? "#1C0C3F" : "#437DFF",
-          borderRadius: 16,
-        }}
-        onPress={async () => {
-          await wallet.setCurrentAccount(null);
-        }}
-      >
-        <ImageBackground
-          source={
-            isLoop ? require("./assets/loop-account-background.png") : null
-          }
-          style={{ padding: 10, position: "relative" }}
-          resizeMode="cover"
-          borderRadius={16}
+    <PermissionedAddressesContext.Provider value={permissionedAddresses}>
+      <View style={{ paddingHorizontal: 10, flex: 1 }}>
+        <TouchableOpacity
+          style={{
+            backgroundColor: isLoop ? "#1C0C3F" : "#437DFF",
+            borderRadius: 16,
+          }}
+          onPress={async () => {
+            await wallet.setCurrentAccount(null);
+          }}
         >
-          <TouchableOpacity
-            style={{
-              position: "absolute",
-              top: 6,
-              left: 6,
-              zIndex: 999,
-            }}
-            hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}
-            onPress={() => {
-              navigation.navigate(SettingsRoute.MultisigSettings);
-            }}
+          <ImageBackground
+            source={
+              isLoop ? require("./assets/loop-account-background.png") : null
+            }
+            style={{ padding: 10, position: "relative" }}
+            resizeMode="cover"
+            borderRadius={16}
           >
-            <KeyRoundIcon />
-          </TouchableOpacity>
-          <View
-            style={{
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
-          >
+            <TouchableOpacity
+              style={{
+                position: "absolute",
+                top: 6,
+                left: 6,
+                zIndex: 999,
+              }}
+              hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}
+              onPress={() => {
+                navigation.navigate(SettingsRoute.MultisigSettings);
+              }}
+            >
+              <KeyRoundIcon />
+            </TouchableOpacity>
             <View
               style={{
-                flexDirection: "row",
+                flexDirection: "column",
+                justifyContent: "flex-start",
                 alignItems: "center",
               }}
             >
-              <View style={{ flexDirection: "column" }}>
-                <Text
-                  style={{
-                    color: "#F6F5FF",
-                    fontSize: 18,
-                    fontWeight: "700",
-                  }}
-                >
-                  <FormattedMessage
-                    id="accountscreen.accountname"
-                    defaultMessage="Obi Smart Account"
-                  />
-                </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <View style={{ flexDirection: "column" }}>
+                  <Text
+                    style={{
+                      color: "#F6F5FF",
+                      fontSize: 18,
+                      fontWeight: "700",
+                    }}
+                  >
+                    <FormattedMessage
+                      id="accountscreen.accountname"
+                      defaultMessage="Obi Smart Account"
+                    />
+                  </Text>
+                </View>
+              </View>
+
+              <View
+                style={{
+                  marginTop: 10,
+                }}
+              >
+                <UsdBalance address={wallet.proxyAddress.address} />
               </View>
             </View>
-
-            <View
-              style={{
-                marginTop: 10,
-              }}
-            >
-              <UsdBalance address={wallet.proxyAddress.address} />
-            </View>
-          </View>
-        </ImageBackground>
-      </TouchableOpacity>
-      <View style={{ flex: 1 }}>
-        <AccountsList />
-      </View>
-      {draft.isDirty ? (
-        <View style={{ margin: 15 }}>
-          <Button
-            flavor="blue"
-            label="Confirm"
-            onPress={async () => {
-              const { spendLimitGatekeeper } = await queryClient.fetchQuery(
-                getGatekeeperContractAddressesQuery({
-                  chainId: wallet.chain,
-                  address: wallet.address,
-                })
-              );
-
-              invariant(
-                spendLimitGatekeeper,
-                "Spend limit gatekeeper address is not set"
-              );
-
-              const messages = terra.getUpdateGatekeeperMessages({
-                currentGatekeeperConfig: draft.original,
-                newGatekeeperConfig: draft.value,
-                proxyAddress: wallet.owner.address,
-                spendLimitGatekeeper,
-              });
-
-              const response = await RequestObiTerraSignAndBroadcastMsg.send({
-                multisigKey: wallet.owner.serialize(),
-                demoMode: wallet.isDemo,
-                messages: messages.map((message) => message.toAmino()),
-              });
-
-              if (isTxError(response)) {
-                Alert.alert("Error", response.raw_log ?? "Unknown error");
-                return;
-              }
-
-              await wallet.setGatekeeperConfig(draft.value);
-              draft.commit({ original: wallet.gatekeeperConfig });
-            }}
-          />
-          <Button
-            flavor="cancel"
-            label="Cancel"
-            onPress={() => {
-              draft.reset();
-            }}
-          />
+          </ImageBackground>
+        </TouchableOpacity>
+        <View style={{ flex: 1 }}>
+          <AccountsList />
         </View>
-      ) : null}
-    </View>
+        {draft.isDirty ? (
+          <View style={{ margin: 15 }}>
+            <Button
+              flavor="blue"
+              label="Confirm"
+              onPress={async () => {
+                invariant(
+                  spendLimitGatekeeper,
+                  "Spend limit gatekeeper address is not set"
+                );
+
+                const messages = terra.getUpdateGatekeeperMessages({
+                  currentGatekeeperConfig: draft.original,
+                  newGatekeeperConfig: draft.value,
+                  proxyAddress: wallet.owner.address,
+                  spendLimitGatekeeper,
+                });
+
+                const response = await RequestObiTerraSignAndBroadcastMsg.send({
+                  multisigKey: wallet.owner.serialize(),
+                  demoMode: wallet.isDemo,
+                  messages: messages.map((message) => message.toAmino()),
+                });
+
+                if (isTxError(response)) {
+                  Alert.alert("Error", response.raw_log ?? "Unknown error");
+                  return;
+                }
+
+                await wallet.setGatekeeperConfig(draft.value);
+                draft.commit({ original: wallet.gatekeeperConfig });
+              }}
+            />
+            <Button
+              flavor="cancel"
+              label="Cancel"
+              onPress={() => {
+                draft.reset();
+              }}
+            />
+          </View>
+        ) : null}
+      </View>
+    </PermissionedAddressesContext.Provider>
   );
 });
 
@@ -777,6 +798,17 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
     }
   };
 
+  const permissionedAddresses = useContext(PermissionedAddressesContext);
+  const permissionedAddress = permissionedAddresses?.find(
+    (address) => address.address === account.address
+  );
+  const spendLimit = permissionedAddress?.params.spend_limits?.[0];
+  const progressbarAmount = spendLimit
+    ? 100 -
+      (100 * parseInt(spendLimit.limit_remaining, 10)) /
+        parseInt(spendLimit.amount, 10)
+    : 0;
+
   return (
     <AccountContainer
       isOpen={isOpen}
@@ -793,11 +825,32 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
       onSetActive={onSetActive}
       account={account}
     >
-      <ProgressBar amount={70} containerStyle={{ marginVertical: 10 }} />
+      <ProgressBar
+        amount={progressbarAmount}
+        containerStyle={{ marginTop: 10 }}
+      />
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginTop: 4,
+        }}
+      >
+        <Text style={{ color: "#6bbeba", fontSize: 10 }}>Limit</Text>
+        <Text style={{ color: "#6bbeba", fontSize: 10 }}>
+          {spendLimit
+            ? `$${Math.floor(parseInt(spendLimit.amount, 10) / 10 ** 6)}`
+            : "NA"}
+        </Text>
+      </View>
       <Animatable.View
         duration={400}
         animation={isOpen ? "fadeIn" : "fadeOut"}
-        style={{ backgroundColor: "#363636", borderRadius: 7 }}
+        style={{
+          backgroundColor: "#363636",
+          borderRadius: 7,
+          marginTop: isOpen ? 10 : 0,
+        }}
       >
         {isOpen && (
           <>

@@ -28,3 +28,32 @@ export function getGatekeeperContractAddressesQuery({
     },
   };
 }
+
+export function getPermissionedAddressesQuery({
+  chainId,
+  spendLimitGatekeeper,
+}: {
+  chainId: Chain;
+  spendLimitGatekeeper: string | null | undefined;
+}) {
+  return {
+    queryKey: ["gatekeeper", { chainId, spendLimitGatekeeper }],
+    queryFn: async () => {
+      return Chain.select({
+        chainId,
+        async onTerraChain(chainId) {
+          if (!spendLimitGatekeeper) return [];
+          return await terra.fetchPermissionedAddresses({
+            spendLimitGatekeeper,
+            chainId,
+          });
+        },
+        async onCosmosChain() {
+          // TODO: not implemented yet
+          return [];
+        },
+      });
+    },
+    enabled: !!spendLimitGatekeeper,
+  };
+}

@@ -365,7 +365,7 @@ const Balance = observer(function Balance() {
                   validator,
                 });
               });
-
+              // TODO: handle current account
               await RequestObiTerraSignAndBroadcastMsg.send({
                 multisigKey: wallet.owner.serialize(),
                 messages: messages.map((message) => {
@@ -477,6 +477,7 @@ const Validators = observer(function Validators() {
                 parseFloat(amount.replace(",", ".")) * 10 ** digits;
               // TODO: also check if amount is greater than balance
               if (isNaN(amountToUse) || amountToUse <= 0) return;
+              // TODO: handle current account
               await RequestObiTerraSignAndBroadcastMsg.send({
                 multisigKey: wallet.owner.serialize(),
                 messages: [
@@ -736,6 +737,7 @@ const MyStake = observer(function MyStake() {
                 parseFloat(amount.replace(",", ".")) * 10 ** digits;
               // TODO: also check if amount is greater than balance
               if (isNaN(amountToUse) || amountToUse <= 0) return;
+              // TODO: handle current account
               await RequestObiTerraSignAndBroadcastMsg.send({
                 multisigKey: wallet.owner.serialize(),
                 messages: [

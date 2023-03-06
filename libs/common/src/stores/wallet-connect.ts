@@ -221,6 +221,7 @@ export class WalletConnectStore {
             console.log(messages.map((msg) => msg.toAmino()));
 
             try {
+              // TODO: handle current account
               const response = await RequestObiTerraSignAndBroadcastMsg.send({
                 multisigKey: multisigKey.serialize(),
                 messages: messages.map((msg) => msg.toAmino()),

@@ -438,6 +438,7 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
                 success: isDeliverTxSuccess(response),
               });
             } else {
+              // TODO: handle current account
               const response = await RequestObiTerraSignAndBroadcastMsg.send({
                 multisigKey: wallet.owner.serialize(),
                 demoMode: wallet.isDemo,
