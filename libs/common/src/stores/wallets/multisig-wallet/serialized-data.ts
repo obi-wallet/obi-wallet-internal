@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 import { migratable } from "../../helpers";
+import { GatekeeperConfig } from "../gatekeeper-config";
+import { SerializedGatekeeperConfig } from "../gatekeeper-config/serialized-data";
 import { SerializedMultisigKey } from "../multisig-key/keys";
 import { Secp256k1PublicKey } from "../multisig-key/keys/public-key";
 
@@ -36,7 +38,23 @@ export const MigratableSerializedMultisigWalletData = migratable(
     owner: SerializedMultisigKey,
     proxyAddress: MigratableSerializedProxyAddress.schema,
   })
-);
+).addMigration({
+  nextSchema: z.object({
+    chain: Chain,
+    owner: SerializedMultisigKey,
+    proxyAddress: MigratableSerializedProxyAddress.schema,
+    gatekeeperConfig: SerializedGatekeeperConfig,
+    singlesigWallets: z.array(SinglesigWallet),
+  }),
+  migrate(data) {
+    const gatekeeperConfig = new GatekeeperConfig();
+    return {
+      ...data,
+      gatekeeperConfig: gatekeeperConfig.serialize(),
+      singlesigWallets: [],
+    };
+  },
+});
 
 export type SerializedMultisigWalletData = z.infer<
   typeof MigratableSerializedMultisigWalletData.schema

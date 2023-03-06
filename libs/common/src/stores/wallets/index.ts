@@ -52,10 +52,7 @@ export class WalletsStore {
   protected readonly kvStore: KVStore;
 
   @observable
-  protected _wallets: Entities<{
-    wallet: Wallet;
-    serializedWallet: SerializedWallet;
-  }>;
+  protected _wallets: Entities<Wallet>;
   @observable
   protected currentWalletId: string | null = null;
   @observable
@@ -92,7 +89,7 @@ export class WalletsStore {
   @computed
   public get currentWallet() {
     if (!this.currentWalletId) return null;
-    return this._wallets.get({ id: this.currentWalletId }).wallet;
+    return this._wallets.get({ id: this.currentWalletId });
   }
 
   public get type(): WalletType | null {
@@ -111,17 +108,12 @@ export class WalletsStore {
 
   @computed
   public get wallets() {
-    return this._wallets.entities.map((entity) => entity.wallet);
+    return this._wallets.entities;
   }
 
   @computed
   public get readyWallets() {
     return this.wallets.filter((wallet) => wallet.isReady);
-  }
-
-  @computed
-  protected get serializedWallets() {
-    return this._wallets.entities.map((entity) => entity.serializedWallet);
   }
 
   @action
@@ -135,7 +127,7 @@ export class WalletsStore {
   protected addWalletWithoutSave = (serializedWallet: SerializedWallet) => {
     const id = Entities.generateId();
     const wallet = this.createWallet({ id, serializedWallet });
-    this._wallets.add({ id, entity: { wallet, serializedWallet } });
+    this._wallets.add({ id, entity: wallet });
     this.currentWalletId = id;
     return wallet;
   };
@@ -162,7 +154,7 @@ export class WalletsStore {
 
   @action
   public getWallet(id: string) {
-    return this._wallets.get({ id }).wallet;
+    return this._wallets.get({ id });
   }
 
   @action
@@ -272,26 +264,21 @@ export class WalletsStore {
     id: string;
     serializedWallet: SerializedWallet;
   }) => {
-    const onChange = async (serializedWallet: SerializedWallet) => {
-      this._wallets.get({ id }).serializedWallet = serializedWallet;
+    const onChange = async () => {
       await this.save();
     };
 
     switch (serializedWallet.type) {
       case "multisig":
       case "multisig-demo":
-        return new MultisigWallet({
-          id,
-          serializedWallet,
-          onChange,
-        });
+        return MultisigWallet.deserialize({ id, serializedWallet, onChange });
     }
   };
 
   protected async save() {
     const serializedData: SerializedData = {
       currentWalletIndex: this.currentWalletIndex,
-      wallets: this.serializedWallets,
+      wallets: this._wallets.entities.map((wallet) => wallet.serialize()),
     };
     const data = toJS(serializedData);
     await this.kvStore.set("wallets", data);

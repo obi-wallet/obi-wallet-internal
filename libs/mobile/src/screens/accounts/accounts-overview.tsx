@@ -20,7 +20,8 @@ import {
 } from "@obi-wallet/common";
 import Slider from "@react-native-community/slider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { isTxError } from "@terra-money/terra.js";
 import { DateTime } from "luxon";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
@@ -28,6 +29,7 @@ import * as R from "ramda";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import {
+  Alert,
   FlatList,
   ImageBackground,
   LayoutAnimation,
@@ -206,8 +208,13 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                 messages: messages.map((message) => message.toAmino()),
               });
 
-              // TODO:
-              draft.commit({ original: draft.value });
+              if (isTxError(response)) {
+                Alert.alert("Error", response.raw_log ?? "Unknown error");
+                return;
+              }
+
+              await wallet.setGatekeeperConfig(draft.value);
+              draft.commit({ original: wallet.gatekeeperConfig });
             }}
           />
           <Button

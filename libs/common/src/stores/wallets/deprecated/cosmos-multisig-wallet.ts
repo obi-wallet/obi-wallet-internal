@@ -152,10 +152,10 @@ export const MigratableSerializedCosmosMultisigWallet = migratable(
   migrate(data) {
     const multisigWalletData = migrateSerializedData(data.data);
     if (multisigWalletData) {
-      return {
+      return MigratableSerializedMultisigWallet.schema.parse({
         type: "multisig" as const,
         data: multisigWalletData,
-      };
+      });
     }
     return null;
   },
@@ -180,10 +180,10 @@ export const MigratableSerializedCosmosMultisigDemoWallet = migratable(
   migrate(data) {
     const multisigWalletData = migrateSerializedData(data.data);
     if (multisigWalletData) {
-      return {
+      return MigratableSerializedMultisigDemoWallet.schema.parse({
         type: "multisig-demo" as const,
         data: multisigWalletData,
-      };
+      });
     }
     return null;
   },
