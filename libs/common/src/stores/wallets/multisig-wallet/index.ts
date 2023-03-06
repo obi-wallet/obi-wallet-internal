@@ -14,6 +14,7 @@ import {
   isTerraChain,
   terraChains,
 } from "../../../chains";
+import { terra } from "../../../networks";
 import { Entities, EntityId } from "../../entities";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
 import { GatekeeperConfig } from "../gatekeeper-config";
@@ -86,15 +87,22 @@ export class MultisigWallet extends AbstractWallet {
     return this._id;
   }
 
-  get address(): string {
+  @computed
+  public get address(): string {
+    if (this.currentAccount?.type === "singlesig-wallet") {
+      return terra.getAddress({
+        publicKey: this.currentAccount.publicKey,
+      });
+    }
+
     return this.proxyAddress.address;
   }
 
-  get type(): WalletType {
+  public get type(): WalletType {
     return WalletType.Multisig;
   }
 
-  get isReady(): boolean {
+  public get isReady(): boolean {
     return true;
   }
 

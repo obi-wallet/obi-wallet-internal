@@ -34,8 +34,14 @@ export interface ExtendedCoin {
   usdPrice: number;
 }
 
-export function useBalances(sortAscending = true) {
-  const rawBalances = useRawBalances();
+export function useBalances({
+  address,
+  sortAscending = true,
+}: {
+  address: string;
+  sortAscending?: boolean;
+}) {
+  const rawBalances = useRawBalances({ address });
   const prices = usePrices();
 
   const data =
@@ -62,9 +68,8 @@ export function useBalances(sortAscending = true) {
   };
 }
 
-export function useRawBalances() {
-  const { chainStore, walletsStore } = useStore();
-  const address = walletsStore.address;
+export function useRawBalances({ address }: { address: string }) {
+  const { chainStore } = useStore();
   const chainId = chainStore.currentChain;
   return useQuery(getBalancesQuery({ chainId, address }));
 }
@@ -75,13 +80,20 @@ export function usePrices() {
   return useQuery(getPricesQuery({ chainId }));
 }
 
-export const UsdBalance = observer(function UsdBalance() {
-  const balances = useBalances();
+export function useUsdBalance({ address }: { address: string }) {
+  const balances = useBalances({ address });
   const balanceInUsd = R.sum(
     balances.data.map((coin) => {
       return formatExtendedCoin(coin).valueInUsd;
     })
   );
+  return `$${balanceInUsd.toFixed(2)}`;
+}
+
+export const UsdBalance = observer<{ address: string }>(function UsdBalance({
+  address,
+}) {
+  const balanceInUsd = useUsdBalance({ address });
 
   return (
     <View
@@ -98,25 +110,7 @@ export const UsdBalance = observer(function UsdBalance() {
           marginBottom: 2,
         }}
       >
-        $
-      </Text>
-      <Text
-        style={{
-          color: "#F6F5FF",
-          fontSize: 28,
-          fontWeight: "500",
-        }}
-      >
-        {balanceInUsd.toFixed(2).split(".")[0]}.
-      </Text>
-      <Text
-        style={{
-          color: "#F6F5FF",
-          fontSize: 28,
-          fontWeight: "500",
-        }}
-      >
-        {balanceInUsd.toFixed(2).split(".")[1]}
+        {balanceInUsd}
       </Text>
     </View>
   );

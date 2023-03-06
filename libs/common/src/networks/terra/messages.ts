@@ -131,9 +131,14 @@ export function getMigrateMessage({
   return new MsgExecuteContract(admin, proxyAddress, {
     wrapped_migrate: {
       code_id: terraChains[chainId].currentCodeIds.userAccount,
-      gatekeeper_code_ids: {
-        spendlimit: terraChains[chainId].currentCodeIds.spendLimitGatekeeper,
-      },
+      ...(codeId >= 1216
+        ? {
+            gatekeeper_code_ids: {
+              spendlimit:
+                terraChains[chainId].currentCodeIds.spendLimitGatekeeper,
+            },
+          }
+        : {}),
       ...(codeId >= 1081
         ? {
             signers: {

@@ -418,7 +418,7 @@ const Validators = observer(function Validators() {
     : activeValidators;
 
   const currentTerraChainInformation = useCurrentTerraChainInformation();
-  const rawBalances = useRawBalances();
+  const rawBalances = useRawBalances({ address: wallet.address });
   const amountToShow = rawBalances.data?.find((balance) => {
     return balance.denom === currentTerraChainInformation.denom;
   });

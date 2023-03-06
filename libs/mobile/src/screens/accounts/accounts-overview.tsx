@@ -48,7 +48,7 @@ import invariant from "tiny-invariant";
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import KeyRoundIcon from "./assets/key-round-icon.svg";
 import { getGatekeeperConfigDraftId } from "./draft-id";
-import { UsdBalance } from "../../app/balances";
+import { UsdBalance, useUsdBalance } from "../../app/balances";
 import { Button } from "../../app/button";
 import { useRootNavigation } from "../../app/root-stack";
 import { Background } from "../../app/screens/components/background";
@@ -186,7 +186,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                 marginTop: 10,
               }}
             >
-              <UsdBalance />
+              <UsdBalance address={wallet.proxyAddress.address} />
             </View>
           </View>
         </ImageBackground>
@@ -974,6 +974,9 @@ interface SinglesigWalletItemProps extends AbstractAccountItemProps {
 
 const SinglesigWalletItem = observer<SinglesigWalletItemProps>(
   function SinglesigWalletItem({ account, active, onSetActive }) {
+    const address = terra.getAddress({ publicKey: account.publicKey });
+    const usdBalance = useUsdBalance({ address });
+
     return (
       <TouchableOpacity
         style={{
@@ -1000,8 +1003,7 @@ const SinglesigWalletItem = observer<SinglesigWalletItemProps>(
           />
           <View style={{ paddingLeft: 10 }}>
             <Text style={{ color: "white", fontSize: 18, fontWeight: "600" }}>
-              {/* TODO: */}
-              $0.00
+              {usdBalance}
             </Text>
             <Text
               style={{
@@ -1009,10 +1011,7 @@ const SinglesigWalletItem = observer<SinglesigWalletItemProps>(
                 color: "#7E7E7E",
               }}
             >
-              {Bech32Address.shortenAddress(
-                terra.getAddress({ publicKey: account.publicKey }),
-                40
-              )}
+              {Bech32Address.shortenAddress(address, 40)}
             </Text>
           </View>
         </View>

@@ -25,7 +25,7 @@ import {
 } from "../../../balances";
 import { IconButton } from "../../../button";
 import { RootRoute, RootStackParamList } from "../../../root-stack";
-import { useStore } from "../../../stores";
+import { useMultisigWallet, useStore } from "../../../stores";
 import { CoinIcon } from "../../components/coin-icon";
 import { NetworkAccountPickerLayout } from "../../components/network-account-picker-layout";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";
@@ -66,6 +66,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
   const isObi = configStore.isObi();
+  const wallet = useMultisigWallet();
 
   return (
     <View
@@ -88,7 +89,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
         <FormattedMessage id="assets.balance" defaultMessage="Balance" />
       </Text>
 
-      <UsdBalance />
+      <UsdBalance address={wallet.address} />
 
       <View
         style={{
@@ -201,7 +202,8 @@ const BalanceAndActions = observer(function BalanceAndActions() {
 
 const AssetsList = observer(function AssetsList() {
   const [sortAscending, setSortAscending] = useState(true);
-  const balances = useBalances(sortAscending);
+  const wallet = useMultisigWallet();
+  const balances = useBalances({ address: wallet.address, sortAscending });
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
 
