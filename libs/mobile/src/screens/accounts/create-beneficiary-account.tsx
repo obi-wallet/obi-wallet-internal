@@ -5,7 +5,7 @@ import { useState } from "react";
 import { View } from "react-native";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
-import { Avatar } from "./avatar";
+import { AvatarPicker } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
@@ -44,7 +44,7 @@ export const CreateBeneficiaryAccountScreen =
             <Text style={{ color: "white", fontSize: 16, marginBottom: 15 }}>
               Add Beneficiary
             </Text>
-            <Avatar />
+            <AvatarPicker />
             <TextInput
               placeholder="Enter Name"
               label="Beneficiary Account Name"

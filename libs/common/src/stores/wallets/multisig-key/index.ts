@@ -237,9 +237,7 @@ export class MultisigKey implements Draftable {
   }) {
     const multisigKey = new MultisigKey({ chain });
     multisigKey._threshold = serialized.threshold;
-    serialized.keys.forEach((key) => {
-      multisigKey._keys.add({ entity: key });
-    });
+    multisigKey._keys = Entities.deserialize(serialized.keys);
     return multisigKey;
   }
 }

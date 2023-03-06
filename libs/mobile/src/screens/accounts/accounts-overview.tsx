@@ -12,6 +12,7 @@ import {
   EntityId,
   FlexAccount,
   GatekeeperConfig,
+  RequestObiTerraSignAndBroadcastMsg,
   SinglesigWallet,
   terra,
   Text,
@@ -19,6 +20,8 @@ import {
 } from "@obi-wallet/common";
 import Slider from "@react-native-community/slider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useQueryClient } from "@tanstack/react-query";
+import { isTxError } from "@terra-money/terra.js";
 import { DateTime } from "luxon";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
@@ -26,6 +29,7 @@ import * as R from "ramda";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import {
+  Alert,
   FlatList,
   ImageBackground,
   LayoutAnimation,
@@ -39,15 +43,21 @@ import {
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { useDebounce } from "rooks";
+import invariant from "tiny-invariant";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import KeyRoundIcon from "./assets/key-round-icon.svg";
+import { Avatar, SinglesigAvatar } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
-import { UsdBalance } from "../../app/balances";
+import { UsdBalance, useUsdBalance } from "../../app/balances";
 import { Button } from "../../app/button";
+import { useRootNavigation } from "../../app/root-stack";
 import { Background } from "../../app/screens/components/background";
+import { CoinIcon } from "../../app/screens/components/coin-icon";
 import { NetworkAccountPickerLayout } from "../../app/screens/components/network-account-picker-layout";
+import { SettingsRoute } from "../../app/screens/settings/settings-stack";
 import { useMultisigWallet, useStore } from "../../app/stores";
+import { getGatekeeperContractAddressesQuery } from "../../queries/gatekeeper";
 
 if (
   Platform.OS === "android" &&
@@ -100,6 +110,7 @@ export const AccountsOverviewScreen = observer<AccountsOverviewScreenProps>(
 const AccountScreenInner = observer(function AccountScreenInner() {
   const { configStore, draftsStore } = useStore();
   const isLoop = configStore.isLoop();
+  const navigation = useRootNavigation();
 
   const wallet = useMultisigWallet();
 
@@ -108,12 +119,17 @@ const AccountScreenInner = observer(function AccountScreenInner() {
     id: draftId,
   });
 
+  const queryClient = useQueryClient();
+
   return (
     <View style={{ paddingHorizontal: 10, flex: 1 }}>
-      <View
+      <TouchableOpacity
         style={{
           backgroundColor: isLoop ? "#1C0C3F" : "#437DFF",
           borderRadius: 16,
+        }}
+        onPress={async () => {
+          await wallet.setCurrentAccount(null);
         }}
       >
         <ImageBackground
@@ -124,7 +140,18 @@ const AccountScreenInner = observer(function AccountScreenInner() {
           resizeMode="cover"
           borderRadius={16}
         >
-          <TouchableOpacity style={{ position: "absolute", top: 6, left: 6 }}>
+          <TouchableOpacity
+            style={{
+              position: "absolute",
+              top: 6,
+              left: 6,
+              zIndex: 999,
+            }}
+            hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}
+            onPress={() => {
+              navigation.navigate(SettingsRoute.MultisigSettings);
+            }}
+          >
             <KeyRoundIcon />
           </TouchableOpacity>
           <View
@@ -161,11 +188,11 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                 marginTop: 10,
               }}
             >
-              <UsdBalance />
+              <UsdBalance address={wallet.proxyAddress.address} />
             </View>
           </View>
         </ImageBackground>
-      </View>
+      </TouchableOpacity>
       <View style={{ flex: 1 }}>
         <AccountsList />
       </View>
@@ -174,9 +201,39 @@ const AccountScreenInner = observer(function AccountScreenInner() {
           <Button
             flavor="blue"
             label="Confirm"
-            onPress={() => {
-              // TODO:
-              draft.commit({ original: draft.value });
+            onPress={async () => {
+              const { spendLimitGatekeeper } = await queryClient.fetchQuery(
+                getGatekeeperContractAddressesQuery({
+                  chainId: wallet.chain,
+                  address: wallet.address,
+                })
+              );
+
+              invariant(
+                spendLimitGatekeeper,
+                "Spend limit gatekeeper address is not set"
+              );
+
+              const messages = terra.getUpdateGatekeeperMessages({
+                currentGatekeeperConfig: draft.original,
+                newGatekeeperConfig: draft.value,
+                proxyAddress: wallet.owner.address,
+                spendLimitGatekeeper,
+              });
+
+              const response = await RequestObiTerraSignAndBroadcastMsg.send({
+                multisigKey: wallet.owner.serialize(),
+                demoMode: wallet.isDemo,
+                messages: messages.map((message) => message.toAmino()),
+              });
+
+              if (isTxError(response)) {
+                Alert.alert("Error", response.raw_log ?? "Unknown error");
+                return;
+              }
+
+              await wallet.setGatekeeperConfig(draft.value);
+              draft.commit({ original: wallet.gatekeeperConfig });
             }}
           />
           <Button
@@ -203,8 +260,11 @@ const AccountsList = observer(function AccountsList() {
 
   const accounts = wallet.getAccounts(draft.value);
   const [itemOpened, setItemOpened] = useState<EntityId | null>(null);
-  // TODO:
-  const [activeAccount, setActiveAccount] = useState<EntityId | null>(null);
+
+  const activeAccount = wallet.currentAccountId;
+  const setActiveAccount = async (id: EntityId) => {
+    await wallet.setCurrentAccount(id);
+  };
 
   const data = accounts.ids.map((id) => {
     return {
@@ -228,8 +288,8 @@ const AccountsList = observer(function AccountsList() {
                 : setItemOpened(element.item.id);
             }}
             isOpen={itemOpened === element.item.id}
-            onSetActive={() => {
-              setActiveAccount(element.item.id);
+            onSetActive={async () => {
+              await setActiveAccount(element.item.id);
             }}
             active={activeAccount === element.item.id}
             account={element.item.account}
@@ -278,7 +338,7 @@ const AccountsList = observer(function AccountsList() {
 
 interface AbstractAccountItemProps {
   active: boolean;
-  onSetActive: () => void;
+  onSetActive: () => Promise<void>;
   isOpen: boolean;
   onOpenToggle: () => void;
   onDelete: () => void;
@@ -392,6 +452,7 @@ const BeneficiaryItem = observer<BeneficiaryItemProps>(
         }}
         active={active}
         onSetActive={onSetActive}
+        account={account}
       >
         <>
           {isOpen && (
@@ -730,6 +791,7 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
       }}
       active={active}
       onSetActive={onSetActive}
+      account={account}
     >
       <ProgressBar amount={70} containerStyle={{ marginVertical: 10 }} />
       <Animatable.View
@@ -916,6 +978,9 @@ interface SinglesigWalletItemProps extends AbstractAccountItemProps {
 
 const SinglesigWalletItem = observer<SinglesigWalletItemProps>(
   function SinglesigWalletItem({ account, active, onSetActive }) {
+    const address = terra.getAddress({ publicKey: account.publicKey });
+    const usdBalance = useUsdBalance({ address });
+
     return (
       <TouchableOpacity
         style={{
@@ -926,24 +991,14 @@ const SinglesigWalletItem = observer<SinglesigWalletItemProps>(
           marginVertical: 10,
           padding: 10,
         }}
-        onPress={() => {
-          onSetActive();
-        }}
+        onPress={onSetActive}
         disabled={active}
       >
         <View style={{ flexDirection: "row" }}>
-          <View
-            style={{
-              width: 40,
-              aspectRatio: 1 / 1,
-              backgroundColor: "white",
-              borderRadius: 6,
-            }}
-          />
+          <SinglesigAvatar style={{ width: 40, height: 40 }} />
           <View style={{ paddingLeft: 10 }}>
             <Text style={{ color: "white", fontSize: 18, fontWeight: "600" }}>
-              {/* TODO: */}
-              $0.00
+              {usdBalance}
             </Text>
             <Text
               style={{
@@ -951,10 +1006,7 @@ const SinglesigWalletItem = observer<SinglesigWalletItemProps>(
                 color: "#7E7E7E",
               }}
             >
-              {Bech32Address.shortenAddress(
-                terra.getAddress({ publicKey: account.publicKey }),
-                40
-              )}
+              {Bech32Address.shortenAddress(address, 40)}
             </Text>
           </View>
         </View>
@@ -994,6 +1046,7 @@ const AccountContainer = observer<{
   active?: boolean;
   onSetActive: () => void;
   collapsible?: boolean;
+  account: Beneficiary | FlexAccount | SinglesigWallet;
 }>(function AccountContainer({
   children,
   isOpen,
@@ -1004,6 +1057,7 @@ const AccountContainer = observer<{
   subTitleStyles,
   active,
   onSetActive,
+  account,
 }) {
   return (
     <Animatable.View
@@ -1022,14 +1076,7 @@ const AccountContainer = observer<{
         onPress={onSetActive}
         disabled={active}
       >
-        <View
-          style={{
-            width: 40,
-            aspectRatio: 1 / 1,
-            backgroundColor: "white",
-            borderRadius: 6,
-          }}
-        />
+        <Avatar style={{ width: 40, height: 40 }} account={account} />
         <View style={{ paddingLeft: 10 }}>
           <Text
             style={[
@@ -1063,14 +1110,13 @@ const AccountContainer = observer<{
             position: "absolute",
             right: 5,
             top: 5,
-            paddingLeft: 10,
-            paddingBottom: 10,
           }}
+          hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}
         >
           <View
             style={{
               width: 20,
-              aspectRatio: 1 / 1,
+              height: 20,
               backgroundColor: "white",
               borderRadius: 100,
               justifyContent: "center",

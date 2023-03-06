@@ -49,7 +49,7 @@ export const Lookup = observer(function Lookup({
       try {
         const currentCodeId = isCosmosChain(chainId)
           ? cosmosChains[chainId].currentCodeId
-          : terraChains[chainId].currentCodeId;
+          : terraChains[chainId].currentCodeIds.userAccount;
 
         const response = await fetch(
           `https://proxy-wallets.obiwallet.workers.dev`,

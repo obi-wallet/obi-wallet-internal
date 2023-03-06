@@ -78,4 +78,16 @@ export class Entities<T> implements Draftable {
     merged._entities = R.mergeAll(entities.map((e) => e._entities));
     return merged;
   }
+
+  public serialize(): T[] {
+    return [...this.entities];
+  }
+
+  public static deserialize<T>(data: T[]): Entities<T> {
+    const entities = new Entities<T>();
+    data.forEach((entity) => {
+      entities.add({ entity });
+    });
+    return entities;
+  }
 }

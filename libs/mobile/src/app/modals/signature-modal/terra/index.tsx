@@ -96,9 +96,11 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
       return transactionInformation.current;
     }
 
+    // TODO: use react-query instead
     useEffect(() => {
       (async () => {
-        for (let i = 0; i < 10; i++) {
+        const maxTries = 2;
+        for (let i = 1; i <= maxTries; i++) {
           try {
             waitForTxInfo.current = (async () => {
               const key = terra.createMultisigPublicKey({ multisigKey });
@@ -113,7 +115,7 @@ export const TerraSignatureModal = observer<TerraSignatureModalProps>(
             break;
           } catch (e) {
             const error = e as Error;
-            if (i === 9) {
+            if (i === maxTries) {
               Alert.alert("Something went wrong", error.message, [
                 {
                   text: "Cancel Transaction",

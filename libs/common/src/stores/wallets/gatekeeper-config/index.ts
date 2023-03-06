@@ -76,12 +76,8 @@ export class GatekeeperConfig implements Draftable {
 
   public static deserialize(data: SerializedGatekeeperConfig) {
     const gatekeeperConfig = new GatekeeperConfig();
-    data.beneficiaries.forEach((beneficiary) => {
-      gatekeeperConfig.beneficiaries.add({ entity: beneficiary });
-    });
-    data.flexAccounts.forEach((flexAccount) => {
-      gatekeeperConfig.flexAccounts.add({ entity: flexAccount });
-    });
+    gatekeeperConfig.beneficiaries = Entities.deserialize(data.beneficiaries);
+    gatekeeperConfig.flexAccounts = Entities.deserialize(data.flexAccounts);
     return gatekeeperConfig;
   }
 }

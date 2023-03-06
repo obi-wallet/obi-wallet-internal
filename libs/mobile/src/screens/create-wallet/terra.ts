@@ -37,6 +37,12 @@ export async function handleTerra({
       chain: chainId,
       owner: multisigKey.serialize(),
       proxyAddress: terra.parseNewAccountResponse(response),
+      gatekeeperConfig: {
+        beneficiaries: [],
+        flexAccounts: [],
+      },
+      singlesigWallets: [],
+      currentAccount: null,
     };
   } catch (e) {
     throw new Error(response.raw_log);

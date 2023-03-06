@@ -12,7 +12,7 @@ import { useState } from "react";
 import { View } from "react-native";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
-import { Avatar } from "./avatar";
+import { AvatarPicker } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
@@ -47,7 +47,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
           <Text style={{ color: "white", fontSize: 16, marginBottom: 15 }}>
             Create Flex Account
           </Text>
-          <Avatar />
+          <AvatarPicker />
           <TextInput
             placeholder="Enter Name"
             label="Flex Account Name"

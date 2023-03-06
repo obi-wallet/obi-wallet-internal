@@ -28,7 +28,7 @@ import Bottle from "../../balances/assets/bottle.svg";
 import Drink from "../../balances/assets/drink.svg";
 import { Button } from "../../button";
 import { RootRoute, RootStackParamList } from "../../root-stack";
-import { useStore } from "../../stores";
+import { useMultisigWallet, useStore } from "../../stores";
 import { TextInput } from "../../text-input";
 import { Back } from "../components/back";
 import { BottomSheetBackdrop } from "../components/bottomSheetBackdrop";
@@ -50,7 +50,8 @@ export type SendScreenProps = NativeStackScreenProps<
 export const SendScreen = observer<SendScreenProps>(function SendScreen({
   navigation,
 }) {
-  const balances = useBalances();
+  const wallet = useMultisigWallet();
+  const balances = useBalances({ address: wallet.address });
   const [selectedCoin, setSelectedCoin] = useState<ExtendedCoin | undefined>(
     () => {
       return balances.data[0];
@@ -76,9 +77,6 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
   const hydratedSelectedCoin = selectedCoin
     ? formatExtendedCoin(selectedCoin)
     : null;
-
-  const { walletsStore } = useStore();
-  const wallet = walletsStore.currentWallet;
 
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState("");
@@ -353,7 +351,7 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
             invariant(wallet, "Expected wallet to be defined.");
 
             function getEncodeObjects(): EncodeObject[] {
-              if (!selectedCoin || !walletsStore.type) return [];
+              if (!selectedCoin) return [];
 
               const addressToUse =
                 address || (drinkOrBottleModalFlavor ? BARTENDER_ADDRESS : "");
@@ -368,14 +366,14 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
                 },
               ];
 
-              if (!walletsStore.address) return [];
+              if (!wallet.address) return [];
 
               if (selectedCoin.contract) {
                 return [
                   {
                     typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
                     value: {
-                      sender: walletsStore.address,
+                      sender: wallet.address,
                       contract: selectedCoin.contract,
                       msg: new Uint8Array(
                         Buffer.from(
@@ -397,7 +395,7 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
                 {
                   typeUrl: "/cosmos.bank.v1beta1.MsgSend",
                   value: {
-                    fromAddress: walletsStore.address,
+                    fromAddress: wallet.address,
                     toAddress: addressToUse,
                     amount: msgAmount,
                   },
@@ -416,16 +414,14 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
                 [selectedCoin.denom]: normalizedAmount.toFixed(0).toString(),
               };
 
-              if (!walletsStore.address) return [];
+              if (!wallet.address) return [];
 
               if (selectedCoin.contract) {
                 // TODO: not implemented yet
                 return [];
               }
 
-              return [
-                new MsgSend(walletsStore.address, addressToUse, msgAmount),
-              ];
+              return [new MsgSend(wallet.address, addressToUse, msgAmount)];
             }
 
             const chain = wallet.chain;

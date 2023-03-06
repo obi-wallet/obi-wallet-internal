@@ -2,6 +2,7 @@ import {
   KeyType,
   MultisigKey,
   MultisigKeySerializedData,
+  SerializedMultisigWalletData,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -49,7 +50,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
           invariant(newDeviceKey, "Device key is required");
           invariant(recoveredPhoneKey, "Phone key is required");
 
-          const serializedData = {
+          const serializedData: SerializedMultisigWalletData = {
             chain: draft.value.chain,
             owner: {
               threshold: parseInt(serializedProxyWallet.owner.threshold, 10),
@@ -115,6 +116,13 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
               ),
             },
             proxyAddress: serializedProxyWallet.proxyAddress,
+            // TODO: fetch from chain?
+            gatekeeperConfig: {
+              beneficiaries: [],
+              flexAccounts: [],
+            },
+            singlesigWallets: [],
+            currentAccount: null,
           };
 
           const newOwner = MultisigKey.deserialize({

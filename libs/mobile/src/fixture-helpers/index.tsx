@@ -109,7 +109,7 @@ export const GatekeeperConfigDraft = {
           name: "Beneficiary Account",
           icon: "",
         },
-        address: "terra1a",
+        address,
         dormancyThreshold: {
           years: 1,
         },

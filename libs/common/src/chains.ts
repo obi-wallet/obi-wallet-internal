@@ -48,7 +48,10 @@ export const terraChains = {
     prefix: "terra",
     accountCreatorAddress:
       "terra1f5adnacrpysy2p0aenl5df05hmmnyfe0pc3598ljnd5l0s5qjkksawdwvw",
-    currentCodeId: 6578,
+    currentCodeIds: {
+      userAccount: 6579,
+      spendLimitGatekeeper: 6584,
+    },
     lcds: ["https://pisco-lcd.terra.dev"],
     api: "https://pisco-api.terra.dev",
     denom: "uluna",
@@ -62,7 +65,10 @@ export const terraChains = {
     prefix: "terra",
     accountCreatorAddress:
       "terra1a9zykuft0ngvq6ug2j60hz0an2kz72c3vs73tj5m87xcm0dt8w2sdkflln",
-    currentCodeId: 1081,
+    currentCodeIds: {
+      userAccount: 1216,
+      spendLimitGatekeeper: 1243,
+    },
     lcds: [
       "https://terra2-api.dalnim.finance",
       "https://phoenix-lcd.terra.dev",

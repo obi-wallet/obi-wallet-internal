@@ -62,6 +62,12 @@ export async function handleCosmos({
         // TODO: get from response
         codeId: currentCodeId,
       },
+      gatekeeperConfig: {
+        beneficiaries: [],
+        flexAccounts: [],
+      },
+      singlesigWallets: [],
+      currentAccount: null,
     };
   } catch (e) {
     throw new Error(response.rawLog);
