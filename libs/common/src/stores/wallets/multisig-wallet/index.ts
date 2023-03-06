@@ -8,6 +8,7 @@ import {
   SerializedProxyAddress,
   SinglesigWallet,
 } from "./serialized-data";
+import { SerializedWalletMeta, WalletMeta } from "..";
 import {
   Chain,
   cosmosChains,
@@ -51,10 +52,7 @@ export class MultisigWallet extends AbstractWallet {
   public readonly proxyAddress: SerializedProxyAddress;
 
   @observable
-  protected _currentAccount: {
-    type: "flex-account" | "singlesig-wallet";
-    id: EntityId;
-  } | null = null;
+  protected _currentAccount: WalletMeta["currentAccount"] | null = null;
 
   protected onChange: () => Promise<void>;
 
@@ -123,6 +121,13 @@ export class MultisigWallet extends AbstractWallet {
     );
   }
 
+  public get meta(): WalletMeta {
+    return {
+      walletId: this.id,
+      currentAccount: this._currentAccount,
+    };
+  }
+
   public get currentAccountId() {
     return this._currentAccount?.id ?? null;
   }
@@ -188,6 +193,42 @@ export class MultisigWallet extends AbstractWallet {
     await this.save();
   }
 
+  public serializeAccount(
+    account: WalletMeta["currentAccount"]
+  ): SerializedWalletMeta["currentAccount"] {
+    if (!account) return null;
+    switch (account.type) {
+      case "flex-account":
+        return {
+          type: "flex-account" as const,
+          index: this._gatekeeperConfig.flexAccounts.ids.indexOf(account.id),
+        };
+      case "singlesig-wallet":
+        return {
+          type: "singlesig-wallet" as const,
+          index: this._singlesigWallets.ids.indexOf(account.id),
+        };
+    }
+  }
+
+  public deserializeAccount(
+    account: SerializedWalletMeta["currentAccount"]
+  ): WalletMeta["currentAccount"] {
+    if (!account) return null;
+    switch (account.type) {
+      case "flex-account":
+        return {
+          type: "flex-account" as const,
+          id: this._gatekeeperConfig.flexAccounts.ids[account.index],
+        };
+      case "singlesig-wallet":
+        return {
+          type: "singlesig-wallet" as const,
+          id: this._singlesigWallets.ids[account.index],
+        };
+    }
+  }
+
   public serialize(): SerializedMultisigWallet | SerializedMultisigDemoWallet {
     return {
       type: this.isDemo ? "multisig-demo" : "multisig",
@@ -197,25 +238,7 @@ export class MultisigWallet extends AbstractWallet {
         proxyAddress: this.proxyAddress,
         gatekeeperConfig: this._gatekeeperConfig.serialize(),
         singlesigWallets: this._singlesigWallets.serialize(),
-        currentAccount: (() => {
-          if (!this._currentAccount) return null;
-          switch (this._currentAccount.type) {
-            case "flex-account":
-              return {
-                type: "flex-account",
-                index: this._gatekeeperConfig.flexAccounts.ids.indexOf(
-                  this._currentAccount.id
-                ),
-              };
-            case "singlesig-wallet":
-              return {
-                type: "singlesig-wallet",
-                index: this._singlesigWallets.ids.indexOf(
-                  this._currentAccount.id
-                ),
-              };
-          }
-        })(),
+        currentAccount: this.serializeAccount(this._currentAccount),
       },
     };
   }
@@ -246,25 +269,9 @@ export class MultisigWallet extends AbstractWallet {
     wallet._singlesigWallets = Entities.deserialize(
       serializedWallet.data.singlesigWallets
     );
-    wallet._currentAccount = (() => {
-      if (!serializedWallet.data.currentAccount) return null;
-      switch (serializedWallet.data.currentAccount.type) {
-        case "flex-account":
-          return {
-            type: "flex-account",
-            id: wallet.gatekeeperConfig.flexAccounts.ids[
-              serializedWallet.data.currentAccount.index
-            ],
-          };
-        case "singlesig-wallet":
-          return {
-            type: "singlesig-wallet",
-            id: wallet.singlesigWallets.ids[
-              serializedWallet.data.currentAccount.index
-            ],
-          };
-      }
-    })();
+    wallet._currentAccount = wallet.deserializeAccount(
+      serializedWallet.data.currentAccount
+    );
     return wallet;
   }
 

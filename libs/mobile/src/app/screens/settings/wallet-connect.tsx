@@ -29,10 +29,10 @@ export const WalletConnect = observer(function WalletConnect() {
           </Text>
         </View>
         <ScrollView>
-          {walletConnectStore.connectors.map((connector) => {
+          {walletConnectStore.connectors.map((info) => {
             return (
               <TouchableOpacity
-                key={connector.handshakeTopic}
+                key={info.connector.handshakeTopic}
                 style={{
                   height: 79,
                   width: "100%",
@@ -57,7 +57,7 @@ export const WalletConnect = observer(function WalletConnect() {
                       fontWeight: "600",
                     }}
                   >
-                    {connector.peerMeta?.name}
+                    {info.connector.peerMeta?.name}
                   </Text>
                   <Text
                     style={{
@@ -66,7 +66,7 @@ export const WalletConnect = observer(function WalletConnect() {
                       fontWeight: "600",
                     }}
                   >
-                    {connector.peerMeta?.url}
+                    {info.connector.peerMeta?.url}
                   </Text>
                 </View>
                 <IconButton
@@ -88,7 +88,7 @@ export const WalletConnect = observer(function WalletConnect() {
                           text: "Confirm",
                           onPress: async () => {
                             await walletConnectStore.disconnectConnector(
-                              connector
+                              info.connector
                             );
                           },
                         },
