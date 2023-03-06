@@ -11,7 +11,7 @@ import {
 import { useKeplr } from "../../../injected-provider";
 import { bundle } from "../../../injected-provider/bundle";
 import { RNInjectedKeplr } from "../../../injected-provider/injected-keplr";
-import { useStore } from "../../../stores";
+import { useMultisigWallet, useStore } from "../../../stores";
 import { RefreshControl } from "../refresh-control";
 
 const tryNewURL = (str: string): URL | undefined => {
@@ -44,6 +44,7 @@ export const ConnectedWebView = observer(function ConnectedWebView({
   ...props
 }: ConnectedWebViewProps) {
   const { walletConnectStore } = useStore();
+  const wallet = useMultisigWallet();
   const keplr = useKeplr({ url });
   const code = bundle;
 
@@ -115,7 +116,10 @@ export const ConnectedWebView = observer(function ConnectedWebView({
               "payload"
             );
             if (payload) {
-              void walletConnectStore.addConnector(payload);
+              void walletConnectStore.addConnector({
+                uri: payload,
+                walletMeta: wallet.meta,
+              });
             }
             return false;
           }

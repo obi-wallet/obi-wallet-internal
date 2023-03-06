@@ -33,7 +33,7 @@ import HistoryIcon from "./assets/history.svg";
 import Wcqr from "./assets/wcqr.svg";
 import { InlineButton, Button as ObiButton } from "../../button";
 import { RootRoute, useRootNavigation } from "../../root-stack";
-import { useStore } from "../../stores";
+import { useMultisigWallet, useStore } from "../../stores";
 import { parseDynamicLinkURL } from "../components/connected-web-view";
 import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
 
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
 
 export const DappExplorer = observer(function DappExplorer() {
   const rootStore = useStore();
+  const wallet = useMultisigWallet();
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
   const [showConnections, setShowConnections] = useState(false);
@@ -57,7 +58,10 @@ export const DappExplorer = observer(function DappExplorer() {
       const payload = parseDynamicLinkURL(data)?.searchParams.get("payload");
       if (payload) {
         close();
-        void walletConnectStore.addConnector(payload);
+        void walletConnectStore.addConnector({
+          uri: payload,
+          walletMeta: wallet.meta,
+        });
       }
     }
   });
@@ -168,7 +172,9 @@ const ConnectionsScreen = observer(function ConnectionsScreen() {
         <>
           <ScrollView style={{ flex: 1, marginHorizontal: 10 }}>
             {walletConnectStore.connectors.map((dapp) => {
-              return <ConnectedDapp dapp={dapp} key={dapp.key} />;
+              return (
+                <ConnectedDapp dapp={dapp.connector} key={dapp.connector.key} />
+              );
             })}
           </ScrollView>
 
@@ -190,7 +196,7 @@ const ConnectionsScreen = observer(function ConnectionsScreen() {
                 label="Disconnect All"
                 onPress={() => {
                   walletConnectStore.connectors.forEach((dapp) => {
-                    dapp.killSession();
+                    dapp.connector.killSession();
                   });
                 }}
               />

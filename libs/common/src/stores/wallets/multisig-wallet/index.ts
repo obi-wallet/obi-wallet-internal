@@ -16,6 +16,7 @@ import {
 } from "../../../chains";
 import { terra } from "../../../networks";
 import { Entities, EntityId } from "../../entities";
+import { ConnectInformation } from "../../wallet-connect";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
 import { GatekeeperConfig } from "../gatekeeper-config";
 import { Beneficiary, FlexAccount } from "../gatekeeper-config/serialized-data";
@@ -121,6 +122,13 @@ export class MultisigWallet extends AbstractWallet {
       gatekeeperConfig.flexAccounts,
       this._singlesigWallets
     );
+  }
+
+  public get meta(): ConnectInformation["walletMeta"] {
+    return {
+      walletId: this.id,
+      currentAccount: this._currentAccount,
+    };
   }
 
   public get currentAccountId() {

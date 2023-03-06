@@ -13,6 +13,7 @@ import { WalletsStore } from "./wallets";
 import {
   RequestObiTerraSignAndBroadcastMsg,
   RequestObiWalletConnectMsg,
+  RequestObiWalletConnectPayload,
 } from "../background";
 import { isTerraChain } from "../chains";
 
@@ -38,6 +39,11 @@ function createWalletConnect(connectorOpts: IWalletConnectOptions) {
 
 type HandshakeTopic = string;
 
+export interface ConnectInformation {
+  connector: WalletConnect;
+  walletMeta: RequestObiWalletConnectPayload["walletMeta"];
+}
+
 // TODO: add walletConnectID to terra chain (mainnet 1, testnet 0)
 export class WalletConnectStore {
   protected readonly kvStore: KVStore;
@@ -46,7 +52,7 @@ export class WalletConnectStore {
   public __initPromise: Promise<void>;
 
   @observable
-  protected _connectors: Record<HandshakeTopic, WalletConnect> = {};
+  protected _connectors: Record<HandshakeTopic, ConnectInformation> = {};
 
   constructor({
     kvStore,
@@ -62,7 +68,13 @@ export class WalletConnectStore {
   }
 
   @action
-  public async addConnector(uri: string) {
+  public async addConnector({
+    uri,
+    walletMeta,
+  }: {
+    uri: string;
+    walletMeta: RequestObiWalletConnectPayload["walletMeta"];
+  }) {
     const connector = createWalletConnect({
       uri,
     });
@@ -71,7 +83,7 @@ export class WalletConnectStore {
       await connector.createSession();
     }
 
-    this.attachEventHandlers(connector);
+    this.attachEventHandlers({ connector, walletMeta });
   }
 
   @computed
@@ -82,29 +94,46 @@ export class WalletConnectStore {
   @action
   public async recoverConnectors() {
     const data = await this.kvStore.get<
-      Record<HandshakeTopic, IWalletConnectSession>
+      Record<
+        HandshakeTopic,
+        {
+          session: IWalletConnectSession;
+          walletMeta: ConnectInformation["walletMeta"];
+        }
+      >
     >("sessions");
-    R.forEachObjIndexed((session, topic) => {
-      if (this._connectors[topic]) return;
-      const connector = createWalletConnect({
-        session,
-      });
-      this.recoverConnector(connector);
-    }, data);
+    if (!data) return;
+    try {
+      R.forEachObjIndexed((info, topic) => {
+        if (this._connectors[topic]) return;
+        const connector = createWalletConnect({
+          session: info.session,
+        });
+        this.recoverConnector({ connector, walletMeta: info.walletMeta });
+      }, data);
+    } catch (e) {
+      // noop
+    }
     await this.save();
   }
 
   @action
-  protected async saveConnector(connector: WalletConnect) {
-    this._connectors[connector.handshakeTopic] = connector;
+  protected async saveConnector({ connector, walletMeta }: ConnectInformation) {
+    this._connectors[connector.handshakeTopic] = {
+      connector,
+      walletMeta,
+    };
     await this.save();
   }
 
   @action
-  protected recoverConnector(connector: WalletConnect) {
+  protected recoverConnector({ connector, walletMeta }: ConnectInformation) {
     if (connector.handshakeTopic) {
-      this._connectors[connector.handshakeTopic] = connector;
-      this.attachEventHandlers(connector);
+      this._connectors[connector.handshakeTopic] = {
+        connector,
+        walletMeta,
+      };
+      this.attachEventHandlers({ connector, walletMeta });
     }
   }
 
@@ -131,21 +160,36 @@ export class WalletConnectStore {
 
   protected async save() {
     const sessions = R.pipe<
-      [Record<HandshakeTopic, WalletConnect>],
-      [HandshakeTopic, WalletConnect][],
-      [HandshakeTopic, WalletConnect][],
-      [HandshakeTopic, IWalletConnectSession][],
-      Record<HandshakeTopic, IWalletConnectSession>
+      [Record<HandshakeTopic, ConnectInformation>],
+      [HandshakeTopic, ConnectInformation][],
+      [HandshakeTopic, ConnectInformation][],
+      [
+        HandshakeTopic,
+        {
+          session: IWalletConnectSession;
+          walletMeta: ConnectInformation["walletMeta"];
+        }
+      ][],
+      Record<
+        HandshakeTopic,
+        {
+          session: IWalletConnectSession;
+          walletMeta: ConnectInformation["walletMeta"];
+        }
+      >
     >(
       R.toPairs,
-      R.filter(([_, connector]) => connector.connected),
-      R.map(([topic, connector]) => [topic, connector.session]),
+      R.filter(([_, info]) => info.connector.connected),
+      R.map(([topic, info]) => [
+        topic,
+        { session: info.connector.session, walletMeta: info.walletMeta },
+      ]),
       R.fromPairs
     )(this._connectors);
     await this.kvStore.set("sessions", toJS(sessions));
   }
 
-  protected attachEventHandlers(connector: WalletConnect) {
+  protected attachEventHandlers({ connector, walletMeta }: ConnectInformation) {
     const topic = connector.handshakeTopic;
 
     // TODO: Do that somewhere else
@@ -160,14 +204,16 @@ export class WalletConnectStore {
         await RequestObiWalletConnectMsg.send({
           type: "session-request",
           peerMeta,
+          walletMeta,
         });
         connector.approveSession({
           // TODO: Maybe pass via send response instead
           // TODO: also save wallet id here
+          // TODO: fix this
           accounts: [this.walletsStore.address!],
           chainId: 1,
         });
-        await this.saveConnector(connector);
+        await this.saveConnector({ connector, walletMeta });
       } catch (e) {
         connector.rejectSession();
       }

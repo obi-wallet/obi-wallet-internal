@@ -1,6 +1,8 @@
 import { BACKGROUND_PORT, Message } from "@keplr-wallet/router";
 
 import { MessageRequesterInternal } from "../../message-requester";
+import { MultisigWallet } from "../../stores";
+import { EntityId } from "../../stores/entities";
 
 export type RequestObiWalletConnectPayload = {
   type: "session-request";
@@ -9,6 +11,10 @@ export type RequestObiWalletConnectPayload = {
     icons: string[];
     name: string;
     url: string;
+  };
+  walletMeta: {
+    walletId: EntityId;
+    currentAccount: MultisigWallet["_currentAccount"];
   };
 };
 
