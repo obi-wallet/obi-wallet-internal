@@ -135,7 +135,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
   const { data: gatekeeperContractAddresses } = useQuery(
     getGatekeeperContractAddressesQuery({
       chainId: wallet.chain,
-      address: wallet.address,
+      address: wallet.proxyAddress.address,
     })
   );
   const spendLimitGatekeeper =
