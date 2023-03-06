@@ -20,3 +20,36 @@ export async function fetchGatekeeperContractAddresses({
     };
   });
 }
+
+export interface PermissionedAddress {
+  address: string;
+  params: {
+    address: string;
+    period_type: "days" | "months";
+    period_multiple: number;
+    spend_limits: {
+      denom: string;
+      amount: string;
+      current_balance: string;
+      limit_remaining: string;
+    }[];
+  };
+}
+
+export async function fetchPermissionedAddresses({
+  spendLimitGatekeeper,
+  chainId,
+}: {
+  spendLimitGatekeeper: string;
+  chainId: TerraChain;
+}) {
+  return await withLcdClient(chainId, async (client) => {
+    const response = await client.wasm.contractQuery<{
+      permissioned_addresses: PermissionedAddress[];
+    }>(spendLimitGatekeeper, {
+      permissioned_addresses: {},
+    });
+
+    return response.permissioned_addresses;
+  });
+}
