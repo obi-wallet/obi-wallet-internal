@@ -1,7 +1,8 @@
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons/faAngleDoubleLeft";
 import { faRss } from "@fortawesome/free-solid-svg-icons/faRss";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Feature, Text } from "@obi-wallet/common";
+import { Bech32Address } from "@keplr-wallet/cosmos";
+import { Feature, terra, Text } from "@obi-wallet/common";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
@@ -11,7 +12,7 @@ import { TouchableHighlight, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { RootStackParamList } from "../../../root-stack";
-import { useStore } from "../../../stores";
+import { useMultisigWallet, useStore } from "../../../stores";
 import { HomeBottomTabRoute } from "../../home/home-stack";
 import { ObiLogo } from "../obi-logo";
 import { isSmallScreenSubstr } from "../screen-size";
@@ -50,6 +51,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
   >();
   const { configStore } = useStore();
   const isObi = configStore.isObi();
+  const wallet = useMultisigWallet();
 
   return (
     <View
@@ -153,10 +155,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
               textAlign: "right",
             }}
           >
-            <FormattedMessage
-              id="accountscreen.accountname"
-              defaultMessage="Obi Smart Account"
-            />
+            {getCurrentAccount()}
           </Text>
         </View>
         <ObiLogo
@@ -168,4 +167,24 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
       </TouchableOpacity>
     </View>
   );
+
+  function getCurrentAccount() {
+    const account = wallet.currentAccount;
+
+    if (account && account.type === "flex-account") {
+      return account.meta.name || "Flex Account";
+    } else if (account && account.type === "singlesig-wallet") {
+      return Bech32Address.shortenAddress(
+        terra.getAddress({ publicKey: account.publicKey }),
+        20
+      );
+    } else {
+      return (
+        <FormattedMessage
+          id="accountscreen.accountname"
+          defaultMessage="Obi Smart Account"
+        />
+      );
+    }
+  }
 });
