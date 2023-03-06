@@ -11,6 +11,7 @@ import { FormattedMessage } from "react-intl";
 import { TouchableHighlight, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Avatar } from "../../../../screens/accounts/avatar";
 import { RootStackParamList } from "../../../root-stack";
 import { useMultisigWallet, useStore } from "../../../stores";
 import { HomeBottomTabRoute } from "../../home/home-stack";
@@ -155,20 +156,15 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
               textAlign: "right",
             }}
           >
-            {getCurrentAccount()}
+            {getCurrentAccountName()}
           </Text>
         </View>
-        <ObiLogo
-          style={{
-            width: 35,
-            height: 35,
-          }}
-        />
+        {getCurrentAccountAvatar()}
       </TouchableOpacity>
     </View>
   );
 
-  function getCurrentAccount() {
+  function getCurrentAccountName() {
     const account = wallet.currentAccount;
 
     if (account && account.type === "flex-account") {
@@ -183,6 +179,31 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
         <FormattedMessage
           id="accountscreen.accountname"
           defaultMessage="Obi Smart Account"
+        />
+      );
+    }
+  }
+
+  function getCurrentAccountAvatar() {
+    const account = wallet.currentAccount;
+
+    if (account) {
+      return (
+        <Avatar
+          style={{
+            width: 35,
+            height: 35,
+          }}
+          account={account}
+        />
+      );
+    } else {
+      return (
+        <ObiLogo
+          style={{
+            width: 35,
+            height: 35,
+          }}
         />
       );
     }

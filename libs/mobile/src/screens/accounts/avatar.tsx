@@ -1,10 +1,14 @@
+import { Beneficiary, FlexAccount, SinglesigWallet } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
-import { TouchableOpacity } from "react-native";
+import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
 import { Image, View } from "react-native";
 
 import Pencil from "./assets/pencil.svg";
+import { formatCoin } from "../../app/balances";
+import { CoinIcon } from "../../app/screens/components/coin-icon";
+import { useCurrentTerraChainInformation } from "../../app/stores";
 
-export const Avatar = observer(function Avatar() {
+export const AvatarPicker = observer(function AvatarPicker() {
   return (
     <View
       style={{
@@ -34,3 +38,40 @@ export const Avatar = observer(function Avatar() {
     </View>
   );
 });
+
+export const Avatar = observer<{
+  style?: StyleProp<ViewStyle>;
+  account: Beneficiary | FlexAccount | SinglesigWallet;
+}>(function Avatar({ style, account }) {
+  if (account.type === "singlesig-wallet") {
+    return <SinglesigAvatar style={style} />;
+  } else {
+    return (
+      <View
+        style={[
+          {
+            backgroundColor: "white",
+            borderRadius: 6,
+          },
+          style,
+        ]}
+      />
+    );
+  }
+});
+
+export const SinglesigAvatar = observer<{ style?: StyleProp<ViewStyle> }>(
+  function SinglesigAvatar({ style }) {
+    const currentTerraChainInformation = useCurrentTerraChainInformation();
+    const formatted = formatCoin({
+      denom: currentTerraChainInformation.denom,
+      amount: "0",
+    });
+
+    return (
+      <View style={style}>
+        <CoinIcon source={formatted?.icon ?? null} />
+      </View>
+    );
+  }
+);

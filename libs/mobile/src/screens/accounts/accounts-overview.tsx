@@ -47,11 +47,13 @@ import invariant from "tiny-invariant";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import KeyRoundIcon from "./assets/key-round-icon.svg";
+import { Avatar, SinglesigAvatar } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { UsdBalance, useUsdBalance } from "../../app/balances";
 import { Button } from "../../app/button";
 import { useRootNavigation } from "../../app/root-stack";
 import { Background } from "../../app/screens/components/background";
+import { CoinIcon } from "../../app/screens/components/coin-icon";
 import { NetworkAccountPickerLayout } from "../../app/screens/components/network-account-picker-layout";
 import { SettingsRoute } from "../../app/screens/settings/settings-stack";
 import { useMultisigWallet, useStore } from "../../app/stores";
@@ -450,6 +452,7 @@ const BeneficiaryItem = observer<BeneficiaryItemProps>(
         }}
         active={active}
         onSetActive={onSetActive}
+        account={account}
       >
         <>
           {isOpen && (
@@ -788,6 +791,7 @@ const FlexAccountItem = observer<FlexAccountItemProps>(function FlexItem({
       }}
       active={active}
       onSetActive={onSetActive}
+      account={account}
     >
       <ProgressBar amount={70} containerStyle={{ marginVertical: 10 }} />
       <Animatable.View
@@ -987,20 +991,11 @@ const SinglesigWalletItem = observer<SinglesigWalletItemProps>(
           marginVertical: 10,
           padding: 10,
         }}
-        onPress={() => {
-          onSetActive();
-        }}
+        onPress={onSetActive}
         disabled={active}
       >
         <View style={{ flexDirection: "row" }}>
-          <View
-            style={{
-              width: 40,
-              aspectRatio: 1 / 1,
-              backgroundColor: "white",
-              borderRadius: 6,
-            }}
-          />
+          <SinglesigAvatar style={{ width: 40, height: 40 }} />
           <View style={{ paddingLeft: 10 }}>
             <Text style={{ color: "white", fontSize: 18, fontWeight: "600" }}>
               {usdBalance}
@@ -1051,6 +1046,7 @@ const AccountContainer = observer<{
   active?: boolean;
   onSetActive: () => void;
   collapsible?: boolean;
+  account: Beneficiary | FlexAccount | SinglesigWallet;
 }>(function AccountContainer({
   children,
   isOpen,
@@ -1061,6 +1057,7 @@ const AccountContainer = observer<{
   subTitleStyles,
   active,
   onSetActive,
+  account,
 }) {
   return (
     <Animatable.View
@@ -1079,14 +1076,7 @@ const AccountContainer = observer<{
         onPress={onSetActive}
         disabled={active}
       >
-        <View
-          style={{
-            width: 40,
-            aspectRatio: 1 / 1,
-            backgroundColor: "white",
-            borderRadius: 6,
-          }}
-        />
+        <Avatar style={{ width: 40, height: 40 }} account={account} />
         <View style={{ paddingLeft: 10 }}>
           <Text
             style={[
@@ -1126,7 +1116,7 @@ const AccountContainer = observer<{
           <View
             style={{
               width: 20,
-              aspectRatio: 1 / 1,
+              height: 20,
               backgroundColor: "white",
               borderRadius: 100,
               justifyContent: "center",
