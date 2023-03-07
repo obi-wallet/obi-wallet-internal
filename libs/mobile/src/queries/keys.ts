@@ -15,6 +15,7 @@ import {
 } from "@obi-wallet/common";
 import { RawKey } from "@terra-money/terra.js";
 
+import { staleTime } from "./helpers";
 import { createSigningStargateClient } from "../app/clients";
 
 export function getPrepareKeyQuery({
@@ -77,6 +78,6 @@ export function getPrepareKeyQuery({
 
       return true;
     },
-    staleTime: 1000 * 60 * 60 * 24, // 1 day
+    staleTime: staleTime({ days: 1 }),
   };
 }
