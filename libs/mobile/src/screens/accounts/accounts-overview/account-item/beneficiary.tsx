@@ -1,19 +1,11 @@
-import {
-  Beneficiary,
-  Draft,
-  DraftableObject,
-  Text,
-  TextInput,
-} from "@obi-wallet/common";
+import { Beneficiary, Text, TextInput } from "@obi-wallet/common";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
-import { useEffect, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import * as Animatable from "react-native-animatable";
 
 import { AbstractAccountItemProps, AccountContainer, Pill } from "./common";
-import { Button } from "../../../../app/button";
 
 export interface BeneficiaryItemProps extends AbstractAccountItemProps {
   account: Beneficiary;
@@ -35,35 +27,28 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
     onDelete,
     onChange,
   }) {
-    const [draft] = useState(() => {
-      return new Draft({
-        original: new DraftableObject(account),
-      });
-    });
-
-    useEffect(() => {
-      if (!R.equals(draft.original.value, account)) {
-        draft.commit({ original: new DraftableObject(account) });
-      }
-    }, [account, draft]);
-
     const dormancyThreshold = (() => {
-      const threshold = draft.value.value.dormancyThreshold;
+      const threshold = account.dormancyThreshold;
       if (R.has("days", threshold)) return Math.floor(threshold.days / 30);
       if (R.has("months", threshold)) return threshold.months;
       if (R.has("years", threshold)) return threshold.years * 12;
       return 0;
     })();
     const setDormancyThreshold = (threshold: number) => {
-      runInAction(() => {
-        draft.value.value.dormancyThreshold = { months: threshold };
+      onChange({
+        ...account,
+        dormancyThreshold: { months: threshold },
       });
     };
 
-    const dripRate = Math.floor(draft.value.value.dripSchedule.rate * 100);
+    const dripRate = Math.floor(account.dripSchedule.rate * 100);
     const setDripRate = (rate: number) => {
-      runInAction(() => {
-        draft.value.value.dripSchedule.rate = rate / 100;
+      onChange({
+        ...account,
+        dripSchedule: {
+          ...account.dripSchedule,
+          rate: rate / 100,
+        },
       });
     };
 
@@ -72,7 +57,7 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
       BeneficiaryPeriodicity.Annually,
     ];
     const selectedPeriodicity = (() => {
-      const period = draft.value.value.dripSchedule.period;
+      const period = account.dripSchedule.period;
       if (R.equals(period, { months: 1 }))
         return BeneficiaryPeriodicity.Monthly;
       if (R.equals(period, { years: 1 }))
@@ -83,10 +68,22 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
       runInAction(() => {
         switch (periodicity) {
           case BeneficiaryPeriodicity.Monthly:
-            draft.value.value.dripSchedule.period = { months: 1 };
+            onChange({
+              ...account,
+              dripSchedule: {
+                ...account.dripSchedule,
+                period: { months: 1 },
+              },
+            });
             break;
           case BeneficiaryPeriodicity.Annually:
-            draft.value.value.dripSchedule.period = { years: 1 };
+            onChange({
+              ...account,
+              dripSchedule: {
+                ...account.dripSchedule,
+                period: { years: 1 },
+              },
+            });
             break;
         }
       });
@@ -209,24 +206,6 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
                 ))}
               </View>
               <View style={{ margin: 15 }}>
-                {draft.isDirty ? (
-                  <>
-                    <Button
-                      flavor="blue"
-                      label="Confirm"
-                      onPress={() => {
-                        onChange(draft.value.value);
-                      }}
-                    />
-                    <Button
-                      flavor="cancel"
-                      label="Cancel"
-                      onPress={() => {
-                        draft.reset();
-                      }}
-                    />
-                  </>
-                ) : null}
                 <TouchableOpacity onPress={onDelete}>
                   <Text
                     style={{

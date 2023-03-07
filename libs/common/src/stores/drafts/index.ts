@@ -4,7 +4,6 @@ import { Draft, Draftable } from "./draft";
 import { Entities, EntityId } from "../entities";
 
 export { Draft };
-export * from "./draftable-object";
 
 export class DraftsStore {
   @observable

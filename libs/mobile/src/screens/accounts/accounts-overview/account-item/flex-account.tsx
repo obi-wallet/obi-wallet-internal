@@ -1,12 +1,6 @@
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  Draft,
-  DraftableObject,
-  FlexAccount,
-  Text,
-  TextInput,
-} from "@obi-wallet/common";
+import { FlexAccount, Text, TextInput } from "@obi-wallet/common";
 import Slider from "@react-native-community/slider";
 import { DateTime } from "luxon";
 import { runInAction } from "mobx";
@@ -18,10 +12,10 @@ import * as Animatable from "react-native-animatable";
 import { useDebounce } from "rooks";
 
 import { AbstractAccountItemProps, AccountContainer, Pill } from "./common";
-import { Button } from "../../../../app/button";
 import { PermissionedAddressesContext } from "../permissioned-address-context";
 
 export interface FlexAccountItemProps extends AbstractAccountItemProps {
+  originalAccount: FlexAccount | null;
   account: FlexAccount;
   onChange: (account: FlexAccount) => void;
 }
@@ -44,33 +38,26 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
     isOpen = true,
     onOpenToggle,
     account,
+    originalAccount,
     active = false,
     onSetActive,
     onDelete,
     onChange,
   }) {
-    const [draft] = useState(() => {
-      return new Draft({
-        original: new DraftableObject(account),
-      });
-    });
-
-    useEffect(() => {
-      if (!R.equals(draft.original.value, account)) {
-        draft.commit({ original: new DraftableObject(account) });
-      }
-    }, [account, draft]);
-
-    const amount = draft.value.value.spendLimit?.amount;
+    const amount = account.spendLimit?.amount;
     const setAmount = useCallback(
       (amount: number) => {
-        runInAction(() => {
-          if (draft.value.value.spendLimit) {
-            draft.value.value.spendLimit.amount = amount;
-          }
+        if (!account.spendLimit) return;
+
+        onChange({
+          ...account,
+          spendLimit: {
+            ...account.spendLimit,
+            amount,
+          },
         });
       },
-      [draft]
+      [account, onChange]
     );
     const debouncedSetAmount = useDebounce(setAmount, 50);
 
@@ -82,7 +69,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
       FlexAccountPeriodicity.Yearly,
     ];
     const selectedPeriod = (() => {
-      const period = draft.value.value.spendLimit?.period;
+      const period = account.spendLimit?.period;
       if (R.equals(period, { days: 1 })) return FlexAccountPeriodicity.Daily;
       if (R.equals(period, { days: 7 })) return FlexAccountPeriodicity.Weekly;
       if (R.equals(period, { months: 1 }))
@@ -92,22 +79,28 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
     })();
     const setSelectedPeriod = (period: FlexAccountPeriodicity) => {
       runInAction(() => {
-        if (!draft.value.value.spendLimit) return;
+        if (!account.spendLimit) return;
 
-        switch (period) {
-          case FlexAccountPeriodicity.Daily:
-            draft.value.value.spendLimit.period = { days: 1 };
-            break;
-          case FlexAccountPeriodicity.Weekly:
-            draft.value.value.spendLimit.period = { days: 7 };
-            break;
-          case FlexAccountPeriodicity.Monthly:
-            draft.value.value.spendLimit.period = { months: 1 };
-            break;
-          case FlexAccountPeriodicity.Yearly:
-            draft.value.value.spendLimit.period = { years: 1 };
-            break;
-        }
+        const newPeriod = (() => {
+          switch (period) {
+            case FlexAccountPeriodicity.Daily:
+              return { days: 1 };
+            case FlexAccountPeriodicity.Weekly:
+              return { days: 7 };
+            case FlexAccountPeriodicity.Monthly:
+              return { months: 1 };
+            case FlexAccountPeriodicity.Yearly:
+              return { years: 1 };
+          }
+        })();
+
+        onChange({
+          ...account,
+          spendLimit: {
+            ...account.spendLimit,
+            period: newPeriod,
+          },
+        });
       });
     };
 
@@ -118,39 +111,35 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
     ];
 
     const getRemainingTime = useCallback(() => {
-      if (!draft.original.value.autoSign) return null;
+      if (!originalAccount?.autoSign) return null;
 
       const remainingTime = DateTime.fromISO(
-        draft.original.value.autoSign?.endTime
+        originalAccount?.autoSign?.endTime
       ).diff(DateTime.now(), "seconds");
       return remainingTime.toMillis() >= 0 ? remainingTime : null;
-    }, [draft.original.value.autoSign]);
+    }, [originalAccount]);
 
     const [remainingTime, setRemainingTime] = useState(getRemainingTime);
 
     const getActiveFlexRule = useCallback(() => {
-      if (draft.original.value.autoSign && getRemainingTime()) {
+      if (originalAccount?.autoSign && getRemainingTime()) {
         return FlexAccountRule.Unlocked;
-      } else if (draft.original.value.spendLimit) {
+      } else if (originalAccount?.spendLimit) {
         return FlexAccountRule.Limited;
       } else {
         return FlexAccountRule.Strict;
       }
-    }, [
-      draft.original.value.autoSign,
-      draft.original.value.spendLimit,
-      getRemainingTime,
-    ]);
+    }, [originalAccount, getRemainingTime]);
 
     const getNextFlexRule = useCallback(() => {
-      if (draft.value.value.autoSign) {
+      if (account.autoSign) {
         return FlexAccountRule.Unlocked;
-      } else if (draft.value.value.spendLimit) {
+      } else if (account.spendLimit) {
         return FlexAccountRule.Limited;
       } else {
         return FlexAccountRule.Strict;
       }
-    }, [draft.value.value.autoSign, draft.value.value.spendLimit]);
+    }, [account.autoSign, account.spendLimit]);
     const activeFlexRule = getActiveFlexRule();
     const nextFlexRule = getNextFlexRule();
 
@@ -161,29 +150,38 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
 
           switch (rule) {
             case FlexAccountRule.Strict:
-              draft.value.value.spendLimit = null;
-              draft.value.value.autoSign = null;
+              onChange({
+                ...account,
+                spendLimit: null,
+                autoSign: null,
+              });
               break;
             case FlexAccountRule.Limited:
-              draft.value.value.autoSign = null;
-              draft.value.value.spendLimit = draft.value.value.spendLimit ?? {
-                amount: 0,
-                period: {
-                  days: 1,
+              onChange({
+                ...account,
+                spendLimit: account.spendLimit ?? {
+                  amount: 0,
+                  period: {
+                    days: 1,
+                  },
                 },
-              };
+                autoSign: null,
+              });
               break;
             case FlexAccountRule.Unlocked:
-              draft.value.value.autoSign = {
-                endTime: DateTime.now().plus({ minutes: 30 }).toISO(),
-              };
+              onChange({
+                ...account,
+                autoSign: {
+                  endTime: DateTime.now().plus({ minutes: 30 }).toISO(),
+                },
+              });
               break;
           }
 
           setRemainingTime(getRemainingTime());
         });
       },
-      [draft, getNextFlexRule, getRemainingTime, setRemainingTime]
+      [account, getNextFlexRule, getRemainingTime, onChange]
     );
 
     useEffect(() => {
@@ -219,7 +217,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
       <AccountContainer
         isOpen={isOpen}
         onOpenToggle={onOpenToggle}
-        title={draft.value.value.meta.name}
+        title={account.meta.name}
         subTitle={`${activeFlexRule} Flex Account${
           remainingTime ? ` ⏱ ${remainingTime.toFormat("m:ss")}` : ""
         }`}
@@ -395,24 +393,6 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                   />
                 </View>
                 <View style={{ margin: 15 }}>
-                  {draft.isDirty ? (
-                    <>
-                      <Button
-                        flavor="blue"
-                        label="Confirm"
-                        onPress={() => {
-                          onChange(draft.value.value);
-                        }}
-                      />
-                      <Button
-                        flavor="cancel"
-                        label="Cancel"
-                        onPress={() => {
-                          draft.reset();
-                        }}
-                      />
-                    </>
-                  ) : null}
                   <TouchableOpacity onPress={onDelete}>
                     <Text
                       style={{

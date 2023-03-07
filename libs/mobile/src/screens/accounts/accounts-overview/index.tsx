@@ -249,6 +249,7 @@ const AccountsList = observer(function AccountsList() {
     id: draftId,
   });
 
+  const originalAccounts = wallet.getAccounts();
   const accounts = wallet.getAccounts(draft.value);
   const [itemOpened, setItemOpened] = useState<EntityId | null>(null);
 
@@ -283,6 +284,9 @@ const AccountsList = observer(function AccountsList() {
               await setActiveAccount(element.item.id);
             }}
             active={activeAccount === element.item.id}
+            originalAccount={
+              originalAccounts.get({ id: element.item.id }) ?? null
+            }
             account={element.item.account}
             onDelete={() => {
               switch (element.item.account.type) {
