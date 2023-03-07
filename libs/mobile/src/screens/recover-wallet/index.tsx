@@ -7,6 +7,7 @@ import {
 } from "@obi-wallet/common";
 import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { View } from "react-native";
@@ -22,6 +23,7 @@ import {
 } from "../../app/screens/onboarding/onboarding-stack";
 import { useStore } from "../../app/stores";
 import { MultisigSettings } from "../../components/multisig-settings";
+import { getCodeIdsQuery } from "../../queries/user-account";
 import { KeyFlow, KeyRoute } from "../keys";
 
 export type RecoverWalletScreenProps = NativeStackScreenProps<
@@ -33,6 +35,8 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
   function RecoverWalletScreen({ route }) {
     const navigation = useRootNavigation();
     const { params } = route;
+
+    const queryClient = useQueryClient();
 
     const { draftsStore, walletsStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({ id: params.draftId });
@@ -58,6 +62,13 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
 
           const chainId = draft.value.chain;
           try {
+            const codeIds = await queryClient.fetchQuery(
+              getCodeIdsQuery({
+                chainId,
+                address: params.serializedData.proxyAddress.address,
+              })
+            );
+
             if (isCosmosChain(chainId)) {
               await handleCosmos({
                 draft,
@@ -70,6 +81,7 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
                 draft,
                 serializedData: params.serializedData,
                 demoMode: params.demoMode,
+                codeIds,
               });
             }
 

@@ -135,47 +135,7 @@ describe("MultisigWallet", () => {
     ).toBeDefined();
   });
 
-  // This fails when wallet already up-to-date.
-  test.skip("MsgMigrateContract", async () => {
-    const message = terra.getMigrateMessage({
-      admin: multisigKey.address(),
-      proxyAddress: proxyAddress.address,
-      chainId,
-      signers: [],
-      codeId: proxyAddress.codeId,
-    });
-    const { signDoc, sign } = await terra.createMultisigTransaction({
-      key: multisigKey,
-      messages: [message],
-      chainId,
-    });
-    const signature = await key.createSignatureAmino(signDoc);
-    const transaction = sign([signature]);
-    expect(
-      await terra.simulateTransaction({ transaction, chainId })
-    ).toBeDefined();
-  });
-
-  // TODO:
-  test.skip("Propose update owner", async () => {
-    const message = terra.getProposeUpdateOwnerMessage({
-      sender: multisigKey.address(),
-      newOwner: "terra18aw4eedj4v3253dvj9h5ucx9uedl9ggaayktq4",
-      signers: [],
-      proxyAddress: proxyAddress.address,
-      codeId: proxyAddress.codeId,
-    });
-    const { signDoc, sign } = await terra.createMultisigTransaction({
-      key: multisigKey,
-      messages: [message],
-      chainId,
-    });
-    const signature = await key.createSignatureAmino(signDoc);
-    const transaction = sign([signature]);
-    expect(
-      await terra.simulateTransaction({ transaction, chainId })
-    ).toBeDefined();
-  });
+  test.todo("Propose update owner");
 
   test("MsgDelegate", async () => {
     const message = terra.getStakeMessage({

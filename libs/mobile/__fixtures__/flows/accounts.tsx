@@ -4,10 +4,9 @@ import { useEffect } from "react";
 import {
   HomeBottomTabRoute,
   HomeDrawerRoute,
-  Modals,
-  StateRenderer,
   useRootNavigation,
 } from "../../src";
+import { BaseAppWithoutProvider } from "../../src/app";
 import { GatekeeperConfigDraft } from "../../src/fixture-helpers";
 import { AccountsRoute } from "../../src/screens/accounts/accounts-stack";
 
@@ -104,12 +103,7 @@ function StepInner({
     );
   }, [step, navigation, routes]);
 
-  return (
-    <>
-      <StateRenderer />
-      <Modals />
-    </>
-  );
+  return <BaseAppWithoutProvider />;
 }
 
 export default {

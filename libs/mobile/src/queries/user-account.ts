@@ -1,17 +1,21 @@
 import { Chain, cosmos, terra } from "@obi-wallet/common";
+import invariant from "tiny-invariant";
 
 import { staleTime } from "./helpers";
 
-export function getCodeIds({
+export function getCodeIdsQuery({
   chainId,
   address,
 }: {
-  chainId: Chain;
-  address: string;
+  chainId: Chain | null | undefined;
+  address: string | null | undefined;
 }) {
   return {
     queryKey: ["code-ids", { chainId, address }],
     queryFn: async () => {
+      invariant(chainId, "chainId is required");
+      invariant(address, "address is required");
+
       return Chain.select({
         chainId,
         async onTerraChain(chainId) {
@@ -33,5 +37,6 @@ export function getCodeIds({
       });
     },
     staleTime: staleTime({ days: 1 }),
+    enabled: !!chainId && !!address,
   };
 }

@@ -3,6 +3,7 @@ import * as R from "ramda";
 import { fetchCodeId } from "./contracts";
 import { fetchGatekeeperContractAddresses } from "./gatekeeper";
 import { TerraChain } from "../../chains";
+import { CodeIds } from "../common";
 
 export async function fetchCodeIds({
   chainId,
@@ -28,8 +29,5 @@ export async function fetchCodeIds({
       ] as [string, number | null];
     })
   );
-  return R.fromPairs(pairsWithCodeIds) as {
-    userAccount: number;
-    spendLimitGatekeeper: number | null;
-  };
+  return R.fromPairs(pairsWithCodeIds) as unknown as CodeIds;
 }

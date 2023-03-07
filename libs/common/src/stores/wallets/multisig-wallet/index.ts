@@ -9,13 +9,8 @@ import {
   SinglesigWallet,
 } from "./serialized-data";
 import { SerializedWalletMeta, WalletMeta } from "..";
-import {
-  Chain,
-  cosmosChains,
-  isTerraChain,
-  terraChains,
-} from "../../../chains";
-import { terra } from "../../../networks";
+import { Chain, cosmosChains, terraChains } from "../../../chains";
+import { CodeIds, terra } from "../../../networks";
 import { Entities, EntityId } from "../../entities";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
 import { GatekeeperConfig } from "../gatekeeper-config";
@@ -104,13 +99,22 @@ export class MultisigWallet extends AbstractWallet {
     return true;
   }
 
-  @computed
-  public get isOutdated(): boolean {
-    const codeId = this.proxyAddress.codeId ?? null;
-    const currentCodeId = isTerraChain(this.chain)
-      ? terraChains[this.chain].currentCodeIds.userAccount
-      : cosmosChains[this.chain].currentCodeId;
-    return codeId !== null && codeId < currentCodeId;
+  public isOutdated(codeIds: CodeIds): boolean {
+    return Chain.select({
+      chainId: this.chain,
+      onTerraChain(chainId) {
+        return (
+          codeIds.userAccount <
+            terraChains[chainId].currentCodeIds.userAccount ||
+          codeIds.spendLimitGatekeeper === null ||
+          codeIds.spendLimitGatekeeper <
+            terraChains[chainId].currentCodeIds.spendLimitGatekeeper
+        );
+      },
+      onCosmosChain(chainId) {
+        return codeIds.userAccount < cosmosChains[chainId].currentCodeId;
+      },
+    });
   }
 
   public getAccounts(gatekeeperConfig = this._gatekeeperConfig) {
@@ -185,11 +189,6 @@ export class MultisigWallet extends AbstractWallet {
     this._singlesigWallets.add({
       entity: singlesig,
     });
-    await this.save();
-  }
-
-  @action async setProxyCodeId(codeId: number) {
-    this.proxyAddress.codeId = codeId;
     await this.save();
   }
 

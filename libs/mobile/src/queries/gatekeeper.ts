@@ -1,4 +1,5 @@
 import { Chain, terra } from "@obi-wallet/common";
+import invariant from "tiny-invariant";
 
 export function getGatekeeperContractAddressesQuery({
   chainId,
@@ -42,7 +43,7 @@ export function getPermissionedAddressesQuery({
       return Chain.select({
         chainId,
         async onTerraChain(chainId) {
-          if (!spendLimitGatekeeper) return [];
+          invariant(spendLimitGatekeeper, "spendLimitGatekeeper is required");
           return await terra.fetchPermissionedAddresses({
             spendLimitGatekeeper,
             chainId,
