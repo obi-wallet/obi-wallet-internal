@@ -52,15 +52,12 @@ export async function handleCosmos({
   });
 
   try {
-    const { currentCodeId } = cosmosChains[chainId];
-
     return {
       chain: chainId,
       owner: multisigKey.serialize(),
       proxyAddress: {
+        v: 1 as const,
         ...cosmos.parseNewAccountResponse(response),
-        // TODO: get from response
-        codeId: currentCodeId,
       },
       gatekeeperConfig: {
         beneficiaries: [],

@@ -1,17 +1,19 @@
 import styled from "@emotion/native";
+import { useTheme } from "@emotion/react";
+import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   cosmosChains,
   Feature,
   isCosmosChain,
-  isTerraChain,
   RequestObiTerraSignAndBroadcastMsg,
   terra,
   TerraChain,
   terraChains,
   Text,
 } from "@obi-wallet/common";
+import { BottomTabBar } from "@react-navigation/bottom-tabs";
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
@@ -19,12 +21,11 @@ import {
   DrawerScreenProps,
 } from "@react-navigation/drawer";
 import { ParamListBase } from "@react-navigation/native";
-import { isTxError } from "@terra-money/terra.js";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { action } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, Platform } from "react-native";
+import { Platform, TouchableOpacity, View } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import invariant from "tiny-invariant";
 
@@ -53,6 +54,7 @@ import {
   HomeDrawer,
   HomeDrawerRoute,
 } from "./home-stack";
+import { getCodeIdsQuery } from "../../../queries/user-account";
 import { AccountsScreen } from "../../../screens/accounts";
 import { useStore } from "../../stores";
 import {
@@ -161,6 +163,14 @@ export const TabNavigation = observer<TabNavigationProps>(
           lazy: false,
         })}
         initialRouteName={HomeBottomTabRoute.Assets}
+        tabBar={(props) => {
+          return (
+            <>
+              <UpdateFooter />
+              <BottomTabBar {...props} />
+            </>
+          );
+        }}
       >
         {configStore.isFeatureEnabled(Feature.AccountsTab) ? (
           <HomeBottomTab.Screen
@@ -234,69 +244,176 @@ export const TabNavigation = observer<TabNavigationProps>(
 );
 
 export const HomeScreen = observer(function HomeScreen() {
-  const { chainStore, walletsStore } = useStore();
+  const { chainStore } = useStore();
 
-  useEffect(() => {
-    const currentWallet = walletsStore.currentWallet;
+  // const { data: codeIds } = useQuery(
+  //   getCodeIdsQuery({
+  //     chainId: wallet.chain,
+  //     address: wallet.proxyAddress.address,
+  //   })
+  // );
+  //
+  // console.log(codeIds);
+  //
+  // const isOutdated = codeIds && wallet.isOutdated(codeIds);
 
-    if (
-      currentWallet &&
-      isTerraChain(currentWallet.chain) &&
-      currentWallet.isOutdated
-    ) {
-      Alert.alert(
-        "Verified Update Available",
-        "Update your Obi Smart Account to continue testing.",
-        [
-          {
-            text: "Update",
-            onPress: async () => {
-              const proxyAddress = currentWallet.proxyAddress;
-              invariant(proxyAddress, "Expected `proxyAddress` to exist.");
-
-              const signers = terra.getSigners({
-                multisigKey: currentWallet.owner,
-              });
-              const message = terra.getMigrateMessage({
-                proxyAddress: proxyAddress.address,
-                admin: currentWallet.owner.address,
-                chainId: currentWallet.chain as TerraChain,
-                signers,
-                codeId: proxyAddress.codeId,
-              });
-              const response = await RequestObiTerraSignAndBroadcastMsg.send({
-                multisigKey: currentWallet.owner.serialize(),
-                demoMode: currentWallet.isDemo,
-                messages: [message.toAmino()],
-              });
-
-              if (!isTxError(response)) {
-                await currentWallet.setProxyCodeId(
-                  terraChains[currentWallet.chain as TerraChain].currentCodeIds
-                    .userAccount
-                );
-              }
-            },
-          },
-        ]
-      );
-    }
-  }, [walletsStore.currentWallet]);
+  // useEffect(() => {
+  //   if (codeIds && wallet.isOutdated(codeIds)) {
+  //     Alert.alert(
+  //       "Verified Update Available",
+  //       "Update your Obi Smart Account to continue testing.",
+  //       [
+  //         {
+  //           text: "Update",
+  //           onPress: async () => {
+  //             const proxyAddress = wallet.proxyAddress;
+  //             invariant(proxyAddress, "Expected `proxyAddress` to exist.");
+  //
+  //             const signers = terra.getSigners({
+  //               multisigKey: wallet.owner,
+  //             });
+  //             const message = terra.getMigrateMessage({
+  //               proxyAddress: proxyAddress.address,
+  //               admin: wallet.owner.address,
+  //               chainId: wallet.chain as TerraChain,
+  //               signers,
+  //               codeId: proxyAddress.codeId,
+  //             });
+  //             const response = await RequestObiTerraSignAndBroadcastMsg.send({
+  //               multisigKey: wallet.owner.serialize(),
+  //               demoMode: wallet.isDemo,
+  //               messages: [message.toAmino()],
+  //             });
+  //
+  //             if (!isTxError(response)) {
+  //               await wallet.setProxyCodeId(
+  //                 terraChains[wallet.chain as TerraChain].currentCodeIds
+  //                   .userAccount
+  //               );
+  //             }
+  //           },
+  //         },
+  //       ]
+  //     );
+  //   }
+  // }, [codeIds, wallet]);
 
   return (
-    <HomeDrawer.Navigator
-      useLegacyImplementation={true}
-      initialRouteName={chainStore.currentChainInformation.label}
-      screenOptions={{
-        headerShown: false,
+    <>
+      <HomeDrawer.Navigator
+        useLegacyImplementation={true}
+        initialRouteName={chainStore.currentChainInformation.label}
+        screenOptions={{
+          headerShown: false,
+        }}
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
+      >
+        <HomeDrawer.Screen
+          name={HomeDrawerRoute.HomeDrawer}
+          component={TabNavigation}
+        />
+      </HomeDrawer.Navigator>
+    </>
+  );
+});
+
+const UpdateFooter = observer(function UpdateHeader() {
+  const { walletsStore } = useStore();
+  const theme = useTheme();
+  const queryClient = useQueryClient();
+
+  const wallet = walletsStore.currentWallet;
+
+  const codeIdsQuery = getCodeIdsQuery({
+    chainId: wallet?.chain,
+    address: wallet?.proxyAddress.address,
+  });
+  const { data: codeIds, isRefetching } = useQuery(codeIdsQuery);
+
+  const outdated = codeIds && wallet?.isOutdated(codeIds);
+  if (!outdated || isRefetching) return null;
+
+  return (
+    <TouchableOpacity
+      style={{
+        backgroundColor: "#FFE200",
+        padding: theme.spacing["12"],
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
       }}
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      onPress={async () => {
+        invariant(wallet, "Expected `wallet` to exist.");
+        const proxyAddress = wallet.proxyAddress;
+
+        const signers = terra.getSigners({
+          multisigKey: wallet.owner,
+        });
+        const message = terra.getMigrateMessage({
+          proxyAddress: proxyAddress.address,
+          admin: wallet.owner.address,
+          chainId: wallet.chain as TerraChain,
+          signers,
+          codeIds,
+        });
+
+        await RequestObiTerraSignAndBroadcastMsg.send({
+          multisigKey: wallet.owner.serialize(),
+          demoMode: wallet.isDemo,
+          messages: [message.toAmino()],
+        });
+
+        // if (!isTxError(response)) {
+        //   await wallet.setProxyCodeId(
+        //     terraChains[wallet.chain as TerraChain].currentCodeIds
+        //       .userAccount
+        //   );
+        // }
+
+        await queryClient.invalidateQueries(
+          {
+            queryKey: codeIdsQuery.queryKey,
+            refetchType: "all",
+          },
+          {
+            throwOnError: true,
+          }
+        );
+      }}
     >
-      <HomeDrawer.Screen
-        name={HomeDrawerRoute.HomeDrawer}
-        component={TabNavigation}
-      />
-    </HomeDrawer.Navigator>
+      <View style={{ flexShrink: 1 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <FontAwesomeIcon icon={faWarning} style={{ color: "#000" }} />
+          <View style={{ marginLeft: theme.spacing["8"] }}>
+            <Text style={{ color: "#000000" }}>Verified Update Available</Text>
+            <Text
+              style={{
+                color: "#000000",
+                ...theme.typography.caption2,
+              }}
+            >
+              Update your Obi Smart Account to continue testing.
+            </Text>
+          </View>
+        </View>
+      </View>
+      <View
+        style={{
+          backgroundColor: "#ffffff",
+          paddingVertical: theme.spacing["4"],
+          paddingHorizontal: theme.spacing["8"],
+          borderRadius: 6,
+          flexShrink: 0,
+        }}
+      >
+        <Text>Update</Text>
+      </View>
+    </TouchableOpacity>
   );
 });
 
@@ -333,7 +450,7 @@ const CustomDrawerContent = observer(function CustomDrawerContent(
         <FontAwesomeIcon
           icon={faTimes}
           style={{ color: isLoop ? "#4d5070" : "white" }}
-        ></FontAwesomeIcon>
+        />
       </TouchableHighlight>
       <Text
         style={{

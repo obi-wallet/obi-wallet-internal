@@ -67,7 +67,7 @@ export const terraChains = {
       "terra1a9zykuft0ngvq6ug2j60hz0an2kz72c3vs73tj5m87xcm0dt8w2sdkflln",
     currentCodeIds: {
       userAccount: 1216,
-      spendLimitGatekeeper: 1243,
+      spendLimitGatekeeper: 1255,
     },
     lcds: [
       "https://terra2-api.dalnim.finance",

@@ -11,7 +11,18 @@ export const MigratableSerializedProxyAddress = migratable(
     address: z.string(),
     codeId: z.number().int().positive(),
   })
-);
+).addMigration({
+  nextSchema: z.object({
+    v: z.literal(1),
+    address: z.string(),
+  }),
+  migrate(data) {
+    return {
+      v: 1 as const,
+      address: data.address,
+    };
+  },
+});
 
 export type SerializedProxyAddress = z.infer<
   typeof MigratableSerializedProxyAddress.schema

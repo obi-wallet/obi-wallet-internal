@@ -5,6 +5,7 @@ import {
   MultisigKey,
   Wallet,
 } from "@obi-wallet/common";
+import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
@@ -13,6 +14,7 @@ import { View } from "react-native";
 import { handleCosmos } from "./cosmos";
 import { handleTerra } from "./terra";
 import { MultisigSettings } from "../../../../components/multisig-settings";
+import { getCodeIdsQuery } from "../../../../queries/user-account";
 import { KeyFlow, KeyRoute } from "../../../../screens/keys";
 import { AsyncButton, Button } from "../../../button";
 import { useRootNavigation } from "../../../root-stack";
@@ -27,6 +29,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
   const wallet = useMultisigWallet();
   const navigation = useRootNavigation();
   const intl = useIntl();
+  const queryClient = useQueryClient();
 
   const draftId = getMultisigSettingsDraftId(wallet);
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
@@ -164,6 +167,13 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
               setLoading(true);
               const chainId = wallet.chain;
               try {
+                const codeIds = await queryClient.fetchQuery(
+                  getCodeIdsQuery({
+                    chainId,
+                    address: wallet.proxyAddress.address,
+                  })
+                );
+
                 if (isCosmosChain(chainId)) {
                   await handleCosmos({
                     draft,
@@ -174,6 +184,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
                   await handleTerra({
                     draft,
                     wallet,
+                    codeIds,
                   });
                 }
               } catch (e) {

@@ -3,7 +3,6 @@ import {
   healthChecks,
   JunoChecks,
   MultisigWallet,
-  RequestObiCosmosSignAndBroadcastMsg,
   Text,
 } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
@@ -18,7 +17,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import invariant from "tiny-invariant";
 
 import WarningIcon from "../../../assets/warning.svg";
 import { useMultisigWallet } from "../../stores";
@@ -84,68 +82,6 @@ export const HealthChecksScreen = observer(function HealthChecksScreen() {
                 "Please move your funds out and create a new wallet.",
             })
           );
-        };
-      },
-    },
-    [JunoChecks.CODE_ID_AT_LEAST_1311]: {
-      title: (
-        <FormattedMessage
-          id="settings.multisighealthchecks.juno.codeidatleast1311.title"
-          defaultMessage="Wallet out of date"
-        />
-      ),
-      description: (
-        <FormattedMessage
-          id="settings.multisighealthchecks.juno.codeidatleast1311.description"
-          defaultMessage="The code ID of your wallet is older than 1311."
-        />
-      ),
-      getOnPress: (wallet: MultisigWallet) => {
-        return async () => {
-          const encodeObjects = getEncodeObjects();
-
-          if (encodeObjects.length > 0) {
-            const response = await RequestObiCosmosSignAndBroadcastMsg.send({
-              multisigKey: wallet.owner.serialize(),
-              demoMode: wallet.isDemo,
-              encodeObjects,
-            });
-
-            try {
-              invariant(
-                wallet.proxyAddress?.address,
-                "Expected proxy address to exist."
-              );
-              await wallet.setProxyCodeId(1311);
-              await refetchProblems();
-            } catch (e) {
-              console.log(response.rawLog);
-            }
-          }
-
-          function getEncodeObjects() {
-            // TODO: fix me
-            // const multisig = wallet.currentAdmin;
-            //
-            // if (!multisig?.multisig?.address || !wallet.proxyAddress?.address)
-            //   return [];
-            return [];
-
-            // const rawMessage: MigrateMsg = {};
-            //
-            // const value: MsgMigrateContract = {
-            //   sender: multisig.multisig.address,
-            //   // @ts-expect-error should be passed as a string
-            //   codeId: Long.fromInt(1311).toString(),
-            //   contract: wallet.proxyAddress.address,
-            //   msg: new Uint8Array(Buffer.from(JSON.stringify(rawMessage))),
-            // };
-            // const message: MsgMigrateContractEncodeObject = {
-            //   typeUrl: "/cosmwasm.wasm.v1.MsgMigrateContract",
-            //   value,
-            // };
-            // return [message];
-          }
         };
       },
     },

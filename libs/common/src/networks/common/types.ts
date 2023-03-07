@@ -38,3 +38,8 @@ export interface Rewards {
   perDelegator: { address: string; rewards: Coin }[];
   total: Coin;
 }
+
+export interface CodeIds {
+  userAccount: number;
+  spendLimitGatekeeper: number | null;
+}

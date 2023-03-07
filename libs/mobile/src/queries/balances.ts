@@ -6,6 +6,8 @@ import {
   terra,
 } from "@obi-wallet/common";
 
+import { staleTime } from "./helpers";
+
 export function getBalancesQuery({
   chainId,
   address,
@@ -100,7 +102,7 @@ export function getValidatorsQuery({ chainId }: { chainId: Chain }) {
 
       return [];
     },
-    staleTime: 1000 * 60 * 60 * 24, // 1 day
+    staleTime: staleTime({ days: 1 }),
   };
 }
 

@@ -11,6 +11,7 @@ import invariant from "tiny-invariant";
 
 import { GatekeeperConfig } from "../..";
 import { TerraChain, terraChains } from "../../chains";
+import { CodeIds } from "../common";
 
 export function getNewAccountMessage({
   address,
@@ -73,8 +74,8 @@ export function parseNewAccountResponse(response: BlockTxBroadcastResult) {
       "Expected to have the same number of `_contract_address` and `code_id` attributes."
     );
     return {
+      v: 1 as const,
       address: contractAddresses[0].value,
-      codeId: parseInt(codeIds[0].value, 10),
     };
   } catch (e) {
     console.log(response.raw_log);
@@ -120,18 +121,23 @@ export function getMigrateMessage({
   admin,
   chainId,
   signers,
-  codeId,
+  codeIds,
 }: {
   admin: string;
   proxyAddress: string;
   chainId: TerraChain;
   signers: { address: string; ty: string }[];
-  codeId: number;
+  codeIds: CodeIds;
 }) {
   return new MsgExecuteContract(admin, proxyAddress, {
     wrapped_migrate: {
-      code_id: terraChains[chainId].currentCodeIds.userAccount,
-      ...(codeId >= 1216
+      ...(codeIds.userAccount < terraChains[chainId].currentCodeIds.userAccount
+        ? { code_id: terraChains[chainId].currentCodeIds.userAccount }
+        : {}),
+      ...(codeIds.userAccount >= 1216 &&
+      (!codeIds.spendLimitGatekeeper ||
+        codeIds.spendLimitGatekeeper <
+          terraChains[chainId].currentCodeIds.spendLimitGatekeeper)
         ? {
             gatekeeper_code_ids: {
               spendlimit:
@@ -139,7 +145,7 @@ export function getMigrateMessage({
             },
           }
         : {}),
-      ...(codeId >= 1081
+      ...(codeIds.userAccount >= 1081
         ? {
             signers: {
               signers,
@@ -155,18 +161,18 @@ export function getProposeUpdateOwnerMessage({
   proxyAddress,
   newOwner,
   signers,
-  codeId,
+  codeIds,
 }: {
   sender: string;
   proxyAddress: string;
   newOwner: string;
   signers: { address: string; ty: string }[];
-  codeId: number;
+  codeIds: CodeIds;
 }) {
   const rawMessage = {
     propose_update_owner: {
       new_owner: newOwner,
-      ...(codeId >= 1081
+      ...(codeIds.userAccount >= 1081
         ? {
             signers: {
               signers,

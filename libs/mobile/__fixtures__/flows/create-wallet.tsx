@@ -1,12 +1,8 @@
 import { CommonActions } from "@react-navigation/native";
 import { useEffect } from "react";
 
-import {
-  Modals,
-  OnboardingRoute,
-  StateRenderer,
-  useRootNavigation,
-} from "../../src";
+import { OnboardingRoute, useRootNavigation } from "../../src";
+import { BaseAppWithoutProvider } from "../../src/app";
 import { MultisigDraft } from "../../src/fixture-helpers";
 import { KeyFlow, KeyRoute } from "../../src/screens/keys";
 
@@ -62,12 +58,7 @@ function StepInner({ step }: { step: number }) {
     );
   }, [step, navigation]);
 
-  return (
-    <>
-      <StateRenderer />
-      <Modals />
-    </>
-  );
+  return <BaseAppWithoutProvider />;
 }
 
 export default {

@@ -115,7 +115,10 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
                 }
               ),
             },
-            proxyAddress: serializedProxyWallet.proxyAddress,
+            proxyAddress: {
+              v: 1,
+              address: serializedProxyWallet.proxyAddress.address,
+            },
             // TODO: fetch from chain?
             gatekeeperConfig: {
               beneficiaries: [],

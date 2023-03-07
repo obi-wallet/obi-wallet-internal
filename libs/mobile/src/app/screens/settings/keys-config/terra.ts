@@ -1,4 +1,5 @@
 import {
+  CodeIds,
   Draft,
   MultisigKey,
   MultisigWallet,
@@ -9,9 +10,11 @@ import {
 export async function handleTerra({
   draft,
   wallet,
+  codeIds,
 }: {
   draft: Draft<MultisigKey>;
   wallet: MultisigWallet;
+  codeIds: CodeIds;
 }) {
   const currentOwner = draft.original;
   const newOwner = draft.value;
@@ -23,7 +26,7 @@ export async function handleTerra({
       proxyAddress: wallet.address,
       newOwner: newOwner.address,
       signers,
-      codeId: wallet.proxyAddress.codeId,
+      codeIds,
     });
 
     const response = await RequestObiTerraSignAndBroadcastMsg.send({

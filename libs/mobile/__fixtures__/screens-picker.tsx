@@ -5,13 +5,12 @@ import { useSelect } from "react-cosmos/fixture";
 import {
   HomeBottomTabRoute,
   HomeDrawerRoute,
-  Modals,
   OnboardingRoute,
   RootRoute,
   SettingsRoute,
-  StateRenderer,
   useRootNavigation,
 } from "../src";
+import { BaseAppWithoutProvider } from "../src/app";
 
 type Route = RootRoute | OnboardingRoute | SettingsRoute | HomeBottomTabRoute;
 
@@ -33,12 +32,7 @@ export default function ScreensPicker() {
     if (routeAction) navigation.dispatch(routeAction);
   }, [navigation, route]);
 
-  return (
-    <>
-      <StateRenderer />
-      <Modals />
-    </>
-  );
+  return <BaseAppWithoutProvider />;
 }
 
 function getRouteParams(route: Route) {

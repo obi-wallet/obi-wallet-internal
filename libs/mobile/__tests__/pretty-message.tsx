@@ -93,7 +93,7 @@ describe("Terra", () => {
       proxyAddress: address,
       newOwner: address,
       signers: [],
-      codeId: terraChains[chainId].currentCodeIds.userAccount,
+      codeIds: terraChains[chainId].currentCodeIds,
     });
 
     test("Obi", async () => {
@@ -151,7 +151,7 @@ describe("Terra", () => {
       admin: address,
       chainId,
       signers: [],
-      codeId: terraChains[chainId].currentCodeIds.userAccount,
+      codeIds: terraChains[chainId].currentCodeIds,
     });
 
     test("Obi", async () => {
