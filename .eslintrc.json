@@ -90,6 +90,11 @@
           {
             "paths": [
               {
+                "name": "@tanstack/react-query",
+                "importNames": ["useQuery"],
+                "message": "Please use useQuery from `src/queries` instead."
+              },
+              {
                 "name": "react-native",
                 "importNames": ["KeyboardAvoidingView"],
                 "message": "Please use KeyboardAvoidingView from `src/app/screens/components/keyboard-avoding-view` instead."

@@ -10,6 +10,6 @@ module.exports = {
     "\\.(js|ts|tsx)$": require.resolve("./jest.preprocessor.js"),
   },
   transformIgnorePatterns: [
-    "node_modules/(?!(@fortawesome|@react-native|react-native|react-native-fontawesome|react-native-safe-area-context)/)",
+    "node_modules/(?!(@fortawesome|@react-native|@react-navigation|react-native|react-native-fontawesome|react-native-safe-area-context)/)",
   ],
 };

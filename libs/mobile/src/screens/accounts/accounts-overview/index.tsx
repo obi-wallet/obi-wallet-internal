@@ -8,7 +8,6 @@ import {
   Text,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useQuery } from "@tanstack/react-query";
 import { isTxError } from "@terra-money/terra.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -39,6 +38,7 @@ import {
   getGatekeeperContractAddressesQuery,
   getPermissionedAddressesQuery,
 } from "../../../queries/gatekeeper";
+import { useQuery } from "../../../queries/helpers";
 import { AccountsRoute, AccountsStackParamList } from "../accounts-stack";
 import { getGatekeeperConfigDraftId } from "../draft-id";
 
@@ -110,7 +110,8 @@ const AccountScreenInner = observer(function AccountScreenInner() {
   );
   const spendLimitGatekeeper =
     gatekeeperContractAddresses?.spendLimitGatekeeper;
-  const { data: permissionedAddresses } = useQuery(
+
+  const { data: permissionedAddresses, refetch } = useQuery(
     getPermissionedAddressesQuery({
       chainId: wallet.chain,
       spendLimitGatekeeper,
@@ -224,6 +225,8 @@ const AccountScreenInner = observer(function AccountScreenInner() {
 
                 await wallet.setGatekeeperConfig(draft.value);
                 draft.commit({ original: wallet.gatekeeperConfig });
+
+                await refetch();
               }}
             />
             <Button

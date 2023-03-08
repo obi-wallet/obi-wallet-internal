@@ -21,7 +21,6 @@ import {
   DrawerScreenProps,
 } from "@react-navigation/drawer";
 import { ParamListBase } from "@react-navigation/native";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { action } from "mobx";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -54,6 +53,7 @@ import {
   HomeDrawer,
   HomeDrawerRoute,
 } from "./home-stack";
+import { useQuery } from "../../../queries/helpers";
 import { getCodeIdsQuery } from "../../../queries/user-account";
 import { AccountsScreen } from "../../../screens/accounts";
 import { useStore } from "../../stores";
@@ -268,7 +268,6 @@ export const HomeScreen = observer(function HomeScreen() {
 const UpdateFooter = observer(function UpdateHeader() {
   const { walletsStore } = useStore();
   const theme = useTheme();
-  const queryClient = useQueryClient();
 
   const wallet = walletsStore.currentWallet;
 
@@ -276,7 +275,7 @@ const UpdateFooter = observer(function UpdateHeader() {
     chainId: wallet?.chain,
     address: wallet?.proxyAddress.address,
   });
-  const { data: codeIds, isRefetching } = useQuery(codeIdsQuery);
+  const { data: codeIds, isRefetching, refetch } = useQuery(codeIdsQuery);
 
   const outdated = codeIds && wallet?.isOutdated(codeIds);
   if (!outdated || isRefetching) return null;
@@ -312,15 +311,9 @@ const UpdateFooter = observer(function UpdateHeader() {
             messages: [message.toAmino()],
           });
         } finally {
-          await queryClient.invalidateQueries(
-            {
-              queryKey: codeIdsQuery.queryKey,
-              refetchType: "all",
-            },
-            {
-              throwOnError: true,
-            }
-          );
+          await refetch({
+            throwOnError: true,
+          });
         }
       }}
     >

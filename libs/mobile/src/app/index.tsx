@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { Config, Text, WalletState } from "@obi-wallet/common";
+import { focusManager } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { AppState, View } from "react-native";
@@ -9,7 +10,7 @@ import { deploymentKey } from "./code-push";
 import { Loader } from "./loader";
 import { Modals } from "./modals";
 import { Provider, ProviderProps } from "./provider";
-import { RootRoute, RootStack } from "./root-stack";
+import { RootRoute, RootStack, useRootNavigation } from "./root-stack";
 import { HomeScreen } from "./screens/home";
 import { Stake } from "./screens/home/components/stake";
 import { OnboardingRoute } from "./screens/onboarding/onboarding-stack";
@@ -54,6 +55,8 @@ export const BaseAppWithoutProvider = observer(
         async (nextAppState) => {
           const previousAppState = appState.current;
           appState.current = nextAppState;
+
+          focusManager.setFocused(nextAppState === "active");
 
           if (
             previousAppState.match(/inactive|background|unknown/) &&
