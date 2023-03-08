@@ -6,7 +6,6 @@ import {
   terra,
   Text,
 } from "@obi-wallet/common";
-import { useQuery } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { FC } from "react";
@@ -25,6 +24,7 @@ import {
   getUnbondingDelegations,
   getValidatorsQuery,
 } from "../../queries";
+import { useQuery } from "../../queries/helpers";
 import { useStore } from "../stores";
 
 export interface ExtendedCoin {
