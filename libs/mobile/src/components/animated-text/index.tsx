@@ -36,7 +36,7 @@ export const AnimatedText = observer(function AnimatedText({
   }, [text]);
 
   return (
-    <Animated.View {...rest} style={[style, { opacity: animation }]}>
+    <Animated.View style={[style, { opacity: animation }]}>
       <Text {...rest} style={[textStyle]}>
         {animatedText}
       </Text>

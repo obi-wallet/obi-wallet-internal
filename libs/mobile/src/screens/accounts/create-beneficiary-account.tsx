@@ -8,7 +8,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import BeneficiaryAccountIcon from "./assets/beneficiary-account-icon.svg";
-import { AvatarPicker, icon } from "./avatar";
+import { AvatarPicker, Icon } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
@@ -33,7 +33,7 @@ export const CreateBeneficiaryAccountScreen =
       const gatekeeperConfig = draftsStore.get<GatekeeperConfig>({
         id: getGatekeeperConfigDraftId(wallet),
       });
-      const [icon, setIcon] = useState<icon | null>(null);
+      const [icon, setIcon] = useState<Icon | null>(null);
 
       const [name, setName] = useState("");
       // TODO: validate address
@@ -65,7 +65,7 @@ export const CreateBeneficiaryAccountScreen =
                   Add Inheritance Account
                 </Text>
                 <AvatarPicker
-                  FallbackSVG={BeneficiaryAccountIcon}
+                  FallbackSvg={BeneficiaryAccountIcon}
                   icon={icon}
                   onChange={setIcon}
                 />

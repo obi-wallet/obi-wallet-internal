@@ -345,14 +345,14 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                         <Animatable.View
                           duration={400}
                           animation={
-                            nextFlexRule === flexRules[1]
+                            nextFlexRule === FlexAccountRule.Limited
                               ? "fadeInDown"
                               : "fadeOutDown"
                           }
                           style={{
                             flexDirection: "row",
 
-                            ...(nextFlexRule === flexRules[1]
+                            ...(nextFlexRule === FlexAccountRule.Limited
                               ? {}
                               : { height: 0, opacity: 0 }),
                           }}
@@ -401,7 +401,9 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                   <Animatable.View
                     duration={400}
                     animation={
-                      nextFlexRule === flexRules[1] ? "fadeIn" : "fadeOut"
+                      nextFlexRule === FlexAccountRule.Limited
+                        ? "fadeIn"
+                        : "fadeOut"
                     }
                     style={{
                       flexDirection: "row",
@@ -409,7 +411,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                       alignItems: "center",
                       paddingHorizontal: 10,
 
-                      ...(nextFlexRule === flexRules[1]
+                      ...(nextFlexRule === FlexAccountRule.Limited
                         ? { paddingTop: 10 }
                         : { height: 0 }),
                     }}

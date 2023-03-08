@@ -183,7 +183,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
           >
             <TouchableOpacity
               style={{
-                backgroundColor: "red",
+                backgroundColor: "#FF2222",
                 padding: 16,
                 borderRadius: 100,
                 width: 50,
@@ -200,7 +200,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
             <Button
               flavor="blue"
               label="Save Changes"
-              buttonStyle={{ width: "65%" }}
+              buttonStyle={{ flex: 1, margin: 10 }}
               onPress={async () => {
                 invariant(
                   spendLimitGatekeeper,

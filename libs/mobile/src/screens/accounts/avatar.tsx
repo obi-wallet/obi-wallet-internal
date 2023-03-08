@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
 import { Image, View } from "react-native";
 import ImagePicker, {
-  Image as pickerImage,
+  Image as PickerImage,
 } from "react-native-image-crop-picker";
 import { SvgProps } from "react-native-svg";
 
@@ -23,17 +23,17 @@ import { formatCoin } from "../../app/balances";
 import { CoinIcon } from "../../app/screens/components/coin-icon";
 import { Modal } from "../../app/screens/components/modal";
 import { useCurrentTerraChainInformation } from "../../app/stores";
-export type icon = {
+export type Icon = {
   uri: string;
 };
 
 export const AvatarPicker = observer(function AvatarPicker({
   icon,
   onChange,
-  FallbackSVG,
+  FallbackSvg,
 }: {
-  icon: icon | null;
-  FallbackSVG: React.FC<SvgProps>;
+  icon: Icon | null;
+  FallbackSvg: React.FC<SvgProps>;
   onChange: (icon: any) => void;
 }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -87,14 +87,15 @@ export const AvatarPicker = observer(function AvatarPicker({
               shadowRadius: 2,
             }}
           >
-            <FallbackSVG width="100%" height="100%" />
+            <FallbackSvg width="100%" height="100%" />
           </View>
         </>
       ) : (
-        <FallbackSVG width="100%" height="100%" />
+        <FallbackSvg width="100%" height="100%" />
       )}
       <View
         style={{
+          zIndex: 3,
           width: 20,
           height: 20,
           position: "absolute",
@@ -145,9 +146,10 @@ export const AvatarPicker = observer(function AvatarPicker({
               height: 300,
               cropping: true,
               includeBase64: true,
+              mediaType: "photo",
             }).then((image) => {
               onChange({
-                uri: `data:${image.mime};base64,${(image as pickerImage).data}`,
+                uri: `data:${image.mime};base64,${(image as PickerImage).data}`,
               });
               setModalVisible(false);
             });
@@ -177,9 +179,10 @@ export const AvatarPicker = observer(function AvatarPicker({
               height: 300,
               cropping: true,
               includeBase64: true,
+              mediaType: "photo",
             }).then((image) => {
               onChange({
-                uri: `data:${image.mime};base64,${(image as pickerImage).data}`,
+                uri: `data:${image.mime};base64,${(image as PickerImage).data}`,
               });
               setModalVisible(false);
             });
