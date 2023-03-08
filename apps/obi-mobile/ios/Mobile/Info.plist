@@ -64,8 +64,12 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need your permission to access your Photo Library.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We need your permission to access your Camera.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need your permission to access your Microphone.</string>
 	<key>NFCReaderUsageDescription</key>
 	<string>Use NFC (Passport, Credit Card, YubiKey, Badge, etc.) as a source of entropy for a new deterministic keypair. No information is stored by Obi.</string>
 	<key>NSFaceIDUsageDescription</key>

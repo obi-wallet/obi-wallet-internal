@@ -5,7 +5,8 @@ import { useState } from "react";
 import { View } from "react-native";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
-import { AvatarPicker } from "./avatar";
+import BeneficiaryAccountIcon from "./assets/beneficiary-account-icon.svg";
+import { AvatarPicker, icon } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
@@ -27,6 +28,7 @@ export const CreateBeneficiaryAccountScreen =
       const gatekeeperConfig = draftsStore.get<GatekeeperConfig>({
         id: getGatekeeperConfigDraftId(wallet),
       });
+      const [icon, setIcon] = useState<icon | null>(null);
 
       const [name, setName] = useState("");
       // TODO: validate address
@@ -37,17 +39,29 @@ export const CreateBeneficiaryAccountScreen =
           <View
             style={{
               flex: 1,
-              alignItems: "center",
+              alignItems: "flex-start",
               marginTop: 20,
             }}
           >
-            <Text style={{ color: "white", fontSize: 16, marginBottom: 15 }}>
-              Add Beneficiary
-            </Text>
-            <AvatarPicker />
+            <View
+              style={{
+                alignItems: "center",
+
+                width: "100%",
+              }}
+            >
+              <Text style={{ color: "white", fontSize: 16, marginBottom: 15 }}>
+                Add Inheritance Account
+              </Text>
+              <AvatarPicker
+                FallbackSVG={BeneficiaryAccountIcon}
+                icon={icon}
+                onChange={setIcon}
+              />
+            </View>
             <TextInput
               placeholder="Enter Name"
-              label="Beneficiary Account Name"
+              label="Inheritance Account Name"
               style={{ width: "100%", marginTop: 40 }}
               value={name}
               onChangeText={setName}
@@ -65,7 +79,7 @@ export const CreateBeneficiaryAccountScreen =
                 fontSize: isSmallScreenNumber(12, 14),
                 color: "white",
                 marginTop: 20,
-                textAlign: "justify",
+                textAlign: "left",
               }}
             >
               Enter a name and the address of your beneficiary. If they don't
@@ -78,7 +92,7 @@ export const CreateBeneficiaryAccountScreen =
                 fontSize: isSmallScreenNumber(12, 14),
                 color: "white",
                 marginTop: 20,
-                textAlign: "justify",
+                textAlign: "left",
               }}
             >
               NOTE: If user is not using an Obi interface, they won't be able to
@@ -87,12 +101,13 @@ export const CreateBeneficiaryAccountScreen =
           </View>
           <View style={{ marginTop: 20 }}>
             <Button
-              flavor="obi"
+              flavor="blue"
+              disabled={!name || !address}
               onPress={() => {
                 gatekeeperConfig.value.addBeneficiary({
                   type: "beneficiary",
                   meta: {
-                    icon: "",
+                    icon: icon?.uri || "",
                     name,
                   },
                   address,

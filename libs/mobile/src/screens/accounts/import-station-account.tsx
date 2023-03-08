@@ -46,7 +46,7 @@ export const ImportStationAccountScreen =
           </View>
           <View style={{ marginTop: 20 }}>
             <Button
-              flavor="obi"
+              flavor="blue"
               onPress={() => {
                 const key = new MnemonicKey({
                   mnemonic,

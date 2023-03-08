@@ -1,4 +1,4 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   EntityId,
@@ -62,27 +62,6 @@ export const AccountsOverviewScreen = observer<AccountsOverviewScreenProps>(
         <NetworkAccountPickerLayout>
           <View style={{ flex: 1, position: "relative" }}>
             <AccountScreenInner />
-            <View
-              style={{
-                position: "absolute",
-                zIndex: 10,
-                right: 20,
-                bottom: 20,
-              }}
-            >
-              <TouchableOpacity
-                style={{
-                  backgroundColor: "#437DFF",
-                  padding: 16,
-                  borderRadius: 100,
-                }}
-                onPress={() => {
-                  navigation.navigate(AccountsRoute.AddAccount);
-                }}
-              >
-                <FontAwesomeIcon icon={faPlus} style={{ color: "#F6F5FF" }} />
-              </TouchableOpacity>
-            </View>
           </View>
         </NetworkAccountPickerLayout>
       </>
@@ -140,8 +119,8 @@ const AccountScreenInner = observer(function AccountScreenInner() {
             <TouchableOpacity
               style={{
                 position: "absolute",
-                top: 6,
-                left: 6,
+                top: 10,
+                left: 10,
                 zIndex: 999,
               }}
               hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}
@@ -194,10 +173,34 @@ const AccountScreenInner = observer(function AccountScreenInner() {
           <AccountsList />
         </View>
         {draft.isDirty ? (
-          <View style={{ margin: 15 }}>
+          <View
+            style={{
+              margin: 5,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                backgroundColor: "red",
+                padding: 16,
+                borderRadius: 100,
+                width: 50,
+                height: 50,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onPress={() => {
+                draft.reset();
+              }}
+            >
+              <FontAwesomeIcon icon={faTimes} style={{ color: "#F6F5FF" }} />
+            </TouchableOpacity>
             <Button
               flavor="blue"
-              label="Confirm"
+              label="Save Changes"
+              buttonStyle={{ width: "65%" }}
               onPress={async () => {
                 invariant(
                   spendLimitGatekeeper,
@@ -226,15 +229,46 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                 draft.commit({ original: wallet.gatekeeperConfig });
               }}
             />
-            <Button
-              flavor="cancel"
-              label="Cancel"
-              onPress={() => {
-                draft.reset();
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#437DFF",
+                padding: 16,
+                borderRadius: 100,
+                width: 50,
+                height: 50,
+                justifyContent: "center",
+                alignItems: "center",
               }}
-            />
+              onPress={() => {
+                navigation.navigate(AccountsRoute.AddAccount);
+              }}
+            >
+              <FontAwesomeIcon icon={faPlus} style={{ color: "#F6F5FF" }} />
+            </TouchableOpacity>
           </View>
-        ) : null}
+        ) : (
+          <View
+            style={{
+              position: "absolute",
+              zIndex: 10,
+              right: 20,
+              bottom: 20,
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#437DFF",
+                padding: 16,
+                borderRadius: 100,
+              }}
+              onPress={() => {
+                navigation.navigate(AccountsRoute.AddAccount);
+              }}
+            >
+              <FontAwesomeIcon icon={faPlus} style={{ color: "#F6F5FF" }} />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </PermissionedAddressesContext.Provider>
   );

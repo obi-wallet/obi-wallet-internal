@@ -9,10 +9,11 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { View } from "react-native";
+import { ImageProps, View } from "react-native";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
-import { AvatarPicker } from "./avatar";
+import FlexAccountIcon from "./assets/flex-account-icon.svg";
+import { AvatarPicker, icon } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
@@ -25,6 +26,7 @@ export type CreateFlexAccountScreenProps = NativeStackScreenProps<
 >;
 
 // TODO: validate form
+
 export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
   function CreateFlexAccountScreen({ navigation }) {
     const { draftsStore } = useStore();
@@ -32,9 +34,8 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
     const gatekeeperConfig = draftsStore.get<GatekeeperConfig>({
       id: getGatekeeperConfigDraftId(wallet),
     });
-
+    const [icon, setIcon] = useState<icon | null>(null);
     const [name, setName] = useState("");
-
     return (
       <ScreenContainer>
         <View
@@ -47,7 +48,11 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
           <Text style={{ color: "white", fontSize: 16, marginBottom: 15 }}>
             Create Flex Account
           </Text>
-          <AvatarPicker />
+          <AvatarPicker
+            icon={icon}
+            onChange={setIcon}
+            FallbackSVG={FlexAccountIcon}
+          />
           <TextInput
             placeholder="Enter Name"
             label="Flex Account Name"
@@ -64,6 +69,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
         <View style={{ marginTop: 20 }}>
           <Button
             flavor="obi"
+            disabled={!name}
             onPress={() => {
               const { publicKey, privateKey } = generateSec256k1KeyPair();
               const aminoPublicKey = {
@@ -90,7 +96,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
                 entity: {
                   type: "flex-account",
                   meta: {
-                    icon: "",
+                    icon: icon?.uri || "",
                     name,
                   },
                   address,
