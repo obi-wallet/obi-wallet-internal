@@ -17,7 +17,7 @@ import * as Animatable from "react-native-animatable";
 import { useThrottle } from "rooks";
 
 import { AbstractAccountItemProps, AccountContainer, Pill } from "./common";
-import { AnimatedText } from "../../../../components/animatedText";
+import { AnimatedText } from "../../../../components/animated-text";
 import { PermissionedAddressesContext } from "../permissioned-address-context";
 export interface FlexAccountItemProps extends AbstractAccountItemProps {
   originalAccount: FlexAccount | null;
