@@ -217,7 +217,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
         (100 * parseInt(spendLimit.limit_remaining, 10)) /
           parseInt(spendLimit.amount, 10)
       : 0;
-
+    console.log({ amount });
     return (
       <AccountContainer
         isOpen={isOpen}
@@ -367,8 +367,11 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                               paddingHorizontal: 20,
                               fontSize: 25,
                               fontFamily: "Poppins",
+                              height: 48,
                             }}
+                            // defaultValue={`$${amount ?? 0}`}
                             value={`$${amount ?? 0}`}
+                            placeholder="0"
                             editable={nextFlexRule === FlexAccountRule.Limited}
                             onChangeText={(value) => {
                               const res = value.replace(/[^0-9.]/g, "");
@@ -407,7 +410,9 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                       alignItems: "center",
                       paddingHorizontal: 10,
 
-                      ...(nextFlexRule === flexRules[1] ? {} : { height: 0 }),
+                      ...(nextFlexRule === flexRules[1]
+                        ? { paddingTop: 10 }
+                        : { height: 0 }),
                     }}
                   >
                     <Slider
