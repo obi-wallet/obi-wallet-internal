@@ -9,7 +9,8 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { ImageProps, View } from "react-native";
+import { View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import FlexAccountIcon from "./assets/flex-account-icon.svg";
@@ -38,34 +39,40 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
     const [name, setName] = useState("");
     return (
       <ScreenContainer>
-        <View
-          style={{
+        <KeyboardAwareScrollView
+          contentContainerStyle={{
             flex: 1,
-            alignItems: "center",
-            marginTop: 20,
           }}
         >
-          <Text style={{ color: "white", fontSize: 16, marginBottom: 15 }}>
-            Create Flex Account
-          </Text>
-          <AvatarPicker
-            icon={icon}
-            onChange={setIcon}
-            FallbackSVG={FlexAccountIcon}
-          />
-          <TextInput
-            placeholder="Enter Name"
-            label="Flex Account Name"
-            style={{ width: "100%", marginTop: 40 }}
-            value={name}
-            onChangeText={setName}
-          />
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              marginTop: 20,
+            }}
+          >
+            <Text style={{ color: "white", fontSize: 16, marginBottom: 15 }}>
+              Create Flex Account
+            </Text>
+            <AvatarPicker
+              icon={icon}
+              onChange={setIcon}
+              FallbackSVG={FlexAccountIcon}
+            />
+            <TextInput
+              placeholder="Enter Name"
+              label="Flex Account Name"
+              style={{ width: "100%", marginTop: 40 }}
+              value={name}
+              onChangeText={setName}
+            />
 
-          <Text style={{ fontSize: 14, color: "white", marginTop: 20 }}>
-            Name your new flex account. You will be able to change flex account
-            settings from the Accounts tab once it is created.
-          </Text>
-        </View>
+            <Text style={{ fontSize: 14, color: "white", marginTop: 20 }}>
+              Name your new flex account. You will be able to change flex
+              account settings from the Accounts tab once it is created.
+            </Text>
+          </View>
+        </KeyboardAwareScrollView>
         <View style={{ marginTop: 20 }}>
           <Button
             flavor="obi"

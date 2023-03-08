@@ -217,7 +217,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
         (100 * parseInt(spendLimit.limit_remaining, 10)) /
           parseInt(spendLimit.amount, 10)
       : 0;
-    console.log({ amount });
+
     return (
       <AccountContainer
         isOpen={isOpen}
@@ -369,7 +369,6 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                               fontFamily: "Poppins",
                               height: 48,
                             }}
-                            // defaultValue={`$${amount ?? 0}`}
                             value={`$${amount ?? 0}`}
                             placeholder="0"
                             editable={nextFlexRule === FlexAccountRule.Limited}
