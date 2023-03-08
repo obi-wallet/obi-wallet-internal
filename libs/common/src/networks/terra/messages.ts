@@ -132,9 +132,18 @@ export function getMigrateMessage({
   return new MsgExecuteContract(admin, proxyAddress, {
     wrapped_migrate: {
       ...(codeIds.userAccount < terraChains[chainId].currentCodeIds.userAccount
-        ? { code_id: terraChains[chainId].currentCodeIds.userAccount }
+        ? {
+            code_id: terraChains[chainId].currentCodeIds.userAccount,
+            ...(codeIds.userAccount >= 1081
+              ? {
+                  signers: {
+                    signers,
+                  },
+                }
+              : {}),
+          }
         : {}),
-      ...(codeIds.userAccount >= 1216 &&
+      ...(codeIds.userAccount >= 1261 &&
       (!codeIds.spendLimitGatekeeper ||
         codeIds.spendLimitGatekeeper <
           terraChains[chainId].currentCodeIds.spendLimitGatekeeper)
@@ -142,13 +151,6 @@ export function getMigrateMessage({
             gatekeeper_code_ids: {
               spendlimit:
                 terraChains[chainId].currentCodeIds.spendLimitGatekeeper,
-            },
-          }
-        : {}),
-      ...(codeIds.userAccount >= 1081
-        ? {
-            signers: {
-              signers,
             },
           }
         : {}),
