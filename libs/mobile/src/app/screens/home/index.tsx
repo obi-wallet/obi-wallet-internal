@@ -246,58 +246,6 @@ export const TabNavigation = observer<TabNavigationProps>(
 export const HomeScreen = observer(function HomeScreen() {
   const { chainStore } = useStore();
 
-  // const { data: codeIds } = useQuery(
-  //   getCodeIdsQuery({
-  //     chainId: wallet.chain,
-  //     address: wallet.proxyAddress.address,
-  //   })
-  // );
-  //
-  // console.log(codeIds);
-  //
-  // const isOutdated = codeIds && wallet.isOutdated(codeIds);
-
-  // useEffect(() => {
-  //   if (codeIds && wallet.isOutdated(codeIds)) {
-  //     Alert.alert(
-  //       "Verified Update Available",
-  //       "Update your Obi Smart Account to continue testing.",
-  //       [
-  //         {
-  //           text: "Update",
-  //           onPress: async () => {
-  //             const proxyAddress = wallet.proxyAddress;
-  //             invariant(proxyAddress, "Expected `proxyAddress` to exist.");
-  //
-  //             const signers = terra.getSigners({
-  //               multisigKey: wallet.owner,
-  //             });
-  //             const message = terra.getMigrateMessage({
-  //               proxyAddress: proxyAddress.address,
-  //               admin: wallet.owner.address,
-  //               chainId: wallet.chain as TerraChain,
-  //               signers,
-  //               codeId: proxyAddress.codeId,
-  //             });
-  //             const response = await RequestObiTerraSignAndBroadcastMsg.send({
-  //               multisigKey: wallet.owner.serialize(),
-  //               demoMode: wallet.isDemo,
-  //               messages: [message.toAmino()],
-  //             });
-  //
-  //             if (!isTxError(response)) {
-  //               await wallet.setProxyCodeId(
-  //                 terraChains[wallet.chain as TerraChain].currentCodeIds
-  //                   .userAccount
-  //               );
-  //             }
-  //           },
-  //         },
-  //       ]
-  //     );
-  //   }
-  // }, [codeIds, wallet]);
-
   return (
     <>
       <HomeDrawer.Navigator
@@ -357,28 +305,23 @@ const UpdateFooter = observer(function UpdateHeader() {
           codeIds,
         });
 
-        await RequestObiTerraSignAndBroadcastMsg.send({
-          multisigKey: wallet.owner.serialize(),
-          demoMode: wallet.isDemo,
-          messages: [message.toAmino()],
-        });
-
-        // if (!isTxError(response)) {
-        //   await wallet.setProxyCodeId(
-        //     terraChains[wallet.chain as TerraChain].currentCodeIds
-        //       .userAccount
-        //   );
-        // }
-
-        await queryClient.invalidateQueries(
-          {
-            queryKey: codeIdsQuery.queryKey,
-            refetchType: "all",
-          },
-          {
-            throwOnError: true,
-          }
-        );
+        try {
+          await RequestObiTerraSignAndBroadcastMsg.send({
+            multisigKey: wallet.owner.serialize(),
+            demoMode: wallet.isDemo,
+            messages: [message.toAmino()],
+          });
+        } finally {
+          await queryClient.invalidateQueries(
+            {
+              queryKey: codeIdsQuery.queryKey,
+              refetchType: "all",
+            },
+            {
+              throwOnError: true,
+            }
+          );
+        }
       }}
     >
       <View style={{ flexShrink: 1 }}>
