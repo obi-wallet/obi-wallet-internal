@@ -1,6 +1,7 @@
 import styled from "@emotion/native";
 import { Brand, Feature } from "@obi-wallet/common";
 import { CommonActions } from "@react-navigation/native";
+import * as Sentry from "@sentry/react-native";
 import { observer } from "mobx-react-lite";
 import { FC, useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -32,7 +33,11 @@ export const SettingsScreen = observer(function SettingsScreen() {
 
   useEffect(() => {
     void (async () => {
-      setAppMetadata(await codePush.getUpdateMetadata());
+      const metadata = await codePush.getUpdateMetadata();
+      if (metadata) {
+        Sentry.setTag("codepush_release", metadata.label);
+      }
+      setAppMetadata(metadata);
     })();
   }, []);
 
