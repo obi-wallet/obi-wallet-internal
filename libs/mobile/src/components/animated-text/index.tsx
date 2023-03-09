@@ -4,12 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import { TextProps, TextStyle, ViewStyle } from "react-native";
 import { Animated, Easing } from "react-native";
 
-export const AnimatedText = observer(function AnimatedText({
+export interface AnimatedTextProps extends Omit<TextProps, "style"> {
+  text: string;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
+}
+
+export const AnimatedText = observer<AnimatedTextProps>(function AnimatedText({
   text,
   style,
   textStyle,
   ...rest
-}: { text: string; style: ViewStyle; textStyle: TextStyle } & TextProps) {
+}) {
   const [animatedText, setAnimatedText] = useState(text);
   const animation = useRef(new Animated.Value(1)).current;
   useEffect(() => {
@@ -32,12 +38,12 @@ export const AnimatedText = observer(function AnimatedText({
         easing: Easing.sin,
         useNativeDriver: true,
       }).start();
-    }, 201);
-  }, [text]);
+    }, 200);
+  }, [animatedText, animation, text]);
 
   return (
     <Animated.View style={[style, { opacity: animation }]}>
-      <Text {...rest} style={[textStyle]}>
+      <Text {...rest} style={textStyle}>
         {animatedText}
       </Text>
     </Animated.View>
