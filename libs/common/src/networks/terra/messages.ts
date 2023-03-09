@@ -133,7 +133,10 @@ export function getMigrateMessage({
     wrapped_migrate: {
       ...(codeIds.userAccount < terraChains[chainId].currentCodeIds.userAccount
         ? {
-            code_id: terraChains[chainId].currentCodeIds.userAccount,
+            code_id:
+              codeIds.userAccount <= 1014
+                ? 1081
+                : terraChains[chainId].currentCodeIds.userAccount,
             ...(codeIds.userAccount >= 1081
               ? {
                   signers: {

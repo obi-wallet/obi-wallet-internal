@@ -25,9 +25,10 @@ export function setupMain({ App }: { App: ComponentType }) {
 
     if (__DEV__ && COSMOS_ENABLED === "true") return Cosmos;
 
-    let Component = Sentry.wrap(App);
+    let Component = App;
 
     if (!__DEV__) {
+      Component = Sentry.wrap(App);
       Component = codePush({
         checkFrequency: codePush.CheckFrequency.MANUAL,
         deploymentKey,

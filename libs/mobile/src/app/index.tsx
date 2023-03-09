@@ -10,7 +10,7 @@ import { deploymentKey } from "./code-push";
 import { Loader } from "./loader";
 import { Modals } from "./modals";
 import { Provider, ProviderProps } from "./provider";
-import { RootRoute, RootStack, useRootNavigation } from "./root-stack";
+import { RootRoute, RootStack } from "./root-stack";
 import { HomeScreen } from "./screens/home";
 import { Stake } from "./screens/home/components/stake";
 import { OnboardingRoute } from "./screens/onboarding/onboarding-stack";
