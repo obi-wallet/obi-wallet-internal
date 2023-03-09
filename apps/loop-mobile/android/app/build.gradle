@@ -102,7 +102,7 @@ android {
         applicationId "money.obi.loop.conrad"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 24
+        versionCode 25
         versionName "0.12.0"
         resValue "string", "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
 
