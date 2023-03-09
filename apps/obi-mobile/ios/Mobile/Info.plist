@@ -64,6 +64,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need your permission to access your Photo Library.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We need your permission to access your Camera.</string>
 	<key>NFCReaderUsageDescription</key>

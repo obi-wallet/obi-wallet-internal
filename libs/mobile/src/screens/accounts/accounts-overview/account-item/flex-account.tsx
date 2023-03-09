@@ -7,13 +7,18 @@ import { runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { TouchableOpacity, View, ViewStyle } from "react-native";
+import {
+  LayoutAnimation,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 import * as Animatable from "react-native-animatable";
-import { useDebounce } from "rooks";
+import { useThrottle } from "rooks";
 
 import { AbstractAccountItemProps, AccountContainer, Pill } from "./common";
+import { AnimatedText } from "../../../../components/animated-text";
 import { PermissionedAddressesContext } from "../permissioned-address-context";
-
 export interface FlexAccountItemProps extends AbstractAccountItemProps {
   originalAccount: FlexAccount | null;
   account: FlexAccount;
@@ -59,7 +64,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
       },
       [account, onChange]
     );
-    const debouncedSetAmount = useDebounce(setAmount, 50);
+    const [throttledSetAmount] = useThrottle(setAmount, 50);
 
     const [timeOpened, setTimeOpened] = useState(false);
     const periodicity = [
@@ -228,6 +233,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
         active={active}
         onSetActive={onSetActive}
         account={account}
+        onDelete={onDelete}
       >
         <ProgressBar
           amount={progressbarAmount}
@@ -254,6 +260,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
             backgroundColor: "#363636",
             borderRadius: 7,
             marginTop: isOpen ? 10 : 0,
+            paddingBottom: isOpen ? 20 : 0,
           }}
         >
           {isOpen && (
@@ -263,16 +270,6 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                   marginTop: 10,
                 }}
               >
-                <Text
-                  style={{
-                    color: "#fff",
-                    margin: 5,
-                    fontSize: 12,
-                    marginBottom: 20,
-                  }}
-                >
-                  Flex Rules
-                </Text>
                 <View
                   style={{
                     flexDirection: "row",
@@ -286,125 +283,156 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                       active={fr === nextFlexRule}
                       key={fr}
                       onPress={() => {
+                        LayoutAnimation.configureNext(
+                          LayoutAnimation.Presets.easeInEaseOut
+                        );
                         setNextFlexRule(fr);
                       }}
                     />
                   ))}
                 </View>
-                <View style={{ padding: 10 }}>
-                  <Text style={{ color: "#fff", fontSize: 12 }}>
-                    {getRuleText()}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    alignItems: "center",
-                    opacity: nextFlexRule === FlexAccountRule.Limited ? 1 : 0.5,
-                  }}
-                >
-                  <View style={{ flexDirection: "row" }}>
-                    {timeOpened ? (
-                      <>
-                        {periodicity.map((period) => (
+                <Animatable.View duration={400} animation="fadeIn">
+                  <AnimatedText
+                    style={{ padding: 10 }}
+                    textStyle={{
+                      color: "#fff",
+                      fontSize: 12,
+                      marginVertical: 10,
+                    }}
+                    text={getRuleText()}
+                  />
+                  <Animatable.View
+                    duration={400}
+                    animation={
+                      nextFlexRule === FlexAccountRule.Limited
+                        ? "fadeIn"
+                        : "fadeOut"
+                    }
+                    style={{
+                      alignItems: "center",
+                      opacity:
+                        nextFlexRule === FlexAccountRule.Limited ? 1 : 0.5,
+                    }}
+                  >
+                    <View style={{ flexDirection: "row" }}>
+                      {timeOpened && (
+                        <>
+                          {periodicity.map((period) => (
+                            <TouchableOpacity
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                padding: 10,
+                                backgroundColor:
+                                  selectedPeriod === period
+                                    ? "#437DFF"
+                                    : "transparent",
+                                borderRadius: 10,
+                              }}
+                              onPress={() => {
+                                setSelectedPeriod(period);
+                                setTimeOpened(false);
+                              }}
+                              key={period}
+                            >
+                              <Text style={{ color: "#fff" }}>{period}</Text>
+                            </TouchableOpacity>
+                          ))}
+                        </>
+                      )}
+
+                      {!timeOpened && (
+                        <Animatable.View
+                          duration={400}
+                          animation={
+                            nextFlexRule === FlexAccountRule.Limited
+                              ? "fadeInDown"
+                              : "fadeOutDown"
+                          }
+                          style={{
+                            flexDirection: "row",
+
+                            ...(nextFlexRule === FlexAccountRule.Limited
+                              ? {}
+                              : { height: 0, opacity: 0 }),
+                          }}
+                        >
+                          <TextInput
+                            style={{
+                              backgroundColor: "#272727",
+                              borderWidth: 0,
+                              borderRadius: 10,
+                              color: "#fff",
+                              padding: 5,
+                              paddingHorizontal: 20,
+                              fontSize: 25,
+                              fontFamily: "Poppins",
+                              height: 48,
+                            }}
+                            value={`$${amount ?? 0}`}
+                            placeholder="0"
+                            editable={nextFlexRule === FlexAccountRule.Limited}
+                            onChangeText={(value) => {
+                              const res = value.replace(/[^0-9.]/g, "");
+                              throttledSetAmount(Number(res));
+                            }}
+                          />
                           <TouchableOpacity
                             style={{
                               flexDirection: "row",
                               alignItems: "center",
                               padding: 10,
-                              backgroundColor:
-                                selectedPeriod === period
-                                  ? "#437DFF"
-                                  : "transparent",
-                              borderRadius: 10,
                             }}
-                            onPress={() => {
-                              setSelectedPeriod(period);
-                              setTimeOpened(false);
-                            }}
-                            key={period}
+                            onPress={() => setTimeOpened(true)}
+                            disabled={nextFlexRule !== FlexAccountRule.Limited}
                           >
-                            <Text style={{ color: "#fff" }}>{period}</Text>
+                            <Text style={{ color: "#fff" }}>
+                              {selectedPeriod}
+                            </Text>
+                            <FontAwesomeIcon
+                              icon={faCaretDown}
+                              style={{ color: "#fff" }}
+                            />
                           </TouchableOpacity>
-                        ))}
-                      </>
-                    ) : (
-                      <>
-                        <TextInput
-                          style={{
-                            backgroundColor: "#272727",
-                            borderWidth: 0,
-                            borderRadius: 10,
-                            color: "#fff",
-                            padding: 5,
-                            paddingHorizontal: 20,
-                            fontSize: 25,
-                            fontFamily: "Poppins",
-                          }}
-                          value={`$${amount ?? 0}`}
-                          editable={nextFlexRule === FlexAccountRule.Limited}
-                          onChangeText={(value) => {
-                            const res = value.replace(/[^0-9.]/g, "");
-                            debouncedSetAmount(Number(res));
-                          }}
-                        />
-                        <TouchableOpacity
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            padding: 10,
-                          }}
-                          onPress={() => setTimeOpened(true)}
-                          disabled={nextFlexRule !== FlexAccountRule.Limited}
-                        >
-                          <Text style={{ color: "#fff" }}>
-                            {selectedPeriod}
-                          </Text>
-                          <FontAwesomeIcon
-                            icon={faCaretDown}
-                            style={{ color: "#fff" }}
-                          />
-                        </TouchableOpacity>
-                      </>
-                    )}
-                  </View>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    paddingHorizontal: 10,
-                  }}
-                >
-                  <Slider
+                        </Animatable.View>
+                      )}
+                    </View>
+                  </Animatable.View>
+                  <Animatable.View
+                    duration={400}
+                    animation={
+                      nextFlexRule === FlexAccountRule.Limited
+                        ? "fadeIn"
+                        : "fadeOut"
+                    }
                     style={{
-                      flex: 1,
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      paddingHorizontal: 10,
+
+                      ...(nextFlexRule === FlexAccountRule.Limited
+                        ? { paddingTop: 10 }
+                        : { height: 0 }),
                     }}
-                    minimumTrackTintColor="#437DFF"
-                    maximumTrackTintColor="#7E7E7E"
-                    maximumValue={500}
-                    minimumValue={0}
-                    step={1}
-                    onValueChange={(value) => {
-                      debouncedSetAmount(value);
-                    }}
-                    disabled={nextFlexRule !== FlexAccountRule.Limited}
-                    value={(amount || 0) as number}
-                  />
-                </View>
-                <View style={{ margin: 15 }}>
-                  <TouchableOpacity onPress={onDelete}>
-                    <Text
+                  >
+                    <Slider
                       style={{
-                        color: "#437DFF",
-                        textAlign: "center",
-                        margin: 10,
+                        flex: 1,
                       }}
-                    >
-                      Delete Flex Account
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                      minimumTrackTintColor="#437DFF"
+                      maximumTrackTintColor="#7E7E7E"
+                      maximumValue={500}
+                      minimumValue={0}
+                      step={1}
+                      onValueChange={(value) => {
+                        throttledSetAmount(value);
+                      }}
+                      disabled={nextFlexRule !== FlexAccountRule.Limited}
+                      value={(amount || 0) as number}
+                    />
+                  </Animatable.View>
+                </Animatable.View>
               </View>
             </>
           )}

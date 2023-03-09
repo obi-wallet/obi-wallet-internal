@@ -5,19 +5,30 @@ import { useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
+import BeneficaryAccountIcon from "./assets/beneficiary-account-icon.svg";
+import FlexAccountIcon from "./assets/flex-account-icon.svg";
+import LegacyAccountIcon from "./assets/legacy-account-icon.svg";
 import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
-
 export type AddAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
   AccountsRoute.AddAccount
 >;
-
 enum AccountType {
   FlexAccount = "flex-account",
   Beneficiary = "beneficiary",
   Legacy = "legacy",
 }
+const getAccountTypeIcon = (type: AccountType) => {
+  switch (type) {
+    case AccountType.FlexAccount:
+      return <FlexAccountIcon />;
+    case AccountType.Beneficiary:
+      return <BeneficaryAccountIcon />;
+    case AccountType.Legacy:
+      return <LegacyAccountIcon />;
+  }
+};
 
 const accountTypeMetaData: Record<
   AccountType,
@@ -30,9 +41,9 @@ const accountTypeMetaData: Record<
     route: AccountsRoute.CreateFlexAccount,
   },
   [AccountType.Beneficiary]: {
-    title: "Add Beneficiary",
+    title: "Add Inheritance Account",
     description:
-      "Add a beneficiary account to your Obi parent account that will automatically receive your assets based on your configuration.",
+      "Add an inheritance account to your Obi parent account that will automatically receive your assets based on your configuration.",
     route: AccountsRoute.CreateBeneficiaryAccount,
   },
   [AccountType.Legacy]: {
@@ -82,11 +93,15 @@ export const AddAccountScreen = observer<AddAccountScreenProps>(
                   borderWidth: selected === item ? 1 : 0,
                   borderColor: "white",
                   backgroundColor: "#272727",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
                 onPress={() => {
                   setSelected(item);
                 }}
-              />
+              >
+                {getAccountTypeIcon(item)}
+              </TouchableOpacity>
             ))}
           </View>
           <Text
@@ -105,7 +120,7 @@ export const AddAccountScreen = observer<AddAccountScreenProps>(
         </View>
         <View style={{ marginTop: 20 }}>
           <Button
-            flavor="obi"
+            flavor="blue"
             onPress={() => {
               navigation.navigate(selectedItem.route);
             }}

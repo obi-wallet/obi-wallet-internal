@@ -8,7 +8,6 @@ import invariant from "tiny-invariant";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import { Button } from "../../app/button";
-import { OnboardingScreenContainer } from "../../app/screens/components/onboarding-screen-container";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
 import { useMultisigWallet } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
@@ -46,7 +45,7 @@ export const ImportStationAccountScreen =
           </View>
           <View style={{ marginTop: 20 }}>
             <Button
-              flavor="obi"
+              flavor="blue"
               onPress={() => {
                 const key = new MnemonicKey({
                   mnemonic,

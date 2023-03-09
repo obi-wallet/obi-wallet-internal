@@ -249,7 +249,6 @@ export const HomeScreen = observer(function HomeScreen() {
   return (
     <>
       <HomeDrawer.Navigator
-        useLegacyImplementation={true}
         initialRouteName={chainStore.currentChainInformation.label}
         screenOptions={{
           headerShown: false,

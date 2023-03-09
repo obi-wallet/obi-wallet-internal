@@ -7,7 +7,7 @@ import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persi
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { observer } from "mobx-react-lite";
-import { ComponentProps, ReactNode, StrictMode, useEffect } from "react";
+import { ComponentProps, ReactNode, useEffect } from "react";
 import { IntlProvider } from "react-intl";
 import { StatusBar } from "react-native";
 import { endConnection, initConnection } from "react-native-iap";
@@ -55,57 +55,55 @@ export const Provider = observer<ProviderProps>(function Provider({
   }, [configStore]);
 
   return (
-    <StrictMode>
-      <PersistQueryClientProvider
-        client={queryClient}
-        persistOptions={{ persister }}
-      >
-        <StoreContext.Provider value={rootStore}>
-          <IntlProvider
-            defaultLocale="en"
-            locale={currentLanguage}
-            messages={messages[currentLanguage]}
-            formats={{
-              date: {
-                en: {
-                  month: "short",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  hour12: false,
-                  minute: "2-digit",
-                  timeZoneName: "short",
-                },
-                de: {
-                  month: "short",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  hour12: false,
-                  minute: "2-digit",
-                  timeZoneName: "short",
-                },
-                es: {
-                  month: "short",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  hour12: false,
-                  minute: "2-digit",
-                  timeZoneName: "short",
-                },
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister }}
+    >
+      <StoreContext.Provider value={rootStore}>
+        <IntlProvider
+          defaultLocale="en"
+          locale={currentLanguage}
+          messages={messages[currentLanguage]}
+          formats={{
+            date: {
+              en: {
+                month: "short",
+                day: "2-digit",
+                hour: "2-digit",
+                hour12: false,
+                minute: "2-digit",
+                timeZoneName: "short",
               },
-            }}
-          >
-            <SafeAreaProvider>
-              <NavigationContainer {...navigationContainerProps}>
-                <ThemeProvider theme={getTheme(configStore.brand)}>
-                  <StatusBar barStyle="light-content" />
-                  {children}
-                </ThemeProvider>
-              </NavigationContainer>
-            </SafeAreaProvider>
-          </IntlProvider>
-        </StoreContext.Provider>
-      </PersistQueryClientProvider>
-    </StrictMode>
+              de: {
+                month: "short",
+                day: "2-digit",
+                hour: "2-digit",
+                hour12: false,
+                minute: "2-digit",
+                timeZoneName: "short",
+              },
+              es: {
+                month: "short",
+                day: "2-digit",
+                hour: "2-digit",
+                hour12: false,
+                minute: "2-digit",
+                timeZoneName: "short",
+              },
+            },
+          }}
+        >
+          <SafeAreaProvider>
+            <NavigationContainer {...navigationContainerProps}>
+              <ThemeProvider theme={getTheme(configStore.brand)}>
+                <StatusBar barStyle="light-content" />
+                {children}
+              </ThemeProvider>
+            </NavigationContainer>
+          </SafeAreaProvider>
+        </IntlProvider>
+      </StoreContext.Provider>
+    </PersistQueryClientProvider>
   );
 });
 

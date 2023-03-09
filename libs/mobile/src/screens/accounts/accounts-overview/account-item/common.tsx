@@ -1,4 +1,8 @@
-import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronDown,
+  faChevronUp,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   Beneficiary,
@@ -33,6 +37,7 @@ export const AccountContainer = observer<{
   onSetActive: () => void;
   collapsible?: boolean;
   account: Beneficiary | FlexAccount | SinglesigWallet;
+  onDelete: () => void;
 }>(function AccountContainer({
   children,
   isOpen,
@@ -44,6 +49,7 @@ export const AccountContainer = observer<{
   active,
   onSetActive,
   account,
+  onDelete,
 }) {
   return (
     <Animatable.View
@@ -57,63 +63,62 @@ export const AccountContainer = observer<{
         padding: 10,
       }}
     >
-      <TouchableOpacity
-        style={{ flexDirection: "row" }}
-        onPress={onSetActive}
-        disabled={active}
-      >
-        <Avatar style={{ width: 40, height: 40 }} account={account} />
-        <View style={{ paddingLeft: 10 }}>
-          <Text
-            style={[
-              {
-                color: "white",
-                fontSize: 18,
-                fontWeight: "600",
-              },
-              titleStyles,
-            ]}
-          >
-            {title}
-          </Text>
-          <Text
-            style={[
-              {
-                fontSize: 12,
-              },
-              subTitleStyles,
-            ]}
-          >
-            {subTitle}
-          </Text>
-        </View>
-      </TouchableOpacity>
-
-      {children && (
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <TouchableOpacity
-          onPress={onOpenToggle}
-          style={{
-            position: "absolute",
-            right: 5,
-            top: 5,
-          }}
-          hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}
+          style={{ flexDirection: "row", flex: 1 }}
+          onPress={onSetActive}
+          disabled={active}
         >
-          <View
-            style={{
-              width: 20,
-              height: 20,
-              backgroundColor: "white",
-              borderRadius: 100,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <FontAwesomeIcon icon={isOpen ? faCaretUp : faCaretDown} />
+          <Avatar style={{ width: 40, height: 40 }} account={account} />
+          <View style={{ paddingLeft: 10 }}>
+            <Text
+              style={[
+                {
+                  color: "white",
+                  fontSize: 18,
+                  fontWeight: "600",
+                },
+                titleStyles,
+              ]}
+            >
+              {title}
+            </Text>
+            <Text
+              style={[
+                {
+                  fontSize: 12,
+                },
+                subTitleStyles,
+              ]}
+            >
+              {subTitle}
+            </Text>
           </View>
         </TouchableOpacity>
+        <TouchableOpacity style={{ padding: 10 }} onPress={onDelete}>
+          <FontAwesomeIcon icon={faTrash} color="#fff" />
+        </TouchableOpacity>
+      </View>
+
+      {children && (
+        <>
+          {children}
+          <TouchableOpacity onPress={onOpenToggle}>
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                paddingTop: 10,
+              }}
+            >
+              <FontAwesomeIcon
+                icon={isOpen ? faChevronUp : faChevronDown}
+                color="#4E4E4E"
+              />
+            </View>
+          </TouchableOpacity>
+        </>
       )}
-      {children}
     </Animatable.View>
   );
 });
@@ -133,7 +138,9 @@ export const Pill = observer<{
       }}
       onPress={onPress}
     >
-      <Text style={{ color: "#fff", fontSize: 12 }}>{label}</Text>
+      <Text style={{ color: "#fff", fontSize: 14, fontWeight: "600" }}>
+        {label}
+      </Text>
     </TouchableOpacity>
   );
 });
