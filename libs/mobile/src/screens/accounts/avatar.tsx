@@ -7,7 +7,7 @@ import {
   Text,
 } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
-import React, { useState } from "react";
+import { FC, useState } from "react";
 import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
 import { Image, View } from "react-native";
 import ImagePicker, {
@@ -23,6 +23,7 @@ import { formatCoin } from "../../app/balances";
 import { CoinIcon } from "../../app/screens/components/coin-icon";
 import { Modal } from "../../app/screens/components/modal";
 import { useCurrentTerraChainInformation } from "../../app/stores";
+
 export type Icon = {
   uri: string;
 };
@@ -33,8 +34,8 @@ export const AvatarPicker = observer(function AvatarPicker({
   FallbackSvg,
 }: {
   icon: Icon | null;
-  FallbackSvg: React.FC<SvgProps>;
-  onChange: (icon: any) => void;
+  FallbackSvg: FC<SvgProps>;
+  onChange: (icon: Icon) => void;
 }) {
   const [modalVisible, setModalVisible] = useState(false);
 
