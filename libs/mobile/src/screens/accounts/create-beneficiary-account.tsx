@@ -41,7 +41,7 @@ export const CreateBeneficiaryAccountScreen =
       return (
         <ScreenContainer>
           <KeyboardAwareScrollView
-            contentContainerStyle={{ flex: 1, backgroundColor: "red" }}
+            contentContainerStyle={{ flex: 1 }}
             enableOnAndroid={false}
           >
             <View
