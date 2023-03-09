@@ -24,9 +24,9 @@ import { CoinIcon } from "../../app/screens/components/coin-icon";
 import { Modal } from "../../app/screens/components/modal";
 import { useCurrentTerraChainInformation } from "../../app/stores";
 
-export type Icon = {
+export interface Icon {
   uri: string;
-};
+}
 
 export const AvatarPicker = observer(function AvatarPicker({
   icon,
