@@ -3,18 +3,18 @@ import { BlockTxBroadcastResult } from "@terra-money/terra.js";
 
 import { AbstractSingletonInteractionStore } from "./abstract-singleton";
 import {
-  RequestObiTerraSignAndBroadcastMsg,
-  RequestObiTerraSignAndBroadcastPayload,
+  RequestObiSignAndBroadcastTerraTransactionMsg,
+  RequestObiSignAndBroadcastTerraTransactionPayload,
 } from "../../background";
 
 export class TerraSignInteractionStore extends AbstractSingletonInteractionStore<
-  RequestObiTerraSignAndBroadcastPayload,
+  RequestObiSignAndBroadcastTerraTransactionPayload,
   BlockTxBroadcastResult
 > {
   constructor(interactionStore: KeplrInteractionStore) {
     super({
       interactionStore,
-      type: RequestObiTerraSignAndBroadcastMsg.type(),
+      type: RequestObiSignAndBroadcastTerraTransactionMsg.type(),
     });
   }
 }

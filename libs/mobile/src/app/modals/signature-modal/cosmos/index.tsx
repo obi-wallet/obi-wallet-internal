@@ -325,7 +325,7 @@ export function useSignatureModalProps({
   data: RequestObiCosmosSignAndBroadcastPayload;
   onConfirm(response: DeliverTxResponse): Promise<void>;
 }): {
-  signatureModalProps: CosmosSignatureModalProps;
+  signatureModalProps: Omit<CosmosSignatureModalProps, "numberOfUsableKeys">;
   openSignatureModal: () => void;
 } {
   const [signatureModalVisible, setSignatureModalVisible] = useState(false);
@@ -347,7 +347,10 @@ export function useSignatureModalProps({
   const wrappedEncodeObjects = getWrappedEncodeObjects();
   const innerEncodeObjects = data.encodeObjects;
 
-  const signatureModalProps = useMemo((): CosmosSignatureModalProps & {
+  const signatureModalProps = useMemo((): Omit<
+    CosmosSignatureModalProps,
+    "numberOfUsableKeys"
+  > & {
     key: string;
   } => {
     const innerAminoMessages = innerEncodeObjects.map((encodeObject) => {

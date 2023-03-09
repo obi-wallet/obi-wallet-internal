@@ -10,7 +10,7 @@ import {
   produceEnv,
   RequestObiCosmosSignAndBroadcastMsg,
   RequestObiInAppPurchaseMsg,
-  RequestObiTerraSignAndBroadcastMsg,
+  RequestObiSignAndBroadcastTerraTransactionMsg,
   RequestObiWalletConnectMsg,
   RouterBackground,
 } from "@obi-wallet/common";
@@ -70,7 +70,7 @@ export function initBackground() {
 
   router.registerMessage(RequestObiInAppPurchaseMsg);
   router.registerMessage(RequestObiCosmosSignAndBroadcastMsg);
-  router.registerMessage(RequestObiTerraSignAndBroadcastMsg);
+  router.registerMessage(RequestObiSignAndBroadcastTerraTransactionMsg);
   router.registerMessage(RequestObiWalletConnectMsg);
   router.addHandler("obi", async (env: Env, msg: Message<unknown>) => {
     const message = msg as ObiMessage;

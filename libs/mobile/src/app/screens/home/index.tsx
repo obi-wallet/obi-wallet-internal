@@ -7,7 +7,7 @@ import {
   cosmosChains,
   Feature,
   isCosmosChain,
-  RequestObiTerraSignAndBroadcastMsg,
+  RequestObiSignAndBroadcastTerraTransactionMsg,
   terra,
   TerraChain,
   terraChains,
@@ -53,7 +53,7 @@ import {
   HomeDrawer,
   HomeDrawerRoute,
 } from "./home-stack";
-import { useQuery } from "../../../queries/helpers";
+import { useQuery } from "../../../queries";
 import { getCodeIdsQuery } from "../../../queries/user-account";
 import { AccountsScreen } from "../../../screens/accounts";
 import { useStore } from "../../stores";
@@ -304,10 +304,12 @@ const UpdateFooter = observer(function UpdateHeader() {
         });
 
         try {
-          await RequestObiTerraSignAndBroadcastMsg.send({
-            multisigKey: wallet.owner.serialize(),
-            demoMode: wallet.isDemo,
+          await RequestObiSignAndBroadcastTerraTransactionMsg.send({
+            chain: wallet.chain as TerraChain,
             messages: [message.toAmino()],
+            demoMode: wallet.isDemo,
+            cancelable: true,
+            multisigKey: wallet.owner.serialize(),
           });
         } finally {
           await refetch({

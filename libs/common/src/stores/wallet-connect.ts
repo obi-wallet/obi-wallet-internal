@@ -11,7 +11,7 @@ import invariant from "tiny-invariant";
 
 import { SerializedWalletMeta, WalletMeta, WalletsStore } from "./wallets";
 import {
-  RequestObiTerraSignAndBroadcastMsg,
+  RequestObiSignAndBroadcastTerraTransactionMsg,
   RequestObiWalletConnectMsg,
   RequestObiWalletConnectPayload,
 } from "../background";
@@ -197,6 +197,7 @@ export class WalletConnectStore {
 
   protected attachEventHandlers({ connector, walletMeta }: ConnectInformation) {
     const topic = connector.handshakeTopic;
+    const wallet = this.walletsStore.getWallet(walletMeta.walletId);
 
     // TODO: Do that somewhere else
     connector.on("session_request", async (error, payload) => {
@@ -247,17 +248,10 @@ export class WalletConnectStore {
       switch (method) {
         case "post": {
           try {
-            // TODO: get from connector instead;
-            const wallet = this.walletsStore.currentWallet;
-
-            invariant(wallet, "Expected current wallet to be defined.");
-
             invariant(
               isTerraChain(wallet?.chain),
               "Expected wallet to be terra multisig."
             );
-
-            const multisigKey = wallet.owner;
 
             const { msgs } = params[0] as {
               msgs: string[];
@@ -270,17 +264,15 @@ export class WalletConnectStore {
                 : Msg.fromData(data);
             });
 
-            console.log(messages.map((msg) => msg.toAmino()));
-
             try {
-              // TODO: handle current account
-              const response = await RequestObiTerraSignAndBroadcastMsg.send({
-                multisigKey: multisigKey.serialize(),
-                messages: messages.map((msg) => msg.toAmino()),
-                demoMode: wallet.isDemo,
-                proxyAddress: wallet.address,
-                cancelable: true,
-              });
+              const response =
+                await RequestObiSignAndBroadcastTerraTransactionMsg.send({
+                  chain: wallet.chain,
+                  messages: messages.map((msg) => msg.toAmino()),
+                  demoMode: wallet.isDemo,
+                  cancelable: true,
+                  walletMeta,
+                });
               if (isTxError(response)) {
                 connector.rejectRequest({
                   id,
@@ -344,8 +336,6 @@ export class WalletConnectStore {
       if (error) {
         throw error;
       }
-
-      // this.setState({ connected: true });
     });
 
     connector.on("disconnect", async (error, payload) => {

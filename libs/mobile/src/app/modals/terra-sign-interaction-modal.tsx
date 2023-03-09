@@ -1,11 +1,7 @@
-import { RequestObiTerraSignAndBroadcastPayload } from "@obi-wallet/common";
-import { BlockTxBroadcastResult } from "@terra-money/terra.js";
+import { RequestObiSignAndBroadcastTerraTransactionPayload } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 
-import {
-  TerraSignatureModal,
-  useTerraSignatureModalProps,
-} from "./signature-modal";
+import { SignatureModal } from "./signature-modal";
 import { useStore } from "../stores";
 
 export const TerraSignInteractionModal = observer(
@@ -23,23 +19,18 @@ export const TerraSignInteractionModal = observer(
 const InteractionModalInner = observer(function InteractionModalInner({
   data,
 }: {
-  data: RequestObiTerraSignAndBroadcastPayload;
+  data: RequestObiSignAndBroadcastTerraTransactionPayload;
 }) {
   const { terraSignInteractionStore } = useStore();
 
-  const { signatureModalProps } = useTerraSignatureModalProps({
-    data,
-    async onConfirm(response: BlockTxBroadcastResult): Promise<void> {
-      await terraSignInteractionStore.approveAndWaitEnd(response);
-    },
-  });
-
   return (
-    <TerraSignatureModal
-      {...signatureModalProps}
-      visible
-      onCancel={() => {
-        terraSignInteractionStore.rejectAll();
+    <SignatureModal
+      data={data}
+      onConfirm={async (response) => {
+        await terraSignInteractionStore.approveAndWaitEnd(response);
+      }}
+      onCancel={async () => {
+        await terraSignInteractionStore.rejectAll();
       }}
     />
   );
