@@ -2,7 +2,7 @@ import { Beneficiary, Text, TextInput } from "@obi-wallet/common";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
-import { TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
 import * as Animatable from "react-native-animatable";
 
 import { AbstractAccountItemProps, AccountContainer, Pill } from "./common";

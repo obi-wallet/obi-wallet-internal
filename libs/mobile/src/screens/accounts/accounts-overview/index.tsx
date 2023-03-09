@@ -55,7 +55,7 @@ export type AccountsOverviewScreenProps = NativeStackScreenProps<
 >;
 
 export const AccountsOverviewScreen = observer<AccountsOverviewScreenProps>(
-  function AccountsOverviewScreen({ navigation }) {
+  function AccountsOverviewScreen() {
     return (
       <>
         <Background />
