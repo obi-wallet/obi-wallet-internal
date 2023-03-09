@@ -44,7 +44,7 @@ export const ImportKeplrAccountScreen = observer<ImportKeplrAccountScreenProps>(
         </View>
         <View style={{ marginTop: 20 }}>
           <Button
-            flavor="obi"
+            flavor="blue"
             onPress={() => {
               const key = new MnemonicKey({
                 mnemonic,

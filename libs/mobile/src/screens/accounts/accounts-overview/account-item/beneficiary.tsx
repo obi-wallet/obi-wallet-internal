@@ -2,7 +2,7 @@ import { Beneficiary, Text, TextInput } from "@obi-wallet/common";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
-import { TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
 import * as Animatable from "react-native-animatable";
 
 import { AbstractAccountItemProps, AccountContainer, Pill } from "./common";
@@ -101,6 +101,7 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
         active={active}
         onSetActive={onSetActive}
         account={account}
+        onDelete={onDelete}
       >
         <>
           {isOpen && (
@@ -118,6 +119,7 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
                 style={{
                   flexDirection: "row",
                   marginHorizontal: 35,
+                  marginTop: 20,
                   alignItems: "center",
                 }}
               >
@@ -139,6 +141,8 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
                     color: "white",
                     fontSize: 26,
                     fontFamily: "Poppins",
+                    minWidth: 60,
+                    textAlign: "center",
                   }}
                   value={dormancyThreshold.toString()}
                   onChangeText={(value) => {
@@ -177,6 +181,8 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
                     fontSize: 26,
                     fontFamily: "Poppins",
                     alignSelf: "flex-end",
+                    minWidth: 60,
+                    textAlign: "center",
                   }}
                   value={(dripRate ?? 0).toString()}
                   onChangeText={(value) => {
@@ -192,6 +198,7 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
                   flex: 1,
                   justifyContent: "space-around",
                   marginTop: 30,
+                  marginBottom: 20,
                 }}
               >
                 {inheritancePeriodicity.map((item) => (
@@ -204,19 +211,6 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
                     }}
                   />
                 ))}
-              </View>
-              <View style={{ margin: 15 }}>
-                <TouchableOpacity onPress={onDelete}>
-                  <Text
-                    style={{
-                      color: "#437DFF",
-                      textAlign: "center",
-                      margin: 10,
-                    }}
-                  >
-                    Delete Beneficiary
-                  </Text>
-                </TouchableOpacity>
               </View>
             </Animatable.View>
           )}

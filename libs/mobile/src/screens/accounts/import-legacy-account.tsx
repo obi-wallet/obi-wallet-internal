@@ -155,7 +155,7 @@ export const ImportLegacyAccountScreen =
         </ScrollView>
         <View style={{ marginTop: 20 }}>
           <Button
-            flavor="obi"
+            flavor="blue"
             onPress={() => {
               switch (selected) {
                 case LegacyAccountType.Keplr:

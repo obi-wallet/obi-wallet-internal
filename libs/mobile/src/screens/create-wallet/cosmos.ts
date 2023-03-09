@@ -1,7 +1,6 @@
 import {
   cosmos,
   CosmosChain,
-  cosmosChains,
   Draft,
   MultisigKey,
   RequestObiCosmosSignAndBroadcastMsg,

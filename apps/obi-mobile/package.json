@@ -99,6 +99,7 @@
     "react-native-haptic-feedback": "*",
     "react-native-html-to-pdf": "*",
     "react-native-iap": "*",
+    "react-native-image-crop-picker": "*",
     "react-native-keyboard-aware-scroll-view": "*",
     "react-native-keychain": "*",
     "react-native-launch-arguments": "*",
