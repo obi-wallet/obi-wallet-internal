@@ -8,11 +8,14 @@ import {
 } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { FC, useState } from "react";
-import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
-import { Image, View } from "react-native";
-import ImagePicker, {
-  Image as PickerImage,
-} from "react-native-image-crop-picker";
+import {
+  Image,
+  StyleProp,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
+import ImagePicker from "react-native-image-crop-picker";
 import { SvgProps } from "react-native-svg";
 
 import BeneficiaryAccount from "./assets/beneficiary-account-icon.svg";
@@ -141,19 +144,22 @@ export const AvatarPicker = observer(function AvatarPicker({
             flexDirection: "row",
             justifyContent: "center",
           }}
-          onPress={() => {
-            ImagePicker.openCamera({
-              width: 300,
-              height: 300,
-              cropping: true,
-              includeBase64: true,
-              mediaType: "photo",
-            }).then((image) => {
+          onPress={async () => {
+            try {
+              const image = await ImagePicker.openCamera({
+                width: 300,
+                height: 300,
+                cropping: true,
+                includeBase64: true,
+                mediaType: "photo",
+              });
               onChange({
-                uri: `data:${image.mime};base64,${(image as PickerImage).data}`,
+                uri: `data:${image.mime};base64,${image.data}`,
               });
               setModalVisible(false);
-            });
+            } catch (e) {
+              // noop
+            }
           }}
         >
           <FontAwesomeIcon
@@ -174,19 +180,22 @@ export const AvatarPicker = observer(function AvatarPicker({
             flexDirection: "row",
             justifyContent: "center",
           }}
-          onPress={() => {
-            ImagePicker.openPicker({
-              width: 300,
-              height: 300,
-              cropping: true,
-              includeBase64: true,
-              mediaType: "photo",
-            }).then((image) => {
+          onPress={async () => {
+            try {
+              const image = await ImagePicker.openPicker({
+                width: 300,
+                height: 300,
+                cropping: true,
+                includeBase64: true,
+                mediaType: "photo",
+              });
               onChange({
-                uri: `data:${image.mime};base64,${(image as PickerImage).data}`,
+                uri: `data:${image.mime};base64,${image.data}`,
               });
               setModalVisible(false);
-            });
+            } catch (e) {
+              // noop
+            }
           }}
         >
           <FontAwesomeIcon
