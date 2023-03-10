@@ -147,14 +147,24 @@ export function getMigrateMessage({
               : {}),
           }
         : {}),
-      ...(codeIds.userAccount >= 1261 &&
-      (!codeIds.spendLimitGatekeeper ||
-        codeIds.spendLimitGatekeeper <
-          terraChains[chainId].currentCodeIds.spendLimitGatekeeper)
+      ...(codeIds.userAccount >= 1261
         ? {
             gatekeeper_code_ids: {
-              spendlimit:
-                terraChains[chainId].currentCodeIds.spendLimitGatekeeper,
+              ...(!codeIds.spendLimitGatekeeper ||
+              codeIds.spendLimitGatekeeper <
+                terraChains[chainId].currentCodeIds.spendLimitGatekeeper
+                ? {
+                    spendlimit:
+                      terraChains[chainId].currentCodeIds.spendLimitGatekeeper,
+                  }
+                : {}),
+              ...(!codeIds.debtGatekeeper ||
+              codeIds.debtGatekeeper <
+                terraChains[chainId].currentCodeIds.debtGatekeeper
+                ? {
+                    debt: terraChains[chainId].currentCodeIds.debtGatekeeper,
+                  }
+                : {}),
             },
           }
         : {}),

@@ -32,6 +32,7 @@ export function getCodeIdsQuery({
             }),
             // TODO: not implemented yet
             spendLimitGatekeeper: null,
+            debtGatekeeper: null,
           };
         },
       });

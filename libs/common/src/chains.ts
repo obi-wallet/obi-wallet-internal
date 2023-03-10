@@ -51,6 +51,7 @@ export const terraChains = {
     currentCodeIds: {
       userAccount: 6579,
       spendLimitGatekeeper: 6584,
+      debtGatekeeper: 6581,
     },
     lcds: ["https://pisco-lcd.terra.dev"],
     api: "https://pisco-api.terra.dev",
@@ -66,8 +67,9 @@ export const terraChains = {
     accountCreatorAddress:
       "terra1a9zykuft0ngvq6ug2j60hz0an2kz72c3vs73tj5m87xcm0dt8w2sdkflln",
     currentCodeIds: {
-      userAccount: 1261,
-      spendLimitGatekeeper: 1255,
+      userAccount: 1275,
+      spendLimitGatekeeper: 1274,
+      debtGatekeeper: 1273,
     },
     lcds: [
       "https://terra2-api.dalnim.finance",
