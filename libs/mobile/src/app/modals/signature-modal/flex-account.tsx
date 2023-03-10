@@ -118,6 +118,7 @@ export const SignatureModalFlexAccountWithFlexAccount =
           return await broadcastTransaction({
             data,
             transaction,
+            sender: flexAccount.accAddress,
           });
         },
       });

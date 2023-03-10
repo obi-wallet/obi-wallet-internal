@@ -24,6 +24,7 @@ export const SignatureModalRawKey = observer<SignatureModalRawKeyProps>(
         return await broadcastTransaction({
           data,
           transaction,
+          sender: rawKey.accAddress,
         });
       },
     });

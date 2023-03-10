@@ -114,6 +114,7 @@ export const SignatureModalMultisigKey =
         return await broadcastTransaction({
           data,
           transaction,
+          sender: multisigKey.address,
         });
       },
     });
