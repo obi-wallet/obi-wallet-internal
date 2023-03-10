@@ -109,7 +109,7 @@ export const CreateBeneficiaryAccountScreen =
                 to see the balance of the funds they inherited.
               </Text>
             </View>
-            {isAndroid && !keyboardVisible && (
+            {isAndroid && keyboardVisible ? null : (
               <View style={{ marginTop: 20 }}>
                 <Button
                   flavor="blue"
