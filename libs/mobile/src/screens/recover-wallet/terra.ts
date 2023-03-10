@@ -3,8 +3,9 @@ import {
   Draft,
   MultisigKey,
   MultisigWalletSerializedData,
-  RequestObiTerraSignAndBroadcastMsg,
+  RequestObiSignAndBroadcastTerraTransactionMsg,
   terra,
+  TerraChain,
 } from "@obi-wallet/common";
 
 export async function handleTerra({
@@ -31,10 +32,12 @@ export async function handleTerra({
       codeIds,
     });
 
-    const response = await RequestObiTerraSignAndBroadcastMsg.send({
-      multisigKey: currentOwner.serialize(),
+    const response = await RequestObiSignAndBroadcastTerraTransactionMsg.send({
+      chain: currentOwner.chain as TerraChain,
       messages: [message.toAmino()],
       demoMode,
+      cancelable: true,
+      multisigKey: currentOwner.serialize(),
     });
 
     try {
@@ -50,10 +53,12 @@ export async function handleTerra({
       proxyAddress: serializedData.proxyAddress.address,
     });
 
-    const response = await RequestObiTerraSignAndBroadcastMsg.send({
-      multisigKey: newOwner.serialize(),
+    const response = await RequestObiSignAndBroadcastTerraTransactionMsg.send({
+      chain: newOwner.chain as TerraChain,
       messages: [message.toAmino()],
       demoMode,
+      cancelable: true,
+      multisigKey: newOwner.serialize(),
     });
 
     try {

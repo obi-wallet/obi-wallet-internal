@@ -46,6 +46,7 @@ export function wrapMessage(message: Msg) {
               amount: coin.amount.toString(),
             };
           }),
+          from_address: message.from_address,
           to_address: message.to_address,
         },
       },

@@ -1,7 +1,7 @@
 import {
   Draft,
   MultisigKey,
-  RequestObiTerraSignAndBroadcastMsg,
+  RequestObiSignAndBroadcastTerraTransactionMsg,
   terra,
   TerraChain,
 } from "@obi-wallet/common";
@@ -25,11 +25,12 @@ export async function handleTerra({
     chainId,
   });
 
-  const response = await RequestObiTerraSignAndBroadcastMsg.send({
-    multisigKey: multisigKey.serialize(),
+  const response = await RequestObiSignAndBroadcastTerraTransactionMsg.send({
+    chain: draft.value.chain as TerraChain,
     messages: [message.toAmino()],
     demoMode,
-    isOnboarding: true,
+    cancelable: true,
+    multisigKey: multisigKey.serialize(),
   });
 
   try {

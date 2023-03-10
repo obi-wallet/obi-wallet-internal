@@ -3,8 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   EntityId,
   GatekeeperConfig,
-  RequestObiTerraSignAndBroadcastMsg,
+  RequestObiSignAndBroadcastTerraTransactionMsg,
   terra,
+  TerraChain,
   Text,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -215,11 +216,14 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                   spendLimitGatekeeper,
                 });
 
-                const response = await RequestObiTerraSignAndBroadcastMsg.send({
-                  multisigKey: wallet.owner.serialize(),
-                  demoMode: wallet.isDemo,
-                  messages: messages.map((message) => message.toAmino()),
-                });
+                const response =
+                  await RequestObiSignAndBroadcastTerraTransactionMsg.send({
+                    chain: wallet.chain as TerraChain,
+                    messages: messages.map((message) => message.toAmino()),
+                    demoMode: wallet.isDemo,
+                    cancelable: true,
+                    multisigKey: wallet.owner.serialize(),
+                  });
 
                 if (isTxError(response)) {
                   Alert.alert("Error", response.raw_log ?? "Unknown error");

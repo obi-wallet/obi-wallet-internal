@@ -32,13 +32,15 @@ const InteractionModalInner = observer(function InteractionModalInner({
     },
   });
 
-  return (
-    <CosmosSignatureModal
-      {...signatureModalProps}
-      visible
-      onCancel={() => {
-        signInteractionStore.rejectAll();
-      }}
-    />
-  );
+  return null;
+
+  // return (
+  //   <CosmosSignatureModal
+  //     {...signatureModalProps}
+  //     visible
+  //     onCancel={() => {
+  //       signInteractionStore.rejectAll();
+  //     }}
+  //   />
+  // );
 });

@@ -10,7 +10,8 @@ import {
   Brand,
   isCosmosChain,
   RequestObiCosmosSignAndBroadcastMsg,
-  RequestObiTerraSignAndBroadcastMsg,
+  RequestObiSignAndBroadcastTerraTransactionMsg,
+  TerraChain,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { isTxError, Msg, MsgSend } from "@terra-money/terra.js";
@@ -438,13 +439,14 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
                 success: isDeliverTxSuccess(response),
               });
             } else {
-              // TODO: handle current account
-              const response = await RequestObiTerraSignAndBroadcastMsg.send({
-                multisigKey: wallet.owner.serialize(),
-                demoMode: wallet.isDemo,
-                messages: getMessages().map((message) => message.toAmino()),
-                proxyAddress: wallet.proxyAddress.address,
-              });
+              const response =
+                await RequestObiSignAndBroadcastTerraTransactionMsg.send({
+                  chain: wallet.chain as TerraChain,
+                  messages: getMessages().map((message) => message.toAmino()),
+                  demoMode: wallet.isDemo,
+                  cancelable: true,
+                  walletMeta: wallet.meta,
+                });
 
               setConfirmModalStatus({
                 visible: true,

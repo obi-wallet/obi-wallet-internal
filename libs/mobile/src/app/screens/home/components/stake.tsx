@@ -8,8 +8,9 @@ import {
   Delegation,
   ExtendedValidator,
   isTerraChain,
-  RequestObiTerraSignAndBroadcastMsg,
+  RequestObiSignAndBroadcastTerraTransactionMsg,
   terra,
+  TerraChain,
   Text,
   TextInput,
   UnbondingDelegation,
@@ -51,9 +52,9 @@ import {
   useValidators,
 } from "../../../balances";
 import {
+  useCurrentTerraChainInformation,
   useMultisigWallet,
   useStore,
-  useCurrentTerraChainInformation,
 } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
@@ -365,14 +366,14 @@ const Balance = observer(function Balance() {
                   validator,
                 });
               });
-              // TODO: handle current account
-              await RequestObiTerraSignAndBroadcastMsg.send({
-                multisigKey: wallet.owner.serialize(),
+              await RequestObiSignAndBroadcastTerraTransactionMsg.send({
+                chain: wallet.chain as TerraChain,
                 messages: messages.map((message) => {
                   return message.toAmino();
                 }),
                 demoMode: wallet.isDemo,
-                proxyAddress: wallet.address,
+                cancelable: true,
+                walletMeta: wallet.meta,
               });
               await rewards.refetch();
             } catch (e) {
@@ -477,9 +478,8 @@ const Validators = observer(function Validators() {
                 parseFloat(amount.replace(",", ".")) * 10 ** digits;
               // TODO: also check if amount is greater than balance
               if (isNaN(amountToUse) || amountToUse <= 0) return;
-              // TODO: handle current account
-              await RequestObiTerraSignAndBroadcastMsg.send({
-                multisigKey: wallet.owner.serialize(),
+              await RequestObiSignAndBroadcastTerraTransactionMsg.send({
+                chain: wallet.chain as TerraChain,
                 messages: [
                   terra
                     .getStakeMessage({
@@ -491,7 +491,8 @@ const Validators = observer(function Validators() {
                     .toAmino(),
                 ],
                 demoMode: wallet.isDemo,
-                proxyAddress: wallet.address,
+                cancelable: true,
+                walletMeta: wallet.meta,
               });
               dispatch({ type: "clear-selected-validator" });
               await Promise.all([delegations.refetch(), rawBalances.refetch()]);
@@ -737,9 +738,8 @@ const MyStake = observer(function MyStake() {
                 parseFloat(amount.replace(",", ".")) * 10 ** digits;
               // TODO: also check if amount is greater than balance
               if (isNaN(amountToUse) || amountToUse <= 0) return;
-              // TODO: handle current account
-              await RequestObiTerraSignAndBroadcastMsg.send({
-                multisigKey: wallet.owner.serialize(),
+              await RequestObiSignAndBroadcastTerraTransactionMsg.send({
+                chain: wallet.chain as TerraChain,
                 messages: [
                   terra
                     .getUnstakeMessage({
@@ -751,7 +751,8 @@ const MyStake = observer(function MyStake() {
                     .toAmino(),
                 ],
                 demoMode: wallet.isDemo,
-                proxyAddress: wallet.address,
+                cancelable: true,
+                walletMeta: wallet.meta,
               });
               dispatch({ type: "clear-selected-validator" });
               await Promise.all([

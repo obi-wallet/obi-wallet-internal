@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useState } from "react";
@@ -16,8 +17,10 @@ export interface MultisigConfirmMessagesProps
   > {
   footer: ReactNode;
   threshold: number;
+  numberOfUsableKeys: number;
   numberOfSignatures: number;
   innerMessages: ConfirmMessagesProps["messages"];
+  safeSpendLimitExceeded?: boolean;
   data: KeysListProps["data"];
 
   onConfirm(): Promise<void>;
@@ -27,11 +30,14 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
   function SignatureModal({
     onConfirm,
     numberOfSignatures,
+    numberOfUsableKeys,
     threshold,
     data,
+    safeSpendLimitExceeded,
     ...props
   }) {
     const { configStore } = useStore();
+    const theme = useTheme();
     const isObi = configStore.isObi();
     const isLoop = configStore.isLoop();
     const enoughSignatures = numberOfSignatures >= threshold;
@@ -115,22 +121,55 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
         />
         {isObi && (
           <View>
-            <Text
-              style={{
-                textAlign: "center",
-                color: "#F6F5FF",
-                fontSize: numberOfSignatures >= threshold ? 14 : 12,
-                fontWeight: "600",
-                opacity: numberOfSignatures >= threshold ? 1 : 0.6,
-                marginVertical: numberOfSignatures >= threshold ? 5 : 2,
-              }}
-            >
-              <FormattedMessage
-                id="signature.keysrequired"
-                defaultMessage="Keys Required"
-              />
-              : {numberOfSignatures}/{threshold}
-            </Text>
+            {safeSpendLimitExceeded ? (
+              <View style={{ marginBottom: theme.spacing["16"] }}>
+                <Text
+                  style={[
+                    theme.typography.body,
+                    {
+                      textAlign: "center",
+                      color: "#F6F5FF",
+                      // fontSize: numberOfSignatures >= threshold ? 14 : 12,
+                      fontWeight: theme.fontWeights.bold,
+                      // opacity: numberOfSignatures >= threshold ? 1 : 0.6,
+                      marginVertical: numberOfSignatures >= threshold ? 5 : 2,
+                    },
+                  ]}
+                >
+                  Safe Spend Limit Exceeded
+                </Text>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: "#F6F5FF",
+                    fontSize: numberOfSignatures >= threshold ? 14 : 12,
+                    fontWeight: "600",
+                    opacity: numberOfSignatures >= threshold ? 1 : 0.6,
+                    marginVertical: numberOfSignatures >= threshold ? 5 : 2,
+                  }}
+                >
+                  Transaction requires {threshold}/{numberOfUsableKeys}{" "}
+                  signatures
+                </Text>
+              </View>
+            ) : (
+              <Text
+                style={{
+                  textAlign: "center",
+                  color: "#F6F5FF",
+                  fontSize: numberOfSignatures >= threshold ? 14 : 12,
+                  fontWeight: "600",
+                  opacity: numberOfSignatures >= threshold ? 1 : 0.6,
+                  marginVertical: numberOfSignatures >= threshold ? 5 : 2,
+                }}
+              >
+                <FormattedMessage
+                  id="signature.keysrequired"
+                  defaultMessage="Keys Required"
+                />
+                : {numberOfSignatures}/{threshold}
+              </Text>
+            )}
           </View>
         )}
       </ConfirmMessages>
