@@ -108,7 +108,10 @@ export class MultisigWallet extends AbstractWallet {
             terraChains[chainId].currentCodeIds.userAccount ||
           codeIds.spendLimitGatekeeper === null ||
           codeIds.spendLimitGatekeeper <
-            terraChains[chainId].currentCodeIds.spendLimitGatekeeper
+            terraChains[chainId].currentCodeIds.spendLimitGatekeeper ||
+          codeIds.debtGatekeeper === null ||
+          codeIds.debtGatekeeper <
+            terraChains[chainId].currentCodeIds.debtGatekeeper
         );
       },
       onCosmosChain(chainId) {

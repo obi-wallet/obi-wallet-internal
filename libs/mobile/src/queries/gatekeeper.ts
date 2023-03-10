@@ -24,6 +24,7 @@ export function getGatekeeperContractAddressesQuery({
           return {
             spendLimitGatekeeper: null,
             sessionKeyGatekeeper: null,
+            debtGatekeeper: null,
           };
         },
       });

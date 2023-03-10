@@ -12,6 +12,7 @@ export async function fetchGatekeeperContractAddresses({
     const response = await client.wasm.contractQuery<{
       spendlimit_gatekeeper_contract_addr: string | null;
       sessionkey_gatekeeper_contract_addr: string | null;
+      debt_gatekeeper_contract_addr: string | null;
     }>(proxyAddress, {
       gatekeeper_contracts: {},
     });
@@ -19,6 +20,7 @@ export async function fetchGatekeeperContractAddresses({
     return {
       spendLimitGatekeeper: response.spendlimit_gatekeeper_contract_addr,
       sessionKeyGatekeeper: response.sessionkey_gatekeeper_contract_addr,
+      debtGatekeeper: response.debt_gatekeeper_contract_addr,
     };
   });
 }
