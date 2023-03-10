@@ -7,6 +7,7 @@ import {
 } from "@terra-money/terra.js";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
+import { Alert } from "react-native";
 import NfcManager, { NfcEvents, OnDiscoverTag } from "react-native-nfc-manager";
 import invariant from "tiny-invariant";
 
@@ -59,6 +60,7 @@ export const SignatureModalMultisigKey =
     const innerMessages = data.messages.map((data) => {
       return Msg.fromAmino(data);
     });
+
     const messages = wrapMessages({
       messages: innerMessages,
       proxyAddress,
@@ -84,6 +86,15 @@ export const SignatureModalMultisigKey =
           messages,
           chainId: data.chain,
         });
+      },
+      onError(error) {
+        const e = error as Error;
+        Alert.alert("Transaction failed", e.message, [
+          {
+            text: "Cancel",
+            onPress: onCancel,
+          },
+        ]);
       },
       retry: 2,
     });

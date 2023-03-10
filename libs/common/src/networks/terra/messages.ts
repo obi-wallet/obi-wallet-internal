@@ -6,6 +6,7 @@ import {
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
 } from "@terra-money/terra.js";
+import { Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
@@ -259,6 +260,97 @@ export function getUpdateGatekeeperMessages({
   proxyAddress: string;
   spendLimitGatekeeper: string;
 }) {
+  function handleBeneficiaries() {
+    const messages: MsgExecuteContract[] = [];
+
+    const previousBeneficiaryAddresses =
+      currentGatekeeperConfig.beneficiaries.entities.map((beneficiary) => {
+        return beneficiary.address;
+      });
+    const nextBeneficiaryAddresses =
+      newGatekeeperConfig.beneficiaries.entities.map((beneficiary) => {
+        return beneficiary.address;
+      });
+
+    const removedAddresses = R.difference(
+      previousBeneficiaryAddresses,
+      nextBeneficiaryAddresses
+    );
+
+    newGatekeeperConfig.beneficiaries.entities.forEach((beneficiary) => {
+      const previousBeneficiary =
+        currentGatekeeperConfig.beneficiaries.entities.find(
+          (previousBeneficiary) => {
+            return previousBeneficiary.address === beneficiary.address;
+          }
+        );
+
+      if (previousBeneficiary && R.equals(previousBeneficiary, beneficiary)) {
+        return;
+      }
+
+      const periodProperties = () => {
+        const { period } = beneficiary.dripSchedule;
+
+        if (R.has("days", period)) {
+          return {
+            period_multiple: period.days,
+            period_type: "days",
+          };
+        } else if (R.has("months", period)) {
+          return {
+            period_multiple: period.months,
+            period_type: "months",
+          };
+        } else {
+          return {
+            period_multiple: period.years * 12,
+            period_type: "months",
+          };
+        }
+      };
+
+      const rawMessage = {
+        upsert_beneficiary: {
+          new_beneficiary: {
+            address: beneficiary.address,
+            cooldown: Duration.fromObject(beneficiary.dormancyThreshold).as(
+              "days"
+            ),
+            inheritance_records: [],
+            offset: 0,
+            ...periodProperties,
+            spend_limits: [
+              {
+                amount: Math.floor(beneficiary.dripSchedule.rate * 100),
+                current_balance: "0",
+                limit_remaining: "0",
+                denom: "PERCENT",
+              },
+            ],
+          },
+        },
+      };
+
+      messages.push(
+        new MsgExecuteContract(proxyAddress, spendLimitGatekeeper, rawMessage)
+      );
+    });
+
+    removedAddresses.forEach((address) => {
+      const rawMessage = {
+        rm_permissioned_address: {
+          doomed_permissioned_address: address,
+        },
+      };
+      messages.push(
+        new MsgExecuteContract(proxyAddress, spendLimitGatekeeper, rawMessage)
+      );
+    });
+
+    return messages;
+  }
+
   function handleFlexAccounts() {
     const messages: MsgExecuteContract[] = [];
 
@@ -370,5 +462,5 @@ export function getUpdateGatekeeperMessages({
     return messages;
   }
 
-  return [...handleFlexAccounts()];
+  return [...handleBeneficiaries(), ...handleFlexAccounts()];
 }

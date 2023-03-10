@@ -23,6 +23,8 @@ const InteractionModalInner = observer(function InteractionModalInner({
 }) {
   const { terraSignInteractionStore } = useStore();
 
+  console.log(JSON.stringify(data.messages, null, 2));
+
   return (
     <SignatureModal
       data={data}
