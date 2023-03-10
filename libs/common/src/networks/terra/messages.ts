@@ -388,7 +388,7 @@ export function getUpdateGatekeeperMessages({
           const rawMessage = {
             create_session_key: {
               address: flexAccount.address,
-              admin_permissions: false,
+              admin_permissions: true,
               max_duration: DateTime.fromISO(
                 flexAccount.autoSign.endTime
               ).toUnixInteger(),
