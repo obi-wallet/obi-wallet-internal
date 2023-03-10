@@ -27,7 +27,7 @@ export const SpendLimit = z.object({
 });
 
 export const AutoSign = z.object({
-  endTime: z.string().datetime(),
+  endTime: z.string().datetime({ offset: true }),
   // TODO: serialized revoke tx ready to broadcast. Although that might not need to be persisted actually.
 });
 
