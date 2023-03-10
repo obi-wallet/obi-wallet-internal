@@ -90,6 +90,8 @@ const AccountScreenInner = observer(function AccountScreenInner() {
   );
   const spendLimitGatekeeper =
     gatekeeperContractAddresses?.spendLimitGatekeeper;
+  const sessionKeyGatekeeper =
+    gatekeeperContractAddresses?.sessionKeyGatekeeper;
 
   const { data: permissionedAddresses, refetch } = useQuery(
     getPermissionedAddressesQuery({
@@ -208,12 +210,17 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                   spendLimitGatekeeper,
                   "Spend limit gatekeeper address is not set"
                 );
+                invariant(
+                  sessionKeyGatekeeper,
+                  "Session key gatekeeper address is not set"
+                );
 
                 const messages = terra.getUpdateGatekeeperMessages({
                   currentGatekeeperConfig: draft.original,
                   newGatekeeperConfig: draft.value,
                   proxyAddress: wallet.owner.address,
                   spendLimitGatekeeper,
+                  sessionKeyGatekeeper,
                 });
 
                 const response =

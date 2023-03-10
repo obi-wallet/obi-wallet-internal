@@ -6,7 +6,7 @@ import {
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
 } from "@terra-money/terra.js";
-import { Duration } from "luxon";
+import { DateTime, Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
@@ -254,11 +254,13 @@ export function getUpdateGatekeeperMessages({
   newGatekeeperConfig,
   proxyAddress,
   spendLimitGatekeeper,
+  sessionKeyGatekeeper,
 }: {
   currentGatekeeperConfig: GatekeeperConfig;
   newGatekeeperConfig: GatekeeperConfig;
   proxyAddress: string;
   spendLimitGatekeeper: string;
+  sessionKeyGatekeeper: string;
 }) {
   function handleBeneficiaries() {
     const messages: MsgExecuteContract[] = [];
@@ -375,6 +377,34 @@ export function getUpdateGatekeeperMessages({
             return previousFlexAccount.address === flexAccount.address;
           }
         );
+
+      if (
+        !previousFlexAccount ||
+        !R.equals(previousFlexAccount.autoSign, flexAccount.autoSign)
+      ) {
+        console.log(flexAccount);
+
+        if (flexAccount.autoSign) {
+          const rawMessage = {
+            create_session_key: {
+              address: flexAccount.address,
+              admin_permissions: false,
+              max_duration: DateTime.fromISO(
+                flexAccount.autoSign.endTime
+              ).toUnixInteger(),
+              use_limit: 999,
+            },
+          };
+
+          messages.push(
+            new MsgExecuteContract(
+              proxyAddress,
+              sessionKeyGatekeeper,
+              rawMessage
+            )
+          );
+        }
+      }
 
       if (
         previousFlexAccount &&

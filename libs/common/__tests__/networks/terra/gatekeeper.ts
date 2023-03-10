@@ -11,18 +11,22 @@ const address = terra.getAddress({
     value: publicKey,
   },
 });
-let spendLimitGatekeeper: string;
+let gatekeepers: {
+  spendLimitGatekeeper: string;
+  sessionKeyGatekeeper: string;
+};
 
 beforeAll(async () => {
-  const gatekeepers = await terra.fetchGatekeeperContractAddresses({
+  const response = await terra.fetchGatekeeperContractAddresses({
     proxyAddress,
     chainId: "phoenix-1",
   });
-  invariant(
-    gatekeepers.spendLimitGatekeeper,
-    "Spend limit gatekeeper not found"
-  );
-  spendLimitGatekeeper = gatekeepers.spendLimitGatekeeper;
+  invariant(response.spendLimitGatekeeper, "Spend limit gatekeeper not found");
+  invariant(response.sessionKeyGatekeeper, "Session key gatekeeper not found");
+  gatekeepers = {
+    spendLimitGatekeeper: response.spendLimitGatekeeper,
+    sessionKeyGatekeeper: response.sessionKeyGatekeeper,
+  };
 });
 
 describe("Empty gatekeeper config", () => {
@@ -34,7 +38,7 @@ describe("Empty gatekeeper config", () => {
       currentGatekeeperConfig,
       newGatekeeperConfig,
       proxyAddress,
-      spendLimitGatekeeper,
+      ...gatekeepers,
     });
     expect(messages).toEqual([]);
   });
@@ -60,14 +64,14 @@ describe("Empty gatekeeper config", () => {
       currentGatekeeperConfig,
       newGatekeeperConfig,
       proxyAddress,
-      spendLimitGatekeeper,
+      ...gatekeepers,
     });
     expect(messages.length).toEqual(1);
     expect(messages[0].toAmino()).toEqual({
       type: "wasm/MsgExecuteContract",
       value: {
         sender: proxyAddress,
-        contract: spendLimitGatekeeper,
+        contract: gatekeepers.spendLimitGatekeeper,
         msg: {
           upsert_permissioned_address: {
             new_permissioned_address: {
@@ -112,14 +116,14 @@ describe("Empty gatekeeper config", () => {
       currentGatekeeperConfig,
       newGatekeeperConfig,
       proxyAddress,
-      spendLimitGatekeeper,
+      ...gatekeepers,
     });
     expect(messages.length).toEqual(1);
     expect(messages[0].toAmino()).toEqual({
       type: "wasm/MsgExecuteContract",
       value: {
         sender: proxyAddress,
-        contract: spendLimitGatekeeper,
+        contract: gatekeepers.spendLimitGatekeeper,
         msg: {
           upsert_permissioned_address: {
             new_permissioned_address: {
@@ -176,14 +180,14 @@ describe("Empty gatekeeper config", () => {
       currentGatekeeperConfig,
       newGatekeeperConfig,
       proxyAddress,
-      spendLimitGatekeeper,
+      ...gatekeepers,
     });
-    expect(messages.length).toEqual(1);
-    expect(messages[0].toAmino()).toEqual({
+    expect(messages.length).toEqual(2);
+    expect(messages.map((message) => message.toAmino())).toContainEqual({
       type: "wasm/MsgExecuteContract",
       value: {
         sender: proxyAddress,
-        contract: spendLimitGatekeeper,
+        contract: gatekeepers.spendLimitGatekeeper,
         msg: {
           upsert_permissioned_address: {
             new_permissioned_address: {
@@ -238,14 +242,14 @@ test("Remove single flex account", async () => {
     currentGatekeeperConfig,
     newGatekeeperConfig,
     proxyAddress,
-    spendLimitGatekeeper,
+    ...gatekeepers,
   });
   expect(messages.length).toEqual(1);
   expect(messages[0].toAmino()).toEqual({
     type: "wasm/MsgExecuteContract",
     value: {
       sender: proxyAddress,
-      contract: spendLimitGatekeeper,
+      contract: gatekeepers.spendLimitGatekeeper,
       msg: {
         rm_permissioned_address: {
           doomed_permissioned_address: address,

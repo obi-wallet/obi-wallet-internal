@@ -23,6 +23,7 @@ export function getGatekeeperContractAddressesQuery({
           // TODO: not implemented yet
           return {
             spendLimitGatekeeper: null,
+            sessionKeyGatekeeper: null,
           };
         },
       });
