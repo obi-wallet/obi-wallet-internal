@@ -145,6 +145,7 @@ export const SignatureModalFlexAccountWithFlexAccount =
           loading={broadcast.isLoading}
           cancelable={data.cancelable}
           messages={data.messages}
+          disabled={!signed}
           onCancel={onCancel}
           onConfirm={async () => {
             const response = await broadcast.mutateAsync();
