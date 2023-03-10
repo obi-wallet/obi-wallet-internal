@@ -11,12 +11,14 @@ export async function fetchGatekeeperContractAddresses({
   return await withLcdClient(chainId, async (client) => {
     const response = await client.wasm.contractQuery<{
       spendlimit_gatekeeper_contract_addr: string | null;
+      sessionkey_gatekeeper_contract_addr: string | null;
     }>(proxyAddress, {
       gatekeeper_contracts: {},
     });
 
     return {
       spendLimitGatekeeper: response.spendlimit_gatekeeper_contract_addr,
+      sessionKeyGatekeeper: response.sessionkey_gatekeeper_contract_addr,
     };
   });
 }
