@@ -1,6 +1,4 @@
-import { CosmosChain } from "@obi-wallet/sdk";
-
-import { createCosmWasmClient } from "../../clients";
+import { CosmosChain, withCosmosCosmWasmClient } from "@obi-wallet/sdk";
 
 export async function fetchCodeId({
   chainId,
@@ -9,8 +7,8 @@ export async function fetchCodeId({
   chainId: CosmosChain;
   address: string;
 }) {
-  const wasmClient = await createCosmWasmClient(chainId);
-  const contract = await wasmClient.getContract(address);
-  wasmClient.disconnect();
-  return contract.codeId;
+  return await withCosmosCosmWasmClient(chainId, async (client) => {
+    const contract = await client.getContract(address);
+    return contract.codeId;
+  });
 }

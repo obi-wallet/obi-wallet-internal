@@ -2,8 +2,8 @@ import {
   lendFees,
   RequestObiSignAndBroadcastTerraTransactionPayload,
   terra,
-  withLcdClient,
 } from "@obi-wallet/common";
+import { withTerraClient } from "@obi-wallet/sdk";
 import {
   BlockTxBroadcastResult,
   isTxError,
@@ -34,7 +34,7 @@ export async function broadcastTransaction({
     // This is only for demo mode
     return {} as BlockTxBroadcastResult;
   } else {
-    let response = await withLcdClient(data.chain, async (client) => {
+    let response = await withTerraClient(data.chain, async (client) => {
       return await client.tx.broadcastBlock(transaction);
     });
     if (isTxError(response)) {
@@ -43,7 +43,7 @@ export async function broadcastTransaction({
           chainId: data.chain,
           address: sender,
         });
-        response = await withLcdClient(data.chain, async (client) => {
+        response = await withTerraClient(data.chain, async (client) => {
           return await client.tx.broadcastBlock(transaction);
         });
       }

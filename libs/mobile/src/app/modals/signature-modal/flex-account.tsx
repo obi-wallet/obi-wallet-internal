@@ -1,11 +1,6 @@
 import { useTheme } from "@emotion/react";
-import {
-  KeyType,
-  MultisigKey,
-  terra,
-  Text,
-  withLcdClient,
-} from "@obi-wallet/common";
+import { KeyType, MultisigKey, terra, Text } from "@obi-wallet/common";
+import { withTerraClient } from "@obi-wallet/sdk";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Msg, RawKey } from "@terra-money/terra.js";
 import { observer } from "mobx-react-lite";
@@ -47,7 +42,7 @@ export const SignatureModalFlexAccount =
     const canExecute = useQuery({
       queryKey: ["can-execute"],
       queryFn: async () => {
-        return await withLcdClient(data.chain, async (client) => {
+        return await withTerraClient(data.chain, async (client) => {
           const mayExecute = await Promise.all(
             innerMessages.map(async (message) => {
               try {

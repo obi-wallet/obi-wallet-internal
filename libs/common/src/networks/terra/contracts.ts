@@ -1,6 +1,4 @@
-import { TerraChain } from "@obi-wallet/sdk";
-
-import { withLcdClient } from "../../clients";
+import { TerraChain, withTerraClient } from "@obi-wallet/sdk";
 
 export async function fetchCodeId({
   chainId,
@@ -9,7 +7,7 @@ export async function fetchCodeId({
   chainId: TerraChain;
   address: string;
 }) {
-  return await withLcdClient(chainId, async (client) => {
+  return await withTerraClient(chainId, async (client) => {
     const response = await client.wasm.contractInfo(address);
     return response.code_id;
   });

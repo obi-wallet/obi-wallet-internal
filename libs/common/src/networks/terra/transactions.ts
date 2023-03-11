@@ -1,4 +1,4 @@
-import { TerraChain, terraChains } from "@obi-wallet/sdk";
+import { TerraChain, terraChains, withTerraClient } from "@obi-wallet/sdk";
 import {
   Account,
   Key,
@@ -14,7 +14,6 @@ import { AxiosError } from "axios";
 import { z } from "zod";
 
 import { getTxGasOptions } from "./gas-information";
-import { withLcdClient } from "../../clients";
 import { lendFees } from "../../fee-lender-worker";
 
 export const SdkError = z.object({
@@ -31,7 +30,7 @@ export async function createAndSignSinglesigTransaction({
   messages: Msg[];
   chainId: TerraChain;
 }) {
-  return await withLcdClient(chainId, async (client) => {
+  return await withTerraClient(chainId, async (client) => {
     const wallet = client.wallet(key);
 
     await prepareKey({ key, chainId });
@@ -56,7 +55,7 @@ export async function createMultisigTransaction({
   const account = await prepareAccount({ address, chainId });
 
   try {
-    return await withLcdClient(chainId, async (client) => {
+    return await withTerraClient(chainId, async (client) => {
       const transaction = await client.tx.create(
         [
           {
@@ -115,7 +114,7 @@ export async function simulateTransaction({
   transaction: Tx;
   chainId: TerraChain;
 }) {
-  return await withLcdClient(chainId, async (client) => {
+  return await withTerraClient(chainId, async (client) => {
     return await client.tx.estimateGas(transaction);
   });
 }
@@ -132,7 +131,7 @@ export async function prepareKey({
   let account: Account | null = await prepareAccount({ address, chainId });
 
   if (!account?.getPublicKey()) {
-    return await withLcdClient(chainId, async (client) => {
+    return await withTerraClient(chainId, async (client) => {
       const wallet = client.wallet(key);
       const { denom } = terraChains[chainId];
       const send = new MsgSend(address, address, { [denom]: 1 });
@@ -179,7 +178,7 @@ export async function getAccount({
   chainId: TerraChain;
 }): Promise<Account | null> {
   try {
-    return await withLcdClient(chainId, async (client) => {
+    return await withTerraClient(chainId, async (client) => {
       return await client.auth.accountInfo(address);
     });
   } catch (e) {
