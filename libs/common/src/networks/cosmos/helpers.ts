@@ -3,8 +3,8 @@ import {
   Pubkey,
   pubkeyToAddress,
 } from "@cosmjs/amino";
+import { CosmosChain, cosmosChains } from "@obi-wallet/sdk";
 
-import { CosmosChain, cosmosChains } from "../../chains";
 import { MultisigKey } from "../../stores";
 
 export function getAddress({

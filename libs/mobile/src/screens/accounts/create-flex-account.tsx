@@ -1,11 +1,11 @@
 import {
-  Chain,
   cosmos,
   GatekeeperConfig,
   generateSec256k1KeyPair,
   terra,
   Text,
 } from "@obi-wallet/common";
+import { Chain } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";

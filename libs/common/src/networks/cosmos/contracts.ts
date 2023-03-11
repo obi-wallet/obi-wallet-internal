@@ -1,4 +1,5 @@
-import { CosmosChain } from "../../chains";
+import { CosmosChain } from "@obi-wallet/sdk";
+
 import { createCosmWasmClient } from "../../clients";
 
 export async function fetchCodeId({

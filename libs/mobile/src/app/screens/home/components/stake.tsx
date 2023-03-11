@@ -7,15 +7,14 @@ import {
   Coin,
   Delegation,
   ExtendedValidator,
-  isTerraChain,
   RequestObiSignAndBroadcastTerraTransactionMsg,
   terra,
-  TerraChain,
   Text,
   TextInput,
   UnbondingDelegation,
   Validator,
 } from "@obi-wallet/common";
+import { isTerraChain, TerraChain } from "@obi-wallet/sdk";
 import Fuse from "fuse.js";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";

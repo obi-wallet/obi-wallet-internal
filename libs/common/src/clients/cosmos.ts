@@ -1,7 +1,6 @@
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { StargateClient } from "@cosmjs/stargate";
-
-import { CosmosChain, cosmosChains } from "../chains";
+import { CosmosChain, cosmosChains } from "@obi-wallet/sdk";
 
 export async function createStargateClient(chainId: CosmosChain) {
   const { rpcs } = cosmosChains[chainId];

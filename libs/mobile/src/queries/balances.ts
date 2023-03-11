@@ -1,10 +1,5 @@
-import {
-  Chain,
-  cosmos,
-  isCosmosChain,
-  isTerraChain,
-  terra,
-} from "@obi-wallet/common";
+import { cosmos, terra } from "@obi-wallet/common";
+import { Chain, isCosmosChain, isTerraChain } from "@obi-wallet/sdk";
 
 import { staleTime } from "./helpers";
 

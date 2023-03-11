@@ -1,6 +1,5 @@
+import { terraChains, TerraChain } from "@obi-wallet/sdk";
 import { LCDClient } from "@terra-money/terra.js";
-
-import { terraChains, TerraChain } from "../chains";
 
 export async function withLcdClient<T>(
   chainId: TerraChain,

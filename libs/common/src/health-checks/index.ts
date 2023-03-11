@@ -1,4 +1,5 @@
-import { Chain } from "../chains";
+import { Chain } from "@obi-wallet/sdk";
+
 import { createCosmWasmClient } from "../clients";
 import { MultisigWallet } from "../stores";
 

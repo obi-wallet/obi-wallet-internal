@@ -1,6 +1,5 @@
+import { CosmosChain, TerraChain } from "@obi-wallet/sdk";
 import fetch from "isomorphic-unfetch";
-
-import { CosmosChain, TerraChain } from "../chains";
 
 export async function lendFees({
   chainId,

@@ -24,14 +24,13 @@ import {
 import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
 import {
   cosmos,
-  cosmosChains,
   createStargateClient,
-  isCosmosChain,
   KeyType,
   lendFees,
   MultisigKey,
   RequestObiCosmosSignAndBroadcastPayload,
 } from "@obi-wallet/common";
+import { cosmosChains, isCosmosChain } from "@obi-wallet/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { observer } from "mobx-react-lite";

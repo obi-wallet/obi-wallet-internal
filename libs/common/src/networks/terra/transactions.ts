@@ -1,3 +1,4 @@
+import { TerraChain, terraChains } from "@obi-wallet/sdk";
 import {
   Account,
   Key,
@@ -13,7 +14,6 @@ import { AxiosError } from "axios";
 import { z } from "zod";
 
 import { getTxGasOptions } from "./gas-information";
-import { TerraChain, terraChains } from "../../chains";
 import { withLcdClient } from "../../clients";
 import { lendFees } from "../../fee-lender-worker";
 

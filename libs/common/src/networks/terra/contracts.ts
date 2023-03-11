@@ -1,4 +1,5 @@
-import { TerraChain } from "../../chains";
+import { TerraChain } from "@obi-wallet/sdk";
+
 import { withLcdClient } from "../../clients";
 
 export async function fetchCodeId({

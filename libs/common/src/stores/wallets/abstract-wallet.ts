@@ -1,6 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-
-import { Chain } from "../../chains";
+import { Chain } from "@obi-wallet/sdk";
 
 export enum WalletType {
   Multisig = "Multisig",

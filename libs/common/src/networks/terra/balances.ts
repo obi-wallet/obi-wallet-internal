@@ -1,3 +1,4 @@
+import { TerraChain, terraChains } from "@obi-wallet/sdk";
 import { Coins, Validator as RawValidator } from "@terra-money/terra.js";
 import {
   Pagination,
@@ -12,7 +13,6 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 
 import { tokenPairs } from "./token-pairs";
-import { TerraChain, terraChains } from "../../chains";
 import { withLcdClient } from "../../clients";
 import {
   Coin,

@@ -1,18 +1,12 @@
+import { TerraChain, terraChains } from "@obi-wallet/sdk";
 import {
   LegacyAminoMultisigPublicKey,
   MsgSend,
   RawKey,
   SimplePublicKey,
 } from "@terra-money/terra.js";
-import { randomBytes } from "crypto";
-import secp256k1 from "secp256k1";
 
-import {
-  generateSec256k1KeyPair,
-  terra,
-  TerraChain,
-  terraChains,
-} from "../../src";
+import { generateSec256k1KeyPair, terra } from "../../src";
 import { getNewAccountMessage } from "../../src/networks/terra/messages";
 import { wrapMessages } from "../../src/networks/terra/wrap-messages";
 

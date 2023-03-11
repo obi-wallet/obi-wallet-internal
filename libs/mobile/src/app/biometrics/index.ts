@@ -1,4 +1,5 @@
-import { Chain, generateSec256k1KeyPair, KVStore } from "@obi-wallet/common";
+import { generateSec256k1KeyPair, KVStore } from "@obi-wallet/common";
+import { Chain } from "@obi-wallet/sdk";
 import { QueryClient } from "@tanstack/react-query";
 import { isEmulator } from "react-native-device-info";
 import * as Keychain from "react-native-keychain";

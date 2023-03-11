@@ -1,4 +1,4 @@
-import { Chain } from "@obi-wallet/common";
+import { Chain } from "@obi-wallet/sdk";
 import { QueryClient } from "@tanstack/react-query";
 import secp256k1 from "secp256k1";
 

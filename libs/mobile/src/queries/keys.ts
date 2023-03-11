@@ -4,15 +4,13 @@ import {
   pubkeyType,
   Secp256k1Wallet,
 } from "@cosmjs/amino";
+import { createStargateClient, lendFees, terra } from "@obi-wallet/common";
 import {
   Chain,
   cosmosChains,
-  createStargateClient,
   isCosmosChain,
   isTerraChain,
-  lendFees,
-  terra,
-} from "@obi-wallet/common";
+} from "@obi-wallet/sdk";
 import { RawKey } from "@terra-money/terra.js";
 
 import { staleTime } from "./helpers";

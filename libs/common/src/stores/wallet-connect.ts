@@ -1,4 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
+import { isTerraChain } from "@obi-wallet/sdk";
 import { isTxError, Msg } from "@terra-money/terra.js";
 import WalletConnect from "@walletconnect/client";
 import {
@@ -15,7 +16,6 @@ import {
   RequestObiWalletConnectMsg,
   RequestObiWalletConnectPayload,
 } from "../background";
-import { isTerraChain } from "../chains";
 
 enum ErrorCodeEnum {
   userDenied = 1, // User Denied

@@ -1,7 +1,7 @@
 import { JsonObject } from "@cosmjs/cosmwasm-stargate";
+import { CosmosChain } from "@obi-wallet/sdk";
 import * as R from "ramda";
 
-import { CosmosChain } from "../../chains";
 import { createCosmWasmClient, createStargateClient } from "../../clients";
 import { Coin } from "../common/types";
 

@@ -1,3 +1,4 @@
+import { TerraChain, terraChains } from "@obi-wallet/sdk";
 import {
   BlockTxBroadcastResult,
   Coin,
@@ -11,7 +12,6 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 
 import { GatekeeperConfig } from "../..";
-import { TerraChain, terraChains } from "../../chains";
 import { CodeIds } from "../common";
 
 export function getNewAccountMessage({

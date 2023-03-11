@@ -1,5 +1,6 @@
-import { Brand, terra, terraChains } from "@obi-wallet/common";
+import { Brand, terra } from "@obi-wallet/common";
 import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
+import { terraChains } from "@obi-wallet/sdk";
 import {
   Coin,
   Msg,

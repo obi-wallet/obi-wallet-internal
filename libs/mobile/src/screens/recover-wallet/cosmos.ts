@@ -4,12 +4,12 @@ import {
 } from "@cosmjs/cosmwasm-stargate";
 import {
   cosmos,
-  CosmosChain,
   Draft,
   MultisigKey,
   MultisigWalletSerializedData,
   RequestObiCosmosSignAndBroadcastMsg,
 } from "@obi-wallet/common";
+import { CosmosChain } from "@obi-wallet/sdk";
 import {
   MsgExecuteContract,
   MsgUpdateAdmin,

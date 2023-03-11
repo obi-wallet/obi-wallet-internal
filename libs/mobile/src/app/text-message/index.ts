@@ -1,4 +1,4 @@
-import { Chain, CosmosChain, TerraChain } from "@obi-wallet/common";
+import { Chain, CosmosChain, TerraChain } from "@obi-wallet/sdk";
 import { QueryClient } from "@tanstack/react-query";
 import { AES } from "crypto-js";
 import { totp } from "otplib";

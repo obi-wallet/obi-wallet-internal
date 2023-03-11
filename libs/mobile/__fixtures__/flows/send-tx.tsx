@@ -1,8 +1,8 @@
 import {
   RequestObiSignAndBroadcastTerraTransactionPayload,
   terra,
-  TerraChain,
 } from "@obi-wallet/common";
+import { TerraChain } from "@obi-wallet/sdk";
 import { MsgSend } from "@terra-money/terra.js";
 import invariant from "tiny-invariant";
 

@@ -1,3 +1,4 @@
+import { Chain, cosmosChains, terraChains } from "@obi-wallet/sdk";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import * as MultisigWalletSerializedData from "./serialized-data";
@@ -9,7 +10,6 @@ import {
   SinglesigWallet,
 } from "./serialized-data";
 import { SerializedWalletMeta, WalletMeta } from "..";
-import { Chain, cosmosChains, terraChains } from "../../../chains";
 import { CodeIds, terra } from "../../../networks";
 import { Entities, EntityId } from "../../entities";
 import { AbstractWallet, WalletType } from "../abstract-wallet";

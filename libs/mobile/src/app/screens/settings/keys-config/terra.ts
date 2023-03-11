@@ -5,8 +5,8 @@ import {
   MultisigWallet,
   RequestObiSignAndBroadcastTerraTransactionMsg,
   terra,
-  TerraChain,
 } from "@obi-wallet/common";
+import { TerraChain } from "@obi-wallet/sdk";
 
 export async function handleTerra({
   draft,

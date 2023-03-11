@@ -1,11 +1,10 @@
 import {
   createStargateClient,
-  isCosmosChain,
-  isTerraChain,
   MultisigKey,
   Text,
   withLcdClient,
 } from "@obi-wallet/common";
+import { isCosmosChain, isTerraChain } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
