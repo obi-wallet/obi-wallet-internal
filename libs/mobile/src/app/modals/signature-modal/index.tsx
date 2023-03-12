@@ -1,5 +1,5 @@
 import { MultisigKey } from "@obi-wallet/common";
-import { RawKey } from "@terra-money/terra.js";
+import { RawKey } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 

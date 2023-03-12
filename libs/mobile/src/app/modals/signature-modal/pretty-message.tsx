@@ -20,7 +20,7 @@ import {
   MsgSend,
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
-} from "@terra-money/terra.js";
+} from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { ReactNode } from "react";

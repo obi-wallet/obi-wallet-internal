@@ -47,7 +47,7 @@
     "@tanstack/query-async-storage-persister": "*",
     "@tanstack/react-query": "*",
     "@tanstack/react-query-persist-client": "*",
-    "@terra-money/terra.js": "*",
+    "@terra-money/feather.js": "*",
     "@terra-money/terra.proto": "*",
     "@testing-library/jest-native": "*",
     "@testing-library/react-native": "*",

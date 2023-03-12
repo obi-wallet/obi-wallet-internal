@@ -6,7 +6,7 @@ import {
 } from "@cosmjs/amino";
 import { lendFees, terra } from "@obi-wallet/common";
 import { Chain, cosmosChains, withCosmosStargateClient } from "@obi-wallet/sdk";
-import { RawKey } from "@terra-money/terra.js";
+import { RawKey } from "@terra-money/feather.js";
 
 import { staleTime } from "./helpers";
 import { createSigningStargateClient } from "../app/clients";

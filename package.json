@@ -64,7 +64,7 @@
     "@tanstack/query-async-storage-persister": "^4.26.1",
     "@tanstack/react-query": "^4.26.1",
     "@tanstack/react-query-persist-client": "^4.26.1",
-    "@terra-money/terra.js": "^3.1.7",
+    "@terra-money/feather.js": "^1.0.0-beta.12",
     "@terra-money/terra.proto": "^2.2.0-beta.4",
     "@walletconnect/client": "^1.8.0",
     "@walletconnect/types": "^1.8.0",

@@ -6,7 +6,7 @@ import {
   MsgExecuteContract,
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
-} from "@terra-money/terra.js";
+} from "@terra-money/feather.js";
 import { DateTime, Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";

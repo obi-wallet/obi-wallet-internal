@@ -1,4 +1,4 @@
-import { LCDClient } from "@terra-money/terra.js";
+import { LCDClient } from "@terra-money/feather.js";
 
 import { terraChains, TerraChain } from "../chains";
 
@@ -10,7 +10,17 @@ export async function withTerraClient<T>(
 
   for (const lcd of terraChains[chainId].lcds) {
     try {
-      return await f(new LCDClient({ URL: lcd, chainID: chainId }));
+      return await f(
+        new LCDClient({
+          [chainId]: {
+            lcd,
+            chainID: chainId,
+            gasAdjustment: 1.75,
+            gasPrices: { uluna: 0.015 },
+            prefix: "terra",
+          },
+        })
+      );
     } catch (e) {
       // Silently retry with other LCDs
       error = e;

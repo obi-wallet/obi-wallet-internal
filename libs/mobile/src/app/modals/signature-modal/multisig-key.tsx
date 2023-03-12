@@ -1,6 +1,6 @@
 import { KeyType, MultisigKey, terra } from "@obi-wallet/common";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Msg, SignatureV2 } from "@terra-money/terra.js";
+import { Msg, SignatureV2 } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";

@@ -1,5 +1,5 @@
 import { TerraChain, terraChains } from "@obi-wallet/sdk";
-import { CreateTxOptions } from "@terra-money/terra.js";
+import { CreateTxOptions } from "@terra-money/feather.js";
 import axios from "axios";
 
 export type TxGasOptions = Pick<CreateTxOptions, "gasPrices" | "gasAdjustment">;

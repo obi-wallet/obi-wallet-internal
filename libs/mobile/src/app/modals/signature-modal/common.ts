@@ -9,7 +9,7 @@ import {
   isTxError,
   Msg,
   Tx,
-} from "@terra-money/terra.js";
+} from "@terra-money/feather.js";
 
 export interface AbstractSignatureModalProps {
   data: RequestObiSignAndBroadcastTerraTransactionPayload;
@@ -35,7 +35,7 @@ export async function broadcastTransaction({
     return {} as BlockTxBroadcastResult;
   } else {
     let response = await withTerraClient(data.chain, async (client) => {
-      return await client.tx.broadcastBlock(transaction);
+      return await client.tx.broadcastBlock(transaction, data.chain);
     });
     if (isTxError(response)) {
       if (response.raw_log.includes("insufficient funds")) {
@@ -44,7 +44,7 @@ export async function broadcastTransaction({
           address: sender,
         });
         response = await withTerraClient(data.chain, async (client) => {
-          return await client.tx.broadcastBlock(transaction);
+          return await client.tx.broadcastBlock(transaction, data.chain);
         });
       }
     }

@@ -2,7 +2,7 @@ import { useTheme } from "@emotion/react";
 import { KeyType, MultisigKey, terra, Text } from "@obi-wallet/common";
 import { withTerraClient } from "@obi-wallet/sdk";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Msg, RawKey } from "@terra-money/terra.js";
+import { Msg, RawKey } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { View } from "react-native";
@@ -32,7 +32,7 @@ export const SignatureModalFlexAccount =
     const innerMessages = data.messages.map((data) => {
       return Msg.fromAmino(data);
     });
-    const sender = flexAccount.accAddress;
+    const sender = flexAccount.accAddress("terra");
     const wrappedMessages = wrapMessages({
       messages: innerMessages,
       proxyAddress,
@@ -113,7 +113,7 @@ export const SignatureModalFlexAccountWithFlexAccount =
           return await broadcastTransaction({
             data,
             transaction,
-            sender: flexAccount.accAddress,
+            sender: flexAccount.accAddress("terra"),
           });
         },
       });

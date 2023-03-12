@@ -1,7 +1,7 @@
 import {
   LegacyAminoMultisigPublicKey,
   SimplePublicKey,
-} from "@terra-money/terra.js";
+} from "@terra-money/feather.js";
 
 import { MultisigKey } from "../../stores";
 
@@ -10,7 +10,7 @@ export function getAddress({
 }: {
   publicKey: SimplePublicKey.Amino;
 }) {
-  return SimplePublicKey.fromAmino(publicKey).address();
+  return SimplePublicKey.fromAmino(publicKey).address("terra");
 }
 
 export function createMultisigPublicKey({
@@ -32,7 +32,7 @@ export function getSigners({ multisigKey }: { multisigKey: MultisigKey }) {
 
   return multisigPublicKey.pubkeys.map((publicKey, i) => {
     return {
-      address: publicKey.address(),
+      address: publicKey.address("terra"),
       ty: multisigKey.signerTypes[i],
     };
   });

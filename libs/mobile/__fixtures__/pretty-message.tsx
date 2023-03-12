@@ -8,7 +8,7 @@ import {
   MsgInstantiateContract,
   MsgSend,
   MsgUndelegate,
-} from "@terra-money/terra.js";
+} from "@terra-money/feather.js";
 import { ScrollView } from "react-native-gesture-handler";
 
 import { PrettyMessage } from "../src";

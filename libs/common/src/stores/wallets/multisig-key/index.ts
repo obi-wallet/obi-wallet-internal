@@ -57,7 +57,7 @@ export class MultisigKey implements Draftable {
       const multisigPublicKey = terra.createMultisigPublicKey({
         multisigKey: this,
       });
-      return multisigPublicKey.address();
+      return multisigPublicKey.address("terra");
     } else {
       const multisigPublicKey = cosmos.createMultisigPublicKey({
         multisigKey: this,

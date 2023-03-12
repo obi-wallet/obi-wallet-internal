@@ -13,7 +13,7 @@ import {
   MsgUndelegate,
   MsgUpdateContractAdmin,
   MsgWithdrawDelegatorReward,
-} from "@terra-money/terra.js";
+} from "@terra-money/feather.js";
 
 export function wrapMessages({
   messages,

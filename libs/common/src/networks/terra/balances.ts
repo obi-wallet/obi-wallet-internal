@@ -1,10 +1,10 @@
 import { TerraChain, terraChains } from "@obi-wallet/sdk";
 import { withTerraClient } from "@obi-wallet/sdk";
-import { Coins, Validator as RawValidator } from "@terra-money/terra.js";
+import { Coins, Validator as RawValidator } from "@terra-money/feather.js";
 import {
   Pagination,
   PaginationOptions,
-} from "@terra-money/terra.js/dist/client/lcd/APIRequester";
+} from "@terra-money/feather.js/dist/client/lcd/APIRequester";
 import {
   BondStatus,
   bondStatusFromJSON,
@@ -243,7 +243,7 @@ export async function fetchValidators({
 }): Promise<ExtendedValidator[]> {
   return await withTerraClient(chainId, async (client) => {
     const rawValidators = await fetchAll((paginationOptions) => {
-      return client.staking.validators(paginationOptions);
+      return client.staking.validators(chainId, paginationOptions);
     });
 
     const MAX_COMMISSION = 0.05;

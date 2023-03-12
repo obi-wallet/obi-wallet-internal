@@ -9,7 +9,7 @@ import {
   SignatureV2,
   SignDoc,
   Tx,
-} from "@terra-money/terra.js";
+} from "@terra-money/feather.js";
 import { AxiosError } from "axios";
 import { z } from "zod";
 
@@ -36,6 +36,7 @@ export async function createAndSignSinglesigTransaction({
     await prepareKey({ key, chainId });
 
     return await wallet.createAndSignTx({
+      chainID: chainId,
       msgs: messages,
     });
   });
@@ -50,7 +51,7 @@ export async function createMultisigTransaction({
   messages: Msg[];
   chainId: TerraChain;
 }) {
-  const address = key.address();
+  const address = key.address("terra");
 
   const account = await prepareAccount({ address, chainId });
 
@@ -65,6 +66,7 @@ export async function createMultisigTransaction({
           },
         ],
         {
+          chainID: chainId,
           msgs: messages,
           ...(await getTxGasOptions({ chainId })),
         }
@@ -115,7 +117,7 @@ export async function simulateTransaction({
   chainId: TerraChain;
 }) {
   return await withTerraClient(chainId, async (client) => {
-    return await client.tx.estimateGas(transaction);
+    return await client.tx.estimateGas(transaction, chainId);
   });
 }
 
@@ -126,7 +128,7 @@ export async function prepareKey({
   key: Key;
   chainId: TerraChain;
 }) {
-  const address = key.accAddress;
+  const address = key.accAddress("terra");
 
   let account: Account | null = await prepareAccount({ address, chainId });
 
@@ -136,10 +138,11 @@ export async function prepareKey({
       const { denom } = terraChains[chainId];
       const send = new MsgSend(address, address, { [denom]: 1 });
       const tx = await wallet.createAndSignTx({
+        chainID: chainId,
         msgs: [send],
         ...(await getTxGasOptions({ chainId })),
       });
-      await client.tx.broadcastBlock(tx);
+      await client.tx.broadcastBlock(tx, chainId);
     });
   }
 

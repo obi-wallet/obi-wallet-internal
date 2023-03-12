@@ -1,5 +1,5 @@
 import { TerraChain } from "@obi-wallet/sdk";
-import { BlockTxBroadcastResult, Msg } from "@terra-money/terra.js";
+import { BlockTxBroadcastResult, Msg } from "@terra-money/feather.js";
 
 import { CommonPayload } from "./common";
 import { createMessage } from "../helpers";
