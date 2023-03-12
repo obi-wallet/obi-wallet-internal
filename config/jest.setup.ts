@@ -32,3 +32,8 @@ jest.mock("nanoid/non-secure", () => {
     },
   };
 });
+
+// To avoid ESM issues
+jest.mock("isomorphic-unfetch", () => {
+  return jest.requireActual("node-fetch");
+});

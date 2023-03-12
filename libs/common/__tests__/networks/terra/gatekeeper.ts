@@ -1,11 +1,15 @@
 import invariant from "tiny-invariant";
 
-import { GatekeeperConfig, generateSec256k1KeyPair, terra } from "../../../src";
+import { fetchGatekeeperContractAddresses } from "../../../src/networks/terra/gatekeeper";
+import { getAddress } from "../../../src/networks/terra/helpers";
+import { getUpdateGatekeeperMessages } from "../../../src/networks/terra/messages";
+import { generateSec256k1KeyPair } from "../../../src/sec256k1";
+import { GatekeeperConfig } from "../../../src/stores";
 
 const proxyAddress =
   "terra19g840q54mxd5vyxh3rdfpncmmyql5hcu8j9wcg45zgwgt4phwdes27emev";
 const { publicKey, privateKey } = generateSec256k1KeyPair();
-const address = terra.getAddress({
+const address = getAddress({
   publicKey: {
     type: "tendermint/PubKeySecp256k1",
     value: publicKey,
@@ -17,7 +21,7 @@ let gatekeepers: {
 };
 
 beforeAll(async () => {
-  const response = await terra.fetchGatekeeperContractAddresses({
+  const response = await fetchGatekeeperContractAddresses({
     proxyAddress,
     chainId: "phoenix-1",
   });
@@ -34,7 +38,7 @@ describe("Empty gatekeeper config", () => {
 
   test("No changes", () => {
     const newGatekeeperConfig = new GatekeeperConfig();
-    const messages = terra.getUpdateGatekeeperMessages({
+    const messages = getUpdateGatekeeperMessages({
       currentGatekeeperConfig,
       newGatekeeperConfig,
       proxyAddress,
@@ -60,7 +64,7 @@ describe("Empty gatekeeper config", () => {
       spendLimit: null,
       autoSign: null,
     });
-    const messages = terra.getUpdateGatekeeperMessages({
+    const messages = getUpdateGatekeeperMessages({
       currentGatekeeperConfig,
       newGatekeeperConfig,
       proxyAddress,
@@ -112,7 +116,7 @@ describe("Empty gatekeeper config", () => {
       },
       autoSign: null,
     });
-    const messages = terra.getUpdateGatekeeperMessages({
+    const messages = getUpdateGatekeeperMessages({
       currentGatekeeperConfig,
       newGatekeeperConfig,
       proxyAddress,
@@ -176,7 +180,7 @@ describe("Empty gatekeeper config", () => {
         endTime: "2021-01-01T00:00:00Z",
       },
     });
-    const messages = terra.getUpdateGatekeeperMessages({
+    const messages = getUpdateGatekeeperMessages({
       currentGatekeeperConfig,
       newGatekeeperConfig,
       proxyAddress,
@@ -238,7 +242,7 @@ test("Remove single flex account", async () => {
     autoSign: null,
   });
   const newGatekeeperConfig = new GatekeeperConfig();
-  const messages = terra.getUpdateGatekeeperMessages({
+  const messages = getUpdateGatekeeperMessages({
     currentGatekeeperConfig,
     newGatekeeperConfig,
     proxyAddress,
