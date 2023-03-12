@@ -392,8 +392,6 @@ export function getUpdateGatekeeperMessages({
         !previousFlexAccount ||
         !R.equals(previousFlexAccount.autoSign, flexAccount.autoSign)
       ) {
-        console.log(flexAccount);
-
         if (flexAccount.autoSign) {
           const rawMessage = {
             create_session_key: {
