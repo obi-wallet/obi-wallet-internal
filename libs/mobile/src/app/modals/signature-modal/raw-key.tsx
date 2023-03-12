@@ -1,6 +1,6 @@
 import { terra } from "@obi-wallet/common";
 import { useMutation } from "@tanstack/react-query";
-import { Msg, RawKey } from "@terra-money/terra.js";
+import { Msg, RawKey } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 
 import { AbstractSignatureModalProps, broadcastTransaction } from "./common";
@@ -24,7 +24,7 @@ export const SignatureModalRawKey = observer<SignatureModalRawKeyProps>(
         return await broadcastTransaction({
           data,
           transaction,
-          sender: rawKey.accAddress,
+          sender: rawKey.accAddress("terra"),
         });
       },
     });

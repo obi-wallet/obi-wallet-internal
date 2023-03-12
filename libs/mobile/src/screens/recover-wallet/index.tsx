@@ -1,10 +1,10 @@
 import { useTheme } from "@emotion/react";
 import {
-  isCosmosChain,
   KeyType,
   MultisigKey,
   MultisigKeySerializedData,
 } from "@obi-wallet/common";
+import { isCosmosChain } from "@obi-wallet/sdk";
 import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";

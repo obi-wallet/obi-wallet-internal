@@ -4,15 +4,17 @@ import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-  cosmosChains,
   Feature,
-  isCosmosChain,
   RequestObiSignAndBroadcastTerraTransactionMsg,
   terra,
-  TerraChain,
-  terraChains,
   Text,
 } from "@obi-wallet/common";
+import {
+  cosmosChains,
+  isCosmosChain,
+  TerraChain,
+  terraChains,
+} from "@obi-wallet/sdk";
 import { BottomTabBar } from "@react-navigation/bottom-tabs";
 import {
   DrawerContentComponentProps,

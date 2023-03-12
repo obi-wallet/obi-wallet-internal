@@ -1,5 +1,6 @@
-import { Brand, terra, terraChains } from "@obi-wallet/common";
+import { Brand, terra } from "@obi-wallet/common";
 import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
+import { terraChains } from "@obi-wallet/sdk";
 import {
   Coin,
   Msg,
@@ -7,7 +8,7 @@ import {
   MsgExecuteContract,
   MsgInstantiateContract,
   MsgSend,
-} from "@terra-money/terra.js";
+} from "@terra-money/feather.js";
 import { render, screen } from "@testing-library/react-native";
 
 import { PrettyMessage } from "../src/app/modals/signature-modal/pretty-message";
@@ -261,7 +262,6 @@ describe("Terra", () => {
     });
     const message = Msg.fromAmino({
       type: "bank/MsgSend",
-      // @ts-expect-error Intentionally wrong
       value: {},
     });
 

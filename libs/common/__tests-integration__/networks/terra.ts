@@ -1,18 +1,12 @@
+import { TerraChain, terraChains } from "@obi-wallet/sdk";
 import {
   LegacyAminoMultisigPublicKey,
   MsgSend,
   RawKey,
   SimplePublicKey,
-} from "@terra-money/terra.js";
-import { randomBytes } from "crypto";
-import secp256k1 from "secp256k1";
+} from "@terra-money/feather.js";
 
-import {
-  generateSec256k1KeyPair,
-  terra,
-  TerraChain,
-  terraChains,
-} from "../../src";
+import { generateSec256k1KeyPair, terra } from "../../src";
 import { getNewAccountMessage } from "../../src/networks/terra/messages";
 import { wrapMessages } from "../../src/networks/terra/wrap-messages";
 
@@ -33,12 +27,12 @@ const {
 };
 
 const key = new RawKey(Buffer.from(privateKey, "base64"));
-const address = key.accAddress;
+const address = key.accAddress("terra");
 
 const multisigKey = new LegacyAminoMultisigPublicKey(1, [
   new SimplePublicKey(publicKey),
 ]);
-const multisigAddress = multisigKey.address();
+const multisigAddress = multisigKey.address("terra");
 
 jest.setTimeout(1000 * 60);
 
@@ -82,7 +76,7 @@ test("createAndSignMultisigTransaction (second key signs)", async () => {
     new SimplePublicKey(publicKey),
     new SimplePublicKey(publicKey2),
   ]);
-  const multisigAddress2 = multisigKey2.address();
+  const multisigAddress2 = multisigKey2.address("terra");
   const message = new MsgSend(multisigAddress2, multisigAddress2, { uluna: 1 });
   const { signDoc, sign } = await terra.createMultisigTransaction({
     key: multisigKey2,
@@ -139,7 +133,7 @@ describe("MultisigWallet", () => {
 
   test("MsgDelegate", async () => {
     const message = terra.getStakeMessage({
-      sender: multisigKey.address(),
+      sender: multisigKey.address("terra"),
       validator: terraChains[chainId].obiValidator,
       amount: 1,
       chainId,

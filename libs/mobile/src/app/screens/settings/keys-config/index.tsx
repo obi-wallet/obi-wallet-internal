@@ -1,10 +1,6 @@
 import { useTheme } from "@emotion/react";
-import {
-  isCosmosChain,
-  KeyType,
-  MultisigKey,
-  Wallet,
-} from "@obi-wallet/common";
+import { KeyType, MultisigKey, Wallet } from "@obi-wallet/common";
+import { isCosmosChain } from "@obi-wallet/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";

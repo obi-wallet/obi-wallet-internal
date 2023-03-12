@@ -1,3 +1,4 @@
+import { Chain, isTerraChain } from "@obi-wallet/sdk";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import {
@@ -13,7 +14,6 @@ import { SerializedEmailKeyPayload } from "./keys/email";
 import { SerializedNfcKeyPayload } from "./keys/nfc";
 import { SerializedPhoneKeyPayload } from "./keys/phone";
 import { SerializedSocialKeyPayload } from "./keys/social";
-import { Chain, isTerraChain } from "../../../chains";
 import { cosmos, terra } from "../../../networks";
 import { Draftable } from "../../drafts/draft";
 import { Entities } from "../../entities";
@@ -57,7 +57,7 @@ export class MultisigKey implements Draftable {
       const multisigPublicKey = terra.createMultisigPublicKey({
         multisigKey: this,
       });
-      return multisigPublicKey.address();
+      return multisigPublicKey.address("terra");
     } else {
       const multisigPublicKey = cosmos.createMultisigPublicKey({
         multisigKey: this,

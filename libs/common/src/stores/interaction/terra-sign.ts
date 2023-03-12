@@ -1,5 +1,5 @@
 import { InteractionStore as KeplrInteractionStore } from "@keplr-wallet/stores";
-import { BlockTxBroadcastResult } from "@terra-money/terra.js";
+import { BlockTxBroadcastResult } from "@terra-money/feather.js";
 
 import { AbstractSingletonInteractionStore } from "./abstract-singleton";
 import {

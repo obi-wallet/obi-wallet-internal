@@ -2,7 +2,7 @@ import { AminoMsg } from "@cosmjs/amino";
 import { useTheme } from "@emotion/react";
 import { Text } from "@obi-wallet/common";
 import Clipboard from "@react-native-clipboard/clipboard";
-import { Msg } from "@terra-money/terra.js";
+import { Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";

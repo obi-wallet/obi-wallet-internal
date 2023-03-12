@@ -2,15 +2,8 @@ import { useTheme } from "@emotion/react";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons/faPaperclip";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  App,
-  Card,
-  isTerraChain,
-  Text,
-  TextInput,
-  Tile,
-  Tiles,
-} from "@obi-wallet/common";
+import { App, Card, Text, TextInput, Tile, Tiles } from "@obi-wallet/common";
+import { isTerraChain } from "@obi-wallet/sdk";
 import WalletConnect from "@walletconnect/client";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";

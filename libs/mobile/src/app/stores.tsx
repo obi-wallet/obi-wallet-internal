@@ -1,11 +1,10 @@
+import { MultisigWallet, RootStore } from "@obi-wallet/common";
 import {
   cosmosChains,
   isCosmosChain,
   isTerraChain,
-  MultisigWallet,
-  RootStore,
   terraChains,
-} from "@obi-wallet/common";
+} from "@obi-wallet/sdk";
 import { createContext, useContext } from "react";
 import invariant from "tiny-invariant";
 

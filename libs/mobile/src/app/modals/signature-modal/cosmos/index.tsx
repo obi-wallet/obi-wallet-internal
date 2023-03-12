@@ -24,14 +24,16 @@ import {
 import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
 import {
   cosmos,
-  cosmosChains,
-  createStargateClient,
-  isCosmosChain,
   KeyType,
   lendFees,
   MultisigKey,
   RequestObiCosmosSignAndBroadcastPayload,
 } from "@obi-wallet/common";
+import {
+  cosmosChains,
+  isCosmosChain,
+  withCosmosStargateClient,
+} from "@obi-wallet/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { observer } from "mobx-react-lite";
@@ -119,29 +121,28 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
 
       invariant(address, "Expected `address` to exist.");
 
-      const client = await createStargateClient(chainId);
+      return await withCosmosStargateClient(chainId, async (client) => {
+        if (!(await client.getAccount(address))) {
+          await lendFees({
+            chainId,
+            address,
+          });
+        }
 
-      if (!(await client.getAccount(address))) {
-        await lendFees({
-          chainId,
-          address,
-        });
-      }
+        const account = await client.getAccount(address);
+        invariant(account, "Expected `account` to be ready.");
 
-      const account = await client.getAccount(address);
-      invariant(account, "Expected `account` to be ready.");
+        const signDoc: StdSignDoc = {
+          memo: "",
+          account_number: account.accountNumber.toString(),
+          chain_id: chainId,
+          fee: fee,
+          msgs: messages,
+          sequence: account.sequence.toString(),
+        };
 
-      const signDoc: StdSignDoc = {
-        memo: "",
-        account_number: account.accountNumber.toString(),
-        chain_id: chainId,
-        fee: fee,
-        msgs: messages,
-        sequence: account.sequence.toString(),
-      };
-
-      client.disconnect();
-      return new Sha256(serializeSignDoc(signDoc)).digest();
+        return new Sha256(serializeSignDoc(signDoc)).digest();
+      });
     }, [multisigKey.address, currentChainInformation.denom, chainId, messages]);
 
     function getKey({ type }: { type: KeyType }): Key {
@@ -382,60 +383,60 @@ export function useSignatureModalProps({
           if (!multisigKey) return;
 
           const { chainId, denom } = currentChainInformation;
-          const client = await createStargateClient(chainId);
 
           console.log(messages);
 
-          const body: TxBodyEncodeObject = {
-            typeUrl: "/cosmos.tx.v1beta1.TxBody",
-            value: {
-              messages,
-              memo: "",
-            },
-          };
-          const bodyBytes = registry.encode(body);
+          await withCosmosStargateClient(chainId, async (client) => {
+            const body: TxBodyEncodeObject = {
+              typeUrl: "/cosmos.tx.v1beta1.TxBody",
+              value: {
+                messages,
+                memo: "",
+              },
+            };
+            const bodyBytes = registry.encode(body);
 
-          const multisigPublicKey = cosmos.createMultisigPublicKey({
-            multisigKey,
+            const multisigPublicKey = cosmos.createMultisigPublicKey({
+              multisigKey,
+            });
+            const address = multisigKey.address;
+
+            const feeAmount = 6000;
+            const fee = {
+              amount: coins(feeAmount, denom),
+              gas: "1280000",
+            };
+
+            if (!(await client.getAccount(address))) {
+              await lendFees({ chainId, address });
+            }
+
+            async function hasEnoughForFees() {
+              const balance = await client?.getBalance(address, denom);
+              return balance && parseInt(balance.amount, 10) >= feeAmount;
+            }
+
+            while (!(await hasEnoughForFees())) {
+              await lendFees({ chainId, address });
+            }
+
+            const account = await client.getAccount(address);
+            invariant(account, "Expected `account` to be ready.");
+
+            const tx = makeMultisignedTx(
+              multisigPublicKey,
+              account.sequence,
+              fee,
+              bodyBytes,
+              signatures
+            );
+
+            const result = await client.broadcastTx(
+              Uint8Array.from(TxRaw.encode(tx).finish())
+            );
+
+            await onConfirm(result);
           });
-          const address = multisigKey.address;
-
-          const feeAmount = 6000;
-          const fee = {
-            amount: coins(feeAmount, denom),
-            gas: "1280000",
-          };
-
-          if (!(await client.getAccount(address))) {
-            await lendFees({ chainId, address });
-          }
-
-          async function hasEnoughForFees() {
-            const balance = await client?.getBalance(address, denom);
-            return balance && parseInt(balance.amount, 10) >= feeAmount;
-          }
-
-          while (!(await hasEnoughForFees())) {
-            await lendFees({ chainId, address });
-          }
-
-          const account = await client.getAccount(address);
-          invariant(account, "Expected `account` to be ready.");
-
-          const tx = makeMultisignedTx(
-            multisigPublicKey,
-            account.sequence,
-            fee,
-            bodyBytes,
-            signatures
-          );
-
-          const result = await client.broadcastTx(
-            Uint8Array.from(TxRaw.encode(tx).finish())
-          );
-
-          client.disconnect();
-          await onConfirm(result);
         }
 
         await handleMultisig();

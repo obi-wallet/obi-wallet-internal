@@ -3,12 +3,12 @@ import { DeliverTxResponse } from "@cosmjs/stargate";
 import { Keplr } from "@keplr-wallet/provider";
 import { BACKGROUND_PORT } from "@keplr-wallet/router";
 import {
-  isCosmosChain,
   MessageRequesterExternal,
   PricingTier,
   RequestObiCosmosSignAndBroadcastMsg,
   RequestObiInAppPurchaseMsg,
 } from "@obi-wallet/common";
+import { isCosmosChain } from "@obi-wallet/sdk";
 import { useMemo } from "react";
 import invariant from "tiny-invariant";
 

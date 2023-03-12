@@ -2,14 +2,14 @@ import {
   lendFees,
   RequestObiSignAndBroadcastTerraTransactionPayload,
   terra,
-  withLcdClient,
 } from "@obi-wallet/common";
+import { withTerraClient } from "@obi-wallet/sdk";
 import {
   BlockTxBroadcastResult,
   isTxError,
   Msg,
   Tx,
-} from "@terra-money/terra.js";
+} from "@terra-money/feather.js";
 
 export interface AbstractSignatureModalProps {
   data: RequestObiSignAndBroadcastTerraTransactionPayload;
@@ -34,8 +34,8 @@ export async function broadcastTransaction({
     // This is only for demo mode
     return {} as BlockTxBroadcastResult;
   } else {
-    let response = await withLcdClient(data.chain, async (client) => {
-      return await client.tx.broadcastBlock(transaction);
+    let response = await withTerraClient(data.chain, async (client) => {
+      return await client.tx.broadcastBlock(transaction, data.chain);
     });
     if (isTxError(response)) {
       if (response.raw_log.includes("insufficient funds")) {
@@ -43,8 +43,8 @@ export async function broadcastTransaction({
           chainId: data.chain,
           address: sender,
         });
-        response = await withLcdClient(data.chain, async (client) => {
-          return await client.tx.broadcastBlock(transaction);
+        response = await withTerraClient(data.chain, async (client) => {
+          return await client.tx.broadcastBlock(transaction, data.chain);
         });
       }
     }

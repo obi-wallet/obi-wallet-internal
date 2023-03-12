@@ -9,7 +9,8 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons/faPlay";
 import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { cosmosChains, isCosmosChain, Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common";
+import { cosmosChains, isCosmosChain } from "@obi-wallet/sdk";
 import {
   Coin as TerraCoin,
   Msg,
@@ -19,7 +20,7 @@ import {
   MsgSend,
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
-} from "@terra-money/terra.js";
+} from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { ReactNode } from "react";

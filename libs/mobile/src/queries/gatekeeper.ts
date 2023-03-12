@@ -1,4 +1,5 @@
-import { Chain, terra } from "@obi-wallet/common";
+import { terra } from "@obi-wallet/common";
+import { Chain } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
 export function getGatekeeperContractAddressesQuery({

@@ -1,7 +1,12 @@
+import {
+  Chain,
+  cosmosChains,
+  isCosmosChain,
+  terraChains,
+} from "@obi-wallet/sdk";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import { ConfigStore } from "./config";
-import { Chain, cosmosChains, isCosmosChain, terraChains } from "../chains";
 
 export class ChainStore {
   protected readonly configStore: ConfigStore;

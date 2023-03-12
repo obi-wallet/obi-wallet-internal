@@ -1,5 +1,5 @@
 import { Sha256 } from "@cosmjs/crypto/build/sha";
-import { Chain } from "@obi-wallet/common";
+import { Chain } from "@obi-wallet/sdk";
 import { QueryClient } from "@tanstack/react-query";
 import { randomBytes } from "crypto";
 import fetch from "isomorphic-unfetch";

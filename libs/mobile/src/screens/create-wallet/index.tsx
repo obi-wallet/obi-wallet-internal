@@ -1,9 +1,9 @@
 import {
-  Chain,
   KeyType,
   MultisigKey,
   MultisigWalletSerializedData,
 } from "@obi-wallet/common";
+import { Chain } from "@obi-wallet/sdk";
 import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";

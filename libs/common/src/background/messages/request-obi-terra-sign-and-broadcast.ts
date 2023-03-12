@@ -1,5 +1,5 @@
 import { BACKGROUND_PORT, Message } from "@keplr-wallet/router";
-import { BlockTxBroadcastResult, Msg } from "@terra-money/terra.js";
+import { BlockTxBroadcastResult, Msg } from "@terra-money/feather.js";
 
 import { MessageRequesterInternal } from "../../message-requester";
 import { SerializedMultisigKey, KeyType } from "../../stores";

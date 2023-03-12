@@ -1,8 +1,10 @@
-import { Coins, Validator as RawValidator } from "@terra-money/terra.js";
+import { TerraChain, terraChains } from "@obi-wallet/sdk";
+import { withTerraClient } from "@obi-wallet/sdk";
+import { Coins, Validator as RawValidator } from "@terra-money/feather.js";
 import {
   Pagination,
   PaginationOptions,
-} from "@terra-money/terra.js/dist/client/lcd/APIRequester";
+} from "@terra-money/feather.js/dist/client/lcd/APIRequester";
 import {
   BondStatus,
   bondStatusFromJSON,
@@ -12,8 +14,6 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 
 import { tokenPairs } from "./token-pairs";
-import { TerraChain, terraChains } from "../../chains";
-import { withLcdClient } from "../../clients";
 import {
   Coin,
   Delegation,
@@ -23,7 +23,7 @@ import {
 } from "../common/types";
 
 export async function fetchPrices({ chainId }: { chainId: TerraChain }) {
-  return await withLcdClient(chainId, async (client) => {
+  return await withTerraClient(chainId, async (client) => {
     const stack: { denom: string; usdPrice: BigNumber }[] = [
       {
         // axlUSDC
@@ -141,7 +141,7 @@ export async function fetchBalances({
   address: string;
   chainId: TerraChain;
 }): Promise<Coin[]> {
-  return await withLcdClient(chainId, async (client) => {
+  return await withTerraClient(chainId, async (client) => {
     return await fetchAll(async (paginationOptions) => {
       const [coins, pagination] = await client.bank.balance(
         address,
@@ -167,7 +167,7 @@ export async function fetchDelegations({
   address: string;
   chainId: TerraChain;
 }): Promise<Delegation[]> {
-  return await withLcdClient(chainId, async (client) => {
+  return await withTerraClient(chainId, async (client) => {
     const rawDelegations = await fetchAll((paginationOptions) => {
       return client.staking.delegations(address, undefined, paginationOptions);
     });
@@ -199,7 +199,7 @@ export async function fetchUnbondingDelegations({
   address: string;
   chainId: TerraChain;
 }): Promise<UnbondingDelegation[]> {
-  return await withLcdClient(chainId, async (client) => {
+  return await withTerraClient(chainId, async (client) => {
     const rawUnbondingDelegations = await fetchAll((paginationOptions) => {
       return client.staking.unbondingDelegations(
         address,
@@ -241,9 +241,9 @@ export async function fetchValidators({
 }: {
   chainId: TerraChain;
 }): Promise<ExtendedValidator[]> {
-  return await withLcdClient(chainId, async (client) => {
+  return await withTerraClient(chainId, async (client) => {
     const rawValidators = await fetchAll((paginationOptions) => {
-      return client.staking.validators(paginationOptions);
+      return client.staking.validators(chainId, paginationOptions);
     });
 
     const MAX_COMMISSION = 0.05;
@@ -317,7 +317,7 @@ export async function fetchRewards({
   address: string;
   chainId: TerraChain;
 }): Promise<Rewards> {
-  return await withLcdClient(chainId, async (client) => {
+  return await withTerraClient(chainId, async (client) => {
     const rewards = await client.distribution.rewards(address);
 
     const handleRewards = (coins: Coins) => {

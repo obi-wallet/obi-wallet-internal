@@ -1,6 +1,6 @@
 import { Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { MnemonicKey } from "@terra-money/terra.js";
+import { MnemonicKey } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { View } from "react-native";

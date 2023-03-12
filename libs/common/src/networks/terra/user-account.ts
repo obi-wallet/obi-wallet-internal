@@ -1,8 +1,8 @@
+import { TerraChain } from "@obi-wallet/sdk";
 import * as R from "ramda";
 
 import { fetchCodeId } from "./contracts";
 import { fetchGatekeeperContractAddresses } from "./gatekeeper";
-import { TerraChain } from "../../chains";
 import { CodeIds } from "../common";
 
 export async function fetchCodeIds({

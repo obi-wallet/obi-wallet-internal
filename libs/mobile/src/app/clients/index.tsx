@@ -2,7 +2,7 @@ import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Decimal } from "@cosmjs/math/build/decimal";
 import { OfflineSigner } from "@cosmjs/proto-signing";
 import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
-import { CosmosChain, cosmosChains } from "@obi-wallet/common";
+import { CosmosChain, cosmosChains } from "@obi-wallet/sdk";
 
 export async function createStargateClient(chainId: CosmosChain) {
   const { rpcs } = cosmosChains[chainId];

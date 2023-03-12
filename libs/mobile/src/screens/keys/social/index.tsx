@@ -1,11 +1,10 @@
+import { MultisigKey, Text } from "@obi-wallet/common";
 import {
-  createStargateClient,
-  isCosmosChain,
+  Chain,
   isTerraChain,
-  MultisigKey,
-  Text,
-  withLcdClient,
-} from "@obi-wallet/common";
+  withCosmosStargateClient,
+  withTerraClient,
+} from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -101,31 +100,33 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
   ]);
 
   async function getAccountPubkey(key: string) {
-    const chainId = chainStore.currentChain;
-    if (isCosmosChain(chainId)) {
-      const client = await createStargateClient(chainId);
-
-      try {
-        const account = await client.getAccount(key);
-        return account?.pubkey;
-      } catch (e) {
-        console.log(e);
-        return null;
-      } finally {
-        client.disconnect();
-      }
-    } else {
-      try {
-        const account = await withLcdClient(chainId, async (client) => {
-          return await client.auth.accountInfo(key);
+    return Chain.select({
+      chainId: chainStore.currentChain,
+      async onCosmosChain(chainId) {
+        return await withCosmosStargateClient(chainId, async (client) => {
+          try {
+            const account = await client.getAccount(key);
+            return account?.pubkey;
+          } catch (e) {
+            console.log(e);
+            return null;
+          }
         });
-        return account.getPublicKey()?.toAmino();
-      } catch (e) {
-        console.log(e);
-        return null;
-      }
-    }
+      },
+      async onTerraChain(chainId) {
+        try {
+          const account = await withTerraClient(chainId, async (client) => {
+            return await client.auth.accountInfo(key);
+          });
+          return account.getPublicKey()?.toAmino();
+        } catch (e) {
+          console.log(e);
+          return null;
+        }
+      },
+    });
   }
+
   return (
     <KeyboardAvoidingView
       style={{

@@ -1,6 +1,7 @@
-import { Chain, KeyType, MultisigKey, TerraChain } from "@obi-wallet/common";
+import { KeyType, MultisigKey } from "@obi-wallet/common";
+import { Chain, TerraChain } from "@obi-wallet/sdk";
 import { QueryClient } from "@tanstack/react-query";
-import { Key, RawKey, SimplePublicKey } from "@terra-money/terra.js";
+import { Key, RawKey, SimplePublicKey } from "@terra-money/feather.js";
 import { SHA256, Word32Array } from "jscrypto";
 import invariant from "tiny-invariant";
 

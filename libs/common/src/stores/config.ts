@@ -1,7 +1,7 @@
+import { Chain } from "@obi-wallet/sdk";
 import { action, makeObservable, observable } from "mobx";
 
 import { WalletType } from "./wallets";
-import { Chain } from "../chains";
 import { Language } from "../languages";
 
 export enum Brand {

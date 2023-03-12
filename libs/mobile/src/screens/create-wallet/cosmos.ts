@@ -1,10 +1,10 @@
 import {
   cosmos,
-  CosmosChain,
   Draft,
   MultisigKey,
   RequestObiCosmosSignAndBroadcastMsg,
 } from "@obi-wallet/common";
+import { CosmosChain } from "@obi-wallet/sdk";
 
 export async function handleCosmos({
   draft,

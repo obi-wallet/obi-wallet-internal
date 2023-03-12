@@ -1,5 +1,4 @@
-import { TerraChain } from "../../chains";
-import { withLcdClient } from "../../clients";
+import { TerraChain, withTerraClient } from "@obi-wallet/sdk";
 
 export async function fetchGatekeeperContractAddresses({
   proxyAddress,
@@ -8,7 +7,7 @@ export async function fetchGatekeeperContractAddresses({
   proxyAddress: string;
   chainId: TerraChain;
 }) {
-  return await withLcdClient(chainId, async (client) => {
+  return await withTerraClient(chainId, async (client) => {
     const response = await client.wasm.contractQuery<{
       spendlimit_gatekeeper_contract_addr: string | null;
       sessionkey_gatekeeper_contract_addr: string | null;
@@ -47,7 +46,7 @@ export async function fetchPermissionedAddresses({
   spendLimitGatekeeper: string;
   chainId: TerraChain;
 }) {
-  return await withLcdClient(chainId, async (client) => {
+  return await withTerraClient(chainId, async (client) => {
     const response = await client.wasm.contractQuery<{
       permissioned_addresses: PermissionedAddress[];
     }>(spendLimitGatekeeper, {

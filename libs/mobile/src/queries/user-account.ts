@@ -1,4 +1,5 @@
-import { Chain, cosmos, terra } from "@obi-wallet/common";
+import { cosmos, terra } from "@obi-wallet/common";
+import { Chain } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
 import { staleTime } from "./helpers";

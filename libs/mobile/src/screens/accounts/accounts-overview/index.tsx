@@ -5,11 +5,11 @@ import {
   GatekeeperConfig,
   RequestObiSignAndBroadcastTerraTransactionMsg,
   terra,
-  TerraChain,
   Text,
 } from "@obi-wallet/common";
+import { TerraChain } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { isTxError } from "@terra-money/terra.js";
+import { isTxError } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";

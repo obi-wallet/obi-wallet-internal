@@ -1,3 +1,4 @@
+import { TerraChain, terraChains } from "@obi-wallet/sdk";
 import {
   BlockTxBroadcastResult,
   Coin,
@@ -5,13 +6,12 @@ import {
   MsgExecuteContract,
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
-} from "@terra-money/terra.js";
+} from "@terra-money/feather.js";
 import { DateTime, Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
 import { GatekeeperConfig } from "../..";
-import { TerraChain, terraChains } from "../../chains";
 import { CodeIds } from "../common";
 
 export function getNewAccountMessage({
@@ -392,8 +392,6 @@ export function getUpdateGatekeeperMessages({
         !previousFlexAccount ||
         !R.equals(previousFlexAccount.autoSign, flexAccount.autoSign)
       ) {
-        console.log(flexAccount);
-
         if (flexAccount.autoSign) {
           const rawMessage = {
             create_session_key: {

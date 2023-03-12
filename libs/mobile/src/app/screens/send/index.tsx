@@ -8,13 +8,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import {
   Brand,
-  isCosmosChain,
   RequestObiCosmosSignAndBroadcastMsg,
   RequestObiSignAndBroadcastTerraTransactionMsg,
-  TerraChain,
 } from "@obi-wallet/common";
+import { isCosmosChain, TerraChain } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { isTxError, Msg, MsgSend } from "@terra-money/terra.js";
+import { isTxError, Msg, MsgSend } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
