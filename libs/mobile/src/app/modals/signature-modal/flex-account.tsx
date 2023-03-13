@@ -51,7 +51,7 @@ export const SignatureModalFlexAccount =
                 }>(proxyAddress, {
                   can_execute: {
                     funds: [],
-                    address: flexAccount.accAddress,
+                    address: flexAccount.accAddress("terra"),
                     msg: { legacy: terra.wrapMessage(message) },
                   },
                 });
