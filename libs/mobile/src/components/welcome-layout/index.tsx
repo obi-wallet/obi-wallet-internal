@@ -5,11 +5,13 @@ import { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 import { Image, SafeAreaView, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useStore } from "../..";
 import { LanguagePicker } from "../../app/language-picker";
 import { InitialBackground } from "../../app/screens/components/initial-background";
 import { BrandToggle } from "../../app/screens/components/obi-mode-toggle";
+import { isSmallScreen } from "../../app/screens/components/screen-size";
 
 export interface WelcomeLayoutProps {
   title: string;
@@ -20,6 +22,7 @@ export interface WelcomeLayoutProps {
 export const WelcomeLayout = observer<WelcomeLayoutProps>(
   function WelcomeLayout({ title, subTitle, children }) {
     const { configStore } = useStore();
+    const safeArea = useSafeAreaInsets();
     const isObi = configStore.isObi();
     const theme = useTheme();
 
@@ -33,7 +36,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
           <View
             style={{
               position: "absolute",
-              top: theme.spacing["64"],
+              top: safeArea.top,
               left: 0,
               right: 0,
             }}
@@ -77,6 +80,8 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
             style={{
               paddingHorizontal: theme.spacing["16"],
               zIndex: -1,
+              flex: 2,
+              justifyContent: "flex-end",
             }}
           >
             <BrandToggle>
@@ -92,8 +97,8 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
                     source={require("../../app/screens/onboarding/welcome/assets/obi-wallet-icon.png")}
                     resizeMode="contain"
                     style={{
-                      width: "70%",
-                      height: "70%",
+                      width: isSmallScreen() ? "50%" : "70%",
+                      height: isSmallScreen() ? "50%" : "70%",
                       aspectRatio: 1 / 1,
                     }}
                   />
@@ -109,7 +114,6 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
                 style={{
                   marginBottom: theme.spacing["12"],
                   zIndex: 2,
-                  alignItems: "flex-end",
                 }}
               >
                 <LanguagePicker />
@@ -140,20 +144,12 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
           <View
             style={{
               flex: 1,
+              justifyContent: "flex-end",
               paddingHorizontal: theme.spacing["16"],
               marginTop: theme.spacing["12"],
-              width: "100%",
-              paddingBottom: 20,
             }}
           >
-            <ScrollView
-              contentContainerStyle={{
-                flex: 1,
-                justifyContent: "flex-end",
-              }}
-            >
-              {children}
-            </ScrollView>
+            {children}
           </View>
         </SafeAreaView>
       </InitialBackground>
