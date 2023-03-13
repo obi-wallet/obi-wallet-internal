@@ -70,7 +70,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
               loadingText="Broadcasting"
               style={{
                 flex: 1,
-                justifyContent: "flex-start",
+                justifyContent: "center",
                 alignItems: "center",
                 zIndex: 999,
                 position: "absolute",
@@ -80,6 +80,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
                 right: 0,
                 bottom: 0,
                 paddingTop: 50,
+                marginTop: -150,
               }}
               animation={require("../../loader/broadcast.json")}
               animationStyles={{

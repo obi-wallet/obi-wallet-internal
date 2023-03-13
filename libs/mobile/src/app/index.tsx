@@ -120,28 +120,34 @@ export const BaseAppWithoutProvider = observer(
 const Load = observer(function Load() {
   const theme = useTheme();
   return (
-    <Loader
+    <View
       style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 999,
-        position: "absolute",
         backgroundColor: theme.colors.background,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
+        flex: 1,
       }}
-      loadingText="Updating app bundle"
-      animation={require("./loader/broadcast.json")}
-      animationStyles={{
-        width: 300,
-        height: 300,
-        maxHeight: "100%",
-        maxWidth: "100%",
-      }}
-    />
+    >
+      <Loader
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 999,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          marginBottom: 150,
+        }}
+        loadingText="Updating app bundle"
+        animation={require("./loader/broadcast.json")}
+        animationStyles={{
+          width: 300,
+          height: 300,
+          maxHeight: "100%",
+          maxWidth: "100%",
+        }}
+      />
+    </View>
   );
 });
 
