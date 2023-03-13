@@ -41,112 +41,107 @@ export const CreateBeneficiaryAccountScreen =
       return (
         <ScreenContainer>
           <KeyboardAwareScrollView
-            contentContainerStyle={{ flex: 1 }}
-            enableOnAndroid={false}
+            viewIsInsideTabBar
+            style={{
+              flex: 1,
+            }}
+            contentContainerStyle={{
+              alignItems: "flex-start",
+              marginTop: 20,
+            }}
           >
             <View
               style={{
-                flex: 1,
-                alignItems: "flex-start",
-                marginTop: 20,
+                alignItems: "center",
+                width: "100%",
               }}
             >
-              <View
-                style={{
-                  alignItems: "center",
-
-                  width: "100%",
-                }}
-              >
-                <Text
-                  style={{ color: "white", fontSize: 16, marginBottom: 15 }}
-                >
-                  Add Inheritance Account
-                </Text>
-                <AvatarPicker
-                  FallbackSvg={BeneficiaryAccountIcon}
-                  icon={icon}
-                  onChange={setIcon}
-                />
-              </View>
-              <TextInput
-                placeholder="Enter Name"
-                label="Inheritance Account Name"
-                style={{ width: "100%", marginTop: 40 }}
-                value={name}
-                onChangeText={setName}
-              />
-              <TextInput
-                placeholder="Enter Address"
-                label="Beneficiary Address"
-                style={{ width: "100%", marginTop: 10 }}
-                value={address}
-                onChangeText={setAddress}
-              />
-
-              <Text
-                style={{
-                  fontSize: isSmallScreenNumber(12, 14),
-                  color: "white",
-                  marginTop: 20,
-                  textAlign: "left",
-                }}
-              >
-                Enter a name and the address of your beneficiary. If they don't
-                have an address, they can create an account using Obi or any
-                other [blockchain] wallet.
+              <Text style={{ color: "white", fontSize: 16, marginBottom: 15 }}>
+                Add Inheritance Account
               </Text>
-
-              <Text
-                style={{
-                  fontSize: isSmallScreenNumber(12, 14),
-                  color: "white",
-                  marginTop: 20,
-                  textAlign: "left",
-                }}
-              >
-                NOTE: If user is not using an Obi interface, they won't be able
-                to see the balance of the funds they inherited.
-              </Text>
+              <AvatarPicker
+                FallbackSvg={BeneficiaryAccountIcon}
+                icon={icon}
+                onChange={setIcon}
+              />
             </View>
-            {isAndroid && keyboardVisible ? null : (
-              <View style={{ marginTop: 20 }}>
-                <Button
-                  flavor="blue"
-                  disabled={!name || !address}
-                  onPress={() => {
-                    gatekeeperConfig.value.addBeneficiary({
-                      type: "beneficiary",
-                      meta: {
-                        icon: icon?.uri || "",
-                        name,
-                      },
-                      address,
-                      dormancyThreshold: {
-                        years: 1,
-                      },
-                      dripSchedule: {
-                        rate: 0.01,
-                        period: {
-                          months: 1,
-                        },
-                      },
-                    });
+            <TextInput
+              placeholder="Enter Name"
+              label="Inheritance Account Name"
+              style={{ width: "100%", marginTop: 40 }}
+              value={name}
+              onChangeText={setName}
+            />
+            <TextInput
+              placeholder="Enter Address"
+              label="Beneficiary Address"
+              style={{ width: "100%", marginTop: 10 }}
+              value={address}
+              onChangeText={setAddress}
+            />
 
-                    navigation.navigate(AccountsRoute.AccountsOverview);
-                  }}
-                  label="Confirm"
-                />
-                <Button
-                  flavor="cancel"
-                  onPress={() => {
-                    navigation.goBack();
-                  }}
-                  label="Cancel"
-                />
-              </View>
-            )}
+            <Text
+              style={{
+                fontSize: isSmallScreenNumber(12, 14),
+                color: "white",
+                marginTop: 20,
+                textAlign: "left",
+              }}
+            >
+              Enter a name and the address of your beneficiary. If they don't
+              have an address, they can create an account using Obi or any other
+              [blockchain] wallet.
+            </Text>
+
+            <Text
+              style={{
+                fontSize: isSmallScreenNumber(12, 14),
+                color: "white",
+                marginTop: 20,
+                textAlign: "left",
+              }}
+            >
+              NOTE: If user is not using an Obi interface, they won't be able to
+              see the balance of the funds they inherited.
+            </Text>
           </KeyboardAwareScrollView>
+          {isAndroid && keyboardVisible ? null : (
+            <View style={{ marginTop: 20 }}>
+              <Button
+                flavor="blue"
+                disabled={!name || !address}
+                onPress={() => {
+                  gatekeeperConfig.value.addBeneficiary({
+                    type: "beneficiary",
+                    meta: {
+                      icon: icon?.uri || "",
+                      name,
+                    },
+                    address,
+                    dormancyThreshold: {
+                      years: 1,
+                    },
+                    dripSchedule: {
+                      rate: 0.01,
+                      period: {
+                        months: 1,
+                      },
+                    },
+                  });
+
+                  navigation.navigate(AccountsRoute.AccountsOverview);
+                }}
+                label="Confirm"
+              />
+              <Button
+                flavor="cancel"
+                onPress={() => {
+                  navigation.goBack();
+                }}
+                label="Cancel"
+              />
+            </View>
+          )}
         </ScreenContainer>
       );
     }
