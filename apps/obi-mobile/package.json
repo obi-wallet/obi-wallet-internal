@@ -101,6 +101,7 @@
     "react-native-iap": "*",
     "react-native-image-crop-picker": "*",
     "react-native-keyboard-aware-scroll-view": "*",
+    "react-native-keyboard-manager": "*",
     "react-native-keychain": "*",
     "react-native-launch-arguments": "*",
     "react-native-linear-gradient": "*",

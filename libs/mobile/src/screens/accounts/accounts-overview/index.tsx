@@ -15,14 +15,12 @@ import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import {
   Alert,
-  FlatList,
   ImageBackground,
   LayoutAnimation,
-  Platform,
   TouchableOpacity,
-  UIManager,
   View,
 } from "react-native";
+import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import invariant from "tiny-invariant";
 
 import { AccountItem } from "./account-item";
@@ -42,13 +40,6 @@ import {
 import { useQuery } from "../../../queries/helpers";
 import { AccountsRoute, AccountsStackParamList } from "../accounts-stack";
 import { getGatekeeperConfigDraftId } from "../draft-id";
-
-if (
-  Platform.OS === "android" &&
-  UIManager.setLayoutAnimationEnabledExperimental
-) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 export type AccountsOverviewScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
@@ -314,7 +305,8 @@ const AccountsList = observer(function AccountsList() {
   });
 
   return (
-    <FlatList
+    <KeyboardAwareFlatList
+      viewIsInsideTabBar
       data={data}
       renderItem={(element) => {
         return (

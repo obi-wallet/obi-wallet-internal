@@ -3,8 +3,9 @@ import { Config, Text, WalletState } from "@obi-wallet/common";
 import { focusManager } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
-import { AppState, View } from "react-native";
+import { AppState, Platform, UIManager, View } from "react-native";
 import codePush from "react-native-code-push";
+import KeyboardManager from "react-native-keyboard-manager";
 
 import { deploymentKey } from "./code-push";
 import { Loader } from "./loader";
@@ -25,6 +26,17 @@ import { keyScreens } from "../screens/keys/key-screens";
 import { LookupProxyWalletsScreen } from "../screens/lookup-proxy-wallets";
 import { RecoverWalletScreen } from "../screens/recover-wallet";
 import { WelcomeScreen } from "../screens/welcome";
+
+if (Platform.OS === "ios") {
+  KeyboardManager?.setToolbarPreviousNextButtonEnable(true);
+}
+
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 export interface BaseAppProps {
   initialConfig: Config;
