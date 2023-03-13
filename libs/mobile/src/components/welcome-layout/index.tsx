@@ -11,6 +11,7 @@ import { useStore } from "../..";
 import { LanguagePicker } from "../../app/language-picker";
 import { InitialBackground } from "../../app/screens/components/initial-background";
 import { BrandToggle } from "../../app/screens/components/obi-mode-toggle";
+import { isSmallScreen } from "../../app/screens/components/screen-size";
 
 export interface WelcomeLayoutProps {
   title: string;
@@ -96,8 +97,8 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
                     source={require("../../app/screens/onboarding/welcome/assets/obi-wallet-icon.png")}
                     resizeMode="contain"
                     style={{
-                      width: "70%",
-                      height: "70%",
+                      width: isSmallScreen() ? "50%" : "70%",
+                      height: isSmallScreen() ? "50%" : "70%",
                       aspectRatio: 1 / 1,
                     }}
                   />
