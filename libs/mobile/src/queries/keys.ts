@@ -27,7 +27,7 @@ export function getPrepareKeyQuery({
         Buffer.from(privateKey, "base64")
       );
 
-      Chain.select({
+      await Chain.select({
         chainId,
         async onCosmosChain(chainId) {
           const { prefix, denom } = cosmosChains[chainId];

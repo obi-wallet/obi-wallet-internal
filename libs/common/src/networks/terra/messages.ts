@@ -334,7 +334,7 @@ export function getUpdateGatekeeperMessages({
             ...periodProperties,
             spend_limits: [
               {
-                amount: Math.floor(beneficiary.dripSchedule.rate * 100),
+                amount: `${Math.floor(beneficiary.dripSchedule.rate * 100)}`,
                 current_balance: "0",
                 limit_remaining: "0",
                 denom: "PERCENT",
@@ -401,6 +401,20 @@ export function getUpdateGatekeeperMessages({
                 flexAccount.autoSign.endTime
               ).toUnixInteger(),
               use_limit: 999,
+            },
+          };
+
+          messages.push(
+            new MsgExecuteContract(
+              proxyAddress,
+              sessionKeyGatekeeper,
+              rawMessage
+            )
+          );
+        } else if (previousFlexAccount?.autoSign && !flexAccount.autoSign) {
+          const rawMessage = {
+            destroy_session_key: {
+              address: flexAccount.address,
             },
           };
 
