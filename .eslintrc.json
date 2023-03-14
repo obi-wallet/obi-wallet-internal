@@ -4,6 +4,7 @@
   "plugins": ["@nrwl/nx", "mobx", "import", "react", "react-hooks", "unicorn"],
   "settings": {
     "react": {
+      "version": "detect",
       "componentWrapperFunctions": ["observer"]
     }
   },
@@ -28,6 +29,15 @@
                 "onlyDependOnLibsWithTags": ["*"]
               }
             ]
+          }
+        ],
+
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            "argsIgnorePattern": "^_",
+            "destructuredArrayIgnorePattern": "^_",
+            "varsIgnorePattern": "^_"
           }
         ],
 

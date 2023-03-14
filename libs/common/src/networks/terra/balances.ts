@@ -12,43 +12,10 @@ import BigNumber from "bignumber.js";
 import * as R from "ramda";
 
 import {
-  Delegation,
   ExtendedValidator,
   Rewards,
   UnbondingDelegation,
 } from "../common/types";
-
-export async function fetchDelegations({
-  address,
-  chainId,
-}: {
-  address: string;
-  chainId: TerraChain;
-}): Promise<Delegation[]> {
-  return await withTerraClient(chainId, async (client) => {
-    const rawDelegations = await fetchAll((paginationOptions) => {
-      return client.staking.delegations(address, undefined, paginationOptions);
-    });
-    return await Promise.all(
-      rawDelegations.map(async (delegation): Promise<Delegation> => {
-        const validator = await client.staking.validator(
-          delegation.validator_address
-        );
-        return {
-          balance: {
-            denom: delegation.balance.denom,
-            amount: delegation.balance.amount.toString(),
-          },
-          validator: {
-            icon: `https://github.com/terra-money/validator-images/blob/main/images/${validator.description.identity}.jpg`,
-            label: validator.description.moniker,
-            address: delegation.validator_address,
-          },
-        };
-      })
-    );
-  });
-}
 
 export async function fetchUnbondingDelegations({
   address,

@@ -1,6 +1,5 @@
 import { commonTwilioConfig } from "./common";
 
-// TODO: fetch from https://assets.terra.money/chains.json instead
 export const terraChains = {
   "pisco-1": {
     chainId: "pisco-1" as const,

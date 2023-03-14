@@ -11,7 +11,7 @@ import { tokenPairs } from "./token-pairs";
 import { TerraChain } from "../../chains";
 import { withTerraClient } from "../../clients";
 import { AbstractSdk } from "../abstract";
-import { Coin } from "../common";
+import { Coin, Delegation } from "../common";
 
 export class TerraSdk extends AbstractSdk {
   protected constructor(protected chainId: TerraChain) {
@@ -170,6 +170,36 @@ export class TerraSdk extends AbstractSdk {
     } while (key);
 
     return result;
+  }
+
+  public async fetchDelegations({ address }: { address: string }) {
+    return await this.withClient(async (client) => {
+      const rawDelegations = await this.fetchAllPages((paginationOptions) => {
+        return client.staking.delegations(
+          address,
+          undefined,
+          paginationOptions
+        );
+      });
+      return await Promise.all(
+        rawDelegations.map(async (delegation): Promise<Delegation> => {
+          const validator = await client.staking.validator(
+            delegation.validator_address
+          );
+          return {
+            balance: {
+              denom: delegation.balance.denom,
+              amount: delegation.balance.amount.toString(),
+            },
+            validator: {
+              icon: `https://github.com/terra-money/validator-images/blob/main/images/${validator.description.identity}.jpg`,
+              label: validator.description.moniker,
+              address: delegation.validator_address,
+            },
+          };
+        })
+      );
+    });
   }
 
   public withClient<T>(f: (client: LCDClient) => T) {

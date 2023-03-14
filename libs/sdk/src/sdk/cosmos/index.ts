@@ -1,6 +1,7 @@
 import { CosmWasmClient, JsonObject } from "@cosmjs/cosmwasm-stargate";
 import { StargateClient } from "@cosmjs/stargate";
 import * as R from "ramda";
+import warning from "tiny-warning";
 
 import { CosmosChain } from "../../chains";
 import {
@@ -188,6 +189,11 @@ export class CosmosSdk extends AbstractSdk {
         }
       }
     );
+  }
+
+  public async fetchDelegations(_: { address: string }) {
+    warning(true, "fetchDelegations not implemented for Cosmos");
+    return [];
   }
 
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {

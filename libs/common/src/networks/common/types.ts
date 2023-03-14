@@ -1,10 +1,4 @@
-import { Coin } from "@obi-wallet/sdk";
-
-export interface Validator {
-  icon: string | null;
-  label: string;
-  address: string;
-}
+import { Coin, Validator } from "@obi-wallet/sdk";
 
 export interface ExtendedValidator extends Validator {
   votingPower: string;
@@ -13,11 +7,6 @@ export interface ExtendedValidator extends Validator {
   promoted: boolean;
   active: boolean;
   jailed: boolean;
-}
-
-export interface Delegation {
-  balance: { denom: string; amount: string };
-  validator: Validator;
 }
 
 export interface UnbondingDelegation {
