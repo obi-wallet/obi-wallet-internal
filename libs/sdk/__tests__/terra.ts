@@ -1,5 +1,7 @@
 import { Sdk } from "../src";
 
+jest.setTimeout(10_000);
+
 describe("fetchPrices", () => {
   test("Cosmos", async () => {
     const result = await Sdk.chainId("juno-1").fetchPrices();
