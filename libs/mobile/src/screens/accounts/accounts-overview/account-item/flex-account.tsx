@@ -17,7 +17,7 @@ import * as Animatable from "react-native-animatable";
 import { useThrottle } from "rooks";
 
 import { AbstractAccountItemProps, AccountContainer, Pill } from "./common";
-import { useMultisigWallet } from "../../../../../src/app/stores";
+import { useMultisigWallet } from "../../../../app/stores";
 import { AnimatedText } from "../../../../components/animated-text";
 import { PermissionedAddressesContext } from "../permissioned-address-context";
 
