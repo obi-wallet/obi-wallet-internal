@@ -55,12 +55,7 @@ export function getUnbondingDelegations({
     queryKey: ["unbonding-delegations", { chainId, address }],
     queryFn: async () => {
       if (!address) return [];
-
-      if (isTerraChain(chainId)) {
-        return await terra.fetchUnbondingDelegations({ address, chainId });
-      }
-
-      return [];
+      return await Sdk.chainId(chainId).fetchUnbondingDelegations({ address });
     },
   };
 }

@@ -196,6 +196,11 @@ export class CosmosSdk extends AbstractSdk {
     return [];
   }
 
+  public async fetchUnbondingDelegations(_: { address: string }) {
+    warning(true, "fetchUnbondingDelegations not implemented for Cosmos");
+    return [];
+  }
+
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
     return withCosmosCosmWasmClient(this.chainId, f);
   }

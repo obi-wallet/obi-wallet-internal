@@ -9,12 +9,6 @@ export interface ExtendedValidator extends Validator {
   jailed: boolean;
 }
 
-export interface UnbondingDelegation {
-  balance: { denom: string; amount: string };
-  validator: Validator;
-  completionTime: Date;
-}
-
 export interface Rewards {
   perDelegator: { address: string; rewards: Coin }[];
   total: Coin;

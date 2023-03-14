@@ -9,13 +9,13 @@ import {
   terra,
   Text,
   TextInput,
-  UnbondingDelegation,
 } from "@obi-wallet/common";
 import {
   Coin,
   Delegation,
   isTerraChain,
   TerraChain,
+  UnbondingDelegation,
   Validator,
 } from "@obi-wallet/sdk";
 import Fuse from "fuse.js";
