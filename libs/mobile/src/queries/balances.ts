@@ -39,12 +39,7 @@ export function getDelegationsQuery({
     queryKey: ["delegations", { chainId, address }],
     queryFn: async () => {
       if (!address) return [];
-
-      if (isTerraChain(chainId)) {
-        return await terra.fetchDelegations({ address, chainId });
-      }
-
-      return [];
+      return await Sdk.chainId(chainId).fetchDelegations({ address });
     },
   };
 }
