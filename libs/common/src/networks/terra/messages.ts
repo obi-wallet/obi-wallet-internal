@@ -411,6 +411,20 @@ export function getUpdateGatekeeperMessages({
               rawMessage
             )
           );
+        } else if (previousFlexAccount?.autoSign && !flexAccount.autoSign) {
+          const rawMessage = {
+            destroy_session_key: {
+              address: flexAccount.address,
+            },
+          };
+
+          messages.push(
+            new MsgExecuteContract(
+              proxyAddress,
+              sessionKeyGatekeeper,
+              rawMessage
+            )
+          );
         }
       }
 

@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import invariant from "tiny-invariant";
 
 import { fetchGatekeeperContractAddresses } from "../../../src/networks/terra/gatekeeper";
@@ -316,6 +317,63 @@ test("Remove single flex account", async () => {
         },
       },
       funds: [],
+    },
+  });
+});
+
+test("Make unlocked flex account locked", async () => {
+  const flexAccount = {
+    type: "flex-account" as const,
+    meta: {
+      name: "Limited Flex Account",
+      icon: "",
+    },
+    address,
+    publicKey: {
+      type: "tendermint/PubKeySecp256k1" as const,
+      value: publicKey,
+    },
+    privateKey: privateKey,
+    spendLimit: {
+      period: {
+        days: 1,
+      },
+      amount: 10,
+    },
+  };
+
+  const currentGatekeeperConfig = new GatekeeperConfig();
+  currentGatekeeperConfig.addFlexAccount({
+    ...flexAccount,
+    autoSign: {
+      endTime: DateTime.now().plus({ minutes: 30 }).toISO(),
+    },
+  });
+  const newGatekeeperConfig = new GatekeeperConfig().clone();
+  newGatekeeperConfig.addFlexAccount({
+    ...flexAccount,
+    autoSign: null,
+  });
+  const messages = getUpdateGatekeeperMessages({
+    currentGatekeeperConfig,
+    newGatekeeperConfig,
+    proxyAddress,
+    ...gatekeepers,
+  });
+  expect(messages.length).toEqual(1);
+  expect(messages[0].toAmino()).toEqual({
+    type: "wasm/MsgExecuteContract",
+    value: {
+      contract:
+        "terra1flmkgq2zcqj66ytwss6dp6p8k0sr39856vflh07phnfv6agcpemse6g9c2",
+      funds: [],
+      msg: {
+        destroy_session_key: {
+          address,
+        },
+      },
+      sender:
+        "terra19g840q54mxd5vyxh3rdfpncmmyql5hcu8j9wcg45zgwgt4phwdes27emev",
     },
   });
 });
