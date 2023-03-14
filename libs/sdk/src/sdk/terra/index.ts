@@ -45,8 +45,27 @@ export class TerraSdk extends AbstractSdk {
       contract_addr: string;
       dex: "astroport" | "terraswap" | "phoenix";
     }[];
-
-    prices["foo"] = new BigNumber(1);
+    const contractInfos = await Promise.all(
+      allPairs.map(async (pair) => {
+        switch (pair.dex) {
+          case "astroport":
+          case "terraswap":
+          case "phoenix": {
+            const response = await this.withClient(async (client) => {
+              return (await client.wasm.contractQuery(pair.contract_addr, {
+                pool: {},
+              })) as {
+                assets: { info: Asset; amount: string }[];
+              };
+            });
+            return {
+              ...pair,
+              ...response,
+            };
+          }
+        }
+      })
+    );
 
     while (stack.length > 0) {
       const item = stack.pop();
@@ -55,7 +74,7 @@ export class TerraSdk extends AbstractSdk {
 
       prices[item.denom] = item.usdPrice;
 
-      const relevantPairs = allPairs
+      const relevantPairs = contractInfos
         .filter((pair) => {
           return pair.asset_infos.find((asset) => {
             return toDenom(asset) === item.denom;
@@ -75,43 +94,26 @@ export class TerraSdk extends AbstractSdk {
         });
 
       for (const { denom, pair } of relevantPairs) {
-        if (R.has(denom, prices) || stack.find((item) => item.denom === denom))
+        if (
+          R.has(denom, prices) ||
+          stack.find((item) => item.denom === denom)
+        ) {
           continue;
-        const price = await (async () => {
-          try {
-            switch (pair.dex) {
-              case "astroport":
-              case "terraswap":
-              case "phoenix": {
-                const response = await this.withClient(async (client) => {
-                  return (await client.wasm.contractQuery(pair.contract_addr, {
-                    pool: {},
-                  })) as {
-                    assets: { info: Asset; amount: string }[];
-                  };
-                });
+        }
 
-                const thisAsset = response.assets.find((asset) => {
-                  return toDenom(asset.info) === item.denom;
-                });
-                const otherAsset = response.assets.find((asset) => {
-                  return toDenom(asset.info) !== item.denom;
-                });
+        const thisAsset = pair.assets.find((asset) => {
+          return toDenom(asset.info) === item.denom;
+        });
+        const otherAsset = pair.assets.find((asset) => {
+          return toDenom(asset.info) !== item.denom;
+        });
 
-                invariant(thisAsset, "thisAsset should exist");
-                invariant(otherAsset, "otherAsset should exist");
+        invariant(thisAsset, "thisAsset should exist");
+        invariant(otherAsset, "otherAsset should exist");
 
-                return item.usdPrice.times(
-                  new BigNumber(thisAsset.amount).div(otherAsset.amount)
-                );
-              }
-            }
-          } catch (e) {
-            console.log(e);
-          }
-
-          return null;
-        })();
+        const price = item.usdPrice.times(
+          new BigNumber(thisAsset.amount).div(otherAsset.amount)
+        );
 
         if (price && !price.isNaN()) {
           stack.push({ denom, usdPrice: price });
