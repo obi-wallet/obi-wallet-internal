@@ -3,6 +3,7 @@ import { CosmosSdk } from "./cosmos";
 import { TerraSdk } from "./terra";
 import { Chain, TerraChain } from "../chains";
 
+export * from "./common";
 export * from "./cosmos";
 export * from "./terra";
 

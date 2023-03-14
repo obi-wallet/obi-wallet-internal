@@ -4,7 +4,6 @@ import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-  Coin,
   Delegation,
   ExtendedValidator,
   RequestObiSignAndBroadcastTerraTransactionMsg,
@@ -14,7 +13,7 @@ import {
   UnbondingDelegation,
   Validator,
 } from "@obi-wallet/common";
-import { isTerraChain, TerraChain } from "@obi-wallet/sdk";
+import { Coin, isTerraChain, TerraChain } from "@obi-wallet/sdk";
 import Fuse from "fuse.js";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";

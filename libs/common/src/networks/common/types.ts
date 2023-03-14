@@ -1,12 +1,4 @@
-export interface Coin {
-  contract?: string;
-  denom: string;
-  amount: string;
-}
-
-export interface ExtendedCoin extends Coin {
-  usdPrice: number;
-}
+import { Coin } from "@obi-wallet/sdk";
 
 export interface Validator {
   icon: string | null;
