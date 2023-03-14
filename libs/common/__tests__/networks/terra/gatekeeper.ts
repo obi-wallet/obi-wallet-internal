@@ -47,6 +47,62 @@ describe("Empty gatekeeper config", () => {
     expect(messages).toEqual([]);
   });
 
+  test("Add beneficiary", () => {
+    const newGatekeeperConfig = new GatekeeperConfig();
+    newGatekeeperConfig.addBeneficiary({
+      type: "beneficiary",
+      meta: {
+        name: "Beneficiary",
+        icon: "",
+      },
+      address,
+      dormancyThreshold: {
+        years: 1,
+      },
+      dripSchedule: {
+        rate: 0.05,
+        period: {
+          years: 1,
+        },
+      },
+    });
+    const messages = getUpdateGatekeeperMessages({
+      currentGatekeeperConfig,
+      newGatekeeperConfig,
+      proxyAddress,
+      ...gatekeepers,
+    });
+    expect(messages.length).toEqual(1);
+    expect(messages[0].toAmino()).toEqual({
+      type: "wasm/MsgExecuteContract",
+      value: {
+        contract:
+          "terra15jvhucnncqrut6t83zf7f7yx8syzxg6rpa643nw99h9n4cmuk6tqsaq7lt",
+        funds: [],
+        msg: {
+          upsert_beneficiary: {
+            new_beneficiary: {
+              address,
+              cooldown: 365,
+              inheritance_records: [],
+              offset: 0,
+              spend_limits: [
+                {
+                  amount: "5",
+                  current_balance: "0",
+                  denom: "PERCENT",
+                  limit_remaining: "0",
+                },
+              ],
+            },
+          },
+        },
+        sender:
+          "terra19g840q54mxd5vyxh3rdfpncmmyql5hcu8j9wcg45zgwgt4phwdes27emev",
+      },
+    });
+  });
+
   test("Add strict flex account", () => {
     const newGatekeeperConfig = new GatekeeperConfig();
     newGatekeeperConfig.addFlexAccount({
