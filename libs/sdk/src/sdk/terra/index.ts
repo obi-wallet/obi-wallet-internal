@@ -8,10 +8,10 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 
 import { tokenPairs } from "./token-pairs";
-import { TerraChain } from "../../chains";
+import { TerraChain, terraChains } from "../../chains";
 import { withTerraClient } from "../../clients";
 import { AbstractSdk } from "../abstract";
-import { Coin, Delegation } from "../common";
+import { Coin, Delegation, UnbondingDelegation } from "../common";
 
 export class TerraSdk extends AbstractSdk {
   protected constructor(protected chainId: TerraChain) {
@@ -198,6 +198,46 @@ export class TerraSdk extends AbstractSdk {
             },
           };
         })
+      );
+    });
+  }
+
+  public async fetchUnbondingDelegations({ address }: { address: string }) {
+    return await this.withClient(async (client) => {
+      const rawUnbondingDelegations = await this.fetchAllPages(
+        (paginationOptions) => {
+          return client.staking.unbondingDelegations(
+            address,
+            undefined,
+            paginationOptions
+          );
+        }
+      );
+      return R.flatten(
+        await Promise.all(
+          rawUnbondingDelegations.map(
+            async (unbondingDelegation): Promise<UnbondingDelegation[]> => {
+              const validator = await client.staking.validator(
+                unbondingDelegation.validator_address
+              );
+
+              return unbondingDelegation.entries.map((entry) => {
+                return {
+                  balance: {
+                    denom: terraChains[this.chainId].denom,
+                    amount: entry.balance.toString(),
+                  },
+                  validator: {
+                    icon: `https://github.com/terra-money/validator-images/blob/main/images/${validator.description.identity}.jpg`,
+                    label: validator.description.moniker,
+                    address: unbondingDelegation.validator_address,
+                  },
+                  completionTime: entry.completion_time,
+                };
+              });
+            }
+          )
+        )
       );
     });
   }

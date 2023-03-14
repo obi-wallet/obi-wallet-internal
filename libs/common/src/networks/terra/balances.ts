@@ -11,55 +11,7 @@ import {
 import BigNumber from "bignumber.js";
 import * as R from "ramda";
 
-import {
-  ExtendedValidator,
-  Rewards,
-  UnbondingDelegation,
-} from "../common/types";
-
-export async function fetchUnbondingDelegations({
-  address,
-  chainId,
-}: {
-  address: string;
-  chainId: TerraChain;
-}): Promise<UnbondingDelegation[]> {
-  return await withTerraClient(chainId, async (client) => {
-    const rawUnbondingDelegations = await fetchAll((paginationOptions) => {
-      return client.staking.unbondingDelegations(
-        address,
-        undefined,
-        paginationOptions
-      );
-    });
-    return R.flatten(
-      await Promise.all(
-        rawUnbondingDelegations.map(
-          async (unbondingDelegation): Promise<UnbondingDelegation[]> => {
-            const validator = await client.staking.validator(
-              unbondingDelegation.validator_address
-            );
-
-            return unbondingDelegation.entries.map((entry) => {
-              return {
-                balance: {
-                  denom: terraChains[chainId].denom,
-                  amount: entry.balance.toString(),
-                },
-                validator: {
-                  icon: `https://github.com/terra-money/validator-images/blob/main/images/${validator.description.identity}.jpg`,
-                  label: validator.description.moniker,
-                  address: unbondingDelegation.validator_address,
-                },
-                completionTime: entry.completion_time,
-              };
-            });
-          }
-        )
-      )
-    );
-  });
-}
+import { ExtendedValidator, Rewards } from "../common/types";
 
 export async function fetchValidators({
   chainId,

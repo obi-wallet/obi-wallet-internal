@@ -1,4 +1,4 @@
-import { Coin, Delegation } from "./common";
+import { Coin, Delegation, UnbondingDelegation } from "./common";
 import { Chain } from "../chains";
 
 export abstract class AbstractSdk {
@@ -16,4 +16,9 @@ export abstract class AbstractSdk {
   }: {
     address: string;
   }): Promise<Delegation[]>;
+  public abstract fetchUnbondingDelegations({
+    address,
+  }: {
+    address: string;
+  }): Promise<UnbondingDelegation[]>;
 }
