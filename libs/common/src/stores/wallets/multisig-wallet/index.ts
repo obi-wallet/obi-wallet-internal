@@ -1,4 +1,10 @@
-import { Chain, cosmosChains, terraChains } from "@obi-wallet/sdk";
+import {
+  Chain,
+  CosmosChain,
+  cosmosChains,
+  TerraChain,
+  terraChains,
+} from "@obi-wallet/sdk";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import * as MultisigWalletSerializedData from "./serialized-data";
@@ -78,6 +84,20 @@ export class MultisigWallet extends AbstractWallet {
 
   public get id() {
     return this._id;
+  }
+
+  public get chainInformation() {
+    return Chain.select<
+      (typeof terraChains)[TerraChain] | (typeof cosmosChains)[CosmosChain]
+    >({
+      chainId: this.chain,
+      onTerraChain(chainId) {
+        return terraChains[chainId];
+      },
+      onCosmosChain(chainId) {
+        return cosmosChains[chainId];
+      },
+    });
   }
 
   @computed

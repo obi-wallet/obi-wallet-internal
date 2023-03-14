@@ -89,8 +89,8 @@ export const CreateBeneficiaryAccountScreen =
               }}
             >
               Enter a name and the address of your beneficiary. If they don't
-              have an address, they can create an account using Obi or any other
-              [blockchain] wallet.
+              have an address, they can create an account using Obi or any other{" "}
+              {wallet.chainInformation.label} wallet.
             </Text>
 
             <Text
