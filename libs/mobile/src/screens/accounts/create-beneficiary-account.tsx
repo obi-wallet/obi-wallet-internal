@@ -1,9 +1,13 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { GatekeeperConfig, Text } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { AccAddress } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { Platform, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { z } from "zod";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import BeneficiaryAccountIcon from "./assets/beneficiary-account-icon.svg";
@@ -21,22 +25,43 @@ export type CreateBeneficiaryAccountScreenProps = NativeStackScreenProps<
   AccountsRoute.CreateBeneficiaryAccount
 >;
 
-// TODO: validate form
+const schema = z.object({
+  name: z.preprocess(
+    (val) => String(val).trim(),
+    z.string().nonempty("Name cannot be empty")
+  ),
+
+  address: z.preprocess(
+    (val) => String(val).trim(),
+    z
+      .string()
+      .nonempty("Address cannot be empty")
+      .refine((address) => AccAddress.validate(address, "terra"), {
+        message: "Invalid Terra Address",
+      })
+  ),
+});
+
 export const CreateBeneficiaryAccountScreen =
   observer<CreateBeneficiaryAccountScreenProps>(
     function CreateBeneficiaryAccountScreen({ navigation }) {
       const { draftsStore } = useStore();
       const wallet = useMultisigWallet();
+      const { control, handleSubmit, formState } = useForm({
+        defaultValues: {
+          name: "",
+          address: "",
+        },
+        mode: "onTouched",
+        resolver: zodResolver(schema),
+      });
+
       const keyboardVisible = useKeyboardVisible();
       const isAndroid = Platform.OS === "android";
       const gatekeeperConfig = draftsStore.get<GatekeeperConfig>({
         id: getGatekeeperConfigDraftId(wallet),
       });
       const [icon, setIcon] = useState<Icon | null>(null);
-
-      const [name, setName] = useState("");
-      // TODO: validate address
-      const [address, setAddress] = useState("");
 
       return (
         <ScreenContainer>
@@ -65,19 +90,36 @@ export const CreateBeneficiaryAccountScreen =
                 onChange={setIcon}
               />
             </View>
-            <TextInput
-              placeholder="Enter Name"
-              label="Inheritance Account Name"
-              style={{ width: "100%", marginTop: 40 }}
-              value={name}
-              onChangeText={setName}
+            <Controller
+              name="name"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  placeholder="Enter Name"
+                  label="Inheritance Account Name"
+                  style={{ width: "100%", marginTop: 40 }}
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  maxLength={30}
+                  invalidMessage={formState.errors.name?.message}
+                />
+              )}
             />
-            <TextInput
-              placeholder="Enter Address"
-              label="Beneficiary Address"
-              style={{ width: "100%", marginTop: 10 }}
-              value={address}
-              onChangeText={setAddress}
+            <Controller
+              name="address"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  placeholder="Enter Address"
+                  label="Beneficiary Address"
+                  style={{ width: "100%", marginTop: 10 }}
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  invalidMessage={formState.errors.address?.message}
+                />
+              )}
             />
 
             <Text
@@ -109,15 +151,15 @@ export const CreateBeneficiaryAccountScreen =
             <View style={{ marginTop: 20 }}>
               <Button
                 flavor="blue"
-                disabled={!name || !address}
-                onPress={() => {
+                disabled={!formState.isValid}
+                onPress={handleSubmit((data) => {
                   gatekeeperConfig.value.addBeneficiary({
                     type: "beneficiary",
                     meta: {
                       icon: icon?.uri || "",
-                      name,
+                      name: data.name,
                     },
-                    address,
+                    address: data.address,
                     dormancyThreshold: {
                       years: 1,
                     },
@@ -130,7 +172,7 @@ export const CreateBeneficiaryAccountScreen =
                   });
 
                   navigation.navigate(AccountsRoute.AccountsOverview);
-                }}
+                })}
                 label="Confirm"
               />
               <Button

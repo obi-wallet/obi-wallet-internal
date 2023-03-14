@@ -42,11 +42,13 @@ export const TextInput = observer<
     label?: string;
     style?: StyleProp<ViewStyle>;
     inputStyle?: StyleProp<TextStyle>;
+    invalidMessage?: string;
   }
 >(function TextInput({
   label,
   style,
   inputStyle,
+  invalidMessage,
   CustomTextInput = OriginalTextInput,
   ...props
 }) {
@@ -57,10 +59,26 @@ export const TextInput = observer<
     <View style={style}>
       {label ? <Text style={styles.label}>{label}</Text> : null}
       <CustomTextInput
-        style={[styles.input, inputStyle]}
+        style={[
+          styles.input,
+          inputStyle,
+          { ...(invalidMessage ? { borderColor: "#FF2222" } : {}) },
+        ]}
         placeholderTextColor={isObi ? "rgba(250,250,250,.5)" : "#4B4E6E"}
         {...props}
       />
+      {invalidMessage && (
+        <Text
+          style={{
+            color: "#FF2222",
+            fontSize: 12,
+            marginTop: 5,
+            marginLeft: 5,
+          }}
+        >
+          {invalidMessage}
+        </Text>
+      )}
     </View>
   );
 });
