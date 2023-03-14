@@ -36,11 +36,6 @@ const multisigAddress = multisigKey.address("terra");
 
 jest.setTimeout(1000 * 60);
 
-test("fetchPrices", async () => {
-  const prices = await terra.fetchPrices({ chainId: "phoenix-1" });
-  expect(prices).toBeDefined();
-});
-
 test("createAndSignSinglesigTransaction", async () => {
   const message = new MsgSend(address, address, { uluna: 1 });
   const transaction = await terra.createAndSignSinglesigTransaction({
