@@ -17,8 +17,10 @@ import * as Animatable from "react-native-animatable";
 import { useThrottle } from "rooks";
 
 import { AbstractAccountItemProps, AccountContainer, Pill } from "./common";
+import { useMultisigWallet } from "../../../../../src/app/stores";
 import { AnimatedText } from "../../../../components/animated-text";
 import { PermissionedAddressesContext } from "../permissioned-address-context";
+
 export interface FlexAccountItemProps extends AbstractAccountItemProps {
   originalAccount: FlexAccount | null;
   account: FlexAccount;
@@ -49,6 +51,12 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
     onDelete,
     onChange,
   }) {
+    const wallet = useMultisigWallet();
+    const threshold = {
+      required: wallet.owner.threshold,
+      keys: wallet.owner.keys.length,
+    };
+
     const amount = account.spendLimit?.amount;
     const setAmount = useCallback(
       (amount: number) => {
@@ -201,7 +209,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
         case FlexAccountRule.Unlocked:
           return "WARNING: No keys required to sign transactions. This setting will revert after 30:00 minutes or until session expires.";
         case FlexAccountRule.Strict:
-          return "All transactions will require X keys to complete.";
+          return `All transactions will require ${threshold.required} of ${threshold.keys} keys to complete.`;
         case FlexAccountRule.Limited:
           return "Transactions under limit amount only require one key.";
       }

@@ -1,4 +1,5 @@
 import { GatekeeperConfig, Text } from "@obi-wallet/common";
+import { terraChains } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -27,6 +28,7 @@ export const CreateBeneficiaryAccountScreen =
     function CreateBeneficiaryAccountScreen({ navigation }) {
       const { draftsStore } = useStore();
       const wallet = useMultisigWallet();
+      const chain = terraChains[wallet.chain as keyof typeof terraChains];
       const keyboardVisible = useKeyboardVisible();
       const isAndroid = Platform.OS === "android";
       const gatekeeperConfig = draftsStore.get<GatekeeperConfig>({
@@ -89,8 +91,8 @@ export const CreateBeneficiaryAccountScreen =
               }}
             >
               Enter a name and the address of your beneficiary. If they don't
-              have an address, they can create an account using Obi or any other
-              [blockchain] wallet.
+              have an address, they can create an account using Obi or any other{" "}
+              {chain.label} wallet.
             </Text>
 
             <Text
