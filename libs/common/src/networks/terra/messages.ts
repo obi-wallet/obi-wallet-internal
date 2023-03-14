@@ -301,7 +301,7 @@ export function getUpdateGatekeeperMessages({
         return;
       }
 
-      const periodProperties = () => {
+      const periodProperties = (() => {
         const { period } = beneficiary.dripSchedule;
 
         if (R.has("days", period)) {
@@ -320,7 +320,7 @@ export function getUpdateGatekeeperMessages({
             period_type: "months",
           };
         }
-      };
+      })();
 
       const rawMessage = {
         upsert_beneficiary: {
