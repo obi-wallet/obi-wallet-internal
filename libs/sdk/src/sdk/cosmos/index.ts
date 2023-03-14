@@ -191,7 +191,7 @@ export class CosmosSdk extends AbstractSdk {
     );
   }
 
-  public async fetchDelegations({ address }: { address: string }) {
+  public async fetchDelegations(_: { address: string }) {
     warning(true, "fetchDelegations not implemented for Cosmos");
     return [];
   }
