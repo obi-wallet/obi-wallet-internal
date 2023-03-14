@@ -46,12 +46,13 @@ export class TerraSdk extends AbstractSdk {
       dex: "astroport" | "terraswap" | "phoenix";
     }[];
 
+    prices["foo"] = new BigNumber(1);
+
     while (stack.length > 0) {
       const item = stack.pop();
       if (!item) break;
-      if (R.has(item.denom, prices)) continue;
+      if (prices[item.denom]) continue;
 
-      // @ts-expect-error Not sure why TS doesn't like it
       prices[item.denom] = item.usdPrice;
 
       const relevantPairs = allPairs
