@@ -1,4 +1,8 @@
 import { LCDClient } from "@terra-money/feather.js";
+import {
+  Pagination,
+  PaginationOptions,
+} from "@terra-money/feather.js/dist/client/lcd/APIRequester";
 import BigNumber from "bignumber.js";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
@@ -7,6 +11,7 @@ import { tokenPairs } from "./token-pairs";
 import { TerraChain } from "../../chains";
 import { withTerraClient } from "../../clients";
 import { AbstractSdk } from "../abstract";
+import { Coin } from "../common";
 
 export class TerraSdk extends AbstractSdk {
   protected constructor(protected chainId: TerraChain) {
@@ -124,6 +129,47 @@ export class TerraSdk extends AbstractSdk {
     return R.mapObjIndexed((price) => {
       return price.toNumber();
     }, prices);
+  }
+
+  public async fetchBalances({ address }: { address: string }) {
+    return await this.withClient(async (client) => {
+      return await this.fetchAllPages(async (paginationOptions) => {
+        const [coins, pagination] = await client.bank.balance(
+          address,
+          paginationOptions
+        );
+        return [
+          coins.map((coin): Coin => {
+            return {
+              denom: coin.denom,
+              amount: coin.amount.toString(),
+            };
+          }),
+          pagination,
+        ];
+      });
+    });
+  }
+
+  public async fetchAllPages<T>(
+    f: (
+      paginationOptions: Partial<PaginationOptions>
+    ) => Promise<[T[], Pagination]>
+  ): Promise<T[]> {
+    const result: T[] = [];
+    let key: string | null = "";
+
+    do {
+      const [list, pagination] = (await f({
+        "pagination.limit": "100",
+        "pagination.key": key,
+      })) as [T[], Pagination];
+
+      result.push(...list);
+      key = pagination?.next_key;
+    } while (key);
+
+    return result;
   }
 
   public withClient<T>(f: (client: LCDClient) => T) {

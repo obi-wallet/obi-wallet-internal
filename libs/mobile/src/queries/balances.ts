@@ -1,5 +1,5 @@
-import { cosmos, terra } from "@obi-wallet/common";
-import { Chain, isCosmosChain, isTerraChain, Sdk } from "@obi-wallet/sdk";
+import { terra } from "@obi-wallet/common";
+import { Chain, isTerraChain, Sdk } from "@obi-wallet/sdk";
 
 import { staleTime } from "./helpers";
 
@@ -14,16 +14,7 @@ export function getBalancesQuery({
     queryKey: ["balances", { chainId, address }],
     queryFn: async () => {
       if (!address) return [];
-
-      if (isCosmosChain(chainId)) {
-        return await cosmos.fetchBalances({ address, chainId });
-      }
-
-      if (isTerraChain(chainId)) {
-        return await terra.fetchBalances({ address, chainId });
-      }
-
-      return [];
+      return await Sdk.chainId(chainId).fetchBalances({ address });
     },
   };
 }

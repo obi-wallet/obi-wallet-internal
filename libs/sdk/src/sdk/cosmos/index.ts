@@ -1,9 +1,15 @@
 import { CosmWasmClient, JsonObject } from "@cosmjs/cosmwasm-stargate";
+import { StargateClient } from "@cosmjs/stargate";
 import * as R from "ramda";
 
 import { CosmosChain } from "../../chains";
-import { withCosmosCosmWasmClient } from "../../clients";
+import {
+  withCosmosClients,
+  withCosmosCosmWasmClient,
+  withCosmosStargateClient,
+} from "../../clients";
 import { AbstractSdk } from "../abstract";
+import { Coin } from "../common";
 
 export class CosmosSdk extends AbstractSdk {
   protected constructor(protected chainId: CosmosChain) {
@@ -135,8 +141,70 @@ export class CosmosSdk extends AbstractSdk {
     });
   }
 
+  public async fetchBalances({ address }: { address: string }) {
+    return await this.withClients(
+      async ({ stargateClient, cosmWasmClient }) => {
+        const [nativeBalances, customBalances] = await Promise.all([
+          fetchNativeBalances(),
+          fetchCustomBalances(),
+        ]);
+        return [...nativeBalances, ...customBalances];
+
+        async function fetchNativeBalances() {
+          const coins = await stargateClient.getAllBalances(address);
+          return coins.map((coin: Coin) => {
+            return {
+              denom: coin.denom,
+              amount: coin.amount,
+              usdPrice: 0,
+            };
+          });
+        }
+
+        async function fetchCustomBalances() {
+          const customTokens = [
+            {
+              contract:
+                "juno1qsrercqegvs4ye0yqg93knv73ye5dc3prqwd6jcdcuj8ggp6w0us66deup",
+              denom: "uloop",
+            },
+          ];
+
+          return await Promise.all(
+            customTokens.map(async (customToken) => {
+              const response = await cosmWasmClient.queryContractSmart(
+                customToken.contract,
+                {
+                  balance: { address: address },
+                }
+              );
+              return {
+                denom: customToken.denom,
+                amount: response.balance,
+                contract: customToken.contract,
+              };
+            })
+          );
+        }
+      }
+    );
+  }
+
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
     return withCosmosCosmWasmClient(this.chainId, f);
+  }
+
+  public withStargateClient<T>(f: (client: StargateClient) => T) {
+    return withCosmosStargateClient(this.chainId, f);
+  }
+
+  public withClients<T>(
+    f: (clients: {
+      stargateClient: StargateClient;
+      cosmWasmClient: CosmWasmClient;
+    }) => T
+  ) {
+    return withCosmosClients(this.chainId, f);
   }
 
   public static chainId(chainId: CosmosChain) {

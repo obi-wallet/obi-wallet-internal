@@ -12,38 +12,11 @@ import BigNumber from "bignumber.js";
 import * as R from "ramda";
 
 import {
-  Coin,
   Delegation,
   ExtendedValidator,
   Rewards,
   UnbondingDelegation,
 } from "../common/types";
-
-export async function fetchBalances({
-  address,
-  chainId,
-}: {
-  address: string;
-  chainId: TerraChain;
-}): Promise<Coin[]> {
-  return await withTerraClient(chainId, async (client) => {
-    return await fetchAll(async (paginationOptions) => {
-      const [coins, pagination] = await client.bank.balance(
-        address,
-        paginationOptions
-      );
-      return [
-        coins.map((coin): Coin => {
-          return {
-            denom: coin.denom,
-            amount: coin.amount.toString(),
-          };
-        }),
-        pagination,
-      ];
-    });
-  });
-}
 
 export async function fetchDelegations({
   address,
