@@ -87,6 +87,8 @@ describe("Empty gatekeeper config", () => {
               cooldown: 365,
               inheritance_records: [],
               offset: 0,
+              period_multiple: 12,
+              period_type: "months",
               spend_limits: [
                 {
                   amount: "5",
