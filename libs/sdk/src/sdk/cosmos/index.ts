@@ -244,6 +244,11 @@ export class CosmosSdk extends AbstractSdk {
     };
   }
 
+  public async fetchPermissionedAddresses(_: { spendLimitGatekeeper: string }) {
+    notImplemented("fetchPermissionedAddresses not implemented for Cosmos");
+    return [];
+  }
+
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
     return withCosmosCosmWasmClient(this.chainId, f);
   }

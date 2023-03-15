@@ -3,6 +3,7 @@ import {
   Delegation,
   EnrichedValidator,
   GatekeeperContractAddresses,
+  PermissionedAddress,
   Rewards,
   UnbondingDelegation,
 } from "./common";
@@ -46,4 +47,9 @@ export abstract class AbstractSdk {
   }: {
     proxyAddress: string;
   }): Promise<GatekeeperContractAddresses>;
+  public abstract fetchPermissionedAddresses({
+    spendLimitGatekeeper,
+  }: {
+    spendLimitGatekeeper: string;
+  }): Promise<PermissionedAddress[]>;
 }

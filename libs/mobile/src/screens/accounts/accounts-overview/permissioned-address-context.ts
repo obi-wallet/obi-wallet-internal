@@ -1,6 +1,6 @@
-import { terra } from "@obi-wallet/common";
+import { PermissionedAddress } from "@obi-wallet/sdk";
 import { createContext } from "react";
 
 export const PermissionedAddressesContext = createContext<
-  Awaited<ReturnType<typeof terra.fetchPermissionedAddresses>> | undefined
+  PermissionedAddress[] | undefined
 >(undefined);

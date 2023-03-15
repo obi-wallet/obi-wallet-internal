@@ -24,6 +24,7 @@ import {
   Coin,
   Delegation,
   EnrichedValidator,
+  PermissionedAddress,
   UnbondingDelegation,
 } from "../common";
 import { GatekeeperContractAddresses } from "../common/gatekeeper";
@@ -400,6 +401,22 @@ export class TerraSdk extends AbstractSdk {
         gatekeeper_contracts: {},
       });
       return schema.parse(response);
+    });
+  }
+
+  public async fetchPermissionedAddresses({
+    spendLimitGatekeeper,
+  }: {
+    spendLimitGatekeeper: string;
+  }) {
+    return await this.withClient(async (client) => {
+      const schema = z.object({
+        permissioned_addresses: z.array(PermissionedAddress),
+      });
+      const response = await client.wasm.contractQuery(spendLimitGatekeeper, {
+        permissioned_addresses: {},
+      });
+      return schema.parse(response).permissioned_addresses;
     });
   }
 
