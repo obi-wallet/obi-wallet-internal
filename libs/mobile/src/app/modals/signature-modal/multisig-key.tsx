@@ -1,4 +1,5 @@
 import { KeyType, MultisigKey, terra } from "@obi-wallet/common";
+import { Sdk } from "@obi-wallet/sdk";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Msg, SignatureV2 } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
@@ -157,7 +158,9 @@ export const SignatureModalMultisigKey =
                 const parsed = parseNFCData(tag);
 
                 console.warn(
-                  `Associated NFC address is ${terra.getAddress({
+                  `Associated NFC address is ${Sdk.chainId(
+                    multisigKey.chain
+                  ).getAddressOfPublicKey({
                     publicKey: factor.payload.publicKey,
                   })}`
                 );

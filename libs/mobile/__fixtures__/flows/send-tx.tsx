@@ -2,7 +2,7 @@ import {
   RequestObiSignAndBroadcastTerraTransactionPayload,
   terra,
 } from "@obi-wallet/common";
-import { TerraChain } from "@obi-wallet/sdk";
+import { Sdk, TerraChain } from "@obi-wallet/sdk";
 import { MsgSend } from "@terra-money/feather.js";
 import invariant from "tiny-invariant";
 
@@ -17,7 +17,9 @@ function SendSinglesigWalletTxFixture() {
 
   // TODO: add fallback
   invariant(singlesigWallet, "No singlesig wallet");
-  const address = terra.getAddress({ publicKey: singlesigWallet.publicKey });
+  const address = Sdk.chainId("phoenix-1").getAddressOfPublicKey({
+    publicKey: singlesigWallet.publicKey,
+  });
 
   const tx: RequestObiSignAndBroadcastTerraTransactionPayload = {
     chain: wallet.chain as TerraChain,

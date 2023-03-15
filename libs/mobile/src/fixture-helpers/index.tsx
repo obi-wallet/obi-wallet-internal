@@ -1,6 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { GatekeeperConfig, MultisigKey, terra } from "@obi-wallet/common";
-import { generateSec256k1KeyPair } from "@obi-wallet/sdk";
+import { generateSec256k1KeyPair, Sdk } from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect } from "react";
@@ -92,7 +92,7 @@ export const GatekeeperConfigDraft = {
       if (accounts.ids.length > 0) return;
 
       const { publicKey, privateKey } = generateSec256k1KeyPair();
-      const address = terra.getAddress({
+      const address = Sdk.chainId(wallet.chain).getAddressOfPublicKey({
         publicKey,
       });
 

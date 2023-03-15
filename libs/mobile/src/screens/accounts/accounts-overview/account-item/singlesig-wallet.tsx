@@ -1,10 +1,12 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { SinglesigWallet, terra, Text } from "@obi-wallet/common";
+import { Sdk } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { TouchableOpacity, View } from "react-native";
 
 import { AbstractAccountItemProps } from "./common";
 import { useUsdBalance } from "../../../../app/balances";
+import { useMultisigWallet } from "../../../../app/stores";
 import { SinglesigAvatar } from "../../avatar";
 
 export interface SinglesigWalletItemProps extends AbstractAccountItemProps {
@@ -13,7 +15,10 @@ export interface SinglesigWalletItemProps extends AbstractAccountItemProps {
 
 export const SinglesigWalletItem = observer<SinglesigWalletItemProps>(
   function SinglesigWalletItem({ account, active, onSetActive }) {
-    const address = terra.getAddress({ publicKey: account.publicKey });
+    const wallet = useMultisigWallet();
+    const address = Sdk.chainId(wallet.chain).getAddressOfPublicKey({
+      publicKey: account.publicKey,
+    });
     const usdBalance = useUsdBalance({ address });
 
     return (

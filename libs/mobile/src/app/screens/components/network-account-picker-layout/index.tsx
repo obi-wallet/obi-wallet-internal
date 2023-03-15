@@ -3,6 +3,7 @@ import { faRss } from "@fortawesome/free-solid-svg-icons/faRss";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Feature, terra, Text } from "@obi-wallet/common";
+import { Sdk } from "@obi-wallet/sdk";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
@@ -171,7 +172,9 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
       return account.meta.name || "Flex Account";
     } else if (account && account.type === "singlesig-wallet") {
       return Bech32Address.shortenAddress(
-        terra.getAddress({ publicKey: account.publicKey }),
+        Sdk.chainId(wallet.chain).getAddressOfPublicKey({
+          publicKey: account.publicKey,
+        }),
         20
       );
     } else {

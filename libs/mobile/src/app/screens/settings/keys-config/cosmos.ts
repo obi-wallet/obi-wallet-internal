@@ -9,7 +9,7 @@ import {
   MultisigWallet,
   RequestObiCosmosSignAndBroadcastMsg,
 } from "@obi-wallet/common";
-import { CosmosChain } from "@obi-wallet/sdk";
+import { CosmosChain, Sdk, Secp256k1PublicKey } from "@obi-wallet/sdk";
 import {
   MsgExecuteContract,
   MsgUpdateAdmin,
@@ -74,9 +74,8 @@ export async function handleCosmos({
         rawMessage: {
           confirm_update_admin: {
             signers: multisigPublicKey.value.pubkeys.map((publicKey) => {
-              return cosmos.getAddress({
-                publicKey,
-                chainId,
+              return Sdk.chainId(chainId).getAddressOfPublicKey({
+                publicKey: publicKey as Secp256k1PublicKey,
               });
             }),
           },
