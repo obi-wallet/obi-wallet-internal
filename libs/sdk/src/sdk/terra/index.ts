@@ -27,6 +27,10 @@ export class TerraSdk extends AbstractSdk {
     super(chainId);
   }
 
+  public get chain() {
+    return terraChains[this.chainId];
+  }
+
   public async fetchPrices() {
     const stack: { denom: string; usdPrice: BigNumber }[] = [
       {
@@ -233,7 +237,7 @@ export class TerraSdk extends AbstractSdk {
               return unbondingDelegation.entries.map((entry) => {
                 return {
                   balance: {
-                    denom: terraChains[this.chainId].denom,
+                    denom: this.chain.denom,
                     amount: entry.balance.toString(),
                   },
                   validator: {
@@ -291,8 +295,7 @@ export class TerraSdk extends AbstractSdk {
       return rawValidators
         .map((validator): EnrichedValidator => {
           const promoted =
-            validator.operator_address ===
-            terraChains[this.chainId].obiValidator;
+            validator.operator_address === this.chain.obiValidator;
           const rank =
             (promoted ? 2 : 0) +
             (prioritizedValidators.includes(validator.operator_address)
