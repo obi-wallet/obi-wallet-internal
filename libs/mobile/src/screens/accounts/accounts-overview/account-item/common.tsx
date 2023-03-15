@@ -70,7 +70,7 @@ export const AccountContainer = observer<{
           disabled={active}
         >
           <Avatar style={{ width: 40, height: 40 }} account={account} />
-          <View style={{ paddingLeft: 10 }}>
+          <View style={{ paddingLeft: 10, flexShrink: 1 }}>
             <Text
               style={[
                 {
