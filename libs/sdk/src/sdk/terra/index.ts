@@ -2,6 +2,7 @@ import {
   AccAddress,
   Coins,
   LCDClient,
+  MsgSend,
   Validator as RawValidator,
 } from "@terra-money/feather.js";
 import {
@@ -18,9 +19,11 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
+import { Key } from "./key";
 import { tokenPairs } from "./token-pairs";
 import { TerraChain, terraChains } from "../../chains";
 import { withTerraClient } from "../../clients";
+import { AbstractSigner } from "../../signers";
 import { AbstractSdk } from "../abstract";
 import {
   AccountValidationResult,
@@ -58,6 +61,37 @@ export class TerraSdk extends AbstractSdk {
       return AccountValidationResult.PUBLIC_KEY_NOT_READY;
     }
     return AccountValidationResult.READY;
+  }
+
+  public async prepareSigner({ signer }: { signer: AbstractSigner }) {
+    const key = Key.fromSigner(signer);
+    const address = key.accAddress(this.chain.prefix);
+
+    await this.prepareAccount({ address });
+
+    const validationResult = await this.validateAccount({ address });
+    invariant(
+      validationResult >= AccountValidationResult.PUBLIC_KEY_NOT_READY,
+      "Account not ready"
+    );
+    if (validationResult <= AccountValidationResult.PUBLIC_KEY_NOT_READY) {
+      await this.withClient(async (client) => {
+        const wallet = client.wallet(key);
+        const { denom } = this.chain;
+        const send = new MsgSend(address, address, { [denom]: 1 });
+        const tx = await wallet.createAndSignTx({
+          chainID: this.chainId,
+          msgs: [send],
+        });
+        await client.tx.broadcastBlock(tx, this.chainId);
+      });
+      while (
+        (await this.validateAccount({ address })) <=
+        AccountValidationResult.PUBLIC_KEY_NOT_READY
+      ) {
+        await this.wait({ ms: 100 });
+      }
+    }
   }
 
   protected async fetchAccount({ address }: { address: string }) {

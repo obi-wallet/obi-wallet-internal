@@ -1,15 +1,20 @@
 import { CosmWasmClient, JsonObject } from "@cosmjs/cosmwasm-stargate";
-import { StargateClient } from "@cosmjs/stargate";
+import { coins, OfflineSigner } from "@cosmjs/proto-signing";
+import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import * as R from "ramda";
+import invariant from "tiny-invariant";
 import warning from "tiny-warning";
 
+import { OfflineAminoSigner } from "./offline-amino-signer";
 import { CosmosChain, cosmosChains } from "../../chains";
 import {
   withCosmosClients,
   withCosmosCosmWasmClient,
+  withCosmosSigningStargateClient,
   withCosmosStargateClient,
 } from "../../clients";
+import { AbstractSigner } from "../../signers";
 import { AbstractSdk } from "../abstract";
 import { AccountValidationResult, Coin } from "../common";
 
@@ -47,6 +52,42 @@ export class CosmosSdk extends AbstractSdk {
       return AccountValidationResult.PUBLIC_KEY_NOT_READY;
     }
     return AccountValidationResult.READY;
+  }
+
+  public async prepareSigner({ signer }: { signer: AbstractSigner }) {
+    const offlineAminoSigner = OfflineAminoSigner.fromSigner({
+      signer,
+      prefix: this.chain.prefix,
+    });
+    const address = offlineAminoSigner.address;
+
+    await this.prepareAccount({ address });
+
+    const validationResult = await this.validateAccount({ address });
+    invariant(
+      validationResult >= AccountValidationResult.PUBLIC_KEY_NOT_READY,
+      "Account not ready"
+    );
+    if (validationResult <= AccountValidationResult.PUBLIC_KEY_NOT_READY) {
+      await this.withSigningStargateClient(
+        offlineAminoSigner,
+        async (client) => {
+          await client.sendTokens(
+            address,
+            address,
+            coins(1, this.chain.denom),
+            "auto",
+            ""
+          );
+        }
+      );
+      while (
+        (await this.validateAccount({ address })) <=
+        AccountValidationResult.PUBLIC_KEY_NOT_READY
+      ) {
+        await this.wait({ ms: 100 });
+      }
+    }
   }
 
   protected async fetchAccount({ address }: { address: string }) {
@@ -285,6 +326,16 @@ export class CosmosSdk extends AbstractSdk {
 
   public withStargateClient<T>(f: (client: StargateClient) => T) {
     return withCosmosStargateClient(this.chainId, f);
+  }
+
+  public withSigningStargateClient<T>(
+    signer: OfflineSigner,
+    f: (client: SigningStargateClient) => T
+  ) {
+    return withCosmosSigningStargateClient(
+      { chainId: this.chainId, signer },
+      f
+    );
   }
 
   public withClients<T>(
