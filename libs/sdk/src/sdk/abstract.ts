@@ -2,6 +2,7 @@ import {
   Coin,
   Delegation,
   EnrichedValidator,
+  Rewards,
   UnbondingDelegation,
 } from "./common";
 import { Chain } from "../chains";
@@ -27,4 +28,9 @@ export abstract class AbstractSdk {
     address: string;
   }): Promise<UnbondingDelegation[]>;
   public abstract fetchValidators(): Promise<EnrichedValidator[]>;
+  public abstract fetchRewards({
+    address,
+  }: {
+    address: string;
+  }): Promise<Rewards>;
 }

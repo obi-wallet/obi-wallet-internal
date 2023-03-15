@@ -1,4 +1,8 @@
-import { LCDClient, Validator as RawValidator } from "@terra-money/feather.js";
+import {
+  Coins,
+  LCDClient,
+  Validator as RawValidator,
+} from "@terra-money/feather.js";
 import {
   Pagination,
   PaginationOptions,
@@ -325,6 +329,42 @@ export class TerraSdk extends AbstractSdk {
           };
         })
         .sort((a, b) => b.rank - a.rank);
+    });
+  }
+
+  public async fetchRewards({ address }: { address: string }) {
+    return await this.withClient(async (client) => {
+      const rewards = await client.distribution.rewards(address);
+
+      const handleRewards = (coins: Coins) => {
+        const mapped = coins.map((coin) => {
+          return {
+            denom: coin.denom,
+            amount: coin.amount.toString(),
+          };
+        });
+        return mapped.length > 0
+          ? mapped[0]
+          : {
+              denom: this.chain.denom,
+              amount: "0",
+            };
+      };
+
+      const perDelegator = R.values(
+        R.mapObjIndexed((rewards, address) => {
+          return {
+            address,
+            rewards: handleRewards(rewards),
+          };
+        }, rewards.rewards)
+      );
+      const total = handleRewards(rewards.total);
+
+      return {
+        perDelegator,
+        total,
+      };
     });
   }
 

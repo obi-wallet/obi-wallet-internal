@@ -1,5 +1,4 @@
-import { terra } from "@obi-wallet/common";
-import { Chain, isTerraChain, Sdk } from "@obi-wallet/sdk";
+import { Chain, Sdk } from "@obi-wallet/sdk";
 
 import { staleTime } from "./helpers";
 
@@ -81,12 +80,7 @@ export function getRewardsQuery({
     queryKey: ["rewards", { chainId, address }],
     queryFn: async () => {
       if (!address) return null;
-
-      if (isTerraChain(chainId)) {
-        return await terra.fetchRewards({ address, chainId });
-      }
-
-      return null;
+      return await Sdk.chainId(chainId).fetchRewards({ address });
     },
   };
 }

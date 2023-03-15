@@ -1,3 +1,5 @@
+import { Coin } from "./coin";
+
 export interface Validator {
   icon: string | null;
   label: string;
@@ -22,4 +24,9 @@ export interface UnbondingDelegation {
   balance: { denom: string; amount: string };
   validator: Validator;
   completionTime: Date;
+}
+
+export interface Rewards {
+  perDelegator: { address: string; rewards: Coin }[];
+  total: Coin;
 }

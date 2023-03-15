@@ -1,6 +1,6 @@
 import { Coin } from "@cosmjs/amino";
-import { Rewards, terra, Text } from "@obi-wallet/common";
-import { cosmosChains, isCosmosChain } from "@obi-wallet/sdk";
+import { terra, Text } from "@obi-wallet/common";
+import { cosmosChains, isCosmosChain, Rewards } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { FC } from "react";
