@@ -1,7 +1,7 @@
+import { Sdk } from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
 import invariant from "tiny-invariant";
 
-import { fetchGatekeeperContractAddresses } from "../../../src/networks/terra/gatekeeper";
 import { getAddress } from "../../../src/networks/terra/helpers";
 import { getUpdateGatekeeperMessages } from "../../../src/networks/terra/messages";
 import { generateSec256k1KeyPair } from "../../../src/sec256k1";
@@ -22,9 +22,10 @@ let gatekeepers: {
 };
 
 beforeAll(async () => {
-  const response = await fetchGatekeeperContractAddresses({
+  const response = await Sdk.chainId(
+    "phoenix-1"
+  ).fetchGatekeeperContractAddresses({
     proxyAddress,
-    chainId: "phoenix-1",
   });
   invariant(response.spendLimitGatekeeper, "Spend limit gatekeeper not found");
   invariant(response.sessionKeyGatekeeper, "Session key gatekeeper not found");

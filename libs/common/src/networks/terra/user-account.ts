@@ -1,7 +1,6 @@
 import { Sdk, TerraChain } from "@obi-wallet/sdk";
 import * as R from "ramda";
 
-import { fetchGatekeeperContractAddresses } from "./gatekeeper";
 import { CodeIds } from "../common";
 
 export async function fetchCodeIds({
@@ -13,9 +12,8 @@ export async function fetchCodeIds({
 }) {
   const addresses = {
     userAccount: address,
-    ...(await fetchGatekeeperContractAddresses({
+    ...(await Sdk.chainId(chainId).fetchGatekeeperContractAddresses({
       proxyAddress: address,
-      chainId,
     })),
   };
 

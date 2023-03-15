@@ -14,6 +14,7 @@ import {
 import BigNumber from "bignumber.js";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
 import { tokenPairs } from "./token-pairs";
 import { TerraChain, terraChains } from "../../chains";
@@ -25,6 +26,7 @@ import {
   EnrichedValidator,
   UnbondingDelegation,
 } from "../common";
+import { GatekeeperContractAddresses } from "../common/gatekeeper";
 
 export class TerraSdk extends AbstractSdk {
   protected constructor(protected chainId: TerraChain) {
@@ -372,6 +374,32 @@ export class TerraSdk extends AbstractSdk {
     return await this.withClient(async (client) => {
       const { code_id } = await client.wasm.contractInfo(contract);
       return code_id;
+    });
+  }
+
+  public async fetchGatekeeperContractAddresses({
+    proxyAddress,
+  }: {
+    proxyAddress: string;
+  }) {
+    return await this.withClient(async (client) => {
+      const schema = z
+        .object({
+          spendlimit_gatekeeper_contract_addr: z.string().nullable(),
+          sessionkey_gatekeeper_contract_addr: z.string().nullable(),
+          debt_gatekeeper_contract_addr: z.string().nullable(),
+        })
+        .transform((response): GatekeeperContractAddresses => {
+          return {
+            spendLimitGatekeeper: response.spendlimit_gatekeeper_contract_addr,
+            sessionKeyGatekeeper: response.sessionkey_gatekeeper_contract_addr,
+            debtGatekeeper: response.debt_gatekeeper_contract_addr,
+          };
+        });
+      const response = await client.wasm.contractQuery(proxyAddress, {
+        gatekeeper_contracts: {},
+      });
+      return schema.parse(response);
     });
   }
 

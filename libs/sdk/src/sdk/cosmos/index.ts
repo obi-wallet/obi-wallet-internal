@@ -228,6 +228,18 @@ export class CosmosSdk extends AbstractSdk {
     });
   }
 
+  public async fetchGatekeeperContractAddresses(_: { proxyAddress: string }) {
+    warning(
+      true,
+      "fetchGatekeeperContractAddresses not implemented for Cosmos"
+    );
+    return {
+      spendLimitGatekeeper: null,
+      sessionKeyGatekeeper: null,
+      debtGatekeeper: null,
+    };
+  }
+
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
     return withCosmosCosmWasmClient(this.chainId, f);
   }

@@ -1,29 +1,5 @@
 import { TerraChain, withTerraClient } from "@obi-wallet/sdk";
 
-export async function fetchGatekeeperContractAddresses({
-  proxyAddress,
-  chainId,
-}: {
-  proxyAddress: string;
-  chainId: TerraChain;
-}) {
-  return await withTerraClient(chainId, async (client) => {
-    const response = await client.wasm.contractQuery<{
-      spendlimit_gatekeeper_contract_addr: string | null;
-      sessionkey_gatekeeper_contract_addr: string | null;
-      debt_gatekeeper_contract_addr: string | null;
-    }>(proxyAddress, {
-      gatekeeper_contracts: {},
-    });
-
-    return {
-      spendLimitGatekeeper: response.spendlimit_gatekeeper_contract_addr,
-      sessionKeyGatekeeper: response.sessionkey_gatekeeper_contract_addr,
-      debtGatekeeper: response.debt_gatekeeper_contract_addr,
-    };
-  });
-}
-
 export interface PermissionedAddress {
   address: string;
   params: {
