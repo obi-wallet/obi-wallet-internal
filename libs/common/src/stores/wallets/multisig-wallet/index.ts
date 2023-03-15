@@ -17,7 +17,7 @@ import {
   SinglesigWallet,
 } from "./serialized-data";
 import { SerializedWalletMeta, WalletMeta } from "..";
-import { CodeIds, terra } from "../../../networks";
+import { CodeIds } from "../../../networks";
 import { Entities, EntityId } from "../../entities";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
 import { GatekeeperConfig } from "../gatekeeper-config";

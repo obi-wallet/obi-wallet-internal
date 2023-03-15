@@ -1,17 +1,13 @@
 import { useTheme } from "@emotion/react";
 import { KeyType, MultisigKey, terra, Text } from "@obi-wallet/common";
-import { withTerraClient } from "@obi-wallet/sdk";
+import { AbstractSigner, Sdk, withTerraClient } from "@obi-wallet/sdk";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Msg, RawKey } from "@terra-money/feather.js";
+import { BlockTxBroadcastResult, Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { View } from "react-native";
 
-import {
-  AbstractSignatureModalProps,
-  broadcastTransaction,
-  wrapMessages,
-} from "./common";
+import { AbstractSignatureModalProps, wrapMessages } from "./common";
 import { ConfirmMessages } from "./confirm-messages";
 import { SignatureModalMultisigKey } from "./multisig-key";
 import { BiometricsKey } from "./terra/keys";
@@ -19,7 +15,7 @@ import { KeysList } from "../../screens/components/keys-list";
 
 export interface SignatureModalFlexAccountProps
   extends AbstractSignatureModalProps {
-  flexAccount: RawKey;
+  flexAccount: AbstractSigner;
   multisigKey: MultisigKey;
   proxyAddress: string;
 }
@@ -32,11 +28,13 @@ export const SignatureModalFlexAccount =
     const innerMessages = data.messages.map((data) => {
       return Msg.fromAmino(data);
     });
-    const sender = flexAccount.accAddress("terra");
+    const flexAccountAddress = Sdk.chainId(data.chain).getAddressOfSigner({
+      signer: flexAccount,
+    });
     const wrappedMessages = wrapMessages({
       messages: innerMessages,
       proxyAddress,
-      sender,
+      sender: flexAccountAddress,
     });
 
     const canExecute = useQuery({
@@ -51,7 +49,7 @@ export const SignatureModalFlexAccount =
                 }>(proxyAddress, {
                   can_execute: {
                     funds: [],
-                    address: flexAccount.accAddress("terra"),
+                    address: flexAccountAddress,
                     msg: { legacy: terra.wrapMessage(message) },
                   },
                 });
@@ -105,15 +103,14 @@ export const SignatureModalFlexAccountWithFlexAccount =
 
       const broadcast = useMutation({
         mutationFn: async () => {
-          const transaction = await terra.createAndSignSinglesigTransaction({
-            key: flexAccount,
-            chainId: data.chain,
+          const sdk = Sdk.chainId(data.chain);
+          await sdk.prepareSigner({ signer: flexAccount });
+          const signedTransaction = await sdk.createAndSignTransaction({
+            signer: flexAccount,
             messages: wrappedMessages,
           });
-          return await broadcastTransaction({
-            data,
-            transaction,
-            sender: flexAccount.accAddress("terra"),
+          return await sdk.broadcastSignedTransaction({
+            signedTransaction,
           });
         },
       });
@@ -145,7 +142,7 @@ export const SignatureModalFlexAccountWithFlexAccount =
           onCancel={onCancel}
           onConfirm={async () => {
             const response = await broadcast.mutateAsync();
-            await onConfirm(response);
+            await onConfirm(response.rawResult as BlockTxBroadcastResult);
           }}
         >
           <KeysList

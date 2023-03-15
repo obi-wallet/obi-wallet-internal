@@ -40,18 +40,6 @@ const multisigAddress = multisigKey.address("terra");
 
 jest.setTimeout(1000 * 60);
 
-test("createAndSignSinglesigTransaction", async () => {
-  const message = new MsgSend(address, address, { uluna: 1 });
-  const transaction = await terra.createAndSignSinglesigTransaction({
-    key,
-    chainId,
-    messages: [message],
-  });
-  expect(
-    await terra.simulateTransaction({ transaction, chainId })
-  ).toBeDefined();
-});
-
 test("createAndSignMultisigTransaction", async () => {
   const message = new MsgSend(multisigAddress, multisigAddress, { uluna: 1 });
   const { signDoc, sign } = await terra.createMultisigTransaction({

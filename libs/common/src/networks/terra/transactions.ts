@@ -21,27 +21,6 @@ export const SdkError = z.object({
   message: z.string(),
 });
 
-export async function createAndSignSinglesigTransaction({
-  key,
-  messages,
-  chainId,
-}: {
-  key: Key;
-  messages: Msg[];
-  chainId: TerraChain;
-}) {
-  return await withTerraClient(chainId, async (client) => {
-    const wallet = client.wallet(key);
-
-    await prepareKey({ key, chainId });
-
-    return await wallet.createAndSignTx({
-      chainID: chainId,
-      msgs: messages,
-    });
-  });
-}
-
 export async function createMultisigTransaction({
   key,
   messages,
@@ -119,37 +98,6 @@ export async function simulateTransaction({
   return await withTerraClient(chainId, async (client) => {
     return await client.tx.estimateGas(transaction, chainId);
   });
-}
-
-export async function prepareKey({
-  key,
-  chainId,
-}: {
-  key: Key;
-  chainId: TerraChain;
-}) {
-  const address = key.accAddress("terra");
-
-  let account: Account | null = await prepareAccount({ address, chainId });
-
-  if (!account?.getPublicKey()) {
-    return await withTerraClient(chainId, async (client) => {
-      const wallet = client.wallet(key);
-      const { denom } = terraChains[chainId];
-      const send = new MsgSend(address, address, { [denom]: 1 });
-      const tx = await wallet.createAndSignTx({
-        chainID: chainId,
-        msgs: [send],
-        ...(await getTxGasOptions({ chainId })),
-      });
-      await client.tx.broadcastBlock(tx, chainId);
-    });
-  }
-
-  while (!account?.getPublicKey()) {
-    await wait({ ms: 1000 });
-    account = await getAccount({ address, chainId });
-  }
 }
 
 export async function prepareAccount({

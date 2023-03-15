@@ -1,30 +1,28 @@
-import { terra } from "@obi-wallet/common";
+import { AbstractSigner, Sdk } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
-import { Msg, RawKey } from "@terra-money/feather.js";
+import { BlockTxBroadcastResult, Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 
-import { AbstractSignatureModalProps, broadcastTransaction } from "./common";
+import { AbstractSignatureModalProps } from "./common";
 import { ConfirmMessages } from "./confirm-messages";
 
 export interface SignatureModalRawKeyProps extends AbstractSignatureModalProps {
-  rawKey: RawKey;
+  signer: AbstractSigner;
 }
 
 export const SignatureModalRawKey = observer<SignatureModalRawKeyProps>(
-  function SignatureModalRawKey({ data, rawKey, onCancel, onConfirm }) {
+  function SignatureModalRawKey({ data, signer, onCancel, onConfirm }) {
     const broadcast = useMutation({
       mutationFn: async () => {
-        const transaction = await terra.createAndSignSinglesigTransaction({
-          key: rawKey,
-          chainId: data.chain,
+        const sdk = Sdk.chainId(data.chain);
+        const signedTransaction = await sdk.createAndSignTransaction({
+          signer: signer,
           messages: data.messages.map((data) => {
             return Msg.fromAmino(data);
           }),
         });
-        return await broadcastTransaction({
-          data,
-          transaction,
-          sender: rawKey.accAddress("terra"),
+        return await sdk.broadcastSignedTransaction({
+          signedTransaction,
         });
       },
     });
@@ -37,7 +35,7 @@ export const SignatureModalRawKey = observer<SignatureModalRawKeyProps>(
         onCancel={onCancel}
         onConfirm={async () => {
           const response = await broadcast.mutateAsync();
-          await onConfirm(response);
+          await onConfirm(response.rawResult as BlockTxBroadcastResult);
         }}
       />
     );
