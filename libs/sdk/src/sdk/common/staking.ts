@@ -4,6 +4,15 @@ export interface Validator {
   address: string;
 }
 
+export interface EnrichedValidator extends Validator {
+  votingPower: string;
+  commission: string;
+  rank: number;
+  promoted: boolean;
+  active: boolean;
+  jailed: boolean;
+}
+
 export interface Delegation {
   balance: { denom: string; amount: string };
   validator: Validator;

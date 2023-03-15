@@ -201,6 +201,11 @@ export class CosmosSdk extends AbstractSdk {
     return [];
   }
 
+  public async fetchValidators() {
+    warning(true, "fetchValidators not implemented for Cosmos");
+    return [];
+  }
+
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
     return withCosmosCosmWasmClient(this.chainId, f);
   }

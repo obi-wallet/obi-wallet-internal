@@ -64,11 +64,7 @@ export function getValidatorsQuery({ chainId }: { chainId: Chain }) {
   return {
     queryKey: ["validators", { chainId }],
     queryFn: async () => {
-      if (isTerraChain(chainId)) {
-        return await terra.fetchValidators({ chainId });
-      }
-
-      return [];
+      return await Sdk.chainId(chainId).fetchValidators();
     },
     staleTime: staleTime({ days: 1 }),
   };

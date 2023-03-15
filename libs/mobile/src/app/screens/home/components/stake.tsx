@@ -4,7 +4,6 @@ import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-  ExtendedValidator,
   RequestObiSignAndBroadcastTerraTransactionMsg,
   terra,
   Text,
@@ -13,6 +12,7 @@ import {
 import {
   Coin,
   Delegation,
+  EnrichedValidator,
   isTerraChain,
   TerraChain,
   UnbondingDelegation,
@@ -542,10 +542,10 @@ const ValidatorItem = observer(function ValidatorItem({
   confirmLabel,
   amountToShow,
 }: {
-  validator: ExtendedValidator;
-  onPress?: (validator: ExtendedValidator) => void;
+  validator: EnrichedValidator;
+  onPress?: (validator: EnrichedValidator) => void;
   active?: boolean;
-  onConfirm?: (args: { validator: ExtendedValidator; amount: string }) => void;
+  onConfirm?: (args: { validator: EnrichedValidator; amount: string }) => void;
   onCancel?: () => void;
   confirmLabel?: string;
   amountToShow?: Coin;
