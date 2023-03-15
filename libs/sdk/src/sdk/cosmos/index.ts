@@ -12,6 +12,10 @@ import {
 import { AbstractSdk } from "../abstract";
 import { Coin } from "../common";
 
+function notImplemented(message: string) {
+  warning(false, message);
+}
+
 export class CosmosSdk extends AbstractSdk {
   protected constructor(protected chainId: CosmosChain) {
     super(chainId);
@@ -196,22 +200,22 @@ export class CosmosSdk extends AbstractSdk {
   }
 
   public async fetchDelegations(_: { address: string }) {
-    warning(true, "fetchDelegations not implemented for Cosmos");
+    notImplemented("fetchDelegations not implemented for Cosmos");
     return [];
   }
 
   public async fetchUnbondingDelegations(_: { address: string }) {
-    warning(true, "fetchUnbondingDelegations not implemented for Cosmos");
+    notImplemented("fetchUnbondingDelegations not implemented for Cosmos");
     return [];
   }
 
   public async fetchValidators() {
-    warning(true, "fetchValidators not implemented for Cosmos");
+    notImplemented("fetchValidators not implemented for Cosmos");
     return [];
   }
 
   public async fetchRewards(_: { address: string }) {
-    warning(true, "fetchRewards not implemented for Cosmos");
+    notImplemented("fetchRewards not implemented for Cosmos");
     return {
       perDelegator: [],
       total: {
