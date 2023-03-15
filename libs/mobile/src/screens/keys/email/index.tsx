@@ -1,6 +1,7 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { generateSec256k1KeyPair, MultisigKey, Text } from "@obi-wallet/common";
+import { MultisigKey, Text } from "@obi-wallet/common";
+import { generateSec256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -305,10 +306,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                         text: "Yes, I sent the email to myself",
                         onPress: () => {
                           draft.value.setEmailKey({
-                            publicKey: {
-                              type: pubkeyType.secp256k1,
-                              value: publicKey,
-                            },
+                            publicKey,
                           });
                           onSubmit();
                         },

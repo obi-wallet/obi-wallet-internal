@@ -1,4 +1,5 @@
 import {
+  AccAddress,
   Coins,
   LCDClient,
   Validator as RawValidator,
@@ -11,6 +12,7 @@ import {
   BondStatus,
   bondStatusFromJSON,
 } from "@terra-money/terra.proto/cosmos/staking/v1beta1/staking";
+import { AxiosError } from "axios";
 import BigNumber from "bignumber.js";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
@@ -21,13 +23,15 @@ import { TerraChain, terraChains } from "../../chains";
 import { withTerraClient } from "../../clients";
 import { AbstractSdk } from "../abstract";
 import {
+  AccountValidationResult,
   Coin,
   Delegation,
   EnrichedValidator,
+  GatekeeperContractAddresses,
   PermissionedAddress,
+  RpcError,
   UnbondingDelegation,
 } from "../common";
-import { GatekeeperContractAddresses } from "../common/gatekeeper";
 
 export class TerraSdk extends AbstractSdk {
   protected constructor(protected chainId: TerraChain) {
@@ -36,6 +40,38 @@ export class TerraSdk extends AbstractSdk {
 
   public get chain() {
     return terraChains[this.chainId];
+  }
+
+  public async validateAccount({ address }: { address: string }) {
+    if (!AccAddress.validate(address, this.chain.prefix)) {
+      return AccountValidationResult.INVALID_ADDRESS;
+    }
+    const account = await this.fetchAccount({ address });
+    if (!account) {
+      return AccountValidationResult.ACCOUNT_NOT_READY;
+    }
+    if (!account.getPublicKey()) {
+      return AccountValidationResult.PUBLIC_KEY_NOT_READY;
+    }
+    return AccountValidationResult.READY;
+  }
+
+  protected async fetchAccount({ address }: { address: string }) {
+    try {
+      return await this.withClient(async (client) => {
+        return await client.auth.accountInfo(address);
+      });
+    } catch (e) {
+      const error = e as AxiosError;
+      const data = error.response?.data;
+
+      const result = RpcError.safeParse(data);
+      if (result.success && result.data.message.includes("code = NotFound")) {
+        return null;
+      }
+
+      throw e;
+    }
   }
 
   public async fetchPrices() {

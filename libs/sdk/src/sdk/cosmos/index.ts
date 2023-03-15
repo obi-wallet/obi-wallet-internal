@@ -1,5 +1,6 @@
 import { CosmWasmClient, JsonObject } from "@cosmjs/cosmwasm-stargate";
 import { StargateClient } from "@cosmjs/stargate";
+import { Bech32Address } from "@keplr-wallet/cosmos";
 import * as R from "ramda";
 import warning from "tiny-warning";
 
@@ -10,7 +11,7 @@ import {
   withCosmosStargateClient,
 } from "../../clients";
 import { AbstractSdk } from "../abstract";
-import { Coin } from "../common";
+import { AccountValidationResult, Coin } from "../common";
 
 function notImplemented(message: string) {
   warning(false, message);
@@ -23,6 +24,28 @@ export class CosmosSdk extends AbstractSdk {
 
   public get chain() {
     return cosmosChains[this.chainId];
+  }
+
+  public async validateAccount({ address }: { address: string }) {
+    try {
+      Bech32Address.validate(address, this.chain.prefix);
+    } catch (e) {
+      return AccountValidationResult.INVALID_ADDRESS;
+    }
+    const account = await this.fetchAccount({ address });
+    if (!account) {
+      return AccountValidationResult.ACCOUNT_NOT_READY;
+    }
+    if (!account.pubkey) {
+      return AccountValidationResult.PUBLIC_KEY_NOT_READY;
+    }
+    return AccountValidationResult.READY;
+  }
+
+  protected async fetchAccount({ address }: { address: string }) {
+    return this.withStargateClient(async (client) => {
+      return await client.getAccount(address);
+    });
   }
 
   public async fetchPrices() {

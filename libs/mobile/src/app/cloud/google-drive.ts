@@ -1,4 +1,4 @@
-import { generateSec256k1KeyPair } from "@obi-wallet/common";
+import { generateSec256k1KeyPair } from "@obi-wallet/sdk";
 import {
   GoogleSignin,
   statusCodes,
@@ -41,12 +41,12 @@ export async function getCloudKeyPair({
 
   await saveKeyPairToCloud({
     name: CLOUD_KEY,
-    publicKey,
+    publicKey: publicKey.value,
     privateKey,
   });
 
   return {
-    publicKey,
+    publicKey: publicKey.value,
     privateKey,
   };
 }

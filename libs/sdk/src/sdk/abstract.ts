@@ -1,4 +1,5 @@
 import {
+  AccountValidationResult,
   Coin,
   Delegation,
   EnrichedValidator,
@@ -11,6 +12,12 @@ import { Chain } from "../chains";
 
 export abstract class AbstractSdk {
   protected constructor(protected chainId: Chain) {}
+
+  public abstract validateAccount({
+    address,
+  }: {
+    address: string;
+  }): Promise<AccountValidationResult>;
 
   public abstract fetchPrices(): Promise<Record<string, number>>;
   public abstract fetchBalances({

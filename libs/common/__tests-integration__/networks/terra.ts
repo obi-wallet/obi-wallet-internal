@@ -1,4 +1,8 @@
-import { TerraChain, terraChains } from "@obi-wallet/sdk";
+import {
+  generateSec256k1KeyPair,
+  TerraChain,
+  terraChains,
+} from "@obi-wallet/sdk";
 import {
   LegacyAminoMultisigPublicKey,
   MsgSend,
@@ -6,7 +10,7 @@ import {
   SimplePublicKey,
 } from "@terra-money/feather.js";
 
-import { generateSec256k1KeyPair, terra } from "../../src";
+import { terra } from "../../src";
 import { getNewAccountMessage } from "../../src/networks/terra/messages";
 import { wrapMessages } from "../../src/networks/terra/wrap-messages";
 
@@ -69,7 +73,7 @@ test("createAndSignMultisigTransaction (second key signs)", async () => {
 
   const multisigKey2 = new LegacyAminoMultisigPublicKey(1, [
     new SimplePublicKey(publicKey),
-    new SimplePublicKey(publicKey2),
+    new SimplePublicKey(publicKey2.value),
   ]);
   const multisigAddress2 = multisigKey2.address("terra");
   const message = new MsgSend(multisigAddress2, multisigAddress2, { uluna: 1 });

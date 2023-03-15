@@ -1,11 +1,5 @@
-import {
-  cosmos,
-  GatekeeperConfig,
-  generateSec256k1KeyPair,
-  terra,
-  Text,
-} from "@obi-wallet/common";
-import { Chain } from "@obi-wallet/sdk";
+import { cosmos, GatekeeperConfig, terra, Text } from "@obi-wallet/common";
+import { generateSec256k1KeyPair, Chain } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -79,22 +73,17 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
             disabled={!name}
             onPress={() => {
               const { publicKey, privateKey } = generateSec256k1KeyPair();
-              const aminoPublicKey = {
-                type: "tendermint/PubKeySecp256k1" as const,
-                value: publicKey,
-              };
-
               const address = Chain.select({
                 chainId: wallet.chain,
                 onCosmosChain(chainId) {
                   return cosmos.getAddress({
                     chainId,
-                    publicKey: aminoPublicKey,
+                    publicKey,
                   });
                 },
                 onTerraChain() {
                   return terra.getAddress({
-                    publicKey: aminoPublicKey,
+                    publicKey,
                   });
                 },
               });
@@ -109,8 +98,8 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
                   address,
                   autoSign: null,
                   spendLimit: null,
-                  privateKey: privateKey,
-                  publicKey: aminoPublicKey,
+                  privateKey,
+                  publicKey,
                 },
               });
 
