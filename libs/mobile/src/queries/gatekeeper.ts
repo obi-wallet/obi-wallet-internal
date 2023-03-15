@@ -29,19 +29,9 @@ export function getPermissionedAddressesQuery({
   return {
     queryKey: ["gatekeeper", { chainId, spendLimitGatekeeper }],
     queryFn: async () => {
-      return Chain.select({
-        chainId,
-        async onTerraChain(chainId) {
-          invariant(spendLimitGatekeeper, "spendLimitGatekeeper is required");
-          return await terra.fetchPermissionedAddresses({
-            spendLimitGatekeeper,
-            chainId,
-          });
-        },
-        async onCosmosChain() {
-          // TODO: not implemented yet
-          return [];
-        },
+      invariant(spendLimitGatekeeper, "spendLimitGatekeeper is required");
+      return await Sdk.chainId(chainId).fetchPermissionedAddresses({
+        spendLimitGatekeeper,
       });
     },
     enabled: !!spendLimitGatekeeper,

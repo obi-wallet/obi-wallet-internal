@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GatekeeperConfig, Text } from "@obi-wallet/common";
+import { Sdk } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { AccAddress } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -28,23 +28,27 @@ export type CreateBeneficiaryAccountScreenProps = NativeStackScreenProps<
 const trim = <T extends z.ZodTypeAny>(schema: T) =>
   z.preprocess((val) => String(val).trim(), schema);
 
-const schema = z.object({
-  name: trim(z.string().nonempty("Name cannot be empty")),
-  address: trim(
-    z
-      .string()
-      .nonempty("Address cannot be empty")
-      .refine((address) => AccAddress.validate(address, "terra"), {
-        message: "Invalid Terra Address",
-      })
-  ),
-});
-
 export const CreateBeneficiaryAccountScreen =
   observer<CreateBeneficiaryAccountScreenProps>(
     function CreateBeneficiaryAccountScreen({ navigation }) {
       const { draftsStore } = useStore();
       const wallet = useMultisigWallet();
+      const schema = z.object({
+        name: trim(z.string().nonempty("Name cannot be empty")),
+        address: trim(
+          z
+            .string()
+            .nonempty("Address cannot be empty")
+            .refine(
+              (address) => {
+                return Sdk.chainId(wallet.chain).validateAddress({ address });
+              },
+              {
+                message: "Invalid Address",
+              }
+            )
+        ),
+      });
       const { control, handleSubmit, formState } = useForm({
         defaultValues: {
           name: "",

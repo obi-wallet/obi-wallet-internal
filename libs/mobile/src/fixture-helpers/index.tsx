@@ -1,10 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
-import {
-  GatekeeperConfig,
-  generateSec256k1KeyPair,
-  MultisigKey,
-  terra,
-} from "@obi-wallet/common";
+import { GatekeeperConfig, MultisigKey, terra } from "@obi-wallet/common";
+import { generateSec256k1KeyPair } from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect } from "react";
@@ -97,10 +93,7 @@ export const GatekeeperConfigDraft = {
 
       const { publicKey, privateKey } = generateSec256k1KeyPair();
       const address = terra.getAddress({
-        publicKey: {
-          type: "tendermint/PubKeySecp256k1",
-          value: publicKey,
-        },
+        publicKey,
       });
 
       draft.value.addBeneficiary({
@@ -127,10 +120,7 @@ export const GatekeeperConfigDraft = {
           icon: "",
         },
         address,
-        publicKey: {
-          type: "tendermint/PubKeySecp256k1",
-          value: publicKey,
-        },
+        publicKey,
         privateKey: privateKey,
         spendLimit: null,
         autoSign: null,
@@ -142,10 +132,7 @@ export const GatekeeperConfigDraft = {
           icon: "",
         },
         address,
-        publicKey: {
-          type: "tendermint/PubKeySecp256k1",
-          value: publicKey,
-        },
+        publicKey,
         privateKey: privateKey,
         spendLimit: {
           period: {
@@ -162,10 +149,7 @@ export const GatekeeperConfigDraft = {
           icon: "",
         },
         address,
-        publicKey: {
-          type: "tendermint/PubKeySecp256k1",
-          value: publicKey,
-        },
+        publicKey,
         privateKey: privateKey,
         spendLimit: {
           period: {
@@ -182,10 +166,7 @@ export const GatekeeperConfigDraft = {
 
       wallet.addSinglesigWallet({
         type: "singlesig-wallet",
-        publicKey: {
-          type: "tendermint/PubKeySecp256k1",
-          value: publicKey,
-        },
+        publicKey,
         privateKey: privateKey,
       });
     }, [draftsStore, wallet]);

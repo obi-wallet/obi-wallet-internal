@@ -1,0 +1,62 @@
+import {
+  AccountData,
+  AminoSignResponse,
+  encodeSecp256k1Signature,
+  OfflineAminoSigner as CosmosOfflineAminoSigner,
+  pubkeyToAddress,
+  serializeSignDoc,
+  StdSignDoc,
+} from "@cosmjs/amino";
+import { Sha256 } from "@cosmjs/crypto";
+
+import { AbstractSigner } from "../../signers";
+
+export class OfflineAminoSigner implements CosmosOfflineAminoSigner {
+  protected constructor(
+    protected signer: AbstractSigner,
+    protected prefix: string
+  ) {}
+
+  public static fromSigner({
+    signer,
+    prefix,
+  }: {
+    signer: AbstractSigner;
+    prefix: string;
+  }) {
+    return new OfflineAminoSigner(signer, prefix);
+  }
+
+  public get address(): string {
+    return pubkeyToAddress(this.signer.publicKey, this.prefix);
+  }
+
+  protected get publicKey(): Uint8Array {
+    return new Uint8Array(Buffer.from(this.signer.publicKey.value, "base64"));
+  }
+
+  public async getAccounts(): Promise<readonly AccountData[]> {
+    return [
+      {
+        algo: "secp256k1",
+        address: this.address,
+        pubkey: this.publicKey,
+      },
+    ];
+  }
+
+  public async signAmino(
+    signerAddress: string,
+    signDoc: StdSignDoc
+  ): Promise<AminoSignResponse> {
+    if (signerAddress !== this.address) {
+      throw new Error(`Address ${signerAddress} not found in wallet`);
+    }
+    const hash = new Sha256(serializeSignDoc(signDoc)).digest();
+    const signature = await this.signer.signHash(hash);
+    return {
+      signed: signDoc,
+      signature: encodeSecp256k1Signature(this.publicKey, signature),
+    };
+  }
+}

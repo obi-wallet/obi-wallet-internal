@@ -1,6 +1,8 @@
 import {
+  AccAddress,
   Coins,
   LCDClient,
+  MsgSend,
   Validator as RawValidator,
 } from "@terra-money/feather.js";
 import {
@@ -11,22 +13,28 @@ import {
   BondStatus,
   bondStatusFromJSON,
 } from "@terra-money/terra.proto/cosmos/staking/v1beta1/staking";
+import { AxiosError } from "axios";
 import BigNumber from "bignumber.js";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
+import { Key } from "./key";
 import { tokenPairs } from "./token-pairs";
 import { TerraChain, terraChains } from "../../chains";
 import { withTerraClient } from "../../clients";
+import { AbstractSigner } from "../../signers";
 import { AbstractSdk } from "../abstract";
 import {
+  AccountValidationResult,
   Coin,
   Delegation,
   EnrichedValidator,
+  GatekeeperContractAddresses,
+  PermissionedAddress,
+  RpcError,
   UnbondingDelegation,
 } from "../common";
-import { GatekeeperContractAddresses } from "../common/gatekeeper";
 
 export class TerraSdk extends AbstractSdk {
   protected constructor(protected chainId: TerraChain) {
@@ -35,6 +43,73 @@ export class TerraSdk extends AbstractSdk {
 
   public get chain() {
     return terraChains[this.chainId];
+  }
+
+  public validateAddress({ address }: { address: string }) {
+    return AccAddress.validate(address, this.chain.prefix);
+  }
+
+  public async validateAccount({ address }: { address: string }) {
+    if (!this.validateAddress({ address })) {
+      return AccountValidationResult.INVALID_ADDRESS;
+    }
+    const account = await this.fetchAccount({ address });
+    if (!account) {
+      return AccountValidationResult.ACCOUNT_NOT_READY;
+    }
+    if (!account.getPublicKey()) {
+      return AccountValidationResult.PUBLIC_KEY_NOT_READY;
+    }
+    return AccountValidationResult.READY;
+  }
+
+  public async prepareSigner({ signer }: { signer: AbstractSigner }) {
+    const key = Key.fromSigner(signer);
+    const address = key.accAddress(this.chain.prefix);
+
+    await this.prepareAccount({ address });
+
+    const validationResult = await this.validateAccount({ address });
+    invariant(
+      validationResult >= AccountValidationResult.PUBLIC_KEY_NOT_READY,
+      "Account not ready"
+    );
+    if (validationResult <= AccountValidationResult.PUBLIC_KEY_NOT_READY) {
+      await this.withClient(async (client) => {
+        const wallet = client.wallet(key);
+        const { denom } = this.chain;
+        const send = new MsgSend(address, address, { [denom]: 1 });
+        const tx = await wallet.createAndSignTx({
+          chainID: this.chainId,
+          msgs: [send],
+        });
+        await client.tx.broadcastBlock(tx, this.chainId);
+      });
+      while (
+        (await this.validateAccount({ address })) <=
+        AccountValidationResult.PUBLIC_KEY_NOT_READY
+      ) {
+        await this.wait({ ms: 100 });
+      }
+    }
+  }
+
+  protected async fetchAccount({ address }: { address: string }) {
+    try {
+      return await this.withClient(async (client) => {
+        return await client.auth.accountInfo(address);
+      });
+    } catch (e) {
+      const error = e as AxiosError;
+      const data = error.response?.data;
+
+      const result = RpcError.safeParse(data);
+      if (result.success && result.data.message.includes("code = NotFound")) {
+        return null;
+      }
+
+      throw e;
+    }
   }
 
   public async fetchPrices() {
@@ -400,6 +475,22 @@ export class TerraSdk extends AbstractSdk {
         gatekeeper_contracts: {},
       });
       return schema.parse(response);
+    });
+  }
+
+  public async fetchPermissionedAddresses({
+    spendLimitGatekeeper,
+  }: {
+    spendLimitGatekeeper: string;
+  }) {
+    return await this.withClient(async (client) => {
+      const schema = z.object({
+        permissioned_addresses: z.array(PermissionedAddress),
+      });
+      const response = await client.wasm.contractQuery(spendLimitGatekeeper, {
+        permissioned_addresses: {},
+      });
+      return schema.parse(response).permissioned_addresses;
     });
   }
 

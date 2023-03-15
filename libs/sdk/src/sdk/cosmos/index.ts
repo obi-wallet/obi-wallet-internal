@@ -1,16 +1,26 @@
 import { CosmWasmClient, JsonObject } from "@cosmjs/cosmwasm-stargate";
-import { StargateClient } from "@cosmjs/stargate";
+import { coins, OfflineSigner } from "@cosmjs/proto-signing";
+import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
+import { Bech32Address } from "@keplr-wallet/cosmos";
 import * as R from "ramda";
+import invariant from "tiny-invariant";
 import warning from "tiny-warning";
 
+import { OfflineAminoSigner } from "./offline-amino-signer";
 import { CosmosChain, cosmosChains } from "../../chains";
 import {
   withCosmosClients,
   withCosmosCosmWasmClient,
+  withCosmosSigningStargateClient,
   withCosmosStargateClient,
 } from "../../clients";
+import { AbstractSigner } from "../../signers";
 import { AbstractSdk } from "../abstract";
-import { Coin } from "../common";
+import { AccountValidationResult, Coin } from "../common";
+
+function notImplemented(message: string) {
+  warning(false, message);
+}
 
 export class CosmosSdk extends AbstractSdk {
   protected constructor(protected chainId: CosmosChain) {
@@ -19,6 +29,71 @@ export class CosmosSdk extends AbstractSdk {
 
   public get chain() {
     return cosmosChains[this.chainId];
+  }
+
+  public validateAddress({ address }: { address: string }) {
+    try {
+      Bech32Address.validate(address, this.chain.prefix);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  public async validateAccount({ address }: { address: string }) {
+    if (!this.validateAddress({ address })) {
+      return AccountValidationResult.INVALID_ADDRESS;
+    }
+    const account = await this.fetchAccount({ address });
+    if (!account) {
+      return AccountValidationResult.ACCOUNT_NOT_READY;
+    }
+    if (!account.pubkey) {
+      return AccountValidationResult.PUBLIC_KEY_NOT_READY;
+    }
+    return AccountValidationResult.READY;
+  }
+
+  public async prepareSigner({ signer }: { signer: AbstractSigner }) {
+    const offlineAminoSigner = OfflineAminoSigner.fromSigner({
+      signer,
+      prefix: this.chain.prefix,
+    });
+    const address = offlineAminoSigner.address;
+
+    await this.prepareAccount({ address });
+
+    const validationResult = await this.validateAccount({ address });
+    invariant(
+      validationResult >= AccountValidationResult.PUBLIC_KEY_NOT_READY,
+      "Account not ready"
+    );
+    if (validationResult <= AccountValidationResult.PUBLIC_KEY_NOT_READY) {
+      await this.withSigningStargateClient(
+        offlineAminoSigner,
+        async (client) => {
+          await client.sendTokens(
+            address,
+            address,
+            coins(1, this.chain.denom),
+            "auto",
+            ""
+          );
+        }
+      );
+      while (
+        (await this.validateAccount({ address })) <=
+        AccountValidationResult.PUBLIC_KEY_NOT_READY
+      ) {
+        await this.wait({ ms: 100 });
+      }
+    }
+  }
+
+  protected async fetchAccount({ address }: { address: string }) {
+    return this.withStargateClient(async (client) => {
+      return await client.getAccount(address);
+    });
   }
 
   public async fetchPrices() {
@@ -196,22 +271,22 @@ export class CosmosSdk extends AbstractSdk {
   }
 
   public async fetchDelegations(_: { address: string }) {
-    warning(true, "fetchDelegations not implemented for Cosmos");
+    notImplemented("fetchDelegations not implemented for Cosmos");
     return [];
   }
 
   public async fetchUnbondingDelegations(_: { address: string }) {
-    warning(true, "fetchUnbondingDelegations not implemented for Cosmos");
+    notImplemented("fetchUnbondingDelegations not implemented for Cosmos");
     return [];
   }
 
   public async fetchValidators() {
-    warning(true, "fetchValidators not implemented for Cosmos");
+    notImplemented("fetchValidators not implemented for Cosmos");
     return [];
   }
 
   public async fetchRewards(_: { address: string }) {
-    warning(true, "fetchRewards not implemented for Cosmos");
+    notImplemented("fetchRewards not implemented for Cosmos");
     return {
       perDelegator: [],
       total: {
@@ -240,12 +315,27 @@ export class CosmosSdk extends AbstractSdk {
     };
   }
 
+  public async fetchPermissionedAddresses(_: { spendLimitGatekeeper: string }) {
+    notImplemented("fetchPermissionedAddresses not implemented for Cosmos");
+    return [];
+  }
+
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
     return withCosmosCosmWasmClient(this.chainId, f);
   }
 
   public withStargateClient<T>(f: (client: StargateClient) => T) {
     return withCosmosStargateClient(this.chainId, f);
+  }
+
+  public withSigningStargateClient<T>(
+    signer: OfflineSigner,
+    f: (client: SigningStargateClient) => T
+  ) {
+    return withCosmosSigningStargateClient(
+      { chainId: this.chainId, signer },
+      f
+    );
   }
 
   public withClients<T>(
