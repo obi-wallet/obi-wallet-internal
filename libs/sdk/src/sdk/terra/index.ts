@@ -42,8 +42,12 @@ export class TerraSdk extends AbstractSdk {
     return terraChains[this.chainId];
   }
 
+  public validateAddress({ address }: { address: string }) {
+    return AccAddress.validate(address, this.chain.prefix);
+  }
+
   public async validateAccount({ address }: { address: string }) {
-    if (!AccAddress.validate(address, this.chain.prefix)) {
+    if (!this.validateAddress({ address })) {
       return AccountValidationResult.INVALID_ADDRESS;
     }
     const account = await this.fetchAccount({ address });

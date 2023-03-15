@@ -13,6 +13,7 @@ import { Chain } from "../chains";
 export abstract class AbstractSdk {
   protected constructor(protected chainId: Chain) {}
 
+  public abstract validateAddress({ address }: { address: string }): boolean;
   public abstract validateAccount({
     address,
   }: {

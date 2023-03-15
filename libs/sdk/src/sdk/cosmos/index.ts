@@ -26,10 +26,17 @@ export class CosmosSdk extends AbstractSdk {
     return cosmosChains[this.chainId];
   }
 
-  public async validateAccount({ address }: { address: string }) {
+  public validateAddress({ address }: { address: string }) {
     try {
       Bech32Address.validate(address, this.chain.prefix);
+      return true;
     } catch (e) {
+      return false;
+    }
+  }
+
+  public async validateAccount({ address }: { address: string }) {
+    if (!this.validateAddress({ address })) {
       return AccountValidationResult.INVALID_ADDRESS;
     }
     const account = await this.fetchAccount({ address });
