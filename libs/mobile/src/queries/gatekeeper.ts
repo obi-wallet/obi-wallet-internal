@@ -1,5 +1,5 @@
 import { terra } from "@obi-wallet/common";
-import { Chain } from "@obi-wallet/sdk";
+import { Chain, Sdk } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
 export function getGatekeeperContractAddressesQuery({
@@ -12,22 +12,8 @@ export function getGatekeeperContractAddressesQuery({
   return {
     queryKey: ["gatekeeper", { chainId, address }],
     queryFn: async () => {
-      return Chain.select({
-        chainId,
-        async onTerraChain(chainId) {
-          return await terra.fetchGatekeeperContractAddresses({
-            proxyAddress: address,
-            chainId,
-          });
-        },
-        async onCosmosChain() {
-          // TODO: not implemented yet
-          return {
-            spendLimitGatekeeper: null,
-            sessionKeyGatekeeper: null,
-            debtGatekeeper: null,
-          };
-        },
+      return await Sdk.chainId(chainId).fetchGatekeeperContractAddresses({
+        proxyAddress: address,
       });
     },
   };

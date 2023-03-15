@@ -1,4 +1,11 @@
-import { Coin, Delegation, UnbondingDelegation } from "./common";
+import {
+  Coin,
+  Delegation,
+  EnrichedValidator,
+  GatekeeperContractAddresses,
+  Rewards,
+  UnbondingDelegation,
+} from "./common";
 import { Chain } from "../chains";
 
 export abstract class AbstractSdk {
@@ -21,4 +28,22 @@ export abstract class AbstractSdk {
   }: {
     address: string;
   }): Promise<UnbondingDelegation[]>;
+  public abstract fetchValidators(): Promise<EnrichedValidator[]>;
+  public abstract fetchRewards({
+    address,
+  }: {
+    address: string;
+  }): Promise<Rewards>;
+
+  public abstract fetchCodeId({
+    contract,
+  }: {
+    contract: string;
+  }): Promise<number>;
+
+  public abstract fetchGatekeeperContractAddresses({
+    proxyAddress,
+  }: {
+    proxyAddress: string;
+  }): Promise<GatekeeperContractAddresses>;
 }

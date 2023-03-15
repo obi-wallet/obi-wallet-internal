@@ -1,5 +1,5 @@
 import { cosmos, terra } from "@obi-wallet/common";
-import { Chain } from "@obi-wallet/sdk";
+import { Chain, Sdk } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
 import { staleTime } from "./helpers";
@@ -27,9 +27,8 @@ export function getCodeIdsQuery({
         },
         async onCosmosChain(chainId) {
           return {
-            userAccount: await cosmos.fetchCodeId({
-              address,
-              chainId,
+            userAccount: await Sdk.chainId(chainId).fetchCodeId({
+              contract: address,
             }),
             // TODO: not implemented yet
             spendLimitGatekeeper: null,

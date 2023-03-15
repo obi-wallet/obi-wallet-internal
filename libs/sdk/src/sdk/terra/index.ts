@@ -1,21 +1,40 @@
-import { LCDClient } from "@terra-money/feather.js";
+import {
+  Coins,
+  LCDClient,
+  Validator as RawValidator,
+} from "@terra-money/feather.js";
 import {
   Pagination,
   PaginationOptions,
 } from "@terra-money/feather.js/dist/client/lcd/APIRequester";
+import {
+  BondStatus,
+  bondStatusFromJSON,
+} from "@terra-money/terra.proto/cosmos/staking/v1beta1/staking";
 import BigNumber from "bignumber.js";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
 import { tokenPairs } from "./token-pairs";
 import { TerraChain, terraChains } from "../../chains";
 import { withTerraClient } from "../../clients";
 import { AbstractSdk } from "../abstract";
-import { Coin, Delegation, UnbondingDelegation } from "../common";
+import {
+  Coin,
+  Delegation,
+  EnrichedValidator,
+  UnbondingDelegation,
+} from "../common";
+import { GatekeeperContractAddresses } from "../common/gatekeeper";
 
 export class TerraSdk extends AbstractSdk {
   protected constructor(protected chainId: TerraChain) {
     super(chainId);
+  }
+
+  public get chain() {
+    return terraChains[this.chainId];
   }
 
   public async fetchPrices() {
@@ -224,7 +243,7 @@ export class TerraSdk extends AbstractSdk {
               return unbondingDelegation.entries.map((entry) => {
                 return {
                   balance: {
-                    denom: terraChains[this.chainId].denom,
+                    denom: this.chain.denom,
                     amount: entry.balance.toString(),
                   },
                   validator: {
@@ -239,6 +258,148 @@ export class TerraSdk extends AbstractSdk {
           )
         )
       );
+    });
+  }
+
+  public async fetchValidators() {
+    return await this.withClient(async (client) => {
+      const rawValidators = await this.fetchAllPages((paginationOptions) => {
+        return client.staking.validators(this.chainId, paginationOptions);
+      });
+
+      const MAX_COMMISSION = 0.05;
+      const VOTE_POWER_INCLUDE = 0.65;
+
+      const totalStaked = BigNumber.sum(
+        ...rawValidators.map(({ tokens = 0 }) => Number(tokens))
+      ).toNumber();
+      const getVotePower = (v: RawValidator) => Number(v.tokens) / totalStaked;
+
+      const prioritizedValidators = rawValidators
+        .sort((a, b) => getVotePower(a) - getVotePower(b)) // least to greatest
+        .reduce(
+          (acc, cur) => {
+            acc.sumVotePower += getVotePower(cur);
+            if (acc.sumVotePower < VOTE_POWER_INCLUDE) {
+              acc.eligible.push(cur);
+            }
+            return acc;
+          },
+          {
+            sumVotePower: 0,
+            eligible: [] as RawValidator[],
+          }
+        )
+        .eligible.filter(
+          ({ commission, status }) =>
+            bondStatusFromJSON(BondStatus[status]) ===
+              BondStatus.BOND_STATUS_BONDED &&
+            Number(commission.commission_rates.rate) <= MAX_COMMISSION
+        )
+        .map(({ operator_address }) => operator_address);
+
+      return rawValidators
+        .map((validator): EnrichedValidator => {
+          const promoted =
+            validator.operator_address === this.chain.obiValidator;
+          const rank =
+            (promoted ? 2 : 0) +
+            (prioritizedValidators.includes(validator.operator_address)
+              ? 1
+              : 0) +
+            Math.random();
+
+          return {
+            icon: validator.description.identity
+              ? `https://raw.githubusercontent.com/terra-money/validator-images/main/images/${validator.description.identity}.jpg`
+              : null,
+            label: validator.description.moniker,
+            address: validator.operator_address,
+            votingPower: (
+              (Number(validator.tokens) / totalStaked) *
+              100
+            ).toFixed(2),
+            commission: validator.commission.commission_rates.rate
+              .times(100)
+              .toFixed(2),
+            promoted,
+            active:
+              bondStatusFromJSON(BondStatus[validator.status]) ===
+              BondStatus.BOND_STATUS_BONDED,
+            jailed: validator.jailed,
+            rank,
+          };
+        })
+        .sort((a, b) => b.rank - a.rank);
+    });
+  }
+
+  public async fetchRewards({ address }: { address: string }) {
+    return await this.withClient(async (client) => {
+      const rewards = await client.distribution.rewards(address);
+
+      const handleRewards = (coins: Coins) => {
+        const mapped = coins.map((coin) => {
+          return {
+            denom: coin.denom,
+            amount: coin.amount.toString(),
+          };
+        });
+        return mapped.length > 0
+          ? mapped[0]
+          : {
+              denom: this.chain.denom,
+              amount: "0",
+            };
+      };
+
+      const perDelegator = R.values(
+        R.mapObjIndexed((rewards, address) => {
+          return {
+            address,
+            rewards: handleRewards(rewards),
+          };
+        }, rewards.rewards)
+      );
+      const total = handleRewards(rewards.total);
+
+      return {
+        perDelegator,
+        total,
+      };
+    });
+  }
+
+  public async fetchCodeId({ contract }: { contract: string }) {
+    return await this.withClient(async (client) => {
+      const { code_id } = await client.wasm.contractInfo(contract);
+      return code_id;
+    });
+  }
+
+  public async fetchGatekeeperContractAddresses({
+    proxyAddress,
+  }: {
+    proxyAddress: string;
+  }) {
+    return await this.withClient(async (client) => {
+      const schema = z
+        .object({
+          spendlimit_gatekeeper_contract_addr: z.string().nullable(),
+          sessionkey_gatekeeper_contract_addr: z.string().nullable(),
+          debt_gatekeeper_contract_addr: z.string().nullable(),
+        })
+        .transform((response): GatekeeperContractAddresses => {
+          return {
+            spendLimitGatekeeper: response.spendlimit_gatekeeper_contract_addr,
+            sessionKeyGatekeeper: response.sessionkey_gatekeeper_contract_addr,
+            debtGatekeeper: response.debt_gatekeeper_contract_addr,
+          };
+        });
+      const response = await client.wasm.contractQuery(proxyAddress, {
+        gatekeeper_contracts: {},
+      });
+      return schema.parse(response);
     });
   }
 

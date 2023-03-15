@@ -3,7 +3,7 @@ import { StargateClient } from "@cosmjs/stargate";
 import * as R from "ramda";
 import warning from "tiny-warning";
 
-import { CosmosChain } from "../../chains";
+import { CosmosChain, cosmosChains } from "../../chains";
 import {
   withCosmosClients,
   withCosmosCosmWasmClient,
@@ -15,6 +15,10 @@ import { Coin } from "../common";
 export class CosmosSdk extends AbstractSdk {
   protected constructor(protected chainId: CosmosChain) {
     super(chainId);
+  }
+
+  public get chain() {
+    return cosmosChains[this.chainId];
   }
 
   public async fetchPrices() {
@@ -199,6 +203,41 @@ export class CosmosSdk extends AbstractSdk {
   public async fetchUnbondingDelegations(_: { address: string }) {
     warning(true, "fetchUnbondingDelegations not implemented for Cosmos");
     return [];
+  }
+
+  public async fetchValidators() {
+    warning(true, "fetchValidators not implemented for Cosmos");
+    return [];
+  }
+
+  public async fetchRewards(_: { address: string }) {
+    warning(true, "fetchRewards not implemented for Cosmos");
+    return {
+      perDelegator: [],
+      total: {
+        denom: this.chain.denom,
+        amount: "0",
+      },
+    };
+  }
+
+  public async fetchCodeId({ contract }: { contract: string }) {
+    return await this.withCosmWasmClient(async (client) => {
+      const { codeId } = await client.getContract(contract);
+      return codeId;
+    });
+  }
+
+  public async fetchGatekeeperContractAddresses(_: { proxyAddress: string }) {
+    warning(
+      true,
+      "fetchGatekeeperContractAddresses not implemented for Cosmos"
+    );
+    return {
+      spendLimitGatekeeper: null,
+      sessionKeyGatekeeper: null,
+      debtGatekeeper: null,
+    };
   }
 
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
