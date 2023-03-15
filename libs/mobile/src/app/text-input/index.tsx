@@ -62,7 +62,7 @@ export const TextInput = observer<
         style={[
           styles.input,
           inputStyle,
-          { ...(invalidMessage ? { borderColor: "#FF2222" } : {}) },
+          invalidMessage ? { borderColor: "#FF2222" } : undefined,
         ]}
         placeholderTextColor={isObi ? "rgba(250,250,250,.5)" : "#4B4E6E"}
         {...props}

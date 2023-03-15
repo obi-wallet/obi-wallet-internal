@@ -25,14 +25,12 @@ export type CreateBeneficiaryAccountScreenProps = NativeStackScreenProps<
   AccountsRoute.CreateBeneficiaryAccount
 >;
 
-const schema = z.object({
-  name: z.preprocess(
-    (val) => String(val).trim(),
-    z.string().nonempty("Name cannot be empty")
-  ),
+const trim = <T extends z.ZodTypeAny>(schema: T) =>
+  z.preprocess((val) => String(val).trim(), schema);
 
-  address: z.preprocess(
-    (val) => String(val).trim(),
+const schema = z.object({
+  name: trim(z.string().nonempty("Name cannot be empty")),
+  address: trim(
     z
       .string()
       .nonempty("Address cannot be empty")
