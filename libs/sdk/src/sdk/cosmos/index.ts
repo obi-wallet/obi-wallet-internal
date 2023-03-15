@@ -1,7 +1,26 @@
-import { CosmWasmClient, JsonObject } from "@cosmjs/cosmwasm-stargate";
+import { pubkeyToAddress } from "@cosmjs/amino";
+import {
+  CosmWasmClient,
+  createWasmAminoConverters,
+  JsonObject,
+} from "@cosmjs/cosmwasm-stargate";
 import { coins, OfflineSigner } from "@cosmjs/proto-signing";
-import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
+import {
+  AminoTypes,
+  createAuthzAminoConverters,
+  createBankAminoConverters,
+  createDistributionAminoConverters,
+  createFeegrantAminoConverters,
+  createGovAminoConverters,
+  createIbcAminoConverters,
+  createStakingAminoConverters,
+  isDeliverTxSuccess,
+  SigningStargateClient,
+  StargateClient,
+} from "@cosmjs/stargate";
+import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 import warning from "tiny-warning";
@@ -14,7 +33,9 @@ import {
   withCosmosSigningStargateClient,
   withCosmosStargateClient,
 } from "../../clients";
+import { PublicKey } from "../../keys";
 import { AbstractSigner } from "../../signers";
+import { Message, SignedTransaction } from "../../transactions";
 import { AbstractSdk } from "../abstract";
 import { AccountValidationResult, Coin } from "../common";
 
@@ -55,14 +76,8 @@ export class CosmosSdk extends AbstractSdk {
   }
 
   public async prepareSigner({ signer }: { signer: AbstractSigner }) {
-    const offlineAminoSigner = OfflineAminoSigner.fromSigner({
-      signer,
-      prefix: this.chain.prefix,
-    });
-    const address = offlineAminoSigner.address;
-
+    const address = this.getAddressOfSigner({ signer });
     await this.prepareAccount({ address });
-
     const validationResult = await this.validateAccount({ address });
     invariant(
       validationResult >= AccountValidationResult.PUBLIC_KEY_NOT_READY,
@@ -70,7 +85,10 @@ export class CosmosSdk extends AbstractSdk {
     );
     if (validationResult <= AccountValidationResult.PUBLIC_KEY_NOT_READY) {
       await this.withSigningStargateClient(
-        offlineAminoSigner,
+        OfflineAminoSigner.fromSigner({
+          signer,
+          prefix: this.chain.prefix,
+        }),
         async (client) => {
           await client.sendTokens(
             address,
@@ -320,6 +338,61 @@ export class CosmosSdk extends AbstractSdk {
     return [];
   }
 
+  public getAddressOfPublicKey({ publicKey }: { publicKey: PublicKey }) {
+    return pubkeyToAddress(publicKey, this.chain.prefix);
+  }
+
+  public async createAndSignTransaction({
+    signer,
+    messages,
+  }: {
+    signer: AbstractSigner;
+    messages: Message[];
+  }) {
+    return await this.withSigningStargateClient(
+      OfflineAminoSigner.fromSigner({
+        signer,
+        prefix: this.chain.prefix,
+      }),
+      async (client) => {
+        const encodeObjects = messages.map((message) => {
+          return this.aminoTypes.fromAmino(message.toAmino());
+        });
+        const gas = await client.simulate(
+          this.getAddressOfSigner({ signer }),
+          encodeObjects,
+          ""
+        );
+        const transaction = await client.sign(
+          this.getAddressOfSigner({ signer }),
+          encodeObjects,
+          {
+            amount: coins(6000, this.chain.denom),
+            gas: gas.toString(),
+          },
+          ""
+        );
+        return TxRaw.encode(transaction).finish();
+      }
+    );
+  }
+
+  public async broadcastSignedTransaction({
+    signedTransaction,
+  }: {
+    signedTransaction: SignedTransaction;
+  }) {
+    return await this.withStargateClient(async (client) => {
+      const rawResult = await client.broadcastTx(signedTransaction);
+      return {
+        success: isDeliverTxSuccess(rawResult),
+        transactionHash: rawResult.transactionHash,
+        rawLog: rawResult.rawLog,
+        rawResult,
+      };
+    });
+  }
+
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
     return withCosmosCosmWasmClient(this.chainId, f);
   }
@@ -345,6 +418,20 @@ export class CosmosSdk extends AbstractSdk {
     }) => T
   ) {
     return withCosmosClients(this.chainId, f);
+  }
+
+  protected get aminoTypes() {
+    return new AminoTypes({
+      ...createAuthzAminoConverters(),
+      ...createBankAminoConverters(),
+      ...createDistributionAminoConverters(),
+      ...createGovAminoConverters(),
+      ...createStakingAminoConverters(this.chain.prefix),
+      ...createIbcAminoConverters(),
+      ...createFeegrantAminoConverters(),
+      ...createVestingAminoConverters(),
+      ...createWasmAminoConverters(),
+    });
   }
 
   public static chainId(chainId: CosmosChain) {

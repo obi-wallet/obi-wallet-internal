@@ -1,3 +1,5 @@
+import { MsgSend } from "@terra-money/feather.js";
+
 import { Sdk, Secp256k1KeyPair, Secp256k1PrivateKeySigner } from "../src";
 
 const keyPair: Secp256k1KeyPair = {
@@ -15,13 +17,69 @@ describe("Sec256k1PrivateKeySigner", () => {
     signer = new Secp256k1PrivateKeySigner(keyPair.privateKey);
   });
 
-  describe("Prepare signer", () => {
+  describe("prepareSigner", () => {
     test("Cosmos", async () => {
       await Sdk.chainId("juno-1").prepareSigner({ signer });
     });
 
     test("Terra", async () => {
       await Sdk.chainId("phoenix-1").prepareSigner({ signer });
+    });
+  });
+
+  describe("createAndSignTransaction", () => {
+    describe("Cosmos", () => {
+      test("Successful MsgSend", async () => {
+        const sdk = Sdk.chainId("juno-1");
+        const address = sdk.getAddressOfSigner({ signer });
+        const message = new MsgSend(address, address, { ujuno: 1 });
+        const transaction = await sdk.createAndSignTransaction({
+          signer,
+          messages: [message],
+        });
+        expect(transaction).toBeInstanceOf(Uint8Array);
+      });
+
+      test("Failed MsgSend", async () => {
+        const sdk = Sdk.chainId("juno-1");
+        const address = sdk.getAddressOfSigner({ signer });
+        const message = new MsgSend(address, address, { invalid: 1 });
+        await expect(
+          sdk.createAndSignTransaction({
+            signer,
+            messages: [message],
+          })
+        ).rejects.toMatchObject({
+          message: expect.stringMatching(/0invalid is smaller than 1invalid/),
+        });
+      });
+    });
+
+    describe("Terra", () => {
+      test("Successful MsgSend", async () => {
+        const sdk = Sdk.chainId("phoenix-1");
+        const address = sdk.getAddressOfSigner({ signer });
+        const message = new MsgSend(address, address, { uluna: 1 });
+        const transaction = await sdk.createAndSignTransaction({
+          signer,
+          messages: [message],
+        });
+        expect(transaction).toBeInstanceOf(Uint8Array);
+      });
+
+      test("Failed MsgSend", async () => {
+        const sdk = Sdk.chainId("phoenix-1");
+        const address = sdk.getAddressOfSigner({ signer });
+        const message = new MsgSend(address, address, { invalid: 1 });
+        await expect(
+          sdk.createAndSignTransaction({
+            signer,
+            messages: [message],
+          })
+        ).rejects.toMatchObject({
+          message: expect.stringMatching(/0invalid is smaller than 1invalid/),
+        });
+      });
     });
   });
 });

@@ -1,8 +1,11 @@
 import {
   AccAddress,
   Coins,
+  isTxError,
   LCDClient,
   MsgSend,
+  SimplePublicKey,
+  Tx,
   Validator as RawValidator,
 } from "@terra-money/feather.js";
 import {
@@ -23,7 +26,9 @@ import { Key } from "./key";
 import { tokenPairs } from "./token-pairs";
 import { TerraChain, terraChains } from "../../chains";
 import { withTerraClient } from "../../clients";
+import { PublicKey } from "../../keys";
 import { AbstractSigner } from "../../signers";
+import { Message, SignedTransaction } from "../../transactions";
 import { AbstractSdk } from "../abstract";
 import {
   AccountValidationResult,
@@ -491,6 +496,60 @@ export class TerraSdk extends AbstractSdk {
         permissioned_addresses: {},
       });
       return schema.parse(response).permissioned_addresses;
+    });
+  }
+
+  public getAddressOfPublicKey({ publicKey }: { publicKey: PublicKey }) {
+    return SimplePublicKey.fromAmino(publicKey).address(this.chain.prefix);
+  }
+
+  public async createAndSignTransaction({
+    signer,
+    messages,
+  }: {
+    signer: AbstractSigner;
+    messages: Message[];
+  }) {
+    return await this.withClient(async (client) => {
+      const key = Key.fromSigner(signer);
+      const wallet = client.wallet(key);
+      try {
+        const transaction = await wallet.createAndSignTx({
+          chainID: this.chainId,
+          msgs: messages,
+        });
+        return transaction.toBytes();
+      } catch (e) {
+        const error = e as AxiosError;
+        const data = error.response?.data;
+
+        const result = RpcError.safeParse(data);
+        if (result.success) {
+          throw new Error(result.data.message);
+        }
+
+        throw e;
+      }
+    });
+  }
+
+  public async broadcastSignedTransaction({
+    signedTransaction,
+  }: {
+    signedTransaction: SignedTransaction;
+  }) {
+    return await this.withClient(async (client) => {
+      const transaction = Tx.fromBuffer(Buffer.from(signedTransaction));
+      const rawResult = await client.tx.broadcastBlock(
+        transaction,
+        this.chainId
+      );
+      return {
+        success: !isTxError(rawResult),
+        transactionHash: rawResult.txhash,
+        rawLog: rawResult.raw_log,
+        rawResult,
+      };
     });
   }
 

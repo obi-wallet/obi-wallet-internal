@@ -3,6 +3,7 @@ import invariant from "tiny-invariant";
 
 import {
   AccountValidationResult,
+  BroadcastTransactionResult,
   Coin,
   Delegation,
   EnrichedValidator,
@@ -12,7 +13,9 @@ import {
   UnbondingDelegation,
 } from "./common";
 import { Chain } from "../chains";
+import { PublicKey } from "../keys";
 import { AbstractSigner } from "../signers";
+import { Message, SignedTransaction } from "../transactions";
 
 export abstract class AbstractSdk {
   protected constructor(protected chainId: Chain) {}
@@ -101,6 +104,30 @@ export abstract class AbstractSdk {
       throw new Error("Lending fees failed");
     }
   }
+
+  public abstract getAddressOfPublicKey({
+    publicKey,
+  }: {
+    publicKey: PublicKey;
+  }): string;
+
+  public getAddressOfSigner({ signer }: { signer: AbstractSigner }): string {
+    return this.getAddressOfPublicKey({ publicKey: signer.publicKey });
+  }
+
+  public abstract createAndSignTransaction({
+    signer,
+    messages,
+  }: {
+    signer: AbstractSigner;
+    messages: Message[];
+  }): Promise<SignedTransaction>;
+
+  public abstract broadcastSignedTransaction({
+    signedTransaction,
+  }: {
+    signedTransaction: SignedTransaction;
+  }): Promise<BroadcastTransactionResult>;
 
   protected wait({ ms }: { ms: number }): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
