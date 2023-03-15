@@ -368,6 +368,13 @@ export class TerraSdk extends AbstractSdk {
     });
   }
 
+  public async fetchCodeId({ contract }: { contract: string }) {
+    return await this.withClient(async (client) => {
+      const { code_id } = await client.wasm.contractInfo(contract);
+      return code_id;
+    });
+  }
+
   public withClient<T>(f: (client: LCDClient) => T) {
     return withTerraClient(this.chainId, f);
   }

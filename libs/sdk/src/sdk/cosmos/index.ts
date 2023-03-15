@@ -221,6 +221,13 @@ export class CosmosSdk extends AbstractSdk {
     };
   }
 
+  public async fetchCodeId({ contract }: { contract: string }) {
+    return await this.withCosmWasmClient(async (client) => {
+      const { codeId } = await client.getContract(contract);
+      return codeId;
+    });
+  }
+
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
     return withCosmosCosmWasmClient(this.chainId, f);
   }

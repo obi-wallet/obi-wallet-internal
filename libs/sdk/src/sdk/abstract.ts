@@ -33,4 +33,10 @@ export abstract class AbstractSdk {
   }: {
     address: string;
   }): Promise<Rewards>;
+
+  public abstract fetchCodeId({
+    contract,
+  }: {
+    contract: string;
+  }): Promise<number>;
 }
