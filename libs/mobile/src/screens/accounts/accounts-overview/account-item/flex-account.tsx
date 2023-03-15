@@ -1,6 +1,7 @@
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { FlexAccount, Text, TextInput } from "@obi-wallet/common";
+import { FlexAccountPermissionedAddress } from "@obi-wallet/sdk";
 import Slider from "@react-native-community/slider";
 import { DateTime } from "luxon";
 import { runInAction } from "mobx";
@@ -217,7 +218,14 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
 
     const permissionedAddresses = useContext(PermissionedAddressesContext);
     const permissionedAddress = permissionedAddresses?.find(
-      (address) => address.address === account.address
+      (
+        permissionedAddress
+      ): permissionedAddress is FlexAccountPermissionedAddress => {
+        return (
+          permissionedAddress.address === account.address &&
+          FlexAccountPermissionedAddress.safeParse(permissionedAddress).success
+        );
+      }
     );
     const spendLimit = permissionedAddress?.params.spend_limits?.[0];
     const progressbarAmount = spendLimit
