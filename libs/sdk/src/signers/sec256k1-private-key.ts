@@ -1,9 +1,9 @@
 import secp256k1 from "secp256k1";
 
-import { AbstractSigner } from "./abstract";
+import { Signer } from "./signer";
 import { Sec256k1PrivateKey, Secp256k1PublicKey } from "../keys";
 
-export class Secp256k1PrivateKeySigner extends AbstractSigner {
+export class Secp256k1PrivateKeySigner extends Signer {
   protected readonly privateKey: Uint8Array;
 
   public constructor(privateKey: Sec256k1PrivateKey) {

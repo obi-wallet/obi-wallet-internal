@@ -1,4 +1,4 @@
-import { AbstractSigner, Sdk } from "@obi-wallet/sdk";
+import { Sdk, Signer } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { BlockTxBroadcastResult, Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
@@ -7,7 +7,7 @@ import { AbstractSignatureModalProps } from "./common";
 import { ConfirmMessages } from "./confirm-messages";
 
 export interface SignatureModalRawKeyProps extends AbstractSignatureModalProps {
-  signer: AbstractSigner;
+  signer: Signer;
 }
 
 export const SignatureModalRawKey = observer<SignatureModalRawKeyProps>(

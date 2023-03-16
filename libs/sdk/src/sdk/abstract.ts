@@ -13,8 +13,8 @@ import {
   UnbondingDelegation,
 } from "./common";
 import { Chain } from "../chains";
-import { PublicKey } from "../keys";
-import { AbstractSigner } from "../signers";
+import { MultisigPublicKey, PublicKey } from "../keys";
+import { MultisigSigner, Signer } from "../signers";
 import { Message, SignedTransaction } from "../transactions";
 
 export abstract class AbstractSdk {
@@ -43,11 +43,7 @@ export abstract class AbstractSdk {
       }
     }
   }
-  public abstract prepareSigner({
-    signer,
-  }: {
-    signer: AbstractSigner;
-  }): Promise<void>;
+  public abstract prepareSigner({ signer }: { signer: Signer }): Promise<void>;
 
   public abstract fetchPrices(): Promise<Record<string, number>>;
   public abstract fetchBalances({
@@ -111,7 +107,7 @@ export abstract class AbstractSdk {
     publicKey: PublicKey;
   }): string;
 
-  public getAddressOfSigner({ signer }: { signer: AbstractSigner }): string {
+  public getAddressOfSigner({ signer }: { signer: Signer }): string {
     return this.getAddressOfPublicKey({ publicKey: signer.publicKey });
   }
 
@@ -119,9 +115,17 @@ export abstract class AbstractSdk {
     signer,
     messages,
   }: {
-    signer: AbstractSigner;
+    signer: Signer;
     messages: Message[];
   }): Promise<SignedTransaction>;
+
+  public abstract createMultisigSigner({
+    multisigPublicKey,
+    messages,
+  }: {
+    multisigPublicKey: MultisigPublicKey;
+    messages: Message[];
+  }): Promise<MultisigSigner>;
 
   public abstract broadcastSignedTransaction({
     signedTransaction,

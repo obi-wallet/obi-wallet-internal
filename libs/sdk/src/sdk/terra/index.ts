@@ -24,11 +24,12 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { Key } from "./key";
+import { MultisigSigner } from "./multisig-signer";
 import { tokenPairs } from "./token-pairs";
 import { TerraChain, terraChains } from "../../chains";
 import { withTerraClient } from "../../clients";
-import { PublicKey } from "../../keys";
-import { AbstractSigner } from "../../signers";
+import { MultisigPublicKey, PublicKey } from "../../keys";
+import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { AbstractSdk } from "../abstract";
 import {
@@ -69,7 +70,7 @@ export class TerraSdk extends AbstractSdk {
     return AccountValidationResult.READY;
   }
 
-  public async prepareSigner({ signer }: { signer: AbstractSigner }) {
+  public async prepareSigner({ signer }: { signer: Signer }) {
     const key = Key.fromSigner(signer);
     const address = key.accAddress(this.chain.prefix);
 
@@ -517,7 +518,7 @@ export class TerraSdk extends AbstractSdk {
     signer,
     messages,
   }: {
-    signer: AbstractSigner;
+    signer: Signer;
     messages: Message[];
   }) {
     return await this.withClient(async (client) => {
@@ -541,6 +542,55 @@ export class TerraSdk extends AbstractSdk {
         throw e;
       }
     });
+  }
+
+  public async createMultisigSigner({
+    multisigPublicKey,
+    messages,
+  }: {
+    multisigPublicKey: MultisigPublicKey;
+    messages: Message[];
+  }) {
+    const address = this.getAddressOfPublicKey({
+      publicKey: multisigPublicKey,
+    });
+    await this.prepareAccount({ address });
+    const account = await this.fetchAccount({ address });
+    invariant(account, "Account not found.");
+
+    try {
+      return await this.withClient(async (client) => {
+        const transaction = await client.tx.create(
+          [
+            {
+              address,
+              sequenceNumber: account.getSequenceNumber(),
+              publicKey: account.getPublicKey(),
+            },
+          ],
+          {
+            chainID: this.chainId,
+            msgs: messages,
+          }
+        );
+        return new MultisigSigner({
+          chainId: this.chainId,
+          account,
+          transaction,
+          multisigPublicKey,
+        });
+      });
+    } catch (e) {
+      const error = e as AxiosError;
+      const data = error.response?.data;
+
+      const result = RpcError.safeParse(data);
+      if (result.success) {
+        throw new Error(result.data.message);
+      }
+
+      throw e;
+    }
   }
 
   public async broadcastSignedTransaction({

@@ -9,19 +9,16 @@ import {
 } from "@cosmjs/amino";
 import { Sha256 } from "@cosmjs/crypto";
 
-import { AbstractSigner } from "../../signers";
+import { Signer } from "../../signers";
 
 export class OfflineAminoSigner implements CosmosOfflineAminoSigner {
-  protected constructor(
-    protected signer: AbstractSigner,
-    protected prefix: string
-  ) {}
+  protected constructor(protected signer: Signer, protected prefix: string) {}
 
   public static fromSigner({
     signer,
     prefix,
   }: {
-    signer: AbstractSigner;
+    signer: Signer;
     prefix: string;
   }) {
     return new OfflineAminoSigner(signer, prefix);
@@ -52,11 +49,15 @@ export class OfflineAminoSigner implements CosmosOfflineAminoSigner {
     if (signerAddress !== this.address) {
       throw new Error(`Address ${signerAddress} not found in wallet`);
     }
-    const hash = new Sha256(serializeSignDoc(signDoc)).digest();
-    const signature = await this.signer.signHash(hash);
+    const signature = await this.signStdSignDoc(signDoc);
     return {
       signed: signDoc,
       signature: encodeSecp256k1Signature(this.publicKey, signature),
     };
+  }
+
+  public async signStdSignDoc(signDoc: StdSignDoc) {
+    const hash = new Sha256(serializeSignDoc(signDoc)).digest();
+    return await this.signer.signHash(hash);
   }
 }

@@ -1,4 +1,4 @@
-import { pubkeyToAddress } from "@cosmjs/amino";
+import { pubkeyToAddress, StdFee } from "@cosmjs/amino";
 import {
   CosmWasmClient,
   createWasmAminoConverters,
@@ -25,6 +25,7 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 import warning from "tiny-warning";
 
+import { MultisigSigner } from "./multisig-signer";
 import { OfflineAminoSigner } from "./offline-amino-signer";
 import { CosmosChain, cosmosChains } from "../../chains";
 import {
@@ -33,8 +34,8 @@ import {
   withCosmosSigningStargateClient,
   withCosmosStargateClient,
 } from "../../clients";
-import { PublicKey } from "../../keys";
-import { AbstractSigner } from "../../signers";
+import { MultisigPublicKey, PublicKey } from "../../keys";
+import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { AbstractSdk } from "../abstract";
 import { AccountValidationResult, Coin } from "../common";
@@ -75,7 +76,7 @@ export class CosmosSdk extends AbstractSdk {
     return AccountValidationResult.READY;
   }
 
-  public async prepareSigner({ signer }: { signer: AbstractSigner }) {
+  public async prepareSigner({ signer }: { signer: Signer }) {
     const address = this.getAddressOfSigner({ signer });
     await this.prepareAccount({ address });
     const validationResult = await this.validateAccount({ address });
@@ -358,7 +359,7 @@ export class CosmosSdk extends AbstractSdk {
     signer,
     messages,
   }: {
-    signer: AbstractSigner;
+    signer: Signer;
     messages: Message[];
   }) {
     return await this.withSigningStargateClient(
@@ -379,7 +380,7 @@ export class CosmosSdk extends AbstractSdk {
           this.getAddressOfSigner({ signer }),
           encodeObjects,
           {
-            amount: coins(6000, this.chain.denom),
+            ...this.defaultFee,
             gas: gas.toString(),
           },
           ""
@@ -387,6 +388,37 @@ export class CosmosSdk extends AbstractSdk {
         return TxRaw.encode(transaction).finish();
       }
     );
+  }
+
+  public async createMultisigSigner({
+    multisigPublicKey,
+    messages,
+  }: {
+    multisigPublicKey: MultisigPublicKey;
+    messages: Message[];
+  }) {
+    const address = this.getAddressOfPublicKey({
+      publicKey: multisigPublicKey,
+    });
+    await this.prepareAccount({ address });
+    const account = await this.fetchAccount({ address });
+    invariant(account, "Account not found.");
+
+    const aminoMessages = messages.map((message) => {
+      return message.toAmino();
+    });
+    const encodeObjects = aminoMessages.map((aminoMessage) => {
+      return this.aminoTypes.fromAmino(aminoMessage);
+    });
+
+    return new MultisigSigner({
+      chainId: this.chainId,
+      account,
+      fee: this.defaultFee,
+      encodeObjects,
+      messages: aminoMessages,
+      multisigPublicKey,
+    });
   }
 
   public async broadcastSignedTransaction({
@@ -460,6 +492,13 @@ export class CosmosSdk extends AbstractSdk {
     }) => T
   ) {
     return withCosmosClients(this.chainId, f);
+  }
+
+  protected get defaultFee(): StdFee {
+    return {
+      amount: coins(6000, this.chain.denom),
+      gas: "1280000",
+    };
   }
 
   protected get aminoTypes() {
