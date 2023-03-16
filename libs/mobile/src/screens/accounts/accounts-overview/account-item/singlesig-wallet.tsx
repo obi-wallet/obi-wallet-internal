@@ -1,5 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { SinglesigWallet, terra, Text } from "@obi-wallet/common";
+import { SinglesigWallet, Text } from "@obi-wallet/common";
 import { Sdk } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { TouchableOpacity, View } from "react-native";

@@ -1,5 +1,5 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { GatekeeperConfig, MultisigKey, terra } from "@obi-wallet/common";
+import { GatekeeperConfig, MultisigKey } from "@obi-wallet/common";
 import { generateSec256k1KeyPair, Sdk } from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";

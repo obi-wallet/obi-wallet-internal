@@ -1,5 +1,5 @@
-import { cosmos, GatekeeperConfig, terra, Text } from "@obi-wallet/common";
-import { generateSec256k1KeyPair, Chain, Sdk } from "@obi-wallet/sdk";
+import { GatekeeperConfig, Text } from "@obi-wallet/common";
+import { generateSec256k1KeyPair, Sdk } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -21,7 +21,6 @@ export type CreateFlexAccountScreenProps = NativeStackScreenProps<
 >;
 
 // TODO: validate form
-
 export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
   function CreateFlexAccountScreen({ navigation }) {
     const { draftsStore } = useStore();

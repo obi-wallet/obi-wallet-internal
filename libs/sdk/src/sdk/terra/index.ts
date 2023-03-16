@@ -553,6 +553,23 @@ export class TerraSdk extends AbstractSdk {
     });
   }
 
+  public async broadcastSignedTransactionAndLendFees({
+    signedTransaction,
+    sender,
+  }: {
+    signedTransaction: SignedTransaction;
+    sender: string;
+  }) {
+    const response = await this.broadcastSignedTransaction({
+      signedTransaction,
+    });
+    if (response.success || !response.rawLog.includes("insufficient funds")) {
+      return response;
+    }
+    await this.lendFees({ address: sender });
+    return await this.broadcastSignedTransaction({ signedTransaction });
+  }
+
   public withClient<T>(f: (client: LCDClient) => T) {
     return withTerraClient(this.chainId, f);
   }

@@ -20,7 +20,7 @@ import {
 } from "@cosmjs/stargate";
 import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { AuthInfo, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 import warning from "tiny-warning";
@@ -239,6 +239,18 @@ export class CosmosSdk extends AbstractSdk {
     });
   }
 
+  protected async fetchBalance({
+    address,
+    denom,
+  }: {
+    address: string;
+    denom: string;
+  }) {
+    return this.withStargateClient(async (client) => {
+      return await client.getBalance(address, denom);
+    });
+  }
+
   public async fetchBalances({ address }: { address: string }) {
     return await this.withClients(
       async ({ stargateClient, cosmWasmClient }) => {
@@ -391,6 +403,36 @@ export class CosmosSdk extends AbstractSdk {
         rawResult,
       };
     });
+  }
+
+  public async broadcastSignedTransactionAndLendFees({
+    signedTransaction,
+    sender,
+  }: {
+    signedTransaction: SignedTransaction;
+    sender: string;
+  }) {
+    const transaction = TxRaw.decode(signedTransaction);
+    const { fee } = AuthInfo.decode(transaction.authInfoBytes);
+
+    const hasEnoughForFees = async () => {
+      if (!fee) return true;
+      invariant(fee.amount.length === 1, "fee.amount.length must be 1");
+      const balance = await this.fetchBalance({
+        address: sender,
+        denom: fee.amount[0].denom,
+      });
+      return (
+        balance &&
+        parseInt(balance.amount, 10) >= parseInt(fee.amount[0].amount, 10)
+      );
+    };
+
+    while (!(await hasEnoughForFees())) {
+      await this.lendFees({ address: sender });
+    }
+
+    return await this.broadcastSignedTransaction({ signedTransaction });
   }
 
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {

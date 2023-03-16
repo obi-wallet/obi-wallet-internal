@@ -129,6 +129,14 @@ export abstract class AbstractSdk {
     signedTransaction: SignedTransaction;
   }): Promise<BroadcastTransactionResult>;
 
+  public abstract broadcastSignedTransactionAndLendFees({
+    signedTransaction,
+    sender,
+  }: {
+    signedTransaction: SignedTransaction;
+    sender: string;
+  }): Promise<BroadcastTransactionResult>;
+
   protected wait({ ms }: { ms: number }): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }

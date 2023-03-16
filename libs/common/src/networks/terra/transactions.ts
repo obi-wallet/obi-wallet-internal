@@ -1,10 +1,8 @@
-import { TerraChain, terraChains, withTerraClient } from "@obi-wallet/sdk";
+import { TerraChain, withTerraClient } from "@obi-wallet/sdk";
 import {
   Account,
-  Key,
   LegacyAminoMultisigPublicKey,
   Msg,
-  MsgSend,
   MultiSignature,
   SignatureV2,
   SignDoc,

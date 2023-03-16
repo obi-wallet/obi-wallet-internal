@@ -109,8 +109,9 @@ export const SignatureModalFlexAccountWithFlexAccount =
             signer: flexAccount,
             messages: wrappedMessages,
           });
-          return await sdk.broadcastSignedTransaction({
+          return await sdk.broadcastSignedTransactionAndLendFees({
             signedTransaction,
+            sender: sdk.getAddressOfSigner({ signer: flexAccount }),
           });
         },
       });

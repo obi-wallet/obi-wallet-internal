@@ -4,7 +4,6 @@ import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 import { Image, SafeAreaView, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useStore } from "../..";

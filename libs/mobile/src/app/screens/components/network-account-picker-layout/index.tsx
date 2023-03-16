@@ -2,7 +2,7 @@ import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons/faAngleDoub
 import { faRss } from "@fortawesome/free-solid-svg-icons/faRss";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { Feature, terra, Text } from "@obi-wallet/common";
+import { Feature, Text } from "@obi-wallet/common";
 import { Sdk } from "@obi-wallet/sdk";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
