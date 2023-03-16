@@ -3,6 +3,7 @@ import {
   Coins,
   isTxError,
   LCDClient,
+  LegacyAminoMultisigPublicKey,
   MsgSend,
   SimplePublicKey,
   Tx,
@@ -500,7 +501,16 @@ export class TerraSdk extends AbstractSdk {
   }
 
   public getAddressOfPublicKey({ publicKey }: { publicKey: PublicKey }) {
-    return SimplePublicKey.fromAmino(publicKey).address(this.chain.prefix);
+    switch (publicKey.type) {
+      case "tendermint/PubKeySecp256k1":
+        return SimplePublicKey.fromAmino(publicKey).address(this.chain.prefix);
+      case "tendermint/PubKeyMultisigThreshold":
+        return LegacyAminoMultisigPublicKey.fromAmino(publicKey).address(
+          this.chain.prefix
+        );
+      default:
+        throw new Error("Unsupported public key type");
+    }
   }
 
   public async createAndSignTransaction({

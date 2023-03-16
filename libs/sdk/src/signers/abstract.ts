@@ -1,9 +1,9 @@
 import { SHA256, Word32Array } from "jscrypto";
 
-import { PublicKey } from "../keys";
+import { Secp256k1PublicKey } from "../keys";
 
 export abstract class AbstractSigner {
-  public abstract get publicKey(): PublicKey;
+  public abstract get publicKey(): Secp256k1PublicKey;
   public abstract signHash(hash: Uint8Array): Promise<Uint8Array>;
 
   public async sign(payload: Buffer): Promise<Buffer> {
