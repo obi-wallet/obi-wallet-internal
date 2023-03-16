@@ -1,8 +1,12 @@
 import {
   AccAddress,
   Coins,
+  isTxError,
   LCDClient,
+  LegacyAminoMultisigPublicKey,
   MsgSend,
+  SimplePublicKey,
+  Tx,
   Validator as RawValidator,
 } from "@terra-money/feather.js";
 import {
@@ -20,10 +24,13 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { Key } from "./key";
+import { MultisigSigner } from "./multisig-signer";
 import { tokenPairs } from "./token-pairs";
 import { TerraChain, terraChains } from "../../chains";
 import { withTerraClient } from "../../clients";
-import { AbstractSigner } from "../../signers";
+import { MultisigPublicKey, PublicKey } from "../../keys";
+import { Signer } from "../../signers";
+import { Message, SignedTransaction } from "../../transactions";
 import { AbstractSdk } from "../abstract";
 import {
   AccountValidationResult,
@@ -63,7 +70,7 @@ export class TerraSdk extends AbstractSdk {
     return AccountValidationResult.READY;
   }
 
-  public async prepareSigner({ signer }: { signer: AbstractSigner }) {
+  public async prepareSigner({ signer }: { signer: Signer }) {
     const key = Key.fromSigner(signer);
     const address = key.accAddress(this.chain.prefix);
 
@@ -492,6 +499,135 @@ export class TerraSdk extends AbstractSdk {
       });
       return schema.parse(response).permissioned_addresses;
     });
+  }
+
+  public getAddressOfPublicKey({ publicKey }: { publicKey: PublicKey }) {
+    switch (publicKey.type) {
+      case "tendermint/PubKeySecp256k1":
+        return SimplePublicKey.fromAmino(publicKey).address(this.chain.prefix);
+      case "tendermint/PubKeyMultisigThreshold":
+        return LegacyAminoMultisigPublicKey.fromAmino(publicKey).address(
+          this.chain.prefix
+        );
+      default:
+        throw new Error("Unsupported public key type");
+    }
+  }
+
+  public async createAndSignTransaction({
+    signer,
+    messages,
+  }: {
+    signer: Signer;
+    messages: Message[];
+  }) {
+    return await this.withClient(async (client) => {
+      const key = Key.fromSigner(signer);
+      const wallet = client.wallet(key);
+      try {
+        const transaction = await wallet.createAndSignTx({
+          chainID: this.chainId,
+          msgs: messages,
+        });
+        return transaction.toBytes();
+      } catch (e) {
+        const error = e as AxiosError;
+        const data = error.response?.data;
+
+        const result = RpcError.safeParse(data);
+        if (result.success) {
+          throw new Error(result.data.message);
+        }
+
+        throw e;
+      }
+    });
+  }
+
+  public async createMultisigSigner({
+    multisigPublicKey,
+    messages,
+  }: {
+    multisigPublicKey: MultisigPublicKey;
+    messages: Message[];
+  }) {
+    const address = this.getAddressOfPublicKey({
+      publicKey: multisigPublicKey,
+    });
+    await this.prepareAccount({ address });
+    const account = await this.fetchAccount({ address });
+    invariant(account, "Account not found.");
+
+    try {
+      return await this.withClient(async (client) => {
+        const transaction = await client.tx.create(
+          [
+            {
+              address,
+              sequenceNumber: account.getSequenceNumber(),
+              publicKey: account.getPublicKey(),
+            },
+          ],
+          {
+            chainID: this.chainId,
+            msgs: messages,
+          }
+        );
+        return new MultisigSigner({
+          chainId: this.chainId,
+          account,
+          transaction,
+          multisigPublicKey,
+        });
+      });
+    } catch (e) {
+      const error = e as AxiosError;
+      const data = error.response?.data;
+
+      const result = RpcError.safeParse(data);
+      if (result.success) {
+        throw new Error(result.data.message);
+      }
+
+      throw e;
+    }
+  }
+
+  public async broadcastSignedTransaction({
+    signedTransaction,
+  }: {
+    signedTransaction: SignedTransaction;
+  }) {
+    return await this.withClient(async (client) => {
+      const transaction = Tx.fromBuffer(Buffer.from(signedTransaction));
+      const rawResult = await client.tx.broadcastBlock(
+        transaction,
+        this.chainId
+      );
+      return {
+        success: !isTxError(rawResult),
+        transactionHash: rawResult.txhash,
+        rawLog: rawResult.raw_log,
+        rawResult,
+      };
+    });
+  }
+
+  public async broadcastSignedTransactionAndLendFees({
+    signedTransaction,
+    sender,
+  }: {
+    signedTransaction: SignedTransaction;
+    sender: string;
+  }) {
+    const response = await this.broadcastSignedTransaction({
+      signedTransaction,
+    });
+    if (response.success || !response.rawLog.includes("insufficient funds")) {
+      return response;
+    }
+    await this.lendFees({ address: sender });
+    return await this.broadcastSignedTransaction({ signedTransaction });
   }
 
   public withClient<T>(f: (client: LCDClient) => T) {

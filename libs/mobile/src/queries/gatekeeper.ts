@@ -1,4 +1,3 @@
-import { terra } from "@obi-wallet/common";
 import { Chain, Sdk } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 

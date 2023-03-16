@@ -1,5 +1,5 @@
 import { MultisigKey } from "@obi-wallet/common";
-import { RawKey } from "@terra-money/feather.js";
+import { Secp256k1PrivateKeySigner } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 
@@ -36,15 +36,13 @@ export const SignatureModal = observer<SignatureModalProps>(
       }
 
       if (currentAccount && currentAccount.type === "singlesig-wallet") {
-        const key = new RawKey(
-          Buffer.from(currentAccount.privateKey, "base64")
-        );
-        return <SignatureModalRawKey {...props} data={data} rawKey={key} />;
+        const signer = new Secp256k1PrivateKeySigner(currentAccount.privateKey);
+        return <SignatureModalRawKey {...props} data={data} signer={signer} />;
       }
 
       if (currentAccount && currentAccount.type === "flex-account") {
-        const flexAccount = new RawKey(
-          Buffer.from(currentAccount.privateKey, "base64")
+        const flexAccount = new Secp256k1PrivateKeySigner(
+          currentAccount.privateKey
         );
         const multisigKey = wallet.owner;
         return (

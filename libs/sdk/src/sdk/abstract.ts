@@ -3,6 +3,7 @@ import invariant from "tiny-invariant";
 
 import {
   AccountValidationResult,
+  BroadcastTransactionResult,
   Coin,
   Delegation,
   EnrichedValidator,
@@ -12,7 +13,9 @@ import {
   UnbondingDelegation,
 } from "./common";
 import { Chain } from "../chains";
-import { AbstractSigner } from "../signers";
+import { MultisigPublicKey, PublicKey } from "../keys";
+import { MultisigSigner, Signer } from "../signers";
+import { Message, SignedTransaction } from "../transactions";
 
 export abstract class AbstractSdk {
   protected constructor(protected chainId: Chain) {}
@@ -40,11 +43,7 @@ export abstract class AbstractSdk {
       }
     }
   }
-  public abstract prepareSigner({
-    signer,
-  }: {
-    signer: AbstractSigner;
-  }): Promise<void>;
+  public abstract prepareSigner({ signer }: { signer: Signer }): Promise<void>;
 
   public abstract fetchPrices(): Promise<Record<string, number>>;
   public abstract fetchBalances({
@@ -101,6 +100,46 @@ export abstract class AbstractSdk {
       throw new Error("Lending fees failed");
     }
   }
+
+  public abstract getAddressOfPublicKey({
+    publicKey,
+  }: {
+    publicKey: PublicKey;
+  }): string;
+
+  public getAddressOfSigner({ signer }: { signer: Signer }): string {
+    return this.getAddressOfPublicKey({ publicKey: signer.publicKey });
+  }
+
+  public abstract createAndSignTransaction({
+    signer,
+    messages,
+  }: {
+    signer: Signer;
+    messages: Message[];
+  }): Promise<SignedTransaction>;
+
+  public abstract createMultisigSigner({
+    multisigPublicKey,
+    messages,
+  }: {
+    multisigPublicKey: MultisigPublicKey;
+    messages: Message[];
+  }): Promise<MultisigSigner>;
+
+  public abstract broadcastSignedTransaction({
+    signedTransaction,
+  }: {
+    signedTransaction: SignedTransaction;
+  }): Promise<BroadcastTransactionResult>;
+
+  public abstract broadcastSignedTransactionAndLendFees({
+    signedTransaction,
+    sender,
+  }: {
+    signedTransaction: SignedTransaction;
+    sender: string;
+  }): Promise<BroadcastTransactionResult>;
 
   protected wait({ ms }: { ms: number }): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));

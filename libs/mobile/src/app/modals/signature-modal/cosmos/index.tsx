@@ -32,6 +32,7 @@ import {
 import {
   cosmosChains,
   isCosmosChain,
+  Sdk,
   withCosmosStargateClient,
 } from "@obi-wallet/sdk";
 import { useQueryClient } from "@tanstack/react-query";
@@ -247,9 +248,8 @@ export const CosmosSignatureModalMultisig = observer<CosmosSignatureModalProps>(
             const signature = signatures.get(key.payload.publicKey.value);
             if (signature) {
               signaturesPerAddress.set(
-                cosmos.getAddress({
+                Sdk.chainId(chainId).getAddressOfPublicKey({
                   publicKey: key.payload.publicKey,
-                  chainId: chainId,
                 }),
                 signature
               );

@@ -2,14 +2,13 @@ import { generateSec256k1KeyPair, Sdk } from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
 import invariant from "tiny-invariant";
 
-import { getAddress } from "../../../src/networks/terra/helpers";
 import { getUpdateGatekeeperMessages } from "../../../src/networks/terra/messages";
 import { GatekeeperConfig } from "../../../src/stores";
 
 const proxyAddress =
   "terra19g840q54mxd5vyxh3rdfpncmmyql5hcu8j9wcg45zgwgt4phwdes27emev";
 const { publicKey, privateKey } = generateSec256k1KeyPair();
-const address = getAddress({
+const address = Sdk.chainId("phoenix-1").getAddressOfPublicKey({
   publicKey,
 });
 let gatekeepers: {

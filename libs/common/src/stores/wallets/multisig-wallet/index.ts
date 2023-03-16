@@ -2,6 +2,7 @@ import {
   Chain,
   CosmosChain,
   cosmosChains,
+  Sdk,
   TerraChain,
   terraChains,
 } from "@obi-wallet/sdk";
@@ -16,7 +17,7 @@ import {
   SinglesigWallet,
 } from "./serialized-data";
 import { SerializedWalletMeta, WalletMeta } from "..";
-import { CodeIds, terra } from "../../../networks";
+import { CodeIds } from "../../../networks";
 import { Entities, EntityId } from "../../entities";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
 import { GatekeeperConfig } from "../gatekeeper-config";
@@ -103,7 +104,7 @@ export class MultisigWallet extends AbstractWallet {
   @computed
   public get address(): string {
     if (this.currentAccount?.type === "singlesig-wallet") {
-      return terra.getAddress({
+      return Sdk.chainId(this.chain).getAddressOfPublicKey({
         publicKey: this.currentAccount.publicKey,
       });
     }

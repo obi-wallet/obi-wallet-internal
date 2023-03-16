@@ -4,7 +4,7 @@ import {
   MultisigKey,
   RequestObiCosmosSignAndBroadcastMsg,
 } from "@obi-wallet/common";
-import { CosmosChain } from "@obi-wallet/sdk";
+import { CosmosChain, Sdk, Secp256k1PublicKey } from "@obi-wallet/sdk";
 
 export async function handleCosmos({
   draft,
@@ -24,9 +24,8 @@ export async function handleCosmos({
 
   const signers = multisigPublicKey.value.pubkeys.map((publicKey, i) => {
     return {
-      address: cosmos.getAddress({
-        publicKey,
-        chainId,
+      address: Sdk.chainId(chainId).getAddressOfPublicKey({
+        publicKey: publicKey as Secp256k1PublicKey,
       }),
       ty: multisigKey.signerTypes[i],
     };
