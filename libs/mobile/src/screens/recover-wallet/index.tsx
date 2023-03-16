@@ -183,7 +183,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
 
     function getNfcKeyActions() {
       if (nfcKey) {
-        if (MultisigKeySerializedData.isUsableKey(nfcKey)) {
+        if (nfcKey.isUsable) {
           return {
             label: "Remove",
             onPress: () => {
@@ -195,7 +195,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
             label: "Recover",
             onPress: () => {
               onRecoverNfc({
-                targetPublicKey: nfcKey.payload.publicKey.value,
+                targetPublicKey: nfcKey.publicKey.value,
               });
             },
           };
@@ -210,7 +210,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
 
     function getCloudKeyActions() {
       if (cloudKey) {
-        if (MultisigKeySerializedData.isUsableKey(cloudKey)) {
+        if (cloudKey.isUsable) {
           return {
             label: "Remove",
             onPress: () => {
@@ -222,7 +222,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
             label: "Recover",
             onPress: () => {
               onRecoverCloud({
-                targetPublicKey: cloudKey.payload.publicKey.value,
+                targetPublicKey: cloudKey.publicKey.value,
               });
             },
           };

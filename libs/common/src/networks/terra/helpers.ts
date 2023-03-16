@@ -13,7 +13,7 @@ export function createMultisigPublicKey({
   const publicKeys = [];
 
   for (const key of multisigKey.keys) {
-    publicKeys.push(SimplePublicKey.fromAmino(key.payload.publicKey));
+    publicKeys.push(SimplePublicKey.fromAmino(key.publicKey));
   }
 
   return new LegacyAminoMultisigPublicKey(multisigKey.threshold, publicKeys);

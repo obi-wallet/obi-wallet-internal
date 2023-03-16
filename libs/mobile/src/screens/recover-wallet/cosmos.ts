@@ -73,7 +73,7 @@ export async function handleCosmos({
           confirm_update_admin: {
             signers: newOwner.keys.map((key) => {
               return Sdk.chainId(chainId).getAddressOfPublicKey({
-                publicKey: key.payload.publicKey,
+                publicKey: key.publicKey,
               });
             }),
           },

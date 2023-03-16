@@ -101,7 +101,7 @@ export const SignatureModalMultisigKey =
         const { sign } = await getTransactionInformation();
         const signaturesOrdered: SignatureV2[] = [];
         for (const key of multisigKey.keys) {
-          const signature = signatures.get(key.payload.publicKey.value);
+          const signature = signatures.get(key.publicKey.value);
           if (signature) {
             signaturesOrdered.push(signature);
           }
@@ -127,7 +127,7 @@ export const SignatureModalMultisigKey =
       const factor = multisigKey.getUsableKeyOfType(type);
       invariant(factor, "Expected key to exist.");
 
-      const alreadySigned = signatures.has(factor.payload.publicKey.value);
+      const alreadySigned = signatures.has(factor.publicKey.value);
       const onPress = async () => {
         if (alreadySigned) return;
 
@@ -143,9 +143,7 @@ export const SignatureModalMultisigKey =
             const signature = await biometricsKey.createSignatureAmino(signDoc);
 
             setSignatures((signatures) => {
-              return new Map(
-                signatures.set(factor.payload.publicKey.value, signature)
-              );
+              return new Map(signatures.set(factor.publicKey.value, signature));
             });
             break;
           }
@@ -161,7 +159,7 @@ export const SignatureModalMultisigKey =
                   `Associated NFC address is ${Sdk.chainId(
                     multisigKey.chain
                   ).getAddressOfPublicKey({
-                    publicKey: factor.payload.publicKey,
+                    publicKey: factor.publicKey,
                   })}`
                 );
 
@@ -176,7 +174,7 @@ export const SignatureModalMultisigKey =
 
                 setSignatures((signatures) => {
                   return new Map(
-                    signatures.set(factor.payload.publicKey.value, signature)
+                    signatures.set(factor.publicKey.value, signature)
                   );
                 });
               }
@@ -192,9 +190,7 @@ export const SignatureModalMultisigKey =
             const signature = await cloudKey.createSignatureAmino(signDoc);
 
             setSignatures((signatures) => {
-              return new Map(
-                signatures.set(factor.payload.publicKey.value, signature)
-              );
+              return new Map(signatures.set(factor.publicKey.value, signature));
             });
             break;
           }
@@ -225,7 +221,7 @@ export const SignatureModalMultisigKey =
         if (
           deviceKey &&
           (await existsKeyOnDevice({
-            publicKey: deviceKey.payload.publicKey.value,
+            publicKey: deviceKey.publicKey.value,
           }))
         ) {
           usableKeys.push(KeyType.Device);
@@ -261,8 +257,8 @@ export const SignatureModalMultisigKey =
           phoneKey ? (
             <BottomSheet bottomSheetRef={phoneNumberBottomSheetRef}>
               <PhoneNumberBottomSheetContent
-                phoneNumber={phoneKey.payload.phoneNumber}
-                securityQuestion={phoneKey.payload.securityQuestion}
+                phoneNumber={phoneKey.serialized.payload.phoneNumber}
+                securityQuestion={phoneKey.serialized.payload.securityQuestion}
                 onRequest={async (securityAnswer) => {
                   const { signDoc } = await getTransactionInformation();
                   const phoneNumberRequestKey = new PhoneNumberRequestKey({
@@ -286,10 +282,7 @@ export const SignatureModalMultisigKey =
                   if (signature) {
                     setSignatures((signatures) => {
                       return new Map(
-                        signatures.set(
-                          phoneKey.payload.publicKey.value,
-                          signature
-                        )
+                        signatures.set(phoneKey.publicKey.value, signature)
                       );
                     });
                     phoneNumberBottomSheetRef.current?.close();

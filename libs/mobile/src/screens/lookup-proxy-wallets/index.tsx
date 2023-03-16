@@ -37,7 +37,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
     return (
       <Lookup
         chainId={draft.value.chain}
-        publicKey={phoneKey.payload.publicKey.value}
+        publicKey={phoneKey.publicKey.value}
         onCancel={() => {
           navigation.goBack();
         }}
@@ -73,7 +73,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
                     case KeyType.Phone:
                       invariant(
                         R.equals(
-                          recoveredPhoneKey.payload.publicKey,
+                          recoveredPhoneKey.serialized.payload.publicKey,
                           key.publicKey
                         ),
                         "Recovered phone key must match the one in the proxy wallet"
@@ -81,7 +81,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
                       return {
                         type: KeyType.Phone,
                         payload: {
-                          ...recoveredPhoneKey.payload,
+                          ...recoveredPhoneKey.serialized.payload,
                           publicKey:
                             key.publicKey as MultisigKeySerializedData.SerializedDeviceKey["payload"]["publicKey"],
                         },
@@ -133,7 +133,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
             serialized: serializedData.owner,
           });
           draft.commit({ original: newOwner });
-          draft.value.setDeviceKey(newDeviceKey.payload);
+          draft.value.setDeviceKey(newDeviceKey.serialized.payload);
 
           navigation.navigate(OnboardingRoute.RecoverWallet, {
             ...params,

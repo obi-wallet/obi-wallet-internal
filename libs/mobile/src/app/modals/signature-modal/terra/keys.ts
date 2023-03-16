@@ -34,8 +34,8 @@ export class BiometricsKey extends Key {
   }) {
     const biometrics = multisigKey.getUsableKeyOfType(KeyType.Device);
     invariant(biometrics, "Expected device key to exist.");
-    super(SimplePublicKey.fromAmino(biometrics.payload.publicKey));
-    this.deviceKeyPublicKey = biometrics.payload.publicKey.value;
+    super(SimplePublicKey.fromAmino(biometrics.serialized.payload.publicKey));
+    this.deviceKeyPublicKey = biometrics.serialized.payload.publicKey.value;
     this.chainId = multisigKey.chain;
     this.queryClient = queryClient;
   }
@@ -55,7 +55,7 @@ export class CloudKey extends RawKey {
   constructor({ multisigKey }: { multisigKey: MultisigKey }) {
     const cloudKey = multisigKey.getUsableKeyOfType(KeyType.Cloud);
     invariant(cloudKey, "Expected cloud key to exist.");
-    super(Buffer.from(cloudKey.payload.privateKey, "base64"));
+    super(Buffer.from(cloudKey.serialized.payload.privateKey, "base64"));
   }
 }
 
@@ -78,7 +78,9 @@ export class PhoneNumberConfirmKey extends Key {
   }) {
     const phoneNumberKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
     invariant(phoneNumberKey, "Expected phone number key to exist.");
-    super(SimplePublicKey.fromAmino(phoneNumberKey.payload.publicKey));
+    super(
+      SimplePublicKey.fromAmino(phoneNumberKey.serialized.payload.publicKey)
+    );
     this.key = key;
     this.demoMode = demoMode;
     this.chainId = multisigKey.chain;
@@ -116,8 +118,10 @@ export class PhoneNumberRequestKey extends Key {
   }) {
     const phoneNumberKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
     invariant(phoneNumberKey, "Expected phone number key to exist.");
-    super(SimplePublicKey.fromAmino(phoneNumberKey.payload.publicKey));
-    this.phoneNumber = phoneNumberKey.payload.phoneNumber;
+    super(
+      SimplePublicKey.fromAmino(phoneNumberKey.serialized.payload.publicKey)
+    );
+    this.phoneNumber = phoneNumberKey.serialized.payload.phoneNumber;
     this.securityAnswer = securityAnswer;
     this.chainId = chainId;
     this.demoMode = demoMode;
@@ -158,8 +162,8 @@ export class NfcKey extends Key {
   }) {
     const nfcKey = multisigKey.getUsableKeyOfType(KeyType.Nfc);
     invariant(nfcKey, "Expected NFC key to exist.");
-    super(SimplePublicKey.fromAmino(nfcKey.payload.publicKey));
-    this.localEntropy = nfcKey.payload.localEntropy;
+    super(SimplePublicKey.fromAmino(nfcKey.serialized.payload.publicKey));
+    this.localEntropy = nfcKey.serialized.payload.localEntropy;
     this.parsed = parsed;
     this.demoMode = demoMode;
     this.chainId = multisigKey.chain;

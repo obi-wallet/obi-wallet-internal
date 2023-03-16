@@ -21,7 +21,7 @@ export async function handleCosmos({
   const signers = multisigKey.keys.map((key, i) => {
     return {
       address: Sdk.chainId(chainId).getAddressOfPublicKey({
-        publicKey: key.payload.publicKey,
+        publicKey: key.publicKey,
       }),
       ty: multisigKey.signerTypes[i],
     };

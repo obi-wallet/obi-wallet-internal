@@ -1,9 +1,9 @@
 import { Chain, MultisigPublicKey, Sdk } from "@obi-wallet/sdk";
-import { action, computed, makeObservable, observable } from "mobx";
+import { MultisigKey as MultisigKeySdk, KeyType } from "@obi-wallet/sdk";
+import { action, autorun, computed, makeObservable, observable } from "mobx";
+import * as R from "ramda";
 
 import {
-  isUsableKey,
-  KeyType,
   SerializedKey,
   SerializedMultisigKey,
   SerializedPendingRecoveryKey,
@@ -23,6 +23,18 @@ export { KeyType, SerializedMultisigKey };
 
 // Chain-agnostic multisig key
 export class MultisigKey implements Draftable {
+  @observable.ref
+  protected _multisigKey: MultisigKeySdk;
+
+  public get multisigKey() {
+    return this._multisigKey;
+  }
+
+  @action
+  public mutate(multisigKey: MultisigKeySdk) {
+    this._multisigKey = multisigKey;
+  }
+
   @observable
   protected _chain: Chain;
 
@@ -35,7 +47,11 @@ export class MultisigKey implements Draftable {
   constructor({ chain }: { chain: Chain }) {
     this._chain = chain;
     this._keys = new Entities();
+    this._multisigKey = MultisigKeySdk.empty();
     makeObservable(this);
+    autorun(() => {
+      console.log(this._multisigKey.toJSON());
+    });
   }
 
   public get chain() {
@@ -43,24 +59,16 @@ export class MultisigKey implements Draftable {
   }
 
   public get keys() {
-    return this._keys.entities;
+    return this._multisigKey.keys;
   }
 
   public get threshold() {
-    return this._threshold;
+    return this._multisigKey.threshold;
   }
 
   @computed
   public get publicKey(): MultisigPublicKey {
-    return {
-      type: "tendermint/PubKeyMultisigThreshold",
-      value: {
-        pubkeys: this.keys.map((key) => {
-          return key.payload.publicKey;
-        }),
-        threshold: this.threshold.toString(),
-      },
-    };
+    return this._multisigKey.publicKey;
   }
 
   @computed
@@ -76,35 +84,15 @@ export class MultisigKey implements Draftable {
   }
 
   public hasKeyOfType(type: KeyType) {
-    return this.keys.some((key) => {
-      return getTypeOfKey(key) === type;
-    });
+    return this._multisigKey.hasKeyOfType(type);
   }
 
-  public getKeyOfType<T extends KeyType>(
-    type: T
-  ):
-    | (
-        | (SerializedKey & { type: T })
-        | (SerializedPendingRecoveryKey & { payload: { type: T } })
-      )
-    | undefined {
-    return this.keys.find((key) => {
-      return getTypeOfKey(key) === type;
-    }) as
-      | (
-          | (SerializedKey & { type: T })
-          | (SerializedPendingRecoveryKey & { payload: { type: T } })
-        )
-      | undefined;
+  public getKeyOfType<T extends KeyType>(type: T) {
+    return this._multisigKey.getKeyOfType(type);
   }
 
-  public getUsableKeyOfType<T extends KeyType>(
-    type: T
-  ): (SerializedKey & { type: T }) | undefined {
-    return this.keys.find((key) => {
-      return isUsableKey(key) && key.type === type;
-    }) as (SerializedKey & { type: T }) | undefined;
+  public getUsableKeyOfType<T extends KeyType>(type: T) {
+    return this._multisigKey.getUsableKeyOfType<T>(type);
   }
 
   @action
@@ -184,49 +172,32 @@ export class MultisigKey implements Draftable {
 
   @action
   protected removeKeyOfType(type: KeyType) {
-    this._keys.removeBy({
-      predicate(key) {
-        return getTypeOfKey(key) === type;
-      },
-    });
+    this.mutate(this._multisigKey.removeKeyOfType(type));
   }
 
   @action
   protected setKey(serializedKey: SerializedKey) {
-    this._keys.removeBy({
-      predicate(key) {
-        return getTypeOfKey(key) === serializedKey.type;
-      },
-    });
-    this._keys.add({
-      entity: serializedKey,
-    });
-    this._threshold = Math.max(1, this._threshold);
+    this.mutate(this._multisigKey.setKey<KeyType>(serializedKey));
   }
 
   @computed
   public get signerTypes() {
-    return this.keys.map((key) => getTypeOfKey(key));
+    return this._multisigKey.signerTypes;
   }
 
   public serialize(): SerializedMultisigKey {
-    return {
-      keys: [...this.keys],
-      threshold: this._threshold,
-    };
+    return this._multisigKey.toJSON();
   }
 
   public clone() {
-    const clone = new MultisigKey({ chain: this.chain });
-    clone._threshold = this._threshold;
-    clone._keys = this._keys.clone();
-    return clone as this;
+    return MultisigKey.deserialize({
+      chain: this.chain,
+      serialized: this.serialize(),
+    }) as this;
   }
 
   public equals(other: MultisigKey) {
-    return (
-      this._threshold === other._threshold && this._keys.equals(other._keys)
-    );
+    return R.equals(this._multisigKey.toJSON(), other._multisigKey.toJSON());
   }
 
   public static deserialize({
@@ -237,18 +208,9 @@ export class MultisigKey implements Draftable {
     serialized: SerializedMultisigKey;
   }) {
     const multisigKey = new MultisigKey({ chain });
+    multisigKey.mutate(MultisigKeySdk.deserialize(serialized));
     multisigKey._threshold = serialized.threshold;
     multisigKey._keys = Entities.deserialize(serialized.keys);
     return multisigKey;
-  }
-}
-
-function getTypeOfKey(
-  key: SerializedKey | SerializedPendingRecoveryKey
-): string {
-  if (isUsableKey(key)) {
-    return key.type;
-  } else {
-    return key.payload.type;
   }
 }
