@@ -1,4 +1,3 @@
-import { pubkeyType } from "@cosmjs/amino";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MultisigKey, Text } from "@obi-wallet/common";
 import { generateSec256k1KeyPair } from "@obi-wallet/sdk";

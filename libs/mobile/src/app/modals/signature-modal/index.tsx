@@ -9,8 +9,6 @@ import { SignatureModalMultisigKey } from "./multisig-key";
 import { SignatureModalRawKey } from "./raw-key";
 import { useStore } from "../../stores";
 
-export * from "./cosmos";
-
 export type SignatureModalProps = AbstractSignatureModalProps;
 
 export const SignatureModal = observer<SignatureModalProps>(

@@ -152,8 +152,6 @@ const Load = observer(function Load() {
 });
 
 export const DemoModeHeader = observer(function DemoModeHeader() {
-  const { walletsStore } = useStore();
-
   // TODO: fix
   return null;
 

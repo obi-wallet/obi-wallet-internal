@@ -1,11 +1,6 @@
-import { DeliverTxResponse } from "@cosmjs/stargate";
 import { RequestObiCosmosSignAndBroadcastPayload } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 
-import {
-  CosmosSignatureModal,
-  useSignatureModalProps,
-} from "./signature-modal";
 import { useStore } from "../stores";
 
 export const SignInteractionModal = observer(function SignInteractionModal() {
@@ -18,29 +13,8 @@ export const SignInteractionModal = observer(function SignInteractionModal() {
   return <InteractionModalInner data={data} />;
 });
 
-const InteractionModalInner = observer(function InteractionModalInner({
-  data,
-}: {
+const InteractionModalInner = observer(function InteractionModalInner(_: {
   data: RequestObiCosmosSignAndBroadcastPayload;
 }) {
-  const { signInteractionStore } = useStore();
-
-  const { signatureModalProps } = useSignatureModalProps({
-    data,
-    async onConfirm(response: DeliverTxResponse): Promise<void> {
-      await signInteractionStore.approveAndWaitEnd(response);
-    },
-  });
-
   return null;
-
-  // return (
-  //   <CosmosSignatureModal
-  //     {...signatureModalProps}
-  //     visible
-  //     onCancel={() => {
-  //       signInteractionStore.rejectAll();
-  //     }}
-  //   />
-  // );
 });

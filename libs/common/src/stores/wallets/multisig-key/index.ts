@@ -1,4 +1,4 @@
-import { Chain, isTerraChain } from "@obi-wallet/sdk";
+import { Chain, MultisigPublicKey, Sdk } from "@obi-wallet/sdk";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import {
@@ -14,7 +14,6 @@ import { SerializedEmailKeyPayload } from "./keys/email";
 import { SerializedNfcKeyPayload } from "./keys/nfc";
 import { SerializedPhoneKeyPayload } from "./keys/phone";
 import { SerializedSocialKeyPayload } from "./keys/social";
-import { cosmos, terra } from "../../../networks";
 import { Draftable } from "../../drafts/draft";
 import { Entities } from "../../entities";
 
@@ -52,21 +51,23 @@ export class MultisigKey implements Draftable {
   }
 
   @computed
+  public get publicKey(): MultisigPublicKey {
+    return {
+      type: "tendermint/PubKeyMultisigThreshold",
+      value: {
+        pubkeys: this.keys.map((key) => {
+          return key.payload.publicKey;
+        }),
+        threshold: this.threshold.toString(),
+      },
+    };
+  }
+
+  @computed
   public get address() {
-    if (isTerraChain(this.chain)) {
-      const multisigPublicKey = terra.createMultisigPublicKey({
-        multisigKey: this,
-      });
-      return multisigPublicKey.address("terra");
-    } else {
-      const multisigPublicKey = cosmos.createMultisigPublicKey({
-        multisigKey: this,
-      });
-      return cosmos.getAddress({
-        publicKey: multisigPublicKey,
-        chainId: this.chain,
-      });
-    }
+    return Sdk.chainId(this.chain).getAddressOfPublicKey({
+      publicKey: this.publicKey,
+    });
   }
 
   @action
