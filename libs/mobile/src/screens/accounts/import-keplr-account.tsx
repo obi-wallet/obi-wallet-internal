@@ -45,7 +45,7 @@ export const ImportKeplrAccountScreen = observer<ImportKeplrAccountScreenProps>(
         <View style={{ marginTop: 20 }}>
           <Button
             flavor="blue"
-            onPress={() => {
+            onPress={async () => {
               const key = new MnemonicKey({
                 mnemonic,
                 coinType: 118,
@@ -57,7 +57,7 @@ export const ImportKeplrAccountScreen = observer<ImportKeplrAccountScreenProps>(
                 'Expected key to be of type "tendermint/PubKeySecp256k1"'
               );
 
-              wallet.addSinglesigWallet({
+              await wallet.addSinglesigWallet({
                 type: "singlesig-wallet",
                 publicKey,
                 privateKey: key.privateKey.toString("base64"),

@@ -3,6 +3,7 @@ import { DeliverTxResponse } from "@cosmjs/stargate";
 import { InstantiateMsg } from "@obi-wallet/proxy-contract";
 import { CosmosChain, cosmosChains } from "@obi-wallet/sdk";
 import { MsgInstantiateContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
+import Long from "long";
 import invariant from "tiny-invariant";
 
 export function getNewAccountMessage({

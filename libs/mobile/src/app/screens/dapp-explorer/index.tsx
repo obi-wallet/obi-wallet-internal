@@ -187,10 +187,12 @@ const ConnectionsScreen = observer(function ConnectionsScreen() {
               <ObiButton
                 flavor="cancel"
                 label="Disconnect All"
-                onPress={() => {
-                  walletConnectStore.connectors.forEach((dapp) => {
-                    dapp.connector.killSession();
-                  });
+                onPress={async () => {
+                  await Promise.all(
+                    walletConnectStore.connectors.map(async (dapp) => {
+                      await dapp.connector.killSession();
+                    })
+                  );
                 }}
               />
             </View>
@@ -225,8 +227,8 @@ const ConnectedDapp = observer(function ConnectedDapp({
 
       <InlineButton
         label="Disconnect"
-        onPress={() => {
-          dapp.killSession();
+        onPress={async () => {
+          await dapp.killSession();
         }}
       />
     </View>

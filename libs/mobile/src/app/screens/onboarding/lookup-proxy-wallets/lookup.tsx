@@ -190,17 +190,17 @@ export const Lookup = observer(function Lookup({
                     alignItems: "center",
                     paddingHorizontal: 10,
                   }}
-                  onPress={() => {
+                  onPress={async () => {
                     switch (chainId) {
                       case "uni-3":
                       case "juno-1":
-                        Linking.openURL(
+                        await Linking.openURL(
                           `https://www.mintscan.io/juno/wasm/contract/${wallet.proxyAddress.address}`
                         );
                         break;
                       case "pisco-1":
                       case "phoenix-1":
-                        Linking.openURL(
+                        await Linking.openURL(
                           `https://terrasco.pe/mainnet/contract/${wallet.proxyAddress.address}`
                         );
                         break;

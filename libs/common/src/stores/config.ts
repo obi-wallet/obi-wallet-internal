@@ -9,10 +9,6 @@ export enum Brand {
   Loop = "Loop",
 }
 
-export type MultisigWalletType =
-  | WalletType.CosmosMultisig
-  | WalletType.TerraMultisig;
-
 export enum Feature {
   AccountsTab = "AccountsTab",
   HealthChecks = "HealthChecks",

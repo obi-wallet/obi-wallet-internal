@@ -51,33 +51,6 @@ export class AbstractSingletonInteractionStore<
     return datas[0];
   }
 
-  protected isEnded(): boolean {
-    return (
-      this.interactionStore.getEvents<void>("request-sign-and-broadcast-end")
-        .length > 0
-    );
-  }
-
-  protected clearEnded() {
-    this.interactionStore.clearEvent("request-sign-and-broadcast-end");
-  }
-
-  protected waitEnd(): Promise<void> {
-    if (this.isEnded()) {
-      return Promise.resolve();
-    }
-
-    return new Promise((resolve) => {
-      const disposer = autorun(() => {
-        if (this.isEnded()) {
-          resolve();
-          this.clearEnded();
-          disposer();
-        }
-      });
-    });
-  }
-
   @flow
   *approveAndWaitEnd(response: MessageResponse) {
     if (this.waitingDatas.length === 0) {
@@ -89,8 +62,6 @@ export class AbstractSingletonInteractionStore<
     try {
       yield this.interactionStore.approveWithoutRemovingData(id, response);
     } finally {
-      // yield this.waitEnd();
-      // this.interactionStore.clearEvent("request-sign-and-broadcast-end");
       this.interactionStore.removeData(this.type, id);
       this._isLoading = false;
     }
@@ -123,9 +94,5 @@ export class AbstractSingletonInteractionStore<
   @flow
   protected *rejectWithId(id: string) {
     yield this.interactionStore.reject(this.type, id);
-  }
-
-  get isLoading(): boolean {
-    return this._isLoading;
   }
 }
