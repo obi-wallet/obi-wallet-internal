@@ -75,8 +75,8 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
               const address = Sdk.chainId(wallet.chain).getAddressOfPublicKey({
                 publicKey,
               });
-              gatekeeperConfig.value.flexAccounts.add({
-                entity: {
+              gatekeeperConfig.value.set(
+                gatekeeperConfig.value.get().upsertFlexAccount({
                   type: "flex-account",
                   meta: {
                     icon: icon?.uri || "",
@@ -87,8 +87,8 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
                   spendLimit: null,
                   privateKey,
                   publicKey,
-                },
-              });
+                })
+              );
 
               navigation.navigate(AccountsRoute.AccountsOverview);
             }}

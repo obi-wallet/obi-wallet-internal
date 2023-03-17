@@ -1,10 +1,15 @@
 import {
+  AbstractSerialized,
   Chain,
   CosmosChain,
   cosmosChains,
   Sdk,
   TerraChain,
   terraChains,
+} from "@obi-wallet/sdk";
+import {
+  Beneficiary as BeneficiarySdk,
+  FlexAccount as FlexAccountSdk,
 } from "@obi-wallet/sdk";
 import { action, computed, makeObservable, observable } from "mobx";
 
@@ -18,15 +23,14 @@ import {
 } from "./serialized-data";
 import { SerializedWalletMeta, WalletMeta } from "..";
 import { CodeIds } from "../../../networks";
-import { Entities, EntityId } from "../../entities";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
 import { GatekeeperConfig } from "../gatekeeper-config";
-import { Beneficiary, FlexAccount } from "../gatekeeper-config/serialized-data";
 import { MultisigKey } from "../multisig-key";
 
+export type Beneficiary = AbstractSerialized<typeof BeneficiarySdk>;
+export type FlexAccount = AbstractSerialized<typeof FlexAccountSdk>;
+
 export {
-  Beneficiary,
-  FlexAccount,
   SinglesigWallet,
   MultisigWalletSerializedData,
   SerializedMultisigWalletData,
@@ -48,7 +52,7 @@ export class MultisigWallet extends AbstractWallet {
   protected _gatekeeperConfig: GatekeeperConfig;
 
   @observable
-  protected _singlesigWallets: Entities<SinglesigWallet>;
+  protected _singlesigWallets: SinglesigWallet[];
 
   @observable
   public readonly proxyAddress: SerializedProxyAddress;
@@ -77,7 +81,7 @@ export class MultisigWallet extends AbstractWallet {
     this.chain = chain;
     this._owner = new MultisigKey({ chain });
     this._gatekeeperConfig = new GatekeeperConfig();
-    this._singlesigWallets = new Entities();
+    this._singlesigWallets = [];
     this.proxyAddress = proxyAddress;
     this.onChange = onChange;
     makeObservable(this);
@@ -141,14 +145,6 @@ export class MultisigWallet extends AbstractWallet {
     });
   }
 
-  public getAccounts(gatekeeperConfig = this._gatekeeperConfig) {
-    return Entities.merge<Beneficiary | FlexAccount | SinglesigWallet>(
-      gatekeeperConfig.beneficiaries,
-      gatekeeperConfig.flexAccounts,
-      this._singlesigWallets
-    );
-  }
-
   public get meta(): WalletMeta {
     return {
       walletId: this.id,
@@ -156,31 +152,27 @@ export class MultisigWallet extends AbstractWallet {
     };
   }
 
-  public get currentAccountId() {
-    return this._currentAccount?.id ?? null;
-  }
-
   @computed
   public get currentAccount() {
     if (!this._currentAccount) return null;
-    return this.getAccounts().get({ id: this._currentAccount.id });
+    return this.getAccount(this._currentAccount);
+  }
+
+  public getAccount(account: {
+    type: "flex-account" | "singlesig-wallet";
+    index: number;
+  }) {
+    switch (account.type) {
+      case "flex-account":
+        return this._gatekeeperConfig.get().flexAccounts[account.index];
+      case "singlesig-wallet":
+        return this._singlesigWallets[account.index];
+    }
   }
 
   @action
-  public async setCurrentAccount(id: EntityId | null) {
-    if (id && this.gatekeeperConfig.flexAccounts.ids.includes(id)) {
-      this._currentAccount = {
-        type: "flex-account",
-        id,
-      };
-    } else if (id && this.singlesigWallets.ids.includes(id)) {
-      this._currentAccount = {
-        type: "singlesig-wallet",
-        id,
-      };
-    } else {
-      this._currentAccount = null;
-    }
+  public async setCurrentAccount(account: WalletMeta["currentAccount"]) {
+    this._currentAccount = account;
     await this.save();
   }
 
@@ -210,46 +202,38 @@ export class MultisigWallet extends AbstractWallet {
 
   @action
   public async addSinglesigWallet(singlesig: SinglesigWallet) {
-    this._singlesigWallets.add({
-      entity: singlesig,
-    });
+    await this.upsertSinglesigWallet(singlesig);
+  }
+
+  @action
+  public async removeSinglesigWallet(index: number) {
+    this._singlesigWallets.splice(index, 1);
+    await this.save();
+  }
+
+  @action
+  public async upsertSinglesigWallet(singlesig: SinglesigWallet) {
+    const index = this._singlesigWallets.findIndex(
+      (s) => s.publicKey === singlesig.publicKey
+    );
+    if (index === -1) {
+      this._singlesigWallets.push(singlesig);
+    } else {
+      this._singlesigWallets[index] = singlesig;
+    }
     await this.save();
   }
 
   public serializeAccount(
     account: WalletMeta["currentAccount"]
   ): SerializedWalletMeta["currentAccount"] {
-    if (!account) return null;
-    switch (account.type) {
-      case "flex-account":
-        return {
-          type: "flex-account" as const,
-          index: this._gatekeeperConfig.flexAccounts.ids.indexOf(account.id),
-        };
-      case "singlesig-wallet":
-        return {
-          type: "singlesig-wallet" as const,
-          index: this._singlesigWallets.ids.indexOf(account.id),
-        };
-    }
+    return account;
   }
 
   public deserializeAccount(
     account: SerializedWalletMeta["currentAccount"]
   ): WalletMeta["currentAccount"] {
-    if (!account) return null;
-    switch (account.type) {
-      case "flex-account":
-        return {
-          type: "flex-account" as const,
-          id: this._gatekeeperConfig.flexAccounts.ids[account.index],
-        };
-      case "singlesig-wallet":
-        return {
-          type: "singlesig-wallet" as const,
-          id: this._singlesigWallets.ids[account.index],
-        };
-    }
+    return account;
   }
 
   public serialize(): SerializedMultisigWallet | SerializedMultisigDemoWallet {
@@ -259,8 +243,8 @@ export class MultisigWallet extends AbstractWallet {
         chain: this.chain,
         owner: this._owner.toJSON(),
         proxyAddress: this.proxyAddress,
-        gatekeeperConfig: this._gatekeeperConfig.serialize(),
-        singlesigWallets: this._singlesigWallets.serialize(),
+        gatekeeperConfig: this._gatekeeperConfig.toJSON(),
+        singlesigWallets: this._singlesigWallets,
         currentAccount: this.serializeAccount(this._currentAccount),
       },
     };
@@ -289,9 +273,7 @@ export class MultisigWallet extends AbstractWallet {
     wallet._gatekeeperConfig = GatekeeperConfig.deserialize(
       serializedWallet.data.gatekeeperConfig
     );
-    wallet._singlesigWallets = Entities.deserialize(
-      serializedWallet.data.singlesigWallets
-    );
+    wallet._singlesigWallets = serializedWallet.data.singlesigWallets;
     wallet._currentAccount = wallet.deserializeAccount(
       serializedWallet.data.currentAccount
     );

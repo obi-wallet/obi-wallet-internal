@@ -1,9 +1,11 @@
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-  EntityId,
+  Beneficiary,
+  FlexAccount,
   GatekeeperConfig,
   RequestObiSignAndBroadcastTerraTransactionMsg,
+  SinglesigWallet,
   terra,
   Text,
 } from "@obi-wallet/common";
@@ -11,12 +13,14 @@ import { TerraChain } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { isTxError } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
+import * as R from "ramda";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import {
   Alert,
   ImageBackground,
   LayoutAnimation,
+  ListRenderItemInfo,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -288,85 +292,132 @@ const AccountsList = observer(function AccountsList() {
     id: draftId,
   });
 
-  const originalAccounts = wallet.getAccounts();
-  const accounts = wallet.getAccounts(draft.value);
-  const [itemOpened, setItemOpened] = useState<EntityId | null>(null);
+  type Account = Beneficiary | FlexAccount | SinglesigWallet;
+  interface AccountMeta<T extends Account = Account> {
+    type: T["type"];
+    index: number;
+  }
 
-  const activeAccount = wallet.currentAccountId;
-  const setActiveAccount = async (id: EntityId) => {
-    await wallet.setCurrentAccount(id);
+  const [itemOpened, setItemOpened] = useState<AccountMeta | null>(null);
+
+  type AccountData<T extends Account = Account> = {
+    meta: AccountMeta<T>;
+    account: T;
+    originalAccount: T | undefined;
   };
 
-  const data = accounts.ids.map((id) => {
-    return {
-      id,
-      account: accounts.get({ id }),
-    };
-  });
+  const beneficiariesData = draft.value
+    .get()
+    .beneficiaries.map((account, index): AccountData<Beneficiary> => {
+      return {
+        meta: {
+          type: account.type,
+          index,
+        },
+        account,
+        originalAccount: wallet.gatekeeperConfig
+          .get()
+          .beneficiaries.find((originalAccount) => {
+            return originalAccount.address === account.address;
+          }),
+      };
+    });
+  const flexAccountsData = draft.value
+    .get()
+    .flexAccounts.map((account, index): AccountData<FlexAccount> => {
+      return {
+        meta: {
+          type: account.type,
+          index,
+        },
+        account,
+        originalAccount: wallet.gatekeeperConfig
+          .get()
+          .flexAccounts.find((originalAccount) => {
+            return originalAccount.address === account.address;
+          }),
+      };
+    });
+  const singlesigWalletsData = wallet.singlesigWallets.map(
+    (account, index): AccountData<SinglesigWallet> => {
+      return {
+        meta: {
+          type: account.type,
+          index,
+        },
+        account,
+        originalAccount: account,
+      };
+    }
+  );
+
+  const data = [
+    ...beneficiariesData,
+    ...flexAccountsData,
+    ...singlesigWalletsData,
+  ];
 
   return (
     <KeyboardAwareFlatList
       viewIsInsideTabBar
       data={data}
-      renderItem={(element) => {
+      renderItem={(element: ListRenderItemInfo<(typeof data)[0]>) => {
         return (
           <AccountItem
             onOpenToggle={() => {
               LayoutAnimation.configureNext(
                 LayoutAnimation.Presets.easeInEaseOut
               );
-              itemOpened === element.item.id
+              R.equals(itemOpened, element.item.meta)
                 ? setItemOpened(null)
-                : setItemOpened(element.item.id);
+                : setItemOpened(element.item.meta);
             }}
-            isOpen={itemOpened === element.item.id}
+            isOpen={R.equals(itemOpened, element.item.meta)}
             onSetActive={async () => {
-              await setActiveAccount(element.item.id);
+              if (element.item.meta.type === "beneficiary") return;
+              await wallet.setCurrentAccount(element.item.meta);
             }}
-            active={activeAccount === element.item.id}
-            originalAccount={
-              originalAccounts.get({ id: element.item.id }) ?? null
-            }
+            active={R.equals(wallet.meta.currentAccount, element.item.meta)}
+            originalAccount={element.item.originalAccount ?? null}
             account={element.item.account}
-            onDelete={() => {
+            onDelete={async () => {
               switch (element.item.account.type) {
                 case "beneficiary":
-                  draft.value.beneficiaries.remove({ id: element.item.id });
+                  draft.value.set(
+                    draft.value.get().removeBeneficiaryByAddress({
+                      address: element.item.account.address,
+                    })
+                  );
                   break;
                 case "flex-account":
-                  draft.value.flexAccounts.remove({ id: element.item.id });
+                  draft.value.set(
+                    draft.value.get().removeFlexAccountByAddress({
+                      address: element.item.account.address,
+                    })
+                  );
                   break;
                 case "singlesig-wallet":
-                  wallet.singlesigWallets.remove({ id: element.item.id });
+                  await wallet.removeSinglesigWallet(element.item.meta.index);
                   break;
               }
             }}
-            onChange={(account) => {
+            onChange={async (account) => {
               switch (account.type) {
                 case "beneficiary":
-                  draft.value.beneficiaries.update({
-                    id: element.item.id,
-                    entity: account,
-                  });
+                  draft.value.set(draft.value.get().upsertBeneficiary(account));
                   break;
                 case "flex-account":
-                  draft.value.flexAccounts.update({
-                    id: element.item.id,
-                    entity: account,
-                  });
+                  draft.value.set(draft.value.get().upsertFlexAccount(account));
                   break;
                 case "singlesig-wallet":
-                  wallet.singlesigWallets.update({
-                    id: element.item.id,
-                    entity: account,
-                  });
+                  await wallet.upsertSinglesigWallet(account);
                   break;
               }
             }}
           />
         );
       }}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => JSON.stringify(item.meta)}
     />
   );
 });

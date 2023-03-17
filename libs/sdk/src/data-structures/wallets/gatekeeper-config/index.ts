@@ -5,6 +5,8 @@ import { FlexAccount } from "./flex-account";
 import { AbstractMigratable, AbstractSerialized } from "../../abstract";
 import { migratable } from "../../migratable";
 
+export { Beneficiary, FlexAccount };
+
 const GatekeeperConfigSchema = migratable(
   z.object({
     beneficiaries: z.array(Beneficiary.migratableSchema),
@@ -49,9 +51,11 @@ export class GatekeeperConfig {
     return [...this._flexAccounts];
   }
 
-  public addBeneficiary(beneficiary: AbstractSerialized<typeof Beneficiary>) {
+  public upsertBeneficiary(
+    beneficiary: AbstractSerialized<typeof Beneficiary>
+  ) {
     return new GatekeeperConfig(
-      [...this._beneficiaries, beneficiary],
+      this.upsertArrayItem(this._beneficiaries, beneficiary),
       this._flexAccounts
     );
   }
@@ -65,11 +69,13 @@ export class GatekeeperConfig {
     );
   }
 
-  public addFlexAccount(flexAccount: AbstractSerialized<typeof FlexAccount>) {
-    return new GatekeeperConfig(this._beneficiaries, [
-      ...this._flexAccounts,
-      flexAccount,
-    ]);
+  public upsertFlexAccount(
+    flexAccount: AbstractSerialized<typeof FlexAccount>
+  ) {
+    return new GatekeeperConfig(
+      this._beneficiaries,
+      this.upsertArrayItem(this._flexAccounts, flexAccount)
+    );
   }
 
   public removeFlexAccountByAddress({ address }: { address: string }) {
@@ -79,5 +85,19 @@ export class GatekeeperConfig {
         (flexAccount) => flexAccount.address !== address
       )
     );
+  }
+
+  protected upsertArrayItem<T extends { address: string }>(
+    array: T[],
+    item: T
+  ) {
+    const result = [...array];
+    const index = result.findIndex((b) => b.address === item.address);
+    if (index === -1) {
+      result.push(item);
+    } else {
+      result[index] = item;
+    }
+    return result;
   }
 }

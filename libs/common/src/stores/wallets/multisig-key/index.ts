@@ -39,7 +39,7 @@ export class MultisigKey implements Draftable {
   }
 
   public equals(other: MultisigKey) {
-    return R.equals(this._multisigKey.toJSON(), other._multisigKey.toJSON());
+    return R.equals(this.toJSON(), other.toJSON());
   }
 
   public static deserialize({

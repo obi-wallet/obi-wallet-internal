@@ -12,8 +12,7 @@ import { mockAction } from "../../src/fixture-helpers";
 
 function SendSinglesigWalletTxFixture() {
   const wallet = useMultisigWallet();
-  const id = wallet.singlesigWallets.ids[0];
-  const singlesigWallet = wallet.singlesigWallets.get({ id });
+  const singlesigWallet = wallet.singlesigWallets[0];
 
   // TODO: add fallback
   invariant(singlesigWallet, "No singlesig wallet");
@@ -30,7 +29,7 @@ function SendSinglesigWalletTxFixture() {
       walletId: wallet.id,
       currentAccount: {
         type: "singlesig-wallet",
-        id,
+        index: 0,
       },
     },
     demoMode: true,
@@ -73,8 +72,7 @@ function SendMultisigTxFixture() {
 
 function SendFlexAccountTxFixture() {
   const wallet = useMultisigWallet();
-  const id = wallet.gatekeeperConfig.flexAccounts.ids[0];
-  const flexAccount = wallet.gatekeeperConfig.flexAccounts.get({ id });
+  const flexAccount = wallet.gatekeeperConfig.get().flexAccounts[0];
 
   // TODO: add fallback
   invariant(flexAccount, "No flex account wallet");
@@ -88,7 +86,7 @@ function SendFlexAccountTxFixture() {
       walletId: wallet.id,
       currentAccount: {
         type: "flex-account",
-        id,
+        index: 0,
       },
     },
     demoMode: true,

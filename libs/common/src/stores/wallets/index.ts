@@ -26,7 +26,7 @@ import {
 } from "./serialized-data";
 import { ChainStore } from "../chain";
 import { ConfigStore } from "../config";
-import { Entities, EntityId } from "../entities";
+import { Entities } from "../entities";
 import { ArrayIndex } from "../helpers";
 
 export * from "./multisig-key";
@@ -46,13 +46,14 @@ export { MultisigWallet, WalletType };
 
 export type Wallet = MultisigWallet;
 
-export interface WalletMeta {
-  walletId: EntityId;
+// TODO: simplify
+export type WalletMeta = {
+  walletId: string;
   currentAccount: {
     type: "flex-account" | "singlesig-wallet";
-    id: EntityId;
+    index: number;
   } | null;
-}
+};
 
 export interface SerializedWalletMeta {
   walletIndex: number;
