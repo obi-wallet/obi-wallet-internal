@@ -155,23 +155,25 @@ export const CreateBeneficiaryAccountScreen =
                 flavor="blue"
                 disabled={!formState.isValid}
                 onPress={handleSubmit((data) => {
-                  gatekeeperConfig.value.addBeneficiary({
-                    type: "beneficiary",
-                    meta: {
-                      icon: icon?.uri || "",
-                      name: data.name,
-                    },
-                    address: data.address,
-                    dormancyThreshold: {
-                      years: 1,
-                    },
-                    dripSchedule: {
-                      rate: 0.01,
-                      period: {
-                        months: 1,
+                  gatekeeperConfig.value.set(
+                    gatekeeperConfig.value.get().upsertBeneficiary({
+                      type: "beneficiary",
+                      meta: {
+                        icon: icon?.uri || "",
+                        name: data.name,
                       },
-                    },
-                  });
+                      address: data.address,
+                      dormancyThreshold: {
+                        years: 1,
+                      },
+                      dripSchedule: {
+                        rate: 0.01,
+                        period: {
+                          months: 1,
+                        },
+                      },
+                    })
+                  );
 
                   navigation.navigate(AccountsRoute.AccountsOverview);
                 })}

@@ -1,83 +1,45 @@
-import { action, makeObservable, observable } from "mobx";
-
 import {
-  Beneficiary,
-  FlexAccount,
-  SerializedGatekeeperConfig,
-} from "./serialized-data";
+  GatekeeperConfig as GatekeeperConfigSdk,
+  Serialized,
+} from "@obi-wallet/sdk";
+import { action, makeObservable, observable } from "mobx";
+import * as R from "ramda";
+
 import { Draftable } from "../../drafts/draft";
-import { Entities } from "../../entities";
 
 export class GatekeeperConfig implements Draftable {
-  @observable
-  public beneficiaries: Entities<Beneficiary>;
+  @observable.ref
+  protected _gatekeeperConfig: GatekeeperConfigSdk;
 
-  @observable
-  public flexAccounts: Entities<FlexAccount>;
+  public get() {
+    return this._gatekeeperConfig;
+  }
+
+  @action
+  public set(gatekeeperConfig: GatekeeperConfigSdk) {
+    this._gatekeeperConfig = gatekeeperConfig;
+  }
 
   constructor() {
-    this.beneficiaries = new Entities();
-    this.flexAccounts = new Entities();
+    this._gatekeeperConfig = GatekeeperConfigSdk.empty();
     makeObservable(this);
   }
 
-  @action
-  public addBeneficiary(beneficiary: Beneficiary) {
-    this.beneficiaries.add({
-      entity: beneficiary,
-    });
-  }
-
-  @action
-  public removeBeneficiaryByAddress({ address }: { address: string }) {
-    this.beneficiaries.removeBy({
-      predicate(beneficiary) {
-        return beneficiary.address === address;
-      },
-    });
-  }
-
-  @action
-  public addFlexAccount(flexAccount: FlexAccount) {
-    this.flexAccounts.add({
-      entity: flexAccount,
-    });
-  }
-
-  @action
-  public removeFlexAccountByAddress({ address }: { address: string }) {
-    this.flexAccounts.removeBy({
-      predicate(flexAccount) {
-        return flexAccount.address === address;
-      },
-    });
-  }
-
-  public serialize(): SerializedGatekeeperConfig {
-    return {
-      beneficiaries: [...this.beneficiaries.entities],
-      flexAccounts: [...this.flexAccounts.entities],
-    };
+  public toJSON() {
+    return this._gatekeeperConfig.toJSON();
   }
 
   public clone() {
-    const clone = new GatekeeperConfig();
-    clone.beneficiaries = this.beneficiaries.clone();
-    clone.flexAccounts = this.flexAccounts.clone();
-    return clone as this;
+    return GatekeeperConfig.deserialize(this.toJSON()) as this;
   }
 
   public equals(other: GatekeeperConfig) {
-    return (
-      this.beneficiaries.equals(other.beneficiaries) &&
-      this.flexAccounts.equals(other.flexAccounts)
-    );
+    return R.equals(this.toJSON(), other.toJSON());
   }
 
-  public static deserialize(data: SerializedGatekeeperConfig) {
+  public static deserialize(data: Serialized<typeof GatekeeperConfigSdk>) {
     const gatekeeperConfig = new GatekeeperConfig();
-    gatekeeperConfig.beneficiaries = Entities.deserialize(data.beneficiaries);
-    gatekeeperConfig.flexAccounts = Entities.deserialize(data.flexAccounts);
+    gatekeeperConfig.set(GatekeeperConfigSdk.deserialize(data));
     return gatekeeperConfig;
   }
 }

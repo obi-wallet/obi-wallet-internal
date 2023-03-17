@@ -46,23 +46,25 @@ describe("Empty gatekeeper config", () => {
 
   test("Add beneficiary", () => {
     const newGatekeeperConfig = new GatekeeperConfig();
-    newGatekeeperConfig.addBeneficiary({
-      type: "beneficiary",
-      meta: {
-        name: "Beneficiary",
-        icon: "",
-      },
-      address,
-      dormancyThreshold: {
-        years: 1,
-      },
-      dripSchedule: {
-        rate: 0.05,
-        period: {
+    newGatekeeperConfig.set(
+      newGatekeeperConfig.get().upsertBeneficiary({
+        type: "beneficiary",
+        meta: {
+          name: "Beneficiary",
+          icon: "",
+        },
+        address,
+        dormancyThreshold: {
           years: 1,
         },
-      },
-    });
+        dripSchedule: {
+          rate: 0.05,
+          period: {
+            years: 1,
+          },
+        },
+      })
+    );
     const messages = getUpdateGatekeeperMessages({
       currentGatekeeperConfig,
       newGatekeeperConfig,
@@ -104,18 +106,20 @@ describe("Empty gatekeeper config", () => {
 
   test("Add strict flex account", () => {
     const newGatekeeperConfig = new GatekeeperConfig();
-    newGatekeeperConfig.addFlexAccount({
-      type: "flex-account",
-      meta: {
-        name: "Strict Flex Account",
-        icon: "",
-      },
-      address,
-      publicKey,
-      privateKey: privateKey,
-      spendLimit: null,
-      autoSign: null,
-    });
+    newGatekeeperConfig.set(
+      newGatekeeperConfig.get().upsertFlexAccount({
+        type: "flex-account",
+        meta: {
+          name: "Strict Flex Account",
+          icon: "",
+        },
+        address,
+        publicKey,
+        privateKey: privateKey,
+        spendLimit: null,
+        autoSign: null,
+      })
+    );
     const messages = getUpdateGatekeeperMessages({
       currentGatekeeperConfig,
       newGatekeeperConfig,
@@ -148,23 +152,25 @@ describe("Empty gatekeeper config", () => {
 
   test("Add limited flex account", () => {
     const newGatekeeperConfig = new GatekeeperConfig();
-    newGatekeeperConfig.addFlexAccount({
-      type: "flex-account",
-      meta: {
-        name: "Limited Flex Account",
-        icon: "",
-      },
-      address,
-      publicKey,
-      privateKey: privateKey,
-      spendLimit: {
-        period: {
-          days: 1,
+    newGatekeeperConfig.set(
+      newGatekeeperConfig.get().upsertFlexAccount({
+        type: "flex-account",
+        meta: {
+          name: "Limited Flex Account",
+          icon: "",
         },
-        amount: 10,
-      },
-      autoSign: null,
-    });
+        address,
+        publicKey,
+        privateKey: privateKey,
+        spendLimit: {
+          period: {
+            days: 1,
+          },
+          amount: 10,
+        },
+        autoSign: null,
+      })
+    );
     const messages = getUpdateGatekeeperMessages({
       currentGatekeeperConfig,
       newGatekeeperConfig,
@@ -205,27 +211,29 @@ describe("Empty gatekeeper config", () => {
 
   test("Add unlocked flex account", () => {
     const newGatekeeperConfig = new GatekeeperConfig();
-    newGatekeeperConfig.addFlexAccount({
-      type: "flex-account",
-      meta: {
-        name: "Unlocked Flex Account",
-        icon: "",
-      },
-      address,
-      publicKey,
-      privateKey: privateKey,
-      spendLimit: {
-        period: {
-          days: 1,
+    newGatekeeperConfig.set(
+      newGatekeeperConfig.get().upsertFlexAccount({
+        type: "flex-account",
+        meta: {
+          name: "Unlocked Flex Account",
+          icon: "",
         },
-        amount: 10,
-      },
-      autoSign: {
-        // TODO: this doesn't make sense like that
-        // Maybe not add here at all end instead query from chain?!
-        endTime: "2021-01-01T00:00:00Z",
-      },
-    });
+        address,
+        publicKey,
+        privateKey: privateKey,
+        spendLimit: {
+          period: {
+            days: 1,
+          },
+          amount: 10,
+        },
+        autoSign: {
+          // TODO: this doesn't make sense like that
+          // Maybe not add here at all end instead query from chain?!
+          endTime: "2021-01-01T00:00:00Z",
+        },
+      })
+    );
     const messages = getUpdateGatekeeperMessages({
       currentGatekeeperConfig,
       newGatekeeperConfig,
@@ -267,23 +275,25 @@ describe("Empty gatekeeper config", () => {
 
 test("Remove single flex account", async () => {
   const currentGatekeeperConfig = new GatekeeperConfig();
-  currentGatekeeperConfig.addFlexAccount({
-    type: "flex-account",
-    meta: {
-      name: "Limited Flex Account",
-      icon: "",
-    },
-    address,
-    publicKey,
-    privateKey: privateKey,
-    spendLimit: {
-      period: {
-        days: 1,
+  currentGatekeeperConfig.set(
+    currentGatekeeperConfig.get().upsertFlexAccount({
+      type: "flex-account",
+      meta: {
+        name: "Limited Flex Account",
+        icon: "",
       },
-      amount: 10,
-    },
-    autoSign: null,
-  });
+      address,
+      publicKey,
+      privateKey: privateKey,
+      spendLimit: {
+        period: {
+          days: 1,
+        },
+        amount: 10,
+      },
+      autoSign: null,
+    })
+  );
   const newGatekeeperConfig = new GatekeeperConfig();
   const messages = getUpdateGatekeeperMessages({
     currentGatekeeperConfig,
@@ -326,17 +336,21 @@ test("Make unlocked flex account locked", async () => {
   };
 
   const currentGatekeeperConfig = new GatekeeperConfig();
-  currentGatekeeperConfig.addFlexAccount({
-    ...flexAccount,
-    autoSign: {
-      endTime: DateTime.now().plus({ minutes: 30 }).toISO(),
-    },
-  });
+  currentGatekeeperConfig.set(
+    currentGatekeeperConfig.get().upsertFlexAccount({
+      ...flexAccount,
+      autoSign: {
+        endTime: DateTime.now().plus({ minutes: 30 }).toISO(),
+      },
+    })
+  );
   const newGatekeeperConfig = new GatekeeperConfig().clone();
-  newGatekeeperConfig.addFlexAccount({
-    ...flexAccount,
-    autoSign: null,
-  });
+  newGatekeeperConfig.set(
+    newGatekeeperConfig.get().upsertFlexAccount({
+      ...flexAccount,
+      autoSign: null,
+    })
+  );
   const messages = getUpdateGatekeeperMessages({
     currentGatekeeperConfig,
     newGatekeeperConfig,

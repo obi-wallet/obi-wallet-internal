@@ -275,12 +275,14 @@ export function getUpdateGatekeeperMessages({
   function handleBeneficiaries() {
     const messages: MsgExecuteContract[] = [];
 
-    const previousBeneficiaryAddresses =
-      currentGatekeeperConfig.beneficiaries.entities.map((beneficiary) => {
+    const previousBeneficiaryAddresses = currentGatekeeperConfig
+      .get()
+      .beneficiaries.map((beneficiary) => {
         return beneficiary.address;
       });
-    const nextBeneficiaryAddresses =
-      newGatekeeperConfig.beneficiaries.entities.map((beneficiary) => {
+    const nextBeneficiaryAddresses = newGatekeeperConfig
+      .get()
+      .beneficiaries.map((beneficiary) => {
         return beneficiary.address;
       });
 
@@ -289,13 +291,12 @@ export function getUpdateGatekeeperMessages({
       nextBeneficiaryAddresses
     );
 
-    newGatekeeperConfig.beneficiaries.entities.forEach((beneficiary) => {
-      const previousBeneficiary =
-        currentGatekeeperConfig.beneficiaries.entities.find(
-          (previousBeneficiary) => {
-            return previousBeneficiary.address === beneficiary.address;
-          }
-        );
+    newGatekeeperConfig.get().beneficiaries.forEach((beneficiary) => {
+      const previousBeneficiary = currentGatekeeperConfig
+        .get()
+        .beneficiaries.find((previousBeneficiary) => {
+          return previousBeneficiary.address === beneficiary.address;
+        });
 
       if (previousBeneficiary && R.equals(previousBeneficiary, beneficiary)) {
         return;
@@ -366,12 +367,14 @@ export function getUpdateGatekeeperMessages({
   function handleFlexAccounts() {
     const messages: MsgExecuteContract[] = [];
 
-    const previousFlexAccountAddresses =
-      currentGatekeeperConfig.flexAccounts.entities.map((flexAccount) => {
+    const previousFlexAccountAddresses = currentGatekeeperConfig
+      .get()
+      .flexAccounts.map((flexAccount) => {
         return flexAccount.address;
       });
-    const nextFlexAccountAddresses =
-      newGatekeeperConfig.flexAccounts.entities.map((flexAccount) => {
+    const nextFlexAccountAddresses = newGatekeeperConfig
+      .get()
+      .flexAccounts.map((flexAccount) => {
         return flexAccount.address;
       });
 
@@ -380,13 +383,12 @@ export function getUpdateGatekeeperMessages({
       nextFlexAccountAddresses
     );
 
-    newGatekeeperConfig.flexAccounts.entities.forEach((flexAccount) => {
-      const previousFlexAccount =
-        currentGatekeeperConfig.flexAccounts.entities.find(
-          (previousFlexAccount) => {
-            return previousFlexAccount.address === flexAccount.address;
-          }
-        );
+    newGatekeeperConfig.get().flexAccounts.forEach((flexAccount) => {
+      const previousFlexAccount = currentGatekeeperConfig
+        .get()
+        .flexAccounts.find((previousFlexAccount) => {
+          return previousFlexAccount.address === flexAccount.address;
+        });
 
       if (
         !previousFlexAccount ||

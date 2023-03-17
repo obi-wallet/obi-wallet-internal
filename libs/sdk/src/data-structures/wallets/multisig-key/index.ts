@@ -58,12 +58,12 @@ export class MultisigKey {
     return this._chain;
   }
 
-  public get keys() {
-    return [...this._keys];
-  }
-
   public get threshold() {
     return this._threshold;
+  }
+
+  public setThreshold(threshold: number) {
+    return new MultisigKey(this._chain, this._keys, threshold);
   }
 
   public get publicKey(): MultisigPublicKey {
@@ -82,12 +82,12 @@ export class MultisigKey {
     });
   }
 
-  public get signerTypes() {
-    return this._keys.map((key) => key.type);
+  public get keys() {
+    return [...this._keys];
   }
 
-  public setThreshold(threshold: number) {
-    return new MultisigKey(this._chain, this._keys, threshold);
+  public get signerTypes() {
+    return this._keys.map((key) => key.type);
   }
 
   public hasKeyOfType(type: KeyType) {
