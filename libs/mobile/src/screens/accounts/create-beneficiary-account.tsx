@@ -19,14 +19,12 @@ import { isSmallScreenNumber } from "../../app/screens/components/screen-size";
 import { useMultisigWallet, useStore } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
 import { useKeyboardVisible } from "../../helpers/keyboard-visible";
+import { trim, validateNonEmptyString } from "../../helpers/zod-helpers";
 
 export type CreateBeneficiaryAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
   AccountsRoute.CreateBeneficiaryAccount
 >;
-
-const trim = <T extends z.ZodTypeAny>(schema: T) =>
-  z.preprocess((val) => String(val).trim(), schema);
 
 export const CreateBeneficiaryAccountScreen =
   observer<CreateBeneficiaryAccountScreenProps>(
@@ -34,19 +32,16 @@ export const CreateBeneficiaryAccountScreen =
       const { draftsStore } = useStore();
       const wallet = useMultisigWallet();
       const schema = z.object({
-        name: trim(z.string().nonempty("Name cannot be empty")),
-        address: trim(
-          z
-            .string()
-            .nonempty("Address cannot be empty")
-            .refine(
-              (address) => {
-                return Sdk.chainId(wallet.chainId).validateAddress({ address });
-              },
-              {
-                message: "Invalid Address",
-              }
-            )
+        name: validateNonEmptyString("Name"),
+        address: validateNonEmptyString("Address").refine(
+          (address) => {
+            return Sdk.chainId(wallet.chain.chainId).validateAddress({
+              address,
+            });
+          },
+          {
+            message: "Invalid Address",
+          }
         ),
       });
       const { control, handleSubmit, formState } = useForm({

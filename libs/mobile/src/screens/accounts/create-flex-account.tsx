@@ -1,3 +1,4 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@obi-wallet/common";
 import {
   generateSec256k1KeyPair,
@@ -7,8 +8,10 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { z } from "zod";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import FlexAccountIcon from "./assets/flex-account-icon.svg";
@@ -18,13 +21,13 @@ import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
 import { useMultisigWallet, useStore } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
+import { validateNonEmptyString } from "../../helpers/zod-helpers";
 
 export type CreateFlexAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
   AccountsRoute.CreateFlexAccount
 >;
 
-// TODO: validate form
 export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
   function CreateFlexAccountScreen({ navigation }) {
     const { draftsStore } = useStore();
@@ -32,8 +35,19 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
     const gatekeeperConfig = draftsStore.get<ObservableGatekeeperConfig>({
       id: getGatekeeperConfigDraftId(wallet),
     });
+    const schema = z.object({
+      name: validateNonEmptyString("Name"),
+    });
+    const { control, handleSubmit, formState } = useForm({
+      defaultValues: {
+        name: "",
+
+        address: "",
+      },
+      mode: "onTouched",
+      resolver: zodResolver(schema),
+    });
     const [icon, setIcon] = useState<Icon | null>(null);
-    const [name, setName] = useState("");
     return (
       <ScreenContainer>
         <KeyboardAwareScrollView
@@ -56,12 +70,21 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
               onChange={setIcon}
               FallbackSvg={FlexAccountIcon}
             />
-            <TextInput
-              placeholder="Enter Name"
-              label="Flex Account Name"
-              style={{ width: "100%", marginTop: 40 }}
-              value={name}
-              onChangeText={setName}
+            <Controller
+              name="name"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  placeholder="Enter Name"
+                  label="Flex Account Name"
+                  style={{ width: "100%", marginTop: 40 }}
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  maxLength={30}
+                  invalidMessage={formState.errors.name?.message}
+                />
+              )}
             />
 
             <Text style={{ fontSize: 14, color: "white", marginTop: 20 }}>
@@ -73,8 +96,8 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
         <View style={{ marginTop: 20 }}>
           <Button
             flavor="blue"
-            disabled={!name}
-            onPress={() => {
+            disabled={!formState.isValid}
+            onPress={handleSubmit((data) => {
               const { publicKey, privateKey } = generateSec256k1KeyPair();
               const address = Sdk.chainId(wallet.chainId).getAddressOfPublicKey(
                 {
@@ -85,7 +108,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
                 type: "flex-account",
                 meta: {
                   icon: icon?.uri || "",
-                  name,
+                  name: data.name,
                 },
                 address,
                 autoSign: null,
@@ -95,7 +118,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
               });
 
               navigation.navigate(AccountsRoute.AccountsOverview);
-            }}
+            })}
             label="Confirm"
           />
           <Button
