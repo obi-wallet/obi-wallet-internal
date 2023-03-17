@@ -19,7 +19,7 @@ import { isSmallScreenNumber } from "../../app/screens/components/screen-size";
 import { useMultisigWallet, useStore } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
 import { useKeyboardVisible } from "../../helpers/keyboard-visible";
-import { trim, validateNonEmptyString } from "../../helpers/zod-helpers";
+import { validateNonEmptyString } from "../../helpers/validation-helpers";
 
 export type CreateBeneficiaryAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,

@@ -17,7 +17,7 @@ import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
 import { useMultisigWallet, useStore } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
-import { validateNonEmptyString } from "../../helpers/zod-helpers";
+import { validateNonEmptyString } from "../../helpers/validation-helpers";
 
 export type CreateFlexAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
@@ -36,7 +36,6 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
     const { control, handleSubmit, formState } = useForm({
       defaultValues: {
         name: "",
-        address: "",
       },
       mode: "onTouched",
       resolver: zodResolver(schema),
