@@ -42,7 +42,7 @@ export class MultisigKey {
   }
 
   public static empty(chain: Chain): MultisigKey {
-    return new MultisigKey(chain, [], 0);
+    return new MultisigKey(chain, [], 1);
   }
 
   public static deserialize(
@@ -109,8 +109,7 @@ export class MultisigKey {
   public setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
     const keys = this._keys.filter((k) => key.type !== k.type);
     keys.push(new UsableKey(key));
-    const threshold = Math.max(1, this._threshold);
-    return new MultisigKey(this._chain, keys, threshold);
+    return new MultisigKey(this._chain, keys, this._threshold);
   }
 
   public removeKeyOfType<T extends KeyType>(type: T) {
