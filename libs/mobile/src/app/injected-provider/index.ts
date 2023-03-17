@@ -26,7 +26,7 @@ class ConcreteKeplr extends Keplr {
 
     if (isCosmosChain(currentWallet.chain)) {
       const msg = new RequestObiCosmosSignAndBroadcastMsg({
-        multisigKey: currentWallet.owner.serialize(),
+        multisigKey: currentWallet.owner.toJSON(),
         demoMode: currentWallet.isDemo,
         encodeObjects: messages,
         proxyAddress: currentWallet.proxyAddress.address,

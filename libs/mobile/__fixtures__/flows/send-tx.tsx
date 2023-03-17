@@ -111,12 +111,12 @@ function SendMultisigKeyTxFixture() {
     chain: wallet.chain as TerraChain,
     messages: [
       terra.getNewAccountMessage({
-        address: wallet.owner.address,
+        address: wallet.owner.get().address,
         chainId: wallet.chain as TerraChain,
         signers: [],
       }),
     ].map((msg) => msg.toAmino()),
-    multisigKey: wallet.owner.serialize(),
+    multisigKey: wallet.owner.toJSON(),
     demoMode: true,
     cancelable: true,
   };

@@ -1,12 +1,17 @@
 import { z } from "zod";
 
-import { AbstractKey, Key, KeyType, UsableKey } from "./keys";
-import { MultisigPublicKey } from "../../../keys";
 import {
-  AbstractMigratable,
-  AbstractSerialized,
-  Serialized,
-} from "../../abstract";
+  AbstractKey,
+  Key,
+  KeyAbstractSerializedMapping,
+  KeySubclassTypeMapping,
+  KeyType,
+  UsableKey,
+} from "./keys";
+import { Chain } from "../../../chains";
+import { MultisigPublicKey } from "../../../keys";
+import { Sdk } from "../../../sdk";
+import { AbstractMigratable, AbstractSerialized } from "../../abstract";
 import { migratable } from "../../migratable";
 
 export * from "./keys";
@@ -24,6 +29,7 @@ export class MultisigKey {
   }
 
   public constructor(
+    protected _chain: Chain,
     protected _keys: AbstractKey[],
     protected _threshold: number
   ) {}
@@ -35,16 +41,21 @@ export class MultisigKey {
     };
   }
 
-  public static empty(): MultisigKey {
-    return new MultisigKey([], 0);
+  public static empty(chain: Chain): MultisigKey {
+    return new MultisigKey(chain, [], 0);
   }
 
   public static deserialize(
+    chain: Chain,
     serialized: AbstractMigratable<typeof MultisigKeySchema>
   ): MultisigKey {
     const { keys, threshold } =
       MultisigKeySchema.migratableSchema.parse(serialized);
-    return new MultisigKey(keys.map(Key.deserialize), threshold);
+    return new MultisigKey(chain, keys.map(Key.deserialize), threshold);
+  }
+
+  public get chain() {
+    return this._chain;
   }
 
   public get keys() {
@@ -65,12 +76,18 @@ export class MultisigKey {
     };
   }
 
+  public get address() {
+    return Sdk.chainId(this._chain).getAddressOfPublicKey({
+      publicKey: this.publicKey,
+    });
+  }
+
   public get signerTypes() {
     return this._keys.map((key) => key.type);
   }
 
   public setThreshold(threshold: number) {
-    return new MultisigKey(this._keys, threshold);
+    return new MultisigKey(this._chain, this._keys, threshold);
   }
 
   public hasKeyOfType(type: KeyType) {
@@ -78,28 +95,26 @@ export class MultisigKey {
   }
 
   public getKeyOfType<T extends KeyType>(type: T) {
-    return this._keys.find((key): key is AbstractKey & { type: T } => {
+    return this._keys.find((key): key is KeySubclassTypeMapping[T] => {
       return key.type === type;
     });
   }
 
   public getUsableKeyOfType<T extends KeyType>(type: T) {
-    return this._keys.find((key): key is UsableKey<T> => {
+    return this._keys.find((key): key is KeySubclassTypeMapping[T] => {
       return key.type === type && key.isUsable;
     });
   }
 
-  public setKey<T extends KeyType>(
-    key: Serialized<typeof UsableKey> & { type: T }
-  ) {
+  public setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
     const keys = this._keys.filter((k) => key.type !== k.type);
-    keys.push(new UsableKey<T>(key));
+    keys.push(new UsableKey(key));
     const threshold = Math.max(1, this._threshold);
-    return new MultisigKey(keys, threshold);
+    return new MultisigKey(this._chain, keys, threshold);
   }
 
   public removeKeyOfType<T extends KeyType>(type: T) {
     const keys = this._keys.filter((key) => key.type !== type);
-    return new MultisigKey(keys, this._threshold);
+    return new MultisigKey(this._chain, keys, this._threshold);
   }
 }

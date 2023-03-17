@@ -1,7 +1,7 @@
+import { Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { z } from "zod";
 
 import { Duration, Percentage } from "../../helpers";
-import { Secp256k1PublicKey } from "../multisig-key/keys/public-key";
 
 export const AccountMetaData = z.object({
   name: z.string(),

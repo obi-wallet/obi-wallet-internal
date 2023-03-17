@@ -12,11 +12,14 @@ export function createMultisigPublicKey({
 }) {
   const publicKeys = [];
 
-  for (const key of multisigKey.keys) {
+  for (const key of multisigKey.get().keys) {
     publicKeys.push(SimplePublicKey.fromAmino(key.publicKey));
   }
 
-  return new LegacyAminoMultisigPublicKey(multisigKey.threshold, publicKeys);
+  return new LegacyAminoMultisigPublicKey(
+    multisigKey.get().threshold,
+    publicKeys
+  );
 }
 
 export function getSigners({ multisigKey }: { multisigKey: MultisigKey }) {
@@ -25,7 +28,7 @@ export function getSigners({ multisigKey }: { multisigKey: MultisigKey }) {
   return multisigPublicKey.pubkeys.map((publicKey, i) => {
     return {
       address: publicKey.address("terra"),
-      ty: multisigKey.signerTypes[i],
+      ty: multisigKey.get().signerTypes[i],
     };
   });
 }

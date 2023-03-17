@@ -1,5 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { MultisigKey, Text } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -80,14 +81,19 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
 
     if (isRecovering) {
       if (targetPublicKey === publicKey) {
-        await draft.value.recoverCloudKey({
-          provider: "google-drive",
-          publicKey: {
-            type: pubkeyType.secp256k1,
-            value: publicKey,
-          },
-          privateKey,
-        });
+        draft.value.set(
+          draft.value.get().setKey({
+            type: KeyType.Cloud,
+            payload: {
+              provider: "google-drive",
+              publicKey: {
+                type: pubkeyType.secp256k1,
+                value: publicKey,
+              },
+              privateKey,
+            },
+          })
+        );
       } else {
         Alert.alert(
           "Error",
@@ -95,19 +101,24 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
         );
       }
     } else {
-      await draft.value.setCloudKey({
-        provider: "google-drive",
-        publicKey: {
-          type: pubkeyType.secp256k1,
-          value: publicKey,
-        },
-        privateKey,
-      });
+      draft.value.set(
+        draft.value.get().setKey({
+          type: KeyType.Cloud,
+          payload: {
+            provider: "google-drive",
+            publicKey: {
+              type: pubkeyType.secp256k1,
+              value: publicKey,
+            },
+            privateKey,
+          },
+        })
+      );
     }
 
     void queryClient.prefetchQuery(
       getPrepareKeyQuery({
-        chainId: draft.value.chain,
+        chainId: draft.value.get().chain,
         publicKey,
         privateKey,
       })

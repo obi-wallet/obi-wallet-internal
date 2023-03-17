@@ -209,7 +209,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                 const messages = terra.getUpdateGatekeeperMessages({
                   currentGatekeeperConfig: draft.original,
                   newGatekeeperConfig: draft.value,
-                  proxyAddress: wallet.owner.address,
+                  proxyAddress: wallet.owner.get().address,
                   spendLimitGatekeeper,
                   sessionKeyGatekeeper,
                 });
@@ -220,7 +220,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                     messages: messages.map((message) => message.toAmino()),
                     demoMode: wallet.isDemo,
                     cancelable: true,
-                    multisigKey: wallet.owner.serialize(),
+                    multisigKey: wallet.owner.toJSON(),
                   });
 
                 if (isTxError(response)) {

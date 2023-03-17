@@ -427,7 +427,7 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
             const chain = wallet.chain;
             if (isCosmosChain(chain)) {
               const response = await RequestObiCosmosSignAndBroadcastMsg.send({
-                multisigKey: wallet.owner.serialize(),
+                multisigKey: wallet.owner.toJSON(),
                 demoMode: wallet.isDemo,
                 encodeObjects: getEncodeObjects(),
                 proxyAddress: wallet.proxyAddress.address,

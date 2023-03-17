@@ -18,15 +18,15 @@ export async function handleCosmos({
   const multisigKey = draft.value;
   // TODO: shuffle?
 
-  const signers = multisigKey.keys.map((key, i) => {
+  const signers = multisigKey.get().keys.map((key, i) => {
     return {
       address: Sdk.chainId(chainId).getAddressOfPublicKey({
         publicKey: key.publicKey,
       }),
-      ty: multisigKey.signerTypes[i],
+      ty: multisigKey.get().signerTypes[i],
     };
   });
-  const owner = multisigKey.address;
+  const owner = multisigKey.get().address;
 
   const message = cosmos.getNewAccountMessage({
     address: owner,
@@ -35,7 +35,7 @@ export async function handleCosmos({
   });
 
   const response = await RequestObiCosmosSignAndBroadcastMsg.send({
-    multisigKey: multisigKey.serialize(),
+    multisigKey: multisigKey.toJSON(),
     encodeObjects: [message],
     demoMode,
     isOnboarding: true,
@@ -44,7 +44,7 @@ export async function handleCosmos({
   try {
     return {
       chain: chainId,
-      owner: multisigKey.serialize(),
+      owner: multisigKey.toJSON(),
       proxyAddress: {
         v: 1 as const,
         ...cosmos.parseNewAccountResponse(response),

@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MultisigKey, Text } from "@obi-wallet/common";
-import { generateSec256k1KeyPair } from "@obi-wallet/sdk";
+import { generateSec256k1KeyPair, KeyType } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -304,9 +304,14 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                       {
                         text: "Yes, I sent the email to myself",
                         onPress: () => {
-                          draft.value.setEmailKey({
-                            publicKey,
-                          });
+                          draft.value.set(
+                            draft.value.get().setKey({
+                              type: KeyType.Email,
+                              payload: {
+                                publicKey,
+                              },
+                            })
+                          );
                           onSubmit();
                         },
                       },

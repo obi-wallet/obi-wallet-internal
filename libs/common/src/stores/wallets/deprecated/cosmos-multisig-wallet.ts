@@ -1,8 +1,8 @@
 import { pubkeyType } from "@cosmjs/amino";
+import { Chain, KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { z } from "zod";
 
 import { migratable } from "../../helpers";
-import { MultisigKey } from "../multisig-key";
 import {
   MigratableSerializedMultisigDemoWallet,
   MigratableSerializedMultisigWallet,
@@ -202,21 +202,36 @@ export function migrateSerializedData(
 
   const chain = mainnetProxyAddress ? "juno-1" : "uni-3";
 
-  const multisigKey = new MultisigKey({ chain });
-  if (currentAdmin.biometrics) {
-    multisigKey.setDeviceKey(currentAdmin.biometrics);
-  }
-  if (currentAdmin.phoneNumber) {
-    multisigKey.setPhoneKey(currentAdmin.phoneNumber);
-  }
-  if (currentAdmin.social) {
-    // @ts-expect-error TODO: review
-    multisigKey.setSocialKey(currentAdmin.social);
-  }
-
   return {
     chain,
-    owner: multisigKey.serialize(),
+    owner: migrateMultisigKey(chain, serializedData).toJSON(),
     proxyAddress,
   };
+
+  function migrateMultisigKey(
+    chain: Chain,
+    { currentAdmin }: SerializedCosmosMultisigWalletData
+  ) {
+    let result = MultisigKey.empty(chain);
+    if (currentAdmin?.biometrics) {
+      result = result.setKey({
+        type: KeyType.Device,
+        payload: currentAdmin.biometrics,
+      });
+    }
+    if (currentAdmin?.phoneNumber) {
+      result = result.setKey({
+        type: KeyType.Phone,
+        payload: currentAdmin.phoneNumber,
+      });
+    }
+    if (currentAdmin?.social) {
+      result = result.setKey({
+        type: KeyType.Social,
+        // @ts-expect-error TODO: review
+        payload: currentAdmin.social,
+      });
+    }
+    return result;
+  }
 }

@@ -1,5 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { MultisigKey, Text } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -303,16 +304,21 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
                     boostEntropy: true,
                     localEntropy,
                   });
-                  draft.value.setNfcKey({
-                    publicKey: {
-                      type: pubkeyType.secp256k1,
-                      value: publicKey,
-                    },
-                    localEntropy,
-                  });
+                  draft.value.set(
+                    draft.value.get().setKey({
+                      type: KeyType.Nfc,
+                      payload: {
+                        publicKey: {
+                          type: pubkeyType.secp256k1,
+                          value: publicKey,
+                        },
+                        localEntropy,
+                      },
+                    })
+                  );
                   void queryClient.prefetchQuery(
                     getPrepareKeyQuery({
-                      chainId: draft.value.chain,
+                      chainId: draft.value.get().chain,
                       publicKey,
                       privateKey,
                     })

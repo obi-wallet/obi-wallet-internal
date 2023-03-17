@@ -1,5 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { MultisigKey, Text } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -199,14 +200,19 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                       demoMode,
                     });
                     if (publicKey) {
-                      draft.value.setPhoneKey({
-                        publicKey: {
-                          type: pubkeyType.secp256k1,
-                          value: publicKey,
-                        },
-                        phoneNumber,
-                        securityQuestion,
-                      });
+                      draft.value.set(
+                        draft.value.get().setKey({
+                          type: KeyType.Phone,
+                          payload: {
+                            publicKey: {
+                              type: pubkeyType.secp256k1,
+                              value: publicKey,
+                            },
+                            phoneNumber,
+                            securityQuestion,
+                          },
+                        })
+                      );
                       setVerifyButtonDisabledDoubleclick(false);
                       onSubmit();
                     } else {

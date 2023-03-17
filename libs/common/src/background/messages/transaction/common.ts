@@ -1,11 +1,13 @@
-import { SerializedMultisigKey, WalletMeta } from "../../../stores";
+import { MultisigKey, Serialized } from "@obi-wallet/sdk";
+
+import { WalletMeta } from "../../../stores";
 
 export interface CommonPayloadWalletMeta {
   readonly walletMeta: WalletMeta;
 }
 
 export interface CommonPayloadMultisigKey {
-  readonly multisigKey: SerializedMultisigKey;
+  readonly multisigKey: Serialized<typeof MultisigKey>;
 }
 
 export type CommonPayload = {

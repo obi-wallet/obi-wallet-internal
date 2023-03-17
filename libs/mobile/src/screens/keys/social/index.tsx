@@ -1,4 +1,5 @@
 import { MultisigKey, Text } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 import {
   Chain,
   isTerraChain,
@@ -256,10 +257,13 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
                 setFetchingPubKey(false);
 
                 if (publicKey) {
-                  draft.value.setSocialKey({
-                    // @ts-expect-error TODO: TypeScript doesn't understand this specific case
-                    publicKey,
-                  });
+                  draft.value.set(
+                    draft.value.get().setKey({
+                      type: KeyType.Social,
+                      // @ts-expect-error TODO: TypeScript doesn't understand this specific case
+                      payload: { publicKey },
+                    })
+                  );
                   onSubmit();
                 } else {
                   Alert.alert(

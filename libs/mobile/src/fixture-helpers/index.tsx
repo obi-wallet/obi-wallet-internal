@@ -1,5 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { GatekeeperConfig, MultisigKey } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 import { generateSec256k1KeyPair, Sdk } from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
@@ -32,26 +33,36 @@ export const MultisigDraft = {
       (async () => {
         if (!draft) {
           const original = new MultisigKey({ chain: chainStore.currentChain });
-          original.setDeviceKey({
-            publicKey: {
-              type: pubkeyType.secp256k1,
-              value: await getBiometricsPublicKey({
-                demoMode: true,
-              }),
-            },
-          });
-          original.setPhoneKey({
-            publicKey: {
-              type: pubkeyType.secp256k1,
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              value: (await parsePublicKeyTextMessageResponse({
-                key: "",
-                demoMode: true,
-              }))!,
-            },
-            phoneNumber: "+1234567890",
-            securityQuestion: securityQuestions[0].value,
-          });
+          original.set(
+            original
+              .get()
+              .setKey({
+                type: KeyType.Device,
+                payload: {
+                  publicKey: {
+                    type: pubkeyType.secp256k1,
+                    value: await getBiometricsPublicKey({
+                      demoMode: true,
+                    }),
+                  },
+                },
+              })
+              .setKey({
+                type: KeyType.Phone,
+                payload: {
+                  publicKey: {
+                    type: pubkeyType.secp256k1,
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    value: (await parsePublicKeyTextMessageResponse({
+                      key: "",
+                      demoMode: true,
+                    }))!,
+                  },
+                  phoneNumber: "+1234567890",
+                  securityQuestion: securityQuestions[0].value,
+                },
+              })
+          );
           draftsStore.create({
             original,
             id: multisigDraftId,

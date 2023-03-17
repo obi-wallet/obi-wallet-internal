@@ -33,7 +33,7 @@ const KeySchema = migratable(
 
 export abstract class AbstractKey {
   protected constructor(
-    public serialized: AbstractSerialized<typeof KeySchema>
+    protected serialized: AbstractSerialized<typeof KeySchema>
   ) {}
   public get publicKey() {
     return this.serialized.payload.publicKey;
@@ -45,17 +45,14 @@ export abstract class AbstractKey {
   }
 }
 
-// TODO: need to go one level deeper to be able to make serialized protected
-export class UsableKey<T extends KeyType> extends AbstractKey {
+export class UsableKey<
+  T extends AbstractSerialized<typeof UsableKeySchema>
+> extends AbstractKey {
   public static get schema() {
     return UsableKeySchema;
   }
 
-  public constructor(
-    public serialized: AbstractSerialized<typeof UsableKeySchema> & {
-      type: T;
-    }
-  ) {
+  public constructor(protected serialized: T) {
     super(serialized);
   }
 
@@ -63,8 +60,12 @@ export class UsableKey<T extends KeyType> extends AbstractKey {
     return true;
   }
 
-  public get type() {
+  public get type(): T["type"] {
     return this.serialized.type;
+  }
+
+  public get payload(): T["payload"] {
+    return this.serialized.payload;
   }
 }
 
@@ -74,7 +75,7 @@ export class PendingRecoverKey extends AbstractKey {
   }
 
   public constructor(
-    public serialized: AbstractSerialized<typeof PendingRecoverKeySchema>
+    protected serialized: AbstractSerialized<typeof PendingRecoverKeySchema>
   ) {
     super(serialized);
   }
@@ -83,7 +84,7 @@ export class PendingRecoverKey extends AbstractKey {
     return false;
   }
 
-  public get type() {
+  public get type(): string {
     return this.serialized.payload.type;
   }
 }
@@ -102,3 +103,11 @@ export class Key {
     return new UsableKey(UsableKey.schema.migratableSchema.parse(serialized));
   }
 }
+
+export type KeyAbstractSerializedMapping = {
+  [T in KeyType]: AbstractSerialized<typeof UsableKeySchema> & { type: T };
+};
+
+export type KeySubclassTypeMapping = {
+  [T in KeyType]: UsableKey<KeyAbstractSerializedMapping[T]>;
+};

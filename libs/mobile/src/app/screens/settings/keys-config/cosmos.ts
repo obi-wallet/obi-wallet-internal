@@ -29,8 +29,8 @@ export async function handleCosmos({
 
   async function proposeUpdateOwner() {
     const value: MsgUpdateAdmin = {
-      sender: currentOwner.address,
-      newAdmin: newOwner.address,
+      sender: currentOwner.get().address,
+      newAdmin: newOwner.get().address,
       contract: wallet.address,
     };
     const message: MsgUpdateAdminEncodeObject = {
@@ -42,17 +42,19 @@ export async function handleCosmos({
       wrapRawMessage({
         rawMessage: {
           propose_update_admin: {
-            new_admin: newOwner.address,
+            new_admin: newOwner.get().address,
           },
         },
-        sender: currentOwner.address,
+        sender: currentOwner.get().address,
         contract: wallet.address,
       }),
-      ...(currentOwner.address === newOwner.address ? [] : [message]),
+      ...(currentOwner.get().address === newOwner.get().address
+        ? []
+        : [message]),
     ];
 
     const response = await RequestObiCosmosSignAndBroadcastMsg.send({
-      multisigKey: currentOwner.serialize(),
+      multisigKey: currentOwner.toJSON(),
       encodeObjects,
       demoMode: wallet.isDemo,
     });
@@ -69,20 +71,20 @@ export async function handleCosmos({
       wrapRawMessage({
         rawMessage: {
           confirm_update_admin: {
-            signers: newOwner.keys.map((key) => {
+            signers: newOwner.get().keys.map((key) => {
               return Sdk.chainId(chainId).getAddressOfPublicKey({
                 publicKey: key.publicKey,
               });
             }),
           },
         },
-        sender: newOwner.address,
+        sender: newOwner.get().address,
         contract: wallet.address,
       }),
     ];
 
     const response = await RequestObiCosmosSignAndBroadcastMsg.send({
-      multisigKey: newOwner.serialize(),
+      multisigKey: newOwner.toJSON(),
       encodeObjects,
       demoMode: wallet.isDemo,
     });
