@@ -1,4 +1,4 @@
-import { KeyType } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 import { ComponentType } from "react";
 import { useIntl } from "react-intl";
 import { SvgProps } from "react-native-svg";

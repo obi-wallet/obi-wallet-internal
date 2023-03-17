@@ -1,5 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { MultisigKey, Text } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -74,15 +75,20 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       const { publicKey, privateKey } = await getBiometricsKeyPair({
         demoMode,
       });
-      draft.value.setDeviceKey({
-        publicKey: {
-          type: pubkeyType.secp256k1,
-          value: publicKey,
-        },
-      });
+      draft.value.set(
+        draft.value.get().setKey({
+          type: KeyType.Device,
+          payload: {
+            publicKey: {
+              type: pubkeyType.secp256k1,
+              value: publicKey,
+            },
+          },
+        })
+      );
       void queryClient.prefetchQuery(
         getPrepareKeyQuery({
-          chainId: draft.value.chain,
+          chainId: draft.value.get().chain,
           publicKey,
           privateKey,
         })

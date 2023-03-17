@@ -10,7 +10,7 @@ export enum JunoChecks {
 
 export const junoChecks: Record<JunoChecks, HealthCheck> = {
   [JunoChecks.CORRECT_ADMIN]: async (wallet: MultisigWallet) => {
-    const currentOwner = wallet.owner.address;
+    const currentOwner = wallet.owner.get().address;
     return await withCosmosCosmWasmClient("juno-1", async (client) => {
       const { admin } = await client.getContract(wallet.address);
       if (!admin) return false;

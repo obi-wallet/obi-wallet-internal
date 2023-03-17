@@ -23,9 +23,9 @@ export async function handleTerra({
   async function proposeUpdateOwner() {
     const signers = terra.getSigners({ multisigKey: newOwner });
     const message = terra.getProposeUpdateOwnerMessage({
-      sender: currentOwner.address,
+      sender: currentOwner.get().address,
       proxyAddress: wallet.address,
-      newOwner: newOwner.address,
+      newOwner: newOwner.get().address,
       signers,
       codeIds,
     });
@@ -35,7 +35,7 @@ export async function handleTerra({
       messages: [message.toAmino()],
       demoMode: wallet.isDemo,
       cancelable: true,
-      multisigKey: currentOwner.serialize(),
+      multisigKey: currentOwner.toJSON(),
     });
 
     try {
@@ -47,7 +47,7 @@ export async function handleTerra({
 
   async function confirmUpdateOwner() {
     const message = terra.getConfirmUpdateOwnerMessage({
-      sender: newOwner.address,
+      sender: newOwner.get().address,
       proxyAddress: wallet.address,
     });
 
@@ -56,7 +56,7 @@ export async function handleTerra({
       messages: [message.toAmino()],
       demoMode: wallet.isDemo,
       cancelable: true,
-      multisigKey: newOwner.serialize(),
+      multisigKey: newOwner.toJSON(),
     });
 
     try {

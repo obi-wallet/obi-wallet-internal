@@ -1,4 +1,4 @@
-import { KeyType } from "@obi-wallet/common";
+import { KeyType, Secp256k1PublicKey } from "@obi-wallet/sdk";
 
 export interface SerializedPublicKey {
   type: string;
@@ -7,7 +7,7 @@ export interface SerializedPublicKey {
 
 export interface SerializedKey {
   type: KeyType;
-  publicKey: SerializedPublicKey;
+  publicKey: Secp256k1PublicKey;
 }
 
 export interface SerializedMultisigKey {

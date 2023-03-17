@@ -1,9 +1,5 @@
-import {
-  KeyType,
-  MultisigKey,
-  MultisigKeySerializedData,
-  SerializedMultisigWalletData,
-} from "@obi-wallet/common";
+import { MultisigKey, SerializedMultisigWalletData } from "@obi-wallet/common";
+import { Key, KeyType, Serialized } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
@@ -30,43 +26,40 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
     const { draftsStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({ id: params.draftId });
 
-    const phoneKey = draft.value.getUsableKeyOfType(KeyType.Phone);
+    const phoneKey = draft.value.get().getUsableKeyOfType(KeyType.Phone);
 
     invariant(phoneKey, "Phone key is required");
 
     return (
       <Lookup
-        chainId={draft.value.chain}
-        publicKey={phoneKey.payload.publicKey.value}
+        chainId={draft.value.get().chain}
+        publicKey={phoneKey.publicKey.value}
         onCancel={() => {
           navigation.goBack();
         }}
         onSelect={async (serializedProxyWallet) => {
-          const newDeviceKey = draft.value.getUsableKeyOfType(KeyType.Device);
-          const recoveredPhoneKey = draft.value.getUsableKeyOfType(
-            KeyType.Phone
-          );
+          const newDeviceKey = draft.value
+            .get()
+            .getUsableKeyOfType(KeyType.Device);
+          const recoveredPhoneKey = draft.value
+            .get()
+            .getUsableKeyOfType(KeyType.Phone);
 
           invariant(newDeviceKey, "Device key is required");
           invariant(recoveredPhoneKey, "Phone key is required");
 
           const serializedData: SerializedMultisigWalletData = {
-            chain: draft.value.chain,
+            chain: draft.value.get().chain,
             owner: {
               threshold: parseInt(serializedProxyWallet.owner.threshold, 10),
               keys: serializedProxyWallet.owner.keys.map(
-                (
-                  key
-                ):
-                  | MultisigKeySerializedData.SerializedKey
-                  | MultisigKeySerializedData.SerializedPendingRecoveryKey => {
+                (key): Serialized<typeof Key> => {
                   switch (key.type) {
                     case KeyType.Device: {
                       return {
                         type: KeyType.Device,
                         payload: {
-                          publicKey:
-                            key.publicKey as MultisigKeySerializedData.SerializedDeviceKey["payload"]["publicKey"],
+                          publicKey: key.publicKey,
                         },
                       };
                     }
@@ -82,16 +75,14 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
                         type: KeyType.Phone,
                         payload: {
                           ...recoveredPhoneKey.payload,
-                          publicKey:
-                            key.publicKey as MultisigKeySerializedData.SerializedDeviceKey["payload"]["publicKey"],
+                          publicKey: key.publicKey,
                         },
                       };
                     case KeyType.Social:
                       return {
                         type: KeyType.Social,
                         payload: {
-                          publicKey:
-                            key.publicKey as MultisigKeySerializedData.SerializedDeviceKey["payload"]["publicKey"],
+                          publicKey: key.publicKey,
                         },
                       };
                     case KeyType.Cloud:
@@ -99,16 +90,14 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
                       return {
                         payload: {
                           type: key.type,
-                          publicKey:
-                            key.publicKey as MultisigKeySerializedData.SerializedDeviceKey["payload"]["publicKey"],
+                          publicKey: key.publicKey,
                         },
                       };
                     case KeyType.Email:
                       return {
                         payload: {
                           type: key.type,
-                          publicKey:
-                            key.publicKey as MultisigKeySerializedData.SerializedDeviceKey["payload"]["publicKey"],
+                          publicKey: key.publicKey,
                         },
                       };
                   }
@@ -133,7 +122,12 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
             serialized: serializedData.owner,
           });
           draft.commit({ original: newOwner });
-          draft.value.setDeviceKey(newDeviceKey.payload);
+          draft.value.set(
+            draft.value.get().setKey({
+              type: KeyType.Device,
+              payload: newDeviceKey.payload,
+            })
+          );
 
           navigation.navigate(OnboardingRoute.RecoverWallet, {
             ...params,

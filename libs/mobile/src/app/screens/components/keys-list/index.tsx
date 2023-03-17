@@ -1,4 +1,5 @@
-import { KeyType, Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
 import { ComponentType, ReactNode, useEffect } from "react";

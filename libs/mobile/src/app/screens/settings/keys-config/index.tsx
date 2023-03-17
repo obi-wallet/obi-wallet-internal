@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
-import { KeyType, MultisigKey, Wallet } from "@obi-wallet/common";
+import { MultisigKey, Wallet } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 import { isCosmosChain } from "@obi-wallet/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -57,9 +58,9 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
   // TODO: show banner if dirty
   // TODO: highlight changed keys
 
-  const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
-  const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
-  const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
+  const hasSocialKey = draft.value.get().hasKeyOfType(KeyType.Social);
+  const hasNfcKey = draft.value.get().hasKeyOfType(KeyType.Nfc);
+  const hasCloudKey = draft.value.get().hasKeyOfType(KeyType.Cloud);
 
   return (
     <MultisigSettings
@@ -88,7 +89,9 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
           ? {
               label: "Remove",
               onPress: () => {
-                draft.value.removeSocialKey();
+                draft.value.set(
+                  draft.value.get().removeKeyOfType(KeyType.Social)
+                );
               },
             }
           : {
@@ -105,7 +108,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
           ? {
               label: "Remove",
               onPress: () => {
-                draft.value.removeNfcKey();
+                draft.value.set(draft.value.get().removeKeyOfType(KeyType.Nfc));
               },
             }
           : {
@@ -122,7 +125,9 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
           ? {
               label: "Remove",
               onPress: () => {
-                draft.value.removeCloudKey();
+                draft.value.set(
+                  draft.value.get().removeKeyOfType(KeyType.Cloud)
+                );
               },
             }
           : {
@@ -135,11 +140,13 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
                 });
               },
             },
-        [KeyType.Email]: draft.value.hasKeyOfType(KeyType.Email)
+        [KeyType.Email]: draft.value.get().hasKeyOfType(KeyType.Email)
           ? {
               label: "Remove",
               onPress: () => {
-                draft.value.removeEmailKey();
+                draft.value.set(
+                  draft.value.get().removeKeyOfType(KeyType.Email)
+                );
               },
             }
           : {

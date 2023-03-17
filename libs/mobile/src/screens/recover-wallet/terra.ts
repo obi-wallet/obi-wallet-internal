@@ -25,19 +25,19 @@ export async function handleTerra({
   async function proposeUpdateOwner() {
     const signers = terra.getSigners({ multisigKey: newOwner });
     const message = terra.getProposeUpdateOwnerMessage({
-      sender: currentOwner.address,
+      sender: currentOwner.get().address,
       proxyAddress: serializedData.proxyAddress.address,
-      newOwner: newOwner.address,
+      newOwner: newOwner.get().address,
       signers,
       codeIds,
     });
 
     const response = await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-      chain: currentOwner.chain as TerraChain,
+      chain: newOwner.get().chain as TerraChain,
       messages: [message.toAmino()],
       demoMode,
       cancelable: true,
-      multisigKey: currentOwner.serialize(),
+      multisigKey: currentOwner.toJSON(),
     });
 
     try {
@@ -49,16 +49,16 @@ export async function handleTerra({
 
   async function confirmUpdateOwner() {
     const message = terra.getConfirmUpdateOwnerMessage({
-      sender: newOwner.address,
+      sender: newOwner.get().address,
       proxyAddress: serializedData.proxyAddress.address,
     });
 
     const response = await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-      chain: newOwner.chain as TerraChain,
+      chain: newOwner.get().chain as TerraChain,
       messages: [message.toAmino()],
       demoMode,
       cancelable: true,
-      multisigKey: newOwner.serialize(),
+      multisigKey: newOwner.toJSON(),
     });
 
     try {

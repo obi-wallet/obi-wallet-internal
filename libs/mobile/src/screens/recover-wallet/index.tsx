@@ -1,9 +1,6 @@
 import { useTheme } from "@emotion/react";
-import {
-  KeyType,
-  MultisigKey,
-  MultisigKeySerializedData,
-} from "@obi-wallet/common";
+import { MultisigKey } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 import { isCosmosChain } from "@obi-wallet/sdk";
 import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -60,7 +57,7 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
 
           invariant(params.serializedData, "Missing serializedData param.");
 
-          const chainId = draft.value.chain;
+          const chainId = draft.value.get().chain;
           try {
             const codeIds = await queryClient.fetchQuery(
               getCodeIdsQuery({
@@ -175,19 +172,19 @@ export const RecoverWallet = observer<RecoverWalletProps>(
     const { draftsStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
-    const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
-    const hasEmailKey = draft.value.hasKeyOfType(KeyType.Email);
+    const hasSocialKey = draft.value.get().hasKeyOfType(KeyType.Social);
+    const hasEmailKey = draft.value.get().hasKeyOfType(KeyType.Email);
 
-    const nfcKey = draft.value.getKeyOfType(KeyType.Nfc);
-    const cloudKey = draft.value.getKeyOfType(KeyType.Cloud);
+    const nfcKey = draft.value.get().getKeyOfType(KeyType.Nfc);
+    const cloudKey = draft.value.get().getKeyOfType(KeyType.Cloud);
 
     function getNfcKeyActions() {
       if (nfcKey) {
-        if (MultisigKeySerializedData.isUsableKey(nfcKey)) {
+        if (nfcKey.isUsable) {
           return {
             label: "Remove",
             onPress: () => {
-              draft.value.removeNfcKey();
+              draft.value.set(draft.value.get().removeKeyOfType(KeyType.Nfc));
             },
           };
         } else {
@@ -195,7 +192,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
             label: "Recover",
             onPress: () => {
               onRecoverNfc({
-                targetPublicKey: nfcKey.payload.publicKey.value,
+                targetPublicKey: nfcKey.publicKey.value,
               });
             },
           };
@@ -210,11 +207,11 @@ export const RecoverWallet = observer<RecoverWalletProps>(
 
     function getCloudKeyActions() {
       if (cloudKey) {
-        if (MultisigKeySerializedData.isUsableKey(cloudKey)) {
+        if (cloudKey.isUsable) {
           return {
             label: "Remove",
             onPress: () => {
-              draft.value.removeCloudKey();
+              draft.value.set(draft.value.get().removeKeyOfType(KeyType.Cloud));
             },
           };
         } else {
@@ -222,7 +219,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
             label: "Recover",
             onPress: () => {
               onRecoverCloud({
-                targetPublicKey: cloudKey.payload.publicKey.value,
+                targetPublicKey: cloudKey.publicKey.value,
               });
             },
           };
@@ -245,7 +242,9 @@ export const RecoverWallet = observer<RecoverWalletProps>(
             ? {
                 label: "Remove",
                 onPress: () => {
-                  draft.value.removeSocialKey();
+                  draft.value.set(
+                    draft.value.get().removeKeyOfType(KeyType.Social)
+                  );
                 },
               }
             : {
@@ -258,7 +257,9 @@ export const RecoverWallet = observer<RecoverWalletProps>(
             ? {
                 label: "Remove",
                 onPress: () => {
-                  draft.value.removeEmailKey();
+                  draft.value.set(
+                    draft.value.get().removeKeyOfType(KeyType.Email)
+                  );
                 },
               }
             : {

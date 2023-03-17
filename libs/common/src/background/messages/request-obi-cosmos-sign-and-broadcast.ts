@@ -1,12 +1,12 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { DeliverTxResponse } from "@cosmjs/stargate";
 import { BACKGROUND_PORT, Message } from "@keplr-wallet/router";
+import { KeyType, MultisigKey, Serialized } from "@obi-wallet/sdk";
 
 import { MessageRequesterInternal } from "../../message-requester";
-import { SerializedMultisigKey, KeyType } from "../../stores";
 
 export interface RequestObiCosmosSignAndBroadcastPayload {
-  readonly multisigKey: SerializedMultisigKey;
+  readonly multisigKey: Serialized<typeof MultisigKey>;
   readonly encodeObjects: EncodeObject[];
   readonly demoMode: boolean;
   readonly proxyAddress?: string;

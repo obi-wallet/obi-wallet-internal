@@ -1,7 +1,7 @@
+import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { z } from "zod";
 
 import { migratable } from "../../helpers";
-import { MultisigKey } from "../multisig-key";
 import {
   MigratableSerializedMultisigDemoWallet,
   MigratableSerializedMultisigWallet,
@@ -101,23 +101,38 @@ export function migrateSerializedData(
     const currentAdmin = result.data.currentAdmin;
     if (!proxyAddress || !currentAdmin) return null;
 
-    const multisigKey = new MultisigKey({ chain: result.data.chain });
-    if (currentAdmin.biometrics) {
-      multisigKey.setDeviceKey(currentAdmin.biometrics);
-    }
-    if (currentAdmin.phoneNumber) {
-      multisigKey.setPhoneKey(currentAdmin.phoneNumber);
-    }
-    if (currentAdmin.social) {
-      multisigKey.setSocialKey(currentAdmin.social);
-    }
-
     return {
       chain: result.data.chain,
-      owner: multisigKey.serialize(),
+      owner: migrateMultisigKey(result.data).toJSON(),
       proxyAddress,
     };
   }
 
   return null;
+
+  function migrateMultisigKey({
+    chain,
+    currentAdmin,
+  }: SerializedTerraMultisigWalletData) {
+    let result = MultisigKey.empty(chain);
+    if (currentAdmin?.biometrics) {
+      result = result.setKey({
+        type: KeyType.Device,
+        payload: currentAdmin.biometrics,
+      });
+    }
+    if (currentAdmin?.phoneNumber) {
+      result = result.setKey({
+        type: KeyType.Phone,
+        payload: currentAdmin.phoneNumber,
+      });
+    }
+    if (currentAdmin?.social) {
+      result = result.setKey({
+        type: KeyType.Social,
+        payload: currentAdmin.social,
+      });
+    }
+    return result;
+  }
 }

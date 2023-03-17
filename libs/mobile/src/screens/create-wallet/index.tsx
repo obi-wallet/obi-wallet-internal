@@ -1,9 +1,5 @@
-import {
-  KeyType,
-  MultisigKey,
-  MultisigWalletSerializedData,
-} from "@obi-wallet/common";
-import { Chain } from "@obi-wallet/sdk";
+import { MultisigKey, MultisigWalletSerializedData } from "@obi-wallet/common";
+import { Chain, KeyType } from "@obi-wallet/sdk";
 import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -38,7 +34,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
       <CreateWallet
         {...params}
         onSubmit={async () => {
-          const chainId = draft.value.chain;
+          const chainId = draft.value.get().chain;
 
           try {
             const serializedData = await Chain.select<
@@ -132,10 +128,10 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   const { draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
-  const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
-  const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
-  const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
-  const hasEmailKey = draft.value.hasKeyOfType(KeyType.Email);
+  const hasSocialKey = draft.value.get().hasKeyOfType(KeyType.Social);
+  const hasNfcKey = draft.value.get().hasKeyOfType(KeyType.Nfc);
+  const hasCloudKey = draft.value.get().hasKeyOfType(KeyType.Cloud);
+  const hasEmailKey = draft.value.get().hasKeyOfType(KeyType.Email);
 
   return (
     <MultisigSettings
@@ -147,7 +143,9 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
           ? {
               label: "Remove",
               onPress: () => {
-                draft.value.removeSocialKey();
+                draft.value.set(
+                  draft.value.get().removeKeyOfType(KeyType.Social)
+                );
               },
             }
           : {
@@ -158,7 +156,7 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
           ? {
               label: "Remove",
               onPress: () => {
-                draft.value.removeNfcKey();
+                draft.value.set(draft.value.get().removeKeyOfType(KeyType.Nfc));
               },
             }
           : {
@@ -169,7 +167,9 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
           ? {
               label: "Remove",
               onPress: () => {
-                draft.value.removeCloudKey();
+                draft.value.set(
+                  draft.value.get().removeKeyOfType(KeyType.Cloud)
+                );
               },
             }
           : {
@@ -180,7 +180,9 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
           ? {
               label: "Remove",
               onPress: () => {
-                draft.value.removeEmailKey();
+                draft.value.set(
+                  draft.value.get().removeKeyOfType(KeyType.Email)
+                );
               },
             }
           : {

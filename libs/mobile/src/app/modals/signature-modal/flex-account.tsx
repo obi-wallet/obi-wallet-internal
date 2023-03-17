@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
-import { KeyType, MultisigKey, terra, Text } from "@obi-wallet/common";
+import { MultisigKey, terra, Text } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 import { Sdk, Signer, withTerraClient } from "@obi-wallet/sdk";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BlockTxBroadcastResult, Msg } from "@terra-money/feather.js";

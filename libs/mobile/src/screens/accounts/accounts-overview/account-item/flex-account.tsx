@@ -54,8 +54,8 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
   }) {
     const wallet = useMultisigWallet();
     const threshold = {
-      required: wallet.owner.threshold,
-      keys: wallet.owner.keys.length,
+      required: wallet.owner.get().threshold,
+      keys: wallet.owner.get().keys.length,
     };
 
     const amount = account.spendLimit?.amount;

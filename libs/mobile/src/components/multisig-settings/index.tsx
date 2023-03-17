@@ -1,6 +1,7 @@
 import { useTheme } from "@emotion/react";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
-import { KeyType, MultisigKey, Text } from "@obi-wallet/common";
+import { MultisigKey, Text } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -56,7 +57,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
     function getKey(
       type: KeyType
     ): Key & { activated: boolean; disabled: boolean } {
-      const activated = multisigKey.hasKeyOfType(type);
+      const activated = multisigKey.get().hasKeyOfType(type);
       const disabled = false;
 
       return {
@@ -72,7 +73,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
     }
 
     const data = keyMetaData.keys.map(getKey);
-    const activatedKeys = multisigKey.keys.length;
+    const activatedKeys = multisigKey.get().keys.length;
 
     return (
       <SafeAreaView
@@ -117,7 +118,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
                 },
               ]}
             >
-              {multisigKey.threshold}/{activatedKeys}
+              {multisigKey.get().threshold}/{activatedKeys}
             </Text>
           </View>
           <Text

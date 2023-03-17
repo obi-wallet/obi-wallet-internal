@@ -20,23 +20,23 @@ export async function handleTerra({
 
   const signers = terra.getSigners({ multisigKey });
   const message = terra.getNewAccountMessage({
-    address: multisigKey.address,
+    address: multisigKey.get().address,
     signers,
     chainId,
   });
 
   const response = await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-    chain: draft.value.chain as TerraChain,
+    chain: draft.value.get().chain as TerraChain,
     messages: [message.toAmino()],
     demoMode,
     cancelable: true,
-    multisigKey: multisigKey.serialize(),
+    multisigKey: multisigKey.toJSON(),
   });
 
   try {
     return {
       chain: chainId,
-      owner: multisigKey.serialize(),
+      owner: multisigKey.toJSON(),
       proxyAddress: terra.parseNewAccountResponse(response),
       gatekeeperConfig: {
         beneficiaries: [],

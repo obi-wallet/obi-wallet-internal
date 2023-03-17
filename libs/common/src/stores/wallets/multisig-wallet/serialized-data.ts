@@ -1,10 +1,9 @@
+import { MultisigKey, Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { z } from "zod";
 
 import { ArrayIndex, migratable } from "../../helpers";
 import { GatekeeperConfig } from "../gatekeeper-config";
 import { SerializedGatekeeperConfig } from "../gatekeeper-config/serialized-data";
-import { SerializedMultisigKey } from "../multisig-key/keys";
-import { Secp256k1PublicKey } from "../multisig-key/keys/public-key";
 
 export const MigratableSerializedProxyAddress = migratable(
   z.object({
@@ -46,14 +45,14 @@ export type SinglesigWallet = z.infer<typeof SinglesigWallet>;
 export const MigratableSerializedMultisigWalletData = migratable(
   z.object({
     chain: Chain,
-    owner: SerializedMultisigKey,
+    owner: MultisigKey.schema.migratableSchema,
     proxyAddress: MigratableSerializedProxyAddress.schema,
   })
 )
   .addMigration({
     nextSchema: z.object({
       chain: Chain,
-      owner: SerializedMultisigKey,
+      owner: MultisigKey.schema.migratableSchema,
       proxyAddress: MigratableSerializedProxyAddress.schema,
       gatekeeperConfig: SerializedGatekeeperConfig,
       singlesigWallets: z.array(SinglesigWallet),
@@ -70,7 +69,7 @@ export const MigratableSerializedMultisigWalletData = migratable(
   .addMigration({
     nextSchema: z.object({
       chain: Chain,
-      owner: SerializedMultisigKey,
+      owner: MultisigKey.schema.migratableSchema,
       proxyAddress: MigratableSerializedProxyAddress.schema,
       gatekeeperConfig: SerializedGatekeeperConfig,
       singlesigWallets: z.array(SinglesigWallet),

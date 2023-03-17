@@ -299,7 +299,7 @@ const UpdateFooter = observer(function UpdateHeader() {
         });
         const message = terra.getMigrateMessage({
           proxyAddress: proxyAddress.address,
-          admin: wallet.owner.address,
+          admin: wallet.owner.get().address,
           chainId: wallet.chain as TerraChain,
           signers,
           codeIds,
@@ -311,7 +311,7 @@ const UpdateFooter = observer(function UpdateHeader() {
             messages: [message.toAmino()],
             demoMode: wallet.isDemo,
             cancelable: true,
-            multisigKey: wallet.owner.serialize(),
+            multisigKey: wallet.owner.toJSON(),
           });
         } finally {
           await refetch({

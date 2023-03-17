@@ -257,7 +257,7 @@ export class MultisigWallet extends AbstractWallet {
       type: this.isDemo ? "multisig-demo" : "multisig",
       data: {
         chain: this.chain,
-        owner: this._owner.serialize(),
+        owner: this._owner.toJSON(),
         proxyAddress: this.proxyAddress,
         gatekeeperConfig: this._gatekeeperConfig.serialize(),
         singlesigWallets: this._singlesigWallets.serialize(),

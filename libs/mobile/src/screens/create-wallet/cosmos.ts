@@ -4,7 +4,7 @@ import {
   MultisigKey,
   RequestObiCosmosSignAndBroadcastMsg,
 } from "@obi-wallet/common";
-import { CosmosChain, Sdk, Secp256k1PublicKey } from "@obi-wallet/sdk";
+import { CosmosChain, Sdk } from "@obi-wallet/sdk";
 
 export async function handleCosmos({
   draft,
@@ -18,23 +18,15 @@ export async function handleCosmos({
   const multisigKey = draft.value;
   // TODO: shuffle?
 
-  const multisigPublicKey = cosmos.createMultisigPublicKey({
-    multisigKey,
-  });
-
-  const signers = multisigPublicKey.value.pubkeys.map((publicKey, i) => {
+  const signers = multisigKey.get().keys.map((key, i) => {
     return {
       address: Sdk.chainId(chainId).getAddressOfPublicKey({
-        publicKey: publicKey as Secp256k1PublicKey,
+        publicKey: key.publicKey,
       }),
-      ty: multisigKey.signerTypes[i],
+      ty: multisigKey.get().signerTypes[i],
     };
   });
-
-  const owner = cosmos.getAddress({
-    publicKey: multisigPublicKey,
-    chainId,
-  });
+  const owner = multisigKey.get().address;
 
   const message = cosmos.getNewAccountMessage({
     address: owner,
@@ -43,7 +35,7 @@ export async function handleCosmos({
   });
 
   const response = await RequestObiCosmosSignAndBroadcastMsg.send({
-    multisigKey: multisigKey.serialize(),
+    multisigKey: multisigKey.toJSON(),
     encodeObjects: [message],
     demoMode,
     isOnboarding: true,
@@ -52,7 +44,7 @@ export async function handleCosmos({
   try {
     return {
       chain: chainId,
-      owner: multisigKey.serialize(),
+      owner: multisigKey.toJSON(),
       proxyAddress: {
         v: 1 as const,
         ...cosmos.parseNewAccountResponse(response),
