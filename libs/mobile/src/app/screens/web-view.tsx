@@ -182,7 +182,7 @@ const FavButton = observer<{ title: string; url: string }>(function FavButton({
             // const largestIcon = manifestRes.data.icons.sort(
             //   (a, b) => b.sizes.length - a.sizes.length
             // )[0];
-            // // if largestIcon is a url keep it else compose it from host and largestIcon.src
+            // // if largestIcon is an url keep it else compose it from host and largestIcon.src
             // const icon = largestIcon.src.startsWith("http")
             //   ? largestIcon.src
             //   : "https://" + host + largestIcon.src;

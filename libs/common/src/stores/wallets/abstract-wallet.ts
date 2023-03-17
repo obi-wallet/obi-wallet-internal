@@ -19,5 +19,3 @@ export abstract class AbstractWallet {
     return address ? Bech32Address.shortenAddress(address, 20) : null;
   }
 }
-
-export type WithAddress<T> = T & { address: string };

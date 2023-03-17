@@ -22,16 +22,6 @@ export function useMultisigWallet(): MultisigWallet {
   return currentWallet;
 }
 
-export function useCurrentCosmosChainInformation() {
-  const { chainStore } = useStore();
-  const chainId = chainStore.currentChain;
-  invariant(
-    isCosmosChain(chainId),
-    "Expected current chain to be a cosmos chain."
-  );
-  return cosmosChains[chainId];
-}
-
 export function useCurrentTerraChainInformation() {
   const { chainStore } = useStore();
   const chainId = chainStore.currentChain;
