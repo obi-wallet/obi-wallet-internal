@@ -1,3 +1,5 @@
+import { action, makeObservable, observable } from "mobx";
+import * as R from "ramda";
 import { z } from "zod";
 
 import { Beneficiary } from "./beneficiary";
@@ -31,59 +33,72 @@ export class GatekeeperConfig {
     };
   }
 
+  public equals(other: GatekeeperConfig) {
+    return R.equals(this.toJSON(), other.toJSON());
+  }
+
+  public clone() {
+    return GatekeeperConfig.deserialize(this.toJSON()) as this;
+  }
+
   public static empty(): GatekeeperConfig {
-    return new GatekeeperConfig([], []);
+    return new GatekeeperConfig(...this.emptyConstructorParameters());
+  }
+
+  protected static emptyConstructorParameters(): ConstructorParameters<
+    typeof GatekeeperConfig
+  > {
+    return [[], []];
   }
 
   public static deserialize(
     serialized: AbstractMigratable<typeof GatekeeperConfigSchema>
   ): GatekeeperConfig {
+    return new GatekeeperConfig(
+      ...this.deserializeConstructorParameters(serialized)
+    );
+  }
+
+  protected static deserializeConstructorParameters(
+    serialized: AbstractMigratable<typeof GatekeeperConfigSchema>
+  ): ConstructorParameters<typeof GatekeeperConfig> {
     const { beneficiaries, flexAccounts } =
       GatekeeperConfigSchema.migratableSchema.parse(serialized);
-    return new GatekeeperConfig(beneficiaries, flexAccounts);
+    return [beneficiaries, flexAccounts];
   }
 
   public get beneficiaries() {
-    return [...this._beneficiaries];
+    return this._beneficiaries;
   }
 
   public get flexAccounts() {
-    return [...this._flexAccounts];
+    return this._flexAccounts;
   }
 
   public upsertBeneficiary(
     beneficiary: AbstractSerialized<typeof Beneficiary>
   ) {
-    return new GatekeeperConfig(
-      this.upsertArrayItem(this._beneficiaries, beneficiary),
-      this._flexAccounts
+    this._beneficiaries = this.upsertArrayItem(
+      this._beneficiaries,
+      beneficiary
     );
   }
 
   public removeBeneficiaryByAddress({ address }: { address: string }) {
-    return new GatekeeperConfig(
-      this._beneficiaries.filter(
-        (beneficiary) => beneficiary.address !== address
-      ),
-      this._flexAccounts
+    this._beneficiaries = this._beneficiaries.filter(
+      (beneficiary) => beneficiary.address !== address
     );
   }
 
   public upsertFlexAccount(
     flexAccount: AbstractSerialized<typeof FlexAccount>
   ) {
-    return new GatekeeperConfig(
-      this._beneficiaries,
-      this.upsertArrayItem(this._flexAccounts, flexAccount)
-    );
+    this._flexAccounts = this.upsertArrayItem(this._flexAccounts, flexAccount);
   }
 
   public removeFlexAccountByAddress({ address }: { address: string }) {
-    return new GatekeeperConfig(
-      this._beneficiaries,
-      this._flexAccounts.filter(
-        (flexAccount) => flexAccount.address !== address
-      )
+    this._flexAccounts = this._flexAccounts.filter(
+      (flexAccount) => flexAccount.address !== address
     );
   }
 
@@ -99,5 +114,40 @@ export class GatekeeperConfig {
       result[index] = item;
     }
     return result;
+  }
+}
+
+export class ObservableGatekeeperConfig extends GatekeeperConfig {
+  public constructor(...args: ConstructorParameters<typeof GatekeeperConfig>) {
+    super(...args);
+    makeObservable<
+      ObservableGatekeeperConfig,
+      "_beneficiaries" | "_flexAccounts"
+    >(
+      this,
+      {
+        _beneficiaries: observable,
+        _flexAccounts: observable,
+        upsertBeneficiary: action,
+        removeBeneficiaryByAddress: action,
+        upsertFlexAccount: action,
+        removeFlexAccountByAddress: action,
+      },
+      {
+        name: "GatekeeperConfig",
+      }
+    );
+  }
+
+  public static empty(): ObservableGatekeeperConfig {
+    return new ObservableGatekeeperConfig(...this.emptyConstructorParameters());
+  }
+
+  public static deserialize(
+    serialized: AbstractMigratable<typeof GatekeeperConfigSchema>
+  ): ObservableGatekeeperConfig {
+    return new ObservableGatekeeperConfig(
+      ...this.deserializeConstructorParameters(serialized)
+    );
   }
 }

@@ -72,7 +72,7 @@ function SendMultisigTxFixture() {
 
 function SendFlexAccountTxFixture() {
   const wallet = useMultisigWallet();
-  const flexAccount = wallet.gatekeeperConfig.get().flexAccounts[0];
+  const flexAccount = wallet.gatekeeperConfig.flexAccounts[0];
 
   // TODO: add fallback
   invariant(flexAccount, "No flex account wallet");

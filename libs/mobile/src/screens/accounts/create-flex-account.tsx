@@ -1,5 +1,9 @@
-import { GatekeeperConfig, Text } from "@obi-wallet/common";
-import { generateSec256k1KeyPair, Sdk } from "@obi-wallet/sdk";
+import { Text } from "@obi-wallet/common";
+import {
+  generateSec256k1KeyPair,
+  ObservableGatekeeperConfig,
+  Sdk,
+} from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -25,7 +29,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
   function CreateFlexAccountScreen({ navigation }) {
     const { draftsStore } = useStore();
     const wallet = useMultisigWallet();
-    const gatekeeperConfig = draftsStore.get<GatekeeperConfig>({
+    const gatekeeperConfig = draftsStore.get<ObservableGatekeeperConfig>({
       id: getGatekeeperConfigDraftId(wallet),
     });
     const [icon, setIcon] = useState<Icon | null>(null);
@@ -75,20 +79,18 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
               const address = Sdk.chainId(wallet.chain).getAddressOfPublicKey({
                 publicKey,
               });
-              gatekeeperConfig.value.set(
-                gatekeeperConfig.value.get().upsertFlexAccount({
-                  type: "flex-account",
-                  meta: {
-                    icon: icon?.uri || "",
-                    name,
-                  },
-                  address,
-                  autoSign: null,
-                  spendLimit: null,
-                  privateKey,
-                  publicKey,
-                })
-              );
+              gatekeeperConfig.value.upsertFlexAccount({
+                type: "flex-account",
+                meta: {
+                  icon: icon?.uri || "",
+                  name,
+                },
+                address,
+                autoSign: null,
+                spendLimit: null,
+                privateKey,
+                publicKey,
+              });
 
               navigation.navigate(AccountsRoute.AccountsOverview);
             }}

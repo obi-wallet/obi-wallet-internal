@@ -1,15 +1,14 @@
 import {
   AbstractSerialized,
+  Beneficiary as BeneficiarySdk,
   Chain,
   CosmosChain,
   cosmosChains,
+  FlexAccount as FlexAccountSdk,
+  ObservableGatekeeperConfig,
   Sdk,
   TerraChain,
   terraChains,
-} from "@obi-wallet/sdk";
-import {
-  Beneficiary as BeneficiarySdk,
-  FlexAccount as FlexAccountSdk,
 } from "@obi-wallet/sdk";
 import { action, computed, makeObservable, observable } from "mobx";
 
@@ -24,7 +23,6 @@ import {
 import { SerializedWalletMeta, WalletMeta } from "..";
 import { CodeIds } from "../../../networks";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
-import { GatekeeperConfig } from "../gatekeeper-config";
 import { MultisigKey } from "../multisig-key";
 
 export type Beneficiary = AbstractSerialized<typeof BeneficiarySdk>;
@@ -49,7 +47,7 @@ export class MultisigWallet extends AbstractWallet {
   protected _owner: MultisigKey;
 
   @observable
-  protected _gatekeeperConfig: GatekeeperConfig;
+  protected _gatekeeperConfig: ObservableGatekeeperConfig;
 
   @observable
   protected _singlesigWallets: SinglesigWallet[];
@@ -80,7 +78,7 @@ export class MultisigWallet extends AbstractWallet {
     this.isDemo = isDemo;
     this.chain = chain;
     this._owner = new MultisigKey({ chain });
-    this._gatekeeperConfig = new GatekeeperConfig();
+    this._gatekeeperConfig = ObservableGatekeeperConfig.empty();
     this._singlesigWallets = [];
     this.proxyAddress = proxyAddress;
     this.onChange = onChange;
@@ -164,7 +162,7 @@ export class MultisigWallet extends AbstractWallet {
   }) {
     switch (account.type) {
       case "flex-account":
-        return this._gatekeeperConfig.get().flexAccounts[account.index];
+        return this._gatekeeperConfig.flexAccounts[account.index];
       case "singlesig-wallet":
         return this._singlesigWallets[account.index];
     }
@@ -191,7 +189,9 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async setGatekeeperConfig(gatekeeperConfig: GatekeeperConfig) {
+  public async setGatekeeperConfig(
+    gatekeeperConfig: ObservableGatekeeperConfig
+  ) {
     this._gatekeeperConfig = gatekeeperConfig;
     await this.save();
   }
@@ -270,7 +270,7 @@ export class MultisigWallet extends AbstractWallet {
       chain: serializedWallet.data.chain,
       serialized: serializedWallet.data.owner,
     });
-    wallet._gatekeeperConfig = GatekeeperConfig.deserialize(
+    wallet._gatekeeperConfig = ObservableGatekeeperConfig.deserialize(
       serializedWallet.data.gatekeeperConfig
     );
     wallet._singlesigWallets = serializedWallet.data.singlesigWallets;
