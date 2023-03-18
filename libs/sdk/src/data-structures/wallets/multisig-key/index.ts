@@ -3,12 +3,12 @@ import * as R from "ramda";
 import { z } from "zod";
 
 import {
-  AbstractKey,
+  createKey,
+  createObservableKey,
   Key,
   KeyAbstractSerializedMapping,
   KeySubclassTypeMapping,
   KeyType,
-  ObservableKey,
 } from "./keys";
 import { Chain } from "../../../chains";
 import { MultisigPublicKey } from "../../../keys";
@@ -32,7 +32,7 @@ export class MultisigKey {
 
   public constructor(
     protected _chain: Chain,
-    protected _keys: AbstractKey[],
+    protected _keys: Key[],
     protected _threshold: number
   ) {}
 
@@ -66,18 +66,18 @@ export class MultisigKey {
     serialized: AbstractMigratable<typeof MultisigKeySchema>
   ): MultisigKey {
     return new MultisigKey(
-      ...this.deserializeConstructorParameters(chain, serialized, Key)
+      ...this.deserializeConstructorParameters(chain, serialized, createKey)
     );
   }
 
   protected static deserializeConstructorParameters(
     chain: Chain,
     serialized: AbstractMigratable<typeof MultisigKeySchema>,
-    KeyClass: typeof Key
+    factory: typeof createKey
   ): ConstructorParameters<typeof MultisigKey> {
     const { keys, threshold } =
       MultisigKeySchema.migratableSchema.parse(serialized);
-    return [chain, keys.map(KeyClass.deserialize.bind(KeyClass)), threshold];
+    return [chain, keys.map((key) => factory(key)), threshold];
   }
 
   public get chain() {
@@ -141,7 +141,7 @@ export class MultisigKey {
     this._keys = this._keys.filter((key) => key.type !== type);
   }
 
-  protected createKey = Key.deserialize.bind(Key);
+  protected createKey = createKey;
 }
 
 export class ObservableMultisigKey extends MultisigKey {
@@ -180,9 +180,13 @@ export class ObservableMultisigKey extends MultisigKey {
     serialized: AbstractMigratable<typeof MultisigKeySchema>
   ): ObservableMultisigKey {
     return new ObservableMultisigKey(
-      ...this.deserializeConstructorParameters(chain, serialized, ObservableKey)
+      ...this.deserializeConstructorParameters(
+        chain,
+        serialized,
+        createObservableKey
+      )
     );
   }
 
-  protected createKey = ObservableKey.deserialize.bind(ObservableKey);
+  protected createKey = createObservableKey;
 }
