@@ -1,19 +1,18 @@
 import {
   CodeIds,
   Draft,
-  MultisigKey,
   MultisigWallet,
   RequestObiSignAndBroadcastTerraTransactionMsg,
   terra,
 } from "@obi-wallet/common";
-import { TerraChain } from "@obi-wallet/sdk";
+import { ObservableMultisigKey, TerraChain } from "@obi-wallet/sdk";
 
 export async function handleTerra({
   draft,
   wallet,
   codeIds,
 }: {
-  draft: Draft<MultisigKey>;
+  draft: Draft<ObservableMultisigKey>;
   wallet: MultisigWallet;
   codeIds: CodeIds;
 }) {
@@ -23,9 +22,9 @@ export async function handleTerra({
   async function proposeUpdateOwner() {
     const signers = terra.getSigners({ multisigKey: newOwner });
     const message = terra.getProposeUpdateOwnerMessage({
-      sender: currentOwner.get().address,
+      sender: currentOwner.address,
       proxyAddress: wallet.address,
-      newOwner: newOwner.get().address,
+      newOwner: newOwner.address,
       signers,
       codeIds,
     });
@@ -47,7 +46,7 @@ export async function handleTerra({
 
   async function confirmUpdateOwner() {
     const message = terra.getConfirmUpdateOwnerMessage({
-      sender: newOwner.get().address,
+      sender: newOwner.address,
       proxyAddress: wallet.address,
     });
 

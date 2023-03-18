@@ -1,6 +1,9 @@
-import { MultisigKey } from "@obi-wallet/common";
-import { KeyType } from "@obi-wallet/sdk";
-import { Chain, TerraChain } from "@obi-wallet/sdk";
+import {
+  Chain,
+  KeyType,
+  ObservableMultisigKey,
+  TerraChain,
+} from "@obi-wallet/sdk";
 import { QueryClient } from "@tanstack/react-query";
 import { Key, RawKey, SimplePublicKey } from "@terra-money/feather.js";
 import { SHA256, Word32Array } from "jscrypto";
@@ -30,14 +33,14 @@ export class BiometricsKey extends Key {
     multisigKey,
     queryClient,
   }: {
-    multisigKey: MultisigKey;
+    multisigKey: ObservableMultisigKey;
     queryClient: QueryClient;
   }) {
-    const biometrics = multisigKey.get().getUsableKeyOfType(KeyType.Device);
+    const biometrics = multisigKey.getUsableKeyOfType(KeyType.Device);
     invariant(biometrics, "Expected device key to exist.");
     super(SimplePublicKey.fromAmino(biometrics.publicKey));
     this.deviceKeyPublicKey = biometrics.publicKey.value;
-    this.chainId = multisigKey.get().chain;
+    this.chainId = multisigKey.chain;
     this.queryClient = queryClient;
   }
 
@@ -53,8 +56,8 @@ export class BiometricsKey extends Key {
 }
 
 export class CloudKey extends RawKey {
-  constructor({ multisigKey }: { multisigKey: MultisigKey }) {
-    const cloudKey = multisigKey.get().getUsableKeyOfType(KeyType.Cloud);
+  constructor({ multisigKey }: { multisigKey: ObservableMultisigKey }) {
+    const cloudKey = multisigKey.getUsableKeyOfType(KeyType.Cloud);
     invariant(cloudKey, "Expected cloud key to exist.");
     super(Buffer.from(cloudKey.payload.privateKey, "base64"));
   }
@@ -73,16 +76,16 @@ export class PhoneNumberConfirmKey extends Key {
     queryClient,
   }: {
     key: string;
-    multisigKey: MultisigKey;
+    multisigKey: ObservableMultisigKey;
     demoMode: boolean;
     queryClient: QueryClient;
   }) {
-    const phoneNumberKey = multisigKey.get().getUsableKeyOfType(KeyType.Phone);
+    const phoneNumberKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
     invariant(phoneNumberKey, "Expected phone number key to exist.");
     super(SimplePublicKey.fromAmino(phoneNumberKey.publicKey));
     this.key = key;
     this.demoMode = demoMode;
-    this.chainId = multisigKey.get().chain;
+    this.chainId = multisigKey.chain;
     this.queryClient = queryClient;
   }
 
@@ -112,10 +115,10 @@ export class PhoneNumberRequestKey extends Key {
   }: {
     securityAnswer: string;
     chainId: TerraChain;
-    multisigKey: MultisigKey;
+    multisigKey: ObservableMultisigKey;
     demoMode: boolean;
   }) {
-    const phoneNumberKey = multisigKey.get().getUsableKeyOfType(KeyType.Phone);
+    const phoneNumberKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
     invariant(phoneNumberKey, "Expected phone number key to exist.");
     super(SimplePublicKey.fromAmino(phoneNumberKey.publicKey));
     this.phoneNumber = phoneNumberKey.payload.phoneNumber;
@@ -152,18 +155,18 @@ export class NfcKey extends Key {
     demoMode,
     queryClient,
   }: {
-    multisigKey: MultisigKey;
+    multisigKey: ObservableMultisigKey;
     parsed: string;
     demoMode: boolean;
     queryClient: QueryClient;
   }) {
-    const nfcKey = multisigKey.get().getUsableKeyOfType(KeyType.Nfc);
+    const nfcKey = multisigKey.getUsableKeyOfType(KeyType.Nfc);
     invariant(nfcKey, "Expected NFC key to exist.");
     super(SimplePublicKey.fromAmino(nfcKey.publicKey));
     this.localEntropy = nfcKey.payload.localEntropy;
     this.parsed = parsed;
     this.demoMode = demoMode;
-    this.chainId = multisigKey.get().chain;
+    this.chainId = multisigKey.chain;
     this.queryClient = queryClient;
   }
 

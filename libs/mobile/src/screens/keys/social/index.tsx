@@ -1,8 +1,9 @@
-import { MultisigKey, Text } from "@obi-wallet/common";
-import { KeyType } from "@obi-wallet/sdk";
+import { Text } from "@obi-wallet/common";
 import {
   Chain,
   isTerraChain,
+  KeyType,
+  ObservableMultisigKey,
   withCosmosStargateClient,
   withTerraClient,
 } from "@obi-wallet/sdk";
@@ -72,7 +73,7 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
   onSubmit,
 }) {
   const { chainStore, configStore, draftsStore } = useStore();
-  const draft = draftsStore.get<MultisigKey>({ id: draftId });
+  const draft = draftsStore.get<ObservableMultisigKey>({ id: draftId });
   const [address, setAddress] = useState("");
   const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true); // Verify&Proceed Button disabled by default
   const [fetchingPubKey, setFetchingPubKey] = useState(false);
@@ -257,13 +258,11 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
                 setFetchingPubKey(false);
 
                 if (publicKey) {
-                  draft.value.set(
-                    draft.value.get().setKey({
-                      type: KeyType.Social,
-                      // @ts-expect-error TODO: TypeScript doesn't understand this specific case
-                      payload: { publicKey },
-                    })
-                  );
+                  draft.value.setKey({
+                    type: KeyType.Social,
+                    // @ts-expect-error TODO: TypeScript doesn't understand this specific case
+                    payload: { publicKey },
+                  });
                   onSubmit();
                 } else {
                   Alert.alert(

@@ -114,21 +114,21 @@ export function migrateSerializedData(
     chain,
     currentAdmin,
   }: SerializedTerraMultisigWalletData) {
-    let result = MultisigKey.empty(chain);
+    const result = MultisigKey.empty(chain);
     if (currentAdmin?.biometrics) {
-      result = result.setKey({
+      result.setKey({
         type: KeyType.Device,
         payload: currentAdmin.biometrics,
       });
     }
     if (currentAdmin?.phoneNumber) {
-      result = result.setKey({
+      result.setKey({
         type: KeyType.Phone,
         payload: currentAdmin.phoneNumber,
       });
     }
     if (currentAdmin?.social) {
-      result = result.setKey({
+      result.setKey({
         type: KeyType.Social,
         payload: currentAdmin.social,
       });

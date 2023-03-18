@@ -6,6 +6,7 @@ import {
   cosmosChains,
   FlexAccount as FlexAccountSdk,
   ObservableGatekeeperConfig,
+  ObservableMultisigKey,
   Sdk,
   TerraChain,
   terraChains,
@@ -23,7 +24,6 @@ import {
 import { SerializedWalletMeta, WalletMeta } from "..";
 import { CodeIds } from "../../../networks";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
-import { MultisigKey } from "../multisig-key";
 
 export type Beneficiary = AbstractSerialized<typeof BeneficiarySdk>;
 export type FlexAccount = AbstractSerialized<typeof FlexAccountSdk>;
@@ -44,7 +44,7 @@ export class MultisigWallet extends AbstractWallet {
   public readonly chain: Chain;
 
   @observable
-  protected _owner: MultisigKey;
+  protected _owner: ObservableMultisigKey;
 
   @observable
   protected _gatekeeperConfig: ObservableGatekeeperConfig;
@@ -77,7 +77,7 @@ export class MultisigWallet extends AbstractWallet {
     this._id = id;
     this.isDemo = isDemo;
     this.chain = chain;
-    this._owner = new MultisigKey({ chain });
+    this._owner = ObservableMultisigKey.empty(chain);
     this._gatekeeperConfig = ObservableGatekeeperConfig.empty();
     this._singlesigWallets = [];
     this.proxyAddress = proxyAddress;
@@ -179,7 +179,7 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async setOwner(owner: MultisigKey) {
+  public async setOwner(owner: ObservableMultisigKey) {
     this._owner = owner;
     await this.save();
   }
@@ -266,10 +266,10 @@ export class MultisigWallet extends AbstractWallet {
       proxyAddress: serializedWallet.data.proxyAddress,
       onChange,
     });
-    wallet._owner = MultisigKey.deserialize({
-      chain: serializedWallet.data.chain,
-      serialized: serializedWallet.data.owner,
-    });
+    wallet._owner = ObservableMultisigKey.deserialize(
+      serializedWallet.data.chain,
+      serializedWallet.data.owner
+    );
     wallet._gatekeeperConfig = ObservableGatekeeperConfig.deserialize(
       serializedWallet.data.gatekeeperConfig
     );

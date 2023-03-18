@@ -1,9 +1,9 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { MultisigKey } from "@obi-wallet/common";
 import {
   generateSec256k1KeyPair,
   KeyType,
   ObservableGatekeeperConfig,
+  ObservableMultisigKey,
   Sdk,
 } from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
@@ -36,37 +36,33 @@ export const MultisigDraft = {
     useEffect(() => {
       (async () => {
         if (!draft) {
-          const original = new MultisigKey({ chain: chainStore.currentChain });
-          original.set(
-            original
-              .get()
-              .setKey({
-                type: KeyType.Device,
-                payload: {
-                  publicKey: {
-                    type: pubkeyType.secp256k1,
-                    value: await getBiometricsPublicKey({
-                      demoMode: true,
-                    }),
-                  },
-                },
-              })
-              .setKey({
-                type: KeyType.Phone,
-                payload: {
-                  publicKey: {
-                    type: pubkeyType.secp256k1,
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    value: (await parsePublicKeyTextMessageResponse({
-                      key: "",
-                      demoMode: true,
-                    }))!,
-                  },
-                  phoneNumber: "+1234567890",
-                  securityQuestion: securityQuestions[0].value,
-                },
-              })
-          );
+          const original = ObservableMultisigKey.empty(chainStore.currentChain);
+          original.setKey({
+            type: KeyType.Device,
+            payload: {
+              publicKey: {
+                type: pubkeyType.secp256k1,
+                value: await getBiometricsPublicKey({
+                  demoMode: true,
+                }),
+              },
+            },
+          });
+          original.setKey({
+            type: KeyType.Phone,
+            payload: {
+              publicKey: {
+                type: pubkeyType.secp256k1,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                value: (await parsePublicKeyTextMessageResponse({
+                  key: "",
+                  demoMode: true,
+                }))!,
+              },
+              phoneNumber: "+1234567890",
+              securityQuestion: securityQuestions[0].value,
+            },
+          });
           draftsStore.create({
             original,
             id: multisigDraftId,

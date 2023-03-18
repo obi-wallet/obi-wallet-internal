@@ -29,7 +29,6 @@ import { ConfigStore } from "../config";
 import { Entities } from "../entities";
 import { ArrayIndex } from "../helpers";
 
-export * from "./multisig-key";
 export * from "./multisig-wallet";
 
 export enum WalletState {

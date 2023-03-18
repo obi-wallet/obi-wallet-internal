@@ -1,12 +1,11 @@
 import {
   CodeIds,
   Draft,
-  MultisigKey,
   MultisigWalletSerializedData,
   RequestObiSignAndBroadcastTerraTransactionMsg,
   terra,
 } from "@obi-wallet/common";
-import { TerraChain } from "@obi-wallet/sdk";
+import { ObservableMultisigKey, TerraChain } from "@obi-wallet/sdk";
 
 export async function handleTerra({
   draft,
@@ -14,7 +13,7 @@ export async function handleTerra({
   codeIds,
   demoMode,
 }: {
-  draft: Draft<MultisigKey>;
+  draft: Draft<ObservableMultisigKey>;
   serializedData: MultisigWalletSerializedData.SerializedMultisigWalletData;
   codeIds: CodeIds;
   demoMode: boolean;
@@ -25,15 +24,15 @@ export async function handleTerra({
   async function proposeUpdateOwner() {
     const signers = terra.getSigners({ multisigKey: newOwner });
     const message = terra.getProposeUpdateOwnerMessage({
-      sender: currentOwner.get().address,
+      sender: currentOwner.address,
       proxyAddress: serializedData.proxyAddress.address,
-      newOwner: newOwner.get().address,
+      newOwner: newOwner.address,
       signers,
       codeIds,
     });
 
     const response = await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-      chain: newOwner.get().chain as TerraChain,
+      chain: newOwner.chain as TerraChain,
       messages: [message.toAmino()],
       demoMode,
       cancelable: true,
@@ -49,12 +48,12 @@ export async function handleTerra({
 
   async function confirmUpdateOwner() {
     const message = terra.getConfirmUpdateOwnerMessage({
-      sender: newOwner.get().address,
+      sender: newOwner.address,
       proxyAddress: serializedData.proxyAddress.address,
     });
 
     const response = await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-      chain: newOwner.get().chain as TerraChain,
+      chain: newOwner.chain as TerraChain,
       messages: [message.toAmino()],
       demoMode,
       cancelable: true,

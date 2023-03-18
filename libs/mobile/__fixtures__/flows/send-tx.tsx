@@ -109,7 +109,7 @@ function SendMultisigKeyTxFixture() {
     chain: wallet.chain as TerraChain,
     messages: [
       terra.getNewAccountMessage({
-        address: wallet.owner.get().address,
+        address: wallet.owner.address,
         chainId: wallet.chain as TerraChain,
         signers: [],
       }),

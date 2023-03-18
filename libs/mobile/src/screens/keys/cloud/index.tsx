@@ -1,6 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { MultisigKey, Text } from "@obi-wallet/common";
-import { KeyType } from "@obi-wallet/sdk";
+import { Text } from "@obi-wallet/common";
+import { KeyType, ObservableMultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -66,7 +66,7 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
   onSubmit,
 }) {
   const { configStore, draftsStore } = useStore();
-  const draft = draftsStore.get<MultisigKey>({ id: draftId });
+  const draft = draftsStore.get<ObservableMultisigKey>({ id: draftId });
   const selectedTagType = useRef("");
   const queryClient = useQueryClient();
   const isObi = configStore.isObi();
@@ -81,28 +81,7 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
 
     if (isRecovering) {
       if (targetPublicKey === publicKey) {
-        draft.value.set(
-          draft.value.get().setKey({
-            type: KeyType.Cloud,
-            payload: {
-              provider: "google-drive",
-              publicKey: {
-                type: pubkeyType.secp256k1,
-                value: publicKey,
-              },
-              privateKey,
-            },
-          })
-        );
-      } else {
-        Alert.alert(
-          "Error",
-          "We could not find the key with that cloud provider / account combination."
-        );
-      }
-    } else {
-      draft.value.set(
-        draft.value.get().setKey({
+        draft.value.setKey({
           type: KeyType.Cloud,
           payload: {
             provider: "google-drive",
@@ -112,13 +91,30 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
             },
             privateKey,
           },
-        })
-      );
+        });
+      } else {
+        Alert.alert(
+          "Error",
+          "We could not find the key with that cloud provider / account combination."
+        );
+      }
+    } else {
+      draft.value.setKey({
+        type: KeyType.Cloud,
+        payload: {
+          provider: "google-drive",
+          publicKey: {
+            type: pubkeyType.secp256k1,
+            value: publicKey,
+          },
+          privateKey,
+        },
+      });
     }
 
     void queryClient.prefetchQuery(
       getPrepareKeyQuery({
-        chainId: draft.value.get().chain,
+        chainId: draft.value.chain,
         publicKey,
         privateKey,
       })

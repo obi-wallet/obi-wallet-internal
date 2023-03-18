@@ -212,7 +212,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                 const messages = terra.getUpdateGatekeeperMessages({
                   currentGatekeeperConfig: draft.original,
                   newGatekeeperConfig: draft.value,
-                  proxyAddress: wallet.owner.get().address,
+                  proxyAddress: wallet.owner.address,
                   spendLimitGatekeeper,
                   sessionKeyGatekeeper,
                 });

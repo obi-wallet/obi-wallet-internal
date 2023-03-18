@@ -5,11 +5,10 @@ import {
 import {
   cosmos,
   Draft,
-  MultisigKey,
   MultisigWalletSerializedData,
   RequestObiCosmosSignAndBroadcastMsg,
 } from "@obi-wallet/common";
-import { CosmosChain, Sdk } from "@obi-wallet/sdk";
+import { CosmosChain, ObservableMultisigKey, Sdk } from "@obi-wallet/sdk";
 import {
   MsgExecuteContract,
   MsgUpdateAdmin,
@@ -21,7 +20,7 @@ export async function handleCosmos({
   demoMode,
   chainId,
 }: {
-  draft: Draft<MultisigKey>;
+  draft: Draft<ObservableMultisigKey>;
   serializedData: MultisigWalletSerializedData.SerializedMultisigWalletData;
   demoMode: boolean;
   chainId: CosmosChain;
@@ -31,8 +30,8 @@ export async function handleCosmos({
 
   async function proposeUpdateOwner() {
     const value: MsgUpdateAdmin = {
-      sender: currentOwner.get().address,
-      newAdmin: newOwner.get().address,
+      sender: currentOwner.address,
+      newAdmin: newOwner.address,
       contract: serializedData.proxyAddress.address,
     };
     const message: MsgUpdateAdminEncodeObject = {
@@ -44,15 +43,13 @@ export async function handleCosmos({
       wrapRawMessage({
         rawMessage: {
           propose_update_admin: {
-            new_admin: newOwner.get().address,
+            new_admin: newOwner.address,
           },
         },
-        sender: currentOwner.get().address,
+        sender: currentOwner.address,
         contract: serializedData.proxyAddress.address,
       }),
-      ...(currentOwner.get().address === newOwner.get().address
-        ? []
-        : [message]),
+      ...(currentOwner.address === newOwner.address ? [] : [message]),
     ];
 
     const response = await RequestObiCosmosSignAndBroadcastMsg.send({
@@ -73,14 +70,14 @@ export async function handleCosmos({
       wrapRawMessage({
         rawMessage: {
           confirm_update_admin: {
-            signers: newOwner.get().keys.map((key) => {
+            signers: newOwner.keys.map((key) => {
               return Sdk.chainId(chainId).getAddressOfPublicKey({
                 publicKey: key.publicKey,
               });
             }),
           },
         },
-        sender: newOwner.get().address,
+        sender: newOwner.address,
         contract: serializedData.proxyAddress.address,
       }),
     ];

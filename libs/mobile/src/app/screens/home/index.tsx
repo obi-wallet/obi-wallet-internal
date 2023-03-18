@@ -299,7 +299,7 @@ const UpdateFooter = observer(function UpdateHeader() {
         });
         const message = terra.getMigrateMessage({
           proxyAddress: proxyAddress.address,
-          admin: wallet.owner.get().address,
+          admin: wallet.owner.address,
           chainId: wallet.chain as TerraChain,
           signers,
           codeIds,

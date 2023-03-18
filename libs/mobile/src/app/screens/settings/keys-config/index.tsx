@@ -1,7 +1,6 @@
 import { useTheme } from "@emotion/react";
-import { MultisigKey, Wallet } from "@obi-wallet/common";
-import { KeyType } from "@obi-wallet/sdk";
-import { isCosmosChain } from "@obi-wallet/sdk";
+import { Wallet } from "@obi-wallet/common";
+import { isCosmosChain, KeyType, ObservableMultisigKey } from "@obi-wallet/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -29,7 +28,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
   const queryClient = useQueryClient();
 
   const draftId = getMultisigSettingsDraftId(wallet);
-  const draft = draftsStore.get<MultisigKey>({ id: draftId });
+  const draft = draftsStore.get<ObservableMultisigKey>({ id: draftId });
 
   useEffect(() => {
     if (!draft) {
@@ -58,9 +57,9 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
   // TODO: show banner if dirty
   // TODO: highlight changed keys
 
-  const hasSocialKey = draft.value.get().hasKeyOfType(KeyType.Social);
-  const hasNfcKey = draft.value.get().hasKeyOfType(KeyType.Nfc);
-  const hasCloudKey = draft.value.get().hasKeyOfType(KeyType.Cloud);
+  const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
+  const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
+  const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
 
   return (
     <MultisigSettings
@@ -89,9 +88,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
           ? {
               label: "Remove",
               onPress: () => {
-                draft.value.set(
-                  draft.value.get().removeKeyOfType(KeyType.Social)
-                );
+                draft.value.removeKeyOfType(KeyType.Social);
               },
             }
           : {
@@ -108,7 +105,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
           ? {
               label: "Remove",
               onPress: () => {
-                draft.value.set(draft.value.get().removeKeyOfType(KeyType.Nfc));
+                draft.value.removeKeyOfType(KeyType.Nfc);
               },
             }
           : {
@@ -125,9 +122,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
           ? {
               label: "Remove",
               onPress: () => {
-                draft.value.set(
-                  draft.value.get().removeKeyOfType(KeyType.Cloud)
-                );
+                draft.value.removeKeyOfType(KeyType.Cloud);
               },
             }
           : {
@@ -140,13 +135,11 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
                 });
               },
             },
-        [KeyType.Email]: draft.value.get().hasKeyOfType(KeyType.Email)
+        [KeyType.Email]: draft.value.hasKeyOfType(KeyType.Email)
           ? {
               label: "Remove",
               onPress: () => {
-                draft.value.set(
-                  draft.value.get().removeKeyOfType(KeyType.Email)
-                );
+                draft.value.removeKeyOfType(KeyType.Email);
               },
             }
           : {

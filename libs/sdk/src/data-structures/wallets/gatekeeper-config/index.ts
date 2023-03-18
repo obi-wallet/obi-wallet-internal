@@ -1,4 +1,4 @@
-import { action, makeObservable, observable } from "mobx";
+import { action, makeObservable, observable, toJS } from "mobx";
 import * as R from "ramda";
 import { z } from "zod";
 
@@ -126,8 +126,10 @@ export class ObservableGatekeeperConfig extends GatekeeperConfig {
     >(
       this,
       {
+        clone: true,
         _beneficiaries: observable,
         _flexAccounts: observable,
+        toJSON: false,
         upsertBeneficiary: action,
         removeBeneficiaryByAddress: action,
         upsertFlexAccount: action,
@@ -137,6 +139,14 @@ export class ObservableGatekeeperConfig extends GatekeeperConfig {
         name: "GatekeeperConfig",
       }
     );
+  }
+
+  public toJSON() {
+    return toJS(super.toJSON());
+  }
+
+  public clone() {
+    return ObservableGatekeeperConfig.deserialize(this.toJSON()) as this;
   }
 
   public static empty(): ObservableGatekeeperConfig {

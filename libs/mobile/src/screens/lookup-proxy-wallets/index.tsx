@@ -1,5 +1,10 @@
-import { MultisigKey, SerializedMultisigWalletData } from "@obi-wallet/common";
-import { Key, KeyType, Serialized } from "@obi-wallet/sdk";
+import { SerializedMultisigWalletData } from "@obi-wallet/common";
+import {
+  Key,
+  KeyType,
+  ObservableMultisigKey,
+  Serialized,
+} from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
@@ -24,32 +29,32 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
     const { params } = route;
 
     const { draftsStore } = useStore();
-    const draft = draftsStore.get<MultisigKey>({ id: params.draftId });
+    const draft = draftsStore.get<ObservableMultisigKey>({
+      id: params.draftId,
+    });
 
-    const phoneKey = draft.value.get().getUsableKeyOfType(KeyType.Phone);
+    const phoneKey = draft.value.getUsableKeyOfType(KeyType.Phone);
 
     invariant(phoneKey, "Phone key is required");
 
     return (
       <Lookup
-        chainId={draft.value.get().chain}
+        chainId={draft.value.chain}
         publicKey={phoneKey.publicKey.value}
         onCancel={() => {
           navigation.goBack();
         }}
         onSelect={async (serializedProxyWallet) => {
-          const newDeviceKey = draft.value
-            .get()
-            .getUsableKeyOfType(KeyType.Device);
-          const recoveredPhoneKey = draft.value
-            .get()
-            .getUsableKeyOfType(KeyType.Phone);
+          const newDeviceKey = draft.value.getUsableKeyOfType(KeyType.Device);
+          const recoveredPhoneKey = draft.value.getUsableKeyOfType(
+            KeyType.Phone
+          );
 
           invariant(newDeviceKey, "Device key is required");
           invariant(recoveredPhoneKey, "Phone key is required");
 
           const serializedData: SerializedMultisigWalletData = {
-            chain: draft.value.get().chain,
+            chain: draft.value.chain,
             owner: {
               threshold: parseInt(serializedProxyWallet.owner.threshold, 10),
               keys: serializedProxyWallet.owner.keys.map(
@@ -117,17 +122,15 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
             currentAccount: null,
           };
 
-          const newOwner = MultisigKey.deserialize({
-            chain: serializedData.chain,
-            serialized: serializedData.owner,
-          });
-          draft.commit({ original: newOwner });
-          draft.value.set(
-            draft.value.get().setKey({
-              type: KeyType.Device,
-              payload: newDeviceKey.payload,
-            })
+          const newOwner = ObservableMultisigKey.deserialize(
+            serializedData.chain,
+            serializedData.owner
           );
+          draft.commit({ original: newOwner });
+          draft.value.setKey({
+            type: KeyType.Device,
+            payload: newDeviceKey.payload,
+          });
 
           navigation.navigate(OnboardingRoute.RecoverWallet, {
             ...params,
