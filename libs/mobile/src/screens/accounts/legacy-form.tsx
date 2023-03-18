@@ -14,14 +14,17 @@ import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
 import { useMultisigWallet } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
-import { validateMnemonic } from "../../helpers/validation-helpers";
+import { mnemonic } from "../../helpers/validation-helpers";
 
 export const LegacyForm = observer<
-  ImportKeplrAccountScreenProps | ImportStationAccountScreenProps
->(function LegacyForm({ navigation }) {
+  { coinType?: number } & (
+    | ImportKeplrAccountScreenProps
+    | ImportStationAccountScreenProps
+  )
+>(function LegacyForm({ navigation, coinType }) {
   const wallet = useMultisigWallet();
   const schema = z.object({
-    mnemonic: validateMnemonic(),
+    mnemonic: mnemonic(),
   });
   const { control, handleSubmit, formState } = useForm({
     defaultValues: {
@@ -65,7 +68,7 @@ export const LegacyForm = observer<
           onPress={handleSubmit((data) => {
             const key = new MnemonicKey({
               mnemonic: data.mnemonic,
-              coinType: 118,
+              coinType,
             });
 
             const publicKey = key.publicKey?.toAmino();
@@ -74,7 +77,7 @@ export const LegacyForm = observer<
               'Expected key to be of type "tendermint/PubKeySecp256k1"'
             );
 
-            wallet.addSinglesigWallet({
+            wallet.upsertSinglesigWallet({
               type: "singlesig-wallet",
               publicKey,
               privateKey: key.privateKey.toString("base64"),

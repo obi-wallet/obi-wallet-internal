@@ -19,7 +19,7 @@ import { isSmallScreenNumber } from "../../app/screens/components/screen-size";
 import { useMultisigWallet, useStore } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
 import { useKeyboardVisible } from "../../helpers/keyboard-visible";
-import { validateNonEmptyString } from "../../helpers/validation-helpers";
+import { nonEmptyString } from "../../helpers/validation-helpers";
 
 export type CreateBeneficiaryAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
@@ -32,15 +32,15 @@ export const CreateBeneficiaryAccountScreen =
       const { draftsStore } = useStore();
       const wallet = useMultisigWallet();
       const schema = z.object({
-        name: validateNonEmptyString("Name"),
-        address: validateNonEmptyString("Address").refine(
-          (address) => {
+        name: nonEmptyString("Name"),
+        address: nonEmptyString("Address").refine(
+          (address: string) => {
             return Sdk.chainId(wallet.chain.chainId).validateAddress({
               address,
             });
           },
           {
-            message: "Invalid Address",
+            message: "Invalid address",
           }
         ),
       });

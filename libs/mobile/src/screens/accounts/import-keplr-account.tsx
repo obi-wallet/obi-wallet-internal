@@ -12,6 +12,6 @@ export type ImportKeplrAccountScreenProps = NativeStackScreenProps<
 
 export const ImportKeplrAccountScreen = observer<ImportKeplrAccountScreenProps>(
   function ImportKeplrAccountScreen(props) {
-    return <LegacyForm {...props} />;
+    return <LegacyForm {...props} coinType={118} />;
   }
 );

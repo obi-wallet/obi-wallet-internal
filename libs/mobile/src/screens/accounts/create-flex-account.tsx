@@ -21,7 +21,7 @@ import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
 import { useMultisigWallet, useStore } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
-import { validateNonEmptyString } from "../../helpers/validation-helpers";
+import { nonEmptyString } from "../../helpers/validation-helpers";
 
 export type CreateFlexAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
@@ -36,7 +36,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
       id: getGatekeeperConfigDraftId(wallet),
     });
     const schema = z.object({
-      name: validateNonEmptyString("Name"),
+      name: nonEmptyString("Name"),
     });
     const { control, handleSubmit, formState } = useForm({
       defaultValues: {
