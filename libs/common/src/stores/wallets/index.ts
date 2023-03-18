@@ -1,5 +1,11 @@
 import { KVStore } from "@keplr-wallet/common";
-import { Serialized } from "@obi-wallet/sdk";
+import {
+  createObservableMultisigWallet,
+  MultisigWallet as MultisigWalletSdk,
+  ObservableGatekeeperConfig,
+  ObservableMultisigKey,
+  Serialized,
+} from "@obi-wallet/sdk";
 import {
   action,
   autorun,
@@ -13,7 +19,6 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import { MultisigWallet } from "./multisig-wallet";
 import { MigratableSerializedData, SerializedData } from "./serialized-data";
 import { ChainStore } from "../chain";
 import { ConfigStore } from "../config";
@@ -31,9 +36,14 @@ export enum WalletState {
   READY = "READY",
 }
 
-export { MultisigWallet };
-
-export type Wallet = MultisigWallet;
+export type MultisigWallet = MultisigWalletSdk<
+  ObservableGatekeeperConfig,
+  ObservableMultisigKey
+>;
+export type Wallet = MultisigWalletSdk<
+  ObservableGatekeeperConfig,
+  ObservableMultisigKey
+>;
 
 export type WalletMeta = {
   walletId: string;
@@ -118,10 +128,10 @@ export class WalletsStore {
 
   @action
   protected addWallet = (
-    serializedWallet: Serialized<typeof MultisigWallet>
+    serializedWallet: Serialized<typeof MultisigWalletSdk>
   ) => {
-    const id = Entities.generateId();
-    const wallet = MultisigWallet.deserializeWithId({ id, serializedWallet });
+    const wallet = createObservableMultisigWallet(serializedWallet);
+    const id = wallet.id;
     this._wallets.add({ id, entity: wallet });
     this.currentWalletId = id;
     return wallet;
@@ -129,7 +139,7 @@ export class WalletsStore {
 
   @action
   public addMultisigWallet(
-    serializedData: Serialized<typeof MultisigWallet>["data"]
+    serializedData: Serialized<typeof MultisigWalletSdk>["data"]
   ) {
     return this.addWallet({
       type: "multisig",
@@ -139,7 +149,7 @@ export class WalletsStore {
 
   @action
   public addMultisigDemoWallet(
-    serializedData: Serialized<typeof MultisigWallet>["data"]
+    serializedData: Serialized<typeof MultisigWalletSdk>["data"]
   ) {
     return this.addWallet({
       type: "multisig-demo",
@@ -234,7 +244,8 @@ export class WalletsStore {
       );
 
       const validWallets = wallets.filter((wallet) => {
-        const result = MultisigWallet.schema.migratableSchema.safeParse(wallet);
+        const result =
+          MultisigWalletSdk.schema.migratableSchema.safeParse(wallet);
         return result.success;
       });
 

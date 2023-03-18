@@ -5,11 +5,11 @@ import {
 import {
   cosmos,
   Draft,
-  MultisigWallet,
   RequestObiCosmosSignAndBroadcastMsg,
 } from "@obi-wallet/common";
 import {
   CosmosChain,
+  MultisigWallet,
   ObservableMultisigKey,
   Sdk,
   Serialized,
