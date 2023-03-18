@@ -1,4 +1,3 @@
-import { validateMnemonic } from "bip39";
 import z from "zod";
 export const trim = <T extends z.ZodTypeAny>(schema: T) =>
   z.preprocess((val) => String(val).trim(), schema);
