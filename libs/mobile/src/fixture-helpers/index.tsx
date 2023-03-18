@@ -1,7 +1,11 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { GatekeeperConfig, MultisigKey } from "@obi-wallet/common";
-import { KeyType } from "@obi-wallet/sdk";
-import { generateSec256k1KeyPair, Sdk } from "@obi-wallet/sdk";
+import {
+  generateSec256k1KeyPair,
+  KeyType,
+  ObservableGatekeeperConfig,
+  ObservableMultisigKey,
+  Sdk,
+} from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect } from "react";
@@ -32,37 +36,33 @@ export const MultisigDraft = {
     useEffect(() => {
       (async () => {
         if (!draft) {
-          const original = new MultisigKey({ chain: chainStore.currentChain });
-          original.set(
-            original
-              .get()
-              .setKey({
-                type: KeyType.Device,
-                payload: {
-                  publicKey: {
-                    type: pubkeyType.secp256k1,
-                    value: await getBiometricsPublicKey({
-                      demoMode: true,
-                    }),
-                  },
-                },
-              })
-              .setKey({
-                type: KeyType.Phone,
-                payload: {
-                  publicKey: {
-                    type: pubkeyType.secp256k1,
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    value: (await parsePublicKeyTextMessageResponse({
-                      key: "",
-                      demoMode: true,
-                    }))!,
-                  },
-                  phoneNumber: "+1234567890",
-                  securityQuestion: securityQuestions[0].value,
-                },
-              })
-          );
+          const original = ObservableMultisigKey.empty(chainStore.currentChain);
+          original.setKey({
+            type: KeyType.Device,
+            payload: {
+              publicKey: {
+                type: pubkeyType.secp256k1,
+                value: await getBiometricsPublicKey({
+                  demoMode: true,
+                }),
+              },
+            },
+          });
+          original.setKey({
+            type: KeyType.Phone,
+            payload: {
+              publicKey: {
+                type: pubkeyType.secp256k1,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                value: (await parsePublicKeyTextMessageResponse({
+                  key: "",
+                  demoMode: true,
+                }))!,
+              },
+              phoneNumber: "+1234567890",
+              securityQuestion: securityQuestions[0].value,
+            },
+          });
           draftsStore.create({
             original,
             id: multisigDraftId,
@@ -86,7 +86,7 @@ export const GatekeeperConfigDraft = {
       const draftId = getGatekeeperConfigDraftId(wallet);
 
       function getDraft() {
-        return draftsStore.get<GatekeeperConfig>({
+        return draftsStore.get<ObservableGatekeeperConfig>({
           id: draftId,
         });
       }
@@ -101,8 +101,8 @@ export const GatekeeperConfigDraft = {
 
       (async () => {
         const accounts = [
-          ...wallet.gatekeeperConfig.get().flexAccounts,
-          ...wallet.gatekeeperConfig.get().beneficiaries,
+          ...wallet.gatekeeperConfig.flexAccounts,
+          ...wallet.gatekeeperConfig.beneficiaries,
         ];
         if (accounts.length > 0) return;
 
@@ -111,75 +111,71 @@ export const GatekeeperConfigDraft = {
           publicKey,
         });
 
-        draft.value.set(
-          draft.value
-            .get()
-            .upsertBeneficiary({
-              type: "beneficiary",
-              meta: {
-                name: "Beneficiary Account",
-                icon: "",
-              },
-              address,
-              dormancyThreshold: {
-                years: 1,
-              },
-              dripSchedule: {
-                rate: 0.05,
-                period: {
-                  years: 1,
-                },
-              },
-            })
-            .upsertFlexAccount({
-              type: "flex-account",
-              meta: {
-                name: "Strict Flex Account",
-                icon: "",
-              },
-              address,
-              publicKey,
-              privateKey: privateKey,
-              spendLimit: null,
-              autoSign: null,
-            })
-            .upsertFlexAccount({
-              type: "flex-account",
-              meta: {
-                name: "Limited Flex Account",
-                icon: "",
-              },
-              address,
-              publicKey,
-              privateKey: privateKey,
-              spendLimit: {
-                period: {
-                  days: 1,
-                },
-                amount: 10,
-              },
-              autoSign: null,
-            })
-            .upsertFlexAccount({
-              type: "flex-account",
-              meta: {
-                name: "Unlocked Flex Account",
-                icon: "",
-              },
-              address,
-              publicKey,
-              privateKey: privateKey,
-              spendLimit: {
-                period: {
-                  days: 1,
-                },
-                amount: 10,
-              },
-              autoSign: {
-                endTime: DateTime.local().plus({ minutes: 30 }).toISO(),
-              },
-            })
-        );
+        draft.value.upsertBeneficiary({
+          type: "beneficiary",
+          meta: {
+            name: "Beneficiary Account",
+            icon: "",
+          },
+          address,
+          dormancyThreshold: {
+            years: 1,
+          },
+          dripSchedule: {
+            rate: 0.05,
+            period: {
+              years: 1,
+            },
+          },
+        });
+        draft.value.upsertFlexAccount({
+          type: "flex-account",
+          meta: {
+            name: "Strict Flex Account",
+            icon: "",
+          },
+          address,
+          publicKey,
+          privateKey: privateKey,
+          spendLimit: null,
+          autoSign: null,
+        });
+        draft.value.upsertFlexAccount({
+          type: "flex-account",
+          meta: {
+            name: "Limited Flex Account",
+            icon: "",
+          },
+          address,
+          publicKey,
+          privateKey: privateKey,
+          spendLimit: {
+            period: {
+              days: 1,
+            },
+            amount: 10,
+          },
+          autoSign: null,
+        });
+        draft.value.upsertFlexAccount({
+          type: "flex-account",
+          meta: {
+            name: "Unlocked Flex Account",
+            icon: "",
+          },
+          address,
+          publicKey,
+          privateKey: privateKey,
+          spendLimit: {
+            period: {
+              days: 1,
+            },
+            amount: 10,
+          },
+          autoSign: {
+            endTime: DateTime.local().plus({ minutes: 30 }).toISO(),
+          },
+        });
 
         draft.commit({ original: draft.value });
 

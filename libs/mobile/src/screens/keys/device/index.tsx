@@ -1,6 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { MultisigKey, Text } from "@obi-wallet/common";
-import { KeyType } from "@obi-wallet/sdk";
+import { Text } from "@obi-wallet/common";
+import { KeyType, ObservableMultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -63,7 +63,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   onSubmit,
 }) {
   const { configStore, draftsStore } = useStore();
-  const draft = draftsStore.get<MultisigKey>({ id: draftId });
+  const draft = draftsStore.get<ObservableMultisigKey>({ id: draftId });
   const queryClient = useQueryClient();
   const isObi = configStore.isObi();
 
@@ -75,20 +75,18 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       const { publicKey, privateKey } = await getBiometricsKeyPair({
         demoMode,
       });
-      draft.value.set(
-        draft.value.get().setKey({
-          type: KeyType.Device,
-          payload: {
-            publicKey: {
-              type: pubkeyType.secp256k1,
-              value: publicKey,
-            },
+      draft.value.setKey({
+        type: KeyType.Device,
+        payload: {
+          publicKey: {
+            type: pubkeyType.secp256k1,
+            value: publicKey,
           },
-        })
-      );
+        },
+      });
       void queryClient.prefetchQuery(
         getPrepareKeyQuery({
-          chainId: draft.value.get().chain,
+          chainId: draft.value.chain,
           publicKey,
           privateKey,
         })

@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
-import { Feature, MultisigKey } from "@obi-wallet/common";
+import { Feature } from "@obi-wallet/common";
+import { ObservableMultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
@@ -29,9 +30,9 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     const { chainStore, draftsStore } = useStore();
 
     function onCreate() {
-      const newMultisigKey = new MultisigKey({
-        chain: chainStore.currentChain,
-      });
+      const newMultisigKey = ObservableMultisigKey.empty(
+        chainStore.currentChain
+      );
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });
@@ -43,9 +44,9 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     }
 
     function onRecover() {
-      const newMultisigKey = new MultisigKey({
-        chain: chainStore.currentChain,
-      });
+      const newMultisigKey = ObservableMultisigKey.empty(
+        chainStore.currentChain
+      );
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });
@@ -57,9 +58,9 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     }
 
     function onEnterDemoMode() {
-      const newMultisigKey = new MultisigKey({
-        chain: chainStore.currentChain,
-      });
+      const newMultisigKey = ObservableMultisigKey.empty(
+        chainStore.currentChain
+      );
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });

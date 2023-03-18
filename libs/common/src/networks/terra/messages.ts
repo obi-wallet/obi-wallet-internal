@@ -1,4 +1,8 @@
-import { TerraChain, terraChains } from "@obi-wallet/sdk";
+import {
+  ObservableGatekeeperConfig,
+  TerraChain,
+  terraChains,
+} from "@obi-wallet/sdk";
 import {
   BlockTxBroadcastResult,
   Coin,
@@ -11,7 +15,6 @@ import { DateTime, Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
-import { GatekeeperConfig } from "../..";
 import { CodeIds } from "../common";
 
 export function getNewAccountMessage({
@@ -266,8 +269,8 @@ export function getUpdateGatekeeperMessages({
   spendLimitGatekeeper,
   sessionKeyGatekeeper,
 }: {
-  currentGatekeeperConfig: GatekeeperConfig;
-  newGatekeeperConfig: GatekeeperConfig;
+  currentGatekeeperConfig: ObservableGatekeeperConfig;
+  newGatekeeperConfig: ObservableGatekeeperConfig;
   proxyAddress: string;
   spendLimitGatekeeper: string;
   sessionKeyGatekeeper: string;
@@ -275,28 +278,27 @@ export function getUpdateGatekeeperMessages({
   function handleBeneficiaries() {
     const messages: MsgExecuteContract[] = [];
 
-    const previousBeneficiaryAddresses = currentGatekeeperConfig
-      .get()
-      .beneficiaries.map((beneficiary) => {
+    const previousBeneficiaryAddresses =
+      currentGatekeeperConfig.beneficiaries.map((beneficiary) => {
         return beneficiary.address;
       });
-    const nextBeneficiaryAddresses = newGatekeeperConfig
-      .get()
-      .beneficiaries.map((beneficiary) => {
+    const nextBeneficiaryAddresses = newGatekeeperConfig.beneficiaries.map(
+      (beneficiary) => {
         return beneficiary.address;
-      });
+      }
+    );
 
     const removedAddresses = R.difference(
       previousBeneficiaryAddresses,
       nextBeneficiaryAddresses
     );
 
-    newGatekeeperConfig.get().beneficiaries.forEach((beneficiary) => {
-      const previousBeneficiary = currentGatekeeperConfig
-        .get()
-        .beneficiaries.find((previousBeneficiary) => {
+    newGatekeeperConfig.beneficiaries.forEach((beneficiary) => {
+      const previousBeneficiary = currentGatekeeperConfig.beneficiaries.find(
+        (previousBeneficiary) => {
           return previousBeneficiary.address === beneficiary.address;
-        });
+        }
+      );
 
       if (previousBeneficiary && R.equals(previousBeneficiary, beneficiary)) {
         return;
@@ -367,28 +369,27 @@ export function getUpdateGatekeeperMessages({
   function handleFlexAccounts() {
     const messages: MsgExecuteContract[] = [];
 
-    const previousFlexAccountAddresses = currentGatekeeperConfig
-      .get()
-      .flexAccounts.map((flexAccount) => {
+    const previousFlexAccountAddresses =
+      currentGatekeeperConfig.flexAccounts.map((flexAccount) => {
         return flexAccount.address;
       });
-    const nextFlexAccountAddresses = newGatekeeperConfig
-      .get()
-      .flexAccounts.map((flexAccount) => {
+    const nextFlexAccountAddresses = newGatekeeperConfig.flexAccounts.map(
+      (flexAccount) => {
         return flexAccount.address;
-      });
+      }
+    );
 
     const removedAddresses = R.difference(
       previousFlexAccountAddresses,
       nextFlexAccountAddresses
     );
 
-    newGatekeeperConfig.get().flexAccounts.forEach((flexAccount) => {
-      const previousFlexAccount = currentGatekeeperConfig
-        .get()
-        .flexAccounts.find((previousFlexAccount) => {
+    newGatekeeperConfig.flexAccounts.forEach((flexAccount) => {
+      const previousFlexAccount = currentGatekeeperConfig.flexAccounts.find(
+        (previousFlexAccount) => {
           return previousFlexAccount.address === flexAccount.address;
-        });
+        }
+      );
 
       if (
         !previousFlexAccount ||

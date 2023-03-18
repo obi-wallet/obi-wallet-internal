@@ -1,17 +1,16 @@
 import {
   Draft,
-  MultisigKey,
   RequestObiSignAndBroadcastTerraTransactionMsg,
   terra,
 } from "@obi-wallet/common";
-import { TerraChain } from "@obi-wallet/sdk";
+import { ObservableMultisigKey, TerraChain } from "@obi-wallet/sdk";
 
 export async function handleTerra({
   draft,
   demoMode,
   chainId,
 }: {
-  draft: Draft<MultisigKey>;
+  draft: Draft<ObservableMultisigKey>;
   demoMode: boolean;
   chainId: TerraChain;
 }) {
@@ -20,13 +19,13 @@ export async function handleTerra({
 
   const signers = terra.getSigners({ multisigKey });
   const message = terra.getNewAccountMessage({
-    address: multisigKey.get().address,
+    address: multisigKey.address,
     signers,
     chainId,
   });
 
   const response = await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-    chain: draft.value.get().chain as TerraChain,
+    chain: draft.value.chain as TerraChain,
     messages: [message.toAmino()],
     demoMode,
     cancelable: true,

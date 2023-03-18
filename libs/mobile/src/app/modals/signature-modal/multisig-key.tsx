@@ -1,6 +1,5 @@
-import { MultisigKey, terra } from "@obi-wallet/common";
-import { KeyType } from "@obi-wallet/sdk";
-import { Sdk } from "@obi-wallet/sdk";
+import { terra } from "@obi-wallet/common";
+import { KeyType, ObservableMultisigKey, Sdk } from "@obi-wallet/sdk";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Msg, SignatureV2 } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
@@ -33,7 +32,7 @@ import { CheckIcon, Key } from "../../screens/components/keys-list";
 
 export interface SignatureModalMultisigKeyProps
   extends AbstractSignatureModalProps {
-  multisigKey: MultisigKey;
+  multisigKey: ObservableMultisigKey;
   proxyAddress?: string;
   safeSpendLimitExceeded?: boolean;
 }
@@ -53,7 +52,7 @@ export const SignatureModalMultisigKey =
     const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
     const queryClient = useQueryClient();
 
-    const sender = multisigKey.get().address;
+    const sender = multisigKey.address;
 
     const innerMessages = data.messages.map((data) => {
       return Msg.fromAmino(data);
@@ -101,7 +100,7 @@ export const SignatureModalMultisigKey =
       mutationFn: async () => {
         const { sign } = await getTransactionInformation();
         const signaturesOrdered: SignatureV2[] = [];
-        for (const key of multisigKey.get().keys) {
+        for (const key of multisigKey.keys) {
           const signature = signatures.get(key.publicKey.value);
           if (signature) {
             signaturesOrdered.push(signature);
@@ -112,7 +111,7 @@ export const SignatureModalMultisigKey =
         return await broadcastTransaction({
           data,
           transaction,
-          sender: multisigKey.get().address,
+          sender: multisigKey.address,
         });
       },
     });
@@ -125,7 +124,7 @@ export const SignatureModalMultisigKey =
     }, []);
 
     function getKey({ type }: { type: KeyType }): Key {
-      const factor = multisigKey.get().getUsableKeyOfType(type);
+      const factor = multisigKey.getUsableKeyOfType(type);
       invariant(factor, "Expected key to exist.");
 
       const alreadySigned = signatures.has(factor.publicKey.value);
@@ -158,7 +157,7 @@ export const SignatureModalMultisigKey =
 
                 console.warn(
                   `Associated NFC address is ${Sdk.chainId(
-                    multisigKey.get().chain
+                    multisigKey.chain
                   ).getAddressOfPublicKey({
                     publicKey: factor.publicKey,
                   })}`
@@ -214,10 +213,10 @@ export const SignatureModalMultisigKey =
       (async () => {
         const usableKeys = [];
 
-        const deviceKey = multisigKey.get().getUsableKeyOfType(KeyType.Device);
-        const phoneKey = multisigKey.get().getUsableKeyOfType(KeyType.Phone);
-        const nfcKey = multisigKey.get().getUsableKeyOfType(KeyType.Nfc);
-        const cloudKey = multisigKey.get().getUsableKeyOfType(KeyType.Cloud);
+        const deviceKey = multisigKey.getUsableKeyOfType(KeyType.Device);
+        const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
+        const nfcKey = multisigKey.getUsableKeyOfType(KeyType.Nfc);
+        const cloudKey = multisigKey.getUsableKeyOfType(KeyType.Cloud);
 
         if (
           deviceKey &&
@@ -244,9 +243,9 @@ export const SignatureModalMultisigKey =
       })();
     }, [multisigKey]);
 
-    if (!multisigKey.get().threshold || !usableKeys) return null;
+    if (!multisigKey.threshold || !usableKeys) return null;
 
-    const phoneKey = multisigKey.get().getUsableKeyOfType(KeyType.Phone);
+    const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
 
     const keys: Key[] = usableKeys.map((type) => {
       return getKey({ type });
@@ -293,7 +292,7 @@ export const SignatureModalMultisigKey =
             </BottomSheet>
           ) : null
         }
-        threshold={multisigKey.get().threshold}
+        threshold={multisigKey.threshold}
         numberOfSignatures={signatures.size}
         numberOfUsableKeys={usableKeys.length}
         innerMessages={data.messages}

@@ -29,9 +29,7 @@ import { ConfigStore } from "../config";
 import { Entities } from "../entities";
 import { ArrayIndex } from "../helpers";
 
-export * from "./multisig-key";
 export * from "./multisig-wallet";
-export * from "./gatekeeper-config";
 
 export enum WalletState {
   /** We are still loading the data from the KV stores. */

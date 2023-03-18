@@ -1,15 +1,15 @@
 import {
   AbstractSerialized,
+  Beneficiary as BeneficiarySdk,
   Chain,
   CosmosChain,
   cosmosChains,
+  FlexAccount as FlexAccountSdk,
+  ObservableGatekeeperConfig,
+  ObservableMultisigKey,
   Sdk,
   TerraChain,
   terraChains,
-} from "@obi-wallet/sdk";
-import {
-  Beneficiary as BeneficiarySdk,
-  FlexAccount as FlexAccountSdk,
 } from "@obi-wallet/sdk";
 import { action, computed, makeObservable, observable } from "mobx";
 
@@ -24,8 +24,6 @@ import {
 import { SerializedWalletMeta, WalletMeta } from "..";
 import { CodeIds } from "../../../networks";
 import { AbstractWallet, WalletType } from "../abstract-wallet";
-import { GatekeeperConfig } from "../gatekeeper-config";
-import { MultisigKey } from "../multisig-key";
 
 export type Beneficiary = AbstractSerialized<typeof BeneficiarySdk>;
 export type FlexAccount = AbstractSerialized<typeof FlexAccountSdk>;
@@ -46,10 +44,10 @@ export class MultisigWallet extends AbstractWallet {
   public readonly chain: Chain;
 
   @observable
-  protected _owner: MultisigKey;
+  protected _owner: ObservableMultisigKey;
 
   @observable
-  protected _gatekeeperConfig: GatekeeperConfig;
+  protected _gatekeeperConfig: ObservableGatekeeperConfig;
 
   @observable
   protected _singlesigWallets: SinglesigWallet[];
@@ -79,8 +77,8 @@ export class MultisigWallet extends AbstractWallet {
     this._id = id;
     this.isDemo = isDemo;
     this.chain = chain;
-    this._owner = new MultisigKey({ chain });
-    this._gatekeeperConfig = new GatekeeperConfig();
+    this._owner = ObservableMultisigKey.empty(chain);
+    this._gatekeeperConfig = ObservableGatekeeperConfig.empty();
     this._singlesigWallets = [];
     this.proxyAddress = proxyAddress;
     this.onChange = onChange;
@@ -164,7 +162,7 @@ export class MultisigWallet extends AbstractWallet {
   }) {
     switch (account.type) {
       case "flex-account":
-        return this._gatekeeperConfig.get().flexAccounts[account.index];
+        return this._gatekeeperConfig.flexAccounts[account.index];
       case "singlesig-wallet":
         return this._singlesigWallets[account.index];
     }
@@ -181,7 +179,7 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async setOwner(owner: MultisigKey) {
+  public async setOwner(owner: ObservableMultisigKey) {
     this._owner = owner;
     await this.save();
   }
@@ -191,7 +189,9 @@ export class MultisigWallet extends AbstractWallet {
   }
 
   @action
-  public async setGatekeeperConfig(gatekeeperConfig: GatekeeperConfig) {
+  public async setGatekeeperConfig(
+    gatekeeperConfig: ObservableGatekeeperConfig
+  ) {
     this._gatekeeperConfig = gatekeeperConfig;
     await this.save();
   }
@@ -266,11 +266,11 @@ export class MultisigWallet extends AbstractWallet {
       proxyAddress: serializedWallet.data.proxyAddress,
       onChange,
     });
-    wallet._owner = MultisigKey.deserialize({
-      chain: serializedWallet.data.chain,
-      serialized: serializedWallet.data.owner,
-    });
-    wallet._gatekeeperConfig = GatekeeperConfig.deserialize(
+    wallet._owner = ObservableMultisigKey.deserialize(
+      serializedWallet.data.chain,
+      serializedWallet.data.owner
+    );
+    wallet._gatekeeperConfig = ObservableGatekeeperConfig.deserialize(
       serializedWallet.data.gatekeeperConfig
     );
     wallet._singlesigWallets = serializedWallet.data.singlesigWallets;

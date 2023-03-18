@@ -1,3 +1,4 @@
+import { makeObservable, observable, toJS } from "mobx";
 import { z } from "zod";
 
 import { CloudKey } from "./cloud";
@@ -69,7 +70,23 @@ export class UsableKey<
   }
 }
 
-export class PendingRecoverKey extends AbstractKey {
+export class ObservableUsableKey<
+  T extends AbstractSerialized<typeof UsableKeySchema>
+> extends UsableKey<T> {
+  public constructor(...args: ConstructorParameters<typeof UsableKey<T>>) {
+    super(...args);
+    makeObservable<UsableKey<T>, "serialized">(this, {
+      serialized: observable,
+      toJSON: false,
+    });
+  }
+
+  public toJSON() {
+    return toJS(super.toJSON());
+  }
+}
+
+export class PendingRecoveryKey extends AbstractKey {
   public static get schema() {
     return PendingRecoverKeySchema;
   }
@@ -89,6 +106,22 @@ export class PendingRecoverKey extends AbstractKey {
   }
 }
 
+export class ObservablePendingRecoveryKey extends PendingRecoveryKey {
+  public constructor(
+    ...args: ConstructorParameters<typeof PendingRecoveryKey>
+  ) {
+    super(...args);
+    makeObservable<PendingRecoveryKey, "serialized">(this, {
+      serialized: observable,
+      toJSON: false,
+    });
+  }
+
+  public toJSON() {
+    return toJS(super.toJSON());
+  }
+}
+
 export class Key {
   public static get schema() {
     return KeySchema;
@@ -97,10 +130,36 @@ export class Key {
   public static deserialize(
     serialized: AbstractMigratable<typeof KeySchema>
   ): AbstractKey {
+    return this.deserializeWithClasses(
+      serialized,
+      UsableKey,
+      PendingRecoveryKey
+    );
+  }
+
+  protected static deserializeWithClasses(
+    serialized: AbstractMigratable<typeof KeySchema>,
+    UsableKeyClass: typeof UsableKey,
+    PendingRecoveryKeyClass: typeof PendingRecoveryKey
+  ) {
     const result =
-      PendingRecoverKey.schema.migratableSchema.safeParse(serialized);
-    if (result.success) return new PendingRecoverKey(result.data);
-    return new UsableKey(UsableKey.schema.migratableSchema.parse(serialized));
+      PendingRecoveryKey.schema.migratableSchema.safeParse(serialized);
+    if (result.success) return new PendingRecoveryKeyClass(result.data);
+    return new UsableKeyClass(
+      UsableKey.schema.migratableSchema.parse(serialized)
+    );
+  }
+}
+
+export class ObservableKey extends Key {
+  public static deserialize(
+    serialized: AbstractMigratable<typeof KeySchema>
+  ): AbstractKey {
+    return this.deserializeWithClasses(
+      serialized,
+      ObservableUsableKey,
+      ObservablePendingRecoveryKey
+    );
   }
 }
 

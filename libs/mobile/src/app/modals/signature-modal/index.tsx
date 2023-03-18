@@ -1,5 +1,7 @@
-import { MultisigKey } from "@obi-wallet/common";
-import { Secp256k1PrivateKeySigner } from "@obi-wallet/sdk";
+import {
+  ObservableMultisigKey,
+  Secp256k1PrivateKeySigner,
+} from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 
@@ -54,10 +56,10 @@ export const SignatureModal = observer<SignatureModalProps>(
         );
       }
     } else if (R.has("multisigKey", data)) {
-      const multisigKey = MultisigKey.deserialize({
-        serialized: data.multisigKey,
-        chain: data.chain,
-      });
+      const multisigKey = ObservableMultisigKey.deserialize(
+        data.chain,
+        data.multisigKey
+      );
       return (
         <SignatureModalMultisigKey
           {...props}

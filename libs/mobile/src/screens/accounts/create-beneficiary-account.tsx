@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { GatekeeperConfig, Text } from "@obi-wallet/common";
-import { Sdk } from "@obi-wallet/sdk";
+import { Text } from "@obi-wallet/common";
+import { ObservableGatekeeperConfig, Sdk } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -60,7 +60,7 @@ export const CreateBeneficiaryAccountScreen =
 
       const keyboardVisible = useKeyboardVisible();
       const isAndroid = Platform.OS === "android";
-      const gatekeeperConfig = draftsStore.get<GatekeeperConfig>({
+      const gatekeeperConfig = draftsStore.get<ObservableGatekeeperConfig>({
         id: getGatekeeperConfigDraftId(wallet),
       });
       const [icon, setIcon] = useState<Icon | null>(null);
@@ -155,25 +155,23 @@ export const CreateBeneficiaryAccountScreen =
                 flavor="blue"
                 disabled={!formState.isValid}
                 onPress={handleSubmit((data) => {
-                  gatekeeperConfig.value.set(
-                    gatekeeperConfig.value.get().upsertBeneficiary({
-                      type: "beneficiary",
-                      meta: {
-                        icon: icon?.uri || "",
-                        name: data.name,
+                  gatekeeperConfig.value.upsertBeneficiary({
+                    type: "beneficiary",
+                    meta: {
+                      icon: icon?.uri || "",
+                      name: data.name,
+                    },
+                    address: data.address,
+                    dormancyThreshold: {
+                      years: 1,
+                    },
+                    dripSchedule: {
+                      rate: 0.01,
+                      period: {
+                        months: 1,
                       },
-                      address: data.address,
-                      dormancyThreshold: {
-                        years: 1,
-                      },
-                      dripSchedule: {
-                        rate: 0.01,
-                        period: {
-                          months: 1,
-                        },
-                      },
-                    })
-                  );
+                    },
+                  });
 
                   navigation.navigate(AccountsRoute.AccountsOverview);
                 })}

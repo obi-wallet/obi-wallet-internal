@@ -1,6 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MultisigKey, Text } from "@obi-wallet/common";
-import { generateSec256k1KeyPair, KeyType } from "@obi-wallet/sdk";
+import { Text } from "@obi-wallet/common";
+import {
+  generateSec256k1KeyPair,
+  KeyType,
+  ObservableMultisigKey,
+} from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -77,7 +81,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   onSubmit,
 }) {
   const { configStore, draftsStore } = useStore();
-  const draft = draftsStore.get<MultisigKey>({ id: draftId });
+  const draft = draftsStore.get<ObservableMultisigKey>({ id: draftId });
   const [selectedTab, setSelectedTab] = useState(Tab.EmailKeyV1);
   const isObi = configStore.isObi();
   const intl = useIntl();
@@ -304,14 +308,12 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                       {
                         text: "Yes, I sent the email to myself",
                         onPress: () => {
-                          draft.value.set(
-                            draft.value.get().setKey({
-                              type: KeyType.Email,
-                              payload: {
-                                publicKey,
-                              },
-                            })
-                          );
+                          draft.value.setKey({
+                            type: KeyType.Email,
+                            payload: {
+                              publicKey,
+                            },
+                          });
                           onSubmit();
                         },
                       },

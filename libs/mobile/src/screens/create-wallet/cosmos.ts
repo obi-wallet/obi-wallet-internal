@@ -1,32 +1,31 @@
 import {
   cosmos,
   Draft,
-  MultisigKey,
   RequestObiCosmosSignAndBroadcastMsg,
 } from "@obi-wallet/common";
-import { CosmosChain, Sdk } from "@obi-wallet/sdk";
+import { CosmosChain, ObservableMultisigKey, Sdk } from "@obi-wallet/sdk";
 
 export async function handleCosmos({
   draft,
   demoMode,
   chainId,
 }: {
-  draft: Draft<MultisigKey>;
+  draft: Draft<ObservableMultisigKey>;
   demoMode: boolean;
   chainId: CosmosChain;
 }) {
   const multisigKey = draft.value;
   // TODO: shuffle?
 
-  const signers = multisigKey.get().keys.map((key, i) => {
+  const signers = multisigKey.keys.map((key, i) => {
     return {
       address: Sdk.chainId(chainId).getAddressOfPublicKey({
         publicKey: key.publicKey,
       }),
-      ty: multisigKey.get().signerTypes[i],
+      ty: multisigKey.signerTypes[i],
     };
   });
-  const owner = multisigKey.get().address;
+  const owner = multisigKey.address;
 
   const message = cosmos.getNewAccountMessage({
     address: owner,

@@ -212,21 +212,21 @@ export function migrateSerializedData(
     chain: Chain,
     { currentAdmin }: SerializedCosmosMultisigWalletData
   ) {
-    let result = MultisigKey.empty(chain);
+    const result = MultisigKey.empty(chain);
     if (currentAdmin?.biometrics) {
-      result = result.setKey({
+      result.setKey({
         type: KeyType.Device,
         payload: currentAdmin.biometrics,
       });
     }
     if (currentAdmin?.phoneNumber) {
-      result = result.setKey({
+      result.setKey({
         type: KeyType.Phone,
         payload: currentAdmin.phoneNumber,
       });
     }
     if (currentAdmin?.social) {
-      result = result.setKey({
+      result.setKey({
         type: KeyType.Social,
         // @ts-expect-error TODO: review
         payload: currentAdmin.social,

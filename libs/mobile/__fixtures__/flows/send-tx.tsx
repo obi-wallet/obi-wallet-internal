@@ -72,7 +72,7 @@ function SendMultisigTxFixture() {
 
 function SendFlexAccountTxFixture() {
   const wallet = useMultisigWallet();
-  const flexAccount = wallet.gatekeeperConfig.get().flexAccounts[0];
+  const flexAccount = wallet.gatekeeperConfig.flexAccounts[0];
 
   // TODO: add fallback
   invariant(flexAccount, "No flex account wallet");
@@ -109,7 +109,7 @@ function SendMultisigKeyTxFixture() {
     chain: wallet.chain as TerraChain,
     messages: [
       terra.getNewAccountMessage({
-        address: wallet.owner.get().address,
+        address: wallet.owner.address,
         chainId: wallet.chain as TerraChain,
         signers: [],
       }),

@@ -3,13 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   Beneficiary,
   FlexAccount,
-  GatekeeperConfig,
   RequestObiSignAndBroadcastTerraTransactionMsg,
   SinglesigWallet,
   terra,
   Text,
 } from "@obi-wallet/common";
-import { TerraChain } from "@obi-wallet/sdk";
+import { ObservableGatekeeperConfig, TerraChain } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { isTxError } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
@@ -73,7 +72,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
   const wallet = useMultisigWallet();
 
   const draftId = getGatekeeperConfigDraftId(wallet);
-  const draft = draftsStore.get<GatekeeperConfig>({
+  const draft = draftsStore.get<ObservableGatekeeperConfig>({
     id: draftId,
   });
 
@@ -213,7 +212,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                 const messages = terra.getUpdateGatekeeperMessages({
                   currentGatekeeperConfig: draft.original,
                   newGatekeeperConfig: draft.value,
-                  proxyAddress: wallet.owner.get().address,
+                  proxyAddress: wallet.owner.address,
                   spendLimitGatekeeper,
                   sessionKeyGatekeeper,
                 });
@@ -288,7 +287,7 @@ const AccountsList = observer(function AccountsList() {
   const wallet = useMultisigWallet();
 
   const draftId = getGatekeeperConfigDraftId(wallet);
-  const draft = draftsStore.get<GatekeeperConfig>({
+  const draft = draftsStore.get<ObservableGatekeeperConfig>({
     id: draftId,
   });
 
@@ -306,38 +305,38 @@ const AccountsList = observer(function AccountsList() {
     originalAccount: T | undefined;
   };
 
-  const beneficiariesData = draft.value
-    .get()
-    .beneficiaries.map((account, index): AccountData<Beneficiary> => {
+  const beneficiariesData = draft.value.beneficiaries.map(
+    (account, index): AccountData<Beneficiary> => {
       return {
         meta: {
           type: account.type,
           index,
         },
         account,
-        originalAccount: wallet.gatekeeperConfig
-          .get()
-          .beneficiaries.find((originalAccount) => {
+        originalAccount: wallet.gatekeeperConfig.beneficiaries.find(
+          (originalAccount) => {
             return originalAccount.address === account.address;
-          }),
+          }
+        ),
       };
-    });
-  const flexAccountsData = draft.value
-    .get()
-    .flexAccounts.map((account, index): AccountData<FlexAccount> => {
+    }
+  );
+  const flexAccountsData = draft.value.flexAccounts.map(
+    (account, index): AccountData<FlexAccount> => {
       return {
         meta: {
           type: account.type,
           index,
         },
         account,
-        originalAccount: wallet.gatekeeperConfig
-          .get()
-          .flexAccounts.find((originalAccount) => {
+        originalAccount: wallet.gatekeeperConfig.flexAccounts.find(
+          (originalAccount) => {
             return originalAccount.address === account.address;
-          }),
+          }
+        ),
       };
-    });
+    }
+  );
   const singlesigWalletsData = wallet.singlesigWallets.map(
     (account, index): AccountData<SinglesigWallet> => {
       return {
@@ -383,18 +382,14 @@ const AccountsList = observer(function AccountsList() {
             onDelete={async () => {
               switch (element.item.account.type) {
                 case "beneficiary":
-                  draft.value.set(
-                    draft.value.get().removeBeneficiaryByAddress({
-                      address: element.item.account.address,
-                    })
-                  );
+                  draft.value.removeBeneficiaryByAddress({
+                    address: element.item.account.address,
+                  });
                   break;
                 case "flex-account":
-                  draft.value.set(
-                    draft.value.get().removeFlexAccountByAddress({
-                      address: element.item.account.address,
-                    })
-                  );
+                  draft.value.removeFlexAccountByAddress({
+                    address: element.item.account.address,
+                  });
                   break;
                 case "singlesig-wallet":
                   await wallet.removeSinglesigWallet(element.item.meta.index);
@@ -404,10 +399,10 @@ const AccountsList = observer(function AccountsList() {
             onChange={async (account) => {
               switch (account.type) {
                 case "beneficiary":
-                  draft.value.set(draft.value.get().upsertBeneficiary(account));
+                  draft.value.upsertBeneficiary(account);
                   break;
                 case "flex-account":
-                  draft.value.set(draft.value.get().upsertFlexAccount(account));
+                  draft.value.upsertFlexAccount(account);
                   break;
                 case "singlesig-wallet":
                   await wallet.upsertSinglesigWallet(account);

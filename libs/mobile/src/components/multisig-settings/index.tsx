@@ -1,7 +1,7 @@
 import { useTheme } from "@emotion/react";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
-import { MultisigKey, Text } from "@obi-wallet/common";
-import { KeyType } from "@obi-wallet/sdk";
+import { Text } from "@obi-wallet/common";
+import { KeyType, ObservableMultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -35,7 +35,7 @@ export interface MultisigSettingsProps {
 export const MultisigSettings = observer<MultisigSettingsProps>(
   function MultisigSettings({ children, draftId, title, subTitle, actions }) {
     const { draftsStore } = useStore();
-    const draft = draftsStore.get<MultisigKey>({ id: draftId });
+    const draft = draftsStore.get<ObservableMultisigKey>({ id: draftId });
 
     const multisigKey = draft.value;
     const { configStore } = useStore();
@@ -57,7 +57,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
     function getKey(
       type: KeyType
     ): Key & { activated: boolean; disabled: boolean } {
-      const activated = multisigKey.get().hasKeyOfType(type);
+      const activated = multisigKey.hasKeyOfType(type);
       const disabled = false;
 
       return {
@@ -73,7 +73,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
     }
 
     const data = keyMetaData.keys.map(getKey);
-    const activatedKeys = multisigKey.get().keys.length;
+    const activatedKeys = multisigKey.keys.length;
 
     return (
       <SafeAreaView
@@ -118,7 +118,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
                 },
               ]}
             >
-              {multisigKey.get().threshold}/{activatedKeys}
+              {multisigKey.threshold}/{activatedKeys}
             </Text>
           </View>
           <Text
