@@ -2,7 +2,6 @@ import { KVStore } from "@keplr-wallet/common";
 import {
   createObservableMultisigWallet,
   MultisigWallet as MultisigWalletSdk,
-  ObservableGatekeeperConfig,
   ObservableMultisigKey,
   Serialized,
 } from "@obi-wallet/sdk";
@@ -36,14 +35,8 @@ export enum WalletState {
   READY = "READY",
 }
 
-export type MultisigWallet = MultisigWalletSdk<
-  ObservableGatekeeperConfig,
-  ObservableMultisigKey
->;
-export type Wallet = MultisigWalletSdk<
-  ObservableGatekeeperConfig,
-  ObservableMultisigKey
->;
+export type MultisigWallet = MultisigWalletSdk<ObservableMultisigKey>;
+export type Wallet = MultisigWalletSdk<ObservableMultisigKey>;
 
 export type WalletMeta = {
   walletId: string;

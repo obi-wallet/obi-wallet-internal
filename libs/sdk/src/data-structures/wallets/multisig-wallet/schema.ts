@@ -3,7 +3,7 @@ import { z } from "zod";
 import { Secp256k1PublicKey } from "../../../keys";
 import { ArrayIndex } from "../../array-index";
 import { migratable } from "../../migratable";
-import { GatekeeperConfig } from "../gatekeeper-config";
+import { createGatekeeperConfig, GatekeeperConfig } from "../gatekeeper-config";
 import { MultisigKey } from "../multisig-key";
 
 export const ProxyAddress = migratable(
@@ -62,7 +62,7 @@ const MultisigWalletData = migratable(
       singlesigWallets: z.array(SinglesigWallet.migratableSchema),
     }),
     migrate(data) {
-      const gatekeeperConfig = GatekeeperConfig.empty();
+      const gatekeeperConfig = createGatekeeperConfig();
       return {
         ...data,
         gatekeeperConfig: gatekeeperConfig.toJSON(),

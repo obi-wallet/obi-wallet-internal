@@ -1,5 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { action, makeObservable, observable, toJS } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 
 import {
   CurrentAccount,
@@ -16,17 +16,15 @@ import {
 import { Sdk } from "../../../sdk";
 import { AbstractSerialized } from "../../abstract";
 import {
+  createGatekeeperConfig,
+  createObservableGatekeeperConfig,
   GatekeeperConfig,
-  ObservableGatekeeperConfig,
 } from "../gatekeeper-config";
 import { MultisigKey, ObservableMultisigKey } from "../multisig-key";
 
 export { SinglesigWallet };
 
-export class MultisigWallet<
-  G extends GatekeeperConfig = GatekeeperConfig,
-  M extends MultisigKey = MultisigKey
-> {
+export class MultisigWallet<M extends MultisigKey = MultisigKey> {
   public static get schema() {
     return MultisigWalletSchema;
   }
@@ -35,7 +33,7 @@ export class MultisigWallet<
     protected _chainId: Chain,
     protected _owner: M,
     protected _proxyAddress: string,
-    protected _gatekeeperConfig: G,
+    protected _gatekeeperConfig: GatekeeperConfig,
     protected _singlesigWallets: AbstractSerialized<typeof SinglesigWallet>[],
     protected _currentAccount: AbstractSerialized<typeof CurrentAccount> | null,
     protected _isDemo: boolean
@@ -173,7 +171,7 @@ export class MultisigWallet<
     return this._gatekeeperConfig;
   }
 
-  public setGatekeeperConfig(gatekeeperConfig: G) {
+  public setGatekeeperConfig(gatekeeperConfig: GatekeeperConfig) {
     this._gatekeeperConfig = gatekeeperConfig;
   }
 
@@ -203,29 +201,24 @@ export class MultisigWallet<
   }
 }
 
-export function createMultisigWallet<
-  G extends GatekeeperConfig = GatekeeperConfig,
-  M extends MultisigKey = MultisigKey
->(
+export function createMultisigWallet<M extends MultisigKey = MultisigKey>(
   serialized: AbstractSerialized<typeof MultisigWalletSchema>,
   factories: {
     MultisigKey: typeof MultisigKey;
-    GatekeeperConfig: typeof GatekeeperConfig;
+    createGatekeeperConfig: typeof createGatekeeperConfig;
   } = {
     MultisigKey,
-    GatekeeperConfig,
+    createGatekeeperConfig,
   }
 ) {
-  return new MultisigWallet<G, M>(
+  return new MultisigWallet<M>(
     serialized.data.chain,
     factories.MultisigKey.deserialize(
       serialized.data.chain,
       serialized.data.owner
     ) as M,
     serialized.data.proxyAddress.address,
-    factories.GatekeeperConfig.deserialize(
-      serialized.data.gatekeeperConfig
-    ) as G,
+    factories.createGatekeeperConfig(serialized.data.gatekeeperConfig),
     serialized.data.singlesigWallets,
     serialized.data.currentAccount,
     serialized.type === "multisig-demo"
@@ -235,12 +228,9 @@ export function createMultisigWallet<
 export function createObservableMultisigWallet(
   serialized: AbstractSerialized<typeof MultisigWalletSchema>
 ) {
-  const wallet = createMultisigWallet<
-    ObservableGatekeeperConfig,
-    ObservableMultisigKey
-  >(serialized, {
+  const wallet = createMultisigWallet<ObservableMultisigKey>(serialized, {
     MultisigKey: ObservableMultisigKey,
-    GatekeeperConfig: ObservableGatekeeperConfig,
+    createGatekeeperConfig: createObservableGatekeeperConfig,
   });
   makeObservable<
     MultisigWallet,

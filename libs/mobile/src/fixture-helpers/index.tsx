@@ -1,8 +1,8 @@
 import { pubkeyType } from "@cosmjs/amino";
 import {
+  GatekeeperConfig,
   generateSec256k1KeyPair,
   KeyType,
-  ObservableGatekeeperConfig,
   ObservableMultisigKey,
   Sdk,
 } from "@obi-wallet/sdk";
@@ -86,7 +86,7 @@ export const GatekeeperConfigDraft = {
       const draftId = getGatekeeperConfigDraftId(wallet);
 
       function getDraft() {
-        return draftsStore.get<ObservableGatekeeperConfig>({
+        return draftsStore.get<GatekeeperConfig>({
           id: draftId,
         });
       }

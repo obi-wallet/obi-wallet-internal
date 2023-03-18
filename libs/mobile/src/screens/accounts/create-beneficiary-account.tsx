@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@obi-wallet/common";
-import { ObservableGatekeeperConfig, Sdk } from "@obi-wallet/sdk";
+import { GatekeeperConfig, Sdk } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -55,7 +55,7 @@ export const CreateBeneficiaryAccountScreen =
 
       const keyboardVisible = useKeyboardVisible();
       const isAndroid = Platform.OS === "android";
-      const gatekeeperConfig = draftsStore.get<ObservableGatekeeperConfig>({
+      const gatekeeperConfig = draftsStore.get<GatekeeperConfig>({
         id: getGatekeeperConfigDraftId(wallet),
       });
       const [icon, setIcon] = useState<Icon | null>(null);

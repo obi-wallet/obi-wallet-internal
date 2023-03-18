@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react/dist/emotion-react.cjs";
-import { ObservableGatekeeperConfig } from "@obi-wallet/sdk";
+import { GatekeeperConfig } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { View } from "react-native";
@@ -20,7 +20,7 @@ export const AccountsScreen = observer(function AccountsScreen() {
   const wallet = useMultisigWallet();
 
   const draftId = getGatekeeperConfigDraftId(wallet);
-  const draft = draftsStore.get<ObservableGatekeeperConfig>({
+  const draft = draftsStore.get<GatekeeperConfig>({
     id: draftId,
   });
 

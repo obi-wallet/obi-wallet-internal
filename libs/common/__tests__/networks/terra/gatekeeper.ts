@@ -1,6 +1,6 @@
 import {
+  createObservableGatekeeperConfig,
   generateSec256k1KeyPair,
-  ObservableGatekeeperConfig,
   Sdk,
 } from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
@@ -34,10 +34,10 @@ beforeAll(async () => {
 });
 
 describe("Empty gatekeeper config", () => {
-  const currentGatekeeperConfig = ObservableGatekeeperConfig.empty();
+  const currentGatekeeperConfig = createObservableGatekeeperConfig();
 
   test("No changes", () => {
-    const newGatekeeperConfig = ObservableGatekeeperConfig.empty();
+    const newGatekeeperConfig = createObservableGatekeeperConfig();
     const messages = getUpdateGatekeeperMessages({
       currentGatekeeperConfig,
       newGatekeeperConfig,
@@ -48,7 +48,7 @@ describe("Empty gatekeeper config", () => {
   });
 
   test("Add beneficiary", () => {
-    const newGatekeeperConfig = ObservableGatekeeperConfig.empty();
+    const newGatekeeperConfig = createObservableGatekeeperConfig();
     newGatekeeperConfig.upsertBeneficiary({
       type: "beneficiary",
       meta: {
@@ -106,7 +106,7 @@ describe("Empty gatekeeper config", () => {
   });
 
   test("Add strict flex account", () => {
-    const newGatekeeperConfig = ObservableGatekeeperConfig.empty();
+    const newGatekeeperConfig = createObservableGatekeeperConfig();
     newGatekeeperConfig.upsertFlexAccount({
       type: "flex-account",
       meta: {
@@ -150,7 +150,7 @@ describe("Empty gatekeeper config", () => {
   });
 
   test("Add limited flex account", () => {
-    const newGatekeeperConfig = ObservableGatekeeperConfig.empty();
+    const newGatekeeperConfig = createObservableGatekeeperConfig();
     newGatekeeperConfig.upsertFlexAccount({
       type: "flex-account",
       meta: {
@@ -207,7 +207,7 @@ describe("Empty gatekeeper config", () => {
   });
 
   test("Add unlocked flex account", () => {
-    const newGatekeeperConfig = ObservableGatekeeperConfig.empty();
+    const newGatekeeperConfig = createObservableGatekeeperConfig();
     newGatekeeperConfig.upsertFlexAccount({
       type: "flex-account",
       meta: {
@@ -269,7 +269,7 @@ describe("Empty gatekeeper config", () => {
 });
 
 test("Remove single flex account", async () => {
-  const currentGatekeeperConfig = ObservableGatekeeperConfig.empty();
+  const currentGatekeeperConfig = createObservableGatekeeperConfig();
   currentGatekeeperConfig.upsertFlexAccount({
     type: "flex-account",
     meta: {
@@ -287,7 +287,7 @@ test("Remove single flex account", async () => {
     },
     autoSign: null,
   });
-  const newGatekeeperConfig = ObservableGatekeeperConfig.empty();
+  const newGatekeeperConfig = createObservableGatekeeperConfig();
   const messages = getUpdateGatekeeperMessages({
     currentGatekeeperConfig,
     newGatekeeperConfig,
@@ -328,14 +328,14 @@ test("Make unlocked flex account locked", async () => {
     },
   };
 
-  const currentGatekeeperConfig = ObservableGatekeeperConfig.empty();
+  const currentGatekeeperConfig = createObservableGatekeeperConfig();
   currentGatekeeperConfig.upsertFlexAccount({
     ...flexAccount,
     autoSign: {
       endTime: DateTime.now().plus({ minutes: 30 }).toISO(),
     },
   });
-  const newGatekeeperConfig = ObservableGatekeeperConfig.empty();
+  const newGatekeeperConfig = createObservableGatekeeperConfig();
   newGatekeeperConfig.upsertFlexAccount({
     ...flexAccount,
     autoSign: null,

@@ -1,4 +1,4 @@
-import { action, makeObservable, observable, toJS } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 import * as R from "ramda";
 import { z } from "zod";
 
@@ -23,7 +23,10 @@ export class GatekeeperConfig {
 
   public constructor(
     protected _beneficiaries: AbstractSerialized<typeof Beneficiary>[],
-    protected _flexAccounts: AbstractSerialized<typeof FlexAccount>[]
+    protected _flexAccounts: AbstractSerialized<typeof FlexAccount>[],
+    protected _factory: (
+      serialized: AbstractSerialized<typeof GatekeeperConfigSchema>
+    ) => GatekeeperConfig
   ) {}
 
   public toJSON(): AbstractSerialized<typeof GatekeeperConfigSchema> {
@@ -38,33 +41,7 @@ export class GatekeeperConfig {
   }
 
   public clone() {
-    return GatekeeperConfig.deserialize(this.toJSON()) as this;
-  }
-
-  public static empty(): GatekeeperConfig {
-    return new GatekeeperConfig(...this.emptyConstructorParameters());
-  }
-
-  protected static emptyConstructorParameters(): ConstructorParameters<
-    typeof GatekeeperConfig
-  > {
-    return [[], []];
-  }
-
-  public static deserialize(
-    serialized: AbstractMigratable<typeof GatekeeperConfigSchema>
-  ): GatekeeperConfig {
-    return new GatekeeperConfig(
-      ...this.deserializeConstructorParameters(serialized)
-    );
-  }
-
-  protected static deserializeConstructorParameters(
-    serialized: AbstractMigratable<typeof GatekeeperConfigSchema>
-  ): ConstructorParameters<typeof GatekeeperConfig> {
-    const { beneficiaries, flexAccounts } =
-      GatekeeperConfigSchema.migratableSchema.parse(serialized);
-    return [beneficiaries, flexAccounts];
+    return this._factory(this.toJSON());
   }
 
   public get beneficiaries() {
@@ -117,47 +94,40 @@ export class GatekeeperConfig {
   }
 }
 
-export class ObservableGatekeeperConfig extends GatekeeperConfig {
-  public constructor(...args: ConstructorParameters<typeof GatekeeperConfig>) {
-    super(...args);
-    makeObservable<
-      ObservableGatekeeperConfig,
-      "_beneficiaries" | "_flexAccounts"
-    >(
-      this,
-      {
-        _beneficiaries: observable,
-        _flexAccounts: observable,
-        toJSON: false,
-        clone: false,
-        upsertBeneficiary: action,
-        removeBeneficiaryByAddress: action,
-        upsertFlexAccount: action,
-        removeFlexAccountByAddress: action,
-      },
-      {
-        name: "GatekeeperConfig",
-      }
-    );
-  }
+export function createGatekeeperConfig(
+  serialized: AbstractMigratable<typeof GatekeeperConfigSchema> = {
+    beneficiaries: [],
+    flexAccounts: [],
+  },
+  factory = createGatekeeperConfig
+) {
+  const { beneficiaries, flexAccounts } =
+    GatekeeperConfigSchema.migratableSchema.parse(serialized);
+  return new GatekeeperConfig(beneficiaries, flexAccounts, factory);
+}
 
-  public toJSON() {
-    return toJS(super.toJSON());
-  }
-
-  public clone() {
-    return ObservableGatekeeperConfig.deserialize(this.toJSON()) as this;
-  }
-
-  public static empty(): ObservableGatekeeperConfig {
-    return new ObservableGatekeeperConfig(...this.emptyConstructorParameters());
-  }
-
-  public static deserialize(
-    serialized: AbstractMigratable<typeof GatekeeperConfigSchema>
-  ): ObservableGatekeeperConfig {
-    return new ObservableGatekeeperConfig(
-      ...this.deserializeConstructorParameters(serialized)
-    );
-  }
+export function createObservableGatekeeperConfig(
+  serialized?: AbstractMigratable<typeof GatekeeperConfigSchema>
+) {
+  const config = createGatekeeperConfig(
+    serialized,
+    createObservableGatekeeperConfig
+  );
+  makeObservable<GatekeeperConfig, "_beneficiaries" | "_flexAccounts">(
+    config,
+    {
+      _beneficiaries: observable,
+      _flexAccounts: observable,
+      toJSON: false,
+      clone: false,
+      upsertBeneficiary: action,
+      removeBeneficiaryByAddress: action,
+      upsertFlexAccount: action,
+      removeFlexAccountByAddress: action,
+    },
+    {
+      name: "GatekeeperConfig",
+    }
+  );
+  return config;
 }

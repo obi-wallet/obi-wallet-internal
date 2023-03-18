@@ -1,16 +1,16 @@
 import { isObservable } from "mobx";
 
-import { ObservableGatekeeperConfig } from "../../src";
+import { createObservableGatekeeperConfig } from "../../src";
 
 describe("ObservableGatekeeperConfig", () => {
   test(".empty observable", () => {
-    expect(isObservable(ObservableGatekeeperConfig.empty())).toEqual(true);
+    expect(isObservable(createObservableGatekeeperConfig())).toEqual(true);
   });
 
   test(".deserialize observable", () => {
     expect(
       isObservable(
-        ObservableGatekeeperConfig.deserialize({
+        createObservableGatekeeperConfig({
           beneficiaries: [],
           flexAccounts: [],
         })
@@ -19,7 +19,7 @@ describe("ObservableGatekeeperConfig", () => {
   });
 
   test("beneficiaries observable", () => {
-    const config = ObservableGatekeeperConfig.empty();
+    const config = createObservableGatekeeperConfig();
     expect(isObservable(config.beneficiaries)).toEqual(true);
     config.upsertBeneficiary({
       type: "beneficiary",
@@ -44,7 +44,7 @@ describe("ObservableGatekeeperConfig", () => {
   });
 
   test("flexAccounts observable", () => {
-    const config = ObservableGatekeeperConfig.empty();
+    const config = createObservableGatekeeperConfig();
     expect(isObservable(config.beneficiaries)).toEqual(true);
     config.upsertFlexAccount({
       type: "flex-account",

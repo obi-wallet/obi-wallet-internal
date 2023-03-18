@@ -1,8 +1,8 @@
 import { isObservable, isObservableProp } from "mobx";
 
 import {
+  createGatekeeperConfig,
   createObservableMultisigWallet,
-  GatekeeperConfig,
   MultisigKey,
   MultisigWallet,
   Serialized,
@@ -13,7 +13,7 @@ describe("ObservableMultisigWallet", () => {
     type: "multisig",
     data: {
       chain: "phoenix-1",
-      gatekeeperConfig: GatekeeperConfig.empty().toJSON(),
+      gatekeeperConfig: createGatekeeperConfig().toJSON(),
       owner: MultisigKey.empty("phoenix-1").toJSON(),
       proxyAddress: {
         v: 1,
