@@ -1,3 +1,4 @@
+import { Bech32Address } from "@keplr-wallet/cosmos";
 import { action, makeObservable, observable, toJS } from "mobx";
 
 import {
@@ -20,16 +21,21 @@ import {
 } from "../gatekeeper-config";
 import { MultisigKey, ObservableMultisigKey } from "../multisig-key";
 
-export class MultisigWallet {
+export { SinglesigWallet };
+
+export class MultisigWallet<
+  G extends GatekeeperConfig = GatekeeperConfig,
+  M extends MultisigKey = MultisigKey
+> {
   public static get schema() {
     return MultisigWalletSchema;
   }
 
   public constructor(
     protected _chainId: Chain,
-    protected _owner: MultisigKey,
+    protected _owner: M,
     protected _proxyAddress: string,
-    protected _gatekeeperConfig: GatekeeperConfig,
+    protected _gatekeeperConfig: G,
     protected _singlesigWallets: AbstractSerialized<typeof SinglesigWallet>[],
     protected _currentAccount: AbstractSerialized<typeof CurrentAccount> | null,
     protected _isDemo: boolean
@@ -64,19 +70,22 @@ export class MultisigWallet {
     );
   }
 
-  public static deserializeConstructorParameters(
+  protected static deserializeConstructorParameters<
+    G extends GatekeeperConfig = GatekeeperConfig,
+    M extends MultisigKey = MultisigKey
+  >(
     serialized: AbstractSerialized<typeof MultisigWalletSchema>,
     MultisigKeyClass: typeof MultisigKey,
     GatekeeperConfigClass: typeof GatekeeperConfig
-  ): ConstructorParameters<typeof MultisigWallet> {
+  ): ConstructorParameters<typeof MultisigWallet<G, M>> {
     return [
       serialized.data.chain,
       MultisigKeyClass.deserialize(
         serialized.data.chain,
         serialized.data.owner
-      ),
+      ) as M,
       serialized.data.proxyAddress.address,
-      GatekeeperConfigClass.deserialize(serialized.data.gatekeeperConfig),
+      GatekeeperConfigClass.deserialize(serialized.data.gatekeeperConfig) as G,
       serialized.data.singlesigWallets,
       serialized.data.currentAccount,
       serialized.type === "multisig-demo",
@@ -102,6 +111,10 @@ export class MultisigWallet {
     });
   }
 
+  public get isDemo() {
+    return this._isDemo;
+  }
+
   public get proxyAddress() {
     return this._proxyAddress;
   }
@@ -114,6 +127,11 @@ export class MultisigWallet {
     }
 
     return this._proxyAddress;
+  }
+
+  public get shortenedAddress(): string | null {
+    const address = this.address;
+    return address ? Bech32Address.shortenAddress(address, 20) : null;
   }
 
   public isOutdated(codeIds: {
@@ -160,7 +178,9 @@ export class MultisigWallet {
     }
   }
 
-  public setCurrentAccount(account: AbstractSerialized<typeof CurrentAccount>) {
+  public setCurrentAccount(
+    account: AbstractSerialized<typeof CurrentAccount> | null
+  ) {
     this._currentAccount = account;
   }
 
@@ -168,7 +188,7 @@ export class MultisigWallet {
     return this._owner;
   }
 
-  public setOwner(owner: MultisigKey) {
+  public setOwner(owner: M) {
     this._owner = owner;
   }
 
@@ -176,7 +196,7 @@ export class MultisigWallet {
     return this._gatekeeperConfig;
   }
 
-  public setGatekeeperConfig(gatekeeperConfig: GatekeeperConfig) {
+  public setGatekeeperConfig(gatekeeperConfig: G) {
     this._gatekeeperConfig = gatekeeperConfig;
   }
 
@@ -206,8 +226,13 @@ export class MultisigWallet {
   }
 }
 
-export class ObservableMultisigWallet extends MultisigWallet {
-  public constructor(...args: ConstructorParameters<typeof MultisigWallet>) {
+export class ObservableMultisigWallet<
+  G extends ObservableGatekeeperConfig = ObservableGatekeeperConfig,
+  M extends ObservableMultisigKey = ObservableMultisigKey
+> extends MultisigWallet<G, M> {
+  public constructor(
+    ...args: ConstructorParameters<typeof MultisigWallet<G, M>>
+  ) {
     super(...args);
     makeObservable<
       ObservableMultisigWallet,
@@ -241,11 +266,18 @@ export class ObservableMultisigWallet extends MultisigWallet {
     serialized: AbstractSerialized<typeof MultisigWalletSchema>
   ): ObservableMultisigWallet {
     return new ObservableMultisigWallet(
-      ...this.deserializeConstructorParameters(
-        serialized,
-        ObservableMultisigKey,
-        ObservableGatekeeperConfig
-      )
+      ...this.deserializeConstructorParameters(serialized)
+    );
+  }
+
+  protected static deserializeConstructorParameters<
+    G extends GatekeeperConfig = ObservableGatekeeperConfig,
+    M extends MultisigKey = ObservableMultisigKey
+  >(serialized: AbstractSerialized<typeof MultisigWalletSchema>) {
+    return super.deserializeConstructorParameters<G, M>(
+      serialized,
+      ObservableMultisigKey,
+      ObservableGatekeeperConfig
     );
   }
 }

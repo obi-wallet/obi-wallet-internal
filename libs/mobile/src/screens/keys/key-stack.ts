@@ -1,4 +1,4 @@
-import { MultisigWalletSerializedData } from "@obi-wallet/common";
+import { MultisigWallet, Serialized } from "@obi-wallet/sdk";
 import { ParamListBase } from "@react-navigation/native";
 
 export enum KeyRoute {
@@ -21,7 +21,7 @@ interface CommonKeyParams {
   flow: KeyFlow;
   draftId: string;
   demoMode: boolean;
-  serializedData?: MultisigWalletSerializedData.SerializedMultisigWalletData;
+  serializedData?: Serialized<typeof MultisigWallet>["data"];
 }
 
 export interface KeyStackParamList extends ParamListBase {

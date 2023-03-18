@@ -291,7 +291,7 @@ const AppsScreen = observer(function AppsScreen() {
               }}
               source={
                 walletsStore.currentWallet &&
-                isTerraChain(walletsStore.currentWallet.chain)
+                isTerraChain(walletsStore.currentWallet.chainId)
                   ? require("./assets/terrascope.png")
                   : HistoryIcon
               }
@@ -304,7 +304,7 @@ const AppsScreen = observer(function AppsScreen() {
                   label: "History",
                   url:
                     walletsStore.currentWallet &&
-                    isTerraChain(walletsStore.currentWallet.chain)
+                    isTerraChain(walletsStore.currentWallet.chainId)
                       ? `https://terrasco.pe/mainnet/contract/${walletsStore.address}`
                       : `https://mintscan.io/juno/wasm/contract/${walletsStore.address}`,
                   icon: "https://place-hold.it/180x180",

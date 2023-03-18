@@ -41,7 +41,7 @@ export const CreateBeneficiaryAccountScreen =
             .nonempty("Address cannot be empty")
             .refine(
               (address) => {
-                return Sdk.chainId(wallet.chain).validateAddress({ address });
+                return Sdk.chainId(wallet.chainId).validateAddress({ address });
               },
               {
                 message: "Invalid Address",
@@ -134,7 +134,7 @@ export const CreateBeneficiaryAccountScreen =
             >
               Enter a name and the address of your beneficiary. If they don't
               have an address, they can create an account using Obi or any other{" "}
-              {wallet.chainInformation.label} wallet.
+              {wallet.chain.label} wallet.
             </Text>
 
             <Text

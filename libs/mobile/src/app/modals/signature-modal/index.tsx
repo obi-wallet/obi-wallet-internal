@@ -30,7 +30,7 @@ export const SignatureModal = observer<SignatureModalProps>(
             {...props}
             data={data}
             multisigKey={multisigKey}
-            proxyAddress={wallet.proxyAddress.address}
+            proxyAddress={wallet.proxyAddress}
           />
         );
       }
@@ -51,7 +51,7 @@ export const SignatureModal = observer<SignatureModalProps>(
             data={data}
             flexAccount={flexAccount}
             multisigKey={multisigKey}
-            proxyAddress={wallet.proxyAddress.address}
+            proxyAddress={wallet.proxyAddress}
           />
         );
       }

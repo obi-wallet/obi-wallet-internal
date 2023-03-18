@@ -78,8 +78,8 @@ const AccountScreenInner = observer(function AccountScreenInner() {
 
   const { data: gatekeeperContractAddresses } = useQuery(
     getGatekeeperContractAddressesQuery({
-      chainId: wallet.chain,
-      address: wallet.proxyAddress.address,
+      chainId: wallet.chainId,
+      address: wallet.proxyAddress,
     })
   );
   const spendLimitGatekeeper =
@@ -89,7 +89,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
 
   const { data: permissionedAddresses, refetch } = useQuery(
     getPermissionedAddressesQuery({
-      chainId: wallet.chain,
+      chainId: wallet.chainId,
       spendLimitGatekeeper,
     })
   );
@@ -102,8 +102,8 @@ const AccountScreenInner = observer(function AccountScreenInner() {
             backgroundColor: isLoop ? "#1C0C3F" : "#437DFF",
             borderRadius: 16,
           }}
-          onPress={async () => {
-            await wallet.setCurrentAccount(null);
+          onPress={() => {
+            wallet.setCurrentAccount(null);
           }}
         >
           <ImageBackground
@@ -162,7 +162,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                   marginTop: 10,
                 }}
               >
-                <UsdBalance address={wallet.proxyAddress.address} />
+                <UsdBalance address={wallet.proxyAddress} />
               </View>
             </View>
           </ImageBackground>
@@ -219,7 +219,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
 
                 const response =
                   await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-                    chain: wallet.chain as TerraChain,
+                    chain: wallet.chainId as TerraChain,
                     messages: messages.map((message) => message.toAmino()),
                     demoMode: wallet.isDemo,
                     cancelable: true,
@@ -231,7 +231,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                   return;
                 }
 
-                await wallet.setGatekeeperConfig(draft.value);
+                wallet.setGatekeeperConfig(draft.value);
                 draft.commit({ original: wallet.gatekeeperConfig });
 
                 await refetch();
@@ -372,14 +372,14 @@ const AccountsList = observer(function AccountsList() {
                 : setItemOpened(element.item.meta);
             }}
             isOpen={R.equals(itemOpened, element.item.meta)}
-            onSetActive={async () => {
+            onSetActive={() => {
               if (element.item.meta.type === "beneficiary") return;
-              await wallet.setCurrentAccount(element.item.meta);
+              wallet.setCurrentAccount(element.item.meta);
             }}
             active={R.equals(wallet.meta.currentAccount, element.item.meta)}
             originalAccount={element.item.originalAccount ?? null}
             account={element.item.account}
-            onDelete={async () => {
+            onDelete={() => {
               switch (element.item.account.type) {
                 case "beneficiary":
                   draft.value.removeBeneficiaryByAddress({
@@ -392,11 +392,11 @@ const AccountsList = observer(function AccountsList() {
                   });
                   break;
                 case "singlesig-wallet":
-                  await wallet.removeSinglesigWallet(element.item.meta.index);
+                  wallet.removeSinglesigWallet(element.item.account);
                   break;
               }
             }}
-            onChange={async (account) => {
+            onChange={(account) => {
               switch (account.type) {
                 case "beneficiary":
                   draft.value.upsertBeneficiary(account);
@@ -405,7 +405,7 @@ const AccountsList = observer(function AccountsList() {
                   draft.value.upsertFlexAccount(account);
                   break;
                 case "singlesig-wallet":
-                  await wallet.upsertSinglesigWallet(account);
+                  wallet.upsertSinglesigWallet(account);
                   break;
               }
             }}

@@ -21,7 +21,7 @@ function SendSinglesigWalletTxFixture() {
   });
 
   const tx: RequestObiSignAndBroadcastTerraTransactionPayload = {
-    chain: wallet.chain as TerraChain,
+    chain: wallet.chainId as TerraChain,
     messages: [new MsgSend(address, address, { uluna: 1 })].map((msg) =>
       msg.toAmino()
     ),
@@ -49,7 +49,7 @@ function SendMultisigTxFixture() {
   const wallet = useMultisigWallet();
 
   const tx: RequestObiSignAndBroadcastTerraTransactionPayload = {
-    chain: wallet.chain as TerraChain,
+    chain: wallet.chainId as TerraChain,
     messages: [new MsgSend(wallet.address, wallet.address, { uluna: 1 })].map(
       (msg) => msg.toAmino()
     ),
@@ -78,7 +78,7 @@ function SendFlexAccountTxFixture() {
   invariant(flexAccount, "No flex account wallet");
 
   const tx: RequestObiSignAndBroadcastTerraTransactionPayload = {
-    chain: wallet.chain as TerraChain,
+    chain: wallet.chainId as TerraChain,
     messages: [new MsgSend(wallet.address, wallet.address, { uluna: 1 })].map(
       (msg) => msg.toAmino()
     ),
@@ -106,11 +106,11 @@ function SendMultisigKeyTxFixture() {
   const wallet = useMultisigWallet();
 
   const tx: RequestObiSignAndBroadcastTerraTransactionPayload = {
-    chain: wallet.chain as TerraChain,
+    chain: wallet.chainId as TerraChain,
     messages: [
       terra.getNewAccountMessage({
         address: wallet.owner.address,
-        chainId: wallet.chain as TerraChain,
+        chainId: wallet.chainId as TerraChain,
         signers: [],
       }),
     ].map((msg) => msg.toAmino()),

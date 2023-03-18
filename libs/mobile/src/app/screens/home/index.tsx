@@ -273,8 +273,8 @@ const UpdateFooter = observer(function UpdateHeader() {
   const wallet = walletsStore.currentWallet;
 
   const codeIdsQuery = getCodeIdsQuery({
-    chainId: wallet?.chain,
-    address: wallet?.proxyAddress.address,
+    chainId: wallet?.chainId,
+    address: wallet?.proxyAddress,
   });
   const { data: codeIds, isRefetching, refetch } = useQuery(codeIdsQuery);
 
@@ -292,22 +292,20 @@ const UpdateFooter = observer(function UpdateHeader() {
       }}
       onPress={async () => {
         invariant(wallet, "Expected `wallet` to exist.");
-        const proxyAddress = wallet.proxyAddress;
-
         const signers = terra.getSigners({
           multisigKey: wallet.owner,
         });
         const message = terra.getMigrateMessage({
-          proxyAddress: proxyAddress.address,
+          proxyAddress: wallet.proxyAddress,
           admin: wallet.owner.address,
-          chainId: wallet.chain as TerraChain,
+          chainId: wallet.chainId as TerraChain,
           signers,
           codeIds,
         });
 
         try {
           await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-            chain: wallet.chain as TerraChain,
+            chain: wallet.chainId as TerraChain,
             messages: [message.toAmino()],
             demoMode: wallet.isDemo,
             cancelable: true,

@@ -1,146 +1,37 @@
 import {
   AbstractSerialized,
   Beneficiary as BeneficiarySdk,
-  Chain,
-  CosmosChain,
-  cosmosChains,
   FlexAccount as FlexAccountSdk,
-  ObservableGatekeeperConfig,
-  ObservableMultisigKey,
-  Sdk,
-  TerraChain,
-  terraChains,
+  SinglesigWallet as SinglesigWalletSdk,
+  ObservableMultisigWallet,
+  Serialized,
 } from "@obi-wallet/sdk";
-import { action, computed, makeObservable, observable } from "mobx";
+import { makeObservable, observable } from "mobx";
 
-import * as MultisigWalletSerializedData from "./serialized-data";
-import {
-  SerializedMultisigDemoWallet,
-  SerializedMultisigWallet,
-  SerializedMultisigWalletData,
-  SerializedProxyAddress,
-  SinglesigWallet,
-} from "./serialized-data";
-import { SerializedWalletMeta, WalletMeta } from "..";
-import { CodeIds } from "../../../networks";
-import { AbstractWallet, WalletType } from "../abstract-wallet";
+import { WalletMeta } from "..";
 
 export type Beneficiary = AbstractSerialized<typeof BeneficiarySdk>;
 export type FlexAccount = AbstractSerialized<typeof FlexAccountSdk>;
+export type SinglesigWallet = AbstractSerialized<typeof SinglesigWalletSdk>;
 
-export {
-  SinglesigWallet,
-  MultisigWalletSerializedData,
-  SerializedMultisigWalletData,
-};
-
-export class MultisigWallet extends AbstractWallet {
+export class MultisigWallet extends ObservableMultisigWallet {
   protected _id: string;
 
-  @observable
-  public readonly isDemo: boolean;
-
-  @observable
-  public readonly chain: Chain;
-
-  @observable
-  protected _owner: ObservableMultisigKey;
-
-  @observable
-  protected _gatekeeperConfig: ObservableGatekeeperConfig;
-
-  @observable
-  protected _singlesigWallets: SinglesigWallet[];
-
-  @observable
-  public readonly proxyAddress: SerializedProxyAddress;
-
-  @observable
-  protected _currentAccount: WalletMeta["currentAccount"] | null = null;
-
-  protected onChange: () => Promise<void>;
-
-  constructor({
-    id,
-    chain,
-    isDemo,
-    onChange,
-    proxyAddress,
-  }: {
-    id: string;
-    chain: Chain;
-    isDemo: boolean;
-    proxyAddress: SerializedProxyAddress;
-    onChange: () => Promise<void>;
-  }) {
-    super();
+  constructor(
+    id: string,
+    ...args: ConstructorParameters<typeof ObservableMultisigWallet>
+  ) {
+    super(...args);
     this._id = id;
-    this.isDemo = isDemo;
-    this.chain = chain;
-    this._owner = ObservableMultisigKey.empty(chain);
-    this._gatekeeperConfig = ObservableGatekeeperConfig.empty();
-    this._singlesigWallets = [];
-    this.proxyAddress = proxyAddress;
-    this.onChange = onChange;
-    makeObservable(this);
+    makeObservable<MultisigWallet, "_id">(this, {
+      _id: observable,
+      id: false,
+      meta: false,
+    });
   }
 
   public get id() {
     return this._id;
-  }
-
-  public get chainInformation() {
-    return Chain.select<
-      (typeof terraChains)[TerraChain] | (typeof cosmosChains)[CosmosChain]
-    >({
-      chainId: this.chain,
-      onTerraChain(chainId) {
-        return terraChains[chainId];
-      },
-      onCosmosChain(chainId) {
-        return cosmosChains[chainId];
-      },
-    });
-  }
-
-  @computed
-  public get address(): string {
-    if (this.currentAccount?.type === "singlesig-wallet") {
-      return Sdk.chainId(this.chain).getAddressOfPublicKey({
-        publicKey: this.currentAccount.publicKey,
-      });
-    }
-
-    return this.proxyAddress.address;
-  }
-
-  public get type(): WalletType {
-    return WalletType.Multisig;
-  }
-
-  public get isReady(): boolean {
-    return true;
-  }
-
-  public isOutdated(codeIds: CodeIds): boolean {
-    return Chain.select({
-      chainId: this.chain,
-      onTerraChain(chainId) {
-        return (
-          codeIds.userAccount <
-            terraChains[chainId].currentCodeIds.userAccount ||
-          codeIds.spendLimitGatekeeper === null ||
-          codeIds.spendLimitGatekeeper <
-            terraChains[chainId].currentCodeIds.spendLimitGatekeeper ||
-          codeIds.debtGatekeeper === null ||
-          codeIds.debtGatekeeper <
-            terraChains[chainId].currentCodeIds.debtGatekeeper
-        );
-      },
-      onCosmosChain(chainId) {
-        return codeIds.userAccount < cosmosChains[chainId].currentCodeId;
-      },
-    });
   }
 
   public get meta(): WalletMeta {
@@ -150,137 +41,16 @@ export class MultisigWallet extends AbstractWallet {
     };
   }
 
-  @computed
-  public get currentAccount() {
-    if (!this._currentAccount) return null;
-    return this.getAccount(this._currentAccount);
-  }
-
-  public getAccount(account: {
-    type: "flex-account" | "singlesig-wallet";
-    index: number;
-  }) {
-    switch (account.type) {
-      case "flex-account":
-        return this._gatekeeperConfig.flexAccounts[account.index];
-      case "singlesig-wallet":
-        return this._singlesigWallets[account.index];
-    }
-  }
-
-  @action
-  public async setCurrentAccount(account: WalletMeta["currentAccount"]) {
-    this._currentAccount = account;
-    await this.save();
-  }
-
-  public get owner() {
-    return this._owner;
-  }
-
-  @action
-  public async setOwner(owner: ObservableMultisigKey) {
-    this._owner = owner;
-    await this.save();
-  }
-
-  public get gatekeeperConfig() {
-    return this._gatekeeperConfig;
-  }
-
-  @action
-  public async setGatekeeperConfig(
-    gatekeeperConfig: ObservableGatekeeperConfig
-  ) {
-    this._gatekeeperConfig = gatekeeperConfig;
-    await this.save();
-  }
-
-  public get singlesigWallets() {
-    return this._singlesigWallets;
-  }
-
-  @action
-  public async addSinglesigWallet(singlesig: SinglesigWallet) {
-    await this.upsertSinglesigWallet(singlesig);
-  }
-
-  @action
-  public async removeSinglesigWallet(index: number) {
-    this._singlesigWallets.splice(index, 1);
-    await this.save();
-  }
-
-  @action
-  public async upsertSinglesigWallet(singlesig: SinglesigWallet) {
-    const index = this._singlesigWallets.findIndex(
-      (s) => s.publicKey === singlesig.publicKey
-    );
-    if (index === -1) {
-      this._singlesigWallets.push(singlesig);
-    } else {
-      this._singlesigWallets[index] = singlesig;
-    }
-    await this.save();
-  }
-
-  public serializeAccount(
-    account: WalletMeta["currentAccount"]
-  ): SerializedWalletMeta["currentAccount"] {
-    return account;
-  }
-
-  public deserializeAccount(
-    account: SerializedWalletMeta["currentAccount"]
-  ): WalletMeta["currentAccount"] {
-    return account;
-  }
-
-  public serialize(): SerializedMultisigWallet | SerializedMultisigDemoWallet {
-    return {
-      type: this.isDemo ? "multisig-demo" : "multisig",
-      data: {
-        chain: this.chain,
-        owner: this._owner.toJSON(),
-        proxyAddress: this.proxyAddress,
-        gatekeeperConfig: this._gatekeeperConfig.toJSON(),
-        singlesigWallets: this._singlesigWallets,
-        currentAccount: this.serializeAccount(this._currentAccount),
-      },
-    };
-  }
-
-  public static deserialize({
+  public static deserializeWithId({
     id,
     serializedWallet,
-    onChange,
   }: {
     id: string;
-    serializedWallet: SerializedMultisigWallet | SerializedMultisigDemoWallet;
-    onChange: () => Promise<void>;
+    serializedWallet: Serialized<typeof MultisigWallet>;
   }): MultisigWallet {
-    const wallet = new MultisigWallet({
+    return new MultisigWallet(
       id,
-      chain: serializedWallet.data.chain,
-      isDemo: serializedWallet.type === "multisig-demo",
-      proxyAddress: serializedWallet.data.proxyAddress,
-      onChange,
-    });
-    wallet._owner = ObservableMultisigKey.deserialize(
-      serializedWallet.data.chain,
-      serializedWallet.data.owner
+      ...this.deserializeConstructorParameters(serializedWallet)
     );
-    wallet._gatekeeperConfig = ObservableGatekeeperConfig.deserialize(
-      serializedWallet.data.gatekeeperConfig
-    );
-    wallet._singlesigWallets = serializedWallet.data.singlesigWallets;
-    wallet._currentAccount = wallet.deserializeAccount(
-      serializedWallet.data.currentAccount
-    );
-    return wallet;
-  }
-
-  protected async save() {
-    await this.onChange();
   }
 }

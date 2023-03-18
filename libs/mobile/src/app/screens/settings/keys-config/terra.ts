@@ -30,7 +30,7 @@ export async function handleTerra({
     });
 
     const response = await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-      chain: wallet.chain as TerraChain,
+      chain: wallet.chainId as TerraChain,
       messages: [message.toAmino()],
       demoMode: wallet.isDemo,
       cancelable: true,
@@ -51,7 +51,7 @@ export async function handleTerra({
     });
 
     const response = await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-      chain: wallet.chain as TerraChain,
+      chain: wallet.chainId as TerraChain,
       messages: [message.toAmino()],
       demoMode: wallet.isDemo,
       cancelable: true,
@@ -67,5 +67,5 @@ export async function handleTerra({
 
   await proposeUpdateOwner();
   await confirmUpdateOwner();
-  await wallet.setOwner(newOwner);
+  wallet.setOwner(newOwner);
 }

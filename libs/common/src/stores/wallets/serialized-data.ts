@@ -1,3 +1,4 @@
+import { MultisigKey, MultisigWallet, Serialized } from "@obi-wallet/sdk";
 import { z } from "zod";
 
 import {
@@ -9,17 +10,7 @@ import {
   MigratableSerializedTerraMultisigDemoWallet,
   MigratableSerializedTerraMultisigWallet,
 } from "./deprecated/terra-multisig-wallet";
-import {
-  MigratableSerializedMultisigDemoWallet,
-  MigratableSerializedMultisigWallet,
-} from "./multisig-wallet/serialized-data";
 import { ArrayIndex, migratable } from "../helpers";
-
-export const SerializedWallet = z.union([
-  MigratableSerializedMultisigWallet.schema,
-  MigratableSerializedMultisigDemoWallet.schema,
-]);
-export type SerializedWallet = z.infer<typeof SerializedWallet>;
 
 export const MigratableSerializedData = migratable(
   z.object({
@@ -31,18 +22,17 @@ export const MigratableSerializedData = migratable(
         MigratableSerializedCosmosMultisigWallet.schema,
         MigratableSerializedCosmosMultisigDemoWallet.schema,
         MigratableCosmosSinglesigWallet.schema,
-        MigratableSerializedMultisigWallet.schema,
-        MigratableSerializedMultisigDemoWallet.schema,
+        MultisigKey.schema.migratableSchema,
       ])
     ),
   })
 ).addMigration({
   nextSchema: z.object({
     currentWalletIndex: ArrayIndex.nullable(),
-    wallets: z.array(SerializedWallet),
+    wallets: z.array(MultisigWallet.schema.migratableSchema),
   }),
   migrate(data) {
-    const wallets: SerializedWallet[] = [];
+    const wallets: Serialized<typeof MultisigWallet>[] = [];
 
     data.wallets.forEach((wallet) => {
       if (handleType(MigratableSerializedTerraMultisigWallet.schema)) return;
@@ -51,8 +41,7 @@ export const MigratableSerializedData = migratable(
       if (handleType(MigratableSerializedCosmosMultisigWallet.schema)) return;
       if (handleType(MigratableSerializedCosmosMultisigDemoWallet.schema))
         return;
-      if (handleType(MigratableSerializedMultisigWallet.schema)) return;
-      if (handleType(MigratableSerializedMultisigDemoWallet.schema)) return;
+      if (handleType(MultisigWallet.schema.migratableSchema)) return;
 
       function handleType<T extends z.ZodTypeAny>(type: T) {
         const result = type.safeParse(wallet);

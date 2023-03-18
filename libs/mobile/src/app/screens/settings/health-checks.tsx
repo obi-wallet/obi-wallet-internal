@@ -28,7 +28,7 @@ export const HealthChecksScreen = observer(function HealthChecksScreen() {
   const [problems, setProblems] = useState<string[] | undefined>();
   const theme = useTheme();
   const refetchProblems = useCallback(async () => {
-    const currentChain = wallet.chain;
+    const currentChain = wallet.chainId;
     const { types, checks } = healthChecks[currentChain];
 
     const potentialProblems = await Promise.all(

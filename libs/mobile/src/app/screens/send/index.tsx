@@ -424,13 +424,13 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
               return [new MsgSend(wallet.address, addressToUse, msgAmount)];
             }
 
-            const chain = wallet.chain;
+            const chain = wallet.chainId;
             if (isCosmosChain(chain)) {
               const response = await RequestObiCosmosSignAndBroadcastMsg.send({
                 multisigKey: wallet.owner.toJSON(),
                 demoMode: wallet.isDemo,
                 encodeObjects: getEncodeObjects(),
-                proxyAddress: wallet.proxyAddress.address,
+                proxyAddress: wallet.proxyAddress,
               });
 
               setConfirmModalStatus({
@@ -440,7 +440,7 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
             } else {
               const response =
                 await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-                  chain: wallet.chain as TerraChain,
+                  chain: wallet.chainId as TerraChain,
                   messages: getMessages().map((message) => message.toAmino()),
                   demoMode: wallet.isDemo,
                   cancelable: true,

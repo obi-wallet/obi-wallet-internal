@@ -19,7 +19,7 @@ import { Avatar } from "../../avatar";
 
 export interface AbstractAccountItemProps {
   active: boolean;
-  onSetActive: () => Promise<void>;
+  onSetActive: () => void;
   isOpen: boolean;
   onOpenToggle: () => void;
   onDelete: () => void;

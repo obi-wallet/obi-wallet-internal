@@ -5,10 +5,15 @@ import {
 import {
   cosmos,
   Draft,
-  MultisigWalletSerializedData,
+  MultisigWallet,
   RequestObiCosmosSignAndBroadcastMsg,
 } from "@obi-wallet/common";
-import { CosmosChain, ObservableMultisigKey, Sdk } from "@obi-wallet/sdk";
+import {
+  CosmosChain,
+  ObservableMultisigKey,
+  Sdk,
+  Serialized,
+} from "@obi-wallet/sdk";
 import {
   MsgExecuteContract,
   MsgUpdateAdmin,
@@ -21,7 +26,7 @@ export async function handleCosmos({
   chainId,
 }: {
   draft: Draft<ObservableMultisigKey>;
-  serializedData: MultisigWalletSerializedData.SerializedMultisigWalletData;
+  serializedData: Serialized<typeof MultisigWallet>["data"];
   demoMode: boolean;
   chainId: CosmosChain;
 }) {
