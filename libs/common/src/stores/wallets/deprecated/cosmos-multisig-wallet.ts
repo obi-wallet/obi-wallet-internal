@@ -1,13 +1,14 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { Chain, KeyType, MultisigKey } from "@obi-wallet/sdk";
+import {
+  Chain,
+  KeyType,
+  Migratable,
+  MultisigKey,
+  MultisigWallet,
+} from "@obi-wallet/sdk";
 import { z } from "zod";
 
 import { migratable } from "../../helpers";
-import {
-  MigratableSerializedMultisigDemoWallet,
-  MigratableSerializedMultisigWallet,
-  MigratableSerializedMultisigWalletData,
-} from "../multisig-wallet/serialized-data";
 
 export const SinglePublicKey = z.object({
   type: z.string(),
@@ -148,11 +149,11 @@ export const MigratableSerializedCosmosMultisigWallet = migratable(
     data: MigratableSerializedCosmosMultisigWalletData.schema,
   })
 ).addMigration({
-  nextSchema: MigratableSerializedMultisigWallet.schema.nullable(),
+  nextSchema: MultisigWallet.schema.currentSchema.nullable(),
   migrate(data) {
     const multisigWalletData = migrateSerializedData(data.data);
     if (multisigWalletData) {
-      return MigratableSerializedMultisigWallet.schema.parse({
+      return MultisigWallet.schema.migratableSchema.parse({
         type: "multisig" as const,
         data: multisigWalletData,
       });
@@ -176,11 +177,11 @@ export const MigratableSerializedCosmosMultisigDemoWallet = migratable(
     data: MigratableSerializedCosmosMultisigWalletData.schema,
   })
 ).addMigration({
-  nextSchema: MigratableSerializedMultisigDemoWallet.schema.nullable(),
+  nextSchema: MultisigWallet.schema.currentSchema.nullable(),
   migrate(data) {
     const multisigWalletData = migrateSerializedData(data.data);
     if (multisigWalletData) {
-      return MigratableSerializedMultisigDemoWallet.schema.parse({
+      return MultisigWallet.schema.migratableSchema.parse({
         type: "multisig-demo" as const,
         data: multisigWalletData,
       });
@@ -191,7 +192,7 @@ export const MigratableSerializedCosmosMultisigDemoWallet = migratable(
 
 export function migrateSerializedData(
   serializedData: SerializedCosmosMultisigWalletData
-): z.input<typeof MigratableSerializedMultisigWalletData.schema> | null {
+): Migratable<typeof MultisigWallet>["data"] | null {
   const proxyAddresses = serializedData.proxyAddresses;
   const mainnetProxyAddress = proxyAddresses["juno-1"];
   const testnetProxyAddress = proxyAddresses["uni-3"];

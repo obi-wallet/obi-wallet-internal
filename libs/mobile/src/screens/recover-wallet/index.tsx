@@ -83,9 +83,9 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
             }
 
             const wallet = params.demoMode
-              ? await walletsStore.addMultisigDemoWallet(params.serializedData)
-              : await walletsStore.addMultisigWallet(params.serializedData);
-            await wallet.setOwner(draft.value);
+              ? walletsStore.addMultisigDemoWallet(params.serializedData)
+              : walletsStore.addMultisigWallet(params.serializedData);
+            wallet.setOwner(draft.value);
 
             navigation.dispatch(
               CommonActions.reset({

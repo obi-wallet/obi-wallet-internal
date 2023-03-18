@@ -1,12 +1,12 @@
-import { KeyType, MultisigKey } from "@obi-wallet/sdk";
+import {
+  KeyType,
+  Migratable,
+  MultisigKey,
+  MultisigWallet,
+} from "@obi-wallet/sdk";
 import { z } from "zod";
 
 import { migratable } from "../../helpers";
-import {
-  MigratableSerializedMultisigDemoWallet,
-  MigratableSerializedMultisigWallet,
-  MigratableSerializedMultisigWalletData,
-} from "../multisig-wallet/serialized-data";
 
 export const Secp256k1PublicKey = z.object({
   type: z.literal("tendermint/PubKeySecp256k1"),
@@ -60,11 +60,11 @@ export const MigratableSerializedTerraMultisigWallet = migratable(
     data: SerializedTerraMultisigWalletData,
   })
 ).addMigration({
-  nextSchema: MigratableSerializedMultisigWallet.schema.nullable(),
+  nextSchema: MultisigWallet.schema.currentSchema.nullable(),
   migrate(data) {
     const multisigWalletData = migrateSerializedData(data.data);
     if (multisigWalletData) {
-      return MigratableSerializedMultisigWallet.schema.parse({
+      return MultisigWallet.schema.migratableSchema.parse({
         type: "multisig" as const,
         data: multisigWalletData,
       });
@@ -79,11 +79,11 @@ export const MigratableSerializedTerraMultisigDemoWallet = migratable(
     data: SerializedTerraMultisigWalletData,
   })
 ).addMigration({
-  nextSchema: MigratableSerializedMultisigDemoWallet.schema.nullable(),
+  nextSchema: MultisigWallet.schema.currentSchema.nullable(),
   migrate(data) {
     const multisigWalletData = migrateSerializedData(data.data);
     if (multisigWalletData) {
-      return MigratableSerializedMultisigDemoWallet.schema.parse({
+      return MultisigWallet.schema.migratableSchema.parse({
         type: "multisig-demo" as const,
         data: multisigWalletData,
       });
@@ -94,7 +94,7 @@ export const MigratableSerializedTerraMultisigDemoWallet = migratable(
 
 export function migrateSerializedData(
   serializedData: SerializedTerraMultisigWalletData
-): z.input<typeof MigratableSerializedMultisigWalletData.schema> | null {
+): Migratable<typeof MultisigWallet>["data"] | null {
   const result = SerializedTerraMultisigWalletData.safeParse(serializedData);
   if (result.success) {
     const proxyAddress = result.data.proxyAddress;

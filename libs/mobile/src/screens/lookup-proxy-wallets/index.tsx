@@ -1,7 +1,7 @@
-import { SerializedMultisigWalletData } from "@obi-wallet/common";
 import {
   Key,
   KeyType,
+  MultisigWallet,
   ObservableMultisigKey,
   Serialized,
 } from "@obi-wallet/sdk";
@@ -53,7 +53,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
           invariant(newDeviceKey, "Device key is required");
           invariant(recoveredPhoneKey, "Phone key is required");
 
-          const serializedData: SerializedMultisigWalletData = {
+          const serializedData: Serialized<typeof MultisigWallet>["data"] = {
             chain: draft.value.chain,
             owner: {
               threshold: parseInt(serializedProxyWallet.owner.threshold, 10),

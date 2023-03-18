@@ -16,7 +16,7 @@ export interface SinglesigWalletItemProps extends AbstractAccountItemProps {
 export const SinglesigWalletItem = observer<SinglesigWalletItemProps>(
   function SinglesigWalletItem({ account, active, onSetActive }) {
     const wallet = useMultisigWallet();
-    const address = Sdk.chainId(wallet.chain).getAddressOfPublicKey({
+    const address = Sdk.chainId(wallet.chainId).getAddressOfPublicKey({
       publicKey: account.publicKey,
     });
     const usdBalance = useUsdBalance({ address });

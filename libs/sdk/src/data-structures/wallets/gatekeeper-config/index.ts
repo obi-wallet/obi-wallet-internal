@@ -126,10 +126,10 @@ export class ObservableGatekeeperConfig extends GatekeeperConfig {
     >(
       this,
       {
-        clone: true,
         _beneficiaries: observable,
         _flexAccounts: observable,
         toJSON: false,
+        clone: false,
         upsertBeneficiary: action,
         removeBeneficiaryByAddress: action,
         upsertFlexAccount: action,

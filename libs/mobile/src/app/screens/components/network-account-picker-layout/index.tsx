@@ -172,7 +172,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
       return account.meta.name || "Flex Account";
     } else if (account && account.type === "singlesig-wallet") {
       return Bech32Address.shortenAddress(
-        Sdk.chainId(wallet.chain).getAddressOfPublicKey({
+        Sdk.chainId(wallet.chainId).getAddressOfPublicKey({
           publicKey: account.publicKey,
         }),
         20

@@ -24,12 +24,12 @@ class ConcreteKeplr extends Keplr {
 
     invariant(currentWallet, "Expected `currentWallet` to be defined.");
 
-    if (isCosmosChain(currentWallet.chain)) {
+    if (isCosmosChain(currentWallet.chainId)) {
       const msg = new RequestObiCosmosSignAndBroadcastMsg({
         multisigKey: currentWallet.owner.toJSON(),
         demoMode: currentWallet.isDemo,
         encodeObjects: messages,
-        proxyAddress: currentWallet.proxyAddress.address,
+        proxyAddress: currentWallet.proxyAddress,
       });
       return await this.requester.sendMessage(BACKGROUND_PORT, msg);
     }

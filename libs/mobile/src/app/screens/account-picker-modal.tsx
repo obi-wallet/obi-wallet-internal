@@ -19,8 +19,6 @@ export interface AccountPickerModalProps {
   open(): void;
 
   close(): void;
-
-  showNotReadyWallets?: boolean;
 }
 
 export function useAccountPickerModalProps() {
@@ -37,12 +35,12 @@ export function useAccountPickerModalProps() {
 }
 
 export const AccountPickerModal = observer<AccountPickerModalProps>(
-  function AccountPickerModal({ visible, close, showNotReadyWallets }) {
+  function AccountPickerModal({ visible, close }) {
     const navigation = useRootNavigation();
     const { walletsStore, configStore } = useStore();
     const isObi = configStore.isObi();
     const theme = useTheme();
-    const onClose = useRef<() => Promise<void>>();
+    const onClose = useRef<() => void>();
 
     return (
       <Modal
@@ -50,7 +48,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
         onClose={close}
         onModalHide={async () => {
           if (typeof onClose.current === "function") {
-            await onClose.current();
+            onClose.current();
             onClose.current = undefined;
           }
         }}
@@ -81,10 +79,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
             </Text>
           </View>
           <ScrollView>
-            {(showNotReadyWallets
-              ? walletsStore.wallets
-              : walletsStore.readyWallets
-            ).map((wallet) => {
+            {walletsStore.wallets.map((wallet) => {
               return (
                 <TouchableOpacity
                   key={wallet.id}
@@ -98,8 +93,8 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                     paddingHorizontal: 10,
                   }}
                   onPress={() => {
-                    onClose.current = async () => {
-                      await walletsStore.setCurrentWallet(wallet.id);
+                    onClose.current = () => {
+                      walletsStore.setCurrentWallet(wallet.id);
                       navigation.dispatch(
                         CommonActions.reset({
                           index: 0,
@@ -133,8 +128,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                         fontWeight: "600",
                       }}
                     >
-                      {wallet.type}
-                      {wallet.isDemo ? " (Demo Mode)" : ""}
+                      Multisig {wallet.isDemo ? " (Demo Mode)" : ""}
                     </Text>
                   </View>
                   <IconButton
@@ -154,8 +148,8 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                           },
                           {
                             text: "Confirm",
-                            onPress: async () => {
-                              await walletsStore.removeWallet(wallet.id);
+                            onPress: () => {
+                              walletsStore.removeWallet(wallet.id);
                             },
                           },
                         ]

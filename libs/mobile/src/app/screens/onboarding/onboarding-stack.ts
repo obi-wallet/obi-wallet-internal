@@ -1,4 +1,4 @@
-import { MultisigWalletSerializedData } from "@obi-wallet/common";
+import { MultisigWallet, Serialized } from "@obi-wallet/sdk";
 
 export enum OnboardingRoute {
   Welcome = "Welcome",
@@ -17,7 +17,7 @@ export interface OnboardingStackParamList
   [OnboardingRoute.RecoverWallet]: {
     draftId: string;
     demoMode: boolean;
-    serializedData?: MultisigWalletSerializedData.SerializedMultisigWalletData;
+    serializedData?: Serialized<typeof MultisigWallet>["data"];
   };
   [OnboardingRoute.LookupProxyWallets]: {
     draftId: string;

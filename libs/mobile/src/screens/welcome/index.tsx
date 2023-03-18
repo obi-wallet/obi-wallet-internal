@@ -104,7 +104,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
   return (
     <>
       <WelcomeLayout title={renderTitle()} subTitle={renderSubTitle()}>
-        {walletsStore.readyWallets.length > 0 ? (
+        {walletsStore.wallets.length > 0 ? (
           <Button
             label={intl.formatMessage({
               id: "onboarding1.login",

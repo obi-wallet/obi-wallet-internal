@@ -1,5 +1,10 @@
-import { MultisigWalletSerializedData } from "@obi-wallet/common";
-import { Chain, KeyType, ObservableMultisigKey } from "@obi-wallet/sdk";
+import {
+  Chain,
+  KeyType,
+  MultisigWallet,
+  ObservableMultisigKey,
+  Serialized,
+} from "@obi-wallet/sdk";
 import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -40,7 +45,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
 
           try {
             const serializedData = await Chain.select<
-              Promise<MultisigWalletSerializedData.SerializedMultisigWalletData>
+              Promise<Serialized<typeof MultisigWallet>["data"]>
             >({
               chainId,
               onCosmosChain(chainId) {
@@ -60,9 +65,9 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             });
 
             if (params.demoMode) {
-              await walletsStore.addMultisigDemoWallet(serializedData);
+              walletsStore.addMultisigDemoWallet(serializedData);
             } else {
-              await walletsStore.addMultisigWallet(serializedData);
+              walletsStore.addMultisigWallet(serializedData);
             }
 
             navigation.dispatch(

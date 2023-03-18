@@ -249,7 +249,7 @@ export class WalletConnectStore {
         case "post": {
           try {
             invariant(
-              isTerraChain(wallet?.chain),
+              isTerraChain(wallet?.chainId),
               "Expected wallet to be terra multisig."
             );
 
@@ -267,7 +267,7 @@ export class WalletConnectStore {
             try {
               const response =
                 await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-                  chain: wallet.chain,
+                  chain: wallet.chainId,
                   messages: messages.map((msg) => msg.toAmino()),
                   demoMode: wallet.isDemo,
                   cancelable: true,

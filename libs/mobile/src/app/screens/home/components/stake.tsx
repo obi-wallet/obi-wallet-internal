@@ -349,7 +349,7 @@ const Balance = observer(function Balance() {
             alignItems: "center",
           }}
           onPress={async () => {
-            const chainId = wallet.chain;
+            const chainId = wallet.chainId;
             invariant(isTerraChain(chainId), "Expected Terra chain.");
 
             const sender = wallet.address;
@@ -369,7 +369,7 @@ const Balance = observer(function Balance() {
                 });
               });
               await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-                chain: wallet.chain as TerraChain,
+                chain: wallet.chainId as TerraChain,
                 messages: messages.map((message) => {
                   return message.toAmino();
                 }),
@@ -467,7 +467,7 @@ const Validators = observer(function Validators() {
           validator={selectedValidator}
           confirmLabel="Stake"
           onConfirm={async ({ amount, validator }) => {
-            const chainId = wallet.chain;
+            const chainId = wallet.chainId;
             invariant(isTerraChain(chainId), "Expected Terra chain.");
 
             try {
@@ -481,7 +481,7 @@ const Validators = observer(function Validators() {
               // TODO: also check if amount is greater than balance
               if (isNaN(amountToUse) || amountToUse <= 0) return;
               await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-                chain: wallet.chain as TerraChain,
+                chain: wallet.chainId as TerraChain,
                 messages: [
                   terra
                     .getStakeMessage({
@@ -727,7 +727,7 @@ const MyStake = observer(function MyStake() {
           validator={selectedValidator}
           confirmLabel="Unstake"
           onConfirm={async ({ amount, validator }) => {
-            const chainId = wallet.chain;
+            const chainId = wallet.chainId;
             invariant(isTerraChain(chainId), "Expected Terra chain.");
 
             try {
@@ -741,7 +741,7 @@ const MyStake = observer(function MyStake() {
               // TODO: also check if amount is greater than balance
               if (isNaN(amountToUse) || amountToUse <= 0) return;
               await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-                chain: wallet.chain as TerraChain,
+                chain: wallet.chainId as TerraChain,
                 messages: [
                   terra
                     .getUnstakeMessage({

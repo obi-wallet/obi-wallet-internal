@@ -95,7 +95,7 @@ export async function handleCosmos({
 
   await proposeUpdateOwner();
   await confirmUpdateOwner();
-  await wallet.setOwner(newOwner);
+  wallet.setOwner(newOwner);
 }
 
 function wrapRawMessage({

@@ -151,11 +151,11 @@ export class ObservableMultisigKey extends MultisigKey {
       ObservableMultisigKey,
       "_chain" | "_keys" | "_threshold" | "createKey"
     >(this, {
-      clone: true,
       _chain: observable,
       _keys: observable,
       _threshold: observable,
       toJSON: false,
+      clone: false,
       createKey: false,
       setThreshold: action,
       setKey: action,

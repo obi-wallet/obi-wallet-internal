@@ -161,12 +161,12 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
             label="Confirm Changes"
             onPress={async () => {
               setLoading(true);
-              const chainId = wallet.chain;
+              const chainId = wallet.chainId;
               try {
                 const codeIds = await queryClient.fetchQuery(
                   getCodeIdsQuery({
                     chainId,
-                    address: wallet.proxyAddress.address,
+                    address: wallet.proxyAddress,
                   })
                 );
 

@@ -99,92 +99,90 @@ export const GatekeeperConfigDraft = {
       }
       const draft = getDraft();
 
-      (async () => {
-        const accounts = [
-          ...wallet.gatekeeperConfig.flexAccounts,
-          ...wallet.gatekeeperConfig.beneficiaries,
-        ];
-        if (accounts.length > 0) return;
+      const accounts = [
+        ...wallet.gatekeeperConfig.flexAccounts,
+        ...wallet.gatekeeperConfig.beneficiaries,
+      ];
+      if (accounts.length > 0) return;
 
-        const { publicKey, privateKey } = generateSec256k1KeyPair();
-        const address = Sdk.chainId(wallet.chain).getAddressOfPublicKey({
-          publicKey,
-        });
+      const { publicKey, privateKey } = generateSec256k1KeyPair();
+      const address = Sdk.chainId(wallet.chainId).getAddressOfPublicKey({
+        publicKey,
+      });
 
-        draft.value.upsertBeneficiary({
-          type: "beneficiary",
-          meta: {
-            name: "Beneficiary Account",
-            icon: "",
-          },
-          address,
-          dormancyThreshold: {
+      draft.value.upsertBeneficiary({
+        type: "beneficiary",
+        meta: {
+          name: "Beneficiary Account",
+          icon: "",
+        },
+        address,
+        dormancyThreshold: {
+          years: 1,
+        },
+        dripSchedule: {
+          rate: 0.05,
+          period: {
             years: 1,
           },
-          dripSchedule: {
-            rate: 0.05,
-            period: {
-              years: 1,
-            },
+        },
+      });
+      draft.value.upsertFlexAccount({
+        type: "flex-account",
+        meta: {
+          name: "Strict Flex Account",
+          icon: "",
+        },
+        address,
+        publicKey,
+        privateKey: privateKey,
+        spendLimit: null,
+        autoSign: null,
+      });
+      draft.value.upsertFlexAccount({
+        type: "flex-account",
+        meta: {
+          name: "Limited Flex Account",
+          icon: "",
+        },
+        address,
+        publicKey,
+        privateKey: privateKey,
+        spendLimit: {
+          period: {
+            days: 1,
           },
-        });
-        draft.value.upsertFlexAccount({
-          type: "flex-account",
-          meta: {
-            name: "Strict Flex Account",
-            icon: "",
+          amount: 10,
+        },
+        autoSign: null,
+      });
+      draft.value.upsertFlexAccount({
+        type: "flex-account",
+        meta: {
+          name: "Unlocked Flex Account",
+          icon: "",
+        },
+        address,
+        publicKey,
+        privateKey: privateKey,
+        spendLimit: {
+          period: {
+            days: 1,
           },
-          address,
-          publicKey,
-          privateKey: privateKey,
-          spendLimit: null,
-          autoSign: null,
-        });
-        draft.value.upsertFlexAccount({
-          type: "flex-account",
-          meta: {
-            name: "Limited Flex Account",
-            icon: "",
-          },
-          address,
-          publicKey,
-          privateKey: privateKey,
-          spendLimit: {
-            period: {
-              days: 1,
-            },
-            amount: 10,
-          },
-          autoSign: null,
-        });
-        draft.value.upsertFlexAccount({
-          type: "flex-account",
-          meta: {
-            name: "Unlocked Flex Account",
-            icon: "",
-          },
-          address,
-          publicKey,
-          privateKey: privateKey,
-          spendLimit: {
-            period: {
-              days: 1,
-            },
-            amount: 10,
-          },
-          autoSign: {
-            endTime: DateTime.local().plus({ minutes: 30 }).toISO(),
-          },
-        });
+          amount: 10,
+        },
+        autoSign: {
+          endTime: DateTime.local().plus({ minutes: 30 }).toISO(),
+        },
+      });
 
-        draft.commit({ original: draft.value });
+      draft.commit({ original: draft.value });
 
-        await wallet.addSinglesigWallet({
-          type: "singlesig-wallet",
-          publicKey,
-          privateKey: privateKey,
-        });
-      })();
+      wallet.upsertSinglesigWallet({
+        type: "singlesig-wallet",
+        publicKey,
+        privateKey: privateKey,
+      });
     }, [draftsStore, wallet]);
 
     return <>{children}</>;
