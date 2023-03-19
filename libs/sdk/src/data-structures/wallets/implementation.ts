@@ -1,9 +1,10 @@
+import { WalletsInterface } from "./interface";
 import { WalletsSchema } from "./schema";
 import { AbstractDataStructure, Serialized } from "../abstract";
 import { AbstractSerialized } from "../migratable";
 import { MultisigWallet } from "../multisig-wallet";
 
-export class Wallets {
+export class Wallets implements WalletsInterface {
   public get schema() {
     return WalletsSchema;
   }
