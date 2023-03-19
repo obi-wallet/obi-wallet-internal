@@ -1,5 +1,5 @@
 import {
-  createObservableMultisigKey,
+  ObservableMultisigKey,
   Secp256k1PrivateKeySigner,
 } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -59,7 +59,7 @@ export const SignatureModal = observer<SignatureModalProps>(
         );
       }
     } else if (R.has("multisigKey", data)) {
-      const multisigKey = createObservableMultisigKey(
+      const multisigKey = ObservableMultisigKey.create(
         data.chain,
         data.multisigKey
       );

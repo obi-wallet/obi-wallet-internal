@@ -5,7 +5,7 @@ import { Chain } from "../../../../chains";
 import { Secp256k1PublicKey } from "../../../../keys";
 import { Migratable } from "../../../abstract";
 import { AbstractSerialized, migratable } from "../../../migratable";
-import { createMultisigKey, KeyType } from "../../../multisig-key";
+import { KeyType, MultisigKey } from "../../../multisig-key";
 import { MultisigWallet } from "../../../multisig-wallet";
 
 const SinglePublicKey = z.object({
@@ -215,7 +215,7 @@ function migrateSerializedData(
       currentAdmin,
     }: AbstractSerialized<typeof MigratableSerializedCosmosMultisigWalletData>
   ) {
-    const result = createMultisigKey(chain);
+    const result = MultisigKey.create(chain);
     if (currentAdmin?.biometrics) {
       result.setKey({
         type: KeyType.Device,
