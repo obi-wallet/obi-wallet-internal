@@ -32,7 +32,7 @@ export const MigratableSerializedData = migratable(
     wallets: z.array(MultisigWallet.schema.migratableSchema),
   }),
   migrate(data) {
-    const wallets: Serialized<typeof MultisigWallet>[] = [];
+    const wallets: Serialized<MultisigWallet>[] = [];
 
     data.wallets.forEach((wallet) => {
       if (handleType(MigratableSerializedTerraMultisigWallet.schema)) return;

@@ -54,7 +54,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
           invariant(newDeviceKey, "Device key is required");
           invariant(recoveredPhoneKey, "Phone key is required");
 
-          const serializedData: Serialized<typeof MultisigWallet>["data"] = {
+          const serializedData: Serialized<MultisigWallet>["data"] = {
             chain: draft.value.chain,
             owner: {
               threshold: parseInt(serializedProxyWallet.owner.threshold, 10),

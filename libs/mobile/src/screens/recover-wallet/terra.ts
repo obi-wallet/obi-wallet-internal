@@ -18,7 +18,7 @@ export async function handleTerra({
   demoMode,
 }: {
   draft: Draft<MultisigKey>;
-  serializedData: Serialized<typeof MultisigWallet>["data"];
+  serializedData: Serialized<MultisigWallet>["data"];
   codeIds: CodeIds;
   demoMode: boolean;
 }) {

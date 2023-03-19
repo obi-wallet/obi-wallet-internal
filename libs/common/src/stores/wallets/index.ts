@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import {
-  createObservableMultisigWallet,
   MultisigWallet,
+  ObservableMultisigWallet,
   Serialized,
 } from "@obi-wallet/sdk";
 import {
@@ -116,10 +116,8 @@ export class WalletsStore {
   }
 
   @action
-  protected addWallet = (
-    serializedWallet: Serialized<typeof MultisigWallet>
-  ) => {
-    const wallet = createObservableMultisigWallet(serializedWallet);
+  protected addWallet = (serializedWallet: Serialized<MultisigWallet>) => {
+    const wallet = ObservableMultisigWallet.create(serializedWallet);
     const id = wallet.id;
     this._wallets.add({ id, entity: wallet });
     this.currentWalletId = id;
@@ -127,9 +125,7 @@ export class WalletsStore {
   };
 
   @action
-  public addMultisigWallet(
-    serializedData: Serialized<typeof MultisigWallet>["data"]
-  ) {
+  public addMultisigWallet(serializedData: Serialized<MultisigWallet>["data"]) {
     return this.addWallet({
       type: "multisig",
       data: serializedData,
@@ -138,7 +134,7 @@ export class WalletsStore {
 
   @action
   public addMultisigDemoWallet(
-    serializedData: Serialized<typeof MultisigWallet>["data"]
+    serializedData: Serialized<MultisigWallet>["data"]
   ) {
     return this.addWallet({
       type: "multisig-demo",

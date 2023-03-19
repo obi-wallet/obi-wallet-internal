@@ -94,7 +94,7 @@ export const MigratableSerializedTerraMultisigDemoWallet = migratable(
 
 export function migrateSerializedData(
   serializedData: SerializedTerraMultisigWalletData
-): Migratable<typeof MultisigWallet>["data"] | null {
+): Migratable<MultisigWallet>["data"] | null {
   const result = SerializedTerraMultisigWalletData.safeParse(serializedData);
   if (result.success) {
     const proxyAddress = result.data.proxyAddress;
