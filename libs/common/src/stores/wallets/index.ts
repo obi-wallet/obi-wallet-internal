@@ -1,8 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import {
   createObservableMultisigWallet,
-  MultisigKey,
-  MultisigWallet as MultisigWalletSdk,
+  MultisigWallet,
   Serialized,
 } from "@obi-wallet/sdk";
 import {
@@ -35,9 +34,6 @@ export enum WalletState {
   READY = "READY",
 }
 
-export type MultisigWallet = MultisigWalletSdk<MultisigKey>;
-export type Wallet = MultisigWalletSdk<MultisigKey>;
-
 export type WalletMeta = {
   walletId: string;
   currentAccount: {
@@ -60,7 +56,7 @@ export class WalletsStore {
   protected readonly kvStore: KVStore;
 
   @observable
-  protected _wallets: Entities<Wallet>;
+  protected _wallets: Entities<MultisigWallet>;
   @observable
   protected currentWalletId: string | null = null;
   @observable
@@ -121,7 +117,7 @@ export class WalletsStore {
 
   @action
   protected addWallet = (
-    serializedWallet: Serialized<typeof MultisigWalletSdk>
+    serializedWallet: Serialized<typeof MultisigWallet>
   ) => {
     const wallet = createObservableMultisigWallet(serializedWallet);
     const id = wallet.id;
@@ -132,7 +128,7 @@ export class WalletsStore {
 
   @action
   public addMultisigWallet(
-    serializedData: Serialized<typeof MultisigWalletSdk>["data"]
+    serializedData: Serialized<typeof MultisigWallet>["data"]
   ) {
     return this.addWallet({
       type: "multisig",
@@ -142,7 +138,7 @@ export class WalletsStore {
 
   @action
   public addMultisigDemoWallet(
-    serializedData: Serialized<typeof MultisigWalletSdk>["data"]
+    serializedData: Serialized<typeof MultisigWallet>["data"]
   ) {
     return this.addWallet({
       type: "multisig-demo",
@@ -237,8 +233,7 @@ export class WalletsStore {
       );
 
       const validWallets = wallets.filter((wallet) => {
-        const result =
-          MultisigWalletSdk.schema.migratableSchema.safeParse(wallet);
+        const result = MultisigWallet.schema.migratableSchema.safeParse(wallet);
         return result.success;
       });
 

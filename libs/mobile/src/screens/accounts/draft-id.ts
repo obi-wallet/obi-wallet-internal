@@ -1,5 +1,5 @@
-import { Wallet } from "@obi-wallet/common";
+import { MultisigWallet } from "@obi-wallet/sdk";
 
-export function getGatekeeperConfigDraftId(wallet: Wallet): string {
+export function getGatekeeperConfigDraftId(wallet: MultisigWallet): string {
   return `gatekeeper-config/${wallet.id}`;
 }

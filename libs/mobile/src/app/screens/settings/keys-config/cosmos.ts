@@ -5,10 +5,9 @@ import {
 import {
   cosmos,
   Draft,
-  MultisigWallet,
   RequestObiCosmosSignAndBroadcastMsg,
 } from "@obi-wallet/common";
-import { CosmosChain, MultisigKey, Sdk } from "@obi-wallet/sdk";
+import { CosmosChain, MultisigKey, MultisigWallet, Sdk } from "@obi-wallet/sdk";
 import {
   MsgExecuteContract,
   MsgUpdateAdmin,

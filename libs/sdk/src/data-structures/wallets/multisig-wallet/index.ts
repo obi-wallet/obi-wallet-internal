@@ -28,14 +28,14 @@ import {
 
 export { SinglesigWallet };
 
-export class MultisigWallet<M extends MultisigKey = MultisigKey> {
+export class MultisigWallet {
   public static get schema() {
     return MultisigWalletSchema;
   }
 
   public constructor(
     protected _chainId: Chain,
-    protected _owner: M,
+    protected _owner: MultisigKey,
     protected _proxyAddress: string,
     protected _gatekeeperConfig: GatekeeperConfig,
     protected _singlesigWallets: AbstractSerialized<typeof SinglesigWallet>[],
@@ -167,7 +167,7 @@ export class MultisigWallet<M extends MultisigKey = MultisigKey> {
     return this._owner;
   }
 
-  public setOwner(owner: M) {
+  public setOwner(owner: MultisigKey) {
     this._owner = owner;
   }
 
@@ -205,19 +205,16 @@ export class MultisigWallet<M extends MultisigKey = MultisigKey> {
   }
 }
 
-export function createMultisigWallet<M extends MultisigKey = MultisigKey>(
+export function createMultisigWallet(
   serialized: AbstractSerialized<typeof MultisigWalletSchema>,
   factories = {
     createMultisigKey,
     createGatekeeperConfig,
   }
 ) {
-  return new MultisigWallet<M>(
+  return new MultisigWallet(
     serialized.data.chain,
-    factories.createMultisigKey(
-      serialized.data.chain,
-      serialized.data.owner
-    ) as M,
+    factories.createMultisigKey(serialized.data.chain, serialized.data.owner),
     serialized.data.proxyAddress.address,
     factories.createGatekeeperConfig(serialized.data.gatekeeperConfig),
     serialized.data.singlesigWallets,
@@ -229,7 +226,7 @@ export function createMultisigWallet<M extends MultisigKey = MultisigKey>(
 export function createObservableMultisigWallet(
   serialized: AbstractSerialized<typeof MultisigWalletSchema>
 ) {
-  const wallet = createMultisigWallet<MultisigKey>(serialized, {
+  const wallet = createMultisigWallet(serialized, {
     createMultisigKey: createObservableMultisigKey,
     createGatekeeperConfig: createObservableGatekeeperConfig,
   });

@@ -1,6 +1,8 @@
-import { Chain, withCosmosCosmWasmClient } from "@obi-wallet/sdk";
-
-import { MultisigWallet } from "../stores";
+import {
+  Chain,
+  MultisigWallet,
+  withCosmosCosmWasmClient,
+} from "@obi-wallet/sdk";
 
 export type HealthCheck = (wallet: MultisigWallet) => Promise<boolean>;
 
