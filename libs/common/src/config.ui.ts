@@ -3,10 +3,10 @@ import { RegisterOption } from "@keplr-wallet/hooks";
 import { FiatCurrency } from "@keplr-wallet/types";
 
 import {
-  ETHEREUM_ENDPOINT,
   ADDITIONAL_INTL_MESSAGES,
   ADDITIONAL_SIGN_IN_PREPEND,
   AMPLITUDE_API_KEY,
+  ETHEREUM_ENDPOINT,
 } from "./config.ui.var";
 import { IntlMessages, TypeLanguageToFiatCurrency } from "./languages";
 

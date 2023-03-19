@@ -1,8 +1,13 @@
 import { Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
-import { TextProps, TextStyle, ViewStyle } from "react-native";
-import { Animated, Easing } from "react-native";
+import {
+  Animated,
+  Easing,
+  TextProps,
+  TextStyle,
+  ViewStyle,
+} from "react-native";
 
 export interface AnimatedTextProps extends Omit<TextProps, "style"> {
   text: string;

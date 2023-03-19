@@ -1,6 +1,6 @@
 import { SimplePublicKey } from "@terra-money/feather.js";
 
-import { AccountValidationResult, Sdk, generateSec256k1KeyPair } from "../src";
+import { AccountValidationResult, generateSec256k1KeyPair, Sdk } from "../src";
 
 describe("validateAccount", () => {
   const demoPublicKey = SimplePublicKey.fromAmino({

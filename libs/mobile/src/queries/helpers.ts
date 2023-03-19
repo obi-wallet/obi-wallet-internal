@@ -1,7 +1,7 @@
 import {
+  QueryKey,
   useQuery as useOriginalQuery,
   UseQueryOptions,
-  QueryKey,
 } from "@tanstack/react-query";
 import { UseQueryResult } from "@tanstack/react-query/src/types";
 import { Duration, DurationLikeObject } from "luxon";

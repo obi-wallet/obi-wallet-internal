@@ -1,7 +1,6 @@
 import { mockAction, MultisigDraft } from "../../src/fixture-helpers";
 import { KeyFlow } from "../../src/screens/keys";
-import { EmailKeyProps } from "../../src/screens/keys/email";
-import { EmailKey } from "../../src/screens/keys/email";
+import { EmailKey, EmailKeyProps } from "../../src/screens/keys/email";
 
 function renderFlavor(flow: EmailKeyProps["flow"]) {
   return (
