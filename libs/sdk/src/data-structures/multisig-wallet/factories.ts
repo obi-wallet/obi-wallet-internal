@@ -3,11 +3,11 @@ import { action, makeObservable, observable } from "mobx";
 import { MultisigWallet } from "./implementation";
 import { MultisigWalletInterface } from "./interface";
 import { MultisigWalletSchema } from "./schema";
-import { AbstractMigratable } from "../../migratable";
 import {
   createGatekeeperConfig,
   createObservableGatekeeperConfig,
 } from "../gatekeeper-config";
+import { AbstractMigratable } from "../migratable";
 import {
   createMultisigKey,
   createObservableMultisigKey,

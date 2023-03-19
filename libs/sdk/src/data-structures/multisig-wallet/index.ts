@@ -4,7 +4,7 @@ import {
 } from "./factories";
 import { MultisigWalletInterface } from "./interface";
 import { MultisigWalletSchema, SinglesigWallet } from "./schema";
-import { AbstractDataStructure } from "../../abstract";
+import { AbstractDataStructure } from "../abstract";
 
 export { SinglesigWallet };
 

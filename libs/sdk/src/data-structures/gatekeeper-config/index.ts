@@ -8,7 +8,7 @@ import {
   AbstractMigratable,
   AbstractSerialized,
   migratable,
-} from "../../migratable";
+} from "../migratable";
 
 export { Beneficiary, FlexAccount };
 

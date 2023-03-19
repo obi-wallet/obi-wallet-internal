@@ -9,9 +9,9 @@ import {
   cosmosChains,
   TerraChain,
   terraChains,
-} from "../../../chains";
-import { AbstractSerialized } from "../../migratable";
+} from "../../chains";
 import { FlexAccount, GatekeeperConfig } from "../gatekeeper-config";
+import { AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
 
 // eslint-disable-next-line import/no-default-export

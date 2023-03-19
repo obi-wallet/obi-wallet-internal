@@ -10,15 +10,15 @@ import {
   KeySubclassTypeMapping,
   KeyType,
 } from "./keys";
-import { Chain } from "../../../chains";
-import { MultisigPublicKey } from "../../../keys";
-import { Sdk } from "../../../sdk";
-import { Serialized } from "../../abstract";
+import { Chain } from "../../chains";
+import { MultisigPublicKey } from "../../keys";
+import { Sdk } from "../../sdk";
+import { Serialized } from "../abstract";
 import {
   AbstractMigratable,
   AbstractSerialized,
   migratable,
-} from "../../migratable";
+} from "../migratable";
 
 export * from "./keys";
 

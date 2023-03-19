@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-import { Secp256k1PublicKey } from "../../../keys";
-import { ArrayIndex } from "../../array-index";
-import { migratable } from "../../migratable";
+import { Secp256k1PublicKey } from "../../keys";
+import { ArrayIndex } from "../array-index";
 import { createGatekeeperConfig, GatekeeperConfig } from "../gatekeeper-config";
+import { migratable } from "../migratable";
 import { MultisigKey } from "../multisig-key";
 
 export const ProxyAddress = migratable(

@@ -12,10 +12,10 @@ import {
   cosmosChains,
   TerraChain,
   terraChains,
-} from "../../../chains";
-import { Sdk } from "../../../sdk";
-import { AbstractSerialized } from "../../migratable";
+} from "../../chains";
+import { Sdk } from "../../sdk";
 import { GatekeeperConfig } from "../gatekeeper-config";
+import { AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
 
 export class MultisigWallet implements MultisigWalletInterface {

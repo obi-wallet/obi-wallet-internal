@@ -3,6 +3,7 @@ import {
   MultisigWallet,
   ObservableMultisigWallet,
   Serialized,
+  WalletsSchema,
 } from "@obi-wallet/sdk";
 import {
   action,
@@ -17,7 +18,6 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import { MigratableSerializedData, SerializedData } from "./serialized-data";
 import { ChainStore } from "../chain";
 import { ConfigStore } from "../config";
 import { Entities } from "../entities";
@@ -170,7 +170,7 @@ export class WalletsStore {
       const serializedData = await this.getSerializedData();
 
       const { currentWalletIndex, wallets } =
-        MigratableSerializedData.schema.parse(serializedData);
+        WalletsSchema.migratableSchema.parse(serializedData);
 
       wallets.forEach(this.addWallet);
 
@@ -183,11 +183,11 @@ export class WalletsStore {
       });
 
       autorun(async () => {
-        const serializedData: SerializedData = {
+        const serializedData = {
           currentWalletIndex: this.currentWalletIndex,
           wallets: this._wallets.entities.map((wallet) => wallet.toJSON()),
         };
-        const data = toJS(serializedData);
+        const data = WalletsSchema.currentSchema.parse(toJS(serializedData));
         await this.kvStore.set("wallets", data);
       });
     } catch (e) {
@@ -198,7 +198,7 @@ export class WalletsStore {
   }
 
   public async getSerializedData(): Promise<
-    z.input<typeof MigratableSerializedData.schema>
+    z.input<typeof WalletsSchema.migratableSchema>
   > {
     const data = await this.kvStore.get("wallets");
     if (!data) {
@@ -209,7 +209,7 @@ export class WalletsStore {
     }
 
     try {
-      return MigratableSerializedData.schema.parse(data);
+      return WalletsSchema.migratableSchema.parse(data);
     } catch (e) {
       invariant(
         R.has("currentWalletIndex", data),

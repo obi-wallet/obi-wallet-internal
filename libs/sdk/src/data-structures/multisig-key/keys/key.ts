@@ -8,12 +8,12 @@ import { KeyType } from "./key-type";
 import { NfcKey } from "./nfc";
 import { PhoneKey } from "./phone";
 import { SocialKey } from "./social";
-import { Secp256k1PublicKey } from "../../../../keys";
+import { Secp256k1PublicKey } from "../../../keys";
 import {
   AbstractMigratable,
   AbstractSerialized,
   migratable,
-} from "../../../migratable";
+} from "../../migratable";
 
 const UsableKeySchema = migratable(
   z.union([DeviceKey, PhoneKey, SocialKey, NfcKey, CloudKey, EmailKey])

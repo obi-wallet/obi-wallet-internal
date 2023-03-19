@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { Secp256k1PublicKey } from "../../../../../keys";
+import { Secp256k1PublicKey } from "../../../../keys";
 import { KeyType } from "../key-type";
 
 export const PhoneKey = z.object({

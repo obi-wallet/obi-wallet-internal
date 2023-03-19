@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 import { AccountMetaData } from "./account-meta-data";
-import { Secp256k1PublicKey } from "../../../keys";
-import { Duration } from "../../duration";
-import { migratable } from "../../migratable";
+import { Secp256k1PublicKey } from "../../keys";
+import { Duration } from "../duration";
+import { migratable } from "../migratable";
 
 export const SpendLimit = z.object({
   amount: z.number(),

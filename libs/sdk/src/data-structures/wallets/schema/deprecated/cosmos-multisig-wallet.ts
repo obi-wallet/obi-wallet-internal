@@ -1,26 +1,19 @@
 import { pubkeyType } from "@cosmjs/amino";
-import {
-  Chain,
-  createMultisigKey,
-  KeyType,
-  Migratable,
-  MultisigWallet,
-} from "@obi-wallet/sdk";
 import { z } from "zod";
 
-import { migratable } from "../../helpers";
+import { Chain } from "../../../../chains";
+import { Secp256k1PublicKey } from "../../../../keys";
+import { Migratable } from "../../../abstract";
+import { AbstractSerialized, migratable } from "../../../migratable";
+import { createMultisigKey, KeyType } from "../../../multisig-key";
+import { MultisigWallet } from "../../../multisig-wallet";
 
-export const SinglePublicKey = z.object({
+const SinglePublicKey = z.object({
   type: z.string(),
   value: z.string(),
 });
 
-export const Secp256k1PublicKey = z.object({
-  type: z.literal(pubkeyType.secp256k1),
-  value: z.string(),
-});
-
-export const MigratableSerializedBiometricsPayload = migratable(
+const MigratableSerializedBiometricsPayload = migratable(
   z.object({
     publicKey: z.string(),
   })
@@ -38,7 +31,7 @@ export const MigratableSerializedBiometricsPayload = migratable(
   },
 });
 
-export const MigratableSerializedPhoneNumberPayload = migratable(
+const MigratableSerializedPhoneNumberPayload = migratable(
   z.object({
     publicKey: z.string(),
     phoneNumber: z.string(),
@@ -61,20 +54,24 @@ export const MigratableSerializedPhoneNumberPayload = migratable(
   },
 });
 
-export const SerializedSocialPayload = z.object({
+const SerializedSocialPayload = z.object({
   publicKey: SinglePublicKey,
 });
 
-export const MigratableSerializedMultisigPayload = migratable(
+const MigratableSerializedMultisigPayload = migratable(
   z.object({
-    biometrics: MigratableSerializedBiometricsPayload.schema.nullable(),
-    phoneNumber: MigratableSerializedPhoneNumberPayload.schema.nullable(),
+    biometrics:
+      MigratableSerializedBiometricsPayload.migratableSchema.nullable(),
+    phoneNumber:
+      MigratableSerializedPhoneNumberPayload.migratableSchema.nullable(),
     cloud: z.null(),
   })
 ).addMigration({
   nextSchema: z.object({
-    biometrics: MigratableSerializedBiometricsPayload.schema.nullable(),
-    phoneNumber: MigratableSerializedPhoneNumberPayload.schema.nullable(),
+    biometrics:
+      MigratableSerializedBiometricsPayload.migratableSchema.nullable(),
+    phoneNumber:
+      MigratableSerializedPhoneNumberPayload.migratableSchema.nullable(),
     cloud: z.null(),
     social: SerializedSocialPayload.nullable(),
   }),
@@ -86,9 +83,7 @@ export const MigratableSerializedMultisigPayload = migratable(
   },
 });
 
-export const MigratableSerializedProxyAddress = migratable(
-  z.string()
-).addMigration({
+const MigratableSerializedProxyAddress = migratable(z.string()).addMigration({
   nextSchema: z.object({
     address: z.string(),
     codeId: z.number(),
@@ -101,23 +96,25 @@ export const MigratableSerializedProxyAddress = migratable(
   },
 });
 
-export const SerializedProxyAddressPerChain = z
+const SerializedProxyAddressPerChain = z
   .object({
-    "uni-3": MigratableSerializedProxyAddress.schema.nullable(),
-    "juno-1": MigratableSerializedProxyAddress.schema.nullable(),
+    "uni-3": MigratableSerializedProxyAddress.migratableSchema.nullable(),
+    "juno-1": MigratableSerializedProxyAddress.migratableSchema.nullable(),
   })
   .partial();
 
-export const MigratableSerializedCosmosMultisigWalletData = migratable(
+const MigratableSerializedCosmosMultisigWalletData = migratable(
   z.object({
-    nextAdmin: MigratableSerializedMultisigPayload.schema,
-    currentAdmin: MigratableSerializedMultisigPayload.schema.nullable(),
-    proxyAddress: MigratableSerializedProxyAddress.schema.nullable(),
+    nextAdmin: MigratableSerializedMultisigPayload.migratableSchema,
+    currentAdmin:
+      MigratableSerializedMultisigPayload.migratableSchema.nullable(),
+    proxyAddress: MigratableSerializedProxyAddress.migratableSchema.nullable(),
   })
 ).addMigration({
   nextSchema: z.object({
-    nextAdmin: MigratableSerializedMultisigPayload.schema,
-    currentAdmin: MigratableSerializedMultisigPayload.schema.nullable(),
+    nextAdmin: MigratableSerializedMultisigPayload.migratableSchema,
+    currentAdmin:
+      MigratableSerializedMultisigPayload.migratableSchema.nullable(),
     proxyAddresses: SerializedProxyAddressPerChain,
   }),
   migrate(data) {
@@ -130,11 +127,7 @@ export const MigratableSerializedCosmosMultisigWalletData = migratable(
   },
 });
 
-export type SerializedCosmosMultisigWalletData = z.infer<
-  typeof MigratableSerializedCosmosMultisigWalletData.schema
->;
-
-export const MigratableSerializedCosmosMultisigWalletType = migratable(
+const MigratableSerializedCosmosMultisigWalletType = migratable(
   z.literal("multisig")
 ).addMigration({
   nextSchema: z.literal("cosmos-multisig"),
@@ -143,10 +136,10 @@ export const MigratableSerializedCosmosMultisigWalletType = migratable(
   },
 });
 
-export const MigratableSerializedCosmosMultisigWallet = migratable(
+const MigratableSerializedCosmosMultisigWallet = migratable(
   z.object({
-    type: MigratableSerializedCosmosMultisigWalletType.schema,
-    data: MigratableSerializedCosmosMultisigWalletData.schema,
+    type: MigratableSerializedCosmosMultisigWalletType.migratableSchema,
+    data: MigratableSerializedCosmosMultisigWalletData.migratableSchema,
   })
 ).addMigration({
   nextSchema: MultisigWallet.schema.currentSchema.nullable(),
@@ -162,7 +155,7 @@ export const MigratableSerializedCosmosMultisigWallet = migratable(
   },
 });
 
-export const MigratableSerializedCosmosMultisigDemoWalletType = migratable(
+const MigratableSerializedCosmosMultisigDemoWalletType = migratable(
   z.literal("multisig-demo")
 ).addMigration({
   nextSchema: z.literal("cosmos-multisig-demo"),
@@ -171,10 +164,10 @@ export const MigratableSerializedCosmosMultisigDemoWalletType = migratable(
   },
 });
 
-export const MigratableSerializedCosmosMultisigDemoWallet = migratable(
+const MigratableSerializedCosmosMultisigDemoWallet = migratable(
   z.object({
-    type: MigratableSerializedCosmosMultisigDemoWalletType.schema,
-    data: MigratableSerializedCosmosMultisigWalletData.schema,
+    type: MigratableSerializedCosmosMultisigDemoWalletType.migratableSchema,
+    data: MigratableSerializedCosmosMultisigWalletData.migratableSchema,
   })
 ).addMigration({
   nextSchema: MultisigWallet.schema.currentSchema.nullable(),
@@ -190,8 +183,15 @@ export const MigratableSerializedCosmosMultisigDemoWallet = migratable(
   },
 });
 
-export function migrateSerializedData(
-  serializedData: SerializedCosmosMultisigWalletData
+export const DeprecatedCosmosMultisigWallet =
+  MigratableSerializedCosmosMultisigWallet;
+export const DeprecatedCosmosMultisigDemoWallet =
+  MigratableSerializedCosmosMultisigDemoWallet;
+
+function migrateSerializedData(
+  serializedData: AbstractSerialized<
+    typeof MigratableSerializedCosmosMultisigWalletData
+  >
 ): Migratable<MultisigWallet>["data"] | null {
   const proxyAddresses = serializedData.proxyAddresses;
   const mainnetProxyAddress = proxyAddresses["juno-1"];
@@ -211,7 +211,9 @@ export function migrateSerializedData(
 
   function migrateMultisigKey(
     chain: Chain,
-    { currentAdmin }: SerializedCosmosMultisigWalletData
+    {
+      currentAdmin,
+    }: AbstractSerialized<typeof MigratableSerializedCosmosMultisigWalletData>
   ) {
     const result = createMultisigKey(chain);
     if (currentAdmin?.biometrics) {

@@ -1,60 +1,50 @@
-import {
-  createMultisigKey,
-  KeyType,
-  Migratable,
-  MultisigWallet,
-} from "@obi-wallet/sdk";
 import { z } from "zod";
 
-import { migratable } from "../../helpers";
+import { Secp256k1PublicKey } from "../../../../keys";
+import { Migratable } from "../../../abstract";
+import { migratable } from "../../../migratable";
+import { createMultisigKey, KeyType } from "../../../multisig-key";
+import { MultisigWallet } from "../../../multisig-wallet";
 
-export const Secp256k1PublicKey = z.object({
-  type: z.literal("tendermint/PubKeySecp256k1"),
-  value: z.string(),
-});
-export const SerializedBiometricsPayload = z.object({
+const SerializedBiometricsPayload = z.object({
   publicKey: Secp256k1PublicKey,
 });
 
-export const SerializedPhoneNumberPayload = z.object({
+const SerializedPhoneNumberPayload = z.object({
   publicKey: Secp256k1PublicKey,
   phoneNumber: z.string(),
   securityQuestion: z.string(),
 });
 
-export const SerializedSocialPayload = z.object({
+const SerializedSocialPayload = z.object({
   publicKey: Secp256k1PublicKey,
 });
 
-export const SerializedMultisigPayload = z.object({
+const SerializedMultisigPayload = z.object({
   biometrics: SerializedBiometricsPayload.nullable(),
   phoneNumber: SerializedPhoneNumberPayload.nullable(),
   social: SerializedSocialPayload.nullable(),
 });
 
-export const SerializedProxyAddress = z.object({
+const SerializedProxyAddress = z.object({
   address: z.string(),
   codeId: z.number().int().positive(),
 });
-export type SerializedProxyAddress = z.infer<typeof SerializedProxyAddress>;
 
-export const TerraChain = z.union([
-  z.literal("pisco-1"),
-  z.literal("phoenix-1"),
-]);
+const TerraChain = z.union([z.literal("pisco-1"), z.literal("phoenix-1")]);
 
-export const SerializedTerraMultisigWalletData = z.object({
+const SerializedTerraMultisigWalletData = z.object({
   chain: TerraChain,
   nextAdmin: SerializedMultisigPayload,
   currentAdmin: SerializedMultisigPayload.nullable(),
   proxyAddress: SerializedProxyAddress.nullable(),
 });
 
-export type SerializedTerraMultisigWalletData = z.TypeOf<
+type SerializedTerraMultisigWalletData = z.TypeOf<
   typeof SerializedTerraMultisigWalletData
 >;
 
-export const MigratableSerializedTerraMultisigWallet = migratable(
+const MigratableSerializedTerraMultisigWallet = migratable(
   z.object({
     type: z.literal("terra-multisig"),
     data: SerializedTerraMultisigWalletData,
@@ -73,7 +63,7 @@ export const MigratableSerializedTerraMultisigWallet = migratable(
   },
 });
 
-export const MigratableSerializedTerraMultisigDemoWallet = migratable(
+const MigratableSerializedTerraMultisigDemoWallet = migratable(
   z.object({
     type: z.literal("terra-multisig-demo"),
     data: SerializedTerraMultisigWalletData,
@@ -92,7 +82,12 @@ export const MigratableSerializedTerraMultisigDemoWallet = migratable(
   },
 });
 
-export function migrateSerializedData(
+export const DeprecatedTerraMultisigWallet =
+  MigratableSerializedTerraMultisigWallet;
+export const DeprecatedTerraMultisigDemoWallet =
+  MigratableSerializedTerraMultisigDemoWallet;
+
+function migrateSerializedData(
   serializedData: SerializedTerraMultisigWalletData
 ): Migratable<MultisigWallet>["data"] | null {
   const result = SerializedTerraMultisigWalletData.safeParse(serializedData);
