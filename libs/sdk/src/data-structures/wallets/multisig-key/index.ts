@@ -1,19 +1,23 @@
-import { action, makeObservable, observable, toJS } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 import * as R from "ramda";
 import { z } from "zod";
 
 import {
-  AbstractKey,
+  createKey,
+  createObservableKey,
   Key,
   KeyAbstractSerializedMapping,
   KeySubclassTypeMapping,
   KeyType,
-  ObservableKey,
 } from "./keys";
 import { Chain } from "../../../chains";
 import { MultisigPublicKey } from "../../../keys";
 import { Sdk } from "../../../sdk";
-import { AbstractMigratable, AbstractSerialized } from "../../abstract";
+import {
+  AbstractMigratable,
+  AbstractSerialized,
+  Serialized,
+} from "../../abstract";
 import { migratable } from "../../migratable";
 
 export * from "./keys";
@@ -32,8 +36,15 @@ export class MultisigKey {
 
   public constructor(
     protected _chain: Chain,
-    protected _keys: AbstractKey[],
-    protected _threshold: number
+    protected _keys: Key[],
+    protected _threshold: number,
+    protected _factories: {
+      createKey: (serialized: Serialized<typeof Key>) => Key;
+      createMultisigKey: (
+        chain: Chain,
+        serialized: AbstractSerialized<typeof MultisigKeySchema>
+      ) => MultisigKey;
+    }
   ) {}
 
   public toJSON(): AbstractSerialized<typeof MultisigKeySchema> {
@@ -48,36 +59,7 @@ export class MultisigKey {
   }
 
   public clone() {
-    return MultisigKey.deserialize(this.chain, this.toJSON()) as this;
-  }
-
-  public static empty(chain: Chain): MultisigKey {
-    return new MultisigKey(...this.emptyConstructorParameters(chain));
-  }
-
-  protected static emptyConstructorParameters(
-    chain: Chain
-  ): ConstructorParameters<typeof MultisigKey> {
-    return [chain, [], 1];
-  }
-
-  public static deserialize(
-    chain: Chain,
-    serialized: AbstractMigratable<typeof MultisigKeySchema>
-  ): MultisigKey {
-    return new MultisigKey(
-      ...this.deserializeConstructorParameters(chain, serialized, Key)
-    );
-  }
-
-  protected static deserializeConstructorParameters(
-    chain: Chain,
-    serialized: AbstractMigratable<typeof MultisigKeySchema>,
-    KeyClass: typeof Key
-  ): ConstructorParameters<typeof MultisigKey> {
-    const { keys, threshold } =
-      MultisigKeySchema.migratableSchema.parse(serialized);
-    return [chain, keys.map(KeyClass.deserialize.bind(KeyClass)), threshold];
+    return this._factories.createMultisigKey(this.chain, this.toJSON());
   }
 
   public get chain() {
@@ -134,55 +116,58 @@ export class MultisigKey {
 
   public setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
     this._keys = this._keys.filter((k) => key.type !== k.type);
-    this._keys.push(this.createKey(key));
+    this._keys.push(this._factories.createKey(key));
   }
 
   public removeKeyOfType<T extends KeyType>(type: T) {
     this._keys = this._keys.filter((key) => key.type !== type);
   }
-
-  protected createKey = Key.deserialize.bind(Key);
 }
 
-export class ObservableMultisigKey extends MultisigKey {
-  public constructor(...args: ConstructorParameters<typeof MultisigKey>) {
-    super(...args);
-    makeObservable<
-      ObservableMultisigKey,
-      "_chain" | "_keys" | "_threshold" | "createKey"
-    >(this, {
+export function createMultisigKey(
+  chain: Chain,
+  serialized: AbstractMigratable<typeof MultisigKeySchema> = {
+    keys: [],
+    threshold: 1,
+  },
+  factories = {
+    createKey,
+    createMultisigKey,
+  }
+) {
+  const { keys, threshold } =
+    MultisigKeySchema.migratableSchema.parse(serialized);
+  return new MultisigKey(
+    chain,
+    keys.map((key) => factories.createKey(key)),
+    threshold,
+    factories
+  );
+}
+
+export function createObservableMultisigKey(
+  chain: Chain,
+  serialized?: AbstractMigratable<typeof MultisigKeySchema>
+) {
+  const key = createMultisigKey(chain, serialized, {
+    createKey: createObservableKey,
+    createMultisigKey: createObservableMultisigKey,
+  });
+  makeObservable<MultisigKey, "_chain" | "_keys" | "_threshold">(
+    key,
+    {
       _chain: observable,
       _keys: observable,
       _threshold: observable,
       toJSON: false,
       clone: false,
-      createKey: false,
       setThreshold: action,
       setKey: action,
       removeKeyOfType: action,
-    });
-  }
-
-  public toJSON() {
-    return toJS(super.toJSON());
-  }
-
-  public clone() {
-    return ObservableMultisigKey.deserialize(this.chain, this.toJSON()) as this;
-  }
-
-  public static empty(chain: Chain): ObservableMultisigKey {
-    return new ObservableMultisigKey(...this.emptyConstructorParameters(chain));
-  }
-
-  public static deserialize(
-    chain: Chain,
-    serialized: AbstractMigratable<typeof MultisigKeySchema>
-  ): ObservableMultisigKey {
-    return new ObservableMultisigKey(
-      ...this.deserializeConstructorParameters(chain, serialized, ObservableKey)
-    );
-  }
-
-  protected createKey = ObservableKey.deserialize.bind(ObservableKey);
+    },
+    {
+      name: "MultisigKey",
+    }
+  );
+  return key;
 }

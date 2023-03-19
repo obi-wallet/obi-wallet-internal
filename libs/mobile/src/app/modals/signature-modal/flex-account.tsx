@@ -2,7 +2,7 @@ import { useTheme } from "@emotion/react";
 import { terra, Text } from "@obi-wallet/common";
 import {
   KeyType,
-  ObservableMultisigKey,
+  MultisigKey,
   Sdk,
   Signer,
   withTerraClient,
@@ -22,7 +22,7 @@ import { KeysList } from "../../screens/components/keys-list";
 export interface SignatureModalFlexAccountProps
   extends AbstractSignatureModalProps {
   flexAccount: Signer;
-  multisigKey: ObservableMultisigKey;
+  multisigKey: MultisigKey;
   proxyAddress: string;
 }
 

@@ -1,8 +1,4 @@
-import {
-  ObservableGatekeeperConfig,
-  TerraChain,
-  terraChains,
-} from "@obi-wallet/sdk";
+import { GatekeeperConfig, TerraChain, terraChains } from "@obi-wallet/sdk";
 import {
   BlockTxBroadcastResult,
   Coin,
@@ -269,8 +265,8 @@ export function getUpdateGatekeeperMessages({
   spendLimitGatekeeper,
   sessionKeyGatekeeper,
 }: {
-  currentGatekeeperConfig: ObservableGatekeeperConfig;
-  newGatekeeperConfig: ObservableGatekeeperConfig;
+  currentGatekeeperConfig: GatekeeperConfig;
+  newGatekeeperConfig: GatekeeperConfig;
   proxyAddress: string;
   spendLimitGatekeeper: string;
   sessionKeyGatekeeper: string;

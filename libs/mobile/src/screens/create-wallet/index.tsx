@@ -1,8 +1,8 @@
 import {
   Chain,
   KeyType,
+  MultisigKey,
   MultisigWallet,
-  ObservableMultisigKey,
   Serialized,
 } from "@obi-wallet/sdk";
 import { CommonActions } from "@react-navigation/native";
@@ -33,7 +33,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
     const { params } = route;
 
     const { draftsStore, walletsStore } = useStore();
-    const draft = draftsStore.get<ObservableMultisigKey>({
+    const draft = draftsStore.get<MultisigKey>({
       id: params.draftId,
     });
 
@@ -133,7 +133,7 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   onAddEmail,
 }) {
   const { draftsStore } = useStore();
-  const draft = draftsStore.get<ObservableMultisigKey>({ id: draftId });
+  const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
   const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
   const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);

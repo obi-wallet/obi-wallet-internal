@@ -3,14 +3,14 @@ import {
   Draft,
   RequestObiCosmosSignAndBroadcastMsg,
 } from "@obi-wallet/common";
-import { CosmosChain, ObservableMultisigKey, Sdk } from "@obi-wallet/sdk";
+import { CosmosChain, MultisigKey, Sdk } from "@obi-wallet/sdk";
 
 export async function handleCosmos({
   draft,
   demoMode,
   chainId,
 }: {
-  draft: Draft<ObservableMultisigKey>;
+  draft: Draft<MultisigKey>;
   demoMode: boolean;
   chainId: CosmosChain;
 }) {

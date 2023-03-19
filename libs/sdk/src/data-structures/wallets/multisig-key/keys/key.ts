@@ -1,4 +1,4 @@
-import { makeObservable, observable, toJS } from "mobx";
+import { makeObservable, observable } from "mobx";
 import { z } from "zod";
 
 import { CloudKey } from "./cloud";
@@ -16,7 +16,7 @@ const UsableKeySchema = migratable(
   z.union([DeviceKey, PhoneKey, SocialKey, NfcKey, CloudKey, EmailKey])
 );
 
-const PendingRecoverKeySchema = migratable(
+const PendingRecoveryKeySchema = migratable(
   z.object({
     payload: z.object({
       type: z.string(),
@@ -25,14 +25,18 @@ const PendingRecoverKeySchema = migratable(
   })
 );
 
-const KeySchema = migratable(
+export const KeySchema = migratable(
   z.union([
     UsableKeySchema.migratableSchema,
-    PendingRecoverKeySchema.migratableSchema,
+    PendingRecoveryKeySchema.migratableSchema,
   ])
 );
 
-export abstract class AbstractKey {
+export abstract class Key {
+  public static get schema() {
+    return KeySchema;
+  }
+
   protected constructor(
     protected serialized: AbstractSerialized<typeof KeySchema>
   ) {}
@@ -48,11 +52,7 @@ export abstract class AbstractKey {
 
 export class UsableKey<
   T extends AbstractSerialized<typeof UsableKeySchema>
-> extends AbstractKey {
-  public static get schema() {
-    return UsableKeySchema;
-  }
-
+> extends Key {
   public constructor(protected serialized: T) {
     super(serialized);
   }
@@ -70,29 +70,9 @@ export class UsableKey<
   }
 }
 
-export class ObservableUsableKey<
-  T extends AbstractSerialized<typeof UsableKeySchema>
-> extends UsableKey<T> {
-  public constructor(...args: ConstructorParameters<typeof UsableKey<T>>) {
-    super(...args);
-    makeObservable<UsableKey<T>, "serialized">(this, {
-      serialized: observable,
-      toJSON: false,
-    });
-  }
-
-  public toJSON() {
-    return toJS(super.toJSON());
-  }
-}
-
-export class PendingRecoveryKey extends AbstractKey {
-  public static get schema() {
-    return PendingRecoverKeySchema;
-  }
-
+export class PendingRecoveryKey extends Key {
   public constructor(
-    protected serialized: AbstractSerialized<typeof PendingRecoverKeySchema>
+    protected serialized: AbstractSerialized<typeof PendingRecoveryKeySchema>
   ) {
     super(serialized);
   }
@@ -106,61 +86,28 @@ export class PendingRecoveryKey extends AbstractKey {
   }
 }
 
-export class ObservablePendingRecoveryKey extends PendingRecoveryKey {
-  public constructor(
-    ...args: ConstructorParameters<typeof PendingRecoveryKey>
-  ) {
-    super(...args);
-    makeObservable<PendingRecoveryKey, "serialized">(this, {
+export function createKey(serialized: AbstractMigratable<typeof KeySchema>) {
+  const result =
+    PendingRecoveryKeySchema.migratableSchema.safeParse(serialized);
+  if (result.success) return new PendingRecoveryKey(result.data);
+  return new UsableKey(UsableKeySchema.migratableSchema.parse(serialized));
+}
+
+export function createObservableKey(
+  serialized: AbstractMigratable<typeof KeySchema>
+) {
+  const key = createKey(serialized);
+  makeObservable<Key, "serialized">(
+    key,
+    {
       serialized: observable,
       toJSON: false,
-    });
-  }
-
-  public toJSON() {
-    return toJS(super.toJSON());
-  }
-}
-
-export class Key {
-  public static get schema() {
-    return KeySchema;
-  }
-
-  public static deserialize(
-    serialized: AbstractMigratable<typeof KeySchema>
-  ): AbstractKey {
-    return this.deserializeWithClasses(
-      serialized,
-      UsableKey,
-      PendingRecoveryKey
-    );
-  }
-
-  protected static deserializeWithClasses(
-    serialized: AbstractMigratable<typeof KeySchema>,
-    UsableKeyClass: typeof UsableKey,
-    PendingRecoveryKeyClass: typeof PendingRecoveryKey
-  ) {
-    const result =
-      PendingRecoveryKey.schema.migratableSchema.safeParse(serialized);
-    if (result.success) return new PendingRecoveryKeyClass(result.data);
-    return new UsableKeyClass(
-      UsableKey.schema.migratableSchema.parse(serialized)
-    );
-  }
-}
-
-export class ObservableKey extends Key {
-  public static deserialize(
-    serialized: AbstractMigratable<typeof KeySchema>
-  ): AbstractKey {
-    return this.deserializeWithClasses(
-      serialized,
-      ObservableUsableKey,
-      ObservablePendingRecoveryKey
-    );
-  }
+    },
+    {
+      name: "Key",
+    }
+  );
+  return key;
 }
 
 export type KeyAbstractSerializedMapping = {

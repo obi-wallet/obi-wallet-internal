@@ -1,4 +1,4 @@
-import { ObservableMultisigKey } from "@obi-wallet/sdk";
+import { MultisigKey } from "@obi-wallet/sdk";
 import {
   LegacyAminoMultisigPublicKey,
   SimplePublicKey,
@@ -7,7 +7,7 @@ import {
 export function createMultisigPublicKey({
   multisigKey,
 }: {
-  multisigKey: ObservableMultisigKey;
+  multisigKey: MultisigKey;
 }) {
   const publicKeys = [];
 
@@ -18,11 +18,7 @@ export function createMultisigPublicKey({
   return new LegacyAminoMultisigPublicKey(multisigKey.threshold, publicKeys);
 }
 
-export function getSigners({
-  multisigKey,
-}: {
-  multisigKey: ObservableMultisigKey;
-}) {
+export function getSigners({ multisigKey }: { multisigKey: MultisigKey }) {
   const multisigPublicKey = createMultisigPublicKey({ multisigKey });
 
   return multisigPublicKey.pubkeys.map((publicKey, i) => {

@@ -1,18 +1,17 @@
 import {
   CodeIds,
   Draft,
-  MultisigWallet,
   RequestObiSignAndBroadcastTerraTransactionMsg,
   terra,
 } from "@obi-wallet/common";
-import { ObservableMultisigKey, TerraChain } from "@obi-wallet/sdk";
+import { MultisigKey, MultisigWallet, TerraChain } from "@obi-wallet/sdk";
 
 export async function handleTerra({
   draft,
   wallet,
   codeIds,
 }: {
-  draft: Draft<ObservableMultisigKey>;
+  draft: Draft<MultisigKey>;
   wallet: MultisigWallet;
   codeIds: CodeIds;
 }) {

@@ -1,7 +1,7 @@
 import {
+  createMultisigKey,
   KeyType,
   Migratable,
-  MultisigKey,
   MultisigWallet,
 } from "@obi-wallet/sdk";
 import { z } from "zod";
@@ -114,7 +114,7 @@ export function migrateSerializedData(
     chain,
     currentAdmin,
   }: SerializedTerraMultisigWalletData) {
-    const result = MultisigKey.empty(chain);
+    const result = createMultisigKey(chain);
     if (currentAdmin?.biometrics) {
       result.setKey({
         type: KeyType.Device,

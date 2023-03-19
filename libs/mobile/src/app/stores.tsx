@@ -1,5 +1,5 @@
-import { MultisigWallet, RootStore } from "@obi-wallet/common";
-import { isTerraChain, terraChains } from "@obi-wallet/sdk";
+import { RootStore } from "@obi-wallet/common";
+import { isTerraChain, MultisigWallet, terraChains } from "@obi-wallet/sdk";
 import { createContext, useContext } from "react";
 import invariant from "tiny-invariant";
 

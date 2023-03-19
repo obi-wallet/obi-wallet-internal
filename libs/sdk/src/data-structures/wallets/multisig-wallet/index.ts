@@ -1,5 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { action, makeObservable, observable, toJS } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 
 import {
   CurrentAccount,
@@ -16,26 +16,28 @@ import {
 import { Sdk } from "../../../sdk";
 import { AbstractSerialized } from "../../abstract";
 import {
+  createGatekeeperConfig,
+  createObservableGatekeeperConfig,
   GatekeeperConfig,
-  ObservableGatekeeperConfig,
 } from "../gatekeeper-config";
-import { MultisigKey, ObservableMultisigKey } from "../multisig-key";
+import {
+  createMultisigKey,
+  createObservableMultisigKey,
+  MultisigKey,
+} from "../multisig-key";
 
 export { SinglesigWallet };
 
-export class MultisigWallet<
-  G extends GatekeeperConfig = GatekeeperConfig,
-  M extends MultisigKey = MultisigKey
-> {
+export class MultisigWallet {
   public static get schema() {
     return MultisigWalletSchema;
   }
 
   public constructor(
     protected _chainId: Chain,
-    protected _owner: M,
+    protected _owner: MultisigKey,
     protected _proxyAddress: string,
-    protected _gatekeeperConfig: G,
+    protected _gatekeeperConfig: GatekeeperConfig,
     protected _singlesigWallets: AbstractSerialized<typeof SinglesigWallet>[],
     protected _currentAccount: AbstractSerialized<typeof CurrentAccount> | null,
     protected _isDemo: boolean
@@ -58,38 +60,15 @@ export class MultisigWallet<
     };
   }
 
-  public static deserialize(
-    serialized: AbstractSerialized<typeof MultisigWalletSchema>
-  ): MultisigWallet {
-    return new MultisigWallet(
-      ...this.deserializeConstructorParameters(
-        serialized,
-        MultisigKey,
-        GatekeeperConfig
-      )
-    );
+  public get id() {
+    return this.proxyAddress;
   }
 
-  protected static deserializeConstructorParameters<
-    G extends GatekeeperConfig = GatekeeperConfig,
-    M extends MultisigKey = MultisigKey
-  >(
-    serialized: AbstractSerialized<typeof MultisigWalletSchema>,
-    MultisigKeyClass: typeof MultisigKey,
-    GatekeeperConfigClass: typeof GatekeeperConfig
-  ): ConstructorParameters<typeof MultisigWallet<G, M>> {
-    return [
-      serialized.data.chain,
-      MultisigKeyClass.deserialize(
-        serialized.data.chain,
-        serialized.data.owner
-      ) as M,
-      serialized.data.proxyAddress.address,
-      GatekeeperConfigClass.deserialize(serialized.data.gatekeeperConfig) as G,
-      serialized.data.singlesigWallets,
-      serialized.data.currentAccount,
-      serialized.type === "multisig-demo",
-    ];
+  public get meta() {
+    return {
+      walletId: this.id,
+      currentAccount: this._currentAccount,
+    };
   }
 
   public get chainId() {
@@ -188,7 +167,7 @@ export class MultisigWallet<
     return this._owner;
   }
 
-  public setOwner(owner: M) {
+  public setOwner(owner: MultisigKey) {
     this._owner = owner;
   }
 
@@ -196,7 +175,7 @@ export class MultisigWallet<
     return this._gatekeeperConfig;
   }
 
-  public setGatekeeperConfig(gatekeeperConfig: G) {
+  public setGatekeeperConfig(gatekeeperConfig: GatekeeperConfig) {
     this._gatekeeperConfig = gatekeeperConfig;
   }
 
@@ -226,24 +205,43 @@ export class MultisigWallet<
   }
 }
 
-export class ObservableMultisigWallet<
-  G extends ObservableGatekeeperConfig = ObservableGatekeeperConfig,
-  M extends ObservableMultisigKey = ObservableMultisigKey
-> extends MultisigWallet<G, M> {
-  public constructor(
-    ...args: ConstructorParameters<typeof MultisigWallet<G, M>>
-  ) {
-    super(...args);
-    makeObservable<
-      ObservableMultisigWallet,
-      | "_chainId"
-      | "_owner"
-      | "_proxyAddress"
-      | "_gatekeeperConfig"
-      | "_singlesigWallets"
-      | "_currentAccount"
-      | "_isDemo"
-    >(this, {
+export function createMultisigWallet(
+  serialized: AbstractSerialized<typeof MultisigWalletSchema>,
+  factories = {
+    createMultisigKey,
+    createGatekeeperConfig,
+  }
+) {
+  return new MultisigWallet(
+    serialized.data.chain,
+    factories.createMultisigKey(serialized.data.chain, serialized.data.owner),
+    serialized.data.proxyAddress.address,
+    factories.createGatekeeperConfig(serialized.data.gatekeeperConfig),
+    serialized.data.singlesigWallets,
+    serialized.data.currentAccount,
+    serialized.type === "multisig-demo"
+  );
+}
+
+export function createObservableMultisigWallet(
+  serialized: AbstractSerialized<typeof MultisigWalletSchema>
+) {
+  const wallet = createMultisigWallet(serialized, {
+    createMultisigKey: createObservableMultisigKey,
+    createGatekeeperConfig: createObservableGatekeeperConfig,
+  });
+  makeObservable<
+    MultisigWallet,
+    | "_chainId"
+    | "_owner"
+    | "_proxyAddress"
+    | "_gatekeeperConfig"
+    | "_singlesigWallets"
+    | "_currentAccount"
+    | "_isDemo"
+  >(
+    wallet,
+    {
       _chainId: observable,
       _owner: observable,
       _proxyAddress: observable,
@@ -255,29 +253,10 @@ export class ObservableMultisigWallet<
       setOwner: action,
       setCurrentAccount: action,
       setGatekeeperConfig: action,
-    });
-  }
-
-  public toJSON() {
-    return toJS(super.toJSON());
-  }
-
-  public static deserialize(
-    serialized: AbstractSerialized<typeof MultisigWalletSchema>
-  ): ObservableMultisigWallet {
-    return new ObservableMultisigWallet(
-      ...this.deserializeConstructorParameters(serialized)
-    );
-  }
-
-  protected static deserializeConstructorParameters<
-    G extends GatekeeperConfig = ObservableGatekeeperConfig,
-    M extends MultisigKey = ObservableMultisigKey
-  >(serialized: AbstractSerialized<typeof MultisigWalletSchema>) {
-    return super.deserializeConstructorParameters<G, M>(
-      serialized,
-      ObservableMultisigKey,
-      ObservableGatekeeperConfig
-    );
-  }
+    },
+    {
+      name: "MultisigWallet",
+    }
+  );
+  return wallet;
 }

@@ -1,6 +1,10 @@
 import { useTheme } from "@emotion/react";
-import { Wallet } from "@obi-wallet/common";
-import { isCosmosChain, KeyType, ObservableMultisigKey } from "@obi-wallet/sdk";
+import {
+  isCosmosChain,
+  KeyType,
+  MultisigKey,
+  MultisigWallet,
+} from "@obi-wallet/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -16,7 +20,7 @@ import { AsyncButton, Button } from "../../../button";
 import { useRootNavigation } from "../../../root-stack";
 import { useMultisigWallet, useStore } from "../../../stores";
 
-function getMultisigSettingsDraftId(wallet: Wallet) {
+function getMultisigSettingsDraftId(wallet: MultisigWallet) {
   return `multisig-settings/${wallet.id}`;
 }
 
@@ -28,7 +32,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
   const queryClient = useQueryClient();
 
   const draftId = getMultisigSettingsDraftId(wallet);
-  const draft = draftsStore.get<ObservableMultisigKey>({ id: draftId });
+  const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
   useEffect(() => {
     if (!draft) {

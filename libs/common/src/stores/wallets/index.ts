@@ -1,5 +1,9 @@
 import { KVStore } from "@keplr-wallet/common";
-import { Serialized } from "@obi-wallet/sdk";
+import {
+  createObservableMultisigWallet,
+  MultisigWallet,
+  Serialized,
+} from "@obi-wallet/sdk";
 import {
   action,
   autorun,
@@ -13,7 +17,6 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import { MultisigWallet } from "./multisig-wallet";
 import { MigratableSerializedData, SerializedData } from "./serialized-data";
 import { ChainStore } from "../chain";
 import { ConfigStore } from "../config";
@@ -30,10 +33,6 @@ export enum WalletState {
   /** We successfully loaded the data from the KV stores. */
   READY = "READY",
 }
-
-export { MultisigWallet };
-
-export type Wallet = MultisigWallet;
 
 export type WalletMeta = {
   walletId: string;
@@ -57,7 +56,7 @@ export class WalletsStore {
   protected readonly kvStore: KVStore;
 
   @observable
-  protected _wallets: Entities<Wallet>;
+  protected _wallets: Entities<MultisigWallet>;
   @observable
   protected currentWalletId: string | null = null;
   @observable
@@ -120,8 +119,8 @@ export class WalletsStore {
   protected addWallet = (
     serializedWallet: Serialized<typeof MultisigWallet>
   ) => {
-    const id = Entities.generateId();
-    const wallet = MultisigWallet.deserializeWithId({ id, serializedWallet });
+    const wallet = createObservableMultisigWallet(serializedWallet);
+    const id = wallet.id;
     this._wallets.add({ id, entity: wallet });
     this.currentWalletId = id;
     return wallet;

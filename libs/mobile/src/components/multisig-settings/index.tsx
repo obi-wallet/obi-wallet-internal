@@ -1,7 +1,7 @@
 import { useTheme } from "@emotion/react";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import { Text } from "@obi-wallet/common";
-import { KeyType, ObservableMultisigKey } from "@obi-wallet/sdk";
+import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -35,7 +35,7 @@ export interface MultisigSettingsProps {
 export const MultisigSettings = observer<MultisigSettingsProps>(
   function MultisigSettings({ children, draftId, title, subTitle, actions }) {
     const { draftsStore } = useStore();
-    const draft = draftsStore.get<ObservableMultisigKey>({ id: draftId });
+    const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
     const multisigKey = draft.value;
     const { configStore } = useStore();

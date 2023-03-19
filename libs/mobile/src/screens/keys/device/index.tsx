@@ -1,6 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { Text } from "@obi-wallet/common";
-import { KeyType, ObservableMultisigKey } from "@obi-wallet/sdk";
+import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -63,7 +63,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   onSubmit,
 }) {
   const { configStore, draftsStore } = useStore();
-  const draft = draftsStore.get<ObservableMultisigKey>({ id: draftId });
+  const draft = draftsStore.get<MultisigKey>({ id: draftId });
   const queryClient = useQueryClient();
   const isObi = configStore.isObi();
 

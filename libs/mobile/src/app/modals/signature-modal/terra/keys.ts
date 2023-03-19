@@ -1,9 +1,4 @@
-import {
-  Chain,
-  KeyType,
-  ObservableMultisigKey,
-  TerraChain,
-} from "@obi-wallet/sdk";
+import { Chain, KeyType, MultisigKey, TerraChain } from "@obi-wallet/sdk";
 import { QueryClient } from "@tanstack/react-query";
 import { Key, RawKey, SimplePublicKey } from "@terra-money/feather.js";
 import { SHA256, Word32Array } from "jscrypto";
@@ -33,7 +28,7 @@ export class BiometricsKey extends Key {
     multisigKey,
     queryClient,
   }: {
-    multisigKey: ObservableMultisigKey;
+    multisigKey: MultisigKey;
     queryClient: QueryClient;
   }) {
     const biometrics = multisigKey.getUsableKeyOfType(KeyType.Device);
@@ -56,7 +51,7 @@ export class BiometricsKey extends Key {
 }
 
 export class CloudKey extends RawKey {
-  constructor({ multisigKey }: { multisigKey: ObservableMultisigKey }) {
+  constructor({ multisigKey }: { multisigKey: MultisigKey }) {
     const cloudKey = multisigKey.getUsableKeyOfType(KeyType.Cloud);
     invariant(cloudKey, "Expected cloud key to exist.");
     super(Buffer.from(cloudKey.payload.privateKey, "base64"));
@@ -76,7 +71,7 @@ export class PhoneNumberConfirmKey extends Key {
     queryClient,
   }: {
     key: string;
-    multisigKey: ObservableMultisigKey;
+    multisigKey: MultisigKey;
     demoMode: boolean;
     queryClient: QueryClient;
   }) {
@@ -115,7 +110,7 @@ export class PhoneNumberRequestKey extends Key {
   }: {
     securityAnswer: string;
     chainId: TerraChain;
-    multisigKey: ObservableMultisigKey;
+    multisigKey: MultisigKey;
     demoMode: boolean;
   }) {
     const phoneNumberKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
@@ -155,7 +150,7 @@ export class NfcKey extends Key {
     demoMode,
     queryClient,
   }: {
-    multisigKey: ObservableMultisigKey;
+    multisigKey: MultisigKey;
     parsed: string;
     demoMode: boolean;
     queryClient: QueryClient;

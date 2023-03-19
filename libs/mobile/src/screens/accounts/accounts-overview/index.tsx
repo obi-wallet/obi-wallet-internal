@@ -8,7 +8,7 @@ import {
   terra,
   Text,
 } from "@obi-wallet/common";
-import { ObservableGatekeeperConfig, TerraChain } from "@obi-wallet/sdk";
+import { GatekeeperConfig, TerraChain } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { isTxError } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
@@ -72,7 +72,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
   const wallet = useMultisigWallet();
 
   const draftId = getGatekeeperConfigDraftId(wallet);
-  const draft = draftsStore.get<ObservableGatekeeperConfig>({
+  const draft = draftsStore.get<GatekeeperConfig>({
     id: draftId,
   });
 
@@ -287,7 +287,7 @@ const AccountsList = observer(function AccountsList() {
   const wallet = useMultisigWallet();
 
   const draftId = getGatekeeperConfigDraftId(wallet);
-  const draft = draftsStore.get<ObservableGatekeeperConfig>({
+  const draft = draftsStore.get<GatekeeperConfig>({
     id: draftId,
   });
 

@@ -1,10 +1,6 @@
 import { useTheme } from "@emotion/react";
-import {
-  healthChecks,
-  JunoChecks,
-  MultisigWallet,
-  Text,
-} from "@obi-wallet/common";
+import { healthChecks, JunoChecks, Text } from "@obi-wallet/common";
+import { MultisigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { ReactNode, useCallback, useEffect, useState } from "react";

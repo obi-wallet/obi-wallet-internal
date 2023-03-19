@@ -1,19 +1,20 @@
 import { isObservable, isObservableProp } from "mobx";
 
 import {
-  GatekeeperConfig,
-  MultisigKey,
-  ObservableMultisigWallet,
+  createGatekeeperConfig,
+  createMultisigKey,
+  createObservableMultisigWallet,
+  MultisigWallet,
   Serialized,
 } from "../../src";
 
 describe("ObservableMultisigWallet", () => {
-  const fixture: Serialized<typeof ObservableMultisigWallet> = {
+  const fixture: Serialized<typeof MultisigWallet> = {
     type: "multisig",
     data: {
       chain: "phoenix-1",
-      gatekeeperConfig: GatekeeperConfig.empty().toJSON(),
-      owner: MultisigKey.empty("phoenix-1").toJSON(),
+      gatekeeperConfig: createGatekeeperConfig().toJSON(),
+      owner: createMultisigKey("phoenix-1").toJSON(),
       proxyAddress: {
         v: 1,
         address: "cosmos1",
@@ -23,9 +24,9 @@ describe("ObservableMultisigWallet", () => {
     },
   };
 
-  let key: ObservableMultisigWallet;
+  let key: MultisigWallet;
   beforeEach(() => {
-    key = ObservableMultisigWallet.deserialize(fixture);
+    key = createObservableMultisigWallet(fixture);
   });
 
   test(".deserialize observable", () => {
