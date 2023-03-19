@@ -1,8 +1,4 @@
-import {
-  CurrentAccount,
-  MultisigWalletSchema,
-  SinglesigWallet,
-} from "./schema";
+import { MultisigWalletSchema, SinglesigWallet } from "./schema";
 import {
   Chain,
   CosmosChain,
@@ -14,14 +10,19 @@ import { FlexAccount, GatekeeperConfig } from "../gatekeeper-config";
 import { AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
 
-// eslint-disable-next-line import/no-default-export
+export type CurrentAccountMeta = {
+  type: "flex-account" | "singlesig-wallet";
+  id: string;
+};
+export interface WalletMeta {
+  walletId: string;
+  currentAccount: CurrentAccountMeta | null;
+}
+
 export interface MultisigWalletInterface {
   readonly schema: typeof MultisigWalletSchema;
   readonly id: string;
-  readonly meta: {
-    walletId: string;
-    currentAccount: AbstractSerialized<typeof CurrentAccount> | null;
-  };
+  readonly meta: WalletMeta;
   readonly chainId: Chain;
   readonly chain:
     | (typeof terraChains)[TerraChain]
@@ -30,7 +31,7 @@ export interface MultisigWalletInterface {
   readonly proxyAddress: string;
   readonly address: string;
   readonly shortenedAddress: string | null;
-  readonly currentAccountMeta: AbstractSerialized<typeof CurrentAccount> | null;
+  readonly currentAccountMeta: CurrentAccountMeta | null;
   readonly currentAccount:
     | AbstractSerialized<typeof SinglesigWallet>
     | AbstractSerialized<typeof FlexAccount>
@@ -48,13 +49,12 @@ export interface MultisigWalletInterface {
     debtGatekeeper: number | null;
   }): boolean;
   getAccount(
-    account: AbstractSerialized<typeof CurrentAccount>
+    account: CurrentAccountMeta
   ):
     | AbstractSerialized<typeof SinglesigWallet>
-    | AbstractSerialized<typeof FlexAccount>;
-  setCurrentAccount(
-    account: AbstractSerialized<typeof CurrentAccount> | null
-  ): void;
+    | AbstractSerialized<typeof FlexAccount>
+    | null;
+  setCurrentAccount(account: CurrentAccountMeta | null): void;
   setOwner(owner: MultisigKey): void;
   setGatekeeperConfig(gatekeeperConfig: GatekeeperConfig): void;
   upsertSinglesigWallet(

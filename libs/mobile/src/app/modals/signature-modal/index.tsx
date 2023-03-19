@@ -19,6 +19,9 @@ export const SignatureModal = observer<SignatureModalProps>(
 
     if (R.has("walletMeta", data)) {
       const wallet = walletsStore.getWallet(data.walletMeta.walletId);
+
+      if (!wallet) return null;
+
       const currentAccount = data.walletMeta.currentAccount
         ? wallet.getAccount(data.walletMeta.currentAccount)
         : null;

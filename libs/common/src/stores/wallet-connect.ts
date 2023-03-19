@@ -1,5 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
-import { isTerraChain } from "@obi-wallet/sdk";
+import { isTerraChain, WalletMeta } from "@obi-wallet/sdk";
 import { isTxError, Msg } from "@terra-money/feather.js";
 import WalletConnect from "@walletconnect/client";
 import {
@@ -10,7 +10,7 @@ import { action, computed, makeObservable, observable, toJS } from "mobx";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
-import { SerializedWalletMeta, WalletMeta, WalletsStore } from "./wallets";
+import { WalletsStore } from "./wallets";
 import {
   RequestObiSignAndBroadcastTerraTransactionMsg,
   RequestObiWalletConnectMsg,
@@ -83,7 +83,7 @@ export class WalletConnectStore {
       await connector.createSession();
     }
 
-    this.attachEventHandlers({ connector, walletMeta });
+    await this.attachEventHandlers({ connector, walletMeta });
   }
 
   @computed
@@ -98,22 +98,26 @@ export class WalletConnectStore {
         HandshakeTopic,
         {
           session: IWalletConnectSession;
-          walletMeta: SerializedWalletMeta;
+          walletMeta: WalletMeta;
         }
       >
     >("sessions");
     if (!data) return;
     try {
-      R.forEachObjIndexed((info, topic) => {
-        if (this._connectors[topic]) return;
-        const connector = createWalletConnect({
-          session: info.session,
-        });
-        this.recoverConnector({
-          connector,
-          walletMeta: this.walletsStore.deserializeWalletMeta(info.walletMeta),
-        });
-      }, data);
+      await Promise.all(
+        R.values(
+          R.mapObjIndexed(async (info, topic) => {
+            if (this._connectors[topic]) return;
+            const connector = createWalletConnect({
+              session: info.session,
+            });
+            await this.recoverConnector({
+              connector,
+              walletMeta: info.walletMeta,
+            });
+          }, data)
+        )
+      );
     } catch (e) {
       // noop
     }
@@ -130,13 +134,16 @@ export class WalletConnectStore {
   }
 
   @action
-  protected recoverConnector({ connector, walletMeta }: ConnectInformation) {
+  protected async recoverConnector({
+    connector,
+    walletMeta,
+  }: ConnectInformation) {
     if (connector.handshakeTopic) {
       this._connectors[connector.handshakeTopic] = {
         connector,
         walletMeta,
       };
-      this.attachEventHandlers({ connector, walletMeta });
+      await this.attachEventHandlers({ connector, walletMeta });
     }
   }
 
@@ -170,14 +177,14 @@ export class WalletConnectStore {
         HandshakeTopic,
         {
           session: IWalletConnectSession;
-          walletMeta: SerializedWalletMeta;
+          walletMeta: WalletMeta;
         }
       ][],
       Record<
         HandshakeTopic,
         {
           session: IWalletConnectSession;
-          walletMeta: SerializedWalletMeta;
+          walletMeta: WalletMeta;
         }
       >
     >(
@@ -187,7 +194,7 @@ export class WalletConnectStore {
         topic,
         {
           session: info.connector.session,
-          walletMeta: this.walletsStore.serializeWalletMeta(info.walletMeta),
+          walletMeta: info.walletMeta,
         },
       ]),
       R.fromPairs
@@ -195,9 +202,16 @@ export class WalletConnectStore {
     await this.kvStore.set("sessions", toJS(sessions));
   }
 
-  protected attachEventHandlers({ connector, walletMeta }: ConnectInformation) {
+  protected async attachEventHandlers({
+    connector,
+    walletMeta,
+  }: ConnectInformation) {
     const topic = connector.handshakeTopic;
     const wallet = this.walletsStore.getWallet(walletMeta.walletId);
+    if (!wallet) {
+      await this.removeConnector(topic);
+      return;
+    }
 
     // TODO: Do that somewhere else
     connector.on("session_request", async (error, payload) => {

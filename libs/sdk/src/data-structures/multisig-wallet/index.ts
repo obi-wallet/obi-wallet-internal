@@ -3,10 +3,11 @@ import {
   createObservableMultisigWallet,
 } from "./factories";
 import { MultisigWalletInterface } from "./interface";
-import { MultisigWalletSchema, SinglesigWallet } from "./schema";
+import { MultisigWalletSchema } from "./schema";
 import { AbstractDataStructure } from "../abstract";
 
-export { SinglesigWallet };
+export { CurrentAccountMeta, WalletMeta } from "./interface";
+export { SinglesigWallet } from "./schema";
 
 export type MultisigWallet = MultisigWalletInterface;
 

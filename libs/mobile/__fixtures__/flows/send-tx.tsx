@@ -29,7 +29,7 @@ function SendSinglesigWalletTxFixture() {
       walletId: wallet.id,
       currentAccount: {
         type: "singlesig-wallet",
-        index: 0,
+        id: singlesigWallet.publicKey.value,
       },
     },
     demoMode: true,
@@ -86,7 +86,7 @@ function SendFlexAccountTxFixture() {
       walletId: wallet.id,
       currentAccount: {
         type: "flex-account",
-        index: 0,
+        id: flexAccount.address,
       },
     },
     demoMode: true,

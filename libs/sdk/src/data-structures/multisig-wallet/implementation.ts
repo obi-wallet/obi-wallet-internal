@@ -1,11 +1,7 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
 
-import { MultisigWalletInterface } from "./interface";
-import {
-  CurrentAccount,
-  MultisigWalletSchema,
-  SinglesigWallet,
-} from "./schema";
+import { CurrentAccountMeta, MultisigWalletInterface } from "./interface";
+import { MultisigWalletSchema, SinglesigWallet } from "./schema";
 import {
   Chain,
   CosmosChain,
@@ -29,7 +25,7 @@ export class MultisigWallet implements MultisigWalletInterface {
     protected _proxyAddress: string,
     protected _gatekeeperConfig: GatekeeperConfig,
     protected _singlesigWallets: AbstractSerialized<typeof SinglesigWallet>[],
-    protected _currentAccount: AbstractSerialized<typeof CurrentAccount> | null,
+    protected _currentAccount: CurrentAccountMeta | null,
     protected _isDemo: boolean
   ) {}
 
@@ -138,18 +134,24 @@ export class MultisigWallet implements MultisigWalletInterface {
     return this.getAccount(this._currentAccount);
   }
 
-  public getAccount(account: AbstractSerialized<typeof CurrentAccount>) {
+  public getAccount(account: CurrentAccountMeta) {
     switch (account.type) {
       case "flex-account":
-        return this._gatekeeperConfig.flexAccounts[account.index];
+        return (
+          this._gatekeeperConfig.flexAccounts.find((f) => {
+            return f.address === account.id;
+          }) ?? null
+        );
       case "singlesig-wallet":
-        return this._singlesigWallets[account.index];
+        return (
+          this.singlesigWallets.find((s) => {
+            return s.publicKey.value === account.id;
+          }) ?? null
+        );
     }
   }
 
-  public setCurrentAccount(
-    account: AbstractSerialized<typeof CurrentAccount> | null
-  ) {
+  public setCurrentAccount(account: CurrentAccountMeta | null) {
     this._currentAccount = account;
   }
 
