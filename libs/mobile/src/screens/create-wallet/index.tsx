@@ -45,7 +45,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
 
           try {
             const serializedData = await Chain.select<
-              Promise<Serialized<typeof MultisigWallet>["data"]>
+              Promise<Serialized<MultisigWallet>["data"]>
             >({
               chainId,
               onCosmosChain(chainId) {

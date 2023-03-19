@@ -13,12 +13,12 @@ import {
 import { Chain } from "../../../chains";
 import { MultisigPublicKey } from "../../../keys";
 import { Sdk } from "../../../sdk";
+import { Serialized } from "../../abstract";
 import {
   AbstractMigratable,
   AbstractSerialized,
-  Serialized,
-} from "../../abstract";
-import { migratable } from "../../migratable";
+  migratable,
+} from "../../migratable";
 
 export * from "./keys";
 

@@ -1,19 +1,24 @@
-import { z } from "zod";
+import {
+  AbstractMigratable,
+  AbstractMigratableSchema,
+  AbstractSerialized,
+} from "./migratable";
 
-export interface AbstractMigratableSchema {
-  currentSchema: z.ZodTypeAny;
-  migratableSchema: z.ZodTypeAny;
+export interface AttachedSchema {
+  schema: AbstractMigratableSchema;
 }
 
-export type AbstractMigratable<T extends AbstractMigratableSchema> = z.input<
-  T["migratableSchema"]
->;
-export type AbstractSerialized<T extends AbstractMigratableSchema> = z.infer<
-  T["currentSchema"]
->;
+export interface AbstractDataStructure<T> extends AttachedSchema {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  create: (...args: any[]) => T;
+}
 
-export type MigratableSchema<T> = T extends { schema: AbstractMigratableSchema }
-  ? T["schema"]
-  : never;
-export type Migratable<T> = AbstractMigratable<MigratableSchema<T>>;
-export type Serialized<T> = AbstractSerialized<MigratableSchema<T>>;
+export type AbstractDataStructureToSchema<T> =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends AttachedSchema ? T["schema"] : never;
+export type Migratable<T> = AbstractMigratable<
+  AbstractDataStructureToSchema<T>
+>;
+export type Serialized<T> = AbstractSerialized<
+  AbstractDataStructureToSchema<T>
+>;

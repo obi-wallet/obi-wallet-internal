@@ -4,8 +4,11 @@ import { z } from "zod";
 
 import { Beneficiary } from "./beneficiary";
 import { FlexAccount } from "./flex-account";
-import { AbstractMigratable, AbstractSerialized } from "../../abstract";
-import { migratable } from "../../migratable";
+import {
+  AbstractMigratable,
+  AbstractSerialized,
+  migratable,
+} from "../../migratable";
 
 export { Beneficiary, FlexAccount };
 

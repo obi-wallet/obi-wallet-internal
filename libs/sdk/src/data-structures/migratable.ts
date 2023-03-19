@@ -45,3 +45,15 @@ export function migratable<T extends z.ZodTypeAny>(schema: T) {
     };
   }
 }
+
+export interface AbstractMigratableSchema {
+  currentSchema: z.ZodTypeAny;
+  migratableSchema: z.ZodTypeAny;
+}
+
+export type AbstractMigratable<T extends AbstractMigratableSchema> = z.input<
+  T["migratableSchema"]
+>;
+export type AbstractSerialized<T extends AbstractMigratableSchema> = z.infer<
+  T["currentSchema"]
+>;

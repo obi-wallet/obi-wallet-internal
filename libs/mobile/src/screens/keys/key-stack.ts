@@ -21,7 +21,7 @@ interface CommonKeyParams {
   flow: KeyFlow;
   draftId: string;
   demoMode: boolean;
-  serializedData?: Serialized<typeof MultisigWallet>["data"];
+  serializedData?: Serialized<MultisigWallet>["data"];
 }
 
 export interface KeyStackParamList extends ParamListBase {

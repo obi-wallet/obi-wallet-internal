@@ -17,7 +17,7 @@ export interface OnboardingStackParamList
   [OnboardingRoute.RecoverWallet]: {
     draftId: string;
     demoMode: boolean;
-    serializedData?: Serialized<typeof MultisigWallet>["data"];
+    serializedData?: Serialized<MultisigWallet>["data"];
   };
   [OnboardingRoute.LookupProxyWallets]: {
     draftId: string;

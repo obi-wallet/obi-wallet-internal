@@ -192,7 +192,7 @@ export const MigratableSerializedCosmosMultisigDemoWallet = migratable(
 
 export function migrateSerializedData(
   serializedData: SerializedCosmosMultisigWalletData
-): Migratable<typeof MultisigWallet>["data"] | null {
+): Migratable<MultisigWallet>["data"] | null {
   const proxyAddresses = serializedData.proxyAddresses;
   const mainnetProxyAddress = proxyAddresses["juno-1"];
   const testnetProxyAddress = proxyAddresses["uni-3"];
