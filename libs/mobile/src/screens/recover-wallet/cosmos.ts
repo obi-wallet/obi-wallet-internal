@@ -9,8 +9,8 @@ import {
 } from "@obi-wallet/common";
 import {
   CosmosChain,
+  MultisigKey,
   MultisigWallet,
-  ObservableMultisigKey,
   Sdk,
   Serialized,
 } from "@obi-wallet/sdk";
@@ -25,7 +25,7 @@ export async function handleCosmos({
   demoMode,
   chainId,
 }: {
-  draft: Draft<ObservableMultisigKey>;
+  draft: Draft<MultisigKey>;
   serializedData: Serialized<typeof MultisigWallet>["data"];
   demoMode: boolean;
   chainId: CosmosChain;

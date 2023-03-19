@@ -1,4 +1,4 @@
-import { makeObservable, observable, toJS } from "mobx";
+import { makeObservable, observable } from "mobx";
 import { z } from "zod";
 
 import { CloudKey } from "./cloud";
@@ -97,10 +97,16 @@ export function createObservableKey(
   serialized: AbstractMigratable<typeof KeySchema>
 ) {
   const key = createKey(serialized);
-  makeObservable<Key, "serialized">(key, {
-    serialized: observable,
-    toJSON: false,
-  });
+  makeObservable<Key, "serialized">(
+    key,
+    {
+      serialized: observable,
+      toJSON: false,
+    },
+    {
+      name: "Key",
+    }
+  );
   return key;
 }
 

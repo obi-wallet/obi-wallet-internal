@@ -1,5 +1,5 @@
 import { terra } from "@obi-wallet/common";
-import { KeyType, ObservableMultisigKey, Sdk } from "@obi-wallet/sdk";
+import { KeyType, MultisigKey, Sdk } from "@obi-wallet/sdk";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Msg, SignatureV2 } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
@@ -32,7 +32,7 @@ import { CheckIcon, Key } from "../../screens/components/keys-list";
 
 export interface SignatureModalMultisigKeyProps
   extends AbstractSignatureModalProps {
-  multisigKey: ObservableMultisigKey;
+  multisigKey: MultisigKey;
   proxyAddress?: string;
   safeSpendLimitExceeded?: boolean;
 }

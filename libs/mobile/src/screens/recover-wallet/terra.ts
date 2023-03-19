@@ -5,8 +5,8 @@ import {
   terra,
 } from "@obi-wallet/common";
 import {
+  MultisigKey,
   MultisigWallet,
-  ObservableMultisigKey,
   Serialized,
   TerraChain,
 } from "@obi-wallet/sdk";
@@ -17,7 +17,7 @@ export async function handleTerra({
   codeIds,
   demoMode,
 }: {
-  draft: Draft<ObservableMultisigKey>;
+  draft: Draft<MultisigKey>;
   serializedData: Serialized<typeof MultisigWallet>["data"];
   codeIds: CodeIds;
   demoMode: boolean;

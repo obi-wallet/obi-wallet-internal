@@ -1,9 +1,9 @@
 import { pubkeyType } from "@cosmjs/amino";
 import {
+  createObservableMultisigKey,
   GatekeeperConfig,
   generateSec256k1KeyPair,
   KeyType,
-  ObservableMultisigKey,
   Sdk,
 } from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
@@ -36,7 +36,7 @@ export const MultisigDraft = {
     useEffect(() => {
       (async () => {
         if (!draft) {
-          const original = ObservableMultisigKey.empty(chainStore.currentChain);
+          const original = createObservableMultisigKey(chainStore.currentChain);
           original.setKey({
             type: KeyType.Device,
             payload: {

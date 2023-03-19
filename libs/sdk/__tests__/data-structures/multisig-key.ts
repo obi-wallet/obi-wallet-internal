@@ -1,10 +1,15 @@
 import { isObservable, isObservableProp } from "mobx";
 
-import { KeyType, ObservableMultisigKey, Serialized } from "../../src";
+import {
+  createObservableMultisigKey,
+  KeyType,
+  MultisigKey,
+  Serialized,
+} from "../../src";
 
 describe("ObservableMultisigKey", () => {
   const chain = "phoenix-1";
-  const fixture: Serialized<typeof ObservableMultisigKey> = {
+  const fixture: Serialized<typeof MultisigKey> = {
     keys: [
       {
         payload: {
@@ -20,22 +25,22 @@ describe("ObservableMultisigKey", () => {
   };
 
   test(".empty observable", () => {
-    expect(isObservable(ObservableMultisigKey.empty(chain))).toEqual(true);
+    expect(isObservable(createObservableMultisigKey(chain))).toEqual(true);
   });
 
   test(".deserialize observable", () => {
-    expect(
-      isObservable(ObservableMultisigKey.deserialize(chain, fixture))
-    ).toEqual(true);
+    expect(isObservable(createObservableMultisigKey(chain, fixture))).toEqual(
+      true
+    );
   });
 
   test("chain observable", () => {
-    const key = ObservableMultisigKey.empty(chain);
+    const key = createObservableMultisigKey(chain);
     expect(isObservableProp(key, "_chain")).toEqual(true);
   });
 
   test("keys observable", () => {
-    const key = ObservableMultisigKey.deserialize(chain, fixture);
+    const key = createObservableMultisigKey(chain, fixture);
     expect(isObservable(key.keys)).toEqual(true);
     expect(isObservable(key.keys[0])).toEqual(true);
     key.setKey<KeyType.Cloud>({
@@ -55,7 +60,7 @@ describe("ObservableMultisigKey", () => {
   });
 
   test("threshold observable", () => {
-    const key = ObservableMultisigKey.empty(chain);
+    const key = createObservableMultisigKey(chain);
     expect(isObservableProp(key, "_threshold")).toEqual(true);
   });
 });

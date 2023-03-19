@@ -3,7 +3,7 @@ import {
   Chain,
   isTerraChain,
   KeyType,
-  ObservableMultisigKey,
+  MultisigKey,
   withCosmosStargateClient,
   withTerraClient,
 } from "@obi-wallet/sdk";
@@ -73,7 +73,7 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
   onSubmit,
 }) {
   const { chainStore, configStore, draftsStore } = useStore();
-  const draft = draftsStore.get<ObservableMultisigKey>({ id: draftId });
+  const draft = draftsStore.get<MultisigKey>({ id: draftId });
   const [address, setAddress] = useState("");
   const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true); // Verify&Proceed Button disabled by default
   const [fetchingPubKey, setFetchingPubKey] = useState(false);

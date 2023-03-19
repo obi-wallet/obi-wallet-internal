@@ -1,7 +1,7 @@
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text } from "@obi-wallet/common";
-import { KeyType, ObservableMultisigKey } from "@obi-wallet/sdk";
+import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage } from "react-intl";
 import { TouchableOpacity, View } from "react-native";
@@ -12,7 +12,7 @@ import { useStore } from "../../app/stores";
 
 export interface KeyBottomSheetContentProps {
   type: KeyType;
-  multisigKey: ObservableMultisigKey;
+  multisigKey: MultisigKey;
 
   action?: {
     label: string;

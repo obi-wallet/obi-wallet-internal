@@ -1,6 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { Text } from "@obi-wallet/common";
-import { KeyType, ObservableMultisigKey } from "@obi-wallet/sdk";
+import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -80,7 +80,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
     onSubmit,
   }) {
     const { configStore, chainStore, draftsStore } = useStore();
-    const draft = draftsStore.get<ObservableMultisigKey>({ id: draftId });
+    const draft = draftsStore.get<MultisigKey>({ id: draftId });
     const isObi = configStore.isObi();
     const chainId = chainStore.currentChain;
     const [key, setKey] = useState("");

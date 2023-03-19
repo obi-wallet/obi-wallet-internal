@@ -20,7 +20,11 @@ import {
   createObservableGatekeeperConfig,
   GatekeeperConfig,
 } from "../gatekeeper-config";
-import { MultisigKey, ObservableMultisigKey } from "../multisig-key";
+import {
+  createMultisigKey,
+  createObservableMultisigKey,
+  MultisigKey,
+} from "../multisig-key";
 
 export { SinglesigWallet };
 
@@ -203,17 +207,14 @@ export class MultisigWallet<M extends MultisigKey = MultisigKey> {
 
 export function createMultisigWallet<M extends MultisigKey = MultisigKey>(
   serialized: AbstractSerialized<typeof MultisigWalletSchema>,
-  factories: {
-    MultisigKey: typeof MultisigKey;
-    createGatekeeperConfig: typeof createGatekeeperConfig;
-  } = {
-    MultisigKey,
+  factories = {
+    createMultisigKey,
     createGatekeeperConfig,
   }
 ) {
   return new MultisigWallet<M>(
     serialized.data.chain,
-    factories.MultisigKey.deserialize(
+    factories.createMultisigKey(
       serialized.data.chain,
       serialized.data.owner
     ) as M,
@@ -228,8 +229,8 @@ export function createMultisigWallet<M extends MultisigKey = MultisigKey>(
 export function createObservableMultisigWallet(
   serialized: AbstractSerialized<typeof MultisigWalletSchema>
 ) {
-  const wallet = createMultisigWallet<ObservableMultisigKey>(serialized, {
-    MultisigKey: ObservableMultisigKey,
+  const wallet = createMultisigWallet<MultisigKey>(serialized, {
+    createMultisigKey: createObservableMultisigKey,
     createGatekeeperConfig: createObservableGatekeeperConfig,
   });
   makeObservable<
@@ -241,18 +242,24 @@ export function createObservableMultisigWallet(
     | "_singlesigWallets"
     | "_currentAccount"
     | "_isDemo"
-  >(wallet, {
-    _chainId: observable,
-    _owner: observable,
-    _proxyAddress: observable,
-    _gatekeeperConfig: observable,
-    _singlesigWallets: observable,
-    _currentAccount: observable,
-    _isDemo: observable,
-    toJSON: false,
-    setOwner: action,
-    setCurrentAccount: action,
-    setGatekeeperConfig: action,
-  });
+  >(
+    wallet,
+    {
+      _chainId: observable,
+      _owner: observable,
+      _proxyAddress: observable,
+      _gatekeeperConfig: observable,
+      _singlesigWallets: observable,
+      _currentAccount: observable,
+      _isDemo: observable,
+      toJSON: false,
+      setOwner: action,
+      setCurrentAccount: action,
+      setGatekeeperConfig: action,
+    },
+    {
+      name: "MultisigWallet",
+    }
+  );
   return wallet;
 }
