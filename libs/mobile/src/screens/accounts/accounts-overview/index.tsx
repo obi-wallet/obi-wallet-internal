@@ -357,6 +357,8 @@ const AccountsList = observer(function AccountsList() {
     ...singlesigWalletsData,
   ];
 
+  const currentAccount = wallet.meta.currentAccount;
+
   return (
     <KeyboardAwareFlatList
       viewIsInsideTabBar
@@ -377,7 +379,7 @@ const AccountsList = observer(function AccountsList() {
               if (element.item.meta.type === "beneficiary") return;
               wallet.setCurrentAccount(element.item.meta);
             }}
-            active={R.equals(wallet.meta.currentAccount, element.item.meta)}
+            active={R.equals(currentAccount, element.item.meta)}
             originalAccount={element.item.originalAccount ?? null}
             account={element.item.account}
             onDelete={() => {
