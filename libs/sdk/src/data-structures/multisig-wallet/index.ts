@@ -7,7 +7,6 @@ import { MultisigWalletSchema } from "./schema";
 import { AbstractDataStructure } from "../abstract";
 
 export { CurrentAccountMeta, WalletMeta } from "./interface";
-export { SinglesigWallet } from "./schema";
 
 export type MultisigWallet = MultisigWalletInterface;
 

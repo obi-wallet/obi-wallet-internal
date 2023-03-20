@@ -2,13 +2,13 @@ import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   RequestObiSignAndBroadcastTerraTransactionMsg,
-  SinglesigWallet,
   terra,
   Text,
 } from "@obi-wallet/common";
 import {
   Beneficiary,
   FlexAccount,
+  SinglesigWallet,
   GatekeeperConfig,
   TerraChain,
 } from "@obi-wallet/sdk";

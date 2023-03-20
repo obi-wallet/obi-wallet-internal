@@ -1,6 +1,6 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { SinglesigWallet, Text } from "@obi-wallet/common";
-import { Sdk } from "@obi-wallet/sdk";
+import { Text } from "@obi-wallet/common";
+import { Sdk, SinglesigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { TouchableOpacity, View } from "react-native";
 

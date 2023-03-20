@@ -1,7 +1,7 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
 
 import { CurrentAccountMeta, MultisigWalletInterface } from "./interface";
-import { MultisigWalletSchema, SinglesigWallet } from "./schema";
+import { MultisigWalletSchema } from "./schema";
 import {
   Chain,
   CosmosChain,
@@ -13,6 +13,7 @@ import { Sdk } from "../../sdk";
 import { GatekeeperConfig } from "../gatekeeper-config";
 import { AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
+import { SinglesigWallet } from "../singlesig-wallet";
 
 export class MultisigWallet implements MultisigWalletInterface {
   public get schema() {
@@ -24,7 +25,7 @@ export class MultisigWallet implements MultisigWalletInterface {
     protected _owner: MultisigKey,
     protected _proxyAddress: string,
     protected _gatekeeperConfig: GatekeeperConfig,
-    protected _singlesigWallets: AbstractSerialized<typeof SinglesigWallet>[],
+    protected _singlesigWallets: SinglesigWallet[],
     protected _currentAccount: CurrentAccountMeta | null,
     protected _isDemo: boolean
   ) {}
@@ -40,7 +41,7 @@ export class MultisigWallet implements MultisigWalletInterface {
           address: this._proxyAddress,
         },
         gatekeeperConfig: this._gatekeeperConfig.toJSON(),
-        singlesigWallets: this._singlesigWallets,
+        singlesigWallets: this._singlesigWallets.map((s) => s.toJSON()),
         currentAccount: this._currentAccount,
       },
     };
@@ -175,9 +176,7 @@ export class MultisigWallet implements MultisigWalletInterface {
     return this._singlesigWallets;
   }
 
-  public upsertSinglesigWallet(
-    singlesig: AbstractSerialized<typeof SinglesigWallet>
-  ) {
+  public upsertSinglesigWallet(singlesig: SinglesigWallet) {
     const index = this._singlesigWallets.findIndex(
       (s) => s.publicKey === singlesig.publicKey
     );
@@ -188,9 +187,7 @@ export class MultisigWallet implements MultisigWalletInterface {
     }
   }
 
-  public removeSinglesigWallet(
-    singlesig: AbstractSerialized<typeof SinglesigWallet>
-  ) {
+  public removeSinglesigWallet(singlesig: SinglesigWallet) {
     this._singlesigWallets = this._singlesigWallets.filter(
       (s) => s.publicKey !== singlesig.publicKey
     );

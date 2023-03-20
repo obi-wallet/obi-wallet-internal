@@ -5,6 +5,7 @@ import {
   MultisigKey,
   MultisigWallet,
   ObservableMultisigWallet,
+  ObservableSinglesigWallet,
   Serialized,
 } from "../../src";
 
@@ -51,14 +52,16 @@ describe("ObservableMultisigWallet", () => {
 
   test("singlesigWallets observable", () => {
     expect(isObservable(key.singlesigWallets)).toEqual(true);
-    key.upsertSinglesigWallet({
-      type: "singlesig-wallet",
-      privateKey: "foo",
-      publicKey: {
-        type: "tendermint/PubKeySecp256k1",
-        value: "bar",
-      },
-    });
+    key.upsertSinglesigWallet(
+      ObservableSinglesigWallet.create({
+        type: "singlesig-wallet",
+        privateKey: "foo",
+        publicKey: {
+          type: "tendermint/PubKeySecp256k1",
+          value: "bar",
+        },
+      })
+    );
     expect(isObservable(key.singlesigWallets[0])).toEqual(true);
     key.removeSinglesigWallet(key.singlesigWallets[0]);
     expect(isObservable(key.singlesigWallets)).toEqual(true);

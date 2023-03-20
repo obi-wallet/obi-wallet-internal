@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-import { Secp256k1PublicKey } from "../../keys";
 import { ArrayIndex } from "../array-index";
 import { createGatekeeperConfig, GatekeeperConfig } from "../gatekeeper-config";
 import { migratable } from "../migratable";
 import { MultisigKey } from "../multisig-key";
+import { SinglesigWallet } from "../singlesig-wallet";
 
 export const ProxyAddress = migratable(
   z.object({
@@ -31,14 +31,6 @@ const Chain = z.union([
   z.literal("phoenix-1"),
 ]);
 
-export const SinglesigWallet = migratable(
-  z.object({
-    type: z.literal("singlesig-wallet"),
-    publicKey: Secp256k1PublicKey,
-    privateKey: z.string(),
-  })
-);
-
 const MultisigWalletData = migratable(
   z.object({
     chain: Chain,
@@ -52,7 +44,7 @@ const MultisigWalletData = migratable(
       owner: MultisigKey.schema.migratableSchema,
       proxyAddress: ProxyAddress.migratableSchema,
       gatekeeperConfig: GatekeeperConfig.schema.migratableSchema,
-      singlesigWallets: z.array(SinglesigWallet.migratableSchema),
+      singlesigWallets: z.array(SinglesigWallet.schema.migratableSchema),
     }),
     migrate(data) {
       const gatekeeperConfig = createGatekeeperConfig();
@@ -69,7 +61,7 @@ const MultisigWalletData = migratable(
       owner: MultisigKey.schema.migratableSchema,
       proxyAddress: ProxyAddress.migratableSchema,
       gatekeeperConfig: GatekeeperConfig.schema.migratableSchema,
-      singlesigWallets: z.array(SinglesigWallet.migratableSchema),
+      singlesigWallets: z.array(SinglesigWallet.schema.migratableSchema),
       currentAccount: z
         .object({
           type: z.union([
@@ -93,7 +85,7 @@ const MultisigWalletData = migratable(
       owner: MultisigKey.schema.migratableSchema,
       proxyAddress: ProxyAddress.migratableSchema,
       gatekeeperConfig: GatekeeperConfig.schema.migratableSchema,
-      singlesigWallets: z.array(SinglesigWallet.migratableSchema),
+      singlesigWallets: z.array(SinglesigWallet.schema.migratableSchema),
       currentAccount: z
         .object({
           type: z.union([

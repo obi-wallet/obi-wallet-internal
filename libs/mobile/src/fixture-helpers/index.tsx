@@ -6,6 +6,7 @@ import {
   ObservableBeneficiary,
   ObservableFlexAccount,
   ObservableMultisigKey,
+  ObservableSinglesigWallet,
   Sdk,
 } from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
@@ -190,11 +191,13 @@ export const GatekeeperConfigDraft = {
 
       draft.commit({ original: draft.value });
 
-      wallet.upsertSinglesigWallet({
-        type: "singlesig-wallet",
-        publicKey,
-        privateKey: privateKey,
-      });
+      wallet.upsertSinglesigWallet(
+        ObservableSinglesigWallet.create({
+          type: "singlesig-wallet",
+          publicKey,
+          privateKey: privateKey,
+        })
+      );
     }, [draftsStore, wallet]);
 
     return <>{children}</>;
