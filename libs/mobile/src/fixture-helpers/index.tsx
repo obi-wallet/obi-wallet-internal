@@ -4,6 +4,7 @@ import {
   generateSec256k1KeyPair,
   KeyType,
   ObservableBeneficiary,
+  ObservableFlexAccount,
   ObservableMultisigKey,
   Sdk,
 } from "@obi-wallet/sdk";
@@ -132,54 +133,60 @@ export const GatekeeperConfigDraft = {
           },
         })
       );
-      draft.value.upsertFlexAccount({
-        type: "flex-account",
-        meta: {
-          name: "Strict Flex Account",
-          icon: "",
-        },
-        address,
-        publicKey,
-        privateKey: privateKey,
-        spendLimit: null,
-        autoSign: null,
-      });
-      draft.value.upsertFlexAccount({
-        type: "flex-account",
-        meta: {
-          name: "Limited Flex Account",
-          icon: "",
-        },
-        address,
-        publicKey,
-        privateKey: privateKey,
-        spendLimit: {
-          period: {
-            days: 1,
+      draft.value.upsertFlexAccount(
+        ObservableFlexAccount.create({
+          type: "flex-account",
+          meta: {
+            name: "Strict Flex Account",
+            icon: "",
           },
-          amount: 10,
-        },
-        autoSign: null,
-      });
-      draft.value.upsertFlexAccount({
-        type: "flex-account",
-        meta: {
-          name: "Unlocked Flex Account",
-          icon: "",
-        },
-        address,
-        publicKey,
-        privateKey: privateKey,
-        spendLimit: {
-          period: {
-            days: 1,
+          address,
+          publicKey,
+          privateKey: privateKey,
+          spendLimit: null,
+          autoSign: null,
+        })
+      );
+      draft.value.upsertFlexAccount(
+        ObservableFlexAccount.create({
+          type: "flex-account",
+          meta: {
+            name: "Limited Flex Account",
+            icon: "",
           },
-          amount: 10,
-        },
-        autoSign: {
-          endTime: DateTime.local().plus({ minutes: 30 }).toISO(),
-        },
-      });
+          address,
+          publicKey,
+          privateKey: privateKey,
+          spendLimit: {
+            period: {
+              days: 1,
+            },
+            amount: 10,
+          },
+          autoSign: null,
+        })
+      );
+      draft.value.upsertFlexAccount(
+        ObservableFlexAccount.create({
+          type: "flex-account",
+          meta: {
+            name: "Unlocked Flex Account",
+            icon: "",
+          },
+          address,
+          publicKey,
+          privateKey: privateKey,
+          spendLimit: {
+            period: {
+              days: 1,
+            },
+            amount: 10,
+          },
+          autoSign: {
+            endTime: DateTime.local().plus({ minutes: 30 }).toISO(),
+          },
+        })
+      );
 
       draft.commit({ original: draft.value });
 

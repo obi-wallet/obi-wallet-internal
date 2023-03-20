@@ -1,7 +1,11 @@
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { FlexAccount, Text, TextInput } from "@obi-wallet/common";
-import { FlexAccountPermissionedAddress } from "@obi-wallet/sdk";
+import { Text, TextInput } from "@obi-wallet/common";
+import {
+  FlexAccount,
+  FlexAccountPermissionedAddress,
+  ObservableFlexAccount,
+} from "@obi-wallet/sdk";
 import Slider from "@react-native-community/slider";
 import { DateTime } from "luxon";
 import { runInAction } from "mobx";
@@ -124,55 +128,52 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
       FlexAccountRule.Unlocked,
     ];
 
-    const getRemainingTime = useCallback(() => {
-      if (!originalAccount?.autoSign) return null;
+    const [remainingTime, setRemainingTime] = useState(
+      originalAccount?.remainingAutoSignDuration
+    );
 
-      const remainingTime = DateTime.fromISO(
-        originalAccount?.autoSign?.endTime
-      ).diff(DateTime.now(), "seconds");
-      return remainingTime.toMillis() >= 0 ? remainingTime : null;
-    }, [originalAccount]);
-
-    const [remainingTime, setRemainingTime] = useState(getRemainingTime);
-
-    const getActiveFlexRule = useCallback(() => {
-      if (originalAccount?.autoSign && getRemainingTime()) {
+    const getActiveFlexRule = () => {
+      if (originalAccount?.hasActiveAutoSign) {
         return FlexAccountRule.Unlocked;
       } else if (originalAccount?.spendLimit) {
         return FlexAccountRule.Limited;
       } else {
         return FlexAccountRule.Strict;
       }
-    }, [originalAccount, getRemainingTime]);
+    };
 
-    const getNextFlexRule = useCallback(() => {
-      if (account.autoSign) {
+    const getNextFlexRule = () => {
+      if (account.hasActiveAutoSign) {
         return FlexAccountRule.Unlocked;
       } else if (account.spendLimit) {
         return FlexAccountRule.Limited;
       } else {
         return FlexAccountRule.Strict;
       }
-    }, [account.autoSign, account.spendLimit]);
+    };
     const activeFlexRule = getActiveFlexRule();
     const nextFlexRule = getNextFlexRule();
 
-    const setNextFlexRule = useCallback(
-      (rule: FlexAccountRule) => {
-        runInAction(() => {
-          if (getNextFlexRule() === rule) return;
+    const setNextFlexRule = (rule: FlexAccountRule) => {
+      runInAction(() => {
+        if (getNextFlexRule() === rule) return;
 
-          switch (rule) {
-            case FlexAccountRule.Strict:
-              onChange({
-                ...account,
+        switch (rule) {
+          case FlexAccountRule.Strict:
+            // TODO: should be method on account
+            onChange(
+              ObservableFlexAccount.create({
+                ...account.toJSON(),
                 spendLimit: null,
                 autoSign: null,
-              });
-              break;
-            case FlexAccountRule.Limited:
-              onChange({
-                ...account,
+              })
+            );
+            break;
+          case FlexAccountRule.Limited:
+            // TODO: should be method on account
+            onChange(
+              ObservableFlexAccount.create({
+                ...account.toJSON(),
                 spendLimit: account.spendLimit ?? {
                   amount: 0,
                   period: {
@@ -180,30 +181,31 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                   },
                 },
                 autoSign: null,
-              });
-              break;
-            case FlexAccountRule.Unlocked:
-              onChange({
+              })
+            );
+            break;
+          case FlexAccountRule.Unlocked:
+            onChange(
+              ObservableFlexAccount.create({
                 ...account,
                 autoSign: {
                   endTime: DateTime.now().plus({ minutes: 30 }).toISO(),
                 },
-              });
-              break;
-          }
+              })
+            );
+            break;
+        }
 
-          setRemainingTime(getRemainingTime());
-        });
-      },
-      [account, getNextFlexRule, getRemainingTime, onChange]
-    );
+        setRemainingTime(originalAccount?.remainingAutoSignDuration);
+      });
+    };
 
     useEffect(() => {
       const interval = setInterval(() => {
-        setRemainingTime(getRemainingTime());
+        setRemainingTime(originalAccount?.remainingAutoSignDuration);
       }, 1000);
       return () => clearInterval(interval);
-    }, [getRemainingTime]);
+    }, [originalAccount]);
 
     const getRuleText = () => {
       switch (nextFlexRule) {

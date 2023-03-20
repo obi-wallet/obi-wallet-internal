@@ -6,7 +6,8 @@ import {
   TerraChain,
   terraChains,
 } from "../../chains";
-import { FlexAccount, GatekeeperConfig } from "../gatekeeper-config";
+import { FlexAccount } from "../flex-account";
+import { GatekeeperConfig } from "../gatekeeper-config";
 import { AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
 
@@ -34,7 +35,7 @@ export interface MultisigWalletInterface {
   readonly currentAccountMeta: CurrentAccountMeta | null;
   readonly currentAccount:
     | AbstractSerialized<typeof SinglesigWallet>
-    | AbstractSerialized<typeof FlexAccount>
+    | FlexAccount
     | null;
   readonly owner: MultisigKey;
   readonly gatekeeperConfig: GatekeeperConfig;
@@ -50,10 +51,7 @@ export interface MultisigWalletInterface {
   }): boolean;
   getAccount(
     account: CurrentAccountMeta
-  ):
-    | AbstractSerialized<typeof SinglesigWallet>
-    | AbstractSerialized<typeof FlexAccount>
-    | null;
+  ): AbstractSerialized<typeof SinglesigWallet> | FlexAccount | null;
   setCurrentAccount(account: CurrentAccountMeta | null): void;
   setOwner(owner: MultisigKey): void;
   setGatekeeperConfig(gatekeeperConfig: GatekeeperConfig): void;

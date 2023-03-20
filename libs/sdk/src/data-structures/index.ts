@@ -1,5 +1,6 @@
 export * from "./abstract";
 export * from "./beneficiary";
+export * from "./flex-account";
 export * from "./gatekeeper-config";
 export * from "./multisig-key";
 export * from "./multisig-wallet";

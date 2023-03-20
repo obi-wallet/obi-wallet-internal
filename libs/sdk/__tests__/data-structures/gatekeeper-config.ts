@@ -3,6 +3,7 @@ import { isObservable } from "mobx";
 import {
   createObservableGatekeeperConfig,
   ObservableBeneficiary,
+  ObservableFlexAccount,
 } from "../../src";
 
 describe("ObservableGatekeeperConfig", () => {
@@ -51,21 +52,23 @@ describe("ObservableGatekeeperConfig", () => {
   test("flexAccounts observable", () => {
     const config = createObservableGatekeeperConfig();
     expect(isObservable(config.beneficiaries)).toEqual(true);
-    config.upsertFlexAccount({
-      type: "flex-account",
-      address: "address",
-      meta: {
-        name: "name",
-        icon: "icon",
-      },
-      autoSign: null,
-      privateKey: "privateKey",
-      spendLimit: null,
-      publicKey: {
-        type: "tendermint/PubKeySecp256k1",
-        value: "value",
-      },
-    });
+    config.upsertFlexAccount(
+      ObservableFlexAccount.create({
+        type: "flex-account",
+        address: "address",
+        meta: {
+          name: "name",
+          icon: "icon",
+        },
+        autoSign: null,
+        privateKey: "privateKey",
+        spendLimit: null,
+        publicKey: {
+          type: "tendermint/PubKeySecp256k1",
+          value: "value",
+        },
+      })
+    );
     expect(isObservable(config.beneficiaries)).toEqual(true);
     config.removeFlexAccountByAddress({ address: "address" });
     expect(isObservable(config.beneficiaries)).toEqual(true);

@@ -1,7 +1,7 @@
 import { faCamera, faPhotoFilm } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { FlexAccount, SinglesigWallet, Text } from "@obi-wallet/common";
-import { Beneficiary } from "@obi-wallet/sdk";
+import { SinglesigWallet, Text } from "@obi-wallet/common";
+import { Beneficiary, FlexAccount } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { FC, useState } from "react";
 import {
