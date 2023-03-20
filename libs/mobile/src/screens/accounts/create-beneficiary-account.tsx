@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@obi-wallet/common";
-import { GatekeeperConfig, Sdk } from "@obi-wallet/sdk";
+import { GatekeeperConfig, ObservableBeneficiary, Sdk } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -150,23 +150,25 @@ export const CreateBeneficiaryAccountScreen =
                 flavor="blue"
                 disabled={!formState.isValid}
                 onPress={handleSubmit((data) => {
-                  gatekeeperConfig.value.upsertBeneficiary({
-                    type: "beneficiary",
-                    meta: {
-                      icon: icon?.uri || "",
-                      name: data.name,
-                    },
-                    address: data.address,
-                    dormancyThreshold: {
-                      years: 1,
-                    },
-                    dripSchedule: {
-                      rate: 0.01,
-                      period: {
-                        months: 1,
+                  gatekeeperConfig.value.upsertBeneficiary(
+                    ObservableBeneficiary.create({
+                      type: "beneficiary",
+                      meta: {
+                        icon: icon?.uri || "",
+                        name: data.name,
                       },
-                    },
-                  });
+                      address: data.address,
+                      dormancyThreshold: {
+                        years: 1,
+                      },
+                      dripSchedule: {
+                        rate: 0.01,
+                        period: {
+                          months: 1,
+                        },
+                      },
+                    })
+                  );
 
                   navigation.navigate(AccountsRoute.AccountsOverview);
                 })}

@@ -2,19 +2,19 @@ import { action, makeObservable, observable } from "mobx";
 import * as R from "ramda";
 import { z } from "zod";
 
-import { Beneficiary } from "./beneficiary";
 import { FlexAccount } from "./flex-account";
+import { Beneficiary, ObservableBeneficiary } from "../beneficiary";
 import {
   AbstractMigratable,
   AbstractSerialized,
   migratable,
 } from "../migratable";
 
-export { Beneficiary, FlexAccount };
+export { FlexAccount };
 
 const GatekeeperConfigSchema = migratable(
   z.object({
-    beneficiaries: z.array(Beneficiary.migratableSchema),
+    beneficiaries: z.array(Beneficiary.schema.migratableSchema),
     flexAccounts: z.array(FlexAccount.migratableSchema),
   })
 );
@@ -25,7 +25,7 @@ export class GatekeeperConfig {
   }
 
   public constructor(
-    protected _beneficiaries: AbstractSerialized<typeof Beneficiary>[],
+    protected _beneficiaries: Beneficiary[],
     protected _flexAccounts: AbstractSerialized<typeof FlexAccount>[],
     protected _factory: (
       serialized: AbstractSerialized<typeof GatekeeperConfigSchema>
@@ -34,7 +34,7 @@ export class GatekeeperConfig {
 
   public toJSON(): AbstractSerialized<typeof GatekeeperConfigSchema> {
     return {
-      beneficiaries: this._beneficiaries,
+      beneficiaries: this._beneficiaries.map((b) => b.toJSON()),
       flexAccounts: this._flexAccounts,
     };
   }
@@ -55,9 +55,7 @@ export class GatekeeperConfig {
     return this._flexAccounts;
   }
 
-  public upsertBeneficiary(
-    beneficiary: AbstractSerialized<typeof Beneficiary>
-  ) {
+  public upsertBeneficiary(beneficiary: Beneficiary) {
     this._beneficiaries = this.upsertArrayItem(
       this._beneficiaries,
       beneficiary
@@ -102,20 +100,27 @@ export function createGatekeeperConfig(
     beneficiaries: [],
     flexAccounts: [],
   },
-  factory = createGatekeeperConfig
+  factories = {
+    createGatekeeperConfig,
+    Beneficiary,
+  }
 ) {
   const { beneficiaries, flexAccounts } =
     GatekeeperConfigSchema.migratableSchema.parse(serialized);
-  return new GatekeeperConfig(beneficiaries, flexAccounts, factory);
+  return new GatekeeperConfig(
+    beneficiaries.map((b) => Beneficiary.create(b)),
+    flexAccounts,
+    factories.createGatekeeperConfig
+  );
 }
 
 export function createObservableGatekeeperConfig(
   serialized?: AbstractMigratable<typeof GatekeeperConfigSchema>
 ) {
-  const config = createGatekeeperConfig(
-    serialized,
-    createObservableGatekeeperConfig
-  );
+  const config = createGatekeeperConfig(serialized, {
+    createGatekeeperConfig: createObservableGatekeeperConfig,
+    Beneficiary: ObservableBeneficiary,
+  });
   makeObservable<GatekeeperConfig, "_beneficiaries" | "_flexAccounts">(
     config,
     {

@@ -17,7 +17,7 @@ export const AutoSign = z.object({
 export const FlexAccount = migratable(
   z.object({
     type: z.literal("flex-account"),
-    meta: AccountMetaData,
+    meta: AccountMetaData.migratableSchema,
     address: z.string(),
     publicKey: Secp256k1PublicKey,
     privateKey: z.string(),

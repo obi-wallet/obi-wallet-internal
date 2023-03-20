@@ -1,6 +1,7 @@
 import {
   createObservableGatekeeperConfig,
   generateSec256k1KeyPair,
+  ObservableBeneficiary,
   Sdk,
 } from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
@@ -49,23 +50,25 @@ describe("Empty gatekeeper config", () => {
 
   test("Add beneficiary", () => {
     const newGatekeeperConfig = createObservableGatekeeperConfig();
-    newGatekeeperConfig.upsertBeneficiary({
-      type: "beneficiary",
-      meta: {
-        name: "Beneficiary",
-        icon: "",
-      },
-      address,
-      dormancyThreshold: {
-        years: 1,
-      },
-      dripSchedule: {
-        rate: 0.05,
-        period: {
+    newGatekeeperConfig.upsertBeneficiary(
+      ObservableBeneficiary.create({
+        type: "beneficiary",
+        meta: {
+          name: "Beneficiary",
+          icon: "",
+        },
+        address,
+        dormancyThreshold: {
           years: 1,
         },
-      },
-    });
+        dripSchedule: {
+          rate: 0.05,
+          period: {
+            years: 1,
+          },
+        },
+      })
+    );
     const messages = getUpdateGatekeeperMessages({
       currentGatekeeperConfig,
       newGatekeeperConfig,

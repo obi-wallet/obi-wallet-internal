@@ -1,4 +1,5 @@
-import { Beneficiary, FlexAccount, SinglesigWallet } from "@obi-wallet/common";
+import { FlexAccount, SinglesigWallet } from "@obi-wallet/common";
+import { Beneficiary } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 
 import { BeneficiaryItem } from "./beneficiary";

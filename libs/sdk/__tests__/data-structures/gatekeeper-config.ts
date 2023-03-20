@@ -1,6 +1,9 @@
 import { isObservable } from "mobx";
 
-import { createObservableGatekeeperConfig } from "../../src";
+import {
+  createObservableGatekeeperConfig,
+  ObservableBeneficiary,
+} from "../../src";
 
 describe("ObservableGatekeeperConfig", () => {
   test(".empty observable", () => {
@@ -21,23 +24,25 @@ describe("ObservableGatekeeperConfig", () => {
   test("beneficiaries observable", () => {
     const config = createObservableGatekeeperConfig();
     expect(isObservable(config.beneficiaries)).toEqual(true);
-    config.upsertBeneficiary({
-      type: "beneficiary",
-      address: "address",
-      meta: {
-        name: "name",
-        icon: "icon",
-      },
-      dripSchedule: {
-        rate: 0.05,
-        period: {
+    config.upsertBeneficiary(
+      ObservableBeneficiary.create({
+        type: "beneficiary",
+        address: "address",
+        meta: {
+          name: "name",
+          icon: "icon",
+        },
+        dripSchedule: {
+          rate: 0.05,
+          period: {
+            years: 1,
+          },
+        },
+        dormancyThreshold: {
           years: 1,
         },
-      },
-      dormancyThreshold: {
-        years: 1,
-      },
-    });
+      })
+    );
     expect(isObservable(config.beneficiaries)).toEqual(true);
     config.removeBeneficiaryByAddress({ address: "address" });
     expect(isObservable(config.beneficiaries)).toEqual(true);

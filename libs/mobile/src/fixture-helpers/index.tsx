@@ -3,6 +3,7 @@ import {
   GatekeeperConfig,
   generateSec256k1KeyPair,
   KeyType,
+  ObservableBeneficiary,
   ObservableMultisigKey,
   Sdk,
 } from "@obi-wallet/sdk";
@@ -112,23 +113,25 @@ export const GatekeeperConfigDraft = {
         publicKey,
       });
 
-      draft.value.upsertBeneficiary({
-        type: "beneficiary",
-        meta: {
-          name: "Beneficiary Account",
-          icon: "",
-        },
-        address,
-        dormancyThreshold: {
-          years: 1,
-        },
-        dripSchedule: {
-          rate: 0.05,
-          period: {
+      draft.value.upsertBeneficiary(
+        ObservableBeneficiary.create({
+          type: "beneficiary",
+          meta: {
+            name: "Beneficiary Account",
+            icon: "",
+          },
+          address,
+          dormancyThreshold: {
             years: 1,
           },
-        },
-      });
+          dripSchedule: {
+            rate: 0.05,
+            period: {
+              years: 1,
+            },
+          },
+        })
+      );
       draft.value.upsertFlexAccount({
         type: "flex-account",
         meta: {

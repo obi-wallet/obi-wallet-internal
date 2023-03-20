@@ -4,12 +4,8 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  Beneficiary,
-  FlexAccount,
-  SinglesigWallet,
-  Text,
-} from "@obi-wallet/common";
+import { FlexAccount, SinglesigWallet, Text } from "@obi-wallet/common";
+import { Beneficiary } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { StyleProp, TextStyle, TouchableOpacity, View } from "react-native";

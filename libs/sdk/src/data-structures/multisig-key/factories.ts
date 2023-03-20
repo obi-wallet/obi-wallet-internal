@@ -9,7 +9,7 @@ import { AbstractMigratable } from "../migratable";
 
 export function createMultisigKey(
   chain: Chain,
-  serialized: AbstractMigratable<typeof MultisigKeySchema> = {
+  migratable: AbstractMigratable<typeof MultisigKeySchema> = {
     keys: [],
     threshold: 1,
   },
@@ -19,7 +19,7 @@ export function createMultisigKey(
   }
 ): MultisigKeyInterface {
   const { keys, threshold } =
-    MultisigKeySchema.migratableSchema.parse(serialized);
+    MultisigKeySchema.migratableSchema.parse(migratable);
   return new MultisigKey(
     chain,
     keys.map((key) => factories.createKey(key)),
@@ -30,9 +30,9 @@ export function createMultisigKey(
 
 export function createObservableMultisigKey(
   chain: Chain,
-  serialized?: AbstractMigratable<typeof MultisigKeySchema>
+  migratable?: AbstractMigratable<typeof MultisigKeySchema>
 ): MultisigKeyInterface {
-  const key = createMultisigKey(chain, serialized, {
+  const key = createMultisigKey(chain, migratable, {
     createKey: createObservableKey,
     createMultisigKey: createObservableMultisigKey,
   });

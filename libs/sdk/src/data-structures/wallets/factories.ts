@@ -35,6 +35,9 @@ export function createObservableWallets(
       logout: action,
       upsertWallet: action,
       removeWallet: action,
+    },
+    {
+      name: "Wallets",
     }
   );
   return wallets;
