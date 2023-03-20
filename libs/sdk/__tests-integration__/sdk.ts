@@ -2,6 +2,8 @@ import { SimplePublicKey } from "@terra-money/feather.js";
 
 import { AccountValidationResult, generateSec256k1KeyPair, Sdk } from "../src";
 
+jest.setTimeout(60_000);
+
 describe("validateAccount", () => {
   const demoPublicKey = SimplePublicKey.fromAmino({
     type: "tendermint/PubKeySecp256k1",
