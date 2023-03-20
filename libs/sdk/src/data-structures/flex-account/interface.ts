@@ -1,7 +1,7 @@
 import { DateTime, Duration } from "luxon";
 import { z } from "zod";
 
-import { AutoSign, FlexAccountSchema, SpendLimit } from "./schema";
+import { FlexAccountSchema, SpendLimit } from "./schema";
 import { Secp256k1PublicKey } from "../../keys";
 import { AccountMetaData } from "../gatekeeper-config/account-meta-data";
 import { AbstractSerialized } from "../migratable";

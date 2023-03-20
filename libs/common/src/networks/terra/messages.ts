@@ -7,7 +7,7 @@ import {
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
 } from "@terra-money/feather.js";
-import { DateTime, Duration } from "luxon";
+import { Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 

@@ -316,7 +316,7 @@ const AccountsList = observer(function AccountsList() {
           id: account.address,
         },
         account,
-        originalAccount: wallet.gatekeeperConfig.beneficiaries.find(
+        originalAccount: draft.original.beneficiaries.find(
           (originalAccount) => {
             return originalAccount.address === account.address;
           }
@@ -332,11 +332,9 @@ const AccountsList = observer(function AccountsList() {
           id: account.address,
         },
         account,
-        originalAccount: wallet.gatekeeperConfig.flexAccounts.find(
-          (originalAccount) => {
-            return originalAccount.address === account.address;
-          }
-        ),
+        originalAccount: draft.original.flexAccounts.find((originalAccount) => {
+          return originalAccount.address === account.address;
+        }),
       };
     }
   );

@@ -59,6 +59,8 @@ export function createObservableMultisigWallet(
       setOwner: action,
       setCurrentAccount: action,
       setGatekeeperConfig: action,
+      upsertSinglesigWallet: action,
+      removeSinglesigWallet: action,
     },
     {
       name: "MultisigWallet",

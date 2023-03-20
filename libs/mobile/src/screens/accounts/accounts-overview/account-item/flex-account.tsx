@@ -8,7 +8,7 @@ import {
 } from "@obi-wallet/sdk";
 import Slider from "@react-native-community/slider";
 import { DateTime } from "luxon";
-import { runInAction } from "mobx";
+import { runInAction, toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -163,7 +163,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
             // TODO: should be method on account
             onChange(
               ObservableFlexAccount.create({
-                ...account.toJSON(),
+                ...toJS(account.toJSON()),
                 spendLimit: null,
                 autoSign: null,
               })
@@ -173,7 +173,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
             // TODO: should be method on account
             onChange(
               ObservableFlexAccount.create({
-                ...account.toJSON(),
+                ...toJS(account.toJSON()),
                 spendLimit: account.spendLimit ?? {
                   amount: 0,
                   period: {
@@ -187,7 +187,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
           case FlexAccountRule.Unlocked:
             onChange(
               ObservableFlexAccount.create({
-                ...account,
+                ...toJS(account.toJSON()),
                 autoSign: {
                   endTime: DateTime.now().plus({ minutes: 30 }).toISO(),
                 },
