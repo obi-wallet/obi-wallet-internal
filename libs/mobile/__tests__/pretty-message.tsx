@@ -11,6 +11,14 @@ import {
 } from "@terra-money/feather.js";
 import { render, screen } from "@testing-library/react-native";
 
+import {
+  createSessionKey,
+  destroySessionKey,
+  rmFlex,
+  upsertBeneficiary,
+  upsertBeneficiaryAnnually,
+  upsertFlex,
+} from "../__fixtures__/messages";
 import { PrettyMessage } from "../src/app/modals/signature-modal/pretty-message";
 import { Provider } from "../src/app/provider";
 
@@ -232,6 +240,112 @@ describe("Terra", () => {
         screen.getByText("Withdrawing staking rewards from:")
       ).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
+    });
+  });
+
+  describe("Add/Update Permissioned Address ", () => {
+    test("Obi", async () => {
+      renderPrettyMessage({ message: upsertFlex, brand: Brand.Obi });
+      expect(screen.getByText("Add/Update Permissioned Address")).toBeDefined();
+      expect(screen.getByText("0LUNA")).toBeDefined();
+      expect(
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+      ).toBeDefined();
+    });
+    test("Loop", async () => {
+      renderPrettyMessage({ message: upsertFlex, brand: Brand.Loop });
+      expect(screen.getByText("Add/Update Permissioned Address")).toBeDefined();
+      expect(
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+      ).toBeDefined();
+    });
+  });
+
+  describe("Remove Permissioned Address", () => {
+    test("Obi", async () => {
+      renderPrettyMessage({ message: rmFlex, brand: Brand.Obi });
+      expect(screen.getByText("Remove Permissioned Address")).toBeDefined();
+      expect(screen.getByText("0LUNA")).toBeDefined();
+      expect(
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+      ).toBeDefined();
+    });
+    test("Loop", async () => {
+      renderPrettyMessage({ message: rmFlex, brand: Brand.Loop });
+      expect(screen.getByText("Remove Permissioned Address")).toBeDefined();
+      expect(
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+      ).toBeDefined();
+    });
+  });
+
+  describe("Create Session Key", () => {
+    test("Obi", async () => {
+      renderPrettyMessage({ message: createSessionKey, brand: Brand.Obi });
+      expect(screen.getByText("Create Session Key")).toBeDefined();
+      expect(screen.getByText("0LUNA")).toBeDefined();
+      expect(
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+      ).toBeDefined();
+    });
+    test("Loop", async () => {
+      renderPrettyMessage({ message: createSessionKey, brand: Brand.Loop });
+      expect(screen.getByText("Create Session Key")).toBeDefined();
+      expect(
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+      ).toBeDefined();
+    });
+  });
+
+  describe("Destroy Session Key", () => {
+    it("Obi", async () => {
+      renderPrettyMessage({ message: destroySessionKey, brand: Brand.Obi });
+      expect(screen.getByText("Destroy Session Key")).toBeDefined();
+      expect(screen.getByText("0LUNA")).toBeDefined();
+      expect(
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+      ).toBeDefined();
+    });
+    test("Loop", async () => {
+      renderPrettyMessage({ message: destroySessionKey, brand: Brand.Loop });
+      expect(screen.getByText("Destroy Session Key")).toBeDefined();
+      expect(
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+      ).toBeDefined();
+    });
+  });
+
+  describe("Add/Update Beneficiary", () => {
+    test("Obi", async () => {
+      renderPrettyMessage({ message: upsertBeneficiary, brand: Brand.Obi });
+      expect(screen.getByText("Add/Update Beneficiary")).toBeDefined();
+      expect(screen.getByText("0LUNA")).toBeDefined();
+      expect(
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+      ).toBeDefined();
+      expect(
+        screen.getByText("Will receive 1% monthly after 12 months")
+      ).toBeDefined();
+    });
+    test("Loop", async () => {
+      renderPrettyMessage({ message: upsertBeneficiary, brand: Brand.Loop });
+      expect(screen.getByText("Add/Update Beneficiary")).toBeDefined();
+      expect(
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+      ).toBeDefined();
+      expect(
+        screen.getByText("Will receive 1% monthly after 12 months")
+      ).toBeDefined();
+    });
+    test("Annually", async () => {
+      renderPrettyMessage({
+        message: upsertBeneficiaryAnnually,
+        brand: Brand.Obi,
+      });
+
+      expect(
+        screen.getByText("Will receive 10% annually after 12 months")
+      ).toBeDefined();
     });
   });
 

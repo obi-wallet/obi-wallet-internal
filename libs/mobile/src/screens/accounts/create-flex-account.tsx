@@ -1,9 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@obi-wallet/common";
 import {
+  GatekeeperConfig,
   generateSec256k1KeyPair,
   Sdk,
-  GatekeeperConfig,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -27,6 +27,7 @@ export type CreateFlexAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
   AccountsRoute.CreateFlexAccount
 >;
+
 export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
   function CreateFlexAccountScreen({ navigation }) {
     const { draftsStore } = useStore();
