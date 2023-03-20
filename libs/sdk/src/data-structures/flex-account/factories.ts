@@ -1,4 +1,4 @@
-import { makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 
 import { FlexAccount } from "./implementation";
 import { FlexAccountInterface } from "./interface";
@@ -41,6 +41,9 @@ export function createObservableFlexAccount(
       _spendLimit: observable,
       _autoSign: observable,
       toJSON: false,
+      setSpendLimit: action,
+      enableAutoSign: action,
+      clearAutoSign: action,
     },
     {
       name: "FlexAccount",

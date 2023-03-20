@@ -105,8 +105,8 @@ export function createGatekeeperConfig(
   const { beneficiaries, flexAccounts } =
     GatekeeperConfigSchema.migratableSchema.parse(serialized);
   return new GatekeeperConfig(
-    beneficiaries.map((b) => Beneficiary.create(b)),
-    flexAccounts.map((b) => FlexAccount.create(b)),
+    beneficiaries.map((b) => factories.Beneficiary.create(b)),
+    flexAccounts.map((b) => factories.FlexAccount.create(b)),
     factories.createGatekeeperConfig
   );
 }

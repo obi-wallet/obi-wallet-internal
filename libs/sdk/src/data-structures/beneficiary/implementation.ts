@@ -52,7 +52,19 @@ export class Beneficiary implements BeneficiaryInterface {
     return this._dormancyThreshold;
   }
 
+  public setDormancyThreshold(duration: z.infer<typeof Duration>) {
+    this._dormancyThreshold = duration;
+  }
+
   public get dripSchedule() {
     return this._dripSchedule;
+  }
+
+  public setDripRate(rate: number) {
+    this._dripSchedule.rate = rate;
+  }
+
+  public setDripPeriod(duration: z.infer<typeof Duration>) {
+    this._dripSchedule.period = duration;
   }
 }

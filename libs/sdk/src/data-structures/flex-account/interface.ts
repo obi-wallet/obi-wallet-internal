@@ -20,4 +20,8 @@ export interface FlexAccountInterface {
 
   toJSON(): AbstractSerialized<typeof FlexAccountSchema>;
   equals(other: FlexAccountInterface): boolean;
+
+  setSpendLimit(spendLimit: z.infer<typeof SpendLimit> | null): void;
+  enableAutoSign(endTime: DateTime): void;
+  clearAutoSign(): void;
 }

@@ -1,4 +1,4 @@
-import { makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 
 import { Beneficiary } from "./implementation";
 import { BeneficiaryInterface } from "./interface";
@@ -32,6 +32,9 @@ export function createObservableBeneficiary(
       _dormancyThreshold: observable,
       _dripSchedule: observable,
       toJSON: false,
+      setDormancyThreshold: action,
+      setDripRate: action,
+      setDripPeriod: action,
     },
     {
       name: "Beneficiary",

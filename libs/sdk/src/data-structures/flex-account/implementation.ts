@@ -65,6 +65,10 @@ export class FlexAccount implements FlexAccountInterface {
     return this._spendLimit;
   }
 
+  public setSpendLimit(spendLimit: z.infer<typeof SpendLimit> | null) {
+    this._spendLimit = spendLimit;
+  }
+
   public get hasActiveAutoSign() {
     return !!this.remainingAutoSignDuration;
   }
@@ -86,5 +90,13 @@ export class FlexAccount implements FlexAccountInterface {
   protected get autoSign() {
     if (!this.hasActiveAutoSign) return null;
     return this._autoSign;
+  }
+
+  public enableAutoSign(endTime: DateTime) {
+    this._autoSign = { endTime: endTime.toISO() };
+  }
+
+  public clearAutoSign() {
+    this._autoSign = null;
   }
 }

@@ -9,8 +9,6 @@ import { SinglesigWalletItem } from "./singlesig-wallet";
 export interface AccountItemProps extends AbstractAccountItemProps {
   originalAccount: Beneficiary | FlexAccount | SinglesigWallet | null;
   account: Beneficiary | FlexAccount | SinglesigWallet;
-  onDelete: () => void;
-  onChange: (account: Beneficiary | FlexAccount | SinglesigWallet) => void;
 }
 
 export const AccountItem = observer<AccountItemProps>(function AccountItem({

@@ -1,14 +1,10 @@
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text, TextInput } from "@obi-wallet/common";
-import {
-  FlexAccount,
-  FlexAccountPermissionedAddress,
-  ObservableFlexAccount,
-} from "@obi-wallet/sdk";
+import { FlexAccount, FlexAccountPermissionedAddress } from "@obi-wallet/sdk";
 import Slider from "@react-native-community/slider";
 import { DateTime } from "luxon";
-import { runInAction, toJS } from "mobx";
+import { runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -29,7 +25,6 @@ import { PermissionedAddressesContext } from "../permissioned-address-context";
 export interface FlexAccountItemProps extends AbstractAccountItemProps {
   originalAccount: FlexAccount | null;
   account: FlexAccount;
-  onChange: (account: FlexAccount) => void;
 }
 
 export enum FlexAccountPeriodicity {
@@ -54,7 +49,6 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
     active = false,
     onSetActive,
     onDelete,
-    onChange,
   }) {
     const wallet = useMultisigWallet();
     const threshold = {
@@ -67,15 +61,12 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
       (amount: number) => {
         if (!account.spendLimit) return;
 
-        onChange({
-          ...account,
-          spendLimit: {
-            ...account.spendLimit,
-            amount,
-          },
+        account.setSpendLimit({
+          ...account.spendLimit,
+          amount,
         });
       },
-      [account, onChange]
+      [account]
     );
     const [throttledSetAmount] = useThrottle(setAmount, 50);
 
@@ -112,12 +103,9 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
           }
         })();
 
-        onChange({
-          ...account,
-          spendLimit: {
-            ...account.spendLimit,
-            period: newPeriod,
-          },
+        account.setSpendLimit({
+          ...account.spendLimit,
+          period: newPeriod,
         });
       });
     };
@@ -160,39 +148,22 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
 
         switch (rule) {
           case FlexAccountRule.Strict:
-            // TODO: should be method on account
-            onChange(
-              ObservableFlexAccount.create({
-                ...toJS(account.toJSON()),
-                spendLimit: null,
-                autoSign: null,
-              })
-            );
+            account.setSpendLimit(null);
+            account.clearAutoSign();
             break;
           case FlexAccountRule.Limited:
-            // TODO: should be method on account
-            onChange(
-              ObservableFlexAccount.create({
-                ...toJS(account.toJSON()),
-                spendLimit: account.spendLimit ?? {
-                  amount: 0,
-                  period: {
-                    days: 1,
-                  },
+            account.setSpendLimit(
+              account.spendLimit ?? {
+                amount: 0,
+                period: {
+                  days: 1,
                 },
-                autoSign: null,
-              })
+              }
             );
+            account.clearAutoSign();
             break;
           case FlexAccountRule.Unlocked:
-            onChange(
-              ObservableFlexAccount.create({
-                ...toJS(account.toJSON()),
-                autoSign: {
-                  endTime: DateTime.now().plus({ minutes: 30 }).toISO(),
-                },
-              })
-            );
+            account.enableAutoSign(DateTime.now().plus({ minutes: 30 }));
             break;
         }
 

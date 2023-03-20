@@ -18,4 +18,7 @@ export interface BeneficiaryInterface {
 
   toJSON(): AbstractSerialized<typeof BeneficiarySchema>;
   equals(other: BeneficiaryInterface): boolean;
+  setDormancyThreshold(duration: z.infer<typeof Duration>): void;
+  setDripRate(rate: number): void;
+  setDripPeriod(duration: z.infer<typeof Duration>): void;
 }

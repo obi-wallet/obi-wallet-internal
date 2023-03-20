@@ -8,8 +8,8 @@ import {
 import {
   Beneficiary,
   FlexAccount,
-  SinglesigWallet,
   GatekeeperConfig,
+  SinglesigWallet,
   TerraChain,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -396,19 +396,6 @@ const AccountsList = observer(function AccountsList() {
                   break;
                 case "singlesig-wallet":
                   wallet.removeSinglesigWallet(element.item.account);
-                  break;
-              }
-            }}
-            onChange={(account) => {
-              switch (account.type) {
-                case "beneficiary":
-                  draft.value.upsertBeneficiary(account);
-                  break;
-                case "flex-account":
-                  draft.value.upsertFlexAccount(account);
-                  break;
-                case "singlesig-wallet":
-                  wallet.upsertSinglesigWallet(account);
                   break;
               }
             }}

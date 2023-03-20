@@ -14,10 +14,10 @@ import * as Animatable from "react-native-animatable";
 import { Avatar } from "../../avatar";
 
 export interface AbstractAccountItemProps {
-  active: boolean;
-  onSetActive: () => void;
   isOpen: boolean;
   onOpenToggle: () => void;
+  active: boolean;
+  onSetActive: () => void;
   onDelete: () => void;
 }
 

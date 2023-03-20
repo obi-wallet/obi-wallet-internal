@@ -24,7 +24,10 @@ export function createMultisigKey(
     chain,
     keys.map((key) => factories.createKey(key)),
     threshold,
-    factories
+    {
+      createKey: factories.createKey,
+      createMultisigKey: factories.createMultisigKey,
+    }
   );
 }
 
