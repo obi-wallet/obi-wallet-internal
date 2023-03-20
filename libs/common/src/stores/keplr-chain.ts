@@ -1,11 +1,11 @@
 import {
-  SetPersistentMemoryMsg,
-  GetPersistentMemoryMsg,
   GetChainInfosMsg,
+  GetPersistentMemoryMsg,
   RemoveSuggestedChainInfoMsg,
-  TryUpdateChainMsg,
-  SetChainEndpointsMsg,
   ResetChainEndpointsMsg,
+  SetChainEndpointsMsg,
+  SetPersistentMemoryMsg,
+  TryUpdateChainMsg,
 } from "@keplr-wallet/background";
 import { toGenerator } from "@keplr-wallet/common";
 import { BACKGROUND_PORT, MessageRequester } from "@keplr-wallet/router";
@@ -16,7 +16,7 @@ import {
   ObservableQuery,
 } from "@keplr-wallet/stores";
 import { ChainInfo } from "@keplr-wallet/types";
-import { observable, action, computed, makeObservable, flow } from "mobx";
+import { action, computed, flow, makeObservable, observable } from "mobx";
 
 export class KeplrChainStore extends BaseChainStore<ChainInfo> {
   @observable

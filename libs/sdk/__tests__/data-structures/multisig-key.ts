@@ -1,9 +1,9 @@
 import { isObservable, isObservableProp } from "mobx";
 
 import {
-  createObservableMultisigKey,
   KeyType,
   MultisigKey,
+  ObservableMultisigKey,
   Serialized,
 } from "../../src";
 
@@ -25,22 +25,22 @@ describe("ObservableMultisigKey", () => {
   };
 
   test(".empty observable", () => {
-    expect(isObservable(createObservableMultisigKey(chain))).toEqual(true);
+    expect(isObservable(ObservableMultisigKey.create(chain))).toEqual(true);
   });
 
   test(".deserialize observable", () => {
-    expect(isObservable(createObservableMultisigKey(chain, fixture))).toEqual(
+    expect(isObservable(ObservableMultisigKey.create(chain, fixture))).toEqual(
       true
     );
   });
 
   test("chain observable", () => {
-    const key = createObservableMultisigKey(chain);
+    const key = ObservableMultisigKey.create(chain);
     expect(isObservableProp(key, "_chain")).toEqual(true);
   });
 
   test("keys observable", () => {
-    const key = createObservableMultisigKey(chain, fixture);
+    const key = ObservableMultisigKey.create(chain, fixture);
     expect(isObservable(key.keys)).toEqual(true);
     expect(isObservable(key.keys[0])).toEqual(true);
     key.setKey<KeyType.Cloud>({
@@ -60,7 +60,7 @@ describe("ObservableMultisigKey", () => {
   });
 
   test("threshold observable", () => {
-    const key = createObservableMultisigKey(chain);
+    const key = ObservableMultisigKey.create(chain);
     expect(isObservableProp(key, "_threshold")).toEqual(true);
   });
 });

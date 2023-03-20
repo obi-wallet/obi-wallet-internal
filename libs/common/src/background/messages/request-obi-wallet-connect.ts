@@ -1,7 +1,7 @@
 import { BACKGROUND_PORT, Message } from "@keplr-wallet/router";
+import { WalletMeta } from "@obi-wallet/sdk";
 
 import { MessageRequesterInternal } from "../../message-requester";
-import { WalletMeta } from "../../stores";
 
 export type RequestObiWalletConnectPayload = {
   type: "session-request";

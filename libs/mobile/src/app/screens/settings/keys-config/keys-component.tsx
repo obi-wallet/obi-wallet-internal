@@ -1,11 +1,11 @@
 import { observer } from "mobx-react-lite";
 import Svg, {
-  SvgProps,
+  ClipPath,
+  Defs,
+  Ellipse,
   G,
   Path,
-  Ellipse,
-  Defs,
-  ClipPath,
+  SvgProps,
 } from "react-native-svg";
 
 import { useStore } from "../../../stores";

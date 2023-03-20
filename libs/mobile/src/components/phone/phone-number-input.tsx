@@ -3,19 +3,20 @@ import { Text, TextInput as OriginalTextInput } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ComponentType, useEffect, useState } from "react";
 import {
+  ScrollView,
   StyleProp,
   StyleSheet,
   TextInputProps,
   TextStyle,
   View,
   ViewStyle,
-  ScrollView,
 } from "react-native";
 import CountryPicker, {
+  Country,
+  CountryCode,
   CountryModalProvider,
+  DARK_THEME,
 } from "react-native-country-picker-modal";
-import { DARK_THEME } from "react-native-country-picker-modal";
-import { CountryCode, Country } from "react-native-country-picker-modal";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 import { isSmallScreenNumber } from "../../app/screens/components/screen-size";

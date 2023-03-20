@@ -10,6 +10,7 @@ import FlexAccountIcon from "./assets/flex-account-icon.svg";
 import LegacyAccountIcon from "./assets/legacy-account-icon.svg";
 import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
+
 export type AddAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
   AccountsRoute.AddAccount

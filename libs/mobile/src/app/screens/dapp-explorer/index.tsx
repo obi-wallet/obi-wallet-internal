@@ -24,7 +24,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
 import HistoryIcon from "./assets/history.svg";
 import Wcqr from "./assets/wcqr.svg";
-import { InlineButton, Button as ObiButton } from "../../button";
+import { Button as ObiButton, InlineButton } from "../../button";
 import { RootRoute, useRootNavigation } from "../../root-stack";
 import { useMultisigWallet, useStore } from "../../stores";
 import { parseDynamicLinkURL } from "../components/connected-web-view";

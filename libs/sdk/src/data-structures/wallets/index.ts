@@ -1,3 +1,17 @@
-export * from "./gatekeeper-config";
-export * from "./multisig-key";
-export * from "./multisig-wallet";
+export { WalletsSchema } from "./schema";
+import { createObservableWallets, createWallets } from "./factories";
+import { WalletsInterface } from "./interface";
+import { WalletsSchema } from "./schema";
+import { AbstractDataStructure } from "../abstract";
+
+export type Wallets = WalletsInterface;
+
+export const Wallets = {
+  schema: WalletsSchema,
+  create: createWallets,
+} satisfies AbstractDataStructure<Wallets>;
+
+export const ObservableWallets = {
+  schema: WalletsSchema,
+  create: createObservableWallets,
+} satisfies AbstractDataStructure<Wallets>;

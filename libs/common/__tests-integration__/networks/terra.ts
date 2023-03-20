@@ -38,7 +38,7 @@ const multisigKey = new LegacyAminoMultisigPublicKey(1, [
 ]);
 const multisigAddress = multisigKey.address("terra");
 
-jest.setTimeout(1000 * 60);
+jest.setTimeout(60_000);
 
 test("createAndSignMultisigTransaction", async () => {
   const message = new MsgSend(multisigAddress, multisigAddress, { uluna: 1 });

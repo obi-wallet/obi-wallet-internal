@@ -1,7 +1,6 @@
 import { mockAction, MultisigDraft } from "../../src/fixture-helpers";
 import { KeyFlow } from "../../src/screens/keys";
-import { SocialKeyProps } from "../../src/screens/keys/social";
-import { SocialKey } from "../../src/screens/keys/social";
+import { SocialKey, SocialKeyProps } from "../../src/screens/keys/social";
 
 function renderFlavor(flow: SocialKeyProps["flow"]) {
   return (

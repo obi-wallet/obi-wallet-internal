@@ -2,9 +2,9 @@ import { isObservable, isObservableProp } from "mobx";
 
 import {
   createGatekeeperConfig,
-  createMultisigKey,
-  ObservableMultisigWallet,
+  MultisigKey,
   MultisigWallet,
+  ObservableMultisigWallet,
   Serialized,
 } from "../../src";
 
@@ -14,7 +14,7 @@ describe("ObservableMultisigWallet", () => {
     data: {
       chain: "phoenix-1",
       gatekeeperConfig: createGatekeeperConfig().toJSON(),
-      owner: createMultisigKey("phoenix-1").toJSON(),
+      owner: MultisigKey.create("phoenix-1").toJSON(),
       proxyAddress: {
         v: 1,
         address: "cosmos1",
@@ -66,5 +66,9 @@ describe("ObservableMultisigWallet", () => {
 
   test("currentAccount observable", () => {
     expect(isObservableProp(key, "_currentAccount")).toEqual(true);
+  });
+
+  test("isDemo observable", () => {
+    expect(isObservableProp(key, "_isDemo")).toEqual(true);
   });
 });

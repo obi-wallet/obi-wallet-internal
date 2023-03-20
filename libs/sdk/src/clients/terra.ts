@@ -1,6 +1,6 @@
 import { LCDClient } from "@terra-money/feather.js";
 
-import { terraChains, TerraChain } from "../chains";
+import { TerraChain, terraChains } from "../chains";
 
 export async function withTerraClient<T>(
   chainId: TerraChain,

@@ -9,6 +9,8 @@
     "jest.config.ts",
     "__tests__/**/*.ts",
     "__tests__/**/*.tsx",
+    "__tests-integration__/**/*.ts",
+    "__tests-integration__/**/*.tsx",
     "src/**/*.test.ts",
     "src/**/*.spec.ts",
     "src/**/*.test.tsx",

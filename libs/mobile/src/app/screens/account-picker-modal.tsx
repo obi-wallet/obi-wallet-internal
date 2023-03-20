@@ -94,7 +94,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                   }}
                   onPress={() => {
                     onClose.current = () => {
-                      walletsStore.setCurrentWallet(wallet.id);
+                      walletsStore.setCurrentWallet(wallet);
                       navigation.dispatch(
                         CommonActions.reset({
                           index: 0,
@@ -149,7 +149,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                           {
                             text: "Confirm",
                             onPress: () => {
-                              walletsStore.removeWallet(wallet.id);
+                              walletsStore.removeWallet(wallet);
                             },
                           },
                         ]

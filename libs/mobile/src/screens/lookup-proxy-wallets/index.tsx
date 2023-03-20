@@ -1,9 +1,9 @@
 import {
-  createObservableMultisigKey,
   Key,
   KeyType,
   MultisigKey,
   MultisigWallet,
+  ObservableMultisigKey,
   Serialized,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -123,7 +123,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
             currentAccount: null,
           };
 
-          const newOwner = createObservableMultisigKey(
+          const newOwner = ObservableMultisigKey.create(
             serializedData.chain,
             serializedData.owner
           );

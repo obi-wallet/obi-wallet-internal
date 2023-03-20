@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="60" height="58" viewBox="0 0 60 58">
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="58" viewBox="0 0 60 58">
   <defs>
     <filter id="Polygon_3" x="0" y="0" width="46" height="58" filterUnits="userSpaceOnUse">
       <feOffset dy="3" input="SourceAlpha"/>

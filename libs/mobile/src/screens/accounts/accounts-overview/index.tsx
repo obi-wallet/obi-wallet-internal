@@ -294,7 +294,7 @@ const AccountsList = observer(function AccountsList() {
   type Account = Beneficiary | FlexAccount | SinglesigWallet;
   interface AccountMeta<T extends Account = Account> {
     type: T["type"];
-    index: number;
+    id: string;
   }
 
   const [itemOpened, setItemOpened] = useState<AccountMeta | null>(null);
@@ -306,11 +306,11 @@ const AccountsList = observer(function AccountsList() {
   };
 
   const beneficiariesData = draft.value.beneficiaries.map(
-    (account, index): AccountData<Beneficiary> => {
+    (account): AccountData<Beneficiary> => {
       return {
         meta: {
           type: account.type,
-          index,
+          id: account.address,
         },
         account,
         originalAccount: wallet.gatekeeperConfig.beneficiaries.find(
@@ -322,11 +322,11 @@ const AccountsList = observer(function AccountsList() {
     }
   );
   const flexAccountsData = draft.value.flexAccounts.map(
-    (account, index): AccountData<FlexAccount> => {
+    (account): AccountData<FlexAccount> => {
       return {
         meta: {
           type: account.type,
-          index,
+          id: account.address,
         },
         account,
         originalAccount: wallet.gatekeeperConfig.flexAccounts.find(
@@ -338,11 +338,11 @@ const AccountsList = observer(function AccountsList() {
     }
   );
   const singlesigWalletsData = wallet.singlesigWallets.map(
-    (account, index): AccountData<SinglesigWallet> => {
+    (account): AccountData<SinglesigWallet> => {
       return {
         meta: {
           type: account.type,
-          index,
+          id: account.publicKey.value,
         },
         account,
         originalAccount: account,

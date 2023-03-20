@@ -1,0 +1,22 @@
+import {
+  createMultisigWallet,
+  createObservableMultisigWallet,
+} from "./factories";
+import { MultisigWalletInterface } from "./interface";
+import { MultisigWalletSchema } from "./schema";
+import { AbstractDataStructure } from "../abstract";
+
+export { CurrentAccountMeta, WalletMeta } from "./interface";
+export { SinglesigWallet } from "./schema";
+
+export type MultisigWallet = MultisigWalletInterface;
+
+export const MultisigWallet = {
+  schema: MultisigWalletSchema,
+  create: createMultisigWallet,
+} satisfies AbstractDataStructure<MultisigWallet>;
+
+export const ObservableMultisigWallet = {
+  schema: MultisigWalletSchema,
+  create: createObservableMultisigWallet,
+} satisfies AbstractDataStructure<MultisigWallet>;
