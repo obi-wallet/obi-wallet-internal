@@ -67,4 +67,8 @@ describe("ObservableMultisigWallet", () => {
   test("currentAccount observable", () => {
     expect(isObservableProp(key, "_currentAccount")).toEqual(true);
   });
+
+  test("isDemo observable", () => {
+    expect(isObservableProp(key, "_isDemo")).toEqual(true);
+  });
 });

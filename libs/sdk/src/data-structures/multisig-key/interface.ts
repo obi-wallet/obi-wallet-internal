@@ -10,6 +10,7 @@ import { MultisigPublicKey } from "../../keys";
 import { AbstractSerialized } from "../migratable";
 
 export interface MultisigKeyInterface {
+  readonly schema: typeof MultisigKeySchema;
   readonly chain: Chain;
   readonly threshold: number;
   readonly publicKey: MultisigPublicKey;

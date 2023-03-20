@@ -4,6 +4,7 @@ import { AbstractSerialized } from "../migratable";
 import { MultisigWallet } from "../multisig-wallet";
 
 export interface WalletsInterface {
+  readonly schema: typeof WalletsSchema;
   readonly wallets: ReadonlyArray<MultisigWallet>;
   readonly currentWallet: MultisigWallet | null;
 
