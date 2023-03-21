@@ -1,4 +1,5 @@
-import { action, makeObservable, observable } from "mobx";
+import { action, makeObservable, observable, toJS } from "mobx";
+import * as R from "ramda";
 
 import { FlexAccount } from "./implementation";
 import { FlexAccountInterface } from "./interface";
@@ -6,7 +7,8 @@ import { FlexAccountSchema } from "./schema";
 import { AbstractMigratable } from "../migratable";
 
 export function createFlexAccount(
-  migratable: AbstractMigratable<typeof FlexAccountSchema>
+  migratable: AbstractMigratable<typeof FlexAccountSchema>,
+  serialize = R.identity
 ): FlexAccountInterface {
   const serialized = FlexAccountSchema.migratableSchema.parse(migratable);
   return new FlexAccount(
@@ -15,14 +17,15 @@ export function createFlexAccount(
     serialized.publicKey,
     serialized.privateKey,
     serialized.spendLimit,
-    serialized.autoSign
+    serialized.autoSign,
+    serialize
   );
 }
 
 export function createObservableFlexAccount(
   migratable: AbstractMigratable<typeof FlexAccountSchema>
 ): FlexAccountInterface {
-  const flexAccount = createFlexAccount(migratable);
+  const flexAccount = createFlexAccount(migratable, toJS);
   makeObservable<
     FlexAccountInterface,
     | "_meta"

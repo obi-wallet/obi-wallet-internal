@@ -19,18 +19,19 @@ export class FlexAccount implements FlexAccountInterface {
     protected _publicKey: Secp256k1PublicKey,
     protected _privateKey: string,
     protected _spendLimit: z.infer<typeof SpendLimit> | null,
-    protected _autoSign: z.infer<typeof AutoSign> | null
+    protected _autoSign: z.infer<typeof AutoSign> | null,
+    protected _serialize: <T>(serialized: T) => T
   ) {}
 
   public toJSON(): AbstractSerialized<typeof FlexAccountSchema> {
     return {
       type: this.type,
-      meta: this.meta,
+      meta: this._serialize(this.meta),
       address: this.address,
-      publicKey: this.publicKey,
+      publicKey: this._serialize(this.publicKey),
       privateKey: this.privateKey,
-      spendLimit: this.spendLimit,
-      autoSign: this.autoSign,
+      spendLimit: this._serialize(this.spendLimit),
+      autoSign: this._serialize(this.autoSign),
     };
   }
 
