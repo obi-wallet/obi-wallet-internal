@@ -19,16 +19,17 @@ export class Beneficiary implements BeneficiaryInterface {
     protected _dripSchedule: {
       rate: number;
       period: z.infer<typeof Duration>;
-    }
+    },
+    protected _serialize: <T>(serialized: T) => T
   ) {}
 
   public toJSON(): AbstractSerialized<typeof BeneficiarySchema> {
     return {
       type: this.type,
-      meta: this.meta,
+      meta: this._serialize(this.meta),
       address: this.address,
-      dormancyThreshold: this.dormancyThreshold,
-      dripSchedule: this.dripSchedule,
+      dormancyThreshold: this._serialize(this.dormancyThreshold),
+      dripSchedule: this._serialize(this.dripSchedule),
     };
   }
 

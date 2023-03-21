@@ -1,4 +1,5 @@
-import { action, makeObservable, observable } from "mobx";
+import { action, makeObservable, observable, toJS } from "mobx";
+import * as R from "ramda";
 
 import { Beneficiary } from "./implementation";
 import { BeneficiaryInterface } from "./interface";
@@ -6,21 +7,23 @@ import { BeneficiarySchema } from "./schema";
 import { AbstractMigratable } from "../migratable";
 
 export function createBeneficiary(
-  migratable: AbstractMigratable<typeof BeneficiarySchema>
+  migratable: AbstractMigratable<typeof BeneficiarySchema>,
+  serialize = R.identity
 ): BeneficiaryInterface {
   const serialized = BeneficiarySchema.migratableSchema.parse(migratable);
   return new Beneficiary(
     serialized.meta,
     serialized.address,
     serialized.dormancyThreshold,
-    serialized.dripSchedule
+    serialized.dripSchedule,
+    serialize
   );
 }
 
 export function createObservableBeneficiary(
   migratable: AbstractMigratable<typeof BeneficiarySchema>
 ): BeneficiaryInterface {
-  const beneficiary = createBeneficiary(migratable);
+  const beneficiary = createBeneficiary(migratable, toJS);
   makeObservable<
     BeneficiaryInterface,
     "_meta" | "_address" | "_dormancyThreshold" | "_dripSchedule"
