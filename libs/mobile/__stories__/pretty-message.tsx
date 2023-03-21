@@ -16,7 +16,7 @@ import {
   upsertBeneficiary,
   upsertBeneficiaryAnnually,
   upsertFlex,
-} from "./messages";
+} from "../__fixtures__/messages";
 import { PrettyMessage } from "../src";
 
 export default function PrettyMessages() {
