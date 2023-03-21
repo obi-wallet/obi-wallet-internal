@@ -5,6 +5,7 @@ import {
   ObservableBeneficiary,
   ObservableFlexAccount,
 } from "../../src";
+import { expectIsPureObject } from "../__helpers__";
 
 describe("ObservableGatekeeperConfig", () => {
   test(".empty observable", () => {
@@ -20,6 +21,10 @@ describe("ObservableGatekeeperConfig", () => {
         })
       )
     ).toEqual(true);
+  });
+
+  test(".toJSON pure", () => {
+    expectIsPureObject(createObservableGatekeeperConfig().toJSON());
   });
 
   test("beneficiaries observable", () => {

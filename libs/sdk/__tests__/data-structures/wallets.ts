@@ -1,6 +1,7 @@
 import { isObservable, isObservableProp } from "mobx";
 
 import { ObservableWallets, Wallets } from "../../src";
+import { expectIsPureObject } from "../__helpers__";
 
 describe("ObservableWallets", () => {
   let wallets: Wallets;
@@ -21,6 +22,10 @@ describe("ObservableWallets", () => {
         })
       )
     ).toEqual(true);
+  });
+
+  test(".toJSON pure", () => {
+    expectIsPureObject(wallets.toJSON());
   });
 
   test("wallets observable", () => {

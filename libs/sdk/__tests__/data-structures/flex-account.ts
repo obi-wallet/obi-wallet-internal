@@ -1,9 +1,8 @@
 import { DateTime } from "luxon";
 import { isAction, isObservable, isObservableProp } from "mobx";
-import * as R from "ramda";
-import invariant from "tiny-invariant";
 
 import { FlexAccount, ObservableFlexAccount, Serialized } from "../../src";
+import { expectIsPureObject } from "../__helpers__";
 
 function createTest<
   A extends (factory: typeof FlexAccount) => FlexAccount[] | void
@@ -39,15 +38,6 @@ function expectIsObservable(flexAccount: FlexAccount) {
   expect(isAction(flexAccount.setSpendLimit)).toEqual(true);
   expect(isAction(flexAccount.enableAutoSign)).toEqual(true);
   expect(isAction(flexAccount.clearAutoSign)).toEqual(true);
-}
-
-function expectIsPureObject(serialized: unknown) {
-  expect(isObservable(serialized)).toEqual(false);
-  JSON.stringify(serialized, function (key, value) {
-    invariant(!isObservableProp(this, key), `Key ${key} is observable prop`);
-    invariant(!isObservable(value), `Key ${key} is observable`);
-    return value;
-  });
 }
 
 function createFlexAccounts(Factory: typeof FlexAccount) {

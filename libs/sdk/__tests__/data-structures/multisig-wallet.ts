@@ -4,10 +4,12 @@ import {
   createGatekeeperConfig,
   MultisigKey,
   MultisigWallet,
+  ObservableMultisigKey,
   ObservableMultisigWallet,
   ObservableSinglesigWallet,
   Serialized,
 } from "../../src";
+import { expectIsPureObject } from "../__helpers__";
 
 describe("ObservableMultisigWallet", () => {
   const fixture: Serialized<typeof MultisigWallet> = {
@@ -32,6 +34,10 @@ describe("ObservableMultisigWallet", () => {
 
   test(".deserialize observable", () => {
     expect(isObservable(key)).toEqual(true);
+  });
+
+  test(".toJSON pure", () => {
+    expectIsPureObject(key.toJSON());
   });
 
   test("chainId observable", () => {

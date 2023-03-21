@@ -1,8 +1,8 @@
 import { isAction, isObservable, isObservableProp } from "mobx";
 import * as R from "ramda";
-import invariant from "tiny-invariant";
 
 import { Beneficiary, ObservableBeneficiary, Serialized } from "../../src";
+import { expectIsPureObject } from "../__helpers__";
 
 function createTest<
   A extends (factory: typeof Beneficiary) => Beneficiary[] | void
@@ -36,15 +36,6 @@ function expectIsObservable(beneficiary: Beneficiary) {
   expect(isAction(beneficiary.setDormancyThreshold)).toEqual(true);
   expect(isAction(beneficiary.setDripRate)).toEqual(true);
   expect(isAction(beneficiary.setDripPeriod)).toEqual(true);
-}
-
-function expectIsPureObject(serialized: unknown) {
-  expect(isObservable(serialized)).toEqual(false);
-  JSON.stringify(serialized, function (key, value) {
-    invariant(!isObservableProp(this, key), `Key ${key} is observable prop`);
-    invariant(!isObservable(value), `Key ${key} is observable`);
-    return value;
-  });
 }
 
 const fixture: Serialized<Beneficiary> = {
