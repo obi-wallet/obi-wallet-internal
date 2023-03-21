@@ -324,7 +324,9 @@ describe("Terra", () => {
         screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
       ).toBeDefined();
       expect(
-        screen.getByText("Will receive 1% monthly after 12 months")
+        screen.getByText(
+          "will receive 1% monthly after 12 months of inactivity"
+        )
       ).toBeDefined();
     });
     test("Loop", async () => {
@@ -334,7 +336,9 @@ describe("Terra", () => {
         screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
       ).toBeDefined();
       expect(
-        screen.getByText("Will receive 1% monthly after 12 months")
+        screen.getByText(
+          "will receive 1% monthly after 12 months of inactivity"
+        )
       ).toBeDefined();
     });
     test("Annually", async () => {
@@ -344,7 +348,9 @@ describe("Terra", () => {
       });
 
       expect(
-        screen.getByText("Will receive 10% annually after 12 months")
+        screen.getByText(
+          "will receive 10% annually after 12 months of inactivity"
+        )
       ).toBeDefined();
     });
   });

@@ -406,13 +406,13 @@ const PrettyMessageExecuteContract = observer(
               )}
             </Text>
             <Text style={{ color: "rgba(255,255,255,0.6)" }}>
-              Will receive{" "}
+              will receive{" "}
               <Text style={{ color: "white" }}>
                 {percent}% {period}
               </Text>{" "}
               after{" "}
               <Text style={{ color: "white" }}>{Math.round(cooldown)}</Text>{" "}
-              months
+              months of inactivity
             </Text>
           </View>
         </MessageElement>
