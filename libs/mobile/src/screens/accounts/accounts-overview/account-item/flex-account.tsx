@@ -87,26 +87,24 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
       return periodicity[0];
     })();
     const setSelectedPeriod = (period: FlexAccountPeriodicity) => {
-      runInAction(() => {
-        if (!account.spendLimit) return;
+      if (!account.spendLimit) return;
 
-        const newPeriod = (() => {
-          switch (period) {
-            case FlexAccountPeriodicity.Daily:
-              return { days: 1 };
-            case FlexAccountPeriodicity.Weekly:
-              return { days: 7 };
-            case FlexAccountPeriodicity.Monthly:
-              return { months: 1 };
-            case FlexAccountPeriodicity.Yearly:
-              return { years: 1 };
-          }
-        })();
+      const newPeriod = (() => {
+        switch (period) {
+          case FlexAccountPeriodicity.Daily:
+            return { days: 1 };
+          case FlexAccountPeriodicity.Weekly:
+            return { days: 7 };
+          case FlexAccountPeriodicity.Monthly:
+            return { months: 1 };
+          case FlexAccountPeriodicity.Yearly:
+            return { years: 1 };
+        }
+      })();
 
-        account.setSpendLimit({
-          ...account.spendLimit,
-          period: newPeriod,
-        });
+      account.setSpendLimit({
+        ...account.spendLimit,
+        period: newPeriod,
       });
     };
 
