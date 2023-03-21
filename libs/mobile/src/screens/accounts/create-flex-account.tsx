@@ -3,6 +3,7 @@ import { Text } from "@obi-wallet/common";
 import {
   GatekeeperConfig,
   generateSec256k1KeyPair,
+  ObservableFlexAccount,
   Sdk,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -102,18 +103,20 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
                   publicKey,
                 }
               );
-              gatekeeperConfig.value.upsertFlexAccount({
-                type: "flex-account",
-                meta: {
-                  icon: icon?.uri || "",
-                  name: data.name,
-                },
-                address,
-                autoSign: null,
-                spendLimit: null,
-                privateKey,
-                publicKey,
-              });
+              gatekeeperConfig.value.upsertFlexAccount(
+                ObservableFlexAccount.create({
+                  type: "flex-account",
+                  meta: {
+                    icon: icon?.uri || "",
+                    name: data.name,
+                  },
+                  address,
+                  autoSign: null,
+                  spendLimit: null,
+                  privateKey,
+                  publicKey,
+                })
+              );
 
               navigation.navigate(AccountsRoute.AccountsOverview);
             })}

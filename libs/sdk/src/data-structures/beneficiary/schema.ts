@@ -1,14 +1,14 @@
 import { z } from "zod";
 
-import { AccountMetaData } from "./account-meta-data";
 import { Duration } from "../duration";
+import { AccountMetaData } from "../gatekeeper-config/account-meta-data";
 import { migratable } from "../migratable";
 import { Percentage } from "../percentage";
 
-export const Beneficiary = migratable(
+export const BeneficiarySchema = migratable(
   z.object({
     type: z.literal("beneficiary"),
-    meta: AccountMetaData,
+    meta: AccountMetaData.migratableSchema,
     address: z.string(),
     dormancyThreshold: Duration,
     dripSchedule: z.object({

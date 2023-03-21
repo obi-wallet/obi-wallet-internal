@@ -19,8 +19,6 @@ import {
 import { ChainStore } from "../chain";
 import { ConfigStore } from "../config";
 
-export * from "./multisig-wallet";
-
 export enum WalletState {
   /** We are still loading the data from the KV stores. */
   LOADING = "LOADING",

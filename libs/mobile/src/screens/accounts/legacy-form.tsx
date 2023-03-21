@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@obi-wallet/common";
+import { ObservableSinglesigWallet } from "@obi-wallet/sdk";
 import { MnemonicKey } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { Controller, useForm } from "react-hook-form";
@@ -77,11 +78,13 @@ export const LegacyForm = observer<
               'Expected key to be of type "tendermint/PubKeySecp256k1"'
             );
 
-            wallet.upsertSinglesigWallet({
-              type: "singlesig-wallet",
-              publicKey,
-              privateKey: key.privateKey.toString("base64"),
-            });
+            wallet.upsertSinglesigWallet(
+              ObservableSinglesigWallet.create({
+                type: "singlesig-wallet",
+                publicKey,
+                privateKey: key.privateKey.toString("base64"),
+              })
+            );
 
             navigation.navigate(AccountsRoute.AccountsOverview);
           })}

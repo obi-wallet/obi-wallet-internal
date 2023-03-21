@@ -7,7 +7,7 @@ import {
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
 } from "@terra-money/feather.js";
-import { DateTime, Duration } from "luxon";
+import { Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
@@ -296,7 +296,7 @@ export function getUpdateGatekeeperMessages({
         }
       );
 
-      if (previousBeneficiary && R.equals(previousBeneficiary, beneficiary)) {
+      if (previousBeneficiary && beneficiary.equals(previousBeneficiary)) {
         return;
       }
 
@@ -389,16 +389,17 @@ export function getUpdateGatekeeperMessages({
 
       if (
         !previousFlexAccount ||
-        !R.equals(previousFlexAccount.autoSign, flexAccount.autoSign)
+        !R.equals(
+          flexAccount.remainingAutoSignDuration,
+          previousFlexAccount.remainingAutoSignDuration
+        )
       ) {
-        if (flexAccount.autoSign) {
+        if (flexAccount.autoSignEndTime) {
           const rawMessage = {
             create_session_key: {
               address: flexAccount.address,
               admin_permissions: true,
-              max_duration: DateTime.fromISO(
-                flexAccount.autoSign.endTime
-              ).toUnixInteger(),
+              max_duration: flexAccount.autoSignEndTime.toUnixInteger(),
               use_limit: 999,
             },
           };
@@ -410,7 +411,10 @@ export function getUpdateGatekeeperMessages({
               rawMessage
             )
           );
-        } else if (previousFlexAccount?.autoSign && !flexAccount.autoSign) {
+        } else if (
+          previousFlexAccount?.hasActiveAutoSign &&
+          !flexAccount.hasActiveAutoSign
+        ) {
           const rawMessage = {
             destroy_session_key: {
               address: flexAccount.address,
@@ -427,13 +431,7 @@ export function getUpdateGatekeeperMessages({
         }
       }
 
-      if (
-        previousFlexAccount &&
-        R.equals(
-          R.omit(["autoSign"], previousFlexAccount),
-          R.omit(["autoSign"], flexAccount)
-        )
-      ) {
+      if (previousFlexAccount && flexAccount.equals(previousFlexAccount)) {
         return;
       }
 

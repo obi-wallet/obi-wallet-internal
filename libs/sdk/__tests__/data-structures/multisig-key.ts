@@ -6,6 +6,7 @@ import {
   ObservableMultisigKey,
   Serialized,
 } from "../../src";
+import { expectIsPureObject } from "../__helpers__";
 
 describe("ObservableMultisigKey", () => {
   const chain = "phoenix-1";
@@ -32,6 +33,10 @@ describe("ObservableMultisigKey", () => {
     expect(isObservable(ObservableMultisigKey.create(chain, fixture))).toEqual(
       true
     );
+  });
+
+  test(".toJSON pure", () => {
+    expectIsPureObject(ObservableMultisigKey.create(chain, fixture).toJSON());
   });
 
   test("chain observable", () => {

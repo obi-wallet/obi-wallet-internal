@@ -1,7 +1,7 @@
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { FlexAccount, Text, TextInput } from "@obi-wallet/common";
-import { FlexAccountPermissionedAddress } from "@obi-wallet/sdk";
+import { Text, TextInput } from "@obi-wallet/common";
+import { FlexAccount, FlexAccountPermissionedAddress } from "@obi-wallet/sdk";
 import Slider from "@react-native-community/slider";
 import { DateTime } from "luxon";
 import { runInAction } from "mobx";
@@ -25,7 +25,6 @@ import { PermissionedAddressesContext } from "../permissioned-address-context";
 export interface FlexAccountItemProps extends AbstractAccountItemProps {
   originalAccount: FlexAccount | null;
   account: FlexAccount;
-  onChange: (account: FlexAccount) => void;
 }
 
 export enum FlexAccountPeriodicity {
@@ -50,7 +49,6 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
     active = false,
     onSetActive,
     onDelete,
-    onChange,
   }) {
     const wallet = useMultisigWallet();
     const threshold = {
@@ -63,15 +61,12 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
       (amount: number) => {
         if (!account.spendLimit) return;
 
-        onChange({
-          ...account,
-          spendLimit: {
-            ...account.spendLimit,
-            amount,
-          },
+        account.setSpendLimit({
+          ...account.spendLimit,
+          amount,
         });
       },
-      [account, onChange]
+      [account]
     );
     const [throttledSetAmount] = useThrottle(setAmount, 50);
 
@@ -92,29 +87,24 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
       return periodicity[0];
     })();
     const setSelectedPeriod = (period: FlexAccountPeriodicity) => {
-      runInAction(() => {
-        if (!account.spendLimit) return;
+      if (!account.spendLimit) return;
 
-        const newPeriod = (() => {
-          switch (period) {
-            case FlexAccountPeriodicity.Daily:
-              return { days: 1 };
-            case FlexAccountPeriodicity.Weekly:
-              return { days: 7 };
-            case FlexAccountPeriodicity.Monthly:
-              return { months: 1 };
-            case FlexAccountPeriodicity.Yearly:
-              return { years: 1 };
-          }
-        })();
+      const newPeriod = (() => {
+        switch (period) {
+          case FlexAccountPeriodicity.Daily:
+            return { days: 1 };
+          case FlexAccountPeriodicity.Weekly:
+            return { days: 7 };
+          case FlexAccountPeriodicity.Monthly:
+            return { months: 1 };
+          case FlexAccountPeriodicity.Yearly:
+            return { years: 1 };
+        }
+      })();
 
-        onChange({
-          ...account,
-          spendLimit: {
-            ...account.spendLimit,
-            period: newPeriod,
-          },
-        });
+      account.setSpendLimit({
+        ...account.spendLimit,
+        period: newPeriod,
       });
     };
 
@@ -124,86 +114,67 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
       FlexAccountRule.Unlocked,
     ];
 
-    const getRemainingTime = useCallback(() => {
-      if (!originalAccount?.autoSign) return null;
+    const [remainingTime, setRemainingTime] = useState(
+      originalAccount?.remainingAutoSignDuration
+    );
 
-      const remainingTime = DateTime.fromISO(
-        originalAccount?.autoSign?.endTime
-      ).diff(DateTime.now(), "seconds");
-      return remainingTime.toMillis() >= 0 ? remainingTime : null;
-    }, [originalAccount]);
-
-    const [remainingTime, setRemainingTime] = useState(getRemainingTime);
-
-    const getActiveFlexRule = useCallback(() => {
-      if (originalAccount?.autoSign && getRemainingTime()) {
+    const getActiveFlexRule = () => {
+      if (originalAccount?.hasActiveAutoSign) {
         return FlexAccountRule.Unlocked;
       } else if (originalAccount?.spendLimit) {
         return FlexAccountRule.Limited;
       } else {
         return FlexAccountRule.Strict;
       }
-    }, [originalAccount, getRemainingTime]);
+    };
 
-    const getNextFlexRule = useCallback(() => {
-      if (account.autoSign) {
+    const getNextFlexRule = () => {
+      if (account.hasActiveAutoSign) {
         return FlexAccountRule.Unlocked;
       } else if (account.spendLimit) {
         return FlexAccountRule.Limited;
       } else {
         return FlexAccountRule.Strict;
       }
-    }, [account.autoSign, account.spendLimit]);
+    };
     const activeFlexRule = getActiveFlexRule();
     const nextFlexRule = getNextFlexRule();
 
-    const setNextFlexRule = useCallback(
-      (rule: FlexAccountRule) => {
-        runInAction(() => {
-          if (getNextFlexRule() === rule) return;
+    const setNextFlexRule = (rule: FlexAccountRule) => {
+      runInAction(() => {
+        if (getNextFlexRule() === rule) return;
 
-          switch (rule) {
-            case FlexAccountRule.Strict:
-              onChange({
-                ...account,
-                spendLimit: null,
-                autoSign: null,
-              });
-              break;
-            case FlexAccountRule.Limited:
-              onChange({
-                ...account,
-                spendLimit: account.spendLimit ?? {
-                  amount: 0,
-                  period: {
-                    days: 1,
-                  },
+        switch (rule) {
+          case FlexAccountRule.Strict:
+            account.setSpendLimit(null);
+            account.clearAutoSign();
+            break;
+          case FlexAccountRule.Limited:
+            account.setSpendLimit(
+              account.spendLimit ?? {
+                amount: 0,
+                period: {
+                  days: 1,
                 },
-                autoSign: null,
-              });
-              break;
-            case FlexAccountRule.Unlocked:
-              onChange({
-                ...account,
-                autoSign: {
-                  endTime: DateTime.now().plus({ minutes: 30 }).toISO(),
-                },
-              });
-              break;
-          }
+              }
+            );
+            account.clearAutoSign();
+            break;
+          case FlexAccountRule.Unlocked:
+            account.enableAutoSign(DateTime.now().plus({ minutes: 30 }));
+            break;
+        }
 
-          setRemainingTime(getRemainingTime());
-        });
-      },
-      [account, getNextFlexRule, getRemainingTime, onChange]
-    );
+        setRemainingTime(originalAccount?.remainingAutoSignDuration);
+      });
+    };
 
     useEffect(() => {
       const interval = setInterval(() => {
-        setRemainingTime(getRemainingTime());
+        setRemainingTime(originalAccount?.remainingAutoSignDuration);
       }, 1000);
       return () => clearInterval(interval);
-    }, [getRemainingTime]);
+    }, [originalAccount]);
 
     const getRuleText = () => {
       switch (nextFlexRule) {

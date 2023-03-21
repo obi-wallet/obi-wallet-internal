@@ -1,4 +1,5 @@
-import { makeObservable, observable } from "mobx";
+import { makeObservable, observable, toJS } from "mobx";
+import * as R from "ramda";
 import { z } from "zod";
 
 import { CloudKey } from "./cloud";
@@ -41,7 +42,8 @@ export abstract class Key {
   }
 
   protected constructor(
-    protected serialized: AbstractSerialized<typeof KeySchema>
+    protected serialized: AbstractSerialized<typeof KeySchema>,
+    protected _serialize: <T>(serialized: T) => T
   ) {}
   public get publicKey() {
     return this.serialized.payload.publicKey;
@@ -49,15 +51,18 @@ export abstract class Key {
   public abstract get isUsable(): boolean;
   public abstract get type(): string;
   public toJSON() {
-    return this.serialized;
+    return this._serialize(this.serialized);
   }
 }
 
 export class UsableKey<
   T extends AbstractSerialized<typeof UsableKeySchema>
 > extends Key {
-  public constructor(protected serialized: T) {
-    super(serialized);
+  public constructor(
+    protected serialized: T,
+    protected _serialize: <T>(serialized: T) => T
+  ) {
+    super(serialized, _serialize);
   }
 
   public get isUsable() {
@@ -75,9 +80,10 @@ export class UsableKey<
 
 export class PendingRecoveryKey extends Key {
   public constructor(
-    protected serialized: AbstractSerialized<typeof PendingRecoveryKeySchema>
+    protected serialized: AbstractSerialized<typeof PendingRecoveryKeySchema>,
+    protected _serialize: <T>(serialized: T) => T
   ) {
-    super(serialized);
+    super(serialized, _serialize);
   }
 
   public get isUsable() {
@@ -89,17 +95,23 @@ export class PendingRecoveryKey extends Key {
   }
 }
 
-export function createKey(serialized: AbstractMigratable<typeof KeySchema>) {
+export function createKey(
+  serialized: AbstractMigratable<typeof KeySchema>,
+  serialize = R.identity
+) {
   const result =
     PendingRecoveryKeySchema.migratableSchema.safeParse(serialized);
-  if (result.success) return new PendingRecoveryKey(result.data);
-  return new UsableKey(UsableKeySchema.migratableSchema.parse(serialized));
+  if (result.success) return new PendingRecoveryKey(result.data, serialize);
+  return new UsableKey(
+    UsableKeySchema.migratableSchema.parse(serialized),
+    serialize
+  );
 }
 
 export function createObservableKey(
   serialized: AbstractMigratable<typeof KeySchema>
 ) {
-  const key = createKey(serialized);
+  const key = createKey(serialized, toJS);
   makeObservable<Key, "serialized">(
     key,
     {

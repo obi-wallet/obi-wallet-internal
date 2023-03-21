@@ -9,11 +9,16 @@ import {
 } from "../gatekeeper-config";
 import { AbstractMigratable } from "../migratable";
 import { MultisigKey, ObservableMultisigKey } from "../multisig-key";
+import {
+  ObservableSinglesigWallet,
+  SinglesigWallet,
+} from "../singlesig-wallet";
 
 export function createMultisigWallet(
   migratable: AbstractMigratable<typeof MultisigWalletSchema>,
   factories = {
     MultisigKey,
+    SinglesigWallet,
     createGatekeeperConfig,
   }
 ): MultisigWalletInterface {
@@ -23,7 +28,7 @@ export function createMultisigWallet(
     factories.MultisigKey.create(serialized.data.chain, serialized.data.owner),
     serialized.data.proxyAddress.address,
     factories.createGatekeeperConfig(serialized.data.gatekeeperConfig),
-    serialized.data.singlesigWallets,
+    serialized.data.singlesigWallets.map((s) => SinglesigWallet.create(s)),
     serialized.data.currentAccount,
     serialized.type === "multisig-demo"
   );
@@ -34,6 +39,7 @@ export function createObservableMultisigWallet(
 ): MultisigWalletInterface {
   const wallet = createMultisigWallet(serialized, {
     MultisigKey: ObservableMultisigKey,
+    SinglesigWallet: ObservableSinglesigWallet,
     createGatekeeperConfig: createObservableGatekeeperConfig,
   });
   makeObservable<
@@ -59,6 +65,8 @@ export function createObservableMultisigWallet(
       setOwner: action,
       setCurrentAccount: action,
       setGatekeeperConfig: action,
+      upsertSinglesigWallet: action,
+      removeSinglesigWallet: action,
     },
     {
       name: "MultisigWallet",

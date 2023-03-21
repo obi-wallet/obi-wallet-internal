@@ -1,5 +1,5 @@
-import { Beneficiary, Text, TextInput } from "@obi-wallet/common";
-import { runInAction } from "mobx";
+import { Text, TextInput } from "@obi-wallet/common";
+import { Beneficiary } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { View } from "react-native";
@@ -9,7 +9,6 @@ import { AbstractAccountItemProps, AccountContainer, Pill } from "./common";
 
 export interface BeneficiaryItemProps extends AbstractAccountItemProps {
   account: Beneficiary;
-  onChange: (account: Beneficiary) => void;
 }
 
 export enum BeneficiaryPeriodicity {
@@ -25,7 +24,6 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
     active,
     onSetActive,
     onDelete,
-    onChange,
   }) {
     const dormancyThreshold = (() => {
       const threshold = account.dormancyThreshold;
@@ -35,58 +33,36 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
       return 0;
     })();
     const setDormancyThreshold = (threshold: number) => {
-      onChange({
-        ...account,
-        dormancyThreshold: { months: threshold },
-      });
+      account.setDormancyThreshold({ months: threshold });
     };
 
     const dripRate = Math.floor(account.dripSchedule.rate * 100);
     const setDripRate = (rate: number) => {
-      onChange({
-        ...account,
-        dripSchedule: {
-          ...account.dripSchedule,
-          rate: rate / 100,
-        },
-      });
+      account.setDripRate(rate / 100);
     };
 
     const inheritancePeriodicity = [
       BeneficiaryPeriodicity.Monthly,
       BeneficiaryPeriodicity.Annually,
     ];
-    const selectedPeriodicity = (() => {
-      const period = account.dripSchedule.period;
+    const selectedPeriodicity = ((
+      period: Beneficiary["dripSchedule"]["period"]
+    ) => {
       if (R.equals(period, { months: 1 }))
         return BeneficiaryPeriodicity.Monthly;
       if (R.equals(period, { years: 1 }))
         return BeneficiaryPeriodicity.Annually;
       return inheritancePeriodicity[0];
-    })();
+    })(account.dripSchedule.period);
     const setSelectedPeriodicity = (periodicity: BeneficiaryPeriodicity) => {
-      runInAction(() => {
-        switch (periodicity) {
-          case BeneficiaryPeriodicity.Monthly:
-            onChange({
-              ...account,
-              dripSchedule: {
-                ...account.dripSchedule,
-                period: { months: 1 },
-              },
-            });
-            break;
-          case BeneficiaryPeriodicity.Annually:
-            onChange({
-              ...account,
-              dripSchedule: {
-                ...account.dripSchedule,
-                period: { years: 1 },
-              },
-            });
-            break;
-        }
-      });
+      switch (periodicity) {
+        case BeneficiaryPeriodicity.Monthly:
+          account.setDripPeriod({ months: 1 });
+          break;
+        case BeneficiaryPeriodicity.Annually:
+          account.setDripPeriod({ years: 1 });
+          break;
+      }
     };
 
     return (

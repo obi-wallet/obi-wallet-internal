@@ -1,14 +1,17 @@
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-  Beneficiary,
-  FlexAccount,
   RequestObiSignAndBroadcastTerraTransactionMsg,
-  SinglesigWallet,
   terra,
   Text,
 } from "@obi-wallet/common";
-import { GatekeeperConfig, TerraChain } from "@obi-wallet/sdk";
+import {
+  Beneficiary,
+  FlexAccount,
+  GatekeeperConfig,
+  SinglesigWallet,
+  TerraChain,
+} from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { isTxError } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
@@ -313,7 +316,7 @@ const AccountsList = observer(function AccountsList() {
           id: account.address,
         },
         account,
-        originalAccount: wallet.gatekeeperConfig.beneficiaries.find(
+        originalAccount: draft.original.beneficiaries.find(
           (originalAccount) => {
             return originalAccount.address === account.address;
           }
@@ -329,11 +332,9 @@ const AccountsList = observer(function AccountsList() {
           id: account.address,
         },
         account,
-        originalAccount: wallet.gatekeeperConfig.flexAccounts.find(
-          (originalAccount) => {
-            return originalAccount.address === account.address;
-          }
-        ),
+        originalAccount: draft.original.flexAccounts.find((originalAccount) => {
+          return originalAccount.address === account.address;
+        }),
       };
     }
   );
@@ -356,6 +357,8 @@ const AccountsList = observer(function AccountsList() {
     ...singlesigWalletsData,
   ];
 
+  const currentAccount = wallet.meta.currentAccount;
+
   return (
     <KeyboardAwareFlatList
       viewIsInsideTabBar
@@ -376,7 +379,7 @@ const AccountsList = observer(function AccountsList() {
               if (element.item.meta.type === "beneficiary") return;
               wallet.setCurrentAccount(element.item.meta);
             }}
-            active={R.equals(wallet.meta.currentAccount, element.item.meta)}
+            active={R.equals(currentAccount, element.item.meta)}
             originalAccount={element.item.originalAccount ?? null}
             account={element.item.account}
             onDelete={() => {
@@ -393,19 +396,6 @@ const AccountsList = observer(function AccountsList() {
                   break;
                 case "singlesig-wallet":
                   wallet.removeSinglesigWallet(element.item.account);
-                  break;
-              }
-            }}
-            onChange={(account) => {
-              switch (account.type) {
-                case "beneficiary":
-                  draft.value.upsertBeneficiary(account);
-                  break;
-                case "flex-account":
-                  draft.value.upsertFlexAccount(account);
-                  break;
-                case "singlesig-wallet":
-                  wallet.upsertSinglesigWallet(account);
                   break;
               }
             }}

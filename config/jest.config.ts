@@ -12,4 +12,5 @@ module.exports = {
   transformIgnorePatterns: [
     "node_modules/(?!(@fortawesome|@react-native|@react-navigation|react-native|react-native-fontawesome|react-native-safe-area-context)/)",
   ],
+  testPathIgnorePatterns: ["/__helpers__/"],
 };
