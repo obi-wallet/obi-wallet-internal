@@ -46,7 +46,7 @@
           "error",
           {
             "devDependencies": [
-              "{apps,libs}/*/{__fixtures__,__tests__,__tests-integration__,scripts}/**/*",
+              "{apps,libs}/*/{__fixtures__,__stories__,__tests__,__tests-integration__,scripts}/**/*",
               "apps/*-e2e/**/*",
               "apps/*/metro.config.js",
               "jest*.[jt]s"
@@ -146,7 +146,7 @@
       "rules": {}
     },
     {
-      "files": ["__fixtures__/**/*.{ts,tsx,js,jsx}"],
+      "files": ["__stories__/**/*.{ts,tsx,js,jsx}"],
       "rules": {
         "import/no-default-export": "off",
 

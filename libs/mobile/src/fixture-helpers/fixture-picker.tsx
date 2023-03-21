@@ -13,7 +13,7 @@ export const FixturePicker = observer(function FixturePicker() {
 
   const chosenFixture =
     fixtures.fixtures[fixture as keyof typeof fixtures.fixtures];
-  const Decorator = fixtures.decorators["__fixtures__/cosmos.decorator.tsx"];
+  const Decorator = fixtures.decorators["__stories__/cosmos.decorator.tsx"];
   console.log(chosenFixture);
 
   return (

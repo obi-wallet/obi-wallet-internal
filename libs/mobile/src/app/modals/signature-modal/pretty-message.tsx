@@ -275,7 +275,149 @@ const PrettyMessageExecuteContract = observer(
         />
       );
     }
+    if (
+      typeof message === "object" &&
+      R.has("upsert_permissioned_address", message)
+    ) {
+      const msg = message as {
+        upsert_permissioned_address: {
+          new_permissioned_address: {
+            address: string;
+          };
+        };
+      };
+      return (
+        <MessageElement
+          coins={[...funds]}
+          icon={<ArrowUpIcon />}
+          title="Add/Update Permissioned Address"
+        >
+          <Text style={{ color: "white" }}>
+            {Bech32Address.shortenAddress(
+              msg.upsert_permissioned_address.new_permissioned_address.address,
+              35
+            )}
+          </Text>
+        </MessageElement>
+      );
+    }
+    if (
+      typeof message === "object" &&
+      R.has("rm_permissioned_address", message)
+    ) {
+      const msg = message as {
+        rm_permissioned_address: {
+          doomed_permissioned_address: string;
+        };
+      };
+      return (
+        <MessageElement
+          coins={[...funds]}
+          icon={<ArrowUpIcon />}
+          title="Remove Permissioned Address"
+        >
+          <Text style={{ color: "white" }}>
+            {Bech32Address.shortenAddress(
+              msg.rm_permissioned_address?.doomed_permissioned_address,
+              35
+            )}
+          </Text>
+        </MessageElement>
+      );
+    }
+    if (typeof message === "object" && R.has("create_session_key", message)) {
+      const msg = message as {
+        create_session_key: {
+          address: string;
+        };
+      };
+      return (
+        <MessageElement
+          coins={[...funds]}
+          icon={<ArrowUpIcon />}
+          title="Create Session Key"
+        >
+          <Text style={{ color: "white" }}>
+            {Bech32Address.shortenAddress(msg.create_session_key.address, 35)}
+          </Text>
+        </MessageElement>
+      );
+    }
+    if (typeof message === "object" && R.has("destroy_session_key", message)) {
+      const msg = message as {
+        destroy_session_key: {
+          address: string;
+        };
+      };
+      return (
+        <MessageElement
+          coins={[...funds]}
+          icon={<ArrowUpIcon />}
+          title="Destroy Session Key"
+        >
+          <Text style={{ color: "white" }}>
+            {Bech32Address.shortenAddress(msg.destroy_session_key.address, 35)}
+          </Text>
+        </MessageElement>
+      );
+    }
+    if (typeof message === "object" && R.has("upsert_beneficiary", message)) {
+      const msg = message as {
+        upsert_beneficiary: {
+          new_beneficiary: {
+            address: string;
+            cooldown: number;
+            period_multiple: number;
+            spend_limits: [
+              {
+                amount: string;
+              }
+            ];
+          };
+        };
+      };
+      // cooldown (days) to months
+      const cooldown = msg.upsert_beneficiary.new_beneficiary.cooldown / 30;
+      const percent =
+        msg.upsert_beneficiary.new_beneficiary.spend_limits[0].amount;
+      // if period_multiple is 1, then it's a monthly payment else it's a annually payment
+      const period =
+        msg.upsert_beneficiary.new_beneficiary.period_multiple === 1
+          ? "monthly"
+          : "annually";
 
+      return (
+        <MessageElement
+          coins={[...funds]}
+          icon={<ArrowUpIcon />}
+          title="Add/Update Beneficiary"
+        >
+          <View
+            style={{
+              flex: 1,
+              width: "100%",
+              alignItems: isObi ? "center" : "flex-start",
+            }}
+          >
+            <Text style={{ color: "white" }}>
+              {Bech32Address.shortenAddress(
+                msg.upsert_beneficiary.new_beneficiary.address,
+                35
+              )}
+            </Text>
+            <Text style={{ color: "rgba(255,255,255,0.6)" }}>
+              will receive{" "}
+              <Text style={{ color: "white" }}>
+                {percent}% {period}
+              </Text>{" "}
+              after{" "}
+              <Text style={{ color: "white" }}>{Math.round(cooldown)}</Text>{" "}
+              months of inactivity
+            </Text>
+          </View>
+        </MessageElement>
+      );
+    }
     return (
       <MessageElement
         icon={<FontAwesomeIcon icon={faPlay} size={33} color="white" />}
