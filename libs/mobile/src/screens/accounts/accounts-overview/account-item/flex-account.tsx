@@ -346,7 +346,6 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                           }}
                         >
                           <TextInput
-                            placeholderTextColor={"#555"}
                             style={{
                               backgroundColor: "#272727",
                               borderWidth: 0,
@@ -415,7 +414,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                       minimumValue={0}
                       step={1}
                       onSlidingComplete={(value) => {
-                        throttledSetAmount(value);
+                        setAmount(value);
                       }}
                       onValueChange={(value) => {
                         throttledSetAmount(value);

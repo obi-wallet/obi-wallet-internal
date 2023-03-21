@@ -127,7 +127,6 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
                   }}
                   keyboardType="numeric"
                   placeholder="0"
-                  placeholderTextColor={"#555"}
                 />
               </View>
 
@@ -165,10 +164,13 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
                   value={dripRate ? dripRate.toString() : ""}
                   onChangeText={(value) => {
                     const res = value.replace(/[^0-9.]/g, "");
-                    setDripRate(Number(res));
+                    const newDripRate = Number(res);
+                    if (newDripRate <= 100 && newDripRate >= 0) {
+                      setDripRate(newDripRate);
+                    }
                   }}
                   placeholder="0"
-                  placeholderTextColor={"#555"}
+                  placeholderTextColor="#555"
                   keyboardType="numeric"
                 />
               </View>

@@ -41,6 +41,7 @@ export const TextInput = observer<TextInputProps>(function TextInput({
         },
         style,
       ]}
+      placeholderTextColor="#555"
       {...props}
     />
   );
