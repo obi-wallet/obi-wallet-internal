@@ -120,12 +120,13 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
                     minWidth: 60,
                     textAlign: "center",
                   }}
-                  value={dormancyThreshold.toString()}
+                  value={dormancyThreshold ? dormancyThreshold.toString() : ""}
                   onChangeText={(value) => {
                     const res = value.replace(/[^0-9.]/g, "");
                     setDormancyThreshold(Number(res));
                   }}
                   keyboardType="numeric"
+                  placeholder="0"
                 />
               </View>
 
@@ -160,11 +161,16 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
                     minWidth: 60,
                     textAlign: "center",
                   }}
-                  value={(dripRate ?? 0).toString()}
+                  value={dripRate ? dripRate.toString() : ""}
                   onChangeText={(value) => {
                     const res = value.replace(/[^0-9.]/g, "");
-                    setDripRate(Number(res));
+                    const newDripRate = Number(res);
+                    if (newDripRate <= 100 && newDripRate >= 0) {
+                      setDripRate(newDripRate);
+                    }
                   }}
+                  placeholder="0"
+                  placeholderTextColor="#555"
                   keyboardType="numeric"
                 />
               </View>

@@ -56,7 +56,8 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
       keys: wallet.owner.keys.length,
     };
 
-    const amount = account.spendLimit?.amount;
+    const amount =
+      account.spendLimit?.amount === 0 ? "" : account.spendLimit?.amount;
     const setAmount = useCallback(
       (amount: number) => {
         if (!account.spendLimit) return;
@@ -356,8 +357,8 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                               fontFamily: "Poppins",
                               height: 48,
                             }}
-                            value={`$${amount ?? 0}`}
-                            placeholder="0"
+                            value={amount ? `$${amount}` : ""}
+                            placeholder="$0"
                             editable={nextFlexRule === FlexAccountRule.Limited}
                             onChangeText={(value) => {
                               const res = value.replace(/[^0-9.]/g, "");
@@ -412,6 +413,9 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                       maximumValue={500}
                       minimumValue={0}
                       step={1}
+                      onSlidingComplete={(value) => {
+                        setAmount(value);
+                      }}
                       onValueChange={(value) => {
                         throttledSetAmount(value);
                       }}
