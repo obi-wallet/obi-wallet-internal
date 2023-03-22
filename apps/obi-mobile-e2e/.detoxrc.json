@@ -6,8 +6,14 @@
     }
   },
   "apps": {
-    "ios.debug": {
+    "ios.debug.small": {
       "type": "ios.app",
+      "build": "cd ../../apps/obi-mobile/ios && xcodebuild -workspace Mobile.xcworkspace -scheme Mobile -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation)' -derivedDataPath ./build -quiet",
+      "binaryPath": "../../apps/obi-mobile/ios/build/Build/Products/Debug-iphonesimulator/Mobile.app"
+    },
+    "ios.debug.large": {
+      "type": "ios.app",
+      "build": "cd ../../apps/obi-mobile/ios && xcodebuild -workspace Mobile.xcworkspace -scheme Mobile -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14 Pro Max' -derivedDataPath ./build -quiet",
       "binaryPath": "../../apps/obi-mobile/ios/build/Build/Products/Debug-iphonesimulator/Mobile.app"
     }
   },
@@ -28,11 +34,11 @@
   "configurations": {
     "ios.sim.debug.small": {
       "device": "simulator-small",
-      "app": "ios.debug"
+      "app": "ios.debug.small"
     },
     "ios.sim.debug.large": {
       "device": "simulator-large",
-      "app": "ios.debug"
+      "app": "ios.debug.large"
     }
   }
 }

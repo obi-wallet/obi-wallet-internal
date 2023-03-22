@@ -5,15 +5,15 @@
   "projectType": "application",
   "targets": {
     "build-ios-small": {
-      "executor": "nx:run-commands",
+      "executor": "@nrwl/detox:build",
       "options": {
-        "command": "nx run-ios obi-mobile --simulator='iPhone SE (3rd generation)'"
+        "detoxConfiguration": "ios.sim.debug.small"
       }
     },
     "build-ios-large": {
-      "executor": "nx:run-commands",
+      "executor": "@nrwl/detox:build",
       "options": {
-        "command": "nx run-ios obi-mobile --simulator='iPhone 14 Pro Max'"
+        "detoxConfiguration": "ios.sim.debug.large"
       }
     },
     "test-ios-small": {
