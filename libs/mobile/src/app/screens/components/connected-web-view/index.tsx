@@ -1,6 +1,6 @@
 import EventEmitter from "eventemitter3";
 import { observer } from "mobx-react-lite";
-import { RefObject, useCallback, useEffect, useMemo } from "react";
+import { RefObject, useCallback, useMemo } from "react";
 import { ScrollView } from "react-native";
 import {
   WebView,
@@ -8,9 +8,6 @@ import {
   WebViewProps,
 } from "react-native-webview";
 
-import { useKeplr } from "../../../injected-provider";
-import { bundle } from "../../../injected-provider/bundle";
-import { RNInjectedKeplr } from "../../../injected-provider/injected-keplr";
 import { useMultisigWallet, useStore } from "../../../stores";
 import { RefreshControl } from "../refresh-control";
 
@@ -45,8 +42,6 @@ export const ConnectedWebView = observer(function ConnectedWebView({
 }: ConnectedWebViewProps) {
   const { walletConnectStore } = useStore();
   const wallet = useMultisigWallet();
-  const keplr = useKeplr({ url });
-  const code = bundle;
 
   const eventEmitter = useMemo(() => new EventEmitter(), []);
   const onMessage = useCallback(
@@ -55,29 +50,6 @@ export const ConnectedWebView = observer(function ConnectedWebView({
     },
     [eventEmitter]
   );
-  useEffect(() => {
-    RNInjectedKeplr.startProxy(
-      keplr,
-      {
-        addMessageListener: (fn) => {
-          eventEmitter.addListener("message", fn);
-        },
-        postMessage: (message) => {
-          webViewRef.current?.injectJavaScript(
-            `
-                window.postMessage(${JSON.stringify(
-                  message
-                )}, window.location.origin);
-                true; // note: this is required, or you'll sometimes get silent failures
-              `
-          );
-        },
-      },
-      RNInjectedKeplr.parseWebviewMessage
-    );
-  }, [eventEmitter, keplr, webViewRef]);
-
-  if (!code) return null;
 
   return (
     <ScrollView
@@ -97,7 +69,6 @@ export const ConnectedWebView = observer(function ConnectedWebView({
         {...props}
         originWhitelist={["*"]}
         source={{ uri: url }}
-        injectedJavaScriptBeforeContentLoaded={code}
         onMessage={onMessage}
         onShouldStartLoadWithRequest={(e) => {
           if (e.url.startsWith("terrastation://")) {

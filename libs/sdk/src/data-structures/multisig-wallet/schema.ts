@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { ArrayIndex } from "../array-index";
-import { createGatekeeperConfig, GatekeeperConfig } from "../gatekeeper-config";
+import { GatekeeperConfig } from "../gatekeeper-config";
 import { migratable } from "../migratable";
 import { MultisigKey } from "../multisig-key";
 import { SinglesigWallet } from "../singlesig-wallet";

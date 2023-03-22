@@ -53,6 +53,3 @@ EOF
 
 # Create empty React Cosmos userdeps file
 touch libs/mobile/cosmos.userdeps.js
-
-# Build provider
-bash scripts/build-provider.sh

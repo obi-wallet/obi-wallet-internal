@@ -17,12 +17,12 @@
       }
     },
     "run-ios": {
-      "dependsOn": ["injected-provider", "react-native-asset"],
+      "dependsOn": ["react-native-asset"],
       "executor": "@nrwl/react-native:run-ios",
       "options": {}
     },
     "bundle-ios": {
-      "dependsOn": ["injected-provider", "react-native-asset"],
+      "dependsOn": ["react-native-asset"],
       "executor": "@nrwl/react-native:bundle",
       "outputs": ["apps/obi-mobile/build"],
       "options": {
@@ -32,12 +32,12 @@
       }
     },
     "run-android": {
-      "dependsOn": ["injected-provider", "react-native-asset"],
+      "dependsOn": ["react-native-asset"],
       "executor": "@nrwl/react-native:run-android",
       "options": {}
     },
     "build-android": {
-      "dependsOn": ["injected-provider", "react-native-asset"],
+      "dependsOn": ["react-native-asset"],
       "executor": "@nrwl/react-native:build-android",
       "outputs": [
         "apps/obi-mobile/android/app/build/outputs/bundle",
@@ -46,7 +46,7 @@
       "options": {}
     },
     "bundle-android": {
-      "dependsOn": ["injected-provider", "react-native-asset"],
+      "dependsOn": ["react-native-asset"],
       "executor": "@nrwl/react-native:bundle",
       "options": {
         "entryFile": "src/main.tsx",
@@ -75,12 +75,6 @@
       "options": {
         "jestConfig": "apps/obi-mobile/jest.config.ts",
         "passWithNoTests": true
-      }
-    },
-    "injected-provider": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "sh scripts/build-provider.sh"
       }
     },
     "react-native-asset": {
