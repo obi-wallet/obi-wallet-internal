@@ -77,14 +77,6 @@ export const ConnectedWebView = observer(function ConnectedWebView({
     );
   }, [eventEmitter, keplr, webViewRef]);
 
-  const { permissionStore } = useStore();
-
-  useEffect(() => {
-    for (const data of permissionStore.waitingDatas) {
-      permissionStore.approve(data.id);
-    }
-  }, [permissionStore, permissionStore.waitingDatas]);
-
   if (!code) return null;
 
   return (

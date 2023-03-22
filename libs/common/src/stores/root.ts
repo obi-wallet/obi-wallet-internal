@@ -1,12 +1,5 @@
 import { APP_PORT } from "@keplr-wallet/router";
-import {
-  ChainSuggestStore,
-  DeferInitialQueryController,
-  InteractionStore as KeplrInteractionStore,
-  ObservableQueryBase,
-  PermissionStore,
-  SignInteractionStore as KeplrSignInteractionStore,
-} from "@keplr-wallet/stores";
+import { InteractionStore as KeplrInteractionStore } from "@keplr-wallet/stores";
 
 import { AppsStore } from "./apps";
 import { ChainStore } from "./chain";
@@ -16,11 +9,9 @@ import { InAppPurchaseInteractionStore } from "./interaction/in-app-purchase";
 import { SignInteractionStore } from "./interaction/sign";
 import { TerraSignInteractionStore } from "./interaction/terra-sign";
 import { WalletConnectInteractionStore } from "./interaction/wallet-connect";
-import { KeplrChainStore } from "./keplr-chain";
 import { LanguageStore } from "./language";
 import { WalletConnectStore } from "./wallet-connect";
 import { WalletsStore } from "./wallets";
-import { CommunityChainInfoRepo, EmbedChainInfos } from "../config";
 import { produceEnv } from "../env";
 import { AbstractKVStore, KVStore as DefaultKVStore } from "../kv-store";
 import { MessageRequesterInternal } from "../message-requester";
@@ -40,11 +31,7 @@ export class RootStore {
   public readonly walletConnectStore: WalletConnectStore;
 
   // Hide Keplr-related stores by default
-  protected readonly keplrChainStore: KeplrChainStore;
-  protected readonly keplrChainSuggestStore: ChainSuggestStore;
   protected readonly keplrInteractionStore: KeplrInteractionStore;
-  protected readonly keplrPermissionStore: PermissionStore;
-  public readonly keplrSignInteractionStore: KeplrSignInteractionStore;
 
   constructor({
     deviceLanguage,
@@ -56,28 +43,10 @@ export class RootStore {
     KVStore?: new (prefix: string) => AbstractKVStore;
   }) {
     const router = new RouterUi(produceEnv);
-    ObservableQueryBase.experimentalDeferInitialQueryController =
-      new DeferInitialQueryController();
 
     this.keplrInteractionStore = new KeplrInteractionStore(
       router,
       new MessageRequesterInternal()
-    );
-    this.keplrChainStore = new KeplrChainStore(
-      EmbedChainInfos,
-      new MessageRequesterInternal(),
-      ObservableQueryBase.experimentalDeferInitialQueryController
-    );
-    this.keplrChainSuggestStore = new ChainSuggestStore(
-      this.keplrInteractionStore,
-      CommunityChainInfoRepo
-    );
-    this.keplrPermissionStore = new PermissionStore(
-      this.keplrInteractionStore,
-      new MessageRequesterInternal()
-    );
-    this.keplrSignInteractionStore = new KeplrSignInteractionStore(
-      this.keplrInteractionStore
     );
 
     this.appsStore = new AppsStore({ kvStore: new KVStore("apps-store") });
@@ -115,9 +84,5 @@ export class RootStore {
     });
 
     router.listen(APP_PORT);
-  }
-
-  public get permissionStore() {
-    return this.keplrPermissionStore;
   }
 }
