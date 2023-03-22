@@ -1,4 +1,5 @@
-import { RequestObiWalletConnectPayload, Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common";
+import { InitiateWalletConnectSessionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 
@@ -10,25 +11,25 @@ import { useStore } from "../stores";
 
 export const WalletConnectInteractionModal = observer(
   function WalletConnectInteractionModal() {
-    const { walletConnectInteractionStore } = useStore();
+    const { userInteractionsStore } = useStore();
 
-    const data = walletConnectInteractionStore.waitingData?.data;
+    const interaction = userInteractionsStore.getPendingUserInteractionsOfType(
+      InitiateWalletConnectSessionUserInteraction
+    )[0];
 
-    if (!data) return null;
+    if (!interaction) return null;
 
-    return <InteractionModalInner data={data} />;
+    return <InteractionModalInner interaction={interaction} />;
   }
 );
 
 const InteractionModalInner = observer(function InteractionModalInner({
-  data,
+  interaction,
 }: {
-  data: RequestObiWalletConnectPayload;
+  interaction: InitiateWalletConnectSessionUserInteraction;
 }) {
-  const { walletConnectInteractionStore } = useStore();
-
   return (
-    <Modal visible={true}>
+    <Modal visible>
       <ScreenContainer>
         <Text
           style={{
@@ -50,7 +51,7 @@ const InteractionModalInner = observer(function InteractionModalInner({
             <Wc />
           </View>
           <Text style={{ color: "#fff", textAlign: "center" }}>
-            {data.peerMeta.name} requested to connect your wallet
+            {interaction.payload.peerMeta.name} requested to connect your wallet
           </Text>
           <View
             style={{
@@ -72,7 +73,7 @@ const InteractionModalInner = observer(function InteractionModalInner({
                   fontSize: 12,
                 }}
               >
-                {data.peerMeta.url}
+                {interaction.payload.peerMeta.url}
               </Text>
             </Text>
           </View>
@@ -96,7 +97,7 @@ const InteractionModalInner = observer(function InteractionModalInner({
                 opacity: 0.5,
               }}
             >
-              {data.peerMeta.description}
+              {interaction.payload.peerMeta.description}
             </Text>
           </View>
         </View>
@@ -105,14 +106,14 @@ const InteractionModalInner = observer(function InteractionModalInner({
             flavor="blue"
             label="Allow"
             onPress={() => {
-              walletConnectInteractionStore.approveAndWaitEnd();
+              interaction.resolve({ approved: true });
             }}
           />
           <Button
             flavor="cancel"
             label="Deny"
             onPress={() => {
-              walletConnectInteractionStore.reject();
+              interaction.resolve({ approved: false });
             }}
           />
         </View>

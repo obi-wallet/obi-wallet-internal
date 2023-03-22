@@ -1,5 +1,9 @@
 import { KVStore } from "@keplr-wallet/common";
-import { isTerraChain, WalletMeta } from "@obi-wallet/sdk";
+import {
+  InitiateWalletConnectSessionUserInteraction,
+  isTerraChain,
+  WalletMeta,
+} from "@obi-wallet/sdk";
 import { isTxError, Msg } from "@terra-money/feather.js";
 import WalletConnect from "@walletconnect/client";
 import {
@@ -11,11 +15,7 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 
 import { WalletsStore } from "./wallets";
-import {
-  RequestObiSignAndBroadcastTerraTransactionMsg,
-  RequestObiWalletConnectMsg,
-  RequestObiWalletConnectPayload,
-} from "../background";
+import { RequestObiSignAndBroadcastTerraTransactionMsg } from "../background";
 
 enum ErrorCodeEnum {
   userDenied = 1, // User Denied
@@ -73,7 +73,7 @@ export class WalletConnectStore {
     walletMeta,
   }: {
     uri: string;
-    walletMeta: RequestObiWalletConnectPayload["walletMeta"];
+    walletMeta: WalletMeta;
   }) {
     const connector = createWalletConnect({
       uri,
@@ -221,23 +221,30 @@ export class WalletConnectStore {
 
       const { peerMeta } = payload.params[0];
       console.log("session-request", peerMeta);
+
       try {
-        await RequestObiWalletConnectMsg.send({
-          type: "session-request",
-          peerMeta,
-          walletMeta,
-        });
-        connector.approveSession({
-          // TODO: Maybe pass via send response instead
-          // TODO: also save wallet id here
-          // TODO: fix this
-          accounts: [this.walletsStore.address!],
-          chainId: 1,
-        });
-        await this.saveConnector({ connector, walletMeta });
+        const response =
+          await InitiateWalletConnectSessionUserInteraction.start({
+            peerMeta,
+            walletMeta,
+          });
+        if (response.approved) {
+          connector.approveSession({
+            // TODO: Maybe pass via send response instead
+            // TODO: also save wallet id here
+            // TODO: fix this
+            // Instead, calculate address from walletMeta
+            accounts: [this.walletsStore.address!],
+            chainId: 1,
+          });
+          await this.saveConnector({ connector, walletMeta });
+          return;
+        }
       } catch (e) {
-        connector.rejectSession();
+        console.log(e);
       }
+
+      connector.rejectSession();
     });
 
     connector.on("session_update", (error) => {

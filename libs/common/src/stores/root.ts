@@ -1,5 +1,6 @@
 import { APP_PORT } from "@keplr-wallet/router";
 import { InteractionStore as KeplrInteractionStore } from "@keplr-wallet/stores";
+import { ObservableUserInteractions, UserInteractions } from "@obi-wallet/sdk";
 
 import { AppsStore } from "./apps";
 import { ChainStore } from "./chain";
@@ -8,7 +9,6 @@ import { DraftsStore } from "./drafts";
 import { InAppPurchaseInteractionStore } from "./interaction/in-app-purchase";
 import { SignInteractionStore } from "./interaction/sign";
 import { TerraSignInteractionStore } from "./interaction/terra-sign";
-import { WalletConnectInteractionStore } from "./interaction/wallet-connect";
 import { LanguageStore } from "./language";
 import { WalletConnectStore } from "./wallet-connect";
 import { WalletsStore } from "./wallets";
@@ -27,8 +27,8 @@ export class RootStore {
   public readonly terraSignInteractionStore: TerraSignInteractionStore;
   public readonly languageStore: LanguageStore;
   public readonly walletsStore: WalletsStore;
-  public readonly walletConnectInteractionStore: WalletConnectInteractionStore;
   public readonly walletConnectStore: WalletConnectStore;
+  public readonly userInteractionsStore: UserInteractions;
 
   // Hide Keplr-related stores by default
   protected readonly keplrInteractionStore: KeplrInteractionStore;
@@ -61,9 +61,7 @@ export class RootStore {
     this.terraSignInteractionStore = new TerraSignInteractionStore(
       this.keplrInteractionStore
     );
-    this.walletConnectInteractionStore = new WalletConnectInteractionStore(
-      this.keplrInteractionStore
-    );
+    this.userInteractionsStore = ObservableUserInteractions.create();
 
     this.languageStore = new LanguageStore({
       deviceLanguage,
