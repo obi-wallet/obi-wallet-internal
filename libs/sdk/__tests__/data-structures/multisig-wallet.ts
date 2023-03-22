@@ -4,7 +4,6 @@ import {
   createGatekeeperConfig,
   MultisigKey,
   MultisigWallet,
-  ObservableMultisigKey,
   ObservableMultisigWallet,
   ObservableSinglesigWallet,
   Serialized,

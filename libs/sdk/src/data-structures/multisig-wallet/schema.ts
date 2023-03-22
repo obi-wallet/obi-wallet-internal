@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { ArrayIndex } from "../array-index";
-import { createGatekeeperConfig, GatekeeperConfig } from "../gatekeeper-config";
+import { GatekeeperConfig } from "../gatekeeper-config";
 import { migratable } from "../migratable";
 import { MultisigKey } from "../multisig-key";
 import { SinglesigWallet } from "../singlesig-wallet";
@@ -36,73 +36,42 @@ const MultisigWalletData = migratable(
     chain: Chain,
     owner: MultisigKey.schema.migratableSchema,
     proxyAddress: ProxyAddress.migratableSchema,
+    gatekeeperConfig: GatekeeperConfig.schema.migratableSchema,
+    singlesigWallets: z.array(SinglesigWallet.schema.migratableSchema),
+    currentAccount: z
+      .object({
+        type: z.union([
+          z.literal("flex-account"),
+          z.literal("singlesig-wallet"),
+        ]),
+        index: ArrayIndex,
+      })
+      .nullable(),
   })
-)
-  .addMigration({
-    nextSchema: z.object({
-      chain: Chain,
-      owner: MultisigKey.schema.migratableSchema,
-      proxyAddress: ProxyAddress.migratableSchema,
-      gatekeeperConfig: GatekeeperConfig.schema.migratableSchema,
-      singlesigWallets: z.array(SinglesigWallet.schema.migratableSchema),
-    }),
-    migrate(data) {
-      const gatekeeperConfig = createGatekeeperConfig();
-      return {
-        ...data,
-        gatekeeperConfig: gatekeeperConfig.toJSON(),
-        singlesigWallets: [],
-      };
-    },
-  })
-  .addMigration({
-    nextSchema: z.object({
-      chain: Chain,
-      owner: MultisigKey.schema.migratableSchema,
-      proxyAddress: ProxyAddress.migratableSchema,
-      gatekeeperConfig: GatekeeperConfig.schema.migratableSchema,
-      singlesigWallets: z.array(SinglesigWallet.schema.migratableSchema),
-      currentAccount: z
-        .object({
-          type: z.union([
-            z.literal("flex-account"),
-            z.literal("singlesig-wallet"),
-          ]),
-          index: ArrayIndex,
-        })
-        .nullable(),
-    }),
-    migrate(data) {
-      return {
-        ...data,
-        currentAccount: null,
-      };
-    },
-  })
-  .addMigration({
-    nextSchema: z.object({
-      chain: Chain,
-      owner: MultisigKey.schema.migratableSchema,
-      proxyAddress: ProxyAddress.migratableSchema,
-      gatekeeperConfig: GatekeeperConfig.schema.migratableSchema,
-      singlesigWallets: z.array(SinglesigWallet.schema.migratableSchema),
-      currentAccount: z
-        .object({
-          type: z.union([
-            z.literal("flex-account"),
-            z.literal("singlesig-wallet"),
-          ]),
-          id: z.string(),
-        })
-        .nullable(),
-    }),
-    migrate(data) {
-      return {
-        ...data,
-        currentAccount: null,
-      };
-    },
-  });
+).addMigration({
+  nextSchema: z.object({
+    chain: Chain,
+    owner: MultisigKey.schema.migratableSchema,
+    proxyAddress: ProxyAddress.migratableSchema,
+    gatekeeperConfig: GatekeeperConfig.schema.migratableSchema,
+    singlesigWallets: z.array(SinglesigWallet.schema.migratableSchema),
+    currentAccount: z
+      .object({
+        type: z.union([
+          z.literal("flex-account"),
+          z.literal("singlesig-wallet"),
+        ]),
+        id: z.string(),
+      })
+      .nullable(),
+  }),
+  migrate(data) {
+    return {
+      ...data,
+      currentAccount: null,
+    };
+  },
+});
 
 export const MultisigWalletSchema = migratable(
   z.object({

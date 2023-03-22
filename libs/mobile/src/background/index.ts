@@ -1,33 +1,23 @@
 import { BACKGROUND_PORT, Env, Message } from "@keplr-wallet/router";
-import { init, KeyRingService, ScryptParams } from "@obi-wallet/background";
+import { init, ScryptParams } from "@obi-wallet/background";
 import {
-  CommunityChainInfoRepo,
-  EmbedChainInfos,
-  KVStore,
   MessageRequesterInternalToUi,
   ObiMessage,
-  PrivilegedOrigins,
   produceEnv,
   RequestObiCosmosSignAndBroadcastMsg,
   RequestObiInAppPurchaseMsg,
   RequestObiSignAndBroadcastTerraTransactionMsg,
-  RequestObiWalletConnectMsg,
   RouterBackground,
 } from "@obi-wallet/common";
 import { Buffer } from "buffer";
 import scrypt from "scrypt-js";
 
 export function initBackground() {
-  let keyRingService: KeyRingService;
   const router = new RouterBackground(produceEnv);
 
   const { interactionService } = init(
     router,
-    (prefix: string) => new KVStore(prefix),
     new MessageRequesterInternalToUi(),
-    EmbedChainInfos,
-    PrivilegedOrigins,
-    CommunityChainInfoRepo,
     {
       rng: (array) => {
         return Promise.resolve(crypto.getRandomValues(array));
@@ -42,36 +32,12 @@ export function initBackground() {
           params.dklen
         );
       },
-    },
-    {
-      create: (params: {
-        iconRelativeUrl?: string;
-        title: string;
-        message: string;
-      }) => {
-        console.log(`Notification: ${params.title}, ${params.message}`);
-        // browser.notifications.create({
-        //   type: "basic",
-        //   iconUrl: params.iconRelativeUrl
-        //     ? browser.runtime.getURL(params.iconRelativeUrl)
-        //     : undefined,
-        //   title: params.title,
-        //   message: params.message,
-        // });
-      },
-    },
-    {},
-    {},
-    (store, embedChainInfos, commonCrypto) => {
-      keyRingService = new KeyRingService(store, embedChainInfos, commonCrypto);
-      return keyRingService;
     }
   );
 
   router.registerMessage(RequestObiInAppPurchaseMsg);
   router.registerMessage(RequestObiCosmosSignAndBroadcastMsg);
   router.registerMessage(RequestObiSignAndBroadcastTerraTransactionMsg);
-  router.registerMessage(RequestObiWalletConnectMsg);
   router.addHandler("obi", async (env: Env, msg: Message<unknown>) => {
     const message = msg as ObiMessage;
     return await interactionService.waitApprove(
