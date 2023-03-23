@@ -1,20 +1,25 @@
-import { RequestObiCosmosSignAndBroadcastPayload } from "@obi-wallet/common";
+import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 
+import { SignatureModal } from "./signature-modal";
 import { useStore } from "../stores";
 
 export const SignInteractionModal = observer(function SignInteractionModal() {
-  const { signInteractionStore } = useStore();
+  const { userInteractionsStore } = useStore();
 
-  const data = signInteractionStore.waitingData?.data;
+  const interaction = userInteractionsStore.getPendingUserInteractionsOfType(
+    SignAndBroadcastTransactionUserInteraction
+  )[0];
 
-  if (!data) return null;
+  if (!interaction) return null;
 
-  return <InteractionModalInner data={data} />;
-});
+  console.log(
+    JSON.stringify(
+      interaction.payload.messages.map((m) => m.toAmino()),
+      null,
+      2
+    )
+  );
 
-const InteractionModalInner = observer(function InteractionModalInner(_: {
-  data: RequestObiCosmosSignAndBroadcastPayload;
-}) {
-  return null;
+  return <SignatureModal interaction={interaction} />;
 });

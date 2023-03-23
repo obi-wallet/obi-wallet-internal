@@ -22,6 +22,7 @@ module.exports = (async () => {
         extraNodeModules: {
           buffer: require.resolve("buffer/"),
           crypto: require.resolve("react-native-crypto"),
+          events: require.resolve("eventemitter3"),
           fs: require.resolve("react-native-level-fs"),
           os: require.resolve("os-browserify"),
           path: require.resolve("path-browserify"),

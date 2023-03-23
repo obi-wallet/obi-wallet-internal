@@ -1,10 +1,10 @@
-import { KVStore } from "@keplr-wallet/common";
 import {
   InitiateWalletConnectSessionUserInteraction,
   isTerraChain,
+  SignAndBroadcastTransactionUserInteraction,
   WalletMeta,
 } from "@obi-wallet/sdk";
-import { isTxError, Msg } from "@terra-money/feather.js";
+import { Msg } from "@terra-money/feather.js";
 import WalletConnect from "@walletconnect/client";
 import {
   IWalletConnectOptions,
@@ -15,7 +15,7 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 
 import { WalletsStore } from "./wallets";
-import { RequestObiSignAndBroadcastTerraTransactionMsg } from "../background";
+import { AbstractKVStore } from "../kv-store";
 
 enum ErrorCodeEnum {
   userDenied = 1, // User Denied
@@ -46,7 +46,7 @@ export interface ConnectInformation {
 
 // TODO: add walletConnectID to terra chain (mainnet 1, testnet 0)
 export class WalletConnectStore {
-  protected readonly kvStore: KVStore;
+  protected readonly kvStore: AbstractKVStore;
   protected readonly walletsStore: WalletsStore;
 
   public __initPromise: Promise<void>;
@@ -58,7 +58,7 @@ export class WalletConnectStore {
     kvStore,
     walletsStore,
   }: {
-    kvStore: KVStore;
+    kvStore: AbstractKVStore;
     walletsStore: WalletsStore;
   }) {
     this.kvStore = kvStore;
@@ -285,34 +285,33 @@ export class WalletConnectStore {
                 : Msg.fromData(data);
             });
 
-            try {
-              const response =
-                await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-                  chain: wallet.chainId,
-                  messages: messages.map((msg) => msg.toAmino()),
-                  demoMode: wallet.isDemo,
-                  cancelable: true,
-                  walletMeta,
+            const response =
+              await SignAndBroadcastTransactionUserInteraction.start({
+                messages,
+                demoMode: wallet.isDemo,
+                cancelable: true,
+                walletMeta,
+              });
+            if (response.approved) {
+              if (response.payload.success) {
+                connector.approveRequest({
+                  id,
+                  result: response.payload.rawResult,
                 });
-              if (isTxError(response)) {
+              } else {
                 connector.rejectRequest({
                   id,
                   error: {
                     message: JSON.stringify({
                       code: ErrorCodeEnum.txFailed,
-                      message: response.raw_log,
-                      txHash: response.txhash,
-                      raw_message: response,
+                      message: response.payload.rawLog,
+                      txHash: response.payload.transactionHash,
+                      raw_message: response.payload.rawResult,
                     }),
                   },
                 });
-              } else {
-                connector.approveRequest({
-                  id,
-                  result: response,
-                });
               }
-            } catch (e) {
+            } else {
               connector.rejectRequest({
                 id,
                 error: {

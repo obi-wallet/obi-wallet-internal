@@ -1,19 +1,14 @@
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  RequestObiSignAndBroadcastTerraTransactionMsg,
-  terra,
-  Text,
-} from "@obi-wallet/common";
+import { terra, Text } from "@obi-wallet/common";
 import {
   Beneficiary,
   FlexAccount,
   GatekeeperConfig,
+  SignAndBroadcastTransactionUserInteraction,
   SinglesigWallet,
-  TerraChain,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { isTxError } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { useState } from "react";
@@ -221,23 +216,26 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                 });
 
                 const response =
-                  await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-                    chain: wallet.chainId as TerraChain,
-                    messages: messages.map((message) => message.toAmino()),
+                  await SignAndBroadcastTransactionUserInteraction.start({
+                    messages,
                     demoMode: wallet.isDemo,
                     cancelable: true,
-                    multisigKey: wallet.owner.toJSON(),
+                    multisigKey: wallet.owner,
                   });
 
-                if (isTxError(response)) {
-                  Alert.alert("Error", response.raw_log ?? "Unknown error");
-                  return;
+                if (response.approved) {
+                  if (response.payload.success) {
+                    wallet.setGatekeeperConfig(draft.value);
+                    draft.commit({ original: wallet.gatekeeperConfig });
+
+                    await refetch();
+                  } else {
+                    Alert.alert(
+                      "Error",
+                      response.payload.rawLog ?? "Unknown error"
+                    );
+                  }
                 }
-
-                wallet.setGatekeeperConfig(draft.value);
-                draft.commit({ original: wallet.gatekeeperConfig });
-
-                await refetch();
               }}
             />
             <TouchableOpacity

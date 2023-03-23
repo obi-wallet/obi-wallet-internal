@@ -4,7 +4,11 @@ import { loopTheme, obiTheme } from "@obi-wallet/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import { QueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  QueryClientProviderProps,
+} from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { observer } from "mobx-react-lite";
 import { ComponentProps, ReactNode, useEffect } from "react";
@@ -28,6 +32,19 @@ const persister = createAsyncStoragePersister({
   storage: AsyncStorage,
 });
 
+const QueryClientProviderWithPersister = observer<QueryClientProviderProps>(
+  function QueryClientProviderWithPersister({ children }) {
+    return (
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister }}
+      >
+        {children}
+      </PersistQueryClientProvider>
+    );
+  }
+);
+
 export interface ProviderProps {
   children: ReactNode;
   config: Config;
@@ -35,12 +52,14 @@ export interface ProviderProps {
     ComponentProps<typeof NavigationContainer>,
     "children"
   >;
+  QueryClientProvider?: typeof QueryClientProvider;
 }
 
 export const Provider = observer<ProviderProps>(function Provider({
   children,
   config,
   navigationContainerProps,
+  QueryClientProvider = QueryClientProviderWithPersister,
 }) {
   const rootStore = useCreateRootStore({ config });
   const { languageStore, configStore } = rootStore;
@@ -55,10 +74,7 @@ export const Provider = observer<ProviderProps>(function Provider({
   }, [configStore]);
 
   return (
-    <PersistQueryClientProvider
-      client={queryClient}
-      persistOptions={{ persister }}
-    >
+    <QueryClientProvider client={queryClient}>
       <StoreContext.Provider value={rootStore}>
         <IntlProvider
           defaultLocale="en"
@@ -103,7 +119,7 @@ export const Provider = observer<ProviderProps>(function Provider({
           </SafeAreaProvider>
         </IntlProvider>
       </StoreContext.Provider>
-    </PersistQueryClientProvider>
+    </QueryClientProvider>
   );
 });
 

@@ -1,14 +1,16 @@
 import { useTheme } from "@emotion/react";
 import { terra, Text } from "@obi-wallet/common";
 import {
+  Chain,
   KeyType,
   MultisigKey,
   Sdk,
   Signer,
+  TerraChain,
   withTerraClient,
 } from "@obi-wallet/sdk";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BlockTxBroadcastResult, Msg } from "@terra-money/feather.js";
+import { Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { View } from "react-native";
@@ -21,6 +23,7 @@ import { KeysList } from "../../screens/components/keys-list";
 
 export interface SignatureModalFlexAccountProps
   extends AbstractSignatureModalProps {
+  chainId: Chain;
   flexAccount: Signer;
   multisigKey: MultisigKey;
   proxyAddress: string;
@@ -30,11 +33,10 @@ export const SignatureModalFlexAccount =
   observer<SignatureModalFlexAccountProps>(function SignatureModalFlexAccount(
     props
   ) {
-    const { data, flexAccount, proxyAddress } = props;
-    const innerMessages = data.messages.map((data) => {
-      return Msg.fromAmino(data);
-    });
-    const flexAccountAddress = Sdk.chainId(data.chain).getAddressOfSigner({
+    const { interaction, chainId, flexAccount, proxyAddress } = props;
+    const { payload } = interaction;
+    const innerMessages = payload.messages;
+    const flexAccountAddress = Sdk.chainId(chainId).getAddressOfSigner({
       signer: flexAccount,
     });
     const wrappedMessages = wrapMessages({
@@ -46,7 +48,8 @@ export const SignatureModalFlexAccount =
     const canExecute = useQuery({
       queryKey: ["can-execute"],
       queryFn: async () => {
-        return await withTerraClient(data.chain, async (client) => {
+        // TODO:
+        return await withTerraClient(chainId as TerraChain, async (client) => {
           const mayExecute = await Promise.all(
             innerMessages.map(async (message) => {
               try {
@@ -96,12 +99,11 @@ export interface SignatureModalFlexAccountWithFlexAccountProps
 export const SignatureModalFlexAccountWithFlexAccount =
   observer<SignatureModalFlexAccountWithFlexAccountProps>(
     function SignatureModalFlexAccountWithFlexAccount({
-      data,
+      chainId,
+      interaction,
       flexAccount,
       multisigKey,
       wrappedMessages,
-      onCancel,
-      onConfirm,
     }) {
       const theme = useTheme();
       const queryClient = useQueryClient();
@@ -109,7 +111,7 @@ export const SignatureModalFlexAccountWithFlexAccount =
 
       const broadcast = useMutation({
         mutationFn: async () => {
-          const sdk = Sdk.chainId(data.chain);
+          const sdk = Sdk.chainId(chainId);
           await sdk.prepareSigner({ signer: flexAccount });
           const signedTransaction = await sdk.createAndSignTransaction({
             signer: flexAccount,
@@ -140,16 +142,20 @@ export const SignatureModalFlexAccountWithFlexAccount =
         },
       ];
 
+      const { payload } = interaction;
+
       return (
         <ConfirmMessages
           loading={broadcast.isLoading}
-          cancelable={data.cancelable}
-          messages={data.messages}
+          cancelable={payload.cancelable}
+          messages={payload.messages}
           disabled={!signed}
-          onCancel={onCancel}
+          onCancel={() => {
+            interaction.resolve({ approved: false });
+          }}
           onConfirm={async () => {
             const response = await broadcast.mutateAsync();
-            await onConfirm(response.rawResult as BlockTxBroadcastResult);
+            interaction.resolve({ approved: true, payload: response });
           }}
         >
           <KeysList

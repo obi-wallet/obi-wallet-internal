@@ -1,6 +1,5 @@
 import { createUserInteractionType, UserInteraction } from "./abstract";
-import { Chain } from "../chains";
-import { MultisigKey, Serialized, WalletMeta } from "../data-structures";
+import { MultisigKey, WalletMeta } from "../data-structures";
 import { BroadcastTransactionResult } from "../sdk";
 import { Message } from "../transactions";
 
@@ -9,17 +8,16 @@ interface CommonPayloadWalletMeta {
 }
 
 interface CommonPayloadMultisigKey {
-  readonly multisigKey: Serialized<typeof MultisigKey>;
+  readonly multisigKey: MultisigKey;
 }
 
-export type SignAndBroadcastTransactionMessage = UserInteraction<
+export type SignAndBroadcastTransactionUserInteraction = UserInteraction<
   {
-    readonly chain: Chain;
     readonly messages: Message[];
     readonly demoMode: boolean;
     readonly cancelable: boolean;
   } & (CommonPayloadMultisigKey | CommonPayloadWalletMeta),
   { approved: true; payload: BroadcastTransactionResult } | { approved: false }
 >;
-export const SignAndBroadcastTransactionMessage =
-  createUserInteractionType<SignAndBroadcastTransactionMessage>();
+export const SignAndBroadcastTransactionUserInteraction =
+  createUserInteractionType<SignAndBroadcastTransactionUserInteraction>();

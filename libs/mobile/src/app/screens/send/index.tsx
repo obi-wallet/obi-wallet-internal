@@ -1,19 +1,16 @@
-import { EncodeObject } from "@cosmjs/proto-signing";
-import { isDeliverTxSuccess } from "@cosmjs/stargate";
 import { useTheme } from "@emotion/react";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons/faQrcode";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
+import { Brand } from "@obi-wallet/common";
 import {
-  Brand,
-  RequestObiCosmosSignAndBroadcastMsg,
-  RequestObiSignAndBroadcastTerraTransactionMsg,
-} from "@obi-wallet/common";
-import { isCosmosChain, TerraChain } from "@obi-wallet/sdk";
+  isTerraChain,
+  SignAndBroadcastTransactionUserInteraction,
+} from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { isTxError, Msg, MsgSend } from "@terra-money/feather.js";
+import { Msg, MsgSend } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -350,59 +347,6 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
           onPress={async () => {
             invariant(wallet, "Expected wallet to be defined.");
 
-            function getEncodeObjects(): EncodeObject[] {
-              if (!selectedCoin) return [];
-
-              const addressToUse =
-                address || (drinkOrBottleModalFlavor ? BARTENDER_ADDRESS : "");
-
-              const { digits } = formatExtendedCoin(selectedCoin);
-              const normalizedAmount =
-                parseFloat(amount.replace(",", ".")) * Math.pow(10, digits);
-              const msgAmount = [
-                {
-                  denom: selectedCoin.denom,
-                  amount: normalizedAmount.toFixed(0).toString(),
-                },
-              ];
-
-              if (!wallet.address) return [];
-
-              if (selectedCoin.contract) {
-                return [
-                  {
-                    typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-                    value: {
-                      sender: wallet.address,
-                      contract: selectedCoin.contract,
-                      msg: new Uint8Array(
-                        Buffer.from(
-                          JSON.stringify({
-                            transfer: {
-                              amount: msgAmount[0].amount,
-                              recipient: addressToUse,
-                            },
-                          })
-                        )
-                      ),
-                      funds: [],
-                    },
-                  },
-                ];
-              }
-
-              return [
-                {
-                  typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-                  value: {
-                    fromAddress: wallet.address,
-                    toAddress: addressToUse,
-                    amount: msgAmount,
-                  },
-                },
-              ];
-            }
-
             function getMessages(): Msg[] {
               if (!selectedCoin) return [];
 
@@ -425,31 +369,20 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
             }
 
             const chain = wallet.chainId;
-            if (isCosmosChain(chain)) {
-              const response = await RequestObiCosmosSignAndBroadcastMsg.send({
-                multisigKey: wallet.owner.toJSON(),
+            // TODO:
+            invariant(isTerraChain(chain), "Expected Terra chain");
+            const response =
+              await SignAndBroadcastTransactionUserInteraction.start({
+                messages: getMessages(),
                 demoMode: wallet.isDemo,
-                encodeObjects: getEncodeObjects(),
-                proxyAddress: wallet.proxyAddress,
+                cancelable: true,
+                walletMeta: wallet.meta,
               });
 
+            if (response.approved) {
               setConfirmModalStatus({
                 visible: true,
-                success: isDeliverTxSuccess(response),
-              });
-            } else {
-              const response =
-                await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-                  chain: wallet.chainId as TerraChain,
-                  messages: getMessages().map((message) => message.toAmino()),
-                  demoMode: wallet.isDemo,
-                  cancelable: true,
-                  walletMeta: wallet.meta,
-                });
-
-              setConfirmModalStatus({
-                visible: true,
-                success: !isTxError(response),
+                success: response.payload.success,
               });
             }
           }}

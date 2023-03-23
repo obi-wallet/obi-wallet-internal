@@ -1,14 +1,70 @@
+import { terra } from "@obi-wallet/common";
 import {
-  RequestObiSignAndBroadcastTerraTransactionPayload,
-  terra,
-} from "@obi-wallet/common";
-import { Sdk, TerraChain } from "@obi-wallet/sdk";
+  Sdk,
+  SignAndBroadcastTransactionUserInteraction,
+  TerraChain,
+} from "@obi-wallet/sdk";
 import { MsgSend } from "@terra-money/feather.js";
 import invariant from "tiny-invariant";
 
 import { SignatureModal } from "../../src/app/modals/signature-modal";
 import { useMultisigWallet } from "../../src/app/stores";
 import { mockAction } from "../../src/fixture-helpers";
+
+function SendMultisigTxFixture() {
+  const wallet = useMultisigWallet();
+
+  const interaction: SignAndBroadcastTransactionUserInteraction = {
+    payload: {
+      messages: [new MsgSend(wallet.address, wallet.address, { uluna: 1 })],
+      walletMeta: {
+        walletId: wallet.id,
+        currentAccount: null,
+      },
+      demoMode: true,
+      cancelable: true,
+    },
+    resolve() {
+      mockAction("resolve")();
+    },
+    reject() {
+      mockAction("reject")();
+    },
+  };
+
+  return <SignatureModal interaction={interaction} />;
+}
+
+function SendFlexAccountTxFixture() {
+  const wallet = useMultisigWallet();
+  const flexAccount = wallet.gatekeeperConfig.flexAccounts[0];
+
+  // TODO: add fallback
+  invariant(flexAccount, "No flex account wallet");
+
+  const interaction: SignAndBroadcastTransactionUserInteraction = {
+    payload: {
+      messages: [new MsgSend(wallet.address, wallet.address, { uluna: 1 })],
+      walletMeta: {
+        walletId: wallet.id,
+        currentAccount: {
+          type: "flex-account",
+          id: flexAccount.address,
+        },
+      },
+      demoMode: true,
+      cancelable: true,
+    },
+    resolve() {
+      mockAction("resolve")();
+    },
+    reject() {
+      mockAction("reject")();
+    },
+  };
+
+  return <SignatureModal interaction={interaction} />;
+}
 
 function SendSinglesigWalletTxFixture() {
   const wallet = useMultisigWallet();
@@ -20,112 +76,55 @@ function SendSinglesigWalletTxFixture() {
     publicKey: singlesigWallet.publicKey,
   });
 
-  const tx: RequestObiSignAndBroadcastTerraTransactionPayload = {
-    chain: wallet.chainId as TerraChain,
-    messages: [new MsgSend(address, address, { uluna: 1 })].map((msg) =>
-      msg.toAmino()
-    ),
-    walletMeta: {
-      walletId: wallet.id,
-      currentAccount: {
-        type: "singlesig-wallet",
-        id: singlesigWallet.publicKey.value,
+  const interaction: SignAndBroadcastTransactionUserInteraction = {
+    payload: {
+      messages: [new MsgSend(address, address, { uluna: 1 })],
+      walletMeta: {
+        walletId: wallet.id,
+        currentAccount: {
+          type: "singlesig-wallet",
+          id: singlesigWallet.publicKey.value,
+        },
       },
+      demoMode: true,
+      cancelable: true,
     },
-    demoMode: true,
-    cancelable: true,
+    resolve() {
+      mockAction("resolve")();
+    },
+    reject() {
+      mockAction("reject")();
+    },
   };
 
-  return (
-    <SignatureModal
-      data={tx}
-      onConfirm={async () => mockAction("onConfirm")()}
-      onCancel={async () => mockAction("onCancel")()}
-    />
-  );
-}
-
-function SendMultisigTxFixture() {
-  const wallet = useMultisigWallet();
-
-  const tx: RequestObiSignAndBroadcastTerraTransactionPayload = {
-    chain: wallet.chainId as TerraChain,
-    messages: [new MsgSend(wallet.address, wallet.address, { uluna: 1 })].map(
-      (msg) => msg.toAmino()
-    ),
-    walletMeta: {
-      walletId: wallet.id,
-      currentAccount: null,
-    },
-    demoMode: true,
-    cancelable: true,
-  };
-
-  return (
-    <SignatureModal
-      data={tx}
-      onConfirm={async () => mockAction("onConfirm")()}
-      onCancel={async () => mockAction("onCancel")()}
-    />
-  );
-}
-
-function SendFlexAccountTxFixture() {
-  const wallet = useMultisigWallet();
-  const flexAccount = wallet.gatekeeperConfig.flexAccounts[0];
-
-  // TODO: add fallback
-  invariant(flexAccount, "No flex account wallet");
-
-  const tx: RequestObiSignAndBroadcastTerraTransactionPayload = {
-    chain: wallet.chainId as TerraChain,
-    messages: [new MsgSend(wallet.address, wallet.address, { uluna: 1 })].map(
-      (msg) => msg.toAmino()
-    ),
-    walletMeta: {
-      walletId: wallet.id,
-      currentAccount: {
-        type: "flex-account",
-        id: flexAccount.address,
-      },
-    },
-    demoMode: true,
-    cancelable: true,
-  };
-
-  return (
-    <SignatureModal
-      data={tx}
-      onConfirm={async () => mockAction("onConfirm")()}
-      onCancel={async () => mockAction("onCancel")()}
-    />
-  );
+  return <SignatureModal interaction={interaction} />;
 }
 
 function SendMultisigKeyTxFixture() {
   const wallet = useMultisigWallet();
 
-  const tx: RequestObiSignAndBroadcastTerraTransactionPayload = {
-    chain: wallet.chainId as TerraChain,
-    messages: [
-      terra.getNewAccountMessage({
-        address: wallet.owner.address,
-        chainId: wallet.chainId as TerraChain,
-        signers: [],
-      }),
-    ].map((msg) => msg.toAmino()),
-    multisigKey: wallet.owner.toJSON(),
-    demoMode: true,
-    cancelable: true,
+  const interaction: SignAndBroadcastTransactionUserInteraction = {
+    payload: {
+      messages: [
+        terra.getNewAccountMessage({
+          address: wallet.owner.address,
+          chainId: wallet.chainId as TerraChain,
+          signers: [],
+        }),
+      ],
+      multisigKey: wallet.owner,
+      demoMode: true,
+      cancelable: true,
+    },
+    resolve() {
+      mockAction("resolve")();
+    },
+    reject() {
+      mockAction("reject")();
+    },
   };
 
-  return (
-    <SignatureModal
-      data={tx}
-      onConfirm={async () => mockAction("onConfirm")()}
-      onCancel={async () => mockAction("onCancel")()}
-    />
-  );
+  return <SignatureModal interaction={interaction} />;
 }
 
 export default {

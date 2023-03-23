@@ -4,4 +4,5 @@ export * from "./data-structures";
 export * from "./keys";
 export * from "./sdk";
 export * from "./signers";
+export * from "./transactions";
 export * from "./user-interactions";

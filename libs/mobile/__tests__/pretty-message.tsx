@@ -1,6 +1,7 @@
 import { Brand, terra } from "@obi-wallet/common";
 import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
 import { terraChains } from "@obi-wallet/sdk";
+import { QueryClientProvider } from "@tanstack/react-query";
 import {
   Coin,
   Msg,
@@ -10,6 +11,8 @@ import {
   MsgSend,
 } from "@terra-money/feather.js";
 import { render, screen } from "@testing-library/react-native";
+import { observer } from "mobx-react-lite";
+import { ReactNode } from "react";
 
 import {
   createSessionKey,
@@ -38,7 +41,7 @@ describe("Terra", () => {
   describe("MsgSend", () => {
     const message = new MsgSend(address, address, { uluna: 1 });
 
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
       expect(screen.getByText("To:")).toBeDefined();
       expect(
@@ -47,7 +50,7 @@ describe("Terra", () => {
       expect(screen.getByText("0.000001LUNA")).toBeDefined();
     });
 
-    test("Loop", async () => {
+    test("Loop", () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
       expect(screen.getByText("Send")).toBeDefined();
       expect(
@@ -60,13 +63,13 @@ describe("Terra", () => {
   describe("MsgInstantiateContract", () => {
     const message = new MsgInstantiateContract(address, address, 1, {});
 
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
       expect(screen.getByText("Init Contract")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
     });
 
-    test("Loop", async () => {
+    test("Loop", () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
       expect(screen.getByText("Init Contract")).toBeDefined();
     });
@@ -75,7 +78,7 @@ describe("Terra", () => {
   describe("MsgExecuteContract", () => {
     const message = new MsgExecuteContract(address, address, {});
 
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
       expect(screen.getByText("Execute Wasm Contract")).toBeDefined();
       expect(
@@ -87,7 +90,7 @@ describe("Terra", () => {
       expect(screen.getByText("0LUNA")).toBeDefined();
     });
 
-    test("Loop", async () => {
+    test("Loop", () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
       expect(screen.getByText("Execute Wasm Contract")).toBeDefined();
       expect(
@@ -105,13 +108,13 @@ describe("Terra", () => {
       codeIds: terraChains[chainId].currentCodeIds,
     });
 
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
       expect(screen.getByText("Update Multikey (step 1 of 2)")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
     });
 
-    test("Loop", async () => {
+    test("Loop", () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
       expect(screen.getByText("Update Multikey (step 1 of 2)")).toBeDefined();
     });
@@ -123,13 +126,13 @@ describe("Terra", () => {
       proxyAddress: address,
     });
 
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
       expect(screen.getByText("Confirm Update (step 2 of 2)")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
     });
 
-    test("Loop", async () => {
+    test("Loop", () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
       expect(screen.getByText("Confirm Update (step 2 of 2)")).toBeDefined();
     });
@@ -142,13 +145,13 @@ describe("Terra", () => {
       chainId,
     });
 
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
       expect(screen.getByText("Create Obi Wallet")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
     });
 
-    test("Loop", async () => {
+    test("Loop", () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
       expect(screen.getByText("Create Obi Wallet")).toBeDefined();
     });
@@ -163,13 +166,13 @@ describe("Terra", () => {
       codeIds: terraChains[chainId].currentCodeIds,
     });
 
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
       expect(screen.getByText("Update Obi Wallet")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
     });
 
-    test("Loop", async () => {
+    test("Loop", () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
       expect(screen.getByText("Update Obi Wallet")).toBeDefined();
     });
@@ -183,14 +186,14 @@ describe("Terra", () => {
       chainId,
     });
 
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
       expect(screen.getByText("Staking to:")).toBeDefined();
       expect(screen.getByText("0.000001LUNA")).toBeDefined();
     });
 
     // TODO: Loop's not showing the amount
-    test.skip("Loop", async () => {
+    test.skip("Loop", () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
       expect(screen.getByText("Staking to:")).toBeDefined();
       expect(screen.getByText("0.000001LUNA")).toBeDefined();
@@ -205,14 +208,14 @@ describe("Terra", () => {
       chainId,
     });
 
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
       expect(screen.getByText("Unstaking from:")).toBeDefined();
       expect(screen.getByText("0.000001LUNA")).toBeDefined();
     });
 
     // TODO: Loop's not showing the amount
-    test.skip("Loop", async () => {
+    test.skip("Loop", () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
       expect(screen.getByText("Unstaking from:")).toBeDefined();
       expect(screen.getByText("0.000001LUNA")).toBeDefined();
@@ -225,7 +228,7 @@ describe("Terra", () => {
       validator: terraChains["phoenix-1"].obiValidator,
     });
 
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
       expect(
         screen.getByText("Withdrawing staking rewards from:")
@@ -234,7 +237,7 @@ describe("Terra", () => {
     });
 
     // TODO: Loop's not showing the amount
-    test.skip("Loop", async () => {
+    test.skip("Loop", () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
       expect(
         screen.getByText("Withdrawing staking rewards from:")
@@ -244,7 +247,7 @@ describe("Terra", () => {
   });
 
   describe("Add/Update Permissioned Address ", () => {
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message: upsertFlex, brand: Brand.Obi });
       expect(screen.getByText("Add/Update Permissioned Address")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
@@ -252,7 +255,7 @@ describe("Terra", () => {
         screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
       ).toBeDefined();
     });
-    test("Loop", async () => {
+    test("Loop", () => {
       renderPrettyMessage({ message: upsertFlex, brand: Brand.Loop });
       expect(screen.getByText("Add/Update Permissioned Address")).toBeDefined();
       expect(
@@ -262,7 +265,7 @@ describe("Terra", () => {
   });
 
   describe("Remove Permissioned Address", () => {
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message: rmFlex, brand: Brand.Obi });
       expect(screen.getByText("Remove Permissioned Address")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
@@ -270,7 +273,7 @@ describe("Terra", () => {
         screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
       ).toBeDefined();
     });
-    test("Loop", async () => {
+    test("Loop", () => {
       renderPrettyMessage({ message: rmFlex, brand: Brand.Loop });
       expect(screen.getByText("Remove Permissioned Address")).toBeDefined();
       expect(
@@ -280,7 +283,7 @@ describe("Terra", () => {
   });
 
   describe("Create Session Key", () => {
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message: createSessionKey, brand: Brand.Obi });
       expect(screen.getByText("Create Session Key")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
@@ -288,7 +291,7 @@ describe("Terra", () => {
         screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
       ).toBeDefined();
     });
-    test("Loop", async () => {
+    test("Loop", () => {
       renderPrettyMessage({ message: createSessionKey, brand: Brand.Loop });
       expect(screen.getByText("Create Session Key")).toBeDefined();
       expect(
@@ -298,7 +301,7 @@ describe("Terra", () => {
   });
 
   describe("Destroy Session Key", () => {
-    it("Obi", async () => {
+    it("Obi", () => {
       renderPrettyMessage({ message: destroySessionKey, brand: Brand.Obi });
       expect(screen.getByText("Destroy Session Key")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
@@ -306,7 +309,7 @@ describe("Terra", () => {
         screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
       ).toBeDefined();
     });
-    test("Loop", async () => {
+    test("Loop", () => {
       renderPrettyMessage({ message: destroySessionKey, brand: Brand.Loop });
       expect(screen.getByText("Destroy Session Key")).toBeDefined();
       expect(
@@ -316,7 +319,7 @@ describe("Terra", () => {
   });
 
   describe("Add/Update Beneficiary", () => {
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message: upsertBeneficiary, brand: Brand.Obi });
       expect(screen.getByText("Add/Update Beneficiary")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
@@ -329,7 +332,7 @@ describe("Terra", () => {
         )
       ).toBeDefined();
     });
-    test("Loop", async () => {
+    test("Loop", () => {
       renderPrettyMessage({ message: upsertBeneficiary, brand: Brand.Loop });
       expect(screen.getByText("Add/Update Beneficiary")).toBeDefined();
       expect(
@@ -341,7 +344,7 @@ describe("Terra", () => {
         )
       ).toBeDefined();
     });
-    test("Annually", async () => {
+    test("Annually", () => {
       renderPrettyMessage({
         message: upsertBeneficiaryAnnually,
         brand: Brand.Obi,
@@ -363,13 +366,13 @@ describe("Terra", () => {
       Coin.fromAmino({ denom: "uluna", amount: "1" })
     );
 
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
       expect(screen.getByText("Unknown message")).toBeDefined();
       expect(screen.getByText("Please check data tab")).toBeDefined();
     });
 
-    test("Loop", async () => {
+    test("Loop", () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
       expect(screen.getByText("Unknown message")).toBeDefined();
       expect(screen.getByText("Please check data tab")).toBeDefined();
@@ -377,20 +380,27 @@ describe("Terra", () => {
   });
 
   describe("Error Boundary", () => {
-    jest.spyOn(console, "error").mockImplementation(() => {
-      // noop
+    beforeEach(() => {
+      jest.spyOn(console, "error").mockImplementation(() => {
+        // noop
+      });
     });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
     const message = Msg.fromAmino({
       type: "bank/MsgSend",
       value: {},
     });
 
-    test("Obi", async () => {
+    test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
       expect(screen.getByText("Unknown message")).toBeDefined();
     });
 
-    test("Loop", async () => {
+    test("Loop", () => {
       renderPrettyMessage({ message, brand: Brand.Loop });
       expect(screen.getByText("Unknown message")).toBeDefined();
     });
@@ -403,11 +413,27 @@ describe("Terra", () => {
     message: Msg;
     brand: Brand;
   }) {
-    render(
-      <Provider key={brand} config={getConfig(brand)}>
+    const Wrapper = createWrapper({ brand });
+    return render(
+      <Wrapper>
         <PrettyMessage message={message.toAmino()} />
-      </Provider>
+      </Wrapper>
     );
+  }
+
+  function createWrapper({ brand }: { brand: Brand }) {
+    // eslint-disable-next-line react/function-component-definition
+    return observer(function Wrapper({ children }: { children: ReactNode }) {
+      return (
+        <Provider
+          key={brand}
+          config={getConfig(brand)}
+          QueryClientProvider={QueryClientProvider}
+        >
+          {children}
+        </Provider>
+      );
+    });
   }
 });
 

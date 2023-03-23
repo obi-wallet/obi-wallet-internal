@@ -3,15 +3,11 @@ import { useTheme } from "@emotion/react";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  Feature,
-  RequestObiSignAndBroadcastTerraTransactionMsg,
-  terra,
-  Text,
-} from "@obi-wallet/common";
+import { Feature, terra, Text } from "@obi-wallet/common";
 import {
   cosmosChains,
   isCosmosChain,
+  SignAndBroadcastTransactionUserInteraction,
   TerraChain,
   terraChains,
 } from "@obi-wallet/sdk";
@@ -304,12 +300,11 @@ const UpdateFooter = observer(function UpdateHeader() {
         });
 
         try {
-          await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-            chain: wallet.chainId as TerraChain,
-            messages: [message.toAmino()],
+          await SignAndBroadcastTransactionUserInteraction.start({
+            messages: [message],
             demoMode: wallet.isDemo,
             cancelable: true,
-            multisigKey: wallet.owner.toJSON(),
+            multisigKey: wallet.owner,
           });
         } finally {
           await refetch({

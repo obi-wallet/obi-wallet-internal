@@ -1,9 +1,10 @@
+import { Draft, terra } from "@obi-wallet/common";
 import {
-  Draft,
-  RequestObiSignAndBroadcastTerraTransactionMsg,
-  terra,
-} from "@obi-wallet/common";
-import { MultisigKey, TerraChain } from "@obi-wallet/sdk";
+  MultisigKey,
+  SignAndBroadcastTransactionUserInteraction,
+  TerraChain,
+} from "@obi-wallet/sdk";
+import { BlockTxBroadcastResult } from "@terra-money/feather.js";
 
 export async function handleTerra({
   draft,
@@ -24,27 +25,33 @@ export async function handleTerra({
     chainId,
   });
 
-  const response = await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-    chain: draft.value.chain as TerraChain,
-    messages: [message.toAmino()],
+  const response = await SignAndBroadcastTransactionUserInteraction.start({
+    messages: [message],
     demoMode,
     cancelable: true,
-    multisigKey: multisigKey.toJSON(),
+    multisigKey: multisigKey,
   });
 
-  try {
-    return {
-      chain: chainId,
-      owner: multisigKey.toJSON(),
-      proxyAddress: terra.parseNewAccountResponse(response),
-      gatekeeperConfig: {
-        beneficiaries: [],
-        flexAccounts: [],
-      },
-      singlesigWallets: [],
-      currentAccount: null,
-    };
-  } catch (e) {
-    throw new Error(response.raw_log);
+  if (response.approved) {
+    if (response.payload.success) {
+      return {
+        chain: chainId,
+        owner: multisigKey.toJSON(),
+        proxyAddress: terra.parseNewAccountResponse(
+          response.payload.rawResult as BlockTxBroadcastResult
+        ),
+        gatekeeperConfig: {
+          beneficiaries: [],
+          flexAccounts: [],
+        },
+        singlesigWallets: [],
+        currentAccount: null,
+      };
+    } else {
+      throw new Error(response.payload.rawLog);
+    }
+  } else {
+    // TODO: handle more gracefully
+    throw new Error("User denied");
   }
 }
