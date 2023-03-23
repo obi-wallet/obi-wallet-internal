@@ -2,7 +2,13 @@ import { Text } from "@obi-wallet/common";
 import { KeyType } from "@obi-wallet/sdk";
 import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
-import { ComponentType, ReactNode, useEffect } from "react";
+import {
+  ComponentType,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import {
   FlatList,
   StyleProp,
@@ -103,22 +109,71 @@ export const KeyListItem = observer(function KeyListItem({
   const { configStore } = useStore();
   const isObi = configStore.isObi();
   const isLoop = configStore.isLoop();
+  const [pending, setPending] = useState(false);
   useEffect(() => {
     if (signed) {
       triggerNotificationSuccess();
     }
   }, [signed]);
+  const onPressSingleton = useCallback(async () => {
+    if (onPress) {
+      setPending(true);
+      try {
+        await onPress();
+      } finally {
+        setPending(false);
+      }
+    }
+  }, [onPress]);
 
   if (tiled && item.description === "Coming Soon") return null;
+  const renderContent = () => {
+    if (pending) {
+      return (
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#111",
+            padding: 25,
+            borderRadius: 100,
+          }}
+        >
+          <LottieView
+            source={require("./assets/loading.json")}
+            autoPlay
+            loop={true}
+            style={{ width: 30, zIndex: -1, position: "absolute" }}
+          />
+        </View>
+      );
+    }
+
+    return (
+      <>
+        <LottieView
+          source={
+            signed
+              ? require("./assets/confirm-animation.json")
+              : require("./assets/prompt-animation.json")
+          }
+          autoPlay
+          loop={!signed ? animate : false}
+          style={{ width: 60, zIndex: -1, position: "absolute" }}
+        />
+        <Icon fill={isObi ? "#fff" : "#7B87A8"} width={24} height={24} />
+      </>
+    );
+  };
 
   return tiled ? (
     <TouchableOpacity
       onPress={() => {
-        if (onPress) {
+        if (onPress && !pending) {
           if (!signed) {
             triggerImpactLight();
+            onPressSingleton();
           }
-          onPress();
         }
       }}
     >
@@ -136,22 +191,7 @@ export const KeyListItem = observer(function KeyListItem({
               borderColor: signed && isLoop ? "#89F5C2" : "transparent",
             }}
           >
-            {signed ? (
-              <LottieView
-                source={require("./assets/confirm-animation.json")}
-                autoPlay
-                loop={false}
-                style={{ width: 60, zIndex: -1, position: "absolute" }}
-              />
-            ) : (
-              <LottieView
-                source={require("./assets/prompt-animation.json")}
-                autoPlay
-                loop={animate}
-                style={{ width: 60, zIndex: -1, position: "absolute" }}
-              />
-            )}
-            <Icon fill={isObi ? "#fff" : "#7B87A8"} width={24} height={24} />
+            {renderContent()}
           </View>
         </View>
         <Text
