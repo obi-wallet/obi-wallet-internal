@@ -1,7 +1,4 @@
-import {
-  ObservableMultisigKey,
-  Secp256k1PrivateKeySigner,
-} from "@obi-wallet/sdk";
+import { Secp256k1PrivateKeySigner } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 
@@ -14,24 +11,27 @@ import { useStore } from "../../stores";
 export type SignatureModalProps = AbstractSignatureModalProps;
 
 export const SignatureModal = observer<SignatureModalProps>(
-  function SignatureModal({ data, ...props }) {
+  function SignatureModal({ interaction }) {
     const { walletsStore } = useStore();
+    const { payload } = interaction;
 
-    if (R.has("walletMeta", data)) {
-      const wallet = walletsStore.getWallet(data.walletMeta.walletId);
+    if (R.has("walletMeta", payload)) {
+      const wallet = walletsStore.getWallet(payload.walletMeta.walletId);
 
       if (!wallet) return null;
 
-      const currentAccount = data.walletMeta.currentAccount
-        ? wallet.getAccount(data.walletMeta.currentAccount)
+      const chainId = wallet.chainId;
+
+      const currentAccount = payload.walletMeta.currentAccount
+        ? wallet.getAccount(payload.walletMeta.currentAccount)
         : null;
 
       if (!currentAccount) {
         const multisigKey = wallet.owner;
         return (
           <SignatureModalMultisigKey
-            {...props}
-            data={data}
+            interaction={interaction}
+            chainId={chainId}
             multisigKey={multisigKey}
             proxyAddress={wallet.proxyAddress}
           />
@@ -40,9 +40,15 @@ export const SignatureModal = observer<SignatureModalProps>(
 
       if (currentAccount && currentAccount.type === "singlesig-wallet") {
         const signer = new Secp256k1PrivateKeySigner(currentAccount.privateKey);
-        return <SignatureModalRawKey {...props} data={data} signer={signer} />;
+        return (
+          <SignatureModalRawKey
+            interaction={interaction}
+            chainId={chainId}
+            signer={signer}
+          />
+        );
       }
-
+      //
       if (currentAccount && currentAccount.type === "flex-account") {
         const flexAccount = new Secp256k1PrivateKeySigner(
           currentAccount.privateKey
@@ -50,24 +56,20 @@ export const SignatureModal = observer<SignatureModalProps>(
         const multisigKey = wallet.owner;
         return (
           <SignatureModalFlexAccount
-            {...props}
-            data={data}
+            interaction={interaction}
+            chainId={chainId}
             flexAccount={flexAccount}
             multisigKey={multisigKey}
             proxyAddress={wallet.proxyAddress}
           />
         );
       }
-    } else if (R.has("multisigKey", data)) {
-      const multisigKey = ObservableMultisigKey.create(
-        data.chain,
-        data.multisigKey
-      );
+    } else if (R.has("multisigKey", payload)) {
       return (
         <SignatureModalMultisigKey
-          {...props}
-          data={data}
-          multisigKey={multisigKey}
+          chainId={payload.multisigKey.chain}
+          interaction={interaction}
+          multisigKey={payload.multisigKey}
         />
       );
     }

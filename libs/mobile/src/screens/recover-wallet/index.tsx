@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { isCosmosChain, KeyType, MultisigKey } from "@obi-wallet/sdk";
+import { isTerraChain, KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,7 +8,6 @@ import { useState } from "react";
 import { View } from "react-native";
 import invariant from "tiny-invariant";
 
-import { handleCosmos } from "./cosmos";
 import { handleTerra } from "./terra";
 import { AsyncButton } from "../../app/button";
 import { RootRoute, useRootNavigation } from "../../app/root-stack";
@@ -66,21 +65,13 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
               })
             );
 
-            if (isCosmosChain(chainId)) {
-              await handleCosmos({
-                draft,
-                serializedData: params.serializedData,
-                demoMode: params.demoMode,
-                chainId,
-              });
-            } else {
-              await handleTerra({
-                draft,
-                serializedData: params.serializedData,
-                demoMode: params.demoMode,
-                codeIds,
-              });
-            }
+            invariant(isTerraChain(chainId), "Expected Terra chain.");
+            await handleTerra({
+              draft,
+              serializedData: params.serializedData,
+              demoMode: params.demoMode,
+              codeIds,
+            });
 
             const wallet = params.demoMode
               ? walletsStore.addMultisigDemoWallet(params.serializedData)

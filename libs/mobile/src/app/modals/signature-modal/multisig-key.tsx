@@ -1,7 +1,14 @@
 import { terra } from "@obi-wallet/common";
-import { KeyType, MultisigKey, Sdk } from "@obi-wallet/sdk";
+import {
+  Chain,
+  isTerraChain,
+  KeyType,
+  MultisigKey,
+  Sdk,
+  TerraChain,
+} from "@obi-wallet/sdk";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Msg, SignatureV2 } from "@terra-money/feather.js";
+import { isTxError, SignatureV2 } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
@@ -32,6 +39,7 @@ import { CheckIcon, Key } from "../../screens/components/keys-list";
 
 export interface SignatureModalMultisigKeyProps
   extends AbstractSignatureModalProps {
+  chainId: Chain;
   multisigKey: MultisigKey;
   proxyAddress?: string;
   safeSpendLimitExceeded?: boolean;
@@ -39,13 +47,13 @@ export interface SignatureModalMultisigKeyProps
 
 export const SignatureModalMultisigKey =
   observer<SignatureModalMultisigKeyProps>(function SignatureModalMultisigKey({
-    data,
+    chainId,
+    interaction,
     multisigKey,
     proxyAddress,
     safeSpendLimitExceeded,
-    onCancel,
-    onConfirm,
   }) {
+    const { payload } = interaction;
     const [signatures, setSignatures] = useState(
       new Map<string, SignatureV2>()
     );
@@ -54,9 +62,7 @@ export const SignatureModalMultisigKey =
 
     const sender = multisigKey.address;
 
-    const innerMessages = data.messages.map((data) => {
-      return Msg.fromAmino(data);
-    });
+    const innerMessages = payload.messages;
 
     const messages = wrapMessages({
       messages: innerMessages,
@@ -77,11 +83,13 @@ export const SignatureModalMultisigKey =
 
     const transaction = useMutation({
       mutationFn: async () => {
+        // TODO: use new abstractions
+        invariant(isTerraChain(chainId), "Expected Terra chain.");
         const key = terra.createMultisigPublicKey({ multisigKey });
         return await terra.createMultisigTransaction({
           key,
           messages,
-          chainId: data.chain,
+          chainId,
         });
       },
       onError(error) {
@@ -89,7 +97,9 @@ export const SignatureModalMultisigKey =
         Alert.alert("Transaction failed", e.message, [
           {
             text: "Cancel",
-            onPress: onCancel,
+            onPress: () => {
+              interaction.resolve({ approved: false });
+            },
           },
         ]);
       },
@@ -109,7 +119,8 @@ export const SignatureModalMultisigKey =
 
         const transaction = await sign(signaturesOrdered);
         return await broadcastTransaction({
-          data,
+          chainId,
+          interaction,
           transaction,
           sender: multisigKey.address,
         });
@@ -166,7 +177,7 @@ export const SignatureModalMultisigKey =
                 const nfcKey = new NfcKey({
                   multisigKey,
                   parsed,
-                  demoMode: data.demoMode,
+                  demoMode: payload.demoMode,
                   queryClient,
                 });
 
@@ -263,9 +274,10 @@ export const SignatureModalMultisigKey =
                   const { signDoc } = await getTransactionInformation();
                   const phoneNumberRequestKey = new PhoneNumberRequestKey({
                     securityAnswer,
-                    chainId: data.chain,
+                    // TODO:
+                    chainId: chainId as TerraChain,
                     multisigKey,
-                    demoMode: data.demoMode,
+                    demoMode: payload.demoMode,
                   });
                   await phoneNumberRequestKey.createSignatureAmino(signDoc);
                 }}
@@ -274,7 +286,7 @@ export const SignatureModalMultisigKey =
                   const phoneNumberRequestKey = new PhoneNumberConfirmKey({
                     key,
                     multisigKey,
-                    demoMode: data.demoMode,
+                    demoMode: payload.demoMode,
                     queryClient,
                   });
                   const signature =
@@ -295,14 +307,23 @@ export const SignatureModalMultisigKey =
         threshold={multisigKey.threshold}
         numberOfSignatures={signatures.size}
         numberOfUsableKeys={usableKeys.length}
-        innerMessages={data.messages}
+        innerMessages={payload.messages}
         data={keys}
         safeSpendLimitExceeded={safeSpendLimitExceeded}
-        onConfirm={async () => {
-          const response = await broadcast.mutateAsync();
-          await onConfirm(response);
+        onCancel={() => {
+          interaction.resolve({ approved: false });
         }}
-        onCancel={onCancel}
+        onConfirm={async () => {
+          // TODO: use new abstractions
+          const rawResult = await broadcast.mutateAsync();
+          const response = {
+            success: !isTxError(rawResult),
+            transactionHash: rawResult.txhash,
+            rawLog: rawResult.raw_log,
+            rawResult,
+          };
+          interaction.resolve({ approved: true, payload: response });
+        }}
       />
     );
   });

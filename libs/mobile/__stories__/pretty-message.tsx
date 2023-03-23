@@ -17,7 +17,7 @@ import {
   upsertBeneficiaryAnnually,
   upsertFlex,
 } from "../__fixtures__/messages";
-import { PrettyMessage } from "../src";
+import { PrettyMessage } from "../src/app/modals/signature-modal/pretty-message";
 
 export default function PrettyMessages() {
   const theme = useTheme();

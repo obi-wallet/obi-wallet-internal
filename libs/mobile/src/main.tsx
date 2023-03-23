@@ -9,14 +9,12 @@ import { COSMOS_ENABLED } from "react-native-dotenv";
 import { LaunchArguments } from "react-native-launch-arguments";
 
 import { deploymentKey } from "./app/code-push";
-import { initBackground } from "./background";
 import { initSentry } from "./background/sentry";
 import { Cosmos } from "./cosmos";
 import { FixturePicker } from "./fixture-helpers/fixture-picker";
 
 export function setupMain({ App }: { App: ComponentType }) {
   initSentry();
-  initBackground();
 
   AppRegistry.registerComponent("Mobile", () => {
     const launchArguments = LaunchArguments.value<{ fixture?: string }>();

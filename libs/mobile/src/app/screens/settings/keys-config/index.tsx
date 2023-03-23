@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import {
-  isCosmosChain,
+  isTerraChain,
   KeyType,
   MultisigKey,
   MultisigWallet,
@@ -10,8 +10,8 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
+import invariant from "tiny-invariant";
 
-import { handleCosmos } from "./cosmos";
 import { handleTerra } from "./terra";
 import { MultisigSettings } from "../../../../components/multisig-settings";
 import { getCodeIdsQuery } from "../../../../queries/user-account";
@@ -174,19 +174,12 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
                   })
                 );
 
-                if (isCosmosChain(chainId)) {
-                  await handleCosmos({
-                    draft,
-                    wallet,
-                    chainId,
-                  });
-                } else {
-                  await handleTerra({
-                    draft,
-                    wallet,
-                    codeIds,
-                  });
-                }
+                invariant(isTerraChain(chainId), "Expected Terra chain");
+                await handleTerra({
+                  draft,
+                  wallet,
+                  codeIds,
+                });
               } catch (e) {
                 // noop
               } finally {

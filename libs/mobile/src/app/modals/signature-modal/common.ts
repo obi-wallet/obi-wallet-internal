@@ -1,50 +1,54 @@
+import { lendFees, terra } from "@obi-wallet/common";
 import {
-  lendFees,
-  RequestObiSignAndBroadcastTerraTransactionPayload,
-  terra,
-} from "@obi-wallet/common";
-import { withTerraClient } from "@obi-wallet/sdk";
+  Chain,
+  isTerraChain,
+  SignAndBroadcastTransactionUserInteraction,
+  withTerraClient,
+} from "@obi-wallet/sdk";
 import {
   BlockTxBroadcastResult,
   isTxError,
   Msg,
   Tx,
 } from "@terra-money/feather.js";
+import invariant from "tiny-invariant";
 
 export interface AbstractSignatureModalProps {
-  data: RequestObiSignAndBroadcastTerraTransactionPayload;
-  onConfirm: (transaction: BlockTxBroadcastResult) => Promise<void>;
-  onCancel: () => Promise<void>;
+  interaction: SignAndBroadcastTransactionUserInteraction;
 }
 
 export async function broadcastTransaction({
-  data,
+  chainId,
+  interaction,
   sender,
   transaction,
 }: {
-  data: RequestObiSignAndBroadcastTerraTransactionPayload;
+  chainId: Chain;
+  interaction: SignAndBroadcastTransactionUserInteraction;
   sender: string;
   transaction: Tx;
 }) {
-  if (data.demoMode) {
+  invariant(isTerraChain(chainId), "Only Terra is supported");
+  const { payload } = interaction;
+  if (payload.demoMode) {
     await terra.simulateTransaction({
       transaction,
-      chainId: data.chain,
+      chainId,
     });
     // This is only for demo mode
     return {} as BlockTxBroadcastResult;
   } else {
-    let response = await withTerraClient(data.chain, async (client) => {
-      return await client.tx.broadcastBlock(transaction, data.chain);
+    let response = await withTerraClient(chainId, async (client) => {
+      return await client.tx.broadcastBlock(transaction, chainId);
     });
     if (isTxError(response)) {
       if (response.raw_log.includes("insufficient funds")) {
         await lendFees({
-          chainId: data.chain,
+          chainId,
           address: sender,
         });
-        response = await withTerraClient(data.chain, async (client) => {
-          return await client.tx.broadcastBlock(transaction, data.chain);
+        response = await withTerraClient(chainId, async (client) => {
+          return await client.tx.broadcastBlock(transaction, chainId);
         });
       }
     }

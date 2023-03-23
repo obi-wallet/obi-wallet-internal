@@ -1,4 +1,3 @@
-import { AminoMsg, Coin as AminoCoin } from "@cosmjs/amino";
 import {
   AminoMsgExecuteContract,
   AminoMsgInstantiateContract,
@@ -10,9 +9,8 @@ import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Text } from "@obi-wallet/common";
-import { cosmosChains, isCosmosChain } from "@obi-wallet/sdk";
+import { Coin, cosmosChains, isCosmosChain } from "@obi-wallet/sdk";
 import {
-  Coin as TerraCoin,
   Msg,
   MsgDelegate,
   MsgExecuteContract,
@@ -34,7 +32,7 @@ import { CoinIcon } from "../../screens/components/coin-icon";
 import { useStore } from "../../stores";
 
 export interface PrettyMessageProps {
-  message: AminoMsg | Msg.Amino;
+  message: Msg.Amino;
 }
 
 export const PrettyMessage = observer(function PrettyMessage({
@@ -53,17 +51,15 @@ const PrettyMessageUnsafe = observer(function PrettyMessageUnsafe({
   switch (message.type) {
     case "bank/MsgSend":
     case "cosmos-sdk/MsgSend": {
-      const msg = message as AminoMsgSend | MsgSend.Amino;
+      const msg = message as MsgSend.Amino;
       return <PrettyMessageSend {...msg} />;
     }
     case "wasm/MsgInstantiateContract": {
-      const msg = message as
-        | AminoMsgInstantiateContract
-        | MsgInstantiateContract.Amino;
+      const msg = message as MsgInstantiateContract.Amino;
       return <PrettyMessageInstantiateContract {...msg} />;
     }
     case "wasm/MsgExecuteContract": {
-      const msg = message as AminoMsgExecuteContract | MsgExecuteContract.Amino;
+      const msg = message as MsgExecuteContract.Amino;
       return <PrettyMessageExecuteContract {...msg} />;
     }
     case "cosmos-sdk/MsgDelegate": {
@@ -466,7 +462,7 @@ const PrettyMessageExecuteContract = observer(
       return isAminoV1Value(value) ? value.execute_msg : value.msg;
     }
 
-    function getFunds() {
+    function getFunds(): readonly Coin[] {
       return isAminoV1Value(value) ? value.coins : value.funds;
     }
 
@@ -583,16 +579,14 @@ const MessageElement = observer<MessageElementProps>(function MessageElement({
 });
 
 interface PrettyCoinsProps {
-  coins?: TerraCoin[] | readonly AminoCoin[];
+  coins?: readonly Coin[];
 }
 
 const PrettyCoins = observer<PrettyCoinsProps>(function PrettyCoins({ coins }) {
   const { chainStore } = useStore();
   const denom = chainStore.currentChainInformation.denom;
   const coinsArray =
-    coins && coins.length > 0
-      ? toAminoCoins(coins)
-      : [{ amount: "0", denom: denom }];
+    coins && coins.length > 0 ? coins : [{ amount: "0", denom: denom }];
   return (
     <View>
       {coinsArray.map((coin) => {
@@ -618,15 +612,4 @@ const PrettyCoins = observer<PrettyCoinsProps>(function PrettyCoins({ coins }) {
       })}
     </View>
   );
-
-  function toAminoCoins(
-    coins: TerraCoin[] | readonly AminoCoin[]
-  ): AminoCoin[] {
-    return coins.map((coin) => {
-      if (typeof (coin as TerraCoin)["toAmino"] === "function") {
-        return (coin as TerraCoin).toAmino();
-      }
-      return coin as AminoCoin;
-    });
-  }
 });

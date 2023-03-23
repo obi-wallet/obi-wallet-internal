@@ -1,5 +1,5 @@
-import { KVStore } from "@keplr-wallet/common";
 import {
+  Migratable,
   MultisigWallet,
   ObservableWallets,
   Serialized,
@@ -16,6 +16,7 @@ import {
   toJS,
 } from "mobx";
 
+import { AbstractKVStore } from "../../kv-store";
 import { ChainStore } from "../chain";
 import { ConfigStore } from "../config";
 
@@ -31,7 +32,7 @@ export enum WalletState {
 export class WalletsStore {
   protected readonly chainStore: ChainStore;
   protected readonly configStore: ConfigStore;
-  protected readonly kvStore: KVStore;
+  protected readonly kvStore: AbstractKVStore;
 
   @observable
   protected _wallets: Wallets;
@@ -48,7 +49,7 @@ export class WalletsStore {
   }: {
     chainStore: ChainStore;
     configStore: ConfigStore;
-    kvStore: KVStore;
+    kvStore: AbstractKVStore;
   }) {
     this.chainStore = chainStore;
     this.configStore = configStore;
@@ -123,12 +124,12 @@ export class WalletsStore {
 
   protected async init() {
     try {
-      const data = await this.kvStore.get("wallets");
+      const data = await this.kvStore.get<Migratable<Wallets> | undefined>(
+        "wallets"
+      );
 
       runInAction(() => {
-        this._wallets = ObservableWallets.create(
-          Wallets.schema.migratableSchema.parse(data)
-        );
+        this._wallets = ObservableWallets.create(data);
         this.state = WalletState.READY;
       });
 

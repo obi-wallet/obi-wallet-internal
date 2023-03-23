@@ -1,5 +1,7 @@
-import { KVStore, toGenerator } from "@keplr-wallet/common";
 import { action, flow, makeObservable, observable, toJS } from "mobx";
+
+import { toGenerator } from "./helpers/to-generator";
+import { AbstractKVStore } from "../kv-store";
 
 export interface App {
   label: string;
@@ -10,12 +12,12 @@ export interface App {
 const knownApps: App[] = [];
 
 export class AppsStore {
-  protected readonly kvStore: KVStore;
+  protected readonly kvStore: AbstractKVStore;
 
   @observable
   public favorites: App[] = [];
 
-  constructor({ kvStore }: { kvStore: KVStore }) {
+  constructor({ kvStore }: { kvStore: AbstractKVStore }) {
     this.kvStore = kvStore;
     makeObservable(this);
     this.init();

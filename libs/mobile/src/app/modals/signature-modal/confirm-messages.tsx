@@ -1,6 +1,6 @@
-import { AminoMsg } from "@cosmjs/amino";
 import { useTheme } from "@emotion/react";
 import { Text } from "@obi-wallet/common";
+import { Message } from "@obi-wallet/sdk";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
@@ -31,7 +31,7 @@ export interface ConfirmMessagesProps extends ModalProps {
   loading?: boolean;
   disabled?: boolean;
   cancelable?: boolean;
-  messages: readonly AminoMsg[] | readonly Msg.Amino[];
+  messages: Message[];
   footer?: ReactNode;
   children?: ReactNode;
 
@@ -256,11 +256,13 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
     }
 
     function renderTabContent() {
+      const aminoMessages = messages.map((message) => message.toAmino());
+
       switch (selectedTab) {
         case Tab.TransactionDetails:
-          return <MessageView messages={messages} />;
+          return <MessageView messages={aminoMessages} />;
         case Tab.Data: {
-          const data = JSON.stringify(messages, null, 2);
+          const data = JSON.stringify(aminoMessages, null, 2);
           return (
             <Text
               style={{ color: "#ffffff" }}
@@ -279,7 +281,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
 );
 
 interface MessageViewProps {
-  messages: ConfirmMessagesProps["messages"];
+  messages: Msg.Amino[];
   isObi?: boolean;
 }
 

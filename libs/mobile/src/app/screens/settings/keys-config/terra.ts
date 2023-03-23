@@ -1,10 +1,10 @@
+import { CodeIds, Draft, terra } from "@obi-wallet/common";
 import {
-  CodeIds,
-  Draft,
-  RequestObiSignAndBroadcastTerraTransactionMsg,
-  terra,
-} from "@obi-wallet/common";
-import { MultisigKey, MultisigWallet, TerraChain } from "@obi-wallet/sdk";
+  MultisigKey,
+  MultisigWallet,
+  SignAndBroadcastTransactionUserInteraction,
+} from "@obi-wallet/sdk";
+import { BlockTxBroadcastResult } from "@terra-money/feather.js";
 
 export async function handleTerra({
   draft,
@@ -28,19 +28,24 @@ export async function handleTerra({
       codeIds,
     });
 
-    const response = await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-      chain: wallet.chainId as TerraChain,
-      messages: [message.toAmino()],
+    const response = await SignAndBroadcastTransactionUserInteraction.start({
+      messages: [message],
       demoMode: wallet.isDemo,
       cancelable: true,
-      multisigKey: currentOwner.toJSON(),
+      multisigKey: currentOwner,
     });
 
     try {
-      terra.parseProposeUpdateOwnerResponse(response);
+      if (response.approved && response.payload.success) {
+        terra.parseProposeUpdateOwnerResponse(
+          response.payload.rawResult as BlockTxBroadcastResult
+        );
+      }
     } catch (e) {
-      await proposeUpdateOwner();
+      console.log(e);
     }
+
+    await proposeUpdateOwner();
   }
 
   async function confirmUpdateOwner() {
@@ -49,19 +54,25 @@ export async function handleTerra({
       proxyAddress: wallet.address,
     });
 
-    const response = await RequestObiSignAndBroadcastTerraTransactionMsg.send({
-      chain: wallet.chainId as TerraChain,
-      messages: [message.toAmino()],
+    const response = await SignAndBroadcastTransactionUserInteraction.start({
+      messages: [message],
       demoMode: wallet.isDemo,
       cancelable: true,
-      multisigKey: newOwner.toJSON(),
+      multisigKey: newOwner,
     });
 
     try {
-      terra.parseProposeUpdateOwnerResponse(response);
+      if (response.approved && response.payload.success) {
+        terra.parseProposeUpdateOwnerResponse(
+          response.payload.rawResult as BlockTxBroadcastResult
+        );
+        return;
+      }
     } catch (e) {
-      await confirmUpdateOwner();
+      console.log(e);
     }
+
+    await confirmUpdateOwner();
   }
 
   await proposeUpdateOwner();

@@ -1,12 +1,13 @@
-import { KVStore, toGenerator } from "@keplr-wallet/common";
 import { action, flow, makeObservable, observable, runInAction } from "mobx";
 
 import { ConfigStore } from "./config";
+import { toGenerator } from "./helpers/to-generator";
+import { AbstractKVStore } from "../kv-store";
 import { Language } from "../languages";
 
 export class LanguageStore {
   protected readonly configStore: ConfigStore;
-  protected readonly kvStore: KVStore;
+  protected readonly kvStore: AbstractKVStore;
 
   @observable
   public currentLanguage: Language;
@@ -18,7 +19,7 @@ export class LanguageStore {
   }: {
     deviceLanguage: string;
     configStore: ConfigStore;
-    kvStore: KVStore;
+    kvStore: AbstractKVStore;
   }) {
     this.configStore = configStore;
     const { languages } = configStore.config;

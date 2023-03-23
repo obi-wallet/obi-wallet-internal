@@ -1,16 +1,10 @@
-import {
-  Chain,
-  KeyType,
-  MultisigKey,
-  MultisigWallet,
-  Serialized,
-} from "@obi-wallet/sdk";
+import { isTerraChain, KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { Alert, View } from "react-native";
+import invariant from "tiny-invariant";
 
-import { handleCosmos } from "./cosmos";
 import { handleTerra } from "./terra";
 import { Button } from "../../app/button";
 import { RootRoute, useRootNavigation } from "../../app/root-stack";
@@ -44,24 +38,11 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
           const chainId = draft.value.chain;
 
           try {
-            const serializedData = await Chain.select<
-              Promise<Serialized<MultisigWallet>["data"]>
-            >({
+            invariant(isTerraChain(chainId), "Expected Terra chain");
+            const serializedData = await handleTerra({
+              draft,
+              demoMode: params.demoMode,
               chainId,
-              onCosmosChain(chainId) {
-                return handleCosmos({
-                  draft,
-                  demoMode: params.demoMode,
-                  chainId,
-                });
-              },
-              onTerraChain(chainId) {
-                return handleTerra({
-                  draft,
-                  demoMode: params.demoMode,
-                  chainId,
-                });
-              },
             });
 
             if (params.demoMode) {
