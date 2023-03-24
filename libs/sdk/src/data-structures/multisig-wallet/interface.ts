@@ -68,4 +68,11 @@ export interface MultisigWalletInterface {
     flexAccount: FlexAccount;
     messages: Message[];
   }): Promise<BroadcastTransactionResult>;
+  signAndBroadcastTransaction({
+    singlesigWallet,
+    messages,
+  }: {
+    singlesigWallet: SinglesigWallet;
+    messages: Message[];
+  }): Promise<BroadcastTransactionResult>;
 }
