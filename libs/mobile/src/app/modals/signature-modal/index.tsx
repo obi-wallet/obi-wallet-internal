@@ -48,19 +48,14 @@ export const SignatureModal = observer<SignatureModalProps>(
           />
         );
       }
-      //
+
       if (currentAccount && currentAccount.type === "flex-account") {
-        const flexAccount = new Secp256k1PrivateKeySigner(
-          currentAccount.privateKey
-        );
-        const multisigKey = wallet.owner;
         return (
           <SignatureModalFlexAccount
             interaction={interaction}
             chainId={chainId}
-            flexAccount={flexAccount}
-            multisigKey={multisigKey}
-            proxyAddress={wallet.proxyAddress}
+            wallet={wallet}
+            flexAccount={currentAccount}
           />
         );
       }

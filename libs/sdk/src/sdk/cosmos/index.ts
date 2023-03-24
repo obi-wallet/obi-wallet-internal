@@ -335,8 +335,7 @@ export class CosmosSdk extends AbstractSdk {
   }
 
   public async fetchGatekeeperContractAddresses(_: { proxyAddress: string }) {
-    warning(
-      true,
+    notImplemented(
       "fetchGatekeeperContractAddresses not implemented for Cosmos"
     );
     return {
@@ -419,6 +418,15 @@ export class CosmosSdk extends AbstractSdk {
       messages: aminoMessages,
       multisigPublicKey,
     });
+  }
+
+  public async canExecute(_: {
+    address: string;
+    proxyAddress: string;
+    messages: Message[];
+  }) {
+    notImplemented("canExecute not implemented for Cosmos");
+    return false;
   }
 
   public async broadcastSignedTransaction({

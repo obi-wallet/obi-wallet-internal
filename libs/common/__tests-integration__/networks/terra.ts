@@ -2,6 +2,7 @@ import {
   generateSec256k1KeyPair,
   TerraChain,
   terraChains,
+  wrapMessages,
 } from "@obi-wallet/sdk";
 import {
   LegacyAminoMultisigPublicKey,
@@ -12,7 +13,6 @@ import {
 
 import { terra } from "../../src";
 import { getNewAccountMessage } from "../../src/networks/terra/messages";
-import { wrapMessages } from "../../src/networks/terra/wrap-messages";
 
 const {
   chainId,

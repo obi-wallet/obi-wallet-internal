@@ -4,6 +4,7 @@ import {
   isTerraChain,
   SignAndBroadcastTransactionUserInteraction,
   withTerraClient,
+  wrapMessages as sdkWrapMessages,
 } from "@obi-wallet/sdk";
 import {
   BlockTxBroadcastResult,
@@ -67,7 +68,7 @@ export function wrapMessages({
 }): Msg[] {
   if (!proxyAddress) return messages;
 
-  return terra.wrapMessages({
+  return sdkWrapMessages({
     messages,
     sender,
     contract: proxyAddress,

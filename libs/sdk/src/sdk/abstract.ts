@@ -127,6 +127,16 @@ export abstract class AbstractSdk {
     messages: Message[];
   }): Promise<MultisigSigner>;
 
+  public abstract canExecute({
+    address,
+    proxyAddress,
+    messages,
+  }: {
+    address: string;
+    proxyAddress: string;
+    messages: Message[];
+  }): Promise<boolean>;
+
   public abstract broadcastSignedTransaction({
     signedTransaction,
   }: {

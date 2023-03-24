@@ -10,6 +10,8 @@ import {
   terraChains,
 } from "../../chains";
 import { Sdk } from "../../sdk";
+import { Message } from "../../transactions";
+import { FlexAccount } from "../flex-account";
 import { GatekeeperConfig } from "../gatekeeper-config";
 import { AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
@@ -191,5 +193,19 @@ export class MultisigWallet implements MultisigWalletInterface {
     this._singlesigWallets = this._singlesigWallets.filter(
       (s) => s.publicKey !== singlesig.publicKey
     );
+  }
+
+  public async canExecute({
+    flexAccount,
+    messages,
+  }: {
+    flexAccount: FlexAccount;
+    messages: Message[];
+  }) {
+    return await Sdk.chainId(this.chainId).canExecute({
+      address: flexAccount.address,
+      proxyAddress: this.proxyAddress,
+      messages,
+    });
   }
 }
