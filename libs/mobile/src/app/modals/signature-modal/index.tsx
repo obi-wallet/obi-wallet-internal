@@ -27,12 +27,10 @@ export const SignatureModal = observer<SignatureModalProps>(
         : null;
 
       if (!currentAccount) {
-        const multisigKey = wallet.owner;
         return (
           <SignatureModalMultisigKey
             interaction={interaction}
-            chainId={chainId}
-            multisigKey={multisigKey}
+            multisigKey={wallet.owner}
             proxyAddress={wallet.proxyAddress}
           />
         );
@@ -53,7 +51,6 @@ export const SignatureModal = observer<SignatureModalProps>(
         return (
           <SignatureModalFlexAccount
             interaction={interaction}
-            chainId={chainId}
             wallet={wallet}
             flexAccount={currentAccount}
           />
@@ -62,7 +59,6 @@ export const SignatureModal = observer<SignatureModalProps>(
     } else if (R.has("multisigKey", payload)) {
       return (
         <SignatureModalMultisigKey
-          chainId={payload.multisigKey.chain}
           interaction={interaction}
           multisigKey={payload.multisigKey}
         />

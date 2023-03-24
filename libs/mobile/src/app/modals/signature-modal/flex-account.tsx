@@ -1,20 +1,12 @@
 import { useTheme } from "@emotion/react";
 import { Text } from "@obi-wallet/common";
-import {
-  Chain,
-  FlexAccount,
-  KeyType,
-  MultisigWallet,
-  Sdk,
-  Secp256k1PrivateKeySigner,
-} from "@obi-wallet/sdk";
+import { FlexAccount, KeyType, MultisigWallet } from "@obi-wallet/sdk";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { View } from "react-native";
 
-import { AbstractSignatureModalProps, wrapMessages } from "./common";
+import { AbstractSignatureModalProps } from "./common";
 import { ConfirmMessages } from "./confirm-messages";
 import { SignatureModalMultisigKey } from "./multisig-key";
 import { BiometricsKey } from "./terra/keys";
@@ -22,7 +14,6 @@ import { KeysList } from "../../screens/components/keys-list";
 
 export interface SignatureModalFlexAccountProps
   extends AbstractSignatureModalProps {
-  chainId: Chain;
   wallet: MultisigWallet;
   flexAccount: FlexAccount;
 }
@@ -34,11 +25,6 @@ export const SignatureModalFlexAccount =
     const { interaction, flexAccount, wallet } = props;
     const { payload } = interaction;
     const innerMessages = payload.messages;
-    const wrappedMessages = wrapMessages({
-      messages: innerMessages,
-      proxyAddress: wallet.proxyAddress,
-      sender: flexAccount.address,
-    });
 
     const canExecute = useQuery({
       queryKey: ["can-execute"],
@@ -54,12 +40,7 @@ export const SignatureModalFlexAccount =
     if (canExecute.data === undefined) return null;
 
     if (canExecute.data) {
-      return (
-        <SignatureModalFlexAccountWithFlexAccount
-          {...props}
-          wrappedMessages={wrappedMessages}
-        />
-      );
+      return <SignatureModalFlexAccountWithFlexAccount {...props} />;
     } else {
       return (
         <SignatureModalMultisigKey
@@ -72,19 +53,12 @@ export const SignatureModalFlexAccount =
     }
   });
 
-export interface SignatureModalFlexAccountWithFlexAccountProps
-  extends SignatureModalFlexAccountProps {
-  wrappedMessages: Msg[];
-}
-
 export const SignatureModalFlexAccountWithFlexAccount =
-  observer<SignatureModalFlexAccountWithFlexAccountProps>(
+  observer<SignatureModalFlexAccountProps>(
     function SignatureModalFlexAccountWithFlexAccount({
-      chainId,
       interaction,
       wallet,
       flexAccount,
-      wrappedMessages,
     }) {
       const multisigKey = wallet.owner;
       const theme = useTheme();
@@ -93,16 +67,9 @@ export const SignatureModalFlexAccountWithFlexAccount =
 
       const broadcast = useMutation({
         mutationFn: async () => {
-          const sdk = Sdk.chainId(chainId);
-          const signer = new Secp256k1PrivateKeySigner(flexAccount.privateKey);
-          await sdk.prepareSigner({ signer });
-          const signedTransaction = await sdk.createAndSignTransaction({
-            signer,
-            messages: wrappedMessages,
-          });
-          return await sdk.broadcastSignedTransactionAndLendFees({
-            signedTransaction,
-            sender: sdk.getAddressOfSigner({ signer }),
+          return await wallet.signAndBroadcastTransaction({
+            flexAccount,
+            messages: interaction.payload.messages,
           });
         },
       });

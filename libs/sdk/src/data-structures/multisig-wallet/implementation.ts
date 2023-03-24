@@ -10,7 +10,8 @@ import {
   terraChains,
 } from "../../chains";
 import { Sdk } from "../../sdk";
-import { Message } from "../../transactions";
+import { Secp256k1PrivateKeySigner } from "../../signers";
+import { Message, wrapMessages } from "../../transactions";
 import { FlexAccount } from "../flex-account";
 import { GatekeeperConfig } from "../gatekeeper-config";
 import { AbstractSerialized } from "../migratable";
@@ -202,10 +203,38 @@ export class MultisigWallet implements MultisigWalletInterface {
     flexAccount: FlexAccount;
     messages: Message[];
   }) {
-    return await Sdk.chainId(this.chainId).canExecute({
+    return await this.sdk.canExecute({
       address: flexAccount.address,
       proxyAddress: this.proxyAddress,
       messages,
     });
+  }
+
+  public async signAndBroadcastTransaction({
+    flexAccount,
+    messages,
+  }: {
+    flexAccount: FlexAccount;
+    messages: Message[];
+  }) {
+    const signer = new Secp256k1PrivateKeySigner(flexAccount.privateKey);
+    await this.sdk.prepareSigner({ signer });
+    const wrappedMessages = wrapMessages({
+      messages,
+      contract: this.proxyAddress,
+      sender: flexAccount.address,
+    });
+    const signedTransaction = await this.sdk.createAndSignTransaction({
+      signer,
+      messages: wrappedMessages,
+    });
+    return await this.sdk.broadcastSignedTransactionAndLendFees({
+      signedTransaction,
+      sender: flexAccount.address,
+    });
+  }
+
+  protected get sdk() {
+    return Sdk.chainId(this.chainId);
   }
 }

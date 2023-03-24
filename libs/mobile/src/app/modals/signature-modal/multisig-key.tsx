@@ -1,6 +1,5 @@
 import { terra } from "@obi-wallet/common";
 import {
-  Chain,
   isTerraChain,
   KeyType,
   MultisigKey,
@@ -39,7 +38,6 @@ import { CheckIcon, Key } from "../../screens/components/keys-list";
 
 export interface SignatureModalMultisigKeyProps
   extends AbstractSignatureModalProps {
-  chainId: Chain;
   multisigKey: MultisigKey;
   proxyAddress?: string;
   safeSpendLimitExceeded?: boolean;
@@ -47,12 +45,12 @@ export interface SignatureModalMultisigKeyProps
 
 export const SignatureModalMultisigKey =
   observer<SignatureModalMultisigKeyProps>(function SignatureModalMultisigKey({
-    chainId,
     interaction,
     multisigKey,
     proxyAddress,
     safeSpendLimitExceeded,
   }) {
+    const chainId = multisigKey.chain;
     const { payload } = interaction;
     const [signatures, setSignatures] = useState(
       new Map<string, SignatureV2>()

@@ -6,6 +6,7 @@ import {
   TerraChain,
   terraChains,
 } from "../../chains";
+import { BroadcastTransactionResult } from "../../sdk";
 import { Message } from "../../transactions";
 import { FlexAccount } from "../flex-account";
 import { GatekeeperConfig } from "../gatekeeper-config";
@@ -60,4 +61,11 @@ export interface MultisigWalletInterface {
     flexAccount: FlexAccount;
     messages: Message[];
   }): Promise<boolean>;
+  signAndBroadcastTransaction({
+    flexAccount,
+    messages,
+  }: {
+    flexAccount: FlexAccount;
+    messages: Message[];
+  }): Promise<BroadcastTransactionResult>;
 }
