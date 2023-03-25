@@ -1,0 +1,241 @@
+import { AES } from "crypto-js";
+import { totp } from "otplib";
+
+import {
+  Chain,
+  CosmosChain,
+  cosmosChains,
+  TerraChain,
+  terraChains,
+} from "../../chains";
+import { Secp256k1KeyPair, Secp256k1PublicKey } from "../../keys";
+import { Sdk } from "../../sdk";
+import { Secp256k1PrivateKeySigner } from "../sec256k1-private-key";
+
+export interface TwilioConfig {
+  authorization: string;
+  secret: string;
+}
+
+export interface TwilioClientInterface {
+  sendPublicKeyTextMessage({
+    phoneNumber,
+    securityAnswer,
+    chainId,
+  }: {
+    phoneNumber: string;
+    securityAnswer: string;
+    chainId: Chain;
+  }): Promise<void>;
+
+  parsePublicKeyTextMessageResponse({
+    key,
+  }: {
+    key: string;
+  }): Promise<Secp256k1PublicKey>;
+
+  sendSignatureTextMessage({
+    phoneNumber,
+    securityAnswer,
+    message,
+    chainId,
+  }: {
+    phoneNumber: string;
+    securityAnswer: string;
+    message: Uint8Array;
+    chainId: Chain;
+  }): Promise<void>;
+
+  parseSignatureTextMessageResponse({
+    key,
+    chainId,
+  }: {
+    key: string;
+    chainId: Chain;
+  }): Promise<Uint8Array>;
+}
+
+export class DemoModeTwilioClient implements TwilioClientInterface {
+  protected demoPayload: Uint8Array | null = null;
+
+  public constructor(protected keyPair: Secp256k1KeyPair) {}
+
+  public async sendPublicKeyTextMessage(_: {
+    phoneNumber: string;
+    securityAnswer: string;
+    chainId: Chain;
+  }) {
+    return;
+  }
+
+  public async parsePublicKeyTextMessageResponse(_: { key: string }) {
+    return this.keyPair.publicKey;
+  }
+
+  public async sendSignatureTextMessage({
+    message,
+  }: {
+    phoneNumber: string;
+    securityAnswer: string;
+    message: Uint8Array;
+    chainId: Chain;
+  }) {
+    this.demoPayload = message;
+    return;
+  }
+
+  public async parseSignatureTextMessageResponse({
+    chainId,
+  }: {
+    key: string;
+    chainId: Chain;
+  }) {
+    if (!this.demoPayload) {
+      throw new Error("No demo payload found.");
+    }
+    const signer = new Secp256k1PrivateKeySigner(this.keyPair.privateKey);
+    await Sdk.chainId(chainId).prepareSigner({ signer });
+    const signature = await signer.signHash(this.demoPayload);
+    this.demoPayload = null;
+    return signature;
+  }
+}
+
+export class TwilioClient implements TwilioClientInterface {
+  public constructor(protected twilioConfig: TwilioConfig) {}
+
+  public async sendPublicKeyTextMessage({
+    phoneNumber,
+    securityAnswer,
+    chainId,
+  }: {
+    phoneNumber: string;
+    securityAnswer: string;
+    chainId: Chain;
+  }) {
+    await this.encryptAndSendMessage({
+      message: `pub:${securityAnswer}`,
+      phoneNumber,
+      chainId,
+    });
+  }
+
+  public async parsePublicKeyTextMessageResponse({ key }: { key: string }) {
+    const decrypted = await this.fetchAndDecryptResponse(key);
+
+    if (!decrypted?.startsWith("pubkey:")) {
+      throw new Error("This doesn't seem to be a public key");
+    }
+
+    return {
+      type: "tendermint/PubKeySecp256k1" as const,
+      value: decrypted.replace("pubkey:", ""),
+    };
+  }
+
+  public async sendSignatureTextMessage({
+    phoneNumber,
+    securityAnswer,
+    message,
+    chainId,
+  }: {
+    phoneNumber: string;
+    securityAnswer: string;
+    message: Uint8Array;
+    chainId: Chain;
+  }) {
+    await this.encryptAndSendMessage({
+      message: `sign:${securityAnswer}:${Buffer.from(message.buffer).toString(
+        "base64"
+      )}`,
+      phoneNumber,
+      chainId,
+    });
+  }
+
+  public async parseSignatureTextMessageResponse({ key }: { key: string }) {
+    const decrypted = await this.fetchAndDecryptResponse(key);
+
+    if (!decrypted?.startsWith("signature::")) {
+      throw new Error("This doesn't seem to be a signature");
+    }
+
+    const signature = decrypted.replace("signature::", "");
+    return new Uint8Array(Buffer.from(signature, "base64"));
+  }
+
+  protected async encryptAndSendMessage({
+    message,
+    phoneNumber,
+    chainId,
+  }: {
+    message: string;
+    phoneNumber: string;
+    chainId: Chain;
+  }) {
+    const body = await this.getMessageBody(`${message}:${chainId}`);
+    const formData = new FormData();
+    const { twilioPhoneNumbers, twilioUrl } = Chain.select<{
+      twilioPhoneNumbers: string[];
+      twilioUrl: string;
+    }>({
+      chainId,
+      onCosmosChain(chainId: CosmosChain) {
+        return cosmosChains[chainId];
+      },
+      onTerraChain(chainId: TerraChain) {
+        return terraChains[chainId];
+      },
+    });
+    const twilioPhoneNumber =
+      twilioPhoneNumbers[Math.floor(Math.random() * twilioPhoneNumbers.length)];
+    formData.append("To", twilioPhoneNumber);
+    formData.append("From", phoneNumber);
+    formData.append("Parameters", JSON.stringify({ trigger_body: body }));
+
+    await fetch(twilioUrl, {
+      body: formData,
+      method: "post",
+      headers: {
+        Authorization: this.twilioConfig.authorization,
+      },
+    });
+  }
+
+  protected async fetchAndDecryptResponse(key: string) {
+    const result = await fetch(`https://obi-hastebin.herokuapp.com/raw/${key}`);
+    return await result.text();
+
+    // Decryption hasn't been implemented on Twilio yet
+    // const token = totp.generate(DEV_SHARED_SECRET);
+    // try {
+    //   totp.verify({ token, secret: DEV_SHARED_SECRET });
+    // } catch (err) {
+    //   // Possible errors
+    //   // - options validation
+    //   // - "Invalid input - it is not base32 encoded string"
+    //   console.error(err);
+    // }
+    // const decrypted = AES.decrypt(message, token).toString(enc.Utf8);
+  }
+
+  protected async getMessageBody(message: string) {
+    // absurdly large step for dev convenience
+    totp.options = { digits: 64, step: 600 };
+    const token = totp.generate(this.twilioConfig.secret);
+
+    totp.verify({ token, secret: this.twilioConfig.secret });
+
+    const encrypted = AES.encrypt(message, token).toString();
+
+    const result = await fetch("https://obi-hastebin.herokuapp.com/documents", {
+      headers: {
+        "Content-type": "application/text",
+      },
+      method: "POST",
+      body: encrypted,
+    });
+    const { key } = JSON.parse(await result.text());
+    return key;
+  }
+}

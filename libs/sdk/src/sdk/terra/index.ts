@@ -30,7 +30,7 @@ import { TerraChain, terraChains } from "../../chains";
 import { withTerraClient } from "../../clients";
 import { MultisigPublicKey, PublicKey } from "../../keys";
 import { Signer } from "../../signers";
-import { Message, SignedTransaction } from "../../transactions";
+import { Message, SignedTransaction, wrapMessage } from "../../transactions";
 import { AbstractSdk } from "../abstract";
 import {
   AccountValidationResult,
@@ -591,6 +591,39 @@ export class TerraSdk extends AbstractSdk {
 
       throw e;
     }
+  }
+
+  public async canExecute({
+    address,
+    proxyAddress,
+    messages,
+  }: {
+    address: string;
+    proxyAddress: string;
+    messages: Message[];
+  }) {
+    return await this.withClient(async (client) => {
+      const mayExecute = await Promise.all(
+        messages.map(async (message) => {
+          try {
+            const response = await client.wasm.contractQuery<{
+              can_execute: { yes?: string };
+            }>(proxyAddress, {
+              can_execute: {
+                funds: [],
+                address,
+                msg: { legacy: wrapMessage(message) },
+              },
+            });
+            return !!response.can_execute.yes;
+          } catch (e) {
+            console.log(e);
+            return false;
+          }
+        })
+      );
+      return mayExecute.every((mayExecute) => mayExecute);
+    });
   }
 
   public async broadcastSignedTransaction({

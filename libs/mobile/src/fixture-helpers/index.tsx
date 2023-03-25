@@ -17,7 +17,7 @@ import { Alert } from "react-native";
 import { getBiometricsPublicKey } from "../app/biometrics";
 import { useSecurityQuestions } from "../app/screens/components/phone-number/security-question-input";
 import { useMultisigWallet, useStore } from "../app/stores";
-import { parsePublicKeyTextMessageResponse } from "../app/text-message";
+import { getTwilioClient } from "../app/text-message";
 import { getGatekeeperConfigDraftId } from "../screens/accounts/draft-id";
 
 export function mockAction(message: string) {
@@ -56,14 +56,11 @@ export const MultisigDraft = {
           original.setKey({
             type: KeyType.Phone,
             payload: {
-              publicKey: {
-                type: pubkeyType.secp256k1,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                value: (await parsePublicKeyTextMessageResponse({
-                  key: "",
-                  demoMode: true,
-                }))!,
-              },
+              publicKey: await getTwilioClient(
+                true
+              ).parsePublicKeyTextMessageResponse({
+                key: "",
+              }),
               phoneNumber: "+1234567890",
               securityQuestion: securityQuestions[0].value,
             },

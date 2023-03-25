@@ -1,11 +1,8 @@
 import { KVStore } from "@obi-wallet/common";
-import { Chain, generateSec256k1KeyPair } from "@obi-wallet/sdk";
-import { QueryClient } from "@tanstack/react-query";
+import { generateSec256k1KeyPair } from "@obi-wallet/sdk";
 import { isEmulator } from "react-native-device-info";
 import * as Keychain from "react-native-keychain";
 import invariant from "tiny-invariant";
-
-import { prepareWalletAndSign } from "../secp256k1";
 
 const BIOMETRICS_KEY = "obi-wallet-biometrics";
 
@@ -121,27 +118,6 @@ export async function getBiometricsKeyPair({
       privateKey,
     };
   }
-}
-
-export async function createBiometricsSignature({
-  payload,
-  publicKey,
-  chainId,
-  queryClient,
-}: {
-  payload: Uint8Array;
-  publicKey: string;
-  chainId: Chain;
-  queryClient: QueryClient;
-}) {
-  const privateKey = await getBiometricsPrivateKey({ publicKey });
-  return await prepareWalletAndSign({
-    publicKey,
-    privateKey,
-    payload,
-    chainId,
-    queryClient,
-  });
 }
 
 async function fetchCredentialsFromKeyChain({ service }: { service: string }) {

@@ -6,6 +6,8 @@ import {
   TerraChain,
   terraChains,
 } from "../../chains";
+import { BroadcastTransactionResult } from "../../sdk";
+import { Message } from "../../transactions";
 import { FlexAccount } from "../flex-account";
 import { GatekeeperConfig } from "../gatekeeper-config";
 import { AbstractSerialized } from "../migratable";
@@ -51,4 +53,26 @@ export interface MultisigWalletInterface {
   setGatekeeperConfig(gatekeeperConfig: GatekeeperConfig): void;
   upsertSinglesigWallet(singlesig: SinglesigWallet): void;
   removeSinglesigWallet(singlesig: SinglesigWallet): void;
+
+  canExecute({
+    flexAccount,
+    messages,
+  }: {
+    flexAccount: FlexAccount;
+    messages: Message[];
+  }): Promise<boolean>;
+  signAndBroadcastTransaction({
+    flexAccount,
+    messages,
+  }: {
+    flexAccount: FlexAccount;
+    messages: Message[];
+  }): Promise<BroadcastTransactionResult>;
+  signAndBroadcastTransaction({
+    singlesigWallet,
+    messages,
+  }: {
+    singlesigWallet: SinglesigWallet;
+    messages: Message[];
+  }): Promise<BroadcastTransactionResult>;
 }

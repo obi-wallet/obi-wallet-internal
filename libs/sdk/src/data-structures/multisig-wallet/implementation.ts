@@ -1,4 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import * as R from "ramda";
 
 import { CurrentAccountMeta, MultisigWalletInterface } from "./interface";
 import { MultisigWalletSchema } from "./schema";
@@ -9,7 +10,10 @@ import {
   TerraChain,
   terraChains,
 } from "../../chains";
-import { Sdk } from "../../sdk";
+import { BroadcastTransactionResult, Sdk } from "../../sdk";
+import { Secp256k1PrivateKeySigner } from "../../signers";
+import { Message, wrapMessages } from "../../transactions";
+import { FlexAccount } from "../flex-account";
 import { GatekeeperConfig } from "../gatekeeper-config";
 import { AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
@@ -191,5 +195,77 @@ export class MultisigWallet implements MultisigWalletInterface {
     this._singlesigWallets = this._singlesigWallets.filter(
       (s) => s.publicKey !== singlesig.publicKey
     );
+  }
+
+  public async canExecute({
+    flexAccount,
+    messages,
+  }: {
+    flexAccount: FlexAccount;
+    messages: Message[];
+  }) {
+    return await this.sdk.canExecute({
+      address: flexAccount.address,
+      proxyAddress: this.proxyAddress,
+      messages,
+    });
+  }
+
+  public async signAndBroadcastTransaction({
+    flexAccount,
+    messages,
+  }: {
+    flexAccount: FlexAccount;
+    messages: Message[];
+  }): Promise<BroadcastTransactionResult>;
+  public async signAndBroadcastTransaction({
+    singlesigWallet,
+    messages,
+  }: {
+    singlesigWallet: SinglesigWallet;
+    messages: Message[];
+  }): Promise<BroadcastTransactionResult>;
+  public async signAndBroadcastTransaction(
+    payload: (
+      | {
+          flexAccount: FlexAccount;
+        }
+      | {
+          singlesigWallet: SinglesigWallet;
+        }
+    ) & { messages: Message[] }
+  ): Promise<BroadcastTransactionResult> {
+    if (R.has("flexAccount", payload)) {
+      const { flexAccount, messages } = payload;
+      const signer = new Secp256k1PrivateKeySigner(flexAccount.privateKey);
+      await this.sdk.prepareSigner({ signer });
+      const wrappedMessages = wrapMessages({
+        messages,
+        contract: this.proxyAddress,
+        sender: flexAccount.address,
+      });
+      const signedTransaction = await this.sdk.createAndSignTransaction({
+        signer,
+        messages: wrappedMessages,
+      });
+      return await this.sdk.broadcastSignedTransactionAndLendFees({
+        signedTransaction,
+        sender: flexAccount.address,
+      });
+    } else {
+      const { singlesigWallet, messages } = payload;
+      const signer = new Secp256k1PrivateKeySigner(singlesigWallet.privateKey);
+      const signedTransaction = await this.sdk.createAndSignTransaction({
+        signer,
+        messages,
+      });
+      return await this.sdk.broadcastSignedTransaction({
+        signedTransaction,
+      });
+    }
+  }
+
+  protected get sdk() {
+    return Sdk.chainId(this.chainId);
   }
 }
