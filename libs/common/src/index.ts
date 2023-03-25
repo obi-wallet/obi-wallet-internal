@@ -1,5 +1,4 @@
 export * from "./card";
-export * from "./fee-lender-worker";
 export * from "./health-checks";
 export * from "./kv-store";
 export * from "./languages";

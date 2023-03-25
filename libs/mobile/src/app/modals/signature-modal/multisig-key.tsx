@@ -1,33 +1,27 @@
-import { terra } from "@obi-wallet/common";
 import {
-  isTerraChain,
+  KeySubclassTypeMapping,
   KeyType,
   MultisigKey,
+  MultisigSigner,
+  PhoneKeySigner,
   Sdk,
-  TerraChain,
+  Signer,
 } from "@obi-wallet/sdk";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { isTxError, SignatureV2 } from "@terra-money/feather.js";
+import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
 import NfcManager, { NfcEvents, OnDiscoverTag } from "react-native-nfc-manager";
 import invariant from "tiny-invariant";
 
-import {
-  AbstractSignatureModalProps,
-  broadcastTransaction,
-  wrapMessages,
-} from "./common";
+import { AbstractSignatureModalProps, wrapMessages } from "./common";
 import { MultisigConfirmMessages } from "./multisig-confirm-messages";
 import { PhoneNumberBottomSheetContent } from "./phone-number-bottom-sheet-content";
 import {
-  BiometricsKey,
-  CloudKey,
-  NfcKey,
-  PhoneNumberConfirmKey,
-  PhoneNumberRequestKey,
-} from "./terra/keys";
+  createCloudKeySigner,
+  createDeviceKeySigner,
+  createNfcKeySigner,
+} from "./signers";
 import { existsKeyOnDevice } from "../../biometrics";
 import { checkIsSupported, parseNFCData, startReading } from "../../nfc";
 import {
@@ -35,6 +29,7 @@ import {
   BottomSheetRef,
 } from "../../screens/components/bottom-sheet";
 import { CheckIcon, Key } from "../../screens/components/keys-list";
+import { getTwilioClient } from "../../text-message";
 
 export interface SignatureModalMultisigKeyProps
   extends AbstractSignatureModalProps {
@@ -50,45 +45,30 @@ export const SignatureModalMultisigKey =
     proxyAddress,
     safeSpendLimitExceeded,
   }) {
-    const chainId = multisigKey.chain;
     const { payload } = interaction;
-    const [signatures, setSignatures] = useState(
-      new Map<string, SignatureV2>()
-    );
     const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
-    const queryClient = useQueryClient();
-
     const sender = multisigKey.address;
-
     const innerMessages = payload.messages;
-
     const messages = wrapMessages({
       messages: innerMessages,
       proxyAddress,
       sender,
     });
 
-    const waitForTxInfo = useRef<Promise<void>>();
-    const transactionInformation = useRef<Awaited<
-      ReturnType<typeof terra.createMultisigTransaction>
-    > | null>();
-    async function getTransactionInformation() {
-      while (!transactionInformation.current) {
-        await waitForTxInfo.current;
-      }
-      return transactionInformation.current;
-    }
+    const { multisigSigner, setMultisigSigner, addSigner } =
+      useMultisigSigner();
+    const [phoneKeySigner, setPhoneKeySigner] = useState<PhoneKeySigner | null>(
+      null
+    );
 
-    const transaction = useMutation({
+    const signer = useMutation({
       mutationFn: async () => {
-        // TODO: use new abstractions
-        invariant(isTerraChain(chainId), "Expected Terra chain.");
-        const key = terra.createMultisigPublicKey({ multisigKey });
-        return await terra.createMultisigTransaction({
-          key,
+        return await multisigKey.createSigner({
           messages,
-          chainId,
         });
+      },
+      onSuccess(multisigSigner) {
+        setMultisigSigner(multisigSigner);
       },
       onError(error) {
         const e = error as Error;
@@ -104,61 +84,50 @@ export const SignatureModalMultisigKey =
       retry: 2,
     });
 
+    useEffect(() => {
+      signer.mutate();
+      // We only want to run this initially
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const broadcast = useMutation({
       mutationFn: async () => {
-        const { sign } = await getTransactionInformation();
-        const signaturesOrdered: SignatureV2[] = [];
-        for (const key of multisigKey.keys) {
-          const signature = signatures.get(key.publicKey.value);
-          if (signature) {
-            signaturesOrdered.push(signature);
-          }
-        }
-
-        const transaction = await sign(signaturesOrdered);
-        return await broadcastTransaction({
-          chainId,
-          interaction,
-          transaction,
+        invariant(multisigSigner, "Expected multisig signer to exist.");
+        const signedTransaction = multisigSigner.createSignedTransaction();
+        return await Sdk.chainId(
+          multisigKey.chain
+        ).broadcastSignedTransactionAndLendFees({
+          signedTransaction,
           sender: multisigKey.address,
         });
       },
     });
 
-    useEffect(() => {
-      waitForTxInfo.current = (async () => {
-        transactionInformation.current = await transaction.mutateAsync();
-      })();
-      // TODO:
-    }, []);
-
     function getKey({ type }: { type: KeyType }): Key {
       const factor = multisigKey.getUsableKeyOfType(type);
       invariant(factor, "Expected key to exist.");
 
-      const alreadySigned = signatures.has(factor.publicKey.value);
+      const alreadySigned = multisigSigner?.alreadySigned(factor.publicKey);
       const onPress = async () => {
         if (alreadySigned) return;
 
-        const { signDoc } = await getTransactionInformation();
-
         switch (type) {
           case KeyType.Device: {
-            const biometricsKey = new BiometricsKey({
-              multisigKey,
-              queryClient,
-            });
-
-            const signature = await biometricsKey.createSignatureAmino(signDoc);
-
-            setSignatures((signatures) => {
-              return new Map(signatures.set(factor.publicKey.value, signature));
-            });
+            const signer = await createDeviceKeySigner({ multisigKey });
+            await addSigner(signer);
             break;
           }
-          case KeyType.Phone:
+          case KeyType.Phone: {
+            const signer = new PhoneKeySigner(
+              multisigKey.chain,
+              factor as KeySubclassTypeMapping[KeyType.Phone],
+              getTwilioClient(payload.demoMode)
+            );
+            setPhoneKeySigner(signer);
             phoneNumberBottomSheetRef.current?.snapToIndex(0);
+            await addSigner(signer);
             break;
+          }
           case KeyType.Nfc: {
             const onDiscoverTag: OnDiscoverTag = async (tag) => {
               if (tag.ndefMessage && tag.ndefMessage.length > 0) {
@@ -172,20 +141,12 @@ export const SignatureModalMultisigKey =
                   })}`
                 );
 
-                const nfcKey = new NfcKey({
+                const signer = await createNfcKeySigner({
                   multisigKey,
-                  parsed,
                   demoMode: payload.demoMode,
-                  queryClient,
+                  parsed,
                 });
-
-                const signature = await nfcKey.createSignatureAmino(signDoc);
-
-                setSignatures((signatures) => {
-                  return new Map(
-                    signatures.set(factor.publicKey.value, signature)
-                  );
-                });
+                await addSigner(signer);
               }
             };
 
@@ -194,13 +155,8 @@ export const SignatureModalMultisigKey =
             break;
           }
           case KeyType.Cloud: {
-            const cloudKey = new CloudKey({ multisigKey });
-
-            const signature = await cloudKey.createSignatureAmino(signDoc);
-
-            setSignatures((signatures) => {
-              return new Map(signatures.set(factor.publicKey.value, signature));
-            });
+            const signer = await createCloudKeySigner({ multisigKey });
+            await addSigner(signer);
             break;
           }
           default:
@@ -269,41 +225,26 @@ export const SignatureModalMultisigKey =
                 phoneNumber={phoneKey.payload.phoneNumber}
                 securityQuestion={phoneKey.payload.securityQuestion}
                 onRequest={async (securityAnswer) => {
-                  const { signDoc } = await getTransactionInformation();
-                  const phoneNumberRequestKey = new PhoneNumberRequestKey({
-                    securityAnswer,
-                    // TODO:
-                    chainId: chainId as TerraChain,
-                    multisigKey,
-                    demoMode: payload.demoMode,
-                  });
-                  await phoneNumberRequestKey.createSignatureAmino(signDoc);
+                  invariant(
+                    phoneKeySigner,
+                    "Expected phone key signer to exist."
+                  );
+                  await phoneKeySigner.requestSignature(securityAnswer);
                 }}
                 onConfirm={async (key) => {
-                  const { signDoc } = await getTransactionInformation();
-                  const phoneNumberRequestKey = new PhoneNumberConfirmKey({
-                    key,
-                    multisigKey,
-                    demoMode: payload.demoMode,
-                    queryClient,
-                  });
-                  const signature =
-                    await phoneNumberRequestKey.createSignatureAmino(signDoc);
-                  if (signature) {
-                    setSignatures((signatures) => {
-                      return new Map(
-                        signatures.set(phoneKey.publicKey.value, signature)
-                      );
-                    });
-                    phoneNumberBottomSheetRef.current?.close();
-                  }
+                  invariant(
+                    phoneKeySigner,
+                    "Expected phone key signer to exist."
+                  );
+                  await phoneKeySigner.confirmSignature(key);
+                  phoneNumberBottomSheetRef.current?.close();
                 }}
               />
             </BottomSheet>
           ) : null
         }
         threshold={multisigKey.threshold}
-        numberOfSignatures={signatures.size}
+        numberOfSignatures={signer.data?.numberOfSignatures || 0}
         numberOfUsableKeys={usableKeys.length}
         innerMessages={payload.messages}
         data={keys}
@@ -312,16 +253,26 @@ export const SignatureModalMultisigKey =
           interaction.resolve({ approved: false });
         }}
         onConfirm={async () => {
-          // TODO: use new abstractions
-          const rawResult = await broadcast.mutateAsync();
-          const response = {
-            success: !isTxError(rawResult),
-            transactionHash: rawResult.txhash,
-            rawLog: rawResult.raw_log,
-            rawResult,
-          };
+          const response = await broadcast.mutateAsync();
           interaction.resolve({ approved: true, payload: response });
         }}
       />
     );
   });
+
+function useMultisigSigner() {
+  const multisigSignerRef = useRef<MultisigSigner>();
+  const [_, setOrderedSignatures] = useState<unknown[]>([]);
+
+  return {
+    multisigSigner: multisigSignerRef.current,
+    setMultisigSigner: (signer: MultisigSigner) => {
+      multisigSignerRef.current = signer;
+      setOrderedSignatures(signer.orderedSignatures);
+    },
+    addSigner: async (signer: Signer) => {
+      await multisigSignerRef.current?.addSigner(signer);
+      setOrderedSignatures(multisigSignerRef.current?.orderedSignatures ?? []);
+    },
+  };
+}

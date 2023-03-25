@@ -1,7 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { Text } from "@obi-wallet/common";
 import { FlexAccount, KeyType, MultisigWallet } from "@obi-wallet/sdk";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { View } from "react-native";
@@ -9,7 +9,7 @@ import { View } from "react-native";
 import { AbstractSignatureModalProps } from "./common";
 import { ConfirmMessages } from "./confirm-messages";
 import { SignatureModalMultisigKey } from "./multisig-key";
-import { BiometricsKey } from "./terra/keys";
+import { createDeviceKeySigner } from "./signers";
 import { KeysList } from "../../screens/components/keys-list";
 
 export interface SignatureModalFlexAccountProps
@@ -62,7 +62,6 @@ export const SignatureModalFlexAccountWithFlexAccount =
     }) {
       const multisigKey = wallet.owner;
       const theme = useTheme();
-      const queryClient = useQueryClient();
       const [signed, setSigned] = useState(false);
 
       const broadcast = useMutation({
@@ -80,13 +79,8 @@ export const SignatureModalFlexAccountWithFlexAccount =
           signed,
           right: null,
           onPress: async () => {
-            const biometricsKey = new BiometricsKey({
-              multisigKey,
-              queryClient,
-            });
-
-            await biometricsKey.sign(new Buffer(""));
-
+            const signer = await createDeviceKeySigner({ multisigKey });
+            await signer.sign(new Buffer(""));
             setSigned(true);
           },
         },

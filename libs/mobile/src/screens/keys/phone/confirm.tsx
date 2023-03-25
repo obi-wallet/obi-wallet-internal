@@ -1,4 +1,3 @@
-import { pubkeyType } from "@cosmjs/amino";
 import { Text } from "@obi-wallet/common";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -19,10 +18,7 @@ import { isSmallScreenNumber } from "../../../app/screens/components/screen-size
 import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
 import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 import { useStore } from "../../../app/stores";
-import {
-  parsePublicKeyTextMessageResponse,
-  sendPublicKeyTextMessage,
-} from "../../../app/text-message";
+import { getTwilioClient } from "../../../app/text-message";
 import { PhoneOneTimeCodeInput } from "../../../components/phone";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
@@ -181,10 +177,10 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                 value={key}
                 setValue={setKey}
                 onResend={async () => {
-                  await sendPublicKeyTextMessage({
+                  const twilioClient = getTwilioClient(demoMode);
+                  await twilioClient.sendPublicKeyTextMessage({
                     phoneNumber,
                     securityAnswer,
-                    demoMode,
                     chainId,
                   });
                 }}
@@ -195,18 +191,16 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                 onPress={async () => {
                   try {
                     setVerifyButtonDisabledDoubleclick(true);
-                    const publicKey = await parsePublicKeyTextMessageResponse({
-                      key,
-                      demoMode,
-                    });
+                    const twilioClient = getTwilioClient(demoMode);
+                    const publicKey =
+                      await twilioClient.parsePublicKeyTextMessageResponse({
+                        key,
+                      });
                     if (publicKey) {
                       draft.value.setKey({
                         type: KeyType.Phone,
                         payload: {
-                          publicKey: {
-                            type: pubkeyType.secp256k1,
-                            value: publicKey,
-                          },
+                          publicKey,
                           phoneNumber,
                           securityQuestion,
                         },

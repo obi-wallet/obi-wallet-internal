@@ -20,15 +20,6 @@
         "passWithNoTests": true
       }
     },
-    "integration": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/common"],
-      "options": {
-        "jestConfig": "libs/common/jest-integration.config.ts",
-        "runInBand": true,
-        "passWithNoTests": true
-      }
-    },
     "tsc": {
       "executor": "nx:run-commands",
       "options": {

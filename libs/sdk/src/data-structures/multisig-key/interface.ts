@@ -7,6 +7,8 @@ import {
 import { MultisigKeySchema } from "./schema";
 import { Chain } from "../../chains";
 import { MultisigPublicKey } from "../../keys";
+import { MultisigSigner } from "../../signers";
+import { Message } from "../../transactions";
 import { AbstractSerialized } from "../migratable";
 
 export interface MultisigKeyInterface {
@@ -31,4 +33,6 @@ export interface MultisigKeyInterface {
   ): KeySubclassTypeMapping[T] | undefined;
   setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]): void;
   removeKeyOfType<T extends KeyType>(type: T): void;
+
+  createSigner({ messages }: { messages: Message[] }): Promise<MultisigSigner>;
 }

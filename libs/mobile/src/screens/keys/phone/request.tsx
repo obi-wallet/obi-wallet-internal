@@ -17,7 +17,7 @@ import {
 import { SendMagicSmsButton } from "../../../app/screens/components/phone-number/send-magic-sms-button";
 import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
 import { useStore } from "../../../app/stores";
-import { sendPublicKeyTextMessage } from "../../../app/text-message";
+import { getTwilioClient } from "../../../app/text-message";
 import { PhoneNumberInput } from "../../../components/phone";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
@@ -296,10 +296,10 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
 
                   if (checkSecurityAnswer && checkPhoneNumber) {
                     try {
-                      await sendPublicKeyTextMessage({
+                      const twilioClient = getTwilioClient(demoMode);
+                      await twilioClient.sendPublicKeyTextMessage({
                         phoneNumber,
                         securityAnswer,
-                        demoMode,
                         chainId,
                       });
                       onSubmit({

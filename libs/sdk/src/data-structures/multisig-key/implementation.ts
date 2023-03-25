@@ -11,6 +11,7 @@ import { MultisigKeySchema } from "./schema";
 import { Chain } from "../../chains";
 import { MultisigPublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
+import { Message } from "../../transactions";
 import { Serialized } from "../abstract";
 import { AbstractSerialized } from "../migratable";
 
@@ -70,7 +71,7 @@ export class MultisigKey implements MultisigKeyInterface {
   }
 
   public get address() {
-    return Sdk.chainId(this._chain).getAddressOfPublicKey({
+    return this.sdk.getAddressOfPublicKey({
       publicKey: this.publicKey,
     });
   }
@@ -106,5 +107,16 @@ export class MultisigKey implements MultisigKeyInterface {
 
   public removeKeyOfType<T extends KeyType>(type: T) {
     this._keys = this._keys.filter((key) => key.type !== type);
+  }
+
+  public async createSigner({ messages }: { messages: Message[] }) {
+    return await this.sdk.createMultisigSigner({
+      multisigPublicKey: this.publicKey,
+      messages,
+    });
+  }
+
+  protected get sdk() {
+    return Sdk.chainId(this._chain);
   }
 }

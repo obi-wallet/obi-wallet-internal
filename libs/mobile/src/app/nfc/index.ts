@@ -1,6 +1,4 @@
 import { Sha256 } from "@cosmjs/crypto/build/sha";
-import { Chain } from "@obi-wallet/sdk";
-import { QueryClient } from "@tanstack/react-query";
 import { randomBytes } from "crypto";
 import fetch from "isomorphic-unfetch";
 import NfcManager, {
@@ -10,30 +8,8 @@ import NfcManager, {
 } from "react-native-nfc-manager";
 import secp256k1 from "secp256k1";
 
-import { prepareWalletAndSign } from "../secp256k1";
-
 const DEMO_PUBLIC_KEY = "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI";
 const DEMO_PRIVATE_KEY = "jrfHogEDo91xaC0Kym/BMheAhlm5z93fVwMT8mKTGy4=";
-
-export async function getNFCPublicKey({
-  demoMode,
-  parsed,
-  boostEntropy,
-  localEntropy,
-}: {
-  demoMode: boolean;
-  boostEntropy: boolean;
-  parsed: string;
-  localEntropy: string;
-}) {
-  const { publicKey } = await getNFCKeyPair({
-    demoMode,
-    parsed,
-    boostEntropy,
-    localEntropy,
-  });
-  return publicKey;
-}
 
 export async function getNFCPrivateKey({
   demoMode,
@@ -128,38 +104,6 @@ export async function getNFCKeyPair({
     const publicKey = Buffer.from(publicKeyBuffer).toString("base64");
     return { privateKey, publicKey };
   }
-}
-
-export async function createNFCSignature({
-  payload,
-  demoMode,
-  parsed,
-  boostEntropy,
-  localEntropy,
-  chainId,
-  queryClient,
-}: {
-  payload: Uint8Array;
-  demoMode: boolean;
-  parsed: string;
-  boostEntropy: boolean;
-  localEntropy: string;
-  chainId: Chain;
-  queryClient: QueryClient;
-}) {
-  const { publicKey, privateKey } = await getNFCKeyPair({
-    demoMode,
-    parsed,
-    boostEntropy,
-    localEntropy,
-  });
-  return await prepareWalletAndSign({
-    publicKey,
-    privateKey,
-    payload,
-    chainId,
-    queryClient,
-  });
 }
 
 export async function checkIsSupported() {
