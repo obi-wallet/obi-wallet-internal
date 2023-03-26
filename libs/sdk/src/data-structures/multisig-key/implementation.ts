@@ -1,18 +1,18 @@
 import * as R from "ramda";
 
 import { MultisigKeyInterface } from "./interface";
-import {
-  Key,
-  KeyAbstractSerializedMapping,
-  KeySubclassTypeMapping,
-  KeyType,
-} from "./keys";
 import { MultisigKeySchema } from "./schema";
 import { Chain } from "../../chains";
 import { MultisigPublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
 import { Message } from "../../transactions";
-import { Serialized } from "../abstract";
+import { AbstractDataStructure } from "../abstract";
+import {
+  Key,
+  KeyAbstractSerializedMapping,
+  KeySubclassTypeMapping,
+  KeyType,
+} from "../key";
 import { AbstractSerialized } from "../migratable";
 
 export class MultisigKey implements MultisigKeyInterface {
@@ -25,7 +25,7 @@ export class MultisigKey implements MultisigKeyInterface {
     protected _keys: Key[],
     protected _threshold: number,
     protected _factories: {
-      createKey: (serialized: Serialized<typeof Key>) => Key;
+      Key: AbstractDataStructure<Key>;
       createMultisigKey: (
         chain: Chain,
         serialized: AbstractSerialized<typeof MultisigKeySchema>
@@ -102,7 +102,7 @@ export class MultisigKey implements MultisigKeyInterface {
 
   public setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
     this._keys = this._keys.filter((k) => key.type !== k.type);
-    this._keys.push(this._factories.createKey(key));
+    this._keys.push(this._factories.Key.create(key));
   }
 
   public removeKeyOfType<T extends KeyType>(type: T) {

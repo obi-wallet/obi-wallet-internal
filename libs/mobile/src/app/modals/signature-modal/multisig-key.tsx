@@ -3,33 +3,24 @@ import {
   KeyType,
   MultisigKey,
   MultisigSigner,
-  PhoneKeySigner,
   Sdk,
   Signer,
 } from "@obi-wallet/sdk";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
-import NfcManager, { NfcEvents, OnDiscoverTag } from "react-native-nfc-manager";
 import invariant from "tiny-invariant";
 
 import { AbstractSignatureModalProps, wrapMessages } from "./common";
 import { MultisigConfirmMessages } from "./multisig-confirm-messages";
 import { PhoneNumberBottomSheetContent } from "./phone-number-bottom-sheet-content";
-import {
-  createCloudKeySigner,
-  createDeviceKeySigner,
-  createNfcKeySigner,
-} from "./signers";
-import { existsKeyOnDevice } from "../../biometrics";
-import { checkIsSupported, parseNFCData, startReading } from "../../nfc";
+import { createUsableSigners, PhoneKeySigner } from "./signers";
 import {
   BottomSheet,
   BottomSheetRef,
 } from "../../screens/components/bottom-sheet";
 import { CheckIcon, Key } from "../../screens/components/keys-list";
-import { getTwilioClient } from "../../text-message";
 
 export interface SignatureModalMultisigKeyProps
   extends AbstractSignatureModalProps {
@@ -57,9 +48,6 @@ export const SignatureModalMultisigKey =
 
     const { multisigSigner, setMultisigSigner, addSigner } =
       useMultisigSigner();
-    const [phoneKeySigner, setPhoneKeySigner] = useState<PhoneKeySigner | null>(
-      null
-    );
 
     const signer = useMutation({
       mutationFn: async () => {
@@ -84,6 +72,18 @@ export const SignatureModalMultisigKey =
       retry: 2,
     });
 
+    const usableSigners = useQuery({
+      queryKey: ["usable-signers"],
+      queryFn: async () => {
+        return await createUsableSigners({
+          multisigKey,
+          demoMode: payload.demoMode,
+          bottomSheetRef: phoneNumberBottomSheetRef,
+        });
+      },
+      cacheTime: 0,
+    });
+
     useEffect(() => {
       signer.mutate();
       // We only want to run this initially
@@ -103,149 +103,64 @@ export const SignatureModalMultisigKey =
       },
     });
 
-    function getKey({ type }: { type: KeyType }): Key {
-      const factor = multisigKey.getUsableKeyOfType(type);
-      invariant(factor, "Expected key to exist.");
+    if (!multisigKey.threshold || !usableSigners.data) return null;
 
-      const alreadySigned = multisigSigner?.alreadySigned(factor.publicKey);
+    const keys: Key[] = usableSigners.data.map(({ key, signer }) => {
+      const alreadySigned = multisigSigner?.alreadySigned(key.publicKey);
       const onPress = async () => {
-        if (alreadySigned) return;
-
-        switch (type) {
-          case KeyType.Device: {
-            const signer = await createDeviceKeySigner({ multisigKey });
-            await addSigner(signer);
-            break;
-          }
-          case KeyType.Phone: {
-            const signer = new PhoneKeySigner(
-              multisigKey.chain,
-              factor as KeySubclassTypeMapping[KeyType.Phone],
-              getTwilioClient(payload.demoMode)
-            );
-            setPhoneKeySigner(signer);
-            phoneNumberBottomSheetRef.current?.snapToIndex(0);
-            await addSigner(signer);
-            break;
-          }
-          case KeyType.Nfc: {
-            const onDiscoverTag: OnDiscoverTag = async (tag) => {
-              if (tag.ndefMessage && tag.ndefMessage.length > 0) {
-                const parsed = parseNFCData(tag);
-
-                console.warn(
-                  `Associated NFC address is ${Sdk.chainId(
-                    multisigKey.chain
-                  ).getAddressOfPublicKey({
-                    publicKey: factor.publicKey,
-                  })}`
-                );
-
-                const signer = await createNfcKeySigner({
-                  multisigKey,
-                  demoMode: payload.demoMode,
-                  parsed,
-                });
-                await addSigner(signer);
-              }
-            };
-
-            NfcManager.setEventListener(NfcEvents.DiscoverTag, onDiscoverTag);
-            await startReading("Tap your NFC device to sign this transaction.");
-            break;
-          }
-          case KeyType.Cloud: {
-            const signer = await createCloudKeySigner({ multisigKey });
-            await addSigner(signer);
-            break;
-          }
-          default:
-            console.log("Not implemented yet");
-            break;
+        if (multisigSigner?.alreadySigned(key.publicKey)) return;
+        try {
+          await addSigner(signer);
+        } catch (e) {
+          // noop
         }
       };
 
       return {
-        type,
+        type: key.type,
         signed: alreadySigned,
         right: alreadySigned ? <CheckIcon /> : null,
         onPress,
       };
-    }
-
-    const [usableKeys, setUsableKeys] = useState<KeyType[] | null>(null);
-    useEffect(() => {
-      (async () => {
-        const usableKeys = [];
-
-        const deviceKey = multisigKey.getUsableKeyOfType(KeyType.Device);
-        const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
-        const nfcKey = multisigKey.getUsableKeyOfType(KeyType.Nfc);
-        const cloudKey = multisigKey.getUsableKeyOfType(KeyType.Cloud);
-
-        if (
-          deviceKey &&
-          (await existsKeyOnDevice({
-            publicKey: deviceKey.publicKey.value,
-          }))
-        ) {
-          usableKeys.push(KeyType.Device);
-        }
-
-        if (phoneKey) {
-          usableKeys.push(KeyType.Phone);
-        }
-
-        if (nfcKey && (await checkIsSupported())) {
-          usableKeys.push(KeyType.Nfc);
-        }
-
-        if (cloudKey) {
-          usableKeys.push(KeyType.Cloud);
-        }
-
-        setUsableKeys(usableKeys);
-      })();
-    }, [multisigKey]);
-
-    if (!multisigKey.threshold || !usableKeys) return null;
-
-    const phoneKey = multisigKey.getUsableKeyOfType(KeyType.Phone);
-
-    const keys: Key[] = usableKeys.map((type) => {
-      return getKey({ type });
     });
+
+    const phoneKeyPayload = usableSigners.data.find(
+      (
+        payload
+      ): payload is {
+        key: KeySubclassTypeMapping[KeyType.Phone];
+        signer: PhoneKeySigner;
+      } => {
+        return payload.key.type === KeyType.Phone;
+      }
+    );
 
     return (
       <MultisigConfirmMessages
         footer={
-          phoneKey ? (
-            <BottomSheet bottomSheetRef={phoneNumberBottomSheetRef}>
+          phoneKeyPayload ? (
+            <BottomSheet
+              bottomSheetRef={phoneNumberBottomSheetRef}
+              onClose={() => {
+                phoneKeyPayload.signer.cancelSignature();
+              }}
+            >
               <PhoneNumberBottomSheetContent
-                phoneNumber={phoneKey.payload.phoneNumber}
-                securityQuestion={phoneKey.payload.securityQuestion}
+                phoneNumber={phoneKeyPayload.key.payload.phoneNumber}
+                securityQuestion={phoneKeyPayload.key.payload.securityQuestion}
                 onRequest={async (securityAnswer) => {
-                  invariant(
-                    phoneKeySigner,
-                    "Expected phone key signer to exist."
-                  );
-                  await phoneKeySigner.requestSignature(securityAnswer);
+                  await phoneKeyPayload.signer.requestSignature(securityAnswer);
                 }}
                 onConfirm={async (key) => {
-                  invariant(
-                    phoneKeySigner,
-                    "Expected phone key signer to exist."
-                  );
-                  await phoneKeySigner.confirmSignature(key);
-                  phoneNumberBottomSheetRef.current?.close();
+                  await phoneKeyPayload.signer.confirmSignature(key);
                 }}
               />
             </BottomSheet>
           ) : null
         }
         threshold={multisigKey.threshold}
-        numberOfSignatures={signer.data?.numberOfSignatures || 0}
-        numberOfUsableKeys={usableKeys.length}
+        numberOfSignatures={multisigSigner?.numberOfSignatures || 0}
+        numberOfUsableKeys={usableSigners.data.length}
         innerMessages={payload.messages}
         data={keys}
         safeSpendLimitExceeded={safeSpendLimitExceeded}

@@ -3,7 +3,7 @@ import { MultisigKeyInterface } from "./interface";
 import { MultisigKeySchema } from "./schema";
 import { AbstractDataStructure } from "../abstract";
 
-export * from "./keys";
+// export * from "./keys";
 
 export type MultisigKey = MultisigKeyInterface;
 

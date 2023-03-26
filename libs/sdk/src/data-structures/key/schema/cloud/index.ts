@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { Secp256k1PublicKey } from "../../../../keys";
-import { KeyType } from "../key-type";
+import { KeyType } from "../../types";
 
 export const CloudKeyProvider = z.literal("google-drive");
 

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { Key } from "./keys";
+import { Key } from "../key";
 import { migratable } from "../migratable";
 
 export const MultisigKeySchema = migratable(

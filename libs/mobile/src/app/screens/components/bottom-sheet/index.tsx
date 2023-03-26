@@ -7,12 +7,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export interface BottomSheetProps {
   children: ReactNode;
   bottomSheetRef: Ref<OriginalBottomSheet>;
+  onClose?: () => void;
 }
 
 export type BottomSheetRef = OriginalBottomSheet;
 
 export const BottomSheet = observer(function BottomSheet({
   children,
+  onClose,
   bottomSheetRef,
 }: BottomSheetProps) {
   const safeArea = useSafeAreaInsets();
@@ -26,6 +28,7 @@ export const BottomSheet = observer(function BottomSheet({
       snapPoints={["50%"]}
       enablePanDownToClose={true}
       ref={bottomSheetRef}
+      onClose={onClose}
       index={-1}
     >
       <BottomSheetView

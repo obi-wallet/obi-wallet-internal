@@ -1,14 +1,14 @@
-import {
-  Key,
-  KeyAbstractSerializedMapping,
-  KeySubclassTypeMapping,
-  KeyType,
-} from "./keys";
 import { MultisigKeySchema } from "./schema";
 import { Chain } from "../../chains";
 import { MultisigPublicKey } from "../../keys";
 import { MultisigSigner } from "../../signers";
 import { Message } from "../../transactions";
+import {
+  Key,
+  KeyAbstractSerializedMapping,
+  KeySubclassTypeMapping,
+  KeyType,
+} from "../key";
 import { AbstractSerialized } from "../migratable";
 
 export interface MultisigKeyInterface {
