@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { Secp256k1PublicKey } from "../../../../keys";
-import { KeyType } from "../key-type";
+import { KeyType } from "../../types";
 
 export const DeviceKey = z.object({
   type: z.literal(KeyType.Device),

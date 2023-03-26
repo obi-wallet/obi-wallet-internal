@@ -1,6 +1,6 @@
 import invariant from "tiny-invariant";
 
-import { Signer } from "./signer";
+import { Signer } from "./abstract";
 import { MultisigPublicKey, Secp256k1PublicKey } from "../keys";
 import { SignedTransaction } from "../transactions";
 

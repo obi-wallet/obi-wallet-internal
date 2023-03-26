@@ -2,9 +2,9 @@ import { action, makeObservable, observable } from "mobx";
 
 import { MultisigKey } from "./implementation";
 import { MultisigKeyInterface } from "./interface";
-import { createKey, createObservableKey } from "./keys";
 import { MultisigKeySchema } from "./schema";
 import { Chain } from "../../chains";
+import { Key, ObservableKey } from "../key";
 import { AbstractMigratable } from "../migratable";
 
 export function createMultisigKey(
@@ -14,7 +14,7 @@ export function createMultisigKey(
     threshold: 1,
   },
   factories = {
-    createKey,
+    Key,
     createMultisigKey,
   }
 ): MultisigKeyInterface {
@@ -22,10 +22,10 @@ export function createMultisigKey(
     MultisigKeySchema.migratableSchema.parse(migratable);
   return new MultisigKey(
     chain,
-    keys.map((key) => factories.createKey(key)),
+    keys.map((key) => factories.Key.create(key)),
     threshold,
     {
-      createKey: factories.createKey,
+      Key: factories.Key,
       createMultisigKey: factories.createMultisigKey,
     }
   );
@@ -36,7 +36,7 @@ export function createObservableMultisigKey(
   migratable?: AbstractMigratable<typeof MultisigKeySchema>
 ): MultisigKeyInterface {
   const key = createMultisigKey(chain, migratable, {
-    createKey: createObservableKey,
+    Key: ObservableKey,
     createMultisigKey: createObservableMultisigKey,
   });
   makeObservable<MultisigKeyInterface, "_chain" | "_keys" | "_threshold">(
