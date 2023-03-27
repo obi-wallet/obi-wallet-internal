@@ -28,24 +28,26 @@ export async function handleTerra({
       codeIds,
     });
 
-    const response = await SignAndBroadcastTransactionUserInteraction.start({
-      messages: [message],
-      demoMode: wallet.isDemo,
-      cancelable: true,
-      multisigKey: currentOwner,
-    });
-
     try {
-      if (response.approved && response.payload.success) {
+      const response = await SignAndBroadcastTransactionUserInteraction.start({
+        messages: [message],
+        demoMode: wallet.isDemo,
+        cancelable: true,
+        multisigKey: currentOwner,
+      });
+      if (response.approved === false) return;
+
+      if (response.payload.success) {
         terra.parseProposeUpdateOwnerResponse(
           response.payload.rawResult as BlockTxBroadcastResult
         );
+      } else {
+        throw new Error("Transaction failed");
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
+      await proposeUpdateOwner();
     }
-
-    await proposeUpdateOwner();
   }
 
   async function confirmUpdateOwner() {
@@ -54,25 +56,27 @@ export async function handleTerra({
       proxyAddress: wallet.address,
     });
 
-    const response = await SignAndBroadcastTransactionUserInteraction.start({
-      messages: [message],
-      demoMode: wallet.isDemo,
-      cancelable: true,
-      multisigKey: newOwner,
-    });
-
     try {
-      if (response.approved && response.payload.success) {
+      const response = await SignAndBroadcastTransactionUserInteraction.start({
+        messages: [message],
+        demoMode: wallet.isDemo,
+        cancelable: true,
+        multisigKey: newOwner,
+      });
+      if (response.approved === false) return;
+
+      if (response.payload.success) {
         terra.parseProposeUpdateOwnerResponse(
           response.payload.rawResult as BlockTxBroadcastResult
         );
         return;
+      } else {
+        throw new Error("Transaction failed");
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
+      await confirmUpdateOwner();
     }
-
-    await confirmUpdateOwner();
   }
 
   await proposeUpdateOwner();

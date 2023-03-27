@@ -23,6 +23,7 @@ import { VerifyAndProceedButton } from "../../../app/screens/components/phone-nu
 import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
 import { TextInput } from "../../../app/text-input";
 import SocialLoop from "../../../assets/social-loop.svg";
+import { useKeyboardVisible } from "../../../helpers/keyboard-visible";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type EmailKeyScreenProps = NativeStackScreenProps<
@@ -81,6 +82,8 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   const [selectedTab, setSelectedTab] = useState(Tab.EmailKeyV1);
   const isObi = configStore.isObi();
   const intl = useIntl();
+
+  const isKeyboardVisible = useKeyboardVisible();
 
   const { control, handleSubmit, formState } = useForm({
     resolver: zodResolver(schema),
@@ -276,52 +279,54 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
           <View
             style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
           >
-            <VerifyAndProceedButton
-              disabled={!formState.isValid}
-              onPress={handleSubmit(async (data) => {
-                try {
-                  const { publicKey, privateKey } = generateSec256k1KeyPair();
+            {!isKeyboardVisible && (
+              <VerifyAndProceedButton
+                disabled={!formState.isValid}
+                onPress={handleSubmit(async (data) => {
+                  try {
+                    const { publicKey, privateKey } = generateSec256k1KeyPair();
 
-                  await Linking.openURL(
-                    `mailto:${
-                      data.email
-                    }?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
-                      "This is a v1 recovery key. You are sending it to yourself; Obi can never access its contents. " +
-                        "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
-                        "DO NOT DELETE this email unless you are saving its contents to a password manager or physical location. In future versions " +
-                        "of Obi, email recovery will use zero-knowledge proofs, and so saving an email will be unnecessary.  " +
-                        privateKey
-                    )}`
-                  );
-                  Alert.alert(
-                    "Confirm Email Sent",
-                    "Never enter the one-time key you received anywhere unless you need it for recovery. Have you sent the email to yourself?",
-                    [
-                      {
-                        text: "No",
-                        style: "cancel",
-                      },
-                      {
-                        text: "Yes, I sent the email to myself",
-                        onPress: () => {
-                          draft.value.setKey({
-                            type: KeyType.Email,
-                            payload: {
-                              publicKey,
-                            },
-                          });
-                          onSubmit();
+                    await Linking.openURL(
+                      `mailto:${
+                        data.email
+                      }?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
+                        "This is a v1 recovery key. You are sending it to yourself; Obi can never access its contents. " +
+                          "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
+                          "DO NOT DELETE this email unless you are saving its contents to a password manager or physical location. In future versions " +
+                          "of Obi, email recovery will use zero-knowledge proofs, and so saving an email will be unnecessary.  " +
+                          privateKey
+                      )}`
+                    );
+                    Alert.alert(
+                      "Confirm Email Sent",
+                      "Never enter the one-time key you received anywhere unless you need it for recovery. Have you sent the email to yourself?",
+                      [
+                        {
+                          text: "No",
+                          style: "cancel",
                         },
-                      },
-                    ],
-                    { cancelable: false }
-                  );
-                } catch (e) {
-                  console.error(e);
-                  // noop
-                }
-              })}
-            />
+                        {
+                          text: "Yes, I sent the email to myself",
+                          onPress: () => {
+                            draft.value.setKey({
+                              type: KeyType.Email,
+                              payload: {
+                                publicKey,
+                              },
+                            });
+                            onSubmit();
+                          },
+                        },
+                      ],
+                      { cancelable: false }
+                    );
+                  } catch (e) {
+                    console.error(e);
+                    // noop
+                  }
+                })}
+              />
+            )}
           </View>
         </View>
       </SafeAreaView>
