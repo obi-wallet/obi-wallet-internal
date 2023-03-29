@@ -20,7 +20,7 @@ export const SignatureModal = observer<SignatureModalProps>(
       if (!wallet) return null;
 
       const currentAccount = payload.walletMeta.currentAccount
-        ? wallet.getAccount(payload.walletMeta.currentAccount)
+        ? wallet.getAccountByMeta(payload.walletMeta.currentAccount)
         : null;
 
       if (!currentAccount) {

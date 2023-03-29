@@ -101,7 +101,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
             borderRadius: 16,
           }}
           onPress={() => {
-            wallet.setCurrentAccount(null);
+            wallet.setCurrentAccountByMeta(null);
           }}
         >
           <ImageBackground
@@ -375,7 +375,7 @@ const AccountsList = observer(function AccountsList() {
             isOpen={R.equals(itemOpened, element.item.meta)}
             onSetActive={() => {
               if (element.item.meta.type === "beneficiary") return;
-              wallet.setCurrentAccount(element.item.meta);
+              wallet.setCurrentAccountByMeta(element.item.meta);
             }}
             active={R.equals(currentAccount, element.item.meta)}
             originalAccount={element.item.originalAccount ?? null}
