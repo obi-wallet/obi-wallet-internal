@@ -1,7 +1,6 @@
 import { action, makeObservable, observable } from "mobx";
 
 import { Wallets } from "./implementation";
-import { WalletsInterface } from "./interface";
 import { WalletsSchema } from "./schema";
 import { AbstractMigratable } from "../migratable";
 import { MultisigWallet, ObservableMultisigWallet } from "../multisig-wallet";
@@ -12,20 +11,19 @@ export function createWallets(
     currentWalletIndex: null,
   },
   factory = MultisigWallet
-): WalletsInterface {
+) {
   const serialized = WalletsSchema.migratableSchema.parse(migratable);
   return new Wallets(
     serialized.wallets.map((wallet) => factory.create(wallet)),
-    serialized.currentWalletIndex,
-    factory
+    serialized.currentWalletIndex
   );
 }
 
 export function createObservableWallets(
   migratable?: AbstractMigratable<typeof WalletsSchema>
-): WalletsInterface {
+) {
   const wallets = createWallets(migratable, ObservableMultisigWallet);
-  makeObservable<WalletsInterface, "_wallets" | "_currentWalletIndex">(
+  makeObservable<Wallets, "_wallets" | "_currentWalletIndex">(
     wallets,
     {
       _wallets: observable,
