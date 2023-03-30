@@ -2,7 +2,7 @@ import {
   createObservableUserInteractions,
   createUserInteractions,
 } from "./factories";
-import { UserInteractionsInterface } from "./interface";
+import { UserInteractions as UserInteractionsInterface } from "./implementation";
 
 export type UserInteractions = UserInteractionsInterface;
 
