@@ -1,5 +1,5 @@
 import { createBeneficiary, createObservableBeneficiary } from "./factories";
-import { BeneficiaryInterface } from "./interface";
+import { Beneficiary as BeneficiaryInterface } from "./implementation";
 import { BeneficiarySchema } from "./schema";
 import { AbstractDataStructure } from "../abstract";
 

@@ -1,13 +1,12 @@
 import R from "ramda";
 import { z } from "zod";
 
-import { BeneficiaryInterface } from "./interface";
 import { BeneficiarySchema } from "./schema";
 import { Duration } from "../duration";
 import { AccountMetaData } from "../gatekeeper-config/account-meta-data";
 import { AbstractSerialized } from "../migratable";
 
-export class Beneficiary implements BeneficiaryInterface {
+export class Beneficiary {
   public get schema() {
     return BeneficiarySchema;
   }
@@ -33,7 +32,7 @@ export class Beneficiary implements BeneficiaryInterface {
     };
   }
 
-  public equals(other: BeneficiaryInterface) {
+  public equals(other: Beneficiary) {
     return R.equals(this.toJSON(), other.toJSON());
   }
 
