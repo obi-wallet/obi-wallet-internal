@@ -383,14 +383,10 @@ const AccountsList = observer(function AccountsList() {
             onDelete={() => {
               switch (element.item.account.type) {
                 case "beneficiary":
-                  draft.value.removeBeneficiaryByAddress({
-                    address: element.item.account.address,
-                  });
+                  draft.value.removeBeneficiary(element.item.account);
                   break;
                 case "flex-account":
-                  draft.value.removeFlexAccountByAddress({
-                    address: element.item.account.address,
-                  });
+                  draft.value.removeFlexAccount(element.item.account);
                   break;
                 case "singlesig-wallet":
                   wallet.removeSinglesigWallet(element.item.account);

@@ -60,9 +60,9 @@ export class GatekeeperConfig {
     );
   }
 
-  public removeBeneficiaryByAddress({ address }: { address: string }) {
+  public removeBeneficiary(beneficiary: Beneficiary) {
     this._beneficiaries = this._beneficiaries.filter(
-      (beneficiary) => beneficiary.address !== address
+      (b) => b.address !== beneficiary.address
     );
   }
 
@@ -70,9 +70,9 @@ export class GatekeeperConfig {
     this._flexAccounts = this.upsertArrayItem(this._flexAccounts, flexAccount);
   }
 
-  public removeFlexAccountByAddress({ address }: { address: string }) {
+  public removeFlexAccount(flexAccount: FlexAccount) {
     this._flexAccounts = this._flexAccounts.filter(
-      (flexAccount) => flexAccount.address !== address
+      (f) => f.address !== flexAccount.address
     );
   }
 
@@ -127,9 +127,9 @@ export function createObservableGatekeeperConfig(
       toJSON: false,
       clone: false,
       upsertBeneficiary: action,
-      removeBeneficiaryByAddress: action,
+      removeBeneficiary: action,
       upsertFlexAccount: action,
-      removeFlexAccountByAddress: action,
+      removeFlexAccount: action,
     },
     {
       name: "GatekeeperConfig",
