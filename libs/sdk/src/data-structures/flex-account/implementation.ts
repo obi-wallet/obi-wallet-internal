@@ -2,13 +2,12 @@ import { DateTime } from "luxon";
 import * as R from "ramda";
 import { z } from "zod";
 
-import { FlexAccountInterface } from "./interface";
 import { AutoSign, FlexAccountSchema, SpendLimit } from "./schema";
 import { Secp256k1PublicKey } from "../../keys";
 import { AccountMetaData } from "../gatekeeper-config/account-meta-data";
 import { AbstractSerialized } from "../migratable";
 
-export class FlexAccount implements FlexAccountInterface {
+export class FlexAccount {
   public get schema() {
     return FlexAccountSchema;
   }
@@ -35,7 +34,7 @@ export class FlexAccount implements FlexAccountInterface {
     };
   }
 
-  public equals(other: FlexAccountInterface) {
+  public equals(other: FlexAccount) {
     return R.equals(
       R.omit(["autoSign"], this.toJSON()),
       R.omit(["autoSign"], other.toJSON())

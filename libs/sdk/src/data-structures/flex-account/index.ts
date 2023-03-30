@@ -1,5 +1,5 @@
 import { createFlexAccount, createObservableFlexAccount } from "./factories";
-import { FlexAccountInterface } from "./interface";
+import { FlexAccount as FlexAccountInterface } from "./implementation";
 import { FlexAccountSchema } from "./schema";
 
 export type FlexAccount = FlexAccountInterface;
