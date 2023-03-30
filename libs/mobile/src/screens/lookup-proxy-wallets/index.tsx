@@ -40,7 +40,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
 
     return (
       <Lookup
-        chainId={draft.value.chain}
+        chainId={draft.value.chainId}
         publicKey={phoneKey.publicKey.value}
         onCancel={() => {
           navigation.goBack();
@@ -55,7 +55,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
           invariant(recoveredPhoneKey, "Phone key is required");
 
           const serializedData: Serialized<MultisigWallet>["data"] = {
-            chain: draft.value.chain,
+            chain: draft.value.chainId,
             owner: {
               threshold: parseInt(serializedProxyWallet.owner.threshold, 10),
               keys: serializedProxyWallet.owner.keys.map(

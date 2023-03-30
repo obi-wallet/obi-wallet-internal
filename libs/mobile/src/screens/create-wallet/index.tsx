@@ -35,7 +35,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
       <CreateWallet
         {...params}
         onSubmit={async () => {
-          const chainId = draft.value.chain;
+          const chainId = draft.value.chainId;
 
           try {
             invariant(isTerraChain(chainId), "Expected Terra chain");

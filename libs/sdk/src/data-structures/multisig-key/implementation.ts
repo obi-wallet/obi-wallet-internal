@@ -1,6 +1,5 @@
 import * as R from "ramda";
 
-import { MultisigKeyInterface } from "./interface";
 import { MultisigKeySchema } from "./schema";
 import { Chain } from "../../chains";
 import { MultisigPublicKey } from "../../keys";
@@ -15,13 +14,13 @@ import {
 } from "../key";
 import { AbstractSerialized } from "../migratable";
 
-export class MultisigKey implements MultisigKeyInterface {
+export class MultisigKey {
   public get schema() {
     return MultisigKeySchema;
   }
 
   public constructor(
-    protected _chain: Chain,
+    protected _chainId: Chain,
     protected _keys: Key[],
     protected _threshold: number,
     protected _factories: {
@@ -29,7 +28,7 @@ export class MultisigKey implements MultisigKeyInterface {
       createMultisigKey: (
         chain: Chain,
         serialized: AbstractSerialized<typeof MultisigKeySchema>
-      ) => MultisigKeyInterface;
+      ) => MultisigKey;
     }
   ) {}
 
@@ -40,16 +39,16 @@ export class MultisigKey implements MultisigKeyInterface {
     };
   }
 
-  public equals(other: MultisigKeyInterface) {
+  public equals(other: MultisigKey) {
     return R.equals(this.toJSON(), other.toJSON());
   }
 
   public clone() {
-    return this._factories.createMultisigKey(this.chain, this.toJSON());
+    return this._factories.createMultisigKey(this.chainId, this.toJSON());
   }
 
-  public get chain() {
-    return this._chain;
+  public get chainId() {
+    return this._chainId;
   }
 
   public get threshold() {
@@ -117,6 +116,6 @@ export class MultisigKey implements MultisigKeyInterface {
   }
 
   protected get sdk() {
-    return Sdk.chainId(this._chain);
+    return Sdk.chainId(this._chainId);
   }
 }

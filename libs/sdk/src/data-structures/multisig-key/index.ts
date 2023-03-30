@@ -1,9 +1,7 @@
 import { createMultisigKey, createObservableMultisigKey } from "./factories";
-import { MultisigKeyInterface } from "./interface";
+import { MultisigKey as MultisigKeyInterface } from "./implementation";
 import { MultisigKeySchema } from "./schema";
 import { AbstractDataStructure } from "../abstract";
-
-// export * from "./keys";
 
 export type MultisigKey = MultisigKeyInterface;
 

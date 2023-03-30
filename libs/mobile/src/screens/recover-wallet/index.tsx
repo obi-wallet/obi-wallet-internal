@@ -56,7 +56,7 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
 
           invariant(params.serializedData, "Missing serializedData param.");
 
-          const chainId = draft.value.chain;
+          const chainId = draft.value.chainId;
           try {
             const codeIds = await queryClient.fetchQuery(
               getCodeIdsQuery({
