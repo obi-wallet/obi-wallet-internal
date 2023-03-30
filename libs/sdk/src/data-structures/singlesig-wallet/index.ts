@@ -2,7 +2,7 @@ import {
   createSinglesigWallet,
   createObservableSinglesigWallet,
 } from "./factories";
-import { SinglesigWalletInterface } from "./interface";
+import { SinglesigWallet as SinglesigWalletInterface } from "./implementation";
 import { SinglesigWalletSchema } from "./schema";
 import { AbstractDataStructure } from "../abstract";
 

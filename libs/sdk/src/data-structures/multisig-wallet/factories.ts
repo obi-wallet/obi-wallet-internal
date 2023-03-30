@@ -1,7 +1,6 @@
 import { action, makeObservable, observable } from "mobx";
 
 import { MultisigWallet } from "./implementation";
-import { MultisigWalletInterface } from "./interface";
 import { MultisigWalletSchema } from "./schema";
 import {
   createGatekeeperConfig,
@@ -21,7 +20,7 @@ export function createMultisigWallet(
     SinglesigWallet,
     createGatekeeperConfig,
   }
-): MultisigWalletInterface {
+) {
   const serialized = MultisigWalletSchema.migratableSchema.parse(migratable);
   return new MultisigWallet(
     serialized.data.chain,
@@ -36,14 +35,14 @@ export function createMultisigWallet(
 
 export function createObservableMultisigWallet(
   serialized: AbstractMigratable<typeof MultisigWalletSchema>
-): MultisigWalletInterface {
+) {
   const wallet = createMultisigWallet(serialized, {
     MultisigKey: ObservableMultisigKey,
     SinglesigWallet: ObservableSinglesigWallet,
     createGatekeeperConfig: createObservableGatekeeperConfig,
   });
   makeObservable<
-    MultisigWalletInterface,
+    MultisigWallet,
     | "_chainId"
     | "_owner"
     | "_proxyAddress"
@@ -63,7 +62,7 @@ export function createObservableMultisigWallet(
       _isDemo: observable,
       toJSON: false,
       setOwner: action,
-      setCurrentAccount: action,
+      setCurrentAccountByMeta: action,
       setGatekeeperConfig: action,
       upsertSinglesigWallet: action,
       removeSinglesigWallet: action,

@@ -114,7 +114,7 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
 
     void queryClient.prefetchQuery(
       getPrepareKeyQuery({
-        chainId: draft.value.chain,
+        chainId: draft.value.chainId,
         publicKey,
         privateKey,
       })

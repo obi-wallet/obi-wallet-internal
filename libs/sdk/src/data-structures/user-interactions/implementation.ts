@@ -1,13 +1,12 @@
 import { nanoid } from "nanoid/non-secure";
 
-import { UserInteractionsInterface } from "./interface";
 import { UserInteractionWithType } from "../../user-interactions/abstract";
 import {
   eventEmitter,
   userInteractionEvent,
 } from "../../user-interactions/event-emitter";
 
-export class UserInteractions implements UserInteractionsInterface {
+export class UserInteractions {
   protected _userInteractions: (UserInteractionWithType & { id: string })[] =
     [];
 

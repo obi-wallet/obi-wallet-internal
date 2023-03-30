@@ -1,16 +1,15 @@
 import { action, makeObservable, observable } from "mobx";
 
 import { UserInteractions } from "./implementation";
-import { UserInteractionsInterface } from "./interface";
 
-export function createUserInteractions(): UserInteractionsInterface {
+export function createUserInteractions() {
   return new UserInteractions();
 }
 
-export function createObservableUserInteractions(): UserInteractionsInterface {
+export function createObservableUserInteractions() {
   const userInteractions = createUserInteractions();
   makeObservable<
-    UserInteractionsInterface,
+    UserInteractions,
     "_userInteractions" | "addUserInteraction" | "removeUserInteractionWithId"
   >(
     userInteractions,

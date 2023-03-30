@@ -1,6 +1,7 @@
 import {
   Migratable,
   MultisigWallet,
+  ObservableMultisigWallet,
   ObservableWallets,
   Serialized,
   Wallets,
@@ -86,25 +87,31 @@ export class WalletsStore {
 
   @action
   public addMultisigWallet(serializedData: Serialized<MultisigWallet>["data"]) {
-    return this._wallets.upsertWallet({
+    const wallet = ObservableMultisigWallet.create({
       type: "multisig",
       data: serializedData,
     });
+    this._wallets.upsertWallet(wallet);
+    this._wallets.setCurrentWallet(wallet);
+    return wallet;
   }
 
   @action
   public addMultisigDemoWallet(
     serializedData: Serialized<MultisigWallet>["data"]
   ) {
-    return this._wallets.upsertWallet({
+    const wallet = ObservableMultisigWallet.create({
       type: "multisig-demo",
       data: serializedData,
     });
+    this._wallets.upsertWallet(wallet);
+    this._wallets.setCurrentWallet(wallet);
+    return wallet;
   }
 
   @action
   public getWallet(id: string) {
-    return this._wallets.getWallet(id);
+    return this._wallets.getWalletByProxyAddress(id);
   }
 
   @action

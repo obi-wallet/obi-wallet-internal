@@ -95,7 +95,7 @@ export const SignatureModalMultisigKey =
         invariant(multisigSigner, "Expected multisig signer to exist.");
         const signedTransaction = multisigSigner.createSignedTransaction();
         return await Sdk.chainId(
-          multisigKey.chain
+          multisigKey.chainId
         ).broadcastSignedTransactionAndLendFees({
           signedTransaction,
           sender: multisigKey.address,

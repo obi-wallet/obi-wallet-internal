@@ -1,7 +1,6 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import * as R from "ramda";
 
-import { CurrentAccountMeta, MultisigWalletInterface } from "./interface";
 import { MultisigWalletSchema } from "./schema";
 import {
   Chain,
@@ -19,7 +18,17 @@ import { AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
 import { SinglesigWallet } from "../singlesig-wallet";
 
-export class MultisigWallet implements MultisigWalletInterface {
+export type CurrentAccountMeta = {
+  type: "flex-account" | "singlesig-wallet";
+  id: string;
+};
+
+export interface WalletMeta {
+  walletId: string;
+  currentAccount: CurrentAccountMeta | null;
+}
+
+export class MultisigWallet {
   public get schema() {
     return MultisigWalletSchema;
   }
@@ -55,7 +64,7 @@ export class MultisigWallet implements MultisigWalletInterface {
     return this.proxyAddress;
   }
 
-  public get meta() {
+  public get meta(): WalletMeta {
     return {
       walletId: this.id,
       currentAccount: this._currentAccount,
@@ -130,16 +139,12 @@ export class MultisigWallet implements MultisigWalletInterface {
     });
   }
 
-  public get currentAccountMeta() {
-    return this._currentAccount;
-  }
-
   public get currentAccount() {
     if (!this._currentAccount) return null;
-    return this.getAccount(this._currentAccount);
+    return this.getAccountByMeta(this._currentAccount);
   }
 
-  public getAccount(account: CurrentAccountMeta) {
+  public getAccountByMeta(account: CurrentAccountMeta) {
     switch (account.type) {
       case "flex-account":
         return (
@@ -156,7 +161,7 @@ export class MultisigWallet implements MultisigWalletInterface {
     }
   }
 
-  public setCurrentAccount(account: CurrentAccountMeta | null) {
+  public setCurrentAccountByMeta(account: CurrentAccountMeta | null) {
     this._currentAccount = account;
   }
 

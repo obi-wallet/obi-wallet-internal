@@ -1,6 +1,6 @@
 export { WalletsSchema } from "./schema";
 import { createObservableWallets, createWallets } from "./factories";
-import { WalletsInterface } from "./interface";
+import { Wallets as WalletsInterface } from "./implementation";
 import { WalletsSchema } from "./schema";
 import { AbstractDataStructure } from "../abstract";
 

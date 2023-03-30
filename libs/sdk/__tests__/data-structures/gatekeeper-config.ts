@@ -30,52 +30,50 @@ describe("ObservableGatekeeperConfig", () => {
   test("beneficiaries observable", () => {
     const config = createObservableGatekeeperConfig();
     expect(isObservable(config.beneficiaries)).toEqual(true);
-    config.upsertBeneficiary(
-      ObservableBeneficiary.create({
-        type: "beneficiary",
-        address: "address",
-        meta: {
-          name: "name",
-          icon: "icon",
-        },
-        dripSchedule: {
-          rate: 0.05,
-          period: {
-            years: 1,
-          },
-        },
-        dormancyThreshold: {
+    const beneficiary = ObservableBeneficiary.create({
+      type: "beneficiary",
+      address: "address",
+      meta: {
+        name: "name",
+        icon: "icon",
+      },
+      dripSchedule: {
+        rate: 0.05,
+        period: {
           years: 1,
         },
-      })
-    );
+      },
+      dormancyThreshold: {
+        years: 1,
+      },
+    });
+    config.upsertBeneficiary(beneficiary);
     expect(isObservable(config.beneficiaries)).toEqual(true);
-    config.removeBeneficiaryByAddress({ address: "address" });
+    config.removeBeneficiary(beneficiary);
     expect(isObservable(config.beneficiaries)).toEqual(true);
   });
 
   test("flexAccounts observable", () => {
     const config = createObservableGatekeeperConfig();
     expect(isObservable(config.beneficiaries)).toEqual(true);
-    config.upsertFlexAccount(
-      ObservableFlexAccount.create({
-        type: "flex-account",
-        address: "address",
-        meta: {
-          name: "name",
-          icon: "icon",
-        },
-        autoSign: null,
-        privateKey: "privateKey",
-        spendLimit: null,
-        publicKey: {
-          type: "tendermint/PubKeySecp256k1",
-          value: "value",
-        },
-      })
-    );
+    const flexAccount = ObservableFlexAccount.create({
+      type: "flex-account",
+      address: "address",
+      meta: {
+        name: "name",
+        icon: "icon",
+      },
+      autoSign: null,
+      privateKey: "privateKey",
+      spendLimit: null,
+      publicKey: {
+        type: "tendermint/PubKeySecp256k1",
+        value: "value",
+      },
+    });
+    config.upsertFlexAccount(flexAccount);
     expect(isObservable(config.beneficiaries)).toEqual(true);
-    config.removeFlexAccountByAddress({ address: "address" });
+    config.removeFlexAccount(flexAccount);
     expect(isObservable(config.beneficiaries)).toEqual(true);
   });
 });

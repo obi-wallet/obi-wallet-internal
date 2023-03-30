@@ -1,18 +1,15 @@
-import { WalletsInterface } from "./interface";
 import { WalletsSchema } from "./schema";
-import { AbstractDataStructure, Serialized } from "../abstract";
 import { AbstractSerialized } from "../migratable";
 import { MultisigWallet } from "../multisig-wallet";
 
-export class Wallets implements WalletsInterface {
+export class Wallets {
   public get schema() {
     return WalletsSchema;
   }
 
   public constructor(
     protected _wallets: MultisigWallet[],
-    protected _currentWalletIndex: number | null,
-    protected _MultisigWallet: AbstractDataStructure<MultisigWallet>
+    protected _currentWalletIndex: number | null
   ) {}
 
   public toJSON(): AbstractSerialized<typeof WalletsSchema> {
@@ -42,15 +39,13 @@ export class Wallets implements WalletsInterface {
     this._currentWalletIndex = null;
   }
 
-  public getWallet(id: string) {
-    return this._wallets.find((w) => w.id === id);
+  public getWalletByProxyAddress(proxyAddress: string) {
+    return this._wallets.find((w) => w.proxyAddress === proxyAddress);
   }
 
-  public upsertWallet(serialized: Serialized<MultisigWallet>) {
-    const wallet = this._MultisigWallet.create(serialized);
+  public upsertWallet(wallet: MultisigWallet) {
     this._wallets.push(wallet);
     this.setCurrentWallet(wallet);
-    return wallet;
   }
 
   public removeWallet(wallet: MultisigWallet) {

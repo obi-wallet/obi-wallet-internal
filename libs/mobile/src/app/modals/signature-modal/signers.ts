@@ -84,7 +84,7 @@ async function createUsableSigner({
     case KeyType.Phone:
       return new PhoneKeySigner({
         key: key,
-        chainId: multisigKey.chain,
+        chainId: multisigKey.chainId,
         demoMode,
         bottomSheetRef,
       });

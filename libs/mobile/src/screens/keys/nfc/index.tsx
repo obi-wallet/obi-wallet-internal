@@ -316,7 +316,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
                   });
                   void queryClient.prefetchQuery(
                     getPrepareKeyQuery({
-                      chainId: draft.value.chain,
+                      chainId: draft.value.chainId,
                       publicKey,
                       privateKey,
                     })

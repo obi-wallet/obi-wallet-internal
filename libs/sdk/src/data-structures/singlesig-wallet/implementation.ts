@@ -1,11 +1,10 @@
 import * as R from "ramda";
 
-import { SinglesigWalletInterface } from "./interface";
 import { SinglesigWalletSchema } from "./schema";
 import { Secp256k1KeyPair } from "../../keys";
 import { AbstractSerialized } from "../migratable";
 
-export class SinglesigWallet implements SinglesigWalletInterface {
+export class SinglesigWallet {
   public get schema() {
     return SinglesigWalletSchema;
   }
@@ -20,7 +19,7 @@ export class SinglesigWallet implements SinglesigWalletInterface {
     };
   }
 
-  public equals(other: SinglesigWalletInterface) {
+  public equals(other: SinglesigWallet) {
     return R.equals(this.toJSON(), other.toJSON());
   }
 

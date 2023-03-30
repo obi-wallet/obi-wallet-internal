@@ -41,7 +41,7 @@ describe("ObservableMultisigKey", () => {
 
   test("chain observable", () => {
     const key = ObservableMultisigKey.create(chain);
-    expect(isObservableProp(key, "_chain")).toEqual(true);
+    expect(isObservableProp(key, "_chainId")).toEqual(true);
   });
 
   test("keys observable", () => {
