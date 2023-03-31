@@ -48,16 +48,13 @@ describe("ObservableMultisigKey", () => {
     const key = ObservableMultisigKey.create(chain, fixture);
     expect(isObservable(key.keys)).toEqual(true);
     expect(isObservable(key.keys[0])).toEqual(true);
-    key.setKey<KeyType.Cloud>({
-      type: KeyType.Cloud,
-      payload: {
-        provider: "google-drive",
-        publicKey: {
-          type: "tendermint/PubKeySecp256k1",
-          value: "foo",
-        },
-        privateKey: "bar",
+    key.setCloudKey({
+      provider: "google-drive",
+      publicKey: {
+        type: "tendermint/PubKeySecp256k1",
+        value: "foo",
       },
+      privateKey: "bar",
     });
     expect(isObservable(key.keys[0])).toEqual(true);
     key.removeKeyOfType(KeyType.Cloud);

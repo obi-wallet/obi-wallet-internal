@@ -38,7 +38,7 @@ export function createObservableMultisigKey(
     Key: ObservableKey,
     createMultisigKey: createObservableMultisigKey,
   });
-  makeObservable<MultisigKey, "_chainId" | "_keys" | "_threshold">(
+  makeObservable<MultisigKey, "_chainId" | "_keys" | "_threshold" | "setKey">(
     key,
     {
       _chainId: observable,
