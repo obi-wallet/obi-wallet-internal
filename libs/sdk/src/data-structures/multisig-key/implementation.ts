@@ -2,7 +2,7 @@ import * as R from "ramda";
 
 import { MultisigKeySchema } from "./schema";
 import { Chain } from "../../chains";
-import { MultisigPublicKey } from "../../keys";
+import { MultisigPublicKey, Secp256k1PublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
 import { Message } from "../../transactions";
 import { AbstractDataStructure } from "../abstract";
@@ -96,6 +96,15 @@ export class MultisigKey {
   public getUsableKeyOfType<T extends KeyType>(type: T) {
     return this._keys.find((key): key is KeySubclassTypeMapping[T] => {
       return key.type === type && key.isUsable;
+    });
+  }
+
+  public setDeviceKey(publicKey: Secp256k1PublicKey) {
+    this.setKey({
+      type: KeyType.Device,
+      payload: {
+        publicKey,
+      },
     });
   }
 

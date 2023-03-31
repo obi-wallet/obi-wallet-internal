@@ -75,14 +75,9 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       const { publicKey, privateKey } = await getBiometricsKeyPair({
         demoMode,
       });
-      draft.value.setKey({
-        type: KeyType.Device,
-        payload: {
-          publicKey: {
-            type: pubkeyType.secp256k1,
-            value: publicKey,
-          },
-        },
+      draft.value.setDeviceKey({
+        type: pubkeyType.secp256k1,
+        value: publicKey,
       });
       void queryClient.prefetchQuery(
         getPrepareKeyQuery({
