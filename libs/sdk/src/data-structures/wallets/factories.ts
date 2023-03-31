@@ -15,7 +15,8 @@ export function createWallets(
   const serialized = WalletsSchema.migratableSchema.parse(migratable);
   return new Wallets(
     serialized.wallets.map((wallet) => factory.create(wallet)),
-    serialized.currentWalletIndex
+    serialized.currentWalletIndex,
+    factory
   );
 }
 

@@ -1,11 +1,9 @@
-import { isTerraChain, KeyType, MultisigKey } from "@obi-wallet/sdk";
+import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { Alert, View } from "react-native";
-import invariant from "tiny-invariant";
 
-import { handleTerra } from "./terra";
 import { Button } from "../../app/button";
 import { RootRoute, useRootNavigation } from "../../app/root-stack";
 import {
@@ -35,36 +33,27 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
       <CreateWallet
         {...params}
         onSubmit={async () => {
-          const chainId = draft.value.chainId;
+          const response = await walletsStore.createWallet({
+            multisigKey: draft.value,
+            demoMode: params.demoMode,
+          });
 
-          try {
-            invariant(isTerraChain(chainId), "Expected Terra chain");
-            const serializedData = await handleTerra({
-              draft,
-              demoMode: params.demoMode,
-              chainId,
-            });
-
-            if (params.demoMode) {
-              walletsStore.addMultisigDemoWallet(serializedData);
-            } else {
-              walletsStore.addMultisigWallet(serializedData);
-            }
-
-            navigation.dispatch(
-              CommonActions.reset({
-                index: 0,
-                routes: [
-                  {
-                    name: RootRoute.Home,
-                  },
-                ],
-              })
-            );
-          } catch (e) {
-            const error = e as Error;
-            Alert.alert("Something went wrong", error.message);
+          if (!response.approved) return;
+          if (!response.payload.success) {
+            console.log(response.payload.originalPayload);
+            Alert.alert("Something went wrong", response.payload.description);
           }
+
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [
+                {
+                  name: RootRoute.Home,
+                },
+              ],
+            })
+          );
         }}
         onAddSocial={() => {
           navigation.navigate(KeyRoute.SocialKey, {

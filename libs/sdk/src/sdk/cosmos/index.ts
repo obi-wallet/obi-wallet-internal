@@ -34,11 +34,17 @@ import {
   withCosmosSigningStargateClient,
   withCosmosStargateClient,
 } from "../../clients";
+import { MultisigKey } from "../../data-structures";
 import { MultisigPublicKey, PublicKey } from "../../keys";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
+import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
 import { AbstractSdk } from "../abstract";
-import { AccountValidationResult, Coin } from "../common";
+import {
+  AccountValidationResult,
+  BroadcastTransactionResult,
+  Coin,
+} from "../common";
 
 function notImplemented(message: string) {
   warning(false, message);
@@ -473,6 +479,16 @@ export class CosmosSdk extends AbstractSdk {
     }
 
     return await this.broadcastSignedTransaction({ signedTransaction });
+  }
+
+  public async createWallet(_: {
+    multisigKey: MultisigKey;
+    demoMode: boolean;
+  }) {
+    notImplemented("createWallet not implemented for Cosmos");
+    return {
+      approved: false as const,
+    };
   }
 
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {

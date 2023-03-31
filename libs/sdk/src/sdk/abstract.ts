@@ -13,9 +13,11 @@ import {
   UnbondingDelegation,
 } from "./common";
 import { Chain } from "../chains";
+import { MultisigKey } from "../data-structures";
 import { MultisigPublicKey, PublicKey } from "../keys";
 import { MultisigSigner, Signer } from "../signers";
 import { Message, SignedTransaction } from "../transactions";
+import { AbstractUserInteractionResponse } from "../user-interactions/abstract";
 
 export abstract class AbstractSdk {
   protected constructor(protected chainId: Chain) {}
@@ -150,6 +152,22 @@ export abstract class AbstractSdk {
     signedTransaction: SignedTransaction;
     sender: string;
   }): Promise<BroadcastTransactionResult>;
+
+  public abstract createWallet({
+    multisigKey,
+    demoMode,
+  }: {
+    multisigKey: MultisigKey;
+    demoMode: boolean;
+  }): Promise<
+    AbstractUserInteractionResponse<
+      { proxyAddress: string },
+      {
+        description: string;
+        originalPayload: BroadcastTransactionResult;
+      }
+    >
+  >;
 
   protected wait({ ms }: { ms: number }): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
