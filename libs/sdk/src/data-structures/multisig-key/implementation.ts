@@ -108,6 +108,17 @@ export class MultisigKey {
     });
   }
 
+  public setPhoneKey(payload: {
+    publicKey: Secp256k1PublicKey;
+    phoneNumber: string;
+    securityQuestion: string;
+  }) {
+    this.setKey({
+      type: KeyType.Phone,
+      payload,
+    });
+  }
+
   public setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
     this._keys = this._keys.filter((k) => key.type !== k.type);
     this._keys.push(this._factories.Key.create(key));
