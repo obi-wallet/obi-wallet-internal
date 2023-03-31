@@ -1,6 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { Text } from "@obi-wallet/common";
-import { KeyType, MultisigKey } from "@obi-wallet/sdk";
+import { MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -81,16 +81,13 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
 
     if (isRecovering) {
       if (targetPublicKey === publicKey) {
-        draft.value.setKey({
-          type: KeyType.Cloud,
-          payload: {
-            provider: "google-drive",
-            publicKey: {
-              type: pubkeyType.secp256k1,
-              value: publicKey,
-            },
-            privateKey,
+        draft.value.setCloudKey({
+          provider: "google-drive",
+          publicKey: {
+            type: pubkeyType.secp256k1,
+            value: publicKey,
           },
+          privateKey,
         });
       } else {
         Alert.alert(
@@ -99,16 +96,13 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
         );
       }
     } else {
-      draft.value.setKey({
-        type: KeyType.Cloud,
-        payload: {
-          provider: "google-drive",
-          publicKey: {
-            type: pubkeyType.secp256k1,
-            value: publicKey,
-          },
-          privateKey,
+      draft.value.setCloudKey({
+        provider: "google-drive",
+        publicKey: {
+          type: pubkeyType.secp256k1,
+          value: publicKey,
         },
+        privateKey,
       });
     }
 

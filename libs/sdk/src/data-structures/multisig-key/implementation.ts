@@ -2,7 +2,11 @@ import * as R from "ramda";
 
 import { MultisigKeySchema } from "./schema";
 import { Chain } from "../../chains";
-import { MultisigPublicKey, Secp256k1PublicKey } from "../../keys";
+import {
+  MultisigPublicKey,
+  Secp256k1KeyPair,
+  Secp256k1PublicKey,
+} from "../../keys";
 import { Sdk } from "../../sdk";
 import { Message } from "../../transactions";
 import { AbstractDataStructure } from "../abstract";
@@ -119,7 +123,42 @@ export class MultisigKey {
     });
   }
 
-  public setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
+  public setSocialKey(publicKey: Secp256k1PublicKey) {
+    this.setKey({
+      type: KeyType.Social,
+      payload: {
+        publicKey,
+      },
+    });
+  }
+
+  public setNfcKey(payload: {
+    publicKey: Secp256k1PublicKey;
+    localEntropy: string;
+  }) {
+    this.setKey({
+      type: KeyType.Nfc,
+      payload,
+    });
+  }
+
+  public setCloudKey(payload: Secp256k1KeyPair & { provider: "google-drive" }) {
+    this.setKey({
+      type: KeyType.Cloud,
+      payload,
+    });
+  }
+
+  public setEmailKey(publicKey: Secp256k1PublicKey) {
+    this.setKey({
+      type: KeyType.Email,
+      payload: {
+        publicKey,
+      },
+    });
+  }
+
+  protected setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
     this._keys = this._keys.filter((k) => key.type !== k.type);
     this._keys.push(this._factories.Key.create(key));
   }

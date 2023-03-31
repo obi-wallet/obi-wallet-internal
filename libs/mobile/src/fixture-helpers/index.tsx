@@ -2,7 +2,6 @@ import { pubkeyType } from "@cosmjs/amino";
 import {
   GatekeeperConfig,
   generateSec256k1KeyPair,
-  KeyType,
   ObservableBeneficiary,
   ObservableFlexAccount,
   ObservableMultisigKey,
@@ -42,28 +41,20 @@ export const MultisigDraft = {
           const original = ObservableMultisigKey.create(
             chainStore.currentChain
           );
-          original.setKey({
-            type: KeyType.Device,
-            payload: {
-              publicKey: {
-                type: pubkeyType.secp256k1,
-                value: await getBiometricsPublicKey({
-                  demoMode: true,
-                }),
-              },
-            },
+          original.setDeviceKey({
+            type: pubkeyType.secp256k1,
+            value: await getBiometricsPublicKey({
+              demoMode: true,
+            }),
           });
-          original.setKey({
-            type: KeyType.Phone,
-            payload: {
-              publicKey: await getTwilioClient(
-                true
-              ).parsePublicKeyTextMessageResponse({
-                key: "",
-              }),
-              phoneNumber: "+1234567890",
-              securityQuestion: securityQuestions[0].value,
-            },
+          original.setPhoneKey({
+            publicKey: await getTwilioClient(
+              true
+            ).parsePublicKeyTextMessageResponse({
+              key: "",
+            }),
+            phoneNumber: "+1234567890",
+            securityQuestion: securityQuestions[0].value,
           });
           draftsStore.create({
             original,

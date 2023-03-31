@@ -128,10 +128,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
             serializedData.owner
           );
           draft.commit({ original: newOwner });
-          draft.value.setKey({
-            type: KeyType.Device,
-            payload: newDeviceKey.payload,
-          });
+          draft.value.setDeviceKey(newDeviceKey.payload.publicKey);
 
           navigation.navigate(OnboardingRoute.RecoverWallet, {
             ...params,

@@ -38,13 +38,8 @@ import { MultisigKey } from "../../data-structures";
 import { MultisigPublicKey, PublicKey } from "../../keys";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
-import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
 import { AbstractSdk } from "../abstract";
-import {
-  AccountValidationResult,
-  BroadcastTransactionResult,
-  Coin,
-} from "../common";
+import { AccountValidationResult, Coin } from "../common";
 
 function notImplemented(message: string) {
   warning(false, message);
