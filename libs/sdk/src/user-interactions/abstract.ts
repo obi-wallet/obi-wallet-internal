@@ -2,6 +2,32 @@ import warning from "tiny-warning";
 
 import { eventEmitter, userInteractionEvent } from "./event-emitter";
 
+export interface CanceledUserInteractionResponse {
+  approved: false;
+}
+
+export interface SuccessfulUserInteractionResponse<TSuccess> {
+  approved: true;
+  payload: {
+    success: true;
+  } & TSuccess;
+}
+
+export interface FailedUserInteractionResponse<TFailure> {
+  approved: true;
+  payload: {
+    success: false;
+  } & TFailure;
+}
+
+export type ApprovedUserInteractionResponse<TSuccess, TFailure> =
+  | SuccessfulUserInteractionResponse<TSuccess>
+  | FailedUserInteractionResponse<TFailure>;
+
+export type AbstractUserInteractionResponse<TSuccess, TFailure> =
+  | CanceledUserInteractionResponse
+  | ApprovedUserInteractionResponse<TSuccess, TFailure>;
+
 export interface UserInteraction<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TPayload = any,
@@ -53,7 +79,7 @@ export function createUserInteractionType<T extends UserInteraction>() {
           };
         warning(
           eventEmitter.listenerCount(userInteractionEvent) > 0,
-          "No listener registered yet. Did you initialize `Messages`?"
+          "No listener registered yet. Did you initialize `UserInteractions`?"
         );
         eventEmitter.emit(userInteractionEvent, message);
       });

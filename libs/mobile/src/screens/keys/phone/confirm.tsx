@@ -197,13 +197,10 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                         key,
                       });
                     if (publicKey) {
-                      draft.value.setKey({
-                        type: KeyType.Phone,
-                        payload: {
-                          publicKey,
-                          phoneNumber,
-                          securityQuestion,
-                        },
+                      draft.value.setPhoneKey({
+                        publicKey,
+                        phoneNumber,
+                        securityQuestion,
                       });
                       setVerifyButtonDisabledDoubleclick(false);
                       onSubmit();

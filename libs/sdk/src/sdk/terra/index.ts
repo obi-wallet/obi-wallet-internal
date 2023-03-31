@@ -4,6 +4,7 @@ import {
   isTxError,
   LCDClient,
   LegacyAminoMultisigPublicKey,
+  MsgExecuteContract,
   MsgSend,
   SimplePublicKey,
   Tx,
@@ -28,12 +29,16 @@ import { MultisigSigner } from "./multisig-signer";
 import { tokenPairs } from "./token-pairs";
 import { TerraChain, terraChains } from "../../chains";
 import { withTerraClient } from "../../clients";
+import { MultisigKey } from "../../data-structures";
 import { MultisigPublicKey, PublicKey } from "../../keys";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction, wrapMessage } from "../../transactions";
+import { SignAndBroadcastTransactionUserInteraction } from "../../user-interactions";
+import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
 import { AbstractSdk } from "../abstract";
 import {
   AccountValidationResult,
+  BroadcastTransactionResult,
   Coin,
   Delegation,
   EnrichedValidator,
@@ -661,6 +666,111 @@ export class TerraSdk extends AbstractSdk {
     }
     await this.lendFees({ address: sender });
     return await this.broadcastSignedTransaction({ signedTransaction });
+  }
+
+  public async createWallet({
+    multisigKey,
+    demoMode,
+  }: {
+    multisigKey: MultisigKey;
+    demoMode: boolean;
+  }): Promise<
+    AbstractUserInteractionResponse<
+      { proxyAddress: string },
+      {
+        description: string;
+        originalPayload: BroadcastTransactionResult;
+      }
+    >
+  > {
+    const addresses = multisigKey.keys.map((key) => {
+      return this.getAddressOfPublicKey({ publicKey: key.publicKey });
+    });
+    const signers = R.zipWith(
+      (address, ty) => {
+        return { address, ty };
+      },
+      addresses,
+      multisigKey.signerTypes
+    );
+
+    const rawMessage = {
+      new_account: {
+        fee_debt: parseInt(this.chain.startingUsdDebt, 10),
+        gatekeeper_authorizations: {
+          beneficiary_auths: [],
+          message_auths: [],
+          session_keys: [],
+          spendlimit_auths: [],
+        },
+        owner: multisigKey.address,
+        signers: {
+          signers,
+        },
+        update_delay: 0,
+      },
+    };
+
+    const message = new MsgExecuteContract(
+      multisigKey.address,
+      this.chain.accountCreatorAddress,
+      rawMessage
+    );
+    const response = await SignAndBroadcastTransactionUserInteraction.start({
+      messages: [message],
+      demoMode,
+      cancelable: true,
+      multisigKey,
+    });
+
+    if (!response.approved) return response;
+    if (!response.payload.success)
+      return {
+        approved: true,
+        payload: {
+          success: false,
+          description: "Transaction failed",
+          originalPayload: response.payload,
+        },
+      };
+
+    const { rawLog } = response.payload;
+    try {
+      invariant(rawLog, "No log found");
+      // TODO: zod
+      const { events } = JSON.parse(rawLog)[0] as {
+        events: {
+          type: string;
+          attributes: { key: string; value: string }[];
+        }[];
+      };
+      const instantiateEvent = events.find((e) => {
+        return e.type === "instantiate";
+      });
+      const contractAddresses = instantiateEvent?.attributes.filter((a) => {
+        return a.key === "_contract_address";
+      });
+      invariant(
+        Array.isArray(contractAddresses) && contractAddresses.length > 0,
+        "No contract address found"
+      );
+      return {
+        approved: true,
+        payload: {
+          success: true,
+          proxyAddress: contractAddresses[0].value,
+        },
+      };
+    } catch (e) {
+      return {
+        approved: true,
+        payload: {
+          success: false,
+          description: "Could not parse log",
+          originalPayload: response.payload,
+        },
+      };
+    }
   }
 
   public withClient<T>(f: (client: LCDClient) => T) {

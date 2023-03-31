@@ -1,5 +1,6 @@
 import {
   Migratable,
+  MultisigKey,
   MultisigWallet,
   ObservableMultisigWallet,
   ObservableWallets,
@@ -107,6 +108,17 @@ export class WalletsStore {
     this._wallets.upsertWallet(wallet);
     this._wallets.setCurrentWallet(wallet);
     return wallet;
+  }
+
+  @action
+  public createWallet({
+    multisigKey,
+    demoMode,
+  }: {
+    multisigKey: MultisigKey;
+    demoMode: boolean;
+  }) {
+    return this._wallets.createWallet({ multisigKey, demoMode });
   }
 
   @action
