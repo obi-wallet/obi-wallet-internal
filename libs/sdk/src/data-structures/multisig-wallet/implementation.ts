@@ -113,30 +113,12 @@ export class MultisigWallet {
     return address ? Bech32Address.shortenAddress(address, 20) : null;
   }
 
-  public isOutdated(codeIds: {
-    userAccount: number;
-    spendLimitGatekeeper: number | null;
-    debtGatekeeper: number | null;
-  }) {
-    // TODO: move into SDK
-    return Chain.select({
-      chainId: this._chainId,
-      onTerraChain(chainId) {
-        return (
-          codeIds.userAccount <
-            terraChains[chainId].currentCodeIds.userAccount ||
-          codeIds.spendLimitGatekeeper === null ||
-          codeIds.spendLimitGatekeeper <
-            terraChains[chainId].currentCodeIds.spendLimitGatekeeper ||
-          codeIds.debtGatekeeper === null ||
-          codeIds.debtGatekeeper <
-            terraChains[chainId].currentCodeIds.debtGatekeeper
-        );
-      },
-      onCosmosChain(chainId) {
-        return codeIds.userAccount < cosmosChains[chainId].currentCodeId;
-      },
-    });
+  public async isOutdated() {
+    return await this.sdk.isOutdated(this);
+  }
+
+  public async update() {
+    return await this.sdk.updateWallet(this);
   }
 
   public get currentAccount() {

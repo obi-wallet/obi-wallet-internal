@@ -13,6 +13,7 @@
     "@cosmjs/stargate": "*",
     "@emotion/native": "*",
     "@emotion/react": "*",
+    "@faker-js/faker": "*",
     "@fortawesome/free-regular-svg-icons": "*",
     "@fortawesome/free-solid-svg-icons": "*",
     "@fortawesome/react-fontawesome": "*",

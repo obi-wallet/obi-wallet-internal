@@ -3,14 +3,8 @@ import { useTheme } from "@emotion/react";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Feature, terra, Text } from "@obi-wallet/common";
-import {
-  cosmosChains,
-  isCosmosChain,
-  SignAndBroadcastTransactionUserInteraction,
-  TerraChain,
-  terraChains,
-} from "@obi-wallet/sdk";
+import { Feature, Text } from "@obi-wallet/common";
+import { cosmosChains, isCosmosChain, terraChains } from "@obi-wallet/sdk";
 import { BottomTabBar } from "@react-navigation/bottom-tabs";
 import {
   DrawerContentComponentProps,
@@ -22,7 +16,7 @@ import { ParamListBase } from "@react-navigation/native";
 import { action } from "mobx";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Platform, TouchableOpacity, View } from "react-native";
+import { Alert, Platform, TouchableOpacity, View } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import invariant from "tiny-invariant";
 
@@ -51,8 +45,7 @@ import {
   HomeDrawer,
   HomeDrawerRoute,
 } from "./home-stack";
-import { useQuery } from "../../../queries";
-import { getCodeIdsQuery } from "../../../queries/user-account";
+import { getIsOutdatedQuery, useQuery } from "../../../queries";
 import { AccountsScreen } from "../../../screens/accounts";
 import { useStore } from "../../stores";
 import {
@@ -268,14 +261,10 @@ const UpdateFooter = observer(function UpdateHeader() {
 
   const wallet = walletsStore.currentWallet;
 
-  const codeIdsQuery = getCodeIdsQuery({
-    chainId: wallet?.chainId,
-    address: wallet?.proxyAddress,
-  });
-  const { data: codeIds, isRefetching, refetch } = useQuery(codeIdsQuery);
+  const isOutdatedQuery = getIsOutdatedQuery(wallet);
+  const { data: isOutdated, isRefetching, refetch } = useQuery(isOutdatedQuery);
 
-  const outdated = codeIds && wallet?.isOutdated(codeIds);
-  if (!outdated || isRefetching) return null;
+  if (!isOutdated || isRefetching) return null;
 
   return (
     <TouchableOpacity
@@ -288,29 +277,16 @@ const UpdateFooter = observer(function UpdateHeader() {
       }}
       onPress={async () => {
         invariant(wallet, "Expected `wallet` to exist.");
-        const signers = terra.getSigners({
-          multisigKey: wallet.owner,
-        });
-        const message = terra.getMigrateMessage({
-          proxyAddress: wallet.proxyAddress,
-          admin: wallet.owner.address,
-          chainId: wallet.chainId as TerraChain,
-          signers,
-          codeIds,
-        });
+        const response = await wallet.update();
 
-        try {
-          await SignAndBroadcastTransactionUserInteraction.start({
-            messages: [message],
-            demoMode: wallet.isDemo,
-            cancelable: true,
-            multisigKey: wallet.owner,
-          });
-        } finally {
-          await refetch({
-            throwOnError: true,
-          });
+        if (response.approved && !response.payload.success) {
+          console.log(response.payload.rawLog);
+          Alert.alert("Transaction failed", response.payload.rawLog);
         }
+
+        await refetch({
+          throwOnError: true,
+        });
       }}
     >
       <View style={{ flexShrink: 1 }}>

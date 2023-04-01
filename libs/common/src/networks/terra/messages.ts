@@ -1,4 +1,9 @@
-import { GatekeeperConfig, TerraChain, terraChains } from "@obi-wallet/sdk";
+import {
+  GatekeeperConfig,
+  CodeIds,
+  TerraChain,
+  terraChains,
+} from "@obi-wallet/sdk";
 import {
   BlockTxBroadcastResult,
   Coin,
@@ -10,8 +15,6 @@ import {
 import { Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
-
-import { CodeIds } from "../common";
 
 export function parseProposeUpdateOwnerResponse(
   response: BlockTxBroadcastResult
@@ -44,61 +47,6 @@ export function parseProposeUpdateOwnerResponse(
     console.log(response.raw_log);
     throw e;
   }
-}
-
-export function getMigrateMessage({
-  proxyAddress,
-  admin,
-  chainId,
-  signers,
-  codeIds,
-}: {
-  admin: string;
-  proxyAddress: string;
-  chainId: TerraChain;
-  signers: { address: string; ty: string }[];
-  codeIds: CodeIds;
-}) {
-  return new MsgExecuteContract(admin, proxyAddress, {
-    wrapped_migrate: {
-      ...(codeIds.userAccount < terraChains[chainId].currentCodeIds.userAccount
-        ? {
-            code_id:
-              codeIds.userAccount <= 1014
-                ? 1081
-                : terraChains[chainId].currentCodeIds.userAccount,
-            ...(codeIds.userAccount >= 1081
-              ? {
-                  signers: {
-                    signers,
-                  },
-                }
-              : {}),
-          }
-        : {}),
-      ...(codeIds.userAccount >= 1261
-        ? {
-            gatekeeper_code_ids: {
-              ...(!codeIds.spendLimitGatekeeper ||
-              codeIds.spendLimitGatekeeper <
-                terraChains[chainId].currentCodeIds.spendLimitGatekeeper
-                ? {
-                    spendlimit:
-                      terraChains[chainId].currentCodeIds.spendLimitGatekeeper,
-                  }
-                : {}),
-              ...(!codeIds.debtGatekeeper ||
-              codeIds.debtGatekeeper <
-                terraChains[chainId].currentCodeIds.debtGatekeeper
-                ? {
-                    debt: terraChains[chainId].currentCodeIds.debtGatekeeper,
-                  }
-                : {}),
-            },
-          }
-        : {}),
-    },
-  });
 }
 
 export function getProposeUpdateOwnerMessage({

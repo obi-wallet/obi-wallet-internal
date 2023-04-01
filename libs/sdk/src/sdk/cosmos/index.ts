@@ -34,12 +34,17 @@ import {
   withCosmosSigningStargateClient,
   withCosmosStargateClient,
 } from "../../clients";
-import { MultisigKey } from "../../data-structures";
+import { MultisigKey, MultisigWallet } from "../../data-structures";
 import { MultisigPublicKey, PublicKey } from "../../keys";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { AbstractSdk } from "../abstract";
-import { AccountValidationResult, Coin } from "../common";
+import {
+  AccountValidationResult,
+  BroadcastTransactionResult,
+  CodeIds,
+  Coin,
+} from "../common";
 
 function notImplemented(message: string) {
   warning(false, message);
@@ -335,6 +340,32 @@ export class CosmosSdk extends AbstractSdk {
     });
   }
 
+  public async fetchCodeIds(wallet: MultisigWallet): Promise<CodeIds> {
+    return {
+      userAccount: await this.fetchCodeId({
+        contract: wallet.proxyAddress,
+      }),
+      spendLimitGatekeeper: null,
+      debtGatekeeper: null,
+    };
+  }
+
+  public async isOutdated(wallet: MultisigWallet) {
+    const codeIds = await this.fetchCodeIds(wallet);
+    return codeIds.userAccount < this.chain.currentCodeId;
+  }
+
+  public async updateWallet(_: MultisigWallet): Promise<
+    | {
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
+    | { approved: false }
+  > {
+    notImplemented("updateWallet not implemented for Cosmos");
+    return { approved: false };
+  }
+
   public async fetchGatekeeperContractAddresses(_: { proxyAddress: string }) {
     notImplemented(
       "fetchGatekeeperContractAddresses not implemented for Cosmos"
@@ -489,6 +520,14 @@ export class CosmosSdk extends AbstractSdk {
   public getCreateWalletMessage(_: MultisigKey): Message {
     notImplemented("getCreateWalletMessage not implemented for Cosmos");
     throw new Error("getCreateWalletMessage not implemented for Cosmos");
+  }
+
+  public getUpdateWalletMessage(_: {
+    wallet: MultisigWallet;
+    codeIds: CodeIds;
+  }): Message {
+    notImplemented("getUpdateWalletMessage not implemented for Cosmos");
+    throw new Error("getUpdateWalletMessage not implemented for Cosmos");
   }
 
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {

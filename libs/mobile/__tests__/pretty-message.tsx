@@ -1,6 +1,12 @@
 import { Brand, terra } from "@obi-wallet/common";
 import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
-import { MultisigKey, Sdk, terraChains } from "@obi-wallet/sdk";
+import {
+  createGatekeeperConfig,
+  MultisigKey,
+  MultisigWallet,
+  Sdk,
+  terraChains,
+} from "@obi-wallet/sdk";
 import { QueryClientProvider } from "@tanstack/react-query";
 import {
   Coin,
@@ -138,7 +144,7 @@ describe("Terra", () => {
     });
   });
 
-  describe("MsgExecuteContract (new_account)", () => {
+  describe("MsgExecuteContract (create wallet)", () => {
     const message = Sdk.chainId("phoenix-1").getCreateWalletMessage(
       MultisigKey.create("phoenix-1")
     );
@@ -155,12 +161,23 @@ describe("Terra", () => {
     });
   });
 
-  describe("MsgExecuteContract (new_account)", () => {
-    const message = terra.getMigrateMessage({
-      proxyAddress: address,
-      admin: address,
-      chainId,
-      signers: [],
+  describe("MsgExecuteContract (update wallet)", () => {
+    const wallet = MultisigWallet.create({
+      type: "multisig",
+      data: {
+        chain: chainId,
+        currentAccount: null,
+        gatekeeperConfig: createGatekeeperConfig().toJSON(),
+        owner: MultisigKey.create(chainId).toJSON(),
+        singlesigWallets: [],
+        proxyAddress: {
+          v: 1,
+          address,
+        },
+      },
+    });
+    const message = Sdk.chainId(chainId).getUpdateWalletMessage({
+      wallet,
       codeIds: terraChains[chainId].currentCodeIds,
     });
 
