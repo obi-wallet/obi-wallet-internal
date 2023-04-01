@@ -106,11 +106,7 @@ function SendMultisigKeyTxFixture() {
   const interaction: SignAndBroadcastTransactionUserInteraction = {
     payload: {
       messages: [
-        terra.getNewAccountMessage({
-          address: wallet.owner.address,
-          chainId: wallet.chainId as TerraChain,
-          signers: [],
-        }),
+        Sdk.chainId(wallet.chainId).getCreateWalletMessage(wallet.owner),
       ],
       multisigKey: wallet.owner,
       demoMode: true,

@@ -29,7 +29,7 @@ import { MultisigSigner } from "./multisig-signer";
 import { tokenPairs } from "./token-pairs";
 import { TerraChain, terraChains } from "../../chains";
 import { withTerraClient } from "../../clients";
-import { MultisigKey } from "../../data-structures";
+import { MultisigKey, MultisigWallet } from "../../data-structures";
 import { MultisigPublicKey, PublicKey } from "../../keys";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction, wrapMessage } from "../../transactions";
@@ -39,6 +39,7 @@ import { AbstractSdk } from "../abstract";
 import {
   AccountValidationResult,
   BroadcastTransactionResult,
+  CodeIds,
   Coin,
   Delegation,
   EnrichedValidator,
@@ -464,6 +465,67 @@ export class TerraSdk extends AbstractSdk {
     });
   }
 
+  public async fetchCodeIds(wallet: MultisigWallet) {
+    const addresses = {
+      userAccount: wallet.proxyAddress,
+      ...(await this.fetchGatekeeperContractAddresses({
+        proxyAddress: wallet.proxyAddress,
+      })),
+    };
+
+    const pairs = R.toPairs(addresses);
+    const pairsWithCodeIds = await Promise.all(
+      pairs.map(async ([key, address]) => {
+        return [
+          key,
+          address ? await this.fetchCodeId({ contract: address }) : null,
+        ] as [string, number | null];
+      })
+    );
+    return R.fromPairs(pairsWithCodeIds) as unknown as CodeIds;
+  }
+
+  public async isOutdated(wallet: MultisigWallet) {
+    const codeIds = await this.fetchCodeIds(wallet);
+    return this.isOutdatedGivenCodeIds(codeIds);
+  }
+
+  protected isOutdatedGivenCodeIds(codeIds: CodeIds) {
+    return (
+      codeIds.userAccount < this.chain.currentCodeIds.userAccount ||
+      codeIds.spendLimitGatekeeper === null ||
+      codeIds.spendLimitGatekeeper <
+        this.chain.currentCodeIds.spendLimitGatekeeper ||
+      codeIds.debtGatekeeper === null ||
+      codeIds.debtGatekeeper < this.chain.currentCodeIds.debtGatekeeper
+    );
+  }
+
+  public async updateWallet(wallet: MultisigWallet): Promise<
+    | {
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
+    | { approved: false }
+  > {
+    const codeIds = await this.fetchCodeIds(wallet);
+    if (!this.isOutdatedGivenCodeIds(codeIds)) {
+      return {
+        approved: true,
+        payload: {
+          success: true,
+        },
+      };
+    }
+
+    return await SignAndBroadcastTransactionUserInteraction.start({
+      messages: [this.getUpdateWalletMessage({ wallet, codeIds })],
+      demoMode: wallet.isDemo,
+      cancelable: true,
+      multisigKey: wallet.owner,
+    });
+  }
+
   public async fetchGatekeeperContractAddresses({
     proxyAddress,
   }: {
@@ -683,41 +745,8 @@ export class TerraSdk extends AbstractSdk {
       }
     >
   > {
-    const addresses = multisigKey.keys.map((key) => {
-      return this.getAddressOfPublicKey({ publicKey: key.publicKey });
-    });
-    const signers = R.zipWith(
-      (address, ty) => {
-        return { address, ty };
-      },
-      addresses,
-      multisigKey.signerTypes
-    );
-
-    const rawMessage = {
-      new_account: {
-        fee_debt: parseInt(this.chain.startingUsdDebt, 10),
-        gatekeeper_authorizations: {
-          beneficiary_auths: [],
-          message_auths: [],
-          session_keys: [],
-          spendlimit_auths: [],
-        },
-        owner: multisigKey.address,
-        signers: {
-          signers,
-        },
-        update_delay: 0,
-      },
-    };
-
-    const message = new MsgExecuteContract(
-      multisigKey.address,
-      this.chain.accountCreatorAddress,
-      rawMessage
-    );
     const response = await SignAndBroadcastTransactionUserInteraction.start({
-      messages: [message],
+      messages: [this.getCreateWalletMessage(multisigKey)],
       demoMode,
       cancelable: true,
       multisigKey,
@@ -771,6 +800,93 @@ export class TerraSdk extends AbstractSdk {
         },
       };
     }
+  }
+
+  protected getSigners(multisigKey: MultisigKey) {
+    const addresses = multisigKey.keys.map((key) => {
+      return this.getAddressOfPublicKey({ publicKey: key.publicKey });
+    });
+    return R.zipWith(
+      (address, ty) => {
+        return { address, ty };
+      },
+      addresses,
+      multisigKey.signerTypes
+    );
+  }
+
+  public getCreateWalletMessage(multisigKey: MultisigKey): Message {
+    const rawMessage = {
+      new_account: {
+        fee_debt: parseInt(this.chain.startingUsdDebt, 10),
+        gatekeeper_authorizations: {
+          beneficiary_auths: [],
+          message_auths: [],
+          session_keys: [],
+          spendlimit_auths: [],
+        },
+        owner: multisigKey.address,
+        signers: {
+          signers: this.getSigners(multisigKey),
+        },
+        update_delay: 0,
+      },
+    };
+
+    return new MsgExecuteContract(
+      multisigKey.address,
+      this.chain.accountCreatorAddress,
+      rawMessage
+    );
+  }
+
+  public getUpdateWalletMessage({
+    wallet,
+    codeIds,
+  }: {
+    wallet: MultisigWallet;
+    codeIds: CodeIds;
+  }): Message {
+    return new MsgExecuteContract(wallet.owner.address, wallet.proxyAddress, {
+      wrapped_migrate: {
+        ...(codeIds.userAccount < this.chain.currentCodeIds.userAccount
+          ? {
+              code_id:
+                codeIds.userAccount <= 1014
+                  ? 1081
+                  : this.chain.currentCodeIds.userAccount,
+              ...(codeIds.userAccount >= 1081
+                ? {
+                    signers: {
+                      signers: this.getSigners(wallet.owner),
+                    },
+                  }
+                : {}),
+            }
+          : {}),
+        ...(codeIds.userAccount >= 1261
+          ? {
+              gatekeeper_code_ids: {
+                ...(!codeIds.spendLimitGatekeeper ||
+                codeIds.spendLimitGatekeeper <
+                  this.chain.currentCodeIds.spendLimitGatekeeper
+                  ? {
+                      spendlimit:
+                        this.chain.currentCodeIds.spendLimitGatekeeper,
+                    }
+                  : {}),
+                ...(!codeIds.debtGatekeeper ||
+                codeIds.debtGatekeeper <
+                  this.chain.currentCodeIds.debtGatekeeper
+                  ? {
+                      debt: this.chain.currentCodeIds.debtGatekeeper,
+                    }
+                  : {}),
+              },
+            }
+          : {}),
+      },
+    });
   }
 
   public withClient<T>(f: (client: LCDClient) => T) {

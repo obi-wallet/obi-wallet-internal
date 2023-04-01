@@ -4,6 +4,7 @@ import invariant from "tiny-invariant";
 import {
   AccountValidationResult,
   BroadcastTransactionResult,
+  CodeIds,
   Coin,
   Delegation,
   EnrichedValidator,
@@ -13,11 +14,14 @@ import {
   UnbondingDelegation,
 } from "./common";
 import { Chain } from "../chains";
-import { MultisigKey } from "../data-structures";
+import { MultisigKey, MultisigWallet } from "../data-structures";
 import { MultisigPublicKey, PublicKey } from "../keys";
 import { MultisigSigner, Signer } from "../signers";
 import { Message, SignedTransaction } from "../transactions";
-import { AbstractUserInteractionResponse } from "../user-interactions/abstract";
+import {
+  AbstractUserInteractionResponse,
+  UserInteraction,
+} from "../user-interactions/abstract";
 
 export abstract class AbstractSdk {
   protected constructor(protected chainId: Chain) {}
@@ -76,6 +80,22 @@ export abstract class AbstractSdk {
   }: {
     contract: string;
   }): Promise<number>;
+  public abstract fetchCodeIds(wallet: MultisigWallet): Promise<CodeIds>;
+  public abstract isOutdated(wallet: MultisigWallet): Promise<boolean>;
+  public abstract updateWallet(wallet: MultisigWallet): Promise<
+    | {
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
+    | { approved: false }
+  >;
+  public abstract getUpdateWalletMessage({
+    wallet,
+    codeIds,
+  }: {
+    wallet: MultisigWallet;
+    codeIds: CodeIds;
+  }): Message;
 
   public abstract fetchGatekeeperContractAddresses({
     proxyAddress,
@@ -168,6 +188,8 @@ export abstract class AbstractSdk {
       }
     >
   >;
+
+  public abstract getCreateWalletMessage(multisigKey: MultisigKey): Message;
 
   protected wait({ ms }: { ms: number }): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));

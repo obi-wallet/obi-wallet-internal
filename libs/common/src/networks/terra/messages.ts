@@ -1,4 +1,9 @@
-import { GatekeeperConfig, TerraChain, terraChains } from "@obi-wallet/sdk";
+import {
+  GatekeeperConfig,
+  CodeIds,
+  TerraChain,
+  terraChains,
+} from "@obi-wallet/sdk";
 import {
   BlockTxBroadcastResult,
   Coin,
@@ -10,78 +15,6 @@ import {
 import { Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
-
-import { CodeIds } from "../common";
-
-export function getNewAccountMessage({
-  address,
-  signers,
-  chainId,
-}: {
-  address: string;
-  signers: { address: string; ty: string }[];
-  chainId: TerraChain;
-}): MsgExecuteContract {
-  const { accountCreatorAddress, startingUsdDebt } = terraChains[chainId];
-
-  const rawMessage = {
-    new_account: {
-      fee_debt: parseInt(startingUsdDebt, 10),
-      gatekeeper_authorizations: {
-        beneficiary_auths: [],
-        message_auths: [],
-        session_keys: [],
-        spendlimit_auths: [],
-      },
-      owner: address,
-      signers: {
-        signers,
-      },
-      update_delay: 0,
-    },
-  };
-
-  return new MsgExecuteContract(address, accountCreatorAddress, rawMessage);
-}
-
-export function parseNewAccountResponse(response: BlockTxBroadcastResult) {
-  try {
-    const rawLog = JSON.parse(response.raw_log) as [
-      {
-        events: [
-          {
-            type: string;
-            attributes: { key: string; value: string }[];
-          }
-        ];
-      }
-    ];
-    const instantiateEvent = rawLog[0].events.find((e) => {
-      return e.type === "instantiate";
-    });
-    invariant(
-      instantiateEvent,
-      "Expected `rawLog` to contain `instantiate` event."
-    );
-    const contractAddresses = instantiateEvent.attributes.filter((a) => {
-      return a.key === "_contract_address";
-    });
-    const codeIds = instantiateEvent.attributes.filter((a) => {
-      return a.key === "code_id";
-    });
-    invariant(
-      contractAddresses.length === codeIds.length,
-      "Expected to have the same number of `_contract_address` and `code_id` attributes."
-    );
-    return {
-      v: 1 as const,
-      address: contractAddresses[0].value,
-    };
-  } catch (e) {
-    console.log(response.raw_log);
-    throw e;
-  }
-}
 
 export function parseProposeUpdateOwnerResponse(
   response: BlockTxBroadcastResult
@@ -114,61 +47,6 @@ export function parseProposeUpdateOwnerResponse(
     console.log(response.raw_log);
     throw e;
   }
-}
-
-export function getMigrateMessage({
-  proxyAddress,
-  admin,
-  chainId,
-  signers,
-  codeIds,
-}: {
-  admin: string;
-  proxyAddress: string;
-  chainId: TerraChain;
-  signers: { address: string; ty: string }[];
-  codeIds: CodeIds;
-}) {
-  return new MsgExecuteContract(admin, proxyAddress, {
-    wrapped_migrate: {
-      ...(codeIds.userAccount < terraChains[chainId].currentCodeIds.userAccount
-        ? {
-            code_id:
-              codeIds.userAccount <= 1014
-                ? 1081
-                : terraChains[chainId].currentCodeIds.userAccount,
-            ...(codeIds.userAccount >= 1081
-              ? {
-                  signers: {
-                    signers,
-                  },
-                }
-              : {}),
-          }
-        : {}),
-      ...(codeIds.userAccount >= 1261
-        ? {
-            gatekeeper_code_ids: {
-              ...(!codeIds.spendLimitGatekeeper ||
-              codeIds.spendLimitGatekeeper <
-                terraChains[chainId].currentCodeIds.spendLimitGatekeeper
-                ? {
-                    spendlimit:
-                      terraChains[chainId].currentCodeIds.spendLimitGatekeeper,
-                  }
-                : {}),
-              ...(!codeIds.debtGatekeeper ||
-              codeIds.debtGatekeeper <
-                terraChains[chainId].currentCodeIds.debtGatekeeper
-                ? {
-                    debt: terraChains[chainId].currentCodeIds.debtGatekeeper,
-                  }
-                : {}),
-            },
-          }
-        : {}),
-    },
-  });
 }
 
 export function getProposeUpdateOwnerMessage({

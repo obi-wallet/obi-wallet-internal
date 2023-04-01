@@ -1,5 +1,6 @@
-import { CodeIds, Draft, terra } from "@obi-wallet/common";
+import { Draft, terra } from "@obi-wallet/common";
 import {
+  CodeIds,
   MultisigKey,
   MultisigWallet,
   SignAndBroadcastTransactionUserInteraction,
