@@ -1,4 +1,4 @@
-import { terra } from "@obi-wallet/common";
+import { MultisigKey, Sdk } from "@obi-wallet/sdk";
 import {
   Coin,
   MsgBeginRedelegate,
@@ -9,7 +9,6 @@ import {
   MsgUndelegate,
 } from "@terra-money/feather.js";
 
-export const { getNewAccountMessage } = terra;
 export const address = "terra18aw4eedj4v3253dvj9h5ucx9uedl9ggaayktq4";
 export const messageSend = new MsgSend(address, address, { uluna: 1000000 });
 export const messageDelegate = new MsgDelegate(
@@ -22,11 +21,10 @@ export const messageUndelegate = new MsgUndelegate(
   "terravaloper1src9wvawtfl6ztxss8zu45zuxnwj4ytpnr30jn",
   new Coin("uluna", 100000000000000)
 );
-export const messageNewAccount = getNewAccountMessage({
-  address: "terra1234567",
-  signers: [{ address, ty: "raw" }],
-  chainId: "phoenix-1",
-});
+export const messageNewAccount = Sdk.chainId(
+  "phoenix-1"
+).getCreateWalletMessage(MultisigKey.create("phoenix-1"));
+
 export const instantiateMessage = new MsgInstantiateContract(
   address,
   address,

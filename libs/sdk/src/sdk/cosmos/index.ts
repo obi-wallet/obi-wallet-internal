@@ -486,6 +486,11 @@ export class CosmosSdk extends AbstractSdk {
     };
   }
 
+  public getCreateWalletMessage(_: MultisigKey): Message {
+    notImplemented("getCreateWalletMessage not implemented for Cosmos");
+    throw new Error("getCreateWalletMessage not implemented for Cosmos");
+  }
+
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
     return withCosmosCosmWasmClient(this.chainId, f);
   }

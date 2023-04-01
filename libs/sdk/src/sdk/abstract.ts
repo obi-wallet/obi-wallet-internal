@@ -169,6 +169,8 @@ export abstract class AbstractSdk {
     >
   >;
 
+  public abstract getCreateWalletMessage(multisigKey: MultisigKey): Message;
+
   protected wait({ ms }: { ms: number }): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }

@@ -683,41 +683,8 @@ export class TerraSdk extends AbstractSdk {
       }
     >
   > {
-    const addresses = multisigKey.keys.map((key) => {
-      return this.getAddressOfPublicKey({ publicKey: key.publicKey });
-    });
-    const signers = R.zipWith(
-      (address, ty) => {
-        return { address, ty };
-      },
-      addresses,
-      multisigKey.signerTypes
-    );
-
-    const rawMessage = {
-      new_account: {
-        fee_debt: parseInt(this.chain.startingUsdDebt, 10),
-        gatekeeper_authorizations: {
-          beneficiary_auths: [],
-          message_auths: [],
-          session_keys: [],
-          spendlimit_auths: [],
-        },
-        owner: multisigKey.address,
-        signers: {
-          signers,
-        },
-        update_delay: 0,
-      },
-    };
-
-    const message = new MsgExecuteContract(
-      multisigKey.address,
-      this.chain.accountCreatorAddress,
-      rawMessage
-    );
     const response = await SignAndBroadcastTransactionUserInteraction.start({
-      messages: [message],
+      messages: [this.getCreateWalletMessage(multisigKey)],
       demoMode,
       cancelable: true,
       multisigKey,
@@ -771,6 +738,42 @@ export class TerraSdk extends AbstractSdk {
         },
       };
     }
+  }
+
+  public getCreateWalletMessage(multisigKey: MultisigKey): Message {
+    const addresses = multisigKey.keys.map((key) => {
+      return this.getAddressOfPublicKey({ publicKey: key.publicKey });
+    });
+    const signers = R.zipWith(
+      (address, ty) => {
+        return { address, ty };
+      },
+      addresses,
+      multisigKey.signerTypes
+    );
+
+    const rawMessage = {
+      new_account: {
+        fee_debt: parseInt(this.chain.startingUsdDebt, 10),
+        gatekeeper_authorizations: {
+          beneficiary_auths: [],
+          message_auths: [],
+          session_keys: [],
+          spendlimit_auths: [],
+        },
+        owner: multisigKey.address,
+        signers: {
+          signers,
+        },
+        update_delay: 0,
+      },
+    };
+
+    return new MsgExecuteContract(
+      multisigKey.address,
+      this.chain.accountCreatorAddress,
+      rawMessage
+    );
   }
 
   public withClient<T>(f: (client: LCDClient) => T) {

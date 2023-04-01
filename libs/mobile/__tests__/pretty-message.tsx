@@ -1,6 +1,6 @@
 import { Brand, terra } from "@obi-wallet/common";
 import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
-import { terraChains } from "@obi-wallet/sdk";
+import { MultisigKey, Sdk, terraChains } from "@obi-wallet/sdk";
 import { QueryClientProvider } from "@tanstack/react-query";
 import {
   Coin,
@@ -139,11 +139,9 @@ describe("Terra", () => {
   });
 
   describe("MsgExecuteContract (new_account)", () => {
-    const message = terra.getNewAccountMessage({
-      address,
-      signers: [],
-      chainId,
-    });
+    const message = Sdk.chainId("phoenix-1").getCreateWalletMessage(
+      MultisigKey.create("phoenix-1")
+    );
 
     test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
