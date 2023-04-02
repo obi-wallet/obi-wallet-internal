@@ -18,10 +18,7 @@ import { MultisigKey, MultisigWallet } from "../data-structures";
 import { MultisigPublicKey, PublicKey } from "../keys";
 import { MultisigSigner, Signer } from "../signers";
 import { Message, SignedTransaction } from "../transactions";
-import {
-  AbstractUserInteractionResponse,
-  UserInteraction,
-} from "../user-interactions/abstract";
+import { AbstractUserInteractionResponse } from "../user-interactions/abstract";
 
 export abstract class AbstractSdk {
   protected constructor(protected chainId: Chain) {}
@@ -172,6 +169,38 @@ export abstract class AbstractSdk {
     signedTransaction: SignedTransaction;
     sender: string;
   }): Promise<BroadcastTransactionResult>;
+
+  public abstract updateOwner({
+    wallet,
+    newOwner,
+  }: {
+    wallet: MultisigWallet;
+    newOwner: MultisigKey;
+  }): Promise<
+    | {
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
+    | { approved: false }
+  >;
+
+  public abstract getProposeUpdateOwnerMessage({
+    wallet,
+    newOwner,
+    codeIds,
+  }: {
+    wallet: MultisigWallet;
+    newOwner: MultisigKey;
+    codeIds: CodeIds;
+  }): Message;
+
+  public abstract getConfirmUpdateOwnerMessage({
+    wallet,
+    newOwner,
+  }: {
+    wallet: MultisigWallet;
+    newOwner: MultisigKey;
+  }): Message;
 
   public abstract createWallet({
     multisigKey,

@@ -1,5 +1,6 @@
 import { WalletsSchema } from "./schema";
 import { Sdk } from "../../sdk";
+import { Serialized } from "../abstract";
 import { createGatekeeperConfig } from "../gatekeeper-config";
 import { AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
@@ -72,6 +73,24 @@ export class Wallets {
       },
     });
     this.upsertWallet(wallet);
+    return response;
+  }
+
+  public async recoverWallet({
+    serializedData,
+    newOwner,
+  }: {
+    serializedData: Serialized<MultisigWallet>["data"];
+    newOwner: MultisigKey;
+  }) {
+    const wallet = this._factory.create({
+      type: "multisig",
+      data: serializedData,
+    });
+    const response = await wallet.updateOwner(newOwner);
+    if (response.approved && response.payload.success) {
+      this.upsertWallet(wallet);
+    }
     return response;
   }
 

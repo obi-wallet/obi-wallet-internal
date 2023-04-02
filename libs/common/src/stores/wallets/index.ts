@@ -122,6 +122,17 @@ export class WalletsStore {
   }
 
   @action
+  public recoverWallet({
+    serializedData,
+    newOwner,
+  }: {
+    serializedData: Serialized<MultisigWallet>["data"];
+    newOwner: MultisigKey;
+  }) {
+    return this._wallets.recoverWallet({ serializedData, newOwner });
+  }
+
+  @action
   public getWallet(id: string) {
     return this._wallets.getWalletByProxyAddress(id);
   }

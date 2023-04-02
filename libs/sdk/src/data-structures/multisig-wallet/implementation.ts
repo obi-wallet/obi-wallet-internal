@@ -121,6 +121,14 @@ export class MultisigWallet {
     return await this.sdk.updateWallet(this);
   }
 
+  public async updateOwner(newOwner: MultisigKey) {
+    const response = await this.sdk.updateOwner({ wallet: this, newOwner });
+    if (response.approved && response.payload.success) {
+      this.setOwner(newOwner);
+    }
+    return response;
+  }
+
   public get currentAccount() {
     if (!this._currentAccount) return null;
     return this.getAccountByMeta(this._currentAccount);

@@ -522,6 +522,38 @@ export class CosmosSdk extends AbstractSdk {
     throw new Error("getCreateWalletMessage not implemented for Cosmos");
   }
 
+  public async updateOwner(_: {
+    wallet: MultisigWallet;
+    newOwner: MultisigKey;
+  }): Promise<
+    | {
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
+    | { approved: false }
+  > {
+    notImplemented("updateOwner not implemented for Cosmos");
+    return { approved: false };
+  }
+
+  public getProposeUpdateOwnerMessage(_: {
+    wallet: MultisigWallet;
+    newOwner: MultisigKey;
+    codeIds: CodeIds;
+  }): Message {
+    notImplemented("getProposeUpdateOwnerMessage not implemented for Cosmos");
+    throw new Error("getProposeUpdateOwnerMessage not implemented for Cosmos");
+  }
+
+  public getConfirmUpdateOwnerMessage(_: {
+    wallet: MultisigWallet;
+    newOwner: MultisigKey;
+    codeIds: CodeIds;
+  }): Message {
+    notImplemented("getConfirmUpdateOwnerMessage not implemented for Cosmos");
+    throw new Error("getConfirmUpdateOwnerMessage not implemented for Cosmos");
+  }
+
   public getUpdateWalletMessage(_: {
     wallet: MultisigWallet;
     codeIds: CodeIds;

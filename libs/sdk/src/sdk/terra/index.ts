@@ -840,6 +840,156 @@ export class TerraSdk extends AbstractSdk {
     );
   }
 
+  public async updateOwner({
+    wallet,
+    newOwner,
+  }: {
+    wallet: MultisigWallet;
+    newOwner: MultisigKey;
+  }): Promise<
+    | {
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
+    | { approved: false }
+  > {
+    const codeIds = await this.fetchCodeIds(wallet);
+    const response = await this.proposeUpdateOwner({
+      wallet,
+      newOwner,
+      codeIds,
+    });
+
+    if (!response.approved || !response.payload.success) {
+      return response;
+    }
+
+    return await this.confirmUpdateOwner({
+      wallet,
+      newOwner,
+    });
+  }
+
+  protected async proposeUpdateOwner({
+    wallet,
+    newOwner,
+    codeIds,
+  }: {
+    wallet: MultisigWallet;
+    newOwner: MultisigKey;
+    codeIds: CodeIds;
+  }): Promise<
+    | {
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
+    | { approved: false }
+  > {
+    const message = this.getProposeUpdateOwnerMessage({
+      wallet,
+      newOwner,
+      codeIds,
+    });
+    const response = await SignAndBroadcastTransactionUserInteraction.start({
+      messages: [message],
+      demoMode: wallet.isDemo,
+      cancelable: true,
+      multisigKey: wallet.owner,
+    });
+
+    if (!response.approved) {
+      return { approved: false };
+    }
+
+    if (response.approved && !response.payload.success) {
+      console.error(response.payload.rawLog);
+      return await this.proposeUpdateOwner({ wallet, newOwner, codeIds });
+    }
+
+    return response;
+  }
+
+  protected async confirmUpdateOwner({
+    wallet,
+    newOwner,
+  }: {
+    wallet: MultisigWallet;
+    newOwner: MultisigKey;
+  }): Promise<
+    | {
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
+    | { approved: false }
+  > {
+    const message = this.getConfirmUpdateOwnerMessage({
+      wallet,
+      newOwner,
+    });
+    const response = await SignAndBroadcastTransactionUserInteraction.start({
+      messages: [message],
+      demoMode: wallet.isDemo,
+      cancelable: true,
+      multisigKey: newOwner,
+    });
+
+    if (!response.approved) {
+      return { approved: false };
+    }
+
+    if (response.approved && !response.payload.success) {
+      console.error(response.payload.rawLog);
+      return await this.confirmUpdateOwner({ wallet, newOwner });
+    }
+
+    return response;
+  }
+
+  public getProposeUpdateOwnerMessage({
+    wallet,
+    newOwner,
+    codeIds,
+  }: {
+    wallet: MultisigWallet;
+    newOwner: MultisigKey;
+    codeIds: CodeIds;
+  }): Message {
+    const rawMessage = {
+      propose_update_owner: {
+        new_owner: newOwner.address,
+        ...(codeIds.userAccount >= 1081
+          ? {
+              signers: {
+                signers: this.getSigners(newOwner),
+              },
+            }
+          : {}),
+      },
+    };
+    return new MsgExecuteContract(
+      wallet.owner.address,
+      wallet.proxyAddress,
+      rawMessage
+    );
+  }
+
+  public getConfirmUpdateOwnerMessage({
+    wallet,
+    newOwner,
+  }: {
+    wallet: MultisigWallet;
+    newOwner: MultisigKey;
+  }): Message {
+    const rawMessage = {
+      confirm_update_owner: {},
+    };
+    return new MsgExecuteContract(
+      newOwner.address,
+      wallet.proxyAddress,
+      rawMessage
+    );
+  }
+
   public getUpdateWalletMessage({
     wallet,
     codeIds,

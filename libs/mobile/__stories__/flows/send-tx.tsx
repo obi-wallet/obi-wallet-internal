@@ -1,8 +1,6 @@
-import { terra } from "@obi-wallet/common";
 import {
   Sdk,
   SignAndBroadcastTransactionUserInteraction,
-  TerraChain,
 } from "@obi-wallet/sdk";
 import { MsgSend } from "@terra-money/feather.js";
 import invariant from "tiny-invariant";

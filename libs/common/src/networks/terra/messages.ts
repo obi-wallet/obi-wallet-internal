@@ -1,11 +1,5 @@
+import { GatekeeperConfig, TerraChain, terraChains } from "@obi-wallet/sdk";
 import {
-  GatekeeperConfig,
-  CodeIds,
-  TerraChain,
-  terraChains,
-} from "@obi-wallet/sdk";
-import {
-  BlockTxBroadcastResult,
   Coin,
   MsgDelegate,
   MsgExecuteContract,
@@ -14,81 +8,6 @@ import {
 } from "@terra-money/feather.js";
 import { Duration } from "luxon";
 import * as R from "ramda";
-import invariant from "tiny-invariant";
-
-export function parseProposeUpdateOwnerResponse(
-  response: BlockTxBroadcastResult
-) {
-  try {
-    const rawLog = JSON.parse(response.raw_log) as [
-      {
-        events: [
-          {
-            type: string;
-            attributes: { key: string; value: string }[];
-          }
-        ];
-      }
-    ];
-    const instantiateEvent = rawLog[0].events.find((e) => {
-      return e.type === "execute";
-    });
-    invariant(
-      instantiateEvent,
-      "Expected `rawLog` to contain `execute` event."
-    );
-    const contractAddress = instantiateEvent.attributes.filter((a) => {
-      return a.key === "_contract_address";
-    });
-    return {
-      address: contractAddress[0].value,
-    };
-  } catch (e) {
-    console.log(response.raw_log);
-    throw e;
-  }
-}
-
-export function getProposeUpdateOwnerMessage({
-  sender,
-  proxyAddress,
-  newOwner,
-  signers,
-  codeIds,
-}: {
-  sender: string;
-  proxyAddress: string;
-  newOwner: string;
-  signers: { address: string; ty: string }[];
-  codeIds: CodeIds;
-}) {
-  const rawMessage = {
-    propose_update_owner: {
-      new_owner: newOwner,
-      ...(codeIds.userAccount >= 1081
-        ? {
-            signers: {
-              signers,
-            },
-          }
-        : {}),
-    },
-  };
-  return new MsgExecuteContract(sender, proxyAddress, rawMessage);
-}
-
-export function getConfirmUpdateOwnerMessage({
-  sender,
-  proxyAddress,
-}: {
-  sender: string;
-  proxyAddress: string;
-}) {
-  const rawMessage = {
-    confirm_update_owner: {},
-  };
-  return new MsgExecuteContract(sender, proxyAddress, rawMessage);
-}
 
 export function getStakeMessage({
   sender,

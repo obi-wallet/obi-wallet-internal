@@ -43,6 +43,22 @@ function getConfig(brand: Brand) {
 describe("Terra", () => {
   const address = "terra18aw4eedj4v3253dvj9h5ucx9uedl9ggaayktq4";
   const chainId = "phoenix-1";
+  const sdk = Sdk.chainId(chainId);
+  const codeIds = terraChains[chainId].currentCodeIds;
+  const wallet = MultisigWallet.create({
+    type: "multisig",
+    data: {
+      chain: chainId,
+      currentAccount: null,
+      gatekeeperConfig: createGatekeeperConfig().toJSON(),
+      owner: MultisigKey.create(chainId).toJSON(),
+      singlesigWallets: [],
+      proxyAddress: {
+        v: 1,
+        address,
+      },
+    },
+  });
 
   describe("MsgSend", () => {
     const message = new MsgSend(address, address, { uluna: 1 });
@@ -106,12 +122,10 @@ describe("Terra", () => {
   });
 
   describe("MsgExecuteContract (propose_update_owner)", () => {
-    const message = terra.getProposeUpdateOwnerMessage({
-      sender: address,
-      proxyAddress: address,
-      newOwner: address,
-      signers: [],
-      codeIds: terraChains[chainId].currentCodeIds,
+    const message = sdk.getProposeUpdateOwnerMessage({
+      wallet,
+      newOwner: MultisigKey.create(chainId),
+      codeIds,
     });
 
     test("Obi", () => {
@@ -127,9 +141,9 @@ describe("Terra", () => {
   });
 
   describe("MsgExecuteContract (confirm_update_owner)", () => {
-    const message = terra.getConfirmUpdateOwnerMessage({
-      sender: address,
-      proxyAddress: address,
+    const message = sdk.getConfirmUpdateOwnerMessage({
+      wallet,
+      newOwner: MultisigKey.create(chainId),
     });
 
     test("Obi", () => {
@@ -145,9 +159,7 @@ describe("Terra", () => {
   });
 
   describe("MsgExecuteContract (create wallet)", () => {
-    const message = Sdk.chainId("phoenix-1").getCreateWalletMessage(
-      MultisigKey.create("phoenix-1")
-    );
+    const message = sdk.getCreateWalletMessage(MultisigKey.create(chainId));
 
     test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
@@ -162,21 +174,7 @@ describe("Terra", () => {
   });
 
   describe("MsgExecuteContract (update wallet)", () => {
-    const wallet = MultisigWallet.create({
-      type: "multisig",
-      data: {
-        chain: chainId,
-        currentAccount: null,
-        gatekeeperConfig: createGatekeeperConfig().toJSON(),
-        owner: MultisigKey.create(chainId).toJSON(),
-        singlesigWallets: [],
-        proxyAddress: {
-          v: 1,
-          address,
-        },
-      },
-    });
-    const message = Sdk.chainId(chainId).getUpdateWalletMessage({
+    const message = sdk.getUpdateWalletMessage({
       wallet,
       codeIds: terraChains[chainId].currentCodeIds,
     });
@@ -196,7 +194,7 @@ describe("Terra", () => {
   describe("MsgDelegate", () => {
     const message = terra.getStakeMessage({
       sender: address,
-      validator: terraChains["phoenix-1"].obiValidator,
+      validator: terraChains[chainId].obiValidator,
       amount: 1,
       chainId,
     });
@@ -218,7 +216,7 @@ describe("Terra", () => {
   describe("MsgUndelegate", () => {
     const message = terra.getUnstakeMessage({
       sender: address,
-      validator: terraChains["phoenix-1"].obiValidator,
+      validator: terraChains[chainId].obiValidator,
       amount: 1,
       chainId,
     });
@@ -240,7 +238,7 @@ describe("Terra", () => {
   describe("MsgWithdrawDelegationReward", () => {
     const message = terra.getWithdrawRewardsMessage({
       sender: address,
-      validator: terraChains["phoenix-1"].obiValidator,
+      validator: terraChains[chainId].obiValidator,
     });
 
     test("Obi", () => {
