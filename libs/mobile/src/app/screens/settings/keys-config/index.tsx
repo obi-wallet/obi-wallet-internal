@@ -1,6 +1,5 @@
 import { useTheme } from "@emotion/react";
 import { KeyType, MultisigKey, MultisigWallet } from "@obi-wallet/sdk";
-import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
@@ -21,7 +20,6 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
   const wallet = useMultisigWallet();
   const navigation = useRootNavigation();
   const intl = useIntl();
-  const queryClient = useQueryClient();
 
   const draftId = getMultisigSettingsDraftId(wallet);
   const draft = draftsStore.get<MultisigKey>({ id: draftId });

@@ -1,6 +1,8 @@
 import { LCDClient } from "@terra-money/feather.js";
+import { AxiosError } from "axios";
 
 import { TerraChain, terraChains } from "../chains";
+import { RpcError } from "../sdk";
 
 export async function withTerraClient<T>(
   chainId: TerraChain,
@@ -22,7 +24,13 @@ export async function withTerraClient<T>(
         })
       );
     } catch (e) {
-      // Silently retry with other LCDs
+      const axiosError = e as AxiosError;
+      const data = axiosError.response?.data;
+
+      // Don't retry with other LCDs if the error is already an RPC error
+      if (RpcError.safeParse(data).success) throw e;
+
+      // Otherwise, silently retry with other LCDs
       error = e;
     }
   }

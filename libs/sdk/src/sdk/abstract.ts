@@ -18,10 +18,7 @@ import { MultisigKey, MultisigWallet } from "../data-structures";
 import { MultisigPublicKey, PublicKey } from "../keys";
 import { MultisigSigner, Signer } from "../signers";
 import { Message, SignedTransaction } from "../transactions";
-import {
-  AbstractUserInteractionResponse,
-  UserInteraction,
-} from "../user-interactions/abstract";
+import { AbstractUserInteractionResponse } from "../user-interactions/abstract";
 
 export abstract class AbstractSdk {
   protected constructor(protected chainId: Chain) {}
