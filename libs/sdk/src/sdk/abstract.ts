@@ -173,6 +173,38 @@ export abstract class AbstractSdk {
     sender: string;
   }): Promise<BroadcastTransactionResult>;
 
+  public abstract updateOwner({
+    wallet,
+    newOwner,
+  }: {
+    wallet: MultisigWallet;
+    newOwner: MultisigKey;
+  }): Promise<
+    | {
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
+    | { approved: false }
+  >;
+
+  public abstract getProposeUpdateOwnerMessage({
+    wallet,
+    newOwner,
+    codeIds,
+  }: {
+    wallet: MultisigWallet;
+    newOwner: MultisigKey;
+    codeIds: CodeIds;
+  }): Message;
+
+  public abstract getConfirmUpdateOwnerMessage({
+    wallet,
+    newOwner,
+  }: {
+    wallet: MultisigWallet;
+    newOwner: MultisigKey;
+  }): Message;
+
   public abstract createWallet({
     multisigKey,
     demoMode,

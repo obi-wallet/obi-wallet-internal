@@ -1,20 +1,12 @@
 import { useTheme } from "@emotion/react";
-import {
-  isTerraChain,
-  KeyType,
-  MultisigKey,
-  MultisigWallet,
-} from "@obi-wallet/sdk";
+import { KeyType, MultisigKey, MultisigWallet } from "@obi-wallet/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
-import { View } from "react-native";
-import invariant from "tiny-invariant";
+import { Alert, View } from "react-native";
 
-import { handleTerra } from "./terra";
 import { MultisigSettings } from "../../../../components/multisig-settings";
-import { getCodeIdsQuery } from "../../../../queries/user-account";
 import { KeyFlow, KeyRoute } from "../../../../screens/keys";
 import { AsyncButton, Button } from "../../../button";
 import { useRootNavigation } from "../../../root-stack";
@@ -165,23 +157,11 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
             label="Confirm Changes"
             onPress={async () => {
               setLoading(true);
-              const chainId = wallet.chainId;
               try {
-                const codeIds = await queryClient.fetchQuery(
-                  getCodeIdsQuery({
-                    chainId,
-                    address: wallet.proxyAddress,
-                  })
-                );
-
-                invariant(isTerraChain(chainId), "Expected Terra chain");
-                await handleTerra({
-                  draft,
-                  wallet,
-                  codeIds,
-                });
-              } catch (e) {
-                // noop
+                const response = await wallet.updateOwner(draft.value);
+                if (response.approved && !response.payload.success) {
+                  Alert.alert("Updating owner failed", response.payload.rawLog);
+                }
               } finally {
                 setLoading(false);
               }
