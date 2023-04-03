@@ -8,6 +8,7 @@ import {
   Coin,
   Delegation,
   EnrichedValidator,
+  FormattedCoin,
   GatekeeperContractAddresses,
   PermissionedAddress,
   Rewards,
@@ -219,6 +220,79 @@ export abstract class AbstractSdk {
   >;
 
   public abstract getCreateWalletMessage(multisigKey: MultisigKey): Message;
+
+  public abstract stake({
+    wallet,
+    amount,
+    validator,
+  }: {
+    wallet: MultisigWallet;
+    amount: Coin;
+    validator: string;
+  }): Promise<
+    | { approved: true; payload: BroadcastTransactionResult }
+    | { approved: false }
+  >;
+
+  public abstract unstake({
+    wallet,
+    amount,
+    validator,
+  }: {
+    wallet: MultisigWallet;
+    amount: Coin;
+    validator: string;
+  }): Promise<
+    | { approved: true; payload: BroadcastTransactionResult }
+    | { approved: false }
+  >;
+
+  public abstract withdrawRewards(
+    wallet: MultisigWallet
+  ): Promise<
+    | { approved: true; payload: BroadcastTransactionResult }
+    | { approved: false }
+  >;
+
+  public abstract getStakeMessage({
+    wallet,
+    amount,
+    validator,
+  }: {
+    wallet: MultisigWallet;
+    amount: Coin;
+    validator: string;
+  }): Message;
+
+  public abstract getUnstakeMessage({
+    wallet,
+    amount,
+    validator,
+  }: {
+    wallet: MultisigWallet;
+    amount: Coin;
+    validator: string;
+  }): Message;
+
+  public abstract getWithdrawRewardsMessage({
+    wallet,
+    validator,
+  }: {
+    wallet: MultisigWallet;
+    validator: string;
+  }): Message;
+
+  public formatCoin(coin: Coin): FormattedCoin {
+    const digits = 6;
+    const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
+    return {
+      icon: null,
+      denom: coin.denom,
+      digits: 6,
+      label: "Unknown Token",
+      amount: amount,
+    };
+  }
 
   protected wait({ ms }: { ms: number }): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));

@@ -44,6 +44,7 @@ import {
   BroadcastTransactionResult,
   CodeIds,
   Coin,
+  FormattedCoin,
 } from "../common";
 
 function notImplemented(message: string) {
@@ -560,6 +561,106 @@ export class CosmosSdk extends AbstractSdk {
   }): Message {
     notImplemented("getUpdateWalletMessage not implemented for Cosmos");
     throw new Error("getUpdateWalletMessage not implemented for Cosmos");
+  }
+
+  public async stake(_: {
+    wallet: MultisigWallet;
+    amount: Coin;
+    validator: string;
+  }): Promise<
+    | { approved: true; payload: BroadcastTransactionResult }
+    | { approved: false }
+  > {
+    notImplemented("stake not implemented for Cosmos");
+    return { approved: false };
+  }
+
+  public async unstake(_: {
+    wallet: MultisigWallet;
+    amount: Coin;
+    validator: string;
+  }): Promise<
+    | { approved: true; payload: BroadcastTransactionResult }
+    | { approved: false }
+  > {
+    notImplemented("unstake not implemented for Cosmos");
+    return { approved: false };
+  }
+
+  public async withdrawRewards(
+    _: MultisigWallet
+  ): Promise<
+    | { approved: true; payload: BroadcastTransactionResult }
+    | { approved: false }
+  > {
+    notImplemented("withdrawRewards not implemented for Cosmos");
+    return { approved: false };
+  }
+
+  public getStakeMessage(_: {
+    wallet: MultisigWallet;
+    amount: Coin;
+    validator: string;
+  }): Message {
+    notImplemented("getStakeMessage not implemented for Cosmos");
+    throw new Error("getStakeMessage not implemented for Cosmos");
+  }
+
+  public getUnstakeMessage(_: {
+    wallet: MultisigWallet;
+    amount: Coin;
+    validator: string;
+  }): Message {
+    notImplemented("getUnstakeMessage not implemented for Cosmos");
+    throw new Error("getUnstakeMessage not implemented for Cosmos");
+  }
+
+  public getWithdrawRewardsMessage(_: {
+    wallet: MultisigWallet;
+    validator: string;
+  }): Message {
+    notImplemented("getWithdrawRewardsMessage not implemented for Cosmos");
+    throw new Error("getWithdrawRewardsMessage not implemented for Cosmos");
+  }
+
+  public formatCoin(coin: Coin): FormattedCoin {
+    switch (coin.denom) {
+      case this.chain.denom: {
+        const digits = 6;
+        const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
+        return {
+          icon: null,
+          denom: this.chain.denom.slice(1).toUpperCase(),
+          digits,
+          label: this.chain.denom[1].toUpperCase() + this.chain.denom.slice(2),
+          amount,
+        };
+      }
+      case "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034": {
+        const digits = 6;
+        const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
+        return {
+          icon: null,
+          denom: "axlUSDC",
+          digits,
+          label: "USDC (Axelar)",
+          amount,
+        };
+      }
+      case "uloop": {
+        const digits = 6;
+        const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);
+        return {
+          icon: null,
+          denom: "LOOP",
+          digits,
+          label: "Loop",
+          amount,
+        };
+      }
+      default:
+        return super.formatCoin(coin);
+    }
   }
 
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {

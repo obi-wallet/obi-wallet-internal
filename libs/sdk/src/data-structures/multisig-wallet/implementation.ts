@@ -9,7 +9,7 @@ import {
   TerraChain,
   terraChains,
 } from "../../chains";
-import { BroadcastTransactionResult, Sdk } from "../../sdk";
+import { BroadcastTransactionResult, Coin, Sdk } from "../../sdk";
 import { Secp256k1PrivateKeySigner } from "../../signers";
 import { Message, wrapMessages } from "../../transactions";
 import { FlexAccount } from "../flex-account";
@@ -258,6 +258,38 @@ export class MultisigWallet {
         signedTransaction,
       });
     }
+  }
+
+  public async stake({
+    amount,
+    validator,
+  }: {
+    amount: Coin;
+    validator: string;
+  }) {
+    return await this.sdk.stake({
+      wallet: this,
+      amount,
+      validator,
+    });
+  }
+
+  public async unstake({
+    amount,
+    validator,
+  }: {
+    amount: Coin;
+    validator: string;
+  }) {
+    return await this.sdk.unstake({
+      wallet: this,
+      amount,
+      validator,
+    });
+  }
+
+  public async withdrawRewards() {
+    return await this.sdk.withdrawRewards(this);
   }
 
   protected get sdk() {
