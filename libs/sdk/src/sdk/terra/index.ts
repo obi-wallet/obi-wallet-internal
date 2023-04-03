@@ -1,11 +1,15 @@
 import {
   AccAddress,
+  Coin as TerraCoin,
   Coins,
   isTxError,
   LCDClient,
   LegacyAminoMultisigPublicKey,
+  MsgDelegate,
   MsgExecuteContract,
   MsgSend,
+  MsgUndelegate,
+  MsgWithdrawDelegatorReward,
   SimplePublicKey,
   Tx,
   Validator as RawValidator,
@@ -27,6 +31,7 @@ import { z } from "zod";
 import { Key } from "./key";
 import { MultisigSigner } from "./multisig-signer";
 import { tokenPairs } from "./token-pairs";
+import { tokens } from "./tokens";
 import { TerraChain, terraChains } from "../../chains";
 import { withTerraClient } from "../../clients";
 import { MultisigKey, MultisigWallet } from "../../data-structures";
@@ -43,6 +48,7 @@ import {
   Coin,
   Delegation,
   EnrichedValidator,
+  FormattedCoin,
   GatekeeperContractAddresses,
   PermissionedAddress,
   RpcError,
@@ -1037,6 +1043,159 @@ export class TerraSdk extends AbstractSdk {
           : {}),
       },
     });
+  }
+
+  public async stake({
+    wallet,
+    amount,
+    validator,
+  }: {
+    wallet: MultisigWallet;
+    amount: Coin;
+    validator: string;
+  }): Promise<
+    | { approved: true; payload: BroadcastTransactionResult }
+    | { approved: false }
+  > {
+    return await SignAndBroadcastTransactionUserInteraction.start({
+      messages: [
+        this.getStakeMessage({
+          wallet,
+          amount,
+          validator,
+        }),
+      ],
+      demoMode: wallet.isDemo,
+      cancelable: true,
+      walletMeta: wallet.meta,
+    });
+  }
+
+  public getStakeMessage({
+    wallet,
+    amount,
+    validator,
+  }: {
+    wallet: MultisigWallet;
+    amount: Coin;
+    validator: string;
+  }): Message {
+    return new MsgDelegate(
+      wallet.address,
+      validator,
+      new TerraCoin(amount.denom, amount.amount)
+    );
+  }
+
+  public async unstake({
+    wallet,
+    amount,
+    validator,
+  }: {
+    wallet: MultisigWallet;
+    amount: Coin;
+    validator: string;
+  }): Promise<
+    | { approved: true; payload: BroadcastTransactionResult }
+    | { approved: false }
+  > {
+    return await SignAndBroadcastTransactionUserInteraction.start({
+      messages: [
+        this.getUnstakeMessage({
+          wallet,
+          amount,
+          validator,
+        }),
+      ],
+      demoMode: wallet.isDemo,
+      cancelable: true,
+      walletMeta: wallet.meta,
+    });
+  }
+
+  public getUnstakeMessage({
+    wallet,
+    amount,
+    validator,
+  }: {
+    wallet: MultisigWallet;
+    amount: Coin;
+    validator: string;
+  }): Message {
+    return new MsgUndelegate(
+      wallet.address,
+      validator,
+      new TerraCoin(amount.denom, amount.amount)
+    );
+  }
+
+  public async withdrawRewards(
+    wallet: MultisigWallet
+  ): Promise<
+    | { approved: true; payload: BroadcastTransactionResult }
+    | { approved: false }
+  > {
+    const rewards = await this.fetchRewards({ address: wallet.address });
+    const validators = rewards.perDelegator
+      .filter((delegator) => {
+        return this.formatCoin(delegator.rewards).amount > 0;
+      })
+      .map((delegator) => {
+        return delegator.address;
+      });
+    const messages = validators.map((validator) => {
+      return this.getWithdrawRewardsMessage({
+        wallet,
+        validator,
+      });
+    });
+    return await SignAndBroadcastTransactionUserInteraction.start({
+      messages,
+      demoMode: wallet.isDemo,
+      cancelable: true,
+      walletMeta: wallet.meta,
+    });
+  }
+
+  public formatCoin(coin: Coin): FormattedCoin {
+    if (!R.has(coin.denom, tokens)) {
+      return super.formatCoin(coin);
+    }
+
+    const token = tokens[coin.denom as keyof typeof tokens];
+    const denom =
+      R.prop("base_denom", token) ??
+      R.prop("denom", token) ??
+      R.prop("symbol", token) ??
+      coin.denom;
+
+    return {
+      icon: token.icon ? { uri: token.icon } : null,
+      denom: (() => {
+        if (denom.startsWith("u")) {
+          return denom.slice(1).toUpperCase();
+        }
+
+        if (denom.startsWith("terra1")) {
+          return "";
+        }
+
+        return denom;
+      })(),
+      digits: token.decimals,
+      label: R.prop("name", token) ?? R.prop("symbol", token) ?? coin.denom,
+      amount: parseInt(coin.amount, 10) / 10 ** token.decimals,
+    };
+  }
+
+  public getWithdrawRewardsMessage({
+    wallet,
+    validator,
+  }: {
+    wallet: MultisigWallet;
+    validator: string;
+  }): Message {
+    return new MsgWithdrawDelegatorReward(wallet.address, validator);
   }
 
   public withClient<T>(f: (client: LCDClient) => T) {

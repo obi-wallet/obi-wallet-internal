@@ -1,4 +1,4 @@
-import { Brand, terra } from "@obi-wallet/common";
+import { Brand } from "@obi-wallet/common";
 import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
 import {
   createGatekeeperConfig,
@@ -192,11 +192,13 @@ describe("Terra", () => {
   });
 
   describe("MsgDelegate", () => {
-    const message = terra.getStakeMessage({
-      sender: address,
+    const message = sdk.getStakeMessage({
+      wallet,
       validator: terraChains[chainId].obiValidator,
-      amount: 1,
-      chainId,
+      amount: {
+        denom: "uluna",
+        amount: "1",
+      },
     });
 
     test("Obi", () => {
@@ -214,11 +216,13 @@ describe("Terra", () => {
   });
 
   describe("MsgUndelegate", () => {
-    const message = terra.getUnstakeMessage({
-      sender: address,
+    const message = sdk.getUnstakeMessage({
+      wallet,
       validator: terraChains[chainId].obiValidator,
-      amount: 1,
-      chainId,
+      amount: {
+        denom: "uluna",
+        amount: "1",
+      },
     });
 
     test("Obi", () => {
@@ -236,8 +240,8 @@ describe("Terra", () => {
   });
 
   describe("MsgWithdrawDelegationReward", () => {
-    const message = terra.getWithdrawRewardsMessage({
-      sender: address,
+    const message = sdk.getWithdrawRewardsMessage({
+      wallet,
       validator: terraChains[chainId].obiValidator,
     });
 

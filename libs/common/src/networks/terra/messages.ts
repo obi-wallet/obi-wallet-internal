@@ -1,59 +1,7 @@
-import { GatekeeperConfig, TerraChain, terraChains } from "@obi-wallet/sdk";
-import {
-  Coin,
-  MsgDelegate,
-  MsgExecuteContract,
-  MsgUndelegate,
-  MsgWithdrawDelegatorReward,
-} from "@terra-money/feather.js";
+import { GatekeeperConfig } from "@obi-wallet/sdk";
+import { MsgExecuteContract } from "@terra-money/feather.js";
 import { Duration } from "luxon";
 import * as R from "ramda";
-
-export function getStakeMessage({
-  sender,
-  validator,
-  amount,
-  chainId,
-}: {
-  sender: string;
-  validator: string;
-  amount: number;
-  chainId: TerraChain;
-}) {
-  return new MsgDelegate(
-    sender,
-    validator,
-    new Coin(terraChains[chainId].denom, amount)
-  );
-}
-
-export function getUnstakeMessage({
-  sender,
-  validator,
-  amount,
-  chainId,
-}: {
-  sender: string;
-  validator: string;
-  amount: number;
-  chainId: TerraChain;
-}) {
-  return new MsgUndelegate(
-    sender,
-    validator,
-    new Coin(terraChains[chainId].denom, amount)
-  );
-}
-
-export function getWithdrawRewardsMessage({
-  sender,
-  validator,
-}: {
-  sender: string;
-  validator: string;
-}) {
-  return new MsgWithdrawDelegatorReward(sender, validator);
-}
 
 export function getUpdateGatekeeperMessages({
   currentGatekeeperConfig,

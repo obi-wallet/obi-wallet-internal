@@ -10,6 +10,7 @@ import {
   EnrichedValidator,
   isTerraChain,
   SignAndBroadcastTransactionUserInteraction,
+  terraChains,
   UnbondingDelegation,
   Validator,
 } from "@obi-wallet/sdk";
@@ -344,31 +345,8 @@ const Balance = observer(function Balance() {
             alignItems: "center",
           }}
           onPress={async () => {
-            const chainId = wallet.chainId;
-            invariant(isTerraChain(chainId), "Expected Terra chain.");
-
-            const sender = wallet.address;
-
             try {
-              const validators = rewards.data.perDelegator
-                .filter((delegator) => {
-                  return formatCoin(delegator.rewards).amount > 0;
-                })
-                .map((delegator) => {
-                  return delegator.address;
-                });
-              const messages = validators.map((validator) => {
-                return terra.getWithdrawRewardsMessage({
-                  sender,
-                  validator,
-                });
-              });
-              await SignAndBroadcastTransactionUserInteraction.start({
-                messages,
-                demoMode: wallet.isDemo,
-                cancelable: true,
-                walletMeta: wallet.meta,
-              });
+              await wallet.withdrawRewards();
               await rewards.refetch();
             } catch (e) {
               console.log(e);
@@ -472,18 +450,12 @@ const Validators = observer(function Validators() {
                 parseFloat(amount.replace(",", ".")) * 10 ** digits;
               // TODO: also check if amount is greater than balance
               if (isNaN(amountToUse) || amountToUse <= 0) return;
-              await SignAndBroadcastTransactionUserInteraction.start({
-                messages: [
-                  terra.getStakeMessage({
-                    sender: wallet.address,
-                    validator: validator.address,
-                    amount: amountToUse,
-                    chainId,
-                  }),
-                ],
-                demoMode: wallet.isDemo,
-                cancelable: true,
-                walletMeta: wallet.meta,
+              await wallet.stake({
+                validator: validator.address,
+                amount: {
+                  denom: terraChains[chainId].denom,
+                  amount: amountToUse.toString(),
+                },
               });
               dispatch({ type: "clear-selected-validator" });
               await Promise.all([delegations.refetch(), rawBalances.refetch()]);
@@ -729,18 +701,12 @@ const MyStake = observer(function MyStake() {
                 parseFloat(amount.replace(",", ".")) * 10 ** digits;
               // TODO: also check if amount is greater than balance
               if (isNaN(amountToUse) || amountToUse <= 0) return;
-              await SignAndBroadcastTransactionUserInteraction.start({
-                messages: [
-                  terra.getUnstakeMessage({
-                    sender: wallet.address,
-                    validator: validator.address,
-                    amount: amountToUse,
-                    chainId,
-                  }),
-                ],
-                demoMode: wallet.isDemo,
-                cancelable: true,
-                walletMeta: wallet.meta,
+              await wallet.unstake({
+                validator: validator.address,
+                amount: {
+                  denom: terraChains[chainId].denom,
+                  amount: amountToUse.toString(),
+                },
               });
               dispatch({ type: "clear-selected-validator" });
               await Promise.all([
