@@ -14,7 +14,6 @@ import { observer } from "mobx-react-lite";
 import { ComponentProps, ReactNode, useEffect } from "react";
 import { IntlProvider } from "react-intl";
 import { StatusBar } from "react-native";
-import { endConnection, initConnection } from "react-native-iap";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { StoreContext } from "./stores";
@@ -64,14 +63,6 @@ export const Provider = observer<ProviderProps>(function Provider({
   const rootStore = useCreateRootStore({ config });
   const { languageStore, configStore } = rootStore;
   const { currentLanguage } = languageStore;
-
-  useEffect(() => {
-    if (!configStore.isFeatureEnabled(Feature.InAppPurchases)) return;
-    void initConnection();
-    return () => {
-      void endConnection();
-    };
-  }, [configStore]);
 
   return (
     <QueryClientProvider client={queryClient}>

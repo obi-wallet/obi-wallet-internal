@@ -6,12 +6,6 @@ module.exports = {
         android: null,
       },
     },
-    "react-native-iap": {
-      platforms: {
-        android: null,
-        ios: null,
-      },
-    },
   },
   project: {
     ios: {},
