@@ -172,7 +172,7 @@ export const GatekeeperConfigDraft = {
             amount: 10,
           },
           autoSign: {
-            endTime: DateTime.local().plus({ minutes: 30 }).toISO(),
+            endTime: DateTime.local().plus({ minutes: 30 }).toISO()!,
           },
         })
       );

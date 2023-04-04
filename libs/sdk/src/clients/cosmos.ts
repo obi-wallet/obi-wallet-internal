@@ -79,11 +79,10 @@ export async function createSigningStargateClient({
   chainId: CosmosChain;
   signer: OfflineSigner;
 }) {
-  const { denom, prefix, rpcs } = cosmosChains[chainId];
+  const { denom, rpcs } = cosmosChains[chainId];
   for (const rpc of rpcs) {
     try {
       return await SigningStargateClient.connectWithSigner(rpc, signer, {
-        prefix,
         gasPrice: {
           // low: 10, average: 25, high: 40
           amount: Decimal.fromAtomics("25", 4),

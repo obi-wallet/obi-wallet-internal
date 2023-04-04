@@ -703,7 +703,7 @@ export class CosmosSdk extends AbstractSdk {
       ...createBankAminoConverters(),
       ...createDistributionAminoConverters(),
       ...createGovAminoConverters(),
-      ...createStakingAminoConverters(this.chain.prefix),
+      ...createStakingAminoConverters(),
       ...createIbcAminoConverters(),
       ...createFeegrantAminoConverters(),
       ...createVestingAminoConverters(),

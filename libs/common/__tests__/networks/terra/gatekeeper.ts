@@ -233,7 +233,7 @@ describe("Empty gatekeeper config", () => {
           amount: 10,
         },
         autoSign: {
-          endTime: DateTime.now().plus({ minutes: 30 }).toISO(),
+          endTime: DateTime.now().plus({ minutes: 30 }).toISO()!,
         },
       })
     );
@@ -343,7 +343,7 @@ test("Make unlocked flex account locked", async () => {
     ObservableFlexAccount.create({
       ...flexAccount,
       autoSign: {
-        endTime: DateTime.now().plus({ minutes: 30 }).toISO(),
+        endTime: DateTime.now().plus({ minutes: 30 }).toISO()!,
       },
     })
   );
