@@ -1,5 +1,5 @@
 import { Theme, ThemeProvider } from "@emotion/react";
-import { Brand, Config, Feature, messages } from "@obi-wallet/common";
+import { Brand, Config, messages } from "@obi-wallet/common";
 import { loopTheme, obiTheme } from "@obi-wallet/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
@@ -11,7 +11,7 @@ import {
 } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { observer } from "mobx-react-lite";
-import { ComponentProps, ReactNode, useEffect } from "react";
+import { ComponentProps, ReactNode } from "react";
 import { IntlProvider } from "react-intl";
 import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
