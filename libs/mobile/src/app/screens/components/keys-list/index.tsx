@@ -126,8 +126,11 @@ export const KeyListItem = observer(function KeyListItem({
       triggerImpactLight();
       //wait a bit to show the loading animation before calling the onPress
       setTimeout(async () => {
-        await onPress();
-        setPending(false);
+        try {
+          await onPress();
+        } finally {
+          setPending(false);
+        }
       }, 200);
     }
   }, [onPress]);
