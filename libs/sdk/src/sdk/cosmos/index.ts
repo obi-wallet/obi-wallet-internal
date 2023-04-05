@@ -34,7 +34,11 @@ import {
   withCosmosSigningStargateClient,
   withCosmosStargateClient,
 } from "../../clients";
-import { MultisigKey, MultisigWallet } from "../../data-structures";
+import {
+  GatekeeperConfig,
+  MultisigKey,
+  MultisigWallet,
+} from "../../data-structures";
 import { MultisigPublicKey, PublicKey } from "../../keys";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
@@ -621,6 +625,30 @@ export class CosmosSdk extends AbstractSdk {
   }): Message {
     notImplemented("getWithdrawRewardsMessage not implemented for Cosmos");
     throw new Error("getWithdrawRewardsMessage not implemented for Cosmos");
+  }
+
+  public async updateGatekeeperConfig(_: {
+    wallet: MultisigWallet;
+    newGatekeeperConfig: GatekeeperConfig;
+  }): Promise<
+    | {
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
+    | { approved: false }
+  > {
+    notImplemented("updateGatekeeperConfig not implemented for Cosmos");
+    return { approved: false };
+  }
+
+  public getUpdateGatekeeperMessages(_: {
+    wallet: MultisigWallet;
+    newGatekeeperConfig: GatekeeperConfig;
+    spendLimitGatekeeper: string;
+    sessionKeyGatekeeper: string;
+  }) {
+    notImplemented("getUpdateGatekeeperMessages not implemented for Cosmos");
+    return [];
   }
 
   public formatCoin(coin: Coin): FormattedCoin {

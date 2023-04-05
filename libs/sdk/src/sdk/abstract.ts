@@ -15,7 +15,11 @@ import {
   UnbondingDelegation,
 } from "./common";
 import { Chain } from "../chains";
-import { MultisigKey, MultisigWallet } from "../data-structures";
+import {
+  GatekeeperConfig,
+  MultisigKey,
+  MultisigWallet,
+} from "../data-structures";
 import { MultisigPublicKey, PublicKey } from "../keys";
 import { MultisigSigner, Signer } from "../signers";
 import { Message, SignedTransaction } from "../transactions";
@@ -194,6 +198,32 @@ export abstract class AbstractSdk {
     newOwner: MultisigKey;
     codeIds: CodeIds;
   }): Message;
+
+  public abstract updateGatekeeperConfig({
+    wallet,
+    newGatekeeperConfig,
+  }: {
+    wallet: MultisigWallet;
+    newGatekeeperConfig: GatekeeperConfig;
+  }): Promise<
+    | {
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
+    | { approved: false }
+  >;
+
+  public abstract getUpdateGatekeeperMessages({
+    wallet,
+    newGatekeeperConfig,
+    spendLimitGatekeeper,
+    sessionKeyGatekeeper,
+  }: {
+    wallet: MultisigWallet;
+    newGatekeeperConfig: GatekeeperConfig;
+    spendLimitGatekeeper: string;
+    sessionKeyGatekeeper: string;
+  }): Message[];
 
   public abstract getConfirmUpdateOwnerMessage({
     wallet,

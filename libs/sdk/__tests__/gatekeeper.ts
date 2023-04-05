@@ -1,30 +1,34 @@
-import {
-  createObservableGatekeeperConfig,
-  generateSec256k1KeyPair,
-  ObservableBeneficiary,
-  ObservableFlexAccount,
-  Sdk,
-} from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
 import invariant from "tiny-invariant";
 
-import { getUpdateGatekeeperMessages } from "../../../src/networks/terra/messages";
+import {
+  createGatekeeperConfig,
+  createObservableGatekeeperConfig,
+  generateSec256k1KeyPair,
+  MultisigKey,
+  MultisigWallet,
+  ObservableBeneficiary,
+  ObservableFlexAccount,
+  Sdk,
+} from "../src";
+
+const chainId = "phoenix-1";
+const sdk = Sdk.chainId(chainId);
 
 const proxyAddress =
   "terra19g840q54mxd5vyxh3rdfpncmmyql5hcu8j9wcg45zgwgt4phwdes27emev";
 const { publicKey, privateKey } = generateSec256k1KeyPair();
-const address = Sdk.chainId("phoenix-1").getAddressOfPublicKey({
+const address = sdk.getAddressOfPublicKey({
   publicKey,
 });
 let gatekeepers: {
   spendLimitGatekeeper: string;
   sessionKeyGatekeeper: string;
 };
+let wallet: MultisigWallet;
 
 beforeAll(async () => {
-  const response = await Sdk.chainId(
-    "phoenix-1"
-  ).fetchGatekeeperContractAddresses({
+  const response = await sdk.fetchGatekeeperContractAddresses({
     proxyAddress,
   });
   invariant(response.spendLimitGatekeeper, "Spend limit gatekeeper not found");
@@ -35,15 +39,29 @@ beforeAll(async () => {
   };
 });
 
-describe("Empty gatekeeper config", () => {
-  const currentGatekeeperConfig = createObservableGatekeeperConfig();
+beforeEach(() => {
+  wallet = MultisigWallet.create({
+    type: "multisig",
+    data: {
+      chain: chainId,
+      owner: MultisigKey.create(chainId).toJSON(),
+      proxyAddress: {
+        v: 1,
+        address: proxyAddress,
+      },
+      gatekeeperConfig: createGatekeeperConfig().toJSON(),
+      singlesigWallets: [],
+      currentAccount: null,
+    },
+  });
+});
 
+describe("Empty gatekeeper config", () => {
   test("No changes", () => {
     const newGatekeeperConfig = createObservableGatekeeperConfig();
-    const messages = getUpdateGatekeeperMessages({
-      currentGatekeeperConfig,
+    const messages = sdk.getUpdateGatekeeperMessages({
+      wallet,
       newGatekeeperConfig,
-      proxyAddress,
       ...gatekeepers,
     });
     expect(messages).toEqual([]);
@@ -70,10 +88,9 @@ describe("Empty gatekeeper config", () => {
         },
       })
     );
-    const messages = getUpdateGatekeeperMessages({
-      currentGatekeeperConfig,
+    const messages = sdk.getUpdateGatekeeperMessages({
+      wallet,
       newGatekeeperConfig,
-      proxyAddress,
       ...gatekeepers,
     });
     expect(messages.length).toEqual(1);
@@ -103,8 +120,7 @@ describe("Empty gatekeeper config", () => {
             },
           },
         },
-        sender:
-          "terra19g840q54mxd5vyxh3rdfpncmmyql5hcu8j9wcg45zgwgt4phwdes27emev",
+        sender: wallet.owner.address,
       },
     });
   });
@@ -125,17 +141,16 @@ describe("Empty gatekeeper config", () => {
         autoSign: null,
       })
     );
-    const messages = getUpdateGatekeeperMessages({
-      currentGatekeeperConfig,
+    const messages = sdk.getUpdateGatekeeperMessages({
+      wallet,
       newGatekeeperConfig,
-      proxyAddress,
       ...gatekeepers,
     });
     expect(messages.length).toEqual(1);
     expect(messages[0].toAmino()).toEqual({
       type: "wasm/MsgExecuteContract",
       value: {
-        sender: proxyAddress,
+        sender: wallet.owner.address,
         contract: gatekeepers.spendLimitGatekeeper,
         msg: {
           upsert_permissioned_address: {
@@ -176,17 +191,16 @@ describe("Empty gatekeeper config", () => {
         autoSign: null,
       })
     );
-    const messages = getUpdateGatekeeperMessages({
-      currentGatekeeperConfig,
+    const messages = sdk.getUpdateGatekeeperMessages({
+      wallet,
       newGatekeeperConfig,
-      proxyAddress,
       ...gatekeepers,
     });
     expect(messages.length).toEqual(1);
     expect(messages[0].toAmino()).toEqual({
       type: "wasm/MsgExecuteContract",
       value: {
-        sender: proxyAddress,
+        sender: wallet.owner.address,
         contract: gatekeepers.spendLimitGatekeeper,
         msg: {
           upsert_permissioned_address: {
@@ -237,17 +251,16 @@ describe("Empty gatekeeper config", () => {
         },
       })
     );
-    const messages = getUpdateGatekeeperMessages({
-      currentGatekeeperConfig,
+    const messages = sdk.getUpdateGatekeeperMessages({
+      wallet,
       newGatekeeperConfig,
-      proxyAddress,
       ...gatekeepers,
     });
     expect(messages.length).toEqual(2);
     expect(messages.map((message) => message.toAmino())).toContainEqual({
       type: "wasm/MsgExecuteContract",
       value: {
-        sender: proxyAddress,
+        sender: wallet.owner.address,
         contract: gatekeepers.spendLimitGatekeeper,
         msg: {
           upsert_permissioned_address: {
@@ -277,8 +290,7 @@ describe("Empty gatekeeper config", () => {
 });
 
 test("Remove single flex account", async () => {
-  const currentGatekeeperConfig = createObservableGatekeeperConfig();
-  currentGatekeeperConfig.upsertFlexAccount(
+  wallet.gatekeeperConfig.upsertFlexAccount(
     ObservableFlexAccount.create({
       type: "flex-account",
       meta: {
@@ -298,17 +310,16 @@ test("Remove single flex account", async () => {
     })
   );
   const newGatekeeperConfig = createObservableGatekeeperConfig();
-  const messages = getUpdateGatekeeperMessages({
-    currentGatekeeperConfig,
+  const messages = sdk.getUpdateGatekeeperMessages({
+    wallet,
     newGatekeeperConfig,
-    proxyAddress,
     ...gatekeepers,
   });
   expect(messages.length).toEqual(1);
   expect(messages[0].toAmino()).toEqual({
     type: "wasm/MsgExecuteContract",
     value: {
-      sender: proxyAddress,
+      sender: wallet.owner.address,
       contract: gatekeepers.spendLimitGatekeeper,
       msg: {
         rm_permissioned_address: {
@@ -338,8 +349,7 @@ test("Make unlocked flex account locked", async () => {
     },
   };
 
-  const currentGatekeeperConfig = createObservableGatekeeperConfig();
-  currentGatekeeperConfig.upsertFlexAccount(
+  wallet.gatekeeperConfig.upsertFlexAccount(
     ObservableFlexAccount.create({
       ...flexAccount,
       autoSign: {
@@ -354,10 +364,9 @@ test("Make unlocked flex account locked", async () => {
       autoSign: null,
     })
   );
-  const messages = getUpdateGatekeeperMessages({
-    currentGatekeeperConfig,
+  const messages = sdk.getUpdateGatekeeperMessages({
+    wallet,
     newGatekeeperConfig,
-    proxyAddress,
     ...gatekeepers,
   });
   expect(messages.length).toEqual(1);
@@ -372,8 +381,7 @@ test("Make unlocked flex account locked", async () => {
           address,
         },
       },
-      sender:
-        "terra19g840q54mxd5vyxh3rdfpncmmyql5hcu8j9wcg45zgwgt4phwdes27emev",
+      sender: wallet.owner.address,
     },
   });
 });
