@@ -263,7 +263,7 @@ export class CosmosSdk extends AbstractSdk {
     });
   }
 
-  public async fetchBalances({ address }: { address: string }) {
+  protected async balancesQueryFn(address: string) {
     return await this.withClients(
       async ({ stargateClient, cosmWasmClient }) => {
         const [nativeBalances, customBalances] = await Promise.all([

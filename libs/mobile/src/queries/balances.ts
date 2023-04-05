@@ -2,22 +2,6 @@ import { Chain, Sdk } from "@obi-wallet/sdk";
 
 import { staleTime } from "./helpers";
 
-export function getBalancesQuery({
-  chainId,
-  address,
-}: {
-  chainId: Chain;
-  address: string | null;
-}) {
-  return {
-    queryKey: ["balances", { chainId, address }],
-    queryFn: async () => {
-      if (!address) return [];
-      return await Sdk.chainId(chainId).fetchBalances({ address });
-    },
-  };
-}
-
 export function getPricesQuery({ chainId }: { chainId: Chain }) {
   return {
     queryKey: ["prices", { chainId }],

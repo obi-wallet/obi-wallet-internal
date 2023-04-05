@@ -10,7 +10,6 @@ import { SvgProps } from "react-native-svg";
 import LoopIcon from "./assets/loop.svg";
 import { getRootStore } from "../../background/root-store";
 import {
-  getBalancesQuery,
   getDelegationsQuery,
   getPricesQuery,
   getRewardsQuery,
@@ -64,7 +63,7 @@ export function useBalances({
 export function useRawBalances({ address }: { address: string }) {
   const { chainStore } = useStore();
   const chainId = chainStore.currentChain;
-  return useQuery(getBalancesQuery({ chainId, address }));
+  return useQuery(Sdk.chainId(chainId).balancesQuery(address));
 }
 
 export function usePrices() {

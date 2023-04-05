@@ -249,7 +249,7 @@ export class TerraSdk extends AbstractSdk {
     }, prices);
   }
 
-  public async fetchBalances({ address }: { address: string }) {
+  protected async balancesQueryFn(address: string) {
     return await this.withClient(async (client) => {
       return await this.fetchAllPages(async (paginationOptions) => {
         const [coins, pagination] = await client.bank.balance(

@@ -6,3 +6,4 @@ export * from "./sdk";
 export * from "./signers";
 export * from "./transactions";
 export * from "./user-interactions";
+export * from "./query-client";

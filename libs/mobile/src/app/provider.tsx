@@ -1,5 +1,6 @@
 import { Theme, ThemeProvider } from "@emotion/react";
 import { Brand, Config, messages } from "@obi-wallet/common";
+import { queryClient } from "@obi-wallet/sdk";
 import { loopTheme, obiTheme } from "@obi-wallet/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
@@ -18,14 +19,6 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { StoreContext } from "./stores";
 import { useCreateRootStore } from "../background/root-store";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      cacheTime: 1000 * 60 * 60 * 24, // 1 day
-    },
-  },
-});
 
 const persister = createAsyncStoragePersister({
   storage: AsyncStorage,

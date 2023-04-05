@@ -21,12 +21,17 @@ import {
   MultisigWallet,
 } from "../data-structures";
 import { MultisigPublicKey, PublicKey } from "../keys";
+import { queryClient, QueryClientNamespace } from "../query-client";
 import { MultisigSigner, Signer } from "../signers";
 import { Message, SignedTransaction } from "../transactions";
 import { AbstractUserInteractionResponse } from "../user-interactions/abstract";
 
 export abstract class AbstractSdk {
-  protected constructor(protected chainId: Chain) {}
+  protected queryNamespace: QueryClientNamespace<"sdk", { chainId: Chain }>;
+
+  protected constructor(protected chainId: Chain) {
+    this.queryNamespace = new QueryClientNamespace("sdk", { chainId });
+  }
 
   public abstract validateAddress({ address }: { address: string }): boolean;
   public abstract validateAccount({
@@ -54,11 +59,20 @@ export abstract class AbstractSdk {
   public abstract prepareSigner({ signer }: { signer: Signer }): Promise<void>;
 
   public abstract fetchPrices(): Promise<Record<string, number>>;
-  public abstract fetchBalances({
-    address,
-  }: {
-    address: string;
-  }): Promise<Coin[]>;
+
+  public fetchBalances(address: string) {
+    return queryClient.fetchQuery(this.balancesQuery(address));
+  }
+
+  public balancesQuery(address: string) {
+    return this.queryNamespace.createQuery({
+      name: "balances",
+      fn: this.balancesQueryFn.bind(this),
+      params: address,
+    });
+  }
+
+  protected abstract balancesQueryFn(address: string): Promise<Coin[]>;
 
   public abstract fetchDelegations({
     address,
