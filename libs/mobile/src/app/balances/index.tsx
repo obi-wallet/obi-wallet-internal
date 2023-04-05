@@ -11,7 +11,6 @@ import LoopIcon from "./assets/loop.svg";
 import { getRootStore } from "../../background/root-store";
 import {
   getDelegationsQuery,
-  getPricesQuery,
   getRewardsQuery,
   getUnbondingDelegations,
   getValidatorsQuery,
@@ -69,7 +68,7 @@ export function useRawBalances({ address }: { address: string }) {
 export function usePrices() {
   const { chainStore } = useStore();
   const chainId = chainStore.currentChain;
-  return useQuery(getPricesQuery({ chainId }));
+  return useQuery(Sdk.chainId(chainId).bank.pricesQuery());
 }
 
 export function useUsdBalance({ address }: { address: string }) {

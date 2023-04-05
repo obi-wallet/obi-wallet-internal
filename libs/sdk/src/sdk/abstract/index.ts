@@ -63,8 +63,6 @@ export abstract class AbstractSdk {
   }
   public abstract prepareSigner({ signer }: { signer: Signer }): Promise<void>;
 
-  public abstract fetchPrices(): Promise<Record<string, number>>;
-
   public abstract fetchDelegations({
     address,
   }: {

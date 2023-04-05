@@ -1,5 +1,6 @@
-import { QueryClient } from "@tanstack/query-core";
+import { FetchQueryOptions, QueryClient } from "@tanstack/query-core";
 import { Duration, DurationLikeObject } from "luxon";
+import * as R from "ramda";
 
 export function queryClientDuration(duration: DurationLikeObject) {
   return Duration.fromObject(duration).toMillis();
@@ -22,7 +23,50 @@ export class QueryClientNamespace<
     protected namespaceParams: TNamespaceParams
   ) {}
 
-  public createQuery<TFnParams, TFnReturn>({
+  public createQuery<TFnParams, TFnReturn>(
+    params: {
+      name: string;
+    } & (
+      | {
+          fn: () => Promise<TFnReturn>;
+        }
+      | {
+          fn: (args: TFnParams) => Promise<TFnReturn>;
+          params: TFnParams;
+        }
+    )
+  ) {
+    if (R.has("params", params)) {
+      return this.createQueryWithParams(params);
+    }
+
+    return this.createQueryWithoutParams(params);
+  }
+
+  protected createQueryWithoutParams<TFnReturn>({
+    name,
+    fn,
+  }: {
+    name: string;
+    fn: () => Promise<TFnReturn>;
+  }): Pick<FetchQueryOptions<TFnReturn>, "queryKey" | "queryFn"> {
+    return {
+      queryKey: [
+        {
+          namespace: this.namespace,
+          params: this.namespaceParams,
+        },
+        {
+          fn: name,
+        },
+      ],
+      queryFn: (): Promise<TFnReturn> => {
+        return fn();
+      },
+    };
+  }
+
+  protected createQueryWithParams<TFnParams, TFnReturn>({
     name,
     fn,
     params,
@@ -30,7 +74,7 @@ export class QueryClientNamespace<
     name: string;
     fn: (args: TFnParams) => Promise<TFnReturn>;
     params: TFnParams;
-  }) {
+  }): Pick<FetchQueryOptions<TFnReturn>, "queryKey" | "queryFn"> {
     return {
       queryKey: [
         {

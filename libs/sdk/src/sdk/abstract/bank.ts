@@ -25,4 +25,17 @@ export abstract class AbstractBankSdk {
   }
 
   protected abstract balancesQueryFn(address: string): Promise<Coin[]>;
+
+  public fetchPrices() {
+    return queryClient.fetchQuery(this.pricesQuery());
+  }
+
+  public pricesQuery() {
+    return this.queryNamespace.createQuery({
+      name: "prices",
+      fn: this.pricesQueryFn.bind(this),
+    });
+  }
+
+  protected abstract pricesQueryFn(): Promise<Record<string, number>>;
 }
