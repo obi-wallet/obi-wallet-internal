@@ -22,6 +22,7 @@ import { CosmosBankSdk } from "./bank";
 import { CosmosClient } from "./client";
 import { MultisigSigner } from "./multisig-signer";
 import { OfflineAminoSigner } from "./offline-amino-signer";
+import { CosmosStakingSdk } from "./staking";
 import { CosmosChain, cosmosChains } from "../../chains";
 import {
   GatekeeperConfig,
@@ -46,6 +47,7 @@ function notImplemented(message: string) {
 
 export class CosmosSdk extends AbstractSdk {
   public bank: CosmosBankSdk;
+  public staking: CosmosStakingSdk;
 
   protected client: CosmosClient;
 
@@ -53,6 +55,10 @@ export class CosmosSdk extends AbstractSdk {
     super(chainId);
     this.client = new CosmosClient(chainId);
     this.bank = new CosmosBankSdk({
+      chainId,
+      client: this.client,
+    });
+    this.staking = new CosmosStakingSdk({
       chainId,
       client: this.client,
     });
@@ -134,32 +140,6 @@ export class CosmosSdk extends AbstractSdk {
     return this.client.withStargateClient(async (client) => {
       return await client.getBalance(address, denom);
     });
-  }
-
-  public async fetchDelegations(_: { address: string }) {
-    notImplemented("fetchDelegations not implemented for Cosmos");
-    return [];
-  }
-
-  public async fetchUnbondingDelegations(_: { address: string }) {
-    notImplemented("fetchUnbondingDelegations not implemented for Cosmos");
-    return [];
-  }
-
-  public async fetchValidators() {
-    notImplemented("fetchValidators not implemented for Cosmos");
-    return [];
-  }
-
-  public async fetchRewards(_: { address: string }) {
-    notImplemented("fetchRewards not implemented for Cosmos");
-    return {
-      perDelegator: [],
-      total: {
-        denom: this.chain.denom,
-        amount: "0",
-      },
-    };
   }
 
   public async fetchCodeId({ contract }: { contract: string }) {

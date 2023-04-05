@@ -26,6 +26,7 @@ export class QueryClientNamespace<
   public createQuery<TFnParams, TFnReturn>(
     params: {
       name: string;
+      staleTime?: DurationLikeObject;
     } & (
       | {
           fn: () => Promise<TFnReturn>;
@@ -46,10 +47,12 @@ export class QueryClientNamespace<
   protected createQueryWithoutParams<TFnReturn>({
     name,
     fn,
+    staleTime,
   }: {
     name: string;
     fn: () => Promise<TFnReturn>;
-  }): Pick<FetchQueryOptions<TFnReturn>, "queryKey" | "queryFn"> {
+    staleTime?: DurationLikeObject;
+  }): Pick<FetchQueryOptions<TFnReturn>, "queryKey" | "queryFn" | "staleTime"> {
     return {
       queryKey: [
         {
@@ -63,6 +66,7 @@ export class QueryClientNamespace<
       queryFn: (): Promise<TFnReturn> => {
         return fn();
       },
+      staleTime: staleTime ? queryClientDuration(staleTime) : undefined,
     };
   }
 
@@ -70,11 +74,13 @@ export class QueryClientNamespace<
     name,
     fn,
     params,
+    staleTime,
   }: {
     name: string;
     fn: (args: TFnParams) => Promise<TFnReturn>;
     params: TFnParams;
-  }): Pick<FetchQueryOptions<TFnReturn>, "queryKey" | "queryFn"> {
+    staleTime?: DurationLikeObject;
+  }): Pick<FetchQueryOptions<TFnReturn>, "queryKey" | "queryFn" | "staleTime"> {
     return {
       queryKey: [
         {
@@ -89,6 +95,7 @@ export class QueryClientNamespace<
       queryFn: (): Promise<TFnReturn> => {
         return fn(params);
       },
+      staleTime: staleTime ? queryClientDuration(staleTime) : undefined,
     };
   }
 }

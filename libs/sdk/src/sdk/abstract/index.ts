@@ -2,6 +2,7 @@ import fetch from "isomorphic-unfetch";
 import invariant from "tiny-invariant";
 
 import { AbstractBankSdk } from "./bank";
+import { AbstractStakingSdk } from "./staking";
 import { Chain } from "../../chains";
 import {
   GatekeeperConfig,
@@ -18,21 +19,19 @@ import {
   BroadcastTransactionResult,
   CodeIds,
   Coin,
-  Delegation,
-  EnrichedValidator,
   FormattedCoin,
   GatekeeperContractAddresses,
   PermissionedAddress,
-  Rewards,
-  UnbondingDelegation,
 } from "../common";
 
 export * from "./bank";
+export * from "./staking";
 
 export abstract class AbstractSdk {
   protected queryNamespace: QueryClientNamespace<"sdk", { chainId: Chain }>;
 
   public abstract bank: AbstractBankSdk;
+  public abstract staking: AbstractStakingSdk;
 
   protected constructor(protected chainId: Chain) {
     this.queryNamespace = new QueryClientNamespace("sdk", { chainId });
@@ -62,23 +61,6 @@ export abstract class AbstractSdk {
     }
   }
   public abstract prepareSigner({ signer }: { signer: Signer }): Promise<void>;
-
-  public abstract fetchDelegations({
-    address,
-  }: {
-    address: string;
-  }): Promise<Delegation[]>;
-  public abstract fetchUnbondingDelegations({
-    address,
-  }: {
-    address: string;
-  }): Promise<UnbondingDelegation[]>;
-  public abstract fetchValidators(): Promise<EnrichedValidator[]>;
-  public abstract fetchRewards({
-    address,
-  }: {
-    address: string;
-  }): Promise<Rewards>;
 
   public abstract fetchCodeId({
     contract,
