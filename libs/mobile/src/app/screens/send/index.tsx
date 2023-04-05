@@ -21,8 +21,6 @@ import invariant from "tiny-invariant";
 
 import ObiQr from "./assets/obiqr.svg";
 import { ExtendedCoin, formatExtendedCoin, useBalances } from "../../balances";
-import Bottle from "../../balances/assets/bottle.svg";
-import Drink from "../../balances/assets/drink.svg";
 import { Button } from "../../button";
 import { RootRoute, RootStackParamList } from "../../root-stack";
 import { useMultisigWallet, useStore } from "../../stores";
@@ -35,9 +33,6 @@ import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
 import { RefreshableFlatList } from "../components/refreshable-flat-list";
 import { isSmallScreenNumber } from "../components/screen-size";
 import { HomeBottomTabRoute } from "../home/home-stack";
-
-const BARTENDER_ADDRESS =
-  "juno1ps9sk7fqh2f95waggk3r5un6sr7rd4gxmq4kzh73zstgkqz52wmqh2wr0s";
 
 export type SendScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -78,13 +73,6 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState("");
 
-  const drinkOrBottleModalFlavor =
-    selectedCoin?.denom === "ubottle"
-      ? "bottle"
-      : selectedCoin?.denom === "udrink"
-      ? "drink"
-      : null;
-
   const normalizedAmount = amount.replace(/,/g, ".");
 
   const [confirmModalVisible, setConfirmModalStatus] = useState<{
@@ -120,23 +108,7 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
         }}
       >
         {qrCodeScannerModal.render()}
-        {drinkOrBottleModalFlavor &&
-        (!address || address === BARTENDER_ADDRESS) &&
-        confirmModalVisible.visible &&
-        confirmModalVisible.success ? (
-          <DrinkOrBottleModal
-            flavor={drinkOrBottleModalFlavor}
-            visible={confirmModalVisible.visible && confirmModalVisible.success}
-            onDismiss={() => {
-              setConfirmModalStatus({ visible: false });
-              navigation.navigate(HomeBottomTabRoute.Assets);
-            }}
-          />
-        ) : null}
-        {((drinkOrBottleModalFlavor && address !== BARTENDER_ADDRESS) ||
-          !drinkOrBottleModalFlavor) &&
-        confirmModalVisible.visible &&
-        confirmModalVisible.success ? (
+        {confirmModalVisible.visible && confirmModalVisible.success ? (
           <SuccessModal
             visible={confirmModalVisible.visible && confirmModalVisible.success}
             onDismiss={() => {
@@ -155,7 +127,6 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
             }}
           />
         ) : null}
-
         <View>
           <View style={{ flexDirection: "row" }}>
             <Back style={{ alignSelf: "flex-start", zIndex: 2 }} />
@@ -183,14 +154,10 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
                 id: "send.to",
                 defaultMessage: "To",
               })}
-              placeholder={
-                drinkOrBottleModalFlavor
-                  ? BARTENDER_ADDRESS
-                  : intl.formatMessage({
-                      id: "send.walletaddress",
-                      defaultMessage: "Wallet Address",
-                    })
-              }
+              placeholder={intl.formatMessage({
+                id: "send.walletaddress",
+                defaultMessage: "Wallet Address",
+              })}
               style={{ flex: 1 }}
               inputStyle={{
                 borderTopRightRadius: 0,
@@ -338,10 +305,9 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
             defaultMessage: "Next",
           })}
           disabled={
-            !(address || drinkOrBottleModalFlavor) ||
+            !address ||
             !amount ||
             Number(normalizedAmount) <= 0 ||
-            (drinkOrBottleModalFlavor && Number(normalizedAmount) < 1) ||
             !selectedCoin
           }
           onPress={async () => {
@@ -598,97 +564,6 @@ const CoinRenderer = observer(function CoinRenderer({
         </Text>
       </View>
     </TouchableOpacity>
-  );
-});
-
-interface DrinkOrBottleModalProps {
-  visible?: boolean;
-  onDismiss: () => void;
-  flavor: "bottle" | "drink";
-}
-
-const DrinkOrBottleModal = observer(function DrinkOrBottleModal({
-  visible,
-  onDismiss,
-  flavor,
-}: DrinkOrBottleModalProps) {
-  const startTime = useRef(Date.now());
-  const previousVisible = useRef(visible);
-  const [remainingTime, setRemainingTime] = useState(180);
-  const remainingMinutes = Math.floor(remainingTime / 60);
-  const remainingSeconds = remainingTime % 60;
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRemainingTime(
-        180 - Math.floor((Date.now() - startTime.current) / 1000)
-      );
-    });
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (remainingTime <= 0) {
-      onDismiss();
-    }
-  }, [onDismiss, remainingTime]);
-
-  if (visible !== previousVisible.current) {
-    previousVisible.current = visible;
-    startTime.current = Date.now();
-  }
-
-  return (
-    <Modal isVisible={visible}>
-      <View
-        style={{
-          flex: 1,
-          alignItems: "stretch",
-          justifyContent: "center",
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: "#111023",
-            borderRadius: 20,
-            alignItems: "center",
-            paddingVertical: 20,
-          }}
-        >
-          <Text style={{ color: "#fff", fontSize: 19 }}>
-            Please show this to your bartender
-          </Text>
-          <Text style={{ color: "#FF1010", marginTop: 10 }}>
-            {remainingTime > 0 ? (
-              <>
-                {remainingMinutes}:
-                {remainingSeconds.toString(10).length < 2 ? "0" : ""}
-                {remainingSeconds}
-              </>
-            ) : (
-              0
-            )}
-          </Text>
-          <View style={{ marginTop: 16 }}>
-            {flavor === "drink" ? (
-              <Drink />
-            ) : flavor === "bottle" ? (
-              <Bottle />
-            ) : null}
-          </View>
-          <Button
-            flavor="blue"
-            label="Dismiss"
-            onPress={() => {
-              onDismiss();
-            }}
-          />
-        </View>
-      </View>
-    </Modal>
   );
 });
 
