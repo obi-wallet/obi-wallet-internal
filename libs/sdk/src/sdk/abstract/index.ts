@@ -1,6 +1,18 @@
 import fetch from "isomorphic-unfetch";
 import invariant from "tiny-invariant";
 
+import { AbstractBankSdk } from "./bank";
+import { Chain } from "../../chains";
+import {
+  GatekeeperConfig,
+  MultisigKey,
+  MultisigWallet,
+} from "../../data-structures";
+import { MultisigPublicKey, PublicKey } from "../../keys";
+import { QueryClientNamespace } from "../../query-client";
+import { MultisigSigner, Signer } from "../../signers";
+import { Message, SignedTransaction } from "../../transactions";
+import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
 import {
   AccountValidationResult,
   BroadcastTransactionResult,
@@ -13,21 +25,14 @@ import {
   PermissionedAddress,
   Rewards,
   UnbondingDelegation,
-} from "./common";
-import { Chain } from "../chains";
-import {
-  GatekeeperConfig,
-  MultisigKey,
-  MultisigWallet,
-} from "../data-structures";
-import { MultisigPublicKey, PublicKey } from "../keys";
-import { queryClient, QueryClientNamespace } from "../query-client";
-import { MultisigSigner, Signer } from "../signers";
-import { Message, SignedTransaction } from "../transactions";
-import { AbstractUserInteractionResponse } from "../user-interactions/abstract";
+} from "../common";
+
+export * from "./bank";
 
 export abstract class AbstractSdk {
   protected queryNamespace: QueryClientNamespace<"sdk", { chainId: Chain }>;
+
+  public abstract bank: AbstractBankSdk;
 
   protected constructor(protected chainId: Chain) {
     this.queryNamespace = new QueryClientNamespace("sdk", { chainId });
@@ -59,20 +64,6 @@ export abstract class AbstractSdk {
   public abstract prepareSigner({ signer }: { signer: Signer }): Promise<void>;
 
   public abstract fetchPrices(): Promise<Record<string, number>>;
-
-  public fetchBalances(address: string) {
-    return queryClient.fetchQuery(this.balancesQuery(address));
-  }
-
-  public balancesQuery(address: string) {
-    return this.queryNamespace.createQuery({
-      name: "balances",
-      fn: this.balancesQueryFn.bind(this),
-      params: address,
-    });
-  }
-
-  protected abstract balancesQueryFn(address: string): Promise<Coin[]>;
 
   public abstract fetchDelegations({
     address,

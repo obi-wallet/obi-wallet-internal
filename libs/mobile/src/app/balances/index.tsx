@@ -63,7 +63,7 @@ export function useBalances({
 export function useRawBalances({ address }: { address: string }) {
   const { chainStore } = useStore();
   const chainId = chainStore.currentChain;
-  return useQuery(Sdk.chainId(chainId).balancesQuery(address));
+  return useQuery(Sdk.chainId(chainId).bank.balancesQuery(address));
 }
 
 export function usePrices() {

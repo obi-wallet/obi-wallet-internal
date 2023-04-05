@@ -1,10 +1,9 @@
 import { pubkeyToAddress, StdFee } from "@cosmjs/amino";
 import {
-  CosmWasmClient,
   createWasmAminoConverters,
   JsonObject,
 } from "@cosmjs/cosmwasm-stargate";
-import { coins, OfflineSigner } from "@cosmjs/proto-signing";
+import { coins } from "@cosmjs/proto-signing";
 import {
   AminoTypes,
   createAuthzAminoConverters,
@@ -15,8 +14,6 @@ import {
   createIbcAminoConverters,
   createStakingAminoConverters,
   isDeliverTxSuccess,
-  SigningStargateClient,
-  StargateClient,
 } from "@cosmjs/stargate";
 import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
 import { Bech32Address } from "@keplr-wallet/cosmos";
@@ -25,15 +22,11 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 import warning from "tiny-warning";
 
+import { CosmosBankSdk } from "./bank";
+import { CosmosClient } from "./client";
 import { MultisigSigner } from "./multisig-signer";
 import { OfflineAminoSigner } from "./offline-amino-signer";
 import { CosmosChain, cosmosChains } from "../../chains";
-import {
-  withCosmosClients,
-  withCosmosCosmWasmClient,
-  withCosmosSigningStargateClient,
-  withCosmosStargateClient,
-} from "../../clients";
 import {
   GatekeeperConfig,
   MultisigKey,
@@ -56,8 +49,17 @@ function notImplemented(message: string) {
 }
 
 export class CosmosSdk extends AbstractSdk {
+  public bank: CosmosBankSdk;
+
+  protected client: CosmosClient;
+
   protected constructor(protected chainId: CosmosChain) {
     super(chainId);
+    this.client = new CosmosClient(chainId);
+    this.bank = new CosmosBankSdk({
+      chainId,
+      client: this.client,
+    });
   }
 
   public get chain() {
@@ -96,7 +98,7 @@ export class CosmosSdk extends AbstractSdk {
       "Account not ready"
     );
     if (validationResult <= AccountValidationResult.PUBLIC_KEY_NOT_READY) {
-      await this.withSigningStargateClient(
+      await this.client.withSigningStargateClient(
         OfflineAminoSigner.fromSigner({
           signer,
           prefix: this.chain.prefix,
@@ -121,13 +123,13 @@ export class CosmosSdk extends AbstractSdk {
   }
 
   protected async fetchAccount({ address }: { address: string }) {
-    return this.withStargateClient(async (client) => {
+    return this.client.withStargateClient(async (client) => {
       return await client.getAccount(address);
     });
   }
 
   public async fetchPrices() {
-    return await this.withCosmWasmClient(async (cosmWasmClient) => {
+    return await this.client.withCosmWasmClient(async (cosmWasmClient) => {
       const denoms = (() => {
         switch (this.chainId) {
           case "uni-3":
@@ -258,58 +260,9 @@ export class CosmosSdk extends AbstractSdk {
     address: string;
     denom: string;
   }) {
-    return this.withStargateClient(async (client) => {
+    return this.client.withStargateClient(async (client) => {
       return await client.getBalance(address, denom);
     });
-  }
-
-  protected async balancesQueryFn(address: string) {
-    return await this.withClients(
-      async ({ stargateClient, cosmWasmClient }) => {
-        const [nativeBalances, customBalances] = await Promise.all([
-          fetchNativeBalances(),
-          fetchCustomBalances(),
-        ]);
-        return [...nativeBalances, ...customBalances];
-
-        async function fetchNativeBalances() {
-          const coins = await stargateClient.getAllBalances(address);
-          return coins.map((coin: Coin) => {
-            return {
-              denom: coin.denom,
-              amount: coin.amount,
-              usdPrice: 0,
-            };
-          });
-        }
-
-        async function fetchCustomBalances() {
-          const customTokens = [
-            {
-              contract:
-                "juno1qsrercqegvs4ye0yqg93knv73ye5dc3prqwd6jcdcuj8ggp6w0us66deup",
-              denom: "uloop",
-            },
-          ];
-
-          return await Promise.all(
-            customTokens.map(async (customToken) => {
-              const response = await cosmWasmClient.queryContractSmart(
-                customToken.contract,
-                {
-                  balance: { address: address },
-                }
-              );
-              return {
-                denom: customToken.denom,
-                amount: response.balance,
-                contract: customToken.contract,
-              };
-            })
-          );
-        }
-      }
-    );
   }
 
   public async fetchDelegations(_: { address: string }) {
@@ -339,7 +292,7 @@ export class CosmosSdk extends AbstractSdk {
   }
 
   public async fetchCodeId({ contract }: { contract: string }) {
-    return await this.withCosmWasmClient(async (client) => {
+    return await this.client.withCosmWasmClient(async (client) => {
       const { codeId } = await client.getContract(contract);
       return codeId;
     });
@@ -398,7 +351,7 @@ export class CosmosSdk extends AbstractSdk {
     signer: Signer;
     messages: Message[];
   }) {
-    return await this.withSigningStargateClient(
+    return await this.client.withSigningStargateClient(
       OfflineAminoSigner.fromSigner({
         signer,
         prefix: this.chain.prefix,
@@ -471,7 +424,7 @@ export class CosmosSdk extends AbstractSdk {
   }: {
     signedTransaction: SignedTransaction;
   }) {
-    return await this.withStargateClient(async (client) => {
+    return await this.client.withStargateClient(async (client) => {
       const rawResult = await client.broadcastTx(signedTransaction);
       return {
         success: isDeliverTxSuccess(rawResult),
@@ -689,33 +642,6 @@ export class CosmosSdk extends AbstractSdk {
       default:
         return super.formatCoin(coin);
     }
-  }
-
-  public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
-    return withCosmosCosmWasmClient(this.chainId, f);
-  }
-
-  public withStargateClient<T>(f: (client: StargateClient) => T) {
-    return withCosmosStargateClient(this.chainId, f);
-  }
-
-  public withSigningStargateClient<T>(
-    signer: OfflineSigner,
-    f: (client: SigningStargateClient) => T
-  ) {
-    return withCosmosSigningStargateClient(
-      { chainId: this.chainId, signer },
-      f
-    );
-  }
-
-  public withClients<T>(
-    f: (clients: {
-      stargateClient: StargateClient;
-      cosmWasmClient: CosmWasmClient;
-    }) => T
-  ) {
-    return withCosmosClients(this.chainId, f);
   }
 
   protected get defaultFee(): StdFee {

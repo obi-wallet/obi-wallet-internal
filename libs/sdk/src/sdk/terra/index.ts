@@ -3,7 +3,6 @@ import {
   Coin as TerraCoin,
   Coins,
   isTxError,
-  LCDClient,
   LegacyAminoMultisigPublicKey,
   MsgDelegate,
   MsgExecuteContract,
@@ -15,10 +14,6 @@ import {
   Validator as RawValidator,
 } from "@terra-money/feather.js";
 import {
-  Pagination,
-  PaginationOptions,
-} from "@terra-money/feather.js/dist/client/lcd/APIRequester";
-import {
   BondStatus,
   bondStatusFromJSON,
 } from "@terra-money/terra.proto/cosmos/staking/v1beta1/staking";
@@ -29,12 +24,13 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
+import { TerraBankSdk } from "./bank";
+import { TerraClient } from "./client";
 import { Key } from "./key";
 import { MultisigSigner } from "./multisig-signer";
 import { tokenPairs } from "./token-pairs";
 import { tokens } from "./tokens";
 import { TerraChain, terraChains } from "../../chains";
-import { withTerraClient } from "../../clients";
 import {
   GatekeeperConfig,
   MultisigKey,
@@ -61,8 +57,17 @@ import {
 } from "../common";
 
 export class TerraSdk extends AbstractSdk {
+  public bank: TerraBankSdk;
+
+  protected client: TerraClient;
+
   protected constructor(protected chainId: TerraChain) {
     super(chainId);
+    this.client = new TerraClient(chainId);
+    this.bank = new TerraBankSdk({
+      chainId,
+      client: this.client,
+    });
   }
 
   public get chain() {
@@ -99,7 +104,7 @@ export class TerraSdk extends AbstractSdk {
       "Account not ready"
     );
     if (validationResult <= AccountValidationResult.PUBLIC_KEY_NOT_READY) {
-      await this.withClient(async (client) => {
+      await this.client.withClient(async (client) => {
         const wallet = client.wallet(key);
         const { denom } = this.chain;
         const send = new MsgSend(address, address, { [denom]: 1 });
@@ -120,7 +125,7 @@ export class TerraSdk extends AbstractSdk {
 
   protected async fetchAccount({ address }: { address: string }) {
     try {
-      return await this.withClient(async (client) => {
+      return await this.client.withClient(async (client) => {
         return await client.auth.accountInfo(address);
       });
     } catch (e) {
@@ -174,7 +179,7 @@ export class TerraSdk extends AbstractSdk {
           case "astroport":
           case "terraswap":
           case "phoenix": {
-            const response = await this.withClient(async (client) => {
+            const response = await this.client.withClient(async (client) => {
               return (await client.wasm.contractQuery(pair.contract_addr, {
                 pool: {},
               })) as {
@@ -249,56 +254,17 @@ export class TerraSdk extends AbstractSdk {
     }, prices);
   }
 
-  protected async balancesQueryFn(address: string) {
-    return await this.withClient(async (client) => {
-      return await this.fetchAllPages(async (paginationOptions) => {
-        const [coins, pagination] = await client.bank.balance(
-          address,
-          paginationOptions
-        );
-        return [
-          coins.map((coin): Coin => {
-            return {
-              denom: coin.denom,
-              amount: coin.amount.toString(),
-            };
-          }),
-          pagination,
-        ];
-      });
-    });
-  }
-
-  public async fetchAllPages<T>(
-    f: (
-      paginationOptions: Partial<PaginationOptions>
-    ) => Promise<[T[], Pagination]>
-  ): Promise<T[]> {
-    const result: T[] = [];
-    let key: string | null = "";
-
-    do {
-      const [list, pagination] = (await f({
-        "pagination.limit": "100",
-        "pagination.key": key,
-      })) as [T[], Pagination];
-
-      result.push(...list);
-      key = pagination?.next_key;
-    } while (key);
-
-    return result;
-  }
-
   public async fetchDelegations({ address }: { address: string }) {
-    return await this.withClient(async (client) => {
-      const rawDelegations = await this.fetchAllPages((paginationOptions) => {
-        return client.staking.delegations(
-          address,
-          undefined,
-          paginationOptions
-        );
-      });
+    return await this.client.withClient(async (client) => {
+      const rawDelegations = await this.client.fetchAllPages(
+        (paginationOptions) => {
+          return client.staking.delegations(
+            address,
+            undefined,
+            paginationOptions
+          );
+        }
+      );
       return await Promise.all(
         rawDelegations.map(async (delegation): Promise<Delegation> => {
           const validator = await client.staking.validator(
@@ -321,8 +287,8 @@ export class TerraSdk extends AbstractSdk {
   }
 
   public async fetchUnbondingDelegations({ address }: { address: string }) {
-    return await this.withClient(async (client) => {
-      const rawUnbondingDelegations = await this.fetchAllPages(
+    return await this.client.withClient(async (client) => {
+      const rawUnbondingDelegations = await this.client.fetchAllPages(
         (paginationOptions) => {
           return client.staking.unbondingDelegations(
             address,
@@ -361,10 +327,12 @@ export class TerraSdk extends AbstractSdk {
   }
 
   public async fetchValidators() {
-    return await this.withClient(async (client) => {
-      const rawValidators = await this.fetchAllPages((paginationOptions) => {
-        return client.staking.validators(this.chainId, paginationOptions);
-      });
+    return await this.client.withClient(async (client) => {
+      const rawValidators = await this.client.fetchAllPages(
+        (paginationOptions) => {
+          return client.staking.validators(this.chainId, paginationOptions);
+        }
+      );
 
       const MAX_COMMISSION = 0.05;
       const VOTE_POWER_INCLUDE = 0.65;
@@ -434,7 +402,7 @@ export class TerraSdk extends AbstractSdk {
   }
 
   public async fetchRewards({ address }: { address: string }) {
-    return await this.withClient(async (client) => {
+    return await this.client.withClient(async (client) => {
       const rewards = await client.distribution.rewards(address);
 
       const handleRewards = (coins: Coins) => {
@@ -470,7 +438,7 @@ export class TerraSdk extends AbstractSdk {
   }
 
   public async fetchCodeId({ contract }: { contract: string }) {
-    return await this.withClient(async (client) => {
+    return await this.client.withClient(async (client) => {
       const { code_id } = await client.wasm.contractInfo(contract);
       return code_id;
     });
@@ -542,7 +510,7 @@ export class TerraSdk extends AbstractSdk {
   }: {
     proxyAddress: string;
   }) {
-    return await this.withClient(async (client) => {
+    return await this.client.withClient(async (client) => {
       const schema = z
         .object({
           spendlimit_gatekeeper_contract_addr: z.string().nullable(),
@@ -568,7 +536,7 @@ export class TerraSdk extends AbstractSdk {
   }: {
     spendLimitGatekeeper: string;
   }) {
-    return await this.withClient(async (client) => {
+    return await this.client.withClient(async (client) => {
       const schema = z.object({
         permissioned_addresses: z.array(PermissionedAddress),
       });
@@ -599,7 +567,7 @@ export class TerraSdk extends AbstractSdk {
     signer: Signer;
     messages: Message[];
   }) {
-    return await this.withClient(async (client) => {
+    return await this.client.withClient(async (client) => {
       const key = Key.fromSigner(signer);
       const wallet = client.wallet(key);
       try {
@@ -637,7 +605,7 @@ export class TerraSdk extends AbstractSdk {
     invariant(account, "Account not found.");
 
     try {
-      return await this.withClient(async (client) => {
+      return await this.client.withClient(async (client) => {
         const transaction = await client.tx.create(
           [
             {
@@ -680,7 +648,7 @@ export class TerraSdk extends AbstractSdk {
     proxyAddress: string;
     messages: Message[];
   }) {
-    return await this.withClient(async (client) => {
+    return await this.client.withClient(async (client) => {
       const mayExecute = await Promise.all(
         messages.map(async (message) => {
           try {
@@ -709,7 +677,7 @@ export class TerraSdk extends AbstractSdk {
   }: {
     signedTransaction: SignedTransaction;
   }) {
-    return await this.withClient(async (client) => {
+    return await this.client.withClient(async (client) => {
       const transaction = Tx.fromBuffer(Buffer.from(signedTransaction));
       const rawResult = await client.tx.broadcastBlock(
         transaction,
@@ -1511,10 +1479,6 @@ export class TerraSdk extends AbstractSdk {
     validator: string;
   }): Message {
     return new MsgWithdrawDelegatorReward(wallet.address, validator);
-  }
-
-  public withClient<T>(f: (client: LCDClient) => T) {
-    return withTerraClient(this.chainId, f);
   }
 
   public static chainId(chainId: TerraChain) {

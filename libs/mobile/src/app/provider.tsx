@@ -6,7 +6,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import {
-  QueryClient,
   QueryClientProvider,
   QueryClientProviderProps,
 } from "@tanstack/react-query";
