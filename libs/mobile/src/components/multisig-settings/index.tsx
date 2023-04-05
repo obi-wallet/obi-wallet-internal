@@ -68,6 +68,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
         onPress: () => {
           triggerBottomSheet(0);
           setSelectedType(type);
+          return Promise.resolve();
         },
       };
     }

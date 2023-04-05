@@ -44,7 +44,7 @@ export interface Key {
   description?: string;
   right?: ReactNode;
   signed?: boolean;
-  onPress?: () => void;
+  onPress?: () => Promise<void>;
 }
 
 export type HydratedKeyListItem = Key & KeyMetaData;
@@ -111,18 +111,24 @@ export const KeyListItem = observer(function KeyListItem({
   const isLoop = configStore.isLoop();
   const [pending, setPending] = useState(false);
   useEffect(() => {
+    if (pending) {
+      triggerImpactLight();
+      onPressSingleton();
+    }
+
     if (signed) {
       triggerNotificationSuccess();
     }
-  }, [signed]);
+  }, [signed, pending]);
+
   const onPressSingleton = useCallback(async () => {
     if (onPress) {
-      setPending(true);
-      try {
+      triggerImpactLight();
+      //wait a bit to show the loading animation before calling the onPress
+      setTimeout(async () => {
         await onPress();
-      } finally {
         setPending(false);
-      }
+      }, 200);
     }
   }, [onPress]);
 
@@ -169,11 +175,8 @@ export const KeyListItem = observer(function KeyListItem({
   return tiled ? (
     <TouchableOpacity
       onPress={() => {
-        if (onPress && !pending) {
-          if (!signed) {
-            triggerImpactLight();
-            onPressSingleton();
-          }
+        if (!pending && !signed) {
+          setPending(true);
         }
       }}
     >
