@@ -2,6 +2,7 @@ import fetch from "isomorphic-unfetch";
 import invariant from "tiny-invariant";
 
 import { AbstractBankSdk } from "./bank";
+import { AbstractGatekeeperSdk } from "./gatekeeper";
 import { AbstractStakingSdk } from "./staking";
 import { Chain } from "../../chains";
 import {
@@ -20,8 +21,6 @@ import {
   CodeIds,
   Coin,
   FormattedCoin,
-  GatekeeperContractAddresses,
-  PermissionedAddress,
 } from "../common";
 
 export * from "./bank";
@@ -31,6 +30,7 @@ export abstract class AbstractSdk {
   protected queryNamespace: QueryClientNamespace<"sdk", { chainId: Chain }>;
 
   public abstract bank: AbstractBankSdk;
+  public abstract gatekeeper: AbstractGatekeeperSdk;
   public abstract staking: AbstractStakingSdk;
 
   protected constructor(protected chainId: Chain) {
@@ -83,17 +83,6 @@ export abstract class AbstractSdk {
     wallet: MultisigWallet;
     codeIds: CodeIds;
   }): Message;
-
-  public abstract fetchGatekeeperContractAddresses({
-    proxyAddress,
-  }: {
-    proxyAddress: string;
-  }): Promise<GatekeeperContractAddresses>;
-  public abstract fetchPermissionedAddresses({
-    spendLimitGatekeeper,
-  }: {
-    spendLimitGatekeeper: string;
-  }): Promise<PermissionedAddress[]>;
 
   protected async lendFees({ address }: { address: string }) {
     invariant(this.validateAddress({ address }), "Invalid address");

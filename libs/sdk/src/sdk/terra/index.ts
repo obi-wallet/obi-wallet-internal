@@ -20,6 +20,7 @@ import { z } from "zod";
 
 import { TerraBankSdk } from "./bank";
 import { TerraClient } from "./client";
+import { TerraGatekeeperSdk } from "./gatekeeper";
 import { Key } from "./key";
 import { MultisigSigner } from "./multisig-signer";
 import { TerraStakingSdk } from "./staking";
@@ -49,6 +50,7 @@ import {
 
 export class TerraSdk extends AbstractSdk {
   public bank: TerraBankSdk;
+  public gatekeeper: TerraGatekeeperSdk;
   public staking: TerraStakingSdk;
 
   protected client: TerraClient;
@@ -57,6 +59,10 @@ export class TerraSdk extends AbstractSdk {
     super(chainId);
     this.client = new TerraClient(chainId);
     this.bank = new TerraBankSdk({
+      chainId,
+      client: this.client,
+    });
+    this.gatekeeper = new TerraGatekeeperSdk({
       chainId,
       client: this.client,
     });
@@ -183,9 +189,7 @@ export class TerraSdk extends AbstractSdk {
   public async fetchCodeIds(wallet: MultisigWallet) {
     const addresses = {
       userAccount: wallet.proxyAddress,
-      ...(await this.fetchGatekeeperContractAddresses({
-        proxyAddress: wallet.proxyAddress,
-      })),
+      ...(await this.gatekeeper.fetchContractAddresses(wallet.proxyAddress)),
     };
 
     const pairs = R.toPairs(addresses);
@@ -719,9 +723,7 @@ export class TerraSdk extends AbstractSdk {
     | { approved: false }
   > {
     const { spendLimitGatekeeper, sessionKeyGatekeeper } =
-      await this.fetchGatekeeperContractAddresses({
-        proxyAddress: wallet.proxyAddress,
-      });
+      await this.gatekeeper.fetchContractAddresses(wallet.proxyAddress);
     invariant(
       spendLimitGatekeeper,
       "Spend limit gatekeeper address is not set"

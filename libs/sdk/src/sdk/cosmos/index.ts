@@ -20,6 +20,7 @@ import warning from "tiny-warning";
 
 import { CosmosBankSdk } from "./bank";
 import { CosmosClient } from "./client";
+import { CosmosGatekeeperSdk } from "./gatekeeper";
 import { MultisigSigner } from "./multisig-signer";
 import { OfflineAminoSigner } from "./offline-amino-signer";
 import { CosmosStakingSdk } from "./staking";
@@ -47,6 +48,7 @@ function notImplemented(message: string) {
 
 export class CosmosSdk extends AbstractSdk {
   public bank: CosmosBankSdk;
+  public gatekeeper: CosmosGatekeeperSdk;
   public staking: CosmosStakingSdk;
 
   protected client: CosmosClient;
@@ -55,6 +57,10 @@ export class CosmosSdk extends AbstractSdk {
     super(chainId);
     this.client = new CosmosClient(chainId);
     this.bank = new CosmosBankSdk({
+      chainId,
+      client: this.client,
+    });
+    this.gatekeeper = new CosmosGatekeeperSdk({
       chainId,
       client: this.client,
     });
