@@ -86,12 +86,12 @@ describe("validateAccount", () => {
 
 describe("fetchPrices", () => {
   test("Cosmos", async () => {
-    const result = await Sdk.chainId("juno-1").bank.fetchPrices();
+    const result = await Sdk.chainId("juno-1").bank.prices();
     expect(typeof result["ujuno"]).toEqual("number");
   });
 
   test("Terra", async () => {
-    const result = await Sdk.chainId("phoenix-1").bank.fetchPrices();
+    const result = await Sdk.chainId("phoenix-1").bank.prices();
     expect(typeof result["uluna"]).toEqual("number");
   });
 });

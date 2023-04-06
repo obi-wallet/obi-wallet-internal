@@ -6,6 +6,9 @@ dist/
 /tmp
 /out-tsc
 
+# TypeDoc output
+docs/
+
 # dependencies
 node_modules
 
