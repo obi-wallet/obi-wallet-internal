@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { TerraClient } from "./client";
 import { TerraChain } from "../../chains";
-import { AbstractGatekeeperSdk } from "../abstract/gatekeeper";
+import { AbstractGatekeeperSdk } from "../abstract";
 import { GatekeeperContractAddresses, PermissionedAddress } from "../common";
 
 export class TerraGatekeeperSdk extends AbstractGatekeeperSdk {

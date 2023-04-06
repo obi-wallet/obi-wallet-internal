@@ -24,7 +24,7 @@ import { CosmosChain, cosmosChains } from "../../chains";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../keys";
 import { Secp256k1PrivateKeySigner } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
-import { AbstractTransactionsSdk } from "../abstract/transactions";
+import { AbstractTransactionsSdk } from "../abstract";
 import { AccountValidationResult, BroadcastTransactionResult } from "../common";
 
 export class CosmosTransactionsSdk extends AbstractTransactionsSdk {

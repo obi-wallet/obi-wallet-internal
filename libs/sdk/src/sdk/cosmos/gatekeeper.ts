@@ -2,7 +2,7 @@ import warning from "tiny-warning";
 
 import { CosmosClient } from "./client";
 import { CosmosChain } from "../../chains";
-import { AbstractGatekeeperSdk } from "../abstract/gatekeeper";
+import { AbstractGatekeeperSdk } from "../abstract";
 import { GatekeeperContractAddresses, PermissionedAddress } from "../common";
 
 function notImplemented(message: string) {

@@ -1,6 +1,5 @@
 import {
   Coin as TerraCoin,
-  Coins,
   isTxError,
   MsgDelegate,
   MsgExecuteContract,
@@ -70,60 +69,6 @@ export class TerraSdk extends AbstractSdk {
 
   public get chain() {
     return terraChains[this.chainId];
-  }
-
-  protected async fetchAccount({ address }: { address: string }) {
-    try {
-      return await this.client.withClient(async (client) => {
-        return await client.auth.accountInfo(address);
-      });
-    } catch (e) {
-      const error = e as AxiosError;
-      const data = error.response?.data;
-
-      const result = RpcError.safeParse(data);
-      if (result.success && result.data.message.includes("code = NotFound")) {
-        return null;
-      }
-
-      throw e;
-    }
-  }
-
-  public async fetchRewards({ address }: { address: string }) {
-    return await this.client.withClient(async (client) => {
-      const rewards = await client.distribution.rewards(address);
-
-      const handleRewards = (coins: Coins) => {
-        const mapped = coins.map((coin) => {
-          return {
-            denom: coin.denom,
-            amount: coin.amount.toString(),
-          };
-        });
-        return mapped.length > 0
-          ? mapped[0]
-          : {
-              denom: this.chain.denom,
-              amount: "0",
-            };
-      };
-
-      const perDelegator = R.values(
-        R.mapObjIndexed((rewards, address) => {
-          return {
-            address,
-            rewards: handleRewards(rewards),
-          };
-        }, rewards.rewards)
-      );
-      const total = handleRewards(rewards.total);
-
-      return {
-        perDelegator,
-        total,
-      };
-    });
   }
 
   public async fetchCodeId({ contract }: { contract: string }) {

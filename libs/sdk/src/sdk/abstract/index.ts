@@ -20,7 +20,9 @@ import {
 } from "../common";
 
 export * from "./bank";
+export * from "./gatekeeper";
 export * from "./staking";
+export * from "./transactions";
 
 export abstract class AbstractSdk {
   protected queryNamespace: QueryClientNamespace<"sdk", { chainId: Chain }>;
