@@ -3,7 +3,6 @@ import {
   Coin as TerraCoin,
   Coins,
   isTxError,
-  LCDClient,
   LegacyAminoMultisigPublicKey,
   MsgDelegate,
   MsgExecuteContract,
@@ -12,29 +11,25 @@ import {
   MsgWithdrawDelegatorReward,
   SimplePublicKey,
   Tx,
-  Validator as RawValidator,
 } from "@terra-money/feather.js";
-import {
-  Pagination,
-  PaginationOptions,
-} from "@terra-money/feather.js/dist/client/lcd/APIRequester";
-import {
-  BondStatus,
-  bondStatusFromJSON,
-} from "@terra-money/terra.proto/cosmos/staking/v1beta1/staking";
 import { AxiosError } from "axios";
-import BigNumber from "bignumber.js";
+import { Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
+import { TerraBankSdk } from "./bank";
+import { TerraClient } from "./client";
 import { Key } from "./key";
 import { MultisigSigner } from "./multisig-signer";
-import { tokenPairs } from "./token-pairs";
+import { TerraStakingSdk } from "./staking";
 import { tokens } from "./tokens";
 import { TerraChain, terraChains } from "../../chains";
-import { withTerraClient } from "../../clients";
-import { MultisigKey, MultisigWallet } from "../../data-structures";
+import {
+  GatekeeperConfig,
+  MultisigKey,
+  MultisigWallet,
+} from "../../data-structures";
 import { MultisigPublicKey, PublicKey } from "../../keys";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction, wrapMessage } from "../../transactions";
@@ -46,18 +41,29 @@ import {
   BroadcastTransactionResult,
   CodeIds,
   Coin,
-  Delegation,
-  EnrichedValidator,
   FormattedCoin,
   GatekeeperContractAddresses,
   PermissionedAddress,
   RpcError,
-  UnbondingDelegation,
 } from "../common";
 
 export class TerraSdk extends AbstractSdk {
+  public bank: TerraBankSdk;
+  public staking: TerraStakingSdk;
+
+  protected client: TerraClient;
+
   protected constructor(protected chainId: TerraChain) {
     super(chainId);
+    this.client = new TerraClient(chainId);
+    this.bank = new TerraBankSdk({
+      chainId,
+      client: this.client,
+    });
+    this.staking = new TerraStakingSdk({
+      chainId,
+      client: this.client,
+    });
   }
 
   public get chain() {
@@ -94,7 +100,7 @@ export class TerraSdk extends AbstractSdk {
       "Account not ready"
     );
     if (validationResult <= AccountValidationResult.PUBLIC_KEY_NOT_READY) {
-      await this.withClient(async (client) => {
+      await this.client.withClient(async (client) => {
         const wallet = client.wallet(key);
         const { denom } = this.chain;
         const send = new MsgSend(address, address, { [denom]: 1 });
@@ -115,7 +121,7 @@ export class TerraSdk extends AbstractSdk {
 
   protected async fetchAccount({ address }: { address: string }) {
     try {
-      return await this.withClient(async (client) => {
+      return await this.client.withClient(async (client) => {
         return await client.auth.accountInfo(address);
       });
     } catch (e) {
@@ -131,305 +137,8 @@ export class TerraSdk extends AbstractSdk {
     }
   }
 
-  public async fetchPrices() {
-    const stack: { denom: string; usdPrice: BigNumber }[] = [
-      {
-        // axlUSDC
-        denom:
-          "ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4",
-        usdPrice: new BigNumber(1),
-      },
-      {
-        // axlUSDT
-        denom:
-          "ibc/CBF67A2BCF6CAE343FDF251E510C8E18C361FC02B23430C121116E0811835DEF",
-        usdPrice: new BigNumber(1),
-      },
-    ];
-    const prices: Record<string, BigNumber> = {};
-
-    type Asset =
-      | { token: { contract_addr: string } }
-      | { native_token: { denom: string } };
-
-    function toDenom(asset: Asset) {
-      return "token" in asset
-        ? asset.token.contract_addr
-        : asset.native_token.denom;
-    }
-
-    const allPairs = R.values(tokenPairs) as {
-      asset_infos: Asset[];
-      contract_addr: string;
-      dex: "astroport" | "terraswap" | "phoenix";
-    }[];
-    const contractInfos = await Promise.all(
-      allPairs.map(async (pair) => {
-        switch (pair.dex) {
-          case "astroport":
-          case "terraswap":
-          case "phoenix": {
-            const response = await this.withClient(async (client) => {
-              return (await client.wasm.contractQuery(pair.contract_addr, {
-                pool: {},
-              })) as {
-                assets: { info: Asset; amount: string }[];
-              };
-            });
-            return {
-              ...pair,
-              ...response,
-            };
-          }
-        }
-      })
-    );
-
-    while (stack.length > 0) {
-      const item = stack.pop();
-      if (!item) break;
-      if (prices[item.denom]) continue;
-
-      prices[item.denom] = item.usdPrice;
-
-      const relevantPairs = contractInfos
-        .filter((pair) => {
-          return pair.asset_infos.find((asset) => {
-            return toDenom(asset) === item.denom;
-          });
-        })
-        .map((pair) => {
-          const otherAsset = pair.asset_infos.find((asset) => {
-            return toDenom(asset) !== item.denom;
-          });
-
-          invariant(otherAsset, "otherAsset should exist");
-
-          return {
-            denom: toDenom(otherAsset),
-            pair,
-          };
-        });
-
-      for (const { denom, pair } of relevantPairs) {
-        if (
-          R.has(denom, prices) ||
-          stack.find((item) => item.denom === denom)
-        ) {
-          continue;
-        }
-
-        const thisAsset = pair.assets.find((asset) => {
-          return toDenom(asset.info) === item.denom;
-        });
-        const otherAsset = pair.assets.find((asset) => {
-          return toDenom(asset.info) !== item.denom;
-        });
-
-        invariant(thisAsset, "thisAsset should exist");
-        invariant(otherAsset, "otherAsset should exist");
-
-        const price = item.usdPrice.times(
-          new BigNumber(thisAsset.amount).div(otherAsset.amount)
-        );
-
-        if (price && !price.isNaN()) {
-          stack.push({ denom, usdPrice: price });
-        }
-      }
-    }
-
-    return R.mapObjIndexed((price) => {
-      return price.toNumber();
-    }, prices);
-  }
-
-  public async fetchBalances({ address }: { address: string }) {
-    return await this.withClient(async (client) => {
-      return await this.fetchAllPages(async (paginationOptions) => {
-        const [coins, pagination] = await client.bank.balance(
-          address,
-          paginationOptions
-        );
-        return [
-          coins.map((coin): Coin => {
-            return {
-              denom: coin.denom,
-              amount: coin.amount.toString(),
-            };
-          }),
-          pagination,
-        ];
-      });
-    });
-  }
-
-  public async fetchAllPages<T>(
-    f: (
-      paginationOptions: Partial<PaginationOptions>
-    ) => Promise<[T[], Pagination]>
-  ): Promise<T[]> {
-    const result: T[] = [];
-    let key: string | null = "";
-
-    do {
-      const [list, pagination] = (await f({
-        "pagination.limit": "100",
-        "pagination.key": key,
-      })) as [T[], Pagination];
-
-      result.push(...list);
-      key = pagination?.next_key;
-    } while (key);
-
-    return result;
-  }
-
-  public async fetchDelegations({ address }: { address: string }) {
-    return await this.withClient(async (client) => {
-      const rawDelegations = await this.fetchAllPages((paginationOptions) => {
-        return client.staking.delegations(
-          address,
-          undefined,
-          paginationOptions
-        );
-      });
-      return await Promise.all(
-        rawDelegations.map(async (delegation): Promise<Delegation> => {
-          const validator = await client.staking.validator(
-            delegation.validator_address
-          );
-          return {
-            balance: {
-              denom: delegation.balance.denom,
-              amount: delegation.balance.amount.toString(),
-            },
-            validator: {
-              icon: `https://github.com/terra-money/validator-images/blob/main/images/${validator.description.identity}.jpg`,
-              label: validator.description.moniker,
-              address: delegation.validator_address,
-            },
-          };
-        })
-      );
-    });
-  }
-
-  public async fetchUnbondingDelegations({ address }: { address: string }) {
-    return await this.withClient(async (client) => {
-      const rawUnbondingDelegations = await this.fetchAllPages(
-        (paginationOptions) => {
-          return client.staking.unbondingDelegations(
-            address,
-            undefined,
-            paginationOptions
-          );
-        }
-      );
-      return R.flatten(
-        await Promise.all(
-          rawUnbondingDelegations.map(
-            async (unbondingDelegation): Promise<UnbondingDelegation[]> => {
-              const validator = await client.staking.validator(
-                unbondingDelegation.validator_address
-              );
-
-              return unbondingDelegation.entries.map((entry) => {
-                return {
-                  balance: {
-                    denom: this.chain.denom,
-                    amount: entry.balance.toString(),
-                  },
-                  validator: {
-                    icon: `https://github.com/terra-money/validator-images/blob/main/images/${validator.description.identity}.jpg`,
-                    label: validator.description.moniker,
-                    address: unbondingDelegation.validator_address,
-                  },
-                  completionTime: entry.completion_time,
-                };
-              });
-            }
-          )
-        )
-      );
-    });
-  }
-
-  public async fetchValidators() {
-    return await this.withClient(async (client) => {
-      const rawValidators = await this.fetchAllPages((paginationOptions) => {
-        return client.staking.validators(this.chainId, paginationOptions);
-      });
-
-      const MAX_COMMISSION = 0.05;
-      const VOTE_POWER_INCLUDE = 0.65;
-
-      const totalStaked = BigNumber.sum(
-        ...rawValidators.map(({ tokens = 0 }) => Number(tokens))
-      ).toNumber();
-      const getVotePower = (v: RawValidator) => Number(v.tokens) / totalStaked;
-
-      const prioritizedValidators = rawValidators
-        .sort((a, b) => getVotePower(a) - getVotePower(b)) // least to greatest
-        .reduce(
-          (acc, cur) => {
-            acc.sumVotePower += getVotePower(cur);
-            if (acc.sumVotePower < VOTE_POWER_INCLUDE) {
-              acc.eligible.push(cur);
-            }
-            return acc;
-          },
-          {
-            sumVotePower: 0,
-            eligible: [] as RawValidator[],
-          }
-        )
-        .eligible.filter(
-          ({ commission, status }) =>
-            bondStatusFromJSON(BondStatus[status]) ===
-              BondStatus.BOND_STATUS_BONDED &&
-            Number(commission.commission_rates.rate) <= MAX_COMMISSION
-        )
-        .map(({ operator_address }) => operator_address);
-
-      return rawValidators
-        .map((validator): EnrichedValidator => {
-          const promoted =
-            validator.operator_address === this.chain.obiValidator;
-          const rank =
-            (promoted ? 2 : 0) +
-            (prioritizedValidators.includes(validator.operator_address)
-              ? 1
-              : 0) +
-            Math.random();
-
-          return {
-            icon: validator.description.identity
-              ? `https://raw.githubusercontent.com/terra-money/validator-images/main/images/${validator.description.identity}.jpg`
-              : null,
-            label: validator.description.moniker,
-            address: validator.operator_address,
-            votingPower: (
-              (Number(validator.tokens) / totalStaked) *
-              100
-            ).toFixed(2),
-            commission: validator.commission.commission_rates.rate
-              .times(100)
-              .toFixed(2),
-            promoted,
-            active:
-              bondStatusFromJSON(BondStatus[validator.status]) ===
-              BondStatus.BOND_STATUS_BONDED,
-            jailed: validator.jailed,
-            rank,
-          };
-        })
-        .sort((a, b) => b.rank - a.rank);
-    });
-  }
-
   public async fetchRewards({ address }: { address: string }) {
-    return await this.withClient(async (client) => {
+    return await this.client.withClient(async (client) => {
       const rewards = await client.distribution.rewards(address);
 
       const handleRewards = (coins: Coins) => {
@@ -465,7 +174,7 @@ export class TerraSdk extends AbstractSdk {
   }
 
   public async fetchCodeId({ contract }: { contract: string }) {
-    return await this.withClient(async (client) => {
+    return await this.client.withClient(async (client) => {
       const { code_id } = await client.wasm.contractInfo(contract);
       return code_id;
     });
@@ -537,7 +246,7 @@ export class TerraSdk extends AbstractSdk {
   }: {
     proxyAddress: string;
   }) {
-    return await this.withClient(async (client) => {
+    return await this.client.withClient(async (client) => {
       const schema = z
         .object({
           spendlimit_gatekeeper_contract_addr: z.string().nullable(),
@@ -563,7 +272,7 @@ export class TerraSdk extends AbstractSdk {
   }: {
     spendLimitGatekeeper: string;
   }) {
-    return await this.withClient(async (client) => {
+    return await this.client.withClient(async (client) => {
       const schema = z.object({
         permissioned_addresses: z.array(PermissionedAddress),
       });
@@ -594,7 +303,7 @@ export class TerraSdk extends AbstractSdk {
     signer: Signer;
     messages: Message[];
   }) {
-    return await this.withClient(async (client) => {
+    return await this.client.withClient(async (client) => {
       const key = Key.fromSigner(signer);
       const wallet = client.wallet(key);
       try {
@@ -632,7 +341,7 @@ export class TerraSdk extends AbstractSdk {
     invariant(account, "Account not found.");
 
     try {
-      return await this.withClient(async (client) => {
+      return await this.client.withClient(async (client) => {
         const transaction = await client.tx.create(
           [
             {
@@ -675,7 +384,7 @@ export class TerraSdk extends AbstractSdk {
     proxyAddress: string;
     messages: Message[];
   }) {
-    return await this.withClient(async (client) => {
+    return await this.client.withClient(async (client) => {
       const mayExecute = await Promise.all(
         messages.map(async (message) => {
           try {
@@ -704,7 +413,7 @@ export class TerraSdk extends AbstractSdk {
   }: {
     signedTransaction: SignedTransaction;
   }) {
-    return await this.withClient(async (client) => {
+    return await this.client.withClient(async (client) => {
       const transaction = Tx.fromBuffer(Buffer.from(signedTransaction));
       const rawResult = await client.tx.broadcastBlock(
         transaction,
@@ -996,6 +705,316 @@ export class TerraSdk extends AbstractSdk {
     );
   }
 
+  public async updateGatekeeperConfig({
+    wallet,
+    newGatekeeperConfig,
+  }: {
+    wallet: MultisigWallet;
+    newGatekeeperConfig: GatekeeperConfig;
+  }): Promise<
+    | {
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
+    | { approved: false }
+  > {
+    const { spendLimitGatekeeper, sessionKeyGatekeeper } =
+      await this.fetchGatekeeperContractAddresses({
+        proxyAddress: wallet.proxyAddress,
+      });
+    invariant(
+      spendLimitGatekeeper,
+      "Spend limit gatekeeper address is not set"
+    );
+    invariant(
+      sessionKeyGatekeeper,
+      "Session key gatekeeper address is not set"
+    );
+    const messages = this.getUpdateGatekeeperMessages({
+      wallet,
+      newGatekeeperConfig,
+      spendLimitGatekeeper,
+      sessionKeyGatekeeper,
+    });
+
+    return await SignAndBroadcastTransactionUserInteraction.start({
+      messages,
+      demoMode: wallet.isDemo,
+      cancelable: true,
+      multisigKey: wallet.owner,
+    });
+  }
+
+  public getUpdateGatekeeperMessages({
+    wallet,
+    newGatekeeperConfig,
+    spendLimitGatekeeper,
+    sessionKeyGatekeeper,
+  }: {
+    wallet: MultisigWallet;
+    newGatekeeperConfig: GatekeeperConfig;
+    spendLimitGatekeeper: string;
+    sessionKeyGatekeeper: string;
+  }): Message[] {
+    function handleBeneficiaries() {
+      const messages: MsgExecuteContract[] = [];
+
+      const previousBeneficiaryAddresses =
+        wallet.gatekeeperConfig.beneficiaries.map((beneficiary) => {
+          return beneficiary.address;
+        });
+      const nextBeneficiaryAddresses = newGatekeeperConfig.beneficiaries.map(
+        (beneficiary) => {
+          return beneficiary.address;
+        }
+      );
+
+      const removedAddresses = R.difference(
+        previousBeneficiaryAddresses,
+        nextBeneficiaryAddresses
+      );
+
+      newGatekeeperConfig.beneficiaries.forEach((beneficiary) => {
+        const previousBeneficiary = wallet.gatekeeperConfig.beneficiaries.find(
+          (previousBeneficiary) => {
+            return previousBeneficiary.address === beneficiary.address;
+          }
+        );
+
+        if (previousBeneficiary && beneficiary.equals(previousBeneficiary)) {
+          return;
+        }
+
+        const periodProperties = (() => {
+          const { period } = beneficiary.dripSchedule;
+
+          if (R.has("days", period)) {
+            return {
+              period_multiple: period.days,
+              period_type: "days",
+            };
+          } else if (R.has("months", period)) {
+            return {
+              period_multiple: period.months,
+              period_type: "months",
+            };
+          } else {
+            return {
+              period_multiple: period.years * 12,
+              period_type: "months",
+            };
+          }
+        })();
+
+        const rawMessage = {
+          upsert_beneficiary: {
+            new_beneficiary: {
+              address: beneficiary.address,
+              cooldown: Duration.fromObject(beneficiary.dormancyThreshold).as(
+                "days"
+              ),
+              inheritance_records: [],
+              offset: 0,
+              ...periodProperties,
+              spend_limits: [
+                {
+                  amount: `${Math.floor(beneficiary.dripSchedule.rate * 100)}`,
+                  current_balance: "0",
+                  limit_remaining: "0",
+                  denom: "PERCENT",
+                },
+              ],
+            },
+          },
+        };
+
+        messages.push(
+          new MsgExecuteContract(
+            wallet.owner.address,
+            spendLimitGatekeeper,
+            rawMessage
+          )
+        );
+      });
+
+      removedAddresses.forEach((address) => {
+        const rawMessage = {
+          rm_permissioned_address: {
+            doomed_permissioned_address: address,
+          },
+        };
+        messages.push(
+          new MsgExecuteContract(
+            wallet.owner.address,
+            spendLimitGatekeeper,
+            rawMessage
+          )
+        );
+      });
+
+      return messages;
+    }
+
+    function handleFlexAccounts() {
+      const messages: MsgExecuteContract[] = [];
+
+      const previousFlexAccountAddresses =
+        wallet.gatekeeperConfig.flexAccounts.map((flexAccount) => {
+          return flexAccount.address;
+        });
+      const nextFlexAccountAddresses = newGatekeeperConfig.flexAccounts.map(
+        (flexAccount) => {
+          return flexAccount.address;
+        }
+      );
+
+      const removedAddresses = R.difference(
+        previousFlexAccountAddresses,
+        nextFlexAccountAddresses
+      );
+
+      newGatekeeperConfig.flexAccounts.forEach((flexAccount) => {
+        const previousFlexAccount = wallet.gatekeeperConfig.flexAccounts.find(
+          (previousFlexAccount) => {
+            return previousFlexAccount.address === flexAccount.address;
+          }
+        );
+
+        if (
+          !previousFlexAccount ||
+          !R.equals(
+            flexAccount.remainingAutoSignDuration,
+            previousFlexAccount.remainingAutoSignDuration
+          )
+        ) {
+          if (flexAccount.autoSignEndTime) {
+            const rawMessage = {
+              create_session_key: {
+                address: flexAccount.address,
+                admin_permissions: true,
+                max_duration: flexAccount.autoSignEndTime.toUnixInteger(),
+                use_limit: 999,
+              },
+            };
+
+            messages.push(
+              new MsgExecuteContract(
+                wallet.owner.address,
+                sessionKeyGatekeeper,
+                rawMessage
+              )
+            );
+          } else if (
+            previousFlexAccount?.hasActiveAutoSign &&
+            !flexAccount.hasActiveAutoSign
+          ) {
+            const rawMessage = {
+              destroy_session_key: {
+                address: flexAccount.address,
+              },
+            };
+
+            messages.push(
+              new MsgExecuteContract(
+                wallet.owner.address,
+                sessionKeyGatekeeper,
+                rawMessage
+              )
+            );
+          }
+        }
+
+        if (previousFlexAccount && flexAccount.equals(previousFlexAccount)) {
+          return;
+        }
+
+        const additionalProperties = (() => {
+          if (flexAccount.spendLimit) {
+            const { period } = flexAccount.spendLimit;
+
+            const periodProperties = (() => {
+              if (R.has("days", period)) {
+                return {
+                  period_multiple: period.days,
+                  period_type: "days",
+                };
+              } else if (R.has("months", period)) {
+                return {
+                  period_multiple: period.months,
+                  period_type: "months",
+                };
+              } else {
+                return {
+                  period_multiple: period.years * 12,
+                  period_type: "months",
+                };
+              }
+            })();
+
+            const amount = `${1_000_000 * flexAccount.spendLimit.amount}`;
+
+            return {
+              ...periodProperties,
+              spend_limits: [
+                {
+                  amount,
+                  current_balance: "0",
+                  denom:
+                    "ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4",
+                  limit_remaining: amount,
+                },
+              ],
+            };
+          } else {
+            return {
+              period_multiple: 0,
+              period_type: "days",
+              spend_limits: [],
+            };
+          }
+        })();
+
+        const rawMessage = {
+          upsert_permissioned_address: {
+            new_permissioned_address: {
+              address: flexAccount.address,
+              cooldown: 0,
+              inheritance_records: [],
+              offset: 0,
+              ...additionalProperties,
+            },
+          },
+        };
+        messages.push(
+          new MsgExecuteContract(
+            wallet.owner.address,
+            spendLimitGatekeeper,
+            rawMessage
+          )
+        );
+      });
+
+      removedAddresses.forEach((address) => {
+        const rawMessage = {
+          rm_permissioned_address: {
+            doomed_permissioned_address: address,
+          },
+        };
+        messages.push(
+          new MsgExecuteContract(
+            wallet.owner.address,
+            spendLimitGatekeeper,
+            rawMessage
+          )
+        );
+      });
+
+      return messages;
+    }
+
+    return [...handleBeneficiaries(), ...handleFlexAccounts()];
+  }
+
   public getUpdateWalletMessage({
     wallet,
     codeIds,
@@ -1135,7 +1154,7 @@ export class TerraSdk extends AbstractSdk {
     | { approved: true; payload: BroadcastTransactionResult }
     | { approved: false }
   > {
-    const rewards = await this.fetchRewards({ address: wallet.address });
+    const rewards = await this.staking.fetchRewards(wallet.address);
     const validators = rewards.perDelegator
       .filter((delegator) => {
         return this.formatCoin(delegator.rewards).amount > 0;
@@ -1196,10 +1215,6 @@ export class TerraSdk extends AbstractSdk {
     validator: string;
   }): Message {
     return new MsgWithdrawDelegatorReward(wallet.address, validator);
-  }
-
-  public withClient<T>(f: (client: LCDClient) => T) {
-    return withTerraClient(this.chainId, f);
   }
 
   public static chainId(chainId: TerraChain) {

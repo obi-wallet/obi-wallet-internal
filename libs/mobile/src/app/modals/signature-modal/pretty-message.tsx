@@ -9,7 +9,7 @@ import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Text } from "@obi-wallet/common";
-import { Coin, cosmosChains, isCosmosChain } from "@obi-wallet/sdk";
+import { Coin, cosmosChains, isCosmosChain, Sdk } from "@obi-wallet/sdk";
 import {
   Msg,
   MsgDelegate,
@@ -27,7 +27,8 @@ import { useIntl } from "react-intl";
 import { View } from "react-native";
 
 import ArrowUpIcon from "./assets/arrowUpIcon.svg";
-import { formatCoin, useRewards, useValidators } from "../../balances";
+import { useQuery } from "../../../queries";
+import { formatCoin, useValidators } from "../../balances";
 import { CoinIcon } from "../../screens/components/coin-icon";
 import { useStore } from "../../stores";
 
@@ -101,7 +102,13 @@ const PrettyMessageWithdrawDelegatorReward =
   observer<MsgWithdrawDelegatorReward.Amino>(
     function PrettyMessageWithdrawDelegatorReward({ value }) {
       const validators = useValidators();
-      const rewards = useRewards();
+      const { chainStore } = useStore();
+
+      const rewards = useQuery(
+        Sdk.chainId(chainStore.currentChain).staking.rewardsQuery(
+          value.delegator_address
+        )
+      );
       const validator = validators.data?.find(
         (validator) => validator.address === value.validator_address
       );

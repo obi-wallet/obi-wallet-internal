@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import * as R from "ramda";
+import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { AutoSign, FlexAccountSchema, SpendLimit } from "./schema";
@@ -93,7 +94,9 @@ export class FlexAccount {
   }
 
   public enableAutoSign(endTime: DateTime) {
-    this._autoSign = { endTime: endTime.toISO() };
+    const newEndTime = endTime.toISO();
+    invariant(newEndTime, "endTime must be a valid ISO date string");
+    this._autoSign = { endTime: newEndTime };
   }
 
   public clearAutoSign() {

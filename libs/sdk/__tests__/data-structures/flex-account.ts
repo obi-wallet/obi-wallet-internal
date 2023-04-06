@@ -41,7 +41,7 @@ function expectIsObservable(flexAccount: FlexAccount) {
 }
 
 function createFlexAccounts(Factory: typeof FlexAccount) {
-  const endTime = DateTime.now().plus({ minutes: 30 }).toISO();
+  const endTime = DateTime.now().plus({ minutes: 30 }).toISO()!;
   const strictFlexAccount: Serialized<FlexAccount> = {
     type: "flex-account",
     meta: {
@@ -76,7 +76,7 @@ function createFlexAccounts(Factory: typeof FlexAccount) {
   const previouslyUnlockedFlexAccount: Serialized<FlexAccount> = {
     ...limitedFlexAccount,
     autoSign: {
-      endTime: DateTime.now().minus({ minutes: 30 }).toISO(),
+      endTime: DateTime.now().minus({ minutes: 30 }).toISO()!,
     },
   };
 

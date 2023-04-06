@@ -3,13 +3,12 @@ import { useTheme } from "@emotion/react";
 import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { terra, Text, TextInput } from "@obi-wallet/common";
+import { Text, TextInput } from "@obi-wallet/common";
 import {
   Coin,
   Delegation,
   EnrichedValidator,
   isTerraChain,
-  SignAndBroadcastTransactionUserInteraction,
   terraChains,
   UnbondingDelegation,
   Validator,

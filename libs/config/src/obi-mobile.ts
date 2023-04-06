@@ -16,7 +16,6 @@ export const obiMobileConfig: Config = {
     [Feature.NftTab]: false,
     [Feature.Recovery]: true,
     [Feature.Staking]: true,
-    [Feature.InAppPurchases]: false,
     [Feature.BrandToggle]: false,
     [Feature.DemoMode]: true,
   },

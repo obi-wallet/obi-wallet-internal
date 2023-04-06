@@ -9,16 +9,8 @@ import { SvgProps } from "react-native-svg";
 
 import LoopIcon from "./assets/loop.svg";
 import { getRootStore } from "../../background/root-store";
-import {
-  getBalancesQuery,
-  getDelegationsQuery,
-  getPricesQuery,
-  getRewardsQuery,
-  getUnbondingDelegations,
-  getValidatorsQuery,
-  useQuery,
-} from "../../queries";
-import { useStore } from "../stores";
+import { useQuery } from "../../queries";
+import { useMultisigWallet, useStore } from "../stores";
 
 export interface ExtendedCoin {
   contract?: string;
@@ -64,13 +56,13 @@ export function useBalances({
 export function useRawBalances({ address }: { address: string }) {
   const { chainStore } = useStore();
   const chainId = chainStore.currentChain;
-  return useQuery(getBalancesQuery({ chainId, address }));
+  return useQuery(Sdk.chainId(chainId).bank.balancesQuery(address));
 }
 
 export function usePrices() {
   const { chainStore } = useStore();
   const chainId = chainStore.currentChain;
-  return useQuery(getPricesQuery({ chainId }));
+  return useQuery(Sdk.chainId(chainId).bank.pricesQuery());
 }
 
 export function useUsdBalance({ address }: { address: string }) {
@@ -183,34 +175,35 @@ export function formatExtendedCoin(coin: ExtendedCoin) {
 }
 
 export function useDelegations() {
-  const { chainStore, walletsStore } = useStore();
-  const address = walletsStore.address;
-  const chainId = chainStore.currentChain;
-  return useQuery(getDelegationsQuery({ chainId, address }));
+  const wallet = useMultisigWallet();
+  return useQuery(
+    Sdk.chainId(wallet.chainId).staking.delegationsQuery(wallet.address)
+  );
 }
 
 export function useUnbondingDelegations() {
-  const { chainStore, walletsStore } = useStore();
-  const address = walletsStore.address;
-  const chainId = chainStore.currentChain;
-  return useQuery(getUnbondingDelegations({ chainId, address }));
+  const wallet = useMultisigWallet();
+  return useQuery(
+    Sdk.chainId(wallet.chainId).staking.unbondingDelegationsQuery(
+      wallet.address
+    )
+  );
 }
 
 export function useValidators() {
   const { chainStore } = useStore();
   const chainId = chainStore.currentChain;
-  return useQuery(getValidatorsQuery({ chainId }));
+  return useQuery(Sdk.chainId(chainId).staking.validatorsQuery());
 }
 
 export function useRewards() {
-  const { chainStore, walletsStore } = useStore();
-  const address = walletsStore.address;
-  const chainId = chainStore.currentChain;
-  const response = useQuery(getRewardsQuery({ chainId, address }));
-
+  const wallet = useMultisigWallet();
+  const response = useQuery(
+    Sdk.chainId(wallet.chainId).staking.rewardsQuery(wallet.address)
+  );
   const fallback: Rewards = {
     perDelegator: [],
-    total: { denom: chainStore.currentChainInformation.denom, amount: "0" },
+    total: { denom: wallet.chain.denom, amount: "0" },
   };
   return {
     ...response,

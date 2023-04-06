@@ -18,6 +18,8 @@ export const FixturePicker = observer(function FixturePicker() {
 
   return (
     <View testID="detox-container" style={{ flex: 1 }}>
+      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+      {/* @ts-ignore TODO: this probably needs some work */}
       <Decorator>{chosenFixture.module.default}</Decorator>
     </View>
   );

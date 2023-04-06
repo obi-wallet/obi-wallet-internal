@@ -171,6 +171,17 @@ export class MultisigWallet {
     this._gatekeeperConfig = gatekeeperConfig;
   }
 
+  public async updateGatekeeperConfig(newGatekeeperConfig: GatekeeperConfig) {
+    const response = await this.sdk.updateGatekeeperConfig({
+      wallet: this,
+      newGatekeeperConfig,
+    });
+    if (response.approved && response.payload.success) {
+      this.setGatekeeperConfig(newGatekeeperConfig);
+    }
+    return response;
+  }
+
   public get singlesigWallets() {
     return this._singlesigWallets;
   }

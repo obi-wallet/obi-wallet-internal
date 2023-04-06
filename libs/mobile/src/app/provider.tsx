@@ -1,32 +1,23 @@
 import { Theme, ThemeProvider } from "@emotion/react";
-import { Brand, Config, Feature, messages } from "@obi-wallet/common";
+import { Brand, Config, messages } from "@obi-wallet/common";
+import { queryClient } from "@obi-wallet/sdk";
 import { loopTheme, obiTheme } from "@obi-wallet/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import {
-  QueryClient,
   QueryClientProvider,
   QueryClientProviderProps,
 } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { observer } from "mobx-react-lite";
-import { ComponentProps, ReactNode, useEffect } from "react";
+import { ComponentProps, ReactNode } from "react";
 import { IntlProvider } from "react-intl";
 import { StatusBar } from "react-native";
-import { endConnection, initConnection } from "react-native-iap";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { StoreContext } from "./stores";
 import { useCreateRootStore } from "../background/root-store";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      cacheTime: 1000 * 60 * 60 * 24, // 1 day
-    },
-  },
-});
 
 const persister = createAsyncStoragePersister({
   storage: AsyncStorage,
@@ -64,14 +55,6 @@ export const Provider = observer<ProviderProps>(function Provider({
   const rootStore = useCreateRootStore({ config });
   const { languageStore, configStore } = rootStore;
   const { currentLanguage } = languageStore;
-
-  useEffect(() => {
-    if (!configStore.isFeatureEnabled(Feature.InAppPurchases)) return;
-    void initConnection();
-    return () => {
-      void endConnection();
-    };
-  }, [configStore]);
 
   return (
     <QueryClientProvider client={queryClient}>

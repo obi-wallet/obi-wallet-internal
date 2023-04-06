@@ -16,7 +16,6 @@ export const loopMobileDevConfig: Config = {
     [Feature.NftTab]: true,
     [Feature.Recovery]: true,
     [Feature.Staking]: true,
-    [Feature.InAppPurchases]: false,
     [Feature.BrandToggle]: false,
     [Feature.DemoMode]: false,
   },

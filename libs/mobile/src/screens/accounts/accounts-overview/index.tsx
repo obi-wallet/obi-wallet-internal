@@ -1,11 +1,10 @@
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { terra, Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common";
 import {
   Beneficiary,
   FlexAccount,
   GatekeeperConfig,
-  SignAndBroadcastTransactionUserInteraction,
   SinglesigWallet,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -22,7 +21,6 @@ import {
   View,
 } from "react-native";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
-import invariant from "tiny-invariant";
 
 import { AccountItem } from "./account-item";
 import KeyRoundIcon from "./assets/key-round-icon.svg";
@@ -37,8 +35,8 @@ import { useMultisigWallet, useStore } from "../../../app/stores";
 import {
   getGatekeeperContractAddressesQuery,
   getPermissionedAddressesQuery,
-} from "../../../queries/gatekeeper";
-import { useQuery } from "../../../queries/helpers";
+  useQuery,
+} from "../../../queries";
 import { AccountsRoute, AccountsStackParamList } from "../accounts-stack";
 import { getGatekeeperConfigDraftId } from "../draft-id";
 
@@ -82,8 +80,6 @@ const AccountScreenInner = observer(function AccountScreenInner() {
   );
   const spendLimitGatekeeper =
     gatekeeperContractAddresses?.spendLimitGatekeeper;
-  const sessionKeyGatekeeper =
-    gatekeeperContractAddresses?.sessionKeyGatekeeper;
 
   const { data: permissionedAddresses, refetch } = useQuery(
     getPermissionedAddressesQuery({
@@ -198,36 +194,12 @@ const AccountScreenInner = observer(function AccountScreenInner() {
               label="Save Changes"
               buttonStyle={{ flex: 1, margin: 10 }}
               onPress={async () => {
-                invariant(
-                  spendLimitGatekeeper,
-                  "Spend limit gatekeeper address is not set"
+                const response = await wallet.updateGatekeeperConfig(
+                  draft.value
                 );
-                invariant(
-                  sessionKeyGatekeeper,
-                  "Session key gatekeeper address is not set"
-                );
-
-                const messages = terra.getUpdateGatekeeperMessages({
-                  currentGatekeeperConfig: draft.original,
-                  newGatekeeperConfig: draft.value,
-                  proxyAddress: wallet.owner.address,
-                  spendLimitGatekeeper,
-                  sessionKeyGatekeeper,
-                });
-
-                const response =
-                  await SignAndBroadcastTransactionUserInteraction.start({
-                    messages,
-                    demoMode: wallet.isDemo,
-                    cancelable: true,
-                    multisigKey: wallet.owner,
-                  });
-
                 if (response.approved) {
                   if (response.payload.success) {
-                    wallet.setGatekeeperConfig(draft.value);
                     draft.commit({ original: wallet.gatekeeperConfig });
-
                     await refetch();
                   } else {
                     Alert.alert(

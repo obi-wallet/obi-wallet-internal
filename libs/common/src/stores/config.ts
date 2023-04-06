@@ -14,7 +14,6 @@ export enum Feature {
   NftTab = "NftTab",
   Recovery = "Recovery",
   Staking = "Staking",
-  InAppPurchases = "InAppPurchases",
   BrandToggle = "BrandToggle",
   DemoMode = "DemoMode",
 }
