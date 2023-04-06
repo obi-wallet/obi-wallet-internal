@@ -1,50 +1,41 @@
 import {
-  AccAddress,
   Coin as TerraCoin,
   Coins,
   isTxError,
-  LegacyAminoMultisigPublicKey,
   MsgDelegate,
   MsgExecuteContract,
-  MsgSend,
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
-  SimplePublicKey,
   Tx,
 } from "@terra-money/feather.js";
 import { AxiosError } from "axios";
 import { Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
-import { z } from "zod";
 
 import { TerraBankSdk } from "./bank";
 import { TerraClient } from "./client";
 import { TerraGatekeeperSdk } from "./gatekeeper";
 import { Key } from "./key";
-import { MultisigSigner } from "./multisig-signer";
 import { TerraStakingSdk } from "./staking";
 import { tokens } from "./tokens";
+import { TerraTransactionsSdk } from "./transactions";
 import { TerraChain, terraChains } from "../../chains";
 import {
   GatekeeperConfig,
   MultisigKey,
   MultisigWallet,
 } from "../../data-structures";
-import { MultisigPublicKey, PublicKey } from "../../keys";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction, wrapMessage } from "../../transactions";
 import { SignAndBroadcastTransactionUserInteraction } from "../../user-interactions";
 import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
 import { AbstractSdk } from "../abstract";
 import {
-  AccountValidationResult,
   BroadcastTransactionResult,
   CodeIds,
   Coin,
   FormattedCoin,
-  GatekeeperContractAddresses,
-  PermissionedAddress,
   RpcError,
 } from "../common";
 
@@ -52,6 +43,7 @@ export class TerraSdk extends AbstractSdk {
   public bank: TerraBankSdk;
   public gatekeeper: TerraGatekeeperSdk;
   public staking: TerraStakingSdk;
+  public transactions: TerraTransactionsSdk;
 
   protected client: TerraClient;
 
@@ -70,59 +62,14 @@ export class TerraSdk extends AbstractSdk {
       chainId,
       client: this.client,
     });
+    this.transactions = new TerraTransactionsSdk({
+      chainId,
+      client: this.client,
+    });
   }
 
   public get chain() {
     return terraChains[this.chainId];
-  }
-
-  public validateAddress({ address }: { address: string }) {
-    return AccAddress.validate(address, this.chain.prefix);
-  }
-
-  public async validateAccount({ address }: { address: string }) {
-    if (!this.validateAddress({ address })) {
-      return AccountValidationResult.INVALID_ADDRESS;
-    }
-    const account = await this.fetchAccount({ address });
-    if (!account) {
-      return AccountValidationResult.ACCOUNT_NOT_READY;
-    }
-    if (!account.getPublicKey()) {
-      return AccountValidationResult.PUBLIC_KEY_NOT_READY;
-    }
-    return AccountValidationResult.READY;
-  }
-
-  public async prepareSigner({ signer }: { signer: Signer }) {
-    const key = Key.fromSigner(signer);
-    const address = key.accAddress(this.chain.prefix);
-
-    await this.prepareAccount({ address });
-
-    const validationResult = await this.validateAccount({ address });
-    invariant(
-      validationResult >= AccountValidationResult.PUBLIC_KEY_NOT_READY,
-      "Account not ready"
-    );
-    if (validationResult <= AccountValidationResult.PUBLIC_KEY_NOT_READY) {
-      await this.client.withClient(async (client) => {
-        const wallet = client.wallet(key);
-        const { denom } = this.chain;
-        const send = new MsgSend(address, address, { [denom]: 1 });
-        const tx = await wallet.createAndSignTx({
-          chainID: this.chainId,
-          msgs: [send],
-        });
-        await client.tx.broadcastBlock(tx, this.chainId);
-      });
-      while (
-        (await this.validateAccount({ address })) <=
-        AccountValidationResult.PUBLIC_KEY_NOT_READY
-      ) {
-        await this.wait({ ms: 100 });
-      }
-    }
   }
 
   protected async fetchAccount({ address }: { address: string }) {
@@ -245,61 +192,6 @@ export class TerraSdk extends AbstractSdk {
     });
   }
 
-  public async fetchGatekeeperContractAddresses({
-    proxyAddress,
-  }: {
-    proxyAddress: string;
-  }) {
-    return await this.client.withClient(async (client) => {
-      const schema = z
-        .object({
-          spendlimit_gatekeeper_contract_addr: z.string().nullable(),
-          sessionkey_gatekeeper_contract_addr: z.string().nullable(),
-          debt_gatekeeper_contract_addr: z.string().nullable(),
-        })
-        .transform((response): GatekeeperContractAddresses => {
-          return {
-            spendLimitGatekeeper: response.spendlimit_gatekeeper_contract_addr,
-            sessionKeyGatekeeper: response.sessionkey_gatekeeper_contract_addr,
-            debtGatekeeper: response.debt_gatekeeper_contract_addr,
-          };
-        });
-      const response = await client.wasm.contractQuery(proxyAddress, {
-        gatekeeper_contracts: {},
-      });
-      return schema.parse(response);
-    });
-  }
-
-  public async fetchPermissionedAddresses({
-    spendLimitGatekeeper,
-  }: {
-    spendLimitGatekeeper: string;
-  }) {
-    return await this.client.withClient(async (client) => {
-      const schema = z.object({
-        permissioned_addresses: z.array(PermissionedAddress),
-      });
-      const response = await client.wasm.contractQuery(spendLimitGatekeeper, {
-        permissioned_addresses: {},
-      });
-      return schema.parse(response).permissioned_addresses;
-    });
-  }
-
-  public getAddressOfPublicKey({ publicKey }: { publicKey: PublicKey }) {
-    switch (publicKey.type) {
-      case "tendermint/PubKeySecp256k1":
-        return SimplePublicKey.fromAmino(publicKey).address(this.chain.prefix);
-      case "tendermint/PubKeyMultisigThreshold":
-        return LegacyAminoMultisigPublicKey.fromAmino(publicKey).address(
-          this.chain.prefix
-        );
-      default:
-        throw new Error("Unsupported public key type");
-    }
-  }
-
   public async createAndSignTransaction({
     signer,
     messages,
@@ -328,55 +220,6 @@ export class TerraSdk extends AbstractSdk {
         throw e;
       }
     });
-  }
-
-  public async createMultisigSigner({
-    multisigPublicKey,
-    messages,
-  }: {
-    multisigPublicKey: MultisigPublicKey;
-    messages: Message[];
-  }) {
-    const address = this.getAddressOfPublicKey({
-      publicKey: multisigPublicKey,
-    });
-    await this.prepareAccount({ address });
-    const account = await this.fetchAccount({ address });
-    invariant(account, "Account not found.");
-
-    try {
-      return await this.client.withClient(async (client) => {
-        const transaction = await client.tx.create(
-          [
-            {
-              address,
-              sequenceNumber: account.getSequenceNumber(),
-              publicKey: account.getPublicKey(),
-            },
-          ],
-          {
-            chainID: this.chainId,
-            msgs: messages,
-          }
-        );
-        return new MultisigSigner({
-          chainId: this.chainId,
-          account,
-          transaction,
-          multisigPublicKey,
-        });
-      });
-    } catch (e) {
-      const error = e as AxiosError;
-      const data = error.response?.data;
-
-      const result = RpcError.safeParse(data);
-      if (result.success) {
-        throw new Error(result.data.message);
-      }
-
-      throw e;
-    }
   }
 
   public async canExecute({
@@ -430,23 +273,6 @@ export class TerraSdk extends AbstractSdk {
         rawResult,
       };
     });
-  }
-
-  public async broadcastSignedTransactionAndLendFees({
-    signedTransaction,
-    sender,
-  }: {
-    signedTransaction: SignedTransaction;
-    sender: string;
-  }) {
-    const response = await this.broadcastSignedTransaction({
-      signedTransaction,
-    });
-    if (response.success || !response.rawLog.includes("insufficient funds")) {
-      return response;
-    }
-    await this.lendFees({ address: sender });
-    return await this.broadcastSignedTransaction({ signedTransaction });
   }
 
   public async createWallet({
@@ -523,7 +349,7 @@ export class TerraSdk extends AbstractSdk {
 
   protected getSigners(multisigKey: MultisigKey) {
     const addresses = multisigKey.keys.map((key) => {
-      return this.getAddressOfPublicKey({ publicKey: key.publicKey });
+      return this.transactions.getAddressOfPublicKey(key.publicKey);
     });
     return R.zipWith(
       (address, ty) => {

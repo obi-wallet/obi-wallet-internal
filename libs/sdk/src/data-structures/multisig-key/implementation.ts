@@ -74,9 +74,7 @@ export class MultisigKey {
   }
 
   public get address() {
-    return this.sdk.getAddressOfPublicKey({
-      publicKey: this.publicKey,
-    });
+    return this.sdk.transactions.getAddressOfPublicKey(this.publicKey);
   }
 
   public get keys() {
@@ -168,7 +166,7 @@ export class MultisigKey {
   }
 
   public async createSigner({ messages }: { messages: Message[] }) {
-    return await this.sdk.createMultisigSigner({
+    return await this.sdk.transactions.createMultisigSigner({
       multisigPublicKey: this.publicKey,
       messages,
     });

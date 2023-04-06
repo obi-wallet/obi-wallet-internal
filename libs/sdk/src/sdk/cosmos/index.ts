@@ -1,4 +1,4 @@
-import { pubkeyToAddress, StdFee } from "@cosmjs/amino";
+import { StdFee } from "@cosmjs/amino";
 import { createWasmAminoConverters } from "@cosmjs/cosmwasm-stargate";
 import { coins } from "@cosmjs/proto-signing";
 import {
@@ -13,29 +13,25 @@ import {
   isDeliverTxSuccess,
 } from "@cosmjs/stargate";
 import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { AuthInfo, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import invariant from "tiny-invariant";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import warning from "tiny-warning";
 
 import { CosmosBankSdk } from "./bank";
 import { CosmosClient } from "./client";
 import { CosmosGatekeeperSdk } from "./gatekeeper";
-import { MultisigSigner } from "./multisig-signer";
 import { OfflineAminoSigner } from "./offline-amino-signer";
 import { CosmosStakingSdk } from "./staking";
+import { CosmosTransactionsSdk } from "./transactions";
 import { CosmosChain, cosmosChains } from "../../chains";
 import {
   GatekeeperConfig,
   MultisigKey,
   MultisigWallet,
 } from "../../data-structures";
-import { MultisigPublicKey, PublicKey } from "../../keys";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { AbstractSdk } from "../abstract";
 import {
-  AccountValidationResult,
   BroadcastTransactionResult,
   CodeIds,
   Coin,
@@ -50,6 +46,7 @@ export class CosmosSdk extends AbstractSdk {
   public bank: CosmosBankSdk;
   public gatekeeper: CosmosGatekeeperSdk;
   public staking: CosmosStakingSdk;
+  public transactions: CosmosTransactionsSdk;
 
   protected client: CosmosClient;
 
@@ -68,84 +65,14 @@ export class CosmosSdk extends AbstractSdk {
       chainId,
       client: this.client,
     });
+    this.transactions = new CosmosTransactionsSdk({
+      chainId,
+      client: this.client,
+    });
   }
 
   public get chain() {
     return cosmosChains[this.chainId];
-  }
-
-  public validateAddress({ address }: { address: string }) {
-    try {
-      Bech32Address.validate(address, this.chain.prefix);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  public async validateAccount({ address }: { address: string }) {
-    if (!this.validateAddress({ address })) {
-      return AccountValidationResult.INVALID_ADDRESS;
-    }
-    const account = await this.fetchAccount({ address });
-    if (!account) {
-      return AccountValidationResult.ACCOUNT_NOT_READY;
-    }
-    if (!account.pubkey) {
-      return AccountValidationResult.PUBLIC_KEY_NOT_READY;
-    }
-    return AccountValidationResult.READY;
-  }
-
-  public async prepareSigner({ signer }: { signer: Signer }) {
-    const address = this.getAddressOfSigner({ signer });
-    await this.prepareAccount({ address });
-    const validationResult = await this.validateAccount({ address });
-    invariant(
-      validationResult >= AccountValidationResult.PUBLIC_KEY_NOT_READY,
-      "Account not ready"
-    );
-    if (validationResult <= AccountValidationResult.PUBLIC_KEY_NOT_READY) {
-      await this.client.withSigningStargateClient(
-        OfflineAminoSigner.fromSigner({
-          signer,
-          prefix: this.chain.prefix,
-        }),
-        async (client) => {
-          await client.sendTokens(
-            address,
-            address,
-            coins(1, this.chain.denom),
-            "auto",
-            ""
-          );
-        }
-      );
-      while (
-        (await this.validateAccount({ address })) <=
-        AccountValidationResult.PUBLIC_KEY_NOT_READY
-      ) {
-        await this.wait({ ms: 100 });
-      }
-    }
-  }
-
-  protected async fetchAccount({ address }: { address: string }) {
-    return this.client.withStargateClient(async (client) => {
-      return await client.getAccount(address);
-    });
-  }
-
-  protected async fetchBalance({
-    address,
-    denom,
-  }: {
-    address: string;
-    denom: string;
-  }) {
-    return this.client.withStargateClient(async (client) => {
-      return await client.getBalance(address, denom);
-    });
   }
 
   public async fetchCodeId({ contract }: { contract: string }) {
@@ -181,26 +108,6 @@ export class CosmosSdk extends AbstractSdk {
     return { approved: false };
   }
 
-  public async fetchGatekeeperContractAddresses(_: { proxyAddress: string }) {
-    notImplemented(
-      "fetchGatekeeperContractAddresses not implemented for Cosmos"
-    );
-    return {
-      spendLimitGatekeeper: null,
-      sessionKeyGatekeeper: null,
-      debtGatekeeper: null,
-    };
-  }
-
-  public async fetchPermissionedAddresses(_: { spendLimitGatekeeper: string }) {
-    notImplemented("fetchPermissionedAddresses not implemented for Cosmos");
-    return [];
-  }
-
-  public getAddressOfPublicKey({ publicKey }: { publicKey: PublicKey }) {
-    return pubkeyToAddress(publicKey, this.chain.prefix);
-  }
-
   public async createAndSignTransaction({
     signer,
     messages,
@@ -218,12 +125,12 @@ export class CosmosSdk extends AbstractSdk {
           return this.aminoTypes.fromAmino(message.toAmino());
         });
         const gas = await client.simulate(
-          this.getAddressOfSigner({ signer }),
+          this.transactions.getAddressOfPublicKey(signer.publicKey),
           encodeObjects,
           ""
         );
         const transaction = await client.sign(
-          this.getAddressOfSigner({ signer }),
+          this.transactions.getAddressOfPublicKey(signer.publicKey),
           encodeObjects,
           {
             ...this.defaultFee,
@@ -234,37 +141,6 @@ export class CosmosSdk extends AbstractSdk {
         return TxRaw.encode(transaction).finish();
       }
     );
-  }
-
-  public async createMultisigSigner({
-    multisigPublicKey,
-    messages,
-  }: {
-    multisigPublicKey: MultisigPublicKey;
-    messages: Message[];
-  }) {
-    const address = this.getAddressOfPublicKey({
-      publicKey: multisigPublicKey,
-    });
-    await this.prepareAccount({ address });
-    const account = await this.fetchAccount({ address });
-    invariant(account, "Account not found.");
-
-    const aminoMessages = messages.map((message) => {
-      return message.toAmino();
-    });
-    const encodeObjects = aminoMessages.map((aminoMessage) => {
-      return this.aminoTypes.fromAmino(aminoMessage);
-    });
-
-    return new MultisigSigner({
-      chainId: this.chainId,
-      account,
-      fee: this.defaultFee,
-      encodeObjects,
-      messages: aminoMessages,
-      multisigPublicKey,
-    });
   }
 
   public async canExecute(_: {
@@ -290,36 +166,6 @@ export class CosmosSdk extends AbstractSdk {
         rawResult,
       };
     });
-  }
-
-  public async broadcastSignedTransactionAndLendFees({
-    signedTransaction,
-    sender,
-  }: {
-    signedTransaction: SignedTransaction;
-    sender: string;
-  }) {
-    const transaction = TxRaw.decode(signedTransaction);
-    const { fee } = AuthInfo.decode(transaction.authInfoBytes);
-
-    const hasEnoughForFees = async () => {
-      if (!fee) return true;
-      invariant(fee.amount.length === 1, "fee.amount.length must be 1");
-      const balance = await this.fetchBalance({
-        address: sender,
-        denom: fee.amount[0].denom,
-      });
-      return (
-        balance &&
-        parseInt(balance.amount, 10) >= parseInt(fee.amount[0].amount, 10)
-      );
-    };
-
-    while (!(await hasEnoughForFees())) {
-      await this.lendFees({ address: sender });
-    }
-
-    return await this.broadcastSignedTransaction({ signedTransaction });
   }
 
   public async createWallet(_: {

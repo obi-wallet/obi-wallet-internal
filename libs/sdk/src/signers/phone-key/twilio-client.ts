@@ -94,7 +94,7 @@ export class DemoModeTwilioClient implements TwilioClientInterface {
       throw new Error("No demo payload found.");
     }
     const signer = new Secp256k1PrivateKeySigner(this.keyPair.privateKey);
-    await Sdk.chainId(chainId).prepareSigner({ signer });
+    await Sdk.chainId(chainId).transactions.prepareKeyPair(this.keyPair);
     const signature = await signer.signHash(this.demoPayload);
     this.demoPayload = null;
     return signature;

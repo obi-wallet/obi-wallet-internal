@@ -96,7 +96,7 @@ export const SignatureModalMultisigKey =
         const signedTransaction = multisigSigner.createSignedTransaction();
         return await Sdk.chainId(
           multisigKey.chainId
-        ).broadcastSignedTransactionAndLendFees({
+        ).transactions.broadcastSignedTransactionAndLendFees({
           signedTransaction,
           sender: multisigKey.address,
         });

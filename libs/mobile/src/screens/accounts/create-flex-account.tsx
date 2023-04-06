@@ -98,11 +98,9 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
             disabled={!formState.isValid}
             onPress={handleSubmit((data) => {
               const { publicKey, privateKey } = generateSec256k1KeyPair();
-              const address = Sdk.chainId(wallet.chainId).getAddressOfPublicKey(
-                {
-                  publicKey,
-                }
-              );
+              const address = Sdk.chainId(
+                wallet.chainId
+              ).transactions.getAddressOfPublicKey(publicKey);
               gatekeeperConfig.value.upsertFlexAccount(
                 ObservableFlexAccount.create({
                   type: "flex-account",

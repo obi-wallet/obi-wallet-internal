@@ -100,9 +100,9 @@ export class MultisigWallet {
 
   public get address() {
     if (this.currentAccount?.type === "singlesig-wallet") {
-      return Sdk.chainId(this._chainId).getAddressOfPublicKey({
-        publicKey: this.currentAccount.publicKey,
-      });
+      return Sdk.chainId(this._chainId).transactions.getAddressOfPublicKey(
+        this.currentAccount.publicKey
+      );
     }
 
     return this._proxyAddress;
@@ -244,7 +244,10 @@ export class MultisigWallet {
     if (R.has("flexAccount", payload)) {
       const { flexAccount, messages } = payload;
       const signer = new Secp256k1PrivateKeySigner(flexAccount.privateKey);
-      await this.sdk.prepareSigner({ signer });
+      await this.sdk.transactions.prepareKeyPair({
+        publicKey: flexAccount.publicKey,
+        privateKey: flexAccount.privateKey,
+      });
       const wrappedMessages = wrapMessages({
         messages,
         contract: this.proxyAddress,
@@ -254,7 +257,7 @@ export class MultisigWallet {
         signer,
         messages: wrappedMessages,
       });
-      return await this.sdk.broadcastSignedTransactionAndLendFees({
+      return await this.sdk.transactions.broadcastSignedTransactionAndLendFees({
         signedTransaction,
         sender: flexAccount.address,
       });

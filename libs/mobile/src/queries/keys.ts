@@ -1,4 +1,4 @@
-import { Chain, Sdk, Secp256k1PrivateKeySigner } from "@obi-wallet/sdk";
+import { Chain, Sdk } from "@obi-wallet/sdk";
 
 import { staleTime } from "./helpers";
 
@@ -14,8 +14,13 @@ export function getPrepareKeyQuery({
   return {
     queryKey: ["prepare-key", { chainId, publicKey, privateKey }],
     queryFn: async () => {
-      const signer = new Secp256k1PrivateKeySigner(privateKey);
-      await Sdk.chainId(chainId).prepareSigner({ signer });
+      await Sdk.chainId(chainId).transactions.prepareKeyPair({
+        publicKey: {
+          type: "tendermint/PubKeySecp256k1",
+          value: publicKey,
+        },
+        privateKey,
+      });
       return true;
     },
     staleTime: staleTime({ days: 1 }),

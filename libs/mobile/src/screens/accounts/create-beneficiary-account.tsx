@@ -35,9 +35,9 @@ export const CreateBeneficiaryAccountScreen =
         name: nonEmptyString("Name"),
         address: nonEmptyString("Address").refine(
           (address: string) => {
-            return Sdk.chainId(wallet.chain.chainId).validateAddress({
-              address,
-            });
+            return Sdk.chainId(
+              wallet.chain.chainId
+            ).transactions.validateAddress(address);
           },
           {
             message: "Invalid address",
