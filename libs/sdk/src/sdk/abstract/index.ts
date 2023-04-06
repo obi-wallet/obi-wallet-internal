@@ -1,4 +1,5 @@
 import { AbstractBankSdk } from "./bank";
+import { AbstractContractsSdk } from "./contracts";
 import { AbstractGatekeeperSdk } from "./gatekeeper";
 import { AbstractStakingSdk } from "./staking";
 import { AbstractTransactionsSdk } from "./transactions";
@@ -20,6 +21,7 @@ import {
 } from "../common";
 
 export * from "./bank";
+export * from "./contracts";
 export * from "./gatekeeper";
 export * from "./staking";
 export * from "./transactions";
@@ -28,6 +30,7 @@ export abstract class AbstractSdk {
   protected queryNamespace: QueryClientNamespace<"sdk", { chainId: Chain }>;
 
   public abstract bank: AbstractBankSdk;
+  public abstract contracts: AbstractContractsSdk;
   public abstract gatekeeper: AbstractGatekeeperSdk;
   public abstract staking: AbstractStakingSdk;
   public abstract transactions: AbstractTransactionsSdk;
@@ -36,13 +39,11 @@ export abstract class AbstractSdk {
     this.queryNamespace = new QueryClientNamespace("sdk", { chainId });
   }
 
-  public abstract fetchCodeId({
-    contract,
-  }: {
-    contract: string;
-  }): Promise<number>;
+  // TODO: internal MultisigWallet SDK
   public abstract fetchCodeIds(wallet: MultisigWallet): Promise<CodeIds>;
+  // TODO: internal MultisigWallet SDK
   public abstract isOutdated(wallet: MultisigWallet): Promise<boolean>;
+  // TODO: internal MultisigWallet SDK
   public abstract updateWallet(wallet: MultisigWallet): Promise<
     | {
         approved: true;
@@ -50,6 +51,7 @@ export abstract class AbstractSdk {
       }
     | { approved: false }
   >;
+  // TODO: internal MultisigWallet SDK
   public abstract getUpdateWalletMessage({
     wallet,
     codeIds,
@@ -58,6 +60,7 @@ export abstract class AbstractSdk {
     codeIds: CodeIds;
   }): Message;
 
+  // TODO: move into TransactionsSdk
   public abstract createAndSignTransaction({
     signer,
     messages,
@@ -66,6 +69,7 @@ export abstract class AbstractSdk {
     messages: Message[];
   }): Promise<SignedTransaction>;
 
+  // TODO: maybe internal MultisigWallet SDK, see usages
   public abstract canExecute({
     address,
     proxyAddress,
@@ -76,12 +80,14 @@ export abstract class AbstractSdk {
     messages: Message[];
   }): Promise<boolean>;
 
+  // TODO: move into TransactionsSdk
   public abstract broadcastSignedTransaction({
     signedTransaction,
   }: {
     signedTransaction: SignedTransaction;
   }): Promise<BroadcastTransactionResult>;
 
+  // TODO: internal MultisigWallet SDK
   public abstract updateOwner({
     wallet,
     newOwner,
@@ -96,6 +102,7 @@ export abstract class AbstractSdk {
     | { approved: false }
   >;
 
+  // TODO: internal MultisigWallet SDK
   public abstract getProposeUpdateOwnerMessage({
     wallet,
     newOwner,
@@ -106,6 +113,7 @@ export abstract class AbstractSdk {
     codeIds: CodeIds;
   }): Message;
 
+  // TODO: internal MultisigWallet SDK
   public abstract updateGatekeeperConfig({
     wallet,
     newGatekeeperConfig,
@@ -120,6 +128,7 @@ export abstract class AbstractSdk {
     | { approved: false }
   >;
 
+  // TODO: internal MultisigWallet SDK
   public abstract getUpdateGatekeeperMessages({
     wallet,
     newGatekeeperConfig,
@@ -132,6 +141,7 @@ export abstract class AbstractSdk {
     sessionKeyGatekeeper: string;
   }): Message[];
 
+  // TODO: internal MultisigWallet SDK
   public abstract getConfirmUpdateOwnerMessage({
     wallet,
     newOwner,
@@ -140,6 +150,7 @@ export abstract class AbstractSdk {
     newOwner: MultisigKey;
   }): Message;
 
+  // TODO: internal Wallets SDK
   public abstract createWallet({
     multisigKey,
     demoMode,
@@ -156,8 +167,10 @@ export abstract class AbstractSdk {
     >
   >;
 
+  // TODO: internal Wallets SDK
   public abstract getCreateWalletMessage(multisigKey: MultisigKey): Message;
 
+  // TODO: internal MultisigWallet SDK
   public abstract stake({
     wallet,
     amount,
@@ -171,6 +184,7 @@ export abstract class AbstractSdk {
     | { approved: false }
   >;
 
+  // TODO: internal MultisigWallet SD
   public abstract unstake({
     wallet,
     amount,
@@ -184,6 +198,7 @@ export abstract class AbstractSdk {
     | { approved: false }
   >;
 
+  // TODO: internal MultisigWallet SDK
   public abstract withdrawRewards(
     wallet: MultisigWallet
   ): Promise<
@@ -191,6 +206,7 @@ export abstract class AbstractSdk {
     | { approved: false }
   >;
 
+  // TODO: internal MultisigWallet SDK
   public abstract getStakeMessage({
     wallet,
     amount,
@@ -201,6 +217,7 @@ export abstract class AbstractSdk {
     validator: string;
   }): Message;
 
+  // TODO: internal MultisigWallet SDK
   public abstract getUnstakeMessage({
     wallet,
     amount,
@@ -211,6 +228,7 @@ export abstract class AbstractSdk {
     validator: string;
   }): Message;
 
+  // TODO: internal MultisigWallet SDK
   public abstract getWithdrawRewardsMessage({
     wallet,
     validator,
@@ -219,6 +237,7 @@ export abstract class AbstractSdk {
     validator: string;
   }): Message;
 
+  // TODO: coin-specific class
   public formatCoin(coin: Coin): FormattedCoin {
     const digits = 6;
     const amount = parseInt(coin.amount, 10) / Math.pow(10, digits);

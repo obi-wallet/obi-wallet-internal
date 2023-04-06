@@ -18,6 +18,7 @@ import warning from "tiny-warning";
 
 import { CosmosBankSdk } from "./bank";
 import { CosmosClient } from "./client";
+import { CosmosContractsSdk } from "./contracts";
 import { CosmosGatekeeperSdk } from "./gatekeeper";
 import { OfflineAminoSigner } from "./offline-amino-signer";
 import { CosmosStakingSdk } from "./staking";
@@ -44,6 +45,7 @@ function notImplemented(message: string) {
 
 export class CosmosSdk extends AbstractSdk {
   public bank: CosmosBankSdk;
+  public contracts: CosmosContractsSdk;
   public gatekeeper: CosmosGatekeeperSdk;
   public staking: CosmosStakingSdk;
   public transactions: CosmosTransactionsSdk;
@@ -54,6 +56,10 @@ export class CosmosSdk extends AbstractSdk {
     super(chainId);
     this.client = new CosmosClient(chainId);
     this.bank = new CosmosBankSdk({
+      chainId,
+      client: this.client,
+    });
+    this.contracts = new CosmosContractsSdk({
       chainId,
       client: this.client,
     });
@@ -75,18 +81,9 @@ export class CosmosSdk extends AbstractSdk {
     return cosmosChains[this.chainId];
   }
 
-  public async fetchCodeId({ contract }: { contract: string }) {
-    return await this.client.withCosmWasmClient(async (client) => {
-      const { codeId } = await client.getContract(contract);
-      return codeId;
-    });
-  }
-
   public async fetchCodeIds(wallet: MultisigWallet): Promise<CodeIds> {
     return {
-      userAccount: await this.fetchCodeId({
-        contract: wallet.proxyAddress,
-      }),
+      userAccount: await this.contracts.codeId(wallet.proxyAddress),
       spendLimitGatekeeper: null,
       debtGatekeeper: null,
     };

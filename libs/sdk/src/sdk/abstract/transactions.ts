@@ -37,7 +37,7 @@ export abstract class AbstractTransactionsSdk {
       name: "prepareKeyPair",
       fn: this.prepareKeyPairQueryFn.bind(this),
       params: keyPair,
-      staleTime: { days: 1 },
+      staleTime: { day: 1 },
     });
   }
 

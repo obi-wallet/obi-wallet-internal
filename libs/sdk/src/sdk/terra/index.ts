@@ -14,6 +14,7 @@ import invariant from "tiny-invariant";
 
 import { TerraBankSdk } from "./bank";
 import { TerraClient } from "./client";
+import { TerraContractsSdk } from "./contracts";
 import { TerraGatekeeperSdk } from "./gatekeeper";
 import { Key } from "./key";
 import { TerraStakingSdk } from "./staking";
@@ -40,6 +41,7 @@ import {
 
 export class TerraSdk extends AbstractSdk {
   public bank: TerraBankSdk;
+  public contracts: TerraContractsSdk;
   public gatekeeper: TerraGatekeeperSdk;
   public staking: TerraStakingSdk;
   public transactions: TerraTransactionsSdk;
@@ -50,6 +52,10 @@ export class TerraSdk extends AbstractSdk {
     super(chainId);
     this.client = new TerraClient(chainId);
     this.bank = new TerraBankSdk({
+      chainId,
+      client: this.client,
+    });
+    this.contracts = new TerraContractsSdk({
       chainId,
       client: this.client,
     });
@@ -71,13 +77,6 @@ export class TerraSdk extends AbstractSdk {
     return terraChains[this.chainId];
   }
 
-  public async fetchCodeId({ contract }: { contract: string }) {
-    return await this.client.withClient(async (client) => {
-      const { code_id } = await client.wasm.contractInfo(contract);
-      return code_id;
-    });
-  }
-
   public async fetchCodeIds(wallet: MultisigWallet) {
     const addresses = {
       userAccount: wallet.proxyAddress,
@@ -87,10 +86,10 @@ export class TerraSdk extends AbstractSdk {
     const pairs = R.toPairs(addresses);
     const pairsWithCodeIds = await Promise.all(
       pairs.map(async ([key, address]) => {
-        return [
-          key,
-          address ? await this.fetchCodeId({ contract: address }) : null,
-        ] as [string, number | null];
+        return [key, address ? await this.contracts.codeId(address) : null] as [
+          string,
+          number | null
+        ];
       })
     );
     return R.fromPairs(pairsWithCodeIds) as unknown as CodeIds;
