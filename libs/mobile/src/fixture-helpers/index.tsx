@@ -99,9 +99,9 @@ export const GatekeeperConfigDraft = {
       if (accounts.length > 0) return;
 
       const { publicKey, privateKey } = generateSec256k1KeyPair();
-      const address = Sdk.chainId(wallet.chainId).getAddressOfPublicKey({
-        publicKey,
-      });
+      const address = Sdk.chainId(
+        wallet.chainId
+      ).transactions.getAddressOfPublicKey(publicKey);
 
       draft.value.upsertBeneficiary(
         ObservableBeneficiary.create({

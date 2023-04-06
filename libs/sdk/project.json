@@ -43,6 +43,21 @@
           "tsc --project libs/sdk/tsconfig.spec.json --noEmit"
         ]
       }
+    },
+    "docs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["typedoc", "open ./docs/index.html"],
+        "cwd": "libs/sdk"
+      }
+    },
+    "typedoc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "typedoc --watch --tsconfig ./tsconfig.lib.json",
+        "cwd": "libs/sdk"
+      },
+      "dependsOn": ["docs"]
     }
   }
 }

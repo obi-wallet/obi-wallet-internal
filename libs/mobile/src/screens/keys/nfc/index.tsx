@@ -1,6 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { Text } from "@obi-wallet/common";
-import { MultisigKey } from "@obi-wallet/sdk";
+import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -26,7 +26,6 @@ import { isSmallScreenNumber } from "../../../app/screens/components/screen-size
 import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
 import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 import { useStore } from "../../../app/stores";
-import { getPrepareKeyQuery } from "../../../queries/keys";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type NfcKeyScreenProps = NativeStackScreenProps<
@@ -298,25 +297,29 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
               onPress={async () => {
                 if (parsed) {
                   const localEntropy = generateLocalEntropy();
+                  // TODO: should return keypair instead
                   const { publicKey, privateKey } = await getNFCKeyPair({
                     demoMode,
                     parsed: parsed.parsed,
                     boostEntropy: true,
                     localEntropy,
                   });
-                  draft.value.setNfcKey({
+                  const keyPair: Secp256k1KeyPair = {
                     publicKey: {
                       type: pubkeyType.secp256k1,
                       value: publicKey,
                     },
+                    privateKey,
+                  };
+                  draft.value.setNfcKey({
+                    publicKey: keyPair.publicKey,
                     localEntropy,
                   });
+
                   void queryClient.prefetchQuery(
-                    getPrepareKeyQuery({
-                      chainId: draft.value.chainId,
-                      publicKey,
-                      privateKey,
-                    })
+                    Sdk.chainId(
+                      draft.value.chainId
+                    ).transactions.prepareKeyPairQuery(keyPair)
                   );
                   onSubmit();
                 } else {

@@ -1,6 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { Text } from "@obi-wallet/common";
-import { MultisigKey } from "@obi-wallet/sdk";
+import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -17,7 +17,6 @@ import { isSmallScreenNumber } from "../../../app/screens/components/screen-size
 import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
 import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 import { useStore } from "../../../app/stores";
-import { getPrepareKeyQuery } from "../../../queries/keys";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type CloudKeyScreenProps = NativeStackScreenProps<
@@ -75,19 +74,23 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
 
   const handleGoogleDrive = async () => {
     await signOut();
+    // TODO: should return keypair instead
     const { publicKey, privateKey } = await getCloudKeyPair({
       demoMode: demoMode,
     });
+    const keyPair: Secp256k1KeyPair = {
+      publicKey: {
+        type: pubkeyType.secp256k1,
+        value: publicKey,
+      },
+      privateKey,
+    };
 
     if (isRecovering) {
       if (targetPublicKey === publicKey) {
         draft.value.setCloudKey({
           provider: "google-drive",
-          publicKey: {
-            type: pubkeyType.secp256k1,
-            value: publicKey,
-          },
-          privateKey,
+          ...keyPair,
         });
       } else {
         Alert.alert(
@@ -98,20 +101,12 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
     } else {
       draft.value.setCloudKey({
         provider: "google-drive",
-        publicKey: {
-          type: pubkeyType.secp256k1,
-          value: publicKey,
-        },
-        privateKey,
+        ...keyPair,
       });
     }
 
     void queryClient.prefetchQuery(
-      getPrepareKeyQuery({
-        chainId: draft.value.chainId,
-        publicKey,
-        privateKey,
-      })
+      Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(keyPair)
     );
     onSubmit();
   };

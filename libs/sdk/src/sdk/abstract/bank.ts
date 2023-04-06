@@ -12,7 +12,12 @@ export abstract class AbstractBankSdk {
     this.queryNamespace = new QueryClientNamespace("bank-sdk", { chainId });
   }
 
-  public fetchBalances(address: string) {
+  /**
+   * Fetches the balances of the given address.
+   *
+   * @see {@link balancesQuery} for usage with TanStack Query.
+   */
+  public balances(address: string) {
     return queryClient.fetchQuery(this.balancesQuery(address));
   }
 
@@ -26,7 +31,12 @@ export abstract class AbstractBankSdk {
 
   protected abstract balancesQueryFn(address: string): Promise<Coin[]>;
 
-  public fetchPrices() {
+  /**
+   * Fetches the current USD-equivalent prices of known tokens.
+   *
+   * @see {@link pricesQuery} for usage with TanStack Query.
+   */
+  public prices() {
     return queryClient.fetchQuery(this.pricesQuery());
   }
 

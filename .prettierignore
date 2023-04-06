@@ -2,6 +2,9 @@
 dist/
 build/
 
+# TypeDoc output
+docs/
+
 /apps/*/android/
 /apps/*/ios/
 

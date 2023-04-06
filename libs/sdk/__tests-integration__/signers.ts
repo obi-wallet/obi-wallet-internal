@@ -26,11 +26,11 @@ describe("Sec256k1PrivateKeySigner", () => {
 
   describe("prepareSigner", () => {
     test("Cosmos", async () => {
-      await Sdk.chainId("juno-1").prepareSigner({ signer });
+      await Sdk.chainId("juno-1").transactions.prepareKeyPair(keyPair);
     });
 
     test("Terra", async () => {
-      await Sdk.chainId("phoenix-1").prepareSigner({ signer });
+      await Sdk.chainId("phoenix-1").transactions.prepareKeyPair(keyPair);
     });
   });
 
@@ -38,7 +38,9 @@ describe("Sec256k1PrivateKeySigner", () => {
     describe("Cosmos", () => {
       test("Successful MsgSend", async () => {
         const sdk = Sdk.chainId("juno-1");
-        const address = sdk.getAddressOfSigner({ signer });
+        const address = sdk.transactions.getAddressOfPublicKey(
+          signer.publicKey
+        );
         const message = new MsgSend(address, address, { ujuno: 1 });
         const transaction = await sdk.createAndSignTransaction({
           signer,
@@ -49,7 +51,9 @@ describe("Sec256k1PrivateKeySigner", () => {
 
       test("Failed MsgSend", async () => {
         const sdk = Sdk.chainId("juno-1");
-        const address = sdk.getAddressOfSigner({ signer });
+        const address = sdk.transactions.getAddressOfPublicKey(
+          signer.publicKey
+        );
         const message = new MsgSend(address, address, { invalid: 1 });
         await expect(
           sdk.createAndSignTransaction({
@@ -65,7 +69,9 @@ describe("Sec256k1PrivateKeySigner", () => {
     describe("Terra", () => {
       test("Successful MsgSend", async () => {
         const sdk = Sdk.chainId("phoenix-1");
-        const address = sdk.getAddressOfSigner({ signer });
+        const address = sdk.transactions.getAddressOfPublicKey(
+          signer.publicKey
+        );
         const message = new MsgSend(address, address, { uluna: 1 });
         const transaction = await sdk.createAndSignTransaction({
           signer,
@@ -76,7 +82,9 @@ describe("Sec256k1PrivateKeySigner", () => {
 
       test("Failed MsgSend", async () => {
         const sdk = Sdk.chainId("phoenix-1");
-        const address = sdk.getAddressOfSigner({ signer });
+        const address = sdk.transactions.getAddressOfPublicKey(
+          signer.publicKey
+        );
         const message = new MsgSend(address, address, { invalid: 1 });
         await expect(
           sdk.createAndSignTransaction({
@@ -108,9 +116,9 @@ describe("MultisigSigner", () => {
 
   test("Cosmos", async () => {
     const sdk = Sdk.chainId("juno-1");
-    const address = sdk.getAddressOfPublicKey({ publicKey: multisigPublicKey });
+    const address = sdk.transactions.getAddressOfPublicKey(multisigPublicKey);
     const message = new MsgSend(address, address, { ujuno: 1 });
-    const multisigSigner = await sdk.createMultisigSigner({
+    const multisigSigner = await sdk.transactions.createMultisigSigner({
       multisigPublicKey,
       messages: [message],
     });
@@ -128,9 +136,9 @@ describe("MultisigSigner", () => {
 
   test("Terra", async () => {
     const sdk = Sdk.chainId("phoenix-1");
-    const address = sdk.getAddressOfPublicKey({ publicKey: multisigPublicKey });
+    const address = sdk.transactions.getAddressOfPublicKey(multisigPublicKey);
     const message = new MsgSend(address, address, { uluna: 1 });
-    const multisigSigner = await sdk.createMultisigSigner({
+    const multisigSigner = await sdk.transactions.createMultisigSigner({
       multisigPublicKey,
       messages: [message],
     });

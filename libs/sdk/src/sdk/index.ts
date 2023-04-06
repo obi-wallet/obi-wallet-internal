@@ -3,9 +3,8 @@ import { CosmosSdk } from "./cosmos";
 import { TerraSdk } from "./terra";
 import { Chain, TerraChain } from "../chains";
 
+export * from "./abstract";
 export * from "./common";
-export * from "./cosmos";
-export * from "./terra";
 
 export class Sdk {
   protected static instances: Partial<Record<Chain, AbstractSdk>> = {};

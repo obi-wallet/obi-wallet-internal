@@ -5,6 +5,7 @@ import {
   Beneficiary,
   FlexAccount,
   GatekeeperConfig,
+  Sdk,
   SinglesigWallet,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -32,11 +33,7 @@ import { Background } from "../../../app/screens/components/background";
 import { NetworkAccountPickerLayout } from "../../../app/screens/components/network-account-picker-layout";
 import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 import { useMultisigWallet, useStore } from "../../../app/stores";
-import {
-  getGatekeeperContractAddressesQuery,
-  getPermissionedAddressesQuery,
-  useQuery,
-} from "../../../queries";
+import { useQuery } from "../../../queries";
 import { AccountsRoute, AccountsStackParamList } from "../accounts-stack";
 import { getGatekeeperConfigDraftId } from "../draft-id";
 
@@ -72,20 +69,10 @@ const AccountScreenInner = observer(function AccountScreenInner() {
     id: draftId,
   });
 
-  const { data: gatekeeperContractAddresses } = useQuery(
-    getGatekeeperContractAddressesQuery({
-      chainId: wallet.chainId,
-      address: wallet.proxyAddress,
-    })
-  );
-  const spendLimitGatekeeper =
-    gatekeeperContractAddresses?.spendLimitGatekeeper;
-
   const { data: permissionedAddresses, refetch } = useQuery(
-    getPermissionedAddressesQuery({
-      chainId: wallet.chainId,
-      spendLimitGatekeeper,
-    })
+    Sdk.chainId(wallet.chainId).gatekeeper.permissionedAddressesQuery(
+      wallet.proxyAddress
+    )
   );
 
   return (

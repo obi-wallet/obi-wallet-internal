@@ -70,9 +70,9 @@ function SendSinglesigWalletTxFixture() {
 
   // TODO: add fallback
   invariant(singlesigWallet, "No singlesig wallet");
-  const address = Sdk.chainId("phoenix-1").getAddressOfPublicKey({
-    publicKey: singlesigWallet.publicKey,
-  });
+  const address = Sdk.chainId("phoenix-1").transactions.getAddressOfPublicKey(
+    singlesigWallet.publicKey
+  );
 
   const interaction: SignAndBroadcastTransactionUserInteraction = {
     payload: {

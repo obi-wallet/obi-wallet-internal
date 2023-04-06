@@ -1,66 +1,40 @@
-import fetch from "isomorphic-unfetch";
-import invariant from "tiny-invariant";
-
 import { AbstractBankSdk } from "./bank";
+import { AbstractGatekeeperSdk } from "./gatekeeper";
 import { AbstractStakingSdk } from "./staking";
+import { AbstractTransactionsSdk } from "./transactions";
 import { Chain } from "../../chains";
 import {
   GatekeeperConfig,
   MultisigKey,
   MultisigWallet,
 } from "../../data-structures";
-import { MultisigPublicKey, PublicKey } from "../../keys";
 import { QueryClientNamespace } from "../../query-client";
-import { MultisigSigner, Signer } from "../../signers";
+import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
 import {
-  AccountValidationResult,
   BroadcastTransactionResult,
   CodeIds,
   Coin,
   FormattedCoin,
-  GatekeeperContractAddresses,
-  PermissionedAddress,
 } from "../common";
 
 export * from "./bank";
+export * from "./gatekeeper";
 export * from "./staking";
+export * from "./transactions";
 
 export abstract class AbstractSdk {
   protected queryNamespace: QueryClientNamespace<"sdk", { chainId: Chain }>;
 
   public abstract bank: AbstractBankSdk;
+  public abstract gatekeeper: AbstractGatekeeperSdk;
   public abstract staking: AbstractStakingSdk;
+  public abstract transactions: AbstractTransactionsSdk;
 
   protected constructor(protected chainId: Chain) {
     this.queryNamespace = new QueryClientNamespace("sdk", { chainId });
   }
-
-  public abstract validateAddress({ address }: { address: string }): boolean;
-  public abstract validateAccount({
-    address,
-  }: {
-    address: string;
-  }): Promise<AccountValidationResult>;
-  public async prepareAccount({ address }: { address: string }): Promise<void> {
-    const validationResult = await this.validateAccount({ address });
-    invariant(
-      validationResult !== AccountValidationResult.INVALID_ADDRESS,
-      "Invalid address"
-    );
-
-    if (validationResult <= AccountValidationResult.ACCOUNT_NOT_READY) {
-      await this.lendFees({ address });
-      while (
-        (await this.validateAccount({ address })) <=
-        AccountValidationResult.ACCOUNT_NOT_READY
-      ) {
-        await this.wait({ ms: 100 });
-      }
-    }
-  }
-  public abstract prepareSigner({ signer }: { signer: Signer }): Promise<void>;
 
   public abstract fetchCodeId({
     contract,
@@ -84,42 +58,6 @@ export abstract class AbstractSdk {
     codeIds: CodeIds;
   }): Message;
 
-  public abstract fetchGatekeeperContractAddresses({
-    proxyAddress,
-  }: {
-    proxyAddress: string;
-  }): Promise<GatekeeperContractAddresses>;
-  public abstract fetchPermissionedAddresses({
-    spendLimitGatekeeper,
-  }: {
-    spendLimitGatekeeper: string;
-  }): Promise<PermissionedAddress[]>;
-
-  protected async lendFees({ address }: { address: string }) {
-    invariant(this.validateAddress({ address }), "Invalid address");
-    const response = await fetch(
-      "https://fee-lender-worker.obiwallet.workers.dev/",
-      {
-        method: "POST",
-        body: `${this.chainId},${address}`,
-      }
-    );
-    if (response.status !== 200) {
-      console.log(response);
-      throw new Error("Lending fees failed");
-    }
-  }
-
-  public abstract getAddressOfPublicKey({
-    publicKey,
-  }: {
-    publicKey: PublicKey;
-  }): string;
-
-  public getAddressOfSigner({ signer }: { signer: Signer }): string {
-    return this.getAddressOfPublicKey({ publicKey: signer.publicKey });
-  }
-
   public abstract createAndSignTransaction({
     signer,
     messages,
@@ -127,14 +65,6 @@ export abstract class AbstractSdk {
     signer: Signer;
     messages: Message[];
   }): Promise<SignedTransaction>;
-
-  public abstract createMultisigSigner({
-    multisigPublicKey,
-    messages,
-  }: {
-    multisigPublicKey: MultisigPublicKey;
-    messages: Message[];
-  }): Promise<MultisigSigner>;
 
   public abstract canExecute({
     address,
@@ -150,14 +80,6 @@ export abstract class AbstractSdk {
     signedTransaction,
   }: {
     signedTransaction: SignedTransaction;
-  }): Promise<BroadcastTransactionResult>;
-
-  public abstract broadcastSignedTransactionAndLendFees({
-    signedTransaction,
-    sender,
-  }: {
-    signedTransaction: SignedTransaction;
-    sender: string;
   }): Promise<BroadcastTransactionResult>;
 
   public abstract updateOwner({
@@ -307,9 +229,5 @@ export abstract class AbstractSdk {
       label: "Unknown Token",
       amount: amount,
     };
-  }
-
-  protected wait({ ms }: { ms: number }): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

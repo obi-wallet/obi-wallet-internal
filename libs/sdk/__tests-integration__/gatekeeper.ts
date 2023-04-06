@@ -18,9 +18,7 @@ const sdk = Sdk.chainId(chainId);
 const proxyAddress =
   "terra19g840q54mxd5vyxh3rdfpncmmyql5hcu8j9wcg45zgwgt4phwdes27emev";
 const { publicKey, privateKey } = generateSec256k1KeyPair();
-const address = sdk.getAddressOfPublicKey({
-  publicKey,
-});
+const address = sdk.transactions.getAddressOfPublicKey(publicKey);
 let gatekeepers: {
   spendLimitGatekeeper: string;
   sessionKeyGatekeeper: string;
@@ -28,9 +26,7 @@ let gatekeepers: {
 let wallet: MultisigWallet;
 
 beforeAll(async () => {
-  const response = await sdk.fetchGatekeeperContractAddresses({
-    proxyAddress,
-  });
+  const response = await sdk.gatekeeper.fetchContractAddresses(proxyAddress);
   invariant(response.spendLimitGatekeeper, "Spend limit gatekeeper not found");
   invariant(response.sessionKeyGatekeeper, "Session key gatekeeper not found");
   gatekeepers = {
