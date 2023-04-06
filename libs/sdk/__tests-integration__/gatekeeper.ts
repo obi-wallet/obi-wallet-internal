@@ -5,6 +5,7 @@ import {
   createGatekeeperConfig,
   createObservableGatekeeperConfig,
   generateSec256k1KeyPair,
+  Messages,
   MultisigKey,
   MultisigWallet,
   ObservableBeneficiary,
@@ -13,6 +14,7 @@ import {
 } from "../src";
 
 const chainId = "phoenix-1";
+const messagesSdk = Messages.chainId(chainId);
 const sdk = Sdk.chainId(chainId);
 
 const proxyAddress =
@@ -55,12 +57,13 @@ beforeEach(() => {
 describe("Empty gatekeeper config", () => {
   test("No changes", () => {
     const newGatekeeperConfig = createObservableGatekeeperConfig();
-    const messages = sdk.getUpdateGatekeeperMessages({
-      wallet,
-      newGatekeeperConfig,
-      ...gatekeepers,
-    });
-    expect(messages).toEqual([]);
+    expect(
+      messagesSdk.getUpdateGatekeeperMessages({
+        wallet,
+        newGatekeeperConfig,
+        ...gatekeepers,
+      })
+    ).toEqual([]);
   });
 
   test("Add beneficiary", () => {
@@ -84,7 +87,7 @@ describe("Empty gatekeeper config", () => {
         },
       })
     );
-    const messages = sdk.getUpdateGatekeeperMessages({
+    const messages = messagesSdk.getUpdateGatekeeperMessages({
       wallet,
       newGatekeeperConfig,
       ...gatekeepers,
@@ -137,7 +140,7 @@ describe("Empty gatekeeper config", () => {
         autoSign: null,
       })
     );
-    const messages = sdk.getUpdateGatekeeperMessages({
+    const messages = messagesSdk.getUpdateGatekeeperMessages({
       wallet,
       newGatekeeperConfig,
       ...gatekeepers,
@@ -187,7 +190,7 @@ describe("Empty gatekeeper config", () => {
         autoSign: null,
       })
     );
-    const messages = sdk.getUpdateGatekeeperMessages({
+    const messages = messagesSdk.getUpdateGatekeeperMessages({
       wallet,
       newGatekeeperConfig,
       ...gatekeepers,
@@ -247,7 +250,7 @@ describe("Empty gatekeeper config", () => {
         },
       })
     );
-    const messages = sdk.getUpdateGatekeeperMessages({
+    const messages = messagesSdk.getUpdateGatekeeperMessages({
       wallet,
       newGatekeeperConfig,
       ...gatekeepers,
@@ -306,7 +309,7 @@ test("Remove single flex account", async () => {
     })
   );
   const newGatekeeperConfig = createObservableGatekeeperConfig();
-  const messages = sdk.getUpdateGatekeeperMessages({
+  const messages = messagesSdk.getUpdateGatekeeperMessages({
     wallet,
     newGatekeeperConfig,
     ...gatekeepers,
@@ -360,7 +363,7 @@ test("Make unlocked flex account locked", async () => {
       autoSign: null,
     })
   );
-  const messages = sdk.getUpdateGatekeeperMessages({
+  const messages = messagesSdk.getUpdateGatekeeperMessages({
     wallet,
     newGatekeeperConfig,
     ...gatekeepers,

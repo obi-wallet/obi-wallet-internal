@@ -1,4 +1,8 @@
-import { FetchQueryOptions, QueryClient } from "@tanstack/query-core";
+import {
+  FetchQueryOptions,
+  QueryClient,
+  WithRequired,
+} from "@tanstack/query-core";
 import { Duration, DurationLikeObject } from "luxon";
 import * as R from "ramda";
 
@@ -52,7 +56,10 @@ export class QueryClientNamespace<
     name: string;
     fn: () => Promise<TFnReturn>;
     staleTime?: DurationLikeObject;
-  }): Pick<FetchQueryOptions<TFnReturn>, "queryKey" | "queryFn" | "staleTime"> {
+  }): Pick<
+    WithRequired<FetchQueryOptions<TFnReturn>, "queryKey">,
+    "queryKey" | "queryFn" | "staleTime"
+  > {
     return {
       queryKey: [
         {
@@ -80,7 +87,10 @@ export class QueryClientNamespace<
     fn: (args: TFnParams) => Promise<TFnReturn>;
     params: TFnParams;
     staleTime?: DurationLikeObject;
-  }): Pick<FetchQueryOptions<TFnReturn>, "queryKey" | "queryFn" | "staleTime"> {
+  }): Pick<
+    WithRequired<FetchQueryOptions<TFnReturn>, "queryKey">,
+    "queryKey" | "queryFn" | "staleTime"
+  > {
     return {
       queryKey: [
         {

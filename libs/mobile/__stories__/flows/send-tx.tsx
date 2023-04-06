@@ -1,4 +1,5 @@
 import {
+  Messages,
   Sdk,
   SignAndBroadcastTransactionUserInteraction,
 } from "@obi-wallet/sdk";
@@ -104,7 +105,7 @@ function SendMultisigKeyTxFixture() {
   const interaction: SignAndBroadcastTransactionUserInteraction = {
     payload: {
       messages: [
-        Sdk.chainId(wallet.chainId).getCreateWalletMessage(wallet.owner),
+        Messages.chainId(wallet.chainId).getCreateWalletMessage(wallet.owner),
       ],
       multisigKey: wallet.owner,
       demoMode: true,

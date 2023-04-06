@@ -24,20 +24,11 @@ import { OfflineAminoSigner } from "./offline-amino-signer";
 import { CosmosStakingSdk } from "./staking";
 import { CosmosTransactionsSdk } from "./transactions";
 import { CosmosChain, cosmosChains } from "../../chains";
-import {
-  GatekeeperConfig,
-  MultisigKey,
-  MultisigWallet,
-} from "../../data-structures";
+import { MultisigKey } from "../../data-structures";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { AbstractSdk } from "../abstract";
-import {
-  BroadcastTransactionResult,
-  CodeIds,
-  Coin,
-  FormattedCoin,
-} from "../common";
+import { Coin, FormattedCoin } from "../common";
 
 function notImplemented(message: string) {
   warning(false, message);
@@ -79,30 +70,6 @@ export class CosmosSdk extends AbstractSdk {
 
   public get chain() {
     return cosmosChains[this.chainId];
-  }
-
-  public async fetchCodeIds(wallet: MultisigWallet): Promise<CodeIds> {
-    return {
-      userAccount: await this.contracts.codeId(wallet.proxyAddress),
-      spendLimitGatekeeper: null,
-      debtGatekeeper: null,
-    };
-  }
-
-  public async isOutdated(wallet: MultisigWallet) {
-    const codeIds = await this.fetchCodeIds(wallet);
-    return codeIds.userAccount < this.chain.currentCodeId;
-  }
-
-  public async updateWallet(_: MultisigWallet): Promise<
-    | {
-        approved: true;
-        payload: BroadcastTransactionResult | { success: true };
-      }
-    | { approved: false }
-  > {
-    notImplemented("updateWallet not implemented for Cosmos");
-    return { approved: false };
   }
 
   public async createAndSignTransaction({
@@ -173,135 +140,6 @@ export class CosmosSdk extends AbstractSdk {
     return {
       approved: false as const,
     };
-  }
-
-  public getCreateWalletMessage(_: MultisigKey): Message {
-    notImplemented("getCreateWalletMessage not implemented for Cosmos");
-    throw new Error("getCreateWalletMessage not implemented for Cosmos");
-  }
-
-  public async updateOwner(_: {
-    wallet: MultisigWallet;
-    newOwner: MultisigKey;
-  }): Promise<
-    | {
-        approved: true;
-        payload: BroadcastTransactionResult | { success: true };
-      }
-    | { approved: false }
-  > {
-    notImplemented("updateOwner not implemented for Cosmos");
-    return { approved: false };
-  }
-
-  public getProposeUpdateOwnerMessage(_: {
-    wallet: MultisigWallet;
-    newOwner: MultisigKey;
-    codeIds: CodeIds;
-  }): Message {
-    notImplemented("getProposeUpdateOwnerMessage not implemented for Cosmos");
-    throw new Error("getProposeUpdateOwnerMessage not implemented for Cosmos");
-  }
-
-  public getConfirmUpdateOwnerMessage(_: {
-    wallet: MultisigWallet;
-    newOwner: MultisigKey;
-    codeIds: CodeIds;
-  }): Message {
-    notImplemented("getConfirmUpdateOwnerMessage not implemented for Cosmos");
-    throw new Error("getConfirmUpdateOwnerMessage not implemented for Cosmos");
-  }
-
-  public getUpdateWalletMessage(_: {
-    wallet: MultisigWallet;
-    codeIds: CodeIds;
-  }): Message {
-    notImplemented("getUpdateWalletMessage not implemented for Cosmos");
-    throw new Error("getUpdateWalletMessage not implemented for Cosmos");
-  }
-
-  public async stake(_: {
-    wallet: MultisigWallet;
-    amount: Coin;
-    validator: string;
-  }): Promise<
-    | { approved: true; payload: BroadcastTransactionResult }
-    | { approved: false }
-  > {
-    notImplemented("stake not implemented for Cosmos");
-    return { approved: false };
-  }
-
-  public async unstake(_: {
-    wallet: MultisigWallet;
-    amount: Coin;
-    validator: string;
-  }): Promise<
-    | { approved: true; payload: BroadcastTransactionResult }
-    | { approved: false }
-  > {
-    notImplemented("unstake not implemented for Cosmos");
-    return { approved: false };
-  }
-
-  public async withdrawRewards(
-    _: MultisigWallet
-  ): Promise<
-    | { approved: true; payload: BroadcastTransactionResult }
-    | { approved: false }
-  > {
-    notImplemented("withdrawRewards not implemented for Cosmos");
-    return { approved: false };
-  }
-
-  public getStakeMessage(_: {
-    wallet: MultisigWallet;
-    amount: Coin;
-    validator: string;
-  }): Message {
-    notImplemented("getStakeMessage not implemented for Cosmos");
-    throw new Error("getStakeMessage not implemented for Cosmos");
-  }
-
-  public getUnstakeMessage(_: {
-    wallet: MultisigWallet;
-    amount: Coin;
-    validator: string;
-  }): Message {
-    notImplemented("getUnstakeMessage not implemented for Cosmos");
-    throw new Error("getUnstakeMessage not implemented for Cosmos");
-  }
-
-  public getWithdrawRewardsMessage(_: {
-    wallet: MultisigWallet;
-    validator: string;
-  }): Message {
-    notImplemented("getWithdrawRewardsMessage not implemented for Cosmos");
-    throw new Error("getWithdrawRewardsMessage not implemented for Cosmos");
-  }
-
-  public async updateGatekeeperConfig(_: {
-    wallet: MultisigWallet;
-    newGatekeeperConfig: GatekeeperConfig;
-  }): Promise<
-    | {
-        approved: true;
-        payload: BroadcastTransactionResult | { success: true };
-      }
-    | { approved: false }
-  > {
-    notImplemented("updateGatekeeperConfig not implemented for Cosmos");
-    return { approved: false };
-  }
-
-  public getUpdateGatekeeperMessages(_: {
-    wallet: MultisigWallet;
-    newGatekeeperConfig: GatekeeperConfig;
-    spendLimitGatekeeper: string;
-    sessionKeyGatekeeper: string;
-  }) {
-    notImplemented("getUpdateGatekeeperMessages not implemented for Cosmos");
-    return [];
   }
 
   public formatCoin(coin: Coin): FormattedCoin {

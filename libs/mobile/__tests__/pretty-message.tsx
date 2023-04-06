@@ -2,9 +2,9 @@ import { Brand } from "@obi-wallet/common";
 import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
 import {
   createGatekeeperConfig,
+  Messages,
   MultisigKey,
   MultisigWallet,
-  Sdk,
   terraChains,
 } from "@obi-wallet/sdk";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -43,7 +43,7 @@ function getConfig(brand: Brand) {
 describe("Terra", () => {
   const address = "terra18aw4eedj4v3253dvj9h5ucx9uedl9ggaayktq4";
   const chainId = "phoenix-1";
-  const sdk = Sdk.chainId(chainId);
+  const messages = Messages.chainId(chainId);
   const codeIds = terraChains[chainId].currentCodeIds;
   const wallet = MultisigWallet.create({
     type: "multisig",
@@ -122,7 +122,7 @@ describe("Terra", () => {
   });
 
   describe("MsgExecuteContract (propose_update_owner)", () => {
-    const message = sdk.getProposeUpdateOwnerMessage({
+    const message = messages.getProposeUpdateOwnerMessage({
       wallet,
       newOwner: MultisigKey.create(chainId),
       codeIds,
@@ -141,7 +141,7 @@ describe("Terra", () => {
   });
 
   describe("MsgExecuteContract (confirm_update_owner)", () => {
-    const message = sdk.getConfirmUpdateOwnerMessage({
+    const message = messages.getConfirmUpdateOwnerMessage({
       wallet,
       newOwner: MultisigKey.create(chainId),
     });
@@ -159,7 +159,9 @@ describe("Terra", () => {
   });
 
   describe("MsgExecuteContract (create wallet)", () => {
-    const message = sdk.getCreateWalletMessage(MultisigKey.create(chainId));
+    const message = messages.getCreateWalletMessage(
+      MultisigKey.create(chainId)
+    );
 
     test("Obi", () => {
       renderPrettyMessage({ message, brand: Brand.Obi });
@@ -174,7 +176,7 @@ describe("Terra", () => {
   });
 
   describe("MsgExecuteContract (update wallet)", () => {
-    const message = sdk.getUpdateWalletMessage({
+    const message = messages.getUpdateWalletMessage({
       wallet,
       codeIds: terraChains[chainId].currentCodeIds,
     });
@@ -192,7 +194,7 @@ describe("Terra", () => {
   });
 
   describe("MsgDelegate", () => {
-    const message = sdk.getStakeMessage({
+    const message = messages.getStakeMessage({
       wallet,
       validator: terraChains[chainId].obiValidator,
       amount: {
@@ -216,7 +218,7 @@ describe("Terra", () => {
   });
 
   describe("MsgUndelegate", () => {
-    const message = sdk.getUnstakeMessage({
+    const message = messages.getUnstakeMessage({
       wallet,
       validator: terraChains[chainId].obiValidator,
       amount: {
@@ -240,7 +242,7 @@ describe("Terra", () => {
   });
 
   describe("MsgWithdrawDelegationReward", () => {
-    const message = sdk.getWithdrawRewardsMessage({
+    const message = messages.getWithdrawRewardsMessage({
       wallet,
       validator: terraChains[chainId].obiValidator,
     });
