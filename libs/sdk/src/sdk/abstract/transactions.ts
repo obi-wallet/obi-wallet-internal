@@ -3,7 +3,7 @@ import invariant from "tiny-invariant";
 
 import { Chain } from "../../chains";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../keys";
-import { QueryClientNamespace } from "../../query-client";
+import { queryClient, QueryClientNamespace } from "../../query-client";
 import { MultisigSigner } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { AccountValidationResult, BroadcastTransactionResult } from "../common";
@@ -28,8 +28,22 @@ export abstract class AbstractTransactionsSdk {
     address: string
   ): Promise<AccountValidationResult>;
 
-  // TODO: possibly call in Sec256k1PrivateKeySigner
-  public abstract prepareKeyPair(keyPair: Secp256k1KeyPair): Promise<void>;
+  public prepareKeyPair(keyPair: Secp256k1KeyPair) {
+    return queryClient.fetchQuery(this.prepareKeyPairQuery(keyPair));
+  }
+
+  public prepareKeyPairQuery(keyPair: Secp256k1KeyPair) {
+    return this.queryNamespace.createQuery({
+      name: "prepareKeyPair",
+      fn: this.prepareKeyPairQueryFn.bind(this),
+      params: keyPair,
+      staleTime: { days: 1 },
+    });
+  }
+
+  protected abstract prepareKeyPairQueryFn(
+    keyPair: Secp256k1KeyPair
+  ): Promise<void>;
 
   public async prepareAccount(address: string): Promise<void> {
     const validationResult = await this.validateAccount(address);

@@ -72,7 +72,7 @@ export class TerraTransactionsSdk extends AbstractTransactionsSdk {
     return AccountValidationResult.READY;
   }
 
-  public async prepareKeyPair(keyPair: Secp256k1KeyPair) {
+  protected async prepareKeyPairQueryFn(keyPair: Secp256k1KeyPair) {
     const key = Key.fromSigner(
       new Secp256k1PrivateKeySigner(keyPair.privateKey)
     );

@@ -1,6 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { Text } from "@obi-wallet/common";
-import { MultisigKey } from "@obi-wallet/sdk";
+import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -26,7 +26,6 @@ import {
   isSmallScreenNumber,
 } from "../../../app/screens/components/screen-size";
 import { useStore } from "../../../app/stores";
-import { getPrepareKeyQuery } from "../../../queries/keys";
 import { KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type DeviceKeyScreenProps = NativeStackScreenProps<
@@ -72,19 +71,25 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 
   async function scanBiometrics() {
     try {
+      // TODO: should return keypair instead
       const { publicKey, privateKey } = await getBiometricsKeyPair({
         demoMode,
       });
+      const keyPair: Secp256k1KeyPair = {
+        publicKey: {
+          type: pubkeyType.secp256k1,
+          value: publicKey,
+        },
+        privateKey,
+      };
       draft.value.setDeviceKey({
         type: pubkeyType.secp256k1,
         value: publicKey,
       });
       void queryClient.prefetchQuery(
-        getPrepareKeyQuery({
-          chainId: draft.value.chainId,
-          publicKey,
-          privateKey,
-        })
+        Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
+          keyPair
+        )
       );
       setScannedBiometrics(true);
     } catch (e) {

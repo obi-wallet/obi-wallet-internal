@@ -72,7 +72,7 @@ export class CosmosTransactionsSdk extends AbstractTransactionsSdk {
     return AccountValidationResult.READY;
   }
 
-  public async prepareKeyPair(keyPair: Secp256k1KeyPair) {
+  protected async prepareKeyPairQueryFn(keyPair: Secp256k1KeyPair) {
     const address = this.getAddressOfPublicKey(keyPair.publicKey);
     await this.prepareAccount(address);
     const validationResult = await this.validateAccount(address);
