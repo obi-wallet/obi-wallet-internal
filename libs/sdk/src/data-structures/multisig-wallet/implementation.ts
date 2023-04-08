@@ -9,7 +9,13 @@ import {
   TerraChain,
   terraChains,
 } from "../../chains";
-import { BroadcastTransactionResult, Coin, Sdk } from "../../sdk";
+import {
+  AbstractMultisigWalletSdk,
+  BroadcastTransactionResult,
+  Coin,
+  MultisigWalletSdk,
+  Sdk,
+} from "../../sdk";
 import { Secp256k1PrivateKeySigner } from "../../signers";
 import { Message, wrapMessages } from "../../transactions";
 import { FlexAccount } from "../flex-account";
@@ -29,6 +35,8 @@ export interface WalletMeta {
 }
 
 export class MultisigWallet {
+  protected multisigWalletSdk: AbstractMultisigWalletSdk;
+
   public get schema() {
     return MultisigWalletSchema;
   }
@@ -41,7 +49,9 @@ export class MultisigWallet {
     protected _singlesigWallets: SinglesigWallet[],
     protected _currentAccount: CurrentAccountMeta | null,
     protected _isDemo: boolean
-  ) {}
+  ) {
+    this.multisigWalletSdk = MultisigWalletSdk.wallet(this);
+  }
 
   public toJSON(): AbstractSerialized<typeof MultisigWalletSchema> {
     return {
@@ -114,15 +124,15 @@ export class MultisigWallet {
   }
 
   public async isOutdated() {
-    return await this.sdk.isOutdated(this);
+    return await this.multisigWalletSdk.isOutdated();
   }
 
   public async update() {
-    return await this.sdk.updateWallet(this);
+    return await this.multisigWalletSdk.updateWallet();
   }
 
   public async updateOwner(newOwner: MultisigKey) {
-    const response = await this.sdk.updateOwner({ wallet: this, newOwner });
+    const response = await this.multisigWalletSdk.updateOwner(newOwner);
     if (response.approved && response.payload.success) {
       this.setOwner(newOwner);
     }
@@ -172,10 +182,9 @@ export class MultisigWallet {
   }
 
   public async updateGatekeeperConfig(newGatekeeperConfig: GatekeeperConfig) {
-    const response = await this.sdk.updateGatekeeperConfig({
-      wallet: this,
-      newGatekeeperConfig,
-    });
+    const response = await this.multisigWalletSdk.updateGatekeeperConfig(
+      newGatekeeperConfig
+    );
     if (response.approved && response.payload.success) {
       this.setGatekeeperConfig(newGatekeeperConfig);
     }
@@ -210,9 +219,8 @@ export class MultisigWallet {
     flexAccount: FlexAccount;
     messages: Message[];
   }) {
-    return await this.sdk.canExecute({
-      address: flexAccount.address,
-      proxyAddress: this.proxyAddress,
+    return await this.multisigWalletSdk.canExecute({
+      flexAccount,
       messages,
     });
   }
@@ -253,10 +261,11 @@ export class MultisigWallet {
         contract: this.proxyAddress,
         sender: flexAccount.address,
       });
-      const signedTransaction = await this.sdk.createAndSignTransaction({
-        signer,
-        messages: wrappedMessages,
-      });
+      const signedTransaction =
+        await this.multisigWalletSdk.createAndSignTransaction({
+          signer,
+          messages: wrappedMessages,
+        });
       return await this.sdk.transactions.broadcastSignedTransactionAndLendFees({
         signedTransaction,
         sender: flexAccount.address,
@@ -264,13 +273,14 @@ export class MultisigWallet {
     } else {
       const { singlesigWallet, messages } = payload;
       const signer = new Secp256k1PrivateKeySigner(singlesigWallet.privateKey);
-      const signedTransaction = await this.sdk.createAndSignTransaction({
-        signer,
-        messages,
-      });
-      return await this.sdk.broadcastSignedTransaction({
-        signedTransaction,
-      });
+      const signedTransaction =
+        await this.multisigWalletSdk.createAndSignTransaction({
+          signer,
+          messages,
+        });
+      return await this.multisigWalletSdk.broadcastSignedTransaction(
+        signedTransaction
+      );
     }
   }
 
@@ -281,8 +291,7 @@ export class MultisigWallet {
     amount: Coin;
     validator: string;
   }) {
-    return await this.sdk.stake({
-      wallet: this,
+    return await this.multisigWalletSdk.stake({
       amount,
       validator,
     });
@@ -295,15 +304,14 @@ export class MultisigWallet {
     amount: Coin;
     validator: string;
   }) {
-    return await this.sdk.unstake({
-      wallet: this,
+    return await this.multisigWalletSdk.unstake({
       amount,
       validator,
     });
   }
 
   public async withdrawRewards() {
-    return await this.sdk.withdrawRewards(this);
+    return await this.multisigWalletSdk.withdrawRewards();
   }
 
   protected get sdk() {

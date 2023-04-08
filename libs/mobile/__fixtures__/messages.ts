@@ -1,4 +1,4 @@
-import { MultisigKey, Sdk } from "@obi-wallet/sdk";
+import { Messages, MultisigKey } from "@obi-wallet/sdk";
 import {
   Coin,
   MsgBeginRedelegate,
@@ -21,7 +21,7 @@ export const messageUndelegate = new MsgUndelegate(
   "terravaloper1src9wvawtfl6ztxss8zu45zuxnwj4ytpnr30jn",
   new Coin("uluna", 100000000000000)
 );
-export const messageNewAccount = Sdk.chainId(
+export const messageNewAccount = Messages.chainId(
   "phoenix-1"
 ).getCreateWalletMessage(MultisigKey.create("phoenix-1"));
 
