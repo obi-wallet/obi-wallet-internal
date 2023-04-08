@@ -1,12 +1,32 @@
+import { StdFee } from "@cosmjs/amino";
+import { createWasmAminoConverters } from "@cosmjs/cosmwasm-stargate";
+import { coins } from "@cosmjs/proto-signing";
+import {
+  AminoTypes,
+  createAuthzAminoConverters,
+  createBankAminoConverters,
+  createDistributionAminoConverters,
+  createFeegrantAminoConverters,
+  createGovAminoConverters,
+  createIbcAminoConverters,
+  createStakingAminoConverters,
+  isDeliverTxSuccess,
+} from "@cosmjs/stargate";
+import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import warning from "tiny-warning";
 
 import { CosmosClient } from "./client";
+import { OfflineAminoSigner } from "./offline-amino-signer";
 import { CosmosChain, cosmosChains } from "../../chains";
 import {
+  FlexAccount,
   GatekeeperConfig,
   MultisigKey,
   MultisigWallet,
 } from "../../data-structures";
+import { Signer } from "../../signers";
+import { Message, SignedTransaction } from "../../transactions";
 import { AbstractMultisigWalletSdk } from "../abstract";
 import { BroadcastTransactionResult, CodeIds, Coin } from "../common";
 import { Messages } from "../messages";
@@ -105,6 +125,84 @@ export class CosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
   > {
     notImplemented("withdrawRewards not implemented for Cosmos");
     return { approved: false };
+  }
+
+  public async canExecute(_: {
+    flexAccount: FlexAccount;
+    messages: Message[];
+  }): Promise<boolean> {
+    notImplemented("canExecute not implemented for Cosmos");
+    return false;
+  }
+
+  public async createAndSignTransaction({
+    signer,
+    messages,
+  }: {
+    signer: Signer;
+    messages: Message[];
+  }): Promise<SignedTransaction> {
+    return await this.client.withSigningStargateClient(
+      OfflineAminoSigner.fromSigner({
+        signer,
+        prefix: this.chain.prefix,
+      }),
+      async (client) => {
+        const encodeObjects = messages.map((message) => {
+          return this.aminoTypes.fromAmino(message.toAmino());
+        });
+        const gas = await client.simulate(
+          this.sdk.transactions.getAddressOfPublicKey(signer.publicKey),
+          encodeObjects,
+          ""
+        );
+        const transaction = await client.sign(
+          this.sdk.transactions.getAddressOfPublicKey(signer.publicKey),
+          encodeObjects,
+          {
+            ...this.defaultFee,
+            gas: gas.toString(),
+          },
+          ""
+        );
+        return TxRaw.encode(transaction).finish();
+      }
+    );
+  }
+
+  public async broadcastSignedTransaction(
+    signedTransaction: SignedTransaction
+  ): Promise<BroadcastTransactionResult> {
+    return await this.client.withStargateClient(async (client) => {
+      const rawResult = await client.broadcastTx(signedTransaction);
+      return {
+        success: isDeliverTxSuccess(rawResult),
+        transactionHash: rawResult.transactionHash,
+        rawLog: rawResult.rawLog,
+        rawResult,
+      };
+    });
+  }
+
+  protected get defaultFee(): StdFee {
+    return {
+      amount: coins(6000, this.chain.denom),
+      gas: "1280000",
+    };
+  }
+
+  protected get aminoTypes() {
+    return new AminoTypes({
+      ...createAuthzAminoConverters(),
+      ...createBankAminoConverters(),
+      ...createDistributionAminoConverters(),
+      ...createGovAminoConverters(),
+      ...createStakingAminoConverters(),
+      ...createIbcAminoConverters(),
+      ...createFeegrantAminoConverters(),
+      ...createVestingAminoConverters(),
+      ...createWasmAminoConverters(),
+    });
   }
 
   protected get chain() {

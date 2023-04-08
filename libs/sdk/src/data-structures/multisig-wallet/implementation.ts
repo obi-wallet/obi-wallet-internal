@@ -219,9 +219,8 @@ export class MultisigWallet {
     flexAccount: FlexAccount;
     messages: Message[];
   }) {
-    return await this.sdk.canExecute({
-      address: flexAccount.address,
-      proxyAddress: this.proxyAddress,
+    return await this.multisigWalletSdk.canExecute({
+      flexAccount,
       messages,
     });
   }
@@ -262,10 +261,11 @@ export class MultisigWallet {
         contract: this.proxyAddress,
         sender: flexAccount.address,
       });
-      const signedTransaction = await this.sdk.createAndSignTransaction({
-        signer,
-        messages: wrappedMessages,
-      });
+      const signedTransaction =
+        await this.multisigWalletSdk.createAndSignTransaction({
+          signer,
+          messages: wrappedMessages,
+        });
       return await this.sdk.transactions.broadcastSignedTransactionAndLendFees({
         signedTransaction,
         sender: flexAccount.address,
@@ -273,13 +273,14 @@ export class MultisigWallet {
     } else {
       const { singlesigWallet, messages } = payload;
       const signer = new Secp256k1PrivateKeySigner(singlesigWallet.privateKey);
-      const signedTransaction = await this.sdk.createAndSignTransaction({
-        signer,
-        messages,
-      });
-      return await this.sdk.broadcastSignedTransaction({
-        signedTransaction,
-      });
+      const signedTransaction =
+        await this.multisigWalletSdk.createAndSignTransaction({
+          signer,
+          messages,
+        });
+      return await this.multisigWalletSdk.broadcastSignedTransaction(
+        signedTransaction
+      );
     }
   }
 

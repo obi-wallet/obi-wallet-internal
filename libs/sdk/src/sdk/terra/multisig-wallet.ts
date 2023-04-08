@@ -1,17 +1,23 @@
+import { isTxError, Tx } from "@terra-money/feather.js";
+import { AxiosError } from "axios";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
 import { TerraClient } from "./client";
+import { Key } from "./key";
 import { TerraChain, terraChains } from "../../chains";
 import {
+  FlexAccount,
   GatekeeperConfig,
   MultisigKey,
   MultisigWallet,
 } from "../../data-structures";
 import { queryClient } from "../../query-client";
+import { Signer } from "../../signers";
+import { Message, SignedTransaction, wrapMessage } from "../../transactions";
 import { SignAndBroadcastTransactionUserInteraction } from "../../user-interactions";
 import { AbstractMultisigWalletSdk } from "../abstract";
-import { BroadcastTransactionResult, CodeIds, Coin } from "../common";
+import { BroadcastTransactionResult, CodeIds, Coin, RpcError } from "../common";
 import { Messages } from "../messages";
 import { Sdk } from "../sdk";
 
@@ -273,6 +279,85 @@ export class TerraMultisigWalletSdk extends AbstractMultisigWalletSdk {
       demoMode: this.wallet.isDemo,
       cancelable: true,
       walletMeta: this.wallet.meta,
+    });
+  }
+
+  public async canExecute({
+    flexAccount,
+    messages,
+  }: {
+    flexAccount: FlexAccount;
+    messages: Message[];
+  }): Promise<boolean> {
+    return await this.client.withClient(async (client) => {
+      const mayExecute = await Promise.all(
+        messages.map(async (message) => {
+          try {
+            const response = await client.wasm.contractQuery<{
+              can_execute: { yes?: string };
+            }>(this.wallet.proxyAddress, {
+              can_execute: {
+                funds: [],
+                address: flexAccount.address,
+                msg: { legacy: wrapMessage(message) },
+              },
+            });
+            return !!response.can_execute.yes;
+          } catch (e) {
+            console.log(e);
+            return false;
+          }
+        })
+      );
+      return mayExecute.every((mayExecute) => mayExecute);
+    });
+  }
+
+  public async createAndSignTransaction({
+    signer,
+    messages,
+  }: {
+    signer: Signer;
+    messages: Message[];
+  }): Promise<SignedTransaction> {
+    return await this.client.withClient(async (client) => {
+      const key = Key.fromSigner(signer);
+      const wallet = client.wallet(key);
+      try {
+        const transaction = await wallet.createAndSignTx({
+          chainID: this.chainId,
+          msgs: messages,
+        });
+        return transaction.toBytes();
+      } catch (e) {
+        const error = e as AxiosError;
+        const data = error.response?.data;
+
+        const result = RpcError.safeParse(data);
+        if (result.success) {
+          throw new Error(result.data.message);
+        }
+
+        throw e;
+      }
+    });
+  }
+
+  public async broadcastSignedTransaction(
+    signedTransaction: SignedTransaction
+  ): Promise<BroadcastTransactionResult> {
+    return await this.client.withClient(async (client) => {
+      const transaction = Tx.fromBuffer(Buffer.from(signedTransaction));
+      const rawResult = await client.tx.broadcastBlock(
+        transaction,
+        this.chainId
+      );
+      return {
+        success: !isTxError(rawResult),
+        transactionHash: rawResult.txhash,
+        rawLog: rawResult.raw_log,
+        rawResult,
+      };
     });
   }
 

@@ -6,8 +6,6 @@ import { AbstractTransactionsSdk } from "./transactions";
 import { Chain } from "../../chains";
 import { MultisigKey } from "../../data-structures";
 import { QueryClientNamespace } from "../../query-client";
-import { Signer } from "../../signers";
-import { Message, SignedTransaction } from "../../transactions";
 import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
 import { BroadcastTransactionResult, Coin, FormattedCoin } from "../common";
 
@@ -31,33 +29,6 @@ export abstract class AbstractSdk {
   protected constructor(protected chainId: Chain) {
     this.queryNamespace = new QueryClientNamespace("sdk", { chainId });
   }
-
-  // TODO: move into TransactionsSdk
-  public abstract createAndSignTransaction({
-    signer,
-    messages,
-  }: {
-    signer: Signer;
-    messages: Message[];
-  }): Promise<SignedTransaction>;
-
-  // TODO: maybe internal MultisigWallet SDK, see usages
-  public abstract canExecute({
-    address,
-    proxyAddress,
-    messages,
-  }: {
-    address: string;
-    proxyAddress: string;
-    messages: Message[];
-  }): Promise<boolean>;
-
-  // TODO: move into TransactionsSdk
-  public abstract broadcastSignedTransaction({
-    signedTransaction,
-  }: {
-    signedTransaction: SignedTransaction;
-  }): Promise<BroadcastTransactionResult>;
 
   // TODO: internal Wallets SDK
   public abstract createWallet({

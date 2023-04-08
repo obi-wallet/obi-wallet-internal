@@ -18,12 +18,6 @@ const keyPair: Secp256k1KeyPair = {
 jest.setTimeout(60_000);
 
 describe("Sec256k1PrivateKeySigner", () => {
-  let signer: Secp256k1PrivateKeySigner;
-
-  beforeEach(() => {
-    signer = new Secp256k1PrivateKeySigner(keyPair.privateKey);
-  });
-
   describe("prepareSigner", () => {
     test("Cosmos", async () => {
       await Sdk.chainId("juno-1").transactions.prepareKeyPair(keyPair);
@@ -31,70 +25,6 @@ describe("Sec256k1PrivateKeySigner", () => {
 
     test("Terra", async () => {
       await Sdk.chainId("phoenix-1").transactions.prepareKeyPair(keyPair);
-    });
-  });
-
-  describe("createAndSignTransaction", () => {
-    describe("Cosmos", () => {
-      test("Successful MsgSend", async () => {
-        const sdk = Sdk.chainId("juno-1");
-        const address = sdk.transactions.getAddressOfPublicKey(
-          signer.publicKey
-        );
-        const message = new MsgSend(address, address, { ujuno: 1 });
-        const transaction = await sdk.createAndSignTransaction({
-          signer,
-          messages: [message],
-        });
-        expect(transaction).toBeInstanceOf(Uint8Array);
-      });
-
-      test("Failed MsgSend", async () => {
-        const sdk = Sdk.chainId("juno-1");
-        const address = sdk.transactions.getAddressOfPublicKey(
-          signer.publicKey
-        );
-        const message = new MsgSend(address, address, { invalid: 1 });
-        await expect(
-          sdk.createAndSignTransaction({
-            signer,
-            messages: [message],
-          })
-        ).rejects.toMatchObject({
-          message: expect.stringMatching(/0invalid is smaller than 1invalid/),
-        });
-      });
-    });
-
-    describe("Terra", () => {
-      test("Successful MsgSend", async () => {
-        const sdk = Sdk.chainId("phoenix-1");
-        const address = sdk.transactions.getAddressOfPublicKey(
-          signer.publicKey
-        );
-        const message = new MsgSend(address, address, { uluna: 1 });
-        const transaction = await sdk.createAndSignTransaction({
-          signer,
-          messages: [message],
-        });
-        expect(transaction).toBeInstanceOf(Uint8Array);
-      });
-
-      test("Failed MsgSend", async () => {
-        const sdk = Sdk.chainId("phoenix-1");
-        const address = sdk.transactions.getAddressOfPublicKey(
-          signer.publicKey
-        );
-        const message = new MsgSend(address, address, { invalid: 1 });
-        await expect(
-          sdk.createAndSignTransaction({
-            signer,
-            messages: [message],
-          })
-        ).rejects.toMatchObject({
-          message: expect.stringMatching(/0invalid is smaller than 1invalid/),
-        });
-      });
     });
   });
 });

@@ -1,10 +1,13 @@
 import { Chain } from "../../chains";
 import {
+  FlexAccount,
   GatekeeperConfig,
   MultisigKey,
   MultisigWallet,
 } from "../../data-structures";
 import { queryClient, QueryClientNamespace } from "../../query-client";
+import { Signer } from "../../signers";
+import { Message, SignedTransaction } from "../../transactions";
 import { BroadcastTransactionResult, CodeIds, Coin } from "../common";
 
 export abstract class AbstractMultisigWalletSdk {
@@ -110,4 +113,24 @@ export abstract class AbstractMultisigWalletSdk {
     | { approved: true; payload: BroadcastTransactionResult }
     | { approved: false }
   >;
+
+  public abstract canExecute({
+    flexAccount,
+    messages,
+  }: {
+    flexAccount: FlexAccount;
+    messages: Message[];
+  }): Promise<boolean>;
+
+  public abstract createAndSignTransaction({
+    signer,
+    messages,
+  }: {
+    signer: Signer;
+    messages: Message[];
+  }): Promise<SignedTransaction>;
+
+  public abstract broadcastSignedTransaction(
+    signedTransaction: SignedTransaction
+  ): Promise<BroadcastTransactionResult>;
 }

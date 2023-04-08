@@ -1,5 +1,3 @@
-import { isTxError, Tx } from "@terra-money/feather.js";
-import { AxiosError } from "axios";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
@@ -7,23 +5,15 @@ import { TerraBankSdk } from "./bank";
 import { TerraClient } from "./client";
 import { TerraContractsSdk } from "./contracts";
 import { TerraGatekeeperSdk } from "./gatekeeper";
-import { Key } from "./key";
 import { TerraStakingSdk } from "./staking";
 import { tokens } from "./tokens";
 import { TerraTransactionsSdk } from "./transactions";
 import { TerraChain, terraChains } from "../../chains";
 import { MultisigKey } from "../../data-structures";
-import { Signer } from "../../signers";
-import { Message, SignedTransaction, wrapMessage } from "../../transactions";
 import { SignAndBroadcastTransactionUserInteraction } from "../../user-interactions";
 import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
 import { AbstractSdk } from "../abstract";
-import {
-  BroadcastTransactionResult,
-  Coin,
-  FormattedCoin,
-  RpcError,
-} from "../common";
+import { BroadcastTransactionResult, Coin, FormattedCoin } from "../common";
 import { Messages } from "../messages";
 
 export class TerraSdk extends AbstractSdk {
@@ -62,89 +52,6 @@ export class TerraSdk extends AbstractSdk {
 
   public get chain() {
     return terraChains[this.chainId];
-  }
-
-  public async createAndSignTransaction({
-    signer,
-    messages,
-  }: {
-    signer: Signer;
-    messages: Message[];
-  }) {
-    return await this.client.withClient(async (client) => {
-      const key = Key.fromSigner(signer);
-      const wallet = client.wallet(key);
-      try {
-        const transaction = await wallet.createAndSignTx({
-          chainID: this.chainId,
-          msgs: messages,
-        });
-        return transaction.toBytes();
-      } catch (e) {
-        const error = e as AxiosError;
-        const data = error.response?.data;
-
-        const result = RpcError.safeParse(data);
-        if (result.success) {
-          throw new Error(result.data.message);
-        }
-
-        throw e;
-      }
-    });
-  }
-
-  public async canExecute({
-    address,
-    proxyAddress,
-    messages,
-  }: {
-    address: string;
-    proxyAddress: string;
-    messages: Message[];
-  }) {
-    return await this.client.withClient(async (client) => {
-      const mayExecute = await Promise.all(
-        messages.map(async (message) => {
-          try {
-            const response = await client.wasm.contractQuery<{
-              can_execute: { yes?: string };
-            }>(proxyAddress, {
-              can_execute: {
-                funds: [],
-                address,
-                msg: { legacy: wrapMessage(message) },
-              },
-            });
-            return !!response.can_execute.yes;
-          } catch (e) {
-            console.log(e);
-            return false;
-          }
-        })
-      );
-      return mayExecute.every((mayExecute) => mayExecute);
-    });
-  }
-
-  public async broadcastSignedTransaction({
-    signedTransaction,
-  }: {
-    signedTransaction: SignedTransaction;
-  }) {
-    return await this.client.withClient(async (client) => {
-      const transaction = Tx.fromBuffer(Buffer.from(signedTransaction));
-      const rawResult = await client.tx.broadcastBlock(
-        transaction,
-        this.chainId
-      );
-      return {
-        success: !isTxError(rawResult),
-        transactionHash: rawResult.txhash,
-        rawLog: rawResult.raw_log,
-        rawResult,
-      };
-    });
   }
 
   public async createWallet({
