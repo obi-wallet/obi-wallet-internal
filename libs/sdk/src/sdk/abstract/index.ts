@@ -4,10 +4,7 @@ import { AbstractGatekeeperSdk } from "./gatekeeper";
 import { AbstractStakingSdk } from "./staking";
 import { AbstractTransactionsSdk } from "./transactions";
 import { Chain } from "../../chains";
-import { MultisigKey } from "../../data-structures";
-import { QueryClientNamespace } from "../../query-client";
-import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
-import { BroadcastTransactionResult, Coin, FormattedCoin } from "../common";
+import { Coin, FormattedCoin } from "../common";
 
 export * from "./bank";
 export * from "./contracts";
@@ -18,34 +15,13 @@ export * from "./staking";
 export * from "./transactions";
 
 export abstract class AbstractSdk {
-  protected queryNamespace: QueryClientNamespace<"sdk", { chainId: Chain }>;
-
   public abstract bank: AbstractBankSdk;
   public abstract contracts: AbstractContractsSdk;
   public abstract gatekeeper: AbstractGatekeeperSdk;
   public abstract staking: AbstractStakingSdk;
   public abstract transactions: AbstractTransactionsSdk;
 
-  protected constructor(protected chainId: Chain) {
-    this.queryNamespace = new QueryClientNamespace("sdk", { chainId });
-  }
-
-  // TODO: internal Wallets SDK
-  public abstract createWallet({
-    multisigKey,
-    demoMode,
-  }: {
-    multisigKey: MultisigKey;
-    demoMode: boolean;
-  }): Promise<
-    AbstractUserInteractionResponse<
-      { proxyAddress: string },
-      {
-        description: string;
-        originalPayload: BroadcastTransactionResult;
-      }
-    >
-  >;
+  protected constructor(protected chainId: Chain) {}
 
   // TODO: coin-specific class
   public formatCoin(coin: Coin): FormattedCoin {

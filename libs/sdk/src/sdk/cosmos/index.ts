@@ -1,5 +1,3 @@
-import warning from "tiny-warning";
-
 import { CosmosBankSdk } from "./bank";
 import { CosmosClient } from "./client";
 import { CosmosContractsSdk } from "./contracts";
@@ -7,13 +5,8 @@ import { CosmosGatekeeperSdk } from "./gatekeeper";
 import { CosmosStakingSdk } from "./staking";
 import { CosmosTransactionsSdk } from "./transactions";
 import { CosmosChain, cosmosChains } from "../../chains";
-import { MultisigKey } from "../../data-structures";
 import { AbstractSdk } from "../abstract";
 import { Coin, FormattedCoin } from "../common";
-
-function notImplemented(message: string) {
-  warning(false, message);
-}
 
 export class CosmosSdk extends AbstractSdk {
   public bank: CosmosBankSdk;
@@ -51,16 +44,6 @@ export class CosmosSdk extends AbstractSdk {
 
   public get chain() {
     return cosmosChains[this.chainId];
-  }
-
-  public async createWallet(_: {
-    multisigKey: MultisigKey;
-    demoMode: boolean;
-  }) {
-    notImplemented("createWallet not implemented for Cosmos");
-    return {
-      approved: false as const,
-    };
   }
 
   public formatCoin(coin: Coin): FormattedCoin {

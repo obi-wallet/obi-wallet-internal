@@ -1,5 +1,5 @@
 import { WalletsSchema } from "./schema";
-import { Sdk } from "../../sdk";
+import { WalletsSdk } from "../../sdk/wallets";
 import { Serialized } from "../abstract";
 import { createGatekeeperConfig } from "../gatekeeper-config";
 import { AbstractSerialized } from "../migratable";
@@ -55,8 +55,10 @@ export class Wallets {
     multisigKey: MultisigKey;
     demoMode: boolean;
   }) {
-    const sdk = Sdk.chainId(multisigKey.chainId);
-    const response = await sdk.createWallet({ multisigKey, demoMode });
+    const response = await this.walletsSdk.createWallet({
+      multisigKey,
+      demoMode,
+    });
     if (!response.approved || !response.payload.success) return response;
     const wallet = this._factory.create({
       type: demoMode ? "multisig-demo" : "multisig",
@@ -101,5 +103,9 @@ export class Wallets {
 
   public removeWallet(wallet: MultisigWallet) {
     this._wallets = this._wallets.filter((w) => w.id !== wallet.id);
+  }
+
+  protected get walletsSdk() {
+    return new WalletsSdk();
   }
 }
