@@ -35,6 +35,7 @@
     "@robinbobin/react-native-google-drive-api-wrapper": "*",
     "@sentry/react-native": "*",
     "@tanstack/query-async-storage-persister": "*",
+    "@tanstack/query-core": "*",
     "@tanstack/react-query": "*",
     "@tanstack/react-query-persist-client": "*",
     "@terra-money/feather.js": "*",
