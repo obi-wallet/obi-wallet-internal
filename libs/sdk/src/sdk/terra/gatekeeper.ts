@@ -47,9 +47,7 @@ export class TerraGatekeeperSdk extends AbstractGatekeeperSdk {
   protected async permissionedAddressesQueryFn(
     proxyAddress: string
   ): Promise<PermissionedAddress[]> {
-    const { spendLimitGatekeeper } = await this.fetchContractAddresses(
-      proxyAddress
-    );
+    const { spendLimitGatekeeper } = await this.contractAddresses(proxyAddress);
     invariant(spendLimitGatekeeper, "spendLimitGatekeeper is required");
     return await this.client.withClient(async (client) => {
       const schema = z.object({

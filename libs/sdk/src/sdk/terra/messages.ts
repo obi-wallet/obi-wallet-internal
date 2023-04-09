@@ -430,7 +430,7 @@ export class TerraMessages extends AbstractMessages {
     return new MsgWithdrawDelegatorReward(wallet.address, validator);
   }
 
-  public getCreateWalletMessage(multisigKey: MultisigKey): Message {
+  public getCreateWalletMessage(owner: MultisigKey): Message {
     const rawMessage = {
       new_account: {
         fee_debt: parseInt(this.chain.startingUsdDebt, 10),
@@ -440,16 +440,16 @@ export class TerraMessages extends AbstractMessages {
           session_keys: [],
           spendlimit_auths: [],
         },
-        owner: multisigKey.address,
+        owner: owner.address,
         signers: {
-          signers: this.getSigners(multisigKey),
+          signers: this.getSigners(owner),
         },
         update_delay: 0,
       },
     };
 
     return new MsgExecuteContract(
-      multisigKey.address,
+      owner.address,
       this.chain.accountCreatorAddress,
       rawMessage
     );

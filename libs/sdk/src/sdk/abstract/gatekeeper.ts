@@ -14,7 +14,13 @@ export abstract class AbstractGatekeeperSdk {
     });
   }
 
-  public fetchContractAddresses(proxyAddress: string) {
+  /**
+   * Fetches the gatekeeper contractAddresses of the given Obi smart account.
+   *
+   * @param proxyAddress - The address of the Obi smart account.
+   * @see {@link contractAddressesQuery} for usage with TanStack Query.
+   */
+  public contractAddresses(proxyAddress: string) {
     return queryClient.fetchQuery(this.contractAddressesQuery(proxyAddress));
   }
 
@@ -30,7 +36,13 @@ export abstract class AbstractGatekeeperSdk {
     proxyAddress: string
   ): Promise<GatekeeperContractAddresses>;
 
-  public fetchPermissionedAddresses(proxyAddress: string) {
+  /**
+   * Fetches the permissioned addresses (i.e. beneficiaries anf flex accounts) of the given Obi smart account.
+   *
+   * @param proxyAddress - The address of the Obi smart account.
+   * @see {@link permissionedAddressesQuery} for usage with TanStack Query.
+   */
+  public permissionedAddresses(proxyAddress: string) {
     return queryClient.fetchQuery(
       this.permissionedAddressesQuery(proxyAddress)
     );

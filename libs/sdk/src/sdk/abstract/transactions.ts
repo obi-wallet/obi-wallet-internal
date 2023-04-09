@@ -20,14 +20,28 @@ export abstract class AbstractTransactionsSdk {
     });
   }
 
+  /**
+   * Address of the given public key.
+   */
   public abstract getAddressOfPublicKey(publicKey: PublicKey): string;
 
+  /**
+   * Validates the given address
+   */
   public abstract validateAddress(address: string): boolean;
 
+  /**
+   * Validates the account of the given address
+   */
   public abstract validateAccount(
     address: string
   ): Promise<AccountValidationResult>;
 
+  /**
+   * Prepares a key pair for signing transactions.
+   *
+   * @see {@link prepareKeyPairQuery} for usage with TanStack Query.
+   */
   public prepareKeyPair(keyPair: Secp256k1KeyPair) {
     return queryClient.fetchQuery(this.prepareKeyPairQuery(keyPair));
   }
@@ -45,6 +59,9 @@ export abstract class AbstractTransactionsSdk {
     keyPair: Secp256k1KeyPair
   ): Promise<void>;
 
+  /**
+   * Prepares an account for signing transactions.
+   */
   public async prepareAccount(address: string): Promise<void> {
     const validationResult = await this.validateAccount(address);
     invariant(
@@ -63,6 +80,9 @@ export abstract class AbstractTransactionsSdk {
     }
   }
 
+  /**
+   * Creates a signer for a multisig transaction.
+   */
   public abstract createMultisigSigner({
     multisigPublicKey,
     messages,
@@ -71,12 +91,18 @@ export abstract class AbstractTransactionsSdk {
     messages: Message[];
   }): Promise<MultisigSigner>;
 
+  /**
+   * Broadcasts a signed transaction.
+   */
   public abstract broadcastSignedTransaction({
     signedTransaction,
   }: {
     signedTransaction: SignedTransaction;
   }): Promise<BroadcastTransactionResult>;
 
+  /**
+   * Broadcasts a signed transaction and lends fees if necessary.
+   */
   public abstract broadcastSignedTransactionAndLendFees({
     signedTransaction,
     sender,

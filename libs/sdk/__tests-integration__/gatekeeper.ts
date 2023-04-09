@@ -28,7 +28,7 @@ let gatekeepers: {
 let wallet: MultisigWallet;
 
 beforeAll(async () => {
-  const response = await sdk.gatekeeper.fetchContractAddresses(proxyAddress);
+  const response = await sdk.gatekeeper.contractAddresses(proxyAddress);
   invariant(response.spendLimitGatekeeper, "Spend limit gatekeeper not found");
   invariant(response.sessionKeyGatekeeper, "Session key gatekeeper not found");
   gatekeepers = {

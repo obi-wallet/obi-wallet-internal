@@ -10,6 +10,11 @@ import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { BroadcastTransactionResult, CodeIds, Coin } from "../common";
 
+/**
+ * Methods are proxied by {@link MultisigWallet}.
+ *
+ * @internal
+ */
 export abstract class AbstractMultisigWalletSdk {
   protected queryNamespace: QueryClientNamespace<
     "multisig-wallet-sdk",

@@ -2,5 +2,8 @@
 apps/*/android
 apps/*/ios
 
+# TypeDoc output
+docs/
+
 # React Cosmos
 cosmos.userdeps.js
