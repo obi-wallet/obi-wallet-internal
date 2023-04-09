@@ -17,7 +17,12 @@ export abstract class AbstractStakingSdk {
     this.queryNamespace = new QueryClientNamespace("staking-sdk", { chainId });
   }
 
-  public fetchValidators() {
+  /**
+   * List of all validators.
+   *
+   * @see {@link validatorsQuery} for usage with TanStack Query.
+   */
+  public validators() {
     return queryClient.fetchQuery(this.validatorsQuery());
   }
 
@@ -31,7 +36,12 @@ export abstract class AbstractStakingSdk {
 
   protected abstract validatorsQueryFn(): Promise<EnrichedValidator[]>;
 
-  public fetchDelegations(address: string) {
+  /**
+   * Delegations of the given address.
+   *
+   * @see {@link delegationsQuery} for usage with TanStack Query.
+   */
+  public delegations(address: string) {
     return queryClient.fetchQuery(this.delegationsQuery(address));
   }
 
@@ -45,7 +55,12 @@ export abstract class AbstractStakingSdk {
 
   protected abstract delegationsQueryFn(address: string): Promise<Delegation[]>;
 
-  public fetchUnbondingDelegations(address: string) {
+  /**
+   * Unbonding delegations of the given address.
+   *
+   * @see {@link unbondingDelegationsQuery} for usage with TanStack Query.
+   */
+  public unbondingDelegations(address: string) {
     return queryClient.fetchQuery(this.unbondingDelegationsQuery(address));
   }
 
@@ -61,7 +76,12 @@ export abstract class AbstractStakingSdk {
     address: string
   ): Promise<UnbondingDelegation[]>;
 
-  public fetchRewards(address: string) {
+  /**
+   * All pending rewards of the given address.
+   *
+   * @see {@link rewardsQuery} for usage with TanStack Query.
+   */
+  public rewards(address: string) {
     return queryClient.fetchQuery(this.rewardsQuery(address));
   }
 

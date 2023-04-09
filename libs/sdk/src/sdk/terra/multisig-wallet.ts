@@ -40,7 +40,7 @@ export class TerraMultisigWalletSdk extends AbstractMultisigWalletSdk {
   protected async codeIdsQueryFn(): Promise<CodeIds> {
     const addresses = {
       userAccount: this.wallet.proxyAddress,
-      ...(await this.sdk.gatekeeper.fetchContractAddresses(
+      ...(await this.sdk.gatekeeper.contractAddresses(
         this.wallet.proxyAddress
       )),
     };
@@ -182,9 +182,7 @@ export class TerraMultisigWalletSdk extends AbstractMultisigWalletSdk {
     | { approved: false }
   > {
     const { spendLimitGatekeeper, sessionKeyGatekeeper } =
-      await this.sdk.gatekeeper.fetchContractAddresses(
-        this.wallet.proxyAddress
-      );
+      await this.sdk.gatekeeper.contractAddresses(this.wallet.proxyAddress);
     invariant(
       spendLimitGatekeeper,
       "Spend limit gatekeeper address is not set"
@@ -260,7 +258,7 @@ export class TerraMultisigWalletSdk extends AbstractMultisigWalletSdk {
     | { approved: true; payload: BroadcastTransactionResult }
     | { approved: false }
   > {
-    const rewards = await this.sdk.staking.fetchRewards(this.wallet.address);
+    const rewards = await this.sdk.staking.rewards(this.wallet.address);
     const validators = rewards.perDelegator
       .filter((delegator) => {
         return this.sdk.formatCoin(delegator.rewards).amount > 0;

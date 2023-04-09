@@ -4,6 +4,7 @@
   "excludeExternals": true,
   "theme": "default",
   "name": "Obi SDK",
+  "excludeInternal": true,
   "excludePrivate": true,
   "excludeProtected": true,
   "hideGenerator": true

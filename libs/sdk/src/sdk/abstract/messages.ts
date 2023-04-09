@@ -7,9 +7,16 @@ import {
 import { Message } from "../../transactions";
 import { CodeIds, Coin } from "../common";
 
+/**
+ * Creates messages used by the rest of the SDK. We expect you to only need this
+ * for generating message fixtures for testing.
+ */
 export abstract class AbstractMessages {
   protected constructor(protected chainId: Chain) {}
 
+  /**
+   * Message to update a wallet to the current code IDs supported by the app.
+   */
   public abstract getUpdateWalletMessage({
     wallet,
     codeIds,
@@ -18,6 +25,9 @@ export abstract class AbstractMessages {
     codeIds: CodeIds;
   }): Message;
 
+  /**
+   * Message to propose a new owner for a wallet. Is usually followed by {@link getConfirmUpdateOwnerMessage}.
+   */
   public abstract getProposeUpdateOwnerMessage({
     wallet,
     newOwner,
@@ -28,6 +38,9 @@ export abstract class AbstractMessages {
     codeIds: CodeIds;
   }): Message;
 
+  /**
+   * Message to confirm a new owner for a wallet. Is usually preceded by {@link getProposeUpdateOwnerMessage}.
+   */
   public abstract getConfirmUpdateOwnerMessage({
     wallet,
     newOwner,
@@ -36,6 +49,9 @@ export abstract class AbstractMessages {
     newOwner: MultisigKey;
   }): Message;
 
+  /**
+   * Messages to commit a {@link GatekeeperConfig} to chain.
+   */
   public abstract getUpdateGatekeeperMessages({
     wallet,
     newGatekeeperConfig,
@@ -48,6 +64,9 @@ export abstract class AbstractMessages {
     sessionKeyGatekeeper: string;
   }): Message[];
 
+  /**
+   * Message to stake the given amount to the given validator.
+   */
   public abstract getStakeMessage({
     wallet,
     amount,
@@ -58,6 +77,9 @@ export abstract class AbstractMessages {
     validator: string;
   }): Message;
 
+  /**
+   * Message to unstake the given amount from the given validator.
+   */
   public abstract getUnstakeMessage({
     wallet,
     amount,
@@ -68,6 +90,9 @@ export abstract class AbstractMessages {
     validator: string;
   }): Message;
 
+  /**
+   * Message to withdraw rewards from the given validator.
+   */
   public abstract getWithdrawRewardsMessage({
     wallet,
     validator,
@@ -76,5 +101,8 @@ export abstract class AbstractMessages {
     validator: string;
   }): Message;
 
-  public abstract getCreateWalletMessage(multisigKey: MultisigKey): Message;
+  /**
+   * Message to create a new wallet with the given owner.
+   */
+  public abstract getCreateWalletMessage(owner: MultisigKey): Message;
 }

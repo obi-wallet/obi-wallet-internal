@@ -13,7 +13,7 @@ export abstract class AbstractBankSdk {
   }
 
   /**
-   * Fetches the balances of the given address.
+   * Balances of the given address.
    *
    * @see {@link balancesQuery} for usage with TanStack Query.
    */
@@ -32,7 +32,7 @@ export abstract class AbstractBankSdk {
   protected abstract balancesQueryFn(address: string): Promise<Coin[]>;
 
   /**
-   * Fetches the current USD-equivalent prices of known tokens.
+   * Current USD-equivalent prices of known tokens.
    *
    * @see {@link pricesQuery} for usage with TanStack Query.
    */
