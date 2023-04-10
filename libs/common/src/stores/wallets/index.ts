@@ -19,9 +19,6 @@ import {
   toJS,
 } from "mobx";
 
-import { ChainStore } from "../chain";
-import { ConfigStore } from "../config";
-
 export enum WalletState {
   /** We are still loading the data from the KV stores. */
   LOADING = "LOADING",
@@ -32,8 +29,6 @@ export enum WalletState {
 }
 
 export class WalletsStore {
-  protected readonly chainStore: ChainStore;
-  protected readonly configStore: ConfigStore;
   protected readonly kvStore: AbstractKVStore;
 
   @observable
@@ -44,28 +39,11 @@ export class WalletsStore {
 
   public __initPromise: Promise<void>;
 
-  constructor({
-    chainStore,
-    configStore,
-    kvStore,
-  }: {
-    chainStore: ChainStore;
-    configStore: ConfigStore;
-    kvStore: AbstractKVStore;
-  }) {
-    this.chainStore = chainStore;
-    this.configStore = configStore;
+  constructor({ kvStore }: { kvStore: AbstractKVStore }) {
     this.kvStore = kvStore;
     this._wallets = ObservableWallets.create();
     makeObservable(this);
     this.__initPromise = this.init();
-
-    autorun(() => {
-      const wallet = this.currentWallet;
-      if (wallet?.chainId !== this.chainStore.currentChain) {
-        this.logout();
-      }
-    });
   }
 
   public toJSON() {

@@ -3,6 +3,7 @@ import {
   KVStore as DefaultKVStore,
 } from "@obi-wallet/headless-ui";
 import { ObservableUserInteractions, UserInteractions } from "@obi-wallet/sdk";
+import { autorun } from "mobx";
 
 import { AppsStore } from "./apps";
 import { ChainStore } from "./chain";
@@ -37,6 +38,9 @@ export class RootStore {
     this.configStore = new ConfigStore({ initialConfig });
     this.draftsStore = new DraftsStore();
     this.userInteractionsStore = ObservableUserInteractions.create();
+    this.walletsStore = new WalletsStore({
+      kvStore: new KVStore("wallets-store"),
+    });
 
     this.languageStore = new LanguageStore({
       deviceLanguage,
@@ -45,15 +49,18 @@ export class RootStore {
     });
     this.chainStore = new ChainStore({ configStore: this.configStore });
 
-    this.walletsStore = new WalletsStore({
-      chainStore: this.chainStore,
-      configStore: this.configStore,
-      kvStore: new KVStore("wallets-store"),
-    });
-
     this.walletConnectStore = new WalletConnectStore({
       kvStore: new KVStore("wallet-connect-store"),
       walletsStore: this.walletsStore,
+    });
+
+    autorun(() => {
+      if (
+        this.walletsStore.currentWallet?.chainId !==
+        this.chainStore.currentChain
+      ) {
+        this.walletsStore.logout();
+      }
     });
   }
 }
