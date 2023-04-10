@@ -18,9 +18,7 @@ import {
   toJS,
 } from "mobx";
 
-import { AbstractKVStore } from "../../kv-store";
-import { ChainStore } from "../chain";
-import { ConfigStore } from "../config";
+import { AbstractKVStore } from "../kv-store";
 
 export enum WalletState {
   /** We are still loading the data from the KV stores. */
@@ -32,47 +30,41 @@ export enum WalletState {
 }
 
 export class WalletsStore {
-  protected readonly chainStore: ChainStore;
-  protected readonly configStore: ConfigStore;
   protected readonly kvStore: AbstractKVStore;
-
-  @observable
   protected _wallets: Wallets;
 
-  @observable
   public state: WalletState = WalletState.LOADING;
-
   public __initPromise: Promise<void>;
 
-  constructor({
-    chainStore,
-    configStore,
-    kvStore,
-  }: {
-    chainStore: ChainStore;
-    configStore: ConfigStore;
-    kvStore: AbstractKVStore;
-  }) {
-    this.chainStore = chainStore;
-    this.configStore = configStore;
+  constructor({ kvStore }: { kvStore: AbstractKVStore }) {
     this.kvStore = kvStore;
     this._wallets = ObservableWallets.create();
-    makeObservable(this);
-    this.__initPromise = this.init();
-
-    autorun(() => {
-      const wallet = this.currentWallet;
-      if (wallet?.chainId !== this.chainStore.currentChain) {
-        this.logout();
-      }
+    makeObservable<WalletsStore, "init" | "kvStore" | "_wallets">(this, {
+      kvStore: false,
+      __initPromise: false,
+      _wallets: observable,
+      state: observable,
+      currentWallet: computed,
+      wallets: computed,
+      addMultisigWallet: action,
+      addMultisigDemoWallet: action,
+      createWallet: action,
+      recoverWallet: action,
+      removeWallet: action,
+      setCurrentWallet: action,
+      logout: action,
+      toJSON: false,
+      getWallet: false,
+      init: false,
+      address: computed,
     });
+    this.__initPromise = this.init();
   }
 
   public toJSON() {
     return toJS(this._wallets.toJSON());
   }
 
-  @computed
   public get currentWallet() {
     return this._wallets.currentWallet;
   }
@@ -81,12 +73,10 @@ export class WalletsStore {
     return this.currentWallet?.address ?? null;
   }
 
-  @computed
   public get wallets() {
     return this._wallets.wallets;
   }
 
-  @action
   public addMultisigWallet(serializedData: Serialized<MultisigWallet>["data"]) {
     const wallet = ObservableMultisigWallet.create({
       type: "multisig",
@@ -97,7 +87,6 @@ export class WalletsStore {
     return wallet;
   }
 
-  @action
   public addMultisigDemoWallet(
     serializedData: Serialized<MultisigWallet>["data"]
   ) {
@@ -110,7 +99,6 @@ export class WalletsStore {
     return wallet;
   }
 
-  @action
   public createWallet({
     multisigKey,
     demoMode,
@@ -121,7 +109,6 @@ export class WalletsStore {
     return this._wallets.createWallet({ multisigKey, demoMode });
   }
 
-  @action
   public recoverWallet({
     serializedData,
     newOwner,
@@ -132,22 +119,18 @@ export class WalletsStore {
     return this._wallets.recoverWallet({ serializedData, newOwner });
   }
 
-  @action
   public getWallet(id: string) {
     return this._wallets.getWalletByProxyAddress(id);
   }
 
-  @action
   public removeWallet(wallet: MultisigWallet) {
     this._wallets.removeWallet(wallet);
   }
 
-  @action
   public setCurrentWallet(wallet: MultisigWallet) {
     this._wallets.setCurrentWallet(wallet);
   }
 
-  @action
   public logout() {
     this._wallets.logout();
   }

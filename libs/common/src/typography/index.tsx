@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import {
   Text as OriginalText,
+  // eslint-disable-next-line no-restricted-imports
   TextInput as OriginalTextInput,
   TextInputProps,
   TextProps,

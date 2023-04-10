@@ -1,7 +1,7 @@
+import { AbstractKVStore } from "@obi-wallet/headless-ui";
 import { action, flow, makeObservable, observable, toJS } from "mobx";
 
 import { toGenerator } from "./helpers/to-generator";
-import { AbstractKVStore } from "../kv-store";
 
 export interface App {
   label: string;

@@ -1,15 +1,9 @@
 import { Theme, ThemeProvider } from "@emotion/react";
 import { Brand, Config, messages } from "@obi-wallet/common";
-import { queryClient } from "@obi-wallet/sdk";
+import { Provider as SdkProvider } from "@obi-wallet/headless-ui";
 import { loopTheme, obiTheme } from "@obi-wallet/theme";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
-import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import {
-  QueryClientProvider,
-  QueryClientProviderProps,
-} from "@tanstack/react-query";
-import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { ComponentProps, ReactNode } from "react";
 import { IntlProvider } from "react-intl";
@@ -18,23 +12,6 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { StoreContext } from "./stores";
 import { useCreateRootStore } from "../background/root-store";
-
-const persister = createAsyncStoragePersister({
-  storage: AsyncStorage,
-});
-
-const QueryClientProviderWithPersister = observer<QueryClientProviderProps>(
-  function QueryClientProviderWithPersister({ children }) {
-    return (
-      <PersistQueryClientProvider
-        client={queryClient}
-        persistOptions={{ persister }}
-      >
-        {children}
-      </PersistQueryClientProvider>
-    );
-  }
-);
 
 export interface ProviderProps {
   children: ReactNode;
@@ -50,14 +27,17 @@ export const Provider = observer<ProviderProps>(function Provider({
   children,
   config,
   navigationContainerProps,
-  QueryClientProvider = QueryClientProviderWithPersister,
+  QueryClientProvider,
 }) {
   const rootStore = useCreateRootStore({ config });
   const { languageStore, configStore } = rootStore;
   const { currentLanguage } = languageStore;
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <SdkProvider
+      rootStore={rootStore.sdkRootStore}
+      QueryClientProvider={QueryClientProvider}
+    >
       <StoreContext.Provider value={rootStore}>
         <IntlProvider
           defaultLocale="en"
@@ -102,7 +82,7 @@ export const Provider = observer<ProviderProps>(function Provider({
           </SafeAreaProvider>
         </IntlProvider>
       </StoreContext.Provider>
-    </QueryClientProvider>
+    </SdkProvider>
   );
 });
 

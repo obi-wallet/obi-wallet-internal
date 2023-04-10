@@ -1,6 +1,5 @@
 export * from "./card";
 export * from "./health-checks";
-export * from "./kv-store";
 export * from "./languages";
 export * from "./screens";
 export * from "./stores";
