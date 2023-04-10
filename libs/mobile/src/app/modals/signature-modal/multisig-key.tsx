@@ -179,6 +179,17 @@ function useMultisigSigner() {
   const multisigSignerRef = useRef<MultisigSigner>();
   const [_, setOrderedSignatures] = useState<unknown[]>([]);
 
+  function waitForSigner() {
+    return new Promise<MultisigSigner>((resolve) => {
+      const interval = setInterval(() => {
+        if (multisigSignerRef.current) {
+          clearInterval(interval);
+          resolve(multisigSignerRef.current);
+        }
+      }, 100);
+    });
+  }
+
   return {
     multisigSigner: multisigSignerRef.current,
     setMultisigSigner: (signer: MultisigSigner) => {
@@ -186,7 +197,8 @@ function useMultisigSigner() {
       setOrderedSignatures(signer.orderedSignatures);
     },
     addSigner: async (signer: Signer) => {
-      await multisigSignerRef.current?.addSigner(signer);
+      const multisigSigner = await waitForSigner();
+      await multisigSigner.addSigner(signer);
       setOrderedSignatures(multisigSignerRef.current?.orderedSignatures ?? []);
     },
   };
