@@ -19,7 +19,7 @@ export class RootStore {
   public readonly draftsStore: DraftsStore;
   public readonly languageStore: LanguageStore;
   public readonly walletConnectStore: WalletConnectStore;
-  protected readonly sdkRootStore: SdkRootStore;
+  public readonly sdkRootStore: SdkRootStore;
 
   // Hide Keplr-related stores by default
 
