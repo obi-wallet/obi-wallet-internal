@@ -1,3 +1,4 @@
+import { AbstractKVStore } from "@obi-wallet/headless-ui";
 import {
   Migratable,
   MultisigKey,
@@ -18,7 +19,6 @@ import {
   toJS,
 } from "mobx";
 
-import { AbstractKVStore } from "../../kv-store";
 import { ChainStore } from "../chain";
 import { ConfigStore } from "../config";
 

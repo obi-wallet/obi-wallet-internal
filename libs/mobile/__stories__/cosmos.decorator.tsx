@@ -1,5 +1,5 @@
-import { KVStore } from "@obi-wallet/common";
 import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
+import { KVStore } from "@obi-wallet/headless-ui";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect } from "react";
 import { useSelect } from "react-cosmos/fixture";

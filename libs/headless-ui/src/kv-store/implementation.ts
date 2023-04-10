@@ -1,10 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export interface AbstractKVStore {
-  get<T = unknown>(key: string): Promise<T | undefined>;
-  set<T = unknown>(key: string, data: T | null): Promise<void>;
-  prefix(): string;
-}
+import { AbstractKVStore } from "./abstract";
 
 export class KVStore implements AbstractKVStore {
   constructor(protected readonly _prefix: string) {}

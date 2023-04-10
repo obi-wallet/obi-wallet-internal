@@ -1,3 +1,4 @@
+import { AbstractKVStore } from "@obi-wallet/headless-ui";
 import {
   InitiateWalletConnectSessionUserInteraction,
   isTerraChain,
@@ -15,7 +16,6 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 
 import { WalletsStore } from "./wallets";
-import { AbstractKVStore } from "../kv-store";
 
 enum ErrorCodeEnum {
   userDenied = 1, // User Denied

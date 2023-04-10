@@ -1,3 +1,7 @@
+import {
+  AbstractKVStore,
+  KVStore as DefaultKVStore,
+} from "@obi-wallet/headless-ui";
 import { ObservableUserInteractions, UserInteractions } from "@obi-wallet/sdk";
 
 import { AppsStore } from "./apps";
@@ -7,7 +11,6 @@ import { DraftsStore } from "./drafts";
 import { LanguageStore } from "./language";
 import { WalletConnectStore } from "./wallet-connect";
 import { WalletsStore } from "./wallets";
-import { AbstractKVStore, KVStore as DefaultKVStore } from "../kv-store";
 
 export class RootStore {
   public readonly appsStore: AppsStore;

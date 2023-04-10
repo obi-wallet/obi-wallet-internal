@@ -1,4 +1,4 @@
-import { AbstractKVStore } from ".";
+import { AbstractKVStore } from "./abstract";
 
 export class MockKVStore implements AbstractKVStore {
   static storage = new Map<string, string>();

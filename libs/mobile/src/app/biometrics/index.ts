@@ -1,4 +1,4 @@
-import { KVStore } from "@obi-wallet/common";
+import { KVStore } from "@obi-wallet/headless-ui";
 import { generateSec256k1KeyPair } from "@obi-wallet/sdk";
 import { isEmulator } from "react-native-device-info";
 import * as Keychain from "react-native-keychain";
