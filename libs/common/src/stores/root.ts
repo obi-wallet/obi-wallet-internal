@@ -1,8 +1,8 @@
 import {
   AbstractKVStore,
   KVStore as DefaultKVStore,
+  RootStore as SdkRootStore,
 } from "@obi-wallet/headless-ui";
-import { ObservableUserInteractions, UserInteractions } from "@obi-wallet/sdk";
 import { autorun } from "mobx";
 
 import { AppsStore } from "./apps";
@@ -11,7 +11,6 @@ import { Config, ConfigStore } from "./config";
 import { DraftsStore } from "./drafts";
 import { LanguageStore } from "./language";
 import { WalletConnectStore } from "./wallet-connect";
-import { WalletsStore } from "./wallets";
 
 export class RootStore {
   public readonly appsStore: AppsStore;
@@ -19,9 +18,8 @@ export class RootStore {
   public readonly configStore: ConfigStore;
   public readonly draftsStore: DraftsStore;
   public readonly languageStore: LanguageStore;
-  public readonly walletsStore: WalletsStore;
   public readonly walletConnectStore: WalletConnectStore;
-  public readonly userInteractionsStore: UserInteractions;
+  protected readonly sdkRootStore: SdkRootStore;
 
   // Hide Keplr-related stores by default
 
@@ -37,10 +35,7 @@ export class RootStore {
     this.appsStore = new AppsStore({ kvStore: new KVStore("apps-store") });
     this.configStore = new ConfigStore({ initialConfig });
     this.draftsStore = new DraftsStore();
-    this.userInteractionsStore = ObservableUserInteractions.create();
-    this.walletsStore = new WalletsStore({
-      kvStore: new KVStore("wallets-store"),
-    });
+    this.sdkRootStore = new SdkRootStore(KVStore);
 
     this.languageStore = new LanguageStore({
       deviceLanguage,
@@ -62,5 +57,13 @@ export class RootStore {
         this.walletsStore.logout();
       }
     });
+  }
+
+  public get walletsStore() {
+    return this.sdkRootStore.walletsStore;
+  }
+
+  public get userInteractionsStore() {
+    return this.sdkRootStore.userInteractionsStore;
   }
 }

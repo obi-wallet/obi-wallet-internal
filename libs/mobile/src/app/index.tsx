@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
-import { Config, Text, WalletState } from "@obi-wallet/common";
+import { Config, Text } from "@obi-wallet/common";
+import { WalletState } from "@obi-wallet/headless-ui";
 import { focusManager } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
