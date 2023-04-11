@@ -6,7 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, View } from "react-native";
+import { Alert, Platform, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -55,7 +55,6 @@ export interface DeviceKeyProps {
 
   onSubmit(): void;
 }
-
 export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   draftId,
   demoMode,
@@ -92,10 +91,16 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         )
       );
       setScannedBiometrics(true);
+
+      if (Platform.OS === "android") {
+        await onSubmit();
+      }
     } catch (e) {
       setScannedBiometrics(false);
       await resetBiometricsKeyPair();
       const error = e as Error;
+
+      if (error.message === "code: 13, msg: Cancel") return;
       console.error(error);
       Alert.alert(
         intl.formatMessage({ id: "general.error" }) + " ScanMyBiometrics",
@@ -223,7 +228,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 await scanBiometrics();
               }
             }}
-            autoPress
+            autoPress={Platform.OS === "ios"}
           />
         </View>
       </KeyboardAwareScrollView>
