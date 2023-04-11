@@ -49,7 +49,10 @@ export abstract class AbstractTransactionsSdk {
   public prepareKeyPairQuery(keyPair: Secp256k1KeyPair) {
     return this.queryNamespace.createQuery({
       name: "prepareKeyPair",
-      fn: this.prepareKeyPairQueryFn.bind(this),
+      fn: async (keyPair) => {
+        await this.prepareKeyPairQueryFn(keyPair);
+        return true;
+      },
       params: keyPair,
       staleTime: { day: 1 },
     });
