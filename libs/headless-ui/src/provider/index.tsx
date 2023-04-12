@@ -9,6 +9,8 @@ import { ComponentType, ReactNode } from "react";
 import { RootStoreProvider } from "./root-store";
 import { RootStore } from "../store";
 
+export * from "./root-store";
+
 const persister = createAsyncStoragePersister({
   storage: AsyncStorage,
 });

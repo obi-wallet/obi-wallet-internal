@@ -1,66 +1,41 @@
+import {
+  SignAndBroadcastTransactionType,
+  useSignAndBroadcastTransaction,
+} from "@obi-wallet/headless-ui";
 import { observer } from "mobx-react-lite";
-import * as R from "ramda";
+import { Alert } from "react-native";
 
 import { AbstractSignatureModalProps } from "./common";
 import { SignatureModalFlexAccount } from "./flex-account";
 import { SignatureModalMultisigKey } from "./multisig-key";
 import { SignatureModalSinglesigWallet } from "./singlesig-wallet";
-import { useStore } from "../../stores";
 
 export type SignatureModalProps = AbstractSignatureModalProps;
 
 export const SignatureModal = observer<SignatureModalProps>(
   function SignatureModal({ interaction }) {
-    const { walletsStore } = useStore();
-    const { payload } = interaction;
+    const payload = useSignAndBroadcastTransaction({
+      interaction,
+      onError(error) {
+        Alert.alert("Transaction failed", error.message, [
+          {
+            text: "Cancel",
+            onPress: () => {
+              interaction.resolve({ approved: false });
+            },
+          },
+        ]);
+      },
+    });
 
-    if (R.has("walletMeta", payload)) {
-      const wallet = walletsStore.getWallet(payload.walletMeta.walletId);
-
-      if (!wallet) return null;
-
-      const currentAccount = payload.walletMeta.currentAccount
-        ? wallet.getAccountByMeta(payload.walletMeta.currentAccount)
-        : null;
-
-      if (!currentAccount) {
-        return (
-          <SignatureModalMultisigKey
-            interaction={interaction}
-            multisigKey={wallet.owner}
-            proxyAddress={wallet.proxyAddress}
-          />
-        );
-      }
-
-      if (currentAccount && currentAccount.type === "singlesig-wallet") {
-        return (
-          <SignatureModalSinglesigWallet
-            interaction={interaction}
-            wallet={wallet}
-            singlesigWallet={currentAccount}
-          />
-        );
-      }
-
-      if (currentAccount && currentAccount.type === "flex-account") {
-        return (
-          <SignatureModalFlexAccount
-            interaction={interaction}
-            wallet={wallet}
-            flexAccount={currentAccount}
-          />
-        );
-      }
-    } else if (R.has("multisigKey", payload)) {
-      return (
-        <SignatureModalMultisigKey
-          interaction={interaction}
-          multisigKey={payload.multisigKey}
-        />
-      );
+    if (!payload) return null;
+    switch (payload.type) {
+      case SignAndBroadcastTransactionType.FlexAccount:
+        return <SignatureModalFlexAccount {...payload} />;
+      case SignAndBroadcastTransactionType.SinglesigWallet:
+        return <SignatureModalSinglesigWallet {...payload} />;
+      case SignAndBroadcastTransactionType.MultisigKey:
+        return <SignatureModalMultisigKey {...payload} />;
     }
-
-    return null;
   }
 );
