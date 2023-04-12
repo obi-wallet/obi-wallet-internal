@@ -1,19 +1,12 @@
-import { useAwaitableState } from "@obi-wallet/headless-ui";
 import {
-  KeySubclassTypeMapping,
-  KeyType,
-  MultisigKey,
-  MultisigSigner,
-  Sdk,
-  Signer,
-} from "@obi-wallet/sdk";
-import { useMutation, useQuery } from "@tanstack/react-query";
+  SignAndBroadcastTransactionType,
+  useSignAndBroadcastTransaction,
+} from "@obi-wallet/headless-ui";
+import { KeySubclassTypeMapping, KeyType, Signer } from "@obi-wallet/sdk";
+import { useQuery } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
-import { useEffect, useRef, useState } from "react";
-import { Alert } from "react-native";
-import invariant from "tiny-invariant";
+import { useRef, useState } from "react";
 
-import { AbstractSignatureModalProps, wrapMessages } from "./common";
 import { MultisigConfirmMessages } from "./multisig-confirm-messages";
 import { PhoneNumberBottomSheetContent } from "./phone-number-bottom-sheet-content";
 import { createUsableSigners, PhoneKeySigner } from "./signers";
@@ -23,93 +16,53 @@ import {
 } from "../../screens/components/bottom-sheet";
 import { CheckIcon, Key } from "../../screens/components/keys-list";
 
-export interface SignatureModalMultisigKeyProps
-  extends AbstractSignatureModalProps {
-  multisigKey: MultisigKey;
-  proxyAddress?: string;
-  safeSpendLimitExceeded?: boolean;
-}
+export type SignatureModalMultisigKeyProps = ReturnType<
+  typeof useSignAndBroadcastTransaction
+> & {
+  type: SignAndBroadcastTransactionType.MultisigKey;
+};
 
 export const SignatureModalMultisigKey =
   observer<SignatureModalMultisigKeyProps>(function SignatureModalMultisigKey({
     interaction,
+    messages,
+    cancel,
+    broadcast,
+    multisigSigner,
     multisigKey,
-    proxyAddress,
     safeSpendLimitExceeded,
   }) {
-    const { payload } = interaction;
     const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
-    const sender = multisigKey.address;
-    const innerMessages = payload.messages;
-    const messages = wrapMessages({
-      messages: innerMessages,
-      proxyAddress,
-      sender,
-    });
-
-    const { multisigSigner, setMultisigSigner, addSigner } =
-      useMultisigSigner();
-
-    const signer = useMutation({
-      mutationFn: async () => {
-        return await multisigKey.createSigner({
-          messages,
-        });
-      },
-      onSuccess(multisigSigner) {
-        setMultisigSigner(multisigSigner);
-      },
-      onError(error) {
-        const e = error as Error;
-        Alert.alert("Transaction failed", e.message, [
-          {
-            text: "Cancel",
-            onPress: () => {
-              interaction.resolve({ approved: false });
-            },
-          },
-        ]);
-      },
-      retry: 2,
-    });
 
     const usableSigners = useQuery({
       queryKey: ["usable-signers"],
       queryFn: async () => {
         return await createUsableSigners({
           multisigKey,
-          demoMode: payload.demoMode,
+          demoMode: interaction.payload.demoMode,
           bottomSheetRef: phoneNumberBottomSheetRef,
         });
       },
       cacheTime: 0,
     });
 
-    useEffect(() => {
-      signer.mutate();
-      // We only want to run this initially
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    const broadcast = useMutation({
-      mutationFn: async () => {
-        invariant(multisigSigner, "Expected multisig signer to exist.");
-        const signedTransaction = multisigSigner.createSignedTransaction();
-        return await Sdk.chainId(
-          multisigKey.chainId
-        ).transactions.broadcastSignedTransactionAndLendFees({
-          signedTransaction,
-          sender: multisigKey.address,
-        });
-      },
-    });
+    const [_, setOrderedSignatures] = useState<unknown[]>([]);
+    const addSigner = async (signer: Signer) => {
+      const ms = await multisigSigner.getAsync();
+      await ms.addSigner(signer);
+      setOrderedSignatures(ms.orderedSignatures ?? []);
+    };
 
     if (!multisigKey.threshold || !usableSigners.data) return null;
 
     const keys: Key[] = usableSigners.data.map(({ key, signer }) => {
-      const alreadySigned = multisigSigner?.alreadySigned(key.publicKey);
+      const alreadySigned = multisigSigner.current?.alreadySigned(
+        key.publicKey
+      );
       const onPress = async () => {
-        if (multisigSigner?.alreadySigned(key.publicKey)) return;
+        if (multisigSigner.current?.alreadySigned(key.publicKey)) {
+          return;
+        }
         try {
           await addSigner(signer);
         } catch (e) {
@@ -160,36 +113,15 @@ export const SignatureModalMultisigKey =
           ) : null
         }
         threshold={multisigKey.threshold}
-        numberOfSignatures={multisigSigner?.numberOfSignatures || 0}
+        numberOfSignatures={multisigSigner.current?.numberOfSignatures || 0}
         numberOfUsableKeys={usableSigners.data.length}
-        innerMessages={payload.messages}
+        innerMessages={messages}
         data={keys}
         safeSpendLimitExceeded={safeSpendLimitExceeded}
-        onCancel={() => {
-          interaction.resolve({ approved: false });
-        }}
+        onCancel={cancel}
         onConfirm={async () => {
-          const response = await broadcast.mutateAsync();
-          interaction.resolve({ approved: true, payload: response });
+          await broadcast.mutateAsync();
         }}
       />
     );
   });
-
-function useMultisigSigner() {
-  const [_, setOrderedSignatures] = useState<unknown[]>([]);
-  const awaitableMultisigSigner = useAwaitableState<MultisigSigner>();
-
-  return {
-    multisigSigner: awaitableMultisigSigner.current,
-    setMultisigSigner: (signer: MultisigSigner) => {
-      awaitableMultisigSigner.set(signer);
-      setOrderedSignatures(signer.orderedSignatures);
-    },
-    addSigner: async (signer: Signer) => {
-      const multisigSigner = await awaitableMultisigSigner.getAsync();
-      await multisigSigner.addSigner(signer);
-      setOrderedSignatures(multisigSigner.orderedSignatures ?? []);
-    },
-  };
-}
