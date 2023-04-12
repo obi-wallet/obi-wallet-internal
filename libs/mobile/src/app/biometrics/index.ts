@@ -99,9 +99,9 @@ export async function getBiometricsKeyPair({
       username: "fake1",
       password: "fake2",
     });
+    await fetchCredentialsFromKeyChain({ service: "fake-prompt" });
 
     const { publicKey, privateKey } = generateSec256k1KeyPair();
-    await fetchCredentialsFromKeyChain({ service: "fake-prompt" });
 
     await saveCredentialsToKeyChain({
       service: BIOMETRICS_KEY,

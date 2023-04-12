@@ -91,10 +91,6 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         )
       );
       setScannedBiometrics(true);
-
-      if (Platform.OS === "android") {
-        await onSubmit();
-      }
     } catch (e) {
       setScannedBiometrics(false);
       await resetBiometricsKeyPair();
@@ -226,6 +222,9 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 onSubmit();
               } else {
                 await scanBiometrics();
+                if (Platform.OS !== "ios") {
+                  onSubmit();
+                }
               }
             }}
             autoPress={Platform.OS === "ios"}
