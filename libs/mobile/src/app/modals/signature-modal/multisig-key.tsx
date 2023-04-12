@@ -1,3 +1,4 @@
+import { useAwaitableState } from "@obi-wallet/headless-ui";
 import {
   KeySubclassTypeMapping,
   KeyType,
@@ -176,30 +177,19 @@ export const SignatureModalMultisigKey =
   });
 
 function useMultisigSigner() {
-  const multisigSignerRef = useRef<MultisigSigner>();
   const [_, setOrderedSignatures] = useState<unknown[]>([]);
-
-  function waitForSigner() {
-    return new Promise<MultisigSigner>((resolve) => {
-      const interval = setInterval(() => {
-        if (multisigSignerRef.current) {
-          clearInterval(interval);
-          resolve(multisigSignerRef.current);
-        }
-      }, 100);
-    });
-  }
+  const awaitableMultisigSigner = useAwaitableState<MultisigSigner>();
 
   return {
-    multisigSigner: multisigSignerRef.current,
+    multisigSigner: awaitableMultisigSigner.current,
     setMultisigSigner: (signer: MultisigSigner) => {
-      multisigSignerRef.current = signer;
+      awaitableMultisigSigner.set(signer);
       setOrderedSignatures(signer.orderedSignatures);
     },
     addSigner: async (signer: Signer) => {
-      const multisigSigner = await waitForSigner();
+      const multisigSigner = await awaitableMultisigSigner.getAsync();
       await multisigSigner.addSigner(signer);
-      setOrderedSignatures(multisigSignerRef.current?.orderedSignatures ?? []);
+      setOrderedSignatures(multisigSigner.orderedSignatures ?? []);
     },
   };
 }
