@@ -1,11 +1,13 @@
 import { useTheme } from "@emotion/react";
 import { Config, Text } from "@obi-wallet/common";
-import { useAppStateEffect, WalletState } from "@obi-wallet/headless-ui";
+import {
+  useAppStateEffect,
+  useCodePushBackgroundUpdate,
+  WalletState,
+} from "@obi-wallet/headless-ui";
 import { focusManager } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
-import { useRef, useState } from "react";
 import { Platform, UIManager, View } from "react-native";
-import codePush from "react-native-code-push";
 import KeyboardManager from "react-native-keyboard-manager";
 
 import { deploymentKey } from "./code-push";
@@ -57,42 +59,21 @@ export const BaseApp = observer<BaseAppProps>(function BaseApp({
 
 export const BaseAppWithoutProvider = observer(
   function BaseAppWithoutProvider() {
-    const [updating, setUpdating] = useState(false);
     const { walletConnectStore } = useStore();
 
-    const lastUpdate = useRef(0);
+    const updating = useCodePushBackgroundUpdate({
+      deploymentKey,
+      frequency: { seconds: 5 },
+    });
 
     useAppStateEffect(
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      async (appState) => {
+      (appState) => {
         const focused = appState === "active";
         focusManager.setFocused(focused);
 
         if (!focused) return;
 
-        await Promise.all([
-          walletConnectStore.recoverConnectors(),
-          (async () => {
-            const timeSinceLastUpdate =
-              new Date().getTime() - lastUpdate.current;
-            if (!__DEV__ && timeSinceLastUpdate > 5 * 1000) {
-              if (await codePush.checkForUpdate(deploymentKey)) {
-                try {
-                  await setUpdating(true);
-                  await codePush.sync({
-                    deploymentKey,
-                    installMode: codePush.InstallMode.IMMEDIATE,
-                  });
-                } catch (e) {
-                  console.error(e);
-                  await setUpdating(false);
-                }
-              }
-            }
-
-            lastUpdate.current = new Date().getTime();
-          })(),
-        ]);
+        void walletConnectStore.recoverConnectors();
       },
       [walletConnectStore]
     );
