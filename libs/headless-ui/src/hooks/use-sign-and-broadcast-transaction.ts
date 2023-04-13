@@ -56,6 +56,7 @@ export function useSignAndBroadcastTransaction({
     onSuccess(value) {
       awaitableCanExecute.set(value);
     },
+    retry: 2,
   });
 
   const awaitableMultisigSigner = useAwaitableState<MultisigSigner>();
@@ -119,6 +120,7 @@ export function useSignAndBroadcastTransaction({
     onSuccess(payload) {
       interaction.resolve({ approved: true, payload });
     },
+    retry: 2,
   });
 
   const common = {
