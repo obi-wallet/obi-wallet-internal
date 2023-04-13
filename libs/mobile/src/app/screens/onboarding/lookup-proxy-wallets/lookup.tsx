@@ -15,6 +15,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Linking, ScrollView, TouchableOpacity, View } from "react-native";
+import { useAsyncEffect } from "rooks";
 
 import * as A from "./api-types";
 import { IconButton } from "../../../button";
@@ -44,35 +45,32 @@ export const Lookup = observer(function Lookup({
   const [selectedWallet, setSelectedWallet] =
     useState<A.SerializedProxyWallet | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const currentCodeId = isCosmosChain(chainId)
-          ? cosmosChains[chainId].currentCodeId
-          : terraChains[chainId].currentCodeIds.userAccount;
+  useAsyncEffect(async () => {
+    try {
+      const currentCodeId = isCosmosChain(chainId)
+        ? cosmosChains[chainId].currentCodeId
+        : terraChains[chainId].currentCodeIds.userAccount;
 
-        const response = await fetch(
-          `https://proxy-wallets.obiwallet.workers.dev`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              chainId,
-              publicKey,
-              currentCodeId,
-            }),
-            headers: {
-              "Api-Version": "v1",
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const proxyWallets =
-          (await response.json()) as A.SerializedProxyWallet[];
-        setWallets(proxyWallets);
-      } catch (e) {
-        console.log(e);
-      }
-    })();
+      const response = await fetch(
+        `https://proxy-wallets.obiwallet.workers.dev`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            chainId,
+            publicKey,
+            currentCodeId,
+          }),
+          headers: {
+            "Api-Version": "v1",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const proxyWallets = (await response.json()) as A.SerializedProxyWallet[];
+      setWallets(proxyWallets);
+    } catch (e) {
+      console.log(e);
+    }
   }, [chainId, publicKey]);
 
   if (!wallets) {

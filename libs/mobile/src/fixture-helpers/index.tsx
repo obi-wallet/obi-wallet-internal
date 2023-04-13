@@ -12,6 +12,7 @@ import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect } from "react";
 import { Alert } from "react-native";
+import { useAsyncEffect } from "rooks";
 
 import { getBiometricsPublicKey } from "../app/biometrics";
 import { useSecurityQuestions } from "../app/screens/components/phone-number/security-question-input";
@@ -35,33 +36,29 @@ export const MultisigDraft = {
     const draft = draftsStore.get({ id: multisigDraftId });
     const securityQuestions = useSecurityQuestions();
 
-    useEffect(() => {
-      (async () => {
-        if (!draft) {
-          const original = ObservableMultisigKey.create(
-            chainStore.currentChain
-          );
-          original.setDeviceKey({
-            type: pubkeyType.secp256k1,
-            value: await getBiometricsPublicKey({
-              demoMode: true,
-            }),
-          });
-          original.setPhoneKey({
-            publicKey: await getTwilioClient(
-              true
-            ).parsePublicKeyTextMessageResponse({
-              key: "",
-            }),
-            phoneNumber: "+1234567890",
-            securityQuestion: securityQuestions[0].value,
-          });
-          draftsStore.create({
-            original,
-            id: multisigDraftId,
-          });
-        }
-      })();
+    useAsyncEffect(async () => {
+      if (!draft) {
+        const original = ObservableMultisigKey.create(chainStore.currentChain);
+        original.setDeviceKey({
+          type: pubkeyType.secp256k1,
+          value: await getBiometricsPublicKey({
+            demoMode: true,
+          }),
+        });
+        original.setPhoneKey({
+          publicKey: await getTwilioClient(
+            true
+          ).parsePublicKeyTextMessageResponse({
+            key: "",
+          }),
+          phoneNumber: "+1234567890",
+          securityQuestion: securityQuestions[0].value,
+        });
+        draftsStore.create({
+          original,
+          id: multisigDraftId,
+        });
+      }
     }, [draft, chainStore, draftsStore, securityQuestions]);
 
     return draft ? <>{children}</> : null;
