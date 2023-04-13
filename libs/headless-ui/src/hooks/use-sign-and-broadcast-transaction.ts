@@ -7,7 +7,6 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { Msg } from "@terra-money/feather.js";
 import * as R from "ramda";
-import { useEffect } from "react";
 import { useEffectOnceWhen } from "rooks";
 import invariant from "tiny-invariant";
 

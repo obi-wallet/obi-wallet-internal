@@ -1,7 +1,7 @@
 import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
 import { KVStore } from "@obi-wallet/headless-ui";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import { useSelect } from "react-cosmos/fixture";
 import { useAsyncEffect } from "rooks";
 

@@ -2,7 +2,7 @@ import { Theme, useTheme } from "@emotion/react";
 import { Brand, Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import {
   GestureResponderEvent,
   Platform,

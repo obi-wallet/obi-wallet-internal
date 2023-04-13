@@ -12,7 +12,7 @@ import {
   terraChains,
 } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Linking, ScrollView, TouchableOpacity, View } from "react-native";
 import { useAsyncEffect } from "rooks";
