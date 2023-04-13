@@ -61,11 +61,6 @@ export const BaseAppWithoutProvider = observer(
   function BaseAppWithoutProvider() {
     const { walletConnectStore } = useStore();
 
-    const updating = useCodePushBackgroundUpdate({
-      deploymentKey,
-      frequency: { seconds: 5 },
-    });
-
     useAppStateEffect(
       (appState) => {
         const focused = appState === "active";
@@ -78,6 +73,7 @@ export const BaseAppWithoutProvider = observer(
       [walletConnectStore]
     );
 
+    const updating = useCodePushBackgroundUpdate({ deploymentKey });
     if (updating) return <Load />;
 
     return (
