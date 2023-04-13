@@ -1,11 +1,13 @@
 import { useTheme } from "@emotion/react";
 import { Config, Text } from "@obi-wallet/common";
-import { WalletState } from "@obi-wallet/headless-ui";
+import {
+  useAppStateEffect,
+  useCodePushBackgroundUpdate,
+  WalletState,
+} from "@obi-wallet/headless-ui";
 import { focusManager } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
-import { useEffect, useRef, useState } from "react";
-import { AppState, Platform, UIManager, View } from "react-native";
-import codePush from "react-native-code-push";
+import { Platform, UIManager, View } from "react-native";
 import KeyboardManager from "react-native-keyboard-manager";
 
 import { deploymentKey } from "./code-push";
@@ -57,54 +59,24 @@ export const BaseApp = observer<BaseAppProps>(function BaseApp({
 
 export const BaseAppWithoutProvider = observer(
   function BaseAppWithoutProvider() {
-    const [updating, setUpdating] = useState(false);
     const { walletConnectStore } = useStore();
-    const appState = useRef(AppState.currentState);
-    const lastUpdate = useRef(0);
 
-    useEffect(() => {
-      const listener = AppState.addEventListener(
-        "change",
-        async (nextAppState) => {
-          const previousAppState = appState.current;
-          appState.current = nextAppState;
+    const updating = useCodePushBackgroundUpdate({
+      deploymentKey,
+      frequency: { seconds: 5 },
+    });
 
-          focusManager.setFocused(nextAppState === "active");
+    useAppStateEffect(
+      (appState) => {
+        const focused = appState === "active";
+        focusManager.setFocused(focused);
 
-          if (
-            previousAppState.match(/inactive|background|unknown/) &&
-            nextAppState === "active"
-          ) {
-            await Promise.all([
-              walletConnectStore.recoverConnectors(),
-              (async () => {
-                const timeSinceLastUpdate =
-                  new Date().getTime() - lastUpdate.current;
-                if (timeSinceLastUpdate > 5 * 1000 && !__DEV__) {
-                  if (await codePush.checkForUpdate(deploymentKey)) {
-                    try {
-                      await setUpdating(true);
-                      await codePush.sync({
-                        deploymentKey,
-                        installMode: codePush.InstallMode.IMMEDIATE,
-                      });
-                    } catch (e) {
-                      console.error(e);
-                      await setUpdating(false);
-                    }
-                  }
-                }
+        if (!focused) return;
 
-                lastUpdate.current = new Date().getTime();
-              })(),
-            ]);
-          }
-        }
-      );
-      return () => {
-        listener.remove();
-      };
-    }, [walletConnectStore]);
+        void walletConnectStore.recoverConnectors();
+      },
+      [walletConnectStore]
+    );
 
     if (updating) return <Load />;
 

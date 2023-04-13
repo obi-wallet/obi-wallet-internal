@@ -3,12 +3,13 @@ import { Brand, Feature } from "@obi-wallet/common";
 import { CommonActions } from "@react-navigation/native";
 import * as Sentry from "@sentry/react-native";
 import { observer } from "mobx-react-lite";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Linking, StyleSheet, Text, View } from "react-native";
 import codePush, { LocalPackage } from "react-native-code-push";
 import { ScrollView } from "react-native-gesture-handler";
 import { SvgProps } from "react-native-svg";
+import { useAsyncEffect } from "rooks";
 
 import MultiSigIcon from "./assets/edit.svg";
 import HelpAndSupport from "./assets/headset.svg";
@@ -31,14 +32,12 @@ export const SettingsScreen = observer(function SettingsScreen() {
   const navigation = useRootNavigation();
   const [appMetadata, setAppMetadata] = useState<LocalPackage | null>(null);
 
-  useEffect(() => {
-    void (async () => {
-      const metadata = await codePush.getUpdateMetadata();
-      if (metadata) {
-        Sentry.setTag("codepush_release", metadata.label);
-      }
-      setAppMetadata(metadata);
-    })();
+  useAsyncEffect(async () => {
+    const metadata = await codePush.getUpdateMetadata();
+    if (metadata) {
+      Sentry.setTag("codepush_release", metadata.label);
+    }
+    setAppMetadata(metadata);
   }, []);
 
   const isMultisigWallet = walletsStore.currentWallet !== null;

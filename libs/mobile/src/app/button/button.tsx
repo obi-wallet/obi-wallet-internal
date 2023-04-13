@@ -2,7 +2,7 @@ import { Theme, useTheme } from "@emotion/react";
 import { Brand, Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import {
   GestureResponderEvent,
   Platform,
@@ -16,6 +16,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { SvgProps } from "react-native-svg";
+import { useEffectOnceWhen } from "rooks";
 
 import { isSmallScreenNumber } from "../screens/components/screen-size";
 import { useStore } from "../stores";
@@ -239,13 +240,11 @@ export const AsyncButton = observer(function AsyncButton({
     setPending(false);
   }, [onPress]);
 
-  useEffect(() => {
+  useEffectOnceWhen(() => {
     if (autoPress) {
       void onPressSingleton();
     }
-    // We only want to run this initially
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   return (
     <Button

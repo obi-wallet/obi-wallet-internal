@@ -1,8 +1,9 @@
 import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
 import { KVStore } from "@obi-wallet/headless-ui";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import { useSelect } from "react-cosmos/fixture";
+import { useAsyncEffect } from "rooks";
 
 import { Provider } from "../src";
 
@@ -22,19 +23,15 @@ export default observer(function CosmosDecorator({
     options: Object.values(Config),
   });
 
-  useEffect(() => {
-    (async () => {
-      const config = await kvStore.get<Config>("config");
-      if (config) {
-        setConfig(config);
-      }
-    })();
+  useAsyncEffect(async () => {
+    const config = await kvStore.get<Config>("config");
+    if (config) {
+      setConfig(config);
+    }
   }, [setConfig]);
 
-  useEffect(() => {
-    (async () => {
-      await kvStore.set("config", config);
-    })();
+  useAsyncEffect(async () => {
+    await kvStore.set("config", config);
   }, [config]);
 
   return <Provider config={getConfig()}>{children}</Provider>;

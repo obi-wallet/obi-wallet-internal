@@ -4,11 +4,12 @@ import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, FlatList, TouchableOpacity, View } from "react-native";
 import NfcManager, { NfcEvents, OnDiscoverTag } from "react-native-nfc-manager";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAsyncEffect } from "rooks";
 
 import {
   checkIsSupported,
@@ -92,8 +93,8 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
   // TODO: if target public key is passed, we are recovering an existing NFC key
   const isRecovering = typeof targetPublicKey === "string";
 
-  useEffect(() => {
-    (async () => {
+  useAsyncEffect(
+    async () => {
       setHasNfc(await checkIsSupported());
 
       const onDiscoverTag: OnDiscoverTag = async (tag) => {
@@ -115,14 +116,12 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
       NfcManager.setEventListener(NfcEvents.StateChanged, () => {
         console.log("state changed");
       });
-    })();
-
-    return () => {
-      (async () => {
-        await NfcManager.unregisterTagEvent();
-      })();
-    };
-  }, [intl]);
+    },
+    [intl],
+    () => {
+      NfcManager.unregisterTagEvent();
+    }
+  );
 
   const readYubikey = async () => {
     setReading(true);

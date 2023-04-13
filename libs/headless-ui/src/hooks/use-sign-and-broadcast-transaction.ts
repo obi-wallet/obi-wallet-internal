@@ -7,7 +7,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { Msg } from "@terra-money/feather.js";
 import * as R from "ramda";
-import { useEffect } from "react";
+import { useEffectOnceWhen } from "rooks";
 import invariant from "tiny-invariant";
 
 import { useAwaitableState } from "./use-awaitable-state";
@@ -55,6 +55,7 @@ export function useSignAndBroadcastTransaction({
     onSuccess(value) {
       awaitableCanExecute.set(value);
     },
+    retry: 2,
   });
 
   const awaitableMultisigSigner = useAwaitableState<MultisigSigner>();
@@ -80,12 +81,10 @@ export function useSignAndBroadcastTransaction({
     retry: 2,
   });
 
-  useEffect(() => {
+  useEffectOnceWhen(() => {
     canExecuteMutation.mutate();
     multisigSignerMutation.mutate();
-    // We only want to run this initially
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   const broadcast = useMutation({
     mutationFn: async () => {
@@ -120,6 +119,7 @@ export function useSignAndBroadcastTransaction({
     onSuccess(payload) {
       interaction.resolve({ approved: true, payload });
     },
+    retry: 2,
   });
 
   const common = {

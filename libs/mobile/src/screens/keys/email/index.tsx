@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@obi-wallet/common";
+import { useAppStateEffect } from "@obi-wallet/headless-ui";
 import {
   generateSec256k1KeyPair,
   MultisigKey,
@@ -7,10 +8,10 @@ import {
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, Linking, TouchableOpacity, View, AppState } from "react-native";
+import { Alert, Linking, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 
@@ -86,47 +87,38 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   const [selectedTab, setSelectedTab] = useState(Tab.EmailKeyV1);
   const isObi = configStore.isObi();
   const intl = useIntl();
-  const appState = useRef(AppState.currentState);
   const [emailKey, setEmailKey] = useState<Secp256k1PublicKey | undefined>();
 
-  useEffect(() => {
-    const listener = AppState.addEventListener(
-      "change",
-      async (nextAppState) => {
-        const previousAppState = appState.current;
-        appState.current = nextAppState;
-        if (
-          previousAppState.match(/inactive|background|unknown/) &&
-          nextAppState === "active" &&
-          emailKey
-        ) {
-          Alert.alert(
-            "Confirm Email Sent",
-            "Never enter the one-time key you received anywhere unless you need it for recovery. Have you sent the email to yourself?",
-            [
-              {
-                text: "No",
-                style: "cancel",
-              },
-              {
-                text: "Yes, I sent the email to myself",
-                onPress: () => {
-                  if (emailKey) {
-                    draft.value.setEmailKey(emailKey);
-                    onSubmit();
-                  }
-                },
-              },
-            ],
-            { cancelable: false }
-          );
-        }
+  const onPressRef = useRef<() => void>();
+  onPressRef.current = () => {
+    if (emailKey) {
+      draft.value.setEmailKey(emailKey);
+      onSubmit();
+    }
+  };
+
+  useAppStateEffect(
+    (appState) => {
+      if (appState === "active" && emailKey) {
+        Alert.alert(
+          "Confirm Email Sent",
+          "Never enter the one-time key you received anywhere unless you need it for recovery. Have you sent the email to yourself?",
+          [
+            {
+              text: "No",
+              style: "cancel",
+            },
+            {
+              text: "Yes, I sent the email to myself",
+              onPress: onPressRef.current,
+            },
+          ],
+          { cancelable: false }
+        );
       }
-    );
-    return () => {
-      listener.remove();
-    };
-  }, [appState, emailKey]);
+    },
+    [emailKey]
+  );
 
   const isKeyboardVisible = useKeyboardVisible();
 
