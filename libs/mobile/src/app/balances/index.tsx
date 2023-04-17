@@ -1,5 +1,6 @@
 import { Coin } from "@cosmjs/amino";
 import { Text } from "@obi-wallet/common";
+import { useQuery } from "@obi-wallet/headless-ui";
 import { cosmosChains, isCosmosChain, Rewards, Sdk } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
@@ -9,7 +10,6 @@ import { SvgProps } from "react-native-svg";
 
 import LoopIcon from "./assets/loop.svg";
 import { getRootStore } from "../../background/root-store";
-import { useQuery } from "../../queries";
 import { useMultisigWallet, useStore } from "../stores";
 
 export interface ExtendedCoin {

@@ -5,11 +5,11 @@ import { focusManager, QueryClientProviderProps } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { observer } from "mobx-react-lite";
 import { ComponentType, ReactNode } from "react";
+import { Platform } from "react-native";
 
 import { RootStoreProvider } from "./root-store";
 import { useAppStateEffect } from "../hooks";
 import { RootStore } from "../store";
-import { Platform } from "react-native";
 
 export * from "./root-store";
 

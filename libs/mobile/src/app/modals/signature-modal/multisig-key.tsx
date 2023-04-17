@@ -1,9 +1,9 @@
 import {
   SignAndBroadcastTransactionType,
+  useQuery,
   useSignAndBroadcastTransaction,
 } from "@obi-wallet/headless-ui";
 import { KeySubclassTypeMapping, KeyType, Signer } from "@obi-wallet/sdk";
-import { useQuery } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useRef, useState } from "react";
 

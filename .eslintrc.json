@@ -109,7 +109,7 @@
               {
                 "name": "@tanstack/react-query",
                 "importNames": ["useQuery"],
-                "message": "Please use useQuery from `src/queries` instead."
+                "message": "Please use useQuery from `@obi-wallet/headless-ui` instead."
               },
               {
                 "name": "react-native",
