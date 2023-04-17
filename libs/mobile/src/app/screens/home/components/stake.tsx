@@ -4,7 +4,13 @@ import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text, TextInput } from "@obi-wallet/common";
-import { useCurrentWallet } from "@obi-wallet/headless-ui";
+import {
+  useCurrentWallet,
+  useDelegations,
+  useRewards,
+  useUnbondingDelegations,
+  useValidators,
+} from "@obi-wallet/headless-ui";
 import {
   Coin,
   Delegation,
@@ -43,11 +49,7 @@ import invariant from "tiny-invariant";
 import {
   formatCoin,
   formatExtendedCoin,
-  useDelegations,
   useRawBalances,
-  useRewards,
-  useUnbondingDelegations,
-  useValidators,
 } from "../../../balances";
 import { useCurrentTerraChainInformation, useStore } from "../../../stores";
 import { Back } from "../../components/back";
