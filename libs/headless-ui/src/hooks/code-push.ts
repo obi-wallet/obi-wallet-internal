@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import codePush, { SyncOptions } from "react-native-code-push";
 import { useThrottle } from "rooks";
 
-import { useAppStateEffect } from "./use-app-state-effect";
+import { useAppStateEffect } from "./app-state-effect";
 
 /**
  * Checks for updates when the app becomes active. Install mode defaults to codePush.InstallMode.IMMEDIATE.

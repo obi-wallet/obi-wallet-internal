@@ -10,7 +10,7 @@ import * as R from "ramda";
 import { useEffectOnceWhen } from "rooks";
 import invariant from "tiny-invariant";
 
-import { useAwaitableState } from "./use-awaitable-state";
+import { useAwaitableState } from "./awaitable-state";
 import { useRootStore } from "../provider";
 
 export enum SignAndBroadcastTransactionType {
