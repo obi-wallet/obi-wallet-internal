@@ -4,7 +4,7 @@ import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persi
 import { QueryClientProviderProps } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { observer } from "mobx-react-lite";
-import { ComponentType, ReactNode, useEffect } from "react";
+import { ComponentType, ReactNode } from "react";
 
 import { RootStoreProvider } from "./root-store";
 import { useAppStateEffect } from "../hooks";

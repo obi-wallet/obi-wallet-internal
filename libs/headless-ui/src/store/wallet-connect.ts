@@ -12,8 +12,9 @@ import { AbstractKVStore } from "../kv-store";
 
 export class WalletConnectStore {
   protected readonly kvStore: AbstractKVStore;
+  protected readonly walletsStore: WalletsStore;
 
-  protected walletConnect: WalletConnect;
+  public walletConnect: WalletConnect;
 
   public __initPromise: Promise<void>;
 
@@ -25,18 +26,20 @@ export class WalletConnectStore {
     walletsStore: WalletsStore;
   }) {
     this.kvStore = kvStore;
-    this.walletConnect = ObservableWalletConnect.create(walletsStore._wallets);
-    makeObservable<WalletConnectStore, "kvStore" | "walletConnect" | "init">(
+    this.walletsStore = walletsStore;
+    this.walletConnect = ObservableWalletConnect.create(walletsStore.wallets);
+    makeObservable<WalletConnectStore, "kvStore" | "walletsStore" | "init">(
       this,
       {
         disconnect: true,
         __initPromise: false,
+        walletConnect: observable,
         init: false,
         kvStore: false,
+        walletsStore: false,
         connectors: false,
         recoverConnectors: false,
         connect: false,
-        walletConnect: observable,
       }
     );
     this.__initPromise = this.init();
@@ -47,6 +50,7 @@ export class WalletConnectStore {
   }
 
   public async recoverConnectors() {
+    await this.walletsStore.initPromise;
     const data = await this.kvStore.get<Migratable<WalletConnect> | undefined>(
       "sessions"
     );

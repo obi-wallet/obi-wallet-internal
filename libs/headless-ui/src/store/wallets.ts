@@ -1,21 +1,5 @@
-import {
-  Migratable,
-  MultisigKey,
-  MultisigWallet,
-  ObservableMultisigWallet,
-  ObservableWallets,
-  Serialized,
-  Wallets,
-} from "@obi-wallet/sdk";
-import {
-  action,
-  autorun,
-  computed,
-  makeObservable,
-  observable,
-  runInAction,
-  toJS,
-} from "mobx";
+import { Migratable, ObservableWallets, Wallets } from "@obi-wallet/sdk";
+import { autorun, makeObservable, observable, runInAction, toJS } from "mobx";
 
 import { AbstractKVStore } from "../kv-store";
 
@@ -30,108 +14,22 @@ export enum WalletState {
 
 export class WalletsStore {
   protected readonly kvStore: AbstractKVStore;
-  public _wallets: Wallets;
 
   public state: WalletState = WalletState.LOADING;
-  public __initPromise: Promise<void>;
+  public initPromise: Promise<void>;
+  public wallets: Wallets;
 
   constructor({ kvStore }: { kvStore: AbstractKVStore }) {
     this.kvStore = kvStore;
-    this._wallets = ObservableWallets.create();
-    makeObservable<WalletsStore, "init" | "kvStore" | "_wallets">(this, {
+    this.wallets = ObservableWallets.create();
+    makeObservable<WalletsStore, "init" | "kvStore">(this, {
       kvStore: false,
-      __initPromise: false,
-      _wallets: observable,
+      initPromise: false,
+      wallets: observable,
       state: observable,
-      currentWallet: computed,
-      wallets: computed,
-      addMultisigWallet: action,
-      addMultisigDemoWallet: action,
-      createWallet: action,
-      recoverWallet: action,
-      removeWallet: action,
-      setCurrentWallet: action,
-      logout: action,
-      toJSON: false,
-      getWallet: false,
       init: false,
-      address: computed,
     });
-    this.__initPromise = this.init();
-  }
-
-  public toJSON() {
-    return toJS(this._wallets.toJSON());
-  }
-
-  public get currentWallet() {
-    return this._wallets.currentWallet;
-  }
-
-  public get address(): string | null {
-    return this.currentWallet?.address ?? null;
-  }
-
-  public get wallets() {
-    return this._wallets.wallets;
-  }
-
-  public addMultisigWallet(serializedData: Serialized<MultisigWallet>["data"]) {
-    const wallet = ObservableMultisigWallet.create({
-      type: "multisig",
-      data: serializedData,
-    });
-    this._wallets.upsertWallet(wallet);
-    this._wallets.setCurrentWallet(wallet);
-    return wallet;
-  }
-
-  public addMultisigDemoWallet(
-    serializedData: Serialized<MultisigWallet>["data"]
-  ) {
-    const wallet = ObservableMultisigWallet.create({
-      type: "multisig-demo",
-      data: serializedData,
-    });
-    this._wallets.upsertWallet(wallet);
-    this._wallets.setCurrentWallet(wallet);
-    return wallet;
-  }
-
-  public createWallet({
-    multisigKey,
-    demoMode,
-  }: {
-    multisigKey: MultisigKey;
-    demoMode: boolean;
-  }) {
-    return this._wallets.createWallet({ multisigKey, demoMode });
-  }
-
-  public recoverWallet({
-    serializedData,
-    newOwner,
-  }: {
-    serializedData: Serialized<MultisigWallet>["data"];
-    newOwner: MultisigKey;
-  }) {
-    return this._wallets.recoverWallet({ serializedData, newOwner });
-  }
-
-  public getWallet(id: string) {
-    return this._wallets.getWalletByProxyAddress(id);
-  }
-
-  public removeWallet(wallet: MultisigWallet) {
-    this._wallets.removeWallet(wallet);
-  }
-
-  public setCurrentWallet(wallet: MultisigWallet) {
-    this._wallets.setCurrentWallet(wallet);
-  }
-
-  public logout() {
-    this._wallets.logout();
+    this.initPromise = this.init();
   }
 
   protected async init() {
@@ -142,14 +40,14 @@ export class WalletsStore {
 
       runInAction(() => {
         if (data) {
-          this._wallets.deserialize(data);
+          this.wallets.deserialize(data);
         }
         this.state = WalletState.READY;
       });
 
       autorun(async () => {
         const data = Wallets.schema.currentSchema.parse(
-          toJS(this._wallets.toJSON())
+          toJS(this.wallets.toJSON())
         );
         await this.kvStore.set("wallets", data);
       });

@@ -60,6 +60,10 @@ export class RootStore {
     return this.sdkRootStore.walletsStore;
   }
 
+  public get walletsStoreState() {
+    return this.sdkRootStore.walletsStoreState;
+  }
+
   public get userInteractionsStore() {
     return this.sdkRootStore.userInteractionsStore;
   }

@@ -138,9 +138,9 @@ export const DemoModeHeader = observer(function DemoModeHeader() {
 });
 
 export const StateRenderer = observer(function StateRenderer() {
-  const { walletsStore } = useStore();
+  const { walletsStore, walletsStoreState } = useStore();
 
-  switch (walletsStore.state) {
+  switch (walletsStoreState) {
     case WalletState.LOADING:
       return <SplashScreen />;
     case WalletState.INVALID:
