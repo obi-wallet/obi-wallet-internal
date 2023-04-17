@@ -1,5 +1,5 @@
 import { RootStore } from "@obi-wallet/common";
-import { isTerraChain, MultisigWallet, terraChains } from "@obi-wallet/sdk";
+import { isTerraChain, terraChains } from "@obi-wallet/sdk";
 import { createContext, useContext } from "react";
 import invariant from "tiny-invariant";
 
@@ -8,13 +8,6 @@ export const StoreContext = createContext<RootStore>(null!);
 
 export function useStore() {
   return useContext(StoreContext);
-}
-
-export function useMultisigWallet(): MultisigWallet {
-  const { walletsStore } = useStore();
-  const { currentWallet } = walletsStore;
-  invariant(currentWallet, "Expected current wallet to be multisig.");
-  return currentWallet;
 }
 
 export function useCurrentTerraChainInformation() {

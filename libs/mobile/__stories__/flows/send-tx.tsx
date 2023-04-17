@@ -1,3 +1,4 @@
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   Messages,
   Sdk,
@@ -7,11 +8,10 @@ import { MsgSend } from "@terra-money/feather.js";
 import invariant from "tiny-invariant";
 
 import { SignatureModal } from "../../src/app/modals/signature-modal";
-import { useMultisigWallet } from "../../src/app/stores";
 import { mockAction } from "../../src/fixture-helpers";
 
 function SendMultisigTxFixture() {
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
 
   const interaction: SignAndBroadcastTransactionUserInteraction = {
     payload: {
@@ -35,7 +35,7 @@ function SendMultisigTxFixture() {
 }
 
 function SendFlexAccountTxFixture() {
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
   const flexAccount = wallet.gatekeeperConfig.flexAccounts[0];
 
   // TODO: add fallback
@@ -66,7 +66,7 @@ function SendFlexAccountTxFixture() {
 }
 
 function SendSinglesigWalletTxFixture() {
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
   const singlesigWallet = wallet.singlesigWallets[0];
 
   // TODO: add fallback
@@ -100,7 +100,7 @@ function SendSinglesigWalletTxFixture() {
 }
 
 function SendMultisigKeyTxFixture() {
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
 
   const interaction: SignAndBroadcastTransactionUserInteraction = {
     payload: {

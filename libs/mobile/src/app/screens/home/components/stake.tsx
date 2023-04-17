@@ -4,6 +4,7 @@ import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text, TextInput } from "@obi-wallet/common";
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   Coin,
   Delegation,
@@ -48,11 +49,7 @@ import {
   useUnbondingDelegations,
   useValidators,
 } from "../../../balances";
-import {
-  useCurrentTerraChainInformation,
-  useMultisigWallet,
-  useStore,
-} from "../../../stores";
+import { useCurrentTerraChainInformation, useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
@@ -286,7 +283,7 @@ const TabPill = observer(function TabPill({
 const Balance = observer(function Balance() {
   const { configStore } = useStore();
   const rewards = useRewards();
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
 
   const isObi = configStore.isObi();
 
@@ -361,7 +358,7 @@ const Balance = observer(function Balance() {
 
 const Validators = observer(function Validators() {
   const delegations = useDelegations();
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
 
   const [needle, setNeedle] = useState("");
   const { state, dispatch } = useContext(StakeStateContext);
@@ -656,7 +653,7 @@ const ValidatorItem = observer(function ValidatorItem({
 const MyStake = observer(function MyStake() {
   const delegations = useDelegations();
   const unbondingDelegations = useUnbondingDelegations();
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
 
   const { state, dispatch } = useContext(StakeStateContext);
 

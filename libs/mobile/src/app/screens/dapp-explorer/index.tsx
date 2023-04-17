@@ -3,6 +3,7 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons/faPaperclip";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { App, Card, Text, TextInput, Tile, Tiles } from "@obi-wallet/common";
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { isTerraChain } from "@obi-wallet/sdk";
 import WalletConnect from "@walletconnect/client";
 import { observer } from "mobx-react-lite";
@@ -26,7 +27,7 @@ import HistoryIcon from "./assets/history.svg";
 import Wcqr from "./assets/wcqr.svg";
 import { Button as ObiButton, InlineButton } from "../../button";
 import { RootRoute, useRootNavigation } from "../../root-stack";
-import { useMultisigWallet, useStore } from "../../stores";
+import { useStore } from "../../stores";
 import { parseDynamicLinkURL } from "../components/connected-web-view";
 import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
 
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
 
 export const DappExplorer = observer(function DappExplorer() {
   const rootStore = useStore();
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
   const [showConnections, setShowConnections] = useState(false);

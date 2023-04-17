@@ -1,7 +1,7 @@
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text } from "@obi-wallet/common";
-import { useQuery } from "@obi-wallet/headless-ui";
+import { useCurrentWallet, useQuery } from "@obi-wallet/headless-ui";
 import {
   Beneficiary,
   FlexAccount,
@@ -33,7 +33,7 @@ import { useRootNavigation } from "../../../app/root-stack";
 import { Background } from "../../../app/screens/components/background";
 import { NetworkAccountPickerLayout } from "../../../app/screens/components/network-account-picker-layout";
 import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
-import { useMultisigWallet, useStore } from "../../../app/stores";
+import { useStore } from "../../../app/stores";
 import { AccountsRoute, AccountsStackParamList } from "../accounts-stack";
 import { getGatekeeperConfigDraftId } from "../draft-id";
 
@@ -62,7 +62,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
   const isLoop = configStore.isLoop();
   const navigation = useRootNavigation();
 
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
 
   const draftId = getGatekeeperConfigDraftId(wallet);
   const draft = draftsStore.get<GatekeeperConfig>({
@@ -244,7 +244,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
 
 const AccountsList = observer(function AccountsList() {
   const { draftsStore } = useStore();
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
 
   const draftId = getGatekeeperConfigDraftId(wallet);
   const draft = draftsStore.get<GatekeeperConfig>({

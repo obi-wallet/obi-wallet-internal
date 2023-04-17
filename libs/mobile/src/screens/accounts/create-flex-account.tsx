@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@obi-wallet/common";
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   GatekeeperConfig,
   generateSec256k1KeyPair,
@@ -20,7 +21,7 @@ import { AvatarPicker, Icon } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
-import { useMultisigWallet, useStore } from "../../app/stores";
+import { useStore } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
 import { nonEmptyString } from "../../helpers/validation-helpers";
 
@@ -32,7 +33,7 @@ export type CreateFlexAccountScreenProps = NativeStackScreenProps<
 export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
   function CreateFlexAccountScreen({ navigation }) {
     const { draftsStore } = useStore();
-    const wallet = useMultisigWallet();
+    const wallet = useCurrentWallet();
     const gatekeeperConfig = draftsStore.get<GatekeeperConfig>({
       id: getGatekeeperConfigDraftId(wallet),
     });
