@@ -6,7 +6,6 @@ import {
   ObservableWallets,
   Serialized,
   Wallets,
-  WalletsSchema,
 } from "@obi-wallet/sdk";
 import {
   action,
@@ -31,7 +30,7 @@ export enum WalletState {
 
 export class WalletsStore {
   protected readonly kvStore: AbstractKVStore;
-  protected _wallets: Wallets;
+  public _wallets: Wallets;
 
   public state: WalletState = WalletState.LOADING;
   public __initPromise: Promise<void>;
@@ -142,12 +141,14 @@ export class WalletsStore {
       );
 
       runInAction(() => {
-        this._wallets = ObservableWallets.create(data);
+        if (data) {
+          this._wallets.deserialize(data);
+        }
         this.state = WalletState.READY;
       });
 
       autorun(async () => {
-        const data = WalletsSchema.currentSchema.parse(
+        const data = Wallets.schema.currentSchema.parse(
           toJS(this._wallets.toJSON())
         );
         await this.kvStore.set("wallets", data);

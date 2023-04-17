@@ -29,6 +29,7 @@ export function createObservableWallets(
     {
       _wallets: observable,
       _currentWalletIndex: observable,
+      deserialize: action,
       toJSON: false,
       setCurrentWallet: action,
       logout: action,

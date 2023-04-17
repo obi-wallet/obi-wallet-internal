@@ -1,4 +1,3 @@
-export { WalletsSchema } from "./schema";
 import { createObservableWallets, createWallets } from "./factories";
 import { Wallets as WalletsInterface } from "./implementation";
 import { WalletsSchema } from "./schema";

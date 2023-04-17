@@ -1,35 +1,26 @@
-import { Duration, DurationLikeObject } from "luxon";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import codePush, { SyncOptions } from "react-native-code-push";
+import { useThrottle } from "rooks";
 
 import { useAppStateEffect } from "./use-app-state-effect";
 
-export interface CodePushBackgroundUpdateConfig extends SyncOptions {
-  frequency: DurationLikeObject;
-}
-
-export function useCodePushBackgroundUpdate(
-  config: CodePushBackgroundUpdateConfig
-) {
-  const lastUpdate = useRef(0);
+/**
+ * Checks for updates when the app becomes active. Install mode defaults to codePush.InstallMode.IMMEDIATE.
+ *
+ * @param options react-native-code-push sync options. We won't track changes to this config.
+ * @returns true if an update is being downloaded and installed
+ */
+export function useCodePushBackgroundUpdate(options: SyncOptions) {
   const [updating, setUpdating] = useState(false);
-  const configRef = useRef(config);
+  const optionsRef = useRef(options);
+  const [backgroundUpdate] = useThrottle(
+    useCallback(async () => {
+      if (__DEV__) return;
 
-  useAppStateEffect(
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    async (appState) => {
-      if (__DEV__ || appState !== "active") return;
-
-      const { frequency, ...config } = configRef.current;
-
-      const timeSinceLastUpdate = new Date().getTime() - lastUpdate.current;
-      const shouldCheckForUpdate =
-        timeSinceLastUpdate > Duration.fromObject(frequency).as("milliseconds");
-      lastUpdate.current = new Date().getTime();
-      if (!shouldCheckForUpdate) return;
+      const options = optionsRef.current;
 
       const updateAvailable = await codePush.checkForUpdate(
-        config.deploymentKey
+        options.deploymentKey
       );
       if (!updateAvailable) return;
 
@@ -37,15 +28,23 @@ export function useCodePushBackgroundUpdate(
         setUpdating(true);
         await codePush.sync({
           installMode: codePush.InstallMode.IMMEDIATE,
-          ...config,
+          ...options,
         });
       } catch (e) {
         console.error(e);
       } finally {
         setUpdating(false);
       }
+    }, []),
+    5000
+  );
+
+  useAppStateEffect(
+    (appState) => {
+      if (appState !== "active") return;
+      void backgroundUpdate();
     },
-    []
+    [backgroundUpdate]
   );
 
   return updating;
