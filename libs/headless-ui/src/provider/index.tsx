@@ -1,7 +1,7 @@
 import { queryClient } from "@obi-wallet/sdk";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import { QueryClientProviderProps } from "@tanstack/react-query";
+import { focusManager, QueryClientProviderProps } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { observer } from "mobx-react-lite";
 import { ComponentType, ReactNode } from "react";
@@ -9,6 +9,7 @@ import { ComponentType, ReactNode } from "react";
 import { RootStoreProvider } from "./root-store";
 import { useAppStateEffect } from "../hooks";
 import { RootStore } from "../store";
+import { Platform } from "react-native";
 
 export * from "./root-store";
 
@@ -40,7 +41,13 @@ export const Provider = observer(function Provider({
 }) {
   useAppStateEffect(
     (appState) => {
-      if (appState !== "active") return;
+      const focused = appState === "active";
+
+      if (Platform.OS !== "web") {
+        focusManager.setFocused(focused);
+      }
+
+      if (!focused) return;
       void rootStore.recoverConnectors();
     },
     [rootStore]
