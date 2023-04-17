@@ -9,6 +9,7 @@ import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Text } from "@obi-wallet/common";
+import { useQuery } from "@obi-wallet/headless-ui";
 import { Coin, cosmosChains, isCosmosChain, Sdk } from "@obi-wallet/sdk";
 import {
   Msg,
@@ -27,7 +28,6 @@ import { useIntl } from "react-intl";
 import { View } from "react-native";
 
 import ArrowUpIcon from "./assets/arrowUpIcon.svg";
-import { useQuery } from "../../../queries";
 import { formatCoin, useValidators } from "../../balances";
 import { CoinIcon } from "../../screens/components/coin-icon";
 import { useStore } from "../../stores";

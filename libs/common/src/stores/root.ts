@@ -19,8 +19,6 @@ export class RootStore {
   public readonly languageStore: LanguageStore;
   public readonly sdkRootStore: SdkRootStore;
 
-  // Hide Keplr-related stores by default
-
   constructor({
     deviceLanguage,
     initialConfig,
@@ -58,6 +56,10 @@ export class RootStore {
 
   public get walletsStore() {
     return this.sdkRootStore.walletsStore;
+  }
+
+  public get walletsStoreState() {
+    return this.sdkRootStore.walletsStoreState;
   }
 
   public get userInteractionsStore() {

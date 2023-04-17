@@ -2,8 +2,6 @@ import {
   Migratable,
   ObservableWalletConnect,
   WalletConnect,
-  WalletConnectConnector,
-  WalletMeta,
 } from "@obi-wallet/sdk";
 import { autorun, makeObservable, observable, toJS } from "mobx";
 
@@ -12,10 +10,9 @@ import { AbstractKVStore } from "../kv-store";
 
 export class WalletConnectStore {
   protected readonly kvStore: AbstractKVStore;
+  protected readonly walletsStore: WalletsStore;
 
-  protected walletConnect: WalletConnect;
-
-  public __initPromise: Promise<void>;
+  public walletConnect: WalletConnect;
 
   constructor({
     kvStore,
@@ -25,47 +22,28 @@ export class WalletConnectStore {
     walletsStore: WalletsStore;
   }) {
     this.kvStore = kvStore;
-    this.walletConnect = ObservableWalletConnect.create(walletsStore._wallets);
-    makeObservable<WalletConnectStore, "kvStore" | "walletConnect" | "init">(
+    this.walletsStore = walletsStore;
+    this.walletConnect = ObservableWalletConnect.create(walletsStore.wallets);
+    makeObservable<WalletConnectStore, "kvStore" | "walletsStore" | "init">(
       this,
       {
-        disconnect: true,
-        __initPromise: false,
+        walletConnect: observable,
         init: false,
         kvStore: false,
-        connectors: false,
+        walletsStore: false,
         recoverConnectors: false,
-        connect: false,
-        walletConnect: observable,
       }
     );
-    this.__initPromise = this.init();
-  }
-
-  public get connectors() {
-    return this.walletConnect.connectors;
+    void this.init();
   }
 
   public async recoverConnectors() {
+    await this.walletsStore.initPromise;
     const data = await this.kvStore.get<Migratable<WalletConnect> | undefined>(
       "sessions"
     );
     if (!data) return;
     await this.walletConnect.recoverConnectors(data);
-  }
-
-  public async connect({
-    uri,
-    walletMeta,
-  }: {
-    uri: string;
-    walletMeta: WalletMeta;
-  }) {
-    await this.walletConnect.connect({ uri, walletMeta });
-  }
-
-  public async disconnect(connector: WalletConnectConnector) {
-    await this.walletConnect.disconnect(connector);
   }
 
   protected async init() {

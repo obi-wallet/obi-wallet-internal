@@ -4,6 +4,7 @@ import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Feature, Text } from "@obi-wallet/common";
+import { useQuery } from "@obi-wallet/headless-ui";
 import { cosmosChains, isCosmosChain, terraChains } from "@obi-wallet/sdk";
 import { BottomTabBar } from "@react-navigation/bottom-tabs";
 import {
@@ -45,7 +46,7 @@ import {
   HomeDrawer,
   HomeDrawerRoute,
 } from "./home-stack";
-import { getIsOutdatedQuery, useQuery } from "../../../queries";
+import { getIsOutdatedQuery } from "../../../queries";
 import { AccountsScreen } from "../../../screens/accounts";
 import { useStore } from "../../stores";
 import {

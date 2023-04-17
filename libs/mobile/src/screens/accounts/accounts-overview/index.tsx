@@ -1,6 +1,7 @@
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text } from "@obi-wallet/common";
+import { useQuery } from "@obi-wallet/headless-ui";
 import {
   Beneficiary,
   FlexAccount,
@@ -33,7 +34,6 @@ import { Background } from "../../../app/screens/components/background";
 import { NetworkAccountPickerLayout } from "../../../app/screens/components/network-account-picker-layout";
 import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 import { useMultisigWallet, useStore } from "../../../app/stores";
-import { useQuery } from "../../../queries";
 import { AccountsRoute, AccountsStackParamList } from "../accounts-stack";
 import { getGatekeeperConfigDraftId } from "../draft-id";
 

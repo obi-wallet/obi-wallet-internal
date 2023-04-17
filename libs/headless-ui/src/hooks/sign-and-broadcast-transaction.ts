@@ -10,7 +10,7 @@ import * as R from "ramda";
 import { useEffectOnceWhen } from "rooks";
 import invariant from "tiny-invariant";
 
-import { useAwaitableState } from "./use-awaitable-state";
+import { useAwaitableState } from "./awaitable-state";
 import { useRootStore } from "../provider";
 
 export enum SignAndBroadcastTransactionType {
@@ -31,7 +31,7 @@ export function useSignAndBroadcastTransaction({
 
   const walletMeta = R.has("walletMeta", payload) ? payload.walletMeta : null;
   const wallet = walletMeta
-    ? walletsStore.getWallet(walletMeta.walletId)
+    ? walletsStore.getWalletByProxyAddress(walletMeta.walletId)
     : null;
   const currentAccount = walletMeta?.currentAccount
     ? wallet?.getAccountByMeta(walletMeta.currentAccount)

@@ -1,11 +1,9 @@
 import { useTheme } from "@emotion/react";
 import { Config, Text } from "@obi-wallet/common";
 import {
-  useAppStateEffect,
   useCodePushBackgroundUpdate,
   WalletState,
 } from "@obi-wallet/headless-ui";
-import { focusManager } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { Platform, UIManager, View } from "react-native";
 import KeyboardManager from "react-native-keyboard-manager";
@@ -59,10 +57,6 @@ export const BaseApp = observer<BaseAppProps>(function BaseApp({
 
 export const BaseAppWithoutProvider = observer(
   function BaseAppWithoutProvider() {
-    useAppStateEffect((appState) => {
-      focusManager.setFocused(appState === "active");
-    }, []);
-
     const updating = useCodePushBackgroundUpdate({ deploymentKey });
     if (updating) return <Load />;
 
@@ -138,9 +132,9 @@ export const DemoModeHeader = observer(function DemoModeHeader() {
 });
 
 export const StateRenderer = observer(function StateRenderer() {
-  const { walletsStore } = useStore();
+  const { walletsStore, walletsStoreState } = useStore();
 
-  switch (walletsStore.state) {
+  switch (walletsStoreState) {
     case WalletState.LOADING:
       return <SplashScreen />;
     case WalletState.INVALID:

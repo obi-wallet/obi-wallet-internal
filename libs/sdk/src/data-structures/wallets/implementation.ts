@@ -39,6 +39,10 @@ export class Wallets {
     return this._wallets[this._currentWalletIndex];
   }
 
+  public get address(): string | null {
+    return this.currentWallet?.address ?? null;
+  }
+
   public setCurrentWallet(wallet: MultisigWallet) {
     const index = this._wallets.findIndex((w) => w.id === wallet.id);
     if (index !== -1) {
