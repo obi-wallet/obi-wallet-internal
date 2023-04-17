@@ -59,19 +59,9 @@ export const BaseApp = observer<BaseAppProps>(function BaseApp({
 
 export const BaseAppWithoutProvider = observer(
   function BaseAppWithoutProvider() {
-    const { walletConnectStore } = useStore();
-
-    useAppStateEffect(
-      (appState) => {
-        const focused = appState === "active";
-        focusManager.setFocused(focused);
-
-        if (!focused) return;
-
-        void walletConnectStore.recoverConnectors();
-      },
-      [walletConnectStore]
-    );
+    useAppStateEffect((appState) => {
+      focusManager.setFocused(appState === "active");
+    }, []);
 
     const updating = useCodePushBackgroundUpdate({ deploymentKey });
     if (updating) return <Load />;
