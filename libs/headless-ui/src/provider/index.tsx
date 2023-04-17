@@ -38,14 +38,12 @@ export const Provider = observer(function Provider({
   QueryClientProvider?: ComponentType<QueryClientProviderProps>;
   rootStore: RootStore;
 }) {
-  const { walletConnectStore } = rootStore;
-
   useAppStateEffect(
     (appState) => {
       if (appState !== "active") return;
-      void walletConnectStore.recoverConnectors();
+      void rootStore.recoverConnectors();
     },
-    [walletConnectStore]
+    [rootStore]
   );
 
   return (

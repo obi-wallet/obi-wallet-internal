@@ -2,8 +2,6 @@ import {
   Migratable,
   ObservableWalletConnect,
   WalletConnect,
-  WalletConnectConnector,
-  WalletMeta,
 } from "@obi-wallet/sdk";
 import { autorun, makeObservable, observable, toJS } from "mobx";
 
@@ -15,8 +13,6 @@ export class WalletConnectStore {
   protected readonly walletsStore: WalletsStore;
 
   public walletConnect: WalletConnect;
-
-  public __initPromise: Promise<void>;
 
   constructor({
     kvStore,
@@ -31,22 +27,14 @@ export class WalletConnectStore {
     makeObservable<WalletConnectStore, "kvStore" | "walletsStore" | "init">(
       this,
       {
-        disconnect: true,
-        __initPromise: false,
         walletConnect: observable,
         init: false,
         kvStore: false,
         walletsStore: false,
-        connectors: false,
         recoverConnectors: false,
-        connect: false,
       }
     );
-    this.__initPromise = this.init();
-  }
-
-  public get connectors() {
-    return this.walletConnect.connectors;
+    void this.init();
   }
 
   public async recoverConnectors() {
@@ -56,20 +44,6 @@ export class WalletConnectStore {
     );
     if (!data) return;
     await this.walletConnect.recoverConnectors(data);
-  }
-
-  public async connect({
-    uri,
-    walletMeta,
-  }: {
-    uri: string;
-    walletMeta: WalletMeta;
-  }) {
-    await this.walletConnect.connect({ uri, walletMeta });
-  }
-
-  public async disconnect(connector: WalletConnectConnector) {
-    await this.walletConnect.disconnect(connector);
   }
 
   protected async init() {

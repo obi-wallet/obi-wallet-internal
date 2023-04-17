@@ -5,7 +5,7 @@ import { WalletsStore } from "./wallets";
 import { AbstractKVStore, KVStore as DefaultKVStore } from "../kv-store";
 
 export class RootStore {
-  public readonly walletConnectStore: WalletConnectStore;
+  protected readonly _walletConnectStore: WalletConnectStore;
   protected readonly _walletsStore: WalletsStore;
   public readonly userInteractionsStore: UserInteractions;
 
@@ -17,7 +17,7 @@ export class RootStore {
       kvStore: new KVStore("wallets-store"),
     });
 
-    this.walletConnectStore = new WalletConnectStore({
+    this._walletConnectStore = new WalletConnectStore({
       kvStore: new KVStore("wallet-connect-store"),
       walletsStore: this._walletsStore,
     });
@@ -29,5 +29,13 @@ export class RootStore {
 
   public get walletsStore() {
     return this._walletsStore.wallets;
+  }
+
+  public get walletConnectStore() {
+    return this._walletConnectStore.walletConnect;
+  }
+
+  public recoverConnectors() {
+    return this._walletConnectStore.recoverConnectors();
   }
 }

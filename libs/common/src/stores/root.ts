@@ -19,8 +19,6 @@ export class RootStore {
   public readonly languageStore: LanguageStore;
   public readonly sdkRootStore: SdkRootStore;
 
-  // Hide Keplr-related stores by default
-
   constructor({
     deviceLanguage,
     initialConfig,
