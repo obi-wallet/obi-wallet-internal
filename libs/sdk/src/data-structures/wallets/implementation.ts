@@ -2,7 +2,7 @@ import { WalletsSchema } from "./schema";
 import { WalletsSdk } from "../../sdk/wallets";
 import { Serialized } from "../abstract";
 import { createGatekeeperConfig } from "../gatekeeper-config";
-import { AbstractSerialized } from "../migratable";
+import { AbstractMigratable, AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
 import { MultisigWallet } from "../multisig-wallet";
 
@@ -22,6 +22,12 @@ export class Wallets {
       wallets: this._wallets.map((w) => w.toJSON()),
       currentWalletIndex: this._currentWalletIndex,
     };
+  }
+
+  public deserialize(migratable: AbstractMigratable<typeof WalletsSchema>) {
+    const serialized = WalletsSchema.migratableSchema.parse(migratable);
+    this._wallets = serialized.wallets.map((w) => this._factory.create(w));
+    this._currentWalletIndex = serialized.currentWalletIndex;
   }
 
   public get wallets() {

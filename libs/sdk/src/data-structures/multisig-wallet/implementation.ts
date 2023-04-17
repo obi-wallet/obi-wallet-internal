@@ -109,9 +109,18 @@ export class MultisigWallet {
   }
 
   public get address() {
-    if (this.currentAccount?.type === "singlesig-wallet") {
+    return this.getAddressByAccountMeta(this._currentAccount);
+  }
+
+  public getAddressByAccountMeta(
+    currentAccountMeta: CurrentAccountMeta | null
+  ) {
+    const currentAccount = currentAccountMeta
+      ? this.getAccountByMeta(currentAccountMeta)
+      : null;
+    if (currentAccount?.type === "singlesig-wallet") {
       return Sdk.chainId(this._chainId).transactions.getAddressOfPublicKey(
-        this.currentAccount.publicKey
+        currentAccount.publicKey
       );
     }
 

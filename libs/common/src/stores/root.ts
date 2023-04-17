@@ -10,7 +10,6 @@ import { ChainStore } from "./chain";
 import { Config, ConfigStore } from "./config";
 import { DraftsStore } from "./drafts";
 import { LanguageStore } from "./language";
-import { WalletConnectStore } from "./wallet-connect";
 
 export class RootStore {
   public readonly appsStore: AppsStore;
@@ -18,7 +17,6 @@ export class RootStore {
   public readonly configStore: ConfigStore;
   public readonly draftsStore: DraftsStore;
   public readonly languageStore: LanguageStore;
-  public readonly walletConnectStore: WalletConnectStore;
   public readonly sdkRootStore: SdkRootStore;
 
   // Hide Keplr-related stores by default
@@ -44,11 +42,6 @@ export class RootStore {
     });
     this.chainStore = new ChainStore({ configStore: this.configStore });
 
-    this.walletConnectStore = new WalletConnectStore({
-      kvStore: new KVStore("wallet-connect-store"),
-      walletsStore: this.walletsStore,
-    });
-
     autorun(() => {
       if (
         this.walletsStore.currentWallet?.chainId !==
@@ -57,6 +50,10 @@ export class RootStore {
         this.walletsStore.logout();
       }
     });
+  }
+
+  public get walletConnectStore() {
+    return this.sdkRootStore.walletConnectStore;
   }
 
   public get walletsStore() {

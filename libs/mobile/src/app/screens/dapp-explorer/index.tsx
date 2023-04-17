@@ -51,7 +51,7 @@ export const DappExplorer = observer(function DappExplorer() {
       const payload = parseDynamicLinkURL(data)?.searchParams.get("payload");
       if (payload) {
         close();
-        void walletConnectStore.addConnector({
+        void walletConnectStore.connect({
           uri: payload,
           walletMeta: wallet.meta,
         });
@@ -164,10 +164,8 @@ const ConnectionsScreen = observer(function ConnectionsScreen() {
       ) : (
         <>
           <ScrollView style={{ flex: 1, marginHorizontal: 10 }}>
-            {walletConnectStore.connectors.map((dapp) => {
-              return (
-                <ConnectedDapp dapp={dapp.connector} key={dapp.connector.key} />
-              );
+            {walletConnectStore.connectors.map(({ connector }) => {
+              return <ConnectedDapp dapp={connector} key={connector.key} />;
             })}
           </ScrollView>
 
@@ -189,8 +187,8 @@ const ConnectionsScreen = observer(function ConnectionsScreen() {
                 label="Disconnect All"
                 onPress={async () => {
                   await Promise.all(
-                    walletConnectStore.connectors.map(async (dapp) => {
-                      await dapp.connector.killSession();
+                    walletConnectStore.connectors.map(async ({ connector }) => {
+                      await walletConnectStore.disconnect(connector);
                     })
                   );
                 }}
@@ -243,6 +241,7 @@ const AppsScreen = observer(function AppsScreen() {
   const [url, setUrl] = useState("");
   const intl = useIntl();
   const navigation = useRootNavigation();
+
   function onAppPress(app: App) {
     navigation.navigate(RootRoute.WebView, {
       app,

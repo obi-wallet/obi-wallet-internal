@@ -87,9 +87,7 @@ export const WalletConnect = observer(function WalletConnect() {
                         {
                           text: "Confirm",
                           onPress: async () => {
-                            await walletConnectStore.disconnectConnector(
-                              info.connector
-                            );
+                            await walletConnectStore.disconnect(info.connector);
                           },
                         },
                       ]

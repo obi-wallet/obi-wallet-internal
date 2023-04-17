@@ -6,5 +6,6 @@ export * from "./key";
 export * from "./multisig-key";
 export * from "./multisig-wallet";
 export * from "./singlesig-wallet";
+export * from "./wallet-connect";
 export * from "./wallets";
 export * from "./user-interactions";

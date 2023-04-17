@@ -79,7 +79,7 @@ export const ConnectedWebView = observer(function ConnectedWebView({
               "payload"
             );
             if (payload) {
-              void walletConnectStore.addConnector({
+              void walletConnectStore.connect({
                 uri: payload,
                 walletMeta: wallet.meta,
               });

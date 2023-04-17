@@ -1,19 +1,23 @@
-import { AbstractKVStore, WalletsStore } from "@obi-wallet/headless-ui";
-import {
-  InitiateWalletConnectSessionUserInteraction,
-  isTerraChain,
-  SignAndBroadcastTransactionUserInteraction,
-  WalletMeta,
-} from "@obi-wallet/sdk";
 import { Msg } from "@terra-money/feather.js";
-import WalletConnect from "@walletconnect/client";
+import WalletConnectConnector from "@walletconnect/client";
 import {
   IWalletConnectOptions,
   IWalletConnectSession,
 } from "@walletconnect/types";
-import { action, computed, makeObservable, observable, toJS } from "mobx";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
+
+import { WalletConnectSchema } from "./schema";
+import { isTerraChain } from "../../chains";
+import {
+  InitiateWalletConnectSessionUserInteraction,
+  SignAndBroadcastTransactionUserInteraction,
+} from "../../user-interactions";
+import { AbstractMigratable, AbstractSerialized } from "../migratable";
+import { WalletMeta } from "../multisig-wallet";
+import { Wallets } from "../wallets";
+
+export { WalletConnectConnector };
 
 enum ErrorCodeEnum {
   userDenied = 1, // User Denied
@@ -22,9 +26,8 @@ enum ErrorCodeEnum {
   timeOut = 4, // Timeout
   etc = 99,
 }
-
-function createWalletConnect(connectorOpts: IWalletConnectOptions) {
-  return new WalletConnect({
+function createWalletConnectConnector(connectorOpts: IWalletConnectOptions) {
+  return new WalletConnectConnector({
     ...connectorOpts,
     clientMeta: {
       description: "Obi Wallet",
@@ -38,136 +41,20 @@ function createWalletConnect(connectorOpts: IWalletConnectOptions) {
 type HandshakeTopic = string;
 
 export interface ConnectInformation {
-  connector: WalletConnect;
+  connector: WalletConnectConnector;
   walletMeta: WalletMeta;
 }
 
-// TODO: add walletConnectID to terra chain (mainnet 1, testnet 0)
-export class WalletConnectStore {
-  protected readonly kvStore: AbstractKVStore;
-  protected readonly walletsStore: WalletsStore;
+export class WalletConnect {
+  public get schema() {
+    return WalletConnectSchema;
+  }
 
-  public __initPromise: Promise<void>;
-
-  @observable
   protected _connectors: Record<HandshakeTopic, ConnectInformation> = {};
+  public constructor(protected wallets: Wallets) {}
 
-  constructor({
-    kvStore,
-    walletsStore,
-  }: {
-    kvStore: AbstractKVStore;
-    walletsStore: WalletsStore;
-  }) {
-    this.kvStore = kvStore;
-    this.walletsStore = walletsStore;
-    makeObservable(this);
-    this.__initPromise = this.init();
-  }
-
-  @action
-  public async addConnector({
-    uri,
-    walletMeta,
-  }: {
-    uri: string;
-    walletMeta: WalletMeta;
-  }) {
-    const connector = createWalletConnect({
-      uri,
-    });
-
-    if (!connector.connected) {
-      await connector.createSession();
-    }
-
-    await this.attachEventHandlers({ connector, walletMeta });
-  }
-
-  @computed
-  public get connectors() {
-    return Object.values(this._connectors);
-  }
-
-  @action
-  public async recoverConnectors() {
-    const data = await this.kvStore.get<
-      Record<
-        HandshakeTopic,
-        {
-          session: IWalletConnectSession;
-          walletMeta: WalletMeta;
-        }
-      >
-    >("sessions");
-    if (!data) return;
-    try {
-      await Promise.all(
-        R.values(
-          R.mapObjIndexed(async (info, topic) => {
-            if (this._connectors[topic]) return;
-            const connector = createWalletConnect({
-              session: info.session,
-            });
-            await this.recoverConnector({
-              connector,
-              walletMeta: info.walletMeta,
-            });
-          }, data)
-        )
-      );
-    } catch (e) {
-      // noop
-    }
-    await this.save();
-  }
-
-  @action
-  protected async saveConnector({ connector, walletMeta }: ConnectInformation) {
-    this._connectors[connector.handshakeTopic] = {
-      connector,
-      walletMeta,
-    };
-    await this.save();
-  }
-
-  @action
-  protected async recoverConnector({
-    connector,
-    walletMeta,
-  }: ConnectInformation) {
-    if (connector.handshakeTopic) {
-      this._connectors[connector.handshakeTopic] = {
-        connector,
-        walletMeta,
-      };
-      await this.attachEventHandlers({ connector, walletMeta });
-    }
-  }
-
-  @action
-  protected async removeConnector(topic: HandshakeTopic) {
-    this._connectors = R.omit([topic], this._connectors);
-    await this.save();
-  }
-
-  @action
-  public async disconnectConnector(connector: WalletConnect) {
-    const { handshakeTopic } = connector;
-    if (connector.connected) {
-      await connector.killSession();
-    } else {
-      connector.rejectSession();
-    }
-    await this.removeConnector(handshakeTopic);
-  }
-
-  protected async init() {
-    await this.recoverConnectors();
-  }
-
-  protected async save() {
-    const sessions = R.pipe<
+  public toJSON(): AbstractSerialized<typeof WalletConnectSchema> {
+    return R.pipe<
       [Record<HandshakeTopic, ConnectInformation>],
       [HandshakeTopic, ConnectInformation][],
       [HandshakeTopic, ConnectInformation][],
@@ -197,7 +84,71 @@ export class WalletConnectStore {
       ]),
       R.fromPairs
     )(this._connectors);
-    await this.kvStore.set("sessions", toJS(sessions));
+  }
+
+  public get connectors() {
+    return Object.values(this._connectors);
+  }
+
+  public async connect({
+    uri,
+    walletMeta,
+  }: {
+    uri: string;
+    walletMeta: WalletMeta;
+  }) {
+    const connector = createWalletConnectConnector({ uri });
+    if (!connector.connected) {
+      await connector.createSession();
+    }
+    await this.attachEventHandlers({ connector, walletMeta });
+  }
+
+  public async disconnect(connector: WalletConnectConnector) {
+    const { handshakeTopic } = connector;
+    if (connector.connected) {
+      await connector.killSession();
+    } else {
+      connector.rejectSession();
+    }
+    this.removeConnector(handshakeTopic);
+  }
+
+  public async recoverConnectors(
+    migratable: AbstractMigratable<typeof WalletConnectSchema>
+  ) {
+    try {
+      const data = WalletConnectSchema.migratableSchema.parse(migratable);
+      await Promise.all(
+        R.values(
+          R.mapObjIndexed(async (info, topic) => {
+            if (this._connectors[topic]) return;
+            const connector = createWalletConnectConnector({
+              session: info.session as IWalletConnectSession,
+            });
+            await this.recoverConnector({
+              connector,
+              walletMeta: info.walletMeta,
+            });
+          }, data)
+        )
+      );
+    } catch (e) {
+      // noop
+    }
+  }
+
+  protected async recoverConnector({
+    connector,
+    walletMeta,
+  }: ConnectInformation) {
+    if (connector.handshakeTopic) {
+      this._connectors[connector.handshakeTopic] = {
+        connector,
+        walletMeta,
+      };
+      await this.attachEventHandlers({ connector, walletMeta });
+    }
   }
 
   protected async attachEventHandlers({
@@ -205,13 +156,14 @@ export class WalletConnectStore {
     walletMeta,
   }: ConnectInformation) {
     const topic = connector.handshakeTopic;
-    const wallet = this.walletsStore.getWallet(walletMeta.walletId);
+    const wallet = this.wallets.getWalletByProxyAddress(walletMeta.walletId);
     if (!wallet) {
-      await this.removeConnector(topic);
+      this.removeConnector(topic);
       return;
     }
 
-    // TODO: Do that somewhere else
+    const address = wallet.getAddressByAccountMeta(walletMeta.currentAccount);
+
     connector.on("session_request", async (error, payload) => {
       if (error) {
         throw error;
@@ -228,14 +180,10 @@ export class WalletConnectStore {
           });
         if (response.approved) {
           connector.approveSession({
-            // TODO: Maybe pass via send response instead
-            // TODO: also save wallet id here
-            // TODO: fix this
-            // Instead, calculate address from walletMeta
-            accounts: [this.walletsStore.address!],
+            accounts: [address],
             chainId: 1,
           });
-          await this.saveConnector({ connector, walletMeta });
+          this.saveConnector({ connector, walletMeta });
           return;
         }
       } catch (e) {
@@ -356,14 +304,25 @@ export class WalletConnectStore {
       }
     });
 
-    connector.on("disconnect", async (error, payload) => {
+    connector.on("disconnect", (error, payload) => {
       console.log("EVENT", "disconnect", payload);
 
       if (error) {
         throw error;
       }
 
-      await this.removeConnector(topic);
+      this.removeConnector(topic);
     });
+  }
+
+  protected saveConnector({ connector, walletMeta }: ConnectInformation) {
+    this._connectors[connector.handshakeTopic] = {
+      connector,
+      walletMeta,
+    };
+  }
+
+  protected removeConnector(topic: HandshakeTopic) {
+    this._connectors = R.omit([topic], this._connectors);
   }
 }
