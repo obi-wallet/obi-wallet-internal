@@ -1,6 +1,7 @@
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Text, TextInput } from "@obi-wallet/common";
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { FlexAccount, FlexAccountPermissionedAddress } from "@obi-wallet/sdk";
 import Slider from "@react-native-community/slider";
 import { DateTime } from "luxon";
@@ -18,7 +19,6 @@ import * as Animatable from "react-native-animatable";
 import { useThrottle } from "rooks";
 
 import { AbstractAccountItemProps, AccountContainer, Pill } from "./common";
-import { useMultisigWallet } from "../../../../app/stores";
 import { AnimatedText } from "../../../../components/animated-text";
 import { PermissionedAddressesContext } from "../permissioned-address-context";
 
@@ -50,7 +50,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
     onSetActive,
     onDelete,
   }) {
-    const wallet = useMultisigWallet();
+    const wallet = useCurrentWallet();
     const threshold = {
       required: wallet.owner.threshold,
       keys: wallet.owner.keys.length,

@@ -9,8 +9,8 @@ import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Text } from "@obi-wallet/common";
-import { useQuery } from "@obi-wallet/headless-ui";
-import { Coin, cosmosChains, isCosmosChain, Sdk } from "@obi-wallet/sdk";
+import { useQuery, useValidators } from "@obi-wallet/headless-ui";
+import { Chain, Coin, cosmosChains, isCosmosChain, Sdk } from "@obi-wallet/sdk";
 import {
   Msg,
   MsgDelegate,
@@ -28,26 +28,30 @@ import { useIntl } from "react-intl";
 import { View } from "react-native";
 
 import ArrowUpIcon from "./assets/arrowUpIcon.svg";
-import { formatCoin, useValidators } from "../../balances";
+import { formatCoin } from "../../balances";
 import { CoinIcon } from "../../screens/components/coin-icon";
 import { useStore } from "../../stores";
 
 export interface PrettyMessageProps {
   message: Msg.Amino;
+  chainId: Chain;
 }
 
+// TODO: pass chain ID
 export const PrettyMessage = observer(function PrettyMessage({
   message,
+  chainId,
 }: PrettyMessageProps) {
   return (
     <ErrorBoundary FallbackComponent={PrettyMessageUnknown}>
-      <PrettyMessageUnsafe message={message} />
+      <PrettyMessageUnsafe message={message} chainId={chainId} />
     </ErrorBoundary>
   );
 });
 
 const PrettyMessageUnsafe = observer(function PrettyMessageUnsafe({
   message,
+  chainId,
 }: PrettyMessageProps) {
   switch (message.type) {
     case "bank/MsgSend":
@@ -65,25 +69,35 @@ const PrettyMessageUnsafe = observer(function PrettyMessageUnsafe({
     }
     case "cosmos-sdk/MsgDelegate": {
       const msg = message as MsgDelegate.Amino;
-      return <PrettyMessageStaking {...msg} label="Staking to:" />;
+      return (
+        <PrettyMessageStaking {...msg} label="Staking to:" chainId={chainId} />
+      );
     }
     case "cosmos-sdk/MsgUndelegate": {
       const msg = message as MsgUndelegate.Amino;
-      return <PrettyMessageStaking {...msg} label="Unstaking from:" />;
+      return (
+        <PrettyMessageStaking
+          {...msg}
+          label="Unstaking from:"
+          chainId={chainId}
+        />
+      );
     }
     case "distribution/MsgWithdrawDelegationReward":
     case "cosmos-sdk/MsgWithdrawDelegationReward": {
       const msg = message as MsgWithdrawDelegatorReward.Amino;
-      return <PrettyMessageWithdrawDelegatorReward {...msg} />;
+      return (
+        <PrettyMessageWithdrawDelegatorReward {...msg} chainId={chainId} />
+      );
     }
     default:
       return <PrettyMessageUnknown />;
   }
 });
 const PrettyMessageStaking = observer<
-  (MsgDelegate.Amino | MsgUndelegate.Amino) & { label: string }
->(function PrettyMessageStaking({ value, label }) {
-  const validators = useValidators();
+  (MsgDelegate.Amino | MsgUndelegate.Amino) & { label: string; chainId: Chain }
+>(function PrettyMessageStaking({ value, label, chainId }) {
+  const validators = useValidators(chainId);
   const validator = validators.data?.find(
     (val) => val.address === value.validator_address
   );
@@ -98,38 +112,37 @@ const PrettyMessageStaking = observer<
   );
 });
 
-const PrettyMessageWithdrawDelegatorReward =
-  observer<MsgWithdrawDelegatorReward.Amino>(
-    function PrettyMessageWithdrawDelegatorReward({ value }) {
-      const validators = useValidators();
-      const { chainStore } = useStore();
+const PrettyMessageWithdrawDelegatorReward = observer<
+  MsgWithdrawDelegatorReward.Amino & { chainId: Chain }
+>(function PrettyMessageWithdrawDelegatorReward({ value, chainId }) {
+  const validators = useValidators(chainId);
+  const { chainStore } = useStore();
 
-      const rewards = useQuery(
-        Sdk.chainId(chainStore.currentChain).staking.rewardsQuery(
-          value.delegator_address
-        )
-      );
-      const validator = validators.data?.find(
-        (validator) => validator.address === value.validator_address
-      );
-      const reward = rewards.data?.perDelegator.find(
-        (delegator) => delegator.address === value.validator_address
-      );
-
-      return (
-        <MessageElement
-          icon={<ArrowUpIcon />}
-          title="Withdrawing staking rewards from:"
-          coins={reward?.rewards ? [reward.rewards] : undefined}
-        >
-          <Text style={{ color: "white" }}>
-            {validator?.label ||
-              Bech32Address.shortenAddress(value.validator_address, 35)}
-          </Text>
-        </MessageElement>
-      );
-    }
+  const rewards = useQuery(
+    Sdk.chainId(chainStore.currentChain).staking.rewardsQuery(
+      value.delegator_address
+    )
   );
+  const validator = validators.data?.find(
+    (validator) => validator.address === value.validator_address
+  );
+  const reward = rewards.data?.perDelegator.find(
+    (delegator) => delegator.address === value.validator_address
+  );
+
+  return (
+    <MessageElement
+      icon={<ArrowUpIcon />}
+      title="Withdrawing staking rewards from:"
+      coins={reward?.rewards ? [reward.rewards] : undefined}
+    >
+      <Text style={{ color: "white" }}>
+        {validator?.label ||
+          Bech32Address.shortenAddress(value.validator_address, 35)}
+      </Text>
+    </MessageElement>
+  );
+});
 
 const PrettyMessageSend = observer(function PrettyMessageSend({
   value,

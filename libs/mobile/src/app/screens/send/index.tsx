@@ -5,6 +5,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import { Brand } from "@obi-wallet/common";
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   isTerraChain,
   SignAndBroadcastTransactionUserInteraction,
@@ -23,7 +24,7 @@ import ObiQr from "./assets/obiqr.svg";
 import { ExtendedCoin, formatExtendedCoin, useBalances } from "../../balances";
 import { Button } from "../../button";
 import { RootRoute, RootStackParamList } from "../../root-stack";
-import { useMultisigWallet, useStore } from "../../stores";
+import { useStore } from "../../stores";
 import { TextInput } from "../../text-input";
 import { Back } from "../components/back";
 import { BottomSheetBackdrop } from "../components/bottomSheetBackdrop";
@@ -42,7 +43,7 @@ export type SendScreenProps = NativeStackScreenProps<
 export const SendScreen = observer<SendScreenProps>(function SendScreen({
   navigation,
 }) {
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
   const balances = useBalances({ address: wallet.address });
   const [selectedCoin, setSelectedCoin] = useState<ExtendedCoin | undefined>(
     () => {

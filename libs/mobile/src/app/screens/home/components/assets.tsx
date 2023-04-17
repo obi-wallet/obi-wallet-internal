@@ -3,6 +3,7 @@ import { faSortAsc } from "@fortawesome/free-solid-svg-icons/faSortAsc";
 import { faSortDesc } from "@fortawesome/free-solid-svg-icons/faSortDesc";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Feature, Text } from "@obi-wallet/common";
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -25,7 +26,7 @@ import {
 } from "../../../balances";
 import { IconButton } from "../../../button";
 import { RootRoute, RootStackParamList } from "../../../root-stack";
-import { useMultisigWallet, useStore } from "../../../stores";
+import { useStore } from "../../../stores";
 import { CoinIcon } from "../../components/coin-icon";
 import { NetworkAccountPickerLayout } from "../../components/network-account-picker-layout";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";
@@ -66,7 +67,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
   const isObi = configStore.isObi();
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
 
   return (
     <View
@@ -202,7 +203,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
 
 const AssetsList = observer(function AssetsList() {
   const [sortAscending, setSortAscending] = useState(true);
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
   const balances = useBalances({ address: wallet.address, sortAscending });
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();

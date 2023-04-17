@@ -1,4 +1,5 @@
 import { pubkeyType } from "@cosmjs/amino";
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   GatekeeperConfig,
   generateSec256k1KeyPair,
@@ -16,7 +17,7 @@ import { useAsyncEffect } from "rooks";
 
 import { getBiometricsPublicKey } from "../app/biometrics";
 import { useSecurityQuestions } from "../app/screens/components/phone-number/security-question-input";
-import { useMultisigWallet, useStore } from "../app/stores";
+import { useStore } from "../app/stores";
 import { getTwilioClient } from "../app/text-message";
 import { getGatekeeperConfigDraftId } from "../screens/accounts/draft-id";
 
@@ -70,7 +71,7 @@ export const GatekeeperConfigDraft = {
     children,
   }) {
     const { draftsStore } = useStore();
-    const wallet = useMultisigWallet();
+    const wallet = useCurrentWallet();
 
     useEffect(() => {
       const draftId = getGatekeeperConfigDraftId(wallet);

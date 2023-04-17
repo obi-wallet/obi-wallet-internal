@@ -1,3 +1,4 @@
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import EventEmitter from "eventemitter3";
 import { observer } from "mobx-react-lite";
 import { RefObject, useCallback, useMemo } from "react";
@@ -8,7 +9,7 @@ import {
   WebViewProps,
 } from "react-native-webview";
 
-import { useMultisigWallet, useStore } from "../../../stores";
+import { useStore } from "../../../stores";
 import { RefreshControl } from "../refresh-control";
 
 const tryNewURL = (str: string): URL | undefined => {
@@ -41,7 +42,7 @@ export const ConnectedWebView = observer(function ConnectedWebView({
   ...props
 }: ConnectedWebViewProps) {
   const { walletConnectStore } = useStore();
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
 
   const eventEmitter = useMemo(() => new EventEmitter(), []);
   const onMessage = useCallback(

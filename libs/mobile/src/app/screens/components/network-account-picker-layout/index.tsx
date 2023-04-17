@@ -3,6 +3,7 @@ import { faRss } from "@fortawesome/free-solid-svg-icons/faRss";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Feature, Text } from "@obi-wallet/common";
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { Sdk } from "@obi-wallet/sdk";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
@@ -14,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar } from "../../../../screens/accounts/avatar";
 import { RootStackParamList } from "../../../root-stack";
-import { useMultisigWallet, useStore } from "../../../stores";
+import { useStore } from "../../../stores";
 import { HomeBottomTabRoute } from "../../home/home-stack";
 import { ObiLogo } from "../obi-logo";
 import { isSmallScreenSubstr } from "../screen-size";
@@ -53,7 +54,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
   >();
   const { configStore } = useStore();
   const isObi = configStore.isObi();
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
 
   return (
     <View

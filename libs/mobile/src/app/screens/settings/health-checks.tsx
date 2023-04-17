@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { healthChecks, JunoChecks, Text } from "@obi-wallet/common";
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { MultisigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
@@ -15,12 +16,11 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import WarningIcon from "../../../assets/warning.svg";
-import { useMultisigWallet } from "../../stores";
 import { Back } from "../components/back";
 
 export const HealthChecksScreen = observer(function HealthChecksScreen() {
   const intl = useIntl();
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
   const [problems, setProblems] = useState<string[] | undefined>();
   const theme = useTheme();
   const refetchProblems = useCallback(async () => {

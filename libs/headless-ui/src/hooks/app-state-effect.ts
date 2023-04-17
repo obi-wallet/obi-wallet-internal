@@ -13,7 +13,8 @@ export function useAppStateEffect(
       fnRef.current(appState);
     });
     return () => {
-      listener.remove();
+      // At least in tests, listener can also be undefined
+      listener?.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);

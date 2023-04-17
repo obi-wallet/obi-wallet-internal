@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@obi-wallet/common";
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { ObservableSinglesigWallet } from "@obi-wallet/sdk";
 import { MnemonicKey } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
@@ -13,7 +14,6 @@ import { ImportKeplrAccountScreenProps } from "./import-keplr-account";
 import { ImportStationAccountScreenProps } from "./import-station-account";
 import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
-import { useMultisigWallet } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
 import { mnemonic } from "../../helpers/validation-helpers";
 
@@ -23,7 +23,7 @@ export const LegacyForm = observer<
     | ImportStationAccountScreenProps
   )
 >(function LegacyForm({ navigation, coinType }) {
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
   const schema = z.object({
     mnemonic: mnemonic(),
   });

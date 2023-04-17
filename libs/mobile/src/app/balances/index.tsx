@@ -1,7 +1,7 @@
 import { Coin } from "@cosmjs/amino";
 import { Text } from "@obi-wallet/common";
 import { useQuery } from "@obi-wallet/headless-ui";
-import { cosmosChains, isCosmosChain, Rewards, Sdk } from "@obi-wallet/sdk";
+import { cosmosChains, isCosmosChain, Sdk } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { FC } from "react";
@@ -10,7 +10,7 @@ import { SvgProps } from "react-native-svg";
 
 import LoopIcon from "./assets/loop.svg";
 import { getRootStore } from "../../background/root-store";
-import { useMultisigWallet, useStore } from "../stores";
+import { useStore } from "../stores";
 
 export interface ExtendedCoin {
   contract?: string;
@@ -171,42 +171,5 @@ export function formatExtendedCoin(coin: ExtendedCoin) {
   return {
     ...formattedCoin,
     valueInUsd: formattedCoin.amount * coin.usdPrice,
-  };
-}
-
-export function useDelegations() {
-  const wallet = useMultisigWallet();
-  return useQuery(
-    Sdk.chainId(wallet.chainId).staking.delegationsQuery(wallet.address)
-  );
-}
-
-export function useUnbondingDelegations() {
-  const wallet = useMultisigWallet();
-  return useQuery(
-    Sdk.chainId(wallet.chainId).staking.unbondingDelegationsQuery(
-      wallet.address
-    )
-  );
-}
-
-export function useValidators() {
-  const { chainStore } = useStore();
-  const chainId = chainStore.currentChain;
-  return useQuery(Sdk.chainId(chainId).staking.validatorsQuery());
-}
-
-export function useRewards() {
-  const wallet = useMultisigWallet();
-  const response = useQuery(
-    Sdk.chainId(wallet.chainId).staking.rewardsQuery(wallet.address)
-  );
-  const fallback: Rewards = {
-    perDelegator: [],
-    total: { denom: wallet.chain.denom, amount: "0" },
-  };
-  return {
-    ...response,
-    data: response.data ?? fallback,
   };
 }

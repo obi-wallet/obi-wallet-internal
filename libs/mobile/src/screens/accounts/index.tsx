@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react/dist/emotion-react.cjs";
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { GatekeeperConfig } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
@@ -13,11 +14,11 @@ import { getGatekeeperConfigDraftId } from "./draft-id";
 import { ImportKeplrAccountScreen } from "./import-keplr-account";
 import { ImportLegacyAccountScreen } from "./import-legacy-account";
 import { ImportStationAccountScreen } from "./import-station-account";
-import { useMultisigWallet, useStore } from "../../app/stores";
+import { useStore } from "../../app/stores";
 
 export const AccountsScreen = observer(function AccountsScreen() {
   const { draftsStore } = useStore();
-  const wallet = useMultisigWallet();
+  const wallet = useCurrentWallet();
 
   const draftId = getGatekeeperConfigDraftId(wallet);
   const draft = draftsStore.get<GatekeeperConfig>({

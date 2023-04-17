@@ -18,28 +18,72 @@ import {
   upsertFlex,
 } from "../__fixtures__/messages";
 import { PrettyMessage } from "../src/app/modals/signature-modal/pretty-message";
+import { useStore } from "../src/app/stores";
 
 export default function PrettyMessages() {
+  const { chainStore } = useStore();
   const theme = useTheme();
 
   return (
     <ScrollView
       style={{ marginVertical: 50, backgroundColor: theme.colors.background }}
     >
-      <PrettyMessage message={messageSend.toAmino()} />
-      <PrettyMessage message={messageDelegate.toAmino()} />
-      <PrettyMessage message={messageUndelegate.toAmino()} />
-      <PrettyMessage message={messageNewAccount.toAmino()} />
-      <PrettyMessage message={instantiateMessage.toAmino()} />
-      <PrettyMessage message={ExecuteMessage.toAmino()} />
-      <PrettyMessage message={unknownMessage.toAmino()} />
-      <PrettyMessage message={initMessage.toAmino()} />
-      <PrettyMessage message={upsertFlex.toAmino()} />
-      <PrettyMessage message={rmFlex.toAmino()} />
-      <PrettyMessage message={createSessionKey.toAmino()} />
-      <PrettyMessage message={destroySessionKey.toAmino()} />
-      <PrettyMessage message={upsertBeneficiary.toAmino()} />
-      <PrettyMessage message={upsertBeneficiaryAnnually.toAmino()} />
+      <PrettyMessage
+        message={messageSend.toAmino()}
+        chainId={chainStore.currentChain}
+      />
+      <PrettyMessage
+        message={messageDelegate.toAmino()}
+        chainId={chainStore.currentChain}
+      />
+      <PrettyMessage
+        message={messageUndelegate.toAmino()}
+        chainId={chainStore.currentChain}
+      />
+      <PrettyMessage
+        message={messageNewAccount.toAmino()}
+        chainId={chainStore.currentChain}
+      />
+      <PrettyMessage
+        message={instantiateMessage.toAmino()}
+        chainId={chainStore.currentChain}
+      />
+      <PrettyMessage
+        message={ExecuteMessage.toAmino()}
+        chainId={chainStore.currentChain}
+      />
+      <PrettyMessage
+        message={unknownMessage.toAmino()}
+        chainId={chainStore.currentChain}
+      />
+      <PrettyMessage
+        message={initMessage.toAmino()}
+        chainId={chainStore.currentChain}
+      />
+      <PrettyMessage
+        message={upsertFlex.toAmino()}
+        chainId={chainStore.currentChain}
+      />
+      <PrettyMessage
+        message={rmFlex.toAmino()}
+        chainId={chainStore.currentChain}
+      />
+      <PrettyMessage
+        message={createSessionKey.toAmino()}
+        chainId={chainStore.currentChain}
+      />
+      <PrettyMessage
+        message={destroySessionKey.toAmino()}
+        chainId={chainStore.currentChain}
+      />
+      <PrettyMessage
+        message={upsertBeneficiary.toAmino()}
+        chainId={chainStore.currentChain}
+      />
+      <PrettyMessage
+        message={upsertBeneficiaryAnnually.toAmino()}
+        chainId={chainStore.currentChain}
+      />
     </ScrollView>
   );
 }

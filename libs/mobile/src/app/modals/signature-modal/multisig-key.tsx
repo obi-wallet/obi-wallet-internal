@@ -116,6 +116,7 @@ export const SignatureModalMultisigKey =
         numberOfSignatures={multisigSigner.current?.numberOfSignatures || 0}
         numberOfUsableKeys={usableSigners.data.length}
         innerMessages={messages}
+        chainId={multisigKey.chainId}
         data={keys}
         safeSpendLimitExceeded={safeSpendLimitExceeded}
         onCancel={cancel}

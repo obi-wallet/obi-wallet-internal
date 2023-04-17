@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@obi-wallet/common";
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { GatekeeperConfig, ObservableBeneficiary, Sdk } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -16,7 +17,7 @@ import { getGatekeeperConfigDraftId } from "./draft-id";
 import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
 import { isSmallScreenNumber } from "../../app/screens/components/screen-size";
-import { useMultisigWallet, useStore } from "../../app/stores";
+import { useStore } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
 import { useKeyboardVisible } from "../../helpers/keyboard-visible";
 import { nonEmptyString } from "../../helpers/validation-helpers";
@@ -30,7 +31,7 @@ export const CreateBeneficiaryAccountScreen =
   observer<CreateBeneficiaryAccountScreenProps>(
     function CreateBeneficiaryAccountScreen({ navigation }) {
       const { draftsStore } = useStore();
-      const wallet = useMultisigWallet();
+      const wallet = useCurrentWallet();
       const schema = z.object({
         name: nonEmptyString("Name"),
         address: nonEmptyString("Address").refine(

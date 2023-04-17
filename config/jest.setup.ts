@@ -9,6 +9,11 @@ jest.mock("@react-native-async-storage/async-storage", () => mockAsyncStorage);
 jest.mock("@fortawesome/react-native-fontawesome", () => ({
   FontAwesomeIcon: "",
 }));
+
+jest.mock("react-native-code-push", () => ({
+  NativeCodePush: {},
+}));
+
 jest.mock("react-native-safe-area-context", () => mockSafeAreaContext);
 jest.mock("react-native", () => {
   const RN = jest.requireActual("react-native"); // use original implementation, which comes with mocks out of the box
