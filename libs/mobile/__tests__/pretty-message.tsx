@@ -435,7 +435,7 @@ describe("Terra", () => {
     const Wrapper = createWrapper({ brand });
     return render(
       <Wrapper>
-        <PrettyMessage message={message.toAmino()} />
+        <PrettyMessage message={message.toAmino()} chainId="phoenix-1" />
       </Wrapper>
     );
   }

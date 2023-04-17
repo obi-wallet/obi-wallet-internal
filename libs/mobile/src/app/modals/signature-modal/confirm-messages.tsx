@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { Text } from "@obi-wallet/common";
-import { Message } from "@obi-wallet/sdk";
+import { Chain, Message } from "@obi-wallet/sdk";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
@@ -32,6 +32,7 @@ export interface ConfirmMessagesProps extends ModalProps {
   disabled?: boolean;
   cancelable?: boolean;
   messages: Message[];
+  chainId: Chain;
   footer?: ReactNode;
   children?: ReactNode;
 
@@ -48,6 +49,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
     disabled,
     cancelable = true,
     messages,
+    chainId,
     onCancel,
     onConfirm,
     footer,
@@ -260,7 +262,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
 
       switch (selectedTab) {
         case Tab.TransactionDetails:
-          return <MessageView messages={aminoMessages} />;
+          return <MessageView messages={aminoMessages} chainId={chainId} />;
         case Tab.Data: {
           const data = JSON.stringify(aminoMessages, null, 2);
           return (
@@ -282,18 +284,22 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
 
 interface MessageViewProps {
   messages: Msg.Amino[];
+  chainId: Chain;
   isObi?: boolean;
 }
 
 const MessageView = observer(function MessageView({
   messages,
+  chainId,
 }: MessageViewProps) {
   if (messages.length === 0) return null;
 
   return (
     <>
       {messages.map((message, index) => {
-        return <PrettyMessage key={index} message={message} />;
+        return (
+          <PrettyMessage key={index} message={message} chainId={chainId} />
+        );
       })}
     </>
   );

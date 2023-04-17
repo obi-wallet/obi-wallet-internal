@@ -17,6 +17,7 @@ export const SignatureModalSinglesigWallet =
     function SignatureModalSinglesigWallet({
       interaction,
       messages,
+      wallet,
       cancel,
       broadcast,
     }) {
@@ -25,6 +26,7 @@ export const SignatureModalSinglesigWallet =
           loading={broadcast.isLoading}
           cancelable={interaction.payload.cancelable}
           messages={messages}
+          chainId={wallet.chainId}
           onCancel={cancel}
           onConfirm={broadcast.mutateAsync}
         />

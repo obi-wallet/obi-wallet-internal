@@ -50,6 +50,7 @@ export const SignatureModalFlexAccount =
         loading={broadcast.isLoading}
         cancelable={interaction.payload.cancelable}
         messages={messages}
+        chainId={multisigKey.chainId}
         disabled={!signed}
         onCancel={cancel}
         onConfirm={broadcast.mutateAsync}

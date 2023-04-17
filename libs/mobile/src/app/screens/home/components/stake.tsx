@@ -365,7 +365,7 @@ const Validators = observer(function Validators() {
   const [needle, setNeedle] = useState("");
   const { state, dispatch } = useContext(StakeStateContext);
 
-  const validators = useValidators();
+  const validators = useValidators(wallet.chainId);
   const { activeValidators, fuse } = useMemo(() => {
     const activeValidators = validators.data?.filter((validator) => {
       return validator.active;
@@ -659,7 +659,7 @@ const MyStake = observer(function MyStake() {
 
   const { state, dispatch } = useContext(StakeStateContext);
 
-  const validators = useValidators();
+  const validators = useValidators(wallet.chainId);
   const selectedValidator = validators.data?.find((validator) => {
     return validator.address === state.selectedValidator;
   });
