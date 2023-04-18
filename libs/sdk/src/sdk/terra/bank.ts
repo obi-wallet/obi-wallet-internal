@@ -4,6 +4,7 @@ import invariant from "tiny-invariant";
 
 import { TerraClient } from "./client";
 import { tokenPairs } from "./token-pairs";
+import { tokens } from "./tokens";
 import { TerraChain } from "../../chains";
 import { AbstractBankSdk } from "../abstract";
 import { Coin } from "../common";
@@ -24,21 +25,49 @@ export class TerraBankSdk extends AbstractBankSdk {
 
   protected async balancesQueryFn(address: string): Promise<Coin[]> {
     return await this.client.withClient(async (client) => {
-      return await this.client.fetchAllPages(async (paginationOptions) => {
-        const [coins, pagination] = await client.bank.balance(
-          address,
-          paginationOptions
-        );
-        return [
-          coins.map((coin): Coin => {
-            return {
-              denom: coin.denom,
-              amount: coin.amount.toString(),
-            };
-          }),
-          pagination,
-        ];
-      });
+      const nativeCoins = await this.client.fetchAllPages(
+        async (paginationOptions) => {
+          const [coins, pagination] = await client.bank.balance(
+            address,
+            paginationOptions
+          );
+          return [
+            coins.map((coin): Coin => {
+              return {
+                denom: coin.denom,
+                amount: coin.amount.toString(),
+              };
+            }),
+            pagination,
+          ];
+        }
+      );
+
+      const contractTokens = await Promise.all(
+        Object.values(tokens).map(async (token) => {
+          if (!R.has("token", token)) return null;
+
+          const response = await client.wasm.contractQuery<{ balance: string }>(
+            token.token,
+            {
+              balance: {
+                address,
+              },
+            }
+          );
+          return {
+            denom: R.has("symbol", token) ? token.symbol : token.protocol,
+            contract: token.token,
+            amount: response.balance,
+          };
+        })
+      );
+
+      return [...nativeCoins, ...contractTokens].filter(
+        (coin): coin is Coin => {
+          return coin !== null && coin.amount !== "0";
+        }
+      );
     });
   }
 
