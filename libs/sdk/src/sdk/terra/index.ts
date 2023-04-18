@@ -50,11 +50,13 @@ export class TerraSdk extends AbstractSdk {
   }
 
   public formatCoin(coin: Coin): FormattedCoin {
-    if (!R.has(coin.denom, tokens)) {
+    const key = R.has("contract", coin) ? coin.contract : coin.denom;
+
+    if (!key || !R.has(key, tokens)) {
       return super.formatCoin(coin);
     }
 
-    const token = tokens[coin.denom as keyof typeof tokens];
+    const token = tokens[key as keyof typeof tokens];
     const denom =
       R.prop("base_denom", token) ??
       R.prop("denom", token) ??
@@ -67,11 +69,6 @@ export class TerraSdk extends AbstractSdk {
         if (denom.startsWith("u")) {
           return denom.slice(1).toUpperCase();
         }
-
-        if (denom.startsWith("terra1")) {
-          return "";
-        }
-
         return denom;
       })(),
       digits: token.decimals,

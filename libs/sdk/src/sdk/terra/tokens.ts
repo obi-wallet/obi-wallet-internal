@@ -723,4 +723,12 @@ export const tokens = {
     icon: "",
     decimals: 6,
   },
+  terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv: {
+    protocol: "Lion DAO",
+    symbol: "ROAR",
+    name: "Lion DAO",
+    token: "terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv",
+    icon: "https://extraterra-assets.s3.us-east-2.amazonaws.com/images/LionDAO.png",
+    decimals: 6,
+  },
 };
