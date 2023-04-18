@@ -50,11 +50,22 @@ export class TerraSdk extends AbstractSdk {
   }
 
   public formatCoin(coin: Coin): FormattedCoin {
+    if (coin.contract) {
+      const token = tokens[coin.contract as keyof typeof tokens];
+      return {
+        icon: null,
+        denom: coin.denom,
+        digits: 6,
+        label: token.name,
+        amount: parseInt(coin.amount, 10) / Math.pow(10, 6),
+      };
+    }
     if (!R.has(coin.denom, tokens)) {
       return super.formatCoin(coin);
     }
 
     const token = tokens[coin.denom as keyof typeof tokens];
+
     const denom =
       R.prop("base_denom", token) ??
       R.prop("denom", token) ??

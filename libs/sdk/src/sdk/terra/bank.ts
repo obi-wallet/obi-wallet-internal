@@ -4,6 +4,7 @@ import invariant from "tiny-invariant";
 
 import { TerraClient } from "./client";
 import { tokenPairs } from "./token-pairs";
+import { tokens } from "./tokens";
 import { TerraChain } from "../../chains";
 import { AbstractBankSdk } from "../abstract";
 import { Coin } from "../common";
@@ -29,11 +30,36 @@ export class TerraBankSdk extends AbstractBankSdk {
           address,
           paginationOptions
         );
+        //get token balance from address
+        const contracts = Object.keys(tokens).filter(
+          (token) => !token.includes("ibc") && token !== "uluna"
+        );
+
+        const tokensRes = await Promise.all(
+          contracts.map(async (token) => {
+            const res = await client.wasm.contractQuery(token, {
+              balance: {
+                address: address,
+              },
+            });
+            if (res?.balance > 0) {
+              return {
+                contract: tokens[token].token,
+                amount: res.balance,
+                denom: tokens[token].symbol,
+              };
+            }
+            return null;
+          })
+        );
+
+        const tokenBalances = tokensRes.filter((token) => token);
         return [
-          coins.map((coin): Coin => {
+          [...coins, ...tokenBalances].map((coin): Coin => {
             return {
               denom: coin.denom,
               amount: coin.amount.toString(),
+              ...(coin?.contract ? { contract: coin.contract } : {}),
             };
           }),
           pagination,
@@ -74,6 +100,7 @@ export class TerraBankSdk extends AbstractBankSdk {
       contract_addr: string;
       dex: "astroport" | "terraswap" | "phoenix";
     }[];
+
     const contractInfos = await Promise.all(
       allPairs.map(async (pair) => {
         switch (pair.dex) {
@@ -95,7 +122,6 @@ export class TerraBankSdk extends AbstractBankSdk {
         }
       })
     );
-
     while (stack.length > 0) {
       const item = stack.pop();
       if (!item) break;
@@ -125,7 +151,7 @@ export class TerraBankSdk extends AbstractBankSdk {
       for (const { denom, pair } of relevantPairs) {
         if (
           R.has(denom, prices) ||
-          stack.find((item) => item.denom === denom)
+          stack.find((stackItem) => stackItem.denom === denom)
         ) {
           continue;
         }
@@ -143,15 +169,15 @@ export class TerraBankSdk extends AbstractBankSdk {
         const price = item.usdPrice.times(
           new BigNumber(thisAsset.amount).div(otherAsset.amount)
         );
-
         if (price && !price.isNaN()) {
           stack.push({ denom, usdPrice: price });
         }
       }
     }
 
-    return R.mapObjIndexed((price) => {
+    const res = R.mapObjIndexed((price) => {
       return price.toNumber();
     }, prices);
+    return res;
   }
 }

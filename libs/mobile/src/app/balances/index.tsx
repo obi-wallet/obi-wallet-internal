@@ -9,6 +9,7 @@ import { ImageRequireSource, ImageURISource, View } from "react-native";
 import { SvgProps } from "react-native-svg";
 
 import LoopIcon from "./assets/loop.svg";
+import { tokens } from "../../../../sdk/src/sdk/terra/tokens";
 import { getRootStore } from "../../background/root-store";
 import { useMultisigWallet, useStore } from "../stores";
 
@@ -28,12 +29,13 @@ export function useBalances({
 }) {
   const rawBalances = useRawBalances({ address });
   const prices = usePrices();
-
+  console.log({ prices });
   const data =
     rawBalances.data?.map((balance) => {
+      console.log({ balance });
       return {
         ...balance,
-        usdPrice: prices.data?.[balance.denom] ?? 0,
+        usdPrice: prices.data?.[balance.contract ?? balance.denom] ?? 0,
       };
     }) ?? [];
   data.sort((a, b) => {
@@ -62,7 +64,8 @@ export function useRawBalances({ address }: { address: string }) {
 export function usePrices() {
   const { chainStore } = useStore();
   const chainId = chainStore.currentChain;
-  return useQuery(Sdk.chainId(chainId).bank.pricesQuery());
+  const res = useQuery(Sdk.chainId(chainId).bank.pricesQuery());
+  return res;
 }
 
 export function useUsdBalance({ address }: { address: string }) {
@@ -118,7 +121,6 @@ export function formatCoin(coin: Coin): FormattedCoin {
     if (formattedCoin.icon) {
       return formattedCoin.icon;
     }
-
     switch (coin.denom) {
       case "ujuno":
         return require("./assets/juno.png");
@@ -127,6 +129,10 @@ export function formatCoin(coin: Coin): FormattedCoin {
       case "uloop":
         return LoopIcon;
       default:
+        if (coin.contract) {
+          const { icon } = tokens[coin.contract];
+          return { uri: icon } as ImageURISource;
+        }
         return null;
     }
   }
