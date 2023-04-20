@@ -11,7 +11,7 @@ import {
   SignAndBroadcastTransactionUserInteraction,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Msg, MsgSend } from "@terra-money/feather.js";
+import { Msg, MsgExecuteContract, MsgSend } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -40,14 +40,19 @@ export type SendScreenProps = NativeStackScreenProps<
   RootRoute.Send
 >;
 
-export const SendScreen = observer<SendScreenProps>(function SendScreen({
-  navigation,
-}) {
+export const SendScreen = observer<SendScreenProps>(function SendScreen(props) {
+  return <SendScreenComponent {...props} asset={props.route.params.asset} />;
+});
+
+export const SendScreenComponent = observer<
+  SendScreenProps & { asset?: ExtendedCoin }
+>(function SendScreen({ navigation, asset }) {
   const wallet = useCurrentWallet();
   const balances = useBalances({ address: wallet.address });
+
   const [selectedCoin, setSelectedCoin] = useState<ExtendedCoin | undefined>(
     () => {
-      return balances.data[0];
+      return asset ?? balances.data[0];
     }
   );
   const [denominationOpened, setDenominationOpened] = useState(false);
@@ -328,8 +333,15 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
               if (!wallet.address) return [];
 
               if (selectedCoin.contract) {
-                // TODO: not implemented yet
-                return [];
+                return [
+                  new MsgExecuteContract(
+                    wallet.address,
+                    selectedCoin.contract,
+                    {
+                      transfer: { recipient: addressToUse, amount },
+                    }
+                  ),
+                ];
               }
 
               return [new MsgSend(wallet.address, addressToUse, msgAmount)];
@@ -360,7 +372,9 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
         />
         <BottomSheet
           handleIndicatorStyle={{ backgroundColor: "white" }}
-          backgroundStyle={{ backgroundColor: isLoop ? "#100F1E" : "#1a1a1a" }}
+          backgroundStyle={{
+            backgroundColor: isLoop ? "#100F1E" : "#1a1a1a",
+          }}
           handleStyle={{ backgroundColor: "transparent" }}
           snapPoints={["60"]}
           enablePanDownToClose={true}
@@ -390,7 +404,11 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen({
             >
               <View>
                 <Text
-                  style={{ fontSize: 16, fontWeight: "600", color: "#f6f5ff" }}
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "600",
+                    color: "#f6f5ff",
+                  }}
                 >
                   <FormattedMessage
                     id="send.denomination"

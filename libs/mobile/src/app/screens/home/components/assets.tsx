@@ -111,7 +111,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               justifyContent: "center",
               alignItems: "center",
             }}
-            onPress={() => navigation.navigate(RootRoute.Send)}
+            onPress={() => navigation.navigate(RootRoute.Send, {})}
           >
             <Send
               width={25}
@@ -318,7 +318,7 @@ const AssetsListItem = observer(function AssetsListItem({
 
   const onTouchAsset = (amount: number) => {
     if (Number(amount) > 0) {
-      navigation.navigate(RootRoute.Send);
+      navigation.navigate(RootRoute.Send, { asset: item });
     } else {
       navigation.navigate(RootRoute.Receive);
     }
