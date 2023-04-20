@@ -33,7 +33,7 @@ export function useBalances({
     rawBalances.data?.map((balance) => {
       return {
         ...balance,
-        usdPrice: prices.data?.[balance.denom] ?? 0,
+        usdPrice: prices.data?.[balance.contract ?? balance.denom] ?? 0,
       };
     }) ?? [];
   data.sort((a, b) => {
