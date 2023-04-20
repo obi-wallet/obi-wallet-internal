@@ -15,7 +15,10 @@ import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
 import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
-import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
+import {
+  OnboardingRoute,
+  RecoverFrom,
+} from "../../../app/screens/onboarding/onboarding-stack";
 import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 import { useStore } from "../../../app/stores";
 import { getTwilioClient } from "../../../app/text-message";
@@ -44,7 +47,10 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
               navigation.navigate(SettingsRoute.MultisigSettings);
               break;
             case KeyFlow.RecoverWallet:
-              navigation.navigate(OnboardingRoute.LookupProxyWallets, params);
+              navigation.navigate(OnboardingRoute.LookupProxyWallets, {
+                ...params,
+                RecoverFrom: RecoverFrom.Phone,
+              });
               break;
           }
         }}
@@ -62,7 +68,7 @@ export interface PhoneKeyConfirmProps {
   securityQuestion: string;
   securityAnswer: string;
 
-  onSubmit(): void;
+  onSubmit(publicKey?: string): void;
 }
 
 export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(

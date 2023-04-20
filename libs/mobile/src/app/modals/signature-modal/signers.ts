@@ -32,11 +32,13 @@ export async function createUsableSigners({
     KeyType.Phone,
     KeyType.Nfc,
     KeyType.Cloud,
+    KeyType.EmailRecovery,
   ];
   return (
     await Promise.all(
       possibleUsableKeys.map(async (type) => {
         const key = multisigKey.getUsableKeyOfType(type);
+
         if (!key) return null;
         const signer = await createUsableSigner({
           multisigKey,
@@ -94,6 +96,8 @@ async function createUsableSigner({
         demoMode,
       });
     case KeyType.Cloud:
+      return new Secp256k1PrivateKeySigner(key.payload.privateKey);
+    case KeyType.EmailRecovery:
       return new Secp256k1PrivateKeySigner(key.payload.privateKey);
     default:
       return null;

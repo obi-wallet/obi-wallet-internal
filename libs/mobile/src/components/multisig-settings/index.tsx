@@ -1,4 +1,6 @@
 import { useTheme } from "@emotion/react";
+import { faCog } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { Text } from "@obi-wallet/common";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
@@ -45,7 +47,6 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
     const isLoop = configStore.isLoop();
 
     const keyMetaData = useKeyMetaData();
-
     const triggerBottomSheet = (index: number) => {
       if (index === -1) {
         bottomSheetRef.current?.close();
@@ -54,25 +55,32 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
       }
     };
 
-    function getKey(
-      type: KeyType
-    ): Key & { activated: boolean; disabled: boolean } {
+    function getKey(type: KeyType): Key & { description?: string } {
       const activated = multisigKey.hasKeyOfType(type);
-      const disabled = false;
+      const key = multisigKey.getKeyOfType(type);
+      const getIcon = () => {
+        if (activated) {
+          return key?.isUsable ? <CheckIcon /> : <WarningIcon />;
+        }
+        return <FontAwesomeIcon icon={faCog} style={{ color: "white" }} />;
+      };
 
       return {
         type,
-        activated,
-        disabled,
-        right: activated ? <CheckIcon /> : <WarningIcon />,
+        right: getIcon(),
         onPress: () => {
           triggerBottomSheet(0);
           setSelectedType(type);
         },
+        ...(activated &&
+          !key?.isUsable && {
+            description: `Setup required`,
+          }),
       };
     }
 
     const data = keyMetaData.keys.map(getKey);
+
     const activatedKeys = multisigKey.keys.length;
 
     return (

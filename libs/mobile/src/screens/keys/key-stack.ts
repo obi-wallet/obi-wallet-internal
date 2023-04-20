@@ -1,6 +1,11 @@
 import { KeyType, MultisigWallet, Serialized } from "@obi-wallet/sdk";
 import { ParamListBase } from "@react-navigation/native";
 
+import {
+  OnboardingRoute,
+  RecoverFrom,
+} from "../../app/screens/onboarding/onboarding-stack";
+
 export enum KeyRoute {
   DeviceKey = "DeviceKey",
   EmailKey = "EmailKey",
@@ -44,6 +49,8 @@ export function keyTypeToKeyRoute(type: KeyType) {
       return KeyRoute.NfcKey;
     case KeyType.Cloud:
       return KeyRoute.CloudKey;
+    case KeyType.EmailRecovery:
+      return OnboardingRoute.EmailRecovery;
   }
 }
 
@@ -62,8 +69,12 @@ interface CommonKeyParams {
 
 export interface KeyStackParamList extends ParamListBase {
   [KeyRoute.DeviceKey]: CommonKeyParams;
-  [KeyRoute.EmailKey]: CommonKeyParams;
-  [KeyRoute.PhoneKeyRequest]: CommonKeyParams;
+  [KeyRoute.EmailKey]: CommonKeyParams & {
+    RecoverFrom?: RecoverFrom.Email | RecoverFrom.Phone;
+  };
+  [KeyRoute.PhoneKeyRequest]: CommonKeyParams & {
+    RecoverFrom?: RecoverFrom.Email | RecoverFrom.Phone;
+  };
   [KeyRoute.PhoneKeyConfirm]: CommonKeyParams & {
     phoneNumber: string;
     securityQuestion: string;
