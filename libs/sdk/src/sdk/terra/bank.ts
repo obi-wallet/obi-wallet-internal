@@ -131,7 +131,6 @@ export class TerraBankSdk extends AbstractBankSdk {
       if (prices[item.denom]) continue;
 
       prices[item.denom] = item.usdPrice;
-
       const relevantPairs = contractInfos
         .filter((pair) => {
           return pair.asset_infos.find((asset) => {
