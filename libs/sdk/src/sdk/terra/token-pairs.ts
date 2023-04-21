@@ -1227,7 +1227,7 @@ export const tokenPairs = {
     dex: "astroport",
   },
   terra14h2jeg9e2zxzesq6n092v2wgfc4x6l8m04eq0mt2sp7lzfezyq0q9xh7w8: {
-    name: "ROAR-AxlUSDC Pair",
+    name: "LUNA/ROAR Pair",
     protocol: "Lion Dao",
     asset_infos: [
       {
@@ -1238,44 +1238,42 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom:
-            "ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4",
+          denom: "uluna",
         },
       },
     ],
     contract_addr:
-      "terra14h2jeg9e2zxzesq6n092v2wgfc4x6l8m04eq0mt2sp7lzfezyq0q9xh7w8",
+      "terra1c7g9pmz2xxe66g8ujpe5tlmj3pawjp290f57cl43j6vswkdtrvwqkgme9q",
     liquidity_token:
-      "terra19068zte9evf6gnqzy3htg87ptkquwp4jcq9948j0cwwjspns53lquzx8d0",
+      "terra1qmr5wagmeej33hsnqdmqyvkq6rg3sfkvflmu6gd6drhtjfpx4y5sew88s4",
     pair_type: {
       xyk: {},
     },
     dex: "astroport",
   },
   terra1p6cxnzh29rafnm9mdr96lhgpw82scqpf43zcq4lgny9eds99cfvsjklz52: {
-    name: "AxlUSDC/TPT Pair",
+    name: "LUNA/TPT Pair",
     protocol: "Terra Poker",
-    dex: "astroport",
     asset_infos: [
-      {
-        native_token: {
-          denom:
-            "ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4",
-        },
-      },
       {
         token: {
           contract_addr:
             "terra13j2k5rfkg0qhk58vz63cze0uze4hwswlrfnm0fa4rnyggjyfrcnqcrs5z2",
         },
       },
+      {
+        native_token: {
+          denom: "uluna",
+        },
+      },
     ],
     contract_addr:
-      "terra1p6cxnzh29rafnm9mdr96lhgpw82scqpf43zcq4lgny9eds99cfvsjklz52",
+      "terra15l5pqlp8q5d4z8tvermadvp429d8pfctg4j802t8edzkf8aavp7q59t7er",
     liquidity_token:
-      "terra1p2n59z2dnx9rt8m8qnztpyw9jgwt0gypenf3q6q0wpkqjcypkqvsq8u3pf",
+      "terra1ces6k6jp7qzkjpwsl6xg4f7zfwre0u23cglg69hhj3g20fhygtpsu24dsy",
     pair_type: {
       xyk: {},
     },
+    dex: "astroport",
   },
 };
