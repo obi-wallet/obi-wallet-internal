@@ -324,11 +324,9 @@ export const SendScreenComponent = observer<
 
               const addressToUse = address;
               const { digits } = formatExtendedCoin(selectedCoin);
-              const normalizedAmount = (
+              const normalizedAmount = Math.floor(
                 parseFloat(amount.replace(",", ".")) * Math.pow(10, digits)
-              )
-                .toFixed(0)
-                .toString();
+              ).toString();
 
               if (!wallet.address) return [];
 
@@ -346,11 +344,12 @@ export const SendScreenComponent = observer<
                   ),
                 ];
               }
-              const msgAmount = {
-                [selectedCoin.denom]: normalizedAmount,
-              };
 
-              return [new MsgSend(wallet.address, addressToUse, msgAmount)];
+              return [
+                new MsgSend(wallet.address, addressToUse, {
+                  [selectedCoin.denom]: normalizedAmount,
+                }),
+              ];
             }
 
             const chain = wallet.chainId;
