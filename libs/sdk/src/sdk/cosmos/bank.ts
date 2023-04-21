@@ -81,7 +81,7 @@ export class CosmosBankSdk extends AbstractBankSdk {
             return [
               "ujuno",
               "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034",
-              "uloop",
+              "juno1qsrercqegvs4ye0yqg93knv73ye5dc3prqwd6jcdcuj8ggp6w0us66deup",
             ];
         }
       })();
@@ -100,7 +100,7 @@ export class CosmosBankSdk extends AbstractBankSdk {
                 ]; // needs to be juno type
               case "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034":
                 return []; //axlUSDC
-              case "uloop": //LOOP
+              case "juno1qsrercqegvs4ye0yqg93knv73ye5dc3prqwd6jcdcuj8ggp6w0us66deup": //LOOP
                 return [
                   "",
                   "juno1utkr0ep06rkxgsesq6uryug93daklyd6wneesmtvxjkz0xjlte9qdj2s8q",

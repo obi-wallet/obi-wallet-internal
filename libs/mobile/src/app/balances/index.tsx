@@ -1,7 +1,6 @@
-import { Coin } from "@cosmjs/amino";
 import { Text } from "@obi-wallet/common";
 import { useQuery } from "@obi-wallet/headless-ui";
-import { cosmosChains, isCosmosChain, Sdk } from "@obi-wallet/sdk";
+import { Coin, Sdk } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { FC } from "react";
@@ -139,35 +138,6 @@ export function formatCoin(coin: Coin): FormattedCoin {
 
 export function formatExtendedCoin(coin: ExtendedCoin) {
   const formattedCoin = formatCoin(coin);
-  const { currentChain } = getRootStore().chainStore;
-
-  if (isCosmosChain(currentChain)) {
-    const { denom } = cosmosChains[currentChain];
-
-    switch (coin.denom) {
-      case denom: {
-        const usdValue = coin.usdPrice / Math.pow(10, formattedCoin.digits);
-        return {
-          ...formattedCoin,
-          valueInUsd: formattedCoin.amount * usdValue,
-        };
-      }
-      case "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034": {
-        return {
-          ...formattedCoin,
-          valueInUsd: formattedCoin.amount,
-        };
-      }
-      case "uloop": {
-        const usdValue = coin.usdPrice / Math.pow(10, formattedCoin.digits);
-        return {
-          ...formattedCoin,
-          valueInUsd: usdValue * formattedCoin.amount,
-        };
-      }
-    }
-  }
-
   return {
     ...formattedCoin,
     valueInUsd: formattedCoin.amount * coin.usdPrice,
