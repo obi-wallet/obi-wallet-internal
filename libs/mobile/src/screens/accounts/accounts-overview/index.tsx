@@ -143,7 +143,10 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                   marginTop: 10,
                 }}
               >
-                <UsdBalance address={wallet.proxyAddress} />
+                <UsdBalance
+                  address={wallet.proxyAddress}
+                  chainId={wallet.chainId}
+                />
               </View>
             </View>
           </ImageBackground>

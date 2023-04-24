@@ -6,7 +6,7 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { ExtendedCoin } from "./balances";
+import { EnrichedToken } from "./balances";
 import { OnboardingStackParamList } from "./screens/onboarding/onboarding-stack";
 import { SettingsStackParamList } from "./screens/settings/settings-stack";
 import { KeyStackParamList } from "../screens/keys";
@@ -29,7 +29,7 @@ export interface RootStackParamList
     app: App;
   };
   [RootRoute.Send]: {
-    asset?: ExtendedCoin;
+    asset?: EnrichedToken;
   };
   [RootRoute.Receive]: undefined;
   [RootRoute.Stake]: undefined;

@@ -1,6 +1,8 @@
+import * as R from "ramda";
+
 import { Chain } from "../../chains";
 import { queryClient, QueryClientNamespace } from "../../query-client";
-import { Coin } from "../common";
+import { EnrichedToken, Token } from "../common";
 
 export abstract class AbstractBankSdk {
   protected queryNamespace: QueryClientNamespace<
@@ -29,7 +31,7 @@ export abstract class AbstractBankSdk {
     });
   }
 
-  protected abstract balancesQueryFn(address: string): Promise<Coin[]>;
+  protected abstract balancesQueryFn(address: string): Promise<Token[]>;
 
   /**
    * Current USD-equivalent prices of known tokens.
@@ -48,4 +50,32 @@ export abstract class AbstractBankSdk {
   }
 
   protected abstract pricesQueryFn(): Promise<Record<string, number>>;
+
+  public enrichToken(
+    token: Token,
+    prices?: Record<string, number>
+  ): EnrichedToken {
+    const enrichedToken = this.enrichTokenWithoutUsdValue(token);
+    return {
+      ...enrichedToken,
+      usdValue: R.has(token.id, prices)
+        ? prices[token.id] * enrichedToken.amount
+        : null,
+    };
+  }
+
+  protected enrichTokenWithoutUsdValue(token: Token): EnrichedToken {
+    const digits = 6;
+    const amount = parseInt(token.amount, 10) / 10 ** digits;
+    return {
+      id: token.id,
+      contract: null,
+      icon: null,
+      denom: token.id,
+      digits: 6,
+      label: "Unknown Token",
+      amount: amount,
+      usdValue: null,
+    };
+  }
 }

@@ -8,7 +8,7 @@ import {
 import { queryClient, QueryClientNamespace } from "../../query-client";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
-import { BroadcastTransactionResult, CodeIds, Coin } from "../common";
+import { BroadcastTransactionResult, CodeIds, Token } from "../common";
 
 /**
  * Methods are proxied by {@link MultisigWallet}.
@@ -96,7 +96,7 @@ export abstract class AbstractMultisigWalletSdk {
     amount,
     validator,
   }: {
-    amount: Coin;
+    amount: Token;
     validator: string;
   }): Promise<
     | { approved: true; payload: BroadcastTransactionResult }
@@ -107,7 +107,7 @@ export abstract class AbstractMultisigWalletSdk {
     amount,
     validator,
   }: {
-    amount: Coin;
+    amount: Token;
     validator: string;
   }): Promise<
     | { approved: true; payload: BroadcastTransactionResult }

@@ -12,11 +12,11 @@ import {
   useValidators,
 } from "@obi-wallet/headless-ui";
 import {
-  Coin,
   Delegation,
   EnrichedValidator,
   isTerraChain,
   terraChains,
+  Token,
   UnbondingDelegation,
   Validator,
 } from "@obi-wallet/sdk";
@@ -46,11 +46,7 @@ import { GestureResponderEvent } from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 
-import {
-  formatCoin,
-  formatExtendedCoin,
-  useRawBalances,
-} from "../../../balances";
+import { enrichToken, useBalances } from "../../../balances";
 import { useCurrentTerraChainInformation, useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
@@ -149,13 +145,15 @@ export const Stake = observer(function Stake() {
 });
 
 const StakingOptions = observer(function StakingOptions() {
+  const wallet = useCurrentWallet();
+  const chainId = wallet.chainId;
   const delegations = useDelegations();
   const unbondingDelegations = useUnbondingDelegations();
   const { state, dispatch } = useContext(StakeStateContext);
   const currentTerraChainInformation = useCurrentTerraChainInformation();
 
   const totalDelegations = {
-    denom: currentTerraChainInformation.denom,
+    id: currentTerraChainInformation.denom,
     amount: R.sum(
       delegations.data?.map((delegation) => {
         return parseInt(delegation.balance.amount, 10);
@@ -163,11 +161,14 @@ const StakingOptions = observer(function StakingOptions() {
     ).toString(),
   };
 
-  const formattedDelegations = formatCoin(totalDelegations);
+  const formattedDelegations = enrichToken({
+    chainId,
+    token: totalDelegations,
+  });
   const delegationsContent = `${formattedDelegations.amount} ${formattedDelegations.denom}`;
 
   const totalUnbondingDelegations = {
-    denom: currentTerraChainInformation.denom,
+    id: currentTerraChainInformation.denom,
     amount: R.sum(
       unbondingDelegations.data?.map((delegation) => {
         return parseInt(delegation.balance.amount, 10);
@@ -175,7 +176,10 @@ const StakingOptions = observer(function StakingOptions() {
     ).toString(),
   };
 
-  const formattedUnbondingDelegations = formatCoin(totalUnbondingDelegations);
+  const formattedUnbondingDelegations = enrichToken({
+    chainId,
+    token: totalUnbondingDelegations,
+  });
   const unbondingDelegationsContent = `${formattedUnbondingDelegations.amount} ${formattedUnbondingDelegations.denom}`;
 
   return (
@@ -290,7 +294,10 @@ const Balance = observer(function Balance() {
   const isObi = configStore.isObi();
 
   const totalRewards = rewards.data.total;
-  const formattedRewards = formatCoin(totalRewards);
+  const formattedRewards = enrichToken({
+    chainId: wallet.chainId,
+    token: totalRewards,
+  });
 
   return (
     <View
@@ -389,9 +396,12 @@ const Validators = observer(function Validators() {
     : activeValidators;
 
   const currentTerraChainInformation = useCurrentTerraChainInformation();
-  const rawBalances = useRawBalances({ address: wallet.address });
+  const rawBalances = useBalances({
+    address: wallet.address,
+    chainId: wallet.chainId,
+  });
   const amountToShow = rawBalances.data?.find((balance) => {
-    return balance.denom === currentTerraChainInformation.denom;
+    return balance.id === currentTerraChainInformation.denom;
   });
 
   return (
@@ -439,10 +449,12 @@ const Validators = observer(function Validators() {
             invariant(isTerraChain(chainId), "Expected Terra chain.");
 
             try {
-              const { digits } = formatExtendedCoin({
-                denom: "uluna",
-                amount: "0",
-                usdPrice: 0,
+              const { digits } = enrichToken({
+                chainId: wallet.chainId,
+                token: {
+                  id: "uluna",
+                  amount: "0",
+                },
               });
               const amountToUse =
                 parseFloat(amount.replace(",", ".")) * 10 ** digits;
@@ -451,7 +463,7 @@ const Validators = observer(function Validators() {
               await wallet.stake({
                 validator: validator.address,
                 amount: {
-                  denom: terraChains[chainId].denom,
+                  id: terraChains[chainId].denom,
                   amount: amountToUse.toString(),
                 },
               });
@@ -507,18 +519,19 @@ const ValidatorItem = observer(function ValidatorItem({
   onConfirm?: (args: { validator: EnrichedValidator; amount: string }) => void;
   onCancel?: () => void;
   confirmLabel?: string;
-  amountToShow?: Coin;
+  amountToShow?: Token;
 }) {
   const currentTerraChainInformation = useCurrentTerraChainInformation();
   const [amount, setAmount] = useState("");
   const promoted = validator.promoted;
 
-  const formatted = formatCoin(
-    amountToShow || {
-      denom: currentTerraChainInformation.denom,
+  const formatted = enrichToken({
+    chainId: currentTerraChainInformation.chainId,
+    token: amountToShow || {
+      id: currentTerraChainInformation.denom,
       amount: "0",
-    }
-  );
+    },
+  });
 
   return (
     <Container
@@ -690,10 +703,12 @@ const MyStake = observer(function MyStake() {
             invariant(isTerraChain(chainId), "Expected Terra chain.");
 
             try {
-              const { digits } = formatExtendedCoin({
-                denom: "uluna",
-                amount: "0",
-                usdPrice: 0,
+              const { digits } = enrichToken({
+                chainId,
+                token: {
+                  id: "uluna",
+                  amount: "0",
+                },
               });
               const amountToUse =
                 parseFloat(amount.replace(",", ".")) * 10 ** digits;
@@ -702,7 +717,7 @@ const MyStake = observer(function MyStake() {
               await wallet.unstake({
                 validator: validator.address,
                 amount: {
-                  denom: terraChains[chainId].denom,
+                  id: terraChains[chainId].denom,
                   amount: amountToUse.toString(),
                 },
               });
@@ -738,7 +753,11 @@ const StakeItem = observer(function StakeItem({
 }: {
   delegation: Delegation;
 }) {
-  const formatted = formatCoin(delegation.balance);
+  const wallet = useCurrentWallet();
+  const formatted = enrichToken({
+    chainId: wallet.chainId,
+    token: delegation.balance,
+  });
   const { dispatch } = useContext(StakeStateContext);
 
   return (
@@ -834,7 +853,11 @@ const UnstakeItem = observer(function UnstakeItem({
 }: {
   unbondingDelegation: UnbondingDelegation;
 }) {
-  const formatted = formatCoin(unbondingDelegation.balance);
+  const wallet = useCurrentWallet();
+  const formatted = enrichToken({
+    chainId: wallet.chainId,
+    token: unbondingDelegation.balance,
+  });
   const releaseDate = DateTime.fromJSDate(unbondingDelegation.completionTime);
   const remainingDays = Math.ceil(releaseDate.diffNow("days").days);
 

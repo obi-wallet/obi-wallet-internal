@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { Image, View } from "react-native";
 import { SvgUri } from "react-native-svg";
 
-import { FormattedCoin } from "../../../balances";
+import { EnrichedToken } from "../../../balances";
 
 const DefaultView = observer(function DefaultView() {
   return (
@@ -19,7 +19,7 @@ const DefaultView = observer(function DefaultView() {
 export const CoinIcon = observer(function CoinIcon({
   source,
 }: {
-  source: FormattedCoin["icon"];
+  source: EnrichedToken["icon"];
 }) {
   if (!source) return <DefaultView />;
 

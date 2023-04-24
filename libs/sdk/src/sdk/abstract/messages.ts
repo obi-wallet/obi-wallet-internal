@@ -5,7 +5,7 @@ import {
   MultisigWallet,
 } from "../../data-structures";
 import { Message } from "../../transactions";
-import { CodeIds, Coin } from "../common";
+import { CodeIds, Token } from "../common";
 
 /**
  * Creates messages used by the rest of the SDK. We expect you to only need this
@@ -13,6 +13,16 @@ import { CodeIds, Coin } from "../common";
  */
 export abstract class AbstractMessages {
   protected constructor(protected chainId: Chain) {}
+
+  public abstract getSendMessages({
+    fromAddress,
+    toAddress,
+    tokens,
+  }: {
+    fromAddress: string;
+    toAddress: string;
+    tokens: Token[];
+  }): Message[];
 
   /**
    * Message to update a wallet to the current code IDs supported by the app.
@@ -73,7 +83,7 @@ export abstract class AbstractMessages {
     validator,
   }: {
     wallet: MultisigWallet;
-    amount: Coin;
+    amount: Token;
     validator: string;
   }): Message;
 
@@ -86,7 +96,7 @@ export abstract class AbstractMessages {
     validator,
   }: {
     wallet: MultisigWallet;
-    amount: Coin;
+    amount: Token;
     validator: string;
   }): Message;
 

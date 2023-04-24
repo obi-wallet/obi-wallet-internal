@@ -28,7 +28,7 @@ import {
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { AbstractMultisigWalletSdk } from "../abstract";
-import { BroadcastTransactionResult, CodeIds, Coin } from "../common";
+import { BroadcastTransactionResult, CodeIds, Token } from "../common";
 import { Messages } from "../messages";
 import { Sdk } from "../sdk";
 
@@ -98,7 +98,7 @@ export class CosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
   }
 
   public async stake(_: {
-    amount: Coin;
+    amount: Token;
     validator: string;
   }): Promise<
     | { approved: true; payload: BroadcastTransactionResult }
@@ -109,7 +109,7 @@ export class CosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
   }
 
   public async unstake(_: {
-    amount: Coin;
+    amount: Token;
     validator: string;
   }): Promise<
     | { approved: true; payload: BroadcastTransactionResult }

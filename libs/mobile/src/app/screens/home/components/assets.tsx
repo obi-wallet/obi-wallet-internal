@@ -19,10 +19,9 @@ import {
 import { ReceiveIcon as Receive } from "./receive";
 import { SendIcon as Send } from "../../../../components/send-icon";
 import {
-  ExtendedCoin,
-  formatExtendedCoin,
+  EnrichedToken,
   UsdBalance,
-  useBalances,
+  useEnrichedBalances,
 } from "../../../balances";
 import { IconButton } from "../../../button";
 import { RootRoute, RootStackParamList } from "../../../root-stack";
@@ -90,7 +89,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
         <FormattedMessage id="assets.balance" defaultMessage="Balance" />
       </Text>
 
-      <UsdBalance address={wallet.address} />
+      <UsdBalance address={wallet.address} chainId={wallet.chainId} />
 
       <View
         style={{
@@ -204,7 +203,11 @@ const BalanceAndActions = observer(function BalanceAndActions() {
 const AssetsList = observer(function AssetsList() {
   const [sortAscending, setSortAscending] = useState(true);
   const wallet = useCurrentWallet();
-  const balances = useBalances({ address: wallet.address, sortAscending });
+  const balances = useEnrichedBalances({
+    address: wallet.address,
+    chainId: wallet.chainId,
+    sortAscending,
+  });
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
 
@@ -298,7 +301,7 @@ const AssetsList = observer(function AssetsList() {
         </View>
 
         <RefreshableFlatList
-          keyExtractor={(coin) => coin.denom}
+          keyExtractor={(token) => token.id}
           data={balances.data}
           renderItem={(props) => <AssetsListItem {...props} />}
           style={{
@@ -313,7 +316,7 @@ const AssetsList = observer(function AssetsList() {
 
 const AssetsListItem = observer(function AssetsListItem({
   item,
-}: ListRenderItemInfo<ExtendedCoin>) {
+}: ListRenderItemInfo<EnrichedToken>) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const onTouchAsset = (amount: number) => {
@@ -324,7 +327,6 @@ const AssetsListItem = observer(function AssetsListItem({
     }
   };
 
-  const { icon, denom, label, amount, valueInUsd } = formatExtendedCoin(item);
   return (
     <View
       style={{
@@ -335,17 +337,17 @@ const AssetsListItem = observer(function AssetsListItem({
         marginBottom: 28,
       }}
     >
-      <TouchableOpacity onPress={async () => onTouchAsset(amount)}>
+      <TouchableOpacity onPress={async () => onTouchAsset(item.amount)}>
         <View
           style={{
             height: 36,
             width: 36,
-            backgroundColor: icon ? "transparent" : "#ccc",
+            backgroundColor: item.icon ? "transparent" : "#ccc",
             borderRadius: 10,
             marginRight: 12,
           }}
         >
-          <CoinIcon source={icon} />
+          <CoinIcon source={item.icon} />
         </View>
       </TouchableOpacity>
       <View
@@ -357,9 +359,9 @@ const AssetsListItem = observer(function AssetsListItem({
         }}
       >
         <View>
-          <TouchableOpacity onPress={async () => onTouchAsset(amount)}>
+          <TouchableOpacity onPress={async () => onTouchAsset(item.amount)}>
             <Text style={{ color: "#F6F5FF", fontSize: 14, fontWeight: "500" }}>
-              {isSmallScreenSubstr(label, "...", 23, 30)}
+              {isSmallScreenSubstr(item.label, "...", 23, 30)}
             </Text>
             <Text
               style={{
@@ -369,7 +371,7 @@ const AssetsListItem = observer(function AssetsListItem({
                 marginTop: 4,
               }}
             >
-              {denom}
+              {item.denom}
             </Text>
           </TouchableOpacity>
         </View>
@@ -393,7 +395,7 @@ const AssetsListItem = observer(function AssetsListItem({
                 textAlign: "right",
               }}
             >
-              ${valueInUsd.toFixed(2)}
+              ${(item.usdValue ?? 0).toFixed(2)}
             </Text>
           </View>
 
@@ -406,7 +408,7 @@ const AssetsListItem = observer(function AssetsListItem({
               marginTop: 4,
             }}
           >
-            {amount} {denom}
+            {item.amount} {item.denom}
           </Text>
         </View>
       </View>

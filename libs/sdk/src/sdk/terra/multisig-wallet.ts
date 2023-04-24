@@ -17,7 +17,12 @@ import { Signer } from "../../signers";
 import { Message, SignedTransaction, wrapMessage } from "../../transactions";
 import { SignAndBroadcastTransactionUserInteraction } from "../../user-interactions";
 import { AbstractMultisigWalletSdk } from "../abstract";
-import { BroadcastTransactionResult, CodeIds, Coin, RpcError } from "../common";
+import {
+  BroadcastTransactionResult,
+  CodeIds,
+  RpcError,
+  Token,
+} from "../common";
 import { Messages } from "../messages";
 import { Sdk } from "../sdk";
 
@@ -210,7 +215,7 @@ export class TerraMultisigWalletSdk extends AbstractMultisigWalletSdk {
     amount,
     validator,
   }: {
-    amount: Coin;
+    amount: Token;
     validator: string;
   }): Promise<
     | { approved: true; payload: BroadcastTransactionResult }
@@ -234,7 +239,7 @@ export class TerraMultisigWalletSdk extends AbstractMultisigWalletSdk {
     amount,
     validator,
   }: {
-    amount: Coin;
+    amount: Token;
     validator: string;
   }): Promise<
     | { approved: true; payload: BroadcastTransactionResult }
@@ -261,7 +266,7 @@ export class TerraMultisigWalletSdk extends AbstractMultisigWalletSdk {
     const rewards = await this.sdk.staking.rewards(this.wallet.address);
     const validators = rewards.perDelegator
       .filter((delegator) => {
-        return this.sdk.formatCoin(delegator.rewards).amount > 0;
+        return this.sdk.bank.enrichToken(delegator.rewards).amount > 0;
       })
       .map((delegator) => {
         return delegator.address;

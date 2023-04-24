@@ -198,7 +198,7 @@ describe("Terra", () => {
       wallet,
       validator: terraChains[chainId].obiValidator,
       amount: {
-        denom: "uluna",
+        id: "uluna",
         amount: "1",
       },
     });
@@ -222,7 +222,7 @@ describe("Terra", () => {
       wallet,
       validator: terraChains[chainId].obiValidator,
       amount: {
-        denom: "uluna",
+        id: "uluna",
         amount: "1",
       },
     });
