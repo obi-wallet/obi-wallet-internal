@@ -13,8 +13,16 @@ import { initSentry } from "./background/sentry";
 import { Cosmos } from "./cosmos";
 import { FixturePicker } from "./fixture-helpers/fixture-picker";
 
-export function setupMain({ App }: { App: ComponentType }) {
-  initSentry();
+export function setupMain({
+  App,
+  release,
+  dist,
+}: {
+  App: ComponentType;
+  release: string;
+  dist: string;
+}) {
+  initSentry({ release, dist });
 
   AppRegistry.registerComponent("Mobile", () => {
     const launchArguments = LaunchArguments.value<{ fixture?: string }>();

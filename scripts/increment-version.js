@@ -17,6 +17,24 @@ const stat = util.promisify(fs.stat);
       const appPath = path.join(appsPath, directory);
       const s = await stat(appPath);
 
+      async function handleMain() {
+        const file = path.join(appPath, "src/main.tsx");
+        const input = await readFile(file, "utf8");
+        const versionRe = /const version = "(.+)"/;
+
+        const currentVersion = versionRe.exec(input)[1];
+        const newVersion = releaseType
+          ? semver.inc(currentVersion, releaseType)
+          : currentVersion;
+
+        const output = input.replace(
+          versionRe,
+          `const version = "${newVersion}"`
+        );
+
+        await writeFile(file, output, "utf8");
+      }
+
       async function handleIos() {
         const file = path.join(appPath, "ios/Mobile.xcodeproj/project.pbxproj");
         const input = await readFile(file, "utf8");
@@ -63,7 +81,7 @@ const stat = util.promisify(fs.stat);
       }
 
       if (s.isDirectory()) {
-        await Promise.all([handleIos(), handleAndroid()]);
+        await Promise.all([handleMain(), handleIos(), handleAndroid()]);
       }
     })
   );

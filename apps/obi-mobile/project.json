@@ -93,12 +93,30 @@
         ]
       }
     },
-    "codepush": {
+    "increment-codepush-version": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["node scripts/increment-codepush-version.js"]
+      }
+    },
+    "codepush-release-react": {
+      "dependsOn": ["increment-codepush-version"],
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "appcenter codepush release-react -a Obi-Money/obi-mobile-android -d Staging -e ./src/main.tsx",
-          "appcenter codepush release-react -a Obi-Money/obi-mobile-ios -d Staging -e ./src/main.tsx --xcode-project-file ios/Mobile.xcodeproj/project.pbxproj -p ios/Mobile/Info.plist"
+          "appcenter codepush release-react -a Obi-Money/obi-mobile-android -d Staging -e ./src/main.tsx --sourcemap-output --output-dir ./build/android",
+          "appcenter codepush release-react -a Obi-Money/obi-mobile-ios -d Staging -e ./src/main.tsx --xcode-project-file ios/Mobile.xcodeproj/project.pbxproj -p ios/Mobile/Info.plist --sourcemap-output --output-dir ./build/ios"
+        ],
+        "cwd": "apps/obi-mobile"
+      }
+    },
+    "codepush": {
+      "dependsOn": ["codepush-release-react"],
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "SENTRY_PROPERTIES=./android/sentry.properties sentry-cli react-native appcenter Obi-Money/obi-mobile-android android ./build/android/CodePush --deployment Staging --dist 65",
+          "SENTRY_PROPERTIES=./ios/sentry.properties sentry-cli react-native appcenter Obi-Money/obi-mobile-ios ios ./build/ios/CodePush --deployment Staging --dist 65"
         ],
         "cwd": "apps/obi-mobile"
       }
