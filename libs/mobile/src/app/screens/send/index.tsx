@@ -8,10 +8,12 @@ import { Brand } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   isTerraChain,
+  Messages,
+  Sdk,
   SignAndBroadcastTransactionUserInteraction,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Msg, MsgExecuteContract, MsgSend } from "@terra-money/feather.js";
+import { Msg, MsgSend } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -21,7 +23,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 
 import ObiQr from "./assets/obiqr.svg";
-import { ExtendedCoin, formatExtendedCoin, useBalances } from "../../balances";
+import { EnrichedToken, useEnrichedBalances } from "../../balances";
 import { Button } from "../../button";
 import { RootRoute, RootStackParamList } from "../../root-stack";
 import { useStore } from "../../stores";
@@ -45,12 +47,15 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen(props) {
 });
 
 export const SendScreenComponent = observer<
-  SendScreenProps & { asset?: ExtendedCoin }
+  SendScreenProps & { asset?: EnrichedToken }
 >(function SendScreen({ navigation, asset }) {
   const wallet = useCurrentWallet();
-  const balances = useBalances({ address: wallet.address });
+  const balances = useEnrichedBalances({
+    address: wallet.address,
+    chainId: wallet.chainId,
+  });
 
-  const [selectedCoin, setSelectedCoin] = useState<ExtendedCoin | undefined>(
+  const [selectedCoin, setSelectedCoin] = useState<EnrichedToken | undefined>(
     () => {
       return asset ?? balances.data[0];
     }
@@ -71,10 +76,6 @@ export const SendScreenComponent = observer<
       setSelectedCoin(balances.data[0]);
     }
   }, [balances, selectedCoin]);
-
-  const hydratedSelectedCoin = selectedCoin
-    ? formatExtendedCoin(selectedCoin)
-    : null;
 
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState("");
@@ -258,7 +259,7 @@ export const SendScreenComponent = observer<
                       borderRadius: 44,
                     }}
                   >
-                    <CoinIcon source={hydratedSelectedCoin?.icon ?? null} />
+                    <CoinIcon source={selectedCoin?.icon ?? null} />
                   </View>
                   <View style={{ justifyContent: "center" }}>
                     <Text
@@ -268,10 +269,10 @@ export const SendScreenComponent = observer<
                         fontSize: 14,
                       }}
                     >
-                      {hydratedSelectedCoin?.denom}
+                      {selectedCoin?.denom}
                     </Text>
                     <Text style={{ color: isLoop ? "#999CB6" : "white" }}>
-                      {hydratedSelectedCoin?.amount}
+                      {selectedCoin?.amount}
                     </Text>
                   </View>
                 </View>
@@ -323,33 +324,18 @@ export const SendScreenComponent = observer<
               if (!selectedCoin) return [];
 
               const addressToUse = address;
-              const { digits } = formatExtendedCoin(selectedCoin);
               const normalizedAmount = Math.floor(
-                parseFloat(amount.replace(",", ".")) * Math.pow(10, digits)
+                parseFloat(amount.replace(",", ".")) *
+                  Math.pow(10, selectedCoin.digits)
               ).toString();
 
               if (!wallet.address) return [];
 
-              if (selectedCoin.contract) {
-                return [
-                  new MsgExecuteContract(
-                    wallet.address,
-                    selectedCoin.contract,
-                    {
-                      transfer: {
-                        recipient: addressToUse,
-                        amount: normalizedAmount,
-                      },
-                    }
-                  ),
-                ];
-              }
-
-              return [
-                new MsgSend(wallet.address, addressToUse, {
-                  [selectedCoin.denom]: normalizedAmount,
-                }),
-              ];
+              return Messages.chainId(wallet.chainId).getSendMessages({
+                fromAddress: wallet.address,
+                toAddress: addressToUse,
+                tokens: [{ id: selectedCoin.id, amount: normalizedAmount }],
+              });
             }
 
             const chain = wallet.chainId;
@@ -506,7 +492,7 @@ export const SendScreenComponent = observer<
 });
 
 interface CoinRendererProps {
-  item: ExtendedCoin;
+  item: EnrichedToken;
   selected: boolean;
   onPress: () => void;
 }
@@ -531,7 +517,6 @@ const CoinRenderer = observer(function CoinRenderer({
   selected,
   onPress,
 }: CoinRendererProps) {
-  const { denom, label, amount, valueInUsd, icon } = formatExtendedCoin(item);
   const { configStore } = useStore();
   const brandColors = getBrandBackground(configStore.brand);
   return (
@@ -556,10 +541,12 @@ const CoinRenderer = observer(function CoinRenderer({
             borderRadius: 12,
           }}
         >
-          <CoinIcon source={icon} />
+          <CoinIcon source={item.icon} />
         </View>
         <View>
-          <Text style={{ color: "#f6f5ff", fontWeight: "500" }}>{label}</Text>
+          <Text style={{ color: "#f6f5ff", fontWeight: "500" }}>
+            {item.label}
+          </Text>
           <Text
             style={{
               color: "#f6f5ff",
@@ -568,13 +555,13 @@ const CoinRenderer = observer(function CoinRenderer({
               opacity: 0.6,
             }}
           >
-            {denom}
+            {item.denom}
           </Text>
         </View>
       </View>
       <View style={{ alignItems: "flex-end" }}>
         <Text style={{ color: "#f6f5ff", fontWeight: "500" }}>
-          ${valueInUsd.toFixed(2)}
+          ${(item.usdValue ?? 0).toFixed(2)}
         </Text>
         <Text
           style={{
@@ -584,7 +571,7 @@ const CoinRenderer = observer(function CoinRenderer({
             opacity: 0.6,
           }}
         >
-          {amount} {denom}
+          {item.amount} {item.denom}
         </Text>
       </View>
     </TouchableOpacity>

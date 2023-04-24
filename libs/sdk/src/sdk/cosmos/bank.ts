@@ -2,9 +2,9 @@ import { JsonObject } from "@cosmjs/cosmwasm-stargate";
 import * as R from "ramda";
 
 import { CosmosClient } from "./client";
-import { CosmosChain } from "../../chains";
+import { CosmosChain, cosmosChains } from "../../chains";
 import { AbstractBankSdk } from "../abstract";
-import { Coin } from "../common";
+import { EnrichedToken, Token } from "../common";
 
 export class CosmosBankSdk extends AbstractBankSdk {
   protected chainId: CosmosChain;
@@ -22,7 +22,7 @@ export class CosmosBankSdk extends AbstractBankSdk {
     this.client = client;
   }
 
-  protected async balancesQueryFn(address: string): Promise<Coin[]> {
+  protected async balancesQueryFn(address: string): Promise<Token[]> {
     return await this.client.withClients(
       async ({ stargateClient, cosmWasmClient }) => {
         const [nativeBalances, customBalances] = await Promise.all([
@@ -33,11 +33,10 @@ export class CosmosBankSdk extends AbstractBankSdk {
 
         async function fetchNativeBalances() {
           const coins = await stargateClient.getAllBalances(address);
-          return coins.map((coin: Coin) => {
+          return coins.map((coin) => {
             return {
-              denom: coin.denom,
+              id: coin.denom,
               amount: coin.amount,
-              usdPrice: 0,
             };
           });
         }
@@ -60,9 +59,8 @@ export class CosmosBankSdk extends AbstractBankSdk {
                 }
               );
               return {
-                denom: customToken.denom,
+                id: customToken.contract,
                 amount: response.balance,
-                contract: customToken.contract,
               };
             })
           );
@@ -194,5 +192,59 @@ export class CosmosBankSdk extends AbstractBankSdk {
         )
       );
     });
+  }
+
+  protected enrichTokenWithoutUsdValue(token: Token): EnrichedToken {
+    switch (token.id) {
+      case this.chain.denom: {
+        const digits = 6;
+        const amount = parseInt(token.amount, 10) / 10 ** digits;
+        return {
+          id: token.id,
+          contract: null,
+          icon: null,
+          denom: this.chain.denom.slice(1).toUpperCase(),
+          digits,
+          label: this.chain.denom[1].toUpperCase() + this.chain.denom.slice(2),
+          amount,
+          usdValue: null,
+        };
+      }
+      case "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034": {
+        const digits = 6;
+        const amount = parseInt(token.amount, 10) / 10 ** digits;
+        return {
+          id: token.id,
+          contract: null,
+          icon: null,
+          denom: "axlUSDC",
+          digits,
+          label: "USDC (Axelar)",
+          amount,
+          usdValue: null,
+        };
+      }
+      case "juno1qsrercqegvs4ye0yqg93knv73ye5dc3prqwd6jcdcuj8ggp6w0us66deup": {
+        const digits = 6;
+        const amount = parseInt(token.amount, 10) / 10 ** digits;
+        return {
+          id: token.id,
+          contract:
+            "juno1qsrercqegvs4ye0yqg93knv73ye5dc3prqwd6jcdcuj8ggp6w0us66deup",
+          icon: null,
+          denom: "LOOP",
+          digits,
+          label: "Loop",
+          amount,
+          usdValue: null,
+        };
+      }
+      default:
+        return super.enrichToken(token);
+    }
+  }
+
+  protected get chain() {
+    return cosmosChains[this.chainId];
   }
 }

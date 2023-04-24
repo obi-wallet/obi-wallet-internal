@@ -18,7 +18,7 @@ import BeneficiaryAccount from "./assets/beneficiary-account-icon.svg";
 import FlexAccountIcon from "./assets/flex-account-icon.svg";
 import LegacyAccountIcon from "./assets/legacy-account-icon.svg";
 import Pencil from "./assets/pencil.svg";
-import { formatCoin } from "../../app/balances";
+import { enrichToken } from "../../app/balances";
 import { CoinIcon } from "../../app/screens/components/coin-icon";
 import { Modal } from "../../app/screens/components/modal";
 import { useCurrentTerraChainInformation } from "../../app/stores";
@@ -257,9 +257,12 @@ const getDefaultAvatar = (
 export const SinglesigAvatar = observer<{ style?: StyleProp<ViewStyle> }>(
   function SinglesigAvatar({ style }) {
     const currentTerraChainInformation = useCurrentTerraChainInformation();
-    const formatted = formatCoin({
-      denom: currentTerraChainInformation.denom,
-      amount: "0",
+    const formatted = enrichToken({
+      chainId: currentTerraChainInformation.chainId,
+      token: {
+        id: currentTerraChainInformation.denom,
+        amount: "0",
+      },
     });
 
     return (

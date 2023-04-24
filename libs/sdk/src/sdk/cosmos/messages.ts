@@ -8,7 +8,7 @@ import {
 } from "../../data-structures";
 import { Message } from "../../transactions";
 import { AbstractMessages } from "../abstract";
-import { CodeIds, Coin } from "../common";
+import { CodeIds, Token } from "../common";
 
 function notImplemented(message: string) {
   warning(false, message);
@@ -17,6 +17,15 @@ function notImplemented(message: string) {
 export class CosmosMessages extends AbstractMessages {
   protected constructor(protected chainId: CosmosChain) {
     super(chainId);
+  }
+
+  public getSendMessages(_: {
+    fromAddress: string;
+    toAddress: string;
+    tokens: Token[];
+  }): Message[] {
+    notImplemented("getSendMessages not implemented for Cosmos");
+    return [];
   }
 
   public getUpdateWalletMessage(_: {
@@ -56,7 +65,7 @@ export class CosmosMessages extends AbstractMessages {
 
   public getStakeMessage(_: {
     wallet: MultisigWallet;
-    amount: Coin;
+    amount: Token;
     validator: string;
   }): Message {
     notImplemented("getStakeMessage not implemented for Cosmos");
@@ -65,7 +74,7 @@ export class CosmosMessages extends AbstractMessages {
 
   public getUnstakeMessage(_: {
     wallet: MultisigWallet;
-    amount: Coin;
+    amount: Token;
     validator: string;
   }): Message {
     notImplemented("getUnstakeMessage not implemented for Cosmos");

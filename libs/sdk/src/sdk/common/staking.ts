@@ -1,4 +1,4 @@
-import { Coin } from "./coin";
+import { Token } from "./token";
 
 export interface Validator {
   icon: string | null;
@@ -16,17 +16,17 @@ export interface EnrichedValidator extends Validator {
 }
 
 export interface Delegation {
-  balance: { denom: string; amount: string };
+  balance: Token;
   validator: Validator;
 }
 
 export interface UnbondingDelegation {
-  balance: { denom: string; amount: string };
+  balance: Token;
   validator: Validator;
   completionTime: Date;
 }
 
 export interface Rewards {
-  perDelegator: { address: string; rewards: Coin }[];
-  total: Coin;
+  perDelegator: { address: string; rewards: Token }[];
+  total: Token;
 }

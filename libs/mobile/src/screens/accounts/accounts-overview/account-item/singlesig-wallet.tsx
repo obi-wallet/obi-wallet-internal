@@ -19,7 +19,7 @@ export const SinglesigWalletItem = observer<SinglesigWalletItemProps>(
     const address = Sdk.chainId(
       wallet.chainId
     ).transactions.getAddressOfPublicKey(account.publicKey);
-    const usdBalance = useUsdBalance({ address });
+    const usdBalance = useUsdBalance({ address, chainId: wallet.chainId });
 
     return (
       <TouchableOpacity

@@ -1,6 +1,11 @@
 import { Text } from "@obi-wallet/common";
 import { useQuery } from "@obi-wallet/headless-ui";
-import { Coin, Sdk } from "@obi-wallet/sdk";
+import {
+  Chain,
+  EnrichedToken as OriginalEnrichedToken,
+  Sdk,
+  Token,
+} from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { FC } from "react";
@@ -8,53 +13,45 @@ import { ImageRequireSource, ImageURISource, View } from "react-native";
 import { SvgProps } from "react-native-svg";
 
 import LoopIcon from "./assets/loop.svg";
-import { getRootStore } from "../../background/root-store";
 import { useStore } from "../stores";
 
-export interface ExtendedCoin {
-  contract?: string;
-  denom: string;
-  amount: string;
-  usdPrice: number;
-}
-
-export function useBalances({
+export function useEnrichedBalances({
   address,
+  chainId,
   sortAscending = true,
 }: {
   address: string;
+  chainId: Chain;
   sortAscending?: boolean;
 }) {
-  const rawBalances = useRawBalances({ address });
+  const balances = useBalances({ address, chainId });
   const prices = usePrices();
 
   const data =
-    rawBalances.data?.map((balance) => {
-      return {
-        ...balance,
-        usdPrice: prices.data?.[balance.contract ?? balance.denom] ?? 0,
-      };
+    balances.data?.map((balance) => {
+      return enrichToken({ chainId, token: balance, prices: prices.data });
     }) ?? [];
   data.sort((a, b) => {
     const [first, second] = sortAscending ? [b, a] : [a, b];
-    return (
-      formatExtendedCoin(first).valueInUsd -
-      formatExtendedCoin(second).valueInUsd
-    );
+    return (first.usdValue ?? 0) - (second.usdValue ?? 0);
   });
 
   return {
     data,
-    isFetching: rawBalances.isFetching || prices.isFetching,
+    isFetching: balances.isFetching || prices.isFetching,
     async refetch() {
-      await Promise.all([rawBalances.refetch(), prices.refetch()]);
+      await Promise.all([balances.refetch(), prices.refetch()]);
     },
   };
 }
 
-export function useRawBalances({ address }: { address: string }) {
-  const { chainStore } = useStore();
-  const chainId = chainStore.currentChain;
+export function useBalances({
+  address,
+  chainId,
+}: {
+  address: string;
+  chainId: Chain;
+}) {
   return useQuery(Sdk.chainId(chainId).bank.balancesQuery(address));
 }
 
@@ -64,66 +61,74 @@ export function usePrices() {
   return useQuery(Sdk.chainId(chainId).bank.pricesQuery());
 }
 
-export function useUsdBalance({ address }: { address: string }) {
-  const balances = useBalances({ address });
+export function useUsdBalance({
+  address,
+  chainId,
+}: {
+  address: string;
+  chainId: Chain;
+}) {
+  const balances = useEnrichedBalances({ address, chainId });
   const balanceInUsd = R.sum(
     balances.data.map((coin) => {
-      return formatExtendedCoin(coin).valueInUsd;
+      return coin.usdValue ?? 0;
     })
   );
   return `$${balanceInUsd.toFixed(2)}`;
 }
 
-export const UsdBalance = observer<{ address: string }>(function UsdBalance({
-  address,
-}) {
-  const balanceInUsd = useUsdBalance({ address });
+export const UsdBalance = observer<{ address: string; chainId: Chain }>(
+  function UsdBalance({ address, chainId }) {
+    const balanceInUsd = useUsdBalance({ address, chainId });
 
-  return (
-    <View
-      style={{
-        flexDirection: "row",
-      }}
-    >
-      <Text
+    return (
+      <View
         style={{
-          color: "#F6F5FF",
-          fontSize: 28,
-          fontWeight: "500",
-          alignSelf: "flex-end",
-          marginBottom: 2,
+          flexDirection: "row",
         }}
       >
-        {balanceInUsd}
-      </Text>
-    </View>
-  );
-});
+        <Text
+          style={{
+            color: "#F6F5FF",
+            fontSize: 28,
+            fontWeight: "500",
+            alignSelf: "flex-end",
+            marginBottom: 2,
+          }}
+        >
+          {balanceInUsd}
+        </Text>
+      </View>
+    );
+  }
+);
 
-export interface FormattedCoin {
+export interface EnrichedToken extends Omit<OriginalEnrichedToken, "icon"> {
   icon: ImageURISource | ImageRequireSource | FC<SvgProps> | null;
-  denom: string;
-  digits: number;
-  label: string;
-  amount: number;
 }
 
-export function formatCoin(coin: Coin): FormattedCoin {
-  const formattedCoin = Sdk.chainId(
-    getRootStore().chainStore.currentChain
-  ).formatCoin(coin);
+export function enrichToken({
+  chainId,
+  token,
+  prices,
+}: {
+  chainId: Chain;
+  token: Token;
+  prices?: Record<string, number>;
+}): EnrichedToken {
+  const enrichedToken = Sdk.chainId(chainId).bank.enrichToken(token, prices);
 
   function getIcon() {
-    if (formattedCoin.icon) {
-      return formattedCoin.icon;
+    if (enrichedToken.icon) {
+      return { uri: enrichedToken.icon };
     }
 
-    switch (coin.denom) {
+    switch (enrichedToken.id) {
       case "ujuno":
         return require("./assets/juno.png");
       case "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034":
         return require("./assets/usdc.png");
-      case "uloop":
+      case "juno1qsrercqegvs4ye0yqg93knv73ye5dc3prqwd6jcdcuj8ggp6w0us66deup":
         return LoopIcon;
       default:
         return null;
@@ -131,15 +136,7 @@ export function formatCoin(coin: Coin): FormattedCoin {
   }
 
   return {
-    ...formattedCoin,
+    ...enrichedToken,
     icon: getIcon(),
-  };
-}
-
-export function formatExtendedCoin(coin: ExtendedCoin) {
-  const formattedCoin = formatCoin(coin);
-  return {
-    ...formattedCoin,
-    valueInUsd: formattedCoin.amount * coin.usdPrice,
   };
 }

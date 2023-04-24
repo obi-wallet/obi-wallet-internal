@@ -7,7 +7,7 @@ import { tokenPairs } from "./token-pairs";
 import { tokens } from "./tokens";
 import { TerraChain } from "../../chains";
 import { AbstractBankSdk } from "../abstract";
-import { Coin } from "../common";
+import { EnrichedToken, Token } from "../common";
 
 export class TerraBankSdk extends AbstractBankSdk {
   protected client: TerraClient;
@@ -23,7 +23,7 @@ export class TerraBankSdk extends AbstractBankSdk {
     this.client = client;
   }
 
-  protected async balancesQueryFn(address: string): Promise<Coin[]> {
+  protected async balancesQueryFn(address: string): Promise<Token[]> {
     return await this.client.withClient(async (client) => {
       const nativeCoins = await this.client.fetchAllPages(
         async (paginationOptions) => {
@@ -32,9 +32,9 @@ export class TerraBankSdk extends AbstractBankSdk {
             paginationOptions
           );
           return [
-            coins.map((coin): Coin => {
+            coins.map((coin): Token => {
               return {
-                denom: coin.denom,
+                id: coin.denom,
                 amount: coin.amount.toString(),
               };
             }),
@@ -56,15 +56,14 @@ export class TerraBankSdk extends AbstractBankSdk {
             }
           );
           return {
-            denom: R.has("symbol", token) ? token.symbol : token.protocol,
-            contract: token.token,
+            id: token.token,
             amount: response.balance,
           };
         })
       );
 
       return [...nativeCoins, ...contractTokens].filter(
-        (coin): coin is Coin => {
+        (coin): coin is Token => {
           return coin !== null && coin.amount !== "0";
         }
       );
@@ -181,5 +180,35 @@ export class TerraBankSdk extends AbstractBankSdk {
     return R.mapObjIndexed((price) => {
       return price.toNumber();
     }, prices);
+  }
+
+  public enrichTokenWithoutUsdValue(token: Token): EnrichedToken {
+    if (!R.has(token.id, tokens)) {
+      return super.enrichTokenWithoutUsdValue(token);
+    }
+
+    const tokenData = tokens[token.id as keyof typeof tokens];
+    const denom =
+      R.prop("base_denom", tokenData) ??
+      R.prop("denom", tokenData) ??
+      R.prop("symbol", tokenData) ??
+      token.id;
+
+    return {
+      id: token.id,
+      icon: tokenData.icon ? tokenData.icon : null,
+      contract: R.prop("token", tokenData) ?? null,
+      denom: (() => {
+        if (denom.startsWith("u")) {
+          return denom.slice(1).toUpperCase();
+        }
+        return denom;
+      })(),
+      digits: tokenData.decimals,
+      label:
+        R.prop("name", tokenData) ?? R.prop("symbol", tokenData) ?? token.id,
+      amount: parseInt(token.amount, 10) / 10 ** tokenData.decimals,
+      usdValue: null,
+    };
   }
 }

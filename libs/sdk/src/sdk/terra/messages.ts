@@ -2,11 +2,13 @@ import {
   Coin as TerraCoin,
   MsgDelegate,
   MsgExecuteContract,
+  MsgSend,
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
 } from "@terra-money/feather.js";
 import { Duration } from "luxon";
 import * as R from "ramda";
+import invariant from "tiny-invariant";
 
 import { TerraChain, terraChains } from "../../chains";
 import {
@@ -16,12 +18,57 @@ import {
 } from "../../data-structures";
 import { Message } from "../../transactions";
 import { AbstractMessages } from "../abstract";
-import { CodeIds, Coin } from "../common";
+import { CodeIds, Token } from "../common";
 import { Sdk } from "../sdk";
 
 export class TerraMessages extends AbstractMessages {
   protected constructor(protected chainId: TerraChain) {
     super(chainId);
+  }
+
+  public getSendMessages({
+    fromAddress,
+    toAddress,
+    tokens,
+  }: {
+    fromAddress: string;
+    toAddress: string;
+    tokens: Token[];
+  }): Message[] {
+    const enrichedTokens = tokens.map((token) => {
+      return {
+        ...this.sdk.bank.enrichToken(token),
+        normalizedAmount: token.amount,
+      };
+    });
+    const [contractTokens, nativeTokens] = R.partition(
+      (token) => token.contract !== null,
+      enrichedTokens
+    );
+    const nativeCoinsMessages =
+      nativeTokens.length > 0
+        ? [
+            new MsgSend(
+              fromAddress,
+              toAddress,
+              R.fromPairs(
+                nativeTokens.map((token) => [token.id, token.normalizedAmount])
+              )
+            ),
+          ]
+        : [];
+
+    const contractTokensMessages = contractTokens.map((token) => {
+      invariant(token.contract !== null, "Contract token must have contract");
+      return new MsgExecuteContract(fromAddress, token.contract, {
+        transfer: {
+          recipient: toAddress,
+          amount: token.normalizedAmount,
+        },
+      });
+    });
+
+    return [...nativeCoinsMessages, ...contractTokensMessages];
   }
 
   public getUpdateWalletMessage({
@@ -394,13 +441,13 @@ export class TerraMessages extends AbstractMessages {
     validator,
   }: {
     wallet: MultisigWallet;
-    amount: Coin;
+    amount: Token;
     validator: string;
   }): Message {
     return new MsgDelegate(
       wallet.address,
       validator,
-      new TerraCoin(amount.denom, amount.amount)
+      new TerraCoin(amount.id, amount.amount)
     );
   }
 
@@ -410,13 +457,13 @@ export class TerraMessages extends AbstractMessages {
     validator,
   }: {
     wallet: MultisigWallet;
-    amount: Coin;
+    amount: Token;
     validator: string;
   }): Message {
     return new MsgUndelegate(
       wallet.address,
       validator,
-      new TerraCoin(amount.denom, amount.amount)
+      new TerraCoin(amount.id, amount.amount)
     );
   }
 

@@ -12,9 +12,9 @@ import {
 import {
   AbstractMultisigWalletSdk,
   BroadcastTransactionResult,
-  Coin,
   MultisigWalletSdk,
   Sdk,
+  Token,
 } from "../../sdk";
 import { Secp256k1PrivateKeySigner } from "../../signers";
 import { Message, wrapMessages } from "../../transactions";
@@ -297,7 +297,7 @@ export class MultisigWallet {
     amount,
     validator,
   }: {
-    amount: Coin;
+    amount: Token;
     validator: string;
   }) {
     return await this.multisigWalletSdk.stake({
@@ -310,7 +310,7 @@ export class MultisigWallet {
     amount,
     validator,
   }: {
-    amount: Coin;
+    amount: Token;
     validator: string;
   }) {
     return await this.multisigWalletSdk.unstake({
