@@ -75,7 +75,7 @@ export class Entities<T> implements Draftable {
   public static merge<T>(...entities: Entities<T>[]): Entities<T> {
     const merged = new Entities<T>();
     merged._ids = ([] as Array<string>).concat(...entities.map((e) => e._ids));
-    merged._entities = R.mergeAll(entities.map((e) => e._entities));
+    merged._entities = R.mergeAll([{}, ...entities.map((e) => e._entities)]);
     return merged;
   }
 
