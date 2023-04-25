@@ -21,6 +21,7 @@ export interface ProviderProps {
     "children"
   >;
   QueryClientProvider?: typeof QueryClientProvider;
+  buster?: string;
 }
 
 export const Provider = observer<ProviderProps>(function Provider({
@@ -28,6 +29,7 @@ export const Provider = observer<ProviderProps>(function Provider({
   config,
   navigationContainerProps,
   QueryClientProvider,
+  buster,
 }) {
   const rootStore = useCreateRootStore({ config });
   const { languageStore, configStore } = rootStore;
@@ -37,6 +39,7 @@ export const Provider = observer<ProviderProps>(function Provider({
     <SdkProvider
       rootStore={rootStore.sdkRootStore}
       QueryClientProvider={QueryClientProvider}
+      buster={buster}
     >
       <StoreContext.Provider value={rootStore}>
         <IntlProvider
