@@ -1,4 +1,4 @@
-import { Chain, Rewards, Sdk } from "@obi-wallet/sdk";
+import { ChainId, Rewards, Sdk } from "@obi-wallet/sdk";
 
 import { useQuery } from "./query";
 import { useCurrentWallet } from "../provider";
@@ -19,7 +19,7 @@ export function useUnbondingDelegations() {
   );
 }
 
-export function useValidators(chainId: Chain) {
+export function useValidators(chainId: ChainId) {
   return useQuery(Sdk.chainId(chainId).staking.validatorsQuery());
 }
 

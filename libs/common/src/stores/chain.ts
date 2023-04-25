@@ -1,5 +1,5 @@
 import {
-  Chain,
+  ChainId,
   cosmosChains,
   isCosmosChain,
   terraChains,
@@ -12,7 +12,7 @@ export class ChainStore {
   protected readonly configStore: ConfigStore;
 
   @observable
-  public currentChain: Chain;
+  public currentChain: ChainId;
 
   constructor({ configStore }: { configStore: ConfigStore }) {
     this.configStore = configStore;
@@ -21,7 +21,7 @@ export class ChainStore {
   }
 
   @action
-  public setCurrentChain(chain: Chain) {
+  public setCurrentChain(chain: ChainId) {
     this.currentChain = chain;
   }
 

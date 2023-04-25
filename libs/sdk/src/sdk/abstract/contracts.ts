@@ -1,13 +1,13 @@
-import { Chain } from "../../chains";
+import { ChainId } from "../../chains";
 import { queryClient, QueryClientNamespace } from "../../query-client";
 
 export abstract class AbstractContractsSdk {
   protected queryNamespace: QueryClientNamespace<
     "contracts-sdk",
-    { chainId: Chain }
+    { chainId: ChainId }
   >;
 
-  protected constructor(protected chainId: Chain) {
+  protected constructor(protected chainId: ChainId) {
     this.queryNamespace = new QueryClientNamespace("contracts-sdk", {
       chainId,
     });

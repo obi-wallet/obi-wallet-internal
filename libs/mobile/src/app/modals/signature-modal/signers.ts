@@ -1,6 +1,6 @@
 import {
   AsyncKeySigner,
-  Chain,
+  ChainId,
   KeySubclassTypeMapping,
   KeyType,
   MultisigKey,
@@ -121,7 +121,7 @@ export class PhoneKeySigner extends Signer {
   protected signer: AbstractPhoneKeySigner;
   protected twilioClient: TwilioClientInterface;
   protected bottomSheetRef: RefObject<BottomSheetRef>;
-  protected chainId: Chain;
+  protected chainId: ChainId;
 
   public constructor({
     key,
@@ -130,7 +130,7 @@ export class PhoneKeySigner extends Signer {
     bottomSheetRef,
   }: {
     key: KeySubclassTypeMapping[KeyType.Phone];
-    chainId: Chain;
+    chainId: ChainId;
     demoMode: boolean;
     bottomSheetRef: RefObject<BottomSheetRef>;
   }) {

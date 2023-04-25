@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { Text } from "@obi-wallet/common";
-import { Chain, Message } from "@obi-wallet/sdk";
+import { ChainId, Message } from "@obi-wallet/sdk";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
@@ -32,7 +32,7 @@ export interface ConfirmMessagesProps extends ModalProps {
   disabled?: boolean;
   cancelable?: boolean;
   messages: Message[];
-  chainId: Chain;
+  chainId: ChainId;
   footer?: ReactNode;
   children?: ReactNode;
 
@@ -284,7 +284,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
 
 interface MessageViewProps {
   messages: Msg.Amino[];
-  chainId: Chain;
+  chainId: ChainId;
   isObi?: boolean;
 }
 

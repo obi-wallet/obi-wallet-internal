@@ -11,7 +11,7 @@ import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Text } from "@obi-wallet/common";
 import { useQuery, useValidators } from "@obi-wallet/headless-ui";
 import {
-  Chain,
+  ChainId,
   cosmosChains,
   isCosmosChain,
   Sdk,
@@ -39,7 +39,7 @@ import { enrichToken } from "../../balances";
 import { CoinIcon } from "../../screens/components/coin-icon";
 import { useStore } from "../../stores";
 
-const ChainIdContext = createContext<Chain | null>(null);
+const ChainIdContext = createContext<ChainId | null>(null);
 
 function useChainId() {
   const chainId = useContext(ChainIdContext);
@@ -49,7 +49,7 @@ function useChainId() {
 
 export interface PrettyMessageProps {
   message: Msg.Amino;
-  chainId: Chain;
+  chainId: ChainId;
 }
 
 export const PrettyMessage = observer<PrettyMessageProps>(

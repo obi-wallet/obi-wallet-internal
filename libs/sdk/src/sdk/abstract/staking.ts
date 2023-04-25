@@ -1,4 +1,4 @@
-import { Chain } from "../../chains";
+import { ChainId } from "../../chains";
 import { queryClient, QueryClientNamespace } from "../../query-client";
 import {
   Delegation,
@@ -10,10 +10,10 @@ import {
 export abstract class AbstractStakingSdk {
   protected queryNamespace: QueryClientNamespace<
     "staking-sdk",
-    { chainId: Chain }
+    { chainId: ChainId }
   >;
 
-  protected constructor(protected chainId: Chain) {
+  protected constructor(protected chainId: ChainId) {
     this.queryNamespace = new QueryClientNamespace("staking-sdk", { chainId });
   }
 

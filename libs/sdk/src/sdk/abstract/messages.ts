@@ -1,4 +1,4 @@
-import { Chain } from "../../chains";
+import { ChainId } from "../../chains";
 import {
   GatekeeperConfig,
   MultisigKey,
@@ -12,7 +12,7 @@ import { CodeIds, Token } from "../common";
  * for generating message fixtures for testing.
  */
 export abstract class AbstractMessages {
-  protected constructor(protected chainId: Chain) {}
+  protected constructor(protected chainId: ChainId) {}
 
   public abstract getSendMessages({
     fromAddress,

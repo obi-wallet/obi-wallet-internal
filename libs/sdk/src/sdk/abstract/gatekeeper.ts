@@ -1,14 +1,14 @@
-import { Chain } from "../../chains";
+import { ChainId } from "../../chains";
 import { queryClient, QueryClientNamespace } from "../../query-client";
 import { GatekeeperContractAddresses, PermissionedAddress } from "../common";
 
 export abstract class AbstractGatekeeperSdk {
   protected queryNamespace: QueryClientNamespace<
     "gatekeeper-sdk",
-    { chainId: Chain }
+    { chainId: ChainId }
   >;
 
-  protected constructor(protected chainId: Chain) {
+  protected constructor(protected chainId: ChainId) {
     this.queryNamespace = new QueryClientNamespace("gatekeeper-sdk", {
       chainId,
     });

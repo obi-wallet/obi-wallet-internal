@@ -1,7 +1,7 @@
 import fetch from "isomorphic-unfetch";
 import invariant from "tiny-invariant";
 
-import { Chain } from "../../chains";
+import { ChainId } from "../../chains";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../keys";
 import { queryClient, QueryClientNamespace } from "../../query-client";
 import { MultisigSigner } from "../../signers";
@@ -11,10 +11,10 @@ import { AccountValidationResult, BroadcastTransactionResult } from "../common";
 export abstract class AbstractTransactionsSdk {
   protected queryNamespace: QueryClientNamespace<
     "transactions-sdk",
-    { chainId: Chain }
+    { chainId: ChainId }
   >;
 
-  protected constructor(protected chainId: Chain) {
+  protected constructor(protected chainId: ChainId) {
     this.queryNamespace = new QueryClientNamespace("transactions-sdk", {
       chainId,
     });

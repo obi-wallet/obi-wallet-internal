@@ -9,11 +9,10 @@ import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   isTerraChain,
   Messages,
-  Sdk,
   SignAndBroadcastTransactionUserInteraction,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Msg, MsgSend } from "@terra-money/feather.js";
+import { Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";

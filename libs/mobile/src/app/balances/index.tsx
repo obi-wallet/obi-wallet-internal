@@ -1,7 +1,7 @@
 import { Text } from "@obi-wallet/common";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
-  Chain,
+  ChainId,
   EnrichedToken as OriginalEnrichedToken,
   Sdk,
   Token,
@@ -21,7 +21,7 @@ export function useEnrichedBalances({
   sortAscending = true,
 }: {
   address: string;
-  chainId: Chain;
+  chainId: ChainId;
   sortAscending?: boolean;
 }) {
   const balances = useBalances({ address, chainId });
@@ -50,7 +50,7 @@ export function useBalances({
   chainId,
 }: {
   address: string;
-  chainId: Chain;
+  chainId: ChainId;
 }) {
   return useQuery(Sdk.chainId(chainId).bank.balancesQuery(address));
 }
@@ -66,7 +66,7 @@ export function useUsdBalance({
   chainId,
 }: {
   address: string;
-  chainId: Chain;
+  chainId: ChainId;
 }) {
   const balances = useEnrichedBalances({ address, chainId });
   const balanceInUsd = R.sum(
@@ -77,7 +77,7 @@ export function useUsdBalance({
   return `$${balanceInUsd.toFixed(2)}`;
 }
 
-export const UsdBalance = observer<{ address: string; chainId: Chain }>(
+export const UsdBalance = observer<{ address: string; chainId: ChainId }>(
   function UsdBalance({ address, chainId }) {
     const balanceInUsd = useUsdBalance({ address, chainId });
 
@@ -112,7 +112,7 @@ export function enrichToken({
   token,
   prices,
 }: {
-  chainId: Chain;
+  chainId: ChainId;
   token: Token;
   prices?: Record<string, number>;
 }): EnrichedToken {

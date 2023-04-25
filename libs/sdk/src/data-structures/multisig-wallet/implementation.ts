@@ -4,6 +4,7 @@ import * as R from "ramda";
 import { MultisigWalletSchema } from "./schema";
 import {
   Chain,
+  ChainId,
   CosmosChain,
   cosmosChains,
   TerraChain,
@@ -42,7 +43,7 @@ export class MultisigWallet {
   }
 
   public constructor(
-    protected _chainId: Chain,
+    protected _chainId: ChainId,
     protected _owner: MultisigKey,
     protected _proxyAddress: string,
     protected _gatekeeperConfig: GatekeeperConfig,

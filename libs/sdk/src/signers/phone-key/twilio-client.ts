@@ -3,6 +3,7 @@ import { totp } from "otplib";
 
 import {
   Chain,
+  ChainId,
   CosmosChain,
   cosmosChains,
   TerraChain,
@@ -25,7 +26,7 @@ export interface TwilioClientInterface {
   }: {
     phoneNumber: string;
     securityAnswer: string;
-    chainId: Chain;
+    chainId: ChainId;
   }): Promise<void>;
 
   parsePublicKeyTextMessageResponse({
@@ -43,7 +44,7 @@ export interface TwilioClientInterface {
     phoneNumber: string;
     securityAnswer: string;
     message: Uint8Array;
-    chainId: Chain;
+    chainId: ChainId;
   }): Promise<void>;
 
   parseSignatureTextMessageResponse({
@@ -51,7 +52,7 @@ export interface TwilioClientInterface {
     chainId,
   }: {
     key: string;
-    chainId: Chain;
+    chainId: ChainId;
   }): Promise<Uint8Array>;
 }
 
@@ -63,7 +64,7 @@ export class DemoModeTwilioClient implements TwilioClientInterface {
   public async sendPublicKeyTextMessage(_: {
     phoneNumber: string;
     securityAnswer: string;
-    chainId: Chain;
+    chainId: ChainId;
   }) {
     return;
   }
@@ -78,7 +79,7 @@ export class DemoModeTwilioClient implements TwilioClientInterface {
     phoneNumber: string;
     securityAnswer: string;
     message: Uint8Array;
-    chainId: Chain;
+    chainId: ChainId;
   }) {
     this.demoPayload = message;
     return;
@@ -88,7 +89,7 @@ export class DemoModeTwilioClient implements TwilioClientInterface {
     chainId,
   }: {
     key: string;
-    chainId: Chain;
+    chainId: ChainId;
   }) {
     if (!this.demoPayload) {
       throw new Error("No demo payload found.");
@@ -111,7 +112,7 @@ export class TwilioClient implements TwilioClientInterface {
   }: {
     phoneNumber: string;
     securityAnswer: string;
-    chainId: Chain;
+    chainId: ChainId;
   }) {
     await this.encryptAndSendMessage({
       message: `pub:${securityAnswer}`,
@@ -142,7 +143,7 @@ export class TwilioClient implements TwilioClientInterface {
     phoneNumber: string;
     securityAnswer: string;
     message: Uint8Array;
-    chainId: Chain;
+    chainId: ChainId;
   }) {
     await this.encryptAndSendMessage({
       message: `sign:${securityAnswer}:${Buffer.from(message.buffer).toString(
@@ -171,7 +172,7 @@ export class TwilioClient implements TwilioClientInterface {
   }: {
     message: string;
     phoneNumber: string;
-    chainId: Chain;
+    chainId: ChainId;
   }) {
     const body = await this.getMessageBody(`${message}:${chainId}`);
     const formData = new FormData();

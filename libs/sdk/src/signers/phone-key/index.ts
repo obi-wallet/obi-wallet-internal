@@ -1,5 +1,5 @@
 import { TwilioClientInterface } from "./twilio-client";
-import { Chain } from "../../chains";
+import { ChainId } from "../../chains";
 import { KeyType } from "../../data-structures";
 import { AsyncKeySigner } from "../abstract";
 
@@ -11,7 +11,7 @@ export class PhoneKeySigner extends AsyncKeySigner<KeyType.Phone> {
     securityAnswer,
     twilioClient,
   }: {
-    chainId: Chain;
+    chainId: ChainId;
     securityAnswer: string;
     twilioClient: TwilioClientInterface;
   }) {
@@ -32,7 +32,7 @@ export class PhoneKeySigner extends AsyncKeySigner<KeyType.Phone> {
     key,
     twilioClient,
   }: {
-    chainId: Chain;
+    chainId: ChainId;
     key: string;
     twilioClient: TwilioClientInterface;
   }) {
