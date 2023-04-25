@@ -117,3 +117,6 @@ GoogleService-Info.plist
 !.yarn/versions
 
 apps/obi-mobile-e2e/artifacts
+
+# Sentry
+sentry.properties
