@@ -11,6 +11,8 @@ import {
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 (async () => {
+  if (process.env.CI === "true") return;
+
   const appDir = path.join(__dirname, "../apps/obi-mobile");
   const { fields } = await get1PasswordItem("di22m5775squt3l34ep477fl4e");
 
