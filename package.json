@@ -7,13 +7,13 @@
     "_runAll": "nx run-many --output-style=static --parallel=1",
     "checks": "yarn lint && yarn test",
     "format": "prettier --write . && yarn lint:eslint --fix",
-    "increment-version": "node scripts/increment-version",
+    "increment-version": "node scripts/increment-version.mjs",
     "postinstall": "patch-package",
     "lint": "yarn lint:tsc && yarn lint:prettier && yarn lint:eslint",
     "lint:eslint": " yarn _runAll --target=lint",
     "lint:prettier": "prettier --check .",
     "lint:tsc": "yarn _runAll --target=tsc",
-    "setup": "bash scripts/setup.sh",
+    "setup": "node scripts/setup.mjs",
     "test": "yarn _runAll --target=test"
   },
   "resolutions": {

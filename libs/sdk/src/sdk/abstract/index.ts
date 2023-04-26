@@ -3,7 +3,7 @@ import { AbstractContractsSdk } from "./contracts";
 import { AbstractGatekeeperSdk } from "./gatekeeper";
 import { AbstractStakingSdk } from "./staking";
 import { AbstractTransactionsSdk } from "./transactions";
-import { Chain } from "../../chains";
+import { ChainId } from "../../chains";
 
 export * from "./bank";
 export * from "./contracts";
@@ -20,5 +20,5 @@ export abstract class AbstractSdk {
   public abstract staking: AbstractStakingSdk;
   public abstract transactions: AbstractTransactionsSdk;
 
-  protected constructor(protected chainId: Chain) {}
+  protected constructor(protected chainId: ChainId) {}
 }

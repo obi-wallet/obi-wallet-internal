@@ -4,7 +4,7 @@ import { TerraChain, terraChains } from "./terra";
 export * from "./cosmos";
 export * from "./terra";
 
-export type Chain = CosmosChain | TerraChain;
+export type ChainId = CosmosChain | TerraChain;
 
 export const Chain = {
   select<T>({
@@ -12,7 +12,7 @@ export const Chain = {
     onCosmosChain,
     onTerraChain,
   }: {
-    chainId: Chain;
+    chainId: ChainId;
     onCosmosChain(chainId: CosmosChain): T;
     onTerraChain(chainId: TerraChain): T;
   }) {

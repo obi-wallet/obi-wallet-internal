@@ -1,4 +1,4 @@
-import { Chain } from "../../chains";
+import { ChainId } from "../../chains";
 import {
   FlexAccount,
   GatekeeperConfig,
@@ -18,17 +18,17 @@ import { BroadcastTransactionResult, CodeIds, Token } from "../common";
 export abstract class AbstractMultisigWalletSdk {
   protected queryNamespace: QueryClientNamespace<
     "multisig-wallet-sdk",
-    { chainId: Chain; proxyAddress: string }
+    { chainId: ChainId; proxyAddress: string }
   >;
 
-  protected chainId: Chain;
+  protected chainId: ChainId;
   protected wallet: MultisigWallet;
 
   protected constructor({
     chainId,
     wallet,
   }: {
-    chainId: Chain;
+    chainId: ChainId;
     wallet: MultisigWallet;
   }) {
     this.queryNamespace = new QueryClientNamespace("multisig-wallet-sdk", {

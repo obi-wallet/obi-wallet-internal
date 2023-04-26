@@ -1,5 +1,5 @@
 import {
-  Chain,
+  ChainId,
   MultisigWallet,
   withCosmosCosmWasmClient,
 } from "@obi-wallet/sdk";
@@ -24,7 +24,7 @@ export const junoChecks: Record<JunoChecks, HealthCheck> = {
 };
 
 export const healthChecks: Record<
-  Chain,
+  ChainId,
   { types: string[]; checks: Record<string, HealthCheck> }
 > = {
   "juno-1": {

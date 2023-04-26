@@ -1,16 +1,16 @@
 import * as R from "ramda";
 
-import { Chain } from "../../chains";
+import { ChainId } from "../../chains";
 import { queryClient, QueryClientNamespace } from "../../query-client";
 import { EnrichedToken, Token } from "../common";
 
 export abstract class AbstractBankSdk {
   protected queryNamespace: QueryClientNamespace<
     "bank-sdk",
-    { chainId: Chain }
+    { chainId: ChainId }
   >;
 
-  protected constructor(protected chainId: Chain) {
+  protected constructor(protected chainId: ChainId) {
     this.queryNamespace = new QueryClientNamespace("bank-sdk", { chainId });
   }
 

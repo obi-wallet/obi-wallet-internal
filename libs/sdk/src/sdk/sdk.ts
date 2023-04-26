@@ -1,12 +1,12 @@
 import { AbstractSdk } from "./abstract";
 import { CosmosSdk } from "./cosmos";
 import { TerraSdk } from "./terra";
-import { Chain, TerraChain } from "../chains";
+import { Chain, ChainId, TerraChain } from "../chains";
 
 export class Sdk {
-  protected static instances: Partial<Record<Chain, AbstractSdk>> = {};
+  protected static instances: Partial<Record<ChainId, AbstractSdk>> = {};
 
-  public static chainId(chainId: Chain) {
+  public static chainId(chainId: ChainId) {
     const cache = this.instances[chainId];
     if (cache) return cache;
 

@@ -1,7 +1,7 @@
 import * as R from "ramda";
 
 import { MultisigKeySchema } from "./schema";
-import { Chain } from "../../chains";
+import { ChainId } from "../../chains";
 import {
   MultisigPublicKey,
   Secp256k1KeyPair,
@@ -24,13 +24,13 @@ export class MultisigKey {
   }
 
   public constructor(
-    protected _chainId: Chain,
+    protected _chainId: ChainId,
     protected _keys: Key[],
     protected _threshold: number,
     protected _factories: {
       Key: AbstractDataStructure<Key>;
       createMultisigKey: (
-        chain: Chain,
+        chain: ChainId,
         serialized: AbstractSerialized<typeof MultisigKeySchema>
       ) => MultisigKey;
     }

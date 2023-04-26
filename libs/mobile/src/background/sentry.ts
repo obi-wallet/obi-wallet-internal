@@ -16,7 +16,7 @@ export function initSentry({
     dsn: __DEV__ ? undefined : SENTRY_DSN,
     tracesSampleRate: __DEV__ ? 1.0 : 0.5,
     environment: __DEV__ ? "development" : APP_ENV,
-    release: "money.obi.wallet@0.14.0+codepush:v65",
-    dist: "65",
+    release,
+    dist,
   });
 }

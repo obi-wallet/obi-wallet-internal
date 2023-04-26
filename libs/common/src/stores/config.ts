@@ -1,4 +1,4 @@
-import { Chain } from "@obi-wallet/sdk";
+import { ChainId } from "@obi-wallet/sdk";
 import { action, makeObservable, observable } from "mobx";
 
 import { Language } from "../languages";
@@ -22,8 +22,8 @@ export interface Config {
   brand: Brand;
 
   chains: {
-    enabled: Chain[];
-    default: Chain;
+    enabled: ChainId[];
+    default: ChainId;
   };
 
   languages: {

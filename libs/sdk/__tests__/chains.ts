@@ -1,7 +1,7 @@
-import { Chain } from "../src";
+import { Chain, ChainId } from "../src";
 
 test("Chain.select", () => {
-  const f = (chainId: Chain) => {
+  const f = (chainId: ChainId) => {
     return Chain.select({
       chainId,
       onCosmosChain: () => "onCosmosChain",
