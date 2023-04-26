@@ -1,7 +1,12 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { download1PasswordFile, execCommand, get1PasswordItem, modifyFile } from "./helpers.mjs";
+import {
+  download1PasswordFile,
+  execCommand,
+  get1PasswordItem,
+  modifyFile,
+} from "./helpers.mjs";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
@@ -10,7 +15,7 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
   const { fields } = await get1PasswordItem("di22m5775squt3l34ep477fl4e");
 
   function getField(label) {
-    return fields.find((field => field.label === label));
+    return fields.find((field) => field.label === label);
   }
 
   // Handle .env
@@ -25,15 +30,21 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
       result = result + `${label}=${value}\n`;
     });
 
-    result = result.split("\n").filter((line) => line !== "").join("\n") + "\n";
+    result =
+      result
+        .split("\n")
+        .filter((line) => line !== "")
+        .join("\n") + "\n";
 
     return result;
   });
 
   // Handle ios/Mobile/AppCenter-Config.plist
-  await modifyFile(path.join(appDir, "ios/Mobile/AppCenter-Config.plist"), async () => {
-    const field = getField("IOS_APP_CENTER_SECRET");
-    return `<?xml version="1.0" encoding="UTF-8"?>
+  await modifyFile(
+    path.join(appDir, "ios/Mobile/AppCenter-Config.plist"),
+    async () => {
+      const field = getField("IOS_APP_CENTER_SECRET");
+      return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
@@ -42,35 +53,48 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
     </dict>
 </plist>
 `;
-  });
+    }
+  );
 
   // Handle android/app/src/main/assets/appcenter-config.json
-  await modifyFile(path.join(appDir, "android/app/src/main/assets/appcenter-config.json"), async () => {
-    const field = getField("ANDROID_APP_CENTER_SECRET");
-    return `{
+  await modifyFile(
+    path.join(appDir, "android/app/src/main/assets/appcenter-config.json"),
+    async () => {
+      const field = getField("ANDROID_APP_CENTER_SECRET");
+      return `{
   "app_secret": "${field.value}"
 }
 `;
-  });
+    }
+  );
 
-  const androidSigningKeystore = await get1PasswordItem("pkorkoqekc7coziqrkqjsehbx4");
+  const androidSigningKeystore = await get1PasswordItem(
+    "pkorkoqekc7coziqrkqjsehbx4"
+  );
 
   // Handle android/local.properties
-  await modifyFile(path.join(appDir, "android/local.properties"), async (input) => {
-    let result = input ?? "";
+  await modifyFile(
+    path.join(appDir, "android/local.properties"),
+    async (input) => {
+      let result = input ?? "";
 
-    androidSigningKeystore.fields.forEach(({ type, label, value }) => {
-      if (type !== "CONCEALED") return;
+      androidSigningKeystore.fields.forEach(({ type, label, value }) => {
+        if (type !== "CONCEALED") return;
 
-      const fieldRe = new RegExp(`${label}=(.+)`);
-      result = result.replace(fieldRe, "");
-      result = result + `${label}=${value}\n`;
-    });
+        const fieldRe = new RegExp(`${label}=(.+)`);
+        result = result.replace(fieldRe, "");
+        result = result + `${label}=${value}\n`;
+      });
 
-    result = result.split("\n").filter((line) => line !== "").join("\n") + "\n";
+      result =
+        result
+          .split("\n")
+          .filter((line) => line !== "")
+          .join("\n") + "\n";
 
-    return result;
-  });
+      return result;
+    }
+  );
 
   // Handle android/app/<KEYSTORE_NAME>.keystore
   await download1PasswordFile(
@@ -81,15 +105,17 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
   // Handle ios/sentry.properties
   await download1PasswordFile(
     "m3blhrmel4shejdaayto7b5bou",
-    path.join(appDir, 'ios/sentry.properties')
+    path.join(appDir, "ios/sentry.properties")
   );
 
   // Handle android/sentry.properties
   await download1PasswordFile(
     "m3blhrmel4shejdaayto7b5bou",
-    path.join(appDir, 'android/sentry.properties')
+    path.join(appDir, "android/sentry.properties")
   );
 
   // Handle libs/mobile/cosmos.userdeps.js
-  await execCommand(`touch ${path.join(__dirname, "..", "libs/mobile/cosmos.userdeps.js")}`);
+  await execCommand(
+    `touch ${path.join(__dirname, "..", "libs/mobile/cosmos.userdeps.js")}`
+  );
 })();
