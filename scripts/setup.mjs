@@ -1,0 +1,95 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { download1PasswordFile, execCommand, get1PasswordItem, modifyFile } from "./helpers.mjs";
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
+
+(async () => {
+  const appDir = path.join(__dirname, "../apps/obi-mobile");
+  const { fields } = await get1PasswordItem("di22m5775squt3l34ep477fl4e");
+
+  function getField(label) {
+    return fields.find((field => field.label === label));
+  }
+
+  // Handle .env
+  await modifyFile(path.join(appDir, ".env"), async (input) => {
+    let result = input ?? "APP_ENV=development\nCOSMOS_ENABLED=true\n";
+
+    fields.forEach(({ type, label, value }) => {
+      if (type !== "CONCEALED") return;
+
+      const fieldRe = new RegExp(`${label}=(.+)`);
+      result = result.replace(fieldRe, "");
+      result = result + `${label}=${value}\n`;
+    });
+
+    result = result.split("\n").filter((line) => line !== "").join("\n") + "\n";
+
+    return result;
+  });
+
+  // Handle ios/Mobile/AppCenter-Config.plist
+  await modifyFile(path.join(appDir, "ios/Mobile/AppCenter-Config.plist"), async () => {
+    const field = getField("IOS_APP_CENTER_SECRET");
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+    <key>AppSecret</key>
+    <string>${field.value}</string>
+    </dict>
+</plist>
+`;
+  });
+
+  // Handle android/app/src/main/assets/appcenter-config.json
+  await modifyFile(path.join(appDir, "android/app/src/main/assets/appcenter-config.json"), async () => {
+    const field = getField("ANDROID_APP_CENTER_SECRET");
+    return `{
+  "app_secret": "${field.value}"
+}
+`;
+  });
+
+  const androidSigningKeystore = await get1PasswordItem("pkorkoqekc7coziqrkqjsehbx4");
+
+  // Handle android/local.properties
+  await modifyFile(path.join(appDir, "android/local.properties"), async (input) => {
+    let result = input ?? "";
+
+    androidSigningKeystore.fields.forEach(({ type, label, value }) => {
+      if (type !== "CONCEALED") return;
+
+      const fieldRe = new RegExp(`${label}=(.+)`);
+      result = result.replace(fieldRe, "");
+      result = result + `${label}=${value}\n`;
+    });
+
+    result = result.split("\n").filter((line) => line !== "").join("\n") + "\n";
+
+    return result;
+  });
+
+  // Handle android/app/<KEYSTORE_NAME>.keystore
+  await download1PasswordFile(
+    "pkorkoqekc7coziqrkqjsehbx4",
+    path.join(appDir, `android/app/${androidSigningKeystore.files[0].name}`)
+  );
+
+  // Handle ios/sentry.properties
+  await download1PasswordFile(
+    "m3blhrmel4shejdaayto7b5bou",
+    path.join(appDir, 'ios/sentry.properties')
+  );
+
+  // Handle android/sentry.properties
+  await download1PasswordFile(
+    "m3blhrmel4shejdaayto7b5bou",
+    path.join(appDir, 'android/sentry.properties')
+  );
+
+  // Handle libs/mobile/cosmos.userdeps.js
+  await execCommand(`touch ${path.join(__dirname, "..", "libs/mobile/cosmos.userdeps.js")}`);
+})();

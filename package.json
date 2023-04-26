@@ -13,7 +13,7 @@
     "lint:eslint": " yarn _runAll --target=lint",
     "lint:prettier": "prettier --check .",
     "lint:tsc": "yarn _runAll --target=tsc",
-    "setup": "bash scripts/setup.sh",
+    "setup": "node scripts/setup.mjs",
     "test": "yarn _runAll --target=test"
   },
   "resolutions": {
