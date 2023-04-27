@@ -1,4 +1,4 @@
-import { token } from "../src";
+import { token, tokenGivenBalance } from "../src";
 
 describe("token", () => {
   const schema = token({
@@ -44,6 +44,34 @@ describe("token", () => {
         {
           "code": "custom",
           "message": "Precision overflow",
+          "path": []
+        }
+      ]"
+    `);
+  });
+});
+
+describe("tokenGivenBalance", () => {
+  const schema = tokenGivenBalance({
+    chainId: "phoenix-1",
+    balance: {
+      id: "uluna",
+      amount: "1",
+    },
+  });
+
+  test("Sufficient balance", () => {
+    expect(schema.parse("0.000001")).toEqual({ id: "uluna", amount: "1" });
+  });
+
+  test("Insufficient balance", () => {
+    expect(() => {
+      return schema.parse("0.000002");
+    }).toThrowErrorMatchingInlineSnapshot(`
+      "[
+        {
+          "code": "custom",
+          "message": "Insufficient balance",
           "path": []
         }
       ]"

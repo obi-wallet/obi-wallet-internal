@@ -2,11 +2,12 @@ import BigNumber from "bignumber.js";
 import z from "zod";
 
 import { ChainId } from "../chains";
-import { Sdk } from "../sdk";
 import type { Token } from "../sdk";
+import { Sdk } from "../sdk";
 
 /**
- * Zod schema that validates a token amount (e.g. "123.456") and returns a {@link Token}.
+ * Zod schema that validates a token amount with potential decimal separator (e.g. "123.456")
+ * and returns a {@link Token}.
  */
 export function token({
   chainId,
@@ -38,4 +39,19 @@ export function token({
         amount: new BigNumber(amount).multipliedBy(10 ** digits).toString(),
       };
     });
+}
+
+/**
+ * Zod schema similar to {@link token} but also validates that the balance is sufficient.
+ */
+export function tokenGivenBalance({
+  chainId,
+  balance,
+}: {
+  chainId: ChainId;
+  balance: Token;
+}) {
+  return token({ chainId, id: balance.id }).refine(({ amount }) => {
+    return new BigNumber(balance.amount).isGreaterThanOrEqualTo(amount);
+  }, "Insufficient balance");
 }
