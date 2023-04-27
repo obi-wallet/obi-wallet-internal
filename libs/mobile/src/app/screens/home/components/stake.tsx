@@ -154,9 +154,9 @@ const StakingOptions = observer(function StakingOptions() {
 
   const totalDelegations = {
     id: currentTerraChainInformation.denom,
-    amount: R.sum(
+    rawAmount: R.sum(
       delegations.data?.map((delegation) => {
-        return parseInt(delegation.balance.amount, 10);
+        return parseInt(delegation.balance.rawAmount, 10);
       }) ?? []
     ).toString(),
   };
@@ -169,9 +169,9 @@ const StakingOptions = observer(function StakingOptions() {
 
   const totalUnbondingDelegations = {
     id: currentTerraChainInformation.denom,
-    amount: R.sum(
+    rawAmount: R.sum(
       unbondingDelegations.data?.map((delegation) => {
-        return parseInt(delegation.balance.amount, 10);
+        return parseInt(delegation.balance.rawAmount, 10);
       }) ?? []
     ).toString(),
   };
@@ -453,7 +453,7 @@ const Validators = observer(function Validators() {
                 chainId: wallet.chainId,
                 token: {
                   id: "uluna",
-                  amount: "0",
+                  rawAmount: "0",
                 },
               });
               const amountToUse =
@@ -464,7 +464,7 @@ const Validators = observer(function Validators() {
                 validator: validator.address,
                 amount: {
                   id: terraChains[chainId].denom,
-                  amount: amountToUse.toString(),
+                  rawAmount: amountToUse.toString(),
                 },
               });
               dispatch({ type: "clear-selected-validator" });
@@ -529,7 +529,7 @@ const ValidatorItem = observer(function ValidatorItem({
     chainId: currentTerraChainInformation.chainId,
     token: amountToShow || {
       id: currentTerraChainInformation.denom,
-      amount: "0",
+      rawAmount: "0",
     },
   });
 
@@ -707,7 +707,7 @@ const MyStake = observer(function MyStake() {
                 chainId,
                 token: {
                   id: "uluna",
-                  amount: "0",
+                  rawAmount: "0",
                 },
               });
               const amountToUse =
@@ -718,7 +718,7 @@ const MyStake = observer(function MyStake() {
                 validator: validator.address,
                 amount: {
                   id: terraChains[chainId].denom,
-                  amount: amountToUse.toString(),
+                  rawAmount: amountToUse.toString(),
                 },
               });
               dispatch({ type: "clear-selected-validator" });

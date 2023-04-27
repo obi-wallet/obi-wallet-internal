@@ -261,7 +261,7 @@ export const SinglesigAvatar = observer<{ style?: StyleProp<ViewStyle> }>(
       chainId: currentTerraChainInformation.chainId,
       token: {
         id: currentTerraChainInformation.denom,
-        amount: "0",
+        rawAmount: "0",
       },
     });
 

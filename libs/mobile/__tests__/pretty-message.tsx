@@ -199,7 +199,7 @@ describe("Terra", () => {
       validator: terraChains[chainId].obiValidator,
       amount: {
         id: "uluna",
-        amount: "1",
+        rawAmount: "1",
       },
     });
 
@@ -223,7 +223,7 @@ describe("Terra", () => {
       validator: terraChains[chainId].obiValidator,
       amount: {
         id: "uluna",
-        amount: "1",
+        rawAmount: "1",
       },
     });
 

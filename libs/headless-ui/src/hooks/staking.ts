@@ -30,7 +30,7 @@ export function useRewards() {
   );
   const fallback: Rewards = {
     perDelegator: [],
-    total: { id: wallet.chain.denom, amount: "0" },
+    total: { id: wallet.chain.denom, rawAmount: "0" },
   };
   return {
     ...response,

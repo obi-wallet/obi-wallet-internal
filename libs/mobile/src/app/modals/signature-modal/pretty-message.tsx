@@ -112,7 +112,7 @@ const PrettyMessageStaking = observer<
       coins={[
         {
           id: value.amount.denom,
-          amount: value.amount.amount,
+          rawAmount: value.amount.amount,
         },
       ]}
       icon={<ArrowUpIcon />}
@@ -169,7 +169,7 @@ const PrettyMessageSend = observer<AminoMsgSend | MsgSend.Amino>(
     const tokens = value.amount.map((coin) => {
       return {
         id: coin.denom,
-        amount: coin.amount,
+        rawAmount: coin.amount,
       };
     });
 
@@ -510,13 +510,13 @@ const PrettyMessageExecuteContract = observer<
       ? value.coins.map((coin) => {
           return {
             id: coin.denom,
-            amount: coin.amount,
+            rawAmount: coin.amount,
           };
         })
       : value.funds.map((coin) => {
           return {
             id: coin.denom,
-            amount: coin.amount,
+            rawAmount: coin.amount,
           };
         });
   }
@@ -643,7 +643,7 @@ const PrettyCoins = observer<PrettyTokensProps>(function PrettyTokens({
   const { chainStore } = useStore();
   const denom = chainStore.currentChainInformation.denom;
   const coinsArray =
-    tokens && tokens.length > 0 ? tokens : [{ id: denom, amount: "0" }];
+    tokens && tokens.length > 0 ? tokens : [{ id: denom, rawAmount: "0" }];
   return (
     <View>
       {coinsArray.map((token) => {

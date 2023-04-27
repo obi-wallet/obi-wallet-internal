@@ -126,7 +126,7 @@ export class TerraStakingSdk extends AbstractStakingSdk {
           return {
             balance: {
               id: delegation.balance.denom,
-              amount: delegation.balance.amount.toString(),
+              rawAmount: delegation.balance.amount.toString(),
             },
             validator: {
               icon: `https://github.com/terra-money/validator-images/blob/main/images/${validator.description.identity}.jpg`,
@@ -164,7 +164,7 @@ export class TerraStakingSdk extends AbstractStakingSdk {
                 return {
                   balance: {
                     id: this.chain.denom,
-                    amount: entry.balance.toString(),
+                    rawAmount: entry.balance.toString(),
                   },
                   validator: {
                     icon: `https://github.com/terra-money/validator-images/blob/main/images/${validator.description.identity}.jpg`,
@@ -189,14 +189,14 @@ export class TerraStakingSdk extends AbstractStakingSdk {
         const mapped = coins.map((coin) => {
           return {
             id: coin.denom,
-            amount: coin.amount.toString(),
+            rawAmount: coin.amount.toString(),
           };
         });
         return mapped.length > 0
           ? mapped[0]
           : {
               id: this.chain.denom,
-              amount: "0",
+              rawAmount: "0",
             };
       };
 
