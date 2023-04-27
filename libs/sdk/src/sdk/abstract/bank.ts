@@ -66,15 +66,14 @@ export abstract class AbstractBankSdk {
 
   protected enrichTokenWithoutUsdValue(token: Token): EnrichedToken {
     const digits = 6;
-    const amount = parseInt(token.amount, 10) / 10 ** digits;
     return {
-      id: token.id,
+      ...token,
+      amount: parseInt(token.rawAmount, 10) / 10 ** digits,
       contract: null,
       icon: null,
       denom: token.id,
       digits: 6,
       label: "Unknown Token",
-      amount: amount,
       usdValue: null,
     };
   }

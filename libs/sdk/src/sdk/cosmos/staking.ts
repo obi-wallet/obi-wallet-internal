@@ -53,7 +53,7 @@ export class CosmosStakingSdk extends AbstractStakingSdk {
       perDelegator: [],
       total: {
         id: this.chain.denom,
-        amount: "0",
+        rawAmount: "0",
       },
     };
   }

@@ -333,7 +333,7 @@ export const SendScreenComponent = observer<
               return Messages.chainId(wallet.chainId).getSendMessages({
                 fromAddress: wallet.address,
                 toAddress: addressToUse,
-                tokens: [{ id: selectedCoin.id, amount: normalizedAmount }],
+                tokens: [{ id: selectedCoin.id, rawAmount: normalizedAmount }],
               });
             }
 

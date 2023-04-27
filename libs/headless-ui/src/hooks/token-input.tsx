@@ -11,7 +11,7 @@ export function useTokenInput(balance: Token) {
     defaultValues: {
       token: {
         id: balance.id,
-        amount: "",
+        rawAmount: "",
       },
     },
     mode: "onTouched",

@@ -36,10 +36,7 @@ export class TerraMessages extends AbstractMessages {
     tokens: Token[];
   }): Message[] {
     const enrichedTokens = tokens.map((token) => {
-      return {
-        ...this.sdk.bank.enrichToken(token),
-        normalizedAmount: token.amount,
-      };
+      return this.sdk.bank.enrichToken(token);
     });
     const [contractTokens, nativeTokens] = R.partition(
       (token) => token.contract !== null,
@@ -52,7 +49,7 @@ export class TerraMessages extends AbstractMessages {
               fromAddress,
               toAddress,
               R.fromPairs(
-                nativeTokens.map((token) => [token.id, token.normalizedAmount])
+                nativeTokens.map((token) => [token.id, token.rawAmount])
               )
             ),
           ]
@@ -63,7 +60,7 @@ export class TerraMessages extends AbstractMessages {
       return new MsgExecuteContract(fromAddress, token.contract, {
         transfer: {
           recipient: toAddress,
-          amount: token.normalizedAmount,
+          amount: token.rawAmount,
         },
       });
     });
@@ -447,7 +444,7 @@ export class TerraMessages extends AbstractMessages {
     return new MsgDelegate(
       wallet.address,
       validator,
-      new TerraCoin(amount.id, amount.amount)
+      new TerraCoin(amount.id, amount.rawAmount)
     );
   }
 
@@ -463,7 +460,7 @@ export class TerraMessages extends AbstractMessages {
     return new MsgUndelegate(
       wallet.address,
       validator,
-      new TerraCoin(amount.id, amount.amount)
+      new TerraCoin(amount.id, amount.rawAmount)
     );
   }
 

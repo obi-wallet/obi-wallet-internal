@@ -1,15 +1,14 @@
 export interface Token {
   id: string;
-  amount: string;
+  rawAmount: string;
 }
 
-export interface EnrichedToken {
-  id: string;
+export interface EnrichedToken extends Token {
+  amount: number;
   contract: string | null;
   icon: string | null;
   denom: string;
   digits: number;
   label: string;
-  amount: number;
   usdValue: number | null;
 }

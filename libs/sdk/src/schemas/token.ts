@@ -13,7 +13,10 @@ export function token({
   chainId,
   id,
 }: { chainId: ChainId } & Pick<Token, "id">) {
-  const { digits } = Sdk.chainId(chainId).bank.enrichToken({ id, amount: "0" });
+  const { digits } = Sdk.chainId(chainId).bank.enrichToken({
+    id,
+    rawAmount: "0",
+  });
 
   return z
     .string()
@@ -43,7 +46,7 @@ export function token({
     .transform((amount): Token => {
       return {
         id,
-        amount: amount.toString(),
+        rawAmount: amount.toString(),
       };
     });
 }
@@ -58,7 +61,7 @@ export function tokenGivenBalance({
   chainId: ChainId;
   balance: Token;
 }) {
-  return token({ chainId, id: balance.id }).refine(({ amount }) => {
-    return new BigNumber(balance.amount).isGreaterThanOrEqualTo(amount);
+  return token({ chainId, id: balance.id }).refine(({ rawAmount }) => {
+    return new BigNumber(balance.rawAmount).isGreaterThanOrEqualTo(rawAmount);
   }, "Insufficient balance");
 }

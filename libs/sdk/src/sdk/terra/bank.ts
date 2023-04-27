@@ -35,7 +35,7 @@ export class TerraBankSdk extends AbstractBankSdk {
             coins.map((coin): Token => {
               return {
                 id: coin.denom,
-                amount: coin.amount.toString(),
+                rawAmount: coin.amount.toString(),
               };
             }),
             pagination,
@@ -57,14 +57,14 @@ export class TerraBankSdk extends AbstractBankSdk {
           );
           return {
             id: token.token,
-            amount: response.balance,
+            rawAmount: response.balance,
           };
         })
       );
 
       return [...nativeCoins, ...contractTokens].filter(
         (coin): coin is Token => {
-          return coin !== null && coin.amount !== "0";
+          return coin !== null && coin.rawAmount !== "0";
         }
       );
     });
@@ -195,7 +195,8 @@ export class TerraBankSdk extends AbstractBankSdk {
       token.id;
 
     return {
-      id: token.id,
+      ...token,
+      amount: parseInt(token.rawAmount, 10) / 10 ** tokenData.decimals,
       icon: tokenData.icon ? tokenData.icon : null,
       contract: R.prop("token", tokenData) ?? null,
       denom: (() => {
@@ -207,7 +208,6 @@ export class TerraBankSdk extends AbstractBankSdk {
       digits: tokenData.decimals,
       label:
         R.prop("name", tokenData) ?? R.prop("symbol", tokenData) ?? token.id,
-      amount: parseInt(token.amount, 10) / 10 ** tokenData.decimals,
       usdValue: null,
     };
   }

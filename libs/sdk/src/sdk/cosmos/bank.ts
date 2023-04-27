@@ -36,7 +36,7 @@ export class CosmosBankSdk extends AbstractBankSdk {
           return coins.map((coin) => {
             return {
               id: coin.denom,
-              amount: coin.amount,
+              rawAmount: coin.amount,
             };
           });
         }
@@ -60,7 +60,7 @@ export class CosmosBankSdk extends AbstractBankSdk {
               );
               return {
                 id: customToken.contract,
-                amount: response.balance,
+                rawAmount: response.balance,
               };
             })
           );
@@ -198,44 +198,41 @@ export class CosmosBankSdk extends AbstractBankSdk {
     switch (token.id) {
       case this.chain.denom: {
         const digits = 6;
-        const amount = parseInt(token.amount, 10) / 10 ** digits;
         return {
-          id: token.id,
+          ...token,
+          amount: parseInt(token.rawAmount, 10) / 10 ** digits,
           contract: null,
           icon: null,
           denom: this.chain.denom.slice(1).toUpperCase(),
           digits,
           label: this.chain.denom[1].toUpperCase() + this.chain.denom.slice(2),
-          amount,
           usdValue: null,
         };
       }
       case "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034": {
         const digits = 6;
-        const amount = parseInt(token.amount, 10) / 10 ** digits;
         return {
-          id: token.id,
+          ...token,
+          amount: parseInt(token.rawAmount, 10) / 10 ** digits,
           contract: null,
           icon: null,
           denom: "axlUSDC",
           digits,
           label: "USDC (Axelar)",
-          amount,
           usdValue: null,
         };
       }
       case "juno1qsrercqegvs4ye0yqg93knv73ye5dc3prqwd6jcdcuj8ggp6w0us66deup": {
         const digits = 6;
-        const amount = parseInt(token.amount, 10) / 10 ** digits;
         return {
-          id: token.id,
+          ...token,
+          amount: parseInt(token.rawAmount, 10) / 10 ** digits,
           contract:
             "juno1qsrercqegvs4ye0yqg93knv73ye5dc3prqwd6jcdcuj8ggp6w0us66deup",
           icon: null,
           denom: "LOOP",
           digits,
           label: "Loop",
-          amount,
           usdValue: null,
         };
       }

@@ -21,14 +21,14 @@ describe("token", () => {
   });
 
   test("Decimal separators", () => {
-    expect(schema.parse("1.0")).toEqual({ id: "uluna", amount: "1000000" });
-    expect(schema.parse("1,0")).toEqual({ id: "uluna", amount: "1000000" });
+    expect(schema.parse("1.0")).toEqual({ id: "uluna", rawAmount: "1000000" });
+    expect(schema.parse("1,0")).toEqual({ id: "uluna", rawAmount: "1000000" });
   });
 
   test("Handle whole precision", () => {
     expect(schema.parse("1.000001")).toEqual({
       id: "uluna",
-      amount: "1000001",
+      rawAmount: "1000001",
     });
   });
 
@@ -66,12 +66,12 @@ describe("tokenGivenBalance", () => {
     chainId: "phoenix-1",
     balance: {
       id: "uluna",
-      amount: "1",
+      rawAmount: "1",
     },
   });
 
   test("Sufficient balance", () => {
-    expect(schema.parse("0.000001")).toEqual({ id: "uluna", amount: "1" });
+    expect(schema.parse("0.000001")).toEqual({ id: "uluna", rawAmount: "1" });
   });
 
   test("Insufficient balance", () => {
