@@ -33,10 +33,17 @@ export function token({
       const fractionalPart = amount.split(".")[1] ?? [];
       return fractionalPart.length <= digits;
     }, "Precision overflow")
+    .transform((amount) => {
+      return new BigNumber(amount).multipliedBy(10 ** digits);
+    })
+    .refine((amount: BigNumber | string) => {
+      if (!(amount instanceof BigNumber)) return true;
+      return amount.gt(0);
+    }, "Amount must be greater than 0")
     .transform((amount): Token => {
       return {
         id,
-        amount: new BigNumber(amount).multipliedBy(10 ** digits).toString(),
+        amount: amount.toString(),
       };
     });
 }

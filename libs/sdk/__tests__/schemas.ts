@@ -6,8 +6,18 @@ describe("token", () => {
     id: "uluna",
   });
 
-  test("Zero", () => {
-    expect(schema.parse("0")).toEqual({ id: "uluna", amount: "0" });
+  test("Fail on non-positive input", () => {
+    expect(() => {
+      schema.parse("0");
+    }).toThrowErrorMatchingInlineSnapshot(`
+      "[
+        {
+          "code": "custom",
+          "message": "Amount must be greater than 0",
+          "path": []
+        }
+      ]"
+    `);
   });
 
   test("Decimal separators", () => {
@@ -66,7 +76,7 @@ describe("tokenGivenBalance", () => {
 
   test("Insufficient balance", () => {
     expect(() => {
-      return schema.parse("0.000002");
+      schema.parse("0.000002");
     }).toThrowErrorMatchingInlineSnapshot(`
       "[
         {
