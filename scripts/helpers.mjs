@@ -3,7 +3,6 @@ import fs from "node:fs";
 import util from "node:util";
 
 const exec = util.promisify(childProcess.exec);
-const spawn = util.promisify(childProcess.spawn);
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 const unlink = util.promisify(fs.unlink);
@@ -17,7 +16,11 @@ export async function get1PasswordItem(id) {
 }
 
 export async function download1PasswordFile(id, outFile) {
-  await unlink(outFile);
+  try {
+    await unlink(outFile);
+  } catch (e) {
+    // noop
+  }
   await execCommand(
     `op document get ${id} --account AURDFTDQCVHDRIBVN3MRH5PSFA --out-file ${outFile}`
   );
