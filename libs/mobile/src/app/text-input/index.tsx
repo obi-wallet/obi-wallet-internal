@@ -67,18 +67,25 @@ export const TextInput = observer<
         placeholderTextColor={isObi ? "rgba(250,250,250,.5)" : "#4B4E6E"}
         {...props}
       />
-      {invalidMessage && (
-        <Text
-          style={{
-            color: "#FF2222",
-            fontSize: 12,
-            marginTop: 5,
-            marginLeft: 5,
-          }}
-        >
-          {invalidMessage}
-        </Text>
-      )}
+      <TextInputInvalidMessage message={invalidMessage} />
     </View>
   );
 });
+
+export const TextInputInvalidMessage = observer<{ message?: string }>(
+  function TextInputInvalidMessage({ message }) {
+    if (!message) return null;
+    return (
+      <Text
+        style={{
+          color: "#FF2222",
+          fontSize: 12,
+          marginTop: 5,
+          marginLeft: 5,
+        }}
+      >
+        {message}
+      </Text>
+    );
+  }
+);

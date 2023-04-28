@@ -14,7 +14,7 @@ export function useTokenInput(balance: Token) {
         rawAmount: "",
       },
     },
-    mode: "onTouched",
+    mode: "onChange",
     resolver: zodResolver(schema),
   });
 

@@ -56,12 +56,16 @@ export function token({
  */
 export function tokenGivenBalance({
   chainId,
-  balance,
+  balance = { id: "", rawAmount: "0" },
 }: {
   chainId: ChainId;
-  balance: Token;
+  balance?: Token;
 }) {
-  return token({ chainId, id: balance.id }).refine(({ rawAmount }) => {
-    return new BigNumber(balance.rawAmount).isGreaterThanOrEqualTo(rawAmount);
-  }, "Insufficient balance");
+  return token({ chainId, id: balance.id })
+    .refine(() => {
+      return balance.id !== "";
+    }, "No token selected")
+    .refine(({ rawAmount }) => {
+      return new BigNumber(balance.rawAmount).isGreaterThanOrEqualTo(rawAmount);
+    }, "Insufficient balance");
 }
