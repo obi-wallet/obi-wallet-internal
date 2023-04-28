@@ -1,23 +1,19 @@
 import { useTheme } from "@emotion/react";
-import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons/faQrcode";
-import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Brand } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   isTerraChain,
   Messages,
   SignAndBroadcastTransactionUserInteraction,
-  tokenGivenBalances,
   Token,
+  tokenGivenBalances,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
@@ -27,6 +23,7 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import ObiQr from "./assets/obiqr.svg";
+import { TokenController } from "../../../forms";
 import { address } from "../../../helpers/validation-helpers";
 import { EnrichedToken, useEnrichedBalances } from "../../balances";
 import { Button } from "../../button";
@@ -34,11 +31,8 @@ import { RootRoute, RootStackParamList } from "../../root-stack";
 import { useStore } from "../../stores";
 import { TextInput, TextInputInvalidMessage } from "../../text-input";
 import { Back } from "../components/back";
-import { BottomSheetBackdrop } from "../components/bottomSheetBackdrop";
-import { CoinIcon } from "../components/coin-icon";
 import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
 import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
-import { RefreshableFlatList } from "../components/refreshable-flat-list";
 import { isSmallScreenNumber } from "../components/screen-size";
 import { HomeBottomTabRoute } from "../home/home-stack";
 
@@ -59,17 +53,6 @@ export const SendScreenComponent = observer<
     address: wallet.address,
     chainId: wallet.chainId,
   });
-
-  const [denominationOpened, setDenominationOpened] = useState(false);
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const triggerBottomSheet = (open: boolean) => {
-    if (open) {
-      setDenominationOpened(true);
-      bottomSheetRef.current?.snapToIndex(0);
-    } else {
-      bottomSheetRef.current?.close();
-    }
-  };
 
   const { control, formState, handleSubmit, getValues, setValue } = useForm({
     defaultValues: {
@@ -102,7 +85,6 @@ export const SendScreenComponent = observer<
   );
 
   const selectedTokenId = getValues().token.id;
-  const selectedToken = balances.data.find((b) => b.id === selectedTokenId);
 
   useEffect(() => {
     if (!selectedTokenId && balances.data[0]) {
@@ -127,8 +109,6 @@ export const SendScreenComponent = observer<
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
   const isObi = configStore.isObi();
-
-  console.log(getValues());
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}>
@@ -281,120 +261,13 @@ export const SendScreenComponent = observer<
             name="token"
             control={control}
             render={({ field, fieldState }) => {
-              const hasError = fieldState.error !== undefined;
               return (
-                <View style={{ marginTop: 35 }}>
-                  <Text
-                    style={{
-                      color: isLoop ? "#787B9C" : "white",
-                      textTransform: "uppercase",
-                      fontSize: 10,
-                      marginBottom: 12,
-                    }}
-                  >
-                    <FormattedMessage
-                      id="send.amount"
-                      defaultMessage="Amount"
-                    />
-                  </Text>
-                  <View
-                    style={[
-                      {
-                        borderWidth: 1,
-                        borderRadius: 12,
-                        borderColor: isLoop ? "#2F2B4C" : "white",
-                        padding: 4,
-                        flexDirection: "row",
-                      },
-                      hasError
-                        ? {
-                            borderColor: "#FF2222",
-                          }
-                        : null,
-                    ]}
-                  >
-                    <TouchableOpacity
-                      style={{
-                        borderRadius: 12,
-                        flex: 2,
-                        backgroundColor: isLoop ? "#17162C" : "#272727",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        paddingVertical: 12,
-                        paddingLeft: 12,
-                      }}
-                      onPress={() => triggerBottomSheet(true)}
-                    >
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "flex-start",
-                          flex: 3,
-                        }}
-                      >
-                        <View
-                          style={{
-                            width: 44,
-                            height: 44,
-                            marginRight: 12,
-                            borderRadius: 44,
-                          }}
-                        >
-                          <CoinIcon source={selectedToken?.icon ?? null} />
-                        </View>
-                        <View style={{ justifyContent: "center" }}>
-                          <Text
-                            style={{
-                              color: "#F6F5FF",
-                              fontWeight: "500",
-                              fontSize: 14,
-                            }}
-                          >
-                            {selectedToken?.denom}
-                          </Text>
-                          <Text style={{ color: isLoop ? "#999CB6" : "white" }}>
-                            {selectedToken?.amount}
-                          </Text>
-                        </View>
-                      </View>
-                      <View style={{ flex: 1, alignItems: "center" }}>
-                        <FontAwesomeIcon
-                          icon={faAngleDown}
-                          style={{ color: isLoop ? "#7B87A8" : "white" }}
-                        />
-                      </View>
-                    </TouchableOpacity>
-                    <TextInput
-                      keyboardType="numeric"
-                      style={{
-                        alignSelf: "center",
-                        borderColor: "transparent",
-                        flex: 1,
-                        paddingLeft: 20,
-                        paddingRight: 10,
-                      }}
-                      inputStyle={{
-                        borderColor: "transparent",
-                        textAlign: "right",
-                        fontSize: 18,
-                        fontWeight: "500",
-                      }}
-                      placeholder="0"
-                      value={field.value.amount}
-                      onChangeText={(amount) => {
-                        field.onChange({
-                          id: field.value.id,
-                          amount,
-                        });
-                      }}
-                      onBlur={field.onBlur}
-                    />
-                  </View>
-                  <TextInputInvalidMessage
-                    message={fieldState.error?.message}
-                  />
-                </View>
+                <TokenController
+                  field={field}
+                  fieldState={fieldState}
+                  balances={balances.data}
+                  refetch={balances.refetch}
+                />
               );
             }}
           />
@@ -440,224 +313,8 @@ export const SendScreenComponent = observer<
             }
           })}
         />
-        <BottomSheetBackdrop
-          onPress={() => triggerBottomSheet(false)}
-          visible={denominationOpened}
-        />
-        <BottomSheet
-          handleIndicatorStyle={{ backgroundColor: "white" }}
-          backgroundStyle={{
-            backgroundColor: isLoop ? "#100F1E" : "#1a1a1a",
-          }}
-          handleStyle={{ backgroundColor: "transparent" }}
-          snapPoints={["60"]}
-          enablePanDownToClose={true}
-          ref={bottomSheetRef}
-          index={-1}
-          backdropComponent={() => null}
-          onClose={() => {
-            setDenominationOpened(false);
-          }}
-        >
-          <BottomSheetView
-            style={{
-              flex: 1,
-              backgroundColor: "transparent",
-              position: "relative",
-              paddingHorizontal: isLoop ? 20 : 5,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                paddingBottom: 10,
-                paddingLeft: 10,
-              }}
-            >
-              <View>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: "600",
-                    color: "#f6f5ff",
-                  }}
-                >
-                  <FormattedMessage
-                    id="send.denomination"
-                    defaultMessage="Denomination"
-                  />
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: "#f6f5ff",
-                    opacity: isLoop ? 0.6 : 1,
-                  }}
-                >
-                  <FormattedMessage
-                    id="send.selectcoin"
-                    defaultMessage="Select the coin you'd like to send"
-                  />
-                </Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => triggerBottomSheet(false)}
-                style={{ alignSelf: "flex-start" }}
-              >
-                <FontAwesomeIcon icon={faTimes} style={{ color: "#F6F5FF" }} />
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                backgroundColor: isLoop ? "transparent" : "#272727",
-                flex: 1,
-                ...(isObi
-                  ? {
-                      borderRadius: 7,
-                    }
-                  : {}),
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  padding: 10,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: isLoop ? "#f6f5ff" : "white",
-                    opacity: isLoop ? 0.6 : 1,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  <FormattedMessage id="send.name" defaultMessage="Name" />
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: isLoop ? "#f6f5ff" : "white",
-                    opacity: isLoop ? 0.6 : 1,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  <FormattedMessage
-                    id="send.holdings"
-                    defaultMessage="Holdings"
-                  />
-                </Text>
-              </View>
-              <RefreshableFlatList
-                data={balances.data}
-                keyExtractor={(item) => item.id}
-                renderItem={(props) => (
-                  <CoinRenderer
-                    {...props}
-                    selected={props.item.id === getValues().token.id}
-                    onPress={() => {
-                      triggerBottomSheet(false);
-                      selectToken(props.item.id);
-                    }}
-                  />
-                )}
-                refetch={balances.refetch}
-              />
-            </View>
-          </BottomSheetView>
-        </BottomSheet>
       </SafeAreaView>
     </KeyboardAvoidingView>
-  );
-});
-
-interface CoinRendererProps {
-  item: EnrichedToken;
-  selected: boolean;
-  onPress: () => void;
-}
-
-const getBrandBackground = (brand: Brand) => {
-  switch (brand) {
-    case Brand.Loop:
-      return {
-        selected: "#17162C",
-        unselected: "#100F1E",
-      };
-    case Brand.Obi:
-      return {
-        selected: "rgba(0,0,0,0.1)",
-        unselected: "transparent",
-      };
-  }
-};
-
-const CoinRenderer = observer(function CoinRenderer({
-  item,
-  selected,
-  onPress,
-}: CoinRendererProps) {
-  const { configStore } = useStore();
-  const brandColors = getBrandBackground(configStore.brand);
-  return (
-    <TouchableOpacity
-      style={{
-        backgroundColor: selected
-          ? brandColors.selected
-          : brandColors.unselected,
-        marginVertical: 10,
-        padding: 10,
-        flexDirection: "row",
-        justifyContent: "space-between",
-      }}
-      onPress={onPress}
-    >
-      <View style={{ flexDirection: "row" }}>
-        <View
-          style={{
-            width: 36,
-            height: 36,
-            marginRight: 10,
-            borderRadius: 12,
-          }}
-        >
-          <CoinIcon source={item.icon} />
-        </View>
-        <View>
-          <Text style={{ color: "#f6f5ff", fontWeight: "500" }}>
-            {item.label}
-          </Text>
-          <Text
-            style={{
-              color: "#f6f5ff",
-              fontWeight: "500",
-              fontSize: 12,
-              opacity: 0.6,
-            }}
-          >
-            {item.denom}
-          </Text>
-        </View>
-      </View>
-      <View style={{ alignItems: "flex-end" }}>
-        <Text style={{ color: "#f6f5ff", fontWeight: "500" }}>
-          ${(item.usdValue ?? 0).toFixed(2)}
-        </Text>
-        <Text
-          style={{
-            color: "#f6f5ff",
-            fontWeight: "500",
-            fontSize: 12,
-            opacity: 0.6,
-          }}
-        >
-          {item.amount} {item.denom}
-        </Text>
-      </View>
-    </TouchableOpacity>
   );
 });
 
