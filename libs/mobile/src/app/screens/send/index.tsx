@@ -11,12 +11,13 @@ import {
   isTerraChain,
   Messages,
   SignAndBroadcastTransactionUserInteraction,
-  tokenGivenBalance,
+  tokenGivenBalances,
+  Token,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
@@ -70,42 +71,44 @@ export const SendScreenComponent = observer<
     }
   };
 
-  const tokenIdRef = useRef(asset?.id ?? balances.data[0]?.id ?? "");
-  const balanceRef = useRef(
-    balances.data.find((b) => b.id === tokenIdRef.current)
-  );
-
   const { control, formState, handleSubmit, getValues, setValue } = useForm({
     defaultValues: {
       address: "",
       token: {
-        id: tokenIdRef.current,
-        rawAmount: "",
+        id: asset?.id ?? balances.data[0]?.id ?? "",
+        amount: "",
       },
     },
     mode: "onChange",
     resolver: zodResolver(
       z.object({
         address: address(wallet.chainId),
-        token: tokenGivenBalance({
+        token: tokenGivenBalances({
           chainId: wallet.chainId,
-          balance: balances.data.find((b) => b.id === tokenIdRef.current),
+          balances: balances.data,
         }),
       })
     ),
   });
-  tokenIdRef.current = getValues("token").id;
-  balanceRef.current = balances.data.find((b) => b.id === tokenIdRef.current);
+
+  const selectToken = useCallback(
+    (id: string) => {
+      setValue("token", {
+        id,
+        amount: getValues().token.amount,
+      });
+    },
+    [getValues, setValue]
+  );
+
+  const selectedTokenId = getValues().token.id;
+  const selectedToken = balances.data.find((b) => b.id === selectedTokenId);
 
   useEffect(() => {
-    const { token } = getValues();
-    if (!token.id && balances.data[0]) {
-      setValue("token", {
-        id: balances.data[0].id,
-        rawAmount: token.rawAmount,
-      });
+    if (!selectedTokenId && balances.data[0]) {
+      selectToken(balances.data[0].id);
     }
-  }, [balances, getValues, setValue]);
+  }, [balances, selectedTokenId, selectToken]);
 
   const [confirmModalVisible, setConfirmModalStatus] = useState<{
     visible?: boolean;
@@ -124,6 +127,8 @@ export const SendScreenComponent = observer<
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
   const isObi = configStore.isObi();
+
+  console.log(getValues());
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}>
@@ -336,7 +341,7 @@ export const SendScreenComponent = observer<
                             borderRadius: 44,
                           }}
                         >
-                          <CoinIcon source={balanceRef.current?.icon ?? null} />
+                          <CoinIcon source={selectedToken?.icon ?? null} />
                         </View>
                         <View style={{ justifyContent: "center" }}>
                           <Text
@@ -346,10 +351,10 @@ export const SendScreenComponent = observer<
                               fontSize: 14,
                             }}
                           >
-                            {balanceRef.current?.denom}
+                            {selectedToken?.denom}
                           </Text>
                           <Text style={{ color: isLoop ? "#999CB6" : "white" }}>
-                            {balanceRef.current?.amount}
+                            {selectedToken?.amount}
                           </Text>
                         </View>
                       </View>
@@ -376,8 +381,13 @@ export const SendScreenComponent = observer<
                         fontWeight: "500",
                       }}
                       placeholder="0"
-                      value={field.value.rawAmount}
-                      onChangeText={field.onChange}
+                      value={field.value.amount}
+                      onChangeText={(amount) => {
+                        field.onChange({
+                          id: field.value.id,
+                          amount,
+                        });
+                      }}
                       onBlur={field.onBlur}
                     />
                   </View>
@@ -397,6 +407,7 @@ export const SendScreenComponent = observer<
           })}
           disabled={!formState.isValid}
           onPress={handleSubmit(async (data) => {
+            console.log(data);
             invariant(wallet, "Expected wallet to be defined.");
 
             function getMessages(): Msg[] {
@@ -405,7 +416,8 @@ export const SendScreenComponent = observer<
               return Messages.chainId(wallet.chainId).getSendMessages({
                 fromAddress: wallet.address,
                 toAddress: data.address,
-                tokens: [data.token],
+                // TODO: TypeScript doesn't understand that we receive the processed data here
+                tokens: [data.token as unknown as Token],
               });
             }
 
@@ -548,10 +560,7 @@ export const SendScreenComponent = observer<
                     selected={props.item.id === getValues().token.id}
                     onPress={() => {
                       triggerBottomSheet(false);
-                      setValue("token", {
-                        id: props.item.id,
-                        rawAmount: getValues().token.rawAmount,
-                      });
+                      selectToken(props.item.id);
                     }}
                   />
                 )}

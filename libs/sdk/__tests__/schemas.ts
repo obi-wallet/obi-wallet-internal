@@ -1,14 +1,11 @@
-import { token, tokenGivenBalance } from "../src";
+import { token, tokenGivenBalances } from "../src";
 
 describe("token", () => {
-  const schema = token({
-    chainId: "phoenix-1",
-    id: "uluna",
-  });
+  const schema = token("phoenix-1");
 
   test("Fail on non-positive input", () => {
     expect(() => {
-      schema.parse("0");
+      schema.parse({ id: "uluna", amount: "0" });
     }).toThrowErrorMatchingInlineSnapshot(`
       "[
         {
@@ -21,12 +18,18 @@ describe("token", () => {
   });
 
   test("Decimal separators", () => {
-    expect(schema.parse("1.0")).toEqual({ id: "uluna", rawAmount: "1000000" });
-    expect(schema.parse("1,0")).toEqual({ id: "uluna", rawAmount: "1000000" });
+    expect(schema.parse({ id: "uluna", amount: "1.0" })).toEqual({
+      id: "uluna",
+      rawAmount: "1000000",
+    });
+    expect(schema.parse({ id: "uluna", amount: "1,0" })).toEqual({
+      id: "uluna",
+      rawAmount: "1000000",
+    });
   });
 
   test("Handle whole precision", () => {
-    expect(schema.parse("1.000001")).toEqual({
+    expect(schema.parse({ id: "uluna", amount: "1.000001" })).toEqual({
       id: "uluna",
       rawAmount: "1000001",
     });
@@ -34,7 +37,7 @@ describe("token", () => {
 
   test("Fail on precision overflow", () => {
     expect(() => {
-      schema.parse("1.0000001");
+      schema.parse({ id: "uluna", amount: "1.0000001" });
     }).toThrowErrorMatchingInlineSnapshot(`
       "[
         {
@@ -48,7 +51,7 @@ describe("token", () => {
 
   test("Invalid input", () => {
     expect(() => {
-      schema.parse("1.0000001");
+      schema.parse({ id: "uluna", amount: "1.0000001" });
     }).toThrowErrorMatchingInlineSnapshot(`
       "[
         {
@@ -61,27 +64,60 @@ describe("token", () => {
   });
 });
 
-describe("tokenGivenBalance", () => {
-  const schema = tokenGivenBalance({
+describe("tokenGivenBalances", () => {
+  const schema = tokenGivenBalances({
     chainId: "phoenix-1",
-    balance: {
-      id: "uluna",
-      rawAmount: "1",
-    },
+    balances: [
+      {
+        id: "uluna",
+        rawAmount: "1",
+      },
+    ],
   });
 
   test("Sufficient balance", () => {
-    expect(schema.parse("0.000001")).toEqual({ id: "uluna", rawAmount: "1" });
+    expect(schema.parse({ id: "uluna", amount: "0.000001" })).toEqual({
+      id: "uluna",
+      rawAmount: "1",
+    });
   });
 
   test("Insufficient balance", () => {
     expect(() => {
-      schema.parse("0.000002");
+      schema.parse({ id: "uluna", amount: "0.000002" });
     }).toThrowErrorMatchingInlineSnapshot(`
       "[
         {
           "code": "custom",
           "message": "Insufficient balance",
+          "path": []
+        }
+      ]"
+    `);
+  });
+
+  test("Insufficient balance", () => {
+    expect(() => {
+      schema.parse({ id: "ujuno", amount: "0.000002" });
+    }).toThrowErrorMatchingInlineSnapshot(`
+      "[
+        {
+          "code": "custom",
+          "message": "Insufficient balance",
+          "path": []
+        }
+      ]"
+    `);
+  });
+
+  test("No token selected", () => {
+    expect(() => {
+      schema.parse({ id: "", amount: "0.00002" });
+    }).toThrowErrorMatchingInlineSnapshot(`
+      "[
+        {
+          "code": "custom",
+          "message": "No token selected",
           "path": []
         }
       ]"

@@ -9,19 +9,24 @@ import { Sdk } from "../sdk";
  * Zod schema that validates a token amount with potential decimal separator (e.g. "123.456")
  * and returns a {@link Token}.
  */
-export function token({
-  chainId,
-  id,
-}: { chainId: ChainId } & Pick<Token, "id">) {
-  const { digits } = Sdk.chainId(chainId).bank.enrichToken({
-    id,
-    rawAmount: "0",
-  });
-
+export function token(chainId: ChainId) {
   return z
-    .string()
-    .transform((val) => val.trim().replace(",", "."))
-    .refine((amount) => {
+    .object({
+      id: z.string(),
+      amount: z.string(),
+    })
+    .transform(({ id, amount }) => {
+      const { digits } = Sdk.chainId(chainId).bank.enrichToken({
+        id,
+        rawAmount: "0",
+      });
+      return {
+        id,
+        amount: amount.trim().replace(",", "."),
+        digits,
+      };
+    })
+    .refine(({ amount }) => {
       const containsOnlyDigitsAndDecimalSeparators = /^[0-9.,]*$/.test(amount);
       const containsAtLeastOneDigit = /[0-9]/.test(amount);
       const containsAtMostOneDecimalSeparator =
@@ -32,18 +37,21 @@ export function token({
         containsAtMostOneDecimalSeparator
       );
     })
-    .refine((amount) => {
+    .refine(({ amount, digits }) => {
       const fractionalPart = amount.split(".")[1] ?? [];
       return fractionalPart.length <= digits;
     }, "Precision overflow")
-    .transform((amount) => {
-      return new BigNumber(amount).multipliedBy(10 ** digits);
+    .transform(({ id, amount, digits }) => {
+      return {
+        id,
+        amount: new BigNumber(amount).multipliedBy(10 ** digits),
+      };
     })
-    .refine((amount: BigNumber | string) => {
+    .refine(({ amount }) => {
       if (!(amount instanceof BigNumber)) return true;
       return amount.gt(0);
     }, "Amount must be greater than 0")
-    .transform((amount): Token => {
+    .transform(({ id, amount }): Token => {
       return {
         id,
         rawAmount: amount.toString(),
@@ -54,18 +62,25 @@ export function token({
 /**
  * Zod schema similar to {@link token} but also validates that the balance is sufficient.
  */
-export function tokenGivenBalance({
+export function tokenGivenBalances({
   chainId,
-  balance = { id: "", rawAmount: "0" },
+  balances,
 }: {
   chainId: ChainId;
-  balance?: Token;
+  balances?: Token[];
 }) {
-  return token({ chainId, id: balance.id })
-    .refine(() => {
-      return balance.id !== "";
+  return token(chainId)
+    .refine((token) => {
+      return token.id !== "";
     }, "No token selected")
-    .refine(({ rawAmount }) => {
-      return new BigNumber(balance.rawAmount).isGreaterThanOrEqualTo(rawAmount);
+    .refine((token) => {
+      if (token.id === "") return true;
+      const balance = balances?.find((balance) => balance.id === token.id) ?? {
+        id: token.id,
+        rawAmount: "0",
+      };
+      return new BigNumber(balance.rawAmount).isGreaterThanOrEqualTo(
+        token.rawAmount
+      );
     }, "Insufficient balance");
 }
