@@ -1,38 +1,38 @@
 import { useTheme } from "@emotion/react";
-import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons/faQrcode";
-import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
-import { Brand } from "@obi-wallet/common";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   isTerraChain,
   Messages,
   SignAndBroadcastTransactionUserInteraction,
+  Token,
+  tokenGivenBalances,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
 import ObiQr from "./assets/obiqr.svg";
+import { TokenController } from "../../../forms";
+import { address } from "../../../helpers/validation-helpers";
 import { EnrichedToken, useEnrichedBalances } from "../../balances";
 import { Button } from "../../button";
 import { RootRoute, RootStackParamList } from "../../root-stack";
 import { useStore } from "../../stores";
-import { TextInput } from "../../text-input";
+import { TextInput, TextInputInvalidMessage } from "../../text-input";
 import { Back } from "../components/back";
-import { BottomSheetBackdrop } from "../components/bottomSheetBackdrop";
-import { CoinIcon } from "../components/coin-icon";
 import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
 import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
-import { RefreshableFlatList } from "../components/refreshable-flat-list";
 import { isSmallScreenNumber } from "../components/screen-size";
 import { HomeBottomTabRoute } from "../home/home-stack";
 
@@ -54,32 +54,43 @@ export const SendScreenComponent = observer<
     chainId: wallet.chainId,
   });
 
-  const [selectedCoin, setSelectedCoin] = useState<EnrichedToken | undefined>(
-    () => {
-      return asset ?? balances.data[0];
-    }
+  const { control, formState, handleSubmit, getValues, setValue } = useForm({
+    defaultValues: {
+      address: "",
+      token: {
+        id: asset?.id ?? balances.data[0]?.id ?? "",
+        amount: "",
+      },
+    },
+    mode: "onChange",
+    resolver: zodResolver(
+      z.object({
+        address: address(wallet.chainId),
+        token: tokenGivenBalances({
+          chainId: wallet.chainId,
+          balances: balances.data,
+        }),
+      })
+    ),
+  });
+
+  const selectToken = useCallback(
+    (id: string) => {
+      setValue("token", {
+        id,
+        amount: getValues().token.amount,
+      });
+    },
+    [getValues, setValue]
   );
-  const [denominationOpened, setDenominationOpened] = useState(false);
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const triggerBottomSheet = (open: boolean) => {
-    if (open) {
-      setDenominationOpened(true);
-      bottomSheetRef.current?.snapToIndex(0);
-    } else {
-      bottomSheetRef.current?.close();
-    }
-  };
+
+  const selectedTokenId = getValues().token.id;
 
   useEffect(() => {
-    if (selectedCoin === undefined && balances.data[0]) {
-      setSelectedCoin(balances.data[0]);
+    if (!selectedTokenId && balances.data[0]) {
+      selectToken(balances.data[0].id);
     }
-  }, [balances, selectedCoin]);
-
-  const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState("");
-
-  const normalizedAmount = amount.replace(/,/g, ".");
+  }, [balances, selectedTokenId, selectToken]);
 
   const [confirmModalVisible, setConfirmModalStatus] = useState<{
     visible?: boolean;
@@ -90,7 +101,7 @@ export const SendScreenComponent = observer<
   const intl = useIntl();
   const qrCodeScannerModal = useQrCodeScannerModal(({ data, close }) => {
     if (data.startsWith(prefix)) {
-      setAddress(data);
+      setValue("address", data);
       close();
     }
   });
@@ -148,161 +159,118 @@ export const SendScreenComponent = observer<
               <FormattedMessage id="send.send" defaultMessage="Send" />
             </Text>
           </View>
-          <View
-            style={{
-              marginTop: 55,
-              flexDirection: "row",
-              alignItems: "flex-end",
-            }}
-          >
-            <TextInput
-              label={intl.formatMessage({
-                id: "send.to",
-                defaultMessage: "To",
-              })}
-              placeholder={intl.formatMessage({
-                id: "send.walletaddress",
-                defaultMessage: "Wallet Address",
-              })}
-              style={{ flex: 1 }}
-              inputStyle={{
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-                borderRightWidth: 0,
-              }}
-              value={address}
-              onChangeText={setAddress}
-            />
-            <TouchableOpacity
-              style={{
-                width: 56,
-                height: isSmallScreenNumber(46, 56),
-                justifyContent: "center",
-                alignItems: "center",
-                padding: isObi ? 0 : 5,
-                borderTopRightRadius: isObi ? 32 : 12,
-                borderBottomRightRadius: isObi ? 32 : 12,
-                borderWidth: 1,
-                borderColor: isLoop ? "#2F2B4C" : "white",
-                borderLeftWidth: 0,
-              }}
-              onPress={() => {
-                qrCodeScannerModal.open();
-              }}
-            >
-              <View
-                style={{
-                  position: "absolute",
-                  width: 1,
-                  backgroundColor: isLoop ? "#2F2B4C" : "white",
-                  height: "100%",
-                  left: 0,
-                }}
-              />
-              {isObi ? (
-                <ObiQr />
-              ) : (
-                <FontAwesomeIcon
-                  icon={faQrcode}
-                  style={{ color: isLoop ? "#887CEB" : "white" }}
-                  size={32}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
-          <View style={{ marginTop: 35 }}>
-            <Text
-              style={{
-                color: isLoop ? "#787B9C" : "white",
-                textTransform: "uppercase",
-                fontSize: 10,
-                marginBottom: 12,
-              }}
-            >
-              <FormattedMessage id="send.amount" defaultMessage="Amount" />
-            </Text>
-            <View
-              style={{
-                borderWidth: 1,
-                borderRadius: 12,
-                borderColor: isLoop ? "#2F2B4C" : "white",
-                padding: 4,
-                flexDirection: "row",
-              }}
-            >
-              <TouchableOpacity
-                style={{
-                  borderRadius: 12,
-                  flex: 2,
-                  backgroundColor: isLoop ? "#17162C" : "#272727",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  paddingVertical: 12,
-                  paddingLeft: 12,
-                }}
-                onPress={() => triggerBottomSheet(true)}
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "flex-start",
-                    flex: 3,
-                  }}
-                >
+          <Controller
+            name="address"
+            control={control}
+            render={({ field, fieldState }) => {
+              const hasError = fieldState.error !== undefined;
+              return (
+                <>
                   <View
                     style={{
-                      width: 44,
-                      height: 44,
-                      marginRight: 12,
-                      borderRadius: 44,
+                      marginTop: 55,
+                      flexDirection: "row",
+                      alignItems: "flex-end",
                     }}
                   >
-                    <CoinIcon source={selectedCoin?.icon ?? null} />
-                  </View>
-                  <View style={{ justifyContent: "center" }}>
-                    <Text
-                      style={{
-                        color: "#F6F5FF",
-                        fontWeight: "500",
-                        fontSize: 14,
+                    <TextInput
+                      label={intl.formatMessage({
+                        id: "send.to",
+                        defaultMessage: "To",
+                      })}
+                      placeholder={intl.formatMessage({
+                        id: "send.walletaddress",
+                        defaultMessage: "Wallet Address",
+                      })}
+                      style={{ flex: 1 }}
+                      inputStyle={[
+                        {
+                          borderTopRightRadius: 0,
+                          borderBottomRightRadius: 0,
+                          borderRightWidth: 0,
+                        },
+                        hasError
+                          ? {
+                              borderColor: "#FF2222",
+                            }
+                          : null,
+                      ]}
+                      value={field.value}
+                      onChangeText={field.onChange}
+                      onBlur={field.onBlur}
+                    />
+                    <TouchableOpacity
+                      style={[
+                        {
+                          width: 56,
+                          height: isSmallScreenNumber(46, 56),
+                          justifyContent: "center",
+                          alignItems: "center",
+                          padding: isObi ? 0 : 5,
+                          borderTopRightRadius: isObi ? 32 : 12,
+                          borderBottomRightRadius: isObi ? 32 : 12,
+                          borderWidth: 1,
+                          borderColor: isLoop ? "#2F2B4C" : "white",
+                          borderLeftWidth: 0,
+                        },
+                        hasError
+                          ? {
+                              borderColor: "#FF2222",
+                            }
+                          : null,
+                      ]}
+                      onPress={() => {
+                        qrCodeScannerModal.open();
                       }}
                     >
-                      {selectedCoin?.denom}
-                    </Text>
-                    <Text style={{ color: isLoop ? "#999CB6" : "white" }}>
-                      {selectedCoin?.amount}
-                    </Text>
+                      <View
+                        style={[
+                          {
+                            position: "absolute",
+                            width: 1,
+                            backgroundColor: isLoop ? "#2F2B4C" : "white",
+                            height: "100%",
+                            left: 0,
+                          },
+                          hasError
+                            ? {
+                                backgroundColor: "#FF2222",
+                              }
+                            : null,
+                        ]}
+                      />
+                      {isObi ? (
+                        <ObiQr />
+                      ) : (
+                        <FontAwesomeIcon
+                          icon={faQrcode}
+                          style={{ color: isLoop ? "#887CEB" : "white" }}
+                          size={32}
+                        />
+                      )}
+                    </TouchableOpacity>
                   </View>
-                </View>
-                <View style={{ flex: 1, alignItems: "center" }}>
-                  <FontAwesomeIcon
-                    icon={faAngleDown}
-                    style={{ color: isLoop ? "#7B87A8" : "white" }}
+                  <TextInputInvalidMessage
+                    message={fieldState.error?.message}
                   />
-                </View>
-              </TouchableOpacity>
-              <TextInput
-                keyboardType="numeric"
-                style={{
-                  alignSelf: "center",
-                  borderColor: "transparent",
-                  flex: 1,
-                  paddingLeft: 20,
-                  paddingRight: 10,
-                }}
-                inputStyle={{
-                  borderColor: "transparent",
-                  textAlign: "right",
-                  fontSize: 18,
-                  fontWeight: "500",
-                }}
-                placeholder="0"
-                value={amount}
-                onChangeText={setAmount}
-              />
-            </View>
-          </View>
+                </>
+              );
+            }}
+          />
+          <Controller
+            name="token"
+            control={control}
+            render={({ field, fieldState }) => {
+              return (
+                <TokenController
+                  field={field}
+                  fieldState={fieldState}
+                  balances={balances.data}
+                  refetch={balances.refetch}
+                />
+              );
+            }}
+          />
         </View>
         <Button
           flavor="blue"
@@ -310,30 +278,19 @@ export const SendScreenComponent = observer<
             id: "send.next",
             defaultMessage: "Next",
           })}
-          disabled={
-            !address ||
-            !amount ||
-            Number(normalizedAmount) <= 0 ||
-            !selectedCoin
-          }
-          onPress={async () => {
+          disabled={!formState.isValid}
+          onPress={handleSubmit(async (data) => {
+            console.log(data);
             invariant(wallet, "Expected wallet to be defined.");
 
             function getMessages(): Msg[] {
-              if (!selectedCoin) return [];
-
-              const addressToUse = address;
-              const normalizedAmount = Math.floor(
-                parseFloat(amount.replace(",", ".")) *
-                  Math.pow(10, selectedCoin.digits)
-              ).toString();
-
               if (!wallet.address) return [];
 
               return Messages.chainId(wallet.chainId).getSendMessages({
                 fromAddress: wallet.address,
-                toAddress: addressToUse,
-                tokens: [{ id: selectedCoin.id, rawAmount: normalizedAmount }],
+                toAddress: data.address,
+                // TODO: TypeScript doesn't understand that we receive the processed data here
+                tokens: [data.token as unknown as Token],
               });
             }
 
@@ -354,226 +311,10 @@ export const SendScreenComponent = observer<
                 success: response.payload.success,
               });
             }
-          }}
+          })}
         />
-        <BottomSheetBackdrop
-          onPress={() => triggerBottomSheet(false)}
-          visible={denominationOpened}
-        />
-        <BottomSheet
-          handleIndicatorStyle={{ backgroundColor: "white" }}
-          backgroundStyle={{
-            backgroundColor: isLoop ? "#100F1E" : "#1a1a1a",
-          }}
-          handleStyle={{ backgroundColor: "transparent" }}
-          snapPoints={["60"]}
-          enablePanDownToClose={true}
-          ref={bottomSheetRef}
-          index={-1}
-          backdropComponent={() => null}
-          onClose={() => {
-            setDenominationOpened(false);
-          }}
-        >
-          <BottomSheetView
-            style={{
-              flex: 1,
-              backgroundColor: "transparent",
-              position: "relative",
-              paddingHorizontal: isLoop ? 20 : 5,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                paddingBottom: 10,
-                paddingLeft: 10,
-              }}
-            >
-              <View>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: "600",
-                    color: "#f6f5ff",
-                  }}
-                >
-                  <FormattedMessage
-                    id="send.denomination"
-                    defaultMessage="Denomination"
-                  />
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: "#f6f5ff",
-                    opacity: isLoop ? 0.6 : 1,
-                  }}
-                >
-                  <FormattedMessage
-                    id="send.selectcoin"
-                    defaultMessage="Select the coin you'd like to send"
-                  />
-                </Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => triggerBottomSheet(false)}
-                style={{ alignSelf: "flex-start" }}
-              >
-                <FontAwesomeIcon icon={faTimes} style={{ color: "#F6F5FF" }} />
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                backgroundColor: isLoop ? "transparent" : "#272727",
-                flex: 1,
-                ...(isObi
-                  ? {
-                      borderRadius: 7,
-                    }
-                  : {}),
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  padding: 10,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: isLoop ? "#f6f5ff" : "white",
-                    opacity: isLoop ? 0.6 : 1,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  <FormattedMessage id="send.name" defaultMessage="Name" />
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: isLoop ? "#f6f5ff" : "white",
-                    opacity: isLoop ? 0.6 : 1,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  <FormattedMessage
-                    id="send.holdings"
-                    defaultMessage="Holdings"
-                  />
-                </Text>
-              </View>
-              <RefreshableFlatList
-                data={balances.data}
-                keyExtractor={(item) => item.denom}
-                renderItem={(props) => (
-                  <CoinRenderer
-                    {...props}
-                    selected={props.item.denom === selectedCoin?.denom}
-                    onPress={() => {
-                      triggerBottomSheet(false);
-                      setSelectedCoin(props.item);
-                    }}
-                  />
-                )}
-                refetch={balances.refetch}
-              />
-            </View>
-          </BottomSheetView>
-        </BottomSheet>
       </SafeAreaView>
     </KeyboardAvoidingView>
-  );
-});
-
-interface CoinRendererProps {
-  item: EnrichedToken;
-  selected: boolean;
-  onPress: () => void;
-}
-
-const getBrandBackground = (brand: Brand) => {
-  switch (brand) {
-    case Brand.Loop:
-      return {
-        selected: "#17162C",
-        unselected: "#100F1E",
-      };
-    case Brand.Obi:
-      return {
-        selected: "rgba(0,0,0,0.1)",
-        unselected: "transparent",
-      };
-  }
-};
-
-const CoinRenderer = observer(function CoinRenderer({
-  item,
-  selected,
-  onPress,
-}: CoinRendererProps) {
-  const { configStore } = useStore();
-  const brandColors = getBrandBackground(configStore.brand);
-  return (
-    <TouchableOpacity
-      style={{
-        backgroundColor: selected
-          ? brandColors.selected
-          : brandColors.unselected,
-        marginVertical: 10,
-        padding: 10,
-        flexDirection: "row",
-        justifyContent: "space-between",
-      }}
-      onPress={onPress}
-    >
-      <View style={{ flexDirection: "row" }}>
-        <View
-          style={{
-            width: 36,
-            height: 36,
-            marginRight: 10,
-            borderRadius: 12,
-          }}
-        >
-          <CoinIcon source={item.icon} />
-        </View>
-        <View>
-          <Text style={{ color: "#f6f5ff", fontWeight: "500" }}>
-            {item.label}
-          </Text>
-          <Text
-            style={{
-              color: "#f6f5ff",
-              fontWeight: "500",
-              fontSize: 12,
-              opacity: 0.6,
-            }}
-          >
-            {item.denom}
-          </Text>
-        </View>
-      </View>
-      <View style={{ alignItems: "flex-end" }}>
-        <Text style={{ color: "#f6f5ff", fontWeight: "500" }}>
-          ${(item.usdValue ?? 0).toFixed(2)}
-        </Text>
-        <Text
-          style={{
-            color: "#f6f5ff",
-            fontWeight: "500",
-            fontSize: 12,
-            opacity: 0.6,
-          }}
-        >
-          {item.amount} {item.denom}
-        </Text>
-      </View>
-    </TouchableOpacity>
   );
 });
 

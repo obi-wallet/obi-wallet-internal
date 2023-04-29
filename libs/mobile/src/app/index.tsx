@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { PortalHost } from "@gorhom/portal";
 import { Config, Text } from "@obi-wallet/common";
 import {
   useCodePushBackgroundUpdate,
@@ -7,6 +8,7 @@ import {
 import { observer } from "mobx-react-lite";
 import { Platform, UIManager, View } from "react-native";
 import KeyboardManager from "react-native-keyboard-manager";
+import { FullWindowOverlay } from "react-native-screens";
 
 import { deploymentKey } from "./code-push";
 import { Loader } from "./loader";
@@ -65,6 +67,9 @@ export const BaseAppWithoutProvider = observer(
         <DemoModeHeader />
         <StateRenderer />
         <Modals />
+        <FullWindowOverlay>
+          <PortalHost name="bottom-sheet" />
+        </FullWindowOverlay>
       </>
     );
   }

@@ -1,4 +1,5 @@
 import { Theme, ThemeProvider } from "@emotion/react";
+import { PortalProvider } from "@gorhom/portal";
 import { Brand, Config, messages } from "@obi-wallet/common";
 import { Provider as SdkProvider } from "@obi-wallet/headless-ui";
 import { loopTheme, obiTheme } from "@obi-wallet/theme";
@@ -76,12 +77,14 @@ export const Provider = observer<ProviderProps>(function Provider({
           }}
         >
           <SafeAreaProvider>
-            <NavigationContainer {...navigationContainerProps}>
-              <ThemeProvider theme={getTheme(configStore.brand)}>
-                <StatusBar barStyle="light-content" />
-                {children}
-              </ThemeProvider>
-            </NavigationContainer>
+            <PortalProvider>
+              <NavigationContainer {...navigationContainerProps}>
+                <ThemeProvider theme={getTheme(configStore.brand)}>
+                  <StatusBar barStyle="light-content" />
+                  {children}
+                </ThemeProvider>
+              </NavigationContainer>
+            </PortalProvider>
           </SafeAreaProvider>
         </IntlProvider>
       </StoreContext.Provider>

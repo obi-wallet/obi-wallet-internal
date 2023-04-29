@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
-import { GatekeeperConfig, ObservableBeneficiary, Sdk } from "@obi-wallet/sdk";
+import { GatekeeperConfig, ObservableBeneficiary } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -20,7 +20,7 @@ import { isSmallScreenNumber } from "../../app/screens/components/screen-size";
 import { useStore } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
 import { useKeyboardVisible } from "../../helpers/keyboard-visible";
-import { nonEmptyString } from "../../helpers/validation-helpers";
+import { address, nonEmptyString } from "../../helpers/validation-helpers";
 
 export type CreateBeneficiaryAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
@@ -34,16 +34,7 @@ export const CreateBeneficiaryAccountScreen =
       const wallet = useCurrentWallet();
       const schema = z.object({
         name: nonEmptyString("Name"),
-        address: nonEmptyString("Address").refine(
-          (address: string) => {
-            return Sdk.chainId(
-              wallet.chain.chainId
-            ).transactions.validateAddress(address);
-          },
-          {
-            message: "Invalid address",
-          }
-        ),
+        address: address(wallet.chainId),
       });
       const { control, handleSubmit, formState } = useForm({
         defaultValues: {

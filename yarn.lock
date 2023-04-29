@@ -2688,7 +2688,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gorhom/portal@npm:1.0.14":
+"@gorhom/portal@npm:1.0.14, @gorhom/portal@npm:^1.0.14":
   version: 1.0.14
   resolution: "@gorhom/portal@npm:1.0.14"
   dependencies:
@@ -16058,6 +16058,7 @@ __metadata:
     "@fortawesome/react-fontawesome": ^0.2.0
     "@fortawesome/react-native-fontawesome": ^0.3.0
     "@gorhom/bottom-sheet": ^4.4.5
+    "@gorhom/portal": ^1.0.14
     "@hookform/resolvers": ^3.1.0
     "@keplr-wallet/cosmos": 0.11.58
     "@nrwl/cli": ^15.9.2
