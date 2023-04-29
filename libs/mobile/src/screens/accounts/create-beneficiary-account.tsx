@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
-import { GatekeeperConfig, ObservableBeneficiary, Sdk } from "@obi-wallet/sdk";
+import { GatekeeperConfig, ObservableBeneficiary } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";

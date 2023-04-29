@@ -5,10 +5,16 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
 import { Portal } from "@gorhom/portal";
 import { Brand } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
-import { useRef, useState } from "react";
+import * as R from "ramda";
+import { ComponentType, useRef, useState } from "react";
 import { ControllerFieldState } from "react-hook-form";
 import { FormattedMessage } from "react-intl";
-import { Text, TouchableOpacity, View } from "react-native";
+import {
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+} from "react-native";
 
 import { EnrichedToken } from "../app/balances";
 import { BottomSheetBackdrop } from "../app/screens/components/bottomSheetBackdrop";
@@ -17,7 +23,7 @@ import { RefreshableFlatList } from "../app/screens/components/refreshable-flat-
 import { useStore } from "../app/stores";
 import { TextInput, TextInputInvalidMessage } from "../app/text-input";
 
-export interface TokenControllerProps {
+export type TokenControllerProps = {
   field: {
     onChange: (value: { id: string; amount: string }) => void;
     onBlur: () => void;
@@ -25,11 +31,22 @@ export interface TokenControllerProps {
   };
   fieldState: ControllerFieldState;
   balances?: EnrichedToken[];
-  refetch: () => Promise<void>;
-}
+} & (
+  | {
+      refetch: () => Promise<void>;
+    }
+  | {
+      disableTokenSelect: true;
+    }
+);
 
 export const TokenController = observer<TokenControllerProps>(
-  function TokenController({ balances, refetch, field, fieldState }) {
+  function TokenController({
+    balances,
+    field,
+    fieldState,
+    ...bottomSheetProps
+  }) {
     const { configStore } = useStore();
     const isObi = configStore.isObi();
     const isLoop = configStore.isLoop();
@@ -48,14 +65,19 @@ export const TokenController = observer<TokenControllerProps>(
     const hasError = fieldState.error !== undefined;
     const selectedToken = balances?.find((b) => b.id === field.value.id);
 
+    const allowTokenSelect = R.has("refetch", bottomSheetProps);
+    const Container: ComponentType<TouchableOpacityProps> = allowTokenSelect
+      ? TouchableOpacity
+      : (View as unknown as ComponentType<TouchableOpacityProps>);
+
     return (
       <View style={{ marginTop: 35 }}>
         <Text
           style={{
-            color: isLoop ? "#787B9C" : "white",
+            color: isLoop ? "#787B9C" : "#ffffff",
             textTransform: "uppercase",
             fontSize: 10,
-            marginBottom: 12,
+            marginBottom: 10,
           }}
         >
           <FormattedMessage id="send.amount" defaultMessage="Amount" />
@@ -63,10 +85,9 @@ export const TokenController = observer<TokenControllerProps>(
         <View
           style={[
             {
+              borderColor: isLoop ? "#2F2B4C" : "#ffffff",
               borderWidth: 1,
-              borderRadius: 12,
-              borderColor: isLoop ? "#2F2B4C" : "white",
-              padding: 4,
+              borderRadius: 7,
               flexDirection: "row",
             },
             hasError
@@ -76,58 +97,44 @@ export const TokenController = observer<TokenControllerProps>(
               : null,
           ]}
         >
-          <TouchableOpacity
+          <Container
             style={{
               borderRadius: 12,
-              flex: 2,
               backgroundColor: isLoop ? "#17162C" : "#272727",
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
-              paddingVertical: 12,
-              paddingLeft: 12,
             }}
             onPress={() => triggerBottomSheet(true)}
           >
             <View
               style={{
-                flexDirection: "row",
-                justifyContent: "flex-start",
-                flex: 3,
+                width: 36,
+                height: 36,
+                borderRadius: 36,
+                margin: 12,
               }}
             >
-              <View
-                style={{
-                  width: 44,
-                  height: 44,
-                  marginRight: 12,
-                  borderRadius: 44,
-                }}
-              >
-                <CoinIcon source={selectedToken?.icon ?? null} />
-              </View>
-              <View style={{ justifyContent: "center" }}>
-                <Text
-                  style={{
-                    color: "#F6F5FF",
-                    fontWeight: "500",
-                    fontSize: 14,
-                  }}
-                >
-                  {selectedToken?.denom}
-                </Text>
-                <Text style={{ color: isLoop ? "#999CB6" : "white" }}>
-                  {selectedToken?.amount}
-                </Text>
-              </View>
+              <CoinIcon source={selectedToken?.icon ?? null} />
             </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <FontAwesomeIcon
-                icon={faAngleDown}
-                style={{ color: isLoop ? "#7B87A8" : "white" }}
-              />
+            <View style={{ justifyContent: "center" }}>
+              <Text style={{ color: "#fff", fontWeight: "600" }}>
+                {selectedToken?.denom}
+              </Text>
+              <Text style={{ color: "#fff", fontWeight: "400" }}>
+                Balance: {selectedToken?.amount}
+              </Text>
             </View>
-          </TouchableOpacity>
+
+            {allowTokenSelect ? (
+              <View style={{ paddingHorizontal: 10, alignItems: "center" }}>
+                <FontAwesomeIcon
+                  icon={faAngleDown}
+                  style={{ color: isLoop ? "#7B87A8" : "white" }}
+                />
+              </View>
+            ) : null}
+          </Container>
           <TextInput
             keyboardType="numeric"
             style={{
@@ -155,143 +162,145 @@ export const TokenController = observer<TokenControllerProps>(
           />
         </View>
         <TextInputInvalidMessage message={fieldState.error?.message} />
-        <Portal hostName="bottom-sheet">
-          <BottomSheetBackdrop
-            onPress={() => triggerBottomSheet(false)}
-            visible={denominationOpened}
-          />
-          <BottomSheet
-            handleIndicatorStyle={{ backgroundColor: "white" }}
-            backgroundStyle={{
-              backgroundColor: isLoop ? "#100F1E" : "#1a1a1a",
-            }}
-            handleStyle={{ backgroundColor: "transparent" }}
-            snapPoints={["60"]}
-            enablePanDownToClose={true}
-            ref={bottomSheetRef}
-            index={-1}
-            backdropComponent={() => null}
-            onClose={() => {
-              setDenominationOpened(false);
-            }}
-          >
-            <BottomSheetView
-              style={{
-                flex: 1,
-                backgroundColor: "transparent",
-                position: "relative",
-                paddingHorizontal: isLoop ? 20 : 5,
+        {R.has("refetch", bottomSheetProps) ? (
+          <Portal hostName="bottom-sheet">
+            <BottomSheetBackdrop
+              onPress={() => triggerBottomSheet(false)}
+              visible={denominationOpened}
+            />
+            <BottomSheet
+              handleIndicatorStyle={{ backgroundColor: "white" }}
+              backgroundStyle={{
+                backgroundColor: isLoop ? "#100F1E" : "#1a1a1a",
+              }}
+              handleStyle={{ backgroundColor: "transparent" }}
+              snapPoints={["60"]}
+              enablePanDownToClose={true}
+              ref={bottomSheetRef}
+              index={-1}
+              backdropComponent={() => null}
+              onClose={() => {
+                setDenominationOpened(false);
               }}
             >
-              <View
+              <BottomSheetView
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                }}
-              >
-                <View>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "600",
-                      color: "#f6f5ff",
-                    }}
-                  >
-                    <FormattedMessage
-                      id="send.denomination"
-                      defaultMessage="Denomination"
-                    />
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: "#f6f5ff",
-                      opacity: isLoop ? 0.6 : 1,
-                    }}
-                  >
-                    <FormattedMessage
-                      id="send.selectcoin"
-                      defaultMessage="Select the coin you'd like to send"
-                    />
-                  </Text>
-                </View>
-                <TouchableOpacity
-                  onPress={() => triggerBottomSheet(false)}
-                  style={{ alignSelf: "flex-start" }}
-                >
-                  <FontAwesomeIcon
-                    icon={faTimes}
-                    style={{ color: "#F6F5FF" }}
-                  />
-                </TouchableOpacity>
-              </View>
-              <View
-                style={{
-                  backgroundColor: isLoop ? "transparent" : "#272727",
                   flex: 1,
-                  ...(isObi
-                    ? {
-                        borderRadius: 7,
-                      }
-                    : {}),
+                  backgroundColor: "transparent",
+                  position: "relative",
+                  paddingHorizontal: isLoop ? 20 : 5,
                 }}
               >
                 <View
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
-                    padding: 10,
+                    alignItems: "center",
+                    paddingBottom: 10,
+                    paddingLeft: 10,
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: isLoop ? "#f6f5ff" : "white",
-                      opacity: isLoop ? 0.6 : 1,
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    <FormattedMessage id="send.name" defaultMessage="Name" />
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: isLoop ? "#f6f5ff" : "white",
-                      opacity: isLoop ? 0.6 : 1,
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    <FormattedMessage
-                      id="send.holdings"
-                      defaultMessage="Holdings"
-                    />
-                  </Text>
-                </View>
-                <RefreshableFlatList
-                  data={balances ?? []}
-                  keyExtractor={(item) => item.id}
-                  renderItem={(props) => (
-                    <CoinRenderer
-                      {...props}
-                      selected={props.item.id === field.value.id}
-                      onPress={() => {
-                        triggerBottomSheet(false);
-                        field.onChange({
-                          ...field.value,
-                          id: props.item.id,
-                        });
+                  <View>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: "600",
+                        color: "#f6f5ff",
                       }}
+                    >
+                      <FormattedMessage
+                        id="send.denomination"
+                        defaultMessage="Denomination"
+                      />
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: "#f6f5ff",
+                        opacity: isLoop ? 0.6 : 1,
+                      }}
+                    >
+                      <FormattedMessage
+                        id="send.selectcoin"
+                        defaultMessage="Select the coin you'd like to send"
+                      />
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => triggerBottomSheet(false)}
+                    style={{ alignSelf: "flex-start" }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faTimes}
+                      style={{ color: "#F6F5FF" }}
                     />
-                  )}
-                  refetch={refetch}
-                />
-              </View>
-            </BottomSheetView>
-          </BottomSheet>
-        </Portal>
+                  </TouchableOpacity>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: isLoop ? "transparent" : "#272727",
+                    flex: 1,
+                    ...(isObi
+                      ? {
+                          borderRadius: 7,
+                        }
+                      : {}),
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      padding: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: isLoop ? "#f6f5ff" : "white",
+                        opacity: isLoop ? 0.6 : 1,
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      <FormattedMessage id="send.name" defaultMessage="Name" />
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: isLoop ? "#f6f5ff" : "white",
+                        opacity: isLoop ? 0.6 : 1,
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      <FormattedMessage
+                        id="send.holdings"
+                        defaultMessage="Holdings"
+                      />
+                    </Text>
+                  </View>
+                  <RefreshableFlatList
+                    data={balances ?? []}
+                    keyExtractor={(item) => item.id}
+                    renderItem={(props) => (
+                      <CoinRenderer
+                        {...props}
+                        selected={props.item.id === field.value.id}
+                        onPress={() => {
+                          triggerBottomSheet(false);
+                          field.onChange({
+                            ...field.value,
+                            id: props.item.id,
+                          });
+                        }}
+                      />
+                    )}
+                    refetch={bottomSheetProps.refetch}
+                  />
+                </View>
+              </BottomSheetView>
+            </BottomSheet>
+          </Portal>
+        ) : null}
       </View>
     );
   }

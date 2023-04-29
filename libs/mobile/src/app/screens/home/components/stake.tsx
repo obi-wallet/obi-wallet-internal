@@ -3,6 +3,7 @@ import { useTheme } from "@emotion/react";
 import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Text, TextInput } from "@obi-wallet/common";
 import {
   useCurrentWallet,
@@ -15,8 +16,8 @@ import {
   Delegation,
   EnrichedValidator,
   isTerraChain,
-  terraChains,
   Token,
+  tokenGivenBalances,
   UnbondingDelegation,
   Validator,
 } from "@obi-wallet/sdk";
@@ -32,6 +33,7 @@ import {
   useReducer,
   useState,
 } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   FlatList,
   Image,
@@ -45,7 +47,9 @@ import { ScrollView } from "react-native-gesture-handler";
 import { GestureResponderEvent } from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
+import { TokenController } from "../../../../forms";
 import { enrichToken, useBalances } from "../../../balances";
 import { useCurrentTerraChainInformation, useStore } from "../../../stores";
 import { Back } from "../../components/back";
@@ -444,28 +448,14 @@ const Validators = observer(function Validators() {
         <ValidatorItem
           validator={selectedValidator}
           confirmLabel="Stake"
-          onConfirm={async ({ amount, validator }) => {
+          onConfirm={async ({ validator, token }) => {
             const chainId = wallet.chainId;
             invariant(isTerraChain(chainId), "Expected Terra chain.");
 
             try {
-              const { digits } = enrichToken({
-                chainId: wallet.chainId,
-                token: {
-                  id: "uluna",
-                  rawAmount: "0",
-                },
-              });
-              const amountToUse =
-                parseFloat(amount.replace(",", ".")) * 10 ** digits;
-              // TODO: also check if amount is greater than balance
-              if (isNaN(amountToUse) || amountToUse <= 0) return;
               await wallet.stake({
                 validator: validator.address,
-                amount: {
-                  id: terraChains[chainId].denom,
-                  rawAmount: amountToUse.toString(),
-                },
+                amount: token,
               });
               dispatch({ type: "clear-selected-validator" });
               await Promise.all([delegations.refetch(), rawBalances.refetch()]);
@@ -516,21 +506,31 @@ const ValidatorItem = observer(function ValidatorItem({
   validator: EnrichedValidator;
   onPress?: (validator: EnrichedValidator) => void;
   active?: boolean;
-  onConfirm?: (args: { validator: EnrichedValidator; amount: string }) => void;
+  onConfirm?: (args: { validator: EnrichedValidator; token: Token }) => void;
   onCancel?: () => void;
   confirmLabel?: string;
   amountToShow?: Token;
 }) {
   const currentTerraChainInformation = useCurrentTerraChainInformation();
-  const [amount, setAmount] = useState("");
   const promoted = validator.promoted;
 
-  const formatted = enrichToken({
-    chainId: currentTerraChainInformation.chainId,
-    token: amountToShow || {
-      id: currentTerraChainInformation.denom,
-      rawAmount: "0",
+  const balances = amountToShow ? [amountToShow] : [];
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      token: {
+        id: currentTerraChainInformation.denom,
+        amount: "",
+      },
     },
+    mode: "onChange",
+    resolver: zodResolver(
+      z.object({
+        token: tokenGivenBalances({
+          chainId: currentTerraChainInformation.chainId,
+          balances,
+        }),
+      })
+    ),
   });
 
   return (
@@ -588,9 +588,14 @@ const ValidatorItem = observer(function ValidatorItem({
           <View style={{ alignItems: "flex-end" }}>
             <TouchableOpacity
               style={{ backgroundColor: "white", borderRadius: 32 }}
-              onPress={() =>
-                onConfirm ? onConfirm({ validator, amount }) : {}
-              }
+              onPress={handleSubmit((data) => {
+                if (typeof onConfirm !== "function") return;
+                onConfirm({
+                  validator,
+                  // TODO: TypeScript doesn't understand that we receive the processed data here
+                  token: data.token as unknown as Token,
+                });
+              })}
             >
               <Text
                 style={{
@@ -607,53 +612,25 @@ const ValidatorItem = observer(function ValidatorItem({
       </TouchableOpacity>
       {active && (
         <View style={{ marginTop: 10, marginRight: 10 }}>
-          <Text style={{ color: "white", fontSize: 10, marginBottom: 10 }}>
-            AMOUNT
-          </Text>
-          <View
-            style={{
-              borderColor: "#fff",
-              borderWidth: 1,
-              borderRadius: 7,
-              flexDirection: "row",
+          <Controller
+            name="token"
+            control={control}
+            render={({ field, fieldState }) => {
+              return (
+                <TokenController
+                  field={field}
+                  fieldState={fieldState}
+                  balances={balances.map((token) => {
+                    return enrichToken({
+                      chainId: currentTerraChainInformation.chainId,
+                      token,
+                    });
+                  })}
+                  disableTokenSelect
+                />
+              );
             }}
-          >
-            <View style={{ flex: 1, flexDirection: "row" }}>
-              <View
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 36,
-                  margin: 12,
-                }}
-              >
-                <CoinIcon source={formatted?.icon ?? null} />
-              </View>
-              <View style={{ justifyContent: "center" }}>
-                <Text style={{ color: "#fff", fontWeight: "600" }}>
-                  {formatted.denom}
-                </Text>
-                <Text style={{ color: "#fff", fontWeight: "400" }}>
-                  Balance: {formatted.amount}
-                </Text>
-              </View>
-            </View>
-            <View style={{ flex: 1, justifyContent: "center" }}>
-              <TextInput
-                style={{
-                  color: "#ffffff",
-                  marginRight: 10,
-                  fontSize: isSmallScreenNumber(18, 24),
-                }}
-                placeholder="0"
-                placeholderTextColor="#fff"
-                textAlign="right"
-                onChangeText={(text) => setAmount(text)}
-                value={amount}
-                keyboardType="numeric"
-              />
-            </View>
-          </View>
+          />
           <View style={{ alignItems: "center", padding: 10 }}>
             <TouchableOpacity onPress={() => (onCancel ? onCancel() : {})}>
               <Text style={{ color: "#fff" }}>Cancel</Text>
@@ -698,28 +675,14 @@ const MyStake = observer(function MyStake() {
         <ValidatorItem
           validator={selectedValidator}
           confirmLabel="Unstake"
-          onConfirm={async ({ amount, validator }) => {
+          onConfirm={async ({ validator, token }) => {
             const chainId = wallet.chainId;
             invariant(isTerraChain(chainId), "Expected Terra chain.");
 
             try {
-              const { digits } = enrichToken({
-                chainId,
-                token: {
-                  id: "uluna",
-                  rawAmount: "0",
-                },
-              });
-              const amountToUse =
-                parseFloat(amount.replace(",", ".")) * 10 ** digits;
-              // TODO: also check if amount is greater than balance
-              if (isNaN(amountToUse) || amountToUse <= 0) return;
               await wallet.unstake({
                 validator: validator.address,
-                amount: {
-                  id: terraChains[chainId].denom,
-                  rawAmount: amountToUse.toString(),
-                },
+                amount: token,
               });
               dispatch({ type: "clear-selected-validator" });
               await Promise.all([
