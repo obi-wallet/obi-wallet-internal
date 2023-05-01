@@ -19,6 +19,7 @@ import { ScreenContainer } from "../../app/screens/components/screen-container";
 import { isSmallScreenNumber } from "../../app/screens/components/screen-size";
 import { useStore } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
+import { AddressController } from "../../forms";
 import { useKeyboardVisible } from "../../helpers/keyboard-visible";
 import { address, nonEmptyString } from "../../helpers/validation-helpers";
 
@@ -60,14 +61,13 @@ export const CreateBeneficiaryAccountScreen =
               flex: 1,
             }}
             contentContainerStyle={{
-              alignItems: "flex-start",
+              alignItems: "stretch",
               marginTop: 20,
             }}
           >
             <View
               style={{
                 alignItems: "center",
-                width: "100%",
               }}
             >
               <Text style={{ color: "white", fontSize: 16, marginBottom: 15 }}>
@@ -79,37 +79,40 @@ export const CreateBeneficiaryAccountScreen =
                 onChange={setIcon}
               />
             </View>
-            <Controller
-              name="name"
-              control={control}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  placeholder="Enter Name"
-                  label="Inheritance Account Name"
-                  style={{ width: "100%", marginTop: 40 }}
-                  value={value}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  maxLength={30}
-                  invalidMessage={formState.errors.name?.message}
-                />
-              )}
-            />
-            <Controller
-              name="address"
-              control={control}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  placeholder="Enter Address"
-                  label="Beneficiary Address"
-                  style={{ width: "100%", marginTop: 10 }}
-                  value={value}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  invalidMessage={formState.errors.address?.message}
-                />
-              )}
-            />
+            <View style={{ marginTop: 40 }}>
+              <Controller
+                name="name"
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    placeholder="Enter Name"
+                    label="Inheritance Account Name"
+                    value={value}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    maxLength={30}
+                    invalidMessage={formState.errors.name?.message}
+                  />
+                )}
+              />
+            </View>
+            <View style={{ marginTop: 10 }}>
+              <Controller
+                name="address"
+                control={control}
+                render={({ field, fieldState }) => {
+                  return (
+                    <AddressController
+                      label="Beneficiary Address"
+                      placeholder="Enter Address"
+                      chainId={wallet.chainId}
+                      field={field}
+                      fieldState={fieldState}
+                    />
+                  );
+                }}
+              />
+            </View>
 
             <Text
               style={{
