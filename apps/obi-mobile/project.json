@@ -17,7 +17,7 @@
       }
     },
     "run-ios": {
-      "dependsOn": ["react-native-asset"],
+      "dependsOn": ["react-native-asset", "react-native-permissions"],
       "executor": "@nrwl/react-native:run-ios",
       "options": {}
     },
@@ -82,6 +82,12 @@
       "options": {
         "command": "react-native-asset",
         "cwd": "apps/obi-mobile"
+      }
+    },
+    "react-native-permissions": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "react-native setup-ios-permissions"
       }
     },
     "tsc": {
