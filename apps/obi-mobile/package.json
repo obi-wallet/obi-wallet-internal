@@ -19,6 +19,7 @@
     "@fortawesome/react-fontawesome": "*",
     "@fortawesome/react-native-fontawesome": "*",
     "@gorhom/bottom-sheet": "*",
+    "@gorhom/portal": "*",
     "@hookform/resolvers": "*",
     "@jest/create-cache-key-function": "*",
     "@keplr-wallet/cosmos": "*",

@@ -1,6 +1,4 @@
 import { useTheme } from "@emotion/react";
-import { faQrcode } from "@fortawesome/free-solid-svg-icons/faQrcode";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
@@ -16,23 +14,20 @@ import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Platform, Text, TouchableOpacity, View } from "react-native";
+import { Platform, Text, View } from "react-native";
 import Modal from "react-native-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import ObiQr from "./assets/obiqr.svg";
-import { TokenController } from "../../../forms";
+import { AddressController, TokenController } from "../../../forms";
 import { address } from "../../../helpers/validation-helpers";
 import { EnrichedToken, useEnrichedBalances } from "../../balances";
 import { Button } from "../../button";
 import { RootRoute, RootStackParamList } from "../../root-stack";
 import { useStore } from "../../stores";
-import { TextInput, TextInputInvalidMessage } from "../../text-input";
 import { Back } from "../components/back";
 import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
-import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
 import { isSmallScreenNumber } from "../components/screen-size";
 import { HomeBottomTabRoute } from "../home/home-stack";
 
@@ -97,18 +92,8 @@ export const SendScreenComponent = observer<
     success?: boolean;
   }>({});
   const { chainStore } = useStore();
-  const { prefix } = chainStore.currentChainInformation;
   const intl = useIntl();
-  const qrCodeScannerModal = useQrCodeScannerModal(({ data, close }) => {
-    if (data.startsWith(prefix)) {
-      setValue("address", data);
-      close();
-    }
-  });
   const theme = useTheme();
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
-  const isObi = configStore.isObi();
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}>
@@ -124,7 +109,6 @@ export const SendScreenComponent = observer<
           }),
         }}
       >
-        {qrCodeScannerModal.render()}
         {confirmModalVisible.visible && confirmModalVisible.success ? (
           <SuccessModal
             visible={confirmModalVisible.visible && confirmModalVisible.success}
@@ -159,118 +143,53 @@ export const SendScreenComponent = observer<
               <FormattedMessage id="send.send" defaultMessage="Send" />
             </Text>
           </View>
-          <Controller
-            name="address"
-            control={control}
-            render={({ field, fieldState }) => {
-              const hasError = fieldState.error !== undefined;
-              return (
-                <>
-                  <View
-                    style={{
-                      marginTop: 55,
-                      flexDirection: "row",
-                      alignItems: "flex-end",
-                    }}
-                  >
-                    <TextInput
-                      label={intl.formatMessage({
-                        id: "send.to",
-                        defaultMessage: "To",
-                      })}
-                      placeholder={intl.formatMessage({
-                        id: "send.walletaddress",
-                        defaultMessage: "Wallet Address",
-                      })}
-                      style={{ flex: 1 }}
-                      inputStyle={[
-                        {
-                          borderTopRightRadius: 0,
-                          borderBottomRightRadius: 0,
-                          borderRightWidth: 0,
-                        },
-                        hasError
-                          ? {
-                              borderColor: "#FF2222",
-                            }
-                          : null,
-                      ]}
-                      value={field.value}
-                      onChangeText={field.onChange}
-                      onBlur={field.onBlur}
-                    />
-                    <TouchableOpacity
-                      style={[
-                        {
-                          width: 56,
-                          height: isSmallScreenNumber(46, 56),
-                          justifyContent: "center",
-                          alignItems: "center",
-                          padding: isObi ? 0 : 5,
-                          borderTopRightRadius: isObi ? 32 : 12,
-                          borderBottomRightRadius: isObi ? 32 : 12,
-                          borderWidth: 1,
-                          borderColor: isLoop ? "#2F2B4C" : "white",
-                          borderLeftWidth: 0,
-                        },
-                        hasError
-                          ? {
-                              borderColor: "#FF2222",
-                            }
-                          : null,
-                      ]}
-                      onPress={() => {
-                        qrCodeScannerModal.open();
-                      }}
-                    >
-                      <View
-                        style={[
-                          {
-                            position: "absolute",
-                            width: 1,
-                            backgroundColor: isLoop ? "#2F2B4C" : "white",
-                            height: "100%",
-                            left: 0,
-                          },
-                          hasError
-                            ? {
-                                backgroundColor: "#FF2222",
-                              }
-                            : null,
-                        ]}
-                      />
-                      {isObi ? (
-                        <ObiQr />
-                      ) : (
-                        <FontAwesomeIcon
-                          icon={faQrcode}
-                          style={{ color: isLoop ? "#887CEB" : "white" }}
-                          size={32}
-                        />
-                      )}
-                    </TouchableOpacity>
-                  </View>
-                  <TextInputInvalidMessage
-                    message={fieldState.error?.message}
+          <View
+            style={{
+              marginTop: 55,
+            }}
+          >
+            <Controller
+              name="address"
+              control={control}
+              render={({ field, fieldState }) => {
+                return (
+                  <AddressController
+                    chainId={chainStore.currentChain}
+                    label={intl.formatMessage({
+                      id: "send.to",
+                      defaultMessage: "To",
+                    })}
+                    placeholder={intl.formatMessage({
+                      id: "send.walletaddress",
+                      defaultMessage: "Wallet Address",
+                    })}
+                    field={field}
+                    fieldState={fieldState}
                   />
-                </>
-              );
+                );
+              }}
+            />
+          </View>
+          <View
+            style={{
+              marginTop: 35,
             }}
-          />
-          <Controller
-            name="token"
-            control={control}
-            render={({ field, fieldState }) => {
-              return (
-                <TokenController
-                  field={field}
-                  fieldState={fieldState}
-                  balances={balances.data}
-                  refetch={balances.refetch}
-                />
-              );
-            }}
-          />
+          >
+            <Controller
+              name="token"
+              control={control}
+              render={({ field, fieldState }) => {
+                return (
+                  <TokenController
+                    field={field}
+                    fieldState={fieldState}
+                    balances={balances.data}
+                    refetch={balances.refetch}
+                  />
+                );
+              }}
+            />
+          </View>
         </View>
         <Button
           flavor="blue"

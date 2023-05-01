@@ -71,7 +71,7 @@ export const TokenController = observer<TokenControllerProps>(
       : (View as unknown as ComponentType<TouchableOpacityProps>);
 
     return (
-      <View style={{ marginTop: 35 }}>
+      <>
         <Text
           style={{
             color: isLoop ? "#787B9C" : "#ffffff",
@@ -301,7 +301,7 @@ export const TokenController = observer<TokenControllerProps>(
             </BottomSheet>
           </Portal>
         ) : null}
-      </View>
+      </>
     );
   }
 );

@@ -611,7 +611,7 @@ const ValidatorItem = observer(function ValidatorItem({
         )}
       </TouchableOpacity>
       {active && (
-        <View style={{ marginTop: 10, marginRight: 10 }}>
+        <View style={{ marginTop: 10 }}>
           <Controller
             name="token"
             control={control}
