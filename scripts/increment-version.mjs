@@ -27,7 +27,7 @@ const stat = util.promisify(fs.stat);
       async function handlePodInstall() {
         await spawnCommand("pod", ["install"], {
           cwd: path.join(appPath, "ios"),
-        })
+        });
       }
 
       async function handleMain() {
