@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import util from "node:util";
 import semver from "semver";
 
-import { modifyFile } from "./helpers.mjs";
+import { modifyFile, spawnCommand } from "./helpers.mjs";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
@@ -19,6 +19,16 @@ const stat = util.promisify(fs.stat);
     directories.map(async (directory) => {
       const appPath = path.join(appsPath, directory);
       const s = await stat(appPath);
+
+      async function syncDeps() {
+        await spawnCommand("nx", ["sync-deps", directory]);
+      }
+
+      async function handlePodInstall() {
+        await spawnCommand("pod", ["install"], {
+          cwd: path.join(appPath, "ios"),
+        });
+      }
 
       async function handleMain() {
         await modifyFile(path.join(appPath, "src/main.tsx"), async (input) => {
@@ -81,6 +91,8 @@ const stat = util.promisify(fs.stat);
       }
 
       if (s.isDirectory()) {
+        await syncDeps();
+        await handlePodInstall();
         await Promise.all([handleMain(), handleIos(), handleAndroid()]);
       }
     })

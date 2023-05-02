@@ -375,7 +375,7 @@ PODS:
   - React-jsinspector (0.71.7)
   - React-logger (0.71.7):
     - glog
-  - react-native-blur (4.3.0):
+  - react-native-blur (4.3.1):
     - React-Core
   - react-native-camera (4.2.1):
     - React-Core
@@ -397,7 +397,7 @@ PODS:
     - React-Core
   - react-native-randombytes (3.6.1):
     - React-Core
-  - react-native-safe-area-context (4.5.1):
+  - react-native-safe-area-context (4.5.2):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -553,14 +553,14 @@ PODS:
   - RNScreens (3.20.0):
     - React-Core
     - React-RCTImage
-  - RNSentry (5.3.1):
+  - RNSentry (5.4.0):
     - React-Core
-    - Sentry/HybridSDK (= 8.4.0)
+    - Sentry/HybridSDK (= 8.5.0)
   - RNSVG (13.9.0):
     - React-Core
-  - Sentry/HybridSDK (8.4.0):
-    - SentryPrivate (= 8.4.0)
-  - SentryPrivate (8.4.0)
+  - Sentry/HybridSDK (8.5.0):
+    - SentryPrivate (= 8.5.0)
+  - SentryPrivate (8.5.0)
   - SocketRocket (0.6.0)
   - SSZipArchive (2.2.3)
   - TOCropViewController (2.6.1)
@@ -876,14 +876,14 @@ SPEC CHECKSUMS:
   React-jsiexecutor: eaa5f71eb8f6861cf0e57f1a0f52aeb020d9e18e
   React-jsinspector: 9885f6f94d231b95a739ef7bb50536fb87ce7539
   React-logger: 3f8ebad1be1bf3299d1ab6d7f971802d7395c7ef
-  react-native-blur: 50c9feabacbc5f49b61337ebc32192c6be7ec3c3
+  react-native-blur: 52e2902df618ace97b3554aeb7f6a2d7ca3b5e9b
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-config: 5330c8258265c1e5fdb8c009d2cabd6badd96727
   react-native-device-crypto: decd7475ec9f48eb66eafcbabfaa5dde01be37f9
   react-native-launch-arguments: 8e21f656fb7ade515fd974209b06be1b9279c91e
   react-native-nfc-manager: c0e6048b119fa3ae7b02ae927d4a801b8e76f287
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
-  react-native-safe-area-context: f5549f36508b1b7497434baa0cd97d7e470920d4
+  react-native-safe-area-context: 1d596539b05a78f2b346e954e7c577f6f9be7544
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
   react-native-webview: 203b6a1c7507737f777c91d7e10c30e7e67c1a17
   React-perflogger: 2d505bbe298e3b7bacdd9e542b15535be07220f6
@@ -912,10 +912,10 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: afa5bf2794aecbb2dba2525329253da0d66656df
   RNReanimated: 7afddd5ab0590339f3e83d7bb52f43a73443b862
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
-  RNSentry: 68d5b2339fc7cd864e8076279345cc90174fa583
+  RNSentry: 3c8dff994d317f98fc073a9ba85d2d8da3868353
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
-  Sentry: 16d46dd5ca10e7f4469a2611805a3de123188add
-  SentryPrivate: 2bb4f8d9ff558b25ac70b66c1dedc58a7c43630b
+  Sentry: 3be3f42e40e5a552935552e115744d5810a216d9
+  SentryPrivate: 8c9463280e282527f938d1a5d1d60f8e10ff279b
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863

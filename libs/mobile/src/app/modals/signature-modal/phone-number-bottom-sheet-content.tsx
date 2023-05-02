@@ -1,4 +1,4 @@
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet/src";
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";

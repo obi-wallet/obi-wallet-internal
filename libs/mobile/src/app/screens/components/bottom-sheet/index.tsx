@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import OriginalBottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet/src";
+import OriginalBottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { observer } from "mobx-react-lite";
 import { ReactNode, Ref } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
