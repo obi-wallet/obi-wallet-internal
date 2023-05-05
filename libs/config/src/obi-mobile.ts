@@ -1,4 +1,5 @@
 import { Brand, Config, Feature } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 
 export const obiMobileConfig: Config = {
   brand: Brand.Obi,
@@ -19,4 +20,5 @@ export const obiMobileConfig: Config = {
     [Feature.BrandToggle]: false,
     [Feature.DemoMode]: true,
   },
+  requiredKeys: [KeyType.Device, KeyType.Phone],
 };

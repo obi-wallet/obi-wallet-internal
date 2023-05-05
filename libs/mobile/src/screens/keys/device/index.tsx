@@ -25,8 +25,14 @@ import {
   isSmallScreen,
   isSmallScreenNumber,
 } from "../../../app/screens/components/screen-size";
+import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
 import { useStore } from "../../../app/stores";
-import { KeyRoute, KeyStackParamList } from "../key-stack";
+import {
+  KeyFlow,
+  KeyRoute,
+  KeyStackParamList,
+  keyTypeToKeyRoute,
+} from "../key-stack";
 
 export type DeviceKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -36,13 +42,25 @@ export type DeviceKeyScreenProps = NativeStackScreenProps<
 export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
   function DeviceKeyScreen({ route }) {
     const navigation = useRootNavigation();
+    const { configStore } = useStore();
     const { params } = route;
 
     return (
       <DeviceKey
         {...params}
         onSubmit={() => {
-          navigation.navigate(KeyRoute.PhoneKeyRequest, params);
+          if (params.flow !== KeyFlow.CreateWallet) {
+            navigation.navigate(KeyRoute.PhoneKeyRequest, params);
+            return;
+          }
+          const { requiredKeys } = configStore.config;
+          const requiredRoutes = requiredKeys.map(keyTypeToKeyRoute);
+          const index = requiredRoutes.indexOf(KeyRoute.DeviceKey);
+          if (index === -1 || index + 1 === requiredRoutes.length) {
+            navigation.navigate(OnboardingRoute.CreateWallet, params);
+            return;
+          }
+          navigation.navigate(requiredRoutes[index + 1], params);
         }}
       />
     );
