@@ -4,7 +4,7 @@ test("Chain.select", () => {
   const f = (chainId: ChainId) => {
     return Chain.select({
       chainId,
-      onCosmosChain: () => "onCosmosChain",
+      onLegacyCosmosChain: () => "onCosmosChain",
       onTerraChain: () => "onTerraChain",
     });
   };

@@ -12,7 +12,7 @@ export class Sdk {
 
     const sdk = Chain.select<AbstractSdk>({
       chainId,
-      onCosmosChain(chainId) {
+      onLegacyCosmosChain(chainId) {
         return CosmosSdk.chainId(chainId);
       },
       onTerraChain(chainId: TerraChain) {

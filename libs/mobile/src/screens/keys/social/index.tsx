@@ -104,7 +104,7 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
   async function getAccountPubkey(key: string) {
     return Chain.select({
       chainId: chainStore.currentChain,
-      async onCosmosChain(chainId) {
+      async onLegacyCosmosChain(chainId) {
         return await withCosmosStargateClient(chainId, async (client) => {
           try {
             const account = await client.getAccount(key);

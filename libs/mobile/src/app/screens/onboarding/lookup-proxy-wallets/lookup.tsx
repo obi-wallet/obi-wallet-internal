@@ -5,9 +5,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Text } from "@obi-wallet/common";
 import {
-  CosmosChain,
-  cosmosChains,
-  isCosmosChain,
+  LegacyCosmosChain,
+  legacyCosmosChains,
+  isLegacyCosmosChain,
   TerraChain,
   terraChains,
 } from "@obi-wallet/sdk";
@@ -25,7 +25,7 @@ import { VerifyAndProceedButton } from "../../components/phone-number/verify-and
 import { isSmallScreenNumber } from "../../components/screen-size";
 
 export interface LookupProps {
-  chainId: CosmosChain | TerraChain;
+  chainId: LegacyCosmosChain | TerraChain;
   publicKey: string;
   onSelect(wallet: A.SerializedProxyWallet): Promise<void>;
   onCancel(): void;
@@ -47,8 +47,8 @@ export const Lookup = observer(function Lookup({
 
   useAsyncEffect(async () => {
     try {
-      const currentCodeId = isCosmosChain(chainId)
-        ? cosmosChains[chainId].currentCodeId
+      const currentCodeId = isLegacyCosmosChain(chainId)
+        ? legacyCosmosChains[chainId].currentCodeId
         : terraChains[chainId].currentCodeIds.userAccount;
 
       const response = await fetch(

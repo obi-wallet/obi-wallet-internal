@@ -1,6 +1,6 @@
 import warning from "tiny-warning";
 
-import { CosmosChain } from "../../chains";
+import { LegacyCosmosChain } from "../../chains";
 import {
   GatekeeperConfig,
   MultisigKey,
@@ -15,7 +15,7 @@ function notImplemented(message: string) {
 }
 
 export class CosmosMessages extends AbstractMessages {
-  protected constructor(protected chainId: CosmosChain) {
+  protected constructor(protected chainId: LegacyCosmosChain) {
     super(chainId);
   }
 
@@ -94,7 +94,7 @@ export class CosmosMessages extends AbstractMessages {
     throw new Error("getCreateWalletMessage not implemented for Cosmos");
   }
 
-  public static chainId(chainId: CosmosChain) {
+  public static chainId(chainId: LegacyCosmosChain) {
     return new CosmosMessages(chainId);
   }
 }

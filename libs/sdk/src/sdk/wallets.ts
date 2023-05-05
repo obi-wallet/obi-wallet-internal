@@ -24,7 +24,7 @@ export class WalletsSdk extends AbstractWalletsSdk {
   > {
     return await Chain.select<AbstractWalletsSdk>({
       chainId: multisigKey.chainId,
-      onCosmosChain() {
+      onLegacyCosmosChain() {
         return new CosmosWalletsSdk();
       },
       onTerraChain() {

@@ -1,23 +1,23 @@
-import { CosmosChain, cosmosChains } from "./cosmos";
+import { LegacyCosmosChain, legacyCosmosChains } from "./legacy-cosmos";
 import { TerraChain, terraChains } from "./terra";
 
-export * from "./cosmos";
+export * from "./legacy-cosmos";
 export * from "./terra";
 
-export type ChainId = CosmosChain | TerraChain;
+export type ChainId = LegacyCosmosChain | TerraChain;
 
 export const Chain = {
   select<T>({
     chainId,
-    onCosmosChain,
+    onLegacyCosmosChain,
     onTerraChain,
   }: {
     chainId: ChainId;
-    onCosmosChain(chainId: CosmosChain): T;
+    onLegacyCosmosChain(chainId: LegacyCosmosChain): T;
     onTerraChain(chainId: TerraChain): T;
   }) {
-    if (isCosmosChain(chainId)) {
-      return onCosmosChain(chainId);
+    if (isLegacyCosmosChain(chainId)) {
+      return onLegacyCosmosChain(chainId);
     } else if (isTerraChain(chainId)) {
       return onTerraChain(chainId);
     } else {
@@ -26,14 +26,12 @@ export const Chain = {
   },
 };
 
-export function isCosmosChain(
-  chain: CosmosChain | TerraChain
-): chain is CosmosChain {
-  return Object.keys(cosmosChains).includes(chain);
+export function isLegacyCosmosChain(
+  chainId: ChainId
+): chainId is LegacyCosmosChain {
+  return Object.keys(legacyCosmosChains).includes(chainId);
 }
 
-export function isTerraChain(
-  chain: CosmosChain | TerraChain
-): chain is TerraChain {
-  return Object.keys(terraChains).includes(chain);
+export function isTerraChain(chainId: ChainId): chainId is TerraChain {
+  return Object.keys(terraChains).includes(chainId);
 }

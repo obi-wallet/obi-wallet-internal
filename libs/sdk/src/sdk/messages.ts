@@ -12,7 +12,7 @@ export class Messages {
 
     const messages = Chain.select<AbstractMessages>({
       chainId,
-      onCosmosChain(chainId) {
+      onLegacyCosmosChain(chainId) {
         return CosmosMessages.chainId(chainId);
       },
       onTerraChain(chainId: TerraChain) {

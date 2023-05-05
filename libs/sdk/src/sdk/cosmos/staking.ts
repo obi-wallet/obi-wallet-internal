@@ -1,7 +1,7 @@
 import warning from "tiny-warning";
 
 import { CosmosClient } from "./client";
-import { CosmosChain, cosmosChains } from "../../chains";
+import { LegacyCosmosChain, legacyCosmosChains } from "../../chains";
 import { AbstractStakingSdk } from "../abstract";
 import {
   Delegation,
@@ -15,14 +15,14 @@ function notImplemented(message: string) {
 }
 
 export class CosmosStakingSdk extends AbstractStakingSdk {
-  protected chainId: CosmosChain;
+  protected chainId: LegacyCosmosChain;
   protected client: CosmosClient;
 
   public constructor({
     chainId,
     client,
   }: {
-    chainId: CosmosChain;
+    chainId: LegacyCosmosChain;
     client: CosmosClient;
   }) {
     super(chainId);
@@ -59,6 +59,6 @@ export class CosmosStakingSdk extends AbstractStakingSdk {
   }
 
   protected get chain() {
-    return cosmosChains[this.chainId];
+    return legacyCosmosChains[this.chainId];
   }
 }

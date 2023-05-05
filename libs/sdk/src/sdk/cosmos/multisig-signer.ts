@@ -20,7 +20,7 @@ import {
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
 import { OfflineAminoSigner } from "./offline-amino-signer";
-import { CosmosChain, cosmosChains } from "../../chains";
+import { LegacyCosmosChain, legacyCosmosChains } from "../../chains";
 import { MultisigPublicKey } from "../../keys";
 import {
   MultisigSigner as AbstractMultisigSigner,
@@ -30,7 +30,7 @@ import {
 const registry = new Registry([...defaultRegistryTypes, ...wasmTypes]);
 
 export class MultisigSigner extends AbstractMultisigSigner<Uint8Array> {
-  protected chainId: CosmosChain;
+  protected chainId: LegacyCosmosChain;
   protected account: Account;
   protected fee: StdFee;
   protected signDoc: StdSignDoc;
@@ -45,7 +45,7 @@ export class MultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     messages,
     multisigPublicKey,
   }: {
-    chainId: CosmosChain;
+    chainId: LegacyCosmosChain;
     account: Account;
     fee: StdFee;
     encodeObjects: EncodeObject[];
@@ -72,7 +72,7 @@ export class MultisigSigner extends AbstractMultisigSigner<Uint8Array> {
   }
 
   protected get prefix() {
-    return cosmosChains[this.chainId].prefix;
+    return legacyCosmosChains[this.chainId].prefix;
   }
 
   protected async createSignature(signer: Signer) {

@@ -20,7 +20,7 @@ import invariant from "tiny-invariant";
 import { CosmosClient } from "./client";
 import { MultisigSigner } from "./multisig-signer";
 import { OfflineAminoSigner } from "./offline-amino-signer";
-import { CosmosChain, cosmosChains } from "../../chains";
+import { LegacyCosmosChain, legacyCosmosChains } from "../../chains";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../keys";
 import { Secp256k1PrivateKeySigner } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
@@ -28,14 +28,14 @@ import { AbstractTransactionsSdk } from "../abstract";
 import { AccountValidationResult, BroadcastTransactionResult } from "../common";
 
 export class CosmosTransactionsSdk extends AbstractTransactionsSdk {
-  protected chainId: CosmosChain;
+  protected chainId: LegacyCosmosChain;
   protected client: CosmosClient;
 
   public constructor({
     chainId,
     client,
   }: {
-    chainId: CosmosChain;
+    chainId: LegacyCosmosChain;
     client: CosmosClient;
   }) {
     super(chainId);
@@ -220,6 +220,6 @@ export class CosmosTransactionsSdk extends AbstractTransactionsSdk {
   }
 
   protected get chain() {
-    return cosmosChains[this.chainId];
+    return legacyCosmosChains[this.chainId];
   }
 }

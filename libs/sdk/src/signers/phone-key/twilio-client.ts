@@ -4,8 +4,8 @@ import { totp } from "otplib";
 import {
   Chain,
   ChainId,
-  CosmosChain,
-  cosmosChains,
+  LegacyCosmosChain,
+  legacyCosmosChains,
   TerraChain,
   terraChains,
 } from "../../chains";
@@ -181,8 +181,8 @@ export class TwilioClient implements TwilioClientInterface {
       twilioUrl: string;
     }>({
       chainId,
-      onCosmosChain(chainId: CosmosChain) {
-        return cosmosChains[chainId];
+      onLegacyCosmosChain(chainId: LegacyCosmosChain) {
+        return legacyCosmosChains[chainId];
       },
       onTerraChain(chainId: TerraChain) {
         return terraChains[chainId];

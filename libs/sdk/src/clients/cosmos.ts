@@ -3,10 +3,10 @@ import { Decimal } from "@cosmjs/math/build/decimal";
 import { OfflineSigner } from "@cosmjs/proto-signing";
 import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
 
-import { CosmosChain, cosmosChains } from "../chains";
+import { LegacyCosmosChain, legacyCosmosChains } from "../chains";
 
 export async function withCosmosClients<T>(
-  chainId: CosmosChain,
+  chainId: LegacyCosmosChain,
   f: (clients: {
     stargateClient: StargateClient;
     cosmWasmClient: CosmWasmClient;
@@ -25,7 +25,7 @@ export async function withCosmosClients<T>(
 }
 
 export async function withCosmosStargateClient<T>(
-  chainId: CosmosChain,
+  chainId: LegacyCosmosChain,
   f: (client: StargateClient) => T
 ) {
   const client = await createStargateClient(chainId);
@@ -37,7 +37,7 @@ export async function withCosmosStargateClient<T>(
 }
 
 export async function withCosmosSigningStargateClient<T>(
-  { chainId, signer }: { chainId: CosmosChain; signer: OfflineSigner },
+  { chainId, signer }: { chainId: LegacyCosmosChain; signer: OfflineSigner },
   f: (client: SigningStargateClient) => T
 ) {
   const client = await createSigningStargateClient({ chainId, signer });
@@ -49,7 +49,7 @@ export async function withCosmosSigningStargateClient<T>(
 }
 
 export async function withCosmosCosmWasmClient<T>(
-  chainId: CosmosChain,
+  chainId: LegacyCosmosChain,
   f: (client: CosmWasmClient) => T
 ) {
   const client = await createCosmWasmClient(chainId);
@@ -60,8 +60,8 @@ export async function withCosmosCosmWasmClient<T>(
   }
 }
 
-async function createStargateClient(chainId: CosmosChain) {
-  const { rpcs } = cosmosChains[chainId];
+async function createStargateClient(chainId: LegacyCosmosChain) {
+  const { rpcs } = legacyCosmosChains[chainId];
   for (const rpc of rpcs) {
     try {
       return await StargateClient.connect(rpc);
@@ -76,10 +76,10 @@ export async function createSigningStargateClient({
   chainId,
   signer,
 }: {
-  chainId: CosmosChain;
+  chainId: LegacyCosmosChain;
   signer: OfflineSigner;
 }) {
-  const { denom, rpcs } = cosmosChains[chainId];
+  const { denom, rpcs } = legacyCosmosChains[chainId];
   for (const rpc of rpcs) {
     try {
       return await SigningStargateClient.connectWithSigner(rpc, signer, {
@@ -96,8 +96,8 @@ export async function createSigningStargateClient({
   throw new Error("No RPC connected");
 }
 
-async function createCosmWasmClient(chainId: CosmosChain) {
-  const { rpcs } = cosmosChains[chainId];
+async function createCosmWasmClient(chainId: LegacyCosmosChain) {
+  const { rpcs } = legacyCosmosChains[chainId];
   for (const rpc of rpcs) {
     try {
       return await CosmWasmClient.connect(rpc);

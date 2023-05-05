@@ -1,6 +1,6 @@
 import { commonTwilioConfig } from "./common";
 
-export const cosmosChains = {
+export const legacyCosmosChains = {
   "uni-3": {
     chainId: "uni-3" as const,
     label: "Juno Testnet",
@@ -34,4 +34,4 @@ export const cosmosChains = {
   },
 };
 
-export type CosmosChain = keyof typeof cosmosChains;
+export type LegacyCosmosChain = keyof typeof legacyCosmosChains;

@@ -5,8 +5,8 @@ import { MultisigWalletSchema } from "./schema";
 import {
   Chain,
   ChainId,
-  CosmosChain,
-  cosmosChains,
+  LegacyCosmosChain,
+  legacyCosmosChains,
   TerraChain,
   terraChains,
 } from "../../chains";
@@ -89,14 +89,15 @@ export class MultisigWallet {
   public get chain() {
     // TODO: move into SDK or a new Chain DS
     return Chain.select<
-      (typeof terraChains)[TerraChain] | (typeof cosmosChains)[CosmosChain]
+      | (typeof terraChains)[TerraChain]
+      | (typeof legacyCosmosChains)[LegacyCosmosChain]
     >({
       chainId: this._chainId,
       onTerraChain(chainId) {
         return terraChains[chainId];
       },
-      onCosmosChain(chainId) {
-        return cosmosChains[chainId];
+      onLegacyCosmosChain(chainId) {
+        return legacyCosmosChains[chainId];
       },
     });
   }

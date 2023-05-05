@@ -8,7 +8,7 @@ export class MultisigWalletSdk {
   public static wallet(wallet: MultisigWallet) {
     return Chain.select<AbstractMultisigWalletSdk>({
       chainId: wallet.chainId,
-      onCosmosChain(chainId) {
+      onLegacyCosmosChain(chainId) {
         return new CosmosMultisigWalletSdk({ chainId, wallet });
       },
       onTerraChain(chainId: TerraChain) {
