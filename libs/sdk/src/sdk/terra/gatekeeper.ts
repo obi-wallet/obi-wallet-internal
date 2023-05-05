@@ -2,7 +2,7 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { TerraClient } from "./client";
-import { TerraChain } from "../../chains";
+import { TerraChainId } from "../../chains";
 import { AbstractGatekeeperSdk } from "../abstract";
 import { GatekeeperContractAddresses, PermissionedAddress } from "../common";
 
@@ -13,7 +13,7 @@ export class TerraGatekeeperSdk extends AbstractGatekeeperSdk {
     chainId,
     client,
   }: {
-    chainId: TerraChain;
+    chainId: TerraChainId;
     client: TerraClient;
   }) {
     super(chainId);

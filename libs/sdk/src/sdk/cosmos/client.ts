@@ -2,7 +2,7 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { OfflineSigner } from "@cosmjs/proto-signing";
 import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
 
-import { LegacyCosmosChain } from "../../chains";
+import { LegacyCosmosChainId } from "../../chains";
 import {
   withCosmosClients,
   withCosmosCosmWasmClient,
@@ -11,7 +11,7 @@ import {
 } from "../../clients";
 
 export class CosmosClient {
-  public constructor(protected chainId: LegacyCosmosChain) {}
+  public constructor(protected chainId: LegacyCosmosChainId) {}
 
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
     return withCosmosCosmWasmClient(this.chainId, f);

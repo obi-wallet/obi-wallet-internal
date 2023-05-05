@@ -12,7 +12,7 @@ import invariant from "tiny-invariant";
 import { TerraClient } from "./client";
 import { Key } from "./key";
 import { MultisigSigner } from "./multisig-signer";
-import { TerraChain, terraChains } from "../../chains";
+import { TerraChainId, terraChains } from "../../chains";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../keys";
 import { Secp256k1PrivateKeySigner } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
@@ -24,14 +24,14 @@ import {
 } from "../common";
 
 export class TerraTransactionsSdk extends AbstractTransactionsSdk {
-  protected chainId: TerraChain;
+  protected chainId: TerraChainId;
   protected client: TerraClient;
 
   public constructor({
     chainId,
     client,
   }: {
-    chainId: TerraChain;
+    chainId: TerraChainId;
     client: TerraClient;
   }) {
     super(chainId);

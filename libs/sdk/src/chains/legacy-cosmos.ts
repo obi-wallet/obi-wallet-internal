@@ -34,4 +34,4 @@ export const legacyCosmosChains = {
   },
 };
 
-export type LegacyCosmosChain = keyof typeof legacyCosmosChains;
+export type LegacyCosmosChainId = keyof typeof legacyCosmosChains;

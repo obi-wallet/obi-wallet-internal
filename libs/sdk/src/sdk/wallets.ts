@@ -24,6 +24,10 @@ export class WalletsSdk extends AbstractWalletsSdk {
   > {
     return await Chain.select<AbstractWalletsSdk>({
       chainId: multisigKey.chainId,
+      onCosmosChain(_) {
+        // TODO:
+        throw new Error("WalletsSdk not implemented for Cosmos");
+      },
       onLegacyCosmosChain() {
         return new CosmosWalletsSdk();
       },

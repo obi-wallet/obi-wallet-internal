@@ -104,7 +104,10 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
   async function getAccountPubkey(key: string) {
     return Chain.select({
       chainId: chainStore.currentChain,
-      async onLegacyCosmosChain(chainId) {
+      async onCosmosChain(_) {
+        throw new Error("getAccountPubkey not implemented for Cosmos");
+      },
+      async onLegacyCosmosChain({ chainId }) {
         return await withCosmosStargateClient(chainId, async (client) => {
           try {
             const account = await client.getAccount(key);
@@ -115,7 +118,7 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
           }
         });
       },
-      async onTerraChain(chainId) {
+      async onTerraChain({ chainId }) {
         try {
           const account = await withTerraClient(chainId, async (client) => {
             return await client.auth.accountInfo(key);

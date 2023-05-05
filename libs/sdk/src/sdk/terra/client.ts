@@ -4,11 +4,11 @@ import {
   PaginationOptions,
 } from "@terra-money/feather.js/dist/client/lcd/APIRequester";
 
-import { TerraChain } from "../../chains";
+import { TerraChainId } from "../../chains";
 import { withTerraClient } from "../../clients";
 
 export class TerraClient {
-  public constructor(protected chainId: TerraChain) {}
+  public constructor(protected chainId: TerraChainId) {}
 
   public async fetchAllPages<T>(
     f: (

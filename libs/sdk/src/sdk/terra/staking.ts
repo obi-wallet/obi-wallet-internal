@@ -7,7 +7,7 @@ import BigNumber from "bignumber.js";
 import * as R from "ramda";
 
 import { TerraClient } from "./client";
-import { TerraChain, terraChains } from "../../chains";
+import { TerraChainId, terraChains } from "../../chains";
 import { AbstractStakingSdk } from "../abstract";
 import {
   Delegation,
@@ -17,14 +17,14 @@ import {
 } from "../common";
 
 export class TerraStakingSdk extends AbstractStakingSdk {
-  protected chainId: TerraChain;
+  protected chainId: TerraChainId;
   protected client: TerraClient;
 
   public constructor({
     chainId,
     client,
   }: {
-    chainId: TerraChain;
+    chainId: TerraChainId;
     client: TerraClient;
   }) {
     super(chainId);

@@ -1,7 +1,7 @@
 import warning from "tiny-warning";
 
 import { CosmosClient } from "./client";
-import { LegacyCosmosChain, legacyCosmosChains } from "../../chains";
+import { LegacyCosmosChainId, legacyCosmosChains } from "../../chains";
 import { AbstractStakingSdk } from "../abstract";
 import {
   Delegation,
@@ -15,14 +15,14 @@ function notImplemented(message: string) {
 }
 
 export class CosmosStakingSdk extends AbstractStakingSdk {
-  protected chainId: LegacyCosmosChain;
+  protected chainId: LegacyCosmosChainId;
   protected client: CosmosClient;
 
   public constructor({
     chainId,
     client,
   }: {
-    chainId: LegacyCosmosChain;
+    chainId: LegacyCosmosChainId;
     client: CosmosClient;
   }) {
     super(chainId);

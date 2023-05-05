@@ -4,13 +4,7 @@ import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Text } from "@obi-wallet/common";
-import {
-  LegacyCosmosChain,
-  legacyCosmosChains,
-  isLegacyCosmosChain,
-  TerraChain,
-  terraChains,
-} from "@obi-wallet/sdk";
+import { Chain, ChainId } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -25,7 +19,7 @@ import { VerifyAndProceedButton } from "../../components/phone-number/verify-and
 import { isSmallScreenNumber } from "../../components/screen-size";
 
 export interface LookupProps {
-  chainId: LegacyCosmosChain | TerraChain;
+  chainId: ChainId;
   publicKey: string;
   onSelect(wallet: A.SerializedProxyWallet): Promise<void>;
   onCancel(): void;
@@ -47,10 +41,18 @@ export const Lookup = observer(function Lookup({
 
   useAsyncEffect(async () => {
     try {
-      const currentCodeId = isLegacyCosmosChain(chainId)
-        ? legacyCosmosChains[chainId].currentCodeId
-        : terraChains[chainId].currentCodeIds.userAccount;
-
+      const currentCodeId = Chain.select({
+        chainId,
+        onCosmosChain(chain) {
+          return chain.currentCodeIds.userAccount;
+        },
+        onLegacyCosmosChain(chain) {
+          return chain.currentCodeId;
+        },
+        onTerraChain(chain) {
+          return chain.currentCodeIds.userAccount;
+        },
+      });
       const response = await fetch(
         `https://proxy-wallets.obiwallet.workers.dev`,
         {

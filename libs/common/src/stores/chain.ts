@@ -1,9 +1,4 @@
-import {
-  ChainId,
-  legacyCosmosChains,
-  isLegacyCosmosChain,
-  terraChains,
-} from "@obi-wallet/sdk";
+import { Chain, ChainId } from "@obi-wallet/sdk";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import { ConfigStore } from "./config";
@@ -27,10 +22,6 @@ export class ChainStore {
 
   @computed
   public get currentChainInformation() {
-    if (isLegacyCosmosChain(this.currentChain)) {
-      return legacyCosmosChains[this.currentChain];
-    } else {
-      return terraChains[this.currentChain];
-    }
+    return Chain.information(this.currentChain);
   }
 }

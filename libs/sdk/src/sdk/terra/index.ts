@@ -4,7 +4,7 @@ import { TerraContractsSdk } from "./contracts";
 import { TerraGatekeeperSdk } from "./gatekeeper";
 import { TerraStakingSdk } from "./staking";
 import { TerraTransactionsSdk } from "./transactions";
-import { TerraChain } from "../../chains";
+import { TerraChainId } from "../../chains";
 import { AbstractSdk } from "../abstract";
 
 export class TerraSdk extends AbstractSdk {
@@ -16,7 +16,7 @@ export class TerraSdk extends AbstractSdk {
 
   protected client: TerraClient;
 
-  protected constructor(protected chainId: TerraChain) {
+  protected constructor(protected chainId: TerraChainId) {
     super(chainId);
     this.client = new TerraClient(chainId);
     this.bank = new TerraBankSdk({
@@ -41,7 +41,7 @@ export class TerraSdk extends AbstractSdk {
     });
   }
 
-  public static chainId(chainId: TerraChain) {
+  public static chainId(chainId: TerraChainId) {
     return new TerraSdk(chainId);
   }
 }

@@ -10,7 +10,7 @@ import { Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
-import { TerraChain, terraChains } from "../../chains";
+import { TerraChainId, terraChains } from "../../chains";
 import {
   GatekeeperConfig,
   MultisigKey,
@@ -22,7 +22,7 @@ import { CodeIds, Token } from "../common";
 import { Sdk } from "../sdk";
 
 export class TerraMessages extends AbstractMessages {
-  protected constructor(protected chainId: TerraChain) {
+  protected constructor(protected chainId: TerraChainId) {
     super(chainId);
   }
 
@@ -520,7 +520,7 @@ export class TerraMessages extends AbstractMessages {
     return terraChains[this.chainId];
   }
 
-  public static chainId(chainId: TerraChain) {
+  public static chainId(chainId: TerraChainId) {
     return new TerraMessages(chainId);
   }
 }

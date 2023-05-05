@@ -18,7 +18,7 @@ import warning from "tiny-warning";
 
 import { CosmosClient } from "./client";
 import { OfflineAminoSigner } from "./offline-amino-signer";
-import { LegacyCosmosChain, legacyCosmosChains } from "../../chains";
+import { LegacyCosmosChainId, legacyCosmosChains } from "../../chains";
 import {
   FlexAccount,
   GatekeeperConfig,
@@ -37,14 +37,14 @@ function notImplemented(message: string) {
 }
 
 export class CosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
-  protected chainId: LegacyCosmosChain;
+  protected chainId: LegacyCosmosChainId;
   protected client: CosmosClient;
 
   public constructor({
     chainId,
     wallet,
   }: {
-    chainId: LegacyCosmosChain;
+    chainId: LegacyCosmosChainId;
     wallet: MultisigWallet;
   }) {
     super({ chainId, wallet });

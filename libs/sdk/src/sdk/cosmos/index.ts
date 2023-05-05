@@ -4,7 +4,7 @@ import { CosmosContractsSdk } from "./contracts";
 import { CosmosGatekeeperSdk } from "./gatekeeper";
 import { CosmosStakingSdk } from "./staking";
 import { CosmosTransactionsSdk } from "./transactions";
-import { LegacyCosmosChain } from "../../chains";
+import { LegacyCosmosChainId } from "../../chains";
 import { AbstractSdk } from "../abstract";
 
 export class CosmosSdk extends AbstractSdk {
@@ -16,7 +16,7 @@ export class CosmosSdk extends AbstractSdk {
 
   protected client: CosmosClient;
 
-  protected constructor(protected chainId: LegacyCosmosChain) {
+  protected constructor(protected chainId: LegacyCosmosChainId) {
     super(chainId);
     this.client = new CosmosClient(chainId);
     this.bank = new CosmosBankSdk({
@@ -41,7 +41,7 @@ export class CosmosSdk extends AbstractSdk {
     });
   }
 
-  public static chainId(chainId: LegacyCosmosChain) {
+  public static chainId(chainId: LegacyCosmosChainId) {
     return new CosmosSdk(chainId);
   }
 }

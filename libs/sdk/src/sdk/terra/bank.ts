@@ -5,7 +5,7 @@ import invariant from "tiny-invariant";
 import { TerraClient } from "./client";
 import { tokenPairs } from "./token-pairs";
 import { tokens } from "./tokens";
-import { TerraChain } from "../../chains";
+import { TerraChainId } from "../../chains";
 import { AbstractBankSdk } from "../abstract";
 import { EnrichedToken, Token } from "../common";
 
@@ -16,7 +16,7 @@ export class TerraBankSdk extends AbstractBankSdk {
     chainId,
     client,
   }: {
-    chainId: TerraChain;
+    chainId: TerraChainId;
     client: TerraClient;
   }) {
     super(chainId);

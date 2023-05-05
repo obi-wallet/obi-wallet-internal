@@ -42,4 +42,4 @@ export const terraChains = {
   },
 };
 
-export type TerraChain = keyof typeof terraChains;
+export type TerraChainId = keyof typeof terraChains;

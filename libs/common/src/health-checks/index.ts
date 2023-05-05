@@ -27,6 +27,10 @@ export const healthChecks: Record<
   ChainId,
   { types: string[]; checks: Record<string, HealthCheck> }
 > = {
+  "oasis-3": {
+    types: [],
+    checks: {},
+  },
   "juno-1": {
     types: [JunoChecks.CORRECT_ADMIN],
     checks: junoChecks,

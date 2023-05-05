@@ -1,11 +1,11 @@
 import { LCDClient } from "@terra-money/feather.js";
 import { AxiosError } from "axios";
 
-import { TerraChain, terraChains } from "../chains";
+import { TerraChainId, terraChains } from "../chains";
 import { RpcError } from "../sdk";
 
 export async function withTerraClient<T>(
-  chainId: TerraChain,
+  chainId: TerraChainId,
   f: (client: LCDClient) => T
 ) {
   let error;

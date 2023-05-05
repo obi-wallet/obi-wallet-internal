@@ -1,7 +1,7 @@
 import { AbstractMessages } from "./abstract";
 import { CosmosMessages } from "./cosmos/messages";
 import { TerraMessages } from "./terra/messages";
-import { Chain, ChainId, TerraChain } from "../chains";
+import { Chain, ChainId } from "../chains";
 
 export class Messages {
   protected static instances: Partial<Record<ChainId, AbstractMessages>> = {};
@@ -12,10 +12,14 @@ export class Messages {
 
     const messages = Chain.select<AbstractMessages>({
       chainId,
-      onLegacyCosmosChain(chainId) {
+      onCosmosChain(_) {
+        // TODO:
+        throw new Error("Messages not implemented for Cosmos");
+      },
+      onLegacyCosmosChain({ chainId }) {
         return CosmosMessages.chainId(chainId);
       },
-      onTerraChain(chainId: TerraChain) {
+      onTerraChain({ chainId }) {
         return TerraMessages.chainId(chainId);
       },
     });

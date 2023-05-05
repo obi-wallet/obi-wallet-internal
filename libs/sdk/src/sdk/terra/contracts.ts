@@ -1,5 +1,5 @@
 import { TerraClient } from "./client";
-import { TerraChain } from "../../chains";
+import { TerraChainId } from "../../chains";
 import { AbstractContractsSdk } from "../abstract";
 
 export class TerraContractsSdk extends AbstractContractsSdk {
@@ -9,7 +9,7 @@ export class TerraContractsSdk extends AbstractContractsSdk {
     chainId,
     client,
   }: {
-    chainId: TerraChain;
+    chainId: TerraChainId;
     client: TerraClient;
   }) {
     super(chainId);

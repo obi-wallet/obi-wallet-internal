@@ -1,14 +1,7 @@
 import { AES } from "crypto-js";
 import { totp } from "otplib";
 
-import {
-  Chain,
-  ChainId,
-  LegacyCosmosChain,
-  legacyCosmosChains,
-  TerraChain,
-  terraChains,
-} from "../../chains";
+import { Chain, ChainId } from "../../chains";
 import { Secp256k1KeyPair, Secp256k1PublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
 import { Secp256k1PrivateKeySigner } from "../sec256k1-private-key";
@@ -176,18 +169,7 @@ export class TwilioClient implements TwilioClientInterface {
   }) {
     const body = await this.getMessageBody(`${message}:${chainId}`);
     const formData = new FormData();
-    const { twilioPhoneNumbers, twilioUrl } = Chain.select<{
-      twilioPhoneNumbers: string[];
-      twilioUrl: string;
-    }>({
-      chainId,
-      onLegacyCosmosChain(chainId: LegacyCosmosChain) {
-        return legacyCosmosChains[chainId];
-      },
-      onTerraChain(chainId: TerraChain) {
-        return terraChains[chainId];
-      },
-    });
+    const { twilioPhoneNumbers, twilioUrl } = Chain.information(chainId);
     const twilioPhoneNumber =
       twilioPhoneNumbers[Math.floor(Math.random() * twilioPhoneNumbers.length)];
     formData.append("To", twilioPhoneNumber);

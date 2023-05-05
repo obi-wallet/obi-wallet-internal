@@ -1,5 +1,5 @@
 import { CosmosClient } from "./client";
-import { LegacyCosmosChain } from "../../chains";
+import { LegacyCosmosChainId } from "../../chains";
 import { AbstractContractsSdk } from "../abstract";
 
 export class CosmosContractsSdk extends AbstractContractsSdk {
@@ -9,7 +9,7 @@ export class CosmosContractsSdk extends AbstractContractsSdk {
     chainId,
     client,
   }: {
-    chainId: LegacyCosmosChain;
+    chainId: LegacyCosmosChainId;
     client: CosmosClient;
   }) {
     super(chainId);

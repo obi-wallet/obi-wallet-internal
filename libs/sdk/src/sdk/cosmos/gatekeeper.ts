@@ -1,7 +1,7 @@
 import warning from "tiny-warning";
 
 import { CosmosClient } from "./client";
-import { LegacyCosmosChain } from "../../chains";
+import { LegacyCosmosChainId } from "../../chains";
 import { AbstractGatekeeperSdk } from "../abstract";
 import { GatekeeperContractAddresses, PermissionedAddress } from "../common";
 
@@ -16,7 +16,7 @@ export class CosmosGatekeeperSdk extends AbstractGatekeeperSdk {
     chainId,
     client,
   }: {
-    chainId: LegacyCosmosChain;
+    chainId: LegacyCosmosChainId;
     client: CosmosClient;
   }) {
     super(chainId);

@@ -8,7 +8,7 @@ import {
 } from "@terra-money/feather.js";
 
 import { Key } from "./key";
-import { TerraChain } from "../../chains";
+import { TerraChainId } from "../../chains";
 import { MultisigPublicKey } from "../../keys";
 import {
   MultisigSigner as AbstractMultisigSigner,
@@ -27,7 +27,7 @@ export class MultisigSigner extends AbstractMultisigSigner<SignatureV2> {
     transaction,
     multisigPublicKey,
   }: {
-    chainId: TerraChain;
+    chainId: TerraChainId;
     account: Account;
     transaction: Tx;
     multisigPublicKey: MultisigPublicKey;

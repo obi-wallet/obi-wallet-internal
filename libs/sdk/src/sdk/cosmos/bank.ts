@@ -2,19 +2,19 @@ import { JsonObject } from "@cosmjs/cosmwasm-stargate";
 import * as R from "ramda";
 
 import { CosmosClient } from "./client";
-import { LegacyCosmosChain, legacyCosmosChains } from "../../chains";
+import { LegacyCosmosChainId, legacyCosmosChains } from "../../chains";
 import { AbstractBankSdk } from "../abstract";
 import { EnrichedToken, Token } from "../common";
 
 export class CosmosBankSdk extends AbstractBankSdk {
-  protected chainId: LegacyCosmosChain;
+  protected chainId: LegacyCosmosChainId;
   protected client: CosmosClient;
 
   public constructor({
     chainId,
     client,
   }: {
-    chainId: LegacyCosmosChain;
+    chainId: LegacyCosmosChainId;
     client: CosmosClient;
   }) {
     super(chainId);

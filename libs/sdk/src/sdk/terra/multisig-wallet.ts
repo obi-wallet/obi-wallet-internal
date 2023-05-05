@@ -5,7 +5,7 @@ import invariant from "tiny-invariant";
 
 import { TerraClient } from "./client";
 import { Key } from "./key";
-import { TerraChain, terraChains } from "../../chains";
+import { TerraChainId, terraChains } from "../../chains";
 import {
   FlexAccount,
   GatekeeperConfig,
@@ -27,14 +27,14 @@ import { Messages } from "../messages";
 import { Sdk } from "../sdk";
 
 export class TerraMultisigWalletSdk extends AbstractMultisigWalletSdk {
-  protected chainId: TerraChain;
+  protected chainId: TerraChainId;
   protected client: TerraClient;
 
   public constructor({
     chainId,
     wallet,
   }: {
-    chainId: TerraChain;
+    chainId: TerraChainId;
     wallet: MultisigWallet;
   }) {
     super({ chainId, wallet });
