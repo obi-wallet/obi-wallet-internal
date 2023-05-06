@@ -1,6 +1,6 @@
+import { AbstractSdk } from "./abstract";
 import { CosmosChainId } from "../../chains";
 import { CosmJsClient } from "../../clients";
-import { AbstractSdk } from "../abstract";
 import { CosmosBankSdk } from "../bank/cosmos";
 import { CosmJsContractsSdk } from "../contracts";
 import { CosmosSdkGatekeeperSdk } from "../gatekeeper";

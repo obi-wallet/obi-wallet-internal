@@ -2,7 +2,7 @@ import { AbstractSdk } from "./abstract";
 import { CosmosSdk } from "./cosmos";
 import { LegacyCosmosSdk } from "./legacy-cosmos";
 import { TerraSdk } from "./terra";
-import { Chain, ChainId } from "../chains";
+import { Chain, ChainId } from "../../chains";
 
 export class Sdk {
   protected static instances: Partial<Record<ChainId, AbstractSdk>> = {};
