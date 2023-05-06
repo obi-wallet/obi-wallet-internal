@@ -17,8 +17,8 @@ import { Bech32Address } from "@keplr-wallet/cosmos";
 import { AuthInfo, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import invariant from "tiny-invariant";
 
-import { CosmosClient } from "./client";
-import { MultisigSigner } from "./multisig-signer";
+import { LegacyCosmosClient } from "./client";
+import { LegacyMultisigSigner } from "./multisig-signer";
 import { OfflineAminoSigner } from "./offline-amino-signer";
 import { LegacyCosmosChainId, legacyCosmosChains } from "../../chains";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../keys";
@@ -27,16 +27,16 @@ import { Message, SignedTransaction } from "../../transactions";
 import { AbstractTransactionsSdk } from "../abstract";
 import { AccountValidationResult, BroadcastTransactionResult } from "../common";
 
-export class CosmosTransactionsSdk extends AbstractTransactionsSdk {
+export class LegacyCosmosTransactionsSdk extends AbstractTransactionsSdk {
   protected chainId: LegacyCosmosChainId;
-  protected client: CosmosClient;
+  protected client: LegacyCosmosClient;
 
   public constructor({
     chainId,
     client,
   }: {
     chainId: LegacyCosmosChainId;
-    client: CosmosClient;
+    client: LegacyCosmosClient;
   }) {
     super(chainId);
     this.chainId = chainId;
@@ -130,7 +130,7 @@ export class CosmosTransactionsSdk extends AbstractTransactionsSdk {
       return this.aminoTypes.fromAmino(aminoMessage);
     });
 
-    return new MultisigSigner({
+    return new LegacyMultisigSigner({
       chainId: this.chainId,
       account,
       fee: this.defaultFee,

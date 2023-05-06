@@ -14,7 +14,7 @@ function notImplemented(message: string) {
   warning(false, message);
 }
 
-export class CosmosMessages extends AbstractMessages {
+export class LegacyCosmosMessages extends AbstractMessages {
   protected constructor(protected chainId: LegacyCosmosChainId) {
     super(chainId);
   }
@@ -95,6 +95,6 @@ export class CosmosMessages extends AbstractMessages {
   }
 
   public static chainId(chainId: LegacyCosmosChainId) {
-    return new CosmosMessages(chainId);
+    return new LegacyCosmosMessages(chainId);
   }
 }

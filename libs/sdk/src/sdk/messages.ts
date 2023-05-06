@@ -1,5 +1,5 @@
 import { AbstractMessages } from "./abstract";
-import { CosmosMessages } from "./cosmos/messages";
+import { LegacyCosmosMessages } from "./legacy-cosmos/messages";
 import { TerraMessages } from "./terra/messages";
 import { Chain, ChainId } from "../chains";
 
@@ -17,7 +17,7 @@ export class Messages {
         throw new Error("Messages not implemented for Cosmos");
       },
       onLegacyCosmosChain({ chainId }) {
-        return CosmosMessages.chainId(chainId);
+        return LegacyCosmosMessages.chainId(chainId);
       },
       onTerraChain({ chainId }) {
         return TerraMessages.chainId(chainId);

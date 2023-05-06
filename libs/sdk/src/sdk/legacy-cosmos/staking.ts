@@ -1,6 +1,6 @@
 import warning from "tiny-warning";
 
-import { CosmosClient } from "./client";
+import { LegacyCosmosClient } from "./client";
 import { LegacyCosmosChainId, legacyCosmosChains } from "../../chains";
 import { AbstractStakingSdk } from "../abstract";
 import {
@@ -14,16 +14,16 @@ function notImplemented(message: string) {
   warning(false, message);
 }
 
-export class CosmosStakingSdk extends AbstractStakingSdk {
+export class LegacyCosmosStakingSdk extends AbstractStakingSdk {
   protected chainId: LegacyCosmosChainId;
-  protected client: CosmosClient;
+  protected client: LegacyCosmosClient;
 
   public constructor({
     chainId,
     client,
   }: {
     chainId: LegacyCosmosChainId;
-    client: CosmosClient;
+    client: LegacyCosmosClient;
   }) {
     super(chainId);
     this.chainId = chainId;

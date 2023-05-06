@@ -1,6 +1,6 @@
 import { AbstractWalletsSdk } from "./abstract/wallets";
 import { BroadcastTransactionResult } from "./common";
-import { CosmosWalletsSdk } from "./cosmos/wallets";
+import { LegacyCosmosWalletsSdk } from "./legacy-cosmos/wallets";
 import { TerraWalletsSdk } from "./terra/wallets";
 import { Chain } from "../chains";
 import { MultisigKey } from "../data-structures";
@@ -29,7 +29,7 @@ export class WalletsSdk extends AbstractWalletsSdk {
         throw new Error("WalletsSdk not implemented for Cosmos");
       },
       onLegacyCosmosChain() {
-        return new CosmosWalletsSdk();
+        return new LegacyCosmosWalletsSdk();
       },
       onTerraChain() {
         return new TerraWalletsSdk();

@@ -29,7 +29,7 @@ import {
 
 const registry = new Registry([...defaultRegistryTypes, ...wasmTypes]);
 
-export class MultisigSigner extends AbstractMultisigSigner<Uint8Array> {
+export class LegacyMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
   protected chainId: LegacyCosmosChainId;
   protected account: Account;
   protected fee: StdFee;

@@ -1,5 +1,5 @@
 import { AbstractMultisigWalletSdk } from "./abstract";
-import { CosmosMultisigWalletSdk } from "./cosmos/multisig-wallet";
+import { LegacyCosmosMultisigWalletSdk } from "./legacy-cosmos/multisig-wallet";
 import { TerraMultisigWalletSdk } from "./terra/multisig-wallet";
 import { Chain } from "../chains";
 import { MultisigWallet } from "../data-structures";
@@ -13,7 +13,7 @@ export class MultisigWalletSdk {
         throw new Error("MultisigWalletSdk not implemented for Cosmos");
       },
       onLegacyCosmosChain({ chainId }) {
-        return new CosmosMultisigWalletSdk({ chainId, wallet });
+        return new LegacyCosmosMultisigWalletSdk({ chainId, wallet });
       },
       onTerraChain({ chainId }) {
         return new TerraMultisigWalletSdk({ chainId, wallet });

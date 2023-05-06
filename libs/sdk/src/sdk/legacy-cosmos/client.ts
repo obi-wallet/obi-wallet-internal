@@ -10,7 +10,7 @@ import {
   withCosmosStargateClient,
 } from "../../clients";
 
-export class CosmosClient {
+export class LegacyCosmosClient {
   public constructor(protected chainId: LegacyCosmosChainId) {}
 
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {

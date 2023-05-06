@@ -1,16 +1,16 @@
-import { CosmosClient } from "./client";
+import { LegacyCosmosClient } from "./client";
 import { LegacyCosmosChainId } from "../../chains";
 import { AbstractContractsSdk } from "../abstract";
 
-export class CosmosContractsSdk extends AbstractContractsSdk {
-  protected client: CosmosClient;
+export class LegacyCosmosContractsSdk extends AbstractContractsSdk {
+  protected client: LegacyCosmosClient;
 
   public constructor({
     chainId,
     client,
   }: {
     chainId: LegacyCosmosChainId;
-    client: CosmosClient;
+    client: LegacyCosmosClient;
   }) {
     super(chainId);
     this.client = client;

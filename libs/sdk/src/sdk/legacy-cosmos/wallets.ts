@@ -9,7 +9,7 @@ function notImplemented(message: string) {
   warning(false, message);
 }
 
-export class CosmosWalletsSdk extends AbstractWalletsSdk {
+export class LegacyCosmosWalletsSdk extends AbstractWalletsSdk {
   public async createWallet(_: {
     multisigKey: MultisigKey;
     demoMode: boolean;
