@@ -1,11 +1,10 @@
-import { AbstractBankSdk } from "./bank";
 import { AbstractContractsSdk } from "./contracts";
 import { AbstractGatekeeperSdk } from "./gatekeeper";
 import { AbstractStakingSdk } from "./staking";
 import { AbstractTransactionsSdk } from "./transactions";
 import { ChainId } from "../../chains";
+import { AbstractBankSdk } from "../bank";
 
-export * from "./bank";
 export * from "./contracts";
 export * from "./gatekeeper";
 export * from "./messages";

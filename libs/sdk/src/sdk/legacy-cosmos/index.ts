@@ -1,4 +1,3 @@
-import { LegacyCosmosBankSdk } from "./bank";
 import { LegacyCosmosContractsSdk } from "./contracts";
 import { LegacyCosmosGatekeeperSdk } from "./gatekeeper";
 import { LegacyCosmosStakingSdk } from "./staking";
@@ -6,6 +5,7 @@ import { LegacyCosmosTransactionsSdk } from "./transactions";
 import { LegacyCosmosChainId } from "../../chains";
 import { CosmJsClient } from "../../clients";
 import { AbstractSdk } from "../abstract";
+import { LegacyCosmosBankSdk } from "../bank";
 
 export class LegacyCosmosSdk extends AbstractSdk {
   public bank: LegacyCosmosBankSdk;

@@ -2,25 +2,59 @@ import BigNumber from "bignumber.js";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
-import { tokenPairs } from "./token-pairs";
-import { tokens } from "./tokens";
-import { TerraChainId } from "../../chains";
-import { FeatherJsClient } from "../../clients";
+import { TerraChainId } from "../../../chains";
+import { FeatherJsClient } from "../../../clients";
+import { EnrichedToken, Token } from "../../common";
 import { AbstractBankSdk } from "../abstract";
-import { EnrichedToken, Token } from "../common";
 
-export class TerraBankSdk extends AbstractBankSdk {
+export interface TokenRegistryEntry {
+  base_denom?: string;
+  denom?: string;
+  name?: string;
+  symbol?: string;
+  icon?: string;
+  token?: string;
+  decimals: number;
+}
+
+export type TokenRegistry = Record<string, TokenRegistryEntry>;
+
+type Asset =
+  | { token: { contract_addr: string } }
+  | { native_token: { denom: string } };
+
+export interface TokenPairRegistryEntry {
+  asset_infos: Asset[];
+  contract_addr: string;
+  dex: string;
+}
+
+export type TokenPairRegistry = Record<string, TokenPairRegistryEntry>;
+
+export class FeatherJsBankSdk extends AbstractBankSdk {
   protected client: FeatherJsClient;
+  protected tokens: TokenRegistry;
+  protected tokenPairs: TokenPairRegistry;
+  protected usdTokens: string[];
 
   public constructor({
     chainId,
     client,
+    tokens,
+    tokenPairs,
+    usdTokens,
   }: {
     chainId: TerraChainId;
     client: FeatherJsClient;
+    tokens: TokenRegistry;
+    tokenPairs: TokenPairRegistry;
+    usdTokens: string[];
   }) {
     super(chainId);
     this.client = client;
+    this.tokens = tokens;
+    this.tokenPairs = tokenPairs;
+    this.usdTokens = usdTokens;
   }
 
   protected async balancesQueryFn(address: string): Promise<Token[]> {
@@ -44,8 +78,8 @@ export class TerraBankSdk extends AbstractBankSdk {
       );
 
       const contractTokens = await Promise.all(
-        Object.values(tokens).map(async (token) => {
-          if (!R.has("token", token)) return null;
+        Object.values(this.tokens).map(async (token) => {
+          if (!token.token) return null;
 
           const response = await client.wasm.contractQuery<{ balance: string }>(
             token.token,
@@ -71,20 +105,13 @@ export class TerraBankSdk extends AbstractBankSdk {
   }
 
   protected async pricesQueryFn(): Promise<Record<string, number>> {
-    const stack: { denom: string; usdPrice: BigNumber }[] = [
-      {
-        // axlUSDC
-        denom:
-          "ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4",
+    const stack = this.usdTokens.map((denom) => {
+      return {
+        denom,
         usdPrice: new BigNumber(1),
-      },
-      {
-        // axlUSDT
-        denom:
-          "ibc/CBF67A2BCF6CAE343FDF251E510C8E18C361FC02B23430C121116E0811835DEF",
-        usdPrice: new BigNumber(1),
-      },
-    ];
+      };
+    });
+
     const prices: Record<string, BigNumber> = {};
 
     type Asset =
@@ -97,11 +124,7 @@ export class TerraBankSdk extends AbstractBankSdk {
         : asset.native_token.denom;
     }
 
-    const allPairs = R.values(tokenPairs) as {
-      asset_infos: Asset[];
-      contract_addr: string;
-      dex: "astroport" | "terraswap" | "phoenix";
-    }[];
+    const allPairs = R.values(this.tokenPairs);
     const contractInfos = await Promise.all(
       allPairs.map(async (pair) => {
         switch (pair.dex) {
@@ -120,6 +143,8 @@ export class TerraBankSdk extends AbstractBankSdk {
               ...response,
             };
           }
+          default:
+            throw new Error("Unsupported dex");
         }
       })
     );
@@ -183,16 +208,13 @@ export class TerraBankSdk extends AbstractBankSdk {
   }
 
   public enrichTokenWithoutUsdValue(token: Token): EnrichedToken {
-    if (!R.has(token.id, tokens)) {
+    if (!R.has(token.id, this.tokens)) {
       return super.enrichTokenWithoutUsdValue(token);
     }
 
-    const tokenData = tokens[token.id as keyof typeof tokens];
+    const tokenData = this.tokens[token.id as keyof typeof this.tokens];
     const denom =
-      R.prop("base_denom", tokenData) ??
-      R.prop("denom", tokenData) ??
-      R.prop("symbol", tokenData) ??
-      token.id;
+      tokenData.base_denom ?? tokenData.denom ?? tokenData.symbol ?? token.id;
 
     return {
       ...token,
@@ -206,8 +228,7 @@ export class TerraBankSdk extends AbstractBankSdk {
         return denom;
       })(),
       digits: tokenData.decimals,
-      label:
-        R.prop("name", tokenData) ?? R.prop("symbol", tokenData) ?? token.id,
+      label: tokenData.name ?? tokenData.symbol ?? token.id,
       usdValue: null,
     };
   }

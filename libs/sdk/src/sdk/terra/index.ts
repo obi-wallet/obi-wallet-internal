@@ -1,4 +1,3 @@
-import { TerraBankSdk } from "./bank";
 import { TerraContractsSdk } from "./contracts";
 import { TerraGatekeeperSdk } from "./gatekeeper";
 import { TerraStakingSdk } from "./staking";
@@ -6,6 +5,7 @@ import { TerraTransactionsSdk } from "./transactions";
 import { TerraChainId } from "../../chains";
 import { FeatherJsClient } from "../../clients";
 import { AbstractSdk } from "../abstract";
+import { TerraBankSdk } from "../bank";
 
 export class TerraSdk extends AbstractSdk {
   public bank: TerraBankSdk;
