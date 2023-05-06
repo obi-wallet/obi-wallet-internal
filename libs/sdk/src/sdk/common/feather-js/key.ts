@@ -1,8 +1,8 @@
-import { Key as TerraKey, SimplePublicKey } from "@terra-money/feather.js";
+import { Key as AbstractKey, SimplePublicKey } from "@terra-money/feather.js";
 
-import { Signer } from "../../signers";
+import { Signer } from "../../../signers";
 
-export class Key extends TerraKey {
+export class FeatherJsKey extends AbstractKey {
   protected constructor(protected signer: Signer) {
     super(SimplePublicKey.fromAmino(signer.publicKey));
   }
@@ -12,6 +12,6 @@ export class Key extends TerraKey {
   }
 
   public static fromSigner(signer: Signer) {
-    return new Key(signer);
+    return new FeatherJsKey(signer);
   }
 }

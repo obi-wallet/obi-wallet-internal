@@ -19,18 +19,18 @@ import {
 } from "@cosmjs/stargate";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
-import { OfflineAminoSigner } from "./offline-amino-signer";
-import { LegacyCosmosChainId, legacyCosmosChains } from "../../chains";
-import { MultisigPublicKey } from "../../keys";
+import { Chain, CosmosChainId, LegacyCosmosChainId } from "../../../chains";
+import { MultisigPublicKey } from "../../../keys";
 import {
   MultisigSigner as AbstractMultisigSigner,
   Signer,
-} from "../../signers";
+} from "../../../signers";
+import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
 
 const registry = new Registry([...defaultRegistryTypes, ...wasmTypes]);
 
-export class LegacyMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
-  protected chainId: LegacyCosmosChainId;
+export class CosmJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
+  protected chainId: CosmosChainId | LegacyCosmosChainId;
   protected account: Account;
   protected fee: StdFee;
   protected signDoc: StdSignDoc;
@@ -45,7 +45,7 @@ export class LegacyMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     messages,
     multisigPublicKey,
   }: {
-    chainId: LegacyCosmosChainId;
+    chainId: CosmosChainId | LegacyCosmosChainId;
     account: Account;
     fee: StdFee;
     encodeObjects: EncodeObject[];
@@ -72,11 +72,11 @@ export class LegacyMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
   }
 
   protected get prefix() {
-    return legacyCosmosChains[this.chainId].prefix;
+    return Chain.information(this.chainId).prefix;
   }
 
   protected async createSignature(signer: Signer) {
-    const offlineAminoSigner = OfflineAminoSigner.fromSigner({
+    const offlineAminoSigner = CosmJsOfflineAminoSigner.fromSigner({
       signer,
       prefix: this.prefix,
     });

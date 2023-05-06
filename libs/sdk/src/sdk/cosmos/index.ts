@@ -5,13 +5,14 @@ import { CosmosBankSdk } from "../bank/cosmos";
 import { CosmJsContractsSdk } from "../contracts";
 import { CosmosSdkGatekeeperSdk } from "../gatekeeper";
 import { CosmJsStakingSdk } from "../staking";
+import { CosmJsTransactionsSdk } from "../transactions";
 
 export class CosmosSdk extends AbstractSdk {
   public bank: CosmosBankSdk;
   public contracts: CosmJsContractsSdk;
   public gatekeeper: CosmosSdkGatekeeperSdk;
   public staking: CosmJsStakingSdk;
-  // public transactions: LegacyCosmosTransactionsSdk;
+  public transactions: CosmJsTransactionsSdk;
 
   protected client: CosmJsClient;
 
@@ -31,6 +32,10 @@ export class CosmosSdk extends AbstractSdk {
       client: this.client,
     });
     this.staking = new CosmJsStakingSdk({
+      chainId,
+      client: this.client,
+    });
+    this.transactions = new CosmJsTransactionsSdk({
       chainId,
       client: this.client,
     });

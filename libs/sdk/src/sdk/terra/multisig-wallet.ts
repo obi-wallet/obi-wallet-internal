@@ -3,7 +3,6 @@ import { AxiosError } from "axios";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
-import { Key } from "./key";
 import { TerraChainId, terraChains } from "../../chains";
 import { FeatherJsClient } from "../../clients";
 import {
@@ -23,6 +22,7 @@ import {
   RpcError,
   Token,
 } from "../common";
+import { FeatherJsKey } from "../common/feather-js";
 import { Messages } from "../messages";
 import { Sdk } from "../sdk";
 
@@ -324,7 +324,7 @@ export class TerraMultisigWalletSdk extends AbstractMultisigWalletSdk {
     messages: Message[];
   }): Promise<SignedTransaction> {
     return await this.client.withClient(async (client) => {
-      const key = Key.fromSigner(signer);
+      const key = FeatherJsKey.fromSigner(signer);
       const wallet = client.wallet(key);
       try {
         const transaction = await wallet.createAndSignTx({

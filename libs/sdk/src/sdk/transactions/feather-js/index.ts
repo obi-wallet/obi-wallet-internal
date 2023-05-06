@@ -9,21 +9,21 @@ import {
 import { AxiosError } from "axios";
 import invariant from "tiny-invariant";
 
-import { Key } from "./key";
-import { MultisigSigner } from "./multisig-signer";
-import { TerraChainId, terraChains } from "../../chains";
-import { FeatherJsClient } from "../../clients";
-import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../keys";
-import { Secp256k1PrivateKeySigner } from "../../signers";
-import { Message, SignedTransaction } from "../../transactions";
-import { AbstractTransactionsSdk } from "../abstract";
+import { FeatherJsMultisigSigner } from "./multisig-signer";
+import { TerraChainId, terraChains } from "../../../chains";
+import { FeatherJsClient } from "../../../clients";
+import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../../keys";
+import { Secp256k1PrivateKeySigner } from "../../../signers";
+import { Message, SignedTransaction } from "../../../transactions";
 import {
   AccountValidationResult,
   BroadcastTransactionResult,
   RpcError,
-} from "../common";
+} from "../../common";
+import { FeatherJsKey } from "../../common/feather-js";
+import { AbstractTransactionsSdk } from "../abstract";
 
-export class TerraTransactionsSdk extends AbstractTransactionsSdk {
+export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
   protected chainId: TerraChainId;
   protected client: FeatherJsClient;
 
@@ -73,7 +73,7 @@ export class TerraTransactionsSdk extends AbstractTransactionsSdk {
   }
 
   protected async prepareKeyPairQueryFn(keyPair: Secp256k1KeyPair) {
-    const key = Key.fromSigner(
+    const key = FeatherJsKey.fromSigner(
       new Secp256k1PrivateKeySigner(keyPair.privateKey)
     );
     const address = key.accAddress(this.chain.prefix);
@@ -150,7 +150,7 @@ export class TerraTransactionsSdk extends AbstractTransactionsSdk {
             msgs: messages,
           }
         );
-        return new MultisigSigner({
+        return new FeatherJsMultisigSigner({
           chainId: this.chainId,
           account,
           transaction,

@@ -16,7 +16,6 @@ import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import warning from "tiny-warning";
 
-import { OfflineAminoSigner } from "./offline-amino-signer";
 import { LegacyCosmosChainId, legacyCosmosChains } from "../../chains";
 import { CosmJsClient } from "../../clients";
 import {
@@ -29,6 +28,7 @@ import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { AbstractMultisigWalletSdk } from "../abstract";
 import { BroadcastTransactionResult, CodeIds, Token } from "../common";
+import { CosmJsOfflineAminoSigner } from "../common/cosm-js";
 import { Messages } from "../messages";
 import { Sdk } from "../sdk";
 
@@ -143,7 +143,7 @@ export class LegacyCosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
     messages: Message[];
   }): Promise<SignedTransaction> {
     return await this.client.withSigningStargateClient(
-      OfflineAminoSigner.fromSigner({
+      CosmJsOfflineAminoSigner.fromSigner({
         signer,
         prefix: this.chain.prefix,
       }),

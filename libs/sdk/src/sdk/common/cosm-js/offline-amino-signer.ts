@@ -2,16 +2,16 @@ import {
   AccountData,
   AminoSignResponse,
   encodeSecp256k1Signature,
-  OfflineAminoSigner as CosmosOfflineAminoSigner,
+  OfflineAminoSigner as AbstractOfflineAminoSigner,
   pubkeyToAddress,
   serializeSignDoc,
   StdSignDoc,
 } from "@cosmjs/amino";
 import { Sha256 } from "@cosmjs/crypto";
 
-import { Signer } from "../../signers";
+import { Signer } from "../../../signers";
 
-export class OfflineAminoSigner implements CosmosOfflineAminoSigner {
+export class CosmJsOfflineAminoSigner implements AbstractOfflineAminoSigner {
   protected constructor(protected signer: Signer, protected prefix: string) {}
 
   public static fromSigner({
@@ -21,7 +21,7 @@ export class OfflineAminoSigner implements CosmosOfflineAminoSigner {
     signer: Signer;
     prefix: string;
   }) {
-    return new OfflineAminoSigner(signer, prefix);
+    return new CosmJsOfflineAminoSigner(signer, prefix);
   }
 
   public get address(): string {

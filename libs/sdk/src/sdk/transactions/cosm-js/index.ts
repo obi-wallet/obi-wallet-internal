@@ -17,25 +17,28 @@ import { Bech32Address } from "@keplr-wallet/cosmos";
 import { AuthInfo, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import invariant from "tiny-invariant";
 
-import { LegacyMultisigSigner } from "./multisig-signer";
-import { OfflineAminoSigner } from "./offline-amino-signer";
-import { LegacyCosmosChainId, legacyCosmosChains } from "../../chains";
-import { CosmJsClient } from "../../clients";
-import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../keys";
-import { Secp256k1PrivateKeySigner } from "../../signers";
-import { Message, SignedTransaction } from "../../transactions";
+import { CosmJsMultisigSigner } from "./multisigs-signer";
+import { Chain, CosmosChainId, LegacyCosmosChainId } from "../../../chains";
+import { CosmJsClient } from "../../../clients";
+import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../../keys";
+import { Secp256k1PrivateKeySigner } from "../../../signers";
+import { Message, SignedTransaction } from "../../../transactions";
+import {
+  AccountValidationResult,
+  BroadcastTransactionResult,
+} from "../../common";
+import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
 import { AbstractTransactionsSdk } from "../abstract";
-import { AccountValidationResult, BroadcastTransactionResult } from "../common";
 
-export class LegacyCosmosTransactionsSdk extends AbstractTransactionsSdk {
-  protected chainId: LegacyCosmosChainId;
+export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
+  protected chainId: CosmosChainId | LegacyCosmosChainId;
   protected client: CosmJsClient;
 
   public constructor({
     chainId,
     client,
   }: {
-    chainId: LegacyCosmosChainId;
+    chainId: CosmosChainId | LegacyCosmosChainId;
     client: CosmJsClient;
   }) {
     super(chainId);
@@ -82,7 +85,7 @@ export class LegacyCosmosTransactionsSdk extends AbstractTransactionsSdk {
     );
     if (validationResult <= AccountValidationResult.PUBLIC_KEY_NOT_READY) {
       await this.client.withSigningStargateClient(
-        OfflineAminoSigner.fromSigner({
+        CosmJsOfflineAminoSigner.fromSigner({
           signer: new Secp256k1PrivateKeySigner(keyPair.privateKey),
           prefix: this.chain.prefix,
         }),
@@ -130,7 +133,7 @@ export class LegacyCosmosTransactionsSdk extends AbstractTransactionsSdk {
       return this.aminoTypes.fromAmino(aminoMessage);
     });
 
-    return new LegacyMultisigSigner({
+    return new CosmJsMultisigSigner({
       chainId: this.chainId,
       account,
       fee: this.defaultFee,
@@ -220,6 +223,6 @@ export class LegacyCosmosTransactionsSdk extends AbstractTransactionsSdk {
   }
 
   protected get chain() {
-    return legacyCosmosChains[this.chainId];
+    return Chain.information(this.chainId);
   }
 }

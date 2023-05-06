@@ -7,15 +7,15 @@ import {
   Tx,
 } from "@terra-money/feather.js";
 
-import { Key } from "./key";
-import { TerraChainId } from "../../chains";
-import { MultisigPublicKey } from "../../keys";
+import { TerraChainId } from "../../../chains";
+import { MultisigPublicKey } from "../../../keys";
 import {
   MultisigSigner as AbstractMultisigSigner,
   Signer,
-} from "../../signers";
+} from "../../../signers";
+import { FeatherJsKey } from "../../common/feather-js";
 
-export class MultisigSigner extends AbstractMultisigSigner<SignatureV2> {
+export class FeatherJsMultisigSigner extends AbstractMultisigSigner<SignatureV2> {
   protected account: Account;
   protected transaction: Tx;
   protected key: LegacyAminoMultisigPublicKey;
@@ -46,7 +46,7 @@ export class MultisigSigner extends AbstractMultisigSigner<SignatureV2> {
   }
 
   protected async createSignature(signer: Signer) {
-    const key = Key.fromSigner(signer);
+    const key = FeatherJsKey.fromSigner(signer);
     return await key.createSignatureAmino(this.signDoc);
   }
 
