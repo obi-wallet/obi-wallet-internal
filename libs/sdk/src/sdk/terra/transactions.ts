@@ -9,10 +9,10 @@ import {
 import { AxiosError } from "axios";
 import invariant from "tiny-invariant";
 
-import { TerraClient } from "./client";
 import { Key } from "./key";
 import { MultisigSigner } from "./multisig-signer";
 import { TerraChainId, terraChains } from "../../chains";
+import { FeatherJsClient } from "../../clients";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../keys";
 import { Secp256k1PrivateKeySigner } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
@@ -25,14 +25,14 @@ import {
 
 export class TerraTransactionsSdk extends AbstractTransactionsSdk {
   protected chainId: TerraChainId;
-  protected client: TerraClient;
+  protected client: FeatherJsClient;
 
   public constructor({
     chainId,
     client,
   }: {
     chainId: TerraChainId;
-    client: TerraClient;
+    client: FeatherJsClient;
   }) {
     super(chainId);
     this.chainId = chainId;

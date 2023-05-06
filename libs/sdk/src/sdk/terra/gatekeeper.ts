@@ -1,20 +1,20 @@
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import { TerraClient } from "./client";
 import { TerraChainId } from "../../chains";
+import { FeatherJsClient } from "../../clients";
 import { AbstractGatekeeperSdk } from "../abstract";
 import { GatekeeperContractAddresses, PermissionedAddress } from "../common";
 
 export class TerraGatekeeperSdk extends AbstractGatekeeperSdk {
-  protected client: TerraClient;
+  protected client: FeatherJsClient;
 
   public constructor({
     chainId,
     client,
   }: {
     chainId: TerraChainId;
-    client: TerraClient;
+    client: FeatherJsClient;
   }) {
     super(chainId);
     this.client = client;

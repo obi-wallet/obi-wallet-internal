@@ -1,7 +1,7 @@
 import warning from "tiny-warning";
 
-import { LegacyCosmosClient } from "./client";
 import { LegacyCosmosChainId, legacyCosmosChains } from "../../chains";
+import { CosmJsClient } from "../../clients";
 import { AbstractStakingSdk } from "../abstract";
 import {
   Delegation,
@@ -16,14 +16,14 @@ function notImplemented(message: string) {
 
 export class LegacyCosmosStakingSdk extends AbstractStakingSdk {
   protected chainId: LegacyCosmosChainId;
-  protected client: LegacyCosmosClient;
+  protected client: CosmJsClient;
 
   public constructor({
     chainId,
     client,
   }: {
     chainId: LegacyCosmosChainId;
-    client: LegacyCosmosClient;
+    client: CosmJsClient;
   }) {
     super(chainId);
     this.chainId = chainId;

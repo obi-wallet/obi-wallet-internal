@@ -1,10 +1,10 @@
 import { TerraBankSdk } from "./bank";
-import { TerraClient } from "./client";
 import { TerraContractsSdk } from "./contracts";
 import { TerraGatekeeperSdk } from "./gatekeeper";
 import { TerraStakingSdk } from "./staking";
 import { TerraTransactionsSdk } from "./transactions";
 import { TerraChainId } from "../../chains";
+import { FeatherJsClient } from "../../clients";
 import { AbstractSdk } from "../abstract";
 
 export class TerraSdk extends AbstractSdk {
@@ -14,11 +14,11 @@ export class TerraSdk extends AbstractSdk {
   public staking: TerraStakingSdk;
   public transactions: TerraTransactionsSdk;
 
-  protected client: TerraClient;
+  protected client: FeatherJsClient;
 
   protected constructor(protected chainId: TerraChainId) {
     super(chainId);
-    this.client = new TerraClient(chainId);
+    this.client = new FeatherJsClient(chainId);
     this.bank = new TerraBankSdk({
       chainId,
       client: this.client,

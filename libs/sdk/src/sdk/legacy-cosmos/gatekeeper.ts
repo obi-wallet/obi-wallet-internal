@@ -1,7 +1,7 @@
 import warning from "tiny-warning";
 
-import { LegacyCosmosClient } from "./client";
 import { LegacyCosmosChainId } from "../../chains";
+import { CosmJsClient } from "../../clients";
 import { AbstractGatekeeperSdk } from "../abstract";
 import { GatekeeperContractAddresses, PermissionedAddress } from "../common";
 
@@ -10,14 +10,14 @@ function notImplemented(message: string) {
 }
 
 export class LegacyCosmosGatekeeperSdk extends AbstractGatekeeperSdk {
-  protected client: LegacyCosmosClient;
+  protected client: CosmJsClient;
 
   public constructor({
     chainId,
     client,
   }: {
     chainId: LegacyCosmosChainId;
-    client: LegacyCosmosClient;
+    client: CosmJsClient;
   }) {
     super(chainId);
     this.client = client;

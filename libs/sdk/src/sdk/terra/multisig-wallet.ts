@@ -3,9 +3,9 @@ import { AxiosError } from "axios";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
-import { TerraClient } from "./client";
 import { Key } from "./key";
 import { TerraChainId, terraChains } from "../../chains";
+import { FeatherJsClient } from "../../clients";
 import {
   FlexAccount,
   GatekeeperConfig,
@@ -28,7 +28,7 @@ import { Sdk } from "../sdk";
 
 export class TerraMultisigWalletSdk extends AbstractMultisigWalletSdk {
   protected chainId: TerraChainId;
-  protected client: TerraClient;
+  protected client: FeatherJsClient;
 
   public constructor({
     chainId,
@@ -39,7 +39,7 @@ export class TerraMultisigWalletSdk extends AbstractMultisigWalletSdk {
   }) {
     super({ chainId, wallet });
     this.chainId = chainId;
-    this.client = new TerraClient(chainId);
+    this.client = new FeatherJsClient(chainId);
   }
 
   protected async codeIdsQueryFn(): Promise<CodeIds> {

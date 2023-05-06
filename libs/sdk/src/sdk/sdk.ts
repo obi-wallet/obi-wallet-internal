@@ -1,4 +1,5 @@
 import { AbstractSdk } from "./abstract";
+import { CosmosSdk } from "./cosmos";
 import { LegacyCosmosSdk } from "./legacy-cosmos";
 import { TerraSdk } from "./terra";
 import { Chain, ChainId } from "../chains";
@@ -12,9 +13,8 @@ export class Sdk {
 
     const sdk = Chain.select<AbstractSdk>({
       chainId,
-      onCosmosChain(_) {
-        // TODO:
-        throw new Error("Sdk not implemented for Cosmos");
+      onCosmosChain({ chainId }) {
+        return CosmosSdk.chainId(chainId);
       },
       onLegacyCosmosChain({ chainId }) {
         return LegacyCosmosSdk.chainId(chainId);

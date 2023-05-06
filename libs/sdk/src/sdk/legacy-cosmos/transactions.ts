@@ -17,10 +17,10 @@ import { Bech32Address } from "@keplr-wallet/cosmos";
 import { AuthInfo, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import invariant from "tiny-invariant";
 
-import { LegacyCosmosClient } from "./client";
 import { LegacyMultisigSigner } from "./multisig-signer";
 import { OfflineAminoSigner } from "./offline-amino-signer";
 import { LegacyCosmosChainId, legacyCosmosChains } from "../../chains";
+import { CosmJsClient } from "../../clients";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../keys";
 import { Secp256k1PrivateKeySigner } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
@@ -29,14 +29,14 @@ import { AccountValidationResult, BroadcastTransactionResult } from "../common";
 
 export class LegacyCosmosTransactionsSdk extends AbstractTransactionsSdk {
   protected chainId: LegacyCosmosChainId;
-  protected client: LegacyCosmosClient;
+  protected client: CosmJsClient;
 
   public constructor({
     chainId,
     client,
   }: {
     chainId: LegacyCosmosChainId;
-    client: LegacyCosmosClient;
+    client: CosmJsClient;
   }) {
     super(chainId);
     this.chainId = chainId;

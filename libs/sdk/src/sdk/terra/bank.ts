@@ -2,22 +2,22 @@ import BigNumber from "bignumber.js";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
-import { TerraClient } from "./client";
 import { tokenPairs } from "./token-pairs";
 import { tokens } from "./tokens";
 import { TerraChainId } from "../../chains";
+import { FeatherJsClient } from "../../clients";
 import { AbstractBankSdk } from "../abstract";
 import { EnrichedToken, Token } from "../common";
 
 export class TerraBankSdk extends AbstractBankSdk {
-  protected client: TerraClient;
+  protected client: FeatherJsClient;
 
   public constructor({
     chainId,
     client,
   }: {
     chainId: TerraChainId;
-    client: TerraClient;
+    client: FeatherJsClient;
   }) {
     super(chainId);
     this.client = client;

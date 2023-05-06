@@ -16,9 +16,9 @@ import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import warning from "tiny-warning";
 
-import { LegacyCosmosClient } from "./client";
 import { OfflineAminoSigner } from "./offline-amino-signer";
 import { LegacyCosmosChainId, legacyCosmosChains } from "../../chains";
+import { CosmJsClient } from "../../clients";
 import {
   FlexAccount,
   GatekeeperConfig,
@@ -38,7 +38,7 @@ function notImplemented(message: string) {
 
 export class LegacyCosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
   protected chainId: LegacyCosmosChainId;
-  protected client: LegacyCosmosClient;
+  protected client: CosmJsClient;
 
   public constructor({
     chainId,
@@ -49,7 +49,7 @@ export class LegacyCosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
   }) {
     super({ chainId, wallet });
     this.chainId = chainId;
-    this.client = new LegacyCosmosClient(chainId);
+    this.client = new CosmJsClient(chainId);
   }
   protected async codeIdsQueryFn(): Promise<CodeIds> {
     return {

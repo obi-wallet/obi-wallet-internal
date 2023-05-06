@@ -1,7 +1,7 @@
 import {
   ChainId,
   MultisigWallet,
-  withCosmosCosmWasmClient,
+  withCosmJsCosmWasmClient,
 } from "@obi-wallet/sdk";
 
 export type HealthCheck = (wallet: MultisigWallet) => Promise<boolean>;
@@ -13,7 +13,7 @@ export enum JunoChecks {
 export const junoChecks: Record<JunoChecks, HealthCheck> = {
   [JunoChecks.CORRECT_ADMIN]: async (wallet: MultisigWallet) => {
     const currentOwner = wallet.owner.address;
-    return await withCosmosCosmWasmClient("juno-1", async (client) => {
+    return await withCosmJsCosmWasmClient("juno-1", async (client) => {
       const { admin } = await client.getContract(wallet.address);
       if (!admin) return false;
       const account = await client.getAccount(admin);

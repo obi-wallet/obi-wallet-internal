@@ -1,2 +1,2 @@
-export * from "./cosmos";
-export * from "./terra";
+export * from "./cosm-js";
+export * from "./feather-js";
