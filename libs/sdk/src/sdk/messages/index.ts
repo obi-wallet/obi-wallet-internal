@@ -1,7 +1,7 @@
 import { AbstractMessages } from "./abstract";
-import { LegacyCosmosMessages } from "./legacy-cosmos/messages";
-import { TerraMessages } from "./terra/messages";
-import { Chain, ChainId } from "../chains";
+import { CosmosSdkMessages } from "./cosmos-sdk";
+import { LegacyCosmosMessages } from "./legacy-cosmos";
+import { Chain, ChainId } from "../../chains";
 
 export class Messages {
   protected static instances: Partial<Record<ChainId, AbstractMessages>> = {};
@@ -12,15 +12,14 @@ export class Messages {
 
     const messages = Chain.select<AbstractMessages>({
       chainId,
-      onCosmosChain(_) {
-        // TODO:
-        throw new Error("Messages not implemented for Cosmos");
+      onCosmosChain({ chainId }) {
+        return CosmosSdkMessages.chainId(chainId);
       },
       onLegacyCosmosChain({ chainId }) {
         return LegacyCosmosMessages.chainId(chainId);
       },
       onTerraChain({ chainId }) {
-        return TerraMessages.chainId(chainId);
+        return CosmosSdkMessages.chainId(chainId);
       },
     });
     this.instances[chainId] = messages;

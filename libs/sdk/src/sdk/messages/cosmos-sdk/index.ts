@@ -10,19 +10,19 @@ import { Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
-import { TerraChainId, terraChains } from "../../chains";
+import { Chain, CosmosChainId, TerraChainId } from "../../../chains";
 import {
   GatekeeperConfig,
   MultisigKey,
   MultisigWallet,
-} from "../../data-structures";
-import { Message } from "../../transactions";
+} from "../../../data-structures";
+import { Message } from "../../../transactions";
+import { CodeIds, Token } from "../../common";
+import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
-import { CodeIds, Token } from "../common";
-import { Sdk } from "../sdk";
 
-export class TerraMessages extends AbstractMessages {
-  protected constructor(protected chainId: TerraChainId) {
+export class CosmosSdkMessages extends AbstractMessages {
+  protected constructor(protected chainId: CosmosChainId | TerraChainId) {
     super(chainId);
   }
 
@@ -517,10 +517,29 @@ export class TerraMessages extends AbstractMessages {
   }
 
   protected get chain() {
-    return terraChains[this.chainId];
+    return Chain.select<{
+      accountCreatorAddress: string;
+      currentCodeIds: {
+        userAccount: number;
+        spendLimitGatekeeper: number;
+        debtGatekeeper: number;
+      };
+      startingUsdDebt: string;
+    }>({
+      chainId: this.chainId,
+      onCosmosChain(chain) {
+        return chain;
+      },
+      onLegacyCosmosChain() {
+        throw new Error("Not a Cosmos SDK chain");
+      },
+      onTerraChain(chain) {
+        return chain;
+      },
+    });
   }
 
-  public static chainId(chainId: TerraChainId) {
-    return new TerraMessages(chainId);
+  public static chainId(chainId: CosmosChainId | TerraChainId) {
+    return new CosmosSdkMessages(chainId);
   }
 }

@@ -1,14 +1,14 @@
 import warning from "tiny-warning";
 
-import { LegacyCosmosChainId } from "../../chains";
+import { LegacyCosmosChainId } from "../../../chains";
 import {
   GatekeeperConfig,
   MultisigKey,
   MultisigWallet,
-} from "../../data-structures";
-import { Message } from "../../transactions";
+} from "../../../data-structures";
+import { Message } from "../../../transactions";
+import { CodeIds, Token } from "../../common";
 import { AbstractMessages } from "../abstract";
-import { CodeIds, Token } from "../common";
 
 function notImplemented(message: string) {
   warning(false, message);
