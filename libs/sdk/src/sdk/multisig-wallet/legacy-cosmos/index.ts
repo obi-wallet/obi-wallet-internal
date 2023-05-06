@@ -1,36 +1,19 @@
-import { StdFee } from "@cosmjs/amino";
-import { createWasmAminoConverters } from "@cosmjs/cosmwasm-stargate";
-import { coins } from "@cosmjs/proto-signing";
-import {
-  AminoTypes,
-  createAuthzAminoConverters,
-  createBankAminoConverters,
-  createDistributionAminoConverters,
-  createFeegrantAminoConverters,
-  createGovAminoConverters,
-  createIbcAminoConverters,
-  createStakingAminoConverters,
-  isDeliverTxSuccess,
-} from "@cosmjs/stargate";
-import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import warning from "tiny-warning";
 
-import { LegacyCosmosChainId, legacyCosmosChains } from "../../chains";
-import { CosmJsClient } from "../../clients";
+import { LegacyCosmosChainId, legacyCosmosChains } from "../../../chains";
+import { CosmJsClient } from "../../../clients";
 import {
   FlexAccount,
   GatekeeperConfig,
   MultisigKey,
   MultisigWallet,
-} from "../../data-structures";
-import { Signer } from "../../signers";
-import { Message, SignedTransaction } from "../../transactions";
+} from "../../../data-structures";
+import { Signer } from "../../../signers";
+import { Message, SignedTransaction } from "../../../transactions";
+import { BroadcastTransactionResult, CodeIds, Token } from "../../common";
+import { Messages } from "../../messages";
+import { Sdk } from "../../sdk";
 import { AbstractMultisigWalletSdk } from "../abstract";
-import { BroadcastTransactionResult, CodeIds, Token } from "../common";
-import { CosmJsOfflineAminoSigner } from "../common/cosm-js";
-import { Messages } from "../messages";
-import { Sdk } from "../sdk";
 
 function notImplemented(message: string) {
   warning(false, message);
@@ -142,67 +125,13 @@ export class LegacyCosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
     signer: Signer;
     messages: Message[];
   }): Promise<SignedTransaction> {
-    return await this.client.withSigningStargateClient(
-      CosmJsOfflineAminoSigner.fromSigner({
-        signer,
-        prefix: this.chain.prefix,
-      }),
-      async (client) => {
-        const encodeObjects = messages.map((message) => {
-          return this.aminoTypes.fromAmino(message.toAmino());
-        });
-        const gas = await client.simulate(
-          this.sdk.transactions.getAddressOfPublicKey(signer.publicKey),
-          encodeObjects,
-          ""
-        );
-        const transaction = await client.sign(
-          this.sdk.transactions.getAddressOfPublicKey(signer.publicKey),
-          encodeObjects,
-          {
-            ...this.defaultFee,
-            gas: gas.toString(),
-          },
-          ""
-        );
-        return TxRaw.encode(transaction).finish();
-      }
-    );
+    return await this.client.createAndSignTransaction({ signer, messages });
   }
 
   public async broadcastSignedTransaction(
     signedTransaction: SignedTransaction
   ): Promise<BroadcastTransactionResult> {
-    return await this.client.withStargateClient(async (client) => {
-      const rawResult = await client.broadcastTx(signedTransaction);
-      return {
-        success: isDeliverTxSuccess(rawResult),
-        transactionHash: rawResult.transactionHash,
-        rawLog: rawResult.rawLog,
-        rawResult,
-      };
-    });
-  }
-
-  protected get defaultFee(): StdFee {
-    return {
-      amount: coins(6000, this.chain.denom),
-      gas: "1280000",
-    };
-  }
-
-  protected get aminoTypes() {
-    return new AminoTypes({
-      ...createAuthzAminoConverters(),
-      ...createBankAminoConverters(),
-      ...createDistributionAminoConverters(),
-      ...createGovAminoConverters(),
-      ...createStakingAminoConverters(),
-      ...createIbcAminoConverters(),
-      ...createFeegrantAminoConverters(),
-      ...createVestingAminoConverters(),
-      ...createWasmAminoConverters(),
-    });
+    return await this.client.broadcastSignedTransaction(signedTransaction);
   }
 
   protected get chain() {

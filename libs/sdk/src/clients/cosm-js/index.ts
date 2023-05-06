@@ -1,10 +1,32 @@
-import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { StdFee } from "@cosmjs/amino";
+import {
+  CosmWasmClient,
+  createWasmAminoConverters,
+} from "@cosmjs/cosmwasm-stargate";
 import { Decimal } from "@cosmjs/math/build/decimal";
-import { OfflineSigner } from "@cosmjs/proto-signing";
-import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
+import { coins, OfflineSigner } from "@cosmjs/proto-signing";
+import {
+  AminoTypes,
+  createAuthzAminoConverters,
+  createBankAminoConverters,
+  createDistributionAminoConverters,
+  createFeegrantAminoConverters,
+  createGovAminoConverters,
+  createIbcAminoConverters,
+  createStakingAminoConverters,
+  isDeliverTxSuccess,
+  SigningStargateClient,
+  StargateClient,
+} from "@cosmjs/stargate";
+import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { z } from "zod";
 
 import { Chain, CosmosChainId, LegacyCosmosChainId } from "../../chains";
+import { BroadcastTransactionResult, Sdk } from "../../sdk";
+import { CosmJsOfflineAminoSigner } from "../../sdk/common/cosm-js";
+import { Signer } from "../../signers";
+import { Message, SignedTransaction } from "../../transactions";
 import { AbstractClient } from "../abstract";
 
 export async function withCosmJsClients<T>(
@@ -164,18 +186,98 @@ export class CosmJsClient extends AbstractClient {
     return withCosmJsClients(this.chainId, f);
   }
 
-  public async queryContract<T extends z.ZodTypeAny>({
-    contract,
-    query,
-    schema,
-  }: {
-    contract: string;
-    query: unknown;
-    schema: T;
-  }): Promise<z.infer<T>> {
+  public async queryContracts<T extends z.ZodTypeAny>(
+    queries: {
+      contract: string;
+      query: unknown;
+      schema: T;
+    }[]
+  ): Promise<z.infer<T>[]> {
     return await this.withCosmWasmClient(async (client) => {
-      const response = await client.queryContractSmart(contract, query);
-      return schema.parse(response);
+      return await Promise.all(
+        queries.map(async ({ contract, query, schema }) => {
+          const response = await client.queryContractSmart(contract, query);
+          return schema.parse(response);
+        })
+      );
     });
+  }
+
+  public async createAndSignTransaction({
+    signer,
+    messages,
+  }: {
+    signer: Signer;
+    messages: Message[];
+  }): Promise<SignedTransaction> {
+    return await this.withSigningStargateClient(
+      CosmJsOfflineAminoSigner.fromSigner({
+        signer,
+        prefix: this.chain.prefix,
+      }),
+      async (client) => {
+        const encodeObjects = messages.map((message) => {
+          return this.aminoTypes.fromAmino(message.toAmino());
+        });
+        const gas = await client.simulate(
+          this.sdk.transactions.getAddressOfPublicKey(signer.publicKey),
+          encodeObjects,
+          ""
+        );
+        const transaction = await client.sign(
+          this.sdk.transactions.getAddressOfPublicKey(signer.publicKey),
+          encodeObjects,
+          {
+            ...this.defaultFee,
+            gas: gas.toString(),
+          },
+          ""
+        );
+        return TxRaw.encode(transaction).finish();
+      }
+    );
+  }
+
+  public async broadcastSignedTransaction(
+    signedTransaction: SignedTransaction
+  ): Promise<BroadcastTransactionResult> {
+    return await this.withStargateClient(async (client) => {
+      const rawResult = await client.broadcastTx(signedTransaction);
+      return {
+        success: isDeliverTxSuccess(rawResult),
+        transactionHash: rawResult.transactionHash,
+        rawLog: rawResult.rawLog,
+        rawResult,
+      };
+    });
+  }
+
+  protected get defaultFee(): StdFee {
+    return {
+      amount: coins(6000, this.chain.denom),
+      gas: "1280000",
+    };
+  }
+
+  protected get aminoTypes() {
+    return new AminoTypes({
+      ...createAuthzAminoConverters(),
+      ...createBankAminoConverters(),
+      ...createDistributionAminoConverters(),
+      ...createGovAminoConverters(),
+      ...createStakingAminoConverters(),
+      ...createIbcAminoConverters(),
+      ...createFeegrantAminoConverters(),
+      ...createVestingAminoConverters(),
+      ...createWasmAminoConverters(),
+    });
+  }
+
+  protected get chain() {
+    return Chain.information(this.chainId);
+  }
+
+  protected get sdk() {
+    return Sdk.chainId(this.chainId);
   }
 }

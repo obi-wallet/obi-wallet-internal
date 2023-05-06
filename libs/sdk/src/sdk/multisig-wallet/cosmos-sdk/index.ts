@@ -1,45 +1,40 @@
-import { isTxError, Tx } from "@terra-money/feather.js";
-import { AxiosError } from "axios";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
-import { TerraChainId, terraChains } from "../../chains";
-import { FeatherJsClient } from "../../clients";
+import { Chain, CosmosChainId, TerraChainId } from "../../../chains";
+import { AbstractClient } from "../../../clients";
 import {
   FlexAccount,
   GatekeeperConfig,
   MultisigKey,
   MultisigWallet,
-} from "../../data-structures";
-import { queryClient } from "../../query-client";
-import { Signer } from "../../signers";
-import { Message, SignedTransaction, wrapMessage } from "../../transactions";
-import { SignAndBroadcastTransactionUserInteraction } from "../../user-interactions";
+} from "../../../data-structures";
+import { queryClient } from "../../../query-client";
+import { Signer } from "../../../signers";
+import { Message, SignedTransaction, wrapMessage } from "../../../transactions";
+import { SignAndBroadcastTransactionUserInteraction } from "../../../user-interactions";
+import { BroadcastTransactionResult, CodeIds, Token } from "../../common";
+import { Messages } from "../../messages";
+import { Sdk } from "../../sdk";
 import { AbstractMultisigWalletSdk } from "../abstract";
-import {
-  BroadcastTransactionResult,
-  CodeIds,
-  RpcError,
-  Token,
-} from "../common";
-import { FeatherJsKey } from "../common/feather-js";
-import { Messages } from "../messages";
-import { Sdk } from "../sdk";
 
-export class TerraMultisigWalletSdk extends AbstractMultisigWalletSdk {
-  protected chainId: TerraChainId;
-  protected client: FeatherJsClient;
+export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
+  protected chainId: CosmosChainId | TerraChainId;
+  protected client: AbstractClient;
 
   public constructor({
     chainId,
     wallet,
+    client,
   }: {
-    chainId: TerraChainId;
+    chainId: CosmosChainId | TerraChainId;
+    client: AbstractClient;
     wallet: MultisigWallet;
   }) {
     super({ chainId, wallet });
     this.chainId = chainId;
-    this.client = new FeatherJsClient(chainId);
+    this.client = client;
   }
 
   protected async codeIdsQueryFn(): Promise<CodeIds> {
@@ -292,28 +287,32 @@ export class TerraMultisigWalletSdk extends AbstractMultisigWalletSdk {
     flexAccount: FlexAccount;
     messages: Message[];
   }): Promise<boolean> {
-    return await this.client.withClient(async (client) => {
-      const mayExecute = await Promise.all(
-        messages.map(async (message) => {
-          try {
-            const response = await client.wasm.contractQuery<{
-              can_execute: { yes?: string };
-            }>(this.wallet.proxyAddress, {
+    const schema = z.object({
+      can_execute: z.object({
+        yes: z.string().optional(),
+      }),
+    });
+    try {
+      const responses = await this.client.queryContracts(
+        messages.map((message) => {
+          return {
+            contract: this.wallet.proxyAddress,
+            query: {
               can_execute: {
                 funds: [],
                 address: flexAccount.address,
                 msg: { legacy: wrapMessage(message) },
               },
-            });
-            return !!response.can_execute.yes;
-          } catch (e) {
-            console.log(e);
-            return false;
-          }
+            },
+            schema,
+          };
         })
       );
-      return mayExecute.every((mayExecute) => mayExecute);
-    });
+      return responses.every((response) => !!response.can_execute.yes);
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
   }
 
   public async createAndSignTransaction({
@@ -323,49 +322,36 @@ export class TerraMultisigWalletSdk extends AbstractMultisigWalletSdk {
     signer: Signer;
     messages: Message[];
   }): Promise<SignedTransaction> {
-    return await this.client.withClient(async (client) => {
-      const key = FeatherJsKey.fromSigner(signer);
-      const wallet = client.wallet(key);
-      try {
-        const transaction = await wallet.createAndSignTx({
-          chainID: this.chainId,
-          msgs: messages,
-        });
-        return transaction.toBytes();
-      } catch (e) {
-        const error = e as AxiosError;
-        const data = error.response?.data;
-
-        const result = RpcError.safeParse(data);
-        if (result.success) {
-          throw new Error(result.data.message);
-        }
-
-        throw e;
-      }
-    });
+    return await this.createAndSignTransaction({ signer, messages });
   }
 
   public async broadcastSignedTransaction(
     signedTransaction: SignedTransaction
   ): Promise<BroadcastTransactionResult> {
-    return await this.client.withClient(async (client) => {
-      const transaction = Tx.fromBuffer(Buffer.from(signedTransaction));
-      const rawResult = await client.tx.broadcastBlock(
-        transaction,
-        this.chainId
-      );
-      return {
-        success: !isTxError(rawResult),
-        transactionHash: rawResult.txhash,
-        rawLog: rawResult.raw_log,
-        rawResult,
-      };
-    });
+    return await this.client.broadcastSignedTransaction(signedTransaction);
   }
 
   protected get chain() {
-    return terraChains[this.chainId];
+    return Chain.select<{
+      accountCreatorAddress: string;
+      currentCodeIds: {
+        userAccount: number;
+        spendLimitGatekeeper: number;
+        debtGatekeeper: number;
+      };
+      startingUsdDebt: string;
+    }>({
+      chainId: this.chainId,
+      onCosmosChain(chain) {
+        return chain;
+      },
+      onLegacyCosmosChain() {
+        throw new Error("Not a Cosmos SDK chain");
+      },
+      onTerraChain(chain) {
+        return chain;
+      },
+    });
   }
 
   protected get messages() {

@@ -1,4 +1,4 @@
-import { LCDClient } from "@terra-money/feather.js";
+import { isTxError, LCDClient, Tx } from "@terra-money/feather.js";
 import {
   Pagination,
   PaginationOptions,
@@ -7,7 +7,10 @@ import { AxiosError } from "axios";
 import { z } from "zod";
 
 import { TerraChainId, terraChains } from "../../chains";
-import { RpcError } from "../../sdk";
+import { BroadcastTransactionResult, RpcError } from "../../sdk";
+import { FeatherJsKey } from "../../sdk/common/feather-js";
+import { Signer } from "../../signers";
+import { Message, SignedTransaction } from "../../transactions";
 import { AbstractClient } from "../abstract";
 
 export async function withFeatherJsClient<T>(
@@ -75,21 +78,71 @@ export class FeatherJsClient extends AbstractClient {
     return withFeatherJsClient(this.chainId, f);
   }
 
-  public async queryContract<T extends z.ZodTypeAny>({
-    contract,
-    query,
-    schema,
-  }: {
-    contract: string;
-    query: unknown;
-    schema: T;
-  }): Promise<z.infer<T>> {
+  public async queryContracts<T extends z.ZodTypeAny>(
+    queries: {
+      contract: string;
+      query: unknown;
+      schema: T;
+    }[]
+  ): Promise<z.infer<T>[]> {
     return await this.withClient(async (client) => {
-      const response = await client.wasm.contractQuery(
-        contract,
-        query as string | object
+      return await Promise.all(
+        queries.map(async ({ contract, query, schema }) => {
+          const response = await client.wasm.contractQuery(
+            contract,
+            query as string | object
+          );
+          return schema.parse(response);
+        })
       );
-      return schema.parse(response);
+    });
+  }
+
+  public async createAndSignTransaction({
+    signer,
+    messages,
+  }: {
+    signer: Signer;
+    messages: Message[];
+  }): Promise<SignedTransaction> {
+    return await this.withClient(async (client) => {
+      const key = FeatherJsKey.fromSigner(signer);
+      const wallet = client.wallet(key);
+      try {
+        const transaction = await wallet.createAndSignTx({
+          chainID: this.chainId,
+          msgs: messages,
+        });
+        return transaction.toBytes();
+      } catch (e) {
+        const error = e as AxiosError;
+        const data = error.response?.data;
+
+        const result = RpcError.safeParse(data);
+        if (result.success) {
+          throw new Error(result.data.message);
+        }
+
+        throw e;
+      }
+    });
+  }
+
+  public async broadcastSignedTransaction(
+    signedTransaction: SignedTransaction
+  ): Promise<BroadcastTransactionResult> {
+    return await this.withClient(async (client) => {
+      const transaction = Tx.fromBuffer(Buffer.from(signedTransaction));
+      const rawResult = await client.tx.broadcastBlock(
+        transaction,
+        this.chainId
+      );
+      return {
+        success: !isTxError(rawResult),
+        transactionHash: rawResult.txhash,
+        rawLog: rawResult.raw_log,
+        rawResult,
+      };
     });
   }
 }

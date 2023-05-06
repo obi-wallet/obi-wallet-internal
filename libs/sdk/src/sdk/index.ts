@@ -1,4 +1,3 @@
-export * from "./abstract";
 export * from "./bank";
 export * from "./common";
 export * from "./contracts";
