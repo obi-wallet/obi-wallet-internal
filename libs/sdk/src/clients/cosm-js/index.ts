@@ -14,11 +14,15 @@ import {
   createGovAminoConverters,
   createIbcAminoConverters,
   createStakingAminoConverters,
+  DistributionExtension,
   isDeliverTxSuccess,
+  QueryClient,
+  setupDistributionExtension,
   SigningStargateClient,
   StargateClient,
 } from "@cosmjs/stargate";
 import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
+import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { z } from "zod";
 
@@ -87,6 +91,18 @@ export async function withCosmJsCosmWasmClient<T>(
   }
 }
 
+export async function withCosmJsTendermint34Client<T>(
+  chainId: CosmosChainId | LegacyCosmosChainId,
+  f: (client: Tendermint34Client) => T
+) {
+  const client = await createCosmJsTendermint34Client(chainId);
+  try {
+    return await f(client);
+  } finally {
+    client.disconnect();
+  }
+}
+
 async function createCosmJsStargateClient(
   chainId: CosmosChainId | LegacyCosmosChainId
 ) {
@@ -139,6 +155,20 @@ async function createCosmJsCosmWasmClient(
   throw new Error("No RPC connected");
 }
 
+async function createCosmJsTendermint34Client(
+  chainId: CosmosChainId | LegacyCosmosChainId
+) {
+  const { rpcs } = cosmosChainInformation(chainId);
+  for (const rpc of rpcs) {
+    try {
+      return await Tendermint34Client.connect(rpc);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  throw new Error("No RPC connected");
+}
+
 function cosmosChainInformation(chainId: CosmosChainId | LegacyCosmosChainId) {
   return Chain.select<{ denom: string; rpcs: string[] }>({
     chainId,
@@ -165,6 +195,14 @@ export class CosmJsClient extends AbstractClient {
 
   public withStargateClient<T>(f: (client: StargateClient) => T) {
     return withCosmJsStargateClient(this.chainId, f);
+  }
+
+  public async withDistributionExtension<T>(
+    f: (distributionExtension: DistributionExtension) => T
+  ) {
+    return await withCosmJsTendermint34Client(this.chainId, async (client) => {
+      return f(QueryClient.withExtensions(client, setupDistributionExtension));
+    });
   }
 
   public withSigningStargateClient<T>(
