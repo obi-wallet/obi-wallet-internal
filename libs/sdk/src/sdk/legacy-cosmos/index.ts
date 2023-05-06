@@ -1,4 +1,3 @@
-import { LegacyCosmosStakingSdk } from "./staking";
 import { LegacyCosmosTransactionsSdk } from "./transactions";
 import { LegacyCosmosChainId } from "../../chains";
 import { CosmJsClient } from "../../clients";
@@ -6,12 +5,13 @@ import { AbstractSdk } from "../abstract";
 import { LegacyCosmosBankSdk } from "../bank";
 import { CosmJsContractsSdk } from "../contracts";
 import { LegacyCosmosGatekeeperSdk } from "../gatekeeper";
+import { CosmJsStakingSdk } from "../staking";
 
 export class LegacyCosmosSdk extends AbstractSdk {
   public bank: LegacyCosmosBankSdk;
   public contracts: CosmJsContractsSdk;
   public gatekeeper: LegacyCosmosGatekeeperSdk;
-  public staking: LegacyCosmosStakingSdk;
+  public staking: CosmJsStakingSdk;
   public transactions: LegacyCosmosTransactionsSdk;
 
   protected client: CosmJsClient;
@@ -31,7 +31,7 @@ export class LegacyCosmosSdk extends AbstractSdk {
       chainId,
       client: this.client,
     });
-    this.staking = new LegacyCosmosStakingSdk({
+    this.staking = new CosmJsStakingSdk({
       chainId,
       client: this.client,
     });

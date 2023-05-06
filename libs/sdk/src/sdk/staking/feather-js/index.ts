@@ -6,17 +6,17 @@ import {
 import BigNumber from "bignumber.js";
 import * as R from "ramda";
 
-import { TerraChainId, terraChains } from "../../chains";
-import { FeatherJsClient } from "../../clients";
-import { AbstractStakingSdk } from "../abstract";
+import { TerraChainId, terraChains } from "../../../chains";
+import { FeatherJsClient } from "../../../clients";
 import {
   Delegation,
   EnrichedValidator,
   Rewards,
   UnbondingDelegation,
-} from "../common";
+} from "../../common";
+import { AbstractStakingSdk } from "../abstract";
 
-export class TerraStakingSdk extends AbstractStakingSdk {
+export class FeatherJsStakingSdk extends AbstractStakingSdk {
   protected chainId: TerraChainId;
   protected client: FeatherJsClient;
 

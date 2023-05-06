@@ -1,28 +1,28 @@
 import warning from "tiny-warning";
 
-import { LegacyCosmosChainId, legacyCosmosChains } from "../../chains";
-import { CosmJsClient } from "../../clients";
-import { AbstractStakingSdk } from "../abstract";
+import { Chain, CosmosChainId, LegacyCosmosChainId } from "../../../chains";
+import { CosmJsClient } from "../../../clients";
 import {
   Delegation,
   EnrichedValidator,
   Rewards,
   UnbondingDelegation,
-} from "../common";
+} from "../../common";
+import { AbstractStakingSdk } from "../abstract";
 
 function notImplemented(message: string) {
   warning(false, message);
 }
 
-export class LegacyCosmosStakingSdk extends AbstractStakingSdk {
-  protected chainId: LegacyCosmosChainId;
+export class CosmJsStakingSdk extends AbstractStakingSdk {
+  protected chainId: CosmosChainId | LegacyCosmosChainId;
   protected client: CosmJsClient;
 
   public constructor({
     chainId,
     client,
   }: {
-    chainId: LegacyCosmosChainId;
+    chainId: CosmosChainId | LegacyCosmosChainId;
     client: CosmJsClient;
   }) {
     super(chainId);
@@ -59,6 +59,6 @@ export class LegacyCosmosStakingSdk extends AbstractStakingSdk {
   }
 
   protected get chain() {
-    return legacyCosmosChains[this.chainId];
+    return Chain.information(this.chainId);
   }
 }
