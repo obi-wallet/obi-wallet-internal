@@ -42,6 +42,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
           if (!response.payload.success) {
             console.log(response.payload.originalPayload);
             Alert.alert("Something went wrong", response.payload.description);
+            return;
           }
 
           navigation.dispatch(

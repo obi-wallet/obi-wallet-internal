@@ -1,18 +1,6 @@
-import { pubkeyToAddress, StdFee } from "@cosmjs/amino";
-import { createWasmAminoConverters } from "@cosmjs/cosmwasm-stargate";
+import { pubkeyToAddress } from "@cosmjs/amino";
 import { coins } from "@cosmjs/proto-signing";
-import {
-  AminoTypes,
-  createAuthzAminoConverters,
-  createBankAminoConverters,
-  createDistributionAminoConverters,
-  createFeegrantAminoConverters,
-  createGovAminoConverters,
-  createIbcAminoConverters,
-  createStakingAminoConverters,
-  isDeliverTxSuccess,
-} from "@cosmjs/stargate";
-import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
+import { isDeliverTxSuccess } from "@cosmjs/stargate";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { AuthInfo, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import invariant from "tiny-invariant";
@@ -130,13 +118,13 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
       return message.toAmino();
     });
     const encodeObjects = aminoMessages.map((aminoMessage) => {
-      return this.aminoTypes.fromAmino(aminoMessage);
+      return this.client.aminoTypes.fromAmino(aminoMessage);
     });
 
     return new CosmJsMultisigSigner({
       chainId: this.chainId,
       account,
-      fee: this.defaultFee,
+      fee: this.client.defaultFee,
       encodeObjects,
       messages: aminoMessages,
       multisigPublicKey,
@@ -198,27 +186,6 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
   }) {
     return this.client.withStargateClient(async (client) => {
       return await client.getBalance(address, denom);
-    });
-  }
-
-  protected get defaultFee(): StdFee {
-    return {
-      amount: coins(6000, this.chain.denom),
-      gas: "1280000",
-    };
-  }
-
-  protected get aminoTypes() {
-    return new AminoTypes({
-      ...createAuthzAminoConverters(),
-      ...createBankAminoConverters(),
-      ...createDistributionAminoConverters(),
-      ...createGovAminoConverters(),
-      ...createStakingAminoConverters(),
-      ...createIbcAminoConverters(),
-      ...createFeegrantAminoConverters(),
-      ...createVestingAminoConverters(),
-      ...createWasmAminoConverters(),
     });
   }
 

@@ -252,14 +252,14 @@ export class CosmJsClient extends AbstractClient {
     });
   }
 
-  protected get defaultFee(): StdFee {
+  public get defaultFee(): StdFee {
     return {
-      amount: coins(6000, this.chain.denom),
-      gas: "1280000",
+      amount: coins(12000, this.chain.denom),
+      gas: "2560000",
     };
   }
 
-  protected get aminoTypes() {
+  public get aminoTypes() {
     return new AminoTypes({
       ...createAuthzAminoConverters(),
       ...createBankAminoConverters(),
