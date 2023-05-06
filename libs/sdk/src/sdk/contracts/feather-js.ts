@@ -1,8 +1,8 @@
+import { AbstractContractsSdk } from "./abstract";
 import { TerraChainId } from "../../chains";
 import { FeatherJsClient } from "../../clients";
-import { AbstractContractsSdk } from "../abstract";
 
-export class TerraContractsSdk extends AbstractContractsSdk {
+export class FeatherJsContractsSdk extends AbstractContractsSdk {
   protected client: FeatherJsClient;
 
   public constructor({
