@@ -1,13 +1,13 @@
 import invariant from "tiny-invariant";
 
-import { MultisigKey } from "../../data-structures";
-import { SignAndBroadcastTransactionUserInteraction } from "../../user-interactions";
-import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
-import { AbstractWalletsSdk } from "../abstract/wallets";
-import { BroadcastTransactionResult } from "../common";
-import { Messages } from "../messages";
+import { MultisigKey } from "../../../data-structures";
+import { SignAndBroadcastTransactionUserInteraction } from "../../../user-interactions";
+import { AbstractUserInteractionResponse } from "../../../user-interactions/abstract";
+import { BroadcastTransactionResult } from "../../common";
+import { Messages } from "../../messages";
+import { AbstractWalletsSdk } from "../abstract";
 
-export class TerraWalletsSdk extends AbstractWalletsSdk {
+export class CosmosSdkWalletsSdk extends AbstractWalletsSdk {
   public async createWallet({
     multisigKey,
     demoMode,

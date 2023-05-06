@@ -1,9 +1,9 @@
 import warning from "tiny-warning";
 
-import { MultisigKey } from "../../data-structures";
-import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
-import { AbstractWalletsSdk } from "../abstract/wallets";
-import { BroadcastTransactionResult } from "../common";
+import { MultisigKey } from "../../../data-structures";
+import { AbstractUserInteractionResponse } from "../../../user-interactions/abstract";
+import { BroadcastTransactionResult } from "../../common";
+import { AbstractWalletsSdk } from "../abstract";
 
 function notImplemented(message: string) {
   warning(false, message);
