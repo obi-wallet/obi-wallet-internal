@@ -1,4 +1,3 @@
-import { TerraGatekeeperSdk } from "./gatekeeper";
 import { TerraStakingSdk } from "./staking";
 import { TerraTransactionsSdk } from "./transactions";
 import { TerraChainId } from "../../chains";
@@ -6,11 +5,12 @@ import { FeatherJsClient } from "../../clients";
 import { AbstractSdk } from "../abstract";
 import { TerraBankSdk } from "../bank";
 import { FeatherJsContractsSdk } from "../contracts";
+import { CosmosSdkGatekeeperSdk } from "../gatekeeper";
 
 export class TerraSdk extends AbstractSdk {
   public bank: TerraBankSdk;
   public contracts: FeatherJsContractsSdk;
-  public gatekeeper: TerraGatekeeperSdk;
+  public gatekeeper: CosmosSdkGatekeeperSdk;
   public staking: TerraStakingSdk;
   public transactions: TerraTransactionsSdk;
 
@@ -27,7 +27,7 @@ export class TerraSdk extends AbstractSdk {
       chainId,
       client: this.client,
     });
-    this.gatekeeper = new TerraGatekeeperSdk({
+    this.gatekeeper = new CosmosSdkGatekeeperSdk({
       chainId,
       client: this.client,
     });

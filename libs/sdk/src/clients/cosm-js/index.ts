@@ -2,8 +2,10 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Decimal } from "@cosmjs/math/build/decimal";
 import { OfflineSigner } from "@cosmjs/proto-signing";
 import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
+import { z } from "zod";
 
 import { Chain, CosmosChainId, LegacyCosmosChainId } from "../../chains";
+import { AbstractClient } from "../abstract";
 
 export async function withCosmJsClients<T>(
   chainId: CosmosChainId | LegacyCosmosChainId,
@@ -130,8 +132,10 @@ function cosmosChainInformation(chainId: CosmosChainId | LegacyCosmosChainId) {
   });
 }
 
-export class CosmJsClient {
-  public constructor(protected chainId: CosmosChainId | LegacyCosmosChainId) {}
+export class CosmJsClient extends AbstractClient {
+  public constructor(protected chainId: CosmosChainId | LegacyCosmosChainId) {
+    super();
+  }
 
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
     return withCosmJsCosmWasmClient(this.chainId, f);
@@ -158,5 +162,20 @@ export class CosmJsClient {
     }) => T
   ) {
     return withCosmJsClients(this.chainId, f);
+  }
+
+  public async queryContract<T extends z.ZodTypeAny>({
+    contract,
+    query,
+    schema,
+  }: {
+    contract: string;
+    query: unknown;
+    schema: T;
+  }): Promise<z.infer<T>> {
+    return await this.withCosmWasmClient(async (client) => {
+      const response = await client.queryContractSmart(contract, query);
+      return schema.parse(response);
+    });
   }
 }

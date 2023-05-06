@@ -1,20 +1,20 @@
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import { TerraChainId } from "../../chains";
-import { FeatherJsClient } from "../../clients";
+import { CosmosChainId, TerraChainId } from "../../../chains";
+import { AbstractClient } from "../../../clients";
+import { GatekeeperContractAddresses, PermissionedAddress } from "../../common";
 import { AbstractGatekeeperSdk } from "../abstract";
-import { GatekeeperContractAddresses, PermissionedAddress } from "../common";
 
-export class TerraGatekeeperSdk extends AbstractGatekeeperSdk {
-  protected client: FeatherJsClient;
+export class CosmosSdkGatekeeperSdk extends AbstractGatekeeperSdk {
+  protected client: AbstractClient;
 
   public constructor({
     chainId,
     client,
   }: {
-    chainId: TerraChainId;
-    client: FeatherJsClient;
+    chainId: CosmosChainId | TerraChainId;
+    client: AbstractClient;
   }) {
     super(chainId);
     this.client = client;
@@ -23,8 +23,12 @@ export class TerraGatekeeperSdk extends AbstractGatekeeperSdk {
   protected async contractAddressesQueryFn(
     proxyAddress: string
   ): Promise<GatekeeperContractAddresses> {
-    return await this.client.withClient(async (client) => {
-      const schema = z
+    return await this.client.queryContract({
+      contract: proxyAddress,
+      query: {
+        gatekeeper_contracts: {},
+      },
+      schema: z
         .object({
           spendlimit_gatekeeper_contract_addr: z.string().nullable(),
           sessionkey_gatekeeper_contract_addr: z.string().nullable(),
@@ -36,11 +40,7 @@ export class TerraGatekeeperSdk extends AbstractGatekeeperSdk {
             sessionKeyGatekeeper: response.sessionkey_gatekeeper_contract_addr,
             debtGatekeeper: response.debt_gatekeeper_contract_addr,
           };
-        });
-      const response = await client.wasm.contractQuery(proxyAddress, {
-        gatekeeper_contracts: {},
-      });
-      return schema.parse(response);
+        }),
     });
   }
 
@@ -49,14 +49,15 @@ export class TerraGatekeeperSdk extends AbstractGatekeeperSdk {
   ): Promise<PermissionedAddress[]> {
     const { spendLimitGatekeeper } = await this.contractAddresses(proxyAddress);
     invariant(spendLimitGatekeeper, "spendLimitGatekeeper is required");
-    return await this.client.withClient(async (client) => {
-      const schema = z.object({
-        permissioned_addresses: z.array(PermissionedAddress),
-      });
-      const response = await client.wasm.contractQuery(spendLimitGatekeeper, {
+    const { permissioned_addresses } = await this.client.queryContract({
+      contract: spendLimitGatekeeper,
+      query: {
         permissioned_addresses: {},
-      });
-      return schema.parse(response).permissioned_addresses;
+      },
+      schema: z.object({
+        permissioned_addresses: z.array(PermissionedAddress),
+      }),
     });
+    return permissioned_addresses;
   }
 }

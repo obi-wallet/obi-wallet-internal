@@ -4,9 +4,11 @@ import {
   PaginationOptions,
 } from "@terra-money/feather.js/dist/client/lcd/APIRequester";
 import { AxiosError } from "axios";
+import { z } from "zod";
 
 import { TerraChainId, terraChains } from "../../chains";
 import { RpcError } from "../../sdk";
+import { AbstractClient } from "../abstract";
 
 export async function withFeatherJsClient<T>(
   chainId: TerraChainId,
@@ -43,8 +45,10 @@ export async function withFeatherJsClient<T>(
   throw error;
 }
 
-export class FeatherJsClient {
-  public constructor(protected chainId: TerraChainId) {}
+export class FeatherJsClient extends AbstractClient {
+  public constructor(protected chainId: TerraChainId) {
+    super();
+  }
 
   public async fetchAllPages<T>(
     f: (
@@ -69,5 +73,23 @@ export class FeatherJsClient {
 
   public withClient<T>(f: (client: LCDClient) => T) {
     return withFeatherJsClient(this.chainId, f);
+  }
+
+  public async queryContract<T extends z.ZodTypeAny>({
+    contract,
+    query,
+    schema,
+  }: {
+    contract: string;
+    query: unknown;
+    schema: T;
+  }): Promise<z.infer<T>> {
+    return await this.withClient(async (client) => {
+      const response = await client.wasm.contractQuery(
+        contract,
+        query as string | object
+      );
+      return schema.parse(response);
+    });
   }
 }

@@ -1,9 +1,9 @@
 import warning from "tiny-warning";
 
-import { LegacyCosmosChainId } from "../../chains";
-import { CosmJsClient } from "../../clients";
+import { LegacyCosmosChainId } from "../../../chains";
+import { CosmJsClient } from "../../../clients";
+import { GatekeeperContractAddresses, PermissionedAddress } from "../../common";
 import { AbstractGatekeeperSdk } from "../abstract";
-import { GatekeeperContractAddresses, PermissionedAddress } from "../common";
 
 function notImplemented(message: string) {
   warning(false, message);
