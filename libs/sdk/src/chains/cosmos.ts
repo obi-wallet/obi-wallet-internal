@@ -1,32 +1,20 @@
 import { commonTwilioConfig } from "./common";
 
 export const cosmosChains = {
-  "uni-3": {
-    chainId: "uni-3" as const,
-    label: "Juno Testnet",
-    prefix: "juno",
-    currentCodeId: 3454,
-    rpcs: ["https://rpc.uni.junonetwork.io/"],
-    denom: "ujunox",
-    startingUsdDebt: "0",
-    debtRepayAddress: "juno1ruftad6eytmr3qzmf9k3eya9ah8hsnvkujkej8",
-    ...commonTwilioConfig,
-    bip44: {
-      coinType: 118,
+  "oasis-3": {
+    chainId: "oasis-3" as const,
+    label: "Noria Testnet",
+    prefix: "noria",
+    accountCreatorAddress:
+      "noria1yh6sluyed035hvcskhhff5w9l0xm5zgffaq4ewe9w28jaul7tdhqemhygn",
+    currentCodeIds: {
+      userAccount: 168,
+      spendLimitGatekeeper: 172,
+      debtGatekeeper: 170,
     },
-  },
-  "juno-1": {
-    chainId: "juno-1" as const,
-    label: "Juno",
-    prefix: "juno",
-    currentCodeId: 1311,
-    rpcs: [
-      "https://juno-rpc.dalnim.finance",
-      "https://rpc-juno.itastakers.com/",
-    ],
-    denom: "ujuno",
+    rpcs: ["https://archive-rpc.noria.nextnet.zone"],
+    denom: "ucrd",
     startingUsdDebt: "0",
-    debtRepayAddress: "juno1ruftad6eytmr3qzmf9k3eya9ah8hsnvkujkej8",
     ...commonTwilioConfig,
     bip44: {
       coinType: 118,
@@ -34,4 +22,4 @@ export const cosmosChains = {
   },
 };
 
-export type CosmosChain = keyof typeof cosmosChains;
+export type CosmosChainId = keyof typeof cosmosChains;

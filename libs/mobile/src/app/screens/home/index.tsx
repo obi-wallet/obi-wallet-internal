@@ -5,7 +5,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Feature, Text } from "@obi-wallet/common";
 import { useQuery } from "@obi-wallet/headless-ui";
-import { cosmosChains, isCosmosChain, terraChains } from "@obi-wallet/sdk";
+import { Chain } from "@obi-wallet/sdk";
 import { BottomTabBar } from "@react-navigation/bottom-tabs";
 import {
   DrawerContentComponentProps,
@@ -333,13 +333,7 @@ const CustomDrawerContent = observer(function CustomDrawerContent(
   const { chainStore, configStore } = useStore();
 
   const isLoop = configStore.isLoop();
-  const networks = configStore.config.chains.enabled.map((chainId) => {
-    if (isCosmosChain(chainId)) {
-      return cosmosChains[chainId];
-    } else {
-      return terraChains[chainId];
-    }
-  });
+  const networks = configStore.config.chains.enabled.map(Chain.information);
 
   return (
     <DrawerContentScrollView

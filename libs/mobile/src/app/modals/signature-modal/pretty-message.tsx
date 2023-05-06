@@ -12,8 +12,8 @@ import { Text } from "@obi-wallet/common";
 import { useQuery, useValidators } from "@obi-wallet/headless-ui";
 import {
   ChainId,
-  cosmosChains,
-  isCosmosChain,
+  legacyCosmosChains,
+  isLegacyCosmosChain,
   Sdk,
   Token,
 } from "@obi-wallet/sdk";
@@ -214,9 +214,9 @@ const PrettyMessageInstantiateContract = observer<
   const intl = useIntl();
 
   if (
-    isCosmosChain(chainStore.currentChain) &&
+    isLegacyCosmosChain(chainStore.currentChain) &&
     value.code_id ===
-      cosmosChains[chainStore.currentChain].currentCodeId.toString()
+      legacyCosmosChains[chainStore.currentChain].currentCodeId.toString()
   ) {
     return (
       <MessageElement

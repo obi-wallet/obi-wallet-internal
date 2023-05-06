@@ -2,14 +2,7 @@ import { Bech32Address } from "@keplr-wallet/cosmos";
 import * as R from "ramda";
 
 import { MultisigWalletSchema } from "./schema";
-import {
-  Chain,
-  ChainId,
-  CosmosChain,
-  cosmosChains,
-  TerraChain,
-  terraChains,
-} from "../../chains";
+import { Chain, ChainId } from "../../chains";
 import {
   AbstractMultisigWalletSdk,
   BroadcastTransactionResult,
@@ -87,18 +80,7 @@ export class MultisigWallet {
   }
 
   public get chain() {
-    // TODO: move into SDK or a new Chain DS
-    return Chain.select<
-      (typeof terraChains)[TerraChain] | (typeof cosmosChains)[CosmosChain]
-    >({
-      chainId: this._chainId,
-      onTerraChain(chainId) {
-        return terraChains[chainId];
-      },
-      onCosmosChain(chainId) {
-        return cosmosChains[chainId];
-      },
-    });
+    return Chain.information(this._chainId);
   }
 
   public get isDemo() {

@@ -1,10 +1,5 @@
-import {
-  ChainId,
-  cosmosChains,
-  isCosmosChain,
-  terraChains,
-} from "@obi-wallet/sdk";
-import { action, computed, makeObservable, observable } from "mobx";
+import { Chain, ChainId } from "@obi-wallet/sdk";
+import { action, autorun, computed, makeObservable, observable } from "mobx";
 
 import { ConfigStore } from "./config";
 
@@ -18,6 +13,10 @@ export class ChainStore {
     this.configStore = configStore;
     this.currentChain = configStore.config.chains.default;
     makeObservable(this);
+
+    autorun(() => {
+      this.setCurrentChain(configStore.config.chains.default);
+    });
   }
 
   @action
@@ -27,10 +26,6 @@ export class ChainStore {
 
   @computed
   public get currentChainInformation() {
-    if (isCosmosChain(this.currentChain)) {
-      return cosmosChains[this.currentChain];
-    } else {
-      return terraChains[this.currentChain];
-    }
+    return Chain.information(this.currentChain);
   }
 }

@@ -16,7 +16,7 @@ export default function WalletsSerializedData() {
           });
         }}
       >
-        <Text style={{ color: "#ffffff" }}>{serializedData}</Text>
+        <Text>{serializedData}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

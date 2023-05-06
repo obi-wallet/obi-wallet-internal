@@ -25,6 +25,7 @@ export const ProxyAddress = migratable(
 });
 
 const Chain = z.union([
+  z.literal("oasis-3"),
   z.literal("uni-3"),
   z.literal("juno-1"),
   z.literal("pisco-1"),

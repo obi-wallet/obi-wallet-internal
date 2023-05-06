@@ -1,4 +1,4 @@
-import { MultisigWallet, Serialized } from "@obi-wallet/sdk";
+import { KeyType, MultisigWallet, Serialized } from "@obi-wallet/sdk";
 import { ParamListBase } from "@react-navigation/native";
 
 export enum KeyRoute {
@@ -9,6 +9,42 @@ export enum KeyRoute {
   SocialKey = "SocialKey",
   NfcKey = "NfcKey",
   CloudKey = "CloudKey",
+}
+
+export function keyRouteToKeyType(route: KeyRoute) {
+  switch (route) {
+    case KeyRoute.DeviceKey:
+      return KeyType.Device;
+    case KeyRoute.EmailKey:
+      return KeyType.Email;
+    case KeyRoute.PhoneKeyRequest:
+      return KeyType.Phone;
+    case KeyRoute.PhoneKeyConfirm:
+      return KeyType.Phone;
+    case KeyRoute.SocialKey:
+      return KeyType.Social;
+    case KeyRoute.NfcKey:
+      return KeyType.Nfc;
+    case KeyRoute.CloudKey:
+      return KeyType.Cloud;
+  }
+}
+
+export function keyTypeToKeyRoute(type: KeyType) {
+  switch (type) {
+    case KeyType.Device:
+      return KeyRoute.DeviceKey;
+    case KeyType.Email:
+      return KeyRoute.EmailKey;
+    case KeyType.Phone:
+      return KeyRoute.PhoneKeyRequest;
+    case KeyType.Social:
+      return KeyRoute.SocialKey;
+    case KeyType.Nfc:
+      return KeyRoute.NfcKey;
+    case KeyType.Cloud:
+      return KeyRoute.CloudKey;
+  }
 }
 
 export enum KeyFlow {

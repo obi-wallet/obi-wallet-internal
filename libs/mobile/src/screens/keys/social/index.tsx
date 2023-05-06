@@ -4,8 +4,8 @@ import {
   isTerraChain,
   MultisigKey,
   Secp256k1PublicKey,
-  withCosmosStargateClient,
-  withTerraClient,
+  withCosmJsStargateClient,
+  withFeatherJsClient,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -104,8 +104,11 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
   async function getAccountPubkey(key: string) {
     return Chain.select({
       chainId: chainStore.currentChain,
-      async onCosmosChain(chainId) {
-        return await withCosmosStargateClient(chainId, async (client) => {
+      async onCosmosChain(_) {
+        throw new Error("getAccountPubkey not implemented for Cosmos");
+      },
+      async onLegacyCosmosChain({ chainId }) {
+        return await withCosmJsStargateClient(chainId, async (client) => {
           try {
             const account = await client.getAccount(key);
             return account?.pubkey;
@@ -115,9 +118,9 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
           }
         });
       },
-      async onTerraChain(chainId) {
+      async onTerraChain({ chainId }) {
         try {
-          const account = await withTerraClient(chainId, async (client) => {
+          const account = await withFeatherJsClient(chainId, async (client) => {
             return await client.auth.accountInfo(key);
           });
           return account.getPublicKey()?.toAmino();

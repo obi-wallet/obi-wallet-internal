@@ -1,4 +1,5 @@
 import { Brand, Config, Feature } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 
 export const loopMobileDevConfig: Config = {
   brand: Brand.Loop,
@@ -19,4 +20,5 @@ export const loopMobileDevConfig: Config = {
     [Feature.BrandToggle]: false,
     [Feature.DemoMode]: false,
   },
+  requiredKeys: [KeyType.Device, KeyType.Phone],
 };

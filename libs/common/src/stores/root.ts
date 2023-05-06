@@ -3,7 +3,6 @@ import {
   KVStore as DefaultKVStore,
   RootStore as SdkRootStore,
 } from "@obi-wallet/headless-ui";
-import { autorun } from "mobx";
 
 import { AppsStore } from "./apps";
 import { ChainStore } from "./chain";
@@ -39,15 +38,6 @@ export class RootStore {
       kvStore: new KVStore("language-store"),
     });
     this.chainStore = new ChainStore({ configStore: this.configStore });
-
-    autorun(() => {
-      if (
-        this.walletsStore.currentWallet?.chainId !==
-        this.chainStore.currentChain
-      ) {
-        this.walletsStore.logout();
-      }
-    });
   }
 
   public get walletConnectStore() {
