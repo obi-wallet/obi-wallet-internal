@@ -25,6 +25,7 @@ import {
 } from "@cosmjs/stargate";
 import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
+import { PageResponse } from "cosmjs-types/cosmos/base/query/v1beta1/pagination";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { z } from "zod";
 
@@ -34,7 +35,6 @@ import { CosmJsOfflineAminoSigner } from "../../sdk/common/cosm-js";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { AbstractClient } from "../abstract";
-import { PageResponse } from "cosmjs-types/cosmos/base/query/v1beta1/pagination";
 
 export async function withCosmJsClients<T>(
   chainId: CosmosChainId | LegacyCosmosChainId,

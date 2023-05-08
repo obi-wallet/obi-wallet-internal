@@ -21,7 +21,7 @@ import Pencil from "./assets/pencil.svg";
 import { enrichToken } from "../../app/balances";
 import { CoinIcon } from "../../app/screens/components/coin-icon";
 import { Modal } from "../../app/screens/components/modal";
-import { useCurrentTerraChainInformation } from "../../app/stores";
+import { useStore } from "../../app/stores";
 
 export interface Icon {
   uri: string;
@@ -256,11 +256,11 @@ const getDefaultAvatar = (
 
 export const SinglesigAvatar = observer<{ style?: StyleProp<ViewStyle> }>(
   function SinglesigAvatar({ style }) {
-    const currentTerraChainInformation = useCurrentTerraChainInformation();
+    const { chainStore } = useStore();
     const formatted = enrichToken({
-      chainId: currentTerraChainInformation.chainId,
+      chainId: chainStore.currentChainInformation.chainId,
       token: {
-        id: currentTerraChainInformation.denom,
+        id: chainStore.currentChainInformation.denom,
         rawAmount: "0",
       },
     });
