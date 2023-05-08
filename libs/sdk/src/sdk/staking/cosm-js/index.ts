@@ -1,4 +1,5 @@
 import { DecCoin } from "cosmjs-types/cosmos/base/v1beta1/coin";
+import * as R from "ramda";
 import warning from "tiny-warning";
 
 import { Chain, CosmosChainId, LegacyCosmosChainId } from "../../../chains";
@@ -72,10 +73,49 @@ export class CosmJsStakingSdk extends AbstractStakingSdk {
   }
 
   protected async unbondingDelegationsQueryFn(
-    _: string
+    address: string
   ): Promise<UnbondingDelegation[]> {
-    // notImplemented("fetchUnbondingDelegations not implemented for Cosmos");
-    return [];
+    return await this.client.withStakingExtensions(async ({ staking }) => {
+      const rawUnbondingDelegations = await this.client.fetchAllPages(
+        async (paginationKey) => {
+          const { unbondingResponses, pagination } =
+            await staking.delegatorUnbondingDelegations(address, paginationKey);
+          return [unbondingResponses, pagination];
+        }
+      );
+      return R.flatten(
+        await Promise.all(
+          rawUnbondingDelegations.map(
+            async (unbondingDelegation): Promise<UnbondingDelegation[]> => {
+              const validator = await staking.validator(
+                unbondingDelegation.validatorAddress
+              );
+
+              return unbondingDelegation.entries.map(
+                (entry): UnbondingDelegation => {
+                  return {
+                    balance: {
+                      id: this.chain.denom,
+                      rawAmount: entry.balance.toString(),
+                    },
+                    validator: {
+                      icon: "",
+                      label:
+                        validator.validator?.description?.moniker ??
+                        unbondingDelegation.validatorAddress,
+                      address: unbondingDelegation.validatorAddress,
+                    },
+                    completionTime: new Date(
+                      entry.completionTime?.seconds.toNumber() ?? 0
+                    ),
+                  };
+                }
+              );
+            }
+          )
+        )
+      );
+    });
   }
 
   protected async rewardsQueryFn(address: string): Promise<Rewards> {
