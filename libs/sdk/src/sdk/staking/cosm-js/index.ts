@@ -36,52 +36,80 @@ export class CosmJsStakingSdk extends AbstractStakingSdk {
     return [];
   }
 
-  protected async delegationsQueryFn(_: string): Promise<Delegation[]> {
-    notImplemented("fetchDelegations not implemented for Cosmos");
-    return [];
+  protected async delegationsQueryFn(address: string): Promise<Delegation[]> {
+    return await this.client.withStakingExtensions(async ({ staking }) => {
+      const rawDelegations = await this.client.fetchAllPages(
+        async (paginationKey) => {
+          const { delegationResponses, pagination } =
+            await staking.delegatorDelegations(address, paginationKey);
+          return [delegationResponses, pagination];
+        }
+      );
+      return (
+        await Promise.all(
+          rawDelegations.map(async (delegation): Promise<Delegation | null> => {
+            if (!delegation.balance || !delegation.delegation) return null;
+            const validator = await staking.validator(
+              delegation.delegation.validatorAddress
+            );
+            return {
+              balance: {
+                id: delegation.balance.denom,
+                rawAmount: delegation.balance.amount,
+              },
+              validator: {
+                icon: "",
+                label:
+                  validator.validator?.description?.moniker ??
+                  delegation.delegation.validatorAddress,
+                address: delegation.delegation.validatorAddress,
+              },
+            };
+          })
+        )
+      ).filter((delegation): delegation is Delegation => !!delegation);
+    });
   }
 
   protected async unbondingDelegationsQueryFn(
     _: string
   ): Promise<UnbondingDelegation[]> {
-    notImplemented("fetchUnbondingDelegations not implemented for Cosmos");
+    // notImplemented("fetchUnbondingDelegations not implemented for Cosmos");
     return [];
   }
 
   protected async rewardsQueryFn(address: string): Promise<Rewards> {
-    return await this.client.withDistributionExtension(
-      async ({ distribution }) => {
-        const rewards = await distribution.delegationTotalRewards(address);
+    return await this.client.withStakingExtensions(async ({ distribution }) => {
+      const rewards = await distribution.delegationTotalRewards(address);
 
-        const handleRewards = (coins: DecCoin[]) => {
-          const mapped = coins.map((coin) => {
-            return {
-              id: coin.denom,
-              rawAmount: coin.amount.toString(),
-            };
-          });
-          return mapped.length > 0
-            ? mapped[0]
-            : {
-                id: this.chain.denom,
-                rawAmount: "0",
-              };
-        };
-
-        const perDelegator = rewards.rewards.map((reward) => {
+      const handleRewards = (coins: DecCoin[]) => {
+        const mapped = coins.map((coin) => {
           return {
-            address: reward.validatorAddress,
-            rewards: handleRewards(reward.reward),
+            id: coin.denom,
+            rawAmount: coin.amount.toString(),
           };
         });
-        const total = handleRewards(rewards.total);
+        return mapped.length > 0
+          ? mapped[0]
+          : {
+              id: this.chain.denom,
+              rawAmount: "0",
+            };
+      };
 
+      const perDelegator = rewards.rewards.map((reward) => {
         return {
-          perDelegator,
-          total,
+          address: reward.validatorAddress,
+          rewards: handleRewards(reward.reward),
         };
-      }
-    );
+      });
+      const total = handleRewards(rewards.total);
+
+      return {
+        perDelegator,
+        total,
+      };
+    });
   }
 
   protected get chain() {

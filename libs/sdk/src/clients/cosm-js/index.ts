@@ -18,7 +18,9 @@ import {
   isDeliverTxSuccess,
   QueryClient,
   setupDistributionExtension,
+  setupStakingExtension,
   SigningStargateClient,
+  StakingExtension,
   StargateClient,
 } from "@cosmjs/stargate";
 import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
@@ -32,6 +34,7 @@ import { CosmJsOfflineAminoSigner } from "../../sdk/common/cosm-js";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { AbstractClient } from "../abstract";
+import { PageResponse } from "cosmjs-types/cosmos/base/query/v1beta1/pagination";
 
 export async function withCosmJsClients<T>(
   chainId: CosmosChainId | LegacyCosmosChainId,
@@ -189,6 +192,21 @@ export class CosmJsClient extends AbstractClient {
     super();
   }
 
+  public async fetchAllPages<T>(
+    f: (paginationKey?: Uint8Array) => Promise<[T[], PageResponse | undefined]>
+  ): Promise<T[]> {
+    const result: T[] = [];
+    let key: Uint8Array | undefined = undefined;
+
+    do {
+      const [list, pagination] = await f(key);
+      result.push(...list);
+      key = pagination?.nextKey;
+    } while (key?.length);
+
+    return result;
+  }
+
   public withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
     return withCosmJsCosmWasmClient(this.chainId, f);
   }
@@ -197,11 +215,17 @@ export class CosmJsClient extends AbstractClient {
     return withCosmJsStargateClient(this.chainId, f);
   }
 
-  public async withDistributionExtension<T>(
-    f: (distributionExtension: DistributionExtension) => T
+  public async withStakingExtensions<T>(
+    f: (extensions: DistributionExtension & StakingExtension) => T
   ) {
     return await withCosmJsTendermint34Client(this.chainId, async (client) => {
-      return f(QueryClient.withExtensions(client, setupDistributionExtension));
+      return f(
+        QueryClient.withExtensions(
+          client,
+          setupDistributionExtension,
+          setupStakingExtension
+        )
+      );
     });
   }
 
