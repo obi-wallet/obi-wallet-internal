@@ -1,6 +1,7 @@
+import BigNumber from "bignumber.js";
 import { DecCoin } from "cosmjs-types/cosmos/base/v1beta1/coin";
+import { BondStatus } from "cosmjs-types/cosmos/staking/v1beta1/staking";
 import * as R from "ramda";
-import warning from "tiny-warning";
 
 import { Chain, CosmosChainId, LegacyCosmosChainId } from "../../../chains";
 import { CosmJsClient } from "../../../clients";
@@ -11,10 +12,6 @@ import {
   UnbondingDelegation,
 } from "../../common";
 import { AbstractStakingSdk } from "../abstract";
-
-function notImplemented(message: string) {
-  warning(false, message);
-}
 
 export class CosmJsStakingSdk extends AbstractStakingSdk {
   protected chainId: CosmosChainId | LegacyCosmosChainId;
@@ -33,8 +30,44 @@ export class CosmJsStakingSdk extends AbstractStakingSdk {
   }
 
   protected async validatorsQueryFn(): Promise<EnrichedValidator[]> {
-    notImplemented("fetchValidators not implemented for Cosmos");
-    return [];
+    return await this.client.withStakingExtensions(async ({ staking }) => {
+      const rawValidators = await this.client.fetchAllPages(
+        async (paginationKey) => {
+          const { validators, pagination } = await staking.validators(
+            "",
+            paginationKey
+          );
+          return [validators, pagination];
+        }
+      );
+
+      const totalStaked = BigNumber.sum(
+        ...rawValidators.map(({ tokens = 0 }) => Number(tokens))
+      ).toNumber();
+
+      return rawValidators.map((validator): EnrichedValidator => {
+        const promoted = false;
+        // TODO: validator.operatorAddress === this.chain.obiValidator;
+
+        const commission = validator.commission?.commissionRates?.rate ?? "0";
+        const commissionRate = new BigNumber(commission).div(10 ** 16);
+
+        return {
+          // TODO:
+          icon: null,
+          label: validator.description?.moniker ?? validator.operatorAddress,
+          address: validator.operatorAddress,
+          votingPower: ((Number(validator.tokens) / totalStaked) * 100).toFixed(
+            2
+          ),
+          commission: commissionRate.toFixed(2),
+          promoted,
+          active: validator.status === BondStatus.BOND_STATUS_BONDED,
+          jailed: validator.jailed,
+          rank: 0,
+        };
+      });
+    });
   }
 
   protected async delegationsQueryFn(address: string): Promise<Delegation[]> {
