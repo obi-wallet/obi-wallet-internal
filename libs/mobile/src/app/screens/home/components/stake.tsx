@@ -13,9 +13,9 @@ import {
   useValidators,
 } from "@obi-wallet/headless-ui";
 import {
+  Chain,
   Delegation,
   EnrichedValidator,
-  isTerraChain,
   Token,
   tokenGivenBalances,
   UnbondingDelegation,
@@ -46,12 +46,11 @@ import {
 import { ScrollView } from "react-native-gesture-handler";
 import { GestureResponderEvent } from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { TokenController } from "../../../../forms";
 import { enrichToken, useBalances } from "../../../balances";
-import { useCurrentTerraChainInformation, useStore } from "../../../stores";
+import { useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
@@ -154,10 +153,10 @@ const StakingOptions = observer(function StakingOptions() {
   const delegations = useDelegations();
   const unbondingDelegations = useUnbondingDelegations();
   const { state, dispatch } = useContext(StakeStateContext);
-  const currentTerraChainInformation = useCurrentTerraChainInformation();
+  const currentChainInformation = Chain.information(wallet.chainId);
 
   const totalDelegations = {
-    id: currentTerraChainInformation.denom,
+    id: currentChainInformation.denom,
     rawAmount: R.sum(
       delegations.data?.map((delegation) => {
         return parseInt(delegation.balance.rawAmount, 10);
@@ -172,7 +171,7 @@ const StakingOptions = observer(function StakingOptions() {
   const delegationsContent = `${formattedDelegations.amount} ${formattedDelegations.denom}`;
 
   const totalUnbondingDelegations = {
-    id: currentTerraChainInformation.denom,
+    id: currentChainInformation.denom,
     rawAmount: R.sum(
       unbondingDelegations.data?.map((delegation) => {
         return parseInt(delegation.balance.rawAmount, 10);
@@ -399,13 +398,14 @@ const Validators = observer(function Validators() {
     ? fuse.search(needle).map((result) => result.item)
     : activeValidators;
 
-  const currentTerraChainInformation = useCurrentTerraChainInformation();
+  const currentChainInformation = Chain.information(wallet.chainId);
+
   const rawBalances = useBalances({
     address: wallet.address,
     chainId: wallet.chainId,
   });
   const amountToShow = rawBalances.data?.find((balance) => {
-    return balance.id === currentTerraChainInformation.denom;
+    return balance.id === currentChainInformation.denom;
   });
 
   return (
@@ -449,15 +449,13 @@ const Validators = observer(function Validators() {
           validator={selectedValidator}
           confirmLabel="Stake"
           onConfirm={async ({ validator, token }) => {
-            const chainId = wallet.chainId;
-            invariant(isTerraChain(chainId), "Expected Terra chain.");
-
             try {
-              await wallet.stake({
+              const response = await wallet.stake({
                 validator: validator.address,
                 amount: token,
               });
               dispatch({ type: "clear-selected-validator" });
+              console.log(response);
               await Promise.all([delegations.refetch(), rawBalances.refetch()]);
             } catch (e) {
               console.log(e);
@@ -511,14 +509,15 @@ const ValidatorItem = observer(function ValidatorItem({
   confirmLabel?: string;
   amountToShow?: Token;
 }) {
-  const currentTerraChainInformation = useCurrentTerraChainInformation();
+  const wallet = useCurrentWallet();
+  const currentChainInformation = Chain.information(wallet.chainId);
   const promoted = validator.promoted;
 
   const balances = amountToShow ? [amountToShow] : [];
   const { control, handleSubmit } = useForm({
     defaultValues: {
       token: {
-        id: currentTerraChainInformation.denom,
+        id: currentChainInformation.denom,
         amount: "",
       },
     },
@@ -526,7 +525,7 @@ const ValidatorItem = observer(function ValidatorItem({
     resolver: zodResolver(
       z.object({
         token: tokenGivenBalances({
-          chainId: currentTerraChainInformation.chainId,
+          chainId: currentChainInformation.chainId,
           balances,
         }),
       })
@@ -622,7 +621,7 @@ const ValidatorItem = observer(function ValidatorItem({
                   fieldState={fieldState}
                   balances={balances.map((token) => {
                     return enrichToken({
-                      chainId: currentTerraChainInformation.chainId,
+                      chainId: currentChainInformation.chainId,
                       token,
                     });
                   })}
@@ -676,9 +675,6 @@ const MyStake = observer(function MyStake() {
           validator={selectedValidator}
           confirmLabel="Unstake"
           onConfirm={async ({ validator, token }) => {
-            const chainId = wallet.chainId;
-            invariant(isTerraChain(chainId), "Expected Terra chain.");
-
             try {
               await wallet.unstake({
                 validator: validator.address,

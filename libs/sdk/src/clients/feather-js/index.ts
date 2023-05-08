@@ -62,10 +62,10 @@ export class FeatherJsClient extends AbstractClient {
     let key: string | null = "";
 
     do {
-      const [list, pagination] = (await f({
+      const [list, pagination] = await f({
         "pagination.limit": "100",
         "pagination.key": key,
-      })) as [T[], Pagination];
+      });
 
       result.push(...list);
       key = pagination?.next_key;
