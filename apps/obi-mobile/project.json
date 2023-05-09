@@ -100,7 +100,6 @@
       }
     },
     "codepush": {
-      "dependsOn": ["codepush-release-react"],
       "executor": "nx:run-commands",
       "options": {
         "command": "node scripts/codepush.mjs"
