@@ -47,6 +47,10 @@ export class Wallets {
     return this._currentChainId;
   }
 
+  public setCurrentChain(chainId: ChainId) {
+    this._currentChainId = chainId;
+  }
+
   protected get currentWalletIndex() {
     if (!this._currentChainId) return null;
     return this._currentWalletIndexPerChain?.[this._currentChainId] ?? null;
