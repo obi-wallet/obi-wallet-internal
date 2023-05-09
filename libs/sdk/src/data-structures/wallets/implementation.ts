@@ -1,4 +1,5 @@
 import { WalletsSchema } from "./schema";
+import { ChainId } from "../../chains";
 import { WalletsSdk } from "../../sdk/wallets";
 import { Serialized } from "../abstract";
 import { createGatekeeperConfig } from "../gatekeeper-config";
@@ -13,30 +14,51 @@ export class Wallets {
 
   public constructor(
     protected _wallets: MultisigWallet[],
-    protected _currentWalletIndex: number | null,
-    protected _factory: typeof MultisigWallet
+    protected _currentChainId: ChainId | null,
+    protected _currentWalletIndexPerChain: Partial<
+      Record<ChainId, number | null>
+    >,
+    protected _factory: typeof MultisigWallet,
+    protected _serialize: <T>(serialized: T) => T
   ) {}
 
   public toJSON(): AbstractSerialized<typeof WalletsSchema> {
     return {
       wallets: this._wallets.map((w) => w.toJSON()),
-      currentWalletIndex: this._currentWalletIndex,
+      currentChainId: this._currentChainId,
+      currentWalletIndexPerChain: this._serialize(
+        this._currentWalletIndexPerChain
+      ),
     };
   }
 
   public deserialize(migratable: AbstractMigratable<typeof WalletsSchema>) {
     const serialized = WalletsSchema.migratableSchema.parse(migratable);
     this._wallets = serialized.wallets.map((w) => this._factory.create(w));
-    this._currentWalletIndex = serialized.currentWalletIndex;
+    this._currentChainId = serialized.currentChainId;
+    this._currentWalletIndexPerChain = serialized.currentWalletIndexPerChain;
   }
 
   public get wallets() {
     return this._wallets;
   }
 
+  public get currentChainId() {
+    return this._currentChainId;
+  }
+
+  public setCurrentChain(chainId: ChainId) {
+    this._currentChainId = chainId;
+  }
+
+  protected get currentWalletIndex() {
+    if (!this._currentChainId) return null;
+    return this._currentWalletIndexPerChain?.[this._currentChainId] ?? null;
+  }
+
   public get currentWallet() {
-    if (typeof this._currentWalletIndex !== "number") return null;
-    return this._wallets[this._currentWalletIndex];
+    if (typeof this.currentWalletIndex !== "number") return null;
+    return this._wallets[this.currentWalletIndex];
   }
 
   public get address(): string | null {
@@ -46,12 +68,14 @@ export class Wallets {
   public setCurrentWallet(wallet: MultisigWallet) {
     const index = this._wallets.findIndex((w) => w.id === wallet.id);
     if (index !== -1) {
-      this._currentWalletIndex = index;
+      this._currentChainId = wallet.chainId;
+      this._currentWalletIndexPerChain[wallet.chainId] = index;
     }
   }
 
   public logout() {
-    this._currentWalletIndex = null;
+    if (!this._currentChainId) return;
+    delete this._currentWalletIndexPerChain[this._currentChainId];
   }
 
   public getWalletByProxyAddress(proxyAddress: string) {

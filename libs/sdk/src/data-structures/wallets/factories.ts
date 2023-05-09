@@ -1,4 +1,5 @@
-import { action, makeObservable, observable } from "mobx";
+import { action, makeObservable, observable, toJS } from "mobx";
+import * as R from "ramda";
 
 import { Wallets } from "./implementation";
 import { WalletsSchema } from "./schema";
@@ -10,27 +11,35 @@ export function createWallets(
     wallets: [],
     currentWalletIndex: null,
   },
-  factory = MultisigWallet
+  factory = MultisigWallet,
+  serialize = R.identity
 ) {
   const serialized = WalletsSchema.migratableSchema.parse(migratable);
   return new Wallets(
     serialized.wallets.map((wallet) => factory.create(wallet)),
-    serialized.currentWalletIndex,
-    factory
+    serialized.currentChainId,
+    serialized.currentWalletIndexPerChain,
+    factory,
+    serialize
   );
 }
 
 export function createObservableWallets(
   migratable?: AbstractMigratable<typeof WalletsSchema>
 ) {
-  const wallets = createWallets(migratable, ObservableMultisigWallet);
-  makeObservable<Wallets, "_wallets" | "_currentWalletIndex">(
+  const wallets = createWallets(migratable, ObservableMultisigWallet, toJS);
+  makeObservable<
+    Wallets,
+    "_wallets" | "_currentChainId" | "_currentWalletIndexPerChain"
+  >(
     wallets,
     {
       _wallets: observable,
-      _currentWalletIndex: observable,
+      _currentChainId: observable,
+      _currentWalletIndexPerChain: observable,
       deserialize: action,
       toJSON: false,
+      setCurrentChain: action,
       setCurrentWallet: action,
       logout: action,
       upsertWallet: action,

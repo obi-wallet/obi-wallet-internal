@@ -40,8 +40,14 @@ describe("ObservableWallets", () => {
     expect(isObservable(wallets.wallets)).toEqual(true);
   });
 
-  test("currentWalletIndex observable", () => {
-    expect(isObservableProp(wallets, "_currentWalletIndex")).toEqual(true);
+  test("currentChainId observable", () => {
+    expect(isObservableProp(wallets, "_currentChainId")).toEqual(true);
+  });
+
+  test("currentWalletIndexPerChain observable", () => {
+    expect(isObservableProp(wallets, "_currentWalletIndexPerChain")).toEqual(
+      true
+    );
   });
 });
 

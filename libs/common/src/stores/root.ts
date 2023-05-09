@@ -37,7 +37,10 @@ export class RootStore {
       configStore: this.configStore,
       kvStore: new KVStore("language-store"),
     });
-    this.chainStore = new ChainStore({ configStore: this.configStore });
+    this.chainStore = new ChainStore({
+      configStore: this.configStore,
+      walletsStore: this.walletsStore,
+    });
   }
 
   public get walletConnectStore() {

@@ -44,17 +44,6 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             Alert.alert("Something went wrong", response.payload.description);
             return;
           }
-
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [
-                {
-                  name: RootRoute.Home,
-                },
-              ],
-            })
-          );
         }}
         onAddSocial={() => {
           navigation.navigate(KeyRoute.SocialKey, {
