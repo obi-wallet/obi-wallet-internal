@@ -4,7 +4,7 @@ import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 import invariant from "tiny-invariant";
 
 import { AsyncButton } from "../../app/button";
@@ -56,18 +56,11 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
               serializedData: params.serializedData,
               newOwner: draft.value,
             });
-
-            if (response.approved && response.payload.success) {
-              navigation.dispatch(
-                CommonActions.reset({
-                  index: 0,
-                  routes: [
-                    {
-                      name: RootRoute.Home,
-                    },
-                  ],
-                })
-              );
+            if (!response.approved) return;
+            if (!response.payload.success) {
+              console.log(response.payload.rawLog);
+              Alert.alert("Something went wrong", response.payload.rawLog);
+              return;
             }
           } finally {
             setLoading(false);

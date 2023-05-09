@@ -95,12 +95,6 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                   onPress={() => {
                     onClose.current = () => {
                       walletsStore.setCurrentWallet(wallet);
-                      navigation.dispatch(
-                        CommonActions.reset({
-                          index: 0,
-                          routes: [{ name: RootRoute.Home }],
-                        })
-                      );
                     };
                     close();
                   }}

@@ -7,9 +7,9 @@ import { PhoneKeyConfirmScreen, PhoneKeyRequestScreen } from "./phone";
 import { SocialKeyScreen } from "./social";
 import { RootStack } from "../../app/root-stack";
 
-export const keyScreens = () => {
+export const keyScreens = (navigationKey: string) => {
   return (
-    <RootStack.Group>
+    <RootStack.Group navigationKey={navigationKey}>
       <RootStack.Screen
         name={KeyRoute.DeviceKey}
         key={KeyRoute.DeviceKey}

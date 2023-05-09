@@ -138,6 +138,7 @@ export const DemoModeHeader = observer(function DemoModeHeader() {
 
 export const StateRenderer = observer(function StateRenderer() {
   const { walletsStore, walletsStoreState } = useStore();
+  const navigationKey = walletsStore.currentWallet?.id ?? "onboarding";
 
   switch (walletsStoreState) {
     case WalletState.LOADING:
@@ -154,32 +155,19 @@ export const StateRenderer = observer(function StateRenderer() {
               fontFamily: "Inter",
             },
           }}
-          initialRouteName={
-            walletsStore.currentWallet
-              ? RootRoute.Home
-              : OnboardingRoute.Welcome
-          }
         >
-          {getScreens()}
+          {walletsStore.currentWallet
+            ? getAuthenticatedScreens()
+            : getOnboardingScreens()}
+          {getSharedScreens()}
         </RootStack.Navigator>
       );
     }
   }
 
-  function getScreens() {
+  function getOnboardingScreens() {
     return (
       <RootStack.Group>
-        <RootStack.Screen name={RootRoute.Home} component={HomeScreen} />
-        <RootStack.Screen
-          name={RootRoute.WebView}
-          component={WebViewScreen}
-          options={({ route }) => ({
-            title: route.params.app.label,
-          })}
-        />
-        <RootStack.Screen name={RootRoute.Send} component={SendScreen} />
-        <RootStack.Screen name={RootRoute.Stake} component={Stake} />
-        <RootStack.Screen name={RootRoute.Receive} component={ReceiveScreen} />
         <RootStack.Screen
           name={OnboardingRoute.Welcome}
           component={WelcomeScreen}
@@ -196,8 +184,33 @@ export const StateRenderer = observer(function StateRenderer() {
           name={OnboardingRoute.RecoverWallet}
           component={RecoverWalletScreen}
         />
+      </RootStack.Group>
+    );
+  }
+
+  function getAuthenticatedScreens() {
+    return (
+      <RootStack.Group>
+        <RootStack.Screen name={RootRoute.Home} component={HomeScreen} />
+        <RootStack.Screen
+          name={RootRoute.WebView}
+          component={WebViewScreen}
+          options={({ route }) => ({
+            title: route.params.app.label,
+          })}
+        />
+        <RootStack.Screen name={RootRoute.Send} component={SendScreen} />
+        <RootStack.Screen name={RootRoute.Stake} component={Stake} />
+        <RootStack.Screen name={RootRoute.Receive} component={ReceiveScreen} />
         {settingsScreens()}
-        {keyScreens()}
+      </RootStack.Group>
+    );
+  }
+
+  function getSharedScreens() {
+    return (
+      <RootStack.Group navigationKey={navigationKey}>
+        {keyScreens(navigationKey)}
       </RootStack.Group>
     );
   }
