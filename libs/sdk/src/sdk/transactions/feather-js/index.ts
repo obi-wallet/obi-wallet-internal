@@ -115,7 +115,11 @@ export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
       const data = error.response?.data;
 
       const result = RpcError.safeParse(data);
-      if (result.success && result.data.message.includes("code = NotFound")) {
+      if (
+        error.response?.status === 404 &&
+        result.success &&
+        result.data.message.includes("not found")
+      ) {
         return null;
       }
 
