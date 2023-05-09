@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { ArrayIndex } from "../array-index";
+import { ChainIdSchema } from "../chain-id";
 import { GatekeeperConfig } from "../gatekeeper-config";
 import { migratable } from "../migratable";
 import { MultisigKey } from "../multisig-key";
@@ -24,17 +25,9 @@ export const ProxyAddress = migratable(
   },
 });
 
-const Chain = z.union([
-  z.literal("oasis-3"),
-  z.literal("uni-3"),
-  z.literal("juno-1"),
-  z.literal("pisco-1"),
-  z.literal("phoenix-1"),
-]);
-
 const MultisigWalletData = migratable(
   z.object({
-    chain: Chain,
+    chain: ChainIdSchema,
     owner: MultisigKey.schema.migratableSchema,
     proxyAddress: ProxyAddress.migratableSchema,
     gatekeeperConfig: GatekeeperConfig.schema.migratableSchema,
@@ -51,7 +44,7 @@ const MultisigWalletData = migratable(
   })
 ).addMigration({
   nextSchema: z.object({
-    chain: Chain,
+    chain: ChainIdSchema,
     owner: MultisigKey.schema.migratableSchema,
     proxyAddress: ProxyAddress.migratableSchema,
     gatekeeperConfig: GatekeeperConfig.schema.migratableSchema,

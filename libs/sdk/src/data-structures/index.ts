@@ -1,5 +1,6 @@
 export * from "./abstract";
 export * from "./beneficiary";
+export * from "./chain-id";
 export * from "./flex-account";
 export * from "./gatekeeper-config";
 export * from "./key";
