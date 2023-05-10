@@ -13,9 +13,7 @@ import { useStore } from "../stores";
 
 export interface AccountPickerModalProps {
   visible: boolean;
-
   open(): void;
-
   close(): void;
 }
 

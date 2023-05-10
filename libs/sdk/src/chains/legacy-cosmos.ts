@@ -12,6 +12,9 @@ export const legacyCosmosChains = {
     debtRepayAddress: "juno1ruftad6eytmr3qzmf9k3eya9ah8hsnvkujkej8",
     ...commonTwilioConfig,
     bip: [{ path: "m/44'/118'/0'/0/0" }],
+    explorerUrl(address: string) {
+      return `https://testnet.mintscan.io/juno-testnet/account/${address}`;
+    },
   },
   "juno-1": {
     chainId: "juno-1" as const,
@@ -27,6 +30,9 @@ export const legacyCosmosChains = {
     debtRepayAddress: "juno1ruftad6eytmr3qzmf9k3eya9ah8hsnvkujkej8",
     ...commonTwilioConfig,
     bip: [{ path: "m/44'/118'/0'/0/0" }],
+    explorerUrl(address: string): string {
+      return `https://www.mintscan.io/juno/account/${address}`;
+    },
   },
 };
 

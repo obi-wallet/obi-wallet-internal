@@ -17,6 +17,9 @@ export const cosmosChains = {
     startingUsdDebt: "0",
     ...commonTwilioConfig,
     bip: [{ path: "m/44'/118'/0'/0/0" }],
+    explorerUrl(address: string) {
+      return `https://app.noria.network/noria/account/${address}`;
+    },
   },
 };
 
