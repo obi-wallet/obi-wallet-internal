@@ -1,6 +1,5 @@
 import styled from "@emotion/native";
 import { Brand, Feature } from "@obi-wallet/common";
-import { CommonActions } from "@react-navigation/native";
 import * as Sentry from "@sentry/react-native";
 import { observer } from "mobx-react-lite";
 import { FC, useState } from "react";
@@ -22,7 +21,6 @@ import { useStore } from "../../stores";
 import { ObiLogo } from "../components/obi-logo";
 import { BrandToggle } from "../components/obi-mode-toggle";
 import { isSmallScreenNumber } from "../components/screen-size";
-import { OnboardingRoute } from "../onboarding/onboarding-stack";
 
 export const SettingsScreen = observer(function SettingsScreen() {
   const { configStore, walletsStore } = useStore();

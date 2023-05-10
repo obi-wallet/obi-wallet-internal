@@ -10,6 +10,7 @@ import KeplrIcon from "./assets/keplr.svg";
 import StationIcon from "./assets/station.svg";
 import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
+import { useStore } from "../../app/stores";
 
 export type ImportLegacyAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
@@ -32,19 +33,41 @@ const legacyAccountTypeMetaData = {
   },
 };
 
-// TODO: handle Juno
+interface LegacyAccountItem {
+  type: LegacyAccountType;
+  route: readonly [AccountsRoute.ImportBipMnemonic, { path: string }];
+}
+
+function parseBip(bip: { path: string }): LegacyAccountItem | null {
+  switch (bip.path) {
+    case "m/44'/118'/0'/0/0":
+      return {
+        type: LegacyAccountType.Keplr,
+        route: [AccountsRoute.ImportBipMnemonic, bip] as const,
+      };
+    case "m/44'/330'/0'/0/0":
+      return {
+        type: LegacyAccountType.Station,
+        route: [AccountsRoute.ImportBipMnemonic, bip] as const,
+      };
+    default:
+      return null;
+  }
+}
+
 export const ImportLegacyAccountScreen =
   observer<ImportLegacyAccountScreenProps>(function ImportLegacyAccountScreen({
     navigation,
   }) {
-    const legacyAccountTypes = [
-      LegacyAccountType.Station,
-      LegacyAccountType.Keplr,
-    ];
-    const [selected, setSelected] = useState<LegacyAccountType | null>(null);
+    const { chainStore } = useStore();
+    const bip = chainStore.currentChainInformation.bip;
+    const legacyAccountItems = bip
+      .map(parseBip)
+      .filter((x): x is LegacyAccountItem => x !== null);
+    const [selected, setSelected] = useState<LegacyAccountItem | null>(null);
 
     const getAccountTypeText = () => {
-      switch (selected) {
+      switch (selected?.type) {
         case LegacyAccountType.Keplr: {
           return (
             <>
@@ -137,8 +160,8 @@ export const ImportLegacyAccountScreen =
               justifyContent: "center",
             }}
           >
-            {legacyAccountTypes.map((account) => {
-              const metaData = legacyAccountTypeMetaData[account];
+            {legacyAccountItems.map((account) => {
+              const metaData = legacyAccountTypeMetaData[account?.type];
               return (
                 <AccountElement
                   key={metaData.name}
@@ -157,13 +180,8 @@ export const ImportLegacyAccountScreen =
           <Button
             flavor="blue"
             onPress={() => {
-              switch (selected) {
-                case LegacyAccountType.Keplr:
-                  navigation.navigate(AccountsRoute.ImportKeplrAccount);
-                  break;
-                case LegacyAccountType.Station:
-                  navigation.navigate(AccountsRoute.ImportStationAccount);
-                  break;
+              if (selected?.route) {
+                navigation.navigate(...selected.route);
               }
             }}
             label="Confirm"

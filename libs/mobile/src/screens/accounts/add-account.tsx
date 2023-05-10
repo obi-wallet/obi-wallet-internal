@@ -10,6 +10,7 @@ import FlexAccountIcon from "./assets/flex-account-icon.svg";
 import LegacyAccountIcon from "./assets/legacy-account-icon.svg";
 import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
+import { useStore } from "../../app/stores";
 
 export type AddAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
@@ -31,37 +32,42 @@ const getAccountTypeIcon = (type: AccountType) => {
   }
 };
 
-const accountTypeMetaData: Record<
-  AccountType,
-  { title: string; description: string; route: AccountsRoute }
-> = {
-  [AccountType.FlexAccount]: {
-    title: "Create Flex Account",
-    description:
-      "Create a permission account that can act on behalf of your Obi parent account. This option is recommended for most users.",
-    route: AccountsRoute.CreateFlexAccount,
-  },
-  [AccountType.Beneficiary]: {
-    title: "Add Inheritance Account",
-    description:
-      "Add an inheritance account to your Obi parent account that will automatically receive your assets based on your configuration.",
-    route: AccountsRoute.CreateBeneficiaryAccount,
-  },
-  [AccountType.Legacy]: {
-    title: "Import Legacy Account",
-    description:
-      "Import a traditional, seed phrase account from Station or Keplr to use in the Obi interface. Note: Multi-Key and other functionality is not available for this account type.",
-    route: AccountsRoute.ImportLegacyAccount,
-  },
-};
-
 export const AddAccountScreen = observer<AddAccountScreenProps>(
   function AddAccountScreen({ navigation }) {
+    const { chainStore } = useStore();
     const accountTypes = [
       AccountType.FlexAccount,
       AccountType.Beneficiary,
       AccountType.Legacy,
     ];
+    const bip = chainStore.currentChainInformation.bip;
+    const accountTypeMetaData = {
+      [AccountType.FlexAccount]: {
+        title: "Create Flex Account",
+        description:
+          "Create a permission account that can act on behalf of your Obi parent account. This option is recommended for most users.",
+        route: [AccountsRoute.CreateFlexAccount] as const,
+      },
+      [AccountType.Beneficiary]: {
+        title: "Add Inheritance Account",
+        description:
+          "Add an inheritance account to your Obi parent account that will automatically receive your assets based on your configuration.",
+        route: [AccountsRoute.CreateBeneficiaryAccount] as const,
+      },
+      [AccountType.Legacy]: {
+        title: "Import Legacy Account",
+        description: `Import a traditional, seed phrase account from ${
+          bip.length > 1 ? "Station or Keplr" : "Keplr"
+        } to use in the Obi interface. Note: Multi-Key and other functionality is not available for this account type.`,
+        route:
+          bip.length > 1
+            ? ([AccountsRoute.ImportLegacyAccount] as const)
+            : ([
+                AccountsRoute.ImportBipMnemonic,
+                { path: bip[0].path },
+              ] as const),
+      },
+    };
     const [selected, setSelected] = useState<AccountType>(accountTypes[0]);
     const selectedItem = accountTypeMetaData[selected];
 
@@ -123,7 +129,7 @@ export const AddAccountScreen = observer<AddAccountScreenProps>(
           <Button
             flavor="blue"
             onPress={() => {
-              navigation.navigate(selectedItem.route);
+              navigation.navigate(...selectedItem.route);
             }}
             label="Confirm"
           />
