@@ -235,12 +235,11 @@ const ConnectedDapp = observer(function ConnectedDapp({
 });
 
 const AppsScreen = observer(function AppsScreen() {
-  const { configStore, appsStore, walletsStore } = useStore();
+  const { configStore, appsStore } = useStore();
   const isObi = configStore.isObi();
   const isLoop = configStore.isLoop();
   const [editMode, setEditMode] = useState(false);
   const [url, setUrl] = useState("");
-  const intl = useIntl();
   const navigation = useRootNavigation();
 
   function onAppPress(app: App) {
@@ -263,6 +262,12 @@ const AppsScreen = observer(function AppsScreen() {
 
         <ScrollView style={{ flex: 1 }}>
           <Tiles>
+            <DefaultApps
+              onAppPress={onAppPress}
+              onLongPress={() => {
+                setEditMode(true);
+              }}
+            />
             {appsStore.favorites.map((app) => {
               return (
                 <Tile
@@ -285,80 +290,6 @@ const AppsScreen = observer(function AppsScreen() {
                 />
               );
             })}
-            <Tile
-              onLongPress={() => {
-                setEditMode(true);
-              }}
-              source={
-                walletsStore.currentWallet &&
-                isTerraChain(walletsStore.currentWallet.chainId)
-                  ? require("./assets/terrascope.png")
-                  : HistoryIcon
-              }
-              label={intl.formatMessage({
-                id: "apps.myhistory",
-                defaultMessage: "History",
-              })}
-              onPress={() => {
-                onAppPress({
-                  label: "History",
-                  url:
-                    walletsStore.currentWallet &&
-                    isTerraChain(walletsStore.currentWallet.chainId)
-                      ? `https://terrasco.pe/mainnet/contract/${walletsStore.address}`
-                      : `https://mintscan.io/juno/wasm/contract/${walletsStore.address}`,
-                  icon: "https://place-hold.it/180x180",
-                });
-              }}
-            />
-            {isObi ? (
-              <Tile
-                onLongPress={() => {
-                  setEditMode(true);
-                }}
-                source={require("./assets/astroport.png")}
-                label="Astroport"
-                onPress={() => {
-                  onAppPress({
-                    label: "Astroport",
-                    url: "https://app.astroport.fi",
-                    icon: "https://place-hold.it/180x180",
-                  });
-                }}
-              />
-            ) : null}
-            {isObi ? (
-              <Tile
-                onLongPress={() => {
-                  setEditMode(true);
-                }}
-                source={require("./assets/coinhall.png")}
-                label="Coinhall"
-                onPress={() => {
-                  onAppPress({
-                    label: "Coinhall",
-                    url: "https://coinhall.org",
-                    icon: "https://place-hold.it/180x180",
-                  });
-                }}
-              />
-            ) : null}
-            {isObi ? (
-              <Tile
-                onLongPress={() => {
-                  setEditMode(true);
-                }}
-                source={require("./assets/terra-poker.png")}
-                label="Terra Poker"
-                onPress={() => {
-                  onAppPress({
-                    label: "Terra Poker",
-                    url: "https://terrapoker.games",
-                    icon: "https://place-hold.it/180x180",
-                  });
-                }}
-              />
-            ) : null}
           </Tiles>
         </ScrollView>
       </Card>
@@ -531,5 +462,82 @@ const AppsScreen = observer(function AppsScreen() {
         </View>
       </View>
     </View>
+  );
+});
+
+export const DefaultApps = observer(function DefaultApps({
+  onAppPress,
+  onLongPress,
+}: {
+  onAppPress: (app: App) => void;
+  onLongPress: () => void;
+}) {
+  const { chainStore, configStore } = useStore();
+  const wallet = useCurrentWallet();
+  const intl = useIntl();
+
+  const isTerra = isTerraChain(wallet.chainId);
+  const isObi = configStore.isObi();
+
+  return (
+    <>
+      <Tile
+        onLongPress={onLongPress}
+        source={isTerra ? require("./assets/terrascope.png") : HistoryIcon}
+        label={intl.formatMessage({
+          id: "apps.myhistory",
+          defaultMessage: "History",
+        })}
+        onPress={() => {
+          onAppPress({
+            label: "History",
+            url: chainStore.currentChainInformation.explorerUrl(wallet.address),
+            icon: "https://place-hold.it/180x180",
+          });
+        }}
+      />
+      {isTerra ? (
+        <Tile
+          onLongPress={onLongPress}
+          source={require("./assets/astroport.png")}
+          label="Astroport"
+          onPress={() => {
+            onAppPress({
+              label: "Astroport",
+              url: "https://app.astroport.fi",
+              icon: "https://place-hold.it/180x180",
+            });
+          }}
+        />
+      ) : null}
+      {isObi ? (
+        <Tile
+          onLongPress={onLongPress}
+          source={require("./assets/coinhall.png")}
+          label="Coinhall"
+          onPress={() => {
+            onAppPress({
+              label: "Coinhall",
+              url: "https://coinhall.org",
+              icon: "https://place-hold.it/180x180",
+            });
+          }}
+        />
+      ) : null}
+      {isTerra ? (
+        <Tile
+          onLongPress={onLongPress}
+          source={require("./assets/terra-poker.png")}
+          label="Terra Poker"
+          onPress={() => {
+            onAppPress({
+              label: "Terra Poker",
+              url: "https://terrapoker.games",
+              icon: "https://place-hold.it/180x180",
+            });
+          }}
+        />
+      ) : null}
+    </>
   );
 });

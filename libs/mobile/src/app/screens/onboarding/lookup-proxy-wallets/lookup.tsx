@@ -31,7 +31,7 @@ export const Lookup = observer(function Lookup({
   onSelect,
   onCancel,
 }: LookupProps) {
-  const { configStore } = useStore();
+  const { chainStore, configStore } = useStore();
   const isObi = configStore.isObi();
   const [wallets, setWallets] = useState<A.SerializedProxyWallet[] | null>(
     null
@@ -191,20 +191,11 @@ export const Lookup = observer(function Lookup({
                     paddingHorizontal: 10,
                   }}
                   onPress={async () => {
-                    switch (chainId) {
-                      case "uni-3":
-                      case "juno-1":
-                        await Linking.openURL(
-                          `https://www.mintscan.io/juno/wasm/contract/${wallet.proxyAddress.address}`
-                        );
-                        break;
-                      case "pisco-1":
-                      case "phoenix-1":
-                        await Linking.openURL(
-                          `https://terrasco.pe/mainnet/contract/${wallet.proxyAddress.address}`
-                        );
-                        break;
-                    }
+                    await Linking.openURL(
+                      chainStore.currentChainInformation.explorerUrl(
+                        wallet.proxyAddress.address
+                      )
+                    );
                   }}
                 >
                   <FontAwesomeIcon
