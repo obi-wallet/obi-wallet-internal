@@ -11,9 +11,8 @@ import { AddAccountScreen } from "./add-account";
 import { CreateBeneficiaryAccountScreen } from "./create-beneficiary-account";
 import { CreateFlexAccountScreen } from "./create-flex-account";
 import { getGatekeeperConfigDraftId } from "./draft-id";
-import { ImportKeplrAccountScreen } from "./import-keplr-account";
+import { ImportBipMnemonicScreen } from "./import-bip-mnemonic";
 import { ImportLegacyAccountScreen } from "./import-legacy-account";
-import { ImportStationAccountScreen } from "./import-station-account";
 import { useStore } from "../../app/stores";
 
 export const AccountsScreen = observer(function AccountsScreen() {
@@ -72,12 +71,8 @@ export const AccountsScreen = observer(function AccountsScreen() {
         component={ImportLegacyAccountScreen}
       />
       <AccountsStack.Screen
-        name={AccountsRoute.ImportStationAccount}
-        component={ImportStationAccountScreen}
-      />
-      <AccountsStack.Screen
-        name={AccountsRoute.ImportKeplrAccount}
-        component={ImportKeplrAccountScreen}
+        name={AccountsRoute.ImportBipMnemonic}
+        component={ImportBipMnemonicScreen}
       />
     </AccountsStack.Navigator>
   );

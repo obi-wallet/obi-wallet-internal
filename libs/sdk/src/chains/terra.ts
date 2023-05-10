@@ -18,6 +18,7 @@ export const terraChains = {
     startingUsdDebt: "0",
     obiValidator: "terravaloper1src9wvawtfl6ztxss8zu45zuxnwj4ytpnr30jn",
     ...commonTwilioConfig,
+    bip: [{ path: "m/44'/330'/0'/0/0" }, { path: "m/44'/118'/0'/0/0" }],
   },
   "phoenix-1": {
     chainId: "phoenix-1" as const,
@@ -39,6 +40,7 @@ export const terraChains = {
     startingUsdDebt: "0",
     obiValidator: "terravaloper1src9wvawtfl6ztxss8zu45zuxnwj4ytpnr30jn",
     ...commonTwilioConfig,
+    bip: [{ path: "m/44'/330'/0'/0/0" }, { path: "m/44'/118'/0'/0/0" }],
   },
 };
 

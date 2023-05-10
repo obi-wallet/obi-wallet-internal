@@ -8,6 +8,7 @@ export enum AccountsRoute {
   ImportLegacyAccount = "ImportLegacyAccount",
   ImportStationAccount = "ImportStationAccount",
   ImportKeplrAccount = "ImportKeplrAccount",
+  ImportBipMnemonic = "ImportBipMnemonic",
 }
 
 export interface AccountsStackParamList
@@ -17,8 +18,9 @@ export interface AccountsStackParamList
   [AccountsRoute.CreateFlexAccount]: undefined;
   [AccountsRoute.CreateBeneficiaryAccount]: undefined;
   [AccountsRoute.ImportLegacyAccount]: undefined;
-  [AccountsRoute.ImportStationAccount]: undefined;
-  [AccountsRoute.ImportKeplrAccount]: undefined;
+  [AccountsRoute.ImportBipMnemonic]: {
+    path: string;
+  };
 }
 
 export const AccountsStack =

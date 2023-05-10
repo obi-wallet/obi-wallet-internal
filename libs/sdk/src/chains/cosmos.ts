@@ -16,9 +16,7 @@ export const cosmosChains = {
     denom: "ucrd",
     startingUsdDebt: "0",
     ...commonTwilioConfig,
-    bip44: {
-      coinType: 118,
-    },
+    bip: [{ path: "m/44'/118'/0'/0/0" }],
   },
 };
 

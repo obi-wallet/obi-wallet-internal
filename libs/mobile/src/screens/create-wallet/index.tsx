@@ -1,11 +1,10 @@
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
-import { CommonActions } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { Alert, View } from "react-native";
 
 import { Button } from "../../app/button";
-import { RootRoute, useRootNavigation } from "../../app/root-stack";
+import { useRootNavigation } from "../../app/root-stack";
 import {
   OnboardingRoute,
   OnboardingStackParamList,

@@ -44,24 +44,6 @@ const importKeplrAccountRoutes = [
   {
     name: AccountsRoute.ImportLegacyAccount,
   },
-  {
-    name: AccountsRoute.ImportKeplrAccount,
-  },
-];
-
-const importStationAccountRoutes = [
-  {
-    name: AccountsRoute.AccountsOverview,
-  },
-  {
-    name: AccountsRoute.AddAccount,
-  },
-  {
-    name: AccountsRoute.ImportLegacyAccount,
-  },
-  {
-    name: AccountsRoute.ImportStationAccount,
-  },
 ];
 
 function Step({ step, routes }: { step: number; routes: { name: string }[] }) {
@@ -113,11 +95,5 @@ export default {
   ">> Add Beneficiary": <Step step={2} routes={beneficiaryRoutes} />,
   ">> Import Legacy Account": (
     <Step step={2} routes={importKeplrAccountRoutes} />
-  ),
-  ">>> Import Station Account": (
-    <Step step={3} routes={importStationAccountRoutes} />
-  ),
-  ">>> Import Keplr Account": (
-    <Step step={3} routes={importKeplrAccountRoutes} />
   ),
 };

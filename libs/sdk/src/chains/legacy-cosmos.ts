@@ -11,9 +11,7 @@ export const legacyCosmosChains = {
     startingUsdDebt: "0",
     debtRepayAddress: "juno1ruftad6eytmr3qzmf9k3eya9ah8hsnvkujkej8",
     ...commonTwilioConfig,
-    bip44: {
-      coinType: 118,
-    },
+    bip: [{ path: "m/44'/118'/0'/0/0" }],
   },
   "juno-1": {
     chainId: "juno-1" as const,
@@ -28,9 +26,7 @@ export const legacyCosmosChains = {
     startingUsdDebt: "0",
     debtRepayAddress: "juno1ruftad6eytmr3qzmf9k3eya9ah8hsnvkujkej8",
     ...commonTwilioConfig,
-    bip44: {
-      coinType: 118,
-    },
+    bip: [{ path: "m/44'/118'/0'/0/0" }],
   },
 };
 

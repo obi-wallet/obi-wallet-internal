@@ -9,5 +9,5 @@ export const obiMobileMultichainConfig: Config = {
     enabled: ["oasis-3", "phoenix-1"],
     default: "oasis-3",
   },
-  requiredKeys: [KeyType.Device],
+  requiredKeys: [KeyType.Device, KeyType.Phone],
 };
