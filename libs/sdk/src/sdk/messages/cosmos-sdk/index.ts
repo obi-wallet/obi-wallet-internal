@@ -79,11 +79,8 @@ export class CosmosSdkMessages extends AbstractMessages {
       wrapped_migrate: {
         ...(codeIds.userAccount < this.chain.currentCodeIds.userAccount
           ? {
-              code_id:
-                codeIds.userAccount <= 1014
-                  ? 1081
-                  : this.chain.currentCodeIds.userAccount,
-              ...(codeIds.userAccount >= 1081
+              code_id: this.getNextCodeId(codeIds),
+              ...(this.attachSigners(codeIds)
                 ? {
                     signers: {
                       signers: this.getSigners(wallet.owner),
@@ -92,7 +89,7 @@ export class CosmosSdkMessages extends AbstractMessages {
                 : {}),
             }
           : {}),
-        ...(codeIds.userAccount >= 1261
+        ...(this.attachGatekeeperCodeIds(codeIds)
           ? {
               gatekeeper_code_ids: {
                 ...(!codeIds.spendLimitGatekeeper ||
@@ -117,6 +114,14 @@ export class CosmosSdkMessages extends AbstractMessages {
     });
   }
 
+  protected attachGatekeeperCodeIds(codeIds: CodeIds) {
+    if (this.chainId === "phoenix-1") {
+      if (codeIds.userAccount < 1261) return false;
+    }
+
+    return true;
+  }
+
   public getProposeUpdateOwnerMessage({
     wallet,
     newOwner,
@@ -129,7 +134,7 @@ export class CosmosSdkMessages extends AbstractMessages {
     const rawMessage = {
       propose_update_owner: {
         new_owner: newOwner.address,
-        ...(codeIds.userAccount >= 1081
+        ...(this.attachSigners(codeIds)
           ? {
               signers: {
                 signers: this.getSigners(newOwner),
@@ -537,6 +542,22 @@ export class CosmosSdkMessages extends AbstractMessages {
         return chain;
       },
     });
+  }
+
+  protected getNextCodeId(codeIds: CodeIds) {
+    if (this.chainId === "phoenix-1") {
+      if (codeIds.userAccount <= 1014) return 1081;
+    }
+
+    return this.chain.currentCodeIds.userAccount;
+  }
+
+  protected attachSigners(codeIds: CodeIds) {
+    if (this.chainId === "phoenix-1") {
+      if (codeIds.userAccount < 1081) return false;
+    }
+
+    return true;
   }
 
   public static chainId(chainId: CosmosChainId | TerraChainId) {
