@@ -38,6 +38,18 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
     return pubkeyToAddress(publicKey, this.chain.prefix);
   }
 
+  public async getPublicKeyOfAddress(address: string): Promise<unknown | null> {
+    return await this.client.withStargateClient(async (client) => {
+      try {
+        const account = await client.getAccount(address);
+        return account?.pubkey ?? null;
+      } catch (e) {
+        console.log(e);
+        return null;
+      }
+    });
+  }
+
   public validateAddress(address: string): boolean {
     try {
       Bech32Address.validate(address, this.chain.prefix);

@@ -52,6 +52,18 @@ export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
     }
   }
 
+  public async getPublicKeyOfAddress(address: string): Promise<unknown | null> {
+    try {
+      const account = await this.client.withClient(async (client) => {
+        return await client.auth.accountInfo(address);
+      });
+      return account.getPublicKey()?.toAmino() ?? null;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
   public validateAddress(address: string): boolean {
     return AccAddress.validate(address, this.chain.prefix);
   }

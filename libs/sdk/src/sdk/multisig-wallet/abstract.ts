@@ -82,6 +82,8 @@ export abstract class AbstractMultisigWalletSdk {
     | { approved: false }
   >;
 
+  public abstract proposedOwner(): Promise<string | null>;
+
   public abstract updateGatekeeperConfig(
     newGatekeeperConfig: GatekeeperConfig
   ): Promise<
