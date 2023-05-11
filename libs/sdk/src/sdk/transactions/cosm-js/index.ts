@@ -7,8 +7,13 @@ import invariant from "tiny-invariant";
 
 import { CosmJsMultisigSigner } from "./multisigs-signer";
 import { Chain, CosmosChainId, LegacyCosmosChainId } from "../../../chains";
-import { CosmJsClient } from "../../../clients";
-import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../../keys";
+import { CosmJsClient, withCosmJsStargateClient } from "../../../clients";
+import {
+  MultisigPublicKey,
+  PublicKey,
+  Secp256k1KeyPair,
+  Secp256k1PublicKey,
+} from "../../../keys";
 import { Secp256k1PrivateKeySigner } from "../../../signers";
 import { Message, SignedTransaction } from "../../../transactions";
 import {
@@ -36,6 +41,18 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
 
   public getAddressOfPublicKey(publicKey: PublicKey) {
     return pubkeyToAddress(publicKey, this.chain.prefix);
+  }
+
+  public async getPublicKeyOfAddress(address: string): Promise<unknown | null> {
+    return await withCosmJsStargateClient(this.chainId, async (client) => {
+      try {
+        const account = await client.getAccount(address);
+        return account?.pubkey ?? null;
+      } catch (e) {
+        console.log(e);
+        return null;
+      }
+    });
   }
 
   public validateAddress(address: string): boolean {

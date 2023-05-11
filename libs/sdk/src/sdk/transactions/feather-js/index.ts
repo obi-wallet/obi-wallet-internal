@@ -11,7 +11,7 @@ import invariant from "tiny-invariant";
 
 import { FeatherJsMultisigSigner } from "./multisig-signer";
 import { TerraChainId, terraChains } from "../../../chains";
-import { FeatherJsClient } from "../../../clients";
+import { FeatherJsClient, withFeatherJsClient } from "../../../clients";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../../keys";
 import { Secp256k1PrivateKeySigner } from "../../../signers";
 import { Message, SignedTransaction } from "../../../transactions";
@@ -49,6 +49,21 @@ export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
         );
       default:
         throw new Error("Unsupported public key type");
+    }
+  }
+
+  public async getPublicKeyOfAddress(address: string): Promise<unknown | null> {
+    try {
+      const account = await withFeatherJsClient(
+        this.chainId,
+        async (client) => {
+          return await client.auth.accountInfo(address);
+        }
+      );
+      return account.getPublicKey()?.toAmino() ?? null;
+    } catch (e) {
+      console.log(e);
+      return null;
     }
   }
 

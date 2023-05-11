@@ -101,13 +101,28 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
       }
     | { approved: false }
   > {
-    const response = await this.proposeUpdateOwner(newOwner);
+    if ((await this.proposedOwner()) !== newOwner.address) {
+      const response = await this.proposeUpdateOwner(newOwner);
 
-    if (!response.approved || !response.payload.success) {
-      return response;
+      if (!response.approved || !response.payload.success) {
+        return response;
+      }
     }
 
     return await this.confirmUpdateOwner(newOwner);
+  }
+
+  public async proposedOwner() {
+    try {
+      const response = await this.client.queryContract({
+        contract: this.wallet.proxyAddress,
+        query: { pending_owner: {} },
+        schema: z.object({ pending_owner: z.string() }),
+      });
+      return response.pending_owner;
+    } catch (e) {
+      return null;
+    }
   }
 
   protected async proposeUpdateOwner(newOwner: MultisigKey): Promise<

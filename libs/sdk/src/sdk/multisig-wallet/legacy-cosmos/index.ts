@@ -69,6 +69,11 @@ export class LegacyCosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
     return { approved: false };
   }
 
+  public async proposedOwner() {
+    notImplemented("proposedOwner not implemented for Cosmos");
+    return null;
+  }
+
   public async updateGatekeeperConfig(_: GatekeeperConfig): Promise<
     | {
         approved: true;
