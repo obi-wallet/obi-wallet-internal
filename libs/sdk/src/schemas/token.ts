@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import z from "zod";
+import { z } from "zod";
 
 import { ChainId } from "../chains";
 import type { Token } from "../sdk";

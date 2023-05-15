@@ -16,7 +16,7 @@ export class CosmosSdk extends AbstractSdk {
 
   protected client: CosmJsClient;
 
-  protected constructor(protected chainId: CosmosChainId) {
+  protected constructor(protected override chainId: CosmosChainId) {
     super(chainId);
     this.client = new CosmJsClient(chainId);
     this.bank = new CosmosBankSdk({

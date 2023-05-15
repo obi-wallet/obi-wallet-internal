@@ -16,7 +16,7 @@ export class TerraSdk extends AbstractSdk {
 
   protected client: FeatherJsClient;
 
-  protected constructor(protected chainId: TerraChainId) {
+  protected constructor(protected override chainId: TerraChainId) {
     super(chainId);
     this.client = new FeatherJsClient(chainId);
     this.bank = new TerraBankSdk({

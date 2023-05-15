@@ -22,7 +22,9 @@ import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
 
 export class CosmosSdkMessages extends AbstractMessages {
-  protected constructor(protected chainId: CosmosChainId | TerraChainId) {
+  protected constructor(
+    protected override chainId: CosmosChainId | TerraChainId
+  ) {
     super(chainId);
   }
 

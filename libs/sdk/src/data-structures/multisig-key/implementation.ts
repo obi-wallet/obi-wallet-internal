@@ -16,6 +16,7 @@ import {
   KeySubclassTypeMapping,
   KeyType,
 } from "../key";
+import { KeySchema } from "../key/schema";
 import { AbstractSerialized } from "../migratable";
 
 export class MultisigKey {
@@ -28,7 +29,7 @@ export class MultisigKey {
     protected _keys: Key[],
     protected _threshold: number,
     protected _factories: {
-      Key: AbstractDataStructure<Key>;
+      Key: AbstractDataStructure<Key, typeof KeySchema>;
       createMultisigKey: (
         chain: ChainId,
         serialized: AbstractSerialized<typeof MultisigKeySchema>

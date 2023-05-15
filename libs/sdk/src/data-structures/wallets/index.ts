@@ -8,9 +8,9 @@ export type Wallets = WalletsInterface;
 export const Wallets = {
   schema: WalletsSchema,
   create: createWallets,
-} satisfies AbstractDataStructure<Wallets>;
+} satisfies AbstractDataStructure<Wallets, typeof WalletsSchema>;
 
 export const ObservableWallets = {
   schema: WalletsSchema,
   create: createObservableWallets,
-} satisfies AbstractDataStructure<Wallets>;
+} satisfies AbstractDataStructure<Wallets, typeof WalletsSchema>;

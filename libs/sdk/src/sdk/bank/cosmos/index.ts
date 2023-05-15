@@ -3,8 +3,8 @@ import { CosmJsClient } from "../../../clients";
 import { CosmJsBankSdk } from "../cosm-js";
 
 export class CosmosBankSdk extends CosmJsBankSdk {
-  protected chainId: CosmosChainId;
-  protected client: CosmJsClient;
+  protected override chainId: CosmosChainId;
+  protected override client: CosmJsClient;
 
   public constructor({
     chainId,

@@ -1,4 +1,4 @@
-import { pubkeyToAddress } from "@cosmjs/amino";
+import { Coin, pubkeyToAddress } from "@cosmjs/amino";
 import { coins } from "@cosmjs/proto-signing";
 import { isDeliverTxSuccess } from "@cosmjs/stargate";
 import { Bech32Address } from "@keplr-wallet/cosmos";
@@ -19,7 +19,7 @@ import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
 import { AbstractTransactionsSdk } from "../abstract";
 
 export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
-  protected chainId: CosmosChainId | LegacyCosmosChainId;
+  protected override chainId: CosmosChainId | LegacyCosmosChainId;
   protected client: CosmJsClient;
 
   public constructor({
@@ -195,7 +195,7 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
   }: {
     address: string;
     denom: string;
-  }) {
+  }): Promise<Coin> {
     return this.client.withStargateClient(async (client) => {
       return await client.getBalance(address, denom);
     });

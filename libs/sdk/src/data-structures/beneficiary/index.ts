@@ -8,9 +8,9 @@ export type Beneficiary = BeneficiaryInterface;
 export const Beneficiary = {
   schema: BeneficiarySchema,
   create: createBeneficiary,
-} satisfies AbstractDataStructure<Beneficiary>;
+} satisfies AbstractDataStructure<Beneficiary, typeof BeneficiarySchema>;
 
 export const ObservableBeneficiary = {
   schema: BeneficiarySchema,
   create: createObservableBeneficiary,
-} satisfies AbstractDataStructure<Beneficiary>;
+} satisfies AbstractDataStructure<Beneficiary, typeof BeneficiarySchema>;

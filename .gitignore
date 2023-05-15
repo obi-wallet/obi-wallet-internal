@@ -5,6 +5,7 @@ build/
 dist/
 /tmp
 /out-tsc
+stats.html
 
 # TypeDoc output
 docs/

@@ -24,7 +24,7 @@ import { FeatherJsKey } from "../../common/feather-js";
 import { AbstractTransactionsSdk } from "../abstract";
 
 export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
-  protected chainId: TerraChainId;
+  protected override chainId: TerraChainId;
   protected client: FeatherJsClient;
 
   public constructor({

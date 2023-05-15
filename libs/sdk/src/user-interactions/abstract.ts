@@ -62,21 +62,22 @@ export interface UserInteractionWithType<
   type: T;
 }
 
-export function createUserInteractionType<T extends UserInteraction>() {
+export function createUserInteractionType<
+  T extends UserInteraction,
+  U extends symbol = symbol
+>(type: U) {
   type TPayload = UserInteractionPayload<T>;
   type TResult = UserInteractionResult<T>;
 
-  const type = Symbol();
   return {
     start(payload: TPayload) {
       return new Promise<TResult>((resolve, reject) => {
-        const message: UserInteractionWithType<typeof type, TPayload, TResult> =
-          {
-            type,
-            payload,
-            resolve: resolve,
-            reject,
-          };
+        const message: UserInteractionWithType<U, TPayload, TResult> = {
+          type,
+          payload,
+          resolve: resolve,
+          reject,
+        };
         warning(
           eventEmitter.listenerCount(userInteractionEvent) > 0,
           "No listener registered yet. Did you initialize `UserInteractions`?"

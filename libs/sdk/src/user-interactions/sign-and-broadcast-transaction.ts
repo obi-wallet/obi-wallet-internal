@@ -19,5 +19,9 @@ export type SignAndBroadcastTransactionUserInteraction = UserInteraction<
   } & (CommonPayloadMultisigKey | CommonPayloadWalletMeta),
   { approved: true; payload: BroadcastTransactionResult } | { approved: false }
 >;
+
+export const SignAndBroadcastTransactionUserInteractionSymbol = Symbol();
 export const SignAndBroadcastTransactionUserInteraction =
-  createUserInteractionType<SignAndBroadcastTransactionUserInteraction>();
+  createUserInteractionType<SignAndBroadcastTransactionUserInteraction>(
+    SignAndBroadcastTransactionUserInteractionSymbol
+  );

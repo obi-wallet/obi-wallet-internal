@@ -20,7 +20,7 @@ import { Sdk } from "../../sdk";
 import { AbstractMultisigWalletSdk } from "../abstract";
 
 export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
-  protected chainId: CosmosChainId | TerraChainId;
+  protected override chainId: CosmosChainId | TerraChainId;
   protected client: AbstractClient;
 
   public constructor({

@@ -3,13 +3,30 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/sdk/src",
   "projectType": "library",
-  "tags": [],
   "targets": {
+    "build": {
+      "executor": "@nx/rollup:rollup",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/sdk",
+        "main": "libs/sdk/src/index.ts",
+        "tsConfig": "libs/sdk/tsconfig.lib.json",
+        "assets": [],
+        "project": "libs/sdk/package.json",
+        "compiler": "swc",
+        "rollupConfig": "./rollup.config.cjs",
+        "format": ["esm"]
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs sdk {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/sdk/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": ["libs/sdk/**/*.ts"]
       }
     },
     "test": {
@@ -59,5 +76,6 @@
       },
       "dependsOn": ["docs"]
     }
-  }
+  },
+  "tags": []
 }

@@ -1,0 +1,41 @@
+{
+  "name": "@obi-wallet/sdk",
+  "version": "0.0.1",
+  "sideEffects": false,
+  "dependencies": {
+    "@keplr-wallet/cosmos": "*",
+    "@tanstack/query-core": "*",
+    "@walletconnect/client": "*",
+    "axios": "*",
+    "bignumber.js": "*",
+    "crypto-js": "*",
+    "eventemitter3": "*",
+    "isomorphic-unfetch": "*",
+    "jscrypto": "*",
+    "luxon": "*",
+    "nanoid": "*",
+    "otplib": "*",
+    "ramda": "*",
+    "secp256k1": "*",
+    "tiny-invariant": "*",
+    "tiny-warning": "*",
+    "zod": "*"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "*",
+    "@testing-library/react-native": "*"
+  },
+  "peerDependencies": {
+    "@cosmjs/amino": "*",
+    "@cosmjs/cosmwasm-stargate": "*",
+    "@cosmjs/crypto": "*",
+    "@cosmjs/math": "*",
+    "@cosmjs/proto-signing": "*",
+    "@cosmjs/stargate": "*",
+    "@cosmjs/tendermint-rpc": "*",
+    "@terra-money/feather.js": "*",
+    "@terra-money/terra.proto": "*",
+    "cosmjs-types": "*",
+    "mobx": "*"
+  }
+}

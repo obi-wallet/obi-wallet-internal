@@ -1,4 +1,4 @@
-import secp256k1 from "secp256k1";
+import * as secp256k1 from "secp256k1";
 
 import { Signer } from "./abstract";
 import { Sec256k1PrivateKey, Secp256k1PublicKey } from "../keys";
