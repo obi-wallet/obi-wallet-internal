@@ -44,6 +44,15 @@
           "codeCoverage": true
         }
       }
+    },
+    "tsc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tsc --project libs/common/tsconfig.lib.json --noEmit",
+          "tsc --project libs/common/tsconfig.spec.json --noEmit"
+        ]
+      }
     }
   }
 }

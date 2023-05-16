@@ -1,1 +1,1 @@
-export * from './lib/modal';
+export const foo = "bar";
