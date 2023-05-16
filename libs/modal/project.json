@@ -54,6 +54,43 @@
           "tsc --project libs/modal/tsconfig.spec.json --noEmit"
         ]
       }
+    },
+    "storybook": {
+      "executor": "@nx/storybook:storybook",
+      "options": {
+        "port": 4400,
+        "configDir": "libs/modal/.storybook"
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "build-storybook": {
+      "executor": "@nx/storybook:build",
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "dist/storybook/modal",
+        "configDir": "libs/modal/.storybook"
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "static-storybook": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "modal:build-storybook",
+        "staticFilePath": "dist/storybook/modal"
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "modal:build-storybook:ci"
+        }
+      }
     }
   }
 }

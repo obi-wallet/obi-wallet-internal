@@ -154,7 +154,10 @@
       "rules": {}
     },
     {
-      "files": ["__stories__/**/*.{ts,tsx,js,jsx}"],
+      "files": [
+        "__stories__/**/*.{ts,tsx,js,jsx}",
+        "*.stories.{ts,tsx,js,jsx}"
+      ],
       "rules": {
         "import/no-default-export": "off",
 
