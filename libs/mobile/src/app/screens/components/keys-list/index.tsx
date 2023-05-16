@@ -1,4 +1,4 @@
-import { Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common-deprecated";
 import { KeyType } from "@obi-wallet/sdk";
 import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";

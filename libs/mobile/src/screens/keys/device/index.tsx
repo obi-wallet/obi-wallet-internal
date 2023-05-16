@@ -1,5 +1,5 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common-deprecated";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";

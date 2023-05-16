@@ -1,4 +1,4 @@
-import { Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common-deprecated";
 import { InitiateWalletConnectSessionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";

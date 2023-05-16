@@ -1,4 +1,4 @@
-import { Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common-deprecated";
 import { MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";

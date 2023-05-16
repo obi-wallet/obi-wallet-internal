@@ -13,8 +13,7 @@
         "tsConfig": "libs/sdk/tsconfig.lib.json",
         "assets": [],
         "project": "libs/sdk/package.json",
-        "compiler": "swc",
-        "rollupConfig": "./rollup.config.cjs",
+        "rollupConfig": "@nx/react/plugins/bundle-rollup",
         "format": ["esm"]
       }
     },

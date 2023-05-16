@@ -1,5 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common-deprecated";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { Sdk, SinglesigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";

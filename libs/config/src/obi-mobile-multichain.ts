@@ -1,4 +1,4 @@
-import { Config } from "@obi-wallet/common";
+import { Config } from "@obi-wallet/common-deprecated";
 import { KeyType } from "@obi-wallet/sdk";
 
 import { obiMobileConfig } from "./obi-mobile";

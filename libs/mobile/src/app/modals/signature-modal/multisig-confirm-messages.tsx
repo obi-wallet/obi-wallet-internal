@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common-deprecated";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useState } from "react";
 import { FormattedMessage } from "react-intl";

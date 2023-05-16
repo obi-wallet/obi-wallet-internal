@@ -1,4 +1,4 @@
-import { Brand, Config, Feature } from "@obi-wallet/common";
+import { Brand, Config, Feature } from "@obi-wallet/common-deprecated";
 import { KeyType } from "@obi-wallet/sdk";
 
 export const obiMobileConfig: Config = {

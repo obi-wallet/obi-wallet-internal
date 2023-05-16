@@ -3,7 +3,7 @@ import { useTheme } from "@emotion/react";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Feature, Text } from "@obi-wallet/common";
+import { Feature, Text } from "@obi-wallet/common-deprecated";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Chain } from "@obi-wallet/sdk";
 import { BottomTabBar } from "@react-navigation/bottom-tabs";

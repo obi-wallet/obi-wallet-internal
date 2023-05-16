@@ -1,5 +1,8 @@
 import { useTheme } from "@emotion/react";
-import { Text, TextInput as OriginalTextInput } from "@obi-wallet/common";
+import {
+  Text,
+  TextInput as OriginalTextInput,
+} from "@obi-wallet/common-deprecated";
 import { observer } from "mobx-react-lite";
 import { ComponentType, useEffect, useState } from "react";
 import {

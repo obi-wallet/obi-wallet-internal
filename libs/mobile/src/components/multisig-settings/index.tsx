@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common-deprecated";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useRef, useState } from "react";

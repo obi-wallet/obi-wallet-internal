@@ -1,6 +1,6 @@
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common-deprecated";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage } from "react-intl";

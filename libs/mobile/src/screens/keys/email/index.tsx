@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common-deprecated";
 import { useAppStateEffect } from "@obi-wallet/headless-ui";
 import {
   generateSec256k1KeyPair,

@@ -4,7 +4,7 @@ import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Text, TextInput } from "@obi-wallet/common";
+import { Text, TextInput } from "@obi-wallet/common-deprecated";
 import {
   useCurrentWallet,
   useDelegations,

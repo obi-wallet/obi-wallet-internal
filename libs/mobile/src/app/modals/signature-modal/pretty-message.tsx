@@ -8,7 +8,7 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons/faPlay";
 import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { Text } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common-deprecated";
 import { useQuery, useValidators } from "@obi-wallet/headless-ui";
 import {
   ChainId,

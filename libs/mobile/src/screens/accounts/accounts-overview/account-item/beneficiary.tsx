@@ -1,4 +1,4 @@
-import { Text, TextInput } from "@obi-wallet/common";
+import { Text, TextInput } from "@obi-wallet/common-deprecated";
 import { Beneficiary } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";

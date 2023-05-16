@@ -5,7 +5,7 @@ import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { fetchMeta, Text } from "@obi-wallet/common";
+import { fetchMeta, Text } from "@obi-wallet/common-deprecated";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useRef, useState } from "react";
