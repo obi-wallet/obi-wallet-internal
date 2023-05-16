@@ -138,7 +138,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/code-frame@npm:^7.21.4":
+"@babel/code-frame@npm:^7.10.4, @babel/code-frame@npm:^7.21.4":
   version: 7.21.4
   resolution: "@babel/code-frame@npm:7.21.4"
   dependencies:
@@ -4181,7 +4181,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nx/react@npm:16.1.4":
+"@nx/react@npm:16.1.4, @nx/react@npm:^16.1.4":
   version: 16.1.4
   resolution: "@nx/react@npm:16.1.4"
   dependencies:
@@ -4925,6 +4925,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rollup/plugin-url@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@rollup/plugin-url@npm:7.0.0"
+  dependencies:
+    "@rollup/pluginutils": ^4.2.1
+    make-dir: ^3.1.0
+    mime: ^2.4.6
+  peerDependencies:
+    rollup: ^1.20.0||^2.0.0
+  checksum: f85d90dbeb45d2c759d22245df188f663d42e26c7cdd652b1e1c50897a7a221e126550c04005883da7c13a7c97a42f43a9746f762fed9fb8d5c4058907d20f90
+  languageName: node
+  linkType: hard
+
 "@rollup/pluginutils@npm:^3.0.8, @rollup/pluginutils@npm:^3.1.0":
   version: 3.1.0
   resolution: "@rollup/pluginutils@npm:3.1.0"
@@ -4938,7 +4951,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/pluginutils@npm:^4.1.2":
+"@rollup/pluginutils@npm:^4.1.2, @rollup/pluginutils@npm:^4.2.1":
   version: 4.2.1
   resolution: "@rollup/pluginutils@npm:4.2.1"
   dependencies:
@@ -5310,6 +5323,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@svgr/rollup@npm:^6.1.2":
+  version: 6.5.1
+  resolution: "@svgr/rollup@npm:6.5.1"
+  dependencies:
+    "@babel/core": ^7.19.6
+    "@babel/plugin-transform-react-constant-elements": ^7.18.12
+    "@babel/preset-env": ^7.19.4
+    "@babel/preset-react": ^7.18.6
+    "@babel/preset-typescript": ^7.18.6
+    "@rollup/pluginutils": ^4.2.1
+    "@svgr/core": ^6.5.1
+    "@svgr/plugin-jsx": ^6.5.1
+    "@svgr/plugin-svgo": ^6.5.1
+  checksum: 809198a655c280b434d762829aeab0c48e545daaa7a520ac87d5e7cfe96402eb4d0c01f8b25959fcc37a2ce4aa1a53c9e1c4ccb1206cd5833883a34db5799dd4
+  languageName: node
+  linkType: hard
+
 "@svgr/webpack@npm:^6.1.2":
   version: 6.5.1
   resolution: "@svgr/webpack@npm:6.5.1"
@@ -5603,6 +5633,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@testing-library/dom@npm:^9.0.0":
+  version: 9.3.0
+  resolution: "@testing-library/dom@npm:9.3.0"
+  dependencies:
+    "@babel/code-frame": ^7.10.4
+    "@babel/runtime": ^7.12.5
+    "@types/aria-query": ^5.0.1
+    aria-query: ^5.0.0
+    chalk: ^4.1.0
+    dom-accessibility-api: ^0.5.9
+    lz-string: ^1.5.0
+    pretty-format: ^27.0.2
+  checksum: 790f4da6a8cbe7da8b7769e81e68caea1aed5b5f1973b808895692a945fb854fe8acdc66ffc34b6a57ec49bad9d76ccdd69b632ea8a82ad61d1e97d76cfdf9ec
+  languageName: node
+  linkType: hard
+
 "@testing-library/jest-dom@npm:^5.16.5":
   version: 5.16.5
   resolution: "@testing-library/jest-dom@npm:5.16.5"
@@ -5651,6 +5697,20 @@ __metadata:
     jest:
       optional: true
   checksum: 6c8dafc922c03ee8a855551b9df5f9ec5886c23386a05502e2a8cbd9b0fd1cc1668c53a6bdd8c64843807dc178d0b982dfa0802f132bfb1c5658426739fcf061
+  languageName: node
+  linkType: hard
+
+"@testing-library/react@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "@testing-library/react@npm:14.0.0"
+  dependencies:
+    "@babel/runtime": ^7.12.5
+    "@testing-library/dom": ^9.0.0
+    "@types/react-dom": ^18.0.0
+  peerDependencies:
+    react: ^18.0.0
+    react-dom: ^18.0.0
+  checksum: 4a54c8f56cc4a39b50803205f84f06280bb76521d6d5d4b3b36651d760c7c7752ef142d857d52aaf4fad4848ed7a8be49afc793a5dda105955d2f8bef24901ac
   languageName: node
   linkType: hard
 
@@ -5707,6 +5767,13 @@ __metadata:
   version: 1.0.3
   resolution: "@tsconfig/node16@npm:1.0.3"
   checksum: 3a8b657dd047495b7ad23437d6afd20297ce90380ff0bdee93fc7d39a900dbd8d9e26e53ff6b465e7967ce2adf0b218782590ce9013285121e6a5928fbd6819f
+  languageName: node
+  linkType: hard
+
+"@types/aria-query@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "@types/aria-query@npm:5.0.1"
+  checksum: 69fd7cceb6113ed370591aef04b3fd0742e9a1b06dd045c43531448847b85de181495e4566f98e776b37c422a12fd71866e0a1dfd904c5ec3f84d271682901de
   languageName: node
   linkType: hard
 
@@ -6027,6 +6094,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-dom@npm:^18.0.0, @types/react-dom@npm:^18.2.4":
+  version: 18.2.4
+  resolution: "@types/react-dom@npm:18.2.4"
+  dependencies:
+    "@types/react": "*"
+  checksum: 8301f35cf1cbfec8c723e9477aecf87774e3c168bd457d353b23c45064737213d3e8008b067c6767b7b08e4f2b3823ee239242a6c225fc91e7f8725ef8734124
+  languageName: node
+  linkType: hard
+
 "@types/react-native@npm:^0.71.6":
   version: 0.71.6
   resolution: "@types/react-native@npm:0.71.6"
@@ -6036,14 +6112,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.0.22":
-  version: 18.0.28
-  resolution: "@types/react@npm:18.0.28"
+"@types/react@npm:^18.2.6":
+  version: 18.2.6
+  resolution: "@types/react@npm:18.2.6"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: e752df961105e5127652460504785897ca6e77259e0da8f233f694f9e8f451cde7fa0709d4456ade0ff600c8ce909cfe29f9b08b9c247fa9b734e126ec53edd7
+  checksum: dea9d232d8df7ac357367a69dcb557711ab3d5501807ffa77cebeee73d49ee94d095f298e36853c63ed47cce097eee4c7eae2aaa8c02fac3f0171ec1b523a819
   languageName: node
   linkType: hard
 
@@ -10214,7 +10290,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dom-accessibility-api@npm:^0.5.6":
+"dom-accessibility-api@npm:^0.5.6, dom-accessibility-api@npm:^0.5.9":
   version: 0.5.16
   resolution: "dom-accessibility-api@npm:0.5.16"
   checksum: 005eb283caef57fc1adec4d5df4dd49189b628f2f575af45decb210e04d634459e3f1ee64f18b41e2dcf200c844bc1d9279d80807e686a30d69a4756151ad248
@@ -15745,6 +15821,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lz-string@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "lz-string@npm:1.5.0"
+  bin:
+    lz-string: bin/bin.js
+  checksum: 1ee98b4580246fd90dd54da6e346fb1caefcf05f677c686d9af237a157fdea3fd7c83a4bc58f858cd5b10a34d27afe0fdcbd0505a47e0590726a873dc8b8f65d
+  languageName: node
+  linkType: hard
+
 "magic-string@npm:^0.25.7":
   version: 0.25.9
   resolution: "magic-string@npm:0.25.9"
@@ -15764,7 +15849,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"make-dir@npm:^3.0.0, make-dir@npm:^3.0.2":
+"make-dir@npm:^3.0.0, make-dir@npm:^3.0.2, make-dir@npm:^3.1.0":
   version: 3.1.0
   resolution: "make-dir@npm:3.1.0"
   dependencies:
@@ -16368,7 +16453,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime@npm:2.6.0, mime@npm:^2.4.1, mime@npm:^2.4.4":
+"mime@npm:2.6.0, mime@npm:^2.4.1, mime@npm:^2.4.4, mime@npm:^2.4.6":
   version: 2.6.0
   resolution: "mime@npm:2.6.0"
   bin:
@@ -17296,6 +17381,7 @@ __metadata:
     "@nx/jest": ^16.1.4
     "@nx/js": ^16.1.4
     "@nx/linter": ^16.1.4
+    "@nx/react": ^16.1.4
     "@nx/react-native": ^16.1.4
     "@nx/rollup": ^16.1.4
     "@nx/web": ^16.1.4
@@ -17314,7 +17400,9 @@ __metadata:
     "@react-navigation/native": ^6.1.6
     "@react-navigation/native-stack": ^6.9.12
     "@robinbobin/react-native-google-drive-api-wrapper": ^1.2.3
+    "@rollup/plugin-url": ^7.0.0
     "@sentry/react-native": ^5.4.0
+    "@svgr/rollup": ^6.1.2
     "@swc/cli": ^0.1.62
     "@swc/core": ^1.3.58
     "@swc/helpers": ^0.5.1
@@ -17327,6 +17415,7 @@ __metadata:
     "@terra-money/terra.proto": ^3.0.5
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/jest-native": ^5.4.2
+    "@testing-library/react": ^14.0.0
     "@testing-library/react-native": ^12.1.1
     "@types/crypto-js": ^4.1.1
     "@types/invariant": ^2.2.35
@@ -17334,7 +17423,8 @@ __metadata:
     "@types/luxon": ^3.3.0
     "@types/node": ^18.16.3
     "@types/ramda": ^0.29.1
-    "@types/react": ^18.2.0
+    "@types/react": ^18.2.6
+    "@types/react-dom": ^18.2.4
     "@types/react-native": ^0.71.6
     "@types/secp256k1": ^4.0.3
     "@typescript-eslint/eslint-plugin": ^5.59.2
@@ -18753,6 +18843,17 @@ __metadata:
     ansi-styles: ^4.0.0
     react-is: ^17.0.1
   checksum: e3b808404d7e1519f0df1aa1f25cee0054ab475775c6b2b8c5568ff23194a92d54bf93274139b6f584ca70fd773be4eaa754b0e03f12bb0a8d1426b07f079976
+  languageName: node
+  linkType: hard
+
+"pretty-format@npm:^27.0.2":
+  version: 27.5.1
+  resolution: "pretty-format@npm:27.5.1"
+  dependencies:
+    ansi-regex: ^5.0.1
+    ansi-styles: ^5.0.0
+    react-is: ^17.0.1
+  checksum: cf610cffcb793885d16f184a62162f2dd0df31642d9a18edf4ca298e909a8fe80bdbf556d5c9573992c102ce8bf948691da91bf9739bee0ffb6e79c8a8a6e088
   languageName: node
   linkType: hard
 
