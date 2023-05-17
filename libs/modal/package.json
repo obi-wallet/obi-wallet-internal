@@ -3,9 +3,11 @@
   "version": "0.0.1",
   "dependencies": {
     "@emotion/react": "*",
+    "@obi-wallet/common": "*",
     "react-shadow": "*"
   },
   "devDependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "*",
     "vite": "*"
   }
 }
