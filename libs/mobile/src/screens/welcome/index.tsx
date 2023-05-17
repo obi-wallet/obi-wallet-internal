@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { Feature, useStore } from "@obi-wallet/common";
+import { Button } from "@obi-wallet/common";
 import { ObservableMultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -13,7 +14,6 @@ import {
   useAccountPickerModalProps,
   useRootNavigation,
 } from "../..";
-import { Button } from "../../app/button";
 import GetStarted from "../../app/screens/onboarding/welcome/assets/get-started.svg";
 import { WelcomeLayout } from "../../components/welcome-layout";
 import { KeyFlow, KeyRoute } from "../keys";

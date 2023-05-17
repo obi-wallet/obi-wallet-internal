@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { useStore } from "@obi-wallet/common";
+import { AsyncButton, useStore } from "@obi-wallet/common";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -7,7 +7,6 @@ import { useState } from "react";
 import { Alert, View } from "react-native";
 import invariant from "tiny-invariant";
 
-import { AsyncButton } from "../../app/button";
 import { useRootNavigation } from "../../app/root-stack";
 import {
   OnboardingRoute,

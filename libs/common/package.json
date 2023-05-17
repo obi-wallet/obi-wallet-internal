@@ -8,7 +8,8 @@
     "mobx": "*",
     "mobx-react-lite": "*",
     "nanoid": "*",
-    "ramda": "*"
+    "ramda": "*",
+    "rooks": "*"
   },
   "devDependencies": {
     "@testing-library/jest-native": "*"

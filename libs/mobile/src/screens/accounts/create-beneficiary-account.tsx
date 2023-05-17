@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isSmallScreenNumber, Text, useStore } from "@obi-wallet/common";
+import { Button } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { GatekeeperConfig, ObservableBeneficiary } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -14,7 +15,6 @@ import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import BeneficiaryAccountIcon from "./assets/beneficiary-account-icon.svg";
 import { AvatarPicker, Icon } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
-import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
 import { TextInput } from "../../app/text-input";
 import { AddressController } from "../../forms";

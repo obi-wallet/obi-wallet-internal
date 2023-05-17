@@ -1,5 +1,4 @@
 import { Theme, useTheme } from "@emotion/react";
-import { Brand, isSmallScreenNumber, Text, useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { FC, useCallback, useState } from "react";
@@ -15,8 +14,11 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { SvgProps } from "react-native-svg";
+import type { SvgProps } from "react-native-svg";
 import { useEffectOnceWhen } from "rooks";
+
+import { Brand, Text, useStore } from "../..";
+import { isSmallScreenNumber } from "../../helpers";
 
 type Flavor = {
   text: TextStyle;

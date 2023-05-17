@@ -1,5 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import {
+  AsyncButton,
   isSmallScreen,
   isSmallScreenNumber,
   Text,
@@ -22,7 +23,6 @@ import {
   getBiometricsKeyPair,
   resetBiometricsKeyPair,
 } from "../../../app/biometrics";
-import { AsyncButton } from "../../../app/button";
 import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";

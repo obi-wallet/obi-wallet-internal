@@ -2,7 +2,13 @@ import { useTheme } from "@emotion/react";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons/faPaperclip";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { App, Text, TextInput, useStore } from "@obi-wallet/common";
+import {
+  App,
+  Button as ObiButton,
+  Text,
+  TextInput,
+  useStore,
+} from "@obi-wallet/common";
 import { Card, Tile, Tiles } from "@obi-wallet/common-deprecated";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { isTerraChain } from "@obi-wallet/sdk";
@@ -26,7 +32,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
 import HistoryIcon from "./assets/history.svg";
 import Wcqr from "./assets/wcqr.svg";
-import { Button as ObiButton, InlineButton } from "../../button";
+import { InlineButton } from "../../button";
 import { RootRoute, useRootNavigation } from "../../root-stack";
 import { parseDynamicLinkURL } from "../components/connected-web-view";
 import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
