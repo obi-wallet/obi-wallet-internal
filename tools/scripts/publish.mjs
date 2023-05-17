@@ -12,6 +12,7 @@ import { readFileSync, writeFileSync } from "fs";
 import chalk from "chalk";
 
 import devkit from "@nx/devkit";
+
 const { readCachedProjectGraph } = devkit;
 
 function invariant(condition, message) {

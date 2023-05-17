@@ -1,3 +1,4 @@
+import { Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { FC, ReactNode } from "react";
 import {
@@ -11,7 +12,6 @@ import {
 import { SvgProps, SvgUri } from "react-native-svg";
 
 import { createShadow } from "../styles";
-import { Text } from "../typography";
 
 const styles = StyleSheet.create({
   container: {

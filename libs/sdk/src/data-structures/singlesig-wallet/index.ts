@@ -1,6 +1,6 @@
 import {
-  createSinglesigWallet,
   createObservableSinglesigWallet,
+  createSinglesigWallet,
 } from "./factories";
 import { SinglesigWallet as SinglesigWalletInterface } from "./implementation";
 import { SinglesigWalletSchema } from "./schema";

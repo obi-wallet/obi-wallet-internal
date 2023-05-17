@@ -1,4 +1,4 @@
-import { Text } from "@obi-wallet/common-deprecated";
+import { Text } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import {

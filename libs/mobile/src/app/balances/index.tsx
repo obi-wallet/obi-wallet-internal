@@ -1,5 +1,4 @@
-import { useStore } from "@obi-wallet/common";
-import { Text } from "@obi-wallet/common-deprecated";
+import { Text, useStore } from "@obi-wallet/common";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
   ChainId,

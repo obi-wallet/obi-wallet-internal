@@ -1,5 +1,4 @@
-import { useStore } from "@obi-wallet/common";
-import { Text } from "@obi-wallet/common-deprecated";
+import { Text, useStore } from "@obi-wallet/common";
 import LottieView, { AnimationObject } from "lottie-react-native";
 import { observer } from "mobx-react-lite";
 import { ActivityIndicator, StyleProp, View, ViewStyle } from "react-native";

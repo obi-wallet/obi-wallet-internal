@@ -1,7 +1,6 @@
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { useStore } from "@obi-wallet/common";
-import { Text } from "@obi-wallet/common-deprecated";
+import { Text, useStore } from "@obi-wallet/common";
 import { useCurrentWallet, useQuery } from "@obi-wallet/headless-ui";
 import {
   Beneficiary,

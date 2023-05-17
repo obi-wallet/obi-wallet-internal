@@ -1,6 +1,5 @@
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
-import { useStore } from "@obi-wallet/common";
-import { Text } from "@obi-wallet/common-deprecated";
+import { Text, useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";

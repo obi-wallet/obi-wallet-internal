@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
-import { healthChecks, JunoChecks, Text } from "@obi-wallet/common-deprecated";
+import { Text } from "@obi-wallet/common";
+import { healthChecks, JunoChecks } from "@obi-wallet/common-deprecated";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { MultisigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";

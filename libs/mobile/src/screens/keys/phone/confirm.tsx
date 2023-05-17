@@ -1,6 +1,4 @@
-import { isSmallScreenNumber } from "@obi-wallet/common";
-import { useStore } from "@obi-wallet/common";
-import { Text } from "@obi-wallet/common-deprecated";
+import { isSmallScreenNumber, Text, useStore } from "@obi-wallet/common";
 import { MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";

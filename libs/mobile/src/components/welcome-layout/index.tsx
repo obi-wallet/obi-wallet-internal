@@ -1,7 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { isSmallScreen } from "@obi-wallet/common";
-import { useStore } from "@obi-wallet/common";
-import { Text } from "@obi-wallet/common-deprecated";
+import { isSmallScreen, Text, useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";

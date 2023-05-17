@@ -3,10 +3,13 @@ import { useTheme } from "@emotion/react";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Feature } from "@obi-wallet/common";
-import { getScreenDimensions, isSmallScreenNumber } from "@obi-wallet/common";
-import { useStore } from "@obi-wallet/common";
-import { Text } from "@obi-wallet/common-deprecated";
+import {
+  Feature,
+  getScreenDimensions,
+  isSmallScreenNumber,
+  Text,
+  useStore,
+} from "@obi-wallet/common";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Chain } from "@obi-wallet/sdk";
 import { BottomTabBar } from "@react-navigation/bottom-tabs";

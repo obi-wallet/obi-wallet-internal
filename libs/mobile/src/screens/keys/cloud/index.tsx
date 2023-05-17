@@ -1,7 +1,5 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { isSmallScreenNumber } from "@obi-wallet/common";
-import { useStore } from "@obi-wallet/common";
-import { Text } from "@obi-wallet/common-deprecated";
+import { isSmallScreenNumber, Text, useStore } from "@obi-wallet/common";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";

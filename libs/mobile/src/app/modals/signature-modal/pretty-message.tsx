@@ -8,13 +8,12 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons/faPlay";
 import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { useStore } from "@obi-wallet/common";
-import { Text } from "@obi-wallet/common-deprecated";
+import { Text, useStore } from "@obi-wallet/common";
 import { useQuery, useValidators } from "@obi-wallet/headless-ui";
 import {
   ChainId,
-  legacyCosmosChains,
   isLegacyCosmosChain,
+  legacyCosmosChains,
   Sdk,
   Token,
 } from "@obi-wallet/sdk";

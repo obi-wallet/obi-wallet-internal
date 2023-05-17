@@ -2,15 +2,8 @@ import { useTheme } from "@emotion/react";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons/faPaperclip";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { App } from "@obi-wallet/common";
-import { useStore } from "@obi-wallet/common";
-import {
-  Card,
-  Text,
-  TextInput,
-  Tile,
-  Tiles,
-} from "@obi-wallet/common-deprecated";
+import { App, Text, TextInput, useStore } from "@obi-wallet/common";
+import { Card, Tile, Tiles } from "@obi-wallet/common-deprecated";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { isTerraChain } from "@obi-wallet/sdk";
 import WalletConnect from "@walletconnect/client";

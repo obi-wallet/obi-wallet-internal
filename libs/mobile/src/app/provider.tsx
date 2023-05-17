@@ -1,7 +1,6 @@
 import { Theme, ThemeProvider } from "@emotion/react";
 import { PortalProvider } from "@gorhom/portal";
-import { Brand, Config, messages } from "@obi-wallet/common";
-import { StoreContext } from "@obi-wallet/common";
+import { Brand, Config, messages, StoreContext } from "@obi-wallet/common";
 import { Provider as SdkProvider } from "@obi-wallet/headless-ui";
 import { loopTheme, obiTheme } from "@obi-wallet/theme";
 import { NavigationContainer } from "@react-navigation/native";

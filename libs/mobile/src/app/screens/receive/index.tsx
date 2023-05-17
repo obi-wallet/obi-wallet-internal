@@ -1,6 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { isSmallScreenNumber } from "@obi-wallet/common";
-import { useStore } from "@obi-wallet/common";
+import { isSmallScreenNumber, useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage } from "react-intl";
 import { Platform, Share, Text, TouchableOpacity, View } from "react-native";

@@ -1,5 +1,4 @@
-import { useStore } from "@obi-wallet/common";
-import { Text } from "@obi-wallet/common-deprecated";
+import { Text, useStore } from "@obi-wallet/common";
 import { ScrollView, Share, TouchableOpacity } from "react-native";
 
 export default function WalletsSerializedData() {

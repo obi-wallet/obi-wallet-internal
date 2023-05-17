@@ -1,8 +1,5 @@
 import { Theme, useTheme } from "@emotion/react";
-import { Brand } from "@obi-wallet/common";
-import { isSmallScreenNumber } from "@obi-wallet/common";
-import { useStore } from "@obi-wallet/common";
-import { Text } from "@obi-wallet/common-deprecated";
+import { Brand, isSmallScreenNumber, Text, useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { FC, useCallback, useState } from "react";

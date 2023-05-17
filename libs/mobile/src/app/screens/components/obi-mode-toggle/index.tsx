@@ -1,5 +1,4 @@
-import { Feature } from "@obi-wallet/common";
-import { useStore } from "@obi-wallet/common";
+import { Feature, useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect, useState } from "react";
 import { Pressable, StyleProp, ViewStyle } from "react-native";

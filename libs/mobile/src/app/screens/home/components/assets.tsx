@@ -2,10 +2,13 @@ import { useTheme } from "@emotion/react";
 import { faSortAsc } from "@fortawesome/free-solid-svg-icons/faSortAsc";
 import { faSortDesc } from "@fortawesome/free-solid-svg-icons/faSortDesc";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Feature } from "@obi-wallet/common";
-import { isSmallScreenNumber, isSmallScreenSubstr } from "@obi-wallet/common";
-import { useStore } from "@obi-wallet/common";
-import { Text } from "@obi-wallet/common-deprecated";
+import {
+  Feature,
+  isSmallScreenNumber,
+  isSmallScreenSubstr,
+  Text,
+  useStore,
+} from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";

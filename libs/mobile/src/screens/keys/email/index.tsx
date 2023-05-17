@@ -1,7 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { isSmallScreenNumber } from "@obi-wallet/common";
-import { useStore } from "@obi-wallet/common";
-import { Text } from "@obi-wallet/common-deprecated";
+import { isSmallScreenNumber, Text, useStore } from "@obi-wallet/common";
 import { useAppStateEffect } from "@obi-wallet/headless-ui";
 import {
   generateSec256k1KeyPair,

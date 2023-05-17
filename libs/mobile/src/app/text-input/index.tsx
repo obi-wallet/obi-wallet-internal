@@ -1,9 +1,9 @@
-import { isSmallScreenNumber } from "@obi-wallet/common";
-import { useStore } from "@obi-wallet/common";
 import {
+  isSmallScreenNumber,
   Text,
   TextInput as OriginalTextInput,
-} from "@obi-wallet/common-deprecated";
+  useStore,
+} from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ComponentType } from "react";
 import {

@@ -2,9 +2,11 @@
   "name": "@obi-wallet/common",
   "version": "0.0.1",
   "dependencies": {
+    "@emotion/react": "*",
     "@obi-wallet/headless-ui": "*",
     "@obi-wallet/sdk": "*",
     "mobx": "*",
+    "mobx-react-lite": "*",
     "nanoid": "*",
     "ramda": "*"
   },

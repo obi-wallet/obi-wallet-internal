@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { Text } from "@obi-wallet/common-deprecated";
+import { Text } from "@obi-wallet/common";
 import {
   SignAndBroadcastTransactionType,
   useSignAndBroadcastTransaction,
