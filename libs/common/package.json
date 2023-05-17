@@ -6,6 +6,7 @@
     "@gorhom/portal": "*",
     "@obi-wallet/headless-ui": "*",
     "@obi-wallet/sdk": "*",
+    "@obi-wallet/theme": "*",
     "@tanstack/react-query": "*",
     "mobx": "*",
     "mobx-react-lite": "*",

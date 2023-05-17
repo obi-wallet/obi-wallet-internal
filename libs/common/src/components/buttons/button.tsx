@@ -17,8 +17,10 @@ import {
 import type { SvgProps } from "react-native-svg";
 import { useEffectOnceWhen } from "rooks";
 
-import { Brand, Text, useStore } from "../..";
+import { useStore } from "../../contexts";
 import { isSmallScreenNumber } from "../../helpers";
+import { Brand } from "../../stores";
+import { Text } from "../typography";
 
 type Flavor = {
   text: TextStyle;
