@@ -1,6 +1,12 @@
 import { useTheme } from "@emotion/react";
 import { PortalHost } from "@gorhom/portal";
-import { Config, Text, useStore } from "@obi-wallet/common";
+import {
+  Config,
+  Provider,
+  ProviderProps,
+  Text,
+  useStore,
+} from "@obi-wallet/common";
 import {
   useCodePushBackgroundUpdate,
   WalletState,
@@ -13,7 +19,6 @@ import { FullWindowOverlay } from "react-native-screens";
 import { deploymentKey } from "./code-push";
 import { Loader } from "./loader";
 import { Modals } from "./modals";
-import { Provider, ProviderProps } from "./provider";
 import { RootRoute, RootStack } from "./root-stack";
 import { HomeScreen } from "./screens/home";
 import { Stake } from "./screens/home/components/stake";

@@ -3,18 +3,23 @@
   "version": "0.0.1",
   "dependencies": {
     "@emotion/react": "*",
+    "@gorhom/portal": "*",
     "@obi-wallet/headless-ui": "*",
     "@obi-wallet/sdk": "*",
+    "@tanstack/react-query": "*",
     "mobx": "*",
     "mobx-react-lite": "*",
     "nanoid": "*",
     "ramda": "*",
+    "react-intl": "*",
+    "react-native-safe-area-context": "*",
     "rooks": "*"
   },
   "devDependencies": {
     "@testing-library/jest-native": "*"
   },
   "peerDependencies": {
+    "@react-navigation/native": "*",
     "react": "*",
     "react-native": "*"
   }
