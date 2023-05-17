@@ -211,6 +211,7 @@
     "react-native-asset": "^2.1.1",
     "react-native-config": "^1.5.0",
     "react-native-svg-transformer": "^1.0.0",
+    "react-shadow": "^20.0.0",
     "react-test-renderer": "^18.2.0",
     "rollup-plugin-visualizer": "^5.9.0",
     "semver": "^7.5.0",

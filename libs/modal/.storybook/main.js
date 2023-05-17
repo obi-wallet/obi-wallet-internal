@@ -1,9 +1,20 @@
+import { mergeConfig } from "vite";
+
 const config = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
   addons: ["@storybook/addon-essentials"],
   framework: {
     name: "@storybook/react-vite",
     options: {},
+  },
+  async viteFinal(config) {
+    return mergeConfig(config, {
+      resolve: {
+        alias: {
+          "react-shadow/emotion": "react-shadow/emotion.esm",
+        },
+      },
+    });
   },
 };
 

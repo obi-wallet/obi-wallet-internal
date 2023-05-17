@@ -46,7 +46,7 @@
           "error",
           {
             "devDependencies": [
-              "{apps,libs}/*/{__fixtures__,__stories__,__tests__,__tests-integration__,scripts}/**/*",
+              "{apps,libs}/*/{.storybook,__fixtures__,__stories__,__tests__,__tests-integration__,scripts}/**/*",
               "{apps,libs}/*/test-setup.ts",
               "apps/*-e2e/**/*",
               "apps/*/metro.config.js",

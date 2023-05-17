@@ -1,4 +1,11 @@
 {
   "name": "@obi-wallet/modal",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "@emotion/react": "*",
+    "react-shadow": "*"
+  },
+  "devDependencies": {
+    "vite": "*"
+  }
 }
