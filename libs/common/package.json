@@ -1,6 +1,13 @@
 {
   "name": "@obi-wallet/common",
   "version": "0.0.1",
+  "dependencies": {
+    "@obi-wallet/headless-ui": "*",
+    "@obi-wallet/sdk": "*",
+    "mobx": "*",
+    "nanoid": "*",
+    "ramda": "*"
+  },
   "devDependencies": {
     "@testing-library/jest-native": "*"
   }

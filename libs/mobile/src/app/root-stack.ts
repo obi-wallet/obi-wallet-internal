@@ -1,4 +1,4 @@
-import { App } from "@obi-wallet/common-deprecated";
+import { App } from "@obi-wallet/common";
 import {
   NavigationProp,
   ParamListBase,

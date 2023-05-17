@@ -1,5 +1,6 @@
 import { Theme, useTheme } from "@emotion/react";
-import { Brand, Text } from "@obi-wallet/common-deprecated";
+import { Brand } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common-deprecated";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { FC, useCallback, useState } from "react";

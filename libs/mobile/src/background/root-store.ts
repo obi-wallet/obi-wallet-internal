@@ -1,4 +1,4 @@
-import { Config, RootStore } from "@obi-wallet/common-deprecated";
+import { Config, RootStore } from "@obi-wallet/common";
 import { useEffect } from "react";
 import { NativeModules, Platform } from "react-native";
 import invariant from "tiny-invariant";

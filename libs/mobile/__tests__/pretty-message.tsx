@@ -1,4 +1,4 @@
-import { Brand } from "@obi-wallet/common-deprecated";
+import { Brand } from "@obi-wallet/common";
 import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
 import {
   createGatekeeperConfig,

@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { Language } from "@obi-wallet/common-deprecated";
+import { Language } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { Image } from "react-native";

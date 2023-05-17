@@ -1,5 +1,5 @@
 import styled from "@emotion/native";
-import { Brand, Feature } from "@obi-wallet/common-deprecated";
+import { Brand, Feature } from "@obi-wallet/common";
 import * as Sentry from "@sentry/react-native";
 import { observer } from "mobx-react-lite";
 import { FC, useState } from "react";

@@ -14,16 +14,23 @@ const knownApps: App[] = [];
 export class AppsStore {
   protected readonly kvStore: AbstractKVStore;
 
-  @observable
   public favorites: App[] = [];
 
   constructor({ kvStore }: { kvStore: AbstractKVStore }) {
     this.kvStore = kvStore;
-    makeObservable(this);
+    makeObservable<AppsStore, "kvStore" | "save" | "init">(this, {
+      kvStore: false,
+      save: false,
+      getKnownApps: false,
+      hasFavorite: false,
+      favorites: observable,
+      init: flow,
+      addFavorite: action,
+      removeFavoriteByUrl: action,
+    });
     this.init();
   }
 
-  @flow
   protected *init() {
     const favorites = yield* toGenerator(
       this.kvStore.get<App[] | undefined>("favorites")
@@ -44,7 +51,6 @@ export class AppsStore {
     return this.favorites.find((app) => app.url === url) !== undefined;
   }
 
-  @action
   public addFavorite(app: App) {
     if (!this.hasFavorite(app.url)) {
       this.favorites = [...this.favorites, app];
@@ -52,7 +58,6 @@ export class AppsStore {
     }
   }
 
-  @action
   public removeFavoriteByUrl(url: string) {
     this.favorites = this.favorites.filter((app) => app.url !== url);
     void this.save();

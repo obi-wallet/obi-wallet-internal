@@ -1,6 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { PortalHost } from "@gorhom/portal";
-import { Config, Text } from "@obi-wallet/common-deprecated";
+import { Config } from "@obi-wallet/common";
+import { Text } from "@obi-wallet/common-deprecated";
 import {
   useCodePushBackgroundUpdate,
   WalletState,

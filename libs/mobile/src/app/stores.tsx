@@ -1,4 +1,4 @@
-import { RootStore } from "@obi-wallet/common-deprecated";
+import { RootStore } from "@obi-wallet/common";
 import { createContext, useContext } from "react";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

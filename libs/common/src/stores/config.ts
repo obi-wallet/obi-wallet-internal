@@ -33,15 +33,22 @@ export interface Config {
 }
 
 export class ConfigStore {
-  @observable
   public config: Config;
 
   constructor({ initialConfig }: { initialConfig: Config }) {
     this.config = initialConfig;
-    makeObservable(this);
+    makeObservable(this, {
+      isFeatureEnabled: false,
+      brand: false,
+      isObi: false,
+      isLoop: false,
+      config: observable,
+      setConfig: action,
+      toggleBrand: action,
+      setBrand: action,
+    });
   }
 
-  @action
   public setConfig(config: Config) {
     this.config = config;
   }
@@ -54,13 +61,11 @@ export class ConfigStore {
     return this.config.brand;
   }
 
-  @action
   public toggleBrand() {
     this.config.brand =
       this.config.brand === Brand.Obi ? Brand.Loop : Brand.Obi;
   }
 
-  @action
   public setBrand(brand: Brand) {
     this.config.brand = brand;
   }
