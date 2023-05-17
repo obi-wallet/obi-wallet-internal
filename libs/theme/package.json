@@ -1,0 +1,10 @@
+{
+  "name": "@obi-wallet/theme",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "dependencies": {},
+  "peerDependencies": {
+    "@emotion/react": "*",
+    "react-native": "*"
+  }
+}
