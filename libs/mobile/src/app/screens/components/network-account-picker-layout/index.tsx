@@ -2,12 +2,8 @@ import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons/faAngleDoub
 import { faRss } from "@fortawesome/free-solid-svg-icons/faRss";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import {
-  Feature,
-  isSmallScreenSubstr,
-  Text,
-  useStore,
-} from "@obi-wallet/common";
+import { isSmallScreenSubstr, Text, useStore } from "@obi-wallet/common";
+import { Feature } from "@obi-wallet/config";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { Sdk } from "@obi-wallet/sdk";
 import { DrawerNavigationProp } from "@react-navigation/drawer";

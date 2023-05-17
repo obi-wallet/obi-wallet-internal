@@ -1,3 +1,4 @@
+import { Config } from "@obi-wallet/config";
 import {
   AbstractKVStore,
   KVStore as DefaultKVStore,
@@ -6,7 +7,7 @@ import {
 
 import { AppsStore } from "./apps";
 import { ChainStore } from "./chain";
-import { Config, ConfigStore } from "./config";
+import { ConfigStore } from "./config";
 import { DraftsStore } from "./drafts";
 import { LanguageStore } from "./language";
 

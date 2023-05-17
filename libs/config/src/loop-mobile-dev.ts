@@ -1,5 +1,8 @@
-import { Brand, Config, Feature } from "@obi-wallet/common";
 import { KeyType } from "@obi-wallet/sdk";
+
+import { Brand } from "./brand";
+import { Config } from "./config";
+import { Feature } from "./feature";
 
 export const loopMobileDevConfig: Config = {
   brand: Brand.Loop,

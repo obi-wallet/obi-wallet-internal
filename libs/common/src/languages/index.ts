@@ -14,5 +14,3 @@ export const messages = {
 export type TypeLanguageToFiatCurrency = { ["default"]: string } & {
   [language: string]: string | undefined;
 };
-
-export type Language = keyof typeof messages;

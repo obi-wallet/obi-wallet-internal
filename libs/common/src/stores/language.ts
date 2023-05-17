@@ -1,9 +1,9 @@
+import { Language } from "@obi-wallet/config";
 import { AbstractKVStore } from "@obi-wallet/headless-ui";
 import { action, flow, makeObservable, observable, runInAction } from "mobx";
 
 import { ConfigStore } from "./config";
 import { toGenerator } from "./helpers/to-generator";
-import { Language } from "../languages";
 
 export class LanguageStore {
   protected readonly configStore: ConfigStore;

@@ -1,12 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { PortalHost } from "@gorhom/portal";
-import {
-  Config,
-  Provider,
-  ProviderProps,
-  Text,
-  useStore,
-} from "@obi-wallet/common";
+import { Provider, ProviderProps, Text, useStore } from "@obi-wallet/common";
+import { Config } from "@obi-wallet/config";
 import {
   useCodePushBackgroundUpdate,
   WalletState,

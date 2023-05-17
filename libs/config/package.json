@@ -1,0 +1,8 @@
+{
+  "name": "@obi-wallet/config",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "dependencies": {
+    "@obi-wallet/sdk": "*"
+  }
+}

@@ -1,7 +1,8 @@
+import { Config } from "@obi-wallet/config";
 import { useEffect } from "react";
 import { NativeModules, Platform } from "react-native";
 
-import { Config, RootStore } from "../stores";
+import { RootStore } from "../stores";
 
 const deviceLanguage = Platform.select({
   ios: () => {

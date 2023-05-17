@@ -1,6 +1,6 @@
-import { Config } from "@obi-wallet/common";
 import { KeyType } from "@obi-wallet/sdk";
 
+import { Config } from "./config";
 import { obiMobileConfig } from "./obi-mobile";
 
 export const obiMobileMultichainConfig: Config = {

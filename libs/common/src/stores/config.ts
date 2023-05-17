@@ -1,36 +1,5 @@
-import { ChainId, KeyType } from "@obi-wallet/sdk";
+import { Brand, Config, Feature } from "@obi-wallet/config";
 import { action, makeObservable, observable } from "mobx";
-
-import { Language } from "../languages";
-
-export enum Brand {
-  Obi = "Obi",
-  Loop = "Loop",
-}
-
-export enum Feature {
-  AccountsTab = "AccountsTab",
-  HealthChecks = "HealthChecks",
-  NftTab = "NftTab",
-  Recovery = "Recovery",
-  Staking = "Staking",
-  BrandToggle = "BrandToggle",
-  DemoMode = "DemoMode",
-}
-
-export interface Config {
-  brand: Brand;
-  chains: {
-    enabled: ChainId[];
-    default: ChainId;
-  };
-  languages: {
-    enabled: Language[];
-    default: Language;
-  };
-  features: Record<Feature, boolean>;
-  requiredKeys: KeyType[];
-}
 
 export class ConfigStore {
   public config: Config;

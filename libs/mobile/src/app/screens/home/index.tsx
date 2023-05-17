@@ -4,12 +4,12 @@ import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-  Feature,
   getScreenDimensions,
   isSmallScreenNumber,
   Text,
   useStore,
 } from "@obi-wallet/common";
+import { Feature } from "@obi-wallet/config";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Chain } from "@obi-wallet/sdk";
 import { BottomTabBar } from "@react-navigation/bottom-tabs";

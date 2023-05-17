@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
-import { Feature, useStore } from "@obi-wallet/common";
-import { Button } from "@obi-wallet/common";
+import { Button, useStore } from "@obi-wallet/common";
+import { Feature } from "@obi-wallet/config";
 import { ObservableMultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";

@@ -3,12 +3,12 @@ import { faSortAsc } from "@fortawesome/free-solid-svg-icons/faSortAsc";
 import { faSortDesc } from "@fortawesome/free-solid-svg-icons/faSortDesc";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-  Feature,
   isSmallScreenNumber,
   isSmallScreenSubstr,
   Text,
   useStore,
 } from "@obi-wallet/common";
+import { Feature } from "@obi-wallet/config";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";

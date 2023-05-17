@@ -1,4 +1,5 @@
 import { Theme, useTheme } from "@emotion/react";
+import { Brand } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { FC, useCallback, useState } from "react";
@@ -19,7 +20,6 @@ import { useEffectOnceWhen } from "rooks";
 
 import { useStore } from "../../contexts";
 import { isSmallScreenNumber } from "../../helpers";
-import { Brand } from "../../stores";
 import { Text } from "../typography";
 
 type Flavor = {

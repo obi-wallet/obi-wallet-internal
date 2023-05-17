@@ -4,6 +4,7 @@
   "dependencies": {
     "@emotion/react": "*",
     "@gorhom/portal": "*",
+    "@obi-wallet/config": "*",
     "@obi-wallet/headless-ui": "*",
     "@obi-wallet/sdk": "*",
     "@obi-wallet/theme": "*",

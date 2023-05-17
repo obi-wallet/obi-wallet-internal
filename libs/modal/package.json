@@ -4,10 +4,15 @@
   "dependencies": {
     "@emotion/react": "*",
     "@obi-wallet/common": "*",
+    "@obi-wallet/config": "*",
+    "mobx-react-lite": "*",
     "react-shadow": "*"
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "*",
     "vite": "*"
+  },
+  "peerDependencies": {
+    "react": "*"
   }
 }

@@ -1,4 +1,5 @@
-import { Brand, Provider } from "@obi-wallet/common";
+import { Provider } from "@obi-wallet/common";
+import { Brand } from "@obi-wallet/config";
 import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
 import {
   createGatekeeperConfig,
