@@ -6,7 +6,7 @@
     "allowSyntheticDefaultImports": true,
     "strict": true
   },
-  "files": [],
+  "files": ["../theme/emotion.d.ts"],
   "include": [],
   "references": [
     {

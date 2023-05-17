@@ -51,7 +51,8 @@
       "options": {
         "commands": [
           "tsc --project libs/modal/tsconfig.lib.json --noEmit",
-          "tsc --project libs/modal/tsconfig.spec.json --noEmit"
+          "tsc --project libs/modal/tsconfig.spec.json --noEmit",
+          "tsc --project libs/modal/.storybook/tsconfig.json --noEmit"
         ]
       }
     },
