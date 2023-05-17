@@ -1,7 +1,7 @@
-import { Config, RootStore } from "@obi-wallet/common";
 import { useEffect } from "react";
 import { NativeModules, Platform } from "react-native";
-import invariant from "tiny-invariant";
+
+import { Config, RootStore } from "../stores";
 
 const deviceLanguage =
   Platform.OS === "ios"
@@ -10,11 +10,6 @@ const deviceLanguage =
     : NativeModules.I18nManager.localeIdentifier; // Android
 
 export const rootStore: { current: RootStore | null } = { current: null };
-
-export function getRootStore(): RootStore {
-  invariant(rootStore.current, "Expected `rootStore` to be initialized.");
-  return rootStore.current;
-}
 
 export function useCreateRootStore({ config }: { config: Config }): RootStore {
   useEffect(() => {
