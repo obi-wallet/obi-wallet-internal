@@ -14,11 +14,13 @@ const config = {
       resolve: {
         alias: {
           "@obi-wallet/common": path.join(__dirname, "../../common/src"),
+          "@obi-wallet/config": path.join(__dirname, "../../config/src"),
           "@obi-wallet/headless-ui": path.join(
             __dirname,
             "../../headless-ui/src"
           ),
           "@obi-wallet/sdk": path.join(__dirname, "../../sdk/src"),
+          "@obi-wallet/theme": path.join(__dirname, "../../theme/src"),
           crypto: "crypto-browserify",
           "react-native": "react-native-web",
           "react-shadow/emotion": "react-shadow/emotion.esm",
@@ -26,6 +28,8 @@ const config = {
       },
       optimizeDeps: {
         esbuildOptions: {
+          mainFields: ["module", "main"],
+          resolveExtensions: [".web.js", ".js", ".ts"],
           define: {
             global: "globalThis",
           },

@@ -3,11 +3,20 @@ import { NativeModules, Platform } from "react-native";
 
 import { Config, RootStore } from "../stores";
 
-const deviceLanguage =
-  Platform.OS === "ios"
-    ? NativeModules.SettingsManager.settings.AppleLocale || // iOS
+const deviceLanguage = Platform.select({
+  ios: () => {
+    return (
+      NativeModules.SettingsManager.settings.AppleLocale || // iOS
       NativeModules.SettingsManager.settings.AppleLanguages[0] // iOS 13
-    : NativeModules.I18nManager.localeIdentifier; // Android
+    ); // iOS 13
+  },
+  android: () => {
+    return NativeModules.I18nManager.localeIdentifier;
+  },
+  default: () => {
+    return "en";
+  },
+})();
 
 export const rootStore: { current: RootStore | null } = { current: null };
 
