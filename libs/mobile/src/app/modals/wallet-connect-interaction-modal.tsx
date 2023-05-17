@@ -1,3 +1,4 @@
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { InitiateWalletConnectSessionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -7,7 +8,6 @@ import { Modal } from "../../components/modal";
 import { Button } from "../button";
 import { ScreenContainer } from "../screens/components/screen-container";
 import Wc from "../screens/dapp-explorer/assets/wallet-connect.svg";
-import { useStore } from "../stores";
 
 export const WalletConnectInteractionModal = observer(
   function WalletConnectInteractionModal() {

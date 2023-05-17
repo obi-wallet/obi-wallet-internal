@@ -1,3 +1,4 @@
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
@@ -13,7 +14,6 @@ import { ImageRequireSource, ImageURISource, View } from "react-native";
 import { SvgProps } from "react-native-svg";
 
 import LoopIcon from "./assets/loop.svg";
-import { useStore } from "../stores";
 
 export function useEnrichedBalances({
   address,

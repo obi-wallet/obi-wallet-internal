@@ -3,6 +3,7 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons/faPaperclip";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { App } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import {
   Card,
   Text,
@@ -34,7 +35,6 @@ import HistoryIcon from "./assets/history.svg";
 import Wcqr from "./assets/wcqr.svg";
 import { Button as ObiButton, InlineButton } from "../../button";
 import { RootRoute, useRootNavigation } from "../../root-stack";
-import { useStore } from "../../stores";
 import { parseDynamicLinkURL } from "../components/connected-web-view";
 import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
 

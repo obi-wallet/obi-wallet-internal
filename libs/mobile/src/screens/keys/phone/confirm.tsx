@@ -1,4 +1,5 @@
 import { isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -17,7 +18,6 @@ import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-a
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
 import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
 import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
-import { useStore } from "../../../app/stores";
 import { getTwilioClient } from "../../../app/text-message";
 import { PhoneOneTimeCodeInput } from "../../../components/phone";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";

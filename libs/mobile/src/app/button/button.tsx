@@ -1,6 +1,7 @@
 import { Theme, useTheme } from "@emotion/react";
 import { Brand } from "@obi-wallet/common";
 import { isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
@@ -19,8 +20,6 @@ import {
 } from "react-native";
 import { SvgProps } from "react-native-svg";
 import { useEffectOnceWhen } from "rooks";
-
-import { useStore } from "../stores";
 
 type Flavor = {
   text: TextStyle;

@@ -1,4 +1,5 @@
 import { isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import {
   Text,
   TextInput as OriginalTextInput,
@@ -13,8 +14,6 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-
-import { useStore } from "../stores";
 
 const getStyles = (isObi: boolean) =>
   StyleSheet.create({

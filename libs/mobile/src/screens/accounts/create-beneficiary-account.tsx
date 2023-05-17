@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { GatekeeperConfig, ObservableBeneficiary } from "@obi-wallet/sdk";
@@ -17,7 +18,6 @@ import { AvatarPicker, Icon } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
-import { useStore } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
 import { AddressController } from "../../forms";
 import { useKeyboardVisible } from "../../helpers/keyboard-visible";

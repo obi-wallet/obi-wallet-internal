@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { isSmallScreen } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
@@ -7,7 +8,6 @@ import { FormattedMessage } from "react-intl";
 import { Image, SafeAreaView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useStore } from "../..";
 import { LanguagePicker } from "../../app/language-picker";
 import { InitialBackground } from "../../app/screens/components/initial-background";
 import { BrandToggle } from "../../app/screens/components/obi-mode-toggle";

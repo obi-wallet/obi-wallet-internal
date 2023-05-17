@@ -1,5 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import { isSmallScreen, isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -23,7 +24,6 @@ import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
-import { useStore } from "../../../app/stores";
 import {
   KeyFlow,
   KeyRoute,

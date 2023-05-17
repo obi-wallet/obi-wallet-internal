@@ -1,4 +1,5 @@
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -12,7 +13,6 @@ import {
 } from "../../screens/components/phone-number/security-question-input";
 import { SendMagicSmsButton } from "../../screens/components/phone-number/send-magic-sms-button";
 import { VerifyAndProceedButton } from "../../screens/components/phone-number/verify-and-proceed-button";
-import { useStore } from "../../stores";
 
 export interface PhoneNumberBottomSheetContentProps {
   phoneNumber: string;

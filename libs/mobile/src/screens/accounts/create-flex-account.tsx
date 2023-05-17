@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
@@ -21,7 +22,6 @@ import { AvatarPicker, Icon } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { Button } from "../../app/button";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
-import { useStore } from "../../app/stores";
 import { TextInput } from "../../app/text-input";
 import { nonEmptyString } from "../../helpers/validation-helpers";
 

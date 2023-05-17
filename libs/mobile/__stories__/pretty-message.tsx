@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { useStore } from "@obi-wallet/common";
 import { ScrollView } from "react-native-gesture-handler";
 
 import {
@@ -18,7 +19,6 @@ import {
   upsertFlex,
 } from "../__fixtures__/messages";
 import { PrettyMessage } from "../src/app/modals/signature-modal/pretty-message";
-import { useStore } from "../src/app/stores";
 
 export default function PrettyMessages() {
   const { chainStore } = useStore();

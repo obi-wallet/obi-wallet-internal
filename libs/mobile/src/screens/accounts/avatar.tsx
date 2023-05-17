@@ -1,5 +1,6 @@
 import { faCamera, faPhotoFilm } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { Beneficiary, FlexAccount, SinglesigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -21,7 +22,6 @@ import Pencil from "./assets/pencil.svg";
 import { enrichToken } from "../../app/balances";
 import { CoinIcon } from "../../app/screens/components/coin-icon";
 import { Modal } from "../../app/screens/components/modal";
-import { useStore } from "../../app/stores";
 
 export interface Icon {
   uri: string;

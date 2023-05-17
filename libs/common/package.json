@@ -12,6 +12,7 @@
     "@testing-library/jest-native": "*"
   },
   "peerDependencies": {
+    "react": "*",
     "react-native": "*"
   }
 }

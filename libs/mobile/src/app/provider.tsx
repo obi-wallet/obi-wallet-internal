@@ -1,6 +1,7 @@
 import { Theme, ThemeProvider } from "@emotion/react";
 import { PortalProvider } from "@gorhom/portal";
 import { Brand, Config, messages } from "@obi-wallet/common";
+import { StoreContext } from "@obi-wallet/common";
 import { Provider as SdkProvider } from "@obi-wallet/headless-ui";
 import { loopTheme, obiTheme } from "@obi-wallet/theme";
 import { NavigationContainer } from "@react-navigation/native";
@@ -11,7 +12,6 @@ import { IntlProvider } from "react-intl";
 import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { StoreContext } from "./stores";
 import { useCreateRootStore } from "../background/root-store";
 
 export interface ProviderProps {

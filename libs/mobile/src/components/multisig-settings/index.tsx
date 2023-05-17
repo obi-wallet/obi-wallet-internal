@@ -1,6 +1,7 @@
 import { useTheme } from "@emotion/react";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -22,7 +23,6 @@ import {
   WarningIcon,
 } from "../../app/screens/components/keys-list";
 import { KeysComponent } from "../../app/screens/settings/keys-config/keys-component";
-import { useStore } from "../../app/stores";
 
 export interface MultisigSettingsProps {
   children?: ReactNode;

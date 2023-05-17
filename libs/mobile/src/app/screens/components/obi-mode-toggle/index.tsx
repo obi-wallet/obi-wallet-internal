@@ -1,10 +1,10 @@
 import { Feature } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect, useState } from "react";
 import { Pressable, StyleProp, ViewStyle } from "react-native";
 
 import { triggerNotificationSuccess } from "../../../../helpers/haptic-feedback";
-import { useStore } from "../../../stores";
 
 export interface BrandModeToggleProps {
   children: ReactNode;

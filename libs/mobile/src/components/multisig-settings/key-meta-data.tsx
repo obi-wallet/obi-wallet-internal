@@ -1,3 +1,4 @@
+import { useStore } from "@obi-wallet/common";
 import { KeyType } from "@obi-wallet/sdk";
 import { ComponentType } from "react";
 import { useIntl } from "react-intl";
@@ -11,7 +12,6 @@ import Ledger from "./assets/ledger.svg";
 import Map from "./assets/map.svg";
 import Nfc from "./assets/nfc.svg";
 import Phone from "./assets/phone.svg";
-import { useStore } from "../../app/stores";
 import SocialLoop from "../../assets/social-loop.svg";
 import SocialObi from "../../assets/social-obi.svg";
 import { SendIcon as Telegram } from "../../components/send-icon";

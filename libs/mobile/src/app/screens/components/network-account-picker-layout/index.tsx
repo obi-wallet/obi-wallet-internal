@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Feature } from "@obi-wallet/common";
 import { isSmallScreenSubstr } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { Sdk } from "@obi-wallet/sdk";
@@ -17,7 +18,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar } from "../../../../screens/accounts/avatar";
 import { RootStackParamList } from "../../../root-stack";
-import { useStore } from "../../../stores";
 import { HomeBottomTabRoute } from "../../home/home-stack";
 import { ObiLogo } from "../obi-logo";
 

@@ -1,8 +1,8 @@
+import { useStore } from "@obi-wallet/common";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 
 import { SignatureModal } from "./signature-modal";
-import { useStore } from "../stores";
 
 export const SignInteractionModal = observer(function SignInteractionModal() {
   const { userInteractionsStore } = useStore();

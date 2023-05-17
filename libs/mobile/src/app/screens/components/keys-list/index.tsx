@@ -1,3 +1,4 @@
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { KeyType } from "@obi-wallet/sdk";
 import LottieView from "lottie-react-native";
@@ -28,7 +29,6 @@ import {
   triggerImpactLight,
   triggerNotificationSuccess,
 } from "../../../../helpers/haptic-feedback";
-import { useStore } from "../../../stores";
 
 export const CheckIcon = Check;
 export const WarningIcon = Warning;

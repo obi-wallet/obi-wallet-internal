@@ -1,12 +1,12 @@
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useStore } from "@obi-wallet/common";
 import { useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { ViewStyle } from "react-native";
 
 import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
 import { IconButton } from "../../../button";
-import { useStore } from "../../../stores";
 
 export interface BackProps {
   style?: ViewStyle;

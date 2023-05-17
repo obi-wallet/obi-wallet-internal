@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react/dist/emotion-react.cjs";
+import { useStore } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { GatekeeperConfig } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -13,7 +14,6 @@ import { CreateFlexAccountScreen } from "./create-flex-account";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { ImportBipMnemonicScreen } from "./import-bip-mnemonic";
 import { ImportLegacyAccountScreen } from "./import-legacy-account";
-import { useStore } from "../../app/stores";
 
 export const AccountsScreen = observer(function AccountsScreen() {
   const { draftsStore } = useStore();

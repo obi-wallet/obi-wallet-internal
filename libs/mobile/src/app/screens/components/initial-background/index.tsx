@@ -1,9 +1,8 @@
 import { useTheme } from "@emotion/react";
+import { useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { ImageBackground, View } from "react-native";
-
-import { useStore } from "../../../stores";
 
 export interface InitialBackgroundProps {
   children?: ReactNode;

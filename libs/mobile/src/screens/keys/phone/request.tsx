@@ -1,4 +1,5 @@
 import { isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -16,7 +17,6 @@ import {
   useSecurityQuestionInput,
 } from "../../../app/screens/components/phone-number/security-question-input";
 import { SendMagicSmsButton } from "../../../app/screens/components/phone-number/send-magic-sms-button";
-import { useStore } from "../../../app/stores";
 import { getTwilioClient } from "../../../app/text-message";
 import { PhoneNumberInput } from "../../../components/phone";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";

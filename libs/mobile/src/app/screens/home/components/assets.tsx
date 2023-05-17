@@ -4,6 +4,7 @@ import { faSortDesc } from "@fortawesome/free-solid-svg-icons/faSortDesc";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Feature } from "@obi-wallet/common";
 import { isSmallScreenNumber, isSmallScreenSubstr } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
@@ -27,7 +28,6 @@ import {
 } from "../../../balances";
 import { IconButton } from "../../../button";
 import { RootRoute, RootStackParamList } from "../../../root-stack";
-import { useStore } from "../../../stores";
 import { CoinIcon } from "../../components/coin-icon";
 import { NetworkAccountPickerLayout } from "../../components/network-account-picker-layout";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";

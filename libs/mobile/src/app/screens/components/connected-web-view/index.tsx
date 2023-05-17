@@ -1,3 +1,4 @@
+import { useStore } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import EventEmitter from "eventemitter3";
 import { observer } from "mobx-react-lite";
@@ -9,7 +10,6 @@ import {
   WebViewProps,
 } from "react-native-webview";
 
-import { useStore } from "../../../stores";
 import { RefreshControl } from "../refresh-control";
 
 const tryNewURL = (str: string): URL | undefined => {

@@ -1,12 +1,12 @@
 import { useTheme } from "@emotion/react";
 import { isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage } from "react-intl";
 import { Platform, Share, Text, TouchableOpacity, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useStore } from "../../stores";
 import { Back } from "../components/back";
 
 export const ReceiveScreen = observer(function ReceiveScreen() {

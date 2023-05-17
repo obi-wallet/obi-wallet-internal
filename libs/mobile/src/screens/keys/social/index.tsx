@@ -1,4 +1,5 @@
 import { isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { Chain, MultisigKey, Sdk, Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -8,12 +9,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import {
-  OnboardingRoute,
-  SettingsRoute,
-  useRootNavigation,
-  useStore,
-} from "../../..";
+import { OnboardingRoute, SettingsRoute, useRootNavigation } from "../../..";
 import { InlineButton } from "../../../app/button";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";

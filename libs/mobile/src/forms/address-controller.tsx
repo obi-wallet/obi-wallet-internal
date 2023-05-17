@@ -1,6 +1,7 @@
 import { faQrcode } from "@fortawesome/free-solid-svg-icons/faQrcode";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { ChainId, Sdk } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ControllerFieldState } from "react-hook-form";
@@ -8,7 +9,6 @@ import { TouchableOpacity, View } from "react-native";
 
 import { useQrCodeScannerModal } from "../app/screens/components/qr-code-scanner-modal";
 import ObiQr from "../app/screens/send/assets/obiqr.svg";
-import { useStore } from "../app/stores";
 import { TextInput, TextInputInvalidMessage } from "../app/text-input";
 
 export interface AddressControllerProps {

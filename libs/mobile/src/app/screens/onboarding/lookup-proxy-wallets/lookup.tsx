@@ -4,6 +4,7 @@ import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { Chain, ChainId } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -14,7 +15,6 @@ import { useAsyncEffect } from "rooks";
 
 import * as A from "./api-types";
 import { IconButton } from "../../../button";
-import { useStore } from "../../../stores";
 import { OnboardingScreenContainer } from "../../components/onboarding-screen-container";
 import { VerifyAndProceedButton } from "../../components/phone-number/verify-and-proceed-button";
 

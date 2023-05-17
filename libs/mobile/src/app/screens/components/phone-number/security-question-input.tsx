@@ -1,4 +1,5 @@
 import { isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import {
   Text,
   TextInput as OriginalTextInput,
@@ -9,7 +10,6 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { TextInputProps, View } from "react-native";
 
 import { DropDownPicker } from "../../../drop-down-picker";
-import { useStore } from "../../../stores";
 import { TextInput } from "../../../text-input";
 
 export type SetStateCallback<S> = (prevState: S) => S;

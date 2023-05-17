@@ -1,6 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { PortalHost } from "@gorhom/portal";
 import { Config } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import {
   useCodePushBackgroundUpdate,
@@ -24,7 +25,6 @@ import { SendScreen } from "./screens/send";
 import { settingsScreens } from "./screens/settings";
 import { SplashScreen } from "./screens/splash";
 import { WebViewScreen } from "./screens/web-view";
-import { useStore } from "./stores";
 import { CreateWalletScreen } from "../screens/create-wallet";
 import { keyScreens } from "../screens/keys/key-screens";
 import { LookupProxyWalletsScreen } from "../screens/lookup-proxy-wallets";

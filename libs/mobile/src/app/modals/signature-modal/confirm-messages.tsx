@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { ChainId, Message } from "@obi-wallet/sdk";
 import Clipboard from "@react-native-clipboard/clipboard";
@@ -20,7 +21,6 @@ import { Button } from "../../button";
 import { Loader } from "../../loader";
 import { Background } from "../../screens/components/background";
 import { ScreenContainer } from "../../screens/components/screen-container";
-import { useStore } from "../../stores";
 
 enum Tab {
   TransactionDetails,

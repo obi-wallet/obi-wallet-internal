@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { useStore } from "@obi-wallet/common";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -12,7 +13,6 @@ import {
   OnboardingRoute,
   OnboardingStackParamList,
 } from "../../app/screens/onboarding/onboarding-stack";
-import { useStore } from "../../app/stores";
 import { MultisigSettings } from "../../components/multisig-settings";
 import { KeyFlow, KeyRoute } from "../keys";
 

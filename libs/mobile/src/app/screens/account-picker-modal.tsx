@@ -1,6 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { observer } from "mobx-react-lite";
 import { useRef, useState } from "react";
@@ -9,7 +10,6 @@ import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
 
 import { Modal } from "./components/modal";
 import { IconButton } from "../button";
-import { useStore } from "../stores";
 
 export interface AccountPickerModalProps {
   visible: boolean;

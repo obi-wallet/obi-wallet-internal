@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { useAppStateEffect } from "@obi-wallet/headless-ui";
 import {
@@ -16,12 +17,7 @@ import { Alert, Linking, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 
-import {
-  OnboardingRoute,
-  SettingsRoute,
-  useRootNavigation,
-  useStore,
-} from "../../..";
+import { OnboardingRoute, SettingsRoute, useRootNavigation } from "../../..";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";

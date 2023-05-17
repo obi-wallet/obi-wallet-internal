@@ -1,3 +1,4 @@
+import { useStore } from "@obi-wallet/common";
 import {
   Key,
   KeyType,
@@ -17,7 +18,6 @@ import {
   OnboardingRoute,
   OnboardingStackParamList,
 } from "../../app/screens/onboarding/onboarding-stack";
-import { useStore } from "../../app/stores";
 
 export type LookupProxyWalletsScreen = NativeStackScreenProps<
   OnboardingStackParamList,

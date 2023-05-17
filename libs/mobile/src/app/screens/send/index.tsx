@@ -1,6 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   isTerraChain,
@@ -26,7 +27,6 @@ import { address } from "../../../helpers/validation-helpers";
 import { EnrichedToken, useEnrichedBalances } from "../../balances";
 import { Button } from "../../button";
 import { RootRoute, RootStackParamList } from "../../root-stack";
-import { useStore } from "../../stores";
 import { Back } from "../components/back";
 import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
 import { HomeBottomTabRoute } from "../home/home-stack";

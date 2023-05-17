@@ -5,6 +5,7 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isSmallScreen, isSmallScreenNumber } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { Text, TextInput } from "@obi-wallet/common-deprecated";
 import {
   useCurrentWallet,
@@ -51,7 +52,6 @@ import { z } from "zod";
 
 import { TokenController } from "../../../../forms";
 import { enrichToken, useBalances } from "../../../balances";
-import { useStore } from "../../../stores";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";

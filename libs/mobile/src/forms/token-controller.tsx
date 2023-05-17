@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { Portal } from "@gorhom/portal";
 import { Brand } from "@obi-wallet/common";
+import { useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { ComponentType, useRef, useState } from "react";
@@ -20,7 +21,6 @@ import { EnrichedToken } from "../app/balances";
 import { BottomSheetBackdrop } from "../app/screens/components/bottomSheetBackdrop";
 import { CoinIcon } from "../app/screens/components/coin-icon";
 import { RefreshableFlatList } from "../app/screens/components/refreshable-flat-list";
-import { useStore } from "../app/stores";
 import { TextInput, TextInputInvalidMessage } from "../app/text-input";
 
 export type TokenControllerProps = {
