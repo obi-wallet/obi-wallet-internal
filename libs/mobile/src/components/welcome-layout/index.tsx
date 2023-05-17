@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { isSmallScreen } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
@@ -10,7 +11,6 @@ import { useStore } from "../..";
 import { LanguagePicker } from "../../app/language-picker";
 import { InitialBackground } from "../../app/screens/components/initial-background";
 import { BrandToggle } from "../../app/screens/components/obi-mode-toggle";
-import { isSmallScreen } from "../../app/screens/components/screen-size";
 
 export interface WelcomeLayoutProps {
   title: string;

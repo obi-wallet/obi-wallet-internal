@@ -4,6 +4,7 @@ import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Feature } from "@obi-wallet/common";
+import { getScreenDimensions, isSmallScreenNumber } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Chain } from "@obi-wallet/sdk";
@@ -50,10 +51,6 @@ import {
 import { getIsOutdatedQuery } from "../../../queries";
 import { AccountsScreen } from "../../../screens/accounts";
 import { useStore } from "../../stores";
-import {
-  getScreenDimensions,
-  isSmallScreenNumber,
-} from "../components/screen-size";
 import { DappExplorer } from "../dapp-explorer";
 import { NFTs } from "../loop-web-apps/nfts";
 import { Trade } from "../loop-web-apps/trade";

@@ -1,3 +1,4 @@
+import { isSmallScreenNumber } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { Chain, MultisigKey, Sdk, Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -18,7 +19,6 @@ import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
-import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
 import { TextInput } from "../../../app/text-input";
 import SocialLoop from "../../../assets/social-loop.svg";
 import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";

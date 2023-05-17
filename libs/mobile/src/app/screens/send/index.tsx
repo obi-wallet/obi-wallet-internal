@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { isSmallScreenNumber } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   isTerraChain,
@@ -28,7 +29,6 @@ import { RootRoute, RootStackParamList } from "../../root-stack";
 import { useStore } from "../../stores";
 import { Back } from "../components/back";
 import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
-import { isSmallScreenNumber } from "../components/screen-size";
 import { HomeBottomTabRoute } from "../home/home-stack";
 
 export type SendScreenProps = NativeStackScreenProps<

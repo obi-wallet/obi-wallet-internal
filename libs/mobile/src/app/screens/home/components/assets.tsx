@@ -3,6 +3,7 @@ import { faSortAsc } from "@fortawesome/free-solid-svg-icons/faSortAsc";
 import { faSortDesc } from "@fortawesome/free-solid-svg-icons/faSortDesc";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Feature } from "@obi-wallet/common";
+import { isSmallScreenNumber, isSmallScreenSubstr } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
@@ -30,10 +31,6 @@ import { useStore } from "../../../stores";
 import { CoinIcon } from "../../components/coin-icon";
 import { NetworkAccountPickerLayout } from "../../components/network-account-picker-layout";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";
-import {
-  isSmallScreenNumber,
-  isSmallScreenSubstr,
-} from "../../components/screen-size";
 import StakingIcon from "../assets/stakingIcon.svg";
 
 export const Assets = observer(function Assets() {

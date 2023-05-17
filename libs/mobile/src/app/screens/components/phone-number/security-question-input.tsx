@@ -1,3 +1,4 @@
+import { isSmallScreenNumber } from "@obi-wallet/common";
 import {
   Text,
   TextInput as OriginalTextInput,
@@ -10,7 +11,6 @@ import { TextInputProps, View } from "react-native";
 import { DropDownPicker } from "../../../drop-down-picker";
 import { useStore } from "../../../stores";
 import { TextInput } from "../../../text-input";
-import { isSmallScreenNumber } from "../screen-size";
 
 export type SetStateCallback<S> = (prevState: S) => S;
 export type OnSecurityQuestionChange = Dispatch<SetStateCallback<string>>;

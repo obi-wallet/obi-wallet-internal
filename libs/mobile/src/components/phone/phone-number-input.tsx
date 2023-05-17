@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { isSmallScreenNumber } from "@obi-wallet/common";
 import {
   Text,
   TextInput as OriginalTextInput,
@@ -22,7 +23,6 @@ import CountryPicker, {
 } from "react-native-country-picker-modal";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import { isSmallScreenNumber } from "../../app/screens/components/screen-size";
 import { useStore } from "../../app/stores";
 
 const getStyles = (isObi: boolean) =>

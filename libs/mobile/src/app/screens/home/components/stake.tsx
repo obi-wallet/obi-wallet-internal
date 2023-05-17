@@ -4,6 +4,7 @@ import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { isSmallScreen, isSmallScreenNumber } from "@obi-wallet/common";
 import { Text, TextInput } from "@obi-wallet/common-deprecated";
 import {
   useCurrentWallet,
@@ -55,10 +56,6 @@ import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";
-import {
-  isSmallScreen,
-  isSmallScreenNumber,
-} from "../../components/screen-size";
 
 enum StakeTab {
   Validators = "Validators",

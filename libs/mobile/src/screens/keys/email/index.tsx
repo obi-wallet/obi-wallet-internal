@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { isSmallScreenNumber } from "@obi-wallet/common";
 import { Text } from "@obi-wallet/common-deprecated";
 import { useAppStateEffect } from "@obi-wallet/headless-ui";
 import {
@@ -25,7 +26,6 @@ import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
-import { isSmallScreenNumber } from "../../../app/screens/components/screen-size";
 import { TextInput } from "../../../app/text-input";
 import SocialLoop from "../../../assets/social-loop.svg";
 import { useKeyboardVisible } from "../../../helpers/keyboard-visible";

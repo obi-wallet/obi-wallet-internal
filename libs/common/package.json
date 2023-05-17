@@ -10,5 +10,8 @@
   },
   "devDependencies": {
     "@testing-library/jest-native": "*"
+  },
+  "peerDependencies": {
+    "react-native": "*"
   }
 }
