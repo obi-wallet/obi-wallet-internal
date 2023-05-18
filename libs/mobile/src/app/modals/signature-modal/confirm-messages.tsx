@@ -245,7 +245,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
                   selectedTab === tab && !isObi ? "underline" : "none",
                 ...(selectedTab === tab && isObi
                   ? { fontWeight: "700" }
-                  : { fontFamily: "poppins-light" }),
+                  : { fontFamily: "Poppins" }),
               }}
             >
               {label}

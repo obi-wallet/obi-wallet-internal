@@ -15,7 +15,7 @@ const getBaseStyles = (isObi: boolean) =>
       fontWeight: "500",
       fontSize: 12,
       color: isObi ? "#437DFF" : "#6959E6",
-      ...(isObi ? { fontFamily: "poppins" } : {}),
+      ...(isObi ? { fontFamily: "Poppins" } : {}),
     },
     button: {
       height: 29,

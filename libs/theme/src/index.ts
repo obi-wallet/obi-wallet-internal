@@ -110,9 +110,10 @@ export const obiTheme: CustomTheme = {
     background: "#1a1a1a",
   },
   fonts: {
-    bold: "poppins-bold",
-    regular: "poppins-regular",
-    light: "poppins-light",
+    // TODO: modal: review web & native
+    bold: "Poppins",
+    regular: "Poppins",
+    light: "Poppins",
   },
 };
 
