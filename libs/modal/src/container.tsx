@@ -12,10 +12,14 @@ export function Container({ children }: { children: ReactNode }) {
         styles={{
           ":host": {
             all: "initial",
+            width: "325px",
+            height: "667px",
+            display: "flex",
           },
         }}
       />
       <div
+        style={{ display: "flex" }}
         ref={(container) => {
           if (!container) return;
           render(children, container);
