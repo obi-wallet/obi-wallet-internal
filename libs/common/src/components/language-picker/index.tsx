@@ -1,11 +1,11 @@
 import { useTheme } from "@emotion/react";
-import { useStore } from "@obi-wallet/common";
 import { Language } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { Image } from "react-native";
 
 import { DropDownPicker } from "./drop-down-picker";
+import { useStore } from "../../contexts";
 
 const allLanguages = [
   {

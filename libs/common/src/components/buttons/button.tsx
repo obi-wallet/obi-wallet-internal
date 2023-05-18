@@ -211,14 +211,14 @@ export const Button = observer(function Button({
     }
   };
 
-  if (Platform.OS === "ios") {
-    return <TouchableHighlight {...buttonProps} onPress={onPress} />;
-  } else {
+  if (Platform.OS === "android") {
     return (
       <TouchableNativeFeedback {...buttonProps} onPress={onPress}>
         <View {...buttonProps} />
       </TouchableNativeFeedback>
     );
+  } else {
+    return <TouchableHighlight {...buttonProps} onPress={onPress} />;
   }
 });
 

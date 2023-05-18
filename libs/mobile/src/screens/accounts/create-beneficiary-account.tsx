@@ -1,6 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { isSmallScreenNumber, Text, useStore } from "@obi-wallet/common";
-import { Button } from "@obi-wallet/common";
+import {
+  Button,
+  isSmallScreenNumber,
+  Text,
+  useStore,
+} from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { GatekeeperConfig, ObservableBeneficiary } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";

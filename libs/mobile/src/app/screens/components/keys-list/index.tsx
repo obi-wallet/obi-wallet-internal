@@ -1,4 +1,9 @@
-import { Text, useStore } from "@obi-wallet/common";
+import {
+  Text,
+  triggerImpactLight,
+  triggerNotificationSuccess,
+  useStore,
+} from "@obi-wallet/common";
 import { KeyType } from "@obi-wallet/sdk";
 import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
@@ -24,10 +29,6 @@ import {
   ComingSoonKeyType,
   useKeyMetaData,
 } from "../../../../components/multisig-settings/key-meta-data";
-import {
-  triggerImpactLight,
-  triggerNotificationSuccess,
-} from "../../../../helpers/haptic-feedback";
 
 export const CheckIcon = Check;
 export const WarningIcon = Warning;

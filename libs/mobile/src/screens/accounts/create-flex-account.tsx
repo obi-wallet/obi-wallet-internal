@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Text, useStore } from "@obi-wallet/common";
-import { Button } from "@obi-wallet/common";
+import { Button, Text, useStore } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   GatekeeperConfig,

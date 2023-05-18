@@ -1,17 +1,17 @@
-import { useStore } from "@obi-wallet/common";
 import { Feature } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect, useState } from "react";
 import { Pressable, StyleProp, ViewStyle } from "react-native";
 
-import { triggerNotificationSuccess } from "../../../../helpers/haptic-feedback";
+import { useStore } from "../../contexts";
+import { triggerNotificationSuccess } from "../../helpers";
 
-export interface BrandModeToggleProps {
+export interface BrandToggleProps {
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
 }
 
-export const BrandToggle = observer<BrandModeToggleProps>(function BrandToggle(
+export const BrandToggle = observer<BrandToggleProps>(function BrandToggle(
   props
 ) {
   const [pressed, setPressed] = useState(0);

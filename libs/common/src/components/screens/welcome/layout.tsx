@@ -1,14 +1,15 @@
 import { useTheme } from "@emotion/react";
-import { isSmallScreen, Text, useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
-import { Image, SafeAreaView, View } from "react-native";
+import { SafeAreaView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { LanguagePicker } from "../../app/language-picker";
-import { InitialBackground } from "../../app/screens/components/initial-background";
-import { BrandToggle } from "../../app/screens/components/obi-mode-toggle";
+import { useStore } from "../../../contexts";
+import { BrandToggle } from "../../brand-toggle";
+import { InitialBackground } from "../../initial-background";
+import { LanguagePicker } from "../../language-picker";
+import { Text } from "../../typography";
 
 export interface WelcomeLayoutProps {
   title: string;
@@ -89,21 +90,22 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
                   justifyContent: "flex-end",
                 }}
               >
-                {isObi ? (
-                  <Image
-                    source={require("../../app/screens/onboarding/welcome/assets/obi-wallet-icon.png")}
-                    resizeMode="contain"
-                    style={{
-                      width: isSmallScreen() ? "50%" : "70%",
-                      height: isSmallScreen() ? "50%" : "70%",
-                      aspectRatio: 1 / 1,
-                    }}
-                  />
-                ) : (
-                  <Image
-                    source={require("../../app/screens/onboarding/welcome/assets/loop.png")}
-                  />
-                )}
+                {/* TODO: modal: fix images for web */}
+                {/*{isObi ? (*/}
+                {/*  <Image*/}
+                {/*    source={require("../../app/screens/onboarding/welcome/assets/obi-wallet-icon.png")}*/}
+                {/*    resizeMode="contain"*/}
+                {/*    style={{*/}
+                {/*      width: isSmallScreen() ? "50%" : "70%",*/}
+                {/*      height: isSmallScreen() ? "50%" : "70%",*/}
+                {/*      aspectRatio: 1 / 1,*/}
+                {/*    }}*/}
+                {/*  />*/}
+                {/*) : (*/}
+                {/*  <Image*/}
+                {/*    source={require("../../app/screens/onboarding/welcome/assets/loop.png")}*/}
+                {/*  />*/}
+                {/*)}*/}
               </View>
             </BrandToggle>
             {isObi ? (

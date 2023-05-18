@@ -1,7 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { isSmallScreenNumber, useStore } from "@obi-wallet/common";
-import { Button } from "@obi-wallet/common";
+import { Button, isSmallScreenNumber, useStore } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   isTerraChain,

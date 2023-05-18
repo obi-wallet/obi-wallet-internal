@@ -1,4 +1,4 @@
-import { useTheme } from "@emotion/react/dist/emotion-react.cjs";
+import { useTheme } from "@emotion/react";
 import { useStore } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { GatekeeperConfig } from "@obi-wallet/sdk";
