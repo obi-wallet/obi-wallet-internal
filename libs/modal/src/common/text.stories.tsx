@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "../provider";
 
 const meta: Meta<typeof Text> = {
-  title: "Text",
+  title: "common/Text",
   component: Text,
 };
 

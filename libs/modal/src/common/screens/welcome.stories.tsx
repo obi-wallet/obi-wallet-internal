@@ -1,10 +1,10 @@
 import { Welcome } from "@obi-wallet/common";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Provider } from "../provider";
+import { Provider } from "../../provider";
 
 const meta: Meta<typeof Welcome> = {
-  title: "Welcome",
+  title: "common/screens/Welcome",
   component: Welcome,
 };
 
