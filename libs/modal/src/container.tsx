@@ -1,7 +1,7 @@
 import { Global } from "@emotion/react";
 import { ReactNode } from "react";
-// @ts-expect-error render is only supported by react-native-web
-import { render } from "react-native";
+// @ts-expect-error internal import w/o types
+import { render } from "react-native-web/dist/exports/render";
 import root from "react-shadow/emotion";
 
 // eslint-disable-next-line mobx/missing-observer

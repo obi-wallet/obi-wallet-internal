@@ -6,6 +6,7 @@
     "@obi-wallet/common": "*",
     "@obi-wallet/config": "*",
     "mobx-react-lite": "*",
+    "react-native-web": "*",
     "react-shadow": "*"
   },
   "devDependencies": {
