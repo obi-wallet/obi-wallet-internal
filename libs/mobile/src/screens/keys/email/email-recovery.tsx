@@ -1,18 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@obi-wallet/common";
-import {
-  MultisigKey,
-  Secp256k1KeyPair,
-  generateSec256k1KeyPair,
-} from "@obi-wallet/sdk";
-import Clipboard from "@react-native-clipboard/clipboard";
+import { MultisigKey, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { useIsFocused } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage } from "react-intl";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 import secp256k1 from "secp256k1";
 import { z } from "zod";
 
@@ -80,29 +75,6 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
     const getPrivateKeyFromText = (text: string) => {
       return text.match(/[A-Za-z0-9+/=]{43}=/)?.[0];
     };
-
-    const getPrivateKeyFromClipboard = async () => {
-      // TODO: check for clipboard permissions
-      const clipboard = await Clipboard.getString();
-      if (clipboard.length === 0) return;
-
-      const privateKey = getPrivateKeyFromText(clipboard);
-      if (!privateKey) {
-        Alert.alert("No key found in your clipboard");
-        return;
-      }
-
-      if (privateKey) {
-        // check if privateKey is the same as the one in the form
-        const { privateKey: formPrivateKey } = getValues();
-        if (formPrivateKey === privateKey) {
-          return;
-        }
-
-        setValue("privateKey", privateKey, { shouldValidate: true });
-      }
-      return;
-    };
     const isKeyboardVisible = useKeyboardVisible();
 
     const { control, handleSubmit, formState, setValue, getValues } = useForm({
@@ -134,9 +106,6 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
             render={({ field: { onChange, onBlur, value } }) => {
               return (
                 <TextInput
-                  onFocus={() => {
-                    getPrivateKeyFromClipboard();
-                  }}
                   placeholder="Email key"
                   autoCapitalize="none"
                   inputMode="text"
