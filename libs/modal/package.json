@@ -13,6 +13,7 @@
     "vite": "*"
   },
   "peerDependencies": {
-    "react": "*"
+    "react": "*",
+    "react-native": "*"
   }
 }
