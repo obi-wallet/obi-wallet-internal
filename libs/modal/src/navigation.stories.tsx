@@ -5,9 +5,6 @@ import {
 } from "@react-navigation/stack";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Container } from "./container";
-import { Provider } from "./provider";
-
 function ScreenA({ navigation }: StackScreenProps<ParamListBase>) {
   useFocusEffect(() => {
     setTimeout(() => {
@@ -32,19 +29,15 @@ const Stack = createStackNavigator();
 
 function Navigation() {
   return (
-    <Container>
-      <Provider>
-        <Stack.Navigator
-          screenOptions={{
-            animationEnabled: true,
-            headerShown: false,
-          }}
-        >
-          <Stack.Screen name="A" component={ScreenA} />
-          <Stack.Screen name="B" component={ScreenB} />
-        </Stack.Navigator>
-      </Provider>
-    </Container>
+    <Stack.Navigator
+      screenOptions={{
+        animationEnabled: true,
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="A" component={ScreenA} />
+      <Stack.Screen name="B" component={ScreenB} />
+    </Stack.Navigator>
   );
 }
 

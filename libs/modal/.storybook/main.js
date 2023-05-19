@@ -25,6 +25,16 @@ const config = {
   },
   async viteFinal({ plugins, ...config }) {
     return mergeConfig(config, {
+      define: {
+        "process.env": {
+          PHONE_NUMBER_KEY_SECRET: process.env.PHONE_NUMBER_KEY_SECRET,
+          PHONE_NUMBER_TWILIO_BASIC_AUTH_USER:
+            process.env.PHONE_NUMBER_TWILIO_BASIC_AUTH_USER,
+          PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD:
+            process.env.PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD,
+        },
+      },
+
       plugins: [
         ...plugins.filter((plugin) => {
           return plugin?.[0]?.name !== "vite:react-babel";

@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "*",
+    "@storybook/react": "*",
     "@vitejs/plugin-react": "*",
     "vite": "*"
   },
