@@ -172,7 +172,7 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
                     value: publicKey,
                   },
                   privateKey,
-                } as Secp256k1KeyPair);
+                });
 
                 onSubmit(privateKey, publicKey);
                 return;

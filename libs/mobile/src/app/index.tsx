@@ -192,7 +192,6 @@ export const StateRenderer = observer(function StateRenderer() {
         />
         <RootStack.Screen
           name={OnboardingRoute.EmailRecovery}
-          key={OnboardingRoute.EmailRecovery}
           component={EmailRecoveryScreen}
         />
       </RootStack.Group>

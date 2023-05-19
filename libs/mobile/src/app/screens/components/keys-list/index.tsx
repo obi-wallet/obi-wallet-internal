@@ -64,9 +64,8 @@ export const KeysList = observer(function KeysList({
 }: KeysListProps) {
   const { metaData, comingSoonKeys } = useKeyMetaData();
   const hydratedData = data.map((key: Key) => {
-    const keyMetaData = metaData[key.type];
     return {
-      ...keyMetaData,
+      ...metaData[key.type],
       ...key,
     };
   });

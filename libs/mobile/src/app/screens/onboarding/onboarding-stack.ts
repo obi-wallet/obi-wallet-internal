@@ -31,7 +31,6 @@ export interface OnboardingStackParamList
   };
   [OnboardingRoute.LookupProxyWallets]: CommonOnboardingParams & {
     RecoverFrom: RecoverFrom;
-    flow: KeyFlow;
   };
   [OnboardingRoute.EmailRecovery]: CommonOnboardingParams;
 }
