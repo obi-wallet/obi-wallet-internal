@@ -7,7 +7,7 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage } from "react-intl";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 import secp256k1 from "secp256k1";
 import { z } from "zod";
 
@@ -25,6 +25,7 @@ import { isSmallScreenNumber } from "../../../app/screens/components/screen-size
 import { TextInput } from "../../../app/text-input";
 import { useKeyboardVisible } from "../../../helpers/keyboard-visible";
 import { KeyFlow } from "../key-stack";
+import Clipboard from "@react-native-clipboard/clipboard";
 
 export type EmailRecoveryScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -73,14 +74,34 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
     const draft = draftsStore.get<MultisigKey>({ id: draftId });
     const [selectedTab, setSelectedTab] = useState(Tab.EmailKeyV1);
     const isObi = configStore.isObi();
+    const getPrivateKeyFromClipboard = async () => {
+      // TODO: check for clipboard permissions
+      const clipboard = await Clipboard.getString();
+      if (clipboard.length === 0) return;
+
+      const privateKey = getPrivateKeyFromText(clipboard);
+      if (!privateKey) {
+        Alert.alert("No key found in your clipboard");
+        return;
+      }
+
+      if (privateKey) {
+        // check if privateKey is the same as the one in the form
+        const { privateKey: formPrivateKey } = getValues();
+        if (formPrivateKey === privateKey) {
+          return;
+        }
+
+        setValue("privateKey", privateKey, { shouldValidate: true });
+      }
+      return;
+    };
     const getPrivateKeyFromText = (text: string) => {
       return findPrivateKeys(text)[0];
     };
     const isKeyboardVisible = useKeyboardVisible();
 
     const pk = generateSec256k1KeyPair();
-    console.log(new Uint8Array(Buffer.from(pk.privateKey, "base64")).length);
-    console.log(pk.privateKey, pk.privateKey.length);
 
     const { control, handleSubmit, formState, setValue, getValues } = useForm({
       resolver: zodResolver(emailPrivateKeySchema),
