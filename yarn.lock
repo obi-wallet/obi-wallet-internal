@@ -8167,6 +8167,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"babel-plugin-react-native-web@npm:^0.19.4":
+  version: 0.19.4
+  resolution: "babel-plugin-react-native-web@npm:0.19.4"
+  checksum: 263315484e21527091c1674833eeab51edc87392ee161fec144c994addbd6f976765067ec11265d3df4748e4951d471da4fc992b59d38705272acc6f2bd8a3a8
+  languageName: node
+  linkType: hard
+
 "babel-plugin-replace-ts-export-assignment@npm:^0.0.2":
   version: 0.0.2
   resolution: "babel-plugin-replace-ts-export-assignment@npm:0.0.2"
@@ -18312,6 +18319,7 @@ __metadata:
     asyncstorage-down: ^4.2.0
     axios: ^1.4.0
     babel-jest: ^29.5.0
+    babel-plugin-react-native-web: ^0.19.4
     bignumber.js: ^9.1.1
     buffer: ^6.0.3
     cosmjs-types: ^0.7.2

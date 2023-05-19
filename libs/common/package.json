@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "dependencies": {
     "@emotion/react": "*",
+    "@fortawesome/free-solid-svg-icons": "*",
+    "@fortawesome/react-native-fontawesome": "*",
     "@gorhom/portal": "*",
     "@obi-wallet/config": "*",
     "@obi-wallet/headless-ui": "*",

@@ -1,7 +1,7 @@
 import { useStore } from "@obi-wallet/common";
+import { Back } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 
-import { Back } from "./back";
 import { Background } from "./background";
 import { ScreenContainer, ScreenContainerProps } from "./screen-container";
 

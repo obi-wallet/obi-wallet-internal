@@ -1,6 +1,7 @@
 import { useTheme } from "@emotion/react";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { isSmallScreenNumber, Text, useStore } from "@obi-wallet/common";
+import { Back } from "@obi-wallet/common";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useRef, useState } from "react";
@@ -13,7 +14,6 @@ import {
   KeyBottomSheetContentProps,
 } from "./key-bottom-sheet-content";
 import { useKeyMetaData } from "./key-meta-data";
-import { Back } from "../../app/screens/components/back";
 import {
   CheckIcon,
   Key,

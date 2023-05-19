@@ -10,6 +10,7 @@ import {
   useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
+import { Back } from "@obi-wallet/common";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -19,7 +20,6 @@ import { Alert, FlatList, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { getCloudKeyPair, signOut } from "../../../app/cloud/google-drive";
-import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 

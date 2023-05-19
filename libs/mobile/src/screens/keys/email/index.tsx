@@ -10,6 +10,7 @@ import {
   useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
+import { Back } from "@obi-wallet/common";
 import { useAppStateEffect } from "@obi-wallet/headless-ui";
 import {
   generateSec256k1KeyPair,
@@ -25,7 +26,6 @@ import { Alert, Linking, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 
-import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";

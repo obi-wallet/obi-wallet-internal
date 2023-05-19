@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { Text } from "@obi-wallet/common";
+import { Back } from "@obi-wallet/common";
 import { healthChecks, JunoChecks } from "@obi-wallet/common-deprecated";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { MultisigWallet } from "@obi-wallet/sdk";
@@ -17,7 +18,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import WarningIcon from "../../../assets/warning.svg";
-import { Back } from "../components/back";
 
 export const HealthChecksScreen = observer(function HealthChecksScreen() {
   const intl = useIntl();

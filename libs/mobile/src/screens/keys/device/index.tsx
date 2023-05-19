@@ -14,6 +14,7 @@ import {
   useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
+import { Back } from "@obi-wallet/common";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,7 +28,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import FaceScanner from "./assets/face-scanner.svg";
 import ObiFaceScanner from "./assets/obi-face-scanner.svg";
 import Scan from "./assets/scan.svg";
-import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 
 export type DeviceKeyScreenProps = NativeStackScreenProps<

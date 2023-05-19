@@ -9,6 +9,7 @@ import {
   useEnrichedBalances,
   useStore,
 } from "@obi-wallet/common";
+import { Back } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   isTerraChain,
@@ -31,7 +32,6 @@ import { z } from "zod";
 
 import { AddressController, TokenController } from "../../../forms";
 import { address } from "../../../helpers/validation-helpers";
-import { Back } from "../components/back";
 import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
 import { HomeBottomTabRoute } from "../home/home-stack";
 

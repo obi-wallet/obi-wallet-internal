@@ -1,4 +1,5 @@
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
+import react from "@vitejs/plugin-react";
 import path from "node:path";
 import { mergeConfig } from "vite";
 
@@ -9,8 +10,18 @@ const config = {
     name: "@storybook/react-vite",
     options: {},
   },
-  async viteFinal(config) {
+  async viteFinal({ plugins, ...config }) {
     return mergeConfig(config, {
+      plugins: [
+        ...plugins.filter((plugin) => {
+          return plugin?.[0]?.name !== "vite:react-babel";
+        }),
+        react({
+          babel: {
+            babelrc: true,
+          },
+        }),
+      ],
       resolve: {
         alias: {
           "@obi-wallet/common": path.join(__dirname, "../../common/src"),

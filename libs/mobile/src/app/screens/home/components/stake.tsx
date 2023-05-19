@@ -13,6 +13,7 @@ import {
   useBalances,
   useStore,
 } from "@obi-wallet/common";
+import { Back } from "@obi-wallet/common";
 import {
   useCurrentWallet,
   useDelegations,
@@ -57,7 +58,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { z } from "zod";
 
 import { TokenController } from "../../../../forms";
-import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";

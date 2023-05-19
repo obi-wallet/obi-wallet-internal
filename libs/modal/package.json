@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "*",
+    "@vitejs/plugin-react": "*",
     "vite": "*"
   },
   "peerDependencies": {
