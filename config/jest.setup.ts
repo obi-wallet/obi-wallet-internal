@@ -24,6 +24,7 @@ jest.mock("react-native", () => {
       AppleLanguages: ["en-US"],
     },
   };
+  RN.NativeModules.RNDeviceInfo = {};
 
   return RN;
 });
