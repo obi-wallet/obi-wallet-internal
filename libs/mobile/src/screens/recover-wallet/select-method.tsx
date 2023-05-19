@@ -1,19 +1,19 @@
-import { useTheme } from "@emotion/react";
 import { Text } from "@obi-wallet/common";
+import { KeyType } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
+import { KeysList } from "../../app/screens/components/keys-list";
 import { OnboardingScreenContainer } from "../../app/screens/components/onboarding-screen-container";
+import { isSmallScreenNumber } from "../../app/screens/components/screen-size";
 import {
   OnboardingRoute,
   OnboardingStackParamList,
   RecoverFrom,
 } from "../../app/screens/onboarding/onboarding-stack";
-import EmailKeyIcon from "../../components/multisig-settings/assets/email.svg";
-import PhoneKeyIcon from "../../components/multisig-settings/assets/phone.svg";
-import { KeyRoute } from "../keys/key-stack";
+import { useStore } from "../../app/stores";
+import { KeyRoute } from "../keys";
 
 export type SelectMethodScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -22,94 +22,60 @@ export type SelectMethodScreenProps = NativeStackScreenProps<
 
 export const SelectMethodScreen = observer<SelectMethodScreenProps>(
   function SelectMethodScreen({ route, navigation }) {
-    const theme = useTheme();
+    const { configStore } = useStore();
+    const isObi = configStore.isObi();
 
     const { params } = route;
 
     return (
       <OnboardingScreenContainer>
-        <Text
-          style={{ color: "white", fontSize: theme.typography.title1.fontSize }}
-        >
-          Recover Wallet
-        </Text>
-        <Text
+        <View
           style={{
-            color: "white",
-            fontSize: theme.typography.caption1.fontSize,
+            marginTop: isObi ? 10 : isSmallScreenNumber(10, 25),
+            paddingTop: isSmallScreenNumber(0, 32),
+            flex: 1,
           }}
         >
-          Choose a method to recover your wallet
-        </Text>
-        <View style={{ flex: 1, marginTop: 30 }}>
-          <TouchableOpacity
+          <Text
             style={{
-              height: 59,
-              width: "100%",
-              backgroundColor: "#272727",
+              color: "#F6F5FF",
+              fontSize: isSmallScreenNumber(20, 24),
+              fontWeight: "600",
               marginBottom: 10,
-              flexDirection: "row",
-              borderRadius: 12,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onPress={() => {
-              navigation.navigate(OnboardingRoute.EmailRecovery, params);
             }}
           >
-            <EmailKeyIcon
-              fill="white"
-              width={30}
-              height={30}
-              style={{ marginHorizontal: 20 }}
-            />
-            <Text
-              style={{
-                color: "#F6F5FF",
-                fontSize: 14,
-                fontWeight: "600",
-                flex: 1,
-              }}
-            >
-              Use email key
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+            Recover Wallet
+          </Text>
+          <Text
             style={{
-              height: 59,
-              width: "100%",
-              backgroundColor: "#272727",
-              marginBottom: 10,
-              flexDirection: "row",
-              borderRadius: 12,
-              alignItems: "center",
-              justifyContent: "center",
-              marginTop: 20,
-            }}
-            onPress={() => {
-              navigation.navigate(KeyRoute.PhoneKeyRequest, {
-                ...params,
-                RecoverFrom: RecoverFrom.Phone,
-              });
+              color: isObi ? "white" : "#999CB6",
+              fontSize: isSmallScreenNumber(12, 14),
             }}
           >
-            <PhoneKeyIcon
-              fill="white"
-              width={30}
-              height={30}
-              style={{ marginHorizontal: 20 }}
+            Choose a method to recover your wallet.
+          </Text>
+          <View style={{ flex: 1, marginTop: 30 }}>
+            <KeysList
+              data={[
+                {
+                  type: KeyType.Phone,
+                  onPress() {
+                    navigation.navigate(KeyRoute.PhoneKeyRequest, {
+                      ...params,
+                      RecoverFrom: RecoverFrom.Phone,
+                    });
+                  },
+                },
+                {
+                  type: KeyType.Email,
+                  onPress() {
+                    navigation.navigate(OnboardingRoute.EmailRecovery, params);
+                  },
+                },
+              ]}
+              hideOtherKeys
             />
-            <Text
-              style={{
-                color: "#F6F5FF",
-                fontSize: 14,
-                fontWeight: "600",
-                flex: 1,
-              }}
-            >
-              Use phone key
-            </Text>
-          </TouchableOpacity>
+          </View>
         </View>
       </OnboardingScreenContainer>
     );
