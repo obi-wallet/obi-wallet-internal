@@ -1,3 +1,4 @@
+import { existsKeyOnDevice, getBiometricsPrivateKey } from "@obi-wallet/common";
 import {
   AsyncKeySigner,
   ChainId,
@@ -13,7 +14,6 @@ import { RefObject } from "react";
 import NfcManager, { NfcEvents, OnDiscoverTag } from "react-native-nfc-manager";
 import invariant from "tiny-invariant";
 
-import { existsKeyOnDevice, getBiometricsPrivateKey } from "../../biometrics";
 import { getNFCPrivateKey, parseNFCData, startReading } from "../../nfc";
 import { BottomSheetRef } from "../../screens/components/bottom-sheet";
 import { getTwilioClient } from "../../text-message";

@@ -1,5 +1,5 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { useStore } from "@obi-wallet/common";
+import { getBiometricsPublicKey, useStore } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   GatekeeperConfig,
@@ -16,7 +16,6 @@ import { ReactNode, useEffect } from "react";
 import { Alert } from "react-native";
 import { useAsyncEffect } from "rooks";
 
-import { getBiometricsPublicKey } from "../app/biometrics";
 import { useSecurityQuestions } from "../app/screens/components/phone-number/security-question-input";
 import { getTwilioClient } from "../app/text-message";
 import { getGatekeeperConfigDraftId } from "../screens/accounts/draft-id";

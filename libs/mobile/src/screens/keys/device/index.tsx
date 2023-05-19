@@ -1,6 +1,7 @@
 import { pubkeyType } from "@cosmjs/amino";
 import {
   AsyncButton,
+  getBiometricsKeyPair,
   isSmallScreen,
   isSmallScreenNumber,
   KeyFlow,
@@ -8,6 +9,7 @@ import {
   KeyStackParamList,
   keyTypeToKeyRoute,
   OnboardingRoute,
+  resetBiometricsKeyPair,
   Text,
   useRootNavigation,
   useStore,
@@ -25,10 +27,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import FaceScanner from "./assets/face-scanner.svg";
 import ObiFaceScanner from "./assets/obi-face-scanner.svg";
 import Scan from "./assets/scan.svg";
-import {
-  getBiometricsKeyPair,
-  resetBiometricsKeyPair,
-} from "../../../app/biometrics";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 

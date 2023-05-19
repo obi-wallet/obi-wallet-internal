@@ -15,11 +15,14 @@
     "nanoid": "*",
     "ramda": "*",
     "react-intl": "*",
+    "react-native-device-info": "*",
     "react-native-dropdown-picker": "*",
     "react-native-haptic-feedback": "*",
+    "react-native-keychain": "*",
     "react-native-safe-area-context": "*",
     "react-native-svg": "*",
-    "rooks": "*"
+    "rooks": "*",
+    "tiny-invariant": "*"
   },
   "devDependencies": {
     "@testing-library/jest-native": "*"
