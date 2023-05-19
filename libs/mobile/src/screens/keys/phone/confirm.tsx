@@ -4,6 +4,7 @@ import {
   KeyRoute,
   KeyStackParamList,
   OnboardingRoute,
+  SettingsRoute,
   Text,
   useStore,
 } from "@obi-wallet/common";
@@ -22,7 +23,6 @@ import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
-import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 import { getTwilioClient } from "../../../app/text-message";
 import { PhoneOneTimeCodeInput } from "../../../components/phone";
 

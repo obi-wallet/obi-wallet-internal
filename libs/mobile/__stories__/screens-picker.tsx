@@ -1,4 +1,4 @@
-import { OnboardingRoute } from "@obi-wallet/common";
+import { OnboardingRoute, SettingsRoute } from "@obi-wallet/common";
 import { CommonActions } from "@react-navigation/native";
 import { useEffect } from "react";
 import { useSelect } from "react-cosmos/fixture";
@@ -7,7 +7,6 @@ import {
   HomeBottomTabRoute,
   HomeDrawerRoute,
   RootRoute,
-  SettingsRoute,
   useRootNavigation,
 } from "../src";
 import { BaseAppWithoutProvider } from "../src/app";

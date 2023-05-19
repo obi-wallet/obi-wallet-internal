@@ -1,5 +1,10 @@
 import styled from "@emotion/native";
-import { BrandToggle, isSmallScreenNumber, useStore } from "@obi-wallet/common";
+import {
+  BrandToggle,
+  isSmallScreenNumber,
+  SettingsRoute,
+  useStore,
+} from "@obi-wallet/common";
 import { Brand, Feature } from "@obi-wallet/config";
 import * as Sentry from "@sentry/react-native";
 import { observer } from "mobx-react-lite";
@@ -16,7 +21,6 @@ import HelpAndSupport from "./assets/headset.svg";
 import LogoutIcon from "./assets/power-red.svg";
 import { HealthChecksScreen } from "./health-checks";
 import { KeysConfigScreen } from "./keys-config";
-import { SettingsRoute } from "./settings-stack";
 import { RootStack, useRootNavigation } from "../../root-stack";
 import { ObiLogo } from "../components/obi-logo";
 

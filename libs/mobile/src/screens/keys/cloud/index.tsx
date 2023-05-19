@@ -5,6 +5,7 @@ import {
   KeyRoute,
   KeyStackParamList,
   OnboardingRoute,
+  SettingsRoute,
   Text,
   useStore,
 } from "@obi-wallet/common";
@@ -21,7 +22,6 @@ import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
-import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 
 export type CloudKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
