@@ -3,6 +3,19 @@ import react from "@vitejs/plugin-react";
 import path from "node:path";
 import { mergeConfig } from "vite";
 
+const extensions = [
+  ".web.tsx",
+  ".tsx",
+  ".web.ts",
+  ".ts",
+  ".web.jsx",
+  ".jsx",
+  ".web.js",
+  ".js",
+  ".css",
+  ".json",
+];
+
 const config = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
   addons: ["@storybook/addon-essentials"],
@@ -36,11 +49,12 @@ const config = {
           "react-native": "react-native-web",
           "react-shadow/emotion": "react-shadow/emotion.esm",
         },
+        extensions,
       },
       optimizeDeps: {
         esbuildOptions: {
           mainFields: ["module", "main"],
-          resolveExtensions: [".web.js", ".js", ".ts"],
+          resolveExtensions: extensions,
           define: {
             global: "globalThis",
           },

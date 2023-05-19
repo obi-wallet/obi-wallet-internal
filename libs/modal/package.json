@@ -7,6 +7,7 @@
     "@obi-wallet/config": "*",
     "@react-navigation/native": "*",
     "@react-navigation/stack": "*",
+    "buffer": "*",
     "mobx-react-lite": "*",
     "react-native-web": "*",
     "react-shadow": "*"
