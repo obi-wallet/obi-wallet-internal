@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@obi-wallet/common";
-import { MultisigKey, Secp256k1KeyPair } from "@obi-wallet/sdk";
+import { generateSec256k1KeyPair, MultisigKey } from "@obi-wallet/sdk";
 import { useIsFocused } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -12,6 +12,7 @@ import secp256k1 from "secp256k1";
 import { z } from "zod";
 
 import { EmailContainer, EmailTypeTabs } from ".";
+import { findPrivateKeys, isPrivateKey } from "./helpers";
 import {
   OnboardingRoute,
   OnboardingStackParamList,
@@ -59,11 +60,11 @@ export const EmailRecoveryScreen = observer<EmailRecoveryScreenProps>(
 export interface EmailRecoveryProps {
   draftId: string;
   flow: KeyFlow;
-  onSubmit(PrivateKey?: string, publicKey?: string): void;
+  onSubmit(): void;
 }
 
 const emailPrivateKeySchema = z.object({
-  privateKey: z.string().regex(/[A-Za-z0-9+/=]+={0,2}/),
+  privateKey: z.string().refine(isPrivateKey, "Invalid private key"),
 });
 
 export const EmailRecovery = observer<EmailRecoveryProps>(
@@ -73,9 +74,13 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
     const [selectedTab, setSelectedTab] = useState(Tab.EmailKeyV1);
     const isObi = configStore.isObi();
     const getPrivateKeyFromText = (text: string) => {
-      return text.match(/[A-Za-z0-9+/=]{43}=/)?.[0];
+      return findPrivateKeys(text)[0];
     };
     const isKeyboardVisible = useKeyboardVisible();
+
+    const pk = generateSec256k1KeyPair();
+    console.log(new Uint8Array(Buffer.from(pk.privateKey, "base64")).length);
+    console.log(pk.privateKey, pk.privateKey.length);
 
     const { control, handleSubmit, formState, setValue, getValues } = useForm({
       resolver: zodResolver(emailPrivateKeySchema),
@@ -106,7 +111,7 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
             render={({ field: { onChange, onBlur, value } }) => {
               return (
                 <TextInput
-                  placeholder="Email key"
+                  placeholder="E-Mail Key"
                   autoCapitalize="none"
                   inputMode="text"
                   style={{ marginTop: 25 }}
@@ -119,7 +124,7 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
                   onBlur={onBlur}
                   onChangeText={(text) => {
                     const privateKey = getPrivateKeyFromText(text);
-                    onChange(privateKey || text);
+                    onChange(privateKey ?? text);
                   }}
                 />
               );
@@ -159,11 +164,10 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
             <VerifyAndProceedButton
               disabled={!formState.isValid}
               onPress={handleSubmit(async (data) => {
-                const privateKey: string =
-                  data.privateKey.match(/[A-Za-z0-9+/=]{43}=/)[0];
-                const pk = new Uint8Array(Buffer.from(privateKey, "base64"));
                 const publicKey = Buffer.from(
-                  secp256k1.publicKeyCreate(pk)
+                  secp256k1.publicKeyCreate(
+                    new Uint8Array(Buffer.from(data.privateKey, "base64"))
+                  )
                 ).toString("base64");
 
                 draft.value.setEmailRecoveryKey({
@@ -171,10 +175,10 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
                     type: "tendermint/PubKeySecp256k1",
                     value: publicKey,
                   },
-                  privateKey,
+                  privateKey: data.privateKey,
                 });
 
-                onSubmit(privateKey, publicKey);
+                onSubmit();
                 return;
               })}
             />
