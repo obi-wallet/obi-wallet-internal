@@ -1,5 +1,12 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { isSmallScreenNumber, Text, useStore } from "@obi-wallet/common";
+import {
+  isSmallScreenNumber,
+  KeyFlow,
+  KeyRoute,
+  KeyStackParamList,
+  Text,
+  useStore,
+} from "@obi-wallet/common";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -15,7 +22,6 @@ import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
 import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
-import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type CloudKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,

@@ -1,4 +1,11 @@
-import { isSmallScreenNumber, Text, useStore } from "@obi-wallet/common";
+import {
+  isSmallScreenNumber,
+  KeyFlow,
+  KeyRoute,
+  KeyStackParamList,
+  Text,
+  useStore,
+} from "@obi-wallet/common";
 import { MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -18,7 +25,6 @@ import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stac
 import { SettingsRoute } from "../../../app/screens/settings/settings-stack";
 import { getTwilioClient } from "../../../app/text-message";
 import { PhoneOneTimeCodeInput } from "../../../components/phone";
-import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<
   KeyStackParamList,

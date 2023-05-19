@@ -3,6 +3,10 @@ import {
   AsyncButton,
   isSmallScreen,
   isSmallScreenNumber,
+  KeyFlow,
+  KeyRoute,
+  KeyStackParamList,
+  keyTypeToKeyRoute,
   Text,
   useStore,
 } from "@obi-wallet/common";
@@ -27,12 +31,6 @@ import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
-import {
-  KeyFlow,
-  KeyRoute,
-  KeyStackParamList,
-  keyTypeToKeyRoute,
-} from "../key-stack";
 
 export type DeviceKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,

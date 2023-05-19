@@ -1,5 +1,6 @@
+import { KeyFlow } from "@obi-wallet/common";
+
 import { mockAction, MultisigDraft } from "../../src/fixture-helpers";
-import { KeyFlow } from "../../src/screens/keys";
 import { SocialKey, SocialKeyProps } from "../../src/screens/keys/social";
 
 function renderFlavor(flow: SocialKeyProps["flow"]) {

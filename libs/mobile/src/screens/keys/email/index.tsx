@@ -1,5 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { isSmallScreenNumber, Text, useStore } from "@obi-wallet/common";
+import {
+  isSmallScreenNumber,
+  KeyFlow,
+  KeyRoute,
+  KeyStackParamList,
+  Text,
+  useStore,
+} from "@obi-wallet/common";
 import { useAppStateEffect } from "@obi-wallet/headless-ui";
 import {
   generateSec256k1KeyPair,
@@ -23,7 +30,6 @@ import { VerifyAndProceedButton } from "../../../app/screens/components/phone-nu
 import { TextInput } from "../../../app/text-input";
 import SocialLoop from "../../../assets/social-loop.svg";
 import { useKeyboardVisible } from "../../../helpers/keyboard-visible";
-import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type EmailKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,

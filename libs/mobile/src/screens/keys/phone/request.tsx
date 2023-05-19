@@ -1,4 +1,11 @@
-import { isSmallScreenNumber, Text, useStore } from "@obi-wallet/common";
+import {
+  isSmallScreenNumber,
+  KeyFlow,
+  KeyRoute,
+  KeyStackParamList,
+  Text,
+  useStore,
+} from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -17,7 +24,6 @@ import {
 import { SendMagicSmsButton } from "../../../app/screens/components/phone-number/send-magic-sms-button";
 import { getTwilioClient } from "../../../app/text-message";
 import { PhoneNumberInput } from "../../../components/phone";
-import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type PhoneKeyRequestScreenProps = NativeStackScreenProps<
   KeyStackParamList,

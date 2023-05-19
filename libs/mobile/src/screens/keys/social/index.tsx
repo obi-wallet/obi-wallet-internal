@@ -1,4 +1,11 @@
-import { isSmallScreenNumber, Text, useStore } from "@obi-wallet/common";
+import {
+  isSmallScreenNumber,
+  KeyFlow,
+  KeyRoute,
+  KeyStackParamList,
+  Text,
+  useStore,
+} from "@obi-wallet/common";
 import { Chain, MultisigKey, Sdk, Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -15,7 +22,6 @@ import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-a
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
 import { TextInput } from "../../../app/text-input";
 import SocialLoop from "../../../assets/social-loop.svg";
-import { KeyFlow, KeyRoute, KeyStackParamList } from "../key-stack";
 
 export type SocialKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,

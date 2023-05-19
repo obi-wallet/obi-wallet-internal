@@ -1,10 +1,10 @@
+import { KeyFlow, KeyRoute } from "@obi-wallet/common";
 import { CommonActions } from "@react-navigation/native";
 import { useEffect } from "react";
 
 import { OnboardingRoute, useRootNavigation } from "../../src";
 import { BaseAppWithoutProvider } from "../../src/app";
 import { MultisigDraft } from "../../src/fixture-helpers";
-import { KeyFlow, KeyRoute } from "../../src/screens/keys";
 
 const commonParams = {
   draftId: MultisigDraft.draftId,

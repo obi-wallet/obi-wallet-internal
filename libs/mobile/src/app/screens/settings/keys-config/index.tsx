@@ -1,5 +1,11 @@
 import { useTheme } from "@emotion/react";
-import { AsyncButton, Button, useStore } from "@obi-wallet/common";
+import {
+  AsyncButton,
+  Button,
+  KeyFlow,
+  KeyRoute,
+  useStore,
+} from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { KeyType, MultisigKey, MultisigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -8,7 +14,6 @@ import { useIntl } from "react-intl";
 import { Alert, View } from "react-native";
 
 import { MultisigSettings } from "../../../../components/multisig-settings";
-import { KeyFlow, KeyRoute } from "../../../../screens/keys";
 import { useRootNavigation } from "../../../root-stack";
 
 function getMultisigSettingsDraftId(wallet: MultisigWallet) {
