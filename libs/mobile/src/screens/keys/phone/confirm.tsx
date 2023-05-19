@@ -68,7 +68,7 @@ export interface PhoneKeyConfirmProps {
   securityQuestion: string;
   securityAnswer: string;
 
-  onSubmit(publicKey?: string): void;
+  onSubmit(): void;
 }
 
 export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
