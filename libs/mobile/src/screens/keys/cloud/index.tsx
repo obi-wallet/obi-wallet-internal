@@ -7,6 +7,7 @@ import {
   OnboardingRoute,
   SettingsRoute,
   Text,
+  useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
@@ -18,7 +19,6 @@ import { Alert, FlatList, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { getCloudKeyPair, signOut } from "../../../app/cloud/google-drive";
-import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";

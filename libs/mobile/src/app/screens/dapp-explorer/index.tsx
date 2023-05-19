@@ -5,8 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   App,
   Button as ObiButton,
+  RootRoute,
   Text,
   TextInput,
+  useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
 import { Card, Tile, Tiles } from "@obi-wallet/common-deprecated";
@@ -33,7 +35,6 @@ import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
 import HistoryIcon from "./assets/history.svg";
 import Wcqr from "./assets/wcqr.svg";
 import { InlineButton } from "../../button";
-import { RootRoute, useRootNavigation } from "../../root-stack";
 import { parseDynamicLinkURL } from "../components/connected-web-view";
 import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
 

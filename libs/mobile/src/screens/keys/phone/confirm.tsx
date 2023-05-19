@@ -6,6 +6,7 @@ import {
   OnboardingRoute,
   SettingsRoute,
   Text,
+  useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
 import { MultisigKey } from "@obi-wallet/sdk";
@@ -18,7 +19,6 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import InsuranceLogo from "./assets/insurance-logo.svg";
-import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";

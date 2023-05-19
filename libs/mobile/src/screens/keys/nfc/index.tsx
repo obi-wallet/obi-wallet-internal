@@ -7,6 +7,7 @@ import {
   OnboardingRoute,
   SettingsRoute,
   Text,
+  useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
@@ -27,7 +28,6 @@ import {
   parseNFCData,
   startReading,
 } from "../../../app/nfc";
-import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";

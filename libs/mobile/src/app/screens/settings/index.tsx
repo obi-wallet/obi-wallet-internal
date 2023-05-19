@@ -2,7 +2,9 @@ import styled from "@emotion/native";
 import {
   BrandToggle,
   isSmallScreenNumber,
+  RootStack,
   SettingsRoute,
+  useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
 import { Brand, Feature } from "@obi-wallet/config";
@@ -21,7 +23,6 @@ import HelpAndSupport from "./assets/headset.svg";
 import LogoutIcon from "./assets/power-red.svg";
 import { HealthChecksScreen } from "./health-checks";
 import { KeysConfigScreen } from "./keys-config";
-import { RootStack, useRootNavigation } from "../../root-stack";
 import { ObiLogo } from "../components/obi-logo";
 
 export const SettingsScreen = observer(function SettingsScreen() {

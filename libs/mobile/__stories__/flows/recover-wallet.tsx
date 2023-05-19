@@ -1,8 +1,12 @@
-import { KeyFlow, KeyRoute, OnboardingRoute } from "@obi-wallet/common";
+import {
+  KeyFlow,
+  KeyRoute,
+  OnboardingRoute,
+  useRootNavigation,
+} from "@obi-wallet/common";
 import { CommonActions } from "@react-navigation/native";
 import { useEffect } from "react";
 
-import { useRootNavigation } from "../../src";
 import { BaseAppWithoutProvider } from "../../src/app";
 import { MultisigDraft } from "../../src/fixture-helpers";
 

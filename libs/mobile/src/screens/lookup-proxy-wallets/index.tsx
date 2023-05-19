@@ -1,6 +1,7 @@
 import {
   OnboardingRoute,
   OnboardingStackParamList,
+  useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
 import {
@@ -16,7 +17,6 @@ import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
-import { useRootNavigation } from "../../app/root-stack";
 import { Lookup } from "../../app/screens/onboarding/lookup-proxy-wallets/lookup";
 
 export type LookupProxyWalletsScreen = NativeStackScreenProps<

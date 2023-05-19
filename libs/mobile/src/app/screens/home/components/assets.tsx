@@ -6,6 +6,8 @@ import {
   EnrichedToken,
   isSmallScreenNumber,
   isSmallScreenSubstr,
+  RootRoute,
+  RootStackParamList,
   Text,
   UsdBalance,
   useEnrichedBalances,
@@ -28,7 +30,6 @@ import {
 import { ReceiveIcon as Receive } from "./receive";
 import { SendIcon as Send } from "../../../../components/send-icon";
 import { IconButton } from "../../../button";
-import { RootRoute, RootStackParamList } from "../../../root-stack";
 import { CoinIcon } from "../../components/coin-icon";
 import { NetworkAccountPickerLayout } from "../../components/network-account-picker-layout";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";

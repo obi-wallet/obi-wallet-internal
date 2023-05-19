@@ -1,11 +1,8 @@
+import { useRootNavigation } from "@obi-wallet/common";
 import { CommonActions } from "@react-navigation/native";
 import { useEffect } from "react";
 
-import {
-  HomeBottomTabRoute,
-  HomeDrawerRoute,
-  useRootNavigation,
-} from "../../src";
+import { HomeBottomTabRoute, HomeDrawerRoute } from "../../src";
 import { BaseAppWithoutProvider } from "../../src/app";
 import { GatekeeperConfigDraft } from "../../src/fixture-helpers";
 import { AccountsRoute } from "../../src/screens/accounts/accounts-stack";

@@ -5,7 +5,12 @@ import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { Text, useStore } from "@obi-wallet/common";
+import {
+  RootRoute,
+  RootStackParamList,
+  Text,
+  useStore,
+} from "@obi-wallet/common";
 import { fetchMeta } from "@obi-wallet/common-deprecated";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -17,7 +22,6 @@ import { WebView } from "react-native-webview";
 import { ConnectedWebView } from "./components/connected-web-view";
 import Fav from "./webview-assets/favorite-24px.svg";
 import UnFav from "./webview-assets/unfavorite-24px.svg";
-import { RootRoute, RootStackParamList } from "../root-stack";
 
 export type WebViewScreenProps = NativeStackScreenProps<
   RootStackParamList,

@@ -5,6 +5,7 @@ import {
   KeyRoute,
   OnboardingRoute,
   OnboardingStackParamList,
+  useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
@@ -14,7 +15,6 @@ import { useState } from "react";
 import { Alert, View } from "react-native";
 import invariant from "tiny-invariant";
 
-import { useRootNavigation } from "../../app/root-stack";
 import { MultisigSettings } from "../../components/multisig-settings";
 
 export type RecoverWalletScreenProps = NativeStackScreenProps<

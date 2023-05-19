@@ -8,6 +8,7 @@
     "@obi-wallet/headless-ui": "*",
     "@obi-wallet/sdk": "*",
     "@obi-wallet/theme": "*",
+    "@react-navigation/native-stack": "*",
     "@tanstack/react-query": "*",
     "mobx": "*",
     "mobx-react-lite": "*",

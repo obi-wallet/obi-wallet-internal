@@ -4,6 +4,8 @@ import {
   Button,
   EnrichedToken,
   isSmallScreenNumber,
+  RootRoute,
+  RootStackParamList,
   useEnrichedBalances,
   useStore,
 } from "@obi-wallet/common";
@@ -29,7 +31,6 @@ import { z } from "zod";
 
 import { AddressController, TokenController } from "../../../forms";
 import { address } from "../../../helpers/validation-helpers";
-import { RootRoute, RootStackParamList } from "../../root-stack";
 import { Back } from "../components/back";
 import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
 import { HomeBottomTabRoute } from "../home/home-stack";

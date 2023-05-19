@@ -4,6 +4,8 @@ import {
   OnboardingRoute,
   Provider,
   ProviderProps,
+  RootRoute,
+  RootStack,
   Text,
   useStore,
 } from "@obi-wallet/common";
@@ -20,7 +22,6 @@ import { FullWindowOverlay } from "react-native-screens";
 import { deploymentKey } from "./code-push";
 import { Loader } from "./loader";
 import { Modals } from "./modals";
-import { RootRoute, RootStack } from "./root-stack";
 import { HomeScreen } from "./screens/home";
 import { Stake } from "./screens/home/components/stake";
 import { ReceiveScreen } from "./screens/receive";

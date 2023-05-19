@@ -5,6 +5,7 @@ import {
   SettingsRoute,
   Text,
   UsdBalance,
+  useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
 import { useCurrentWallet, useQuery } from "@obi-wallet/headless-ui";
@@ -33,7 +34,6 @@ import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import { AccountItem } from "./account-item";
 import KeyRoundIcon from "./assets/key-round-icon.svg";
 import { PermissionedAddressesContext } from "./permissioned-address-context";
-import { useRootNavigation } from "../../../app/root-stack";
 import { Background } from "../../../app/screens/components/background";
 import { NetworkAccountPickerLayout } from "../../../app/screens/components/network-account-picker-layout";
 import { AccountsRoute, AccountsStackParamList } from "../accounts-stack";

@@ -1,4 +1,4 @@
-import { KeyRoute } from "@obi-wallet/common";
+import { KeyRoute, RootStack } from "@obi-wallet/common";
 
 import { CloudKeyScreen } from "./cloud";
 import { DeviceKeyScreen } from "./device";
@@ -6,7 +6,6 @@ import { EmailKeyScreen } from "./email";
 import { NfcKeyScreen } from "./nfc";
 import { PhoneKeyConfirmScreen, PhoneKeyRequestScreen } from "./phone";
 import { SocialKeyScreen } from "./social";
-import { RootStack } from "../../app/root-stack";
 
 export const keyScreens = (navigationKey: string) => {
   return (

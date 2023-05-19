@@ -1,16 +1,15 @@
 import {
-  App,
-  EnrichedToken,
-  KeyStackParamList,
-  OnboardingStackParamList,
-  SettingsStackParamList,
-} from "@obi-wallet/common";
-import {
   NavigationProp,
   ParamListBase,
   useNavigation as useNavigationOriginal,
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+import { KeyStackParamList } from "./key-stack";
+import { OnboardingStackParamList } from "./onboarding-stack";
+import { SettingsStackParamList } from "./settings-stack";
+import { EnrichedToken } from "../hooks";
+import { App } from "../stores";
 
 export enum RootRoute {
   Home = "Home",

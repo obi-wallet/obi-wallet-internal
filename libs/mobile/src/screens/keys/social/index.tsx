@@ -6,6 +6,7 @@ import {
   OnboardingRoute,
   SettingsRoute,
   Text,
+  useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
 import { Chain, MultisigKey, Sdk, Secp256k1PublicKey } from "@obi-wallet/sdk";
@@ -16,7 +17,6 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useRootNavigation } from "../../..";
 import { InlineButton } from "../../../app/button";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
