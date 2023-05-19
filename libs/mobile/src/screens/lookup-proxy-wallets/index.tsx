@@ -46,7 +46,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
       console.error("No usable key found");
       return null;
     }
-    const publicKey = usableKey?.payload.publicKey.value;
+    const publicKey = usableKey.payload.publicKey.value;
 
     return (
       <Lookup
