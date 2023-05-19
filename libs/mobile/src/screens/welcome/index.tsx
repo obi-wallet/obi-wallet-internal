@@ -1,13 +1,16 @@
-import { KeyFlow, KeyRoute, useStore, Welcome } from "@obi-wallet/common";
+import {
+  KeyFlow,
+  KeyRoute,
+  OnboardingRoute,
+  OnboardingStackParamList,
+  useStore,
+  Welcome,
+} from "@obi-wallet/common";
 import { ObservableMultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 
-import {
-  OnboardingRoute,
-  OnboardingStackParamList,
-  useRootNavigation,
-} from "../..";
+import { useRootNavigation } from "../..";
 
 export type WelcomeScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,

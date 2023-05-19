@@ -1,6 +1,12 @@
 import { useTheme } from "@emotion/react";
 import { PortalHost } from "@gorhom/portal";
-import { Provider, ProviderProps, Text, useStore } from "@obi-wallet/common";
+import {
+  OnboardingRoute,
+  Provider,
+  ProviderProps,
+  Text,
+  useStore,
+} from "@obi-wallet/common";
 import { Config } from "@obi-wallet/config";
 import {
   useCodePushBackgroundUpdate,
@@ -17,7 +23,6 @@ import { Modals } from "./modals";
 import { RootRoute, RootStack } from "./root-stack";
 import { HomeScreen } from "./screens/home";
 import { Stake } from "./screens/home/components/stake";
-import { OnboardingRoute } from "./screens/onboarding/onboarding-stack";
 import { ReceiveScreen } from "./screens/receive";
 import { SendScreen } from "./screens/send";
 import { settingsScreens } from "./screens/settings";

@@ -3,6 +3,7 @@ import {
   KeyFlow,
   KeyRoute,
   KeyStackParamList,
+  OnboardingRoute,
   Text,
   useStore,
 } from "@obi-wallet/common";
@@ -14,7 +15,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { OnboardingRoute, SettingsRoute, useRootNavigation } from "../../..";
+import { SettingsRoute, useRootNavigation } from "../../..";
 import { InlineButton } from "../../../app/button";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";

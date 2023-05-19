@@ -7,6 +7,7 @@ import {
   KeyRoute,
   KeyStackParamList,
   keyTypeToKeyRoute,
+  OnboardingRoute,
   Text,
   useStore,
 } from "@obi-wallet/common";
@@ -30,7 +31,6 @@ import {
 import { useRootNavigation } from "../../../app/root-stack";
 import { Back } from "../../../app/screens/components/back";
 import { Background } from "../../../app/screens/components/background";
-import { OnboardingRoute } from "../../../app/screens/onboarding/onboarding-stack";
 
 export type DeviceKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
