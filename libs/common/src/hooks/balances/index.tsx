@@ -1,4 +1,3 @@
-import { Text, useStore } from "@obi-wallet/common";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
   ChainId,
@@ -12,7 +11,8 @@ import { FC } from "react";
 import { ImageRequireSource, ImageURISource, View } from "react-native";
 import { SvgProps } from "react-native-svg";
 
-import LoopIcon from "./assets/loop.svg";
+import { Text } from "../../components";
+import { useStore } from "../../contexts";
 
 export function useEnrichedBalances({
   address,
@@ -128,7 +128,8 @@ export function enrichToken({
       case "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034":
         return require("./assets/usdc.png");
       case "juno1qsrercqegvs4ye0yqg93knv73ye5dc3prqwd6jcdcuj8ggp6w0us66deup":
-        return LoopIcon;
+        // TODO: modal: handle SVGs
+        return null;
       default:
         return null;
     }

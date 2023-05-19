@@ -3,9 +3,12 @@ import { faSortAsc } from "@fortawesome/free-solid-svg-icons/faSortAsc";
 import { faSortDesc } from "@fortawesome/free-solid-svg-icons/faSortDesc";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
+  EnrichedToken,
   isSmallScreenNumber,
   isSmallScreenSubstr,
   Text,
+  UsdBalance,
+  useEnrichedBalances,
   useStore,
 } from "@obi-wallet/common";
 import { Feature } from "@obi-wallet/config";
@@ -24,11 +27,6 @@ import {
 
 import { ReceiveIcon as Receive } from "./receive";
 import { SendIcon as Send } from "../../../../components/send-icon";
-import {
-  EnrichedToken,
-  UsdBalance,
-  useEnrichedBalances,
-} from "../../../balances";
 import { IconButton } from "../../../button";
 import { RootRoute, RootStackParamList } from "../../../root-stack";
 import { CoinIcon } from "../../components/coin-icon";

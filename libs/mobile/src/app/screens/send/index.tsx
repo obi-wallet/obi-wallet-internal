@@ -1,6 +1,12 @@
 import { useTheme } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, isSmallScreenNumber, useStore } from "@obi-wallet/common";
+import {
+  Button,
+  EnrichedToken,
+  isSmallScreenNumber,
+  useEnrichedBalances,
+  useStore,
+} from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   isTerraChain,
@@ -23,7 +29,6 @@ import { z } from "zod";
 
 import { AddressController, TokenController } from "../../../forms";
 import { address } from "../../../helpers/validation-helpers";
-import { EnrichedToken, useEnrichedBalances } from "../../balances";
 import { RootRoute, RootStackParamList } from "../../root-stack";
 import { Back } from "../components/back";
 import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";

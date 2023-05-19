@@ -1,5 +1,6 @@
 import {
   App,
+  EnrichedToken,
   KeyStackParamList,
   OnboardingStackParamList,
   SettingsStackParamList,
@@ -10,8 +11,6 @@ import {
   useNavigation as useNavigationOriginal,
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
-import { EnrichedToken } from "./balances";
 
 export enum RootRoute {
   Home = "Home",

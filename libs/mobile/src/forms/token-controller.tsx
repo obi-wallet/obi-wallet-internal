@@ -3,7 +3,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { Portal } from "@gorhom/portal";
-import { useStore } from "@obi-wallet/common";
+import { EnrichedToken, useStore } from "@obi-wallet/common";
 import { Brand } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
@@ -17,7 +17,6 @@ import {
   View,
 } from "react-native";
 
-import { EnrichedToken } from "../app/balances";
 import { BottomSheetBackdrop } from "../app/screens/components/bottomSheetBackdrop";
 import { CoinIcon } from "../app/screens/components/coin-icon";
 import { RefreshableFlatList } from "../app/screens/components/refreshable-flat-list";

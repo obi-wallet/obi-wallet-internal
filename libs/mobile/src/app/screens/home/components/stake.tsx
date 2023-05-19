@@ -5,10 +5,12 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  enrichToken,
   isSmallScreen,
   isSmallScreenNumber,
   Text,
   TextInput,
+  useBalances,
   useStore,
 } from "@obi-wallet/common";
 import {
@@ -55,7 +57,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { z } from "zod";
 
 import { TokenController } from "../../../../forms";
-import { enrichToken, useBalances } from "../../../balances";
 import { Back } from "../../components/back";
 import { CoinIcon } from "../../components/coin-icon";
 import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";

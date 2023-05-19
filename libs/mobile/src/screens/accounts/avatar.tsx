@@ -1,6 +1,6 @@
 import { faCamera, faPhotoFilm } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Text, useStore } from "@obi-wallet/common";
+import { enrichToken, Text, useStore } from "@obi-wallet/common";
 import { Beneficiary, FlexAccount, SinglesigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { FC, useState } from "react";
@@ -18,7 +18,6 @@ import BeneficiaryAccount from "./assets/beneficiary-account-icon.svg";
 import FlexAccountIcon from "./assets/flex-account-icon.svg";
 import LegacyAccountIcon from "./assets/legacy-account-icon.svg";
 import Pencil from "./assets/pencil.svg";
-import { enrichToken } from "../../app/balances";
 import { CoinIcon } from "../../app/screens/components/coin-icon";
 import { Modal } from "../../app/screens/components/modal";
 

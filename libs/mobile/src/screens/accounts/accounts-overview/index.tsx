@@ -1,6 +1,12 @@
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Button, SettingsRoute, Text, useStore } from "@obi-wallet/common";
+import {
+  Button,
+  SettingsRoute,
+  Text,
+  UsdBalance,
+  useStore,
+} from "@obi-wallet/common";
 import { useCurrentWallet, useQuery } from "@obi-wallet/headless-ui";
 import {
   Beneficiary,
@@ -27,7 +33,6 @@ import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import { AccountItem } from "./account-item";
 import KeyRoundIcon from "./assets/key-round-icon.svg";
 import { PermissionedAddressesContext } from "./permissioned-address-context";
-import { UsdBalance } from "../../../app/balances";
 import { useRootNavigation } from "../../../app/root-stack";
 import { Background } from "../../../app/screens/components/background";
 import { NetworkAccountPickerLayout } from "../../../app/screens/components/network-account-picker-layout";

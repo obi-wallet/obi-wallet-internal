@@ -1,8 +1,7 @@
+import { EnrichedToken } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { Image, View } from "react-native";
 import { SvgUri } from "react-native-svg";
-
-import { EnrichedToken } from "../../../balances";
 
 const DefaultView = observer(function DefaultView() {
   return (

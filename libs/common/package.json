@@ -17,6 +17,7 @@
     "react-native-dropdown-picker": "*",
     "react-native-haptic-feedback": "*",
     "react-native-safe-area-context": "*",
+    "react-native-svg": "*",
     "rooks": "*"
   },
   "devDependencies": {
