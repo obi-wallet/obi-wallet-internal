@@ -69,12 +69,8 @@ interface CommonKeyParams {
 
 export interface KeyStackParamList extends ParamListBase {
   [KeyRoute.DeviceKey]: CommonKeyParams;
-  [KeyRoute.EmailKey]: CommonKeyParams & {
-    RecoverFrom?: RecoverFrom.Email | RecoverFrom.Phone;
-  };
-  [KeyRoute.PhoneKeyRequest]: CommonKeyParams & {
-    RecoverFrom?: RecoverFrom.Email | RecoverFrom.Phone;
-  };
+  [KeyRoute.EmailKey]: CommonKeyParams;
+  [KeyRoute.PhoneKeyRequest]: CommonKeyParams;
   [KeyRoute.PhoneKeyConfirm]: CommonKeyParams & {
     phoneNumber: string;
     securityQuestion: string;
