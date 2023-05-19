@@ -30,7 +30,7 @@ export interface OnboardingStackParamList
     serializedData?: Serialized<MultisigWallet>["data"];
   };
   [OnboardingRoute.LookupProxyWallets]: CommonOnboardingParams & {
-    RecoverFrom: RecoverFrom;
+    recoverFrom: RecoverFrom;
   };
   [OnboardingRoute.EmailRecovery]: CommonOnboardingParams;
 }

@@ -38,7 +38,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
     if (!navigation.isFocused()) return null;
 
     const usableKey = draft.value.getUsableKeyOfType(
-      params.RecoverFrom === RecoverFrom.Email
+      params.recoverFrom === RecoverFrom.Email
         ? KeyType.EmailRecovery
         : KeyType.Phone
     );

@@ -60,10 +60,7 @@ export const SelectMethodScreen = observer<SelectMethodScreenProps>(
                 {
                   type: KeyType.Phone,
                   onPress() {
-                    navigation.navigate(KeyRoute.PhoneKeyRequest, {
-                      ...params,
-                      RecoverFrom: RecoverFrom.Phone,
-                    });
+                    navigation.navigate(KeyRoute.PhoneKeyRequest, params);
                   },
                 },
                 {

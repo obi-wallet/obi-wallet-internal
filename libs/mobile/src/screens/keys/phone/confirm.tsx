@@ -49,7 +49,7 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
             case KeyFlow.RecoverWallet:
               navigation.navigate(OnboardingRoute.LookupProxyWallets, {
                 ...params,
-                RecoverFrom: RecoverFrom.Phone,
+                recoverFrom: RecoverFrom.Phone,
               });
               break;
           }

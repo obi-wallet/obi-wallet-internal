@@ -49,7 +49,7 @@ export const EmailRecoveryScreen = observer<EmailRecoveryScreenProps>(
         onSubmit={() => {
           navigation.navigate(OnboardingRoute.LookupProxyWallets, {
             ...params,
-            RecoverFrom: RecoverFrom.Email,
+            recoverFrom: RecoverFrom.Email,
           });
         }}
       />
