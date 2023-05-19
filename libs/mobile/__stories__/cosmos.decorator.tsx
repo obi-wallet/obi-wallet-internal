@@ -1,4 +1,3 @@
-import { Provider } from "@obi-wallet/common";
 import {
   loopMobileDevConfig,
   obiMobileConfig,
@@ -9,6 +8,8 @@ import { observer } from "mobx-react-lite";
 import { ReactNode, useRef } from "react";
 import { useSelect } from "react-cosmos/fixture";
 import { useAsyncEffect } from "rooks";
+
+import { Provider } from "../src/app/provider";
 
 const kvStore = new KVStore("react-cosmos");
 

@@ -6,7 +6,11 @@ import { ReactNode } from "react";
 export const Provider = observer<{ children: ReactNode }>(function Provider({
   children,
 }) {
+  const env = {};
+
   return (
-    <OriginalProvider config={obiMobileConfig}>{children}</OriginalProvider>
+    <OriginalProvider config={obiMobileConfig} env={env}>
+      {children}
+    </OriginalProvider>
   );
 });

@@ -11,13 +11,14 @@ import { IntlProvider } from "react-intl";
 import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { StoreContext } from "../../contexts";
+import { Env, EnvContext, StoreContext } from "../../contexts";
 import { useCreateRootStore } from "../../hooks";
 import { messages } from "../../languages";
 
 export interface ProviderProps {
   children: ReactNode;
   config: Config;
+  env: Env;
   navigationContainerProps?: Omit<
     ComponentProps<typeof NavigationContainer>,
     "children"
@@ -29,6 +30,7 @@ export interface ProviderProps {
 export const Provider = observer<ProviderProps>(function Provider({
   children,
   config,
+  env,
   navigationContainerProps,
   QueryClientProvider,
   buster,
@@ -43,52 +45,54 @@ export const Provider = observer<ProviderProps>(function Provider({
       QueryClientProvider={QueryClientProvider}
       buster={buster}
     >
-      <StoreContext.Provider value={rootStore}>
-        <IntlProvider
-          defaultLocale="en"
-          locale={currentLanguage}
-          messages={messages[currentLanguage]}
-          formats={{
-            date: {
-              en: {
-                month: "short",
-                day: "2-digit",
-                hour: "2-digit",
-                hour12: false,
-                minute: "2-digit",
-                timeZoneName: "short",
+      <EnvContext.Provider value={env}>
+        <StoreContext.Provider value={rootStore}>
+          <IntlProvider
+            defaultLocale="en"
+            locale={currentLanguage}
+            messages={messages[currentLanguage]}
+            formats={{
+              date: {
+                en: {
+                  month: "short",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  hour12: false,
+                  minute: "2-digit",
+                  timeZoneName: "short",
+                },
+                de: {
+                  month: "short",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  hour12: false,
+                  minute: "2-digit",
+                  timeZoneName: "short",
+                },
+                es: {
+                  month: "short",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  hour12: false,
+                  minute: "2-digit",
+                  timeZoneName: "short",
+                },
               },
-              de: {
-                month: "short",
-                day: "2-digit",
-                hour: "2-digit",
-                hour12: false,
-                minute: "2-digit",
-                timeZoneName: "short",
-              },
-              es: {
-                month: "short",
-                day: "2-digit",
-                hour: "2-digit",
-                hour12: false,
-                minute: "2-digit",
-                timeZoneName: "short",
-              },
-            },
-          }}
-        >
-          <SafeAreaProvider>
-            <PortalProvider>
-              <NavigationContainer {...navigationContainerProps}>
-                <ThemeProvider theme={getTheme(configStore.brand)}>
-                  <StatusBar barStyle="light-content" />
-                  {children}
-                </ThemeProvider>
-              </NavigationContainer>
-            </PortalProvider>
-          </SafeAreaProvider>
-        </IntlProvider>
-      </StoreContext.Provider>
+            }}
+          >
+            <SafeAreaProvider>
+              <PortalProvider>
+                <NavigationContainer {...navigationContainerProps}>
+                  <ThemeProvider theme={getTheme(configStore.brand)}>
+                    <StatusBar barStyle="light-content" />
+                    {children}
+                  </ThemeProvider>
+                </NavigationContainer>
+              </PortalProvider>
+            </SafeAreaProvider>
+          </IntlProvider>
+        </StoreContext.Provider>
+      </EnvContext.Provider>
     </SdkProvider>
   );
 });
