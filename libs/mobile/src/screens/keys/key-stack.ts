@@ -1,6 +1,11 @@
 import { KeyType, MultisigWallet, Serialized } from "@obi-wallet/sdk";
 import { ParamListBase } from "@react-navigation/native";
 
+import {
+  OnboardingRoute,
+  RecoverFrom,
+} from "../../app/screens/onboarding/onboarding-stack";
+
 export enum KeyRoute {
   DeviceKey = "DeviceKey",
   EmailKey = "EmailKey",
@@ -44,6 +49,8 @@ export function keyTypeToKeyRoute(type: KeyType) {
       return KeyRoute.NfcKey;
     case KeyType.Cloud:
       return KeyRoute.CloudKey;
+    case KeyType.EmailRecovery:
+      return OnboardingRoute.EmailRecovery;
   }
 }
 

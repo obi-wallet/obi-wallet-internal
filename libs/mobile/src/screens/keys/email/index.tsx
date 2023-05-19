@@ -6,9 +6,10 @@ import {
   MultisigKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk";
+import { useIsFocused } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import { useRef, useState } from "react";
+import { ReactNode, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, Linking, TouchableOpacity, View } from "react-native";
@@ -45,6 +46,8 @@ export const EmailKeyScreen = observer<EmailKeyScreenProps>(
   function EmailKeyScreen({ route }) {
     const navigation = useRootNavigation();
     const { params } = route;
+    const isFocused = useIsFocused();
+    if (!isFocused) return null;
 
     return (
       <EmailKey
@@ -73,7 +76,7 @@ export interface EmailKeyProps {
   onSubmit(): void;
 }
 
-const schema = z.object({
+const emailKeySchema = z.object({
   email: z.string().email(),
 });
 
@@ -86,7 +89,6 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
   const [selectedTab, setSelectedTab] = useState(Tab.EmailKeyV1);
   const isObi = configStore.isObi();
-  const intl = useIntl();
   const [emailKey, setEmailKey] = useState<Secp256k1PublicKey | undefined>();
 
   const onPressRef = useRef<() => void>();
@@ -123,12 +125,147 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   const isKeyboardVisible = useKeyboardVisible();
 
   const { control, handleSubmit, formState } = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(emailKeySchema),
+    mode: "onChange",
   });
 
   function encodeForMailto(text: string): string {
     return encodeURIComponent(text).replace(/%20/g, "%20");
   }
+
+  function renderTabContent() {
+    switch (selectedTab) {
+      case Tab.EmailKeyV1:
+        return (
+          <>
+            <Text
+              style={{
+                color: isObi ? "#fff" : "#999CB6",
+                fontSize: isSmallScreenNumber(12, 14),
+                marginTop: 10,
+              }}
+            >
+              <FormattedMessage
+                id="onboarding5.setemailkey.subtext.terra"
+                defaultMessage="Enter an email address. This is not stored; you will email your recovery key here."
+              />
+            </Text>
+            <Controller
+              name="email"
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => {
+                return (
+                  <TextInput
+                    placeholder="Email address"
+                    autoCapitalize="none"
+                    inputMode="email"
+                    style={{ marginTop: 25 }}
+                    inputStyle={{
+                      ...(formState.errors.privateKey
+                        ? { borderColor: "red" }
+                        : {}),
+                    }}
+                    value={value}
+                    onBlur={onBlur}
+                    onChangeText={(text) => {
+                      onChange(text);
+                    }}
+                  />
+                );
+              }}
+            />
+          </>
+        );
+      case Tab.EmailKeyZK: {
+        return (
+          <Text style={{ color: "#ffffff", marginTop: 10 }}>
+            Coming soon...
+          </Text>
+        );
+      }
+    }
+  }
+  return (
+    <EmailContainer isObi={isObi}>
+      <Text
+        style={{
+          color: "#F6F5FF",
+          fontSize: isSmallScreenNumber(20, 24),
+          fontWeight: "600",
+          marginTop: isSmallScreenNumber(20, 32),
+          textAlign: "center",
+        }}
+      >
+        {flow === KeyFlow.EditWallet || flow === KeyFlow.RecoverWallet ? (
+          <FormattedMessage
+            id="onboarding5.recovery.setemailkey"
+            defaultMessage="Set a New Email Recovery Key"
+          />
+        ) : (
+          <FormattedMessage
+            id="onboarding5.setemailkey"
+            defaultMessage="Set an Email Recovery Key"
+          />
+        )}
+      </Text>
+
+      <EmailTypeTabs
+        selectedTab={selectedTab}
+        flow={KeyFlow.RecoverWallet}
+        isObi={isObi}
+        onPress={setSelectedTab}
+      >
+        {renderTabContent()}
+      </EmailTypeTabs>
+
+      <View style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}>
+        {!isKeyboardVisible && (
+          <VerifyAndProceedButton
+            disabled={!formState.isValid}
+            onPress={handleSubmit(async (data) => {
+              try {
+                const { publicKey, privateKey } = generateSec256k1KeyPair();
+                const URL = `mailto:${
+                  data.email
+                }?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
+                  "This is a v1 recovery key. You are sending it to yourself; Obi can never access its contents. " +
+                    "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
+                    "DO NOT DELETE this email unless you are saving its contents to a password manager or physical location. In future versions " +
+                    "of Obi, email recovery will use zero-knowledge proofs, and so saving an email will be unnecessary.  " +
+                    privateKey
+                )}`;
+
+                setEmailKey(publicKey);
+                await Linking.openURL(URL);
+              } catch (e) {
+                console.error(e);
+                // noop
+              }
+            })}
+          />
+        )}
+      </View>
+    </EmailContainer>
+  );
+});
+
+export const EmailTypeTabs = observer(function EmailTypeTabs({
+  selectedTab,
+  children,
+  flow,
+  isObi = false,
+  onPress,
+}: {
+  selectedTab: Tab.EmailKeyV1 | Tab.EmailKeyZK;
+  children: React.ReactNode;
+  flow: KeyFlow;
+  isObi?: boolean;
+  onPress: (tab: Tab) => void;
+}) {
+  const intl = useIntl();
 
   function renderTabButton({
     tab,
@@ -139,11 +276,21 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
     label: string;
     isObi?: boolean;
   }) {
+    console.log({ label });
     return (
-      <View style={{ flex: 1 }}>
+      <View
+        style={{
+          flex: 1,
+          // backgroundColor: "green",
+          ...(isObi && {
+            borderBottomColor: "rgba(250,250,250,.2)",
+            borderBottomWidth: 1,
+          }),
+        }}
+      >
         <TouchableOpacity
           onPress={() => {
-            setSelectedTab(tab);
+            onPress(tab);
           }}
           style={{
             flex: 1,
@@ -174,61 +321,49 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
     );
   }
 
-  function renderTabContent() {
-    switch (selectedTab) {
-      case Tab.EmailKeyV1:
-        return (
-          <>
-            <Text
-              style={{
-                color: isObi ? "#fff" : "#999CB6",
-                fontSize: isSmallScreenNumber(12, 14),
-                marginTop: 10,
-              }}
-            >
-              {flow === KeyFlow.RecoverWallet ? (
-                <FormattedMessage
-                  id="onboarding5.recovery.emailsubtext.cosmos"
-                  defaultMessage="Enter your recovery key from your email. (This is one-time use and will be replaced with a new recovery key.)"
-                />
-              ) : (
-                <FormattedMessage
-                  id="onboarding5.setemailkey.subtext.terra"
-                  defaultMessage="Enter an email address. This is not stored; you will email your recovery key here."
-                />
-              )}
-            </Text>
-            <Controller
-              name="email"
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  placeholder="email address"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  inputMode="email"
-                  style={{ marginTop: 25 }}
-                  value={value}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                />
-              )}
-            />
-          </>
-        );
-      case Tab.EmailKeyZK: {
-        return (
-          <Text style={{ color: "#ffffff", marginTop: 10 }}>
-            Coming soon...
-          </Text>
-        );
-      }
-    }
-  }
+  return (
+    <>
+      <View
+        style={{
+          flexDirection: "row",
+          // backgroundColor: "blue",
+          height: 50,
+          marginTop: 50,
+          marginBottom: 20,
+          marginHorizontal: isObi ? 10 : 0,
+        }}
+      >
+        {renderTabButton({
+          tab: Tab.EmailKeyV1,
+          label: intl.formatMessage({
+            id: "keys.email.tabs.simplekey",
+            defaultMessage: "Simple 1 Use Key",
+          }),
+          isObi,
+        })}
 
+        {flow !== KeyFlow.RecoverWallet &&
+          renderTabButton({
+            tab: Tab.EmailKeyZK,
+            label: intl.formatMessage({
+              id: "keys.email.tabs.zkkey",
+              defaultMessage: "Zero Knowledge Key",
+            }),
+            isObi,
+          })}
+      </View>
+      {children}
+    </>
+  );
+});
+
+export const EmailContainer = observer(function EmailContainer({
+  isObi,
+  children,
+}: {
+  isObi: boolean;
+  children: ReactNode;
+}) {
   return (
     <KeyboardAvoidingView
       style={{
@@ -244,7 +379,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
             justifyContent: "space-between",
           }}
         >
-          <View>
+          <View style={{ flex: 1 }}>
             <Back
               style={{
                 marginLeft: -5,
@@ -253,94 +388,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
               }}
             />
             {isObi ? undefined : <SocialLoop width={70} height={70} />}
-            <View>
-              <Text
-                style={{
-                  color: "#F6F5FF",
-                  fontSize: isSmallScreenNumber(20, 24),
-                  fontWeight: "600",
-                  marginTop: isSmallScreenNumber(20, 32),
-                  textAlign: "center",
-                }}
-              >
-                {flow === KeyFlow.EditWallet ? (
-                  <FormattedMessage
-                    id="onboarding5.recovery.setemailkey"
-                    defaultMessage="Set a New Email Recovery Key"
-                  />
-                ) : flow === KeyFlow.RecoverWallet ? (
-                  <FormattedMessage
-                    id="onboarding2.recovery.email"
-                    defaultMessage="Recover your Email Key"
-                  />
-                ) : (
-                  <FormattedMessage
-                    id="onboarding5.setemailkey"
-                    defaultMessage="Set an Email Recovery Key"
-                  />
-                )}
-              </Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                height: 50,
-                ...(isObi && {
-                  borderBottomColor: "rgba(250,250,250,.2)",
-                  borderBottomWidth: 1,
-                }),
-                marginTop: 50,
-                marginBottom: 20,
-                marginHorizontal: isObi ? 10 : 0,
-              }}
-            >
-              {renderTabButton({
-                tab: Tab.EmailKeyV1,
-                label: intl.formatMessage({
-                  id: "keys.email.tabs.simplekey",
-                  defaultMessage: "Simple 1 Use Key",
-                }),
-                isObi,
-              })}
-              {renderTabButton({
-                tab: Tab.EmailKeyZK,
-                label: intl.formatMessage({
-                  id: "keys.email.tabs.zkkey",
-                  defaultMessage: "Zero Knowledge Key",
-                }),
-                isObi,
-              })}
-            </View>
-            <View>{renderTabContent()}</View>
-          </View>
-          <View
-            style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
-          >
-            {!isKeyboardVisible && (
-              <VerifyAndProceedButton
-                disabled={!formState.isValid}
-                onPress={handleSubmit(async (data) => {
-                  try {
-                    const { publicKey, privateKey } = generateSec256k1KeyPair();
-                    const URL = `mailto:${
-                      data.email
-                    }?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
-                      "This is a v1 recovery key. You are sending it to yourself; Obi can never access its contents. " +
-                        "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
-                        "DO NOT DELETE this email unless you are saving its contents to a password manager or physical location. In future versions " +
-                        "of Obi, email recovery will use zero-knowledge proofs, and so saving an email will be unnecessary.  " +
-                        privateKey
-                    )}`;
-
-                    setEmailKey(publicKey);
-                    await Linking.openURL(URL);
-                  } catch (e) {
-                    console.error(e);
-                    // noop
-                  }
-                })}
-              />
-            )}
+            {children}
           </View>
         </View>
       </SafeAreaView>

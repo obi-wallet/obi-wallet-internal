@@ -25,9 +25,11 @@ import { SplashScreen } from "./screens/splash";
 import { WebViewScreen } from "./screens/web-view";
 import { useStore } from "./stores";
 import { CreateWalletScreen } from "../screens/create-wallet";
+import { EmailRecoveryScreen } from "../screens/keys/email/email-recovery";
 import { keyScreens } from "../screens/keys/key-screens";
 import { LookupProxyWalletsScreen } from "../screens/lookup-proxy-wallets";
 import { RecoverWalletScreen } from "../screens/recover-wallet";
+import { SelectMethodScreen } from "../screens/recover-wallet/select-method";
 import { WelcomeScreen } from "../screens/welcome";
 
 if (Platform.OS === "ios") {
@@ -183,6 +185,14 @@ export const StateRenderer = observer(function StateRenderer() {
         <RootStack.Screen
           name={OnboardingRoute.RecoverWallet}
           component={RecoverWalletScreen}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.SelectMethod}
+          component={SelectMethodScreen}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.EmailRecovery}
+          component={EmailRecoveryScreen}
         />
       </RootStack.Group>
     );

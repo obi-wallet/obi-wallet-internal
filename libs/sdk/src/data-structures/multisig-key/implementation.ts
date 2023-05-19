@@ -155,6 +155,12 @@ export class MultisigKey {
       },
     });
   }
+  public setEmailRecoveryKey(key: Secp256k1KeyPair) {
+    this.setKey({
+      type: KeyType.EmailRecovery,
+      payload: key,
+    });
+  }
 
   protected setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
     this._keys = this._keys.filter((k) => key.type !== k.type);

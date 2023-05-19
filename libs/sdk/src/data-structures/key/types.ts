@@ -9,6 +9,7 @@ export enum KeyType {
   Nfc = "nfc",
   Cloud = "cloud",
   Email = "email",
+  EmailRecovery = "email-recovery",
 }
 
 export type KeyAbstractSerializedMapping = {

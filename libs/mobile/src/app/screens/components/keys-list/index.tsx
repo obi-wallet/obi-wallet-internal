@@ -54,6 +54,7 @@ export interface KeysListProps {
   style?: StyleProp<ViewStyle>;
   tiled?: boolean;
   animate?: boolean;
+  hideOtherKeys?: boolean;
 }
 
 export const KeysList = observer(function KeysList({
@@ -61,9 +62,10 @@ export const KeysList = observer(function KeysList({
   style,
   tiled,
   animate,
+  hideOtherKeys,
 }: KeysListProps) {
   const { metaData, comingSoonKeys } = useKeyMetaData();
-  const hydratedData = data.map((key) => {
+  const hydratedData = data.map((key: Key) => {
     return {
       ...metaData[key.type],
       ...key,
@@ -83,7 +85,12 @@ export const KeysList = observer(function KeysList({
               right: null,
             };
           }),
-        ]}
+        ].filter((key) => {
+          if (hideOtherKeys) {
+            return data.find((k) => key.type === k.type);
+          }
+          return true;
+        })}
         horizontal={tiled}
         keyExtractor={(item) => item.type}
         renderItem={(props) => (
