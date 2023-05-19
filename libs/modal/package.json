@@ -5,6 +5,8 @@
     "@emotion/react": "*",
     "@obi-wallet/common": "*",
     "@obi-wallet/config": "*",
+    "@react-navigation/native": "*",
+    "@react-navigation/stack": "*",
     "mobx-react-lite": "*",
     "react-native-web": "*",
     "react-shadow": "*"

@@ -1,7 +1,7 @@
 import { Global } from "@emotion/react";
 import { ReactNode } from "react";
 // @ts-expect-error internal import w/o types
-import { render } from "react-native-web/dist/exports/render";
+import { render } from "react-native-web";
 import root from "react-shadow/emotion";
 
 // eslint-disable-next-line mobx/missing-observer
@@ -20,7 +20,7 @@ export function Container({ children }: { children: ReactNode }) {
           }}
         />
         <div
-          style={{ display: "flex" }}
+          style={{ display: "flex", flex: 1 }}
           ref={(container) => {
             if (!container) return;
             render(children, container);
