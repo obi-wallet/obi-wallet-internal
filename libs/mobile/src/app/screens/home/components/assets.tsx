@@ -4,6 +4,7 @@ import { faSortDesc } from "@fortawesome/free-solid-svg-icons/faSortDesc";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   EnrichedToken,
+  IconButton,
   isSmallScreenNumber,
   isSmallScreenSubstr,
   RootRoute,
@@ -29,7 +30,6 @@ import {
 
 import { ReceiveIcon as Receive } from "./receive";
 import { SendIcon as Send } from "../../../../components/send-icon";
-import { IconButton } from "../../../button";
 import { CoinIcon } from "../../components/coin-icon";
 import { NetworkAccountPickerLayout } from "../../components/network-account-picker-layout";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";

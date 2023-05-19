@@ -1,12 +1,10 @@
 import { useTheme } from "@emotion/react";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Text, useStore } from "@obi-wallet/common";
+import { IconButton, Text, useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import { IconButton } from "../../button";
 
 export const WalletConnect = observer(function WalletConnect() {
   const { configStore, walletConnectStore } = useStore();
