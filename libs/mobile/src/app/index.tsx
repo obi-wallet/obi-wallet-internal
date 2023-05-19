@@ -8,6 +8,7 @@ import {
   RootStack,
   Text,
   useStore,
+  WelcomeScreen,
 } from "@obi-wallet/common";
 import { Config } from "@obi-wallet/config";
 import {
@@ -33,7 +34,6 @@ import { CreateWalletScreen } from "../screens/create-wallet";
 import { keyScreens } from "../screens/keys/key-screens";
 import { LookupProxyWalletsScreen } from "../screens/lookup-proxy-wallets";
 import { RecoverWalletScreen } from "../screens/recover-wallet";
-import { WelcomeScreen } from "../screens/welcome";
 
 if (Platform.OS === "ios") {
   KeyboardManager?.setToolbarPreviousNextButtonEnable(true);
