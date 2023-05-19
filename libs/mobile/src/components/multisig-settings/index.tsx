@@ -55,7 +55,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
       }
     };
 
-    function getKey(type: KeyType): Key & { description?: string } {
+    function getKey(type: KeyType): Key {
       const activated = multisigKey.hasKeyOfType(type);
       const key = multisigKey.getKeyOfType(type);
       const getIcon = () => {
@@ -74,7 +74,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
         },
         ...(activated &&
           !key?.isUsable && {
-            description: `Setup required`,
+            description: "Setup required",
           }),
       };
     }
