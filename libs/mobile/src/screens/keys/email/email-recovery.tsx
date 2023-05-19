@@ -79,8 +79,6 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
     const isKeyboardVisible = useKeyboardVisible();
 
     const pk = generateSec256k1KeyPair();
-    console.log(new Uint8Array(Buffer.from(pk.privateKey, "base64")).length);
-    console.log(pk.privateKey, pk.privateKey.length);
 
     const { control, handleSubmit, formState, setValue, getValues } = useForm({
       resolver: zodResolver(emailPrivateKeySchema),
