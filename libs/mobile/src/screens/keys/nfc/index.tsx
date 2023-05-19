@@ -1,5 +1,7 @@
 import { pubkeyType } from "@cosmjs/amino";
 import {
+  Back,
+  Background,
   isSmallScreenNumber,
   KeyFlow,
   KeyRoute,
@@ -10,7 +12,6 @@ import {
   useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
-import { Back } from "@obi-wallet/common";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -29,7 +30,6 @@ import {
   parseNFCData,
   startReading,
 } from "../../../app/nfc";
-import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
 

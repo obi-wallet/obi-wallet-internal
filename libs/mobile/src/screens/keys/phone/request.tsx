@@ -1,4 +1,6 @@
 import {
+  Back,
+  Background,
   isSmallScreenNumber,
   KeyFlow,
   KeyRoute,
@@ -7,7 +9,6 @@ import {
   useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
-import { Back } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -16,7 +17,6 @@ import { Alert, Image, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Background } from "../../../app/screens/components/background";
 import {
   SecurityQuestionInput,
   useSecurityQuestionInput,

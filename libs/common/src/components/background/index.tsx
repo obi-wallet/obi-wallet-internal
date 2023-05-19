@@ -1,7 +1,8 @@
 import { useTheme } from "@emotion/react";
-import { useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
-import { Image, View } from "react-native";
+import { View } from "react-native";
+
+import { useStore } from "../../contexts";
 
 export const Background = observer(function Background() {
   const theme = useTheme();
@@ -22,14 +23,15 @@ export const Background = observer(function Background() {
     >
       {isObi ? null : (
         <>
-          <Image
-            source={require("./assets/background-blue.png")}
-            style={{ top: 200, left: 0, position: "absolute" }}
-          />
-          <Image
-            source={require("./assets/background-purple.png")}
-            style={{ position: "absolute", top: 0, right: 0 }}
-          />
+          {/* TODO: handle images */}
+          {/*<Image*/}
+          {/*  source={require("./assets/background-blue.png")}*/}
+          {/*  style={{ top: 200, left: 0, position: "absolute" }}*/}
+          {/*/>*/}
+          {/*<Image*/}
+          {/*  source={require("./assets/background-purple.png")}*/}
+          {/*  style={{ position: "absolute", top: 0, right: 0 }}*/}
+          {/*/>*/}
         </>
       )}
     </View>

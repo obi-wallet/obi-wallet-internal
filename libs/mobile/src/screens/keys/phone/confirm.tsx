@@ -1,4 +1,6 @@
 import {
+  Back,
+  Background,
   isSmallScreenNumber,
   KeyFlow,
   KeyRoute,
@@ -9,7 +11,6 @@ import {
   useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
-import { Back } from "@obi-wallet/common";
 import { MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -20,7 +21,6 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import InsuranceLogo from "./assets/insurance-logo.svg";
-import { Background } from "../../../app/screens/components/background";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
 import { getTwilioClient } from "../../../app/text-message";

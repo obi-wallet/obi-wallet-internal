@@ -10,7 +10,7 @@ import { IconButton } from "../buttons";
 // TODO:
 const ChevronCircleLeft = observer(function ChevronCircleLeft() {
   return null;
-})
+});
 
 export interface BackProps {
   style?: ViewStyle;

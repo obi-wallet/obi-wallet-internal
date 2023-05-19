@@ -1,6 +1,7 @@
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
+  Background,
   Button,
   SettingsRoute,
   Text,
@@ -34,7 +35,6 @@ import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import { AccountItem } from "./account-item";
 import KeyRoundIcon from "./assets/key-round-icon.svg";
 import { PermissionedAddressesContext } from "./permissioned-address-context";
-import { Background } from "../../../app/screens/components/background";
 import { NetworkAccountPickerLayout } from "../../../app/screens/components/network-account-picker-layout";
 import { AccountsRoute, AccountsStackParamList } from "../accounts-stack";
 import { getGatekeeperConfigDraftId } from "../draft-id";

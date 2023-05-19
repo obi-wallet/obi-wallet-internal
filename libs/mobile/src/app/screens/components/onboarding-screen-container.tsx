@@ -1,8 +1,6 @@
-import { useStore } from "@obi-wallet/common";
-import { Back } from "@obi-wallet/common";
+import { Back, Background, useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 
-import { Background } from "./background";
 import { ScreenContainer, ScreenContainerProps } from "./screen-container";
 
 export const OnboardingScreenContainer = observer<ScreenContainerProps>(
