@@ -20,6 +20,7 @@
     "react-native-device-info": "*",
     "react-native-dropdown-picker": "*",
     "react-native-haptic-feedback": "*",
+    "react-native-keyboard-aware-scroll-view": "*",
     "react-native-keychain": "*",
     "react-native-safe-area-context": "*",
     "react-native-svg": "*",

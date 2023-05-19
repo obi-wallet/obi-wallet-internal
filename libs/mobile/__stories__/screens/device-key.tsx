@@ -1,5 +1,6 @@
+import { DeviceKey } from "@obi-wallet/common";
+
 import { mockAction, MultisigDraft } from "../../src/fixture-helpers";
-import { DeviceKey } from "../../src/screens/keys/device";
 
 export default (
   <MultisigDraft.Container>

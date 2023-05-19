@@ -1,21 +1,3 @@
-import { pubkeyType } from "@cosmjs/amino";
-import {
-  AsyncButton,
-  Back,
-  Background,
-  getBiometricsKeyPair,
-  isSmallScreen,
-  isSmallScreenNumber,
-  KeyFlow,
-  KeyRoute,
-  KeyStackParamList,
-  keyTypeToKeyRoute,
-  OnboardingRoute,
-  resetBiometricsKeyPair,
-  Text,
-  useRootNavigation,
-  useStore,
-} from "@obi-wallet/common";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -23,12 +5,39 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, Platform, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import FaceScanner from "./assets/face-scanner.svg";
-import ObiFaceScanner from "./assets/obi-face-scanner.svg";
-import Scan from "./assets/scan.svg";
+import { useStore } from "../../../../contexts";
+import { isSmallScreen, isSmallScreenNumber } from "../../../../helpers";
+import { getBiometricsKeyPair, resetBiometricsKeyPair } from "../../../../keys";
+import {
+  KeyFlow,
+  KeyRoute,
+  KeyStackParamList,
+  keyTypeToKeyRoute,
+  OnboardingRoute,
+  useRootNavigation,
+} from "../../../../router";
+import { Back } from "../../../back";
+import { Background } from "../../../background";
+import { AsyncButton } from "../../../buttons";
+import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
+import { Text } from "../../../typography";
+
+// TODO:
+const FaceScanner = observer(function FaceScanner() {
+  return null;
+});
+
+// TODO:
+const ObiFaceScanner = observer(function ObiFaceScanner() {
+  return null;
+});
+
+// TODO:
+const Scan = observer(function Scan() {
+  return null;
+});
 
 export type DeviceKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -90,13 +99,13 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       });
       const keyPair: Secp256k1KeyPair = {
         publicKey: {
-          type: pubkeyType.secp256k1,
+          type: "tendermint/PubKeySecp256k1",
           value: publicKey,
         },
         privateKey,
       };
       draft.value.setDeviceKey({
-        type: pubkeyType.secp256k1,
+        type: "tendermint/PubKeySecp256k1",
         value: publicKey,
       });
       void queryClient.prefetchQuery(
@@ -213,7 +222,8 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
               fontSize: isSmallScreenNumber(12, 14),
               fontWeight: "400",
               marginTop: 10,
-              ...(isObi ? { fontFamily: "poppins-light" } : {}),
+              // TODO: might be required for native
+              // ...(isObi ? { fontFamily: "poppins-light" } : {}),
             }}
           >
             <FormattedMessage

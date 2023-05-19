@@ -1,7 +1,6 @@
-import { KeyRoute, RootStack } from "@obi-wallet/common";
+import { DeviceKeyScreen, KeyRoute, RootStack } from "@obi-wallet/common";
 
 import { CloudKeyScreen } from "./cloud";
-import { DeviceKeyScreen } from "./device";
 import { EmailKeyScreen } from "./email";
 import { NfcKeyScreen } from "./nfc";
 import { PhoneKeyConfirmScreen, PhoneKeyRequestScreen } from "./phone";
