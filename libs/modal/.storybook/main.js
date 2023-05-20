@@ -56,6 +56,7 @@ const config = {
           "@obi-wallet/sdk": path.join(__dirname, "../../sdk/src"),
           "@obi-wallet/theme": path.join(__dirname, "../../theme/src"),
           crypto: "crypto-browserify",
+          stream: "stream-browserify",
           "react-native": "react-native-web",
           "react-shadow/emotion": "react-shadow/emotion.esm",
         },

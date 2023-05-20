@@ -1,27 +1,29 @@
-import {
-  Back,
-  Background,
-  getTwilioClient,
-  isSmallScreenNumber,
-  KeyFlow,
-  KeyRoute,
-  KeyStackParamList,
-  PhoneNumberInput,
-  SecurityQuestionInput,
-  SendMagicSmsButton,
-  Text,
-  useEnv,
-  useRootNavigation,
-  useSecurityQuestionInput,
-  useStore,
-} from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, Image, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useEnv, useStore } from "../../../../contexts";
+import { isSmallScreenNumber } from "../../../../helpers";
+import { getTwilioClient } from "../../../../keys";
+import {
+  KeyFlow,
+  KeyRoute,
+  KeyStackParamList,
+  useRootNavigation,
+} from "../../../../router";
+import { Back } from "../../../back";
+import { Background } from "../../../background";
+import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
+import {
+  PhoneNumberInput,
+  SecurityQuestionInput,
+  SendMagicSmsButton,
+  useSecurityQuestionInput,
+} from "../../../phone-key";
+import { Text } from "../../../typography";
 
 export type PhoneKeyRequestScreenProps = NativeStackScreenProps<
   KeyStackParamList,

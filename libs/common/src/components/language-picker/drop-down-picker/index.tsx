@@ -1,11 +1,11 @@
 import { Language } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
 import { DropDownPickerProps } from "react-native-dropdown-picker";
-import invariant from "tiny-invariant";
+import warning from "tiny-warning";
 
 export const DropDownPicker = observer<DropDownPickerProps<Language | null>>(
   function DropDownPicker() {
-    invariant(false, "DropDownPicker not implemented for web");
+    warning(false, "DropDownPicker not implemented for web");
     return null;
   }
 );

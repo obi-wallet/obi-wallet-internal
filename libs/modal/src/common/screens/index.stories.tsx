@@ -2,6 +2,7 @@ import {
   DeviceKeyScreen,
   KeyRoute,
   OnboardingRoute,
+  PhoneKeyRequestScreen,
   RootStack,
   WelcomeScreen,
 } from "@obi-wallet/common";
@@ -20,6 +21,10 @@ function App({ initialRouteName }: { initialRouteName: string }) {
         component={WelcomeScreen}
       />
       <RootStack.Screen name={KeyRoute.DeviceKey} component={DeviceKeyScreen} />
+      <RootStack.Screen
+        name={KeyRoute.PhoneKeyRequest}
+        component={PhoneKeyRequestScreen}
+      />
     </RootStack.Navigator>
   );
 }
@@ -42,5 +47,11 @@ export const Welcome: Story = {
 export const DeviceKey: Story = {
   render: () => {
     return <App initialRouteName={KeyRoute.DeviceKey} />;
+  },
+};
+
+export const PhoneKeyRequest: Story = {
+  render: () => {
+    return <App initialRouteName={KeyRoute.PhoneKeyRequest} />;
   },
 };
