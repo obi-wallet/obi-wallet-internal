@@ -3,6 +3,7 @@ import {
   Back,
   Background,
   isSmallScreenNumber,
+  KeyboardAvoidingView,
   KeyFlow,
   KeyRoute,
   KeyStackParamList,
@@ -31,7 +32,6 @@ import {
   parseNFCData,
   startReading,
 } from "../../../app/nfc";
-import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 
 export type NfcKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,

@@ -3,6 +3,7 @@ import {
   Back,
   Background,
   isSmallScreenNumber,
+  KeyboardAvoidingView,
   KeyFlow,
   KeyRoute,
   KeyStackParamList,
@@ -29,7 +30,6 @@ import { Alert, Linking, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 
-import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import SocialLoop from "../../../assets/social-loop.svg";
 import { useKeyboardVisible } from "../../../helpers/keyboard-visible";
 

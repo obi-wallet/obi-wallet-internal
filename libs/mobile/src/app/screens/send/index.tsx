@@ -1,15 +1,16 @@
 import { useTheme } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Back,
   Button,
   EnrichedToken,
   isSmallScreenNumber,
+  KeyboardAvoidingView,
   RootRoute,
   RootStackParamList,
   useEnrichedBalances,
   useStore,
 } from "@obi-wallet/common";
-import { Back } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   isTerraChain,
@@ -32,7 +33,6 @@ import { z } from "zod";
 
 import { AddressController, TokenController } from "../../../forms";
 import { address } from "../../../helpers/validation-helpers";
-import { KeyboardAvoidingView } from "../components/keyboard-avoiding-view";
 import { HomeBottomTabRoute } from "../home/home-stack";
 
 export type SendScreenProps = NativeStackScreenProps<

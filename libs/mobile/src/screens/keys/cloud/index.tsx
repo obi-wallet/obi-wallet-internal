@@ -3,6 +3,7 @@ import {
   Back,
   Background,
   isSmallScreenNumber,
+  KeyboardAvoidingView,
   KeyFlow,
   KeyRoute,
   KeyStackParamList,
@@ -21,7 +22,6 @@ import { Alert, FlatList, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { getCloudKeyPair, signOut } from "../../../app/cloud/google-drive";
-import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 
 export type CloudKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,

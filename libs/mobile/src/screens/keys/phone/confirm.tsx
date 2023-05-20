@@ -3,6 +3,7 @@ import {
   Background,
   getTwilioClient,
   isSmallScreenNumber,
+  KeyboardAvoidingView,
   KeyFlow,
   KeyRoute,
   KeyStackParamList,
@@ -24,7 +25,6 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import InsuranceLogo from "./assets/insurance-logo.svg";
-import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { PhoneOneTimeCodeInput } from "../../../components/phone";
 
 export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<

@@ -3,6 +3,7 @@ export * from "./background";
 export * from "./brand-toggle";
 export * from "./buttons";
 export * from "./initial-background";
+export * from "./keyboard-avoiding-view";
 export * from "./keyboard-aware-scroll-view";
 export * from "./language-picker";
 export * from "./phone-key";

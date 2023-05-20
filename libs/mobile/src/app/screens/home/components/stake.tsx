@@ -10,6 +10,7 @@ import {
   enrichToken,
   isSmallScreen,
   isSmallScreenNumber,
+  KeyboardAvoidingView,
   Text,
   useBalances,
   useStore,
@@ -59,7 +60,6 @@ import { z } from "zod";
 
 import { TokenController } from "../../../../forms";
 import { CoinIcon } from "../../components/coin-icon";
-import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";
 
 enum StakeTab {
