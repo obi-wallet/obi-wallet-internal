@@ -2,6 +2,7 @@ import {
   DeviceKeyScreen,
   KeyRoute,
   OnboardingRoute,
+  PhoneKeyConfirmScreen,
   PhoneKeyRequestScreen,
   RootStack,
   WelcomeScreen,
@@ -24,6 +25,10 @@ function App({ initialRouteName }: { initialRouteName: string }) {
       <RootStack.Screen
         name={KeyRoute.PhoneKeyRequest}
         component={PhoneKeyRequestScreen}
+      />
+      <RootStack.Screen
+        name={KeyRoute.PhoneKeyConfirm}
+        component={PhoneKeyConfirmScreen}
       />
     </RootStack.Navigator>
   );
@@ -53,5 +58,11 @@ export const DeviceKey: Story = {
 export const PhoneKeyRequest: Story = {
   render: () => {
     return <App initialRouteName={KeyRoute.PhoneKeyRequest} />;
+  },
+};
+
+export const PhoneKeyConfirm: Story = {
+  render: () => {
+    return <App initialRouteName={KeyRoute.PhoneKeyConfirm} />;
   },
 };

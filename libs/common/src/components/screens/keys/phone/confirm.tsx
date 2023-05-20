@@ -1,31 +1,35 @@
-import {
-  Back,
-  Background,
-  getTwilioClient,
-  isSmallScreenNumber,
-  KeyboardAvoidingView,
-  KeyFlow,
-  KeyRoute,
-  KeyStackParamList,
-  OnboardingRoute,
-  PhoneOneTimeCodeInput,
-  SettingsRoute,
-  Text,
-  useEnv,
-  useRootNavigation,
-  useStore,
-  VerifyAndProceedButton,
-} from "@obi-wallet/common";
 import { MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Alert, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import InsuranceLogo from "./assets/insurance-logo.svg";
+import { useEnv, useStore } from "../../../../contexts";
+import { isSmallScreenNumber } from "../../../../helpers";
+import { getTwilioClient } from "../../../../keys";
+import {
+  KeyFlow,
+  KeyRoute,
+  KeyStackParamList,
+  OnboardingRoute,
+  SettingsRoute,
+  useRootNavigation,
+} from "../../../../router";
+import { Back } from "../../../back";
+import { Background } from "../../../background";
+import { KeyboardAvoidingView } from "../../../keyboard-avoiding-view";
+import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
+import { PhoneOneTimeCodeInput } from "../../../phone-key";
+import { Text } from "../../../typography";
+import { VerifyAndProceedButton } from "../../../verify-and-proceed-button";
+
+// TODO:
+// import InsuranceLogo from "./assets/insurance-logo.svg";
+const InsuranceLogo = observer(function InsuranceLogo() {
+  return null;
+});
 
 export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<
   KeyStackParamList,
