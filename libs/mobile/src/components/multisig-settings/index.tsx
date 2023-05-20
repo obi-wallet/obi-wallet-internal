@@ -2,10 +2,14 @@ import { useTheme } from "@emotion/react";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import {
   Back,
+  CheckIcon,
   isSmallScreenNumber,
+  Key,
+  KeysList,
   Text,
   useKeyMetaData,
   useStore,
+  WarningIcon,
 } from "@obi-wallet/common";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -18,12 +22,6 @@ import {
   KeyBottomSheetContent,
   KeyBottomSheetContentProps,
 } from "./key-bottom-sheet-content";
-import {
-  CheckIcon,
-  Key,
-  KeysList,
-  WarningIcon,
-} from "../../app/screens/components/keys-list";
 import { KeysComponent } from "../../app/screens/settings/keys-config/keys-component";
 
 export interface MultisigSettingsProps {

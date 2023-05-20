@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { Text } from "@obi-wallet/common";
+import { KeysList, Text } from "@obi-wallet/common";
 import {
   SignAndBroadcastTransactionType,
   useSignAndBroadcastTransaction,
@@ -11,7 +11,6 @@ import { View } from "react-native";
 
 import { ConfirmMessages } from "./confirm-messages";
 import { createDeviceKeySigner } from "./signers";
-import { KeysList } from "../../screens/components/keys-list";
 
 export type SignatureModalFlexAccountProps = ReturnType<
   typeof useSignAndBroadcastTransaction

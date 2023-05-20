@@ -1,11 +1,3 @@
-import {
-  ComingSoonKeyType,
-  Text,
-  triggerImpactLight,
-  triggerNotificationSuccess,
-  useKeyMetaData,
-  useStore,
-} from "@obi-wallet/common";
 import { KeyType } from "@obi-wallet/sdk";
 import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
@@ -25,11 +17,10 @@ import {
 } from "react-native";
 import { SvgProps } from "react-native-svg";
 
-import Check from "../../../../assets/check.svg";
-import Warning from "../../../../assets/warning.svg";
-
-export const CheckIcon = Check;
-export const WarningIcon = Warning;
+import { ComingSoonKeyType, useKeyMetaData } from "./key-meta-data";
+import { useStore } from "../../contexts";
+import { triggerImpactLight, triggerNotificationSuccess } from "../../helpers";
+import { Text } from "../typography";
 
 export interface KeyMetaData {
   label: string;

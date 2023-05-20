@@ -1,4 +1,4 @@
-import { useEnv } from "@obi-wallet/common";
+import { CheckIcon, Key, useEnv } from "@obi-wallet/common";
 import {
   SignAndBroadcastTransactionType,
   useQuery,
@@ -15,7 +15,6 @@ import {
   BottomSheet,
   BottomSheetRef,
 } from "../../screens/components/bottom-sheet";
-import { CheckIcon, Key } from "../../screens/components/keys-list";
 
 export type SignatureModalMultisigKeyProps = ReturnType<
   typeof useSignAndBroadcastTransaction

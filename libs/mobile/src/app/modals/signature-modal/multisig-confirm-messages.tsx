@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { Text, useStore } from "@obi-wallet/common";
+import { KeysList, KeysListProps, Text, useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -7,7 +7,6 @@ import { Alert, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import { ConfirmMessages, ConfirmMessagesProps } from "./confirm-messages";
-import { KeysList, KeysListProps } from "../../screens/components/keys-list";
 
 export interface MultisigConfirmMessagesProps
   extends Omit<

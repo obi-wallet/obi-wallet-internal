@@ -4,7 +4,7 @@ import { useIntl } from "react-intl";
 import { SvgProps } from "react-native-svg";
 
 import { useStore } from "../../contexts";
-import { SendIcon as Telegram } from "../send-icon";
+import { SendIcon as Telegram } from "../icons";
 
 // TODO:
 // import Cloud from "./assets/cloud.svg";
