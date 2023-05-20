@@ -1,4 +1,3 @@
-import { Text, useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import {
   Platform,
@@ -8,6 +7,9 @@ import {
   TouchableWithoutFeedbackProps,
   View,
 } from "react-native";
+
+import { useStore } from "../../contexts";
+import { Text } from "../typography";
 
 const getBaseStyles = (isObi: boolean) =>
   StyleSheet.create({

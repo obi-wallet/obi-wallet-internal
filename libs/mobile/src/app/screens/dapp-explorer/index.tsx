@@ -6,6 +6,7 @@ import {
   App,
   BaseTextInput,
   Button as ObiButton,
+  InlineButton,
   RootRoute,
   Text,
   useRootNavigation,
@@ -34,7 +35,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
 import HistoryIcon from "./assets/history.svg";
 import Wcqr from "./assets/wcqr.svg";
-import { InlineButton } from "../../button";
 import { parseDynamicLinkURL } from "../components/connected-web-view";
 import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
 

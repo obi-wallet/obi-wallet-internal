@@ -1,6 +1,7 @@
 import {
   Back,
   Background,
+  InlineButton,
   isSmallScreenNumber,
   KeyboardAvoidingView,
   KeyFlow,
@@ -22,7 +23,6 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { InlineButton } from "../../../app/button";
 import SocialLoop from "../../../assets/social-loop.svg";
 
 export type SocialKeyScreenProps = NativeStackScreenProps<
