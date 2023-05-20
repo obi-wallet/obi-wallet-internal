@@ -5,6 +5,8 @@ import {
   CheckIcon,
   isSmallScreenNumber,
   Key,
+  KeyBottomSheetContent,
+  KeyBottomSheetContentProps,
   KeysIcon,
   KeysList,
   Text,
@@ -18,11 +20,6 @@ import { ReactNode, useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import {
-  KeyBottomSheetContent,
-  KeyBottomSheetContentProps,
-} from "./key-bottom-sheet-content";
 
 export interface MultisigSettingsProps {
   children?: ReactNode;
