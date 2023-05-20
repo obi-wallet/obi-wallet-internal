@@ -17,6 +17,7 @@
     "nanoid": "*",
     "ramda": "*",
     "react-intl": "*",
+    "react-native-country-picker-modal": "*",
     "react-native-device-info": "*",
     "react-native-dropdown-picker": "*",
     "react-native-haptic-feedback": "*",
@@ -25,7 +26,8 @@
     "react-native-safe-area-context": "*",
     "react-native-svg": "*",
     "rooks": "*",
-    "tiny-invariant": "*"
+    "tiny-invariant": "*",
+    "tiny-warning": "*"
   },
   "devDependencies": {
     "@testing-library/jest-native": "*"

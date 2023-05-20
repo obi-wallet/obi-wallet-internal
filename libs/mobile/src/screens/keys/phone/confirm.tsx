@@ -12,6 +12,7 @@ import {
   useEnv,
   useRootNavigation,
   useStore,
+  VerifyAndProceedButton,
 } from "@obi-wallet/common";
 import { MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -24,7 +25,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import InsuranceLogo from "./assets/insurance-logo.svg";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
-import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
 import { PhoneOneTimeCodeInput } from "../../../components/phone";
 
 export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<

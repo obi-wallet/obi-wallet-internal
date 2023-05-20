@@ -9,7 +9,7 @@ import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { FC } from "react";
 import { ImageRequireSource, ImageURISource, View } from "react-native";
-import { SvgProps } from "react-native-svg";
+import type { SvgProps } from "react-native-svg";
 
 import { Text } from "../../components";
 import { useStore } from "../../contexts";

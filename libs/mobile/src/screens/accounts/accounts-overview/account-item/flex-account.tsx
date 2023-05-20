@@ -1,6 +1,6 @@
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Text, TextInput } from "@obi-wallet/common";
+import { Text, BaseTextInput } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { FlexAccount, FlexAccountPermissionedAddress } from "@obi-wallet/sdk";
 import Slider from "@react-native-community/slider";
@@ -345,7 +345,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                               : { height: 0, opacity: 0 }),
                           }}
                         >
-                          <TextInput
+                          <BaseTextInput
                             style={{
                               backgroundColor: "#272727",
                               borderWidth: 0,

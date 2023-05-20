@@ -6,9 +6,13 @@ import {
   KeyFlow,
   KeyRoute,
   KeyStackParamList,
+  PhoneNumberInput,
+  SecurityQuestionInput,
+  SendMagicSmsButton,
   Text,
   useEnv,
   useRootNavigation,
+  useSecurityQuestionInput,
   useStore,
 } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -18,13 +22,6 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, Image, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import {
-  SecurityQuestionInput,
-  useSecurityQuestionInput,
-} from "../../../app/screens/components/phone-number/security-question-input";
-import { SendMagicSmsButton } from "../../../app/screens/components/phone-number/send-magic-sms-button";
-import { PhoneNumberInput } from "../../../components/phone";
 
 export type PhoneKeyRequestScreenProps = NativeStackScreenProps<
   KeyStackParamList,

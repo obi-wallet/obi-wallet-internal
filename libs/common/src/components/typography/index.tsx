@@ -29,7 +29,7 @@ export const Text = observer<TextProps & { children: ReactNode }>(
   }
 );
 
-export const TextInput = observer<TextInputProps>(function TextInput({
+export const BaseTextInput = observer<TextInputProps>(function TextInput({
   style,
   ...props
 }) {

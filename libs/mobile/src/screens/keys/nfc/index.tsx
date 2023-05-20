@@ -11,6 +11,7 @@ import {
   Text,
   useRootNavigation,
   useStore,
+  VerifyAndProceedButton,
 } from "@obi-wallet/common";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -31,7 +32,6 @@ import {
   startReading,
 } from "../../../app/nfc";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
-import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
 
 export type NfcKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,

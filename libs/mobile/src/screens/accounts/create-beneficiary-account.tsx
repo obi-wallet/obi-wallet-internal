@@ -3,6 +3,7 @@ import {
   Button,
   isSmallScreenNumber,
   Text,
+  TextInput,
   useStore,
 } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
@@ -20,7 +21,6 @@ import BeneficiaryAccountIcon from "./assets/beneficiary-account-icon.svg";
 import { AvatarPicker, Icon } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { ScreenContainer } from "../../app/screens/components/screen-container";
-import { TextInput } from "../../app/text-input";
 import { AddressController } from "../../forms";
 import { useKeyboardVisible } from "../../helpers/keyboard-visible";
 import { address, nonEmptyString } from "../../helpers/validation-helpers";

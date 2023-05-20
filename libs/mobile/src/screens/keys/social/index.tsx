@@ -8,8 +8,10 @@ import {
   OnboardingRoute,
   SettingsRoute,
   Text,
+  TextInput,
   useRootNavigation,
   useStore,
+  VerifyAndProceedButton,
 } from "@obi-wallet/common";
 import { Chain, MultisigKey, Sdk, Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -21,8 +23,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { InlineButton } from "../../../app/button";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
-import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
-import { TextInput } from "../../../app/text-input";
 import SocialLoop from "../../../assets/social-loop.svg";
 
 export type SocialKeyScreenProps = NativeStackScreenProps<

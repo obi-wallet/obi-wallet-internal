@@ -5,15 +5,15 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Back,
+  BaseTextInput,
   enrichToken,
   isSmallScreen,
   isSmallScreenNumber,
   Text,
-  TextInput,
   useBalances,
   useStore,
 } from "@obi-wallet/common";
-import { Back } from "@obi-wallet/common";
 import {
   useCurrentWallet,
   useDelegations,
@@ -46,13 +46,13 @@ import { Controller, useForm } from "react-hook-form";
 import {
   FlatList,
   Image,
+  ScrollView,
   StyleProp,
   TouchableHighlight,
   TouchableOpacity,
   View,
   ViewStyle,
 } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
 import { GestureResponderEvent } from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { z } from "zod";
@@ -421,7 +421,7 @@ const Validators = observer(function Validators() {
             </Text>
           </View>
           <View style={{ flex: 1 }}>
-            <TextInput
+            <BaseTextInput
               style={{
                 color: "#ffffff",
                 borderColor: "#ffffff",

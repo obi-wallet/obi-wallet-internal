@@ -1,9 +1,13 @@
-import { AsyncButton, useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
 import { Keyboard } from "react-native";
 
-import ShieldCheck from "./assets/shield-check.svg";
+import { useStore } from "../../contexts";
+import { AsyncButton } from "../buttons";
+
+// TODO:
+// import ShieldCheck from "./assets/shield-check.svg";
+const ShieldCheck = undefined;
 
 export interface VerifyAndProceedButtonProps {
   onPress: () => Promise<void>;

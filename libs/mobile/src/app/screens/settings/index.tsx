@@ -12,9 +12,8 @@ import * as Sentry from "@sentry/react-native";
 import { observer } from "mobx-react-lite";
 import { FC, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Linking, StyleSheet, Text, View } from "react-native";
+import { Linking, ScrollView, StyleSheet, Text, View } from "react-native";
 import codePush, { LocalPackage } from "react-native-code-push";
-import { ScrollView } from "react-native-gesture-handler";
 import { SvgProps } from "react-native-svg";
 import { useAsyncEffect } from "rooks";
 

@@ -8,6 +8,7 @@ import {
   isSmallScreenNumber,
   Text,
   useStore,
+  VerifyAndProceedButton,
 } from "@obi-wallet/common";
 import { Chain, ChainId } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -18,7 +19,6 @@ import { useAsyncEffect } from "rooks";
 
 import * as A from "./api-types";
 import { OnboardingScreenContainer } from "../../components/onboarding-screen-container";
-import { VerifyAndProceedButton } from "../../components/phone-number/verify-and-proceed-button";
 
 export interface LookupProps {
   chainId: ChainId;

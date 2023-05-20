@@ -1,9 +1,3 @@
-import {
-  isSmallScreenNumber,
-  Text,
-  TextInput as OriginalTextInput,
-  useStore,
-} from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ComponentType } from "react";
 import {
@@ -14,6 +8,10 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+
+import { useStore } from "../../contexts";
+import { isSmallScreenNumber } from "../../helpers";
+import { Text, BaseTextInput } from "../typography";
 
 const getStyles = (isObi: boolean) =>
   StyleSheet.create({
@@ -51,7 +49,7 @@ export const TextInput = observer<
   style,
   inputStyle,
   invalidMessage,
-  CustomTextInput = OriginalTextInput,
+  CustomTextInput = BaseTextInput,
   ...props
 }) {
   const { configStore } = useStore();

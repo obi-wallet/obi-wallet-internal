@@ -1,17 +1,18 @@
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
-import { Text, useStore } from "@obi-wallet/common";
+import {
+  SecurityQuestionInput,
+  SendMagicSmsButton,
+  Text,
+  useSecurityQuestionInput,
+  useStore,
+  VerifyAndProceedButton,
+} from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
 
 import { PhoneOneTimeCodeInput } from "../../../components/phone";
-import {
-  SecurityQuestionInput,
-  useSecurityQuestionInput,
-} from "../../screens/components/phone-number/security-question-input";
-import { SendMagicSmsButton } from "../../screens/components/phone-number/send-magic-sms-button";
-import { VerifyAndProceedButton } from "../../screens/components/phone-number/verify-and-proceed-button";
 
 export interface PhoneNumberBottomSheetContentProps {
   phoneNumber: string;

@@ -1,4 +1,4 @@
-import { Text, TextInput } from "@obi-wallet/common";
+import { Text, BaseTextInput } from "@obi-wallet/common";
 import { Beneficiary } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
@@ -109,7 +109,7 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
                 >
                   Inheritance triggers after how many months of inactivity?
                 </Text>
-                <TextInput
+                <BaseTextInput
                   style={{
                     backgroundColor: "#272727",
                     borderRadius: 7,
@@ -149,7 +149,7 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
                 >
                   Recipient receives funds at the following rate (%):
                 </Text>
-                <TextInput
+                <BaseTextInput
                   style={{
                     backgroundColor: "#272727",
                     borderRadius: 7,

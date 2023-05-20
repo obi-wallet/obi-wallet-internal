@@ -4,10 +4,10 @@ import { faPaperclip } from "@fortawesome/free-solid-svg-icons/faPaperclip";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   App,
+  BaseTextInput,
   Button as ObiButton,
   RootRoute,
   Text,
-  TextInput,
   useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
@@ -26,9 +26,9 @@ import {
   ScrollView,
   StyleSheet,
   TouchableHighlight,
+  TouchableOpacity,
   View,
 } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
@@ -383,7 +383,7 @@ const AppsScreen = observer(function AppsScreen() {
             flexDirection: "row",
           }}
         >
-          <TextInput
+          <BaseTextInput
             defaultValue=""
             style={{
               flex: 1,

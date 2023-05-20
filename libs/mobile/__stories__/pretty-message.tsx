@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { useStore } from "@obi-wallet/common";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView } from "react-native";
 
 import {
   createSessionKey,

@@ -1,16 +1,17 @@
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  Button,
-  isSmallScreenNumber,
-  Text,
-  useStore,
-} from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
 
-import SMS from "./assets/sms.svg";
+import { useStore } from "../../../contexts";
+import { isSmallScreenNumber } from "../../../helpers";
+import { Button } from "../../buttons";
+import { Text } from "../../typography";
+
+// TODO:
+// import SMS from "./assets/sms.svg";
+const SMS = undefined;
 
 export interface SendMagicSmsButtonProps {
   description?: string;

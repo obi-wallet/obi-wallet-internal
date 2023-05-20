@@ -23,8 +23,13 @@ import { ParamListBase } from "@react-navigation/native";
 import { action } from "mobx";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, Platform, TouchableOpacity, View } from "react-native";
-import { TouchableHighlight } from "react-native-gesture-handler";
+import {
+  Alert,
+  Platform,
+  TouchableHighlight,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import invariant from "tiny-invariant";
 
 import AppsIcon from "./assets/appsIcon.svg";

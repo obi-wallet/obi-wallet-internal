@@ -1,9 +1,10 @@
 import { pubkeyType } from "@cosmjs/amino";
 import {
   getBiometricsPublicKey,
-  useEnv,
-  useStore,
   getTwilioClient,
+  useEnv,
+  useSecurityQuestions,
+  useStore,
 } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
@@ -21,7 +22,6 @@ import { ReactNode, useEffect } from "react";
 import { Alert } from "react-native";
 import { useAsyncEffect } from "rooks";
 
-import { useSecurityQuestions } from "../app/screens/components/phone-number/security-question-input";
 import { getGatekeeperConfigDraftId } from "../screens/accounts/draft-id";
 
 export function mockAction(message: string) {

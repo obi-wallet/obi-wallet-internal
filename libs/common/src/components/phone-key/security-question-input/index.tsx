@@ -1,16 +1,13 @@
-import {
-  isSmallScreenNumber,
-  Text,
-  TextInput as OriginalTextInput,
-  useStore,
-} from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ComponentType, Dispatch, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { TextInputProps, View } from "react-native";
 
-import { DropDownPicker } from "../../../drop-down-picker";
-import { TextInput } from "../../../text-input";
+import { DropDownPicker } from "./drop-down-picker";
+import { useStore } from "../../../contexts";
+import { isSmallScreenNumber } from "../../../helpers";
+import { TextInput } from "../../text-input";
+import { BaseTextInput, Text } from "../../typography";
 
 export type SetStateCallback<S> = (prevState: S) => S;
 export type OnSecurityQuestionChange = Dispatch<SetStateCallback<string>>;
@@ -39,7 +36,7 @@ export const SecurityQuestionInput = observer(function SecurityQuestionInput({
   },
   securityAnswer,
   onSecurityAnswerChange,
-  CustomTextInput = OriginalTextInput,
+  CustomTextInput = BaseTextInput,
 }: SecurityQuestionInputProps) {
   const [dropdownPickerOpen, setDropdownPickerOpen] = useState(false);
   const [securityQuestions, setSecurityQuestions] = useState(
