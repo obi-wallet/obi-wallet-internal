@@ -5,6 +5,7 @@
     "@emotion/react": "*",
     "@fortawesome/free-solid-svg-icons": "*",
     "@fortawesome/react-native-fontawesome": "*",
+    "@gorhom/bottom-sheet": "*",
     "@gorhom/portal": "*",
     "@obi-wallet/config": "*",
     "@obi-wallet/headless-ui": "*",

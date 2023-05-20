@@ -4,6 +4,7 @@ import {
   Button,
   KeyFlow,
   KeyRoute,
+  MultisigSettings,
   useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
@@ -13,8 +14,6 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { Alert, View } from "react-native";
-
-import { MultisigSettings } from "../../../../components/multisig-settings";
 
 function getMultisigSettingsDraftId(wallet: MultisigWallet) {
   return `multisig-settings/${wallet.id}`;

@@ -3,6 +3,7 @@ import {
   AsyncButton,
   KeyFlow,
   KeyRoute,
+  MultisigSettings,
   OnboardingRoute,
   OnboardingStackParamList,
   useRootNavigation,
@@ -14,8 +15,6 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { Alert, View } from "react-native";
 import invariant from "tiny-invariant";
-
-import { MultisigSettings } from "../../components/multisig-settings";
 
 export type RecoverWalletScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,

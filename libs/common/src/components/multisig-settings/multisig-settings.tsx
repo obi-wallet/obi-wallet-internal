@@ -1,25 +1,23 @@
 import { useTheme } from "@emotion/react";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import {
-  Back,
-  CheckIcon,
-  isSmallScreenNumber,
-  Key,
-  KeyBottomSheetContent,
-  KeyBottomSheetContentProps,
-  KeysIcon,
-  KeysList,
-  Text,
-  useKeyMetaData,
-  useStore,
-  WarningIcon,
-} from "@obi-wallet/common";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import {
+  KeyBottomSheetContent,
+  KeyBottomSheetContentProps,
+} from "./key-bottom-sheet-content";
+import { useKeyMetaData } from "./key-meta-data";
+import { Key, KeysList } from "./keys-list";
+import { useStore } from "../../contexts";
+import { isSmallScreenNumber } from "../../helpers";
+import { Back } from "../back";
+import { BottomSheet, BottomSheetView } from "../bottom-sheet";
+import { CheckIcon, KeysIcon, WarningIcon } from "../icons";
+import { Text } from "../typography";
 
 export interface MultisigSettingsProps {
   children?: ReactNode;
