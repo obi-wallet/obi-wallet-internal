@@ -1,7 +1,9 @@
 import {
+  ComingSoonKeyType,
   Text,
   triggerImpactLight,
   triggerNotificationSuccess,
+  useKeyMetaData,
   useStore,
 } from "@obi-wallet/common";
 import { KeyType } from "@obi-wallet/sdk";
@@ -25,10 +27,6 @@ import { SvgProps } from "react-native-svg";
 
 import Check from "../../../../assets/check.svg";
 import Warning from "../../../../assets/warning.svg";
-import {
-  ComingSoonKeyType,
-  useKeyMetaData,
-} from "../../../../components/multisig-settings/key-meta-data";
 
 export const CheckIcon = Check;
 export const WarningIcon = Warning;

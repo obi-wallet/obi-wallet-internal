@@ -1,19 +1,50 @@
-import { SendIcon as Telegram, useStore } from "@obi-wallet/common";
 import { KeyType } from "@obi-wallet/sdk";
 import { ComponentType } from "react";
 import { useIntl } from "react-intl";
 import { SvgProps } from "react-native-svg";
 
-import Cloud from "./assets/cloud.svg";
-import DeviceLoop from "./assets/device-loop.svg";
-import DeviceObi from "./assets/device-obi.svg";
-import Email from "./assets/email.svg";
-import Ledger from "./assets/ledger.svg";
-import Map from "./assets/map.svg";
-import Nfc from "./assets/nfc.svg";
-import Phone from "./assets/phone.svg";
-import SocialLoop from "../../assets/social-loop.svg";
-import SocialObi from "../../assets/social-obi.svg";
+import { useStore } from "../../contexts";
+import { SendIcon as Telegram } from "../send-icon";
+
+// TODO:
+// import Cloud from "./assets/cloud.svg";
+const Cloud = Telegram as ComponentType<SvgProps>;
+
+// TODO:
+// import DeviceLoop from "./assets/device-loop.svg";
+const DeviceLoop = Telegram as ComponentType<SvgProps>;
+
+// TODO:
+// import DeviceObi from "./assets/device-obi.svg";
+const DeviceObi = Telegram as ComponentType<SvgProps>;
+
+// TODO:
+// import Email from "./assets/email.svg";
+const Email = Telegram as ComponentType<SvgProps>;
+
+// TODO:
+// import Ledger from "./assets/ledger.svg";
+const Ledger = Telegram as ComponentType<SvgProps>;
+
+// TODO:
+// import Map from "./assets/map.svg";
+const Map = Telegram as ComponentType<SvgProps>;
+
+// TODO:
+// import Nfc from "./assets/nfc.svg";
+const Nfc = Telegram as ComponentType<SvgProps>;
+
+// TODO:
+// import Phone from "./assets/phone.svg";
+const Phone = Telegram as ComponentType<SvgProps>;
+
+// TODO:
+// import SocialLoop from "../../assets/social-loop.svg";
+const SocialLoop = Telegram as ComponentType<SvgProps>;
+
+// TODO:
+// import SocialObi from "../../assets/social-obi.svg";
+const SocialObi = Telegram as ComponentType<SvgProps>;
 
 export enum ComingSoonKeyType {
   Telegram = "telegram",

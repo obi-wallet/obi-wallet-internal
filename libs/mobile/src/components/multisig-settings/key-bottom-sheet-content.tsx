@@ -1,13 +1,11 @@
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Text, useStore } from "@obi-wallet/common";
+import { Text, useKeyMetaData, useStore } from "@obi-wallet/common";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage } from "react-intl";
 import { TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-import { useKeyMetaData } from "./key-meta-data";
 
 export interface KeyBottomSheetContentProps {
   type: KeyType;
