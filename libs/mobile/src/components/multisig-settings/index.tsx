@@ -5,6 +5,7 @@ import {
   CheckIcon,
   isSmallScreenNumber,
   Key,
+  KeysIcon,
   KeysList,
   Text,
   useKeyMetaData,
@@ -22,7 +23,6 @@ import {
   KeyBottomSheetContent,
   KeyBottomSheetContentProps,
 } from "./key-bottom-sheet-content";
-import { KeysComponent } from "../../app/screens/settings/keys-config/keys-component";
 
 export interface MultisigSettingsProps {
   children?: ReactNode;
@@ -108,7 +108,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
               alignItems: "center",
             }}
           >
-            <KeysComponent keys={activatedKeys} />
+            <KeysIcon keys={activatedKeys} />
             <Text
               style={[
                 styles.heading,

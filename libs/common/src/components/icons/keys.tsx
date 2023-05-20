@@ -1,4 +1,3 @@
-import { useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import Svg, {
   ClipPath,
@@ -9,7 +8,9 @@ import Svg, {
   SvgProps,
 } from "react-native-svg";
 
-export const KeysComponent = observer(function KeysComponent(
+import { useStore } from "../../contexts";
+
+export const KeysIcon = observer(function KeysIcon(
   props: SvgProps & { keys: number }
 ) {
   const { configStore } = useStore();
