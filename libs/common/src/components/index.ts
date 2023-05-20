@@ -9,6 +9,7 @@ export * from "./language-picker";
 export * from "./phone-key";
 export * from "./provider";
 export * from "./screens";
+export * from "./send-icon";
 export * from "./text-input";
 export * from "./typography";
 export * from "./verify-and-proceed-button";

@@ -9,6 +9,7 @@ import {
   isSmallScreenSubstr,
   RootRoute,
   RootStackParamList,
+  SendIcon as Send,
   Text,
   UsdBalance,
   useEnrichedBalances,
@@ -29,7 +30,6 @@ import {
 } from "react-native";
 
 import { ReceiveIcon as Receive } from "./receive";
-import { SendIcon as Send } from "../../../../components/send-icon";
 import { CoinIcon } from "../../components/coin-icon";
 import { NetworkAccountPickerLayout } from "../../components/network-account-picker-layout";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";

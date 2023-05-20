@@ -1,6 +1,7 @@
-import { useStore } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import Svg, { Path, SvgProps } from "react-native-svg";
+
+import { useStore } from "../../contexts";
 
 export const SendIcon = observer(function SendIcon(
   props: SvgProps & { color?: string }

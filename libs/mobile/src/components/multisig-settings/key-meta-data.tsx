@@ -1,4 +1,4 @@
-import { useStore } from "@obi-wallet/common";
+import { SendIcon as Telegram, useStore } from "@obi-wallet/common";
 import { KeyType } from "@obi-wallet/sdk";
 import { ComponentType } from "react";
 import { useIntl } from "react-intl";
@@ -14,7 +14,6 @@ import Nfc from "./assets/nfc.svg";
 import Phone from "./assets/phone.svg";
 import SocialLoop from "../../assets/social-loop.svg";
 import SocialObi from "../../assets/social-obi.svg";
-import { SendIcon as Telegram } from "../../components/send-icon";
 
 export enum ComingSoonKeyType {
   Telegram = "telegram",
