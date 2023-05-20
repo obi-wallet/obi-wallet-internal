@@ -1,3 +1,4 @@
+import { useEnv } from "@obi-wallet/common";
 import {
   SignAndBroadcastTransactionType,
   useQuery,
@@ -33,6 +34,7 @@ export const SignatureModalMultisigKey =
     safeSpendLimitExceeded,
   }) {
     const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
+    const env = useEnv();
 
     const usableSigners = useQuery({
       queryKey: ["usable-signers"],
@@ -41,6 +43,7 @@ export const SignatureModalMultisigKey =
           multisigKey,
           demoMode: interaction.payload.demoMode,
           bottomSheetRef: phoneNumberBottomSheetRef,
+          env,
         });
       },
       cacheTime: 0,

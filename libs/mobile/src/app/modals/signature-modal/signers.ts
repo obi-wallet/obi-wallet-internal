@@ -1,4 +1,9 @@
-import { existsKeyOnDevice, getBiometricsPrivateKey } from "@obi-wallet/common";
+import {
+  Env,
+  existsKeyOnDevice,
+  getBiometricsPrivateKey,
+  getTwilioClient,
+} from "@obi-wallet/common";
 import {
   AsyncKeySigner,
   ChainId,
@@ -16,16 +21,17 @@ import invariant from "tiny-invariant";
 
 import { getNFCPrivateKey, parseNFCData, startReading } from "../../nfc";
 import { BottomSheetRef } from "../../screens/components/bottom-sheet";
-import { getTwilioClient } from "../../text-message";
 
 export async function createUsableSigners({
   multisigKey,
   demoMode,
   bottomSheetRef,
+  env,
 }: {
   multisigKey: MultisigKey;
   demoMode: boolean;
   bottomSheetRef: RefObject<BottomSheetRef>;
+  env: Env;
 }) {
   const possibleUsableKeys = [
     KeyType.Device,
@@ -43,6 +49,7 @@ export async function createUsableSigners({
           demoMode,
           bottomSheetRef,
           key,
+          env,
         });
         return {
           key,
@@ -64,11 +71,13 @@ async function createUsableSigner({
   demoMode,
   bottomSheetRef,
   key,
+  env,
 }: {
   multisigKey: MultisigKey;
   demoMode: boolean;
   key: KeySubclassTypeMapping[KeyType];
   bottomSheetRef: RefObject<BottomSheetRef>;
+  env: Env;
 }): Promise<Signer | null> {
   switch (key.type) {
     case KeyType.Device: {
@@ -87,6 +96,7 @@ async function createUsableSigner({
         chainId: multisigKey.chainId,
         demoMode,
         bottomSheetRef,
+        env,
       });
     case KeyType.Nfc:
       return new NfcKeySigner({
@@ -128,15 +138,17 @@ export class PhoneKeySigner extends Signer {
     chainId,
     demoMode,
     bottomSheetRef,
+    env,
   }: {
     key: KeySubclassTypeMapping[KeyType.Phone];
     chainId: ChainId;
     demoMode: boolean;
     bottomSheetRef: RefObject<BottomSheetRef>;
+    env: Env;
   }) {
     super();
     this.signer = new AbstractPhoneKeySigner(key);
-    this.twilioClient = getTwilioClient(demoMode);
+    this.twilioClient = getTwilioClient({ demoMode, env });
     this.bottomSheetRef = bottomSheetRef;
     this.chainId = chainId;
   }

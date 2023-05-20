@@ -1,11 +1,13 @@
 import {
   Back,
   Background,
+  getTwilioClient,
   isSmallScreenNumber,
   KeyFlow,
   KeyRoute,
   KeyStackParamList,
   Text,
+  useEnv,
   useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
@@ -22,7 +24,6 @@ import {
   useSecurityQuestionInput,
 } from "../../../app/screens/components/phone-number/security-question-input";
 import { SendMagicSmsButton } from "../../../app/screens/components/phone-number/send-magic-sms-button";
-import { getTwilioClient } from "../../../app/text-message";
 import { PhoneNumberInput } from "../../../components/phone";
 
 export type PhoneKeyRequestScreenProps = NativeStackScreenProps<
@@ -66,6 +67,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
     const { configStore, chainStore } = useStore();
     const isObi = configStore.isObi();
     const chainId = chainStore.currentChain;
+    const env = useEnv();
 
     const {
       securityQuestion,
@@ -300,7 +302,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
 
                   if (checkSecurityAnswer && checkPhoneNumber) {
                     try {
-                      const twilioClient = getTwilioClient(demoMode);
+                      const twilioClient = getTwilioClient({ demoMode, env });
                       await twilioClient.sendPublicKeyTextMessage({
                         phoneNumber,
                         securityAnswer,

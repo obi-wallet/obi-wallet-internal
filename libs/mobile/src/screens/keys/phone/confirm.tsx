@@ -1,6 +1,7 @@
 import {
   Back,
   Background,
+  getTwilioClient,
   isSmallScreenNumber,
   KeyFlow,
   KeyRoute,
@@ -8,6 +9,7 @@ import {
   OnboardingRoute,
   SettingsRoute,
   Text,
+  useEnv,
   useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
@@ -23,7 +25,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import InsuranceLogo from "./assets/insurance-logo.svg";
 import { KeyboardAvoidingView } from "../../../app/screens/components/keyboard-avoiding-view";
 import { VerifyAndProceedButton } from "../../../app/screens/components/phone-number/verify-and-proceed-button";
-import { getTwilioClient } from "../../../app/text-message";
 import { PhoneOneTimeCodeInput } from "../../../components/phone";
 
 export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<
@@ -83,6 +84,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
     const draft = draftsStore.get<MultisigKey>({ id: draftId });
     const isObi = configStore.isObi();
     const chainId = chainStore.currentChain;
+    const env = useEnv();
     const [key, setKey] = useState("");
 
     const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true); // Magic Button disabled by default
@@ -181,7 +183,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                 value={key}
                 setValue={setKey}
                 onResend={async () => {
-                  const twilioClient = getTwilioClient(demoMode);
+                  const twilioClient = getTwilioClient({ demoMode, env });
                   await twilioClient.sendPublicKeyTextMessage({
                     phoneNumber,
                     securityAnswer,
@@ -195,7 +197,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                 onPress={async () => {
                   try {
                     setVerifyButtonDisabledDoubleclick(true);
-                    const twilioClient = getTwilioClient(demoMode);
+                    const twilioClient = getTwilioClient({ demoMode, env });
                     const publicKey =
                       await twilioClient.parsePublicKeyTextMessageResponse({
                         key,

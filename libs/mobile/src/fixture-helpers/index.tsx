@@ -1,5 +1,10 @@
 import { pubkeyType } from "@cosmjs/amino";
-import { getBiometricsPublicKey, useStore } from "@obi-wallet/common";
+import {
+  getBiometricsPublicKey,
+  useEnv,
+  useStore,
+  getTwilioClient,
+} from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   GatekeeperConfig,
@@ -17,7 +22,6 @@ import { Alert } from "react-native";
 import { useAsyncEffect } from "rooks";
 
 import { useSecurityQuestions } from "../app/screens/components/phone-number/security-question-input";
-import { getTwilioClient } from "../app/text-message";
 import { getGatekeeperConfigDraftId } from "../screens/accounts/draft-id";
 
 export function mockAction(message: string) {
@@ -35,6 +39,7 @@ export const MultisigDraft = {
     const { chainStore, draftsStore } = useStore();
     const draft = draftsStore.get({ id: multisigDraftId });
     const securityQuestions = useSecurityQuestions();
+    const env = useEnv();
 
     useAsyncEffect(async () => {
       if (!draft) {
@@ -46,9 +51,10 @@ export const MultisigDraft = {
           }),
         });
         original.setPhoneKey({
-          publicKey: await getTwilioClient(
-            true
-          ).parsePublicKeyTextMessageResponse({
+          publicKey: await getTwilioClient({
+            demoMode: true,
+            env,
+          }).parsePublicKeyTextMessageResponse({
             key: "",
           }),
           phoneNumber: "+1234567890",
