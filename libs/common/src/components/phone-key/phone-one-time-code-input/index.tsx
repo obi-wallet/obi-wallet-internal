@@ -1,8 +1,11 @@
-import { InlineButton, Text, TextInput } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { View } from "react-native";
+
+import { InlineButton } from "../../buttons";
+import { TextInput } from "../../text-input";
+import { Text } from "../../typography";
 
 export interface PhoneOneTimeCodeInputProps {
   phoneNumber: string;

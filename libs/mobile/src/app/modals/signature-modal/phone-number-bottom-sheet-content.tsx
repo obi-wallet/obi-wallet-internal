@@ -1,5 +1,6 @@
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import {
+  PhoneOneTimeCodeInput,
   SecurityQuestionInput,
   SendMagicSmsButton,
   Text,
@@ -11,8 +12,6 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, View } from "react-native";
-
-import { PhoneOneTimeCodeInput } from "../../../components/phone";
 
 export interface PhoneNumberBottomSheetContentProps {
   phoneNumber: string;

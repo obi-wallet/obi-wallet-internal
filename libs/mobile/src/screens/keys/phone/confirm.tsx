@@ -8,6 +8,7 @@ import {
   KeyRoute,
   KeyStackParamList,
   OnboardingRoute,
+  PhoneOneTimeCodeInput,
   SettingsRoute,
   Text,
   useEnv,
@@ -25,7 +26,6 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import InsuranceLogo from "./assets/insurance-logo.svg";
-import { PhoneOneTimeCodeInput } from "../../../components/phone";
 
 export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<
   KeyStackParamList,
