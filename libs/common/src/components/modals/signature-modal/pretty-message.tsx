@@ -8,7 +8,6 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons/faPlay";
 import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { CoinIcon, enrichToken, Text, useStore } from "@obi-wallet/common";
 import { useQuery, useValidators } from "@obi-wallet/headless-ui";
 import {
   ChainId,
@@ -34,7 +33,16 @@ import { useIntl } from "react-intl";
 import { View } from "react-native";
 import invariant from "tiny-invariant";
 
-import ArrowUpIcon from "./assets/arrowUpIcon.svg";
+import { useStore } from "../../../contexts";
+import { enrichToken } from "../../../hooks";
+import { CoinIcon } from "../../icons";
+import { Text } from "../../typography";
+
+// TODO:
+// import ArrowUpIcon from "./assets/arrowUpIcon.svg";
+const ArrowUpIcon = observer(function ArrowUpIcon() {
+  return null;
+});
 
 const ChainIdContext = createContext<ChainId | null>(null);
 

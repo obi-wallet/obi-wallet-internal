@@ -1,5 +1,11 @@
 import { useTheme } from "@emotion/react";
-import { Background, Button, Text, useStore } from "@obi-wallet/common";
+import {
+  Background,
+  Button,
+  PrettyMessage,
+  Text,
+  useStore,
+} from "@obi-wallet/common";
 import { ChainId, Message } from "@obi-wallet/sdk";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { Msg } from "@terra-money/feather.js";
@@ -14,7 +20,6 @@ import {
   View,
 } from "react-native";
 
-import { PrettyMessage } from "./pretty-message";
 import { Modal } from "../../../components/modal";
 import { Loader } from "../../loader";
 import { ScreenContainer } from "../../screens/components/screen-container";

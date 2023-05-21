@@ -1,3 +1,4 @@
+import { PrettyMessage } from "@obi-wallet/common";
 import {
   Brand,
   loopMobileDevConfig,
@@ -31,7 +32,6 @@ import {
   upsertBeneficiaryAnnually,
   upsertFlex,
 } from "../__fixtures__/messages";
-import { PrettyMessage } from "../src/app/modals/signature-modal/pretty-message";
 import { Provider } from "../src/app/provider";
 
 function getConfig(brand: Brand) {

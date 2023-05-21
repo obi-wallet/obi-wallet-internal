@@ -1,7 +1,7 @@
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 
-import { useStore } from "../../../contexts";
+import { useStore } from "../../contexts";
 
 const SignatureModal = observer<{
   interaction: SignAndBroadcastTransactionUserInteraction;
