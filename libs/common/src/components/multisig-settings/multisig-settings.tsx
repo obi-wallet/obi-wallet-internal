@@ -15,7 +15,7 @@ import { Key, KeysList } from "./keys-list";
 import { useStore } from "../../contexts";
 import { isSmallScreenNumber } from "../../helpers";
 import { Back } from "../back";
-import { BottomSheet, BottomSheetView } from "../bottom-sheet";
+import { BaseBottomSheet, BottomSheet, BottomSheetView } from "../bottom-sheet";
 import { CheckIcon, KeysIcon, WarningIcon } from "../icons";
 import { Text } from "../typography";
 
@@ -136,7 +136,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
           <KeysList data={data} />
         </View>
         <View>{children}</View>
-        <BottomSheet
+        <BaseBottomSheet
           handleIndicatorStyle={{ backgroundColor: "white" }}
           backgroundStyle={{ backgroundColor: isLoop ? "#100F1E" : "#272727" }}
           handleStyle={{ backgroundColor: "transparent" }}
@@ -163,7 +163,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
               />
             ) : null}
           </BottomSheetView>
-        </BottomSheet>
+        </BaseBottomSheet>
       </SafeAreaView>
     );
   }

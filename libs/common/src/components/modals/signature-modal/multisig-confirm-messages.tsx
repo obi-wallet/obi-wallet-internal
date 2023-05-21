@@ -1,17 +1,14 @@
 import { useTheme } from "@emotion/react";
-import {
-  ConfirmMessages,
-  ConfirmMessagesProps,
-  KeysList,
-  KeysListProps,
-  Text,
-  useStore,
-} from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Alert, View } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
+
+import { ConfirmMessages, ConfirmMessagesProps } from "./confirm-messages";
+import { useStore } from "../../../contexts";
+import { LinearGradient } from "../../linear-gradient";
+import { KeysList, KeysListProps } from "../../multisig-settings";
+import { Text } from "../../typography";
 
 export interface MultisigConfirmMessagesProps
   extends Omit<

@@ -1,11 +1,4 @@
 import {
-  CheckIcon,
-  createUsableSigners,
-  Key,
-  PhoneKeySigner,
-  useEnv,
-} from "@obi-wallet/common";
-import {
   SignAndBroadcastTransactionType,
   useQuery,
   useSignAndBroadcastTransaction,
@@ -16,10 +9,11 @@ import { useRef, useState } from "react";
 
 import { MultisigConfirmMessages } from "./multisig-confirm-messages";
 import { PhoneNumberBottomSheetContent } from "./phone-number-bottom-sheet-content";
-import {
-  BottomSheet,
-  BottomSheetRef,
-} from "../../screens/components/bottom-sheet";
+import { createUsableSigners, PhoneKeySigner } from "./signers";
+import { useEnv } from "../../../contexts";
+import { BottomSheet } from "../../bottom-sheet";
+import { CheckIcon } from "../../icons";
+import { Key } from "../../multisig-settings";
 
 export type SignatureModalMultisigKeyProps = ReturnType<
   typeof useSignAndBroadcastTransaction
@@ -37,7 +31,7 @@ export const SignatureModalMultisigKey =
     multisigKey,
     safeSpendLimitExceeded,
   }) {
-    const phoneNumberBottomSheetRef = useRef<BottomSheetRef>(null);
+    const phoneNumberBottomSheetRef = useRef<BottomSheet>(null);
     const env = useEnv();
 
     const usableSigners = useQuery({

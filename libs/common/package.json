@@ -38,6 +38,7 @@
     "react-native-haptic-feedback": "*",
     "react-native-keyboard-aware-scroll-view": "*",
     "react-native-keychain": "*",
+    "react-native-linear-gradient": "*",
     "react-native-nfc-manager": "*",
     "react-native-safe-area-context": "*",
     "react-native-svg": "*",
