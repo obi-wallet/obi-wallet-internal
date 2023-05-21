@@ -2,6 +2,7 @@ import { useTheme } from "@emotion/react";
 import { PortalHost } from "@gorhom/portal";
 import {
   CreateWalletScreen,
+  Loader,
   OnboardingRoute,
   RootRoute,
   RootStack,
@@ -20,7 +21,6 @@ import KeyboardManager from "react-native-keyboard-manager";
 import { FullWindowOverlay } from "react-native-screens";
 
 import { deploymentKey } from "./code-push";
-import { Loader } from "./loader";
 import { Modals } from "./modals";
 import { Provider, ProviderProps } from "./provider";
 import { HomeScreen } from "./screens/home";

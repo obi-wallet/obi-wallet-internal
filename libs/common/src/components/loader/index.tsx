@@ -1,9 +1,11 @@
-import { Text, useStore } from "@obi-wallet/common";
 import LottieView, { AnimationObject } from "lottie-react-native";
 import { observer } from "mobx-react-lite";
 import { ActivityIndicator, StyleProp, View, ViewStyle } from "react-native";
 
-interface LoaderProps {
+import { useStore } from "../../contexts";
+import { Text } from "../typography";
+
+export interface LoaderProps {
   loadingText?: string;
   style?: StyleProp<ViewStyle>;
   animation?: string | AnimationObject;

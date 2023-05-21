@@ -2,6 +2,7 @@ import { useTheme } from "@emotion/react";
 import {
   Background,
   Button,
+  Loader,
   Modal,
   PrettyMessage,
   Text,
@@ -21,7 +22,6 @@ import {
   View,
 } from "react-native";
 
-import { Loader } from "../../loader";
 import { ScreenContainer } from "../../screens/components/screen-container";
 
 enum Tab {
