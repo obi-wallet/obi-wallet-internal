@@ -4,6 +4,7 @@ import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
+  getIsOutdatedQuery,
   getScreenDimensions,
   HomeBottomTab,
   HomeBottomTabRoute,
@@ -55,7 +56,6 @@ import NFTsIcon from "./assets/nftsIcon.svg";
 import SettingsIcon from "./assets/settingsIcon.svg";
 import TradeIcon from "./assets/tradeIcon.svg";
 import { Assets } from "./components/assets";
-import { getIsOutdatedQuery } from "../../../queries";
 import { AccountsScreen } from "../../../screens/accounts";
 import { DappExplorer } from "../dapp-explorer";
 import { NFTs } from "../loop-web-apps/nfts";

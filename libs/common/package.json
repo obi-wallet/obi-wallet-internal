@@ -16,6 +16,7 @@
     "@react-navigation/native-stack": "*",
     "@tanstack/react-query": "*",
     "lottie-react-native": "*",
+    "luxon": "*",
     "mobx": "*",
     "mobx-react-lite": "*",
     "nanoid": "*",

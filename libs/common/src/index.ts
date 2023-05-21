@@ -4,5 +4,6 @@ export * from "./helpers";
 export * from "./hooks";
 export * from "./keys";
 export * from "./languages";
+export * from "./queries";
 export * from "./router";
 export * from "./stores";
