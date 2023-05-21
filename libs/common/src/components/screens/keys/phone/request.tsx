@@ -1,9 +1,11 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Alert, Image, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { z } from "zod";
 
 import { useEnv, useStore } from "../../../../contexts";
 import { isSmallScreenNumber } from "../../../../helpers";
@@ -17,12 +19,8 @@ import {
 import { Back } from "../../../back";
 import { Background } from "../../../background";
 import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
-import {
-  PhoneNumberInput,
-  SecurityQuestionInput,
-  SendMagicSmsButton,
-  useSecurityQuestionInput,
-} from "../../../phone-key";
+import { SendMagicSmsButton, useSecurityQuestions } from "../../../phone-key";
+import { TextInput } from "../../../text-input";
 import { Text } from "../../../typography";
 
 export type PhoneKeyRequestScreenProps = NativeStackScreenProps<
@@ -49,6 +47,15 @@ export const PhoneKeyRequestScreen = observer<PhoneKeyRequestScreenProps>(
   }
 );
 
+const schema = z.object({
+  securityQuestion: z.string(),
+  securityAnswer: z
+    .string()
+    .min(3, "Answer must contain at least 3 characters")
+    .regex(/^[A-Za-z0-9.\sáéíóúñü_-]*$/, "Answer contains invalid characters"),
+  phoneNumber: z.string(),
+});
+
 export interface PhoneKeyRequestProps {
   flow: KeyFlow;
   demoMode: boolean;
@@ -67,110 +74,17 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
     const isObi = configStore.isObi();
     const chainId = chainStore.currentChain;
     const env = useEnv();
+    const securityQuestions = useSecurityQuestions();
 
-    const {
-      securityQuestion,
-      setSecurityQuestion,
-      securityAnswer,
-      setSecurityAnswer,
-    } = useSecurityQuestionInput();
-    const [phoneCountryCode, setPhoneCountryCode] = useState("");
-    const [phoneNumberWithoutCountryCode, setPhoneNumberWithoutCountryCode] =
-      useState("");
-    const [phoneNumber, setPhoneNumber] = useState(
-      phoneCountryCode + phoneNumberWithoutCountryCode
-    );
-    const [magicButtonDisabled, setMagicButtonDisabled] = useState(true); // Magic Button disabled by default
-    const [magicButtonDisabledDoubleclick, setMagicButtonDisabledDoubleclick] =
-      useState(false); // Magic Button disabled on button-click to prevent double-click
-
-    const minInputCharsSecurityAnswer = 3;
-    const minInputCharsPhoneNumber = 6;
-
-    useEffect(() => {
-      if (
-        securityAnswer.length >= minInputCharsSecurityAnswer &&
-        phoneNumber.length >= minInputCharsPhoneNumber
-      ) {
-        setMagicButtonDisabled(false); // Enable Magic Button if checks are okay
-      } else {
-        setMagicButtonDisabled(true);
-      }
-    }, [
-      magicButtonDisabled,
-      setMagicButtonDisabled,
-      securityAnswer,
-      phoneNumber,
-    ]);
-
-    const handleSecurityAnswer = () => {
-      if (!securityAnswer) {
-        Alert.alert(
-          intl.formatMessage({
-            id: "onboarding2.error.securityanswermissing.title",
-          }),
-          intl.formatMessage({
-            id: "onboarding2.error.securityanswermissing.text",
-          })
-        );
-        setMagicButtonDisabledDoubleclick(false);
-        return false;
-      }
-
-      if (
-        // Check length
-        securityAnswer.length < minInputCharsSecurityAnswer
-      ) {
-        Alert.alert(
-          intl.formatMessage({
-            id: "onboarding2.error.securityanswertooshort.title",
-          }),
-          intl.formatMessage({
-            id: "onboarding2.error.securityanswertooshort.text",
-          })
-        );
-        setMagicButtonDisabledDoubleclick(false);
-        return false;
-      }
-
-      return true;
-    };
-
-    const handlePhoneNumber = () => {
-      if (!phoneNumberWithoutCountryCode || !phoneCountryCode || !phoneNumber) {
-        Alert.alert(
-          intl.formatMessage({ id: "onboarding2.error.phonenrmissing.title" }),
-          intl.formatMessage({ id: "onboarding2.error.phonenrmissing.text" })
-        );
-        setMagicButtonDisabledDoubleclick(false);
-        return false;
-      }
-
-      // Check if phoneNumber has digits only
-      const onlyDigitsInPhoneNumber = /^[0-9]+$/.test(
-        phoneNumberWithoutCountryCode
-      );
-      if (!onlyDigitsInPhoneNumber) {
-        Alert.alert(
-          intl.formatMessage({
-            id: "onboarding2.error.phonenrnospecialchars.title",
-          }),
-          intl.formatMessage({
-            id: "onboarding2.error.phonenrnospecialchars.text",
-          })
-        );
-        setMagicButtonDisabledDoubleclick(false);
-        return false;
-      }
-
-      return true;
-    };
-
-    // Function passed down to child component "PhoneInput" as property
-    const handlePhoneNumberCountryCode = (countryCode: string) => {
-      setPhoneCountryCode(countryCode);
-      setPhoneNumber(phoneCountryCode + phoneNumberWithoutCountryCode);
-    };
+    const { control, formState, handleSubmit } = useForm({
+      defaultValues: {
+        securityQuestion: securityQuestions[0].value,
+        securityAnswer: "",
+        phoneNumber: "",
+      },
+      mode: "onChange",
+      resolver: zodResolver(schema),
+    });
 
     return (
       <SafeAreaView style={{ flex: 1 }}>
@@ -255,35 +169,59 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                   </Text>
                 </View>
               </View>
-              <SecurityQuestionInput
-                securityQuestion={securityQuestion}
-                onSecurityQuestionChange={setSecurityQuestion}
-                securityAnswer={securityAnswer}
-                onSecurityAnswerChange={(inputText) => {
-                  const reg = /([^A-Za-z0-9.\sáéíóúñü_-])/;
-                  if (!reg.test(inputText)) {
-                    setSecurityAnswer(inputText);
-                  }
+              <Controller
+                name="securityQuestion"
+                control={control}
+                render={({ field, fieldState }) => {
+                  // TODO: dropdown / select
+                  return (
+                    <TextInput
+                      label="Security Question"
+                      placeholder="Security Question"
+                      style={{ flex: 1 }}
+                      invalidMessage={fieldState.error?.message}
+                      value={
+                        securityQuestions.find(
+                          ({ value }) => value === field.value
+                        )?.label
+                      }
+                    />
+                  );
                 }}
               />
-
-              <PhoneNumberInput
-                label={intl.formatMessage({ id: "onboarding2.phonenr" })}
-                keyboardType="phone-pad"
-                textContentType="telephoneNumber"
-                placeholder={intl.formatMessage({
-                  id: "onboarding2.phonenrlabel",
-                })}
-                style={{ marginTop: 15 }}
-                value={phoneNumberWithoutCountryCode}
-                onChangeText={(e) => {
-                  const noCountryCode = e.replace(phoneCountryCode, "");
-                  const noSpecialChars = noCountryCode.replace(/[^0-9]/gi, "");
-
-                  setPhoneNumberWithoutCountryCode(noSpecialChars);
-                  setPhoneNumber(phoneCountryCode + noSpecialChars);
+              <Controller
+                name="securityAnswer"
+                control={control}
+                render={({ field, fieldState }) => {
+                  return (
+                    <TextInput
+                      label="Security Answer"
+                      placeholder="Type your answer here"
+                      style={{ flex: 1 }}
+                      invalidMessage={fieldState.error?.message}
+                      value={field.value}
+                      onChangeText={field.onChange}
+                      onBlur={field.onBlur}
+                    />
+                  );
                 }}
-                handlePhoneNumberCountryCode={handlePhoneNumberCountryCode}
+              />
+              <Controller
+                name="phoneNumber"
+                control={control}
+                render={({ field, fieldState }) => {
+                  return (
+                    <TextInput
+                      label="Phone Number"
+                      placeholder="+1123456789"
+                      style={{ flex: 1 }}
+                      invalidMessage={fieldState.error?.message}
+                      value={field.value}
+                      onChangeText={field.onChange}
+                      onBlur={field.onBlur}
+                    />
+                  );
+                }}
               />
             </View>
             <View
@@ -293,46 +231,26 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                 description={intl.formatMessage({
                   id: "onboarding2.bottominfo",
                 })}
-                onPress={async () => {
-                  setMagicButtonDisabledDoubleclick(true);
-
-                  const checkSecurityAnswer = await handleSecurityAnswer();
-                  const checkPhoneNumber = await handlePhoneNumber();
-
-                  if (checkSecurityAnswer && checkPhoneNumber) {
-                    try {
-                      const twilioClient = getTwilioClient({ demoMode, env });
-                      await twilioClient.sendPublicKeyTextMessage({
-                        phoneNumber,
-                        securityAnswer,
-                        chainId,
-                      });
-                      onSubmit({
-                        phoneNumber,
-                        securityQuestion,
-                        securityAnswer,
-                      });
-                      setMagicButtonDisabledDoubleclick(false);
-                    } catch (e) {
-                      const error = e as Error;
-                      setMagicButtonDisabledDoubleclick(false);
-                      console.error(error);
-                      Alert.alert(
-                        intl.formatMessage({
-                          id: "onboarding2.error.sendingsmsfailed",
-                        }),
-                        error.message
-                      );
-                    }
-                  } else {
-                    setMagicButtonDisabledDoubleclick(false);
+                disabled={!formState.isValid}
+                onPress={handleSubmit(async (data) => {
+                  try {
+                    const twilioClient = getTwilioClient({ demoMode, env });
+                    await twilioClient.sendPublicKeyTextMessage({
+                      ...data,
+                      chainId,
+                    });
+                    onSubmit(data);
+                  } catch (e) {
+                    const error = e as Error;
+                    console.error(error);
+                    Alert.alert(
+                      intl.formatMessage({
+                        id: "onboarding2.error.sendingsmsfailed",
+                      }),
+                      error.message
+                    );
                   }
-                }}
-                disabled={
-                  magicButtonDisabledDoubleclick
-                    ? magicButtonDisabledDoubleclick
-                    : magicButtonDisabled
-                }
+                })}
               />
             </View>
           </View>

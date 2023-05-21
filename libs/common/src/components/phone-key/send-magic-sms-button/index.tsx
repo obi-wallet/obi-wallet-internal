@@ -6,7 +6,7 @@ import { View } from "react-native";
 
 import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
-import { Button } from "../../buttons";
+import { AsyncButton, Button } from "../../buttons";
 import { Text } from "../../typography";
 
 // TODO:
@@ -16,7 +16,7 @@ const SMS = undefined;
 export interface SendMagicSmsButtonProps {
   description?: string;
   disabled?: boolean;
-  onPress: () => void;
+  onPress: () => Promise<void>;
 }
 
 export const SendMagicSmsButton = observer(function SendMagicSmsButton({
@@ -59,7 +59,7 @@ export const SendMagicSmsButton = observer(function SendMagicSmsButton({
           </Text>
         </View>
       ) : null}
-      <Button
+      <AsyncButton
         label={intl.formatMessage({
           id: "onboarding2.sendmagicsms",
           defaultMessage: "Get Magic SMS",
@@ -67,11 +67,7 @@ export const SendMagicSmsButton = observer(function SendMagicSmsButton({
         LeftIcon={isObi ? undefined : SMS}
         flavor="blue"
         disabled={disabled}
-        onPress={() => {
-          if (!disabled) {
-            onPress();
-          }
-        }}
+        onPress={onPress}
       />
     </View>
   );
