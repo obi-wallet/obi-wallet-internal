@@ -3,6 +3,7 @@ import { faSortAsc } from "@fortawesome/free-solid-svg-icons/faSortAsc";
 import { faSortDesc } from "@fortawesome/free-solid-svg-icons/faSortDesc";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
+  CoinIcon,
   EnrichedToken,
   IconButton,
   isSmallScreenNumber,
@@ -30,7 +31,6 @@ import {
 } from "react-native";
 
 import { ReceiveIcon as Receive } from "./receive";
-import { CoinIcon } from "../../components/coin-icon";
 import { NetworkAccountPickerLayout } from "../../components/network-account-picker-layout";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";
 import StakingIcon from "../assets/stakingIcon.svg";

@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Back,
   BaseTextInput,
+  CoinIcon,
   enrichToken,
   isSmallScreen,
   isSmallScreenNumber,
@@ -59,7 +60,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { z } from "zod";
 
 import { TokenController } from "../../../../forms";
-import { CoinIcon } from "../../components/coin-icon";
 import { RefreshableFlatList } from "../../components/refreshable-flat-list";
 
 enum StakeTab {

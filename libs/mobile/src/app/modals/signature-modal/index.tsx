@@ -2,15 +2,17 @@ import {
   SignAndBroadcastTransactionType,
   useSignAndBroadcastTransaction,
 } from "@obi-wallet/headless-ui";
+import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { Alert } from "react-native";
 
-import { AbstractSignatureModalProps } from "./common";
 import { SignatureModalFlexAccount } from "./flex-account";
 import { SignatureModalMultisigKey } from "./multisig-key";
 import { SignatureModalSinglesigWallet } from "./singlesig-wallet";
 
-export type SignatureModalProps = AbstractSignatureModalProps;
+export interface SignatureModalProps {
+  interaction: SignAndBroadcastTransactionUserInteraction;
+}
 
 export const SignatureModal = observer<SignatureModalProps>(
   function SignatureModal({ interaction }) {

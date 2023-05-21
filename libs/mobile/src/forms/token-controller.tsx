@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { Portal } from "@gorhom/portal";
 import {
+  CoinIcon,
   EnrichedToken,
   TextInput,
   TextInputInvalidMessage,
@@ -23,7 +24,6 @@ import {
 } from "react-native";
 
 import { BottomSheetBackdrop } from "../app/screens/components/bottomSheetBackdrop";
-import { CoinIcon } from "../app/screens/components/coin-icon";
 import { RefreshableFlatList } from "../app/screens/components/refreshable-flat-list";
 
 export type TokenControllerProps = {
