@@ -3,6 +3,7 @@ import {
   DeviceKeyScreen,
   getTwilioClient,
   KeyRoute,
+  Modals,
   OnboardingRoute,
   PhoneKeyConfirmScreen,
   PhoneKeyRequestScreen,
@@ -94,6 +95,7 @@ function App({ initialRouteName }: { initialRouteName: string }) {
           }}
         />
       </RootStack.Navigator>
+      <Modals />
     </MultisigDraft.Container>
   );
 }

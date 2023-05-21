@@ -1,3 +1,4 @@
+import { Modals } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 
 import { Container } from "./container";
@@ -8,6 +9,7 @@ export function Modal() {
   return (
     <Container>
       <ModalWithoutProvider />
+      <Modals />
     </Container>
   );
 }
