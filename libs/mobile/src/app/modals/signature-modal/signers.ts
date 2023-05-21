@@ -1,8 +1,12 @@
 import {
+  BottomSheet,
   Env,
   existsKeyOnDevice,
   getBiometricsPrivateKey,
+  getNFCPrivateKey,
   getTwilioClient,
+  parseNFCData,
+  startReading,
 } from "@obi-wallet/common";
 import {
   AsyncKeySigner,
@@ -19,9 +23,6 @@ import { RefObject } from "react";
 import NfcManager, { NfcEvents, OnDiscoverTag } from "react-native-nfc-manager";
 import invariant from "tiny-invariant";
 
-import { getNFCPrivateKey, parseNFCData, startReading } from "../../nfc";
-import { BottomSheetRef } from "../../screens/components/bottom-sheet";
-
 export async function createUsableSigners({
   multisigKey,
   demoMode,
@@ -30,7 +31,7 @@ export async function createUsableSigners({
 }: {
   multisigKey: MultisigKey;
   demoMode: boolean;
-  bottomSheetRef: RefObject<BottomSheetRef>;
+  bottomSheetRef: RefObject<BottomSheet>;
   env: Env;
 }) {
   const possibleUsableKeys = [
@@ -76,7 +77,7 @@ async function createUsableSigner({
   multisigKey: MultisigKey;
   demoMode: boolean;
   key: KeySubclassTypeMapping[KeyType];
-  bottomSheetRef: RefObject<BottomSheetRef>;
+  bottomSheetRef: RefObject<BottomSheet>;
   env: Env;
 }): Promise<Signer | null> {
   switch (key.type) {
@@ -130,7 +131,7 @@ export class DeviceKeySigner extends Signer {
 export class PhoneKeySigner extends Signer {
   protected signer: AbstractPhoneKeySigner;
   protected twilioClient: TwilioClientInterface;
-  protected bottomSheetRef: RefObject<BottomSheetRef>;
+  protected bottomSheetRef: RefObject<BottomSheet>;
   protected chainId: ChainId;
 
   public constructor({
@@ -143,7 +144,7 @@ export class PhoneKeySigner extends Signer {
     key: KeySubclassTypeMapping[KeyType.Phone];
     chainId: ChainId;
     demoMode: boolean;
-    bottomSheetRef: RefObject<BottomSheetRef>;
+    bottomSheetRef: RefObject<BottomSheet>;
     env: Env;
   }) {
     super();

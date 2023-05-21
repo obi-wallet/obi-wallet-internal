@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "*",
+    "@cosmjs/crypto": "*",
     "@cosmjs/stargate": "*",
     "@emotion/react": "*",
     "@fortawesome/free-solid-svg-icons": "*",
@@ -21,6 +22,7 @@
     "@react-navigation/native-stack": "*",
     "@tanstack/react-query": "*",
     "@terra-money/feather.js": "*",
+    "isomorphic-unfetch": "*",
     "lottie-react-native": "*",
     "luxon": "*",
     "mobx": "*",
@@ -36,9 +38,11 @@
     "react-native-haptic-feedback": "*",
     "react-native-keyboard-aware-scroll-view": "*",
     "react-native-keychain": "*",
+    "react-native-nfc-manager": "*",
     "react-native-safe-area-context": "*",
     "react-native-svg": "*",
     "rooks": "*",
+    "secp256k1": "*",
     "tiny-invariant": "*",
     "tiny-warning": "*",
     "zod": "*"

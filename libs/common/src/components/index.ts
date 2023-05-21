@@ -1,5 +1,6 @@
 export * from "./back";
 export * from "./background";
+export * from "./bottom-sheet";
 export * from "./brand-toggle";
 export * from "./buttons";
 export * from "./icons";

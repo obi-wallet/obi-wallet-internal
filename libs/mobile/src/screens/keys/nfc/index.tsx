@@ -2,13 +2,18 @@ import { pubkeyType } from "@cosmjs/amino";
 import {
   Back,
   Background,
+  checkIsSupported,
+  generateLocalEntropy,
+  getNFCKeyPair,
   isSmallScreenNumber,
   KeyboardAvoidingView,
   KeyFlow,
   KeyRoute,
   KeyStackParamList,
   OnboardingRoute,
+  parseNFCData,
   SettingsRoute,
+  startReading,
   Text,
   useRootNavigation,
   useStore,
@@ -24,14 +29,6 @@ import { Alert, FlatList, TouchableOpacity, View } from "react-native";
 import NfcManager, { NfcEvents, OnDiscoverTag } from "react-native-nfc-manager";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAsyncEffect } from "rooks";
-
-import {
-  checkIsSupported,
-  generateLocalEntropy,
-  getNFCKeyPair,
-  parseNFCData,
-  startReading,
-} from "../../../app/nfc";
 
 export type NfcKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,

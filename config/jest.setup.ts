@@ -14,6 +14,14 @@ jest.mock("react-native-code-push", () => ({
   NativeCodePush: {},
 }));
 
+jest.mock("@react-native-clipboard/clipboard", () => {
+  return {};
+});
+
+jest.mock("react-native-nfc-manager", () => {
+  return {};
+});
+
 jest.mock("react-native-country-picker-modal", () => {
   return {};
 });

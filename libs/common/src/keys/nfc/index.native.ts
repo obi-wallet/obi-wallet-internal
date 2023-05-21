@@ -1,4 +1,4 @@
-import { Sha256 } from "@cosmjs/crypto/build/sha";
+import { Sha256 } from "@cosmjs/crypto";
 import { randomBytes } from "crypto";
 import fetch from "isomorphic-unfetch";
 import NfcManager, {
