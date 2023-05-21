@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Modal } from "./modal";
+import { ModalWithoutProvider } from "./modal";
 
-const meta: Meta<typeof Modal> = {
+const meta: Meta<typeof ModalWithoutProvider> = {
   title: "Modal",
-  component: Modal,
+  component: ModalWithoutProvider,
 };
 
 export default meta;
 
-type Story = StoryObj<typeof Modal>;
+type Story = StoryObj<typeof ModalWithoutProvider>;
 
 export const Primary: Story = {
-  render: () => <Modal />,
+  render: () => <ModalWithoutProvider />,
 };
