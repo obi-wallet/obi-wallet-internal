@@ -1,4 +1,6 @@
 import {
+  HomeBottomTabRoute,
+  HomeDrawerRoute,
   OnboardingRoute,
   RootRoute,
   SettingsRoute,
@@ -8,7 +10,6 @@ import { CommonActions } from "@react-navigation/native";
 import { useEffect } from "react";
 import { useSelect } from "react-cosmos/fixture";
 
-import { HomeBottomTabRoute, HomeDrawerRoute } from "../src";
 import { BaseAppWithoutProvider } from "../src/app";
 
 type Route = RootRoute | OnboardingRoute | SettingsRoute | HomeBottomTabRoute;

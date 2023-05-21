@@ -11,6 +11,8 @@
     "@obi-wallet/headless-ui": "*",
     "@obi-wallet/sdk": "*",
     "@obi-wallet/theme": "*",
+    "@react-navigation/bottom-tabs": "*",
+    "@react-navigation/drawer": "*",
     "@react-navigation/native-stack": "*",
     "@tanstack/react-query": "*",
     "lottie-react-native": "*",

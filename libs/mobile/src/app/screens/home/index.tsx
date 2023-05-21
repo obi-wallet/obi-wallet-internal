@@ -5,6 +5,10 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   getScreenDimensions,
+  HomeBottomTab,
+  HomeBottomTabRoute,
+  HomeDrawer,
+  HomeDrawerRoute,
   isSmallScreenNumber,
   Text,
   useStore,
@@ -51,12 +55,6 @@ import NFTsIcon from "./assets/nftsIcon.svg";
 import SettingsIcon from "./assets/settingsIcon.svg";
 import TradeIcon from "./assets/tradeIcon.svg";
 import { Assets } from "./components/assets";
-import {
-  HomeBottomTab,
-  HomeBottomTabRoute,
-  HomeDrawer,
-  HomeDrawerRoute,
-} from "./home-stack";
 import { getIsOutdatedQuery } from "../../../queries";
 import { AccountsScreen } from "../../../screens/accounts";
 import { DappExplorer } from "../dapp-explorer";
@@ -64,12 +62,14 @@ import { NFTs } from "../loop-web-apps/nfts";
 import { Trade } from "../loop-web-apps/trade";
 import { SettingsScreen } from "../settings";
 
-export type TabNavigationProps = DrawerScreenProps<ParamListBase>;
 const ActiveIconContainer = styled.View({
   backgroundColor: "#ffffff80",
   borderRadius: 9,
   padding: 5,
 });
+
+export type TabNavigationProps = DrawerScreenProps<ParamListBase>;
+
 export const TabNavigation = observer<TabNavigationProps>(
   function TabNavigation() {
     const intl = useIntl();

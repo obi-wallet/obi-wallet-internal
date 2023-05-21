@@ -27,6 +27,7 @@ const config = {
   async viteFinal({ plugins, ...config }) {
     return mergeConfig(config, {
       define: {
+        __DEV__: process.env.NODE_ENV !== "production",
         "process.env": {
           PHONE_NUMBER_KEY_SECRET: process.env.PHONE_NUMBER_KEY_SECRET,
           PHONE_NUMBER_TWILIO_BASIC_AUTH_USER:

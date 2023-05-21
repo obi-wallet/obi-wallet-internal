@@ -4,6 +4,7 @@ import {
   Back,
   Button,
   EnrichedToken,
+  HomeBottomTabRoute,
   isSmallScreenNumber,
   KeyboardAvoidingView,
   RootRoute,
@@ -33,7 +34,6 @@ import { z } from "zod";
 
 import { AddressController, TokenController } from "../../../forms";
 import { address } from "../../../helpers/validation-helpers";
-import { HomeBottomTabRoute } from "../home/home-stack";
 
 export type SendScreenProps = NativeStackScreenProps<
   RootStackParamList,

@@ -3,6 +3,7 @@ import { faRss } from "@fortawesome/free-solid-svg-icons/faRss";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import {
+  HomeBottomTabRoute,
   isSmallScreenSubstr,
   RootStackParamList,
   Text,
@@ -20,7 +21,6 @@ import { TouchableHighlight, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar } from "../../../../screens/accounts/avatar";
-import { HomeBottomTabRoute } from "../../home/home-stack";
 import { ObiLogo } from "../obi-logo";
 
 export interface NetworkAccountPickerLayoutProps {
