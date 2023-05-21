@@ -15,6 +15,7 @@
     "@obi-wallet/headless-ui": "*",
     "@obi-wallet/sdk": "*",
     "@obi-wallet/theme": "*",
+    "@react-native-clipboard/clipboard": "*",
     "@react-navigation/bottom-tabs": "*",
     "@react-navigation/drawer": "*",
     "@react-navigation/native-stack": "*",

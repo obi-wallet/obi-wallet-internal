@@ -1,10 +1,9 @@
+import { ConfirmMessages } from "@obi-wallet/common";
 import {
   SignAndBroadcastTransactionType,
   useSignAndBroadcastTransaction,
 } from "@obi-wallet/headless-ui";
 import { observer } from "mobx-react-lite";
-
-import { ConfirmMessages } from "./confirm-messages";
 
 export type SignatureModalSinglesigWalletProps = ReturnType<
   typeof useSignAndBroadcastTransaction

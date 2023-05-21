@@ -1,14 +1,4 @@
 import { useTheme } from "@emotion/react";
-import {
-  Background,
-  Button,
-  Loader,
-  Modal,
-  PrettyMessage,
-  ScreenContainer,
-  Text,
-  useStore,
-} from "@obi-wallet/common";
 import { ChainId, Message } from "@obi-wallet/sdk";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { Msg } from "@terra-money/feather.js";
@@ -22,6 +12,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
+import { PrettyMessage } from "./pretty-message";
+import { useStore } from "../../../contexts";
+import { Background } from "../../background";
+import { Button } from "../../buttons";
+import { Loader } from "../../loader";
+import { Modal } from "../../modal";
+import { ScreenContainer } from "../../screen-container";
+import { Text } from "../../typography";
 
 enum Tab {
   TransactionDetails,
