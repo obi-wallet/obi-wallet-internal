@@ -2,6 +2,7 @@ import { useTheme } from "@emotion/react";
 import {
   Background,
   Button,
+  Modal,
   PrettyMessage,
   Text,
   useStore,
@@ -20,7 +21,6 @@ import {
   View,
 } from "react-native";
 
-import { Modal } from "../../../components/modal";
 import { Loader } from "../../loader";
 import { ScreenContainer } from "../../screens/components/screen-container";
 
