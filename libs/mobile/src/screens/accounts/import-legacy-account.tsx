@@ -1,4 +1,4 @@
-import { Button, Text, useStore } from "@obi-wallet/common";
+import { Button, ScreenContainer, Text, useStore } from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { FC, useState } from "react";
@@ -8,7 +8,6 @@ import { SvgProps } from "react-native-svg";
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import KeplrIcon from "./assets/keplr.svg";
 import StationIcon from "./assets/station.svg";
-import { ScreenContainer } from "../../app/screens/components/screen-container";
 
 export type ImportLegacyAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,

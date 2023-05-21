@@ -5,6 +5,7 @@ import {
   Loader,
   Modal,
   PrettyMessage,
+  ScreenContainer,
   Text,
   useStore,
 } from "@obi-wallet/common";
@@ -21,8 +22,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-import { ScreenContainer } from "../../screens/components/screen-container";
 
 enum Tab {
   TransactionDetails,

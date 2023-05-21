@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
   isSmallScreenNumber,
+  ScreenContainer,
   Text,
   TextInput,
   useStore,
@@ -20,7 +21,6 @@ import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import BeneficiaryAccountIcon from "./assets/beneficiary-account-icon.svg";
 import { AvatarPicker, Icon } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
-import { ScreenContainer } from "../../app/screens/components/screen-container";
 import { AddressController } from "../../forms";
 import { useKeyboardVisible } from "../../helpers/keyboard-visible";
 import { address, nonEmptyString } from "../../helpers/validation-helpers";

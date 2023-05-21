@@ -1,9 +1,9 @@
 import { Button, Modal, Text, useStore } from "@obi-wallet/common";
+import { ScreenContainer } from "@obi-wallet/common";
 import { InitiateWalletConnectSessionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 
-import { ScreenContainer } from "../screens/components/screen-container";
 import Wc from "../screens/dapp-explorer/assets/wallet-connect.svg";
 
 export const WalletConnectInteractionModal = observer(

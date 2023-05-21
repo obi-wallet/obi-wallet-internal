@@ -13,6 +13,7 @@ export * from "./modals";
 export * from "./multisig-settings";
 export * from "./phone-key";
 export * from "./provider";
+export * from "./screen-container";
 export * from "./screens";
 export * from "./text-input";
 export * from "./typography";
