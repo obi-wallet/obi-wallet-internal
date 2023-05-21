@@ -1,4 +1,5 @@
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
+import inject from "@rollup/plugin-inject";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
 import { mergeConfig } from "vite";
@@ -39,11 +40,7 @@ const config = {
         ...plugins.filter((plugin) => {
           return plugin?.[0]?.name !== "vite:react-babel";
         }),
-        react({
-          babel: {
-            babelrc: true,
-          },
-        }),
+        react(),
       ],
       resolve: {
         alias: {
@@ -74,6 +71,11 @@ const config = {
               buffer: true,
             }),
           ],
+        },
+      },
+      build: {
+        rollupOptions: {
+          plugins: [inject({ Buffer: ["buffer", "Buffer"] })],
         },
       },
     });

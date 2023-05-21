@@ -1,6 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { PortalHost } from "@gorhom/portal";
 import {
+  CreateWalletScreen,
   OnboardingRoute,
   RootRoute,
   RootStack,
@@ -29,7 +30,6 @@ import { SendScreen } from "./screens/send";
 import { settingsScreens } from "./screens/settings";
 import { SplashScreen } from "./screens/splash";
 import { WebViewScreen } from "./screens/web-view";
-import { CreateWalletScreen } from "../screens/create-wallet";
 import { keyScreens } from "../screens/keys/key-screens";
 import { LookupProxyWalletsScreen } from "../screens/lookup-proxy-wallets";
 import { RecoverWalletScreen } from "../screens/recover-wallet";

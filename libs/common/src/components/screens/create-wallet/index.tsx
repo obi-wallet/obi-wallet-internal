@@ -1,17 +1,18 @@
-import {
-  Button,
-  KeyFlow,
-  KeyRoute,
-  MultisigSettings,
-  OnboardingRoute,
-  OnboardingStackParamList,
-  useRootNavigation,
-  useStore,
-} from "@obi-wallet/common";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { Alert, View } from "react-native";
+
+import { useStore } from "../../../contexts";
+import {
+  KeyFlow,
+  KeyRoute,
+  OnboardingRoute,
+  OnboardingStackParamList,
+  useRootNavigation,
+} from "../../../router";
+import { Button } from "../../buttons";
+import { MultisigSettings } from "../../multisig-settings";
 
 export type CreateWalletScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,

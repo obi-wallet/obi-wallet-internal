@@ -10,10 +10,12 @@
     "buffer": "*",
     "mobx-react-lite": "*",
     "react-native-web": "*",
-    "react-shadow": "*"
+    "react-shadow": "*",
+    "rooks": "*"
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "*",
+    "@rollup/plugin-inject": "*",
     "@storybook/react": "*",
     "@vitejs/plugin-react": "*",
     "vite": "*"
