@@ -2,7 +2,13 @@ import { observer } from "mobx-react-lite";
 
 import { SignInteractionModal } from "./sign-interaction-modal";
 
-export { ConfirmMessages, PrettyMessage } from "./signature-modal";
+export {
+  ConfirmMessages,
+  PrettyMessage,
+  createDeviceKeySigner,
+  createUsableSigners,
+  PhoneKeySigner,
+} from "./signature-modal";
 export type {
   ConfirmMessagesProps,
   PrettyMessageProps,

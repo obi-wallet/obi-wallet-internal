@@ -1,4 +1,10 @@
-import { CheckIcon, Key, useEnv } from "@obi-wallet/common";
+import {
+  CheckIcon,
+  createUsableSigners,
+  Key,
+  PhoneKeySigner,
+  useEnv,
+} from "@obi-wallet/common";
 import {
   SignAndBroadcastTransactionType,
   useQuery,
@@ -10,7 +16,6 @@ import { useRef, useState } from "react";
 
 import { MultisigConfirmMessages } from "./multisig-confirm-messages";
 import { PhoneNumberBottomSheetContent } from "./phone-number-bottom-sheet-content";
-import { createUsableSigners, PhoneKeySigner } from "./signers";
 import {
   BottomSheet,
   BottomSheetRef,

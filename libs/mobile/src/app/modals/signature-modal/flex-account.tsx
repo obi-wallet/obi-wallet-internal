@@ -1,5 +1,10 @@
 import { useTheme } from "@emotion/react";
-import { ConfirmMessages, KeysList, Text } from "@obi-wallet/common";
+import {
+  ConfirmMessages,
+  createDeviceKeySigner,
+  KeysList,
+  Text,
+} from "@obi-wallet/common";
 import {
   SignAndBroadcastTransactionType,
   useSignAndBroadcastTransaction,
@@ -8,8 +13,6 @@ import { KeyType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { View } from "react-native";
-
-import { createDeviceKeySigner } from "./signers";
 
 export type SignatureModalFlexAccountProps = ReturnType<
   typeof useSignAndBroadcastTransaction
