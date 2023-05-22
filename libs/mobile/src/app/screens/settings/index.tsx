@@ -2,6 +2,7 @@ import styled from "@emotion/native";
 import {
   BrandToggle,
   isSmallScreenNumber,
+  ObiIcon,
   RootStack,
   SettingsRoute,
   useRootNavigation,
@@ -22,7 +23,6 @@ import HelpAndSupport from "./assets/headset.svg";
 import LogoutIcon from "./assets/power-red.svg";
 import { HealthChecksScreen } from "./health-checks";
 import { KeysConfigScreen } from "./keys-config";
-import { ObiLogo } from "../components/obi-logo";
 
 export const SettingsScreen = observer(function SettingsScreen() {
   const { configStore, walletsStore } = useStore();
@@ -68,7 +68,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
               marginLeft: 10,
             }}
           >
-            <ObiLogo
+            <ObiIcon
               style={{
                 width: 64,
                 height: 64,

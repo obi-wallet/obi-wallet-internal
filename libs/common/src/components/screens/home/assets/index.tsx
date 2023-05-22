@@ -2,24 +2,6 @@ import { useTheme } from "@emotion/react";
 import { faSortAsc } from "@fortawesome/free-solid-svg-icons/faSortAsc";
 import { faSortDesc } from "@fortawesome/free-solid-svg-icons/faSortDesc";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  CoinIcon,
-  EnrichedToken,
-  IconButton,
-  isSmallScreenNumber,
-  isSmallScreenSubstr,
-  NetworkAccountPickerLayout,
-  ReceiveIcon,
-  RefreshableFlatList,
-  RootRoute,
-  RootStackParamList,
-  SendIcon,
-  StakingIcon,
-  Text,
-  UsdBalance,
-  useEnrichedBalances,
-  useStore,
-} from "@obi-wallet/common";
 import { Feature } from "@obi-wallet/config";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
@@ -34,10 +16,39 @@ import {
   View,
 } from "react-native";
 
+import { useStore } from "../../../../contexts";
+import { isSmallScreenNumber, isSmallScreenSubstr } from "../../../../helpers";
+import {
+  EnrichedToken,
+  UsdBalance,
+  useEnrichedBalances,
+} from "../../../../hooks";
+import { RootRoute, RootStackParamList } from "../../../../router";
+import { IconButton } from "../../../buttons";
+import { CoinIcon, ReceiveIcon, SendIcon, StakingIcon } from "../../../icons";
+import { NetworkAccountPickerLayout } from "../../../network-account-picker-layout";
+import { RefreshableFlatList } from "../../../refreshable-flat-list";
+import { Text } from "../../../typography";
+
 export const Assets = observer(function Assets() {
   const theme = useTheme();
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
+
+  // TODO: image
+  return (
+    <View
+      style={{
+        backgroundColor: theme.colors.background,
+        flex: 1,
+      }}
+    >
+      <NetworkAccountPickerLayout>
+        <BalanceAndActions />
+        <AssetsList />
+      </NetworkAccountPickerLayout>
+    </View>
+  );
 
   return (
     <ImageBackground
@@ -114,7 +125,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
             <SendIcon
               width={25}
               height={25}
-              viewBox=""
+              viewBox={undefined}
               style={{ marginLeft: -5 }}
             />
           </TouchableHighlight>
@@ -146,7 +157,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
             <ReceiveIcon
               width={25}
               height={25}
-              viewBox=""
+              viewBox={undefined}
               style={{
                 marginTop: -5,
               }}

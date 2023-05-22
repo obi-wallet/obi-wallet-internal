@@ -1,6 +1,5 @@
 import { faCamera, faPhotoFilm } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { CoinIcon, enrichToken, Text, useStore } from "@obi-wallet/common";
 import { Beneficiary, FlexAccount, SinglesigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { FC, useState } from "react";
@@ -11,14 +10,19 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import ImagePicker from "react-native-image-crop-picker";
 import { SvgProps } from "react-native-svg";
 
-import BeneficiaryAccount from "./assets/beneficiary-account-icon.svg";
-import FlexAccountIcon from "./assets/flex-account-icon.svg";
-import LegacyAccountIcon from "./assets/legacy-account-icon.svg";
-import Pencil from "./assets/pencil.svg";
-import { Modal } from "../../app/screens/components/modal";
+import { useStore } from "../../contexts";
+import { enrichToken } from "../../hooks";
+import {
+  BeneficiaryAccountIcon,
+  CoinIcon,
+  FlexAccountIcon,
+  LegacyAccountIcon,
+  PencilIcon,
+} from "../icons";
+import { Modal } from "../modal";
+import { Text } from "../typography";
 
 export interface Icon {
   uri: string;
@@ -108,7 +112,7 @@ export const AvatarPicker = observer(function AvatarPicker({
           elevation: 5,
         }}
       >
-        <Pencil />
+        <PencilIcon />
       </View>
       <Modal
         isVisible={modalVisible}
@@ -139,16 +143,17 @@ export const AvatarPicker = observer(function AvatarPicker({
           }}
           onPress={async () => {
             try {
-              const image = await ImagePicker.openCamera({
-                width: 300,
-                height: 300,
-                cropping: true,
-                includeBase64: true,
-                mediaType: "photo",
-              });
-              onChange({
-                uri: `data:${image.mime};base64,${image.data}`,
-              });
+              // TODO:
+              // const image = await ImagePicker.openCamera({
+              //   width: 300,
+              //   height: 300,
+              //   cropping: true,
+              //   includeBase64: true,
+              //   mediaType: "photo",
+              // });
+              // onChange({
+              //   uri: `data:${image.mime};base64,${image.data}`,
+              // });
               setModalVisible(false);
             } catch (e) {
               // noop
@@ -175,16 +180,17 @@ export const AvatarPicker = observer(function AvatarPicker({
           }}
           onPress={async () => {
             try {
-              const image = await ImagePicker.openPicker({
-                width: 300,
-                height: 300,
-                cropping: true,
-                includeBase64: true,
-                mediaType: "photo",
-              });
-              onChange({
-                uri: `data:${image.mime};base64,${image.data}`,
-              });
+              // TODO:
+              // const image = await ImagePicker.openPicker({
+              //   width: 300,
+              //   height: 300,
+              //   cropping: true,
+              //   includeBase64: true,
+              //   mediaType: "photo",
+              // });
+              // onChange({
+              //   uri: `data:${image.mime};base64,${image.data}`,
+              // });
               setModalVisible(false);
             } catch (e) {
               // noop
@@ -245,7 +251,7 @@ const getDefaultAvatar = (
     case "flex-account":
       return <FlexAccountIcon width="100%" height="100%" />;
     case "beneficiary":
-      return <BeneficiaryAccount width="100%" height="100%" />;
+      return <BeneficiaryAccountIcon width="100%" height="100%" />;
     case "singlesig-wallet":
       return <LegacyAccountIcon width="100%" height="100%" />;
   }

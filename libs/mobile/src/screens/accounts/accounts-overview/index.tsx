@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   Background,
   Button,
+  NetworkAccountPickerLayout,
   SettingsRoute,
   Text,
   UsdBalance,
@@ -35,7 +36,6 @@ import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import { AccountItem } from "./account-item";
 import KeyRoundIcon from "./assets/key-round-icon.svg";
 import { PermissionedAddressesContext } from "./permissioned-address-context";
-import { NetworkAccountPickerLayout } from "../../../app/screens/components/network-account-picker-layout";
 import { AccountsRoute, AccountsStackParamList } from "../accounts-stack";
 import { getGatekeeperConfigDraftId } from "../draft-id";
 

@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FlatList, FlatListProps } from "react-native";
 
-import { RefreshControl } from "./refresh-control";
+import { RefreshControl } from "../refresh-control";
 
 export interface RefreshableFlatListProps<T> extends FlatListProps<T> {
   refetch: () => Promise<unknown>;

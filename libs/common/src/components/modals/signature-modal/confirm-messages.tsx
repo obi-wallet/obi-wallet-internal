@@ -16,8 +16,8 @@ import { PrettyMessage } from "./pretty-message";
 import { useStore } from "../../../contexts";
 import { BroadcastingAnimation } from "../../animations";
 import { Background } from "../../background";
+import { BaseModal } from "../../base-modal";
 import { Button } from "../../buttons";
-import { Modal } from "../../modal";
 import { ScreenContainer } from "../../screen-container";
 import { Text } from "../../typography";
 
@@ -63,7 +63,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
     const isLoop = configStore.isLoop();
 
     return (
-      <Modal {...props}>
+      <BaseModal {...props}>
         <ScreenContainer>
           {loading ? <BroadcastingAnimation /> : null}
 
@@ -183,7 +183,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
 
           {footer}
         </ScreenContainer>
-      </Modal>
+      </BaseModal>
     );
 
     function renderTabButton({

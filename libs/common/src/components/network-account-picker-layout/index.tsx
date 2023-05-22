@@ -2,17 +2,10 @@ import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons/faAngleDoub
 import { faRss } from "@fortawesome/free-solid-svg-icons/faRss";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import {
-  HomeBottomTabRoute,
-  isSmallScreenSubstr,
-  RootStackParamList,
-  Text,
-  useStore,
-} from "@obi-wallet/common";
 import { Feature } from "@obi-wallet/config";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { Sdk } from "@obi-wallet/sdk";
-import { DrawerNavigationProp } from "@react-navigation/drawer";
+import type { DrawerNavigationProp } from "@react-navigation/drawer";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
@@ -20,8 +13,12 @@ import { FormattedMessage } from "react-intl";
 import { TouchableHighlight, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Avatar } from "../../../../screens/accounts/avatar";
-import { ObiLogo } from "../obi-logo";
+import { useStore } from "../../contexts";
+import { isSmallScreenSubstr } from "../../helpers";
+import { HomeBottomTabRoute, RootStackParamList } from "../../router";
+import { Avatar } from "../avatar";
+import { ObiIcon } from "../icons";
+import { Text } from "../typography";
 
 export interface NetworkAccountPickerLayoutProps {
   children: ReactNode;
@@ -206,7 +203,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
       );
     } else {
       return (
-        <ObiLogo
+        <ObiIcon
           style={{
             width: 35,
             height: 35,

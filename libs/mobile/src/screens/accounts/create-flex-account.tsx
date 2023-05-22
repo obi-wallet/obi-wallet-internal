@@ -1,6 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  AvatarPicker,
   Button,
+  Icon,
   ScreenContainer,
   Text,
   TextInput,
@@ -23,7 +25,6 @@ import { z } from "zod";
 
 import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import FlexAccountIcon from "./assets/flex-account-icon.svg";
-import { AvatarPicker, Icon } from "./avatar";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { nonEmptyString } from "../../helpers/validation-helpers";
 

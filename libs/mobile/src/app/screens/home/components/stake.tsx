@@ -12,6 +12,7 @@ import {
   isSmallScreen,
   isSmallScreenNumber,
   KeyboardAvoidingView,
+  RefreshableFlatList,
   Text,
   useBalances,
   useStore,
@@ -60,7 +61,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { z } from "zod";
 
 import { TokenController } from "../../../../forms";
-import { RefreshableFlatList } from "../../components/refreshable-flat-list";
 
 enum StakeTab {
   Validators = "Validators",

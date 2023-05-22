@@ -27,6 +27,7 @@ import {
 } from "react-native";
 import invariant from "tiny-invariant";
 
+import { Assets } from "./assets";
 import { useStore } from "../../../contexts";
 import { getScreenDimensions, isSmallScreenNumber } from "../../../helpers";
 import { getIsOutdatedQuery } from "../../../queries";
@@ -47,8 +48,6 @@ const MockScreen = observer(function MockScreen() {
 
 // TODO:
 const DappExplorer = MockScreen;
-// TODO:
-const Assets = MockScreen;
 // TODO:
 const NFTs = MockScreen;
 // TODO:

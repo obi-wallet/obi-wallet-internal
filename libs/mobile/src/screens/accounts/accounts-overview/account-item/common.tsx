@@ -4,14 +4,12 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Text } from "@obi-wallet/common";
+import { Avatar, Text } from "@obi-wallet/common";
 import { Beneficiary, FlexAccount, SinglesigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { StyleProp, TextStyle, TouchableOpacity, View } from "react-native";
 import * as Animatable from "react-native-animatable";
-
-import { Avatar } from "../../avatar";
 
 export interface AbstractAccountItemProps {
   isOpen: boolean;

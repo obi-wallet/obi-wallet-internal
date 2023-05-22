@@ -1,15 +1,18 @@
 import { observer } from "mobx-react-lite";
-import { Modal as OriginalModal, ModalProps } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import type { ModalProps as RNModalProps } from "react-native-modal";
+import warning from "tiny-warning";
 
-export const Modal = observer<ModalProps>(function Modal({
+export interface ModalProps extends Partial<RNModalProps> {
+  isVisible: boolean;
+  onClose: () => void;
+}
+
+export const Modal = observer(function Modal({
   children,
+  isVisible,
+  onClose,
   ...props
-}) {
-  return (
-    <OriginalModal {...props}>
-      {/* See https://github.com/th3rdwave/react-native-safe-area-context/issues/279#issuecomment-1159644248 */}
-      <SafeAreaProvider>{children}</SafeAreaProvider>
-    </OriginalModal>
-  );
+}: ModalProps) {
+  warning(false, "Modal is not implemented for web");
+  return null;
 });

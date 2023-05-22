@@ -1,4 +1,4 @@
-import { Button, Modal, Text, useStore } from "@obi-wallet/common";
+import { Button, BaseModal, Text, useStore } from "@obi-wallet/common";
 import { ScreenContainer } from "@obi-wallet/common";
 import { InitiateWalletConnectSessionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -26,7 +26,7 @@ const InteractionModalInner = observer(function InteractionModalInner({
   interaction: InitiateWalletConnectSessionUserInteraction;
 }) {
   return (
-    <Modal visible>
+    <BaseModal visible>
       <ScreenContainer>
         <Text
           style={{
@@ -115,6 +115,6 @@ const InteractionModalInner = observer(function InteractionModalInner({
           />
         </View>
       </ScreenContainer>
-    </Modal>
+    </BaseModal>
   );
 });

@@ -6,6 +6,7 @@ import { Portal } from "@gorhom/portal";
 import {
   CoinIcon,
   EnrichedToken,
+  RefreshableFlatList,
   TextInput,
   TextInputInvalidMessage,
   useStore,
@@ -24,7 +25,6 @@ import {
 } from "react-native";
 
 import { BottomSheetBackdrop } from "../app/screens/components/bottomSheetBackdrop";
-import { RefreshableFlatList } from "../app/screens/components/refreshable-flat-list";
 
 export type TokenControllerProps = {
   field: {

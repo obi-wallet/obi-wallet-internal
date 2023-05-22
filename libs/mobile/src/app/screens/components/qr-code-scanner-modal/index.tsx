@@ -1,4 +1,4 @@
-import { Button, Modal } from "@obi-wallet/common";
+import { Button, BaseModal } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { ModalProps } from "react-native";
@@ -18,7 +18,7 @@ export const QrCodeScannerModal = observer(function QrCodeScannerModal({
   const safeArea = useSafeAreaInsets();
 
   return (
-    <Modal {...props}>
+    <BaseModal {...props}>
       <QRCodeScanner
         onRead={({ data }) => {
           onScan(data);
@@ -41,7 +41,7 @@ export const QrCodeScannerModal = observer(function QrCodeScannerModal({
         reactivate
         showMarker
       />
-    </Modal>
+    </BaseModal>
   );
 });
 
