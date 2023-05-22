@@ -1,6 +1,7 @@
 import {
   CreateWalletScreen,
   DeviceKeyScreen,
+  getBiometricsPublicKey,
   getTwilioClient,
   KeyRoute,
   Modals,
@@ -33,13 +34,12 @@ const MultisigDraft = {
     useAsyncEffect(async () => {
       if (!draft) {
         const original = ObservableMultisigKey.create(chainStore.currentChain);
-        // TODO: doesn't work in web yet
-        // original.setDeviceKey({
-        //   type: pubkeyType.secp256k1,
-        //   value: await getBiometricsPublicKey({
-        //     demoMode: true,
-        //   }),
-        // });
+        original.setDeviceKey({
+          type: "tendermint/PubKeySecp256k1",
+          value: await getBiometricsPublicKey({
+            demoMode: true,
+          }),
+        });
         original.setPhoneKey({
           publicKey: await getTwilioClient({
             demoMode: true,

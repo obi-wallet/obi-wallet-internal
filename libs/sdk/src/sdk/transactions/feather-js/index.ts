@@ -130,7 +130,8 @@ export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
       if (
         error.response?.status === 404 &&
         result.success &&
-        result.data.message.includes("not found")
+        (result.data.message.includes("not found") ||
+          result.data.message.includes("code = NotFound"))
       ) {
         return null;
       }
