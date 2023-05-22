@@ -18,6 +18,10 @@ jest.mock("@react-native-clipboard/clipboard", () => {
   return {};
 });
 
+jest.mock("react-native-linear-gradient", () => {
+  return {};
+});
+
 jest.mock("react-native-nfc-manager", () => {
   return {};
 });
