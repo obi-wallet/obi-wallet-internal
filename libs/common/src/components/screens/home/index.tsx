@@ -39,7 +39,20 @@ import {
   RootRoute,
   RootStackParamList,
 } from "../../../router";
-import { SendIcon } from "../../icons";
+import {
+  AppsIcon,
+  AssetsActiveIcon,
+  AssetsIcon,
+  NftsActiveIcon,
+  NftsIcon,
+  ObiAccountsActiveIcon,
+  ObiAccountsIcon,
+  ObiAppsActiveIcon,
+  ObiAppsIcon,
+  ObiAssetsActiveIcon,
+  ObiAssetsIcon,
+  SendIcon,
+} from "../../icons";
 import { Text } from "../../typography";
 
 const MockScreen = observer(function MockScreen() {
@@ -57,17 +70,6 @@ const Trade = MockScreen;
 const SettingsScreen = MockScreen;
 
 // TODO:
-const AppsIcon = SendIcon;
-const AssetsIcon = SendIcon;
-const ObiAppsIcon = SendIcon;
-const ObiAppsActiveIcon = SendIcon;
-const ObiAccountsIcon = SendIcon;
-const ObiAssetsIcon = SendIcon;
-const ObiAccountsActiveIcon = SendIcon;
-const ObiAssetsActiveIcon = SendIcon;
-const AssetsIconActive = SendIcon;
-const NFTsIcon = SendIcon;
-const NFTsIconActive = SendIcon;
 const TradeIcon = SendIcon;
 const TradeIconActive = SendIcon;
 const AppsIconActive = SendIcon;
@@ -112,7 +114,7 @@ export const TabNavigation = observer<TabNavigationProps>(
                 );
               case HomeBottomTabRoute.Assets:
                 if (isLoop)
-                  return focused ? <AssetsIconActive /> : <AssetsIcon />;
+                  return focused ? <AssetsActiveIcon /> : <AssetsIcon />;
                 return focused ? (
                   <ActiveIconContainer>
                     <ObiAssetsActiveIcon width={28} height={28} />
@@ -130,7 +132,7 @@ export const TabNavigation = observer<TabNavigationProps>(
                   <ObiAppsIcon width={28} height={28} />
                 );
               case HomeBottomTabRoute.Nfts:
-                return focused ? <NFTsIconActive /> : <NFTsIcon />;
+                return focused ? <NftsActiveIcon /> : <NftsIcon />;
               case HomeBottomTabRoute.Trade:
                 return focused ? <TradeIconActive /> : <TradeIcon />;
               case HomeBottomTabRoute.Settings:
