@@ -1,4 +1,3 @@
-import { useTheme } from "@emotion/react";
 import { ChainId, Message } from "@obi-wallet/sdk";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { Msg } from "@terra-money/feather.js";
@@ -15,9 +14,9 @@ import {
 
 import { PrettyMessage } from "./pretty-message";
 import { useStore } from "../../../contexts";
+import { BroadcastingAnimation } from "../../animations";
 import { Background } from "../../background";
 import { Button } from "../../buttons";
-import { Loader } from "../../loader";
 import { Modal } from "../../modal";
 import { ScreenContainer } from "../../screen-container";
 import { Text } from "../../typography";
@@ -61,38 +60,12 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
     const [selectedTab, setSelectedTab] = useState(Tab.TransactionDetails);
     const { configStore } = useStore();
     const isObi = configStore.isObi();
-    const theme = useTheme();
     const isLoop = configStore.isLoop();
 
     return (
       <Modal {...props}>
         <ScreenContainer>
-          {loading ? (
-            <Loader
-              loadingText="Broadcasting"
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 999,
-                position: "absolute",
-                backgroundColor: isLoop ? "#100F1D" : theme.colors.background,
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                paddingTop: 50,
-                marginTop: -150,
-              }}
-              animation={require("../../loader/broadcast.json")}
-              animationStyles={{
-                width: 300,
-                height: 300,
-                maxHeight: "100%",
-                maxWidth: "100%",
-              }}
-            />
-          ) : null}
+          {loading ? <BroadcastingAnimation /> : null}
 
           <Background />
 

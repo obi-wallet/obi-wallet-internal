@@ -1,5 +1,4 @@
 import { KeyType } from "@obi-wallet/sdk";
-import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
 import {
   ComponentType,
@@ -20,6 +19,11 @@ import { SvgProps } from "react-native-svg";
 import { ComingSoonKeyType, useKeyMetaData } from "./key-meta-data";
 import { useStore } from "../../contexts";
 import { triggerImpactLight, triggerNotificationSuccess } from "../../helpers";
+import {
+  ConfirmAnimation,
+  LoadingAnimation,
+  PromptAnimation,
+} from "../animations";
 import { Text } from "../typography";
 
 export interface KeyMetaData {
@@ -128,28 +132,14 @@ export const KeyListItem = observer(function KeyListItem({
             borderRadius: 100,
           }}
         >
-          <LottieView
-            source={require("./assets/loading.json")}
-            autoPlay
-            loop={true}
-            style={{ width: 30, zIndex: -1, position: "absolute" }}
-          />
+          <LoadingAnimation />
         </View>
       );
     }
 
     return (
       <>
-        <LottieView
-          source={
-            signed
-              ? require("./assets/confirm-animation.json")
-              : require("./assets/prompt-animation.json")
-          }
-          autoPlay
-          loop={!signed ? animate : false}
-          style={{ width: 60, zIndex: -1, position: "absolute" }}
-        />
+        {signed ? <ConfirmAnimation /> : <PromptAnimation loop={animate} />}
         <Icon fill={isObi ? "#fff" : "#7B87A8"} width={24} height={24} />
       </>
     );

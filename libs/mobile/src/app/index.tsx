@@ -2,11 +2,11 @@ import { useTheme } from "@emotion/react";
 import { PortalHost } from "@gorhom/portal";
 import {
   CreateWalletScreen,
-  Loader,
   OnboardingRoute,
   RootRoute,
   RootStack,
   Text,
+  UpdatingAppBundleAnimation,
   useStore,
   WelcomeScreen,
 } from "@obi-wallet/common";
@@ -88,27 +88,7 @@ const Load = observer(function Load() {
         flex: 1,
       }}
     >
-      <Loader
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 999,
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          marginBottom: 150,
-        }}
-        loadingText="Updating app bundle"
-        animation={require("./loader/broadcast.json")}
-        animationStyles={{
-          width: 300,
-          height: 300,
-          maxHeight: "100%",
-          maxWidth: "100%",
-        }}
-      />
+      <UpdatingAppBundleAnimation />
     </View>
   );
 });

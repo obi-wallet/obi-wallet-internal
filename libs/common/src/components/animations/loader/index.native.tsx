@@ -2,8 +2,8 @@ import LottieView, { AnimationObject } from "lottie-react-native";
 import { observer } from "mobx-react-lite";
 import { ActivityIndicator, StyleProp, View, ViewStyle } from "react-native";
 
-import { useStore } from "../../contexts";
-import { Text } from "../typography";
+import { useStore } from "../../../contexts";
+import { Text } from "../../typography";
 
 export interface LoaderProps {
   loadingText?: string;
@@ -37,7 +37,7 @@ export const Loader = observer(function Loader({
     }
     return (
       <LottieView
-        source={require("./obi-spinner.json")}
+        source={require("../assets/obi-spinner.json")}
         autoPlay
         loop
         style={{ maxHeight: 60, maxWidth: 60, width: "100%" }}
@@ -60,7 +60,11 @@ export const Loader = observer(function Loader({
             {loadingText}
           </Text>
           <View style={{ height: 11, width: 20 }}>
-            <LottieView source={require("./ellipses.json")} autoPlay loop />
+            <LottieView
+              source={require("../assets/ellipses.json")}
+              autoPlay
+              loop
+            />
           </View>
         </View>
       ) : null}

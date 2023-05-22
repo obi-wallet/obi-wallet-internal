@@ -1,3 +1,4 @@
+export * from "./animations";
 export * from "./back";
 export * from "./background";
 export * from "./bottom-sheet";
@@ -8,7 +9,6 @@ export * from "./initial-background";
 export * from "./keyboard-avoiding-view";
 export * from "./keyboard-aware-scroll-view";
 export * from "./language-picker";
-export * from "./loader";
 export * from "./modal";
 export * from "./modals";
 export * from "./multisig-settings";
