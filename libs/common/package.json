@@ -5,6 +5,7 @@
     "@cosmjs/cosmwasm-stargate": "*",
     "@cosmjs/crypto": "*",
     "@cosmjs/stargate": "*",
+    "@emotion/native": "*",
     "@emotion/react": "*",
     "@fortawesome/free-solid-svg-icons": "*",
     "@fortawesome/react-native-fontawesome": "*",
