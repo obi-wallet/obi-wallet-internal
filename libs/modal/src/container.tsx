@@ -13,8 +13,9 @@ export function Container({ children }: { children: ReactNode }) {
           styles={{
             ":host": {
               all: "initial",
-              width: "325px",
-              height: "667px",
+              width: "390px",
+              height: "844px",
+              borderRadius: "25px",
               display: "flex",
               overflow: "hidden",
             },
