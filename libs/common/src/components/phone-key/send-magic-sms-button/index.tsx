@@ -4,14 +4,9 @@ import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
 
-import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
-import { AsyncButton, Button } from "../../buttons";
+import { AsyncButton } from "../../buttons";
 import { Text } from "../../typography";
-
-// TODO:
-// import SMS from "./assets/sms.svg";
-const SMS = undefined;
 
 export interface SendMagicSmsButtonProps {
   description?: string;
@@ -26,9 +21,6 @@ export const SendMagicSmsButton = observer(function SendMagicSmsButton({
   disabled,
 }: SendMagicSmsButtonProps) {
   const intl = useIntl();
-  const { configStore } = useStore();
-  const isObi = configStore.isObi();
-
   return (
     <View>
       {description ? (
@@ -64,7 +56,6 @@ export const SendMagicSmsButton = observer(function SendMagicSmsButton({
           id: "onboarding2.sendmagicsms",
           defaultMessage: "Get Magic SMS",
         })}
-        LeftIcon={isObi ? undefined : SMS}
         flavor="blue"
         disabled={disabled}
         onPress={onPress}

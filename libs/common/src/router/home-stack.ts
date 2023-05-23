@@ -16,8 +16,6 @@ export enum HomeBottomTabRoute {
   Accounts = "Accounts",
   Assets = "Assets",
   Apps = "Apps",
-  Nfts = "Nfts",
-  Trade = "Trade",
   Settings = "Settings",
 }
 
@@ -25,8 +23,6 @@ export interface HomeBottomTabParamList extends ParamListBase {
   [HomeBottomTabRoute.Accounts]: undefined;
   [HomeBottomTabRoute.Assets]: undefined;
   [HomeBottomTabRoute.Apps]: undefined;
-  [HomeBottomTabRoute.Nfts]: undefined;
-  [HomeBottomTabRoute.Trade]: undefined;
   [HomeBottomTabRoute.Settings]: undefined;
 }
 

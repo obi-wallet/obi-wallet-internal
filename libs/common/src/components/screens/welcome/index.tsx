@@ -87,9 +87,6 @@ export interface WelcomeProps {
   onEnterDemoMode(): void;
 }
 
-// TODO:
-const GetStarted = undefined;
-
 export const Welcome = observer<WelcomeProps>(function Welcome({
   onCreate,
   onRecover,
@@ -108,7 +105,6 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
             id: "onboarding1.login",
             defaultMessage: "Login",
           })}
-          RightIcon={isObi ? undefined : GetStarted}
           flavor="green"
           onPress={() => {
             // accountPickerModalProps.open();
@@ -117,7 +113,6 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
       ) : null}
       <Button
         label={intl.formatMessage({ id: "onboarding1.getstarted" })}
-        RightIcon={isObi ? undefined : GetStarted}
         flavor="green"
         buttonStyle={{
           marginTop: theme.spacing[4],
@@ -126,7 +121,6 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
       />
       <Button
         label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
-        RightIcon={isObi ? undefined : GetStarted}
         flavor="blue"
         buttonStyle={{
           marginTop: theme.spacing[4],
@@ -155,7 +149,6 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
             id: "onboarding1.demo",
             defaultMessage: "Enter Demo Mode",
           })}
-          RightIcon={isObi ? undefined : GetStarted}
           flavor="blue"
           buttonStyle={{
             marginTop: theme.spacing[4],

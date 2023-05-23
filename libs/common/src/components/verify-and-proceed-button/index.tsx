@@ -5,10 +5,6 @@ import { Keyboard } from "react-native";
 import { useStore } from "../../contexts";
 import { AsyncButton } from "../buttons";
 
-// TODO:
-// import ShieldCheck from "./assets/shield-check.svg";
-const ShieldCheck = undefined;
-
 export interface VerifyAndProceedButtonProps {
   onPress: () => Promise<void>;
   disabled?: boolean;
@@ -19,15 +15,12 @@ export const VerifyAndProceedButton = observer(function VerifyAndProceedButton({
   disabled,
 }: VerifyAndProceedButtonProps) {
   const intl = useIntl();
-  const { configStore } = useStore();
-  const isObi = configStore.isObi();
   return (
     <AsyncButton
       label={intl.formatMessage({
         id: "onboarding3.verifyandproceed",
         defaultMessage: "Verify & Proceed",
       })}
-      LeftIcon={isObi ? undefined : ShieldCheck}
       flavor={disabled ? "gray" : "blue"}
       onPress={async () => {
         Keyboard.dismiss();

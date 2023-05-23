@@ -21,23 +21,9 @@ import {
 import { Back } from "../../../back";
 import { Background } from "../../../background";
 import { AsyncButton } from "../../../buttons";
+import { ObiFaceScannerIcon } from "../../../icons";
 import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
 import { Text } from "../../../typography";
-
-// TODO:
-const FaceScanner = observer(function FaceScanner() {
-  return null;
-});
-
-// TODO:
-const ObiFaceScanner = observer(function ObiFaceScanner() {
-  return null;
-});
-
-// TODO:
-const Scan = observer(function Scan() {
-  return null;
-});
 
 export type DeviceKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -197,7 +183,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                         }
                   }
                 >
-                  {isObi ? <ObiFaceScanner /> : <FaceScanner />}
+                  <ObiFaceScannerIcon />
                 </View>
               </View>
             </View>
@@ -240,7 +226,6 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
               id: "onboarding4.biometrics.button",
             })}
             flavor="blue"
-            LeftIcon={isObi ? undefined : Scan}
             onPress={async () => {
               if (scannedBiometrics) {
                 onSubmit();

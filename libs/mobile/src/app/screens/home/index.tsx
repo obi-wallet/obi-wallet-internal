@@ -49,17 +49,11 @@ import ObiSettingsActiveIcon from "./assets/filled-cog-icon.svg";
 import ObiAssetsActiveIcon from "./assets/filled-wallet-icon.svg";
 import AppsIconActive from "./assets/ic_apps_active.svg";
 import AssetsIconActive from "./assets/ic_assets_active.svg";
-import NFTsIconActive from "./assets/ic_nfts_active.svg";
 import SettingsIconActive from "./assets/ic_settings_active.svg";
-import TradeIconActive from "./assets/ic_trade_active.svg";
-import NFTsIcon from "./assets/nftsIcon.svg";
 import SettingsIcon from "./assets/settingsIcon.svg";
-import TradeIcon from "./assets/tradeIcon.svg";
 import { Assets } from "./components/assets";
 import { AccountsScreen } from "../../../screens/accounts";
 import { DappExplorer } from "../dapp-explorer";
-import { NFTs } from "../loop-web-apps/nfts";
-import { Trade } from "../loop-web-apps/trade";
 import { SettingsScreen } from "../settings";
 
 const ActiveIconContainer = styled.View({
@@ -110,10 +104,6 @@ export const TabNavigation = observer<TabNavigationProps>(
                 ) : (
                   <ObiAppsIcon width={28} height={28} />
                 );
-              case HomeBottomTabRoute.Nfts:
-                return focused ? <NFTsIconActive /> : <NFTsIcon />;
-              case HomeBottomTabRoute.Trade:
-                return focused ? <TradeIconActive /> : <TradeIcon />;
               case HomeBottomTabRoute.Settings:
                 if (isLoop)
                   return focused ? <SettingsIconActive /> : <SettingsIcon />;
@@ -192,18 +182,6 @@ export const TabNavigation = observer<TabNavigationProps>(
           }}
           component={Assets}
         />
-        {configStore.isFeatureEnabled(Feature.NftTab) ? (
-          <HomeBottomTab.Screen
-            name={HomeBottomTabRoute.Nfts}
-            options={{
-              title: intl.formatMessage({
-                id: "menu.nfts",
-                defaultMessage: "NFTs",
-              }),
-            }}
-            component={NFTs}
-          />
-        ) : null}
         <HomeBottomTab.Screen
           name={HomeBottomTabRoute.Apps}
           options={{
@@ -214,18 +192,6 @@ export const TabNavigation = observer<TabNavigationProps>(
           }}
           component={DappExplorer}
         />
-        {isLoop && (
-          <HomeBottomTab.Screen
-            name={HomeBottomTabRoute.Trade}
-            options={{
-              title: intl.formatMessage({
-                id: "menu.trade",
-                defaultMessage: "Trade",
-              }),
-            }}
-            component={Trade}
-          />
-        )}
         <HomeBottomTab.Screen
           name={HomeBottomTabRoute.Settings}
           options={{

@@ -40,18 +40,14 @@ import {
   RootStackParamList,
 } from "../../../router";
 import {
-  AppsIcon,
-  AssetsActiveIcon,
-  AssetsIcon,
-  NftsActiveIcon,
-  NftsIcon,
   ObiAccountsActiveIcon,
   ObiAccountsIcon,
   ObiAppsActiveIcon,
   ObiAppsIcon,
   ObiAssetsActiveIcon,
   ObiAssetsIcon,
-  SendIcon,
+  ObiSettingsActiveIcon,
+  ObiSettingsIcon,
 } from "../../icons";
 import { Text } from "../../typography";
 
@@ -62,21 +58,10 @@ const MockScreen = observer(function MockScreen() {
 // TODO:
 const DappExplorer = MockScreen;
 // TODO:
-const NFTs = MockScreen;
 // TODO:
 const AccountsScreen = MockScreen;
 // TODO:
-const Trade = MockScreen;
 const SettingsScreen = MockScreen;
-
-// TODO:
-const TradeIcon = SendIcon;
-const TradeIconActive = SendIcon;
-const AppsIconActive = SendIcon;
-const SettingsIcon = SendIcon;
-const SettingsIconActive = SendIcon;
-const ObiSettingsIcon = SendIcon;
-const ObiSettingsActiveIcon = SendIcon;
 
 export type HomeScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -113,8 +98,6 @@ export const TabNavigation = observer<TabNavigationProps>(
                   <ObiAccountsIcon width={32} height={32} />
                 );
               case HomeBottomTabRoute.Assets:
-                if (isLoop)
-                  return focused ? <AssetsActiveIcon /> : <AssetsIcon />;
                 return focused ? (
                   <ActiveIconContainer>
                     <ObiAssetsActiveIcon width={28} height={28} />
@@ -123,7 +106,6 @@ export const TabNavigation = observer<TabNavigationProps>(
                   <ObiAssetsIcon width={32} height={32} />
                 );
               case HomeBottomTabRoute.Apps:
-                if (isLoop) return focused ? <AppsIconActive /> : <AppsIcon />;
                 return focused ? (
                   <ActiveIconContainer>
                     <ObiAppsActiveIcon width={28} height={28} />
@@ -131,13 +113,7 @@ export const TabNavigation = observer<TabNavigationProps>(
                 ) : (
                   <ObiAppsIcon width={28} height={28} />
                 );
-              case HomeBottomTabRoute.Nfts:
-                return focused ? <NftsActiveIcon /> : <NftsIcon />;
-              case HomeBottomTabRoute.Trade:
-                return focused ? <TradeIconActive /> : <TradeIcon />;
               case HomeBottomTabRoute.Settings:
-                if (isLoop)
-                  return focused ? <SettingsIconActive /> : <SettingsIcon />;
                 return focused ? (
                   <ActiveIconContainer>
                     <ObiSettingsActiveIcon width={28} height={28} />
@@ -213,18 +189,6 @@ export const TabNavigation = observer<TabNavigationProps>(
           }}
           component={Assets}
         />
-        {configStore.isFeatureEnabled(Feature.NftTab) ? (
-          <HomeBottomTab.Screen
-            name={HomeBottomTabRoute.Nfts}
-            options={{
-              title: intl.formatMessage({
-                id: "menu.nfts",
-                defaultMessage: "NFTs",
-              }),
-            }}
-            component={NFTs}
-          />
-        ) : null}
         <HomeBottomTab.Screen
           name={HomeBottomTabRoute.Apps}
           options={{
@@ -235,18 +199,6 @@ export const TabNavigation = observer<TabNavigationProps>(
           }}
           component={DappExplorer}
         />
-        {isLoop && (
-          <HomeBottomTab.Screen
-            name={HomeBottomTabRoute.Trade}
-            options={{
-              title: intl.formatMessage({
-                id: "menu.trade",
-                defaultMessage: "Trade",
-              }),
-            }}
-            component={Trade}
-          />
-        )}
         <HomeBottomTab.Screen
           name={HomeBottomTabRoute.Settings}
           options={{
