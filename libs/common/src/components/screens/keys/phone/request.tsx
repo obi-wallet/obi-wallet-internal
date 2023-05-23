@@ -3,12 +3,12 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, Image, View } from "react-native";
+import { Image, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 
 import { useEnv, useStore } from "../../../../contexts";
-import { isSmallScreenNumber } from "../../../../helpers";
+import { Alert, isSmallScreenNumber } from "../../../../helpers";
 import { getTwilioClient } from "../../../../keys";
 import {
   KeyFlow,

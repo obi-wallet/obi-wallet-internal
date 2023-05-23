@@ -1,9 +1,10 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 
 import { useStore } from "../../../contexts";
+import { Alert } from "../../../helpers";
 import { BottomSheetTextInput } from "../../bottom-sheet";
 import {
   PhoneOneTimeCodeInput,

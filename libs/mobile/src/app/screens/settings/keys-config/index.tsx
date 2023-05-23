@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import {
+  Alert,
   AsyncButton,
   Button,
   KeyFlow,
@@ -13,7 +14,7 @@ import { KeyType, MultisigKey, MultisigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 
 function getMultisigSettingsDraftId(wallet: MultisigWallet) {
   return `multisig-settings/${wallet.id}`;

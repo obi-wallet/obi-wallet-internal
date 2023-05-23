@@ -4,11 +4,11 @@ import {
 } from "@obi-wallet/headless-ui";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
-import { Alert } from "react-native";
 
 import { SignatureModalFlexAccount } from "./flex-account";
 import { SignatureModalMultisigKey } from "./multisig-key";
 import { SignatureModalSinglesigWallet } from "./singlesig-wallet";
+import { Alert } from "../../../helpers";
 
 export * from "./confirm-messages";
 export * from "./pretty-message";

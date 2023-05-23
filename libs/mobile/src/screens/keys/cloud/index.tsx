@@ -1,5 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import {
+  Alert,
   Back,
   Background,
   isSmallScreenNumber,
@@ -18,7 +19,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useRef } from "react";
-import { Alert, FlatList, TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { getCloudKeyPair, signOut } from "../../../app/cloud/google-drive";

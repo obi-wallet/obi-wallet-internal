@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { Text } from "@obi-wallet/common";
+import { Alert, Text } from "@obi-wallet/common";
 import { Back } from "@obi-wallet/common";
 import { healthChecks, JunoChecks } from "@obi-wallet/common-deprecated";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
@@ -8,13 +8,7 @@ import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import {
-  Alert,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import WarningIcon from "../../../assets/warning.svg";

@@ -1,6 +1,7 @@
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
+  Alert,
   Background,
   Button,
   NetworkAccountPickerLayout,
@@ -24,7 +25,6 @@ import * as R from "ramda";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import {
-  Alert,
   ImageBackground,
   LayoutAnimation,
   ListRenderItemInfo,

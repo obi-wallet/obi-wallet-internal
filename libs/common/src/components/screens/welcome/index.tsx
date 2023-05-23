@@ -4,10 +4,10 @@ import { ObservableMultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
-import { Alert } from "react-native";
 
 import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
+import { Alert } from "../../../helpers";
 import {
   KeyFlow,
   KeyRoute,

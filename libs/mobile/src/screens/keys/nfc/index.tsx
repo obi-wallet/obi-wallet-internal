@@ -1,5 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import {
+  Alert,
   Back,
   Background,
   checkIsSupported,
@@ -25,7 +26,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, FlatList, TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity, View } from "react-native";
 import NfcManager, { NfcEvents, OnDiscoverTag } from "react-native-nfc-manager";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAsyncEffect } from "rooks";

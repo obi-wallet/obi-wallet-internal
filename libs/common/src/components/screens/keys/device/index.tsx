@@ -4,11 +4,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, Platform, View } from "react-native";
+import { Platform, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useStore } from "../../../../contexts";
-import { isSmallScreen, isSmallScreenNumber } from "../../../../helpers";
+import { Alert, isSmallScreen, isSmallScreenNumber } from "../../../../helpers";
 import { getBiometricsKeyPair, resetBiometricsKeyPair } from "../../../../keys";
 import {
   KeyFlow,

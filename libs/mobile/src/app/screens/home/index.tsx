@@ -4,6 +4,7 @@ import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
+  Alert,
   getIsOutdatedQuery,
   getScreenDimensions,
   HomeBottomTab,
@@ -29,7 +30,6 @@ import { action } from "mobx";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
-  Alert,
   Platform,
   TouchableHighlight,
   TouchableOpacity,

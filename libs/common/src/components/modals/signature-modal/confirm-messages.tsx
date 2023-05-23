@@ -4,16 +4,11 @@ import { Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import {
-  Alert,
-  ModalProps,
-  ScrollView,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ModalProps, ScrollView, TouchableOpacity, View } from "react-native";
 
 import { PrettyMessage } from "./pretty-message";
 import { useStore } from "../../../contexts";
+import { Alert } from "../../../helpers";
 import { BroadcastingAnimation } from "../../animations";
 import { Background } from "../../background";
 import { BaseModal } from "../../base-modal";

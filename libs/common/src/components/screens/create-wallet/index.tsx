@@ -1,9 +1,10 @@
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 
 import { useStore } from "../../../contexts";
+import { Alert } from "../../../helpers";
 import {
   KeyFlow,
   KeyRoute,

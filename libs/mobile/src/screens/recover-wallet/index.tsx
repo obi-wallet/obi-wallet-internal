@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import {
+  Alert,
   AsyncButton,
   KeyFlow,
   KeyRoute,
@@ -13,7 +14,7 @@ import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 import invariant from "tiny-invariant";
 
 export type RecoverWalletScreenProps = NativeStackScreenProps<

@@ -1,5 +1,6 @@
 import { pubkeyType } from "@cosmjs/amino";
 import {
+  Alert,
   getBiometricsPublicKey,
   getTwilioClient,
   useEnv,
@@ -19,7 +20,6 @@ import {
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect } from "react";
-import { Alert } from "react-native";
 import { useAsyncEffect } from "rooks";
 
 import { getGatekeeperConfigDraftId } from "../screens/accounts/draft-id";

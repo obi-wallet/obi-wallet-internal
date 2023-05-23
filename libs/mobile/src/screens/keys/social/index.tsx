@@ -1,4 +1,5 @@
 import {
+  Alert,
   Back,
   Background,
   InlineButton,
@@ -20,7 +21,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import SocialLoop from "../../../assets/social-loop.svg";

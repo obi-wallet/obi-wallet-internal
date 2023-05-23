@@ -2,10 +2,11 @@ import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 
 import { ConfirmMessages, ConfirmMessagesProps } from "./confirm-messages";
 import { useStore } from "../../../contexts";
+import { Alert } from "../../../helpers";
 import { LinearGradient } from "../../linear-gradient";
 import { KeysList, KeysListProps } from "../../multisig-settings";
 import { Text } from "../../typography";

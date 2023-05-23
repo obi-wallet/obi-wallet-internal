@@ -19,7 +19,6 @@ import { action } from "mobx";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
-  Alert,
   Platform,
   TouchableHighlight,
   TouchableOpacity,
@@ -29,7 +28,11 @@ import invariant from "tiny-invariant";
 
 import { Assets } from "./assets";
 import { useStore } from "../../../contexts";
-import { getScreenDimensions, isSmallScreenNumber } from "../../../helpers";
+import {
+  Alert,
+  getScreenDimensions,
+  isSmallScreenNumber,
+} from "../../../helpers";
 import { getIsOutdatedQuery } from "../../../queries";
 import {
   HomeBottomTab,
