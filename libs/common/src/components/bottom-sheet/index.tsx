@@ -1,10 +1,52 @@
+import { useTheme } from "@emotion/react";
 import type BottomSheetType from "@gorhom/bottom-sheet";
 import type { BottomSheetProps as BaseBottomSheetProps } from "@gorhom/bottom-sheet";
 import type { BottomSheetTextInputProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetTextInput/types";
 import type { BottomSheetViewProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetView/types";
 import { observer } from "mobx-react-lite";
 import { forwardRef, ReactNode, Ref } from "react";
+import Sheet from "react-modal-sheet";
+import { FullWindowOverlay } from "react-native-screens";
 import warning from "tiny-warning";
+
+// import { BottomSheet as ReactSpringBottomSheet } from "react-spring-bottom-sheet";
+
+export interface BottomSheetNewProps {
+  open: boolean;
+  onClose(): void;
+  children: ReactNode;
+}
+
+export const BottomSheetNew = observer<BottomSheetNewProps>(
+  function BottomSheetNew({ open, onClose, children }) {
+    const theme = useTheme();
+
+    return (
+      <FullWindowOverlay>
+        <Sheet
+          isOpen={open}
+          onClose={onClose}
+          rootId="obi-modal-container"
+          // @ts-expect-error TODO: fix this
+          mountPoint={window["OBI_MODAL_CONTAINER"]}
+          snapPoints={[0.5]}
+        >
+          <Sheet.Container
+            style={{
+              backgroundColor: theme.colors.background,
+            }}
+          >
+            <Sheet.Header />
+            <Sheet.Content>{children}</Sheet.Content>
+          </Sheet.Container>
+
+          {/* @ts-expect-error `onClick` exists according to documentation */}
+          <Sheet.Backdrop onClick={onClose} />
+        </Sheet>
+      </FullWindowOverlay>
+    );
+  }
+);
 
 export type BottomSheet = BottomSheetType;
 

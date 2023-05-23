@@ -15,7 +15,12 @@ import { Key, KeysList } from "./keys-list";
 import { useStore } from "../../contexts";
 import { isSmallScreenNumber } from "../../helpers";
 import { Back } from "../back";
-import { BaseBottomSheet, BottomSheet, BottomSheetView } from "../bottom-sheet";
+import {
+  BaseBottomSheet,
+  BottomSheet,
+  BottomSheetNew,
+  BottomSheetView,
+} from "../bottom-sheet";
 import { CheckIcon, KeysIcon, WarningIcon } from "../icons";
 import { Text } from "../typography";
 
@@ -41,13 +46,13 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
 
     const keyMetaData = useKeyMetaData();
 
-    const triggerBottomSheet = (index: number) => {
-      if (index === -1) {
-        bottomSheetRef.current?.close();
-      } else {
-        bottomSheetRef.current?.snapToIndex(index);
-      }
-    };
+    // const triggerBottomSheet = (index: number) => {
+    //   if (index === -1) {
+    //     bottomSheetRef.current?.close();
+    //   } else {
+    //     bottomSheetRef.current?.snapToIndex(index);
+    //   }
+    // };
 
     function getKey(
       type: KeyType
@@ -61,7 +66,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
         disabled,
         right: activated ? <CheckIcon /> : <WarningIcon />,
         onPress: () => {
-          triggerBottomSheet(0);
+          // triggerBottomSheet(0);
           setSelectedType(type);
         },
       };
@@ -136,34 +141,50 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
           <KeysList data={data} />
         </View>
         <View>{children}</View>
-        <BaseBottomSheet
-          handleIndicatorStyle={{ backgroundColor: "white" }}
-          backgroundStyle={{ backgroundColor: isLoop ? "#100F1E" : "#272727" }}
-          handleStyle={{ backgroundColor: "transparent" }}
-          snapPoints={["50%"]}
-          enablePanDownToClose={true}
-          ref={bottomSheetRef}
-          index={-1}
+        <BottomSheetNew
+          open={selectedType !== null}
+          onClose={() => {
+            setSelectedType(null);
+          }}
         >
-          <BottomSheetView
-            style={{
-              flex: 1,
-              backgroundColor: "transparent",
-              position: "relative",
-            }}
-          >
-            {selectedType ? (
-              <KeyBottomSheetContent
-                type={selectedType}
-                action={actions[selectedType]}
-                multisigKey={multisigKey}
-                onClose={() => {
-                  triggerBottomSheet(-1);
-                }}
-              />
-            ) : null}
-          </BottomSheetView>
-        </BaseBottomSheet>
+          {selectedType ? (
+            <KeyBottomSheetContent
+              type={selectedType}
+              action={actions[selectedType]}
+              multisigKey={multisigKey}
+              onClose={() => {
+                setSelectedType(null);
+              }}
+            />
+          ) : null}
+        </BottomSheetNew>
+        {/*<BaseBottomSheet*/}
+        {/*  handleIndicatorStyle={{ backgroundColor: "white" }}*/}
+        {/*  backgroundStyle={{ backgroundColor: isLoop ? "#100F1E" : "#272727" }}*/}
+        {/*  handleStyle={{ backgroundColor: "transparent" }}*/}
+        {/*  snapPoints={["50%"]}*/}
+        {/*  enablePanDownToClose={true}*/}
+        {/*  ref={bottomSheetRef}*/}
+        {/*  index={-1}*/}
+        {/*>*/}
+        {/*  <BottomSheetView*/}
+        {/*    style={{*/}
+        {/*      flex: 1,*/}
+        {/*      backgroundColor: "transparent",*/}
+        {/*      position: "relative",*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    {selectedType ? (*/}
+        {/*      <KeyBottomSheetContent*/}
+        {/*        type={selectedType}*/}
+        {/*        action={actions[selectedType]}*/}
+        {/*        multisigKey={multisigKey}*/}
+        {/*        onClose={() => {*/}
+        {/*          triggerBottomSheet(-1);*/}
+        {/*        }}*/}
+        {/*      />*/}
+        {/*    ) : null}*/}
+        {/*  </BottomSheetView>*/}
       </SafeAreaView>
     );
   }

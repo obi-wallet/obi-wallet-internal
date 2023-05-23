@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "@emotion/react": "*",
+    "@gorhom/portal": "*",
     "@obi-wallet/common": "*",
     "@obi-wallet/config": "*",
     "@obi-wallet/headless-ui": "*",
