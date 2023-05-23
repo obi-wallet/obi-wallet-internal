@@ -4,12 +4,22 @@ import type { BottomSheetProps as BaseBottomSheetProps } from "@gorhom/bottom-sh
 import type { BottomSheetTextInputProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetTextInput/types";
 import type { BottomSheetViewProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetView/types";
 import { observer } from "mobx-react-lite";
-import { forwardRef, ReactNode, Ref } from "react";
+import {
+  createContext,
+  forwardRef,
+  MutableRefObject,
+  ReactNode,
+  Ref,
+  useContext,
+} from "react";
 import Sheet from "react-modal-sheet";
 import { FullWindowOverlay } from "react-native-screens";
 import warning from "tiny-warning";
 
-// import { BottomSheet as ReactSpringBottomSheet } from "react-spring-bottom-sheet";
+export const BottomSheetContainerContext = createContext<
+  MutableRefObject<HTMLDivElement | null>
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+>(null!);
 
 export interface BottomSheetNewProps {
   open: boolean;
@@ -20,15 +30,16 @@ export interface BottomSheetNewProps {
 export const BottomSheetNew = observer<BottomSheetNewProps>(
   function BottomSheetNew({ open, onClose, children }) {
     const theme = useTheme();
+    const containerRef = useContext(BottomSheetContainerContext);
+
+    if (!containerRef.current) return null;
 
     return (
       <FullWindowOverlay>
         <Sheet
           isOpen={open}
           onClose={onClose}
-          rootId="obi-modal-container"
-          // @ts-expect-error TODO: fix this
-          mountPoint={window["OBI_MODAL_CONTAINER"]}
+          mountPoint={containerRef.current}
           snapPoints={[0.5]}
         >
           <Sheet.Container
