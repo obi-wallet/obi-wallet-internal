@@ -15,6 +15,8 @@ export function Container({ children }: { children: ReactNode }) {
               all: "initial",
               width: "390px",
               height: "844px",
+              maxWidth: "100%",
+              maxHeight: "100%",
               borderRadius: "25px",
               display: "flex",
               overflow: "hidden",
