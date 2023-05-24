@@ -13,6 +13,7 @@ import {
   useContext,
 } from "react";
 import Sheet from "react-modal-sheet";
+import { StyleProp, ViewStyle } from "react-native";
 import { FullWindowOverlay } from "react-native-screens";
 import warning from "tiny-warning";
 
@@ -93,3 +94,16 @@ export const BottomSheetTextInput = observer<BottomSheetTextInputProps>(
     return null;
   }
 );
+
+export interface BottomSheetBackdropProps {
+  onPress: () => void;
+  style?: StyleProp<ViewStyle>;
+  visible: boolean;
+}
+
+export const BottomSheetBackdrop = observer(function BottomSheetBackdrop(
+  _: BottomSheetBackdropProps
+) {
+  warning(false, "BottomSheetBackdrop not implemented for web");
+  return null;
+});
