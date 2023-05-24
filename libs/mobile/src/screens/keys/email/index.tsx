@@ -12,6 +12,7 @@ import {
   SettingsRoute,
   Text,
   TextInput,
+  useKeyboardVisible,
   useRootNavigation,
   useStore,
   VerifyAndProceedButton,
@@ -32,7 +33,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 
 import SocialLoop from "../../../assets/social-loop.svg";
-import { useKeyboardVisible } from "../../../helpers/keyboard-visible";
 
 export type EmailKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,

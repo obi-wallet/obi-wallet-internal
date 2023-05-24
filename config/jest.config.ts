@@ -10,7 +10,7 @@ module.exports = {
     "\\.(js|ts|tsx)$": require.resolve("./jest.preprocessor.js"),
   },
   transformIgnorePatterns: [
-    "node_modules/(?!(@fortawesome|@react-native|@react-navigation|react-native|react-native-animatable|react-native-modal|react-native-code-push|react-native-country-picker-modal|react-native-device-info|react-native-dropdown-picker|react-native-haptic-feedback|react-native-keychain|react-native-nfc-manager|react-native-iphone-x-helper|react-native-fontawesome|react-native-keyboard-aware-scroll-view|react-native-safe-area-context)/)",
+    "node_modules/(?!(@fortawesome|@react-native|@react-navigation|react-native|react-native-animatable|react-native-modal|react-native-code-push|react-native-country-picker-modal|react-native-device-info|react-native-dropdown-picker|react-native-haptic-feedback|react-native-keychain|react-native-nfc-manager|react-native-iphone-x-helper|react-native-fontawesome|react-native-keyboard-aware-scroll-view|react-native-qrcode-scanner|react-native-safe-area-context)/)",
   ],
   testPathIgnorePatterns: ["/__helpers__/"],
 };

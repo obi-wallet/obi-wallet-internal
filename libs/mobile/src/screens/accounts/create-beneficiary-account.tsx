@@ -12,6 +12,7 @@ import {
   ScreenContainer,
   Text,
   TextInput,
+  useKeyboardVisible,
   useStore,
 } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
@@ -26,7 +27,6 @@ import { z } from "zod";
 
 import BeneficiaryAccountIcon from "./assets/beneficiary-account-icon.svg";
 import { getGatekeeperConfigDraftId } from "./draft-id";
-import { useKeyboardVisible } from "../../helpers/keyboard-visible";
 
 export type CreateBeneficiaryAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
