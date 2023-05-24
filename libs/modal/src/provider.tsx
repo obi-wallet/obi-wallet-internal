@@ -1,12 +1,12 @@
 import { PortalHost } from "@gorhom/portal";
 import {
+  BottomSheetContainerContext,
   Env,
   Provider as OriginalProvider,
-  BottomSheetContainerContext,
 } from "@obi-wallet/common";
 import { obiMobileConfig } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useRef, useState } from "react";
+import { ReactNode, useRef } from "react";
 
 export const Provider = observer<{ children: ReactNode; env: Env }>(
   function Provider({ children, env }) {

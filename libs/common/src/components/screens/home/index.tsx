@@ -45,26 +45,21 @@ import {
 import {
   ObiAccountsActiveIcon,
   ObiAccountsIcon,
-  ObiAppsActiveIcon,
-  ObiAppsIcon,
   ObiAssetsActiveIcon,
   ObiAssetsIcon,
   ObiSettingsActiveIcon,
   ObiSettingsIcon,
 } from "../../icons";
 import { Text } from "../../typography";
+import { SettingsScreen } from "../settings";
 
 const MockScreen = observer(function MockScreen() {
   return null;
 });
 
 // TODO:
-const DappExplorer = MockScreen;
-// TODO:
-// TODO:
 const AccountsScreen = MockScreen;
 // TODO:
-const SettingsScreen = MockScreen;
 
 export type HomeScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -108,14 +103,6 @@ export const TabNavigation = observer<TabNavigationProps>(
                 ) : (
                   <ObiAssetsIcon width={32} height={32} />
                 );
-              case HomeBottomTabRoute.Apps:
-                return focused ? (
-                  <ActiveIconContainer>
-                    <ObiAppsActiveIcon width={28} height={28} />
-                  </ActiveIconContainer>
-                ) : (
-                  <ObiAppsIcon width={28} height={28} />
-                );
               case HomeBottomTabRoute.Settings:
                 return focused ? (
                   <ActiveIconContainer>
@@ -124,6 +111,9 @@ export const TabNavigation = observer<TabNavigationProps>(
                 ) : (
                   <ObiSettingsIcon width={28} height={28} />
                 );
+              // TODO: not used in modal
+              case HomeBottomTabRoute.Apps:
+                return null;
             }
           },
           tabBarStyle: {
@@ -191,16 +181,6 @@ export const TabNavigation = observer<TabNavigationProps>(
             }),
           }}
           component={Assets}
-        />
-        <HomeBottomTab.Screen
-          name={HomeBottomTabRoute.Apps}
-          options={{
-            title: intl.formatMessage({
-              id: "menu.apps",
-              defaultMessage: "Apps",
-            }),
-          }}
-          component={DappExplorer}
         />
         <HomeBottomTab.Screen
           name={HomeBottomTabRoute.Settings}

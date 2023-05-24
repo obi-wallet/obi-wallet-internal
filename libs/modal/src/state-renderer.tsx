@@ -8,6 +8,7 @@ import {
   PhoneKeyRequestScreen,
   RootRoute,
   RootStack,
+  settingsScreens,
   useStore,
   WelcomeScreen,
 } from "@obi-wallet/common";
@@ -88,7 +89,7 @@ export const StateRenderer = observer(function StateRenderer() {
         {/* TODO: */}
         {/*<RootStack.Screen name={RootRoute.Receive} component={ReceiveScreen} />*/}
         {/* TODO: */}
-        {/*{settingsScreens()}*/}
+        {settingsScreens()}
       </RootStack.Group>
     );
   }

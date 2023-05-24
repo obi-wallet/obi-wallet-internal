@@ -19,7 +19,7 @@ const preview: Preview = {
   ],
 };
 
-export const parameters = { layout: 'fullscreen' }
+export const parameters = { layout: "fullscreen" };
 
 // eslint-disable-next-line import/no-default-export
 export default preview;
