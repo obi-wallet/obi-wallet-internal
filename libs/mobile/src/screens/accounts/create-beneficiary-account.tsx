@@ -3,6 +3,7 @@ import {
   AccountsRoute,
   AccountsStackParamList,
   address,
+  AddressController,
   AvatarPicker,
   Button,
   Icon,
@@ -25,7 +26,6 @@ import { z } from "zod";
 
 import BeneficiaryAccountIcon from "./assets/beneficiary-account-icon.svg";
 import { getGatekeeperConfigDraftId } from "./draft-id";
-import { AddressController } from "../../forms";
 import { useKeyboardVisible } from "../../helpers/keyboard-visible";
 
 export type CreateBeneficiaryAccountScreenProps = NativeStackScreenProps<

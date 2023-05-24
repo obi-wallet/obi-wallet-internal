@@ -3,15 +3,6 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { Portal } from "@gorhom/portal";
-import {
-  BottomSheetBackdrop,
-  CoinIcon,
-  EnrichedToken,
-  RefreshableFlatList,
-  TextInput,
-  TextInputInvalidMessage,
-  useStore,
-} from "@obi-wallet/common";
 import { Brand } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
@@ -24,6 +15,16 @@ import {
   TouchableOpacityProps,
   View,
 } from "react-native";
+
+import {
+  BottomSheetBackdrop,
+  CoinIcon,
+  RefreshableFlatList,
+  TextInput,
+  TextInputInvalidMessage,
+} from "../../components";
+import { useStore } from "../../contexts";
+import { EnrichedToken } from "../../hooks";
 
 export type TokenControllerProps = {
   field: {

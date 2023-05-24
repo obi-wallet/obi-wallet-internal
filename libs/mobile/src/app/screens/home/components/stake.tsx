@@ -14,6 +14,7 @@ import {
   KeyboardAvoidingView,
   RefreshableFlatList,
   Text,
+  TokenController,
   useBalances,
   useStore,
 } from "@obi-wallet/common";
@@ -59,8 +60,6 @@ import {
 import { GestureResponderEvent } from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { z } from "zod";
-
-import { TokenController } from "../../../../forms";
 
 enum StakeTab {
   Validators = "Validators",

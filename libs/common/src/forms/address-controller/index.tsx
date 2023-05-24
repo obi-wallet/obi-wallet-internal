@@ -1,18 +1,21 @@
 import { faQrcode } from "@fortawesome/free-solid-svg-icons/faQrcode";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  isSmallScreenNumber,
-  TextInput,
-  TextInputInvalidMessage,
-  useStore,
-} from "@obi-wallet/common";
-import { useQrCodeScannerModal } from "@obi-wallet/common";
 import { ChainId, Sdk } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ControllerFieldState } from "react-hook-form";
 import { TouchableOpacity, View } from "react-native";
 
-import ObiQr from "../app/screens/send/assets/obiqr.svg";
+import {
+  SendIcon,
+  TextInput,
+  TextInputInvalidMessage,
+  useQrCodeScannerModal,
+} from "../../components";
+import { useStore } from "../../contexts";
+import { isSmallScreenNumber } from "../../helpers";
+
+// TODO:
+const ObiQr = SendIcon;
 
 export interface AddressControllerProps {
   chainId: ChainId;
