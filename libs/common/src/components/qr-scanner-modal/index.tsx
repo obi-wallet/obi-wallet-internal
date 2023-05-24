@@ -1,9 +1,11 @@
-import { Button, BaseModal } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { ModalProps } from "react-native";
-import QRCodeScanner from "react-native-qrcode-scanner";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { QrCodeScanner } from "./qr-code-scanner";
+import { BaseModal } from "../base-modal";
+import { Button } from "../buttons";
 
 export interface QrCodeScannerModalProps extends ModalProps {
   onScan: (address: string) => void;
@@ -19,7 +21,7 @@ export const QrCodeScannerModal = observer(function QrCodeScannerModal({
 
   return (
     <BaseModal {...props}>
-      <QRCodeScanner
+      <QrCodeScanner
         onRead={({ data }) => {
           onScan(data);
         }}

@@ -9,6 +9,7 @@ import {
   InlineButton,
   RootRoute,
   Text,
+  useQrCodeScannerModal,
   useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
@@ -36,7 +37,6 @@ import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
 import HistoryIcon from "./assets/history.svg";
 import Wcqr from "./assets/wcqr.svg";
 import { parseDynamicLinkURL } from "../components/connected-web-view";
-import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
 
 const styles = StyleSheet.create({
   card: {

@@ -1,5 +1,4 @@
 export { BaseApp, StateRenderer } from "./app";
-export { QrCodeScannerModal } from "./app/screens/components/qr-code-scanner-modal";
 export { SendScreen } from "./app/screens/send";
 export { setupMain } from "./main";
 export * from "./app/screens/settings/settings-stack";

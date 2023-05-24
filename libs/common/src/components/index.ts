@@ -17,6 +17,7 @@ export * from "./multisig-settings";
 export * from "./network-account-picker-layout";
 export * from "./phone-key";
 export * from "./provider";
+export * from "./qr-scanner-modal";
 export * from "./refresh-control";
 export * from "./refreshable-flat-list";
 export * from "./screen-container";
