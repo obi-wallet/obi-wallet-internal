@@ -1,3 +1,4 @@
+export * from "./animated-text";
 export * from "./animations";
 export * from "./avatar";
 export * from "./back";

@@ -1,16 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  AccountsRoute,
-  AccountsStackParamList,
-  AvatarPicker,
-  Button,
-  Icon,
-  nonEmptyString,
-  ScreenContainer,
-  Text,
-  TextInput,
-  useStore,
-} from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   GatekeeperConfig,
@@ -23,11 +11,19 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { z } from "zod";
 
-import FlexAccountIcon from "./assets/flex-account-icon.svg";
 import { getGatekeeperConfigDraftId } from "./draft-id";
+import { useStore } from "../../../contexts";
+import { nonEmptyString } from "../../../forms";
+import { AccountsRoute, AccountsStackParamList } from "../../../router";
+import { AvatarPicker, Icon } from "../../avatar";
+import { Button } from "../../buttons";
+import { FlexAccountIcon } from "../../icons";
+import { KeyboardAwareScrollView } from "../../keyboard-aware-scroll-view";
+import { ScreenContainer } from "../../screen-container";
+import { TextInput } from "../../text-input";
+import { Text } from "../../typography";
 
 export type CreateFlexAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,

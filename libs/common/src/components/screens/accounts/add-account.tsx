@@ -1,19 +1,18 @@
-import {
-  AccountsRoute,
-  AccountsStackParamList,
-  Button,
-  ScreenContainer,
-  Text,
-  useStore,
-} from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 
-import BeneficaryAccountIcon from "./assets/beneficiary-account-icon.svg";
-import FlexAccountIcon from "./assets/flex-account-icon.svg";
-import LegacyAccountIcon from "./assets/legacy-account-icon.svg";
+import { useStore } from "../../../contexts";
+import { AccountsRoute, AccountsStackParamList } from "../../../router";
+import { Button } from "../../buttons";
+import {
+  BeneficiaryAccountIcon,
+  FlexAccountIcon,
+  LegacyAccountIcon,
+} from "../../icons";
+import { ScreenContainer } from "../../screen-container";
+import { Text } from "../../typography";
 
 export type AddAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
@@ -29,7 +28,7 @@ const getAccountTypeIcon = (type: AccountType) => {
     case AccountType.FlexAccount:
       return <FlexAccountIcon />;
     case AccountType.Beneficiary:
-      return <BeneficaryAccountIcon />;
+      return <BeneficiaryAccountIcon />;
     case AccountType.Legacy:
       return <LegacyAccountIcon />;
   }

@@ -1,18 +1,5 @@
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  AccountsRoute,
-  AccountsStackParamList,
-  Alert,
-  Background,
-  Button,
-  NetworkAccountPickerLayout,
-  SettingsRoute,
-  Text,
-  UsdBalance,
-  useRootNavigation,
-  useStore,
-} from "@obi-wallet/common";
 import { useCurrentWallet, useQuery } from "@obi-wallet/headless-ui";
 import {
   Beneficiary,
@@ -33,12 +20,28 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 
 import { AccountItem } from "./account-item";
-import KeyRoundIcon from "./assets/key-round-icon.svg";
-import { PermissionedAddressesContext } from "./permissioned-address-context";
+import { PermissionedAddressesContext } from "./permissioned-addresses-context";
+import { useStore } from "../../../../contexts";
+import { Alert } from "../../../../helpers";
+import { UsdBalance } from "../../../../hooks";
+import {
+  AccountsRoute,
+  AccountsStackParamList,
+  SettingsRoute,
+  useRootNavigation,
+} from "../../../../router";
+import { Background } from "../../../background";
+import { Button } from "../../../buttons";
+import { SendIcon } from "../../../icons";
+import { KeyboardAwareFlatList } from "../../../keyboard-aware-scroll-view";
+import { NetworkAccountPickerLayout } from "../../../network-account-picker-layout";
+import { Text } from "../../../typography";
 import { getGatekeeperConfigDraftId } from "../draft-id";
+
+// TODO:
+const KeyRoundIcon = SendIcon;
 
 export type AccountsOverviewScreenProps = NativeStackScreenProps<
   AccountsStackParamList,

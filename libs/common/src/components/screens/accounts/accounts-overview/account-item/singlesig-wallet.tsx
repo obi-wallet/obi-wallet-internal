@@ -1,11 +1,13 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { SinglesigAvatar, Text, useUsdBalance } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { Sdk, SinglesigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { TouchableOpacity, View } from "react-native";
 
 import { AbstractAccountItemProps } from "./common";
+import { useUsdBalance } from "../../../../../hooks";
+import { SinglesigAvatar } from "../../../../avatar";
+import { Text } from "../../../../typography";
 
 export interface SinglesigWalletItemProps extends AbstractAccountItemProps {
   account: SinglesigWallet;

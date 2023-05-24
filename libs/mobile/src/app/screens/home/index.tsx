@@ -4,6 +4,7 @@ import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
+  AccountsScreen,
   Alert,
   getIsOutdatedQuery,
   getScreenDimensions,
@@ -52,7 +53,6 @@ import AssetsIconActive from "./assets/ic_assets_active.svg";
 import SettingsIconActive from "./assets/ic_settings_active.svg";
 import SettingsIcon from "./assets/settingsIcon.svg";
 import { Assets } from "./components/assets";
-import { AccountsScreen } from "../../../screens/accounts";
 import { DappExplorer } from "../dapp-explorer";
 import { SettingsScreen } from "../settings";
 

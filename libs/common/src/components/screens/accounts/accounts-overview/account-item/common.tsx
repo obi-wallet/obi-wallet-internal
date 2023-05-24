@@ -4,12 +4,14 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Avatar, Text } from "@obi-wallet/common";
 import { Beneficiary, FlexAccount, SinglesigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { StyleProp, TextStyle, TouchableOpacity, View } from "react-native";
-import * as Animatable from "react-native-animatable";
+
+import { AnimatableView } from "../../../../animatable";
+import { Avatar } from "../../../../avatar";
+import { Text } from "../../../../typography";
 
 export interface AbstractAccountItemProps {
   isOpen: boolean;
@@ -46,7 +48,7 @@ export const AccountContainer = observer<{
   onDelete,
 }) {
   return (
-    <Animatable.View
+    <AnimatableView
       duration={400}
       style={{
         borderWidth: 1,
@@ -113,7 +115,7 @@ export const AccountContainer = observer<{
           </TouchableOpacity>
         </>
       )}
-    </Animatable.View>
+    </AnimatableView>
   );
 });
 

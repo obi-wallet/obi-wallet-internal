@@ -1,6 +1,7 @@
 import { pubkeyType } from "@cosmjs/amino";
 import {
   Alert,
+  getGatekeeperConfigDraftId,
   getBiometricsPublicKey,
   getTwilioClient,
   useEnv,
@@ -21,8 +22,6 @@ import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect } from "react";
 import { useAsyncEffect } from "rooks";
-
-import { getGatekeeperConfigDraftId } from "../screens/accounts/draft-id";
 
 export function mockAction(message: string) {
   return () => {

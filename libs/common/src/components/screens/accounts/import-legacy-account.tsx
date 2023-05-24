@@ -1,19 +1,20 @@
-import {
-  AccountsRoute,
-  AccountsStackParamList,
-  Button,
-  ScreenContainer,
-  Text,
-  useStore,
-} from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import { FC, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { SvgProps } from "react-native-svg";
 
-import KeplrIcon from "./assets/keplr.svg";
-import StationIcon from "./assets/station.svg";
+import { useStore } from "../../../contexts";
+import { AccountsRoute, AccountsStackParamList } from "../../../router";
+import { Button } from "../../buttons";
+import { SendIcon } from "../../icons";
+import { ScreenContainer } from "../../screen-container";
+import { Text } from "../../typography";
+
+// TODO:
+const KeplrIcon = SendIcon;
+// TODO:
+const StationIcon = SendIcon;
 
 export type ImportLegacyAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
@@ -206,7 +207,9 @@ const AccountElement = observer(function AccountElement({
   selected,
   onPress,
 }: {
-  Image: FC<SvgProps>;
+  Image:
+    | FunctionComponent<SvgProps>
+    | FunctionComponent<SvgProps & { color?: string }>;
   selected: boolean;
   onPress: () => void;
 }) {

@@ -1,20 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  AccountsRoute,
-  AccountsStackParamList,
-  address,
-  AddressController,
-  AvatarPicker,
-  Button,
-  Icon,
-  isSmallScreenNumber,
-  nonEmptyString,
-  ScreenContainer,
-  Text,
-  TextInput,
-  useKeyboardVisible,
-  useStore,
-} from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { GatekeeperConfig, ObservableBeneficiary } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -22,11 +6,21 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Platform, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { z } from "zod";
 
-import BeneficiaryAccountIcon from "./assets/beneficiary-account-icon.svg";
 import { getGatekeeperConfigDraftId } from "./draft-id";
+import { useStore } from "../../../contexts";
+import { address, AddressController, nonEmptyString } from "../../../forms";
+import { isSmallScreenNumber } from "../../../helpers";
+import { useKeyboardVisible } from "../../../hooks";
+import { AccountsRoute, AccountsStackParamList } from "../../../router";
+import { AvatarPicker, Icon } from "../../avatar";
+import { Button } from "../../buttons";
+import { BeneficiaryAccountIcon } from "../../icons";
+import { KeyboardAwareScrollView } from "../../keyboard-aware-scroll-view";
+import { ScreenContainer } from "../../screen-container";
+import { TextInput } from "../../text-input";
+import { Text } from "../../typography";
 
 export type CreateBeneficiaryAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,

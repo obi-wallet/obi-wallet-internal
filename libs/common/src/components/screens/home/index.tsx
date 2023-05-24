@@ -51,15 +51,8 @@ import {
   ObiSettingsIcon,
 } from "../../icons";
 import { Text } from "../../typography";
+import { AccountsScreen } from "../accounts";
 import { SettingsScreen } from "../settings";
-
-const MockScreen = observer(function MockScreen() {
-  return null;
-});
-
-// TODO:
-const AccountsScreen = MockScreen;
-// TODO:
 
 export type HomeScreenProps = NativeStackScreenProps<
   RootStackParamList,
