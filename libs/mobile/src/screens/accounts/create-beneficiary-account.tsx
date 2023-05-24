@@ -2,10 +2,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   AccountsRoute,
   AccountsStackParamList,
+  address,
   AvatarPicker,
   Button,
   Icon,
   isSmallScreenNumber,
+  nonEmptyString,
   ScreenContainer,
   Text,
   TextInput,
@@ -25,7 +27,6 @@ import BeneficiaryAccountIcon from "./assets/beneficiary-account-icon.svg";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { AddressController } from "../../forms";
 import { useKeyboardVisible } from "../../helpers/keyboard-visible";
-import { address, nonEmptyString } from "../../helpers/validation-helpers";
 
 export type CreateBeneficiaryAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,

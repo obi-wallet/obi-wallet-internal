@@ -1,6 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  address,
   Back,
   Button,
   EnrichedToken,
@@ -33,7 +34,6 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { AddressController, TokenController } from "../../../forms";
-import { address } from "../../../helpers/validation-helpers";
 
 export type SendScreenProps = NativeStackScreenProps<
   RootStackParamList,

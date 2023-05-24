@@ -5,6 +5,7 @@ import {
   AvatarPicker,
   Button,
   Icon,
+  nonEmptyString,
   ScreenContainer,
   Text,
   TextInput,
@@ -27,7 +28,6 @@ import { z } from "zod";
 
 import FlexAccountIcon from "./assets/flex-account-icon.svg";
 import { getGatekeeperConfigDraftId } from "./draft-id";
-import { nonEmptyString } from "../../helpers/validation-helpers";
 
 export type CreateFlexAccountScreenProps = NativeStackScreenProps<
   AccountsStackParamList,

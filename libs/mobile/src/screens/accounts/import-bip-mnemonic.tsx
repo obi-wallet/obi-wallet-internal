@@ -3,6 +3,7 @@ import {
   AccountsRoute,
   AccountsStackParamList,
   Button,
+  mnemonic,
   ScreenContainer,
   Text,
   TextInput,
@@ -16,8 +17,6 @@ import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-
-import { mnemonic } from "../../helpers/validation-helpers";
 
 export type ImportBipMnemonicScreenProps = NativeStackScreenProps<
   AccountsStackParamList,
