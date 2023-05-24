@@ -1,5 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, ScreenContainer, Text, TextInput } from "@obi-wallet/common";
+import {
+  AccountsRoute,
+  AccountsStackParamList,
+  Button,
+  ScreenContainer,
+  Text,
+  TextInput,
+} from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { ObservableSinglesigWallet } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -10,7 +17,6 @@ import { View } from "react-native";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import { mnemonic } from "../../helpers/validation-helpers";
 
 export type ImportBipMnemonicScreenProps = NativeStackScreenProps<

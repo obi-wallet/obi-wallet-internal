@@ -1,4 +1,5 @@
 import {
+  AccountsRoute,
   HomeBottomTabRoute,
   HomeDrawerRoute,
   useRootNavigation,
@@ -8,7 +9,6 @@ import { useEffect } from "react";
 
 import { BaseAppWithoutProvider } from "../../src/app";
 import { GatekeeperConfigDraft } from "../../src/fixture-helpers";
-import { AccountsRoute } from "../../src/screens/accounts/accounts-stack";
 
 const flexAccountRoutes = [
   {

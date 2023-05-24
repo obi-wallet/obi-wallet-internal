@@ -1,6 +1,8 @@
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
+  AccountsRoute,
+  AccountsStackParamList,
   Alert,
   Background,
   Button,
@@ -36,7 +38,6 @@ import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import { AccountItem } from "./account-item";
 import KeyRoundIcon from "./assets/key-round-icon.svg";
 import { PermissionedAddressesContext } from "./permissioned-address-context";
-import { AccountsRoute, AccountsStackParamList } from "../accounts-stack";
 import { getGatekeeperConfigDraftId } from "../draft-id";
 
 export type AccountsOverviewScreenProps = NativeStackScreenProps<

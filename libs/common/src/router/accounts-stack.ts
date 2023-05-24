@@ -6,8 +6,6 @@ export enum AccountsRoute {
   CreateFlexAccount = "CreateFlexAccount",
   CreateBeneficiaryAccount = "CreateBeneficiaryAccount",
   ImportLegacyAccount = "ImportLegacyAccount",
-  ImportStationAccount = "ImportStationAccount",
-  ImportKeplrAccount = "ImportKeplrAccount",
   ImportBipMnemonic = "ImportBipMnemonic",
 }
 

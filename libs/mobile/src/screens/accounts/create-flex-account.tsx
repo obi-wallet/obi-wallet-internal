@@ -1,5 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  AccountsRoute,
+  AccountsStackParamList,
   AvatarPicker,
   Button,
   Icon,
@@ -23,7 +25,6 @@ import { View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { z } from "zod";
 
-import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import FlexAccountIcon from "./assets/flex-account-icon.svg";
 import { getGatekeeperConfigDraftId } from "./draft-id";
 import { nonEmptyString } from "../../helpers/validation-helpers";

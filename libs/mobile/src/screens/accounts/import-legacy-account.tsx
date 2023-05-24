@@ -1,11 +1,17 @@
-import { Button, ScreenContainer, Text, useStore } from "@obi-wallet/common";
+import {
+  AccountsRoute,
+  AccountsStackParamList,
+  Button,
+  ScreenContainer,
+  Text,
+  useStore,
+} from "@obi-wallet/common";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { FC, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { SvgProps } from "react-native-svg";
 
-import { AccountsRoute, AccountsStackParamList } from "./accounts-stack";
 import KeplrIcon from "./assets/keplr.svg";
 import StationIcon from "./assets/station.svg";
 

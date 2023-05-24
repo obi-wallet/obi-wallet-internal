@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { useStore } from "@obi-wallet/common";
+import { AccountsRoute, AccountsStack, useStore } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { GatekeeperConfig } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -7,7 +7,6 @@ import { useEffect } from "react";
 import { View } from "react-native";
 
 import { AccountsOverviewScreen } from "./accounts-overview";
-import { AccountsRoute, AccountsStack } from "./accounts-stack";
 import { AddAccountScreen } from "./add-account";
 import { CreateBeneficiaryAccountScreen } from "./create-beneficiary-account";
 import { CreateFlexAccountScreen } from "./create-flex-account";
