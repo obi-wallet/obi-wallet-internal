@@ -11,6 +11,7 @@ import {
   RootStack,
   SendScreen,
   settingsScreens,
+  StakeScreen,
   useStore,
   WelcomeScreen,
 } from "@obi-wallet/common";
@@ -76,17 +77,8 @@ export const StateRenderer = observer(function StateRenderer() {
     return (
       <RootStack.Group>
         <RootStack.Screen name={RootRoute.Home} component={HomeScreen} />
-        {/* TODO: */}
-        {/*<RootStack.Screen*/}
-        {/*  name={RootRoute.WebView}*/}
-        {/*  component={WebViewScreen}*/}
-        {/*  options={({ route }) => ({*/}
-        {/*    title: route.params.app.label,*/}
-        {/*  })}*/}
-        {/*/>*/}
         <RootStack.Screen name={RootRoute.Send} component={SendScreen} />
-        {/* TODO: */}
-        {/*<RootStack.Screen name={RootRoute.Stake} component={Stake} />*/}
+        <RootStack.Screen name={RootRoute.Stake} component={StakeScreen} />
         <RootStack.Screen name={RootRoute.Receive} component={ReceiveScreen} />
         {settingsScreens()}
       </RootStack.Group>

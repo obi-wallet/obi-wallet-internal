@@ -5,4 +5,5 @@ export * from "./keys";
 export * from "./receive";
 export * from "./send";
 export * from "./settings";
+export * from "./stake";
 export * from "./welcome";
