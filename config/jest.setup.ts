@@ -10,6 +10,18 @@ jest.mock("@fortawesome/react-native-fontawesome", () => ({
   FontAwesomeIcon: "",
 }));
 
+jest.mock("@react-native-google-signin/google-signin", () => {
+  return {
+    GoogleSignin: {
+      configure: jest.fn(),
+    },
+  };
+});
+
+jest.mock("@robinbobin/react-native-google-drive-api-wrapper", () => {
+  return {};
+});
+
 jest.mock("react-native-code-push", () => ({
   NativeCodePush: {},
 }));
