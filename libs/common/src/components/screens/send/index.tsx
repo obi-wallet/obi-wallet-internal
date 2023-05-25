@@ -1,20 +1,5 @@
 import { useTheme } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  address,
-  AddressController,
-  Back,
-  Button,
-  EnrichedToken,
-  HomeBottomTabRoute,
-  isSmallScreenNumber,
-  KeyboardAvoidingView,
-  RootRoute,
-  RootStackParamList,
-  TokenController,
-  useEnrichedBalances,
-  useStore,
-} from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   isTerraChain,
@@ -30,10 +15,23 @@ import { useCallback, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Platform, Text, View } from "react-native";
-import Modal from "react-native-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 import { z } from "zod";
+
+import { useStore } from "../../../contexts";
+import { address, AddressController, TokenController } from "../../../forms";
+import { isSmallScreenNumber } from "../../../helpers";
+import { EnrichedToken, useEnrichedBalances } from "../../../hooks";
+import {
+  HomeBottomTabRoute,
+  RootRoute,
+  RootStackParamList,
+} from "../../../router";
+import { Back } from "../../back";
+import { BaseModal } from "../../base-modal";
+import { Button } from "../../buttons";
+import { KeyboardAvoidingView } from "../../keyboard-avoiding-view";
 
 export type SendScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -252,7 +250,7 @@ const SuccessModal = observer(function SuccessModal({
 }: SuccessModalProps) {
   const theme = useTheme();
   return (
-    <Modal isVisible={visible}>
+    <BaseModal visible={visible}>
       <View
         style={{
           flex: 1,
@@ -282,7 +280,7 @@ const SuccessModal = observer(function SuccessModal({
           </View>
         </View>
       </View>
-    </Modal>
+    </BaseModal>
   );
 });
 
@@ -297,7 +295,7 @@ const FailureModal = observer(function FailureModal({
 }: FailureModalProps) {
   const theme = useTheme();
   return (
-    <Modal isVisible={visible}>
+    <BaseModal visible={visible}>
       <View
         style={{
           flex: 1,
@@ -327,6 +325,6 @@ const FailureModal = observer(function FailureModal({
           </View>
         </View>
       </View>
-    </Modal>
+    </BaseModal>
   );
 });

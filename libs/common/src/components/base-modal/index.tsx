@@ -3,7 +3,12 @@ import { observer } from "mobx-react-lite";
 import { ModalProps, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-export const BaseModal = observer<ModalProps>(function Modal({ children }) {
+export const BaseModal = observer<ModalProps>(function Modal({
+  children,
+  visible,
+}) {
+  if (!visible) return null;
+
   return (
     <Portal hostName="modals">
       <div

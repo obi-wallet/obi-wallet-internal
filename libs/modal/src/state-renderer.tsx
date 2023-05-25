@@ -8,6 +8,7 @@ import {
   PhoneKeyRequestScreen,
   RootRoute,
   RootStack,
+  SendScreen,
   settingsScreens,
   useStore,
   WelcomeScreen,
@@ -82,8 +83,7 @@ export const StateRenderer = observer(function StateRenderer() {
         {/*    title: route.params.app.label,*/}
         {/*  })}*/}
         {/*/>*/}
-        {/* TODO: */}
-        {/*<RootStack.Screen name={RootRoute.Send} component={SendScreen} />*/}
+        <RootStack.Screen name={RootRoute.Send} component={SendScreen} />
         {/* TODO: */}
         {/*<RootStack.Screen name={RootRoute.Stake} component={Stake} />*/}
         {/* TODO: */}

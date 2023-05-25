@@ -58,7 +58,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
     const isLoop = configStore.isLoop();
 
     return (
-      <BaseModal {...props}>
+      <BaseModal {...props} visible>
         <ScreenContainer>
           {loading ? <BroadcastingAnimation /> : null}
 

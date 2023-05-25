@@ -5,6 +5,7 @@ import {
   OnboardingRoute,
   RootRoute,
   RootStack,
+  SendScreen,
   Text,
   UpdatingAppBundleAnimation,
   useStore,
@@ -26,7 +27,6 @@ import { Provider, ProviderProps } from "./provider";
 import { HomeScreen } from "./screens/home";
 import { Stake } from "./screens/home/components/stake";
 import { ReceiveScreen } from "./screens/receive";
-import { SendScreen } from "./screens/send";
 import { settingsScreens } from "./screens/settings";
 import { SplashScreen } from "./screens/splash";
 import { WebViewScreen } from "./screens/web-view";
