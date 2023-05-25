@@ -16,6 +16,7 @@ export * from "./modal";
 export * from "./modals";
 export * from "./multisig-settings";
 export * from "./network-account-picker-layout";
+export * from "./onboarding-screen-container";
 export * from "./phone-key";
 export * from "./provider";
 export * from "./qr-scanner-modal";

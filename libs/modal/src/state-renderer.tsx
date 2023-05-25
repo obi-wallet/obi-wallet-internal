@@ -3,6 +3,7 @@ import {
   DeviceKeyScreen,
   HomeScreen,
   KeyRoute,
+  LookupProxyWalletsScreen,
   OnboardingRoute,
   PhoneKeyConfirmScreen,
   PhoneKeyRequestScreen,
@@ -56,11 +57,10 @@ export const StateRenderer = observer(function StateRenderer() {
           name={OnboardingRoute.Welcome}
           component={WelcomeScreen}
         />
-        {/* TODO: */}
-        {/*<RootStack.Screen*/}
-        {/*  name={OnboardingRoute.LookupProxyWallets}*/}
-        {/*  component={LookupProxyWalletsScreen}*/}
-        {/*/>*/}
+        <RootStack.Screen
+          name={OnboardingRoute.LookupProxyWallets}
+          component={LookupProxyWalletsScreen}
+        />
         <RootStack.Screen
           name={OnboardingRoute.CreateWallet}
           component={CreateWalletScreen}

@@ -1,4 +1,5 @@
-import { Lookup } from "../src/app/screens/onboarding/lookup-proxy-wallets/lookup";
+import { Lookup } from "@obi-wallet/common";
+
 import { mockAction } from "../src/fixture-helpers";
 
 export default (

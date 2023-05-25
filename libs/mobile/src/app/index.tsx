@@ -2,6 +2,7 @@ import { useTheme } from "@emotion/react";
 import { PortalHost } from "@gorhom/portal";
 import {
   CreateWalletScreen,
+  LookupProxyWalletsScreen,
   OnboardingRoute,
   ReceiveScreen,
   RecoverWalletScreen,
@@ -32,7 +33,6 @@ import { settingsScreens } from "./screens/settings";
 import { SplashScreen } from "./screens/splash";
 import { WebViewScreen } from "./screens/web-view";
 import { keyScreens } from "../screens/keys/key-screens";
-import { LookupProxyWalletsScreen } from "../screens/lookup-proxy-wallets";
 
 if (Platform.OS === "ios") {
   KeyboardManager?.setToolbarPreviousNextButtonEnable(true);

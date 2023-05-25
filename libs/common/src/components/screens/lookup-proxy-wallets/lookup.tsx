@@ -3,13 +3,6 @@ import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import {
-  IconButton,
-  isSmallScreenNumber,
-  Text,
-  useStore,
-  VerifyAndProceedButton,
-} from "@obi-wallet/common";
 import { Chain, ChainId } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -18,7 +11,12 @@ import { Linking, ScrollView, TouchableOpacity, View } from "react-native";
 import { useAsyncEffect } from "rooks";
 
 import * as A from "./api-types";
-import { OnboardingScreenContainer } from "../../components/onboarding-screen-container";
+import { useStore } from "../../../contexts";
+import { isSmallScreenNumber } from "../../../helpers";
+import { IconButton } from "../../buttons";
+import { OnboardingScreenContainer } from "../../onboarding-screen-container";
+import { Text } from "../../typography";
+import { VerifyAndProceedButton } from "../../verify-and-proceed-button";
 
 export interface LookupProps {
   chainId: ChainId;

@@ -2,6 +2,7 @@ export * from "./accounts";
 export * from "./create-wallet";
 export * from "./home";
 export * from "./keys";
+export * from "./lookup-proxy-wallets";
 export * from "./receive";
 export * from "./recover-wallet";
 export * from "./send";
