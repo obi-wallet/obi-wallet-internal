@@ -3,7 +3,6 @@ import {
   GoogleSignin,
   statusCodes,
 } from "@react-native-google-signin/google-signin";
-import { GDrive } from "@robinbobin/react-native-google-drive-api-wrapper";
 
 GoogleSignin.configure({
   iosClientId:
@@ -100,6 +99,10 @@ async function saveKeyPairToCloud({
 
 async function createGDrive() {
   await getUserInfo();
+  const {
+    GDrive,
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+  } = require("@robinbobin/react-native-google-drive-api-wrapper");
   const gDrive = new GDrive();
   gDrive.accessToken = (await GoogleSignin.getTokens()).accessToken;
   return gDrive;
