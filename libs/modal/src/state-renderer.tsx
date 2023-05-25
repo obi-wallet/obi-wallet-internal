@@ -6,6 +6,7 @@ import {
   OnboardingRoute,
   PhoneKeyConfirmScreen,
   PhoneKeyRequestScreen,
+  ReceiveScreen,
   RootRoute,
   RootStack,
   SendScreen,
@@ -86,9 +87,7 @@ export const StateRenderer = observer(function StateRenderer() {
         <RootStack.Screen name={RootRoute.Send} component={SendScreen} />
         {/* TODO: */}
         {/*<RootStack.Screen name={RootRoute.Stake} component={Stake} />*/}
-        {/* TODO: */}
-        {/*<RootStack.Screen name={RootRoute.Receive} component={ReceiveScreen} />*/}
-        {/* TODO: */}
+        <RootStack.Screen name={RootRoute.Receive} component={ReceiveScreen} />
         {settingsScreens()}
       </RootStack.Group>
     );

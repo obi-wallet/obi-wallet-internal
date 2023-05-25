@@ -1,11 +1,13 @@
 import { useTheme } from "@emotion/react";
-import { isSmallScreenNumber, useStore } from "@obi-wallet/common";
-import { Back } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage } from "react-intl";
 import { Platform, Share, Text, TouchableOpacity, View } from "react-native";
-import QRCode from "react-native-qrcode-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { QrCode } from "./qr-code";
+import { useStore } from "../../../contexts";
+import { isSmallScreenNumber } from "../../../helpers";
+import { Back } from "../../back";
 
 export const ReceiveScreen = observer(function ReceiveScreen() {
   const { walletsStore, configStore } = useStore();
@@ -74,7 +76,7 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
             marginBottom: "30%",
           }}
         >
-          <QRCode value={address} size={200} />
+          <QrCode value={address} size={200} />
         </View>
         <TouchableOpacity
           style={{

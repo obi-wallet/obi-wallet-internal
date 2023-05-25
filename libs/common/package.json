@@ -47,6 +47,7 @@
     "react-native-modal": "*",
     "react-native-nfc-manager": "*",
     "react-native-qrcode-scanner": "*",
+    "react-native-qrcode-svg": "*",
     "react-native-safe-area-context": "*",
     "react-native-screens": "*",
     "react-native-svg": "*",

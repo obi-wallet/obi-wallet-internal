@@ -3,6 +3,7 @@ import { PortalHost } from "@gorhom/portal";
 import {
   CreateWalletScreen,
   OnboardingRoute,
+  ReceiveScreen,
   RootRoute,
   RootStack,
   SendScreen,
@@ -26,7 +27,6 @@ import { Modals } from "./modals";
 import { Provider, ProviderProps } from "./provider";
 import { HomeScreen } from "./screens/home";
 import { Stake } from "./screens/home/components/stake";
-import { ReceiveScreen } from "./screens/receive";
 import { settingsScreens } from "./screens/settings";
 import { SplashScreen } from "./screens/splash";
 import { WebViewScreen } from "./screens/web-view";
