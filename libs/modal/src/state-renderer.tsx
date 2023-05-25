@@ -4,6 +4,7 @@ import {
   HomeScreen,
   KeyRoute,
   LookupProxyWalletsScreen,
+  NfcKeyScreen,
   OnboardingRoute,
   PhoneKeyConfirmScreen,
   PhoneKeyRequestScreen,
@@ -122,13 +123,12 @@ export const keyScreens = (navigationKey: string) => {
         component={SocialKeyScreen}
         options={{ headerShown: false }}
       />
-      {/* TODO: */}
-      {/*<RootStack.Screen*/}
-      {/*  name={KeyRoute.NfcKey}*/}
-      {/*  key={KeyRoute.NfcKey}*/}
-      {/*  component={NfcKeyScreen}*/}
-      {/*  options={{ headerShown: false }}*/}
-      {/*/>*/}
+      <RootStack.Screen
+        name={KeyRoute.NfcKey}
+        key={KeyRoute.NfcKey}
+        component={NfcKeyScreen}
+        options={{ headerShown: false }}
+      />
       {/* TODO: */}
       {/*<RootStack.Screen*/}
       {/*  name={KeyRoute.CloudKey}*/}

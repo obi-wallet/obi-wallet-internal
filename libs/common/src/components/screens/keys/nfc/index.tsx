@@ -1,25 +1,3 @@
-import { pubkeyType } from "@cosmjs/amino";
-import {
-  Alert,
-  Back,
-  Background,
-  checkIsSupported,
-  generateLocalEntropy,
-  getNFCKeyPair,
-  isSmallScreenNumber,
-  KeyboardAvoidingView,
-  KeyFlow,
-  KeyRoute,
-  KeyStackParamList,
-  OnboardingRoute,
-  parseNFCData,
-  SettingsRoute,
-  startReading,
-  Text,
-  useRootNavigation,
-  useStore,
-  VerifyAndProceedButton,
-} from "@obi-wallet/common";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -30,6 +8,29 @@ import { FlatList, TouchableOpacity, View } from "react-native";
 import NfcManager, { NfcEvents, OnDiscoverTag } from "react-native-nfc-manager";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAsyncEffect } from "rooks";
+
+import { useStore } from "../../../../contexts";
+import { Alert, isSmallScreenNumber } from "../../../../helpers";
+import {
+  checkIsSupported,
+  generateLocalEntropy,
+  getNFCKeyPair,
+  parseNFCData,
+  startReading,
+} from "../../../../keys";
+import {
+  KeyFlow,
+  KeyRoute,
+  KeyStackParamList,
+  OnboardingRoute,
+  SettingsRoute,
+  useRootNavigation,
+} from "../../../../router";
+import { Back } from "../../../back";
+import { Background } from "../../../background";
+import { KeyboardAvoidingView } from "../../../keyboard-avoiding-view";
+import { Text } from "../../../typography";
+import { VerifyAndProceedButton } from "../../../verify-and-proceed-button";
 
 export type NfcKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -307,7 +308,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
                   });
                   const keyPair: Secp256k1KeyPair = {
                     publicKey: {
-                      type: pubkeyType.secp256k1,
+                      type: "tendermint/PubKeySecp256k1",
                       value: publicKey,
                     },
                     privateKey,

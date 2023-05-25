@@ -1,5 +1,6 @@
+import { NfcKey } from "@obi-wallet/common";
+
 import { mockAction, MultisigDraft } from "../../src/fixture-helpers";
-import { NfcKey } from "../../src/screens/keys/nfc";
 
 export default (
   <MultisigDraft.Container>

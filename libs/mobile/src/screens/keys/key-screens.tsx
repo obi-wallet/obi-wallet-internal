@@ -1,6 +1,7 @@
 import {
   DeviceKeyScreen,
   KeyRoute,
+  NfcKeyScreen,
   PhoneKeyConfirmScreen,
   PhoneKeyRequestScreen,
   RootStack,
@@ -9,7 +10,6 @@ import {
 
 import { CloudKeyScreen } from "./cloud";
 import { EmailKeyScreen } from "./email";
-import { NfcKeyScreen } from "./nfc";
 
 export const keyScreens = (navigationKey: string) => {
   return (
