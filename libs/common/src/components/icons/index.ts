@@ -2,6 +2,7 @@ export * from "./apps";
 export * from "./assets";
 export * from "./beneficiary-account";
 export * from "./check";
+export * from "./chevron-circle-left";
 export * from "./coin";
 export * from "./flex-account";
 export * from "./help-and-support";

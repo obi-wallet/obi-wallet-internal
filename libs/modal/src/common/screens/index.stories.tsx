@@ -93,6 +93,9 @@ function App({ initialRouteName }: { initialRouteName: string }) {
         <RootStack.Screen
           name={KeyRoute.SocialKey}
           component={SocialKeyScreen}
+          initialParams={{
+            draftId: MultisigDraft.draftId,
+          }}
         />
         <RootStack.Screen name={KeyRoute.CloudKey} component={CloudKeyScreen} />
         <RootStack.Screen name={KeyRoute.EmailKey} component={EmailKeyScreen} />
@@ -139,6 +142,30 @@ export const PhoneKeyRequest: Story = {
 export const PhoneKeyConfirm: Story = {
   render: () => {
     return <App initialRouteName={KeyRoute.PhoneKeyConfirm} />;
+  },
+};
+
+export const SocialKey: Story = {
+  render: () => {
+    return <App initialRouteName={KeyRoute.SocialKey} />;
+  },
+};
+
+export const NfcKey: Story = {
+  render: () => {
+    return <App initialRouteName={KeyRoute.NfcKey} />;
+  },
+};
+
+export const EmailKey: Story = {
+  render: () => {
+    return <App initialRouteName={KeyRoute.EmailKey} />;
+  },
+};
+
+export const CloudKey: Story = {
+  render: () => {
+    return <App initialRouteName={KeyRoute.CloudKey} />;
   },
 };
 

@@ -1,16 +1,9 @@
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { ViewStyle } from "react-native";
 
-import { useStore } from "../../contexts";
 import { IconButton } from "../buttons";
-
-// TODO:
-const ChevronCircleLeft = observer(function ChevronCircleLeft() {
-  return null;
-});
+import { ChevronCircleLeftIcon } from "../icons";
 
 export interface BackProps {
   style?: ViewStyle;
@@ -18,8 +11,6 @@ export interface BackProps {
 
 export const Back = observer(function Back({ style }: BackProps) {
   const { goBack } = useNavigation();
-  const { configStore } = useStore();
-  const isObi = configStore.isObi();
 
   return (
     <IconButton
@@ -27,11 +18,7 @@ export const Back = observer(function Back({ style }: BackProps) {
       style={style}
       hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
     >
-      {isObi ? (
-        <ChevronCircleLeft />
-      ) : (
-        <FontAwesomeIcon icon={faChevronLeft} style={{ color: "#7B87A8" }} />
-      )}
+      <ChevronCircleLeftIcon />
     </IconButton>
   );
 });
