@@ -25,6 +25,7 @@
     "@react-navigation/native-stack": "*",
     "@tanstack/react-query": "*",
     "@terra-money/feather.js": "*",
+    "fuse.js": "*",
     "isomorphic-unfetch": "*",
     "lottie-react-native": "*",
     "luxon": "*",

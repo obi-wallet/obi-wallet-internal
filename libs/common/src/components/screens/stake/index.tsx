@@ -9,7 +9,7 @@ import {
   useDelegations,
   useRewards,
   useUnbondingDelegations,
-  useValidators
+  useValidators,
 } from "@obi-wallet/headless-ui";
 import {
   Chain,
@@ -18,13 +18,21 @@ import {
   Token,
   tokenGivenBalances,
   UnbondingDelegation,
-  Validator
+  Validator,
 } from "@obi-wallet/sdk";
 import Fuse from "fuse.js";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
-import { createContext, Dispatch, useContext, useMemo, useReducer, useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as R from "ramda";
+import {
+  createContext,
+  Dispatch,
+  useContext,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   FlatList,
   Image,
@@ -33,26 +41,21 @@ import {
   TouchableHighlight,
   TouchableOpacity,
   View,
-  ViewStyle
+  ViewStyle,
 } from "react-native";
-
-import { useStore } from "../../../contexts";
-import { enrichToken, useBalances } from "../../../hooks";
-import { Back } from "../../back";
-import { KeyboardAvoidingView } from "../../keyboard-avoiding-view";
-import * as R from "ramda";
 import { GestureResponderEvent } from "react-native-modal";
-
-import { RefreshableFlatList } from "../../refreshable-flat-list";
-import { BaseTextInput, Text } from "../../typography";
-import { isSmallScreen, isSmallScreenNumber } from "../../../helpers";
-import { CoinIcon } from "../../icons";
-
-import { Controller, useForm } from "react-hook-form";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { z } from "zod";
 
+import { useStore } from "../../../contexts";
 import { TokenController } from "../../../forms";
-
+import { isSmallScreen, isSmallScreenNumber } from "../../../helpers";
+import { enrichToken, useBalances } from "../../../hooks";
+import { Back } from "../../back";
+import { CoinIcon } from "../../icons";
+import { KeyboardAvoidingView } from "../../keyboard-avoiding-view";
+import { RefreshableFlatList } from "../../refreshable-flat-list";
+import { BaseTextInput, Text } from "../../typography";
 
 enum StakeTab {
   Validators = "Validators",
@@ -70,16 +73,16 @@ const initialStakeState: StakeState = {
 };
 type StakeAction =
   | {
-  type: "set-selected-validator";
-  payload: Validator;
-}
+      type: "set-selected-validator";
+      payload: Validator;
+    }
   | {
-  type: "clear-selected-validator";
-}
+      type: "clear-selected-validator";
+    }
   | {
-  type: "set-selected-tab";
-  payload: StakeTab;
-};
+      type: "set-selected-tab";
+      payload: StakeTab;
+    };
 
 function stakeReducer(state: StakeState, action: StakeAction): StakeState {
   switch (action.type) {
@@ -249,12 +252,12 @@ const StakingOptions = observer(function StakingOptions() {
 });
 
 const TabPill = observer(function TabPill({
-                                            style,
-                                            onPress,
-                                            active,
-                                            label,
-                                            content,
-                                          }: {
+  style,
+  onPress,
+  active,
+  label,
+  content,
+}: {
   label: string;
   content: string;
   style?: StyleProp<ViewStyle>;
@@ -487,14 +490,14 @@ const Container = styled.View({
 });
 
 const ValidatorItem = observer(function ValidatorItem({
-                                                        validator,
-                                                        onPress,
-                                                        active = false,
-                                                        onCancel,
-                                                        onConfirm,
-                                                        confirmLabel,
-                                                        amountToShow,
-                                                      }: {
+  validator,
+  onPress,
+  active = false,
+  onCancel,
+  onConfirm,
+  confirmLabel,
+  amountToShow,
+}: {
   validator: EnrichedValidator;
   onPress?: (validator: EnrichedValidator) => void;
   active?: boolean;
@@ -531,9 +534,9 @@ const ValidatorItem = observer(function ValidatorItem({
       style={
         promoted
           ? {
-            borderWidth: 1,
-            borderColor: "#437DFF",
-          }
+              borderWidth: 1,
+              borderColor: "#437DFF",
+            }
           : undefined
       }
     >
@@ -702,8 +705,8 @@ const MyStake = observer(function MyStake() {
 });
 
 const StakeItem = observer(function StakeItem({
-                                                delegation,
-                                              }: {
+  delegation,
+}: {
   delegation: Delegation;
 }) {
   const wallet = useCurrentWallet();
@@ -802,8 +805,8 @@ const Unstaking = observer(function Unstaking() {
 });
 
 const UnstakeItem = observer(function UnstakeItem({
-                                                    unbondingDelegation,
-                                                  }: {
+  unbondingDelegation,
+}: {
   unbondingDelegation: UnbondingDelegation;
 }) {
   const wallet = useCurrentWallet();

@@ -7,6 +7,7 @@ import {
   PhoneKeyConfirmScreen,
   PhoneKeyRequestScreen,
   ReceiveScreen,
+  RecoverWalletScreen,
   RootRoute,
   RootStack,
   SendScreen,
@@ -64,11 +65,10 @@ export const StateRenderer = observer(function StateRenderer() {
           name={OnboardingRoute.CreateWallet}
           component={CreateWalletScreen}
         />
-        {/* TODO: */}
-        {/*<RootStack.Screen*/}
-        {/*  name={OnboardingRoute.RecoverWallet}*/}
-        {/*  component={RecoverWalletScreen}*/}
-        {/*/>*/}
+        <RootStack.Screen
+          name={OnboardingRoute.RecoverWallet}
+          component={RecoverWalletScreen}
+        />
       </RootStack.Group>
     );
   }

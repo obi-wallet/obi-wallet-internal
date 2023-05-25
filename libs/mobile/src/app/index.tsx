@@ -4,6 +4,7 @@ import {
   CreateWalletScreen,
   OnboardingRoute,
   ReceiveScreen,
+  RecoverWalletScreen,
   RootRoute,
   RootStack,
   SendScreen,
@@ -32,7 +33,6 @@ import { SplashScreen } from "./screens/splash";
 import { WebViewScreen } from "./screens/web-view";
 import { keyScreens } from "../screens/keys/key-screens";
 import { LookupProxyWalletsScreen } from "../screens/lookup-proxy-wallets";
-import { RecoverWalletScreen } from "../screens/recover-wallet";
 
 if (Platform.OS === "ios") {
   KeyboardManager?.setToolbarPreviousNextButtonEnable(true);

@@ -132,6 +132,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
             [
               {
                 text: "Cancel",
+                style: "cancel",
                 // eslint-disable-next-line @typescript-eslint/no-empty-function
                 onPress() {},
               },

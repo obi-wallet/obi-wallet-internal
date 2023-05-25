@@ -1,21 +1,22 @@
 import { useTheme } from "@emotion/react";
-import {
-  Alert,
-  AsyncButton,
-  KeyFlow,
-  KeyRoute,
-  MultisigSettings,
-  OnboardingRoute,
-  OnboardingStackParamList,
-  useRootNavigation,
-  useStore,
-} from "@obi-wallet/common";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { View } from "react-native";
 import invariant from "tiny-invariant";
+
+import { useStore } from "../../../contexts";
+import { Alert } from "../../../helpers";
+import {
+  KeyFlow,
+  KeyRoute,
+  OnboardingRoute,
+  OnboardingStackParamList,
+  useRootNavigation,
+} from "../../../router";
+import { AsyncButton } from "../../buttons";
+import { MultisigSettings } from "../../multisig-settings";
 
 export type RecoverWalletScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,
