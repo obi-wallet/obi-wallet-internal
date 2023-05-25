@@ -1,21 +1,3 @@
-import {
-  Alert,
-  Back,
-  Background,
-  InlineButton,
-  isSmallScreenNumber,
-  KeyboardAvoidingView,
-  KeyFlow,
-  KeyRoute,
-  KeyStackParamList,
-  OnboardingRoute,
-  SettingsRoute,
-  Text,
-  TextInput,
-  useRootNavigation,
-  useStore,
-  VerifyAndProceedButton,
-} from "@obi-wallet/common";
 import { Chain, MultisigKey, Sdk, Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -24,7 +6,23 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import SocialLoop from "../../../assets/social-loop.svg";
+import { useStore } from "../../../../contexts";
+import { Alert, isSmallScreenNumber } from "../../../../helpers";
+import {
+  KeyFlow,
+  KeyRoute,
+  KeyStackParamList,
+  OnboardingRoute,
+  SettingsRoute,
+  useRootNavigation,
+} from "../../../../router";
+import { Back } from "../../../back";
+import { Background } from "../../../background";
+import { InlineButton } from "../../../buttons";
+import { KeyboardAvoidingView } from "../../../keyboard-avoiding-view";
+import { TextInput } from "../../../text-input";
+import { Text } from "../../../typography";
+import { VerifyAndProceedButton } from "../../../verify-and-proceed-button";
 
 export type SocialKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -155,7 +153,6 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
 
             <View>
               <View>
-                {isObi ? undefined : <SocialLoop width={70} height={70} />}
                 <Text
                   style={{
                     color: "#F6F5FF",

@@ -13,6 +13,7 @@ import {
   RootStack,
   SendScreen,
   settingsScreens,
+  SocialKeyScreen,
   StakeScreen,
   useStore,
   WelcomeScreen,
@@ -115,13 +116,12 @@ export const keyScreens = (navigationKey: string) => {
         component={PhoneKeyConfirmScreen}
         options={{ headerShown: false }}
       />
-      {/* TODO: */}
-      {/*<RootStack.Screen*/}
-      {/*  name={KeyRoute.SocialKey}*/}
-      {/*  key={KeyRoute.SocialKey}*/}
-      {/*  component={SocialKeyScreen}*/}
-      {/*  options={{ headerShown: false }}*/}
-      {/*/>*/}
+      <RootStack.Screen
+        name={KeyRoute.SocialKey}
+        key={KeyRoute.SocialKey}
+        component={SocialKeyScreen}
+        options={{ headerShown: false }}
+      />
       {/* TODO: */}
       {/*<RootStack.Screen*/}
       {/*  name={KeyRoute.NfcKey}*/}

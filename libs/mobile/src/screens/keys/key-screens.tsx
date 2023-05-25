@@ -4,12 +4,12 @@ import {
   PhoneKeyConfirmScreen,
   PhoneKeyRequestScreen,
   RootStack,
+  SocialKeyScreen,
 } from "@obi-wallet/common";
 
 import { CloudKeyScreen } from "./cloud";
 import { EmailKeyScreen } from "./email";
 import { NfcKeyScreen } from "./nfc";
-import { SocialKeyScreen } from "./social";
 
 export const keyScreens = (navigationKey: string) => {
   return (

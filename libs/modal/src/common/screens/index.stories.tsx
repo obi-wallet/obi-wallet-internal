@@ -9,6 +9,7 @@ import {
   PhoneKeyConfirmScreen,
   PhoneKeyRequestScreen,
   RootStack,
+  SocialKeyScreen,
   useEnv,
   useSecurityQuestions,
   useStore,
@@ -86,6 +87,10 @@ function App({ initialRouteName }: { initialRouteName: string }) {
         <RootStack.Screen
           name={KeyRoute.PhoneKeyConfirm}
           component={PhoneKeyConfirmScreen}
+        />
+        <RootStack.Screen
+          name={KeyRoute.SocialKey}
+          component={SocialKeyScreen}
         />
         <RootStack.Screen
           name={OnboardingRoute.CreateWallet}
