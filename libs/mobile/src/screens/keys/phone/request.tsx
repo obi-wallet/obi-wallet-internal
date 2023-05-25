@@ -297,10 +297,11 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                   if (checkSecurityAnswer && checkPhoneNumber) {
                     try {
                       const twilioClient = getTwilioClient(demoMode);
-                      await twilioClient.sendPublicKeyTextMessage({
+                      await twilioClient.requestPublicKeyMagicCode({
                         phoneNumber,
                         securityAnswer,
                         chainId,
+                        voice: false,
                       });
                       onSubmit({
                         phoneNumber,
