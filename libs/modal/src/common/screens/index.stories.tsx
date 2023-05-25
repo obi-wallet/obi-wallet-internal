@@ -2,6 +2,7 @@ import {
   CloudKeyScreen,
   CreateWalletScreen,
   DeviceKeyScreen,
+  EmailKeyScreen,
   getBiometricsPublicKey,
   getTwilioClient,
   KeyRoute,
@@ -94,6 +95,7 @@ function App({ initialRouteName }: { initialRouteName: string }) {
           component={SocialKeyScreen}
         />
         <RootStack.Screen name={KeyRoute.CloudKey} component={CloudKeyScreen} />
+        <RootStack.Screen name={KeyRoute.EmailKey} component={EmailKeyScreen} />
         <RootStack.Screen
           name={OnboardingRoute.CreateWallet}
           component={CreateWalletScreen}

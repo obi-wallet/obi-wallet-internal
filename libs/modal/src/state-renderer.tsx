@@ -2,6 +2,7 @@ import {
   CloudKeyScreen,
   CreateWalletScreen,
   DeviceKeyScreen,
+  EmailKeyScreen,
   HomeScreen,
   KeyRoute,
   LookupProxyWalletsScreen,
@@ -136,13 +137,12 @@ export const keyScreens = (navigationKey: string) => {
         component={CloudKeyScreen}
         options={{ headerShown: false }}
       />
-      {/* TODO: */}
-      {/*<RootStack.Screen*/}
-      {/*  name={KeyRoute.EmailKey}*/}
-      {/*  key={KeyRoute.EmailKey}*/}
-      {/*  component={EmailKeyScreen}*/}
-      {/*  options={{ headerShown: false }}*/}
-      {/*/>*/}
+      <RootStack.Screen
+        name={KeyRoute.EmailKey}
+        key={KeyRoute.EmailKey}
+        component={EmailKeyScreen}
+        options={{ headerShown: false }}
+      />
     </RootStack.Group>
   );
 };
