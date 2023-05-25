@@ -1,4 +1,5 @@
 import {
+  CloudKeyScreen,
   CreateWalletScreen,
   DeviceKeyScreen,
   getBiometricsPublicKey,
@@ -92,6 +93,7 @@ function App({ initialRouteName }: { initialRouteName: string }) {
           name={KeyRoute.SocialKey}
           component={SocialKeyScreen}
         />
+        <RootStack.Screen name={KeyRoute.CloudKey} component={CloudKeyScreen} />
         <RootStack.Screen
           name={OnboardingRoute.CreateWallet}
           component={CreateWalletScreen}

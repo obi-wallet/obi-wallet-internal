@@ -1,4 +1,5 @@
 import {
+  CloudKeyScreen,
   CreateWalletScreen,
   DeviceKeyScreen,
   HomeScreen,
@@ -129,13 +130,12 @@ export const keyScreens = (navigationKey: string) => {
         component={NfcKeyScreen}
         options={{ headerShown: false }}
       />
-      {/* TODO: */}
-      {/*<RootStack.Screen*/}
-      {/*  name={KeyRoute.CloudKey}*/}
-      {/*  key={KeyRoute.CloudKey}*/}
-      {/*  component={CloudKeyScreen}*/}
-      {/*  options={{ headerShown: false }}*/}
-      {/*/>*/}
+      <RootStack.Screen
+        name={KeyRoute.CloudKey}
+        key={KeyRoute.CloudKey}
+        component={CloudKeyScreen}
+        options={{ headerShown: false }}
+      />
       {/* TODO: */}
       {/*<RootStack.Screen*/}
       {/*  name={KeyRoute.EmailKey}*/}

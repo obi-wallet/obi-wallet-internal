@@ -1,20 +1,3 @@
-import { pubkeyType } from "@cosmjs/amino";
-import {
-  Alert,
-  Back,
-  Background,
-  GoogleDrive,
-  isSmallScreenNumber,
-  KeyboardAvoidingView,
-  KeyFlow,
-  KeyRoute,
-  KeyStackParamList,
-  OnboardingRoute,
-  SettingsRoute,
-  Text,
-  useRootNavigation,
-  useStore,
-} from "@obi-wallet/common";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -22,6 +5,22 @@ import { observer } from "mobx-react-lite";
 import { useRef } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useStore } from "../../../../contexts";
+import { Alert, isSmallScreenNumber } from "../../../../helpers";
+import { GoogleDrive } from "../../../../keys";
+import {
+  KeyFlow,
+  KeyRoute,
+  KeyStackParamList,
+  OnboardingRoute,
+  SettingsRoute,
+  useRootNavigation,
+} from "../../../../router";
+import { Back } from "../../../back";
+import { Background } from "../../../background";
+import { KeyboardAvoidingView } from "../../../keyboard-avoiding-view";
+import { Text } from "../../../typography";
 
 export type CloudKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -84,7 +83,7 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
     });
     const keyPair: Secp256k1KeyPair = {
       publicKey: {
-        type: pubkeyType.secp256k1,
+        type: "tendermint/PubKeySecp256k1",
         value: publicKey,
       },
       privateKey,
