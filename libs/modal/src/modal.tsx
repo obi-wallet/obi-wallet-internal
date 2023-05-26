@@ -9,11 +9,15 @@ export function Modal() {
   return (
     <Container>
       <ModalWithoutProvider />
-      <Modals />
     </Container>
   );
 }
 
 export const ModalWithoutProvider = observer(function ModalWithoutProvider() {
-  return <StateRenderer />;
+  return (
+    <>
+      <StateRenderer />
+      <Modals />
+    </>
+  );
 });
