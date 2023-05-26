@@ -1,7 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useRef, useState } from "react";
+import { ReactNode, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,12 +15,7 @@ import { Key, KeysList } from "./keys-list";
 import { useStore } from "../../contexts";
 import { isSmallScreenNumber } from "../../helpers";
 import { Back } from "../back";
-import {
-  BaseBottomSheet,
-  BottomSheet,
-  BottomSheetNew,
-  BottomSheetView,
-} from "../bottom-sheet";
+import { BottomSheetNew } from "../bottom-sheet";
 import { CheckIcon, KeysIcon, WarningIcon } from "../icons";
 import { Text } from "../typography";
 
@@ -39,20 +34,10 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
 
     const multisigKey = draft.value;
     const { configStore } = useStore();
-    const bottomSheetRef = useRef<BottomSheet>(null);
     const [selectedType, setSelectedType] = useState<KeyType | null>(null);
     const theme = useTheme();
-    const isLoop = configStore.isLoop();
 
     const keyMetaData = useKeyMetaData();
-
-    // const triggerBottomSheet = (index: number) => {
-    //   if (index === -1) {
-    //     bottomSheetRef.current?.close();
-    //   } else {
-    //     bottomSheetRef.current?.snapToIndex(index);
-    //   }
-    // };
 
     function getKey(
       type: KeyType

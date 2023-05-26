@@ -68,25 +68,10 @@ export interface BottomSheetProps {
   onClose?: () => void;
 }
 
-export const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
-  // eslint-disable-next-line mobx/no-anonymous-observer,mobx/missing-observer
-  function BaseBottomSheet(props, ref) {
-    warning(false, "BaseBottomSheet not implemented for web");
-    return null;
-  }
-);
-
 export const BottomSheet = observer<BottomSheetProps>(function BottomSheet() {
   warning(false, "BottomSheet not implemented for web");
   return null;
 });
-
-export const BottomSheetView = observer<BottomSheetViewProps>(
-  function BottomSheetView() {
-    warning(false, "BottomSheetView not implemented for web");
-    return null;
-  }
-);
 
 export const BottomSheetTextInput = observer<BottomSheetTextInputProps>(
   function BottomSheetTextInput() {
