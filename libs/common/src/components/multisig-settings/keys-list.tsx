@@ -64,7 +64,7 @@ export const KeysList = observer(function KeysList({
   });
 
   return (
-    <View style={[style]}>
+    <View style={[{ flex: 1 }, style]}>
       <FlatList
         data={[
           ...hydratedData,
