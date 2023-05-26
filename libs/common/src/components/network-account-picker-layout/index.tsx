@@ -64,7 +64,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
         justifyContent: "space-between",
       }}
     >
-      <TouchableHighlight
+      <View
         style={{
           backgroundColor: isObi ? "#272727" : "#16152D",
           alignSelf: "flex-start",
@@ -76,7 +76,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
           paddingVertical: 10,
           borderRadius: 8,
         }}
-        onPress={() => navigation.openDrawer()}
+        // onPress={() => navigation.openDrawer()}
       >
         <>
           <View
@@ -119,7 +119,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
             </Text>
           </View>
         </>
-      </TouchableHighlight>
+      </View>
 
       <TouchableOpacity
         style={{
