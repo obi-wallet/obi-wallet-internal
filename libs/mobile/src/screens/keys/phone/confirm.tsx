@@ -182,12 +182,14 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                 phoneNumberMightBeIncorrect
                 value={key}
                 setValue={setKey}
-                onResend={async () => {
+                onResend={async (voice) => {
                   const twilioClient = getTwilioClient(demoMode);
-                  await twilioClient.sendPublicKeyTextMessage({
+
+                  await twilioClient.requestPublicKeyMagicCode({
                     phoneNumber,
                     securityAnswer,
                     chainId,
+                    voice,
                   });
                 }}
               />
@@ -199,7 +201,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                     setVerifyButtonDisabledDoubleclick(true);
                     const twilioClient = getTwilioClient(demoMode);
                     const publicKey =
-                      await twilioClient.parsePublicKeyTextMessageResponse({
+                      await twilioClient.parsePublicKeyMagicCodeResponse({
                         key,
                       });
                     if (publicKey) {

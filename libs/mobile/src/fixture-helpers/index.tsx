@@ -49,7 +49,7 @@ export const MultisigDraft = {
         original.setPhoneKey({
           publicKey: await getTwilioClient(
             true
-          ).parsePublicKeyTextMessageResponse({
+          ).parsePublicKeyMagicCodeResponse({
             key: "",
           }),
           phoneNumber: "+1234567890",

@@ -102,8 +102,8 @@ export const SignatureModalMultisigKey =
               <PhoneNumberBottomSheetContent
                 phoneNumber={phoneKeyPayload.key.payload.phoneNumber}
                 securityQuestion={phoneKeyPayload.key.payload.securityQuestion}
-                onRequest={async (securityAnswer) => {
-                  await phoneKeyPayload.signer.requestSignature(securityAnswer);
+                onRequest={async (data) => {
+                  await phoneKeyPayload.signer.requestSignature(data);
                 }}
                 onConfirm={async (key) => {
                   await phoneKeyPayload.signer.confirmSignature(key);
