@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { ChainId, Sdk } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ControllerFieldState } from "react-hook-form";
-import { TouchableOpacity, View } from "react-native";
+import { Platform, TouchableOpacity, View } from "react-native";
 
 import {
   SendIcon,
@@ -49,6 +49,20 @@ export const AddressController = observer<AddressControllerProps>(
         close();
       }
     });
+
+    if (Platform.OS === "web") {
+      return (
+        <TextInput
+          label={label}
+          placeholder={placeholder}
+          style={{ flex: 1 }}
+          value={field.value}
+          onChangeText={field.onChange}
+          onBlur={field.onBlur}
+          invalidMessage={fieldState.error?.message}
+        />
+      );
+    }
 
     return (
       <>
