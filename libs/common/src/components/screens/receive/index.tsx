@@ -18,22 +18,26 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
   if (!address) return null;
 
   const onShare = async (text: string) => {
-    try {
-      const result = await Share.share({
-        message: text,
-      });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
+    if (Platform.OS === "web") {
+      await navigator.clipboard.writeText(text);
+    } else {
+      try {
+        const result = await Share.share({
+          message: text,
+        });
+        if (result.action === Share.sharedAction) {
+          if (result.activityType) {
+            // shared with activity type of result.activityType
+          } else {
+            // shared
+          }
+        } else if (result.action === Share.dismissedAction) {
+          // dismissed
         }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
+      } catch (e) {
+        const error = e as Error;
+        alert(error.message);
       }
-    } catch (e) {
-      const error = e as Error;
-      alert(error.message);
     }
   };
 
@@ -95,20 +99,27 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
               fontWeight: "500",
             }}
           >
-            <FormattedMessage
-              id="receive.taptoshare"
-              defaultMessage="Tap to share your address"
-            />
+            {Platform.OS === "web"
+              ? "Tap to copy your address"
+              : "Tap to share your address"}
           </Text>
           <Text
-            style={{
-              textAlign: "center",
-              color: "#F6F5FF",
-              fontSize: 12,
-              fontWeight: "500",
-              opacity: 0.6,
-              marginTop: 10,
-            }}
+            style={[
+              {
+                textAlign: "center",
+                color: "#F6F5FF",
+                fontSize: 12,
+                fontWeight: "500",
+                opacity: 0.6,
+                marginTop: 10,
+              },
+              Platform.OS === "web"
+                ? {
+                    // @ts-expect-error web-only prop
+                    overflowWrap: "anywhere",
+                  }
+                : undefined,
+            ]}
           >
             {address}
           </Text>

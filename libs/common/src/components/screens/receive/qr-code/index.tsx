@@ -1,8 +1,19 @@
 import { observer } from "mobx-react-lite";
-import type { QRCodeProps } from "react-native-qrcode-svg";
-import warning from "tiny-warning";
+import QRCode from "react-qr-code";
 
-export const QrCode = observer<QRCodeProps>(function QrCode() {
-  warning(false, "QrCode is not implemented for web");
-  return null;
+export interface QrCodeProps {
+  value: string;
+  size: number;
+}
+
+export const QrCode = observer<QrCodeProps>(function QrCode({ value, size }) {
+  return (
+    <QRCode
+      value={value}
+      style={{
+        width: size,
+        height: size,
+      }}
+    />
+  );
 });
