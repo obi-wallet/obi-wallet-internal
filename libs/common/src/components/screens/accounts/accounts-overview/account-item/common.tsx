@@ -8,8 +8,8 @@ import { Beneficiary, FlexAccount, SinglesigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { StyleProp, TextStyle, TouchableOpacity, View } from "react-native";
+import { View as AnimatableView } from "react-native-animatable";
 
-import { AnimatableView } from "../../../../animatable";
 import { Avatar } from "../../../../avatar";
 import { Text } from "../../../../typography";
 

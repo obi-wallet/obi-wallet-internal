@@ -15,6 +15,10 @@ import {
   OnboardingStackParamList,
   useRootNavigation,
 } from "../../../router";
+import {
+  AccountPickerModal,
+  useAccountPickerModalProps,
+} from "../../account-picker-modal";
 import { Button } from "../../buttons";
 
 export type WelcomeScreenProps = NativeStackScreenProps<
@@ -97,6 +101,8 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
   const intl = useIntl();
   const theme = useTheme();
 
+  const accountPickerModalProps = useAccountPickerModalProps();
+
   return (
     <WelcomeLayout title={renderTitle()} subTitle={renderSubTitle()}>
       {walletsStore.wallets.length > 0 ? (
@@ -107,7 +113,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
           })}
           flavor="green"
           onPress={() => {
-            // accountPickerModalProps.open();
+            accountPickerModalProps.open();
           }}
         />
       ) : null}
@@ -157,6 +163,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
           onPress={onEnterDemoMode}
         />
       ) : null}
+      <AccountPickerModal {...accountPickerModalProps} />
     </WelcomeLayout>
   );
 

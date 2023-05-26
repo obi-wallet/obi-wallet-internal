@@ -2,9 +2,9 @@ import { Beneficiary } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { View } from "react-native";
+import { View as AnimatableView } from "react-native-animatable";
 
 import { AbstractAccountItemProps, AccountContainer, Pill } from "./common";
-import { AnimatableView } from "../../../../animatable";
 import { BaseTextInput, Text } from "../../../../typography";
 
 export interface BeneficiaryItemProps extends AbstractAccountItemProps {

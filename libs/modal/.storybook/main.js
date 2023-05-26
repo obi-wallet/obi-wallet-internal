@@ -67,6 +67,9 @@ const config = {
           define: {
             global: "globalThis",
           },
+          loader: {
+            ".js": "jsx",
+          },
           plugins: [
             NodeGlobalsPolyfillPlugin({
               buffer: true,

@@ -1,3 +1,4 @@
+export * from "./account-picker-modal";
 export * from "./animated-text";
 export * from "./animations";
 export * from "./avatar";

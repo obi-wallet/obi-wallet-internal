@@ -14,10 +14,10 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { View as AnimatableView } from "react-native-animatable";
 import { useThrottle } from "rooks";
 
 import { AbstractAccountItemProps, AccountContainer, Pill } from "./common";
-import { AnimatableView } from "../../../../animatable";
 import { AnimatedText } from "../../../../animated-text";
 import { BaseTextInput, Text } from "../../../../typography";
 import { PermissionedAddressesContext } from "../permissioned-addresses-context";
