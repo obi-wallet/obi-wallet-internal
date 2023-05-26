@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
-import { View } from "react-native";
-import warning from "tiny-warning";
+import { Image, View } from "react-native";
+import invariant from "tiny-invariant";
 
 import { EnrichedToken } from "../../hooks";
 
@@ -21,6 +21,12 @@ export const CoinIcon = observer(function CoinIcon({
 }: {
   source: EnrichedToken["icon"];
 }) {
-  warning(false, "CoinIcon not implemented for web");
-  return <DefaultView />;
+  if (typeof source !== "object" || !source?.uri) {
+    invariant(false, "URI must be defined for web");
+    return <DefaultView />;
+  }
+
+  return (
+    <Image source={source} style={{ flex: 1, width: "100%", height: "100%" }} />
+  );
 });

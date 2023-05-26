@@ -11,6 +11,7 @@ import { FormattedMessage } from "react-intl";
 import {
   ImageBackground,
   ListRenderItemInfo,
+  Platform,
   TouchableHighlight,
   TouchableOpacity,
   View,
@@ -314,9 +315,15 @@ const AssetsList = observer(function AssetsList() {
           keyExtractor={(token) => token.id}
           data={balances.data}
           renderItem={(props) => <AssetsListItem {...props} />}
-          style={{
-            marginTop: 28,
-          }}
+          style={
+            Platform.OS === "web"
+              ? {
+                  marginTop: 10,
+                }
+              : {
+                  marginTop: 28,
+                }
+          }
           refetch={balances.refetch}
         />
       </View>
