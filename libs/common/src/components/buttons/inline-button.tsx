@@ -51,13 +51,13 @@ export const InlineButton = observer(function InlineButton({
     style: [baseStyles.button, props.style],
   };
 
-  if (Platform.OS === "ios") {
-    return <TouchableHighlight {...buttonProps} />;
-  } else {
+  if (Platform.OS === "android") {
     return (
       <TouchableNativeFeedback {...buttonProps}>
         <View style={[baseStyles.button, props.style]}>{children}</View>
       </TouchableNativeFeedback>
     );
+  } else {
+    return <TouchableHighlight {...buttonProps} />;
   }
 });
