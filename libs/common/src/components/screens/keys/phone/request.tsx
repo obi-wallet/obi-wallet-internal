@@ -19,7 +19,11 @@ import {
 import { Back } from "../../../back";
 import { Background } from "../../../background";
 import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
-import { SendMagicSmsButton, useSecurityQuestions } from "../../../phone-key";
+import {
+  SecurityQuestionInput,
+  SendMagicSmsButton,
+  useSecurityQuestions,
+} from "../../../phone-key";
 import { TextInput } from "../../../text-input";
 import { Text } from "../../../typography";
 
@@ -175,17 +179,23 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                 render={({ field, fieldState }) => {
                   // TODO: dropdown / select
                   return (
-                    <TextInput
-                      label="Security Question"
-                      placeholder="Security Question"
-                      style={{ flex: 1 }}
-                      invalidMessage={fieldState.error?.message}
-                      value={
-                        securityQuestions.find(
-                          ({ value }) => value === field.value
-                        )?.label
-                      }
+                    <SecurityQuestionInput
+                      securityQuestion={field.value}
+                      onSecurityQuestionChange={(item) => {
+                        field.onChange(item);
+                      }}
                     />
+                    // <TextInput
+                    //   label="Security Question"
+                    //   placeholder="Security Question"
+                    //   style={{ flex: 1 }}
+                    //   invalidMessage={fieldState.error?.message}
+                    //   value={
+                    //     securityQuestions.find(
+                    //       ({ value }) => value === field.value
+                    //     )?.label
+                    //   }
+                    // />
                   );
                 }}
               />

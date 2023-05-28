@@ -14,9 +14,6 @@ export type OnSecurityQuestionChange = Dispatch<SetStateCallback<string>>;
 
 export type SecurityQuestionInputProps = {
   securityQuestion: string;
-  securityAnswer: string;
-  onSecurityAnswerChange: (securityAnswer: string) => void;
-  CustomTextInput?: ComponentType<TextInputProps>;
 } & (
   | {
       disabled: true;
@@ -28,26 +25,61 @@ export type SecurityQuestionInputProps = {
     }
 );
 
+export type SecurityQuestionInputWithAnswerProps = {
+  securityAnswer: string;
+  onSecurityAnswerChange: (securityAnswer: string) => void;
+  CustomTextInput?: ComponentType<TextInputProps>;
+} & SecurityQuestionInputProps;
+
+export const SecurityQuestionInputWithAnswer =
+  observer<SecurityQuestionInputWithAnswerProps>(
+    function SecurityQuestionInputWithAnswer({
+      CustomTextInput = BaseTextInput,
+      securityAnswer,
+      onSecurityAnswerChange,
+      ...props
+    }) {
+      const intl = useIntl();
+
+      return (
+        <View style={{ zIndex: 999 }}>
+          <SecurityQuestionInput {...props} />
+
+          <TextInput
+            label={intl.formatMessage({
+              id: "onboarding2.answer",
+              defaultMessage: "Answer",
+            })}
+            placeholder={intl.formatMessage({
+              id: "onboarding2.answerlabel",
+              defaultMessage: "Type your answer here",
+            })}
+            style={{ marginTop: 15 }}
+            value={securityAnswer}
+            onChangeText={onSecurityAnswerChange}
+            CustomTextInput={CustomTextInput}
+          />
+        </View>
+      );
+    }
+  );
+
 export const SecurityQuestionInput = observer(function SecurityQuestionInput({
   disabled,
   securityQuestion,
   onSecurityQuestionChange = () => {
     // noop if disabled
   },
-  securityAnswer,
-  onSecurityAnswerChange,
-  CustomTextInput = BaseTextInput,
 }: SecurityQuestionInputProps) {
   const [dropdownPickerOpen, setDropdownPickerOpen] = useState(false);
   const [securityQuestions, setSecurityQuestions] = useState(
     useSecurityQuestions()
   );
 
-  const intl = useIntl();
   const isObi = useStore().configStore.isObi();
 
   return (
-    <View style={{ zIndex: 999 }}>
+    <>
       <Text
         style={{
           color: isObi ? "white" : "#787B9C",
@@ -96,22 +128,7 @@ export const SecurityQuestionInput = observer(function SecurityQuestionInput({
           fontSize: isSmallScreenNumber(10, 14),
         }}
       />
-
-      <TextInput
-        label={intl.formatMessage({
-          id: "onboarding2.answer",
-          defaultMessage: "Answer",
-        })}
-        placeholder={intl.formatMessage({
-          id: "onboarding2.answerlabel",
-          defaultMessage: "Type your answer here",
-        })}
-        style={{ marginTop: 15 }}
-        value={securityAnswer}
-        onChangeText={onSecurityAnswerChange}
-        CustomTextInput={CustomTextInput}
-      />
-    </View>
+    </>
   );
 });
 

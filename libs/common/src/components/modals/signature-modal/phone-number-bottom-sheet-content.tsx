@@ -8,7 +8,7 @@ import { Alert } from "../../../helpers";
 import { BottomSheetTextInput } from "../../bottom-sheet";
 import {
   PhoneOneTimeCodeInput,
-  SecurityQuestionInput,
+  SecurityQuestionInputWithAnswer,
   SendMagicSmsButton,
   useSecurityQuestionInput,
 } from "../../phone-key";
@@ -144,7 +144,7 @@ export const PhoneNumberBottomSheetContent =
             justifyContent: "space-between",
           }}
         >
-          <SecurityQuestionInput
+          <SecurityQuestionInputWithAnswer
             disabled
             securityQuestion={securityQuestion}
             securityAnswer={securityAnswer}
