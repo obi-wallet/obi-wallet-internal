@@ -10,7 +10,7 @@ import Svg, {
 
 import { useStore } from "../../contexts";
 
-export const KeysIcon = observer(function KeysIcon(
+export const MultisigKeysIcon = observer(function KeysIcon(
   props: SvgProps & { keys: number }
 ) {
   const { configStore } = useStore();

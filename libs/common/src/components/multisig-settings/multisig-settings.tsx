@@ -16,7 +16,7 @@ import { useStore } from "../../contexts";
 import { isSmallScreenNumber } from "../../helpers";
 import { Back } from "../back";
 import { BottomSheetNew } from "../bottom-sheet";
-import { CheckIcon, KeysIcon, WarningIcon } from "../icons";
+import { CheckIcon, MultisigKeysIcon, WarningIcon } from "../icons";
 import { Text } from "../typography";
 
 export interface MultisigSettingsProps {
@@ -33,7 +33,6 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
     const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
     const multisigKey = draft.value;
-    const { configStore } = useStore();
     const [selectedType, setSelectedType] = useState<KeyType | null>(null);
     const theme = useTheme();
 
@@ -93,7 +92,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
               alignItems: "center",
             }}
           >
-            <KeysIcon keys={activatedKeys} />
+            <MultisigKeysIcon keys={activatedKeys} />
             <Text
               style={[
                 styles.heading,

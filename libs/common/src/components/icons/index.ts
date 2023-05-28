@@ -10,6 +10,7 @@ export * from "./keys";
 export * from "./legacy-account";
 export * from "./logout";
 export * from "./multisig";
+export * from "./multisig-keys";
 export * from "./nfts";
 export * from "./obi";
 export * from "./obi-accounts";
