@@ -1,12 +1,10 @@
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { Portal } from "@gorhom/portal";
 import { Brand } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
-import { ComponentType, useRef, useState } from "react";
+import { ComponentType, useState } from "react";
 import { ControllerFieldState } from "react-hook-form";
 import { FormattedMessage } from "react-intl";
 import {
@@ -17,7 +15,6 @@ import {
 } from "react-native";
 
 import {
-  BottomSheetBackdrop,
   BottomSheetNew,
   CoinIcon,
   RefreshableFlatList,

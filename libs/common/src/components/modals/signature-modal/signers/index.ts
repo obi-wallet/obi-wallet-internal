@@ -8,7 +8,6 @@ import {
   Signer,
   TwilioClientInterface,
 } from "@obi-wallet/sdk";
-import { RefObject } from "react";
 import invariant from "tiny-invariant";
 
 import { NfcKeySigner } from "./nfc-key-signer";
@@ -18,17 +17,15 @@ import {
   getBiometricsPrivateKey,
   getTwilioClient,
 } from "../../../../keys";
-import { BottomSheet } from "../../../bottom-sheet";
 
 export async function createUsableSigners({
   multisigKey,
   demoMode,
-  bottomSheetRef,
   env,
 }: {
   multisigKey: MultisigKey;
   demoMode: boolean;
-  bottomSheetRef: RefObject<BottomSheet>;
+  openBottomSheet: () => void;
   env: Env;
 }) {
   const possibleUsableKeys = [
@@ -45,7 +42,6 @@ export async function createUsableSigners({
         const signer = await createUsableSigner({
           multisigKey,
           demoMode,
-          bottomSheetRef,
           key,
           env,
         });
@@ -67,14 +63,12 @@ export async function createUsableSigners({
 async function createUsableSigner({
   multisigKey,
   demoMode,
-  bottomSheetRef,
   key,
   env,
 }: {
   multisigKey: MultisigKey;
   demoMode: boolean;
   key: KeySubclassTypeMapping[KeyType];
-  bottomSheetRef: RefObject<BottomSheet>;
   env: Env;
 }): Promise<Signer | null> {
   switch (key.type) {
@@ -93,7 +87,6 @@ async function createUsableSigner({
         key: key,
         chainId: multisigKey.chainId,
         demoMode,
-        bottomSheetRef,
         env,
       });
     case KeyType.Nfc:
@@ -128,31 +121,26 @@ export class DeviceKeySigner extends Signer {
 export class PhoneKeySigner extends Signer {
   protected signer: AbstractPhoneKeySigner;
   protected twilioClient: TwilioClientInterface;
-  protected bottomSheetRef: RefObject<BottomSheet>;
   protected chainId: ChainId;
 
   public constructor({
     key,
     chainId,
     demoMode,
-    bottomSheetRef,
     env,
   }: {
     key: KeySubclassTypeMapping[KeyType.Phone];
     chainId: ChainId;
     demoMode: boolean;
-    bottomSheetRef: RefObject<BottomSheet>;
     env: Env;
   }) {
     super();
     this.signer = new AbstractPhoneKeySigner(key);
     this.twilioClient = getTwilioClient({ demoMode, env });
-    this.bottomSheetRef = bottomSheetRef;
     this.chainId = chainId;
   }
 
   public async signHash(hash: Uint8Array) {
-    this.bottomSheetRef.current?.snapToIndex(0);
     return await this.signer.signHash(hash);
   }
 
@@ -161,7 +149,6 @@ export class PhoneKeySigner extends Signer {
   }
 
   public async requestSignature(securityAnswer: string) {
-    this.bottomSheetRef.current?.snapToIndex(0);
     await this.signer.requestSignature({
       chainId: this.chainId,
       securityAnswer,
@@ -175,7 +162,6 @@ export class PhoneKeySigner extends Signer {
       key,
       twilioClient: this.twilioClient,
     });
-    this.bottomSheetRef.current?.close();
   }
 
   public cancelSignature() {

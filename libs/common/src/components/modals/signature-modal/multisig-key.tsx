@@ -11,7 +11,7 @@ import { MultisigConfirmMessages } from "./multisig-confirm-messages";
 import { PhoneNumberBottomSheetContent } from "./phone-number-bottom-sheet-content";
 import { createUsableSigners, PhoneKeySigner } from "./signers";
 import { useEnv } from "../../../contexts";
-import { BottomSheet } from "../../bottom-sheet";
+import { BottomSheet, BottomSheetNew } from "../../bottom-sheet";
 import { CheckIcon } from "../../icons";
 import { Key } from "../../multisig-settings";
 
@@ -31,7 +31,7 @@ export const SignatureModalMultisigKey =
     multisigKey,
     safeSpendLimitExceeded,
   }) {
-    const phoneNumberBottomSheetRef = useRef<BottomSheet>(null);
+    const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
     const env = useEnv();
 
     const usableSigners = useQuery({
@@ -40,7 +40,9 @@ export const SignatureModalMultisigKey =
         return await createUsableSigners({
           multisigKey,
           demoMode: interaction.payload.demoMode,
-          bottomSheetRef: phoneNumberBottomSheetRef,
+          openBottomSheet: () => {
+            setBottomSheetOpen(true);
+          },
           env,
         });
       },
@@ -65,6 +67,9 @@ export const SignatureModalMultisigKey =
           return;
         }
         try {
+          if (key.type === KeyType.Phone) {
+            setBottomSheetOpen(true);
+          }
           await addSigner(signer);
         } catch (e) {
           // noop
@@ -94,23 +99,26 @@ export const SignatureModalMultisigKey =
       <MultisigConfirmMessages
         footer={
           phoneKeyPayload ? (
-            <BottomSheet
-              bottomSheetRef={phoneNumberBottomSheetRef}
+            <BottomSheetNew
+              open={bottomSheetOpen}
               onClose={() => {
                 phoneKeyPayload.signer.cancelSignature();
+                setBottomSheetOpen(false);
               }}
             >
               <PhoneNumberBottomSheetContent
                 phoneNumber={phoneKeyPayload.key.payload.phoneNumber}
                 securityQuestion={phoneKeyPayload.key.payload.securityQuestion}
                 onRequest={async (securityAnswer) => {
+                  setBottomSheetOpen(true);
                   await phoneKeyPayload.signer.requestSignature(securityAnswer);
                 }}
                 onConfirm={async (key) => {
                   await phoneKeyPayload.signer.confirmSignature(key);
+                  setBottomSheetOpen(false);
                 }}
               />
-            </BottomSheet>
+            </BottomSheetNew>
           ) : null
         }
         threshold={multisigKey.threshold}

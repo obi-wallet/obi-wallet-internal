@@ -1,19 +1,17 @@
 import { useTheme } from "@emotion/react";
 import type BottomSheetType from "@gorhom/bottom-sheet";
-import type { BottomSheetProps as BaseBottomSheetProps } from "@gorhom/bottom-sheet";
 import type { BottomSheetTextInputProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetTextInput/types";
-import type { BottomSheetViewProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetView/types";
 import { observer } from "mobx-react-lite";
 import {
   createContext,
-  forwardRef,
   MutableRefObject,
   ReactNode,
   Ref,
   useContext,
 } from "react";
 import Sheet from "react-modal-sheet";
-import { StyleProp, ViewStyle } from "react-native";
+// eslint-disable-next-line no-restricted-imports
+import { TextInput } from "react-native";
 import { FullWindowOverlay } from "react-native-screens";
 import warning from "tiny-warning";
 
@@ -74,21 +72,7 @@ export const BottomSheet = observer<BottomSheetProps>(function BottomSheet() {
 });
 
 export const BottomSheetTextInput = observer<BottomSheetTextInputProps>(
-  function BottomSheetTextInput() {
-    warning(false, "BottomSheetTextInput not implemented for web");
-    return null;
+  function BottomSheetTextInput(props) {
+    return <TextInput {...props} />;
   }
 );
-
-export interface BottomSheetBackdropProps {
-  onPress: () => void;
-  style?: StyleProp<ViewStyle>;
-  visible: boolean;
-}
-
-export const BottomSheetBackdrop = observer(function BottomSheetBackdrop(
-  _: BottomSheetBackdropProps
-) {
-  warning(false, "BottomSheetBackdrop not implemented for web");
-  return null;
-});
