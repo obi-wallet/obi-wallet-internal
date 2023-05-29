@@ -5,6 +5,7 @@ export * from "./keys";
 export * from "./lookup-proxy-wallets";
 export * from "./receive";
 export * from "./recover-wallet";
+export * from "./select-recovery-method";
 export * from "./send";
 export * from "./settings";
 export * from "./stake";

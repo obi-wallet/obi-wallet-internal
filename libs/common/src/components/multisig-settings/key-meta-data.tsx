@@ -82,6 +82,13 @@ export function useKeyMetaData() {
       }),
       Icon: EmailKeyIcon,
     },
+    [KeyType.EmailRecovery]: {
+      label: intl.formatMessage({
+        id: "settings.multisig.option.emailkey",
+        defaultMessage: "Email Recovery Key",
+      }),
+      Icon: EmailKeyIcon,
+    },
     [ComingSoonKeyType.Telegram]: {
       label: "Telegram Key",
       Icon: TelegramKeyIcon as ComponentType<SvgProps>,

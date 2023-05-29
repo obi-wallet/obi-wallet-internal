@@ -113,12 +113,12 @@ export const Lookup = observer(function Lookup({
               {wallets.length > 0 ? (
                 <FormattedMessage
                   id="recovery.choosewallet.subtext"
-                  defaultMessage="We found the following Obi Wallets associated with your phone number and security answer. Select the one you want to recover."
+                  defaultMessage="We found the following Obi Wallets associated with your recovery key. Select the one you want to recover."
                 />
               ) : (
                 <FormattedMessage
                   id="recovery.choosewallet.subtextnone"
-                  defaultMessage="We found no Obi Wallets associated with your phone number and security answer. Please try a different combination."
+                  defaultMessage="We found no Obi Wallets associated with your recovery key. Please try a different combination."
                 />
               )}
             </Text>

@@ -14,6 +14,7 @@ import {
   KeyRoute,
   KeyStackParamList,
   OnboardingRoute,
+  RecoverFrom,
   SettingsRoute,
   useRootNavigation,
 } from "../../../../router";
@@ -53,7 +54,10 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
               navigation.navigate(SettingsRoute.MultisigSettings);
               break;
             case KeyFlow.RecoverWallet:
-              navigation.navigate(OnboardingRoute.LookupProxyWallets, params);
+              navigation.navigate(OnboardingRoute.LookupProxyWallets, {
+                ...params,
+                recoverFrom: RecoverFrom.Phone,
+              });
               break;
           }
         }}

@@ -1,7 +1,6 @@
-import { KeyFlow } from "@obi-wallet/common";
+import { EmailKey, EmailKeyProps, KeyFlow } from "@obi-wallet/common";
 
 import { mockAction, MultisigDraft } from "../../src/fixture-helpers";
-import { EmailKey, EmailKeyProps } from "../../src/screens/keys/email";
 
 function renderFlavor(flow: EmailKeyProps["flow"]) {
   return (

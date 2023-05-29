@@ -1,4 +1,6 @@
 import { useTheme } from "@emotion/react";
+import { faCog } from "@fortawesome/free-solid-svg-icons/faCog";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useState } from "react";
@@ -38,21 +40,27 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
 
     const keyMetaData = useKeyMetaData();
 
-    function getKey(
-      type: KeyType
-    ): Key & { activated: boolean; disabled: boolean } {
+    function getKey(type: KeyType): Key {
       const activated = multisigKey.hasKeyOfType(type);
-      const disabled = false;
+      const key = multisigKey.getKeyOfType(type);
+
+      const getIcon = () => {
+        if (activated) {
+          return key?.isUsable ? <CheckIcon /> : <WarningIcon />;
+        }
+        return <FontAwesomeIcon icon={faCog} style={{ color: "white" }} />;
+      };
 
       return {
         type,
-        activated,
-        disabled,
-        right: activated ? <CheckIcon /> : <WarningIcon />,
+        right: getIcon(),
         onPress: () => {
-          // triggerBottomSheet(0);
           setSelectedType(type);
         },
+        ...(activated &&
+          !key?.isUsable && {
+            description: "Setup required",
+          }),
       };
     }
 

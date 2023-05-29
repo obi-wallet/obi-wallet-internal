@@ -41,7 +41,7 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
         {...params}
         onSubmit={() => {
           if (params.flow !== KeyFlow.CreateWallet) {
-            navigation.navigate(KeyRoute.PhoneKeyRequest, params);
+            navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
             return;
           }
           const { requiredKeys } = configStore.config;

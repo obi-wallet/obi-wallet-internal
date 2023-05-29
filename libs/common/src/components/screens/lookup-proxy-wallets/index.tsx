@@ -14,8 +14,10 @@ import invariant from "tiny-invariant";
 import { Lookup } from "./lookup";
 import { useStore } from "../../../contexts";
 import {
+  KeyRoute,
   OnboardingRoute,
   OnboardingStackParamList,
+  RecoverFrom,
   useRootNavigation,
 } from "../../../router";
 
@@ -36,14 +38,20 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
       id: params.draftId,
     });
 
-    const phoneKey = draft.value.getUsableKeyOfType(KeyType.Phone);
+    const usableKey = draft.value.getUsableKeyOfType(
+      params.recoverFrom === RecoverFrom.Email
+        ? KeyType.EmailRecovery
+        : KeyType.Phone
+    );
+    invariant(usableKey, "No usable key found");
+    const publicKey = usableKey.payload.publicKey.value;
 
-    invariant(phoneKey, "Phone key is required");
+    if (!navigation.isFocused()) return null;
 
     return (
       <Lookup
         chainId={draft.value.chainId}
-        publicKey={phoneKey.publicKey.value}
+        publicKey={publicKey}
         onCancel={() => {
           navigation.goBack();
         }}
@@ -52,9 +60,15 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
           const recoveredPhoneKey = draft.value.getUsableKeyOfType(
             KeyType.Phone
           );
+          const recoveredEmailKey = draft.value.getUsableKeyOfType(
+            KeyType.EmailRecovery
+          );
 
           invariant(newDeviceKey, "Device key is required");
-          invariant(recoveredPhoneKey, "Phone key is required");
+          invariant(
+            recoveredPhoneKey || recoveredEmailKey,
+            "Phone or email key is required"
+          );
 
           const serializedData: Serialized<MultisigWallet>["data"] = {
             chain: draft.value.chainId,
@@ -72,20 +86,29 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
                       };
                     }
                     case KeyType.Phone:
-                      invariant(
-                        R.equals(
-                          recoveredPhoneKey.payload.publicKey,
-                          key.publicKey
-                        ),
-                        "Recovered phone key must match the one in the proxy wallet"
-                      );
-                      return {
-                        type: KeyType.Phone,
-                        payload: {
-                          ...recoveredPhoneKey.payload,
-                          publicKey: key.publicKey,
-                        },
-                      };
+                      if (recoveredPhoneKey) {
+                        invariant(
+                          R.equals(
+                            recoveredPhoneKey.payload.publicKey,
+                            key.publicKey
+                          ),
+                          "Recovered phone key must match the one in the proxy wallet"
+                        );
+                        return {
+                          type: KeyType.Phone,
+                          payload: {
+                            ...recoveredPhoneKey.payload,
+                            publicKey: key.publicKey,
+                          },
+                        };
+                      } else {
+                        return {
+                          payload: {
+                            type: key.type,
+                            publicKey: key.publicKey,
+                          },
+                        };
+                      }
                     case KeyType.Social:
                       return {
                         type: KeyType.Social,
@@ -102,6 +125,26 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
                         },
                       };
                     case KeyType.Email:
+                      if (
+                        recoveredEmailKey &&
+                        usableKey?.type === KeyType.EmailRecovery
+                      ) {
+                        return {
+                          type: KeyType.EmailRecovery,
+                          payload: {
+                            publicKey: key.publicKey,
+                            privateKey: usableKey.payload.privateKey,
+                          },
+                        };
+                      } else {
+                        return {
+                          payload: {
+                            type: key.type,
+                            publicKey: key.publicKey,
+                          },
+                        };
+                      }
+                    default:
                       return {
                         payload: {
                           type: key.type,
@@ -125,17 +168,32 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
             currentAccount: null,
           };
 
-          const newOwner = ObservableMultisigKey.create(
-            serializedData.chain,
-            serializedData.owner
-          );
-          draft.commit({ original: newOwner });
-          draft.value.setDeviceKey(newDeviceKey.payload.publicKey);
+          try {
+            const currentOwner = ObservableMultisigKey.create(
+              serializedData.chain,
+              serializedData.owner
+            );
 
-          navigation.navigate(OnboardingRoute.RecoverWallet, {
-            ...params,
-            serializedData,
-          });
+            draft.commit({ original: currentOwner });
+            const newOwner = draft.value;
+            draft.value.setDeviceKey(newDeviceKey.payload.publicKey);
+            if (recoveredEmailKey) {
+              newOwner.removeKeyOfType(KeyType.EmailRecovery);
+
+              navigation.navigate(KeyRoute.EmailKey, {
+                ...params,
+                serializedData,
+              });
+              return;
+            }
+
+            navigation.navigate(OnboardingRoute.RecoverWallet, {
+              ...params,
+              serializedData,
+            });
+          } catch (e) {
+            console.log(e);
+          }
         }}
       />
     );

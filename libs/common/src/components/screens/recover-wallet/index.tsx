@@ -112,7 +112,6 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
 
 export interface RecoverWalletProps {
   draftId: string;
-
   onSubmit(): Promise<void>;
   onAddSocial(): void;
   onAddNfc(): void;

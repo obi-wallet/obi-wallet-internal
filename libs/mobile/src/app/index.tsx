@@ -2,12 +2,14 @@ import { useTheme } from "@emotion/react";
 import { PortalHost } from "@gorhom/portal";
 import {
   CreateWalletScreen,
+  EmailRecoveryScreen,
   LookupProxyWalletsScreen,
   OnboardingRoute,
   ReceiveScreen,
   RecoverWalletScreen,
   RootRoute,
   RootStack,
+  SelectRecoveryMethodScreen,
   SendScreen,
   Text,
   UpdatingAppBundleAnimation,
@@ -167,6 +169,14 @@ export const StateRenderer = observer(function StateRenderer() {
         <RootStack.Screen
           name={OnboardingRoute.RecoverWallet}
           component={RecoverWalletScreen}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.SelectRecoveryMethod}
+          component={SelectRecoveryMethodScreen}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.EmailRecovery}
+          component={EmailRecoveryScreen}
         />
       </RootStack.Group>
     );

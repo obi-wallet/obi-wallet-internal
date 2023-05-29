@@ -3,6 +3,7 @@ import {
   CreateWalletScreen,
   DeviceKeyScreen,
   EmailKeyScreen,
+  EmailRecoveryScreen,
   HomeScreen,
   KeyRoute,
   LookupProxyWalletsScreen,
@@ -14,6 +15,7 @@ import {
   RecoverWalletScreen,
   RootRoute,
   RootStack,
+  SelectRecoveryMethodScreen,
   SendScreen,
   settingsScreens,
   SocialKeyScreen,
@@ -72,6 +74,14 @@ export const StateRenderer = observer(function StateRenderer() {
         <RootStack.Screen
           name={OnboardingRoute.RecoverWallet}
           component={RecoverWalletScreen}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.SelectRecoveryMethod}
+          component={SelectRecoveryMethodScreen}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.EmailRecovery}
+          component={EmailRecoveryScreen}
         />
       </RootStack.Group>
     );
