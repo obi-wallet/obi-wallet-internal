@@ -12,7 +12,7 @@ export interface PhoneOneTimeCodeInputProps {
   value: string;
   phoneNumberMightBeIncorrect: boolean;
   setValue(value: string): void;
-  onResend(): Promise<void>;
+  onResend(voice: boolean): Promise<void>;
 }
 
 export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
@@ -24,9 +24,10 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
     onResend,
   }) {
     const intl = useIntl();
+    const waitTime = 45;
 
     const [resendButtonDisabled, setResendButtonDisabled] = useState(false);
-    const [resendCounter, setResendCounter] = useState(0);
+    const [resendCounter, setResendCounter] = useState(waitTime);
     const [resendButtonHit, setResendButtonHit] = useState(false);
 
     useEffect(() => {
@@ -59,47 +60,53 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
         />
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
+            flexDirection: "column",
+            alignItems: "flex-start",
             marginTop: 24,
+            width: "100%",
           }}
         >
           <Text style={{ color: "rgba(246, 245, 255, 0.6)", fontSize: 12 }}>
             <FormattedMessage
               id="onboarding3.noresponselabel"
-              defaultMessage="Didn’t receive a response?"
+              defaultMessage="Didn't receive a response?"
             />
           </Text>
+          {resendCounter === 0 ? (
+            <View style={{ flexDirection: "row", marginTop: 10 }}>
+              <InlineButton
+                label={`${intl.formatMessage({
+                  id: "onboarding3.sendagain",
+                })} SMS`}
+                onPress={async () => {
+                  setResendCounter(waitTime);
+                  setResendButtonHit(true);
 
-          <InlineButton
-            label={intl.formatMessage({ id: "onboarding3.sendagain" })}
-            onPress={async () => {
-              setResendCounter(20);
-              setResendButtonHit(true);
+                  setValue("");
 
-              setValue("");
+                  await onResend(false);
+                }}
+                disabled={resendButtonDisabled}
+              />
+              <InlineButton
+                label="Get a voice call instead"
+                onPress={async () => {
+                  setResendCounter(waitTime);
+                  setResendButtonHit(true);
 
-              await onResend();
-            }}
-            disabled={resendButtonDisabled}
-          />
+                  setValue("");
+
+                  await onResend(true);
+                }}
+                disabled={resendButtonDisabled}
+              />
+            </View>
+          ) : (
+            <Text style={{ color: "rgba(246, 245, 255, 0.6)", fontSize: 12 }}>
+              Wait {resendCounter} seconds to request a new code
+            </Text>
+          )}
         </View>
-
-        {resendButtonDisabled ? (
-          <Text
-            style={{
-              color: "rgba(246, 245, 255, 0.6)",
-              fontSize: 12,
-              marginVertical: 10,
-            }}
-          >
-            <FormattedMessage
-              id="onboarding3.sendagain.info.counter"
-              defaultMessage="Your Magic SMS has been resent! Give it some time to arrive. You can try again in "
-            />
-            &nbsp;{resendCounter} {resendCounter > 0 ? "seconds" : "second"}.
-          </Text>
-        ) : null}
 
         {resendButtonHit && phoneNumberMightBeIncorrect ? (
           <Text
@@ -111,9 +118,9 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
           >
             <FormattedMessage
               id="onboarding3.sendagain.info.checknumber"
-              defaultMessage="If you haven't received the SMS please check if your phone number is correct:"
+              defaultMessage="If you haven't received the Obi magic code please check if your phone number is correct:"
             />{" "}
-            {phoneNumber}.
+            <Text style={{ fontWeight: "bold" }}>{phoneNumber}.</Text>
           </Text>
         ) : null}
       </>

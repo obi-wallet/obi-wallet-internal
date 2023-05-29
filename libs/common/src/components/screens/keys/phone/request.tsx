@@ -245,9 +245,10 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                 onPress={handleSubmit(async (data) => {
                   try {
                     const twilioClient = getTwilioClient({ demoMode, env });
-                    await twilioClient.sendPublicKeyTextMessage({
+                    await twilioClient.requestPublicKeyMagicCode({
                       ...data,
                       chainId,
+                      voice: false,
                     });
                     onSubmit(data);
                   } catch (e) {

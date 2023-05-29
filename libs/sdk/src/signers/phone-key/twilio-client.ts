@@ -12,35 +12,39 @@ export interface TwilioConfig {
 }
 
 export interface TwilioClientInterface {
-  sendPublicKeyTextMessage({
+  requestPublicKeyMagicCode({
     phoneNumber,
     securityAnswer,
     chainId,
+    voice,
   }: {
     phoneNumber: string;
     securityAnswer: string;
     chainId: ChainId;
+    voice: boolean;
   }): Promise<void>;
 
-  parsePublicKeyTextMessageResponse({
+  parsePublicKeyMagicCodeResponse({
     key,
   }: {
     key: string;
   }): Promise<Secp256k1PublicKey>;
 
-  sendSignatureTextMessage({
+  requestSignatureMagicCode({
     phoneNumber,
     securityAnswer,
     message,
     chainId,
+    voice,
   }: {
     phoneNumber: string;
     securityAnswer: string;
     message: Uint8Array;
     chainId: ChainId;
+    voice: boolean;
   }): Promise<void>;
 
-  parseSignatureTextMessageResponse({
+  parseSignatureMagicCodeResponse({
     key,
     chainId,
   }: {
@@ -54,7 +58,7 @@ export class DemoModeTwilioClient implements TwilioClientInterface {
 
   public constructor(protected keyPair: Secp256k1KeyPair) {}
 
-  public async sendPublicKeyTextMessage(_: {
+  public async requestPublicKeyMagicCode(_: {
     phoneNumber: string;
     securityAnswer: string;
     chainId: ChainId;
@@ -62,11 +66,11 @@ export class DemoModeTwilioClient implements TwilioClientInterface {
     return;
   }
 
-  public async parsePublicKeyTextMessageResponse(_: { key: string }) {
+  public async parsePublicKeyMagicCodeResponse(_: { key: string }) {
     return this.keyPair.publicKey;
   }
 
-  public async sendSignatureTextMessage({
+  public async requestSignatureMagicCode({
     message,
   }: {
     phoneNumber: string;
@@ -78,7 +82,7 @@ export class DemoModeTwilioClient implements TwilioClientInterface {
     return;
   }
 
-  public async parseSignatureTextMessageResponse({
+  public async parseSignatureMagicCodeResponse({
     chainId,
   }: {
     key: string;
@@ -98,23 +102,26 @@ export class DemoModeTwilioClient implements TwilioClientInterface {
 export class TwilioClient implements TwilioClientInterface {
   public constructor(protected twilioConfig: TwilioConfig) {}
 
-  public async sendPublicKeyTextMessage({
+  public async requestPublicKeyMagicCode({
     phoneNumber,
     securityAnswer,
     chainId,
+    voice,
   }: {
     phoneNumber: string;
     securityAnswer: string;
     chainId: ChainId;
+    voice: boolean;
   }) {
     await this.encryptAndSendMessage({
       message: `pub:${securityAnswer}`,
       phoneNumber,
       chainId,
+      voice,
     });
   }
 
-  public async parsePublicKeyTextMessageResponse({ key }: { key: string }) {
+  public async parsePublicKeyMagicCodeResponse({ key }: { key: string }) {
     const decrypted = await this.fetchAndDecryptResponse(key);
 
     if (!decrypted?.startsWith("pubkey:")) {
@@ -127,16 +134,18 @@ export class TwilioClient implements TwilioClientInterface {
     };
   }
 
-  public async sendSignatureTextMessage({
+  public async requestSignatureMagicCode({
     phoneNumber,
     securityAnswer,
     message,
     chainId,
+    voice,
   }: {
     phoneNumber: string;
     securityAnswer: string;
     message: Uint8Array;
     chainId: ChainId;
+    voice: boolean;
   }) {
     await this.encryptAndSendMessage({
       message: `sign:${securityAnswer}:${Buffer.from(message.buffer).toString(
@@ -144,10 +153,11 @@ export class TwilioClient implements TwilioClientInterface {
       )}`,
       phoneNumber,
       chainId,
+      voice,
     });
   }
 
-  public async parseSignatureTextMessageResponse({ key }: { key: string }) {
+  public async parseSignatureMagicCodeResponse({ key }: { key: string }) {
     const decrypted = await this.fetchAndDecryptResponse(key);
 
     if (!decrypted?.startsWith("signature::")) {
@@ -162,19 +172,24 @@ export class TwilioClient implements TwilioClientInterface {
     message,
     phoneNumber,
     chainId,
+    voice,
   }: {
     message: string;
     phoneNumber: string;
     chainId: ChainId;
+    voice: boolean;
   }) {
     const body = await this.getMessageBody(`${message}:${chainId}`);
     const formData = new FormData();
     const { twilioPhoneNumbers, twilioUrl } = Chain.information(chainId);
     const twilioPhoneNumber =
       twilioPhoneNumbers[Math.floor(Math.random() * twilioPhoneNumbers.length)];
-    formData.append("To", twilioPhoneNumber);
-    formData.append("From", phoneNumber);
-    formData.append("Parameters", JSON.stringify({ trigger_body: body }));
+    formData.append("To", phoneNumber);
+    formData.append("From", twilioPhoneNumber);
+    formData.append(
+      "Parameters",
+      JSON.stringify({ trigger_body: { body, voice } })
+    );
 
     await fetch(twilioUrl, {
       body: formData,

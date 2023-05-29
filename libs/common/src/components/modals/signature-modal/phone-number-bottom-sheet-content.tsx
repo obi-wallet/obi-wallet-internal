@@ -19,7 +19,7 @@ export interface PhoneNumberBottomSheetContentProps {
   phoneNumber: string;
   securityQuestion: string;
 
-  onRequest(securityAnswer: string): Promise<void>;
+  onRequest(data: { voice: boolean; securityAnswer: string }): Promise<void>;
 
   onConfirm(key: string): Promise<void>;
 }
@@ -100,8 +100,8 @@ export const PhoneNumberBottomSheetContent =
                 phoneNumberMightBeIncorrect={false}
                 value={key}
                 setValue={setKey}
-                onResend={async () => {
-                  await onRequest(securityAnswer);
+                onResend={async (voice) => {
+                  await onRequest({ securityAnswer, voice });
                 }}
               />
             </View>
@@ -157,7 +157,7 @@ export const PhoneNumberBottomSheetContent =
               setMagicButtonDisabledDoubleclick(true);
 
               try {
-                await onRequest(securityAnswer);
+                await onRequest({ securityAnswer, voice: false });
                 setSentMessage(true);
                 setMagicButtonDisabledDoubleclick(false);
               } catch (e) {

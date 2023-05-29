@@ -53,7 +53,7 @@ export const MultisigDraft = {
           publicKey: await getTwilioClient({
             demoMode: true,
             env,
-          }).parsePublicKeyTextMessageResponse({
+          }).parsePublicKeyMagicCodeResponse({
             key: "",
           }),
           phoneNumber: "+1234567890",

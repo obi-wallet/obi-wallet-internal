@@ -151,11 +151,18 @@ export class PhoneKeySigner extends Signer {
     return this.signer.publicKey;
   }
 
-  public async requestSignature(securityAnswer: string) {
+  public async requestSignature({
+    securityAnswer,
+    voice,
+  }: {
+    securityAnswer: string;
+    voice: boolean;
+  }) {
     await this.signer.requestSignature({
       chainId: this.chainId,
       securityAnswer,
       twilioClient: this.twilioClient,
+      voice,
     });
   }
 
