@@ -46,6 +46,14 @@ jest.mock("react-native-qrcode-scanner", () => {
   return {};
 });
 
+jest.mock("react-native-animatable", () => {
+  return {};
+});
+
+jest.mock("react-native-modal", () => {
+  return {};
+});
+
 jest.mock("react-native-safe-area-context", () => mockSafeAreaContext);
 
 jest.mock("react-native", () => {

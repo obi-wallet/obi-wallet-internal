@@ -47,4 +47,8 @@ export const healthChecks: Record<
     types: [],
     checks: {},
   },
+  "osmo-test-5": {
+    types: [],
+    checks: {},
+  },
 };

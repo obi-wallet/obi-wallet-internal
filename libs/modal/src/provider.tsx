@@ -4,7 +4,7 @@ import {
   Env,
   Provider as OriginalProvider,
 } from "@obi-wallet/common";
-import { obiMobileConfig } from "@obi-wallet/config";
+import { obiModalConfig } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useRef } from "react";
 
@@ -21,7 +21,7 @@ export const Provider = observer<{ children: ReactNode; env: Env }>(
         }}
         ref={containerRef}
       >
-        <OriginalProvider config={obiMobileConfig} env={env}>
+        <OriginalProvider config={obiModalConfig} env={env}>
           <BottomSheetContainerContext.Provider value={containerRef}>
             {children}
             <PortalHost name="modals" />
