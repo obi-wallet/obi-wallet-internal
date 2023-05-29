@@ -84,6 +84,7 @@
     "jscrypto": "^1.0.3",
     "long": "^5.2.3",
     "lottie-ios": "~3.4.4",
+    "lottie-react": "^2.4.0",
     "lottie-react-native": "^5.1.5",
     "luxon": "^3.3.0",
     "mobx": "^6.9.0",

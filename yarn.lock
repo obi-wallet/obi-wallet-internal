@@ -16658,6 +16658,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lottie-react@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "lottie-react@npm:2.4.0"
+  dependencies:
+    lottie-web: ^5.10.2
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: e9ea4a89be90a29bde4a83956f76a80d1f8031882f18ea38ef5271d2aafd8e68348ae6297f185ed85b149ca4896fe33aee7faf9780b88a1b289b8e146f477448
+  languageName: node
+  linkType: hard
+
+"lottie-web@npm:^5.10.2":
+  version: 5.11.0
+  resolution: "lottie-web@npm:5.11.0"
+  checksum: 4f9c86c7cf0280ccb4380b826213719122a227f50e27e5d6943dff2f05dfe4e569bd8a358a0cb9c96cbdf62f9d70b883b5cb5ec50ecb7a1eed794c5ce5a1e38a
+  languageName: node
+  linkType: hard
+
 "lowercase-keys@npm:^2.0.0":
   version: 2.0.0
   resolution: "lowercase-keys@npm:2.0.0"
@@ -18464,6 +18483,7 @@ __metadata:
     jscrypto: ^1.0.3
     long: ^5.2.3
     lottie-ios: ~3.4.4
+    lottie-react: ^2.4.0
     lottie-react-native: ^5.1.5
     luxon: ^3.3.0
     metro: 0.73.9

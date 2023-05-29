@@ -30,6 +30,7 @@
     "@terra-money/feather.js": "*",
     "fuse.js": "*",
     "isomorphic-unfetch": "*",
+    "lottie-react": "*",
     "lottie-react-native": "*",
     "luxon": "*",
     "mobx": "*",
