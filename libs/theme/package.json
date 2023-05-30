@@ -1,10 +1,14 @@
 {
   "name": "@obi-wallet/theme",
   "version": "0.0.1",
+  "repository": "https://github.com/obi-wallet/obi-wallet-internal.git",
   "type": "commonjs",
   "dependencies": {},
   "peerDependencies": {
     "@emotion/react": "*",
     "react-native": "*"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }

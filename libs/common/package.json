@@ -1,6 +1,7 @@
 {
   "name": "@obi-wallet/common",
   "version": "0.0.1",
+  "repository": "https://github.com/obi-wallet/obi-wallet-internal.git",
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "*",
     "@cosmjs/crypto": "*",
@@ -69,5 +70,8 @@
     "@react-navigation/native": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }

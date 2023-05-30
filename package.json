@@ -13,6 +13,7 @@
     "lint:eslint": " yarn _runAll --target=lint",
     "lint:prettier": "prettier --check .",
     "lint:tsc": "yarn _runAll --target=tsc",
+    "publish-libs": "node scripts/publish-libs.mjs",
     "setup": "node scripts/setup.mjs",
     "test": "yarn _runAll --target=test"
   },

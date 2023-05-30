@@ -1,0 +1,17 @@
+name: GitHub Packages
+on:
+  push:
+    branches:
+      - feature/modal
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+      - run: yarn
+      - run: yarn publish-libs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

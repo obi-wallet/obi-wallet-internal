@@ -1,6 +1,7 @@
 {
   "name": "@obi-wallet/sdk",
   "version": "0.0.1",
+  "repository": "https://github.com/obi-wallet/obi-wallet-internal.git",
   "sideEffects": false,
   "dependencies": {
     "@keplr-wallet/cosmos": "*",
@@ -37,5 +38,8 @@
     "@terra-money/terra.proto": "*",
     "cosmjs-types": "*",
     "mobx": "*"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }
