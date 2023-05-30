@@ -46,6 +46,7 @@
     "react-native-country-picker-modal": "*",
     "react-native-device-info": "*",
     "react-native-dropdown-picker": "*",
+    "react-native-gesture-handler": "*",
     "react-native-haptic-feedback": "*",
     "react-native-keyboard-aware-scroll-view": "*",
     "react-native-keychain": "*",

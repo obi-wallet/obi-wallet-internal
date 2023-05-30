@@ -1,79 +1,86 @@
 //osmosis settings screen
+import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
-
 import { View } from "react-native-animatable";
-import {
-  Back,
-  SettingsRoute,
-  Text,
-  isSmallScreenNumber,
-  useStore,
-} from "@obi-wallet/common";
-
-import { useTheme } from "@emotion/react";
-import { Setting } from "./index";
 import { Switch } from "react-native-gesture-handler";
-import { TextInput } from "../../text-input";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export const OsmosisSettingsScreen = observer(({ navigation }) => {
-  const [spendLimit, setSpendLimit] = useState<string>("0");
-  const isObi = useStore().configStore.isObi();
-  const theme = useTheme();
-  return (
-    <SafeAreaView style={{ backgroundColor: theme.colors.background, flex: 1 }}>
-      <View
-        style={{
-          marginTop: isObi ? 10 : isSmallScreenNumber(10, 25),
-          paddingTop: isSmallScreenNumber(0, 32),
-          paddingBottom: 20,
-          flexDirection: "row",
-          alignItems: "center",
-        }}
+import { Setting } from ".";
+import { useStore } from "../../../contexts";
+import { isSmallScreenNumber } from "../../../helpers";
+import { RootRoute, RootStackParamList, SettingsRoute } from "../../../router";
+import { Back } from "../../back";
+import { TextInput } from "../../text-input";
+import { Text } from "../../typography";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+
+export type OsmosisSettingsScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  SettingsRoute.OsmosisSettings
+>;
+
+export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
+  function OsmosisSettingsScreen({ navigation }) {
+    const [spendLimit, setSpendLimit] = useState<string>("0");
+    const isObi = useStore().configStore.isObi();
+    const theme = useTheme();
+    return (
+      <SafeAreaView
+        style={{ backgroundColor: theme.colors.background, flex: 1 }}
       >
-        <View style={{ marginRight: -60, marginLeft: 10, zIndex: 2 }}>
-          <Back />
-        </View>
         <View
           style={{
+            marginTop: isObi ? 10 : isSmallScreenNumber(10, 25),
+            paddingTop: isSmallScreenNumber(0, 32),
+            paddingBottom: 20,
+            flexDirection: "row",
             alignItems: "center",
-            justifyContent: "center",
-            flex: 1,
           }}
         >
-          <Text
+          <View style={{ marginRight: -60, marginLeft: 10, zIndex: 2 }}>
+            <Back />
+          </View>
+          <View
             style={{
-              color: "#F6F5FF",
-              fontSize: isSmallScreenNumber(20, 24),
-              fontWeight: "600",
+              alignItems: "center",
+              justifyContent: "center",
+              flex: 1,
             }}
           >
-            Account Settings
-          </Text>
+            <Text
+              style={{
+                color: "#F6F5FF",
+                fontSize: isSmallScreenNumber(20, 24),
+                fontWeight: "600",
+              }}
+            >
+              Account Settings
+            </Text>
+          </View>
         </View>
-      </View>
-      <View style={{ flex: 1 }}>
-        <SessionKeySetting />
-        <SessionKeySpendLimitSetting
-          value={0}
-          onChange={function (value: string): void {
-            throw new Error("Function not implemented.");
-          }} // onChange={(value: number) => {
-          //   setSpendLimit(value);
-          // }}
-          // value={spendLimit}
-        />
-        {/* <SlippageLimitSetting /> */}
-        <Setting
-          title={"Whitelisted LPs"}
-          subtitle={"Manage whitelisted LPs"}
-          onPress={() => navigation.navigate(SettingsRoute.WhitelistedLPs)}
-        ></Setting>
-      </View>
-    </SafeAreaView>
-  );
-});
+        <View style={{ flex: 1 }}>
+          <SessionKeySetting />
+          <SessionKeySpendLimitSetting
+            value={0}
+            onChange={function (value: string): void {
+              throw new Error("Function not implemented.");
+            }} // onChange={(value: number) => {
+            //   setSpendLimit(value);
+            // }}
+            // value={spendLimit}
+          />
+          {/* <SlippageLimitSetting /> */}
+          <Setting
+            title="Whitelisted LPs"
+            subtitle="Manage whitelisted LPs"
+            onPress={() => navigation.navigate(SettingsRoute.WhitelistedLPs)}
+          ></Setting>
+        </View>
+      </SafeAreaView>
+    );
+  }
+);
 interface SessionKeySpendLimitSettingProps {
   value: number;
   onChange: (value: string) => void;
@@ -173,7 +180,7 @@ const SessionKeySetting = observer(function SessionKeySetting() {
       title="Session Key"
       subtitle="Enabling session key will only require you to sign one transaction when connecting your Osmosis smart account."
     >
-      <Switch thumbColor={"#437DFF"} />
+      <Switch thumbColor="#437DFF" />
     </Setting>
   );
 });

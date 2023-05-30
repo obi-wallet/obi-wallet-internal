@@ -17,15 +17,13 @@ import { Linking, ScrollView, StyleSheet, Text, View } from "react-native";
 import codePush, { LocalPackage } from "react-native-code-push";
 import { SvgProps } from "react-native-svg";
 import { useAsyncEffect } from "rooks";
-import CogIcon from "../home/assets/obi-settings-active.svg";
+
 import MultiSigIcon from "./assets/edit.svg";
 import HelpAndSupport from "./assets/headset.svg";
 import LogoutIcon from "./assets/power-red.svg";
 // import { HealthChecksScreen } from "./health-checks";
 import { KeysConfigScreen } from "./keys-config";
-
-import { OsmosisSettingsScreen } from "../../../../../common/src/components/screens/settings/osmosis-settings";
-import { WhitelistedLPsScreen } from "../../../../../common/src/components/screens/settings/whitelisted-lps";
+import CogIcon from "../home/assets/obi-settings-active.svg";
 
 export const SettingsScreen = observer(function SettingsScreen() {
   const { configStore, walletsStore } = useStore();
@@ -125,11 +123,11 @@ export const SettingsScreen = observer(function SettingsScreen() {
             />
             <Setting
               Icon={CogIcon}
-              title={"Account Settings"}
-              subtitle={"Manage your account settings."}
+              title="Account Settings"
+              subtitle="Manage your account settings."
               onPress={() => navigation.navigate(SettingsRoute.OsmosisSettings)}
             />
-            {/* 
+            {/*
             {configStore.isFeatureEnabled(Feature.HealthChecks) ? (
               <Setting
                 Icon={MultiSigIcon}
@@ -277,7 +275,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
 });
 
 interface SettingProps {
-  Icon?: FC<SvgProps> | JSX.Element;
+  Icon?: FC<SvgProps>;
   title: string;
   subtitle: string;
   onPress?: () => void;
@@ -409,24 +407,24 @@ export const settingsScreens = () => {
         options={{ headerShown: false }}
       />
 
-      <RootStack.Screen
-        name={SettingsRoute.MultisigHealthChecks}
-        key={SettingsRoute.MultisigHealthChecks}
-        component={HealthChecksScreen}
-        options={{ headerShown: false }}
-      />
-      <RootStack.Screen
-        name={SettingsRoute.OsmosisSettings}
-        key={SettingsRoute.OsmosisSettings}
-        component={OsmosisSettingsScreen}
-        options={{ headerShown: false }}
-      />
-      <RootStack.Screen
-        name={SettingsRoute.WhitelistedLPs}
-        key={SettingsRoute.WhitelistedLPs}
-        component={WhitelistedLPsScreen}
-        options={{ headerShown: false }}
-      />
+      {/*<RootStack.Screen*/}
+      {/*  name={SettingsRoute.MultisigHealthChecks}*/}
+      {/*  key={SettingsRoute.MultisigHealthChecks}*/}
+      {/*  component={HealthChecksScreen}*/}
+      {/*  options={{ headerShown: false }}*/}
+      {/*/>*/}
+      {/*<RootStack.Screen*/}
+      {/*  name={SettingsRoute.OsmosisSettings}*/}
+      {/*  key={SettingsRoute.OsmosisSettings}*/}
+      {/*  component={OsmosisSettingsScreen}*/}
+      {/*  options={{ headerShown: false }}*/}
+      {/*/>*/}
+      {/*<RootStack.Screen*/}
+      {/*  name={SettingsRoute.WhitelistedLPs}*/}
+      {/*  key={SettingsRoute.WhitelistedLPs}*/}
+      {/*  component={WhitelistedLPsScreen}*/}
+      {/*  options={{ headerShown: false }}*/}
+      {/*/>*/}
     </RootStack.Group>
   );
 };

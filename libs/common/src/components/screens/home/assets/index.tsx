@@ -25,6 +25,7 @@ import {
   useEnrichedBalances,
 } from "../../../../hooks";
 import { RootRoute, RootStackParamList } from "../../../../router";
+import { HomeBottomTabRoute } from "../../../../router";
 import { IconButton } from "../../../buttons";
 import {
   CoinIcon,
@@ -36,7 +37,6 @@ import {
 import { NetworkAccountPickerLayout } from "../../../network-account-picker-layout";
 import { RefreshableFlatList } from "../../../refreshable-flat-list";
 import { Text } from "../../../typography";
-import { HomeBottomTabRoute } from "../../../../router";
 
 export const Assets = observer(function Assets() {
   const theme = useTheme();

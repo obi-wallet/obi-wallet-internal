@@ -14,6 +14,8 @@ import {
 import { SvgProps } from "react-native-svg";
 
 import { MultisigSettingsScreen } from "./multisig-settings";
+import { OsmosisSettingsScreen } from "./osmosis-settings";
+import { WhitelistedLpsScreen } from "./whitelisted-lps";
 import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
 import {
@@ -22,6 +24,7 @@ import {
   SettingsRoute,
   useRootNavigation,
 } from "../../../router";
+import { Back } from "../../back";
 import { BrandToggle } from "../../brand-toggle";
 import {
   HelpAndSupportIcon,
@@ -30,9 +33,6 @@ import {
   ObiIcon,
   ObiSettingsActiveIcon,
 } from "../../icons";
-import { OsmosisSettingsScreen } from "./osmosis-settings";
-import { WhitelistedLPsScreen } from "./whitelisted-lps";
-import { Back } from "../../back";
 
 export const SettingsScreen = observer(function SettingsScreen() {
   const { configStore, walletsStore } = useStore();
@@ -129,8 +129,8 @@ export const SettingsScreen = observer(function SettingsScreen() {
             />
             <Setting
               Icon={ObiSettingsActiveIcon}
-              title={"Account Settings"}
-              subtitle={"Manage your account settings."}
+              title="Account Settings"
+              subtitle="Manage your account settings."
               onPress={() => navigation.navigate(SettingsRoute.OsmosisSettings)}
             />
             {configStore.isFeatureEnabled(Feature.HealthChecks) ? (
@@ -424,7 +424,7 @@ export const settingsScreens = () => {
       <RootStack.Screen
         name={SettingsRoute.WhitelistedLPs}
         key={SettingsRoute.WhitelistedLPs}
-        component={WhitelistedLPsScreen}
+        component={WhitelistedLpsScreen}
         options={{ headerShown: false }}
       />
     </RootStack.Group>
