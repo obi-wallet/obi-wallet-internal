@@ -26,7 +26,13 @@ import {
 } from "../../../../hooks";
 import { RootRoute, RootStackParamList } from "../../../../router";
 import { IconButton } from "../../../buttons";
-import { CoinIcon, ReceiveIcon, SendIcon, StakingIcon } from "../../../icons";
+import {
+  CoinIcon,
+  ObiSettingsActiveIcon,
+  ReceiveIcon,
+  SendIcon,
+  StakingIcon,
+} from "../../../icons";
 import { NetworkAccountPickerLayout } from "../../../network-account-picker-layout";
 import { RefreshableFlatList } from "../../../refreshable-flat-list";
 import { Text } from "../../../typography";
@@ -177,7 +183,36 @@ const BalanceAndActions = observer(function BalanceAndActions() {
             <FormattedMessage id="assets.receive" defaultMessage="Receive" />
           </Text>
         </View>
-        {configStore.isFeatureEnabled(Feature.Staking) && (
+
+        <View style={{ alignItems: "center" }}>
+          <TouchableHighlight
+            style={{
+              width: 56,
+              height: 56,
+              backgroundColor: isLoop ? "#100F1E" : "#437DFF",
+              borderRadius: isLoop ? 16 : 56,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onPress={() => navigation.navigate(RootRoute.Stake)}
+          >
+            <ObiSettingsActiveIcon />
+          </TouchableHighlight>
+          <Text
+            style={{
+              color: "#F6F5FF",
+              fontSize: 9,
+              fontWeight: "500",
+              marginTop: 10,
+              letterSpacing: 0.09,
+              textTransform: isLoop ? "uppercase" : "none",
+            }}
+          >
+            Settings
+          </Text>
+        </View>
+
+        {/* {configStore.isFeatureEnabled(Feature.Staking) && (
           <View style={{ alignItems: "center" }}>
             <TouchableHighlight
               style={{
@@ -205,7 +240,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               <FormattedMessage id="assets.staking" defaultMessage="Staking" />
             </Text>
           </View>
-        )}
+        )} */}
       </View>
     </View>
   );

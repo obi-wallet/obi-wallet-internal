@@ -61,10 +61,10 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
       style={{
         padding: 16,
         flexDirection: "row",
-        justifyContent: "space-between",
+        justifyContent: "flex-end",
       }}
     >
-      <View
+      {/* <View
         style={{
           backgroundColor: isObi ? "#272727" : "#16152D",
           alignSelf: "flex-start",
@@ -119,7 +119,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
             </Text>
           </View>
         </>
-      </View>
+      </View> */}
 
       <TouchableOpacity
         style={{
@@ -168,7 +168,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
 
   function getCurrentAccountName() {
     const account = wallet.currentAccount;
-
+    return "Osmosis Smart Account";
     if (account && account.type === "flex-account") {
       return account.meta.name || "Flex Account";
     } else if (account && account.type === "singlesig-wallet") {
