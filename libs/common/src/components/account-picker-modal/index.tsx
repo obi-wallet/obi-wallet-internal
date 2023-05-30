@@ -36,7 +36,6 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
     const { walletsStore, configStore } = useStore();
     const isObi = configStore.isObi();
     const theme = useTheme();
-    const onClose = useRef<() => void>();
 
     return (
       <BaseModal visible={visible}>
@@ -96,9 +95,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                       paddingHorizontal: 10,
                     }}
                     onPress={() => {
-                      onClose.current = () => {
-                        walletsStore.setCurrentWallet(wallet);
-                      };
+                      walletsStore.setCurrentWallet(wallet);
                       close();
                     }}
                   >
