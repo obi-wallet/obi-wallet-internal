@@ -148,7 +148,7 @@ export const TabNavigation = observer<TabNavigationProps>(
           return (
             <>
               <UpdateFooter />
-              <BottomTabBar {...props} />
+              {/* <BottomTabBar {...props} /> */}
             </>
           );
         }}

@@ -3,20 +3,36 @@ import { Brand, Feature } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
 import { FC } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Linking, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Linking,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SvgProps } from "react-native-svg";
 
 import { MultisigSettingsScreen } from "./multisig-settings";
 import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
-import { RootStack, SettingsRoute, useRootNavigation } from "../../../router";
+import {
+  HomeBottomTabRoute,
+  RootStack,
+  SettingsRoute,
+  useRootNavigation,
+} from "../../../router";
 import { BrandToggle } from "../../brand-toggle";
 import {
   HelpAndSupportIcon,
   LogoutIcon,
   MultisigIcon,
   ObiIcon,
+  ObiSettingsActiveIcon,
 } from "../../icons";
+import { OsmosisSettingsScreen } from "./osmosis-settings";
+import { WhitelistedLPsScreen } from "./whitelisted-lps";
+import { Back } from "../../back";
 
 export const SettingsScreen = observer(function SettingsScreen() {
   const { configStore, walletsStore } = useStore();
@@ -46,7 +62,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
             marginBottom: 10,
           }}
         >
-          <BrandToggle
+          {/* <BrandToggle
             style={{
               borderRadius: 32,
               marginRight: 10,
@@ -59,11 +75,16 @@ export const SettingsScreen = observer(function SettingsScreen() {
                 height: 64,
               }}
             />
-          </BrandToggle>
+          </BrandToggle> */}
+          <View style={{ marginHorizontal: 10 }}>
+            <Back
+              onPress={() => navigation.navigate(HomeBottomTabRoute.Assets)}
+            />
+          </View>
 
           <View style={{ flexDirection: "column" }}>
             <Heading>
-              Obi {isMultisigWallet ? <>Secure Multisig </> : null}Account
+              Osmosis {isMultisigWallet ? <>Secure Multisig </> : null}Account
             </Heading>
             {/*<Text style={styles.subHeading}>
               Profile picture, name and mail
@@ -105,6 +126,12 @@ export const SettingsScreen = observer(function SettingsScreen() {
               onPress={() =>
                 navigation.navigate(SettingsRoute.MultisigSettings)
               }
+            />
+            <Setting
+              Icon={ObiSettingsActiveIcon}
+              title={"Account Settings"}
+              subtitle={"Manage your account settings."}
+              onPress={() => navigation.navigate(SettingsRoute.OsmosisSettings)}
             />
             {configStore.isFeatureEnabled(Feature.HealthChecks) ? (
               <Setting
@@ -253,37 +280,56 @@ export const SettingsScreen = observer(function SettingsScreen() {
 });
 
 interface SettingProps {
-  Icon: FC<SvgProps>;
+  Icon?: FC<SvgProps>;
   title: string;
   subtitle: string;
   onPress?: () => void;
+  children?: React.ReactNode;
+  disableButton?: boolean;
 }
 
-const Setting = observer(function Setting({
+export const Setting = observer(function Setting({
   Icon,
   title,
   subtitle,
   onPress,
+  children,
+  disableButton,
 }: SettingProps) {
   const { configStore } = useStore();
   const brand = configStore.brand;
   const isLoop = configStore.isLoop();
-  return (
-    <SettingButton onPress={() => onPress && onPress()} brand={brand}>
-      <View
-        style={{
-          padding: 10,
-          backgroundColor: isLoop ? "#1D1C37" : "#437DFF",
-          alignSelf: "flex-start",
-          borderRadius: 12,
-        }}
-      >
-        <Icon fill={isLoop ? "#7B87A8" : "white"} />
+  const renderContent = () => (
+    <>
+      <View style={{ flex: 1, flexDirection: "row" }}>
+        {Icon && (
+          <View
+            style={{
+              padding: 10,
+              backgroundColor: isLoop ? "#1D1C37" : "#437DFF",
+              alignSelf: "flex-start",
+
+              borderRadius: 12,
+            }}
+          >
+            <Icon fill={isLoop ? "#7B87A8" : "white"} />
+          </View>
+        )}
+        <TilesContainer>
+          <Heading style={[{ fontSize: 14 }]}>{title}</Heading>
+          <SubHeading>{subtitle}</SubHeading>
+        </TilesContainer>
       </View>
-      <TilesContainer>
-        <Heading style={[{ fontSize: 14 }]}>{title}</Heading>
-        <SubHeading>{subtitle}</SubHeading>
-      </TilesContainer>
+      <View>{children}</View>
+    </>
+  );
+  return (
+    <SettingButton
+      onPress={() => onPress && onPress()}
+      brand={brand}
+      disabled={disableButton}
+    >
+      {renderContent()}
     </SettingButton>
   );
 });
@@ -318,6 +364,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     flexDirection: "row",
+    ...(Platform.OS === "web"
+      ? {
+          minHeight: "max-content",
+          paddingVertical: 10,
+        }
+      : {}),
   },
   flex1: {
     flex: 0,
@@ -361,6 +413,18 @@ export const settingsScreens = () => {
         name={SettingsRoute.MultisigSettings}
         key={SettingsRoute.MultisigSettings}
         component={MultisigSettingsScreen}
+        options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name={SettingsRoute.OsmosisSettings}
+        key={SettingsRoute.OsmosisSettings}
+        component={OsmosisSettingsScreen}
+        options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name={SettingsRoute.WhitelistedLPs}
+        key={SettingsRoute.WhitelistedLPs}
+        component={WhitelistedLPsScreen}
         options={{ headerShown: false }}
       />
     </RootStack.Group>
