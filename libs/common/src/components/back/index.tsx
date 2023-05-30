@@ -7,14 +7,15 @@ import { ChevronCircleLeftIcon } from "../icons";
 
 export interface BackProps {
   style?: ViewStyle;
+  onPress?: () => void;
 }
 
-export const Back = observer(function Back({ style }: BackProps) {
+export const Back = observer(function Back({ style, onPress }: BackProps) {
   const { goBack } = useNavigation();
 
   return (
     <IconButton
-      onPress={goBack}
+      onPress={onPress ?? goBack}
       style={style}
       hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
     >

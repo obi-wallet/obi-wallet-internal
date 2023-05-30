@@ -16,7 +16,12 @@ import { SvgProps } from "react-native-svg";
 import { MultisigSettingsScreen } from "./multisig-settings";
 import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
-import { RootStack, SettingsRoute, useRootNavigation } from "../../../router";
+import {
+  HomeBottomTabRoute,
+  RootStack,
+  SettingsRoute,
+  useRootNavigation,
+} from "../../../router";
 import { BrandToggle } from "../../brand-toggle";
 import {
   HelpAndSupportIcon,
@@ -27,6 +32,7 @@ import {
 } from "../../icons";
 import { OsmosisSettingsScreen } from "./osmosis-settings";
 import { WhitelistedLPsScreen } from "./whitelisted-lps";
+import { Back } from "../../back";
 
 export const SettingsScreen = observer(function SettingsScreen() {
   const { configStore, walletsStore } = useStore();
@@ -56,7 +62,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
             marginBottom: 10,
           }}
         >
-          <BrandToggle
+          {/* <BrandToggle
             style={{
               borderRadius: 32,
               marginRight: 10,
@@ -69,11 +75,16 @@ export const SettingsScreen = observer(function SettingsScreen() {
                 height: 64,
               }}
             />
-          </BrandToggle>
+          </BrandToggle> */}
+          <View style={{ marginHorizontal: 10 }}>
+            <Back
+              onPress={() => navigation.navigate(HomeBottomTabRoute.Assets)}
+            />
+          </View>
 
           <View style={{ flexDirection: "column" }}>
             <Heading>
-              Obi {isMultisigWallet ? <>Secure Multisig </> : null}Account
+              Osmosis {isMultisigWallet ? <>Secure Multisig </> : null}Account
             </Heading>
             {/*<Text style={styles.subHeading}>
               Profile picture, name and mail
