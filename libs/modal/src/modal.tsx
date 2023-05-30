@@ -45,9 +45,14 @@ const MessageHandlers = observer(function MessageHandlers() {
   useEffect(() => {
     async function listener(event: MessageEvent) {
       if (event.data.type !== "@obi/sign-and-broadcast-transaction") return;
-      const response = await SignAndBroadcastTransactionUserInteraction.start(
-        event.data.payload
-      );
+      if (!walletsStore.currentWallet) return;
+
+      const response = await SignAndBroadcastTransactionUserInteraction.start({
+        messages: event.data.payload,
+        cancelable: true,
+        walletMeta: walletsStore.currentWallet.meta,
+        demoMode: walletsStore.currentWallet.isDemo,
+      });
       event.source?.postMessage({
         type: "@obi/sign-and-broadcast-transaction-response",
         payload: response,
