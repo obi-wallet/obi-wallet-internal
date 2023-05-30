@@ -12,6 +12,7 @@
     "@react-navigation/native": "*",
     "@react-navigation/stack": "*",
     "buffer": "*",
+    "mobx": "*",
     "mobx-react-lite": "*",
     "react-native-web": "*",
     "react-shadow": "*",
