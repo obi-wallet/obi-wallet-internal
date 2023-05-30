@@ -11,9 +11,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16.x
-          registry-url: https://npm.pkg.github.com/
-          always-auth: true
+      - uses: ferluisxd/create-npmrc@3
+        with:
+          org_name: obi-wallet
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       - run: yarn
       - run: yarn publish-libs
