@@ -8,6 +8,7 @@ export const ConfirmAnimation = observer(function ConfirmAnimation() {
     <Lottie
       animationData={confirmAnimation}
       autoPlay
+      loop={false}
       style={{ width: 60, zIndex: -1, position: "absolute" }}
     />
   );

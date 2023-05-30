@@ -8,12 +8,12 @@ export interface PromptAnimationProps {
 }
 
 export const PromptAnimation = observer<PromptAnimationProps>(
-  function PromptAnimation() {
+  function PromptAnimation({ loop }) {
     return (
       <Lottie
         animationData={promptAnimation}
         autoPlay
-        loop={true}
+        loop={loop}
         style={{ width: 60, zIndex: -1, position: "absolute" }}
       />
     );

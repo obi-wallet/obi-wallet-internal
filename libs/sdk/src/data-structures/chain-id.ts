@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-export const ChainIdSchema = z.union([
+import { ChainId } from "../chains";
+
+export const ChainIdSchema: z.ZodType<ChainId> = z.union([
   z.literal("oasis-3"),
   z.literal("uni-3"),
   z.literal("juno-1"),
