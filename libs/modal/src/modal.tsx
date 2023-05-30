@@ -53,10 +53,14 @@ const MessageHandlers = observer(function MessageHandlers() {
         walletMeta: walletsStore.currentWallet.meta,
         demoMode: walletsStore.currentWallet.isDemo,
       });
-      event.source?.postMessage({
-        type: "@obi/sign-and-broadcast-transaction-response",
-        payload: response,
-      });
+      event.source?.postMessage(
+        {
+          type: "@obi/sign-and-broadcast-transaction-response",
+          payload: response,
+        },
+        // @ts-expect-error this is fine
+        "*"
+      );
     }
     window.addEventListener("message", listener, false);
     return () => {
