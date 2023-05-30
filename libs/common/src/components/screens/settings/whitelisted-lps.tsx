@@ -1,0 +1,63 @@
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useEffect, useState } from "react";
+
+import { View } from "react-native-animatable";
+import { Back, Text, isSmallScreenNumber, useStore } from "@obi-wallet/common";
+
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useTheme } from "@emotion/react";
+import { Setting } from "../../../../../mobile/src/app/screens/settings";
+import { Switch } from "react-native-gesture-handler";
+import { TextInput } from "../../text-input";
+
+import { useAsyncEffect } from "rooks";
+
+export const WhitelistedLPsScreen = observer(({ navigation }) => {
+  const [spendLimit, setSpendLimit] = useState<string>("0");
+  const isObi = useStore().configStore.isObi();
+  const [loading, setLoading] = useState<boolean>(true);
+  const theme = useTheme();
+  const [lpList, setLpList] = useState<any[]>([]);
+
+  useAsyncEffect(async () => {
+    const lpList = await setLpList(lpList);
+    setLoading(false);
+  }, []);
+
+  return (
+    <SafeAreaView style={{ backgroundColor: theme.colors.background, flex: 1 }}>
+      <View
+        style={{
+          marginTop: isObi ? 10 : isSmallScreenNumber(10, 25),
+          paddingTop: isSmallScreenNumber(0, 32),
+          paddingBottom: 20,
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <View style={{ marginRight: -60, marginLeft: 10, zIndex: 2 }}>
+          <Back />
+        </View>
+        <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
+          }}
+        >
+          <Text
+            style={{
+              color: "#F6F5FF",
+              fontSize: isSmallScreenNumber(20, 24),
+              fontWeight: "600",
+            }}
+          >
+            Whitelisted LPs
+          </Text>
+        </View>
+      </View>
+      <View style={{ flex: 1 }}></View>
+    </SafeAreaView>
+  );
+});

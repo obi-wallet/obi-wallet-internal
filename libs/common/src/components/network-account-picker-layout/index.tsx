@@ -169,23 +169,23 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
   function getCurrentAccountName() {
     const account = wallet.currentAccount;
     return "Osmosis Smart Account";
-    if (account && account.type === "flex-account") {
-      return account.meta.name || "Flex Account";
-    } else if (account && account.type === "singlesig-wallet") {
-      return Bech32Address.shortenAddress(
-        Sdk.chainId(wallet.chainId).transactions.getAddressOfPublicKey(
-          account.publicKey
-        ),
-        20
-      );
-    } else {
-      return (
-        <FormattedMessage
-          id="accountscreen.accountname"
-          defaultMessage="Obi Smart Account"
-        />
-      );
-    }
+    // if (account && account.type === "flex-account") {
+    //   return account.meta.name || "Flex Account";
+    // } else if (account && account.type === "singlesig-wallet") {
+    //   return Bech32Address.shortenAddress(
+    //     Sdk.chainId(wallet.chainId).transactions.getAddressOfPublicKey(
+    //       account.publicKey
+    //     ),
+    //     20
+    //   );
+    // } else {
+    //   return (
+    //     <FormattedMessage
+    //       id="accountscreen.accountname"
+    //       defaultMessage="Obi Smart Account"
+    //     />
+    //   );
+    // }
   }
 
   function getCurrentAccountAvatar() {

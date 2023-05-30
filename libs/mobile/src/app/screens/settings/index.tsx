@@ -17,12 +17,15 @@ import { Linking, ScrollView, StyleSheet, Text, View } from "react-native";
 import codePush, { LocalPackage } from "react-native-code-push";
 import { SvgProps } from "react-native-svg";
 import { useAsyncEffect } from "rooks";
-
+import CogIcon from "../home/assets/obi-settings-active.svg";
 import MultiSigIcon from "./assets/edit.svg";
 import HelpAndSupport from "./assets/headset.svg";
 import LogoutIcon from "./assets/power-red.svg";
-import { HealthChecksScreen } from "./health-checks";
+// import { HealthChecksScreen } from "./health-checks";
 import { KeysConfigScreen } from "./keys-config";
+
+import { OsmosisSettingsScreen } from "../../../../../common/src/components/screens/settings/osmosis-settings";
+import { WhitelistedLPsScreen } from "../../../../../common/src/components/screens/settings/whitelisted-lps";
 
 export const SettingsScreen = observer(function SettingsScreen() {
   const { configStore, walletsStore } = useStore();
@@ -31,7 +34,6 @@ export const SettingsScreen = observer(function SettingsScreen() {
   const intl = useIntl();
   const navigation = useRootNavigation();
   const [appMetadata, setAppMetadata] = useState<LocalPackage | null>(null);
-
   useAsyncEffect(async () => {
     const metadata = await codePush.getUpdateMetadata();
     if (metadata) {
@@ -121,6 +123,13 @@ export const SettingsScreen = observer(function SettingsScreen() {
                 navigation.navigate(SettingsRoute.MultisigSettings)
               }
             />
+            <Setting
+              Icon={CogIcon}
+              title={"Account Settings"}
+              subtitle={"Manage your account settings."}
+              onPress={() => navigation.navigate(SettingsRoute.OsmosisSettings)}
+            />
+            {/* 
             {configStore.isFeatureEnabled(Feature.HealthChecks) ? (
               <Setting
                 Icon={MultiSigIcon}
@@ -137,7 +146,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
                   navigation.navigate(SettingsRoute.MultisigHealthChecks)
                 }
               />
-            ) : null}
+            ) : null} */}
           </>
         ) : null}
         <View
@@ -268,37 +277,56 @@ export const SettingsScreen = observer(function SettingsScreen() {
 });
 
 interface SettingProps {
-  Icon: FC<SvgProps>;
+  Icon?: FC<SvgProps> | JSX.Element;
   title: string;
   subtitle: string;
   onPress?: () => void;
+  children?: React.ReactNode;
+  disableButton?: boolean;
 }
 
-const Setting = observer(function Setting({
+export const Setting = observer(function Setting({
   Icon,
   title,
   subtitle,
   onPress,
+  children,
+  disableButton,
 }: SettingProps) {
   const { configStore } = useStore();
   const brand = configStore.brand;
   const isLoop = configStore.isLoop();
-  return (
-    <SettingButton onPress={() => onPress && onPress()} brand={brand}>
-      <View
-        style={{
-          padding: 10,
-          backgroundColor: isLoop ? "#1D1C37" : "#437DFF",
-          alignSelf: "flex-start",
-          borderRadius: 12,
-        }}
-      >
-        <Icon fill={isLoop ? "#7B87A8" : "white"} />
+  const renderContent = () => (
+    <>
+      <View style={{ flex: 1, flexDirection: "row" }}>
+        {Icon && (
+          <View
+            style={{
+              padding: 10,
+              backgroundColor: isLoop ? "#1D1C37" : "#437DFF",
+              alignSelf: "flex-start",
+
+              borderRadius: 12,
+            }}
+          >
+            <Icon fill={isLoop ? "#7B87A8" : "white"} />
+          </View>
+        )}
+        <TilesContainer>
+          <Heading style={[{ fontSize: 14 }]}>{title}</Heading>
+          <SubHeading>{subtitle}</SubHeading>
+        </TilesContainer>
       </View>
-      <TilesContainer>
-        <Heading style={[{ fontSize: 14 }]}>{title}</Heading>
-        <SubHeading>{subtitle}</SubHeading>
-      </TilesContainer>
+      <View>{children}</View>
+    </>
+  );
+  return (
+    <SettingButton
+      onPress={() => onPress && onPress()}
+      brand={brand}
+      disabled={disableButton}
+    >
+      {renderContent()}
     </SettingButton>
   );
 });
@@ -333,6 +361,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     flexDirection: "row",
+    justifyContent: "space-between",
   },
   flex1: {
     flex: 0,
@@ -379,10 +408,23 @@ export const settingsScreens = () => {
         component={KeysConfigScreen}
         options={{ headerShown: false }}
       />
+
       <RootStack.Screen
         name={SettingsRoute.MultisigHealthChecks}
         key={SettingsRoute.MultisigHealthChecks}
         component={HealthChecksScreen}
+        options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name={SettingsRoute.OsmosisSettings}
+        key={SettingsRoute.OsmosisSettings}
+        component={OsmosisSettingsScreen}
+        options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name={SettingsRoute.WhitelistedLPs}
+        key={SettingsRoute.WhitelistedLPs}
+        component={WhitelistedLPsScreen}
         options={{ headerShown: false }}
       />
     </RootStack.Group>

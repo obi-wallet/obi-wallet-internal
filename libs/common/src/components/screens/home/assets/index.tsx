@@ -36,6 +36,7 @@ import {
 import { NetworkAccountPickerLayout } from "../../../network-account-picker-layout";
 import { RefreshableFlatList } from "../../../refreshable-flat-list";
 import { Text } from "../../../typography";
+import { HomeBottomTabRoute } from "../../../../router";
 
 export const Assets = observer(function Assets() {
   const theme = useTheme();
@@ -194,7 +195,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               justifyContent: "center",
               alignItems: "center",
             }}
-            onPress={() => navigation.navigate(RootRoute.Stake)}
+            onPress={() => navigation.navigate(HomeBottomTabRoute.Settings)}
           >
             <ObiSettingsActiveIcon />
           </TouchableHighlight>
