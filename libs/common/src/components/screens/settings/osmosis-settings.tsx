@@ -1,5 +1,6 @@
 //osmosis settings screen
 import { useTheme } from "@emotion/react";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { View } from "react-native-animatable";
@@ -13,7 +14,6 @@ import { RootRoute, RootStackParamList, SettingsRoute } from "../../../router";
 import { Back } from "../../back";
 import { TextInput } from "../../text-input";
 import { Text } from "../../typography";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 export type OsmosisSettingsScreenProps = NativeStackScreenProps<
   RootStackParamList,

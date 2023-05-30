@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 import { View } from "react-native-animatable";
@@ -7,10 +8,9 @@ import { useAsyncEffect } from "rooks";
 
 import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
+import { RootStackParamList, SettingsRoute } from "../../../router";
 import { Back } from "../../back";
 import { Text } from "../../typography";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList, SettingsRoute } from "../../../router";
 
 export type WhitelistedLpsScreenProps = NativeStackScreenProps<
   RootStackParamList,

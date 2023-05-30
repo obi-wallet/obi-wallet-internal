@@ -42,14 +42,22 @@ const MessageHandlers = observer(function MessageHandlers() {
     });
   }, [walletsStore]);
 
+  useEffect(() => {
+    async function listener(event: MessageEvent) {
+      if (event.data.type !== "@obi/sign-and-broadcast-transaction") return;
+      const response = await SignAndBroadcastTransactionUserInteraction.start(
+        event.data.payload
+      );
+      event.source?.postMessage({
+        type: "@obi/sign-and-broadcast-transaction-response",
+        payload: response,
+      });
+    }
+    window.addEventListener("message", listener, false);
+    return () => {
+      window.removeEventListener("message", listener);
+    };
+  }, []);
+
   return null;
 });
-
-// @ts-expect-error Expose signAndBroadcastTransaction
-// This should be handled by an OAuth-like flow in the future.
-window["__obi__"] = {
-  signAndBroadcastTransaction:
-    SignAndBroadcastTransactionUserInteraction.start.bind(
-      SignAndBroadcastTransactionUserInteraction
-    ),
-};
