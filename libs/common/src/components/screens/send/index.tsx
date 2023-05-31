@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   isTerraChain,
+  Message,
   Messages,
   SignAndBroadcastTransactionUserInteraction,
   Token,
@@ -204,7 +205,7 @@ export const SendScreenComponent = observer<
             console.log(data);
             invariant(wallet, "Expected wallet to be defined.");
 
-            function getMessages(): Msg[] {
+            function getMessages(): Message[] {
               if (!wallet.address) return [];
 
               return Messages.chainId(wallet.chainId).getSendMessages({

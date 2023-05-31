@@ -3,6 +3,7 @@ import { coins } from "@cosmjs/proto-signing";
 import { isDeliverTxSuccess } from "@cosmjs/stargate";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { AuthInfo, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import * as R from "ramda";
 import invariant from "tiny-invariant";
 
 import { CosmJsMultisigSigner } from "./multisigs-signer";
@@ -127,6 +128,9 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
     invariant(account, "Account not found.");
 
     const aminoMessages = messages.map((message) => {
+      if (R.has("osmo", message)) {
+        return message.osmo;
+      }
       return message.toAmino();
     });
     const encodeObjects = aminoMessages.map((aminoMessage) => {

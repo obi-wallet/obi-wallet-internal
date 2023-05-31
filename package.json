@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "_runAll": "nx run-many --output-style=static --parallel=1",
+    "_runAll": "nx run-many --output-style=static --parallel=1 --exclude mobile,obi-mobile",
     "checks": "yarn lint && yarn test",
     "format": "prettier --write . && yarn lint:eslint --fix",
     "increment-version": "node scripts/increment-version.mjs",

@@ -55,7 +55,7 @@ export class CosmJsBankSdk extends AbstractBankSdk {
         };
       }
       default:
-        return super.enrichToken(token);
+        return super.enrichTokenWithoutUsdValue(token);
     }
   }
 

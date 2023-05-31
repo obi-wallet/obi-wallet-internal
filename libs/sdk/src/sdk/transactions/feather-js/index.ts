@@ -2,6 +2,7 @@ import {
   AccAddress,
   isTxError,
   LegacyAminoMultisigPublicKey,
+  Msg,
   MsgSend,
   SimplePublicKey,
   Tx,
@@ -164,7 +165,8 @@ export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
           ],
           {
             chainID: this.chainId,
-            msgs: messages,
+            // TODO:
+            msgs: messages as Msg[],
           }
         );
         return new FeatherJsMultisigSigner({

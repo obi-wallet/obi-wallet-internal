@@ -14,19 +14,30 @@ import {
   MsgUpdateContractAdmin,
   MsgWithdrawDelegatorReward,
 } from "@terra-money/feather.js";
+import * as R from "ramda";
 
-export type Message = Msg;
+export type Message = Msg | { osmo: unknown };
 
 export function wrapMessages({
   messages,
   sender,
   contract,
 }: {
-  messages: Msg[];
+  messages: Message[];
   sender: string;
   contract: string;
 }): MsgExecuteContract[] {
   return messages.map((msg) => {
+    if (R.has("osmo", msg)) {
+      return new MsgExecuteContract(sender, contract, {
+        execute: {
+          msg: Buffer.from(
+            JSON.stringify({ osmo: wrapOsmoMessage(msg) })
+          ).toString("base64"),
+        },
+      });
+    }
+
     return new MsgExecuteContract(sender, contract, {
       execute: {
         msg: Buffer.from(JSON.stringify({ legacy: wrapMessage(msg) })).toString(
@@ -35,6 +46,12 @@ export function wrapMessages({
       },
     });
   });
+}
+
+export function wrapOsmoMessage(message: { osmo: unknown }) {
+  return {
+    swap_exact_amount_in: (message.osmo as any).value,
+  };
 }
 
 export function wrapMessage(message: Msg) {

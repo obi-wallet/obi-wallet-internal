@@ -1,11 +1,11 @@
 import {
   MultisigSigner,
+  Message,
   Sdk,
   SignAndBroadcastTransactionUserInteraction,
   wrapMessages as sdkWrapMessages,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
-import { Msg } from "@terra-money/feather.js";
 import * as R from "ramda";
 import { useEffectOnceWhen } from "rooks";
 import invariant from "tiny-invariant";
@@ -177,10 +177,10 @@ function wrapMessages({
   proxyAddress,
   sender,
 }: {
-  messages: Msg[];
+  messages: Message[];
   proxyAddress?: string;
   sender?: string;
-}): Msg[] {
+}): Message[] {
   if (!proxyAddress || !sender) return messages;
 
   return sdkWrapMessages({

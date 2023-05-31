@@ -2,6 +2,7 @@ import { ChainId, Message } from "@obi-wallet/sdk";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
+import * as R from "ramda";
 import { ReactNode, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { ModalProps, ScrollView, TouchableOpacity, View } from "react-native";
@@ -226,7 +227,12 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
     }
 
     function renderTabContent() {
-      const aminoMessages = messages.map((message) => message.toAmino());
+      const aminoMessages = messages.map((message) => {
+        if (R.has("osmo", message)) {
+          return message.osmo;
+        }
+        return message.toAmino();
+      });
 
       switch (selectedTab) {
         case Tab.TransactionDetails:
