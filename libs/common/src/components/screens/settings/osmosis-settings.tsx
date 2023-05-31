@@ -2,7 +2,8 @@
 import { useTheme } from "@emotion/react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { useState } from "react";
+import { Platform } from "react-native";
 import { View } from "react-native-animatable";
 import { Switch } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Setting } from ".";
 import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
-import { RootRoute, RootStackParamList, SettingsRoute } from "../../../router";
+import { RootStackParamList, SettingsRoute } from "../../../router";
 import { Back } from "../../back";
 import { TextInput } from "../../text-input";
 import { Text } from "../../typography";
@@ -22,9 +23,11 @@ export type OsmosisSettingsScreenProps = NativeStackScreenProps<
 
 export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
   function OsmosisSettingsScreen({ navigation }) {
-    const [spendLimit, setSpendLimit] = useState<string>("0");
     const isObi = useStore().configStore.isObi();
     const theme = useTheme();
+    const [sessionKeyEnabled, setSessionKeyEnabled] = useState<boolean>(false);
+    const [spendLimit, setSpendLimit] = useState<string>("0");
+    const [slippageLimit, setSlippageLimit] = useState<string>("0");
     return (
       <SafeAreaView
         style={{ backgroundColor: theme.colors.background, flex: 1 }}
@@ -60,17 +63,18 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
           </View>
         </View>
         <View style={{ flex: 1 }}>
-          <SessionKeySetting />
-          <SessionKeySpendLimitSetting
-            value={0}
-            onChange={function (value: string): void {
-              throw new Error("Function not implemented.");
-            }} // onChange={(value: number) => {
-            //   setSpendLimit(value);
-            // }}
-            // value={spendLimit}
+          <SessionKeySetting
+            value={sessionKeyEnabled}
+            onChange={() => setSessionKeyEnabled(!sessionKeyEnabled)}
           />
-          {/* <SlippageLimitSetting /> */}
+          <SessionKeySpendLimitSetting
+            value={spendLimit}
+            onChange={setSpendLimit}
+          />
+          <SlippageLimitSetting
+            value={slippageLimit}
+            onChange={setSlippageLimit}
+          />
           <Setting
             title="Whitelisted LPs"
             subtitle="Manage whitelisted LPs"
@@ -82,37 +86,37 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
   }
 );
 interface SessionKeySpendLimitSettingProps {
-  value: number;
+  value: string;
   onChange: (value: string) => void;
 }
 
 const SessionKeySpendLimitSetting = observer<SessionKeySpendLimitSettingProps>(
   function SessionKeySpendLimitSetting({ value, onChange }) {
-    const theme = useTheme();
-    const isObi = useStore().configStore.isObi();
-    const getTextValue = () => {
-      if (!value) return "$0";
-      console.log("getTextCalled", value);
-      if (value === 0) {
-        return "";
-      }
-      return `$${value}`;
-    };
     return (
       <Setting
         disableButton={true}
         title="Session Key Max Spend"
         subtitle="Any transaction up to this dollar amount won’t require a signature."
       >
-        <View style={{ minWidth: 100, flex: 1, backgroundColor: "red" }}>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ fontSize: 16, color: "white" }}>$</Text>
           <TextInput
             inputStyle={{
               fontSize: 14,
               backgroundColor: "#1a1a1a",
               borderWidth: 0,
             }}
-            value={getTextValue()}
+            style={Platform.OS === "web" ? { flex: 1, maxWidth: 100 } : {}}
+            value={value}
             onChangeText={(text: string) => {
+              console.log("text", text);
               //get regex to only allow numbers, decimals and empty string
               const res = text.replace(/[^0-9.]/g, "");
               onChange(res);
@@ -127,14 +131,7 @@ const SlippageLimitSetting = observer<SessionKeySpendLimitSettingProps>(
   function SessionKeySpendLimitSetting({ value, onChange }) {
     const theme = useTheme();
     const isObi = useStore().configStore.isObi();
-    const getTextValue = () => {
-      if (!value) return "0";
-      console.log("getTextCalled", value);
-      if (value === 0) {
-        return "";
-      }
-      return `${value}%`;
-    };
+
     return (
       <Setting
         disableButton={true}
@@ -157,30 +154,42 @@ const SlippageLimitSetting = observer<SessionKeySpendLimitSettingProps>(
               backgroundColor: "#1a1a1a",
               borderWidth: 0,
             }}
-            value={getTextValue()}
+            value={value}
+            style={{ maxWidth: 100, flex: 1 }}
             onChangeText={(text: string) => {
               const res = text.replace(/[^0-9./s]/g, "");
               onChange(res);
             }}
-            style={{ flex: 1 }}
           />
-          <Text style={{ fontSize: 20, color: "white" }}>%</Text>
+          <Text style={{ fontSize: 16, color: "white" }}>%</Text>
         </View>
       </Setting>
     );
   }
 );
 
-const SessionKeySetting = observer(function SessionKeySetting() {
-  const theme = useTheme();
-  const isObi = useStore().configStore.isObi();
-  return (
-    <Setting
-      disableButton={true}
-      title="Session Key"
-      subtitle="Enabling session key will only require you to sign one transaction when connecting your Osmosis smart account."
-    >
-      <Switch thumbColor="#437DFF" />
-    </Setting>
-  );
-});
+interface SessionKeySettingProps {
+  value: boolean;
+  onChange: () => void;
+}
+const SessionKeySetting = observer<SessionKeySettingProps>(
+  function SessionKeySetting({ value, onChange }) {
+    const theme = useTheme();
+    const isObi = useStore().configStore.isObi();
+    return (
+      <Setting
+        disableButton={true}
+        title="Session Key"
+        subtitle="Enabling session key will only require you to sign one transaction when connecting your Osmosis smart account."
+      >
+        <Switch
+          thumbColor="#437DFF"
+          value={value}
+          onValueChange={(value) => {
+            onChange();
+          }}
+        />
+      </Setting>
+    );
+  }
+);

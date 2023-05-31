@@ -127,7 +127,6 @@ export const SettingsScreen = observer(function SettingsScreen() {
               subtitle="Manage your account settings."
               onPress={() => navigation.navigate(SettingsRoute.OsmosisSettings)}
             />
-            {/*
             {configStore.isFeatureEnabled(Feature.HealthChecks) ? (
               <Setting
                 Icon={MultiSigIcon}
@@ -144,7 +143,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
                   navigation.navigate(SettingsRoute.MultisigHealthChecks)
                 }
               />
-            ) : null} */}
+            ) : null}
           </>
         ) : null}
         <View
