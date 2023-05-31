@@ -4,6 +4,7 @@ import { ObservableMultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
+import { Platform } from "react-native";
 
 import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
@@ -168,6 +169,14 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
   );
 
   function renderTitle() {
+    if (Platform.OS === "web") {
+      return intl
+        .formatMessage({
+          id: "onboarding1.welcometo.obi",
+          defaultMessage: "Welcome to Obi",
+        })
+        .replace("Obi", "Osmosis");
+    }
     if (isObi) {
       return intl.formatMessage({
         id: "onboarding1.welcometo.obi",
@@ -182,6 +191,10 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
   }
 
   function renderSubTitle() {
+    if (Platform.OS === "web") {
+      return "Welcome to the most secure and convenient way to manage your trading on Osmosis!";
+    }
+
     if (isObi) {
       return "Obi is the most secure and convenient way to manage assets in the Cosmos.";
     } else {
