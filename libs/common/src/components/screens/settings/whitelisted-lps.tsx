@@ -206,10 +206,36 @@ const PoolListItem = observer<PoolListItemProps>(function PoolListItem({
       }}
     >
       <View style={{ flexDirection: "row" }}>
-        <Image
-          source={{ uri: baseURl + data?.asset1Logo }}
-          style={{ width: 50, height: 50, marginRight: 10 }}
-        />
+        <View
+          style={{
+            position: "relative",
+            width: 60,
+            height: 50,
+            marginRight: 10,
+            padding: 10,
+          }}
+        >
+          <Image
+            source={{ uri: baseURl + data?.asset2Logo }}
+            style={{
+              width: 40,
+              height: 40,
+              right: 0,
+              bottom: 0,
+              position: "absolute",
+            }}
+          />
+          <Image
+            source={{ uri: baseURl + data?.asset1Logo }}
+            style={{
+              width: 40,
+              height: 40,
+              left: 0,
+              top: 0,
+              position: "absolute",
+            }}
+          />
+        </View>
 
         <View>
           <Text style={{ color: "white" }}>{data?.name}</Text>
