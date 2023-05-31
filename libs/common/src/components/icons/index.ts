@@ -23,3 +23,4 @@ export * from "./receive";
 export * from "./send";
 export * from "./staking";
 export * from "./warning";
+export * from "./new-settings-icon";

@@ -29,6 +29,7 @@ import { HomeBottomTabRoute } from "../../../../router";
 import { IconButton } from "../../../buttons";
 import {
   CoinIcon,
+  NewSettingsIcon,
   ObiSettingsActiveIcon,
   ReceiveIcon,
   SendIcon,
@@ -201,7 +202,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
             }}
             onPress={() => navigation.navigate(HomeBottomTabRoute.Settings)}
           >
-            <ObiSettingsActiveIcon />
+            <NewSettingsIcon width={30} height={30} />
           </TouchableHighlight>
           <Text
             style={{
