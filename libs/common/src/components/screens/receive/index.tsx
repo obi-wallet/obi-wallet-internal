@@ -89,7 +89,13 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
             paddingVertical: 20,
             paddingHorizontal: 30,
           }}
-          onPress={() => onShare(address)}
+          onPress={() => {
+            if (Platform.OS === "web") {
+              navigator.clipboard.writeText(address);
+            } else {
+              onShare(address);
+            }
+          }}
         >
           <Text
             style={{
@@ -100,7 +106,7 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
             }}
           >
             {Platform.OS === "web"
-              ? "Tap to copy your address"
+              ? "Click to copy your address"
               : "Tap to share your address"}
           </Text>
           <Text
