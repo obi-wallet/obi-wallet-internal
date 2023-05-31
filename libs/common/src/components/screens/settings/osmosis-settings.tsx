@@ -77,7 +77,7 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
             </Text>
           </View>
         </View>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, paddingHorizontal: 10 }}>
           <SessionKeySetting
             value={sessionKeyEnabled}
             onChange={() => setSessionKeyEnabled(!sessionKeyEnabled)}
