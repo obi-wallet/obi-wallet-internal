@@ -301,7 +301,14 @@ export const Setting = observer(function Setting({
   const isLoop = configStore.isLoop();
   const renderContent = () => (
     <>
-      <View style={{ flex: 1, flexDirection: "row" }}>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          // backgroundColor: "blue",
+          ...(Platform.OS === "web" ? {} : {}),
+        }}
+      >
         {Icon && (
           <View
             style={{
@@ -320,14 +327,16 @@ export const Setting = observer(function Setting({
           <SubHeading>{subtitle}</SubHeading>
         </TilesContainer>
       </View>
-      <View>{children}</View>
+      <View style={{ backgroundColor: "" }}>{children}</View>
     </>
   );
-  return (
+  return disableButton ? (
+    <SettingContainer brand={brand}>{renderContent()}</SettingContainer>
+  ) : (
     <SettingButton
       onPress={() => onPress && onPress()}
       brand={brand}
-      disabled={disableButton}
+      // disabled={disableButton}
     >
       {renderContent()}
     </SettingButton>
@@ -344,6 +353,7 @@ const Container = styled.SafeAreaView(
 
 const TilesContainer = styled.View({
   paddingHorizontal: 10,
+  flex: 1,
 });
 
 const Heading = styled.Text({
@@ -357,6 +367,7 @@ const SubHeading = styled.Text({
   color: "#F6F5FF",
   opacity: 0.6,
   fontSize: 12,
+  ...(Platform.OS === "web" ? { wordBreak: "break-word" } : {}),
 });
 
 const styles = StyleSheet.create({
@@ -396,6 +407,15 @@ const styles = StyleSheet.create({
     color: "#3D4661",
   },
 });
+const SettingContainer = styled.View<{ brand: Brand }>(
+  {
+    ...styles.setting,
+    ...styles.flex1,
+  },
+  (props) => ({
+    backgroundColor: props.brand === Brand.Loop ? "#111023" : "#272727",
+  })
+);
 const SettingButton = styled.TouchableOpacity<{ brand: Brand }>(
   {
     ...styles.setting,

@@ -1,25 +1,58 @@
 import { useTheme } from "@emotion/react";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 import { View } from "react-native-animatable";
+import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAsyncEffect } from "rooks";
 
 import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
+import { RootStackParamList, SettingsRoute } from "../../../router";
 import { Back } from "../../back";
 import { Text } from "../../typography";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList, SettingsRoute } from "../../../router";
 
 export type WhitelistedLpsScreenProps = NativeStackScreenProps<
   RootStackParamList,
   SettingsRoute.WhitelistedLPs
 >;
 
+const osmosisWhitelistedLps = ["12", "5", "3", "10", "34", "6", "1", "18"];
+interface Token {
+  denom: string;
+  amount: string;
+}
+
+interface PoolParams {
+  swap_fee: string;
+  exit_fee: string;
+  smooth_weight_change_params: any; // You can replace 'any' with the specific type if available
+}
+
+interface TotalShares {
+  denom: string;
+  amount: string;
+}
+
+interface PoolAsset {
+  token: Token;
+  weight: string;
+}
+
+interface Pool {
+  "@type": string;
+  address: string;
+  id: string;
+  pool_params: PoolParams;
+  future_pool_governor: string;
+  total_shares: TotalShares;
+  pool_assets: PoolAsset[];
+  total_weight: string;
+}
+
 export const WhitelistedLpsScreen = observer<WhitelistedLpsScreenProps>(
   function WhitelistedLPsScreen({ navigation }) {
-    const [spendLimit, setSpendLimit] = useState<string>("0");
     const isObi = useStore().configStore.isObi();
     const [loading, setLoading] = useState<boolean>(true);
     const theme = useTheme();
@@ -27,9 +60,17 @@ export const WhitelistedLpsScreen = observer<WhitelistedLpsScreenProps>(
 
     useAsyncEffect(async () => {
       // const lpList = await setLpList(lpList);
+      const { pools }: { pools: Pool[] } = await fetch(
+        "https://lcd.osmotest5.osmosis.zone/osmosis/gamm/v1beta1/pools?pagination.limit=1000"
+      ).then((res) => res.json());
+      const lpList = pools.filter((pool) =>
+        osmosisWhitelistedLps.includes(pool.id)
+      );
+      setLpList(lpList);
       setLoading(false);
     }, []);
 
+    console.log(loading, lpList);
     return (
       <SafeAreaView
         style={{ backgroundColor: theme.colors.background, flex: 1 }}
@@ -64,7 +105,26 @@ export const WhitelistedLpsScreen = observer<WhitelistedLpsScreenProps>(
             </Text>
           </View>
         </View>
-        <View style={{ flex: 1 }}></View>
+        <View style={{ flex: 1 }}>
+          {loading ? (
+            <Text>Loading...</Text>
+          ) : (
+            <View>
+              <FlatList
+                data={lpList}
+                renderItem={({ item }) => (
+                  <View>
+                    <Text style={{ color: "white" }}>
+                      <Text>{item.id}</Text>
+                      <Text>{item.pool_assets[0].token.denom}</Text>
+                      <Text>{item.pool_assets[1].token.denom}</Text>
+                    </Text>
+                  </View>
+                )}
+              />
+            </View>
+          )}
+        </View>
       </SafeAreaView>
     );
   }
