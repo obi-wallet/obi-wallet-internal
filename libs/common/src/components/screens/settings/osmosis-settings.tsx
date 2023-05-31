@@ -30,8 +30,6 @@ import { Button } from "../../buttons";
 import { TextInput } from "../../text-input";
 import { Text } from "../../typography";
 
-
-
 export type OsmosisSettingsScreenProps = NativeStackScreenProps<
   RootStackParamList,
   SettingsRoute.OsmosisSettings
