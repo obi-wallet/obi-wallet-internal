@@ -31,48 +31,48 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
             flex: 1,
           }}
         >
-          <View
-            style={{
-              position: "absolute",
-              top: safeArea.top,
-              left: 0,
-              right: 0,
-            }}
-          >
-            <View style={{ padding: theme.spacing["12"] }}>
-              <View
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
-                  left: 0,
-                  bottom: 0,
-                  backgroundColor: "black",
-                  opacity: 0.3,
-                }}
-              />
-              <Text
-                style={{
-                  ...theme.typography.footnote,
-                  color: "white",
-                }}
-              >
-                <Text style={{ fontWeight: theme.fontWeights.bold }}>
-                  <FormattedMessage
-                    id="onboarding1.disclaimer"
-                    defaultMessage="Disclaimer:"
-                  />{" "}
-                </Text>
-                <FormattedMessage
-                  id="onboarding1.disclaimerMsg"
-                  defaultMessage="Obi is in alpha. Security audits are pending. Current implementations are only intended for trial purposes."
-                />
-              </Text>
-            </View>
-            <View style={{ marginHorizontal: theme.spacing["24"] }}>
-              {isObi ? null : <LanguagePicker />}
-            </View>
-          </View>
+          {/*<View*/}
+          {/*  style={{*/}
+          {/*    position: "absolute",*/}
+          {/*    top: safeArea.top,*/}
+          {/*    left: 0,*/}
+          {/*    right: 0,*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  <View style={{ padding: theme.spacing["12"] }}>*/}
+          {/*    <View*/}
+          {/*      style={{*/}
+          {/*        position: "absolute",*/}
+          {/*        top: 0,*/}
+          {/*        right: 0,*/}
+          {/*        left: 0,*/}
+          {/*        bottom: 0,*/}
+          {/*        backgroundColor: "black",*/}
+          {/*        opacity: 0.3,*/}
+          {/*      }}*/}
+          {/*    />*/}
+          {/*    <Text*/}
+          {/*      style={{*/}
+          {/*        ...theme.typography.footnote,*/}
+          {/*        color: "white",*/}
+          {/*      }}*/}
+          {/*    >*/}
+          {/*      <Text style={{ fontWeight: theme.fontWeights.bold }}>*/}
+          {/*        <FormattedMessage*/}
+          {/*          id="onboarding1.disclaimer"*/}
+          {/*          defaultMessage="Disclaimer:"*/}
+          {/*        />{" "}*/}
+          {/*      </Text>*/}
+          {/*      <FormattedMessage*/}
+          {/*        id="onboarding1.disclaimerMsg"*/}
+          {/*        defaultMessage="Obi is in alpha. Security audits are pending. Current implementations are only intended for trial purposes."*/}
+          {/*      />*/}
+          {/*    </Text>*/}
+          {/*  </View>*/}
+          {/*  <View style={{ marginHorizontal: theme.spacing["24"] }}>*/}
+          {/*    {isObi ? null : <LanguagePicker />}*/}
+          {/*  </View>*/}
+          {/*</View>*/}
 
           <View
             style={{
