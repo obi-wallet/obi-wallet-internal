@@ -47,10 +47,23 @@ export class CosmJsBankSdk extends AbstractBankSdk {
           ...token,
           amount: parseInt(token.rawAmount, 10) / 10 ** digits,
           contract: null,
-          icon: null,
+          icon: "https://app.osmosis.zone/_next/image?url=%2Ftokens%2Fosmo.svg&w=48&q=75",
           denom: this.chain.denom.slice(1).toUpperCase(),
           digits,
-          label: this.chain.denom[1].toUpperCase() + this.chain.denom.slice(2),
+          label: this.chain.denom.slice(1).toUpperCase(),
+          usdValue: null,
+        };
+      }
+      case "ibc/A8C2D23A1E6F95DA4E48BA349667E322BD7A6C996D8A4AAE8BA72E190F3D1477": {
+        const digits = 6;
+        return {
+          ...token,
+          amount: parseInt(token.rawAmount, 10) / 10 ** digits,
+          contract: null,
+          icon: "https://app.osmosis.zone/_next/image?url=%2Ftokens%2Fatom.svg&w=48&q=75",
+          denom: "ATOM",
+          digits,
+          label: "ATOM",
           usdValue: null,
         };
       }
