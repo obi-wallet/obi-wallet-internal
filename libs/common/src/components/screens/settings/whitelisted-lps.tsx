@@ -2,8 +2,8 @@ import { useTheme } from "@emotion/react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
-import { View } from "react-native-animatable";
-import { FlatList } from "react-native-gesture-handler";
+import { View, Image } from "react-native";
+import { FlatList, ScrollView, Switch } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAsyncEffect } from "rooks";
 
@@ -19,6 +19,59 @@ export type WhitelistedLpsScreenProps = NativeStackScreenProps<
 >;
 
 const osmosisWhitelistedLps = ["12", "5", "3", "10", "34", "6", "1", "18"];
+const osmoIcon = "tokens/osmo.svg";
+
+const osmosisWhitelistedLpsData = [
+  {
+    id: "12",
+    name: "ATOM / OSMO",
+    asset1Logo: "tokens/atom.svg",
+    asset2Logo: osmoIcon,
+  },
+  {
+    id: "5",
+    name: "aUSDC/OSMO",
+    asset1Logo: "tokens/usdc.svg",
+    asset2Logo: osmoIcon,
+  },
+  {
+    id: "3",
+    name: "JUNOX/OSMO",
+    asset1Logo: "tokens/juno.svg",
+    asset2Logo: osmoIcon,
+  },
+  {
+    id: "10",
+    name: "MARS/OSMO",
+    asset1Logo: "tokens/mars.svg",
+    asset2Logo: osmoIcon,
+  },
+  {
+    id: "34",
+    name: "QCK/OSMO",
+    asset1Logo: "tokens/qck.svg",
+    asset2Logo: osmoIcon,
+  },
+  {
+    id: "6",
+    name: "nUSD/OSMO",
+    asset1Logo: "tokens/usdc.svg",
+    asset2Logo: osmoIcon,
+  },
+  {
+    id: "1",
+    name: "ION/OSMO",
+    asset1Logo: "tokens/ion.svg",
+    asset2Logo: osmoIcon,
+  },
+  {
+    id: "18",
+    name: "AKT/OSMO",
+    asset1Logo: "tokens/akt.svg",
+    asset2Logo: osmoIcon,
+  },
+];
+
 interface Token {
   denom: string;
   amount: string;
@@ -63,14 +116,18 @@ export const WhitelistedLpsScreen = observer<WhitelistedLpsScreenProps>(
       const { pools }: { pools: Pool[] } = await fetch(
         "https://lcd.osmotest5.osmosis.zone/osmosis/gamm/v1beta1/pools?pagination.limit=1000"
       ).then((res) => res.json());
-      const lpList = pools.filter((pool) =>
-        osmosisWhitelistedLps.includes(pool.id)
-      );
+      const lpList = pools
+        .filter((pool) => osmosisWhitelistedLps.includes(pool.id))
+        .sort(
+          (a, b) =>
+            osmosisWhitelistedLps.indexOf(a.id) -
+            osmosisWhitelistedLps.indexOf(b.id)
+        );
+
       setLpList(lpList);
       setLoading(false);
     }, []);
 
-    console.log(loading, lpList);
     return (
       <SafeAreaView
         style={{ backgroundColor: theme.colors.background, flex: 1 }}
@@ -107,25 +164,59 @@ export const WhitelistedLpsScreen = observer<WhitelistedLpsScreenProps>(
         </View>
         <View style={{ flex: 1 }}>
           {loading ? (
-            <Text>Loading...</Text>
-          ) : (
-            <View>
-              <FlatList
-                data={lpList}
-                renderItem={({ item }) => (
-                  <View>
-                    <Text style={{ color: "white" }}>
-                      <Text>{item.id}</Text>
-                      <Text>{item.pool_assets[0].token.denom}</Text>
-                      <Text>{item.pool_assets[1].token.denom}</Text>
-                    </Text>
-                  </View>
-                )}
-              />
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "white" }}>Loading...</Text>
             </View>
+          ) : (
+            <ScrollView style={{ flex: 1 }}>
+              {lpList.map((item) => (
+                <PoolListItem item={item} key={item.id} />
+              ))}
+            </ScrollView>
           )}
         </View>
       </SafeAreaView>
     );
   }
 );
+interface PoolListItemProps {
+  item: Pool;
+}
+const PoolListItem = observer<PoolListItemProps>(function PoolListItem({
+  item,
+}) {
+  const data = osmosisWhitelistedLpsData.find((lp) => lp.id === item.id);
+  const baseURl = "https://testnet.osmosis.zone/";
+
+  return (
+    <View
+      style={{
+        backgroundColor: "#272727",
+        margin: 10,
+        borderRadius: 7,
+        padding: 10,
+        flexDirection: "row",
+        justifyContent: "space-between",
+      }}
+    >
+      <View style={{ flexDirection: "row" }}>
+        <Image
+          source={{ uri: baseURl + data?.asset1Logo }}
+          style={{ width: 50, height: 50, marginRight: 10 }}
+        />
+
+        <View>
+          <Text style={{ color: "white" }}>{data?.name}</Text>
+          <Text style={{ color: "white" }}>Pool #{item.id}</Text>
+        </View>
+      </View>
+      <Switch value={true} />
+    </View>
+  );
+});

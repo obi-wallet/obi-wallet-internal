@@ -310,7 +310,7 @@ export const Setting = observer(function Setting({
         style={{
           flex: 1,
           flexDirection: "row",
-          // backgroundColor: "blue",
+
           ...(Platform.OS === "web" ? {} : {}),
         }}
       >
