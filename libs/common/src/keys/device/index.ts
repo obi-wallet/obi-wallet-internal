@@ -74,7 +74,9 @@ export async function getBiometricsKeyPair({
 }: {
   demoMode: boolean;
 }) {
-  if (demoMode) {
+  // TODO: remove this once we have Osmosis-specific fix for prepareKeyPair
+  // eslint-disable-next-line no-constant-condition
+  if (true || demoMode) {
     return {
       privateKey: DEMO_PRIVATE_KEY,
       publicKey: DEMO_PUBLIC_KEY,
