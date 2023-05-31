@@ -51,6 +51,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
           flexDirection: "row",
           justifyContent: "space-between",
           marginBottom: isSmallScreenNumber(10, 40),
+          paddingHorizontal: 20,
         }}
       >
         <View
@@ -102,7 +103,11 @@ export const SettingsScreen = observer(function SettingsScreen() {
           */}
         </View>
       </View>
-      <ScrollView>
+      <ScrollView
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+        }}
+      >
         {/*
         <Setting
           Icon={MultiSigIcon}
@@ -313,7 +318,9 @@ export const Setting = observer(function Setting({
           <View
             style={{
               padding: 10,
-              backgroundColor: isLoop ? "#1D1C37" : "#437DFF",
+              // backgroundColor: isLoop ? "#1D1C37" : "#437DFF",
+              // @ts-expect-error Works in web
+              background: "linear-gradient(to right, #df05cb, #2c07e3)",
               alignSelf: "flex-start",
 
               borderRadius: 12,

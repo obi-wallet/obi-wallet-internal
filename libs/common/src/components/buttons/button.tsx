@@ -33,7 +33,7 @@ const loopFlavors: Record<string, Flavor> = {
       color: "#040317",
     },
     button: {
-      backgroundColor: "#59D6E6",
+      // backgroundColor: "linear-gradient(#e66465, #9198e5)",
     },
   },
   green: {
@@ -90,7 +90,6 @@ const baseStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#949494cc",
     opacity: 0.5,
   },
 });
@@ -122,7 +121,8 @@ const getFlavorStyles = (
         },
         button: {
           ...baseStyles.button,
-          backgroundColor: "#437DFF",
+          // backgroundColor: "#437DFF",
+          background: "linear-gradient(to right, #df05cb, #2c07e3)",
           opacity: 1,
           ...flavorStyles.button,
         },

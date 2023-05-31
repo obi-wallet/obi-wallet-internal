@@ -123,7 +123,9 @@ const BalanceAndActions = observer(function BalanceAndActions() {
             style={{
               width: 56,
               height: 56,
-              backgroundColor: isLoop ? "#100F1E" : "#437DFF",
+              // @ts-expect-error Works in web
+              background: "linear-gradient(to right, #df05cb, #2c07e3)",
+              // backgroundColor: isLoop ? "#100F1E" : "#437DFF",
               borderRadius: isLoop ? 16 : 56,
               justifyContent: "center",
               alignItems: "center",
@@ -155,7 +157,8 @@ const BalanceAndActions = observer(function BalanceAndActions() {
             style={{
               width: 56,
               height: 56,
-              backgroundColor: isLoop ? "#100F1E" : "#437DFF",
+              // @ts-expect-error Works in web
+              background: "linear-gradient(to right, #df05cb, #2c07e3)",
               borderRadius: isLoop ? 16 : 56,
               justifyContent: "center",
               alignItems: "center",
@@ -190,7 +193,8 @@ const BalanceAndActions = observer(function BalanceAndActions() {
             style={{
               width: 56,
               height: 56,
-              backgroundColor: isLoop ? "#100F1E" : "#437DFF",
+              // @ts-expect-error Works in web
+              background: "linear-gradient(to right, #df05cb, #2c07e3)",
               borderRadius: isLoop ? 16 : 56,
               justifyContent: "center",
               alignItems: "center",
