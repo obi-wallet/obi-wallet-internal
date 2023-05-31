@@ -1,20 +1,36 @@
 //osmosis settings screen
 import { useTheme } from "@emotion/react";
+import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useCurrentWallet } from "@obi-wallet/headless-ui";
+import {
+  generateSec256k1KeyPair,
+  ObservableFlexAccount,
+  Sdk,
+} from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
-import { Platform } from "react-native";
+import { Platform, TouchableOpacity } from "react-native";
 import { View } from "react-native-animatable";
 import { Switch } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Setting } from ".";
 import { useStore } from "../../../contexts";
-import { isSmallScreenNumber } from "../../../helpers";
-import { RootStackParamList, SettingsRoute } from "../../../router";
+import { Alert, isSmallScreenNumber } from "../../../helpers";
+import {
+  AccountsRoute,
+  RootStackParamList,
+  SettingsRoute,
+} from "../../../router";
+import { Draft } from "../../../stores";
 import { Back } from "../../back";
+import { Button } from "../../buttons";
 import { TextInput } from "../../text-input";
 import { Text } from "../../typography";
+
+
 
 export type OsmosisSettingsScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -23,6 +39,7 @@ export type OsmosisSettingsScreenProps = NativeStackScreenProps<
 
 export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
   function OsmosisSettingsScreen({ navigation }) {
+    const wallet = useCurrentWallet();
     const isObi = useStore().configStore.isObi();
     const theme = useTheme();
     const [sessionKeyEnabled, setSessionKeyEnabled] = useState<boolean>(false);
@@ -79,7 +96,59 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
             title="Whitelisted LPs"
             subtitle="Manage whitelisted LPs"
             onPress={() => navigation.navigate(SettingsRoute.WhitelistedLPs)}
-          ></Setting>
+          />
+        </View>
+        <View
+          style={{
+            margin: 5,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Button
+            flavor="blue"
+            label="Save Changes"
+            buttonStyle={{ flex: 1, margin: 10 }}
+            disabled={!sessionKeyEnabled}
+            onPress={async () => {
+              const { publicKey, privateKey } = generateSec256k1KeyPair();
+              const address = Sdk.chainId(
+                wallet.chainId
+              ).transactions.getAddressOfPublicKey(publicKey);
+              const draft = new Draft({
+                original: wallet.gatekeeperConfig,
+              });
+              draft.value.upsertFlexAccount(
+                ObservableFlexAccount.create({
+                  type: "flex-account",
+                  meta: {
+                    icon: "",
+                    name: "",
+                  },
+                  autoSign: null,
+                  spendLimit: {
+                    amount: parseFloat(spendLimit),
+                    period: { days: 1 },
+                  },
+                  address,
+                  publicKey,
+                  privateKey,
+                })
+              );
+              const response = await wallet.updateGatekeeperConfig(draft.value);
+              if (response.approved) {
+                if (response.payload.success) {
+                  console.log(wallet.gatekeeperConfig.flexAccounts[0].toJSON());
+                } else {
+                  Alert.alert(
+                    "Error",
+                    response.payload.rawLog ?? "Unknown error"
+                  );
+                }
+              }
+            }}
+          />
         </View>
       </SafeAreaView>
     );
@@ -96,7 +165,7 @@ const SessionKeySpendLimitSetting = observer<SessionKeySpendLimitSettingProps>(
       <Setting
         disableButton={true}
         title="Session Key Max Spend"
-        subtitle="Any transaction up to this dollar amount won’t require a signature."
+        subtitle="Any transaction up to this OSMO amount won't require a signature."
       >
         <View
           style={{
@@ -106,7 +175,6 @@ const SessionKeySpendLimitSetting = observer<SessionKeySpendLimitSettingProps>(
             alignItems: "center",
           }}
         >
-          <Text style={{ fontSize: 16, color: "white" }}>$</Text>
           <TextInput
             inputStyle={{
               fontSize: 14,
@@ -122,6 +190,7 @@ const SessionKeySpendLimitSetting = observer<SessionKeySpendLimitSettingProps>(
               onChange(res);
             }}
           />
+          <Text style={{ fontSize: 16, color: "white" }}>OSMO</Text>
         </View>
       </Setting>
     );

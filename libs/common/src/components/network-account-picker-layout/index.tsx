@@ -132,7 +132,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
         }}
         onPress={() => {
           if (configStore.isFeatureEnabled(Feature.AccountsTab)) {
-            navigation.navigate(HomeBottomTabRoute.Accounts);
+            // navigation.navigate(HomeBottomTabRoute.Accounts);
           }
         }}
       >
