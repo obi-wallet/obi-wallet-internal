@@ -32,6 +32,7 @@ import {
   MultisigIcon,
   ObiIcon,
   ObiSettingsActiveIcon,
+  NewSettingsIcon,
 } from "../../icons";
 
 export const SettingsScreen = observer(function SettingsScreen() {
@@ -133,7 +134,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
               }
             />
             <Setting
-              Icon={ObiSettingsActiveIcon}
+              Icon={NewSettingsIcon}
               title="Account Settings"
               subtitle="Manage your account settings."
               onPress={() => navigation.navigate(SettingsRoute.OsmosisSettings)}
