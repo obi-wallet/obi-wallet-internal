@@ -18,7 +18,11 @@ import {
 } from "react-native";
 
 import { useStore } from "../../../../contexts";
-import { isSmallScreenNumber, isSmallScreenSubstr } from "../../../../helpers";
+import {
+  isSmallScreenNumber,
+  isSmallScreenSubstr,
+  isWeb,
+} from "../../../../helpers";
 import {
   EnrichedToken,
   UsdBalance,
@@ -334,7 +338,7 @@ const AssetsList = observer(function AssetsList() {
           data={balances.data}
           renderItem={(props) => <AssetsListItem {...props} />}
           style={
-            Platform.OS === "web"
+            isWeb()
               ? {
                   marginTop: 10,
                 }

@@ -16,6 +16,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useStore } from "../../contexts";
+import { isWeb } from "../../helpers";
 import { RootStackParamList } from "../../router";
 import { Avatar } from "../avatar";
 import { ObiIcon } from "../icons";
@@ -56,7 +57,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
   const { configStore } = useStore();
   const wallet = useCurrentWallet();
   const theme = useTheme();
-  if (Platform.OS === "web") {
+  if (isWeb()) {
     return null;
   }
 

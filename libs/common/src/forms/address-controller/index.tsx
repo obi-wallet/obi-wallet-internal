@@ -12,7 +12,7 @@ import {
   useQrCodeScannerModal,
 } from "../../components";
 import { useStore } from "../../contexts";
-import { isSmallScreenNumber } from "../../helpers";
+import { isSmallScreenNumber, isWeb } from "../../helpers";
 
 // TODO:
 const ObiQr = SendIcon;
@@ -50,7 +50,7 @@ export const AddressController = observer<AddressControllerProps>(
       }
     });
 
-    if (Platform.OS === "web") {
+    if (isWeb()) {
       return (
         <TextInput
           label={label}

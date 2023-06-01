@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { QrCode } from "./qr-code";
 import { useStore } from "../../../contexts";
-import { isSmallScreenNumber } from "../../../helpers";
+import { isSmallScreenNumber, isWeb } from "../../../helpers";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 
 export const ReceiveScreen = observer(function ReceiveScreen() {
@@ -17,7 +17,7 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
   if (!address) return null;
 
   const onShare = async (text: string) => {
-    if (Platform.OS === "web") {
+    if (isWeb()) {
       await navigator.clipboard.writeText(text);
     } else {
       try {
@@ -100,7 +100,7 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
                 fontWeight: "500",
               }}
             >
-              {Platform.OS === "web"
+              {isWeb()
                 ? "Click to copy your address"
                 : "Tap to share your address"}
             </Text>
@@ -114,7 +114,7 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
                   opacity: 0.6,
                   marginTop: 10,
                 },
-                Platform.OS === "web"
+                isWeb()
                   ? {
                       // @ts-expect-error web-only prop
                       overflowWrap: "anywhere",

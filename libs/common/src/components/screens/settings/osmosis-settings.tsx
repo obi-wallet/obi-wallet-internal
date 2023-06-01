@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Setting } from ".";
 import { useStore } from "../../../contexts";
-import { Alert, isSmallScreenNumber } from "../../../helpers";
+import { Alert, isSmallScreenNumber, isWeb } from "../../../helpers";
 import { RootStackParamList, SettingsRoute } from "../../../router";
 import { Draft } from "../../../stores";
 import { Button } from "../../buttons";
@@ -173,7 +173,7 @@ const SessionKeySpendLimitSetting = observer<SessionKeySpendLimitSettingProps>(
               backgroundColor: "#1a1a1a",
               borderWidth: 0,
             }}
-            style={Platform.OS === "web" ? { flex: 1, maxWidth: 100 } : {}}
+            style={isWeb() ? { flex: 1, maxWidth: 100 } : {}}
             value={value}
             onChangeText={(text: string) => {
               console.log("text", text);

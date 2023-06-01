@@ -11,6 +11,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useStore } from "../../../contexts";
+import { isWeb } from "../../../helpers";
 import { BrandToggle } from "../../brand-toggle";
 import { LanguagePicker } from "../../language-picker";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
@@ -111,7 +112,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
                 {/*  />*/}
                 {/*)}*/}
 
-                {Platform.OS === "web" && (
+                {isWeb() && (
                   <Image
                     source={{ uri: "/osmosis-home.png" }}
                     style={{

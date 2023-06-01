@@ -15,7 +15,7 @@ import {
 import { useKeyMetaData } from "./key-meta-data";
 import { Key, KeysList } from "./keys-list";
 import { useStore } from "../../contexts";
-import { isSmallScreenNumber } from "../../helpers";
+import { isSmallScreenNumber, isWeb } from "../../helpers";
 import { BottomSheetNew } from "../bottom-sheet";
 import { CheckIcon, MultisigKeysIcon, WarningIcon } from "../icons";
 import { OsmosisScreenContainer } from "../osmosis-screen-container";
@@ -79,7 +79,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
             <Text style={styles.heading}>{title}</Text>
             <Text style={styles.subHeading}>{subTitle}</Text>
           </View>
-          {Platform.OS === "web" ? (
+          {isWeb() ? (
             <View
               style={{
                 paddingVertical: 10,

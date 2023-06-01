@@ -8,7 +8,7 @@ import { Platform } from "react-native";
 
 import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
-import { Alert } from "../../../helpers";
+import { Alert, isWeb } from "../../../helpers";
 import {
   KeyFlow,
   KeyRoute,
@@ -169,7 +169,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
   );
 
   function renderTitle() {
-    if (Platform.OS === "web") {
+    if (isWeb()) {
       return "Osmosis Smart Account";
     }
     if (isObi) {
@@ -186,7 +186,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
   }
 
   function renderSubTitle() {
-    if (Platform.OS === "web") {
+    if (isWeb()) {
       return "Welcome to the most secure and convenient way to manage your trading on Osmosis!";
     }
 
