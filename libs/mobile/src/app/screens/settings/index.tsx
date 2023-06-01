@@ -13,7 +13,14 @@ import * as Sentry from "@sentry/react-native";
 import { observer } from "mobx-react-lite";
 import { FC, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Linking, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Linking,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import codePush, { LocalPackage } from "react-native-code-push";
 import { SvgProps } from "react-native-svg";
 import { useAsyncEffect } from "rooks";
@@ -146,19 +153,21 @@ export const SettingsScreen = observer(function SettingsScreen() {
             ) : null}
           </>
         ) : null}
-        <View
-          style={[
-            styles.flex1,
-            styles.separatorContainer,
-            { flexDirection: "row" },
-          ]}
-        >
-          <View style={[styles.separator]} />
-          <Text style={[styles.separatorText]}>
-            <FormattedMessage id="settings.more" defaultMessage="More" />
-          </Text>
-          <View style={[styles.separator]} />
-        </View>
+        {Platform.OS !== "web" && (
+          <View
+            style={[
+              styles.flex1,
+              styles.separatorContainer,
+              { flexDirection: "row" },
+            ]}
+          >
+            <View style={[styles.separator]} />
+            <Text style={[styles.separatorText]}>
+              <FormattedMessage id="settings.more" defaultMessage="More" />
+            </Text>
+            <View style={[styles.separator]} />
+          </View>
+        )}
         <Setting
           Icon={HelpAndSupport}
           title={intl.formatMessage({

@@ -156,19 +156,22 @@ export const SettingsScreen = observer(function SettingsScreen() {
               ) : null}
             </>
           ) : null}
-          <View
-            style={[
-              styles.flex1,
-              styles.separatorContainer,
-              { flexDirection: "row" },
-            ]}
-          >
-            <View style={[styles.separator]} />
-            <Text style={[styles.separatorText]}>
-              <FormattedMessage id="settings.more" defaultMessage="More" />
-            </Text>
-            <View style={[styles.separator]} />
-          </View>
+
+          {Platform.OS !== "web" && (
+            <View
+              style={[
+                styles.flex1,
+                styles.separatorContainer,
+                { flexDirection: "row" },
+              ]}
+            >
+              <View style={[styles.separator]} />
+              <Text style={[styles.separatorText]}>
+                <FormattedMessage id="settings.more" defaultMessage="More" />
+              </Text>
+              <View style={[styles.separator]} />
+            </View>
+          )}
           <Setting
             Icon={HelpAndSupportIcon}
             title={intl.formatMessage({

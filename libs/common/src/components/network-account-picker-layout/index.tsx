@@ -1,8 +1,4 @@
 import { useTheme } from "@emotion/react";
-import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons/faAngleDoubleLeft";
-import { faRss } from "@fortawesome/free-solid-svg-icons/faRss";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Feature } from "@obi-wallet/config";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { Sdk } from "@obi-wallet/sdk";
@@ -11,12 +7,16 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
-import { TouchableHighlight, TouchableOpacity, View } from "react-native";
+import {
+  Platform,
+  TouchableHighlight,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useStore } from "../../contexts";
-import { isSmallScreenSubstr } from "../../helpers";
-import { HomeBottomTabRoute, RootStackParamList } from "../../router";
+import { RootStackParamList } from "../../router";
 import { Avatar } from "../avatar";
 import { ObiIcon } from "../icons";
 import { Text } from "../typography";
@@ -56,6 +56,9 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
   const { configStore } = useStore();
   const wallet = useCurrentWallet();
   const theme = useTheme();
+  if (Platform.OS === "web") {
+    return null;
+  }
 
   return (
     <View
