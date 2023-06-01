@@ -1,5 +1,6 @@
 export * from "./apps";
 export * from "./assets";
+export * from "./back";
 export * from "./beneficiary-account";
 export * from "./check";
 export * from "./chevron-circle-left";

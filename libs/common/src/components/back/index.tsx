@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { ViewStyle } from "react-native";
 
 import { IconButton } from "../buttons";
-import { ChevronCircleLeftIcon } from "../icons";
+import { BackIcon } from "../icons";
 
 export interface BackProps {
   style?: ViewStyle;
@@ -19,7 +19,7 @@ export const Back = observer(function Back({ style, onPress }: BackProps) {
       style={style}
       hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
     >
-      <ChevronCircleLeftIcon />
+      <BackIcon />
     </IconButton>
   );
 });
