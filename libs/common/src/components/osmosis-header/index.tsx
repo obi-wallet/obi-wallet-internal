@@ -8,10 +8,11 @@ import { BackIcon, OsmosisSmartAccountIcon } from "../icons";
 export interface OsmosisHeaderProps {
   onBack?: () => void;
   onClose?: () => void;
+  hideLogo?: boolean;
 }
 
 export const OsmosisHeader = observer<OsmosisHeaderProps>(
-  function OsmosisHeader({ onBack, onClose }) {
+  function OsmosisHeader({ onBack, onClose, hideLogo }) {
     const navigation = useNavigation();
 
     const onBackPress = getBackHandler();
@@ -38,7 +39,7 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
             </IconButton>
           ) : undefined}
         </View>
-        <OsmosisSmartAccountIcon />
+        {!hideLogo && <OsmosisSmartAccountIcon />}
         <View style={{ width: 29 }}>
           {onClose ? (
             <IconButton
