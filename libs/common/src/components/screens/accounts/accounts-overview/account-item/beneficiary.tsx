@@ -115,7 +115,6 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
                   paddingHorizontal: 10,
                   color: "white",
                   fontSize: 26,
-                  fontFamily: "Poppins",
                   minWidth: 60,
                   textAlign: "center",
                 }}
@@ -155,7 +154,6 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
                   paddingHorizontal: 10,
                   color: "white",
                   fontSize: 26,
-                  fontFamily: "Poppins",
                   alignSelf: "flex-end",
                   minWidth: 60,
                   textAlign: "center",

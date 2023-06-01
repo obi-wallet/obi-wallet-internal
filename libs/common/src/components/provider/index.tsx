@@ -2,7 +2,7 @@ import { Theme, ThemeProvider } from "@emotion/react";
 import { PortalProvider } from "@gorhom/portal";
 import { Brand, Config } from "@obi-wallet/config";
 import { Provider as SdkProvider } from "@obi-wallet/headless-ui";
-import { loopTheme, obiTheme } from "@obi-wallet/theme";
+import { obiTheme } from "@obi-wallet/theme";
 import { NavigationContainer } from "@react-navigation/native";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -97,11 +97,6 @@ export const Provider = observer<ProviderProps>(function Provider({
   );
 });
 
-export function getTheme(brand: Brand): Theme {
-  switch (brand) {
-    case Brand.Obi:
-      return obiTheme;
-    case Brand.Loop:
-      return loopTheme;
-  }
+export function getTheme(_: Brand): Theme {
+  return obiTheme;
 }

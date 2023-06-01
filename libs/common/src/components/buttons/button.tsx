@@ -114,8 +114,7 @@ const getFlavorStyles = (
         ...baseStyles,
         text: {
           ...baseStyles.text,
-          fontFamily: theme.fonts.light,
-          fontWeight: "normal" as const,
+          ...theme.textStyles.light,
           color: "#fff",
           ...flavorStyles.text,
         },
@@ -150,7 +149,7 @@ const getFlavorStyles = (
         text: {
           ...baseStyles.text,
           ...flavorStyles.text,
-          fontFamily: theme.fonts.bold,
+          ...theme.textStyles.bold,
         },
         button: {
           ...baseStyles.button,

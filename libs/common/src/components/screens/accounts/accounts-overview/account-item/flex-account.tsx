@@ -352,7 +352,6 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                             padding: 5,
                             paddingHorizontal: 20,
                             fontSize: 25,
-                            fontFamily: "Poppins",
                             height: 48,
                           }}
                           value={amount ? `$${amount}` : ""}

@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import {
   CloudKeyScreen,
   CreateWalletScreen,
@@ -29,6 +30,7 @@ import { observer } from "mobx-react-lite";
 export const StateRenderer = observer(function StateRenderer() {
   const { walletsStore, walletsStoreState } = useStore();
   const navigationKey = walletsStore.currentWallet?.id ?? "onboarding";
+  const theme = useTheme();
 
   switch (walletsStoreState) {
     case WalletState.LOADING:
@@ -42,9 +44,7 @@ export const StateRenderer = observer(function StateRenderer() {
         <RootStack.Navigator
           screenOptions={{
             headerShown: false,
-            headerTitleStyle: {
-              fontFamily: "Inter",
-            },
+            headerTitleStyle: theme.textStyles.regular,
           }}
         >
           {walletsStore.currentWallet

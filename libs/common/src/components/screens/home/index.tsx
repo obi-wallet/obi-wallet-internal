@@ -73,6 +73,7 @@ export const TabNavigation = observer<TabNavigationProps>(
     const { configStore } = useStore();
     const isLoop = configStore.isLoop();
     const isObi = configStore.isObi();
+    const theme = useTheme();
 
     return (
       <HomeBottomTab.Navigator
@@ -134,9 +135,8 @@ export const TabNavigation = observer<TabNavigationProps>(
           tabBarActiveTintColor: isLoop ? "#F6F5FF" : "white",
           tabBarInactiveTintColor: isLoop ? "#4D5070" : "white",
           tabBarLabelStyle: {
-            fontFamily: isObi ? "poppins-light" : "Inter",
+            ...theme.textStyles.light,
             fontSize: isObi ? 8 : 10,
-            fontWeight: isObi ? "normal" : "500",
             textTransform: isLoop ? "uppercase" : "none",
             marginTop: 15,
             letterSpacing: 0.6,
@@ -291,6 +291,7 @@ const CustomDrawerContent = observer(function CustomDrawerContent(
 
   const { navigation } = props;
   const { chainStore, configStore } = useStore();
+  const theme = useTheme();
 
   const isLoop = configStore.isLoop();
   const networks = configStore.config.chains.enabled.map(Chain.information);
@@ -338,11 +339,12 @@ const CustomDrawerContent = observer(function CustomDrawerContent(
             activeBackgroundColor={
               isLoop ? "#27253E" : "rgba(255, 255, 255, 0.1)"
             }
-            labelStyle={{
-              fontFamily: "Inter",
-              fontSize: 16,
-              fontWeight: "500",
-            }}
+            labelStyle={[
+              theme.textStyles.regular,
+              {
+                fontSize: 16,
+              },
+            ]}
             onPress={action(() => {
               chainStore.setCurrentChain(network.chainId);
               navigation.closeDrawer();

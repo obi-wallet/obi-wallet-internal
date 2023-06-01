@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { useIntl } from "react-intl";
@@ -27,6 +28,7 @@ export const EmailTabs = observer<EmailTabsProps>(function EmailTypeTabs({
   onPress,
 }) {
   const intl = useIntl();
+  const theme = useTheme();
 
   function renderTabButton({
     tab,
@@ -67,11 +69,9 @@ export const EmailTabs = observer<EmailTabsProps>(function EmailTypeTabs({
           <Text
             style={{
               color: selectedTab === tab && !isObi ? "#89F5C2" : "white",
-              textDecorationLine:
-                selectedTab === tab && !isObi ? "underline" : "none",
-              ...(selectedTab === tab && isObi
-                ? { fontWeight: "700" }
-                : { fontFamily: "poppins-light" }),
+              ...(selectedTab === tab
+                ? theme.textStyles.bold
+                : theme.textStyles.light),
             }}
           >
             {label}

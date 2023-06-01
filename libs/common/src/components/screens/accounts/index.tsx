@@ -47,9 +47,7 @@ export const AccountsScreen = observer(function AccountsScreen() {
     <AccountsStack.Navigator
       screenOptions={{
         headerShown: false,
-        headerTitleStyle: {
-          fontFamily: "Inter",
-        },
+        headerTitleStyle: theme.textStyles.regular,
       }}
     >
       <AccountsStack.Screen

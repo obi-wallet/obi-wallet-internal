@@ -14,15 +14,7 @@ export const Text = observer<TextProps & { children: ReactNode }>(
     const theme = useTheme();
 
     return (
-      <OriginalText
-        style={[
-          {
-            fontFamily: theme.fonts.regular,
-          },
-          style,
-        ]}
-        {...props}
-      >
+      <OriginalText style={[theme.textStyles.regular, style]} {...props}>
         {children}
       </OriginalText>
     );
@@ -36,12 +28,7 @@ export const BaseTextInput = observer<TextInputProps>(function TextInput({
   const theme = useTheme();
   return (
     <OriginalTextInput
-      style={[
-        {
-          fontFamily: theme.fonts.regular,
-        },
-        style,
-      ]}
+      style={[theme.textStyles.regular, style]}
       placeholderTextColor="#555"
       {...props}
     />

@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { ChainId, Message } from "@obi-wallet/sdk";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { Msg } from "@terra-money/feather.js";
@@ -57,6 +58,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
     const { configStore } = useStore();
     const isObi = configStore.isObi();
     const isLoop = configStore.isLoop();
+    const theme = useTheme();
 
     return (
       <BaseModal {...props} visible>
@@ -210,14 +212,10 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
             }}
           >
             <Text
-              style={{
-                color: selectedTab === tab && !isObi ? "#89F5C2" : "white",
-                textDecorationLine:
-                  selectedTab === tab && !isObi ? "underline" : "none",
-                ...(selectedTab === tab && isObi
-                  ? { fontWeight: "700" }
-                  : { fontFamily: "Poppins" }),
-              }}
+              style={[
+                { color: "#ffffff" },
+                selectedTab === tab ? theme.textStyles.bold : undefined,
+              ]}
             >
               {label}
             </Text>

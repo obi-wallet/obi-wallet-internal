@@ -33,17 +33,6 @@ export interface CommonTheme {
   };
 }
 
-export interface CustomTheme extends CommonTheme {
-  colors: {
-    background: string;
-  };
-  fonts: {
-    light: string;
-    regular: string;
-    bold: string;
-  };
-}
-
 const fontWeights = {
   bold: Platform.select({
     android: "bold" as const,
@@ -104,27 +93,26 @@ export const common: CommonTheme = {
   fontWeights,
 };
 
-export const obiTheme: CustomTheme = {
+export const obiTheme = {
   ...common,
   colors: {
     background: "#1a1a1a",
   },
-  fonts: {
-    // TODO: modal: review web & native
-    bold: "Poppins",
-    regular: "Poppins",
-    light: "Poppins",
+  // TODO: modal: review web & native
+  textStyles: {
+    bold: {
+      fontFamily: "Poppins",
+      fontWeight: "bold",
+    },
+    regular: {
+      fontFamily: "Poppins",
+      fontWeight: "normal",
+    },
+    light: {
+      fontFamily: "Poppins",
+      fontWeight: "300",
+    },
   },
-};
+} as const;
 
-export const loopTheme: CustomTheme = {
-  ...common,
-  colors: {
-    background: "#090817",
-  },
-  fonts: {
-    bold: "Inter-Bold",
-    regular: "Inter-Regular",
-    light: "Inter-Light",
-  },
-};
+export type CustomTheme = typeof obiTheme;

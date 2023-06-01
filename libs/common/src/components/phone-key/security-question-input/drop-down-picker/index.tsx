@@ -31,8 +31,8 @@ export const DropDownPicker = observer<DropDownPickerProps<unknown | null>>(
             color: "#fff",
             paddingHorizontal: 20,
             height: 56,
-            fontFamily: theme.fonts.regular,
             fontSize: 14,
+            ...theme.textStyles.regular,
           }}
         >
           {props.items.map((item) => {

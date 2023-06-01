@@ -1,3 +1,5 @@
+import { useTheme } from "@emotion/react";
+import { CustomTheme } from "@obi-wallet/theme";
 import { observer } from "mobx-react-lite";
 import {
   Platform,
@@ -11,19 +13,18 @@ import {
 import { useStore } from "../../contexts";
 import { Text } from "../typography";
 
-const getBaseStyles = (isObi: boolean) =>
+const getBaseStyles = (theme: CustomTheme) =>
   StyleSheet.create({
     text: {
-      fontWeight: "500",
       fontSize: 12,
-      color: isObi ? "#437DFF" : "#6959E6",
-      ...(isObi ? { fontFamily: "Poppins" } : {}),
+      color: "#437DFF",
+      ...theme.textStyles.regular,
     },
     button: {
       height: 29,
       borderWidth: 1,
       borderRadius: 19,
-      borderColor: isObi ? "#437DFF" : "rgba(105, 89, 230, 0.4)",
+      borderColor: "#437DFF",
       justifyContent: "center",
       alignItems: "center",
       paddingHorizontal: 15,
@@ -40,9 +41,8 @@ export const InlineButton = observer(function InlineButton({
   label,
   ...props
 }: InlineButtonProps) {
-  const { configStore } = useStore();
-  const isObi = configStore.isObi();
-  const baseStyles = getBaseStyles(isObi);
+  const theme = useTheme();
+  const baseStyles = getBaseStyles(theme);
   const children = <Text style={baseStyles.text}>{label}</Text>;
 
   const buttonProps = {

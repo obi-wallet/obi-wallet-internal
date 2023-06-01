@@ -364,13 +364,15 @@ const TilesContainer = styled.View({
   flex: 1,
 });
 
-const Heading = styled.Text({
-  color: "#F6F5FF",
-  fontSize: isSmallScreenNumber(14, 18),
-  fontWeight: "700",
-  fontFamily: "Inter",
-  paddingBottom: 4,
+const Heading = styled.Text(({ theme }) => {
+  return {
+    color: "#F6F5FF",
+    fontSize: isSmallScreenNumber(14, 18),
+    paddingBottom: 4,
+    ...theme.textStyles.bold,
+  };
 });
+
 const SubHeading = styled.Text({
   color: "#F6F5FF",
   opacity: 0.6,

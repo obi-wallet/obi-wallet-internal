@@ -20,7 +20,6 @@ const getStyles = (isObi: boolean) =>
       fontSize: 10,
       marginBottom: 5,
       textTransform: "uppercase",
-      ...(isObi ? { fontFamily: "poppins" } : {}),
     },
     input: {
       width: "100%",
@@ -32,7 +31,6 @@ const getStyles = (isObi: boolean) =>
       fontWeight: "500",
       color: "#F6F5FF",
       borderRadius: isObi ? 30 : 12,
-      ...(isObi ? { fontFamily: "poppins" } : {}),
     },
   });
 
