@@ -12,9 +12,9 @@ import { PrettyMessage } from "./pretty-message";
 import { useStore } from "../../../contexts";
 import { Alert } from "../../../helpers";
 import { BroadcastingAnimation } from "../../animations";
-import { Background } from "../../background";
 import { BaseModal } from "../../base-modal";
 import { Button } from "../../buttons";
+import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 import { ScreenContainer } from "../../screen-container";
 import { Text } from "../../typography";
 
@@ -62,125 +62,127 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
 
     return (
       <BaseModal {...props} visible>
-        <ScreenContainer>
-          {loading ? <BroadcastingAnimation /> : null}
+        <OsmosisScreenContainer>
+          <ScreenContainer>
+            {loading ? <BroadcastingAnimation /> : null}
 
-          <Background />
-
-          <View
-            style={{
-              height: 50,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {isOnboarding ? (
-              <>
-                <Text style={{ color: "white", fontWeight: "700" }}>
-                  Now sign your first Obi transaction
-                </Text>
-                <Text style={{ color: "white", opacity: 0.6 }}>
-                  Use your keys to create your wallet
-                </Text>
-              </>
-            ) : (
-              <Text style={{ color: "white", fontSize: 16, fontWeight: "500" }}>
-                <FormattedMessage
-                  id="signature.modal.confirmtx"
-                  defaultMessage="Confirm Transaction"
-                />
-              </Text>
-            )}
-          </View>
-
-          <View style={{ flex: 1 }}>
             <View
               style={{
-                flexDirection: "row",
                 height: 50,
-                ...(isObi && {
-                  borderBottomColor: "rgba(250,250,250,.2)",
-                  borderBottomWidth: 1,
-                }),
-                marginHorizontal: isObi ? 10 : 0,
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              {renderTabButton({
-                tab: Tab.TransactionDetails,
-                label: intl.formatMessage({
-                  id: "signature.modal.txdetails",
-                  defaultMessage: "Tx Details",
-                }),
-                isObi,
-              })}
-              {renderTabButton({
-                tab: Tab.Data,
-                label: intl.formatMessage({
-                  id: "signature.modal.data",
-                  defaultMessage: "Data",
-                }),
-                isObi,
-              })}
+              {isOnboarding ? (
+                <>
+                  <Text style={{ color: "white", fontWeight: "700" }}>
+                    Now sign your first Obi transaction
+                  </Text>
+                  <Text style={{ color: "white", opacity: 0.6 }}>
+                    Use your keys to create your wallet
+                  </Text>
+                </>
+              ) : (
+                <Text
+                  style={{ color: "white", fontSize: 16, fontWeight: "500" }}
+                >
+                  <FormattedMessage
+                    id="signature.modal.confirmtx"
+                    defaultMessage="Confirm Transaction"
+                  />
+                </Text>
+              )}
             </View>
 
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "space-between",
-              }}
-            >
+            <View style={{ flex: 1 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  height: 50,
+                  ...(isObi && {
+                    borderBottomColor: "rgba(250,250,250,.2)",
+                    borderBottomWidth: 1,
+                  }),
+                  marginHorizontal: isObi ? 10 : 0,
+                }}
+              >
+                {renderTabButton({
+                  tab: Tab.TransactionDetails,
+                  label: intl.formatMessage({
+                    id: "signature.modal.txdetails",
+                    defaultMessage: "Tx Details",
+                  }),
+                  isObi,
+                })}
+                {renderTabButton({
+                  tab: Tab.Data,
+                  label: intl.formatMessage({
+                    id: "signature.modal.data",
+                    defaultMessage: "Data",
+                  }),
+                  isObi,
+                })}
+              </View>
+
               <View
                 style={{
                   flex: 1,
-                  borderTopRightRadius: 0,
+                  justifyContent: "space-between",
                 }}
               >
-                <ScrollView
+                <View
                   style={{
                     flex: 1,
-                    padding: 10,
-                    ...{ backgroundColor: isLoop ? "#130F23" : "" },
-                    marginBottom: 10,
-                    borderRadius: 12,
-                    borderTopRightRadius: Tab.Data === selectedTab ? 0 : 12,
-                    borderTopLeftRadius:
-                      Tab.TransactionDetails === selectedTab ? 0 : 12,
+                    borderTopRightRadius: 0,
                   }}
                 >
-                  {renderTabContent()}
-                </ScrollView>
-              </View>
+                  <ScrollView
+                    style={{
+                      flex: 1,
+                      padding: 10,
+                      ...{ backgroundColor: isLoop ? "#130F23" : "" },
+                      marginBottom: 10,
+                      borderRadius: 12,
+                      borderTopRightRadius: Tab.Data === selectedTab ? 0 : 12,
+                      borderTopLeftRadius:
+                        Tab.TransactionDetails === selectedTab ? 0 : 12,
+                    }}
+                  >
+                    {renderTabContent()}
+                  </ScrollView>
+                </View>
 
-              {children}
+                {children}
 
-              <Button
-                disabled={disabled}
-                flavor="green"
-                label={intl.formatMessage({
-                  id: "signature.modal.confirm",
-                  defaultMessage: "Confirm",
-                })}
-                onPress={() => {
-                  onConfirm();
-                }}
-              />
-              {cancelable && (
                 <Button
-                  flavor={isObi ? "cancel" : "blue"}
+                  disabled={disabled}
+                  flavor="green"
                   label={intl.formatMessage({
-                    id: "signature.modal.cancel",
-                    defaultMessage: "Cancel",
+                    id: "signature.modal.confirm",
+                    defaultMessage: "Confirm",
                   })}
                   onPress={() => {
-                    onCancel();
+                    onConfirm();
                   }}
                 />
-              )}
+                {cancelable && (
+                  <Button
+                    flavor={isObi ? "cancel" : "blue"}
+                    label={intl.formatMessage({
+                      id: "signature.modal.cancel",
+                      defaultMessage: "Cancel",
+                    })}
+                    onPress={() => {
+                      onCancel();
+                    }}
+                  />
+                )}
+              </View>
             </View>
-          </View>
 
-          {footer}
-        </ScreenContainer>
+            {footer}
+          </ScreenContainer>
+        </OsmosisScreenContainer>
       </BaseModal>
     );
 

@@ -17,7 +17,7 @@ export const ScreenContainer = observer<ScreenContainerProps>(
         style={[
           {
             flex: 1,
-            backgroundColor: theme.colors.background,
+            // backgroundColor: theme.colors.background,
             paddingHorizontal: 20,
             justifyContent: "space-between",
           },

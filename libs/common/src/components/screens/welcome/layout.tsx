@@ -1,14 +1,13 @@
 import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
-import { FormattedMessage } from "react-intl";
 import { SafeAreaView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useStore } from "../../../contexts";
 import { BrandToggle } from "../../brand-toggle";
-import { InitialBackground } from "../../initial-background";
 import { LanguagePicker } from "../../language-picker";
+import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 import { Text } from "../../typography";
 
 export interface WelcomeLayoutProps {
@@ -25,7 +24,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
     const theme = useTheme();
 
     return (
-      <InitialBackground>
+      <OsmosisScreenContainer>
         <SafeAreaView
           style={{
             flex: 1,
@@ -151,7 +150,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
             {children}
           </View>
         </SafeAreaView>
-      </InitialBackground>
+      </OsmosisScreenContainer>
     );
   }
 );

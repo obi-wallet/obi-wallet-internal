@@ -97,6 +97,11 @@ export const obiTheme = {
   ...common,
   colors: {
     background: "#1a1a1a",
+    panelBackground: "#272727",
+  },
+  background: {
+    image: undefined,
+    color: "#1a1a1a",
   },
   // TODO: modal: review web & native
   textStyles: {
@@ -112,6 +117,18 @@ export const obiTheme = {
       fontFamily: "Poppins",
       fontWeight: "300",
     },
+  } as const,
+};
+
+export const osmosisTheme = {
+  ...obiTheme,
+  colors: {
+    background: "#131032",
+    panelBackground: "#27284E",
+  },
+  background: {
+    image: "/background.png",
+    color: "#131032",
   },
 } as const;
 

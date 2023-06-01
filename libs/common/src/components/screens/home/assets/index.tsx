@@ -36,6 +36,7 @@ import {
   StakingIcon,
 } from "../../../icons";
 import { NetworkAccountPickerLayout } from "../../../network-account-picker-layout";
+import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { RefreshableFlatList } from "../../../refreshable-flat-list";
 import { Text } from "../../../typography";
 
@@ -46,37 +47,12 @@ export const Assets = observer(function Assets() {
 
   // TODO: image
   return (
-    <View
-      style={{
-        backgroundColor: theme.colors.background,
-        flex: 1,
-      }}
-    >
+    <OsmosisScreenContainer>
       <NetworkAccountPickerLayout>
         <BalanceAndActions />
         <AssetsList />
       </NetworkAccountPickerLayout>
-    </View>
-  );
-
-  return (
-    <ImageBackground
-      source={require("../assets/background.png")}
-      resizeMode="cover"
-      imageStyle={{
-        height: isLoop ? 403 : 0,
-        marginTop: isSmallScreenNumber(0, 60),
-      }}
-      style={{
-        backgroundColor: theme.colors.background,
-        flex: 1,
-      }}
-    >
-      <NetworkAccountPickerLayout>
-        <BalanceAndActions />
-        <AssetsList />
-      </NetworkAccountPickerLayout>
-    </ImageBackground>
+    </OsmosisScreenContainer>
   );
 });
 
@@ -262,6 +238,7 @@ const AssetsList = observer(function AssetsList() {
   });
   const { configStore } = useStore();
   const isLoop = configStore.isLoop();
+  const theme = useTheme();
 
   return (
     <View
@@ -270,7 +247,7 @@ const AssetsList = observer(function AssetsList() {
         flexDirection: "row",
         justifyContent: "center",
         marginTop: isSmallScreenNumber(20, 40),
-        backgroundColor: isLoop ? "#100F1E" : "#272727",
+        backgroundColor: theme.colors.panelBackground,
         borderTopLeftRadius: isLoop ? 30 : 7,
         borderTopRightRadius: isLoop ? 30 : 7,
         paddingHorizontal: 16,

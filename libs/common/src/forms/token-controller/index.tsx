@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -51,6 +52,7 @@ export const TokenController = observer<TokenControllerProps>(
     const { configStore } = useStore();
     const isObi = configStore.isObi();
     const isLoop = configStore.isLoop();
+    const theme = useTheme();
 
     const [denominationOpened, setDenominationOpened] = useState(false);
 
@@ -92,7 +94,7 @@ export const TokenController = observer<TokenControllerProps>(
           <Container
             style={{
               borderRadius: 12,
-              backgroundColor: isLoop ? "#17162C" : "#272727",
+              backgroundColor: theme.colors.panelBackground,
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
@@ -220,7 +222,7 @@ export const TokenController = observer<TokenControllerProps>(
               </View>
               <View
                 style={{
-                  backgroundColor: isLoop ? "transparent" : "#272727",
+                  backgroundColor: theme.colors.panelBackground,
                   flex: 1,
                   ...(isObi
                     ? {

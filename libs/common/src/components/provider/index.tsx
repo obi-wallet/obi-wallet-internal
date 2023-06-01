@@ -2,7 +2,7 @@ import { Theme, ThemeProvider } from "@emotion/react";
 import { PortalProvider } from "@gorhom/portal";
 import { Brand, Config } from "@obi-wallet/config";
 import { Provider as SdkProvider } from "@obi-wallet/headless-ui";
-import { obiTheme } from "@obi-wallet/theme";
+import { obiTheme, osmosisTheme } from "@obi-wallet/theme";
 import { NavigationContainer } from "@react-navigation/native";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -98,5 +98,7 @@ export const Provider = observer<ProviderProps>(function Provider({
 });
 
 export function getTheme(_: Brand): Theme {
-  return obiTheme;
+  // @ts-expect-error Ignore for now
+  // TODO: should be prop / part of config instead
+  return osmosisTheme;
 }

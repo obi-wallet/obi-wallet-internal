@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -17,9 +18,8 @@ import {
   SettingsRoute,
   useRootNavigation,
 } from "../../../../router";
-import { Back } from "../../../back";
-import { Background } from "../../../background";
 import { KeyboardAvoidingView } from "../../../keyboard-avoiding-view";
+import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { Text } from "../../../typography";
 
 export type CloudKeyScreenProps = NativeStackScreenProps<
@@ -153,67 +153,61 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
         flex: 1,
       }}
     >
-      <SafeAreaView style={{ flex: 1 }}>
-        <Background />
-        <View
-          style={{
-            flex: 1,
-            paddingHorizontal: 20,
-            justifyContent: "space-between",
-          }}
-        >
-          <View>
-            <Back
-              style={{
-                marginLeft: -5,
-                padding: 5,
-                width: 25,
-              }}
-            />
+      <OsmosisScreenContainer>
+        <SafeAreaView style={{ flex: 1 }}>
+          <View
+            style={{
+              flex: 1,
+              paddingHorizontal: 20,
+              justifyContent: "space-between",
+            }}
+          >
             <View>
               <View>
-                <Text
-                  style={{
-                    color: "#F6F5FF",
-                    fontSize: isSmallScreenNumber(20, 24),
-                    fontWeight: "600",
-                    marginTop: isSmallScreenNumber(20, 32),
-                  }}
-                >
-                  {isRecovering
-                    ? "Recover your Cloud Key"
-                    : "Set up a Cloud Key"}
-                </Text>
-                <Text
-                  style={{
-                    color: isObi ? "#fff" : "#999CB6",
-                    fontSize: isSmallScreenNumber(12, 14),
-                    marginTop: 10,
-                  }}
-                >
-                  {isRecovering
-                    ? "Import your key from the cloud"
-                    : "Generate a key and save it to the cloud."}
-                </Text>
-                <FlatList
-                  data={cloudData}
-                  renderItem={({ item }) => (
-                    <ListItem
-                      item={item}
-                      onScanPress={() => {
-                        selectedTagType.current = item.title;
-                        item.handler();
-                      }}
-                      selectedTagType={selectedTagType.current}
-                      scannedNfc={false}
-                    />
-                  )}
-                />
+                <View>
+                  <Text
+                    style={{
+                      color: "#F6F5FF",
+                      fontSize: isSmallScreenNumber(20, 24),
+                      fontWeight: "600",
+                      marginTop: isSmallScreenNumber(20, 32),
+                    }}
+                  >
+                    {isRecovering
+                      ? "Recover your Cloud Key"
+                      : "Set up a Cloud Key"}
+                  </Text>
+                  <Text
+                    style={{
+                      color: isObi ? "#fff" : "#999CB6",
+                      fontSize: isSmallScreenNumber(12, 14),
+                      marginTop: 10,
+                    }}
+                  >
+                    {isRecovering
+                      ? "Import your key from the cloud"
+                      : "Generate a key and save it to the cloud."}
+                  </Text>
+                  <FlatList
+                    data={cloudData}
+                    renderItem={({ item }) => (
+                      <ListItem
+                        item={item}
+                        onScanPress={() => {
+                          selectedTagType.current = item.title;
+                          item.handler();
+                        }}
+                        selectedTagType={selectedTagType.current}
+                        scannedNfc={false}
+                      />
+                    )}
+                  />
+                </View>
               </View>
             </View>
           </View>
-        </View>
-      </SafeAreaView>
+        </SafeAreaView>
+      </OsmosisScreenContainer>
     </KeyboardAvoidingView>
   );
 });
@@ -229,6 +223,8 @@ const ListItem = observer(function ListItem({
   selectedTagType: string;
   onScanPress: () => void;
 }) {
+  const theme = useTheme();
+
   return (
     <View
       style={{
@@ -237,7 +233,7 @@ const ListItem = observer(function ListItem({
         justifyContent: "space-between",
         marginTop: isSmallScreenNumber(10, 15),
         paddingVertical: isSmallScreenNumber(10, 15),
-        backgroundColor: "#272727",
+        backgroundColor: theme.colors.panelBackground,
         borderRadius: 10,
         paddingHorizontal: 10,
       }}

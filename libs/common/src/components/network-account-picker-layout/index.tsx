@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons/faAngleDoubleLeft";
 import { faRss } from "@fortawesome/free-solid-svg-icons/faRss";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -53,8 +54,8 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
       NavigationProp<RootStackParamList>
   >();
   const { configStore } = useStore();
-  const isObi = configStore.isObi();
   const wallet = useCurrentWallet();
+  const theme = useTheme();
 
   return (
     <View
@@ -126,7 +127,7 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
           flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: isObi ? "#272727" : "transparent",
+          backgroundColor: theme.colors.panelBackground,
           paddingRight: 10,
           borderRadius: 8,
         }}

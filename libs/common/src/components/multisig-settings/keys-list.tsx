@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { KeyType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import {
@@ -109,6 +110,8 @@ export const KeyListItem = observer(function KeyListItem({
   const { configStore } = useStore();
   const isObi = configStore.isObi();
   const isLoop = configStore.isLoop();
+  const theme = useTheme();
+
   const [pending, setPending] = useState(false);
   useEffect(() => {
     if (signed) {
@@ -199,7 +202,7 @@ export const KeyListItem = observer(function KeyListItem({
       style={{
         height: 59,
         width: "100%",
-        backgroundColor: isLoop ? "#111023" : "#272727",
+        backgroundColor: theme.colors.panelBackground,
         marginBottom: 10,
         flexDirection: "row",
         borderRadius: 12,

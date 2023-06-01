@@ -18,11 +18,10 @@ import {
   OnboardingRoute,
   useRootNavigation,
 } from "../../../../router";
-import { Back } from "../../../back";
-import { Background } from "../../../background";
 import { AsyncButton } from "../../../buttons";
 import { ObiFaceScannerIcon } from "../../../icons";
 import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
+import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { Text } from "../../../typography";
 
 export type DeviceKeyScreenProps = NativeStackScreenProps<
@@ -115,131 +114,125 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: isObi ? "#1A1A1A" : "" }}>
-      {isObi ? null : <Background />}
-      <KeyboardAwareScrollView
-        style={{
-          flex: 1,
-          paddingHorizontal: 20,
-        }}
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: "space-between",
-        }}
-      >
-        <View>
-          <Back
-            style={{
-              marginLeft: -5,
-              padding: 5,
-              width: 25,
-            }}
-          />
-
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
+    <OsmosisScreenContainer>
+      <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardAwareScrollView
+          style={{
+            flex: 1,
+            paddingHorizontal: 20,
+          }}
+          contentContainerStyle={{
+            flex: 1,
+            flexGrow: 1,
+            justifyContent: "space-between",
+          }}
+        >
+          <View>
             <View
               style={{
-                backgroundColor: isObi
-                  ? "rgba(219, 222, 255,0.07)"
-                  : "rgba(86, 84, 141, 0.07)",
                 justifyContent: "center",
                 alignItems: "center",
-                width: isSmallScreenNumber(200, 296),
-                height: isSmallScreenNumber(200, 296),
-                borderRadius: isSmallScreenNumber(200, 296),
               }}
             >
               <View
                 style={{
                   backgroundColor: isObi
-                    ? "rgba(219, 222, 255,0.17)"
-                    : "rgba(86, 84, 141, 0.17)",
+                    ? "rgba(219, 222, 255,0.07)"
+                    : "rgba(86, 84, 141, 0.07)",
                   justifyContent: "center",
                   alignItems: "center",
-                  width: isSmallScreenNumber(140, 224),
-                  height: isSmallScreenNumber(140, 224),
-                  borderRadius: isSmallScreenNumber(140, 224),
+                  width: isSmallScreenNumber(200, 296),
+                  height: isSmallScreenNumber(200, 296),
+                  borderRadius: isSmallScreenNumber(200, 296),
                 }}
               >
                 <View
-                  style={
-                    isSmallScreen()
-                      ? {
-                          width: 70,
-                          height: 70,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }
-                      : {
-                          width: "50%",
-                          height: "50%",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }
-                  }
+                  style={{
+                    backgroundColor: isObi
+                      ? "rgba(219, 222, 255,0.17)"
+                      : "rgba(86, 84, 141, 0.17)",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: isSmallScreenNumber(140, 224),
+                    height: isSmallScreenNumber(140, 224),
+                    borderRadius: isSmallScreenNumber(140, 224),
+                  }}
                 >
-                  <ObiFaceScannerIcon />
+                  <View
+                    style={
+                      isSmallScreen()
+                        ? {
+                            width: 70,
+                            height: 70,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }
+                        : {
+                            width: "50%",
+                            height: "50%",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }
+                    }
+                  >
+                    <ObiFaceScannerIcon />
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
 
-          <Text
-            style={{
-              fontSize: isSmallScreenNumber(20, 24),
-              fontWeight: "600",
-              color: "#F6F5FF",
-              marginTop: 79,
-            }}
+            <Text
+              style={{
+                fontSize: isSmallScreenNumber(20, 24),
+                fontWeight: "600",
+                color: "#F6F5FF",
+                marginTop: 79,
+              }}
+            >
+              <FormattedMessage
+                id="onboarding4.authyourkeys"
+                defaultMessage="Authenticate Your Keys"
+              />
+            </Text>
+            <Text
+              style={{
+                color: isObi ? "white" : "#999CB6",
+                fontSize: isSmallScreenNumber(12, 14),
+                fontWeight: "400",
+                marginTop: 10,
+                // TODO: might be required for native
+                // ...(isObi ? { fontFamily: "poppins-light" } : {}),
+              }}
+            >
+              <FormattedMessage
+                id="onboarding4.authyourkeys.subtext"
+                defaultMessage="With Obi, your Device, iCloud, and phone number work as a multi-factor authenticator."
+              />
+            </Text>
+          </View>
+          <View
+            style={{ flex: 1, justifyContent: "flex-end", paddingBottom: 20 }}
           >
-            <FormattedMessage
-              id="onboarding4.authyourkeys"
-              defaultMessage="Authenticate Your Keys"
-            />
-          </Text>
-          <Text
-            style={{
-              color: isObi ? "white" : "#999CB6",
-              fontSize: isSmallScreenNumber(12, 14),
-              fontWeight: "400",
-              marginTop: 10,
-              // TODO: might be required for native
-              // ...(isObi ? { fontFamily: "poppins-light" } : {}),
-            }}
-          >
-            <FormattedMessage
-              id="onboarding4.authyourkeys.subtext"
-              defaultMessage="With Obi, your Device, iCloud, and phone number work as a multi-factor authenticator."
-            />
-          </Text>
-        </View>
-        <View
-          style={{ flex: 1, justifyContent: "flex-end", paddingBottom: 20 }}
-        >
-          <AsyncButton
-            label={intl.formatMessage({
-              id: "onboarding4.biometrics.button",
-            })}
-            flavor="blue"
-            onPress={async () => {
-              if (scannedBiometrics) {
-                onSubmit();
-              } else {
-                await scanBiometrics();
-                if (Platform.OS !== "ios") {
+            <AsyncButton
+              label={intl.formatMessage({
+                id: "onboarding4.biometrics.button",
+              })}
+              flavor="blue"
+              onPress={async () => {
+                if (scannedBiometrics) {
                   onSubmit();
+                } else {
+                  await scanBiometrics();
+                  if (Platform.OS !== "ios") {
+                    onSubmit();
+                  }
                 }
-              }
-            }}
-            autoPress={Platform.OS === "ios"}
-          />
-        </View>
-      </KeyboardAwareScrollView>
-    </SafeAreaView>
+              }}
+              autoPress={Platform.OS === "ios"}
+            />
+          </View>
+        </KeyboardAwareScrollView>
+      </SafeAreaView>
+    </OsmosisScreenContainer>
   );
 });

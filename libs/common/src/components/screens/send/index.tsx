@@ -10,7 +10,6 @@ import {
   tokenGivenBalances,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -29,10 +28,10 @@ import {
   RootRoute,
   RootStackParamList,
 } from "../../../router";
-import { Back } from "../../back";
 import { BaseModal } from "../../base-modal";
 import { Button } from "../../buttons";
 import { KeyboardAvoidingView } from "../../keyboard-avoiding-view";
+import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 
 export type SendScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -99,144 +98,145 @@ export const SendScreenComponent = observer<
   const theme = useTheme();
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }}>
-      <SafeAreaView
-        style={{
-          backgroundColor: theme.colors.background,
-          flex: 1,
-          justifyContent: "space-between",
-          paddingHorizontal: 20,
-          paddingVertical: Platform.select({
-            ios: isSmallScreenNumber(20, 20),
-            android: isSmallScreenNumber(30, 30),
-          }),
-        }}
-      >
-        {confirmModalVisible.visible && confirmModalVisible.success ? (
-          <SuccessModal
-            visible={confirmModalVisible.visible && confirmModalVisible.success}
-            onDismiss={() => {
-              setConfirmModalStatus({ visible: false });
-              navigation.navigate(HomeBottomTabRoute.Assets);
-            }}
-          />
-        ) : null}
-        {confirmModalVisible.visible && !confirmModalVisible.success ? (
-          <FailureModal
-            visible={
-              confirmModalVisible.visible && !confirmModalVisible.success
-            }
-            onDismiss={() => {
-              setConfirmModalStatus({ visible: false });
-            }}
-          />
-        ) : null}
-        <View>
-          <View style={{ flexDirection: "row" }}>
-            <Back style={{ alignSelf: "flex-start", zIndex: 2 }} />
-            <Text
+    <OsmosisScreenContainer>
+      <KeyboardAvoidingView style={{ flex: 1 }}>
+        <SafeAreaView
+          style={{
+            flex: 1,
+            justifyContent: "space-between",
+            paddingHorizontal: 20,
+            paddingVertical: Platform.select({
+              ios: isSmallScreenNumber(20, 20),
+              android: isSmallScreenNumber(30, 30),
+            }),
+          }}
+        >
+          {confirmModalVisible.visible && confirmModalVisible.success ? (
+            <SuccessModal
+              visible={
+                confirmModalVisible.visible && confirmModalVisible.success
+              }
+              onDismiss={() => {
+                setConfirmModalStatus({ visible: false });
+                navigation.navigate(HomeBottomTabRoute.Assets);
+              }}
+            />
+          ) : null}
+          {confirmModalVisible.visible && !confirmModalVisible.success ? (
+            <FailureModal
+              visible={
+                confirmModalVisible.visible && !confirmModalVisible.success
+              }
+              onDismiss={() => {
+                setConfirmModalStatus({ visible: false });
+              }}
+            />
+          ) : null}
+          <View>
+            <View style={{ flexDirection: "row" }}>
+              <Text
+                style={{
+                  width: "100%",
+                  textAlign: "center",
+                  color: "#F6F5FF",
+                  fontWeight: "600",
+                }}
+              >
+                <FormattedMessage id="send.send" defaultMessage="Send" />
+              </Text>
+            </View>
+            <View
               style={{
-                width: "100%",
-                textAlign: "center",
-                marginLeft: -20,
-                color: "#F6F5FF",
-                fontWeight: "600",
+                marginTop: 55,
               }}
             >
-              <FormattedMessage id="send.send" defaultMessage="Send" />
-            </Text>
-          </View>
-          <View
-            style={{
-              marginTop: 55,
-            }}
-          >
-            <Controller
-              name="address"
-              control={control}
-              render={({ field, fieldState }) => {
-                return (
-                  <AddressController
-                    chainId={chainStore.currentChain}
-                    label={intl.formatMessage({
-                      id: "send.to",
-                      defaultMessage: "To",
-                    })}
-                    placeholder={intl.formatMessage({
-                      id: "send.walletaddress",
-                      defaultMessage: "Wallet Address",
-                    })}
-                    field={field}
-                    fieldState={fieldState}
-                  />
-                );
+              <Controller
+                name="address"
+                control={control}
+                render={({ field, fieldState }) => {
+                  return (
+                    <AddressController
+                      chainId={chainStore.currentChain}
+                      label={intl.formatMessage({
+                        id: "send.to",
+                        defaultMessage: "To",
+                      })}
+                      placeholder={intl.formatMessage({
+                        id: "send.walletaddress",
+                        defaultMessage: "Wallet Address",
+                      })}
+                      field={field}
+                      fieldState={fieldState}
+                    />
+                  );
+                }}
+              />
+            </View>
+            <View
+              style={{
+                marginTop: 35,
               }}
-            />
+            >
+              <Controller
+                name="token"
+                control={control}
+                render={({ field, fieldState }) => {
+                  return (
+                    <TokenController
+                      field={field}
+                      fieldState={fieldState}
+                      balances={balances.data}
+                      refetch={balances.refetch}
+                    />
+                  );
+                }}
+              />
+            </View>
           </View>
-          <View
-            style={{
-              marginTop: 35,
-            }}
-          >
-            <Controller
-              name="token"
-              control={control}
-              render={({ field, fieldState }) => {
-                return (
-                  <TokenController
-                    field={field}
-                    fieldState={fieldState}
-                    balances={balances.data}
-                    refetch={balances.refetch}
-                  />
-                );
-              }}
-            />
-          </View>
-        </View>
-        <Button
-          flavor="blue"
-          label={intl.formatMessage({
-            id: "send.next",
-            defaultMessage: "Next",
-          })}
-          disabled={!formState.isValid}
-          onPress={handleSubmit(async (data) => {
-            console.log(data);
-            invariant(wallet, "Expected wallet to be defined.");
+          <Button
+            flavor="blue"
+            label={intl.formatMessage({
+              id: "send.next",
+              defaultMessage: "Next",
+            })}
+            disabled={!formState.isValid}
+            onPress={handleSubmit(async (data) => {
+              console.log(data);
+              invariant(wallet, "Expected wallet to be defined.");
 
-            function getMessages(): Message[] {
-              if (!wallet.address) return [];
+              function getMessages(): Message[] {
+                if (!wallet.address) return [];
 
-              return Messages.chainId(wallet.chainId).getSendMessages({
-                fromAddress: wallet.address,
-                toAddress: data.address,
-                // TODO: TypeScript doesn't understand that we receive the processed data here
-                tokens: [data.token as unknown as Token],
-              });
-            }
+                return Messages.chainId(wallet.chainId).getSendMessages({
+                  fromAddress: wallet.address,
+                  toAddress: data.address,
+                  // TODO: TypeScript doesn't understand that we receive the processed data here
+                  tokens: [data.token as unknown as Token],
+                });
+              }
 
-            const chain = wallet.chainId;
-            // TODO:
-            invariant(isTerraChain(chain), "Expected Terra chain");
-            const response =
-              await SignAndBroadcastTransactionUserInteraction.start({
-                messages: getMessages(),
-                demoMode: wallet.isDemo,
-                cancelable: true,
-                walletMeta: wallet.meta,
-              });
+              const chain = wallet.chainId;
+              // TODO:
+              invariant(isTerraChain(chain), "Expected Terra chain");
+              const response =
+                await SignAndBroadcastTransactionUserInteraction.start({
+                  messages: getMessages(),
+                  demoMode: wallet.isDemo,
+                  cancelable: true,
+                  walletMeta: wallet.meta,
+                });
 
-            if (response.approved) {
-              setConfirmModalStatus({
-                visible: true,
-                success: response.payload.success,
-              });
-            }
-          })}
-        />
-      </SafeAreaView>
-    </KeyboardAvoidingView>
+              if (response.approved) {
+                setConfirmModalStatus({
+                  visible: true,
+                  success: response.payload.success,
+                });
+              }
+            })}
+          />
+        </SafeAreaView>
+      </KeyboardAvoidingView>
+    </OsmosisScreenContainer>
   );
 });
 

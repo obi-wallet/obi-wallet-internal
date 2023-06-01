@@ -26,9 +26,8 @@ import {
   SettingsRoute,
   useRootNavigation,
 } from "../../../../router";
-import { Back } from "../../../back";
-import { Background } from "../../../background";
 import { KeyboardAvoidingView } from "../../../keyboard-avoiding-view";
+import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { Text } from "../../../typography";
 import { VerifyAndProceedButton } from "../../../verify-and-proceed-button";
 
@@ -179,177 +178,171 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
   ];
 
   return (
-    <KeyboardAvoidingView
-      style={{
-        flex: 1,
-      }}
-    >
-      <SafeAreaView style={{ flex: 1 }}>
-        <Background />
-        <View
-          style={{
-            flex: 1,
-            paddingHorizontal: 20,
-            justifyContent: "space-between",
-          }}
-        >
-          <View>
-            <Back
-              style={{
-                marginLeft: -5,
-                padding: 5,
-                width: 25,
-              }}
-            />
+    <OsmosisScreenContainer>
+      <KeyboardAvoidingView
+        style={{
+          flex: 1,
+        }}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <View
+            style={{
+              flex: 1,
+              paddingHorizontal: 20,
+              justifyContent: "space-between",
+            }}
+          >
             <View>
               <View>
-                <Text
-                  style={{
-                    color: "#F6F5FF",
-                    fontSize: isSmallScreenNumber(20, 24),
-                    fontWeight: "600",
-                    marginTop: isSmallScreenNumber(20, 32),
-                  }}
-                >
-                  Set up an NFC Key
-                </Text>
-                <Text
-                  style={{
-                    color: isObi ? "#fff" : "#999CB6",
-                    fontSize: isSmallScreenNumber(12, 14),
-                    marginTop: 10,
-                  }}
-                >
-                  Scan an NFC enabled device to create a key associated with
-                  your Obi Account.
-                </Text>
-                <Text
-                  style={{
-                    color: isObi ? "#fff" : "#999CB6",
-                    fontSize: isSmallScreenNumber(12, 14),
-                    marginTop: 20,
-                    fontWeight: "600",
-                  }}
-                >
-                  Obi CANNOT access or store sensitive information from credit
-                  cards or identification.
-                </Text>
-                {hasNfc ? (
-                  <View>
-                    <FlatList
-                      data={nfcData}
-                      renderItem={({ item }) => (
-                        <ListItem
-                          item={item}
-                          onScanPress={() => {
-                            selectedTagType.current = item.title;
-                            item.handler();
-                          }}
-                          selectedTagType={selectedTagType.current}
-                          scannedNfc={scannedNfc}
-                        />
-                      )}
-                    />
-                  </View>
-                ) : null}
                 <View>
-                  {!hasNfc ? (
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: 14,
-                        marginTop: 10,
-                      }}
-                    >
-                      <FormattedMessage
-                        id="onboarding5.nfcunavailable"
-                        defaultMessage="No NFC available on this device."
+                  <Text
+                    style={{
+                      color: "#F6F5FF",
+                      fontSize: isSmallScreenNumber(20, 24),
+                      fontWeight: "600",
+                      marginTop: isSmallScreenNumber(20, 32),
+                    }}
+                  >
+                    Set up an NFC Key
+                  </Text>
+                  <Text
+                    style={{
+                      color: isObi ? "#fff" : "#999CB6",
+                      fontSize: isSmallScreenNumber(12, 14),
+                      marginTop: 10,
+                    }}
+                  >
+                    Scan an NFC enabled device to create a key associated with
+                    your Obi Account.
+                  </Text>
+                  <Text
+                    style={{
+                      color: isObi ? "#fff" : "#999CB6",
+                      fontSize: isSmallScreenNumber(12, 14),
+                      marginTop: 20,
+                      fontWeight: "600",
+                    }}
+                  >
+                    Obi CANNOT access or store sensitive information from credit
+                    cards or identification.
+                  </Text>
+                  {hasNfc ? (
+                    <View>
+                      <FlatList
+                        data={nfcData}
+                        renderItem={({ item }) => (
+                          <ListItem
+                            item={item}
+                            onScanPress={() => {
+                              selectedTagType.current = item.title;
+                              item.handler();
+                            }}
+                            selectedTagType={selectedTagType.current}
+                            scannedNfc={scannedNfc}
+                          />
+                        )}
                       />
-                    </Text>
-                  ) : parsed ? (
-                    <Text
-                      style={{
-                        color: "#999CB6",
-                        fontSize: 14,
-                        marginTop: 10,
-                        marginLeft: 10,
-                        marginRight: 10,
-                        marginBottom: 40,
-                      }}
-                    >
-                      <FormattedMessage
-                        id="onboarding5.nfctagtype"
-                        defaultMessage={
-                          "You've labeled your NFC device as: " +
-                          selectedTagType.current +
-                          ". This key is boosted with both local and remote brute force shields."
-                        }
-                      />
-                    </Text>
+                    </View>
                   ) : null}
+                  <View>
+                    {!hasNfc ? (
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: 14,
+                          marginTop: 10,
+                        }}
+                      >
+                        <FormattedMessage
+                          id="onboarding5.nfcunavailable"
+                          defaultMessage="No NFC available on this device."
+                        />
+                      </Text>
+                    ) : parsed ? (
+                      <Text
+                        style={{
+                          color: "#999CB6",
+                          fontSize: 14,
+                          marginTop: 10,
+                          marginLeft: 10,
+                          marginRight: 10,
+                          marginBottom: 40,
+                        }}
+                      >
+                        <FormattedMessage
+                          id="onboarding5.nfctagtype"
+                          defaultMessage={
+                            "You've labeled your NFC device as: " +
+                            selectedTagType.current +
+                            ". This key is boosted with both local and remote brute force shields."
+                          }
+                        />
+                      </Text>
+                    ) : null}
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
-          <View
-            style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
-          >
-            <VerifyAndProceedButton
-              disabled={!parsed}
-              onPress={async () => {
-                if (parsed) {
-                  const localEntropy = generateLocalEntropy();
-                  // TODO: should return keypair instead
-                  const { publicKey, privateKey } = await getNFCKeyPair({
-                    demoMode,
-                    parsed: parsed.parsed,
-                    boostEntropy: true,
-                    localEntropy,
-                  });
-                  const keyPair: Secp256k1KeyPair = {
-                    publicKey: {
-                      type: "tendermint/PubKeySecp256k1",
-                      value: publicKey,
-                    },
-                    privateKey,
-                  };
-                  draft.value.setNfcKey({
-                    publicKey: keyPair.publicKey,
-                    localEntropy,
-                  });
-
-                  void queryClient.prefetchQuery(
-                    Sdk.chainId(
-                      draft.value.chainId
-                    ).transactions.prepareKeyPairQuery(keyPair)
-                  );
-                  onSubmit();
-                } else {
-                  Alert.alert(
-                    intl.formatMessage({
-                      id: "onboarding5.nfcnotscanned",
-                      defaultMessage: "NFC not scanned",
-                    }),
-                    intl.formatMessage({
-                      id: "onboarding5.nfcnotscannedsubtext",
-                      defaultMessage: "Please scan an NFC key.",
-                    }),
-                    [
-                      {
-                        text: intl.formatMessage({
-                          id: "onboarding5.ok",
-                          defaultMessage: "OK",
-                        }),
+            <View
+              style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
+            >
+              <VerifyAndProceedButton
+                disabled={!parsed}
+                onPress={async () => {
+                  if (parsed) {
+                    const localEntropy = generateLocalEntropy();
+                    // TODO: should return keypair instead
+                    const { publicKey, privateKey } = await getNFCKeyPair({
+                      demoMode,
+                      parsed: parsed.parsed,
+                      boostEntropy: true,
+                      localEntropy,
+                    });
+                    const keyPair: Secp256k1KeyPair = {
+                      publicKey: {
+                        type: "tendermint/PubKeySecp256k1",
+                        value: publicKey,
                       },
-                    ]
-                  );
-                }
-              }}
-            />
+                      privateKey,
+                    };
+                    draft.value.setNfcKey({
+                      publicKey: keyPair.publicKey,
+                      localEntropy,
+                    });
+
+                    void queryClient.prefetchQuery(
+                      Sdk.chainId(
+                        draft.value.chainId
+                      ).transactions.prepareKeyPairQuery(keyPair)
+                    );
+                    onSubmit();
+                  } else {
+                    Alert.alert(
+                      intl.formatMessage({
+                        id: "onboarding5.nfcnotscanned",
+                        defaultMessage: "NFC not scanned",
+                      }),
+                      intl.formatMessage({
+                        id: "onboarding5.nfcnotscannedsubtext",
+                        defaultMessage: "Please scan an NFC key.",
+                      }),
+                      [
+                        {
+                          text: intl.formatMessage({
+                            id: "onboarding5.ok",
+                            defaultMessage: "OK",
+                          }),
+                        },
+                      ]
+                    );
+                  }
+                }}
+              />
+            </View>
           </View>
-        </View>
-      </SafeAreaView>
-    </KeyboardAvoidingView>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
+    </OsmosisScreenContainer>
   );
 });
 

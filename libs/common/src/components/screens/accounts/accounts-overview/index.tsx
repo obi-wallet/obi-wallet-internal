@@ -32,7 +32,6 @@ import {
   SettingsRoute,
   useRootNavigation,
 } from "../../../../router";
-import { Background } from "../../../background";
 import { Button } from "../../../buttons";
 import { SendIcon } from "../../../icons";
 import { KeyboardAwareFlatList } from "../../../keyboard-aware-scroll-view";
@@ -51,14 +50,11 @@ export type AccountsOverviewScreenProps = NativeStackScreenProps<
 export const AccountsOverviewScreen = observer<AccountsOverviewScreenProps>(
   function AccountsOverviewScreen() {
     return (
-      <>
-        <Background />
-        <NetworkAccountPickerLayout>
-          <View style={{ flex: 1, position: "relative" }}>
-            <AccountScreenInner />
-          </View>
-        </NetworkAccountPickerLayout>
-      </>
+      <NetworkAccountPickerLayout>
+        <View style={{ flex: 1, position: "relative" }}>
+          <AccountScreenInner />
+        </View>
+      </NetworkAccountPickerLayout>
     );
   }
 );

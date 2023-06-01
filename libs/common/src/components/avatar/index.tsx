@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { faCamera, faPhotoFilm } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Beneficiary, FlexAccount, SinglesigWallet } from "@obi-wallet/sdk";
@@ -38,6 +39,7 @@ export const AvatarPicker = observer(function AvatarPicker({
   onChange: (icon: Icon) => void;
 }) {
   const [modalVisible, setModalVisible] = useState(false);
+  const theme = useTheme();
 
   return (
     <TouchableOpacity
@@ -47,7 +49,7 @@ export const AvatarPicker = observer(function AvatarPicker({
         borderRadius: 16,
         borderWidth: 1,
         borderColor: "white",
-        backgroundColor: "#272727",
+        backgroundColor: theme.colors.panelBackground,
         alignItems: "center",
         justifyContent: "center",
         padding: 5,

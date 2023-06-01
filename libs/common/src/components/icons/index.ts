@@ -19,6 +19,7 @@ export * from "./obi-apps";
 export * from "./obi-assets";
 export * from "./obi-face-scanner";
 export * from "./obi-settings";
+export * from "./osmosis-smart-account";
 export * from "./pencil";
 export * from "./receive";
 export * from "./send";

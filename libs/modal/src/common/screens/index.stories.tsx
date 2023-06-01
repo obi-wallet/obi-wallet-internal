@@ -6,11 +6,14 @@ import {
   getBiometricsPublicKey,
   getTwilioClient,
   KeyRoute,
+  LookupProxyWalletsScreen,
   Modals,
+  NfcKeyScreen,
   OnboardingRoute,
   PhoneKeyConfirmScreen,
   PhoneKeyRequestScreen,
   RootStack,
+  SelectRecoveryMethodScreen,
   SocialKeyScreen,
   useEnv,
   useSecurityQuestions,
@@ -97,11 +100,32 @@ function App({ initialRouteName }: { initialRouteName: string }) {
             draftId: MultisigDraft.draftId,
           }}
         />
+        <RootStack.Screen
+          name={KeyRoute.NfcKey}
+          component={NfcKeyScreen}
+          initialParams={{
+            draftId: MultisigDraft.draftId,
+          }}
+        />
         <RootStack.Screen name={KeyRoute.CloudKey} component={CloudKeyScreen} />
         <RootStack.Screen name={KeyRoute.EmailKey} component={EmailKeyScreen} />
         <RootStack.Screen
           name={OnboardingRoute.CreateWallet}
           component={CreateWalletScreen}
+          initialParams={{
+            draftId: MultisigDraft.draftId,
+          }}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.LookupProxyWallets}
+          component={LookupProxyWalletsScreen}
+          initialParams={{
+            draftId: MultisigDraft.draftId,
+          }}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.SelectRecoveryMethod}
+          component={SelectRecoveryMethodScreen}
           initialParams={{
             draftId: MultisigDraft.draftId,
           }}
@@ -172,5 +196,17 @@ export const CloudKey: Story = {
 export const CreateWallet: Story = {
   render: () => {
     return <App initialRouteName={OnboardingRoute.CreateWallet} />;
+  },
+};
+
+export const LookupProxyWallets: Story = {
+  render: () => {
+    return <App initialRouteName={OnboardingRoute.LookupProxyWallets} />;
+  },
+};
+
+export const SelectRecoveryMethod: Story = {
+  render: () => {
+    return <App initialRouteName={OnboardingRoute.SelectRecoveryMethod} />;
   },
 };

@@ -46,6 +46,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
             justifyContent: "center",
             backgroundColor: "rgba(0, 0, 0, 0.8)",
             paddingHorizontal: 20,
+            paddingVertical: 20,
           }}
         >
           <View
@@ -88,7 +89,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                     style={{
                       height: 79,
                       width: "100%",
-                      backgroundColor: isObi ? "#272727" : "#111023",
+                      backgroundColor: theme.colors.panelBackground,
                       marginBottom: 20,
                       flexDirection: "row",
                       borderRadius: 12,

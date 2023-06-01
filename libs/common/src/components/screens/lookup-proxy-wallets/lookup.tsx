@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
@@ -38,6 +39,7 @@ export const Lookup = observer(function Lookup({
   );
   const [selectedWallet, setSelectedWallet] =
     useState<A.SerializedProxyWallet | null>(null);
+  const theme = useTheme();
 
   useAsyncEffect(async () => {
     try {
@@ -134,7 +136,7 @@ export const Lookup = observer(function Lookup({
                 style={{
                   height: 79,
                   width: "100%",
-                  backgroundColor: isObi ? "#272727" : "#111023",
+                  backgroundColor: theme.colors.panelBackground,
                   marginBottom: 20,
                   flexDirection: "row",
                   borderRadius: 12,

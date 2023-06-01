@@ -7,11 +7,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { QrCode } from "./qr-code";
 import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
-import { Back } from "../../back";
+import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 
 export const ReceiveScreen = observer(function ReceiveScreen() {
-  const { walletsStore, configStore } = useStore();
-  const isLoop = configStore.isLoop();
+  const { walletsStore } = useStore();
   const theme = useTheme();
   const address = walletsStore.address;
 
@@ -42,89 +41,90 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
   };
 
   return (
-    <SafeAreaView
-      style={{
-        backgroundColor: theme.colors.background,
-        flex: 1,
-        paddingHorizontal: 20,
-        paddingVertical: Platform.select({
-          ios: isSmallScreenNumber(20, 20),
-          android: isSmallScreenNumber(30, 30),
-        }),
-        justifyContent: "space-between",
-      }}
-    >
-      <View style={{ zIndex: 2 }}>
-        <View style={{ flexDirection: "row" }}>
-          <Back style={{ alignSelf: "flex-start", zIndex: 2 }} />
-          <Text
-            style={{
-              width: "100%",
-              textAlign: "center",
-              marginLeft: -20,
-              color: "#F6F5FF",
-              fontWeight: "600",
-            }}
-          >
-            <FormattedMessage id="receive.receive" defaultMessage="Receive" />
-          </Text>
-        </View>
-      </View>
-
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <View
-          style={{
-            borderRadius: 16,
-            backgroundColor: "white",
-            padding: 10,
-            marginBottom: "30%",
-          }}
-        >
-          <QrCode value={address} size={200} />
-        </View>
-        <TouchableOpacity
-          style={{
-            backgroundColor: isLoop ? "#17162C" : "#272727",
-            borderRadius: 12,
-            paddingVertical: 20,
-            paddingHorizontal: 30,
-          }}
-          onPress={() => onShare(address)}
-        >
-          <Text
-            style={{
-              textAlign: "center",
-              color: "#F6F5FF",
-              fontSize: 16,
-              fontWeight: "500",
-            }}
-          >
-            {Platform.OS === "web"
-              ? "Tap to copy your address"
-              : "Tap to share your address"}
-          </Text>
-          <Text
-            style={[
-              {
+    <OsmosisScreenContainer>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          paddingHorizontal: 20,
+          paddingVertical: Platform.select({
+            ios: isSmallScreenNumber(20, 20),
+            android: isSmallScreenNumber(30, 30),
+          }),
+          justifyContent: "space-between",
+        }}
+      >
+        <View style={{ zIndex: 2 }}>
+          <View style={{ flexDirection: "row" }}>
+            <Text
+              style={{
+                width: "100%",
                 textAlign: "center",
                 color: "#F6F5FF",
-                fontSize: 12,
-                fontWeight: "500",
-                opacity: 0.6,
-                marginTop: 10,
-              },
-              Platform.OS === "web"
-                ? {
-                    // @ts-expect-error web-only prop
-                    overflowWrap: "anywhere",
-                  }
-                : undefined,
-            ]}
+                fontWeight: "600",
+              }}
+            >
+              <FormattedMessage id="receive.receive" defaultMessage="Receive" />
+            </Text>
+          </View>
+        </View>
+
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <View
+            style={{
+              borderRadius: 16,
+              backgroundColor: "white",
+              padding: 10,
+              marginBottom: "30%",
+            }}
           >
-            {address}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+            <QrCode value={address} size={200} />
+          </View>
+          <TouchableOpacity
+            style={{
+              backgroundColor: theme.colors.panelBackground,
+              borderRadius: 12,
+              paddingVertical: 20,
+              paddingHorizontal: 30,
+            }}
+            onPress={() => onShare(address)}
+          >
+            <Text
+              style={{
+                textAlign: "center",
+                color: "#F6F5FF",
+                fontSize: 16,
+                fontWeight: "500",
+              }}
+            >
+              {Platform.OS === "web"
+                ? "Tap to copy your address"
+                : "Tap to share your address"}
+            </Text>
+            <Text
+              style={[
+                {
+                  textAlign: "center",
+                  color: "#F6F5FF",
+                  fontSize: 12,
+                  fontWeight: "500",
+                  opacity: 0.6,
+                  marginTop: 10,
+                },
+                Platform.OS === "web"
+                  ? {
+                      // @ts-expect-error web-only prop
+                      overflowWrap: "anywhere",
+                    }
+                  : undefined,
+              ]}
+            >
+              {address}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </OsmosisScreenContainer>
   );
 });

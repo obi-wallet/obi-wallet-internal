@@ -16,10 +16,9 @@ import {
   SettingsRoute,
   useRootNavigation,
 } from "../../../../router";
-import { Back } from "../../../back";
-import { Background } from "../../../background";
 import { InlineButton } from "../../../buttons";
 import { KeyboardAvoidingView } from "../../../keyboard-avoiding-view";
+import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { TextInput } from "../../../text-input";
 import { Text } from "../../../typography";
 import { VerifyAndProceedButton } from "../../../verify-and-proceed-button";
@@ -128,130 +127,123 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
   }
 
   return (
-    <KeyboardAvoidingView
-      style={{
-        flex: 1,
-      }}
-    >
-      <SafeAreaView style={{ flex: 1 }}>
-        <Background />
-        <View
-          style={{
-            flex: 1,
-            paddingHorizontal: 20,
-            justifyContent: "space-between",
-          }}
-        >
-          <View>
-            <Back
-              style={{
-                marginLeft: -5,
-                padding: 5,
-                width: 25,
-              }}
-            />
-
+    <OsmosisScreenContainer>
+      <KeyboardAvoidingView
+        style={{
+          flex: 1,
+        }}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <View
+            style={{
+              flex: 1,
+              paddingHorizontal: 20,
+              justifyContent: "space-between",
+            }}
+          >
             <View>
               <View>
-                <Text
-                  style={{
-                    color: "#F6F5FF",
-                    fontSize: isSmallScreenNumber(20, 24),
-                    fontWeight: "600",
-                    marginTop: isSmallScreenNumber(20, 32),
-                  }}
-                >
-                  {flow === KeyFlow.EditWallet ? (
-                    <FormattedMessage
-                      id="onboarding5.recovery.setsocialkey"
-                      defaultMessage="Set a New Social Key"
-                    />
-                  ) : flow === KeyFlow.RecoverWallet ? (
-                    <FormattedMessage
-                      id="onboarding2.recovery.social"
-                      defaultMessage="Recover your Social Key"
-                    />
-                  ) : (
-                    <FormattedMessage
-                      id="onboarding5.setsocialkey"
-                      defaultMessage="Set a Social Key"
-                    />
-                  )}
-                </Text>
-                <Text
-                  style={{
-                    color: isObi ? "#fff" : "#999CB6",
-                    fontSize: isSmallScreenNumber(12, 14),
-                    marginTop: 10,
-                  }}
-                >
-                  {flow === KeyFlow.RecoverWallet
-                    ? `Enter the ${networkLabel} address of a trusted friend that you used when creating the wallet.`
-                    : `Enter the ${networkLabel} address of a trusted friend who can help you recover your account.`}
-                </Text>
+                <View>
+                  <Text
+                    style={{
+                      color: "#F6F5FF",
+                      fontSize: isSmallScreenNumber(20, 24),
+                      fontWeight: "600",
+                      marginTop: isSmallScreenNumber(20, 32),
+                    }}
+                  >
+                    {flow === KeyFlow.EditWallet ? (
+                      <FormattedMessage
+                        id="onboarding5.recovery.setsocialkey"
+                        defaultMessage="Set a New Social Key"
+                      />
+                    ) : flow === KeyFlow.RecoverWallet ? (
+                      <FormattedMessage
+                        id="onboarding2.recovery.social"
+                        defaultMessage="Recover your Social Key"
+                      />
+                    ) : (
+                      <FormattedMessage
+                        id="onboarding5.setsocialkey"
+                        defaultMessage="Set a Social Key"
+                      />
+                    )}
+                  </Text>
+                  <Text
+                    style={{
+                      color: isObi ? "#fff" : "#999CB6",
+                      fontSize: isSmallScreenNumber(12, 14),
+                      marginTop: 10,
+                    }}
+                  >
+                    {flow === KeyFlow.RecoverWallet
+                      ? `Enter the ${networkLabel} address of a trusted friend that you used when creating the wallet.`
+                      : `Enter the ${networkLabel} address of a trusted friend who can help you recover your account.`}
+                  </Text>
+                </View>
               </View>
+              <TextInput
+                placeholder={`${chainStore.currentChainInformation.prefix}1234…`}
+                style={{ marginTop: 25 }}
+                value={address}
+                onChangeText={setAddress}
+              />
+              <Text
+                style={{
+                  color: isObi ? "#fff" : "#999CB6",
+                  fontSize: isSmallScreenNumber(12, 14),
+                  marginTop: 10,
+                }}
+              >
+                {flow !== KeyFlow.RecoverWallet ? (
+                  <FormattedMessage
+                    id="onboarding5.setsocialkey.subtext2"
+                    defaultMessage="…or you can use the demo account if you don't trust any of your friends"
+                  />
+                ) : null}
+              </Text>
+
+              <InlineButton
+                label={intl.formatMessage({
+                  id: "onboarding5.useobiaccount",
+                })}
+                style={{ alignSelf: "flex-start", marginTop: 10 }}
+                onPress={() => {
+                  setAddress(obiAddress);
+                }}
+              />
             </View>
-            <TextInput
-              placeholder={`${chainStore.currentChainInformation.prefix}1234…`}
-              style={{ marginTop: 25 }}
-              value={address}
-              onChangeText={setAddress}
-            />
-            <Text
-              style={{
-                color: isObi ? "#fff" : "#999CB6",
-                fontSize: isSmallScreenNumber(12, 14),
-                marginTop: 10,
-              }}
+            <View
+              style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
             >
-              {flow !== KeyFlow.RecoverWallet ? (
-                <FormattedMessage
-                  id="onboarding5.setsocialkey.subtext2"
-                  defaultMessage="…or you can use the demo account if you don't trust any of your friends"
-                />
-              ) : null}
-            </Text>
-
-            <InlineButton
-              label={intl.formatMessage({
-                id: "onboarding5.useobiaccount",
-              })}
-              style={{ alignSelf: "flex-start", marginTop: 10 }}
-              onPress={() => {
-                setAddress(obiAddress);
-              }}
-            />
-          </View>
-          <View
-            style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
-          >
-            <VerifyAndProceedButton
-              disabled={
-                verifyButtonDisabled ? verifyButtonDisabled : fetchingPubKey
-              }
-              onPress={async () => {
-                setFetchingPubKey(true);
-                const publicKey = await getAccountPubkey(address);
-                setFetchingPubKey(false);
-
-                if (publicKey) {
-                  draft.value.setSocialKey(publicKey as Secp256k1PublicKey);
-                  onSubmit();
-                } else {
-                  Alert.alert(
-                    intl.formatMessage({
-                      id: "onboarding5.error.noactivity.title",
-                    }),
-                    intl.formatMessage({
-                      id: "onboarding5.error.noactivity.subtext",
-                    })
-                  );
+              <VerifyAndProceedButton
+                disabled={
+                  verifyButtonDisabled ? verifyButtonDisabled : fetchingPubKey
                 }
-              }}
-            />
+                onPress={async () => {
+                  setFetchingPubKey(true);
+                  const publicKey = await getAccountPubkey(address);
+                  setFetchingPubKey(false);
+
+                  if (publicKey) {
+                    draft.value.setSocialKey(publicKey as Secp256k1PublicKey);
+                    onSubmit();
+                  } else {
+                    Alert.alert(
+                      intl.formatMessage({
+                        id: "onboarding5.error.noactivity.title",
+                      }),
+                      intl.formatMessage({
+                        id: "onboarding5.error.noactivity.subtext",
+                      })
+                    );
+                  }
+                }}
+              />
+            </View>
           </View>
-        </View>
-      </SafeAreaView>
-    </KeyboardAvoidingView>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
+    </OsmosisScreenContainer>
   );
 });

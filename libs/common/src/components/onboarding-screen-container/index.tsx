@@ -1,8 +1,7 @@
 import { observer } from "mobx-react-lite";
 
 import { useStore } from "../../contexts";
-import { Back } from "../back";
-import { Background } from "../background";
+import { OsmosisScreenContainer } from "../osmosis-screen-container";
 import { ScreenContainer, ScreenContainerProps } from "../screen-container";
 
 export const OnboardingScreenContainer = observer<ScreenContainerProps>(
@@ -15,19 +14,11 @@ export const OnboardingScreenContainer = observer<ScreenContainerProps>(
       : undefined;
 
     return (
-      <>
-        <Background />
+      <OsmosisScreenContainer>
         <ScreenContainer style={[screenContainerStyle, style]}>
-          <Back
-            style={{
-              marginLeft: -5,
-              padding: 5,
-              width: 25,
-            }}
-          />
           {children}
         </ScreenContainer>
-      </>
+      </OsmosisScreenContainer>
     );
   }
 );

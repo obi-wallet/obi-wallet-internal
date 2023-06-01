@@ -16,9 +16,9 @@ import { useKeyMetaData } from "./key-meta-data";
 import { Key, KeysList } from "./keys-list";
 import { useStore } from "../../contexts";
 import { isSmallScreenNumber } from "../../helpers";
-import { Back } from "../back";
 import { BottomSheetNew } from "../bottom-sheet";
 import { CheckIcon, MultisigKeysIcon, WarningIcon } from "../icons";
+import { OsmosisScreenContainer } from "../osmosis-screen-container";
 import { Text } from "../typography";
 
 export interface MultisigSettingsProps {
@@ -68,116 +68,110 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
     const activatedKeys = multisigKey.keys.length;
 
     return (
-      <SafeAreaView
-        style={{
-          backgroundColor: theme.colors.background,
-          paddingHorizontal: 20,
-          flex: 1,
-        }}
-      >
-        <View>
-          <Back
-            style={{
-              marginLeft: -5,
-              padding: 5,
-              width: 25,
-            }}
-          />
-          <Text style={styles.heading}>{title}</Text>
-          <Text style={styles.subHeading}>{subTitle}</Text>
-        </View>
-        <View
+      <OsmosisScreenContainer>
+        <SafeAreaView
           style={{
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 20,
+            paddingHorizontal: 20,
+            flex: 1,
           }}
         >
+          <View>
+            <Text style={styles.heading}>{title}</Text>
+            <Text style={styles.subHeading}>{subTitle}</Text>
+          </View>
           <View
             style={{
-              display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              marginTop: 20,
             }}
           >
-            <MultisigKeysIcon keys={activatedKeys} />
+            <View
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <MultisigKeysIcon keys={activatedKeys} />
+              <Text
+                style={[
+                  styles.heading,
+                  {
+                    position: "absolute",
+                    fontSize: 24,
+                  },
+                ]}
+              >
+                {multisigKey.threshold}/{activatedKeys}
+              </Text>
+            </View>
             <Text
               style={[
                 styles.heading,
                 {
-                  position: "absolute",
-                  fontSize: 24,
+                  marginTop: 0,
+                  fontSize: isSmallScreenNumber(14, 18),
+                  marginBottom: 8,
                 },
               ]}
             >
-              {multisigKey.threshold}/{activatedKeys}
+              <FormattedMessage
+                id="settings.multisig.risk.high"
+                defaultMessage="Security Tier: Basic"
+              />
             </Text>
           </View>
-          <Text
-            style={[
-              styles.heading,
-              {
-                marginTop: 0,
-                fontSize: isSmallScreenNumber(14, 18),
-                marginBottom: 8,
-              },
-            ]}
+          <View style={{ flex: 1, marginTop: 20 }}>
+            <KeysList data={data} />
+          </View>
+          <View>{children}</View>
+          <BottomSheetNew
+            open={selectedType !== null}
+            onClose={() => {
+              setSelectedType(null);
+            }}
           >
-            <FormattedMessage
-              id="settings.multisig.risk.high"
-              defaultMessage="Security Tier: Basic"
-            />
-          </Text>
-        </View>
-        <View style={{ flex: 1, marginTop: 20 }}>
-          <KeysList data={data} />
-        </View>
-        <View>{children}</View>
-        <BottomSheetNew
-          open={selectedType !== null}
-          onClose={() => {
-            setSelectedType(null);
-          }}
-        >
-          {selectedType ? (
-            <KeyBottomSheetContent
-              type={selectedType}
-              action={actions[selectedType]}
-              multisigKey={multisigKey}
-              onClose={() => {
-                setSelectedType(null);
-              }}
-            />
-          ) : null}
-        </BottomSheetNew>
-        {/*<BaseBottomSheet*/}
-        {/*  handleIndicatorStyle={{ backgroundColor: "white" }}*/}
-        {/*  backgroundStyle={{ backgroundColor: isLoop ? "#100F1E" : "#272727" }}*/}
-        {/*  handleStyle={{ backgroundColor: "transparent" }}*/}
-        {/*  snapPoints={["50%"]}*/}
-        {/*  enablePanDownToClose={true}*/}
-        {/*  ref={bottomSheetRef}*/}
-        {/*  index={-1}*/}
-        {/*>*/}
-        {/*  <BottomSheetView*/}
-        {/*    style={{*/}
-        {/*      flex: 1,*/}
-        {/*      backgroundColor: "transparent",*/}
-        {/*      position: "relative",*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    {selectedType ? (*/}
-        {/*      <KeyBottomSheetContent*/}
-        {/*        type={selectedType}*/}
-        {/*        action={actions[selectedType]}*/}
-        {/*        multisigKey={multisigKey}*/}
-        {/*        onClose={() => {*/}
-        {/*          triggerBottomSheet(-1);*/}
-        {/*        }}*/}
-        {/*      />*/}
-        {/*    ) : null}*/}
-        {/*  </BottomSheetView>*/}
-      </SafeAreaView>
+            {selectedType ? (
+              <KeyBottomSheetContent
+                type={selectedType}
+                action={actions[selectedType]}
+                multisigKey={multisigKey}
+                onClose={() => {
+                  setSelectedType(null);
+                }}
+              />
+            ) : null}
+          </BottomSheetNew>
+          {/*<BaseBottomSheet*/}
+          {/*  handleIndicatorStyle={{ backgroundColor: "white" }}*/}
+          {/*  backgroundStyle={{ backgroundColor: isLoop ? "#100F1E" : "#272727" }}*/}
+          {/*  handleStyle={{ backgroundColor: "transparent" }}*/}
+          {/*  snapPoints={["50%"]}*/}
+          {/*  enablePanDownToClose={true}*/}
+          {/*  ref={bottomSheetRef}*/}
+          {/*  index={-1}*/}
+          {/*>*/}
+          {/*  <BottomSheetView*/}
+          {/*    style={{*/}
+          {/*      flex: 1,*/}
+          {/*      backgroundColor: "transparent",*/}
+          {/*      position: "relative",*/}
+          {/*    }}*/}
+          {/*  >*/}
+          {/*    {selectedType ? (*/}
+          {/*      <KeyBottomSheetContent*/}
+          {/*        type={selectedType}*/}
+          {/*        action={actions[selectedType]}*/}
+          {/*        multisigKey={multisigKey}*/}
+          {/*        onClose={() => {*/}
+          {/*          triggerBottomSheet(-1);*/}
+          {/*        }}*/}
+          {/*      />*/}
+          {/*    ) : null}*/}
+          {/*  </BottomSheetView>*/}
+        </SafeAreaView>
+      </OsmosisScreenContainer>
     );
   }
 );

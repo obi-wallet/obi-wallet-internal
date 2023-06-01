@@ -153,18 +153,6 @@ export const TabNavigation = observer<TabNavigationProps>(
           );
         }}
       >
-        {configStore.isFeatureEnabled(Feature.AccountsTab) ? (
-          <HomeBottomTab.Screen
-            name={HomeBottomTabRoute.Accounts}
-            options={{
-              title: intl.formatMessage({
-                id: "menu.accounts",
-                defaultMessage: "Accounts",
-              }),
-            }}
-            component={AccountsScreen}
-          />
-        ) : null}
         <HomeBottomTab.Screen
           name={HomeBottomTabRoute.Assets}
           options={{

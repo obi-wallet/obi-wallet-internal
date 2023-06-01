@@ -18,10 +18,9 @@ import {
   SettingsRoute,
   useRootNavigation,
 } from "../../../../router";
-import { Back } from "../../../back";
-import { Background } from "../../../background";
 import { KeyboardAvoidingView } from "../../../keyboard-avoiding-view";
 import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
+import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { PhoneOneTimeCodeInput } from "../../../phone-key";
 import { Text } from "../../../typography";
 import { VerifyAndProceedButton } from "../../../verify-and-proceed-button";
@@ -113,135 +112,131 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
     }, [verifyButtonDisabled, setVerifyButtonDisabled, key]);
 
     return (
-      <KeyboardAvoidingView
-        style={{
-          flex: 1,
-        }}
-      >
-        <SafeAreaView style={{ flex: 1 }}>
-          <Background />
-          <KeyboardAwareScrollView
-            style={{
-              flex: 1,
-              paddingHorizontal: 20,
-            }}
-            contentContainerStyle={{ flex: 1, justifyContent: "space-between" }}
-          >
-            <View>
-              <Back
-                style={{
-                  marginLeft: -5,
-                  padding: 5,
-                  width: 25,
-                }}
-              />
-
-              <View
-                style={{
-                  justifyContent: "flex-end",
-                  marginTop: isObi ? 10 : 43,
-                }}
-              >
-                <View>
-                  {isObi ? null : <InsuranceLogo />}
-                  <Text
-                    style={{
-                      color: "#F6F5FF",
-                      fontSize: isSmallScreenNumber(20, 24),
-                      fontWeight: "600",
-                      marginTop: 32,
-                    }}
-                  >
-                    {flow === KeyFlow.EditWallet ? (
+      <OsmosisScreenContainer>
+        <KeyboardAvoidingView
+          style={{
+            flex: 1,
+          }}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <KeyboardAwareScrollView
+              style={{
+                flex: 1,
+                paddingHorizontal: 20,
+              }}
+              contentContainerStyle={{
+                flex: 1,
+                justifyContent: "space-between",
+              }}
+            >
+              <View>
+                <View
+                  style={{
+                    justifyContent: "flex-end",
+                    marginTop: isObi ? 10 : 43,
+                  }}
+                >
+                  <View>
+                    {isObi ? null : <InsuranceLogo />}
+                    <Text
+                      style={{
+                        color: "#F6F5FF",
+                        fontSize: isSmallScreenNumber(20, 24),
+                        fontWeight: "600",
+                        marginTop: 32,
+                      }}
+                    >
+                      {flow === KeyFlow.EditWallet ? (
+                        <FormattedMessage
+                          id="onboarding2.recovery.authyourkeys"
+                          defaultMessage="Create a Replacement Phone Number Key"
+                        />
+                      ) : flow === KeyFlow.RecoverWallet ? (
+                        <FormattedMessage
+                          id="onboarding2.recovery.phonenumber"
+                          defaultMessage="Recover your Phone Number Key"
+                        />
+                      ) : (
+                        <FormattedMessage
+                          id="onboarding3.authyourkeys"
+                          defaultMessage="Authenticate Your Keys"
+                        />
+                      )}
+                    </Text>
+                    <Text
+                      style={{
+                        color: isObi ? "white" : "#999CB6",
+                        fontSize: isSmallScreenNumber(12, 14),
+                        marginTop: 10,
+                      }}
+                    >
                       <FormattedMessage
-                        id="onboarding2.recovery.authyourkeys"
-                        defaultMessage="Create a Replacement Phone Number Key"
-                      />
-                    ) : flow === KeyFlow.RecoverWallet ? (
-                      <FormattedMessage
-                        id="onboarding2.recovery.phonenumber"
-                        defaultMessage="Recover your Phone Number Key"
-                      />
-                    ) : (
-                      <FormattedMessage
-                        id="onboarding3.authyourkeys"
-                        defaultMessage="Authenticate Your Keys"
-                      />
-                    )}
-                  </Text>
-                  <Text
-                    style={{
-                      color: isObi ? "white" : "#999CB6",
-                      fontSize: isSmallScreenNumber(12, 14),
-                      marginTop: 10,
-                    }}
-                  >
-                    <FormattedMessage
-                      id="onboarding3.pastereponse"
-                      defaultMessage="Paste in the response you received to"
-                    />{" "}
-                    <Text style={{ fontWeight: "600" }}>{phoneNumber}.</Text>
-                  </Text>
+                        id="onboarding3.pastereponse"
+                        defaultMessage="Paste in the response you received to"
+                      />{" "}
+                      <Text style={{ fontWeight: "600" }}>{phoneNumber}.</Text>
+                    </Text>
+                  </View>
                 </View>
-              </View>
 
-              <PhoneOneTimeCodeInput
-                phoneNumber={phoneNumber}
-                phoneNumberMightBeIncorrect
-                value={key}
-                setValue={setKey}
-                onResend={async (voice) => {
-                  const twilioClient = getTwilioClient({ demoMode, env });
-                  await twilioClient.requestPublicKeyMagicCode({
-                    phoneNumber,
-                    securityAnswer,
-                    chainId,
-                    voice,
-                  });
-                }}
-              />
-            </View>
-            <View style={{ marginVertical: 20 }}>
-              <VerifyAndProceedButton
-                onPress={async () => {
-                  try {
-                    setVerifyButtonDisabledDoubleclick(true);
+                <PhoneOneTimeCodeInput
+                  phoneNumber={phoneNumber}
+                  phoneNumberMightBeIncorrect
+                  value={key}
+                  setValue={setKey}
+                  onResend={async (voice) => {
                     const twilioClient = getTwilioClient({ demoMode, env });
-                    const publicKey =
-                      await twilioClient.parsePublicKeyMagicCodeResponse({
-                        key,
-                      });
-                    if (publicKey) {
-                      draft.value.setPhoneKey({
-                        publicKey,
-                        phoneNumber,
-                        securityQuestion,
-                      });
+                    await twilioClient.requestPublicKeyMagicCode({
+                      phoneNumber,
+                      securityAnswer,
+                      chainId,
+                      voice,
+                    });
+                  }}
+                />
+              </View>
+              <View style={{ marginVertical: 20 }}>
+                <VerifyAndProceedButton
+                  onPress={async () => {
+                    try {
+                      setVerifyButtonDisabledDoubleclick(true);
+                      const twilioClient = getTwilioClient({ demoMode, env });
+                      const publicKey =
+                        await twilioClient.parsePublicKeyMagicCodeResponse({
+                          key,
+                        });
+                      if (publicKey) {
+                        draft.value.setPhoneKey({
+                          publicKey,
+                          phoneNumber,
+                          securityQuestion,
+                        });
+                        setVerifyButtonDisabledDoubleclick(false);
+                        onSubmit();
+                      } else {
+                        setVerifyButtonDisabledDoubleclick(false);
+                      }
+                    } catch (e) {
+                      const error = e as Error;
                       setVerifyButtonDisabledDoubleclick(false);
-                      onSubmit();
-                    } else {
-                      setVerifyButtonDisabledDoubleclick(false);
+                      console.error(error);
+                      Alert.alert(
+                        "Error VerifyAndProceedButton (2)",
+                        error.message
+                      );
                     }
-                  } catch (e) {
-                    const error = e as Error;
-                    setVerifyButtonDisabledDoubleclick(false);
-                    console.error(error);
-                    Alert.alert(
-                      "Error VerifyAndProceedButton (2)",
-                      error.message
-                    );
+                  }}
+                  disabled={
+                    verifyButtonDisabledDoubleclick
+                      ? verifyButtonDisabledDoubleclick
+                      : verifyButtonDisabled
                   }
-                }}
-                disabled={
-                  verifyButtonDisabledDoubleclick
-                    ? verifyButtonDisabledDoubleclick
-                    : verifyButtonDisabled
-                }
-              />
-            </View>
-          </KeyboardAwareScrollView>
-        </SafeAreaView>
-      </KeyboardAvoidingView>
+                />
+              </View>
+            </KeyboardAwareScrollView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
+      </OsmosisScreenContainer>
     );
   }
 );

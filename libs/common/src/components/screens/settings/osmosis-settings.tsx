@@ -1,7 +1,4 @@
-//osmosis settings screen
 import { useTheme } from "@emotion/react";
-import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   generateSec256k1KeyPair,
@@ -10,8 +7,8 @@ import {
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import React, { useState } from "react";
-import { Platform, TouchableOpacity } from "react-native";
+import { useState } from "react";
+import { Platform } from "react-native";
 import { View } from "react-native-animatable";
 import { Switch } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,14 +16,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Setting } from ".";
 import { useStore } from "../../../contexts";
 import { Alert, isSmallScreenNumber } from "../../../helpers";
-import {
-  AccountsRoute,
-  RootStackParamList,
-  SettingsRoute,
-} from "../../../router";
+import { RootStackParamList, SettingsRoute } from "../../../router";
 import { Draft } from "../../../stores";
-import { Back } from "../../back";
 import { Button } from "../../buttons";
+import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 import { TextInput } from "../../text-input";
 import { Text } from "../../typography";
 
@@ -39,116 +32,117 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
   function OsmosisSettingsScreen({ navigation }) {
     const wallet = useCurrentWallet();
     const isObi = useStore().configStore.isObi();
-    const theme = useTheme();
     const [sessionKeyEnabled, setSessionKeyEnabled] = useState<boolean>(false);
     const [spendLimit, setSpendLimit] = useState<string>("0");
     const [slippageLimit, setSlippageLimit] = useState<string>("0");
+
     return (
-      <SafeAreaView
-        style={{ backgroundColor: theme.colors.background, flex: 1 }}
-      >
-        <View
-          style={{
-            marginTop: isObi ? 10 : isSmallScreenNumber(10, 25),
-            paddingTop: isSmallScreenNumber(0, 32),
-            paddingBottom: 20,
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <View style={{ marginRight: -60, marginLeft: 10, zIndex: 2 }}>
-            <Back />
+      <OsmosisScreenContainer>
+        <SafeAreaView style={{ flex: 1 }}>
+          <View
+            style={{
+              marginTop: isObi ? 10 : isSmallScreenNumber(10, 25),
+              paddingTop: isSmallScreenNumber(0, 32),
+              paddingBottom: 20,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                flex: 1,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#F6F5FF",
+                  fontSize: isSmallScreenNumber(20, 24),
+                  fontWeight: "600",
+                }}
+              >
+                Account Settings
+              </Text>
+            </View>
+          </View>
+          <View style={{ flex: 1 }}>
+            <SessionKeySetting
+              value={sessionKeyEnabled}
+              onChange={() => setSessionKeyEnabled(!sessionKeyEnabled)}
+            />
+            <SessionKeySpendLimitSetting
+              value={spendLimit}
+              onChange={setSpendLimit}
+            />
+            <SlippageLimitSetting
+              value={slippageLimit}
+              onChange={setSlippageLimit}
+            />
+            <Setting
+              title="Whitelisted LPs"
+              subtitle="Manage whitelisted LPs"
+              onPress={() => navigation.navigate(SettingsRoute.WhitelistedLPs)}
+            />
           </View>
           <View
             style={{
+              margin: 5,
+              flexDirection: "row",
               alignItems: "center",
-              justifyContent: "center",
-              flex: 1,
+              justifyContent: "space-between",
             }}
           >
-            <Text
-              style={{
-                color: "#F6F5FF",
-                fontSize: isSmallScreenNumber(20, 24),
-                fontWeight: "600",
-              }}
-            >
-              Account Settings
-            </Text>
-          </View>
-        </View>
-        <View style={{ flex: 1 }}>
-          <SessionKeySetting
-            value={sessionKeyEnabled}
-            onChange={() => setSessionKeyEnabled(!sessionKeyEnabled)}
-          />
-          <SessionKeySpendLimitSetting
-            value={spendLimit}
-            onChange={setSpendLimit}
-          />
-          <SlippageLimitSetting
-            value={slippageLimit}
-            onChange={setSlippageLimit}
-          />
-          <Setting
-            title="Whitelisted LPs"
-            subtitle="Manage whitelisted LPs"
-            onPress={() => navigation.navigate(SettingsRoute.WhitelistedLPs)}
-          />
-        </View>
-        <View
-          style={{
-            margin: 5,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Button
-            flavor="blue"
-            label="Save Changes"
-            buttonStyle={{ flex: 1, margin: 10 }}
-            disabled={!sessionKeyEnabled}
-            onPress={async () => {
-              const { publicKey, privateKey } = generateSec256k1KeyPair();
-              const address = Sdk.chainId(
-                wallet.chainId
-              ).transactions.getAddressOfPublicKey(publicKey);
-              const draft = new Draft({
-                original: wallet.gatekeeperConfig,
-              });
-              draft.value.upsertFlexAccount(
-                ObservableFlexAccount.create({
-                  type: "flex-account",
-                  meta: {
-                    icon: "",
-                    name: "",
-                  },
-                  autoSign: null,
-                  spendLimit: {
-                    amount: parseFloat(spendLimit),
-                    period: { days: 1 },
-                  },
-                  address,
-                  publicKey,
-                  privateKey,
-                })
-              );
-              const response = await wallet.updateGatekeeperConfig(draft.value);
-              if (response.approved) {
-                if (response.payload.success) {
-                  console.log(wallet.gatekeeperConfig.flexAccounts[0].toJSON());
-                } else {
-                  Alert.alert(
-                    "Error",
-                    response.payload.rawLog ?? "Unknown error"
-                  );
+            <Button
+              flavor="blue"
+              label="Save Changes"
+              buttonStyle={{ flex: 1, margin: 10 }}
+              disabled={!sessionKeyEnabled}
+              onPress={async () => {
+                const { publicKey, privateKey } = generateSec256k1KeyPair();
+                const address = Sdk.chainId(
+                  wallet.chainId
+                ).transactions.getAddressOfPublicKey(publicKey);
+                const draft = new Draft({
+                  original: wallet.gatekeeperConfig,
+                });
+                draft.value.upsertFlexAccount(
+                  ObservableFlexAccount.create({
+                    type: "flex-account",
+                    meta: {
+                      icon: "",
+                      name: "",
+                    },
+                    autoSign: null,
+                    spendLimit: {
+                      amount: parseFloat(spendLimit),
+                      period: { days: 1 },
+                    },
+                    address,
+                    publicKey,
+                    privateKey,
+                  })
+                );
+                const response = await wallet.updateGatekeeperConfig(
+                  draft.value
+                );
+                if (response.approved) {
+                  if (response.payload.success) {
+                    console.log(
+                      wallet.gatekeeperConfig.flexAccounts[0].toJSON()
+                    );
+                  } else {
+                    Alert.alert(
+                      "Error",
+                      response.payload.rawLog ?? "Unknown error"
+                    );
+                  }
                 }
-              }
-            }}
-          />
-        </View>
-      </SafeAreaView>
+              }}
+            />
+          </View>
+        </SafeAreaView>
+      </OsmosisScreenContainer>
     );
   }
 );

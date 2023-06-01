@@ -1,16 +1,16 @@
 import { useTheme } from "@emotion/react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import React, { useState } from "react";
-import { View, Image } from "react-native";
-import { FlatList, ScrollView, Switch } from "react-native-gesture-handler";
+import { useState } from "react";
+import { Image, View } from "react-native";
+import { ScrollView, Switch } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAsyncEffect } from "rooks";
 
 import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
 import { RootStackParamList, SettingsRoute } from "../../../router";
-import { Back } from "../../back";
+import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 import { Text } from "../../typography";
 
 export type WhitelistedLpsScreenProps = NativeStackScreenProps<
@@ -108,7 +108,6 @@ export const WhitelistedLpsScreen = observer<WhitelistedLpsScreenProps>(
   function WhitelistedLPsScreen({ navigation }) {
     const isObi = useStore().configStore.isObi();
     const [loading, setLoading] = useState<boolean>(true);
-    const theme = useTheme();
     const [lpList, setLpList] = useState<any[]>([]);
 
     useAsyncEffect(async () => {
@@ -129,59 +128,56 @@ export const WhitelistedLpsScreen = observer<WhitelistedLpsScreenProps>(
     }, []);
 
     return (
-      <SafeAreaView
-        style={{ backgroundColor: theme.colors.background, flex: 1 }}
-      >
-        <View
-          style={{
-            marginTop: isObi ? 10 : isSmallScreenNumber(10, 25),
-            paddingTop: isSmallScreenNumber(0, 32),
-            paddingBottom: 20,
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <View style={{ marginRight: -60, marginLeft: 10, zIndex: 2 }}>
-            <Back />
-          </View>
+      <OsmosisScreenContainer>
+        <SafeAreaView style={{ flex: 1 }}>
           <View
             style={{
+              marginTop: isObi ? 10 : isSmallScreenNumber(10, 25),
+              paddingTop: isSmallScreenNumber(0, 32),
+              paddingBottom: 20,
+              flexDirection: "row",
               alignItems: "center",
-              justifyContent: "center",
-              flex: 1,
             }}
           >
-            <Text
-              style={{
-                color: "#F6F5FF",
-                fontSize: isSmallScreenNumber(20, 24),
-                fontWeight: "600",
-              }}
-            >
-              Whitelisted LPs
-            </Text>
-          </View>
-        </View>
-        <View style={{ flex: 1 }}>
-          {loading ? (
             <View
               style={{
-                flex: 1,
-                justifyContent: "center",
                 alignItems: "center",
+                justifyContent: "center",
+                flex: 1,
               }}
             >
-              <Text style={{ color: "white" }}>Loading...</Text>
+              <Text
+                style={{
+                  color: "#F6F5FF",
+                  fontSize: isSmallScreenNumber(20, 24),
+                  fontWeight: "600",
+                }}
+              >
+                Whitelisted LPs
+              </Text>
             </View>
-          ) : (
-            <ScrollView style={{ flex: 1 }}>
-              {lpList.map((item) => (
-                <PoolListItem item={item} key={item.id} />
-              ))}
-            </ScrollView>
-          )}
-        </View>
-      </SafeAreaView>
+          </View>
+          <View style={{ flex: 1 }}>
+            {loading ? (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ color: "white" }}>Loading...</Text>
+              </View>
+            ) : (
+              <ScrollView style={{ flex: 1 }}>
+                {lpList.map((item) => (
+                  <PoolListItem item={item} key={item.id} />
+                ))}
+              </ScrollView>
+            )}
+          </View>
+        </SafeAreaView>
+      </OsmosisScreenContainer>
     );
   }
 );
@@ -191,13 +187,14 @@ interface PoolListItemProps {
 const PoolListItem = observer<PoolListItemProps>(function PoolListItem({
   item,
 }) {
+  const theme = useTheme();
   const data = osmosisWhitelistedLpsData.find((lp) => lp.id === item.id);
   const baseURl = "https://testnet.osmosis.zone/";
 
   return (
     <View
       style={{
-        backgroundColor: "#272727",
+        backgroundColor: theme.colors.panelBackground,
         margin: 10,
         borderRadius: 7,
         padding: 10,

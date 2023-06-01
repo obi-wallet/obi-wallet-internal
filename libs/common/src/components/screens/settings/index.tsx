@@ -24,16 +24,13 @@ import {
   SettingsRoute,
   useRootNavigation,
 } from "../../../router";
-import { Back } from "../../back";
-import { BrandToggle } from "../../brand-toggle";
 import {
   HelpAndSupportIcon,
   LogoutIcon,
   MultisigIcon,
-  ObiIcon,
-  ObiSettingsActiveIcon,
   NewSettingsIcon,
 } from "../../icons";
+import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 
 export const SettingsScreen = observer(function SettingsScreen() {
   const { configStore, walletsStore } = useStore();
@@ -45,26 +42,31 @@ export const SettingsScreen = observer(function SettingsScreen() {
   const isMultisigWallet = walletsStore.currentWallet !== null;
 
   return (
-    <Container>
-      <View
-        style={{
-          marginTop: isSmallScreenNumber(20, 61),
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginBottom: isSmallScreenNumber(10, 40),
-          paddingHorizontal: 20,
-        }}
-      >
+    <OsmosisScreenContainer
+      onBack={() => {
+        navigation.navigate(HomeBottomTabRoute.Assets);
+      }}
+    >
+      <Container>
         <View
           style={{
-            flex: 1,
+            marginTop: isSmallScreenNumber(20, 61),
             flexDirection: "row",
-            paddingLeft: 0,
-            alignItems: "center",
-            marginBottom: 10,
+            justifyContent: "space-between",
+            marginBottom: isSmallScreenNumber(10, 40),
+            paddingHorizontal: 20,
           }}
         >
-          {/* <BrandToggle
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              paddingLeft: 0,
+              alignItems: "center",
+              marginBottom: 10,
+            }}
+          >
+            {/* <BrandToggle
             style={{
               borderRadius: 32,
               marginRight: 10,
@@ -78,21 +80,15 @@ export const SettingsScreen = observer(function SettingsScreen() {
               }}
             />
           </BrandToggle> */}
-          <View style={{ marginHorizontal: 10 }}>
-            <Back
-              onPress={() => navigation.navigate(HomeBottomTabRoute.Assets)}
-            />
-          </View>
-
-          <View style={{ flexDirection: "column" }}>
-            <Heading>
-              Osmosis {isMultisigWallet ? <>Secure Multisig </> : null}Account
-            </Heading>
-            {/*<Text style={styles.subHeading}>
+            <View style={{ flexDirection: "column" }}>
+              <Heading>
+                Osmosis {isMultisigWallet ? <>Secure Multisig </> : null}Account
+              </Heading>
+              {/*<Text style={styles.subHeading}>
               Profile picture, name and mail
             </Text>*/}
-          </View>
-          {/*
+            </View>
+            {/*
           <TouchableOpacity
             style={{ flex: 1, justifyContent: "center", paddingLeft: 20 }}
           >
@@ -102,14 +98,14 @@ export const SettingsScreen = observer(function SettingsScreen() {
             />
           </TouchableOpacity>
           */}
+          </View>
         </View>
-      </View>
-      <ScrollView
-        contentContainerStyle={{
-          paddingHorizontal: 20,
-        }}
-      >
-        {/*
+        <ScrollView
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+          }}
+        >
+          {/*
         <Setting
           Icon={MultiSigIcon}
           title="Account settings"
@@ -117,106 +113,103 @@ export const SettingsScreen = observer(function SettingsScreen() {
           onPress={() => navigation.navigate("AccountsSettings")}
         />
       */}
-        {isMultisigWallet ? (
-          <>
-            <Setting
-              Icon={MultisigIcon}
-              title={intl.formatMessage({
-                id: "settings.multigsigsettings",
-                defaultMessage: "Key Settings",
-              })}
-              subtitle={intl.formatMessage({
-                id: "settings.multigsigsettings.subtext",
-                defaultMessage: "Manage your SMS, social, and other keys.",
-              })}
-              onPress={() =>
-                navigation.navigate(SettingsRoute.MultisigSettings)
-              }
-            />
-            <Setting
-              Icon={NewSettingsIcon}
-              title="Account Settings"
-              subtitle="Manage your account settings."
-              onPress={() => navigation.navigate(SettingsRoute.OsmosisSettings)}
-            />
-            {configStore.isFeatureEnabled(Feature.HealthChecks) ? (
+          {isMultisigWallet ? (
+            <>
               <Setting
                 Icon={MultisigIcon}
                 title={intl.formatMessage({
-                  id: "settings.multisighealthchecks",
-                  defaultMessage: "Wallet Health",
+                  id: "settings.multigsigsettings",
+                  defaultMessage: "Key Settings",
                 })}
                 subtitle={intl.formatMessage({
-                  id: "settings.multisighealthchecks.subtext",
-                  defaultMessage:
-                    "Check for any potential issues in your wallet.",
+                  id: "settings.multigsigsettings.subtext",
+                  defaultMessage: "Manage your SMS, social, and other keys.",
                 })}
                 onPress={() =>
-                  navigation.navigate(SettingsRoute.MultisigHealthChecks)
+                  navigation.navigate(SettingsRoute.MultisigSettings)
                 }
               />
-            ) : null}
-          </>
-        ) : null}
-        <View
-          style={[
-            styles.flex1,
-            styles.separatorContainer,
-            { flexDirection: "row" },
-          ]}
-        >
-          <View style={[styles.separator]} />
-          <Text style={[styles.separatorText]}>
-            <FormattedMessage id="settings.more" defaultMessage="More" />
-          </Text>
-          <View style={[styles.separator]} />
-        </View>
-        <Setting
-          Icon={HelpAndSupportIcon}
-          title={intl.formatMessage({
-            id: "settings.helpsupport",
-            defaultMessage: "Help & Support",
-          })}
-          subtitle={intl.formatMessage(
-            isObi
-              ? {
-                  id: "settings.helpsupport.subtext.obi",
-                  defaultMessage: "Contact Obi support.",
+              <Setting
+                Icon={NewSettingsIcon}
+                title="Account Settings"
+                subtitle="Manage your account settings."
+                onPress={() =>
+                  navigation.navigate(SettingsRoute.OsmosisSettings)
                 }
-              : {
-                  id: "settings.helpsupport.subtext",
-                  defaultMessage: "Contact Loop support.",
-                }
-          )}
-          onPress={() =>
-            Linking.openURL(
-              isObi ? "https://obi.money/contact" : "https://loop.markets/help"
-            )
-          }
-        />
+              />
+              {configStore.isFeatureEnabled(Feature.HealthChecks) ? (
+                <Setting
+                  Icon={MultisigIcon}
+                  title={intl.formatMessage({
+                    id: "settings.multisighealthchecks",
+                    defaultMessage: "Wallet Health",
+                  })}
+                  subtitle={intl.formatMessage({
+                    id: "settings.multisighealthchecks.subtext",
+                    defaultMessage:
+                      "Check for any potential issues in your wallet.",
+                  })}
+                  onPress={() =>
+                    navigation.navigate(SettingsRoute.MultisigHealthChecks)
+                  }
+                />
+              ) : null}
+            </>
+          ) : null}
+          <View
+            style={[
+              styles.flex1,
+              styles.separatorContainer,
+              { flexDirection: "row" },
+            ]}
+          >
+            <View style={[styles.separator]} />
+            <Text style={[styles.separatorText]}>
+              <FormattedMessage id="settings.more" defaultMessage="More" />
+            </Text>
+            <View style={[styles.separator]} />
+          </View>
+          <Setting
+            Icon={HelpAndSupportIcon}
+            title={intl.formatMessage({
+              id: "settings.helpsupport",
+              defaultMessage: "Help & Support",
+            })}
+            subtitle={intl.formatMessage(
+              isObi
+                ? {
+                    id: "settings.helpsupport.subtext.obi",
+                    defaultMessage: "Contact Obi support.",
+                  }
+                : {
+                    id: "settings.helpsupport.subtext",
+                    defaultMessage: "Contact Loop support.",
+                  }
+            )}
+            onPress={() =>
+              Linking.openURL(
+                isObi
+                  ? "https://obi.money/contact"
+                  : "https://loop.markets/help"
+              )
+            }
+          />
 
-        <Setting
-          Icon={() => <LogoutIcon fill={isLoop ? "#E36B7D" : "white"} />}
-          title={intl.formatMessage({
-            id: "settings.logout",
-            defaultMessage: "Log Out",
-          })}
-          subtitle={intl.formatMessage({
-            id: "settings.logout.subtext",
-            defaultMessage: "Save your keys before logging out.",
-          })}
-          onPress={() => {
-            walletsStore.logout();
-          }}
-        />
+          <Setting
+            Icon={() => <LogoutIcon fill={isLoop ? "#E36B7D" : "white"} />}
+            title={intl.formatMessage({
+              id: "settings.logout",
+              defaultMessage: "Log Out",
+            })}
+            subtitle={intl.formatMessage({
+              id: "settings.logout.subtext",
+              defaultMessage: "Save your keys before logging out.",
+            })}
+            onPress={() => {
+              walletsStore.logout();
+            }}
+          />
 
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "column",
-            justifyContent: "flex-end",
-          }}
-        >
           <View
             style={{
               flex: 1,
@@ -226,62 +219,70 @@ export const SettingsScreen = observer(function SettingsScreen() {
           >
             <View
               style={{
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center",
-                paddingBottom: 15,
+                flex: 1,
+                flexDirection: "column",
+                justifyContent: "flex-end",
               }}
             >
-              {/*<Text*/}
-              {/*  onPress={() => {*/}
-              {/*    navigation.navigate("AddSubAccount");*/}
-              {/*  }}*/}
-              {/*  style={{*/}
-              {/*    color: "#F6F5FF",*/}
-              {/*    paddingRight: 10,*/}
-              {/*    fontSize: 10,*/}
-              {/*  }}*/}
-              {/*>*/}
-              {/*  <FormattedMessage*/}
-              {/*    id="settings.terms"*/}
-              {/*    defaultMessage="Terms of Service"*/}
-              {/*  />*/}
-              {/*</Text>*/}
-              <Text
-                onPress={() => {
-                  const url = configStore.isObi()
-                    ? "https://www.obi.money/privacy-policy"
-                    : "https://mail.loop.onl/privacy-policy/";
-                  void Linking.openURL(url);
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  paddingBottom: 15,
                 }}
+              >
+                {/*<Text*/}
+                {/*  onPress={() => {*/}
+                {/*    navigation.navigate("AddSubAccount");*/}
+                {/*  }}*/}
+                {/*  style={{*/}
+                {/*    color: "#F6F5FF",*/}
+                {/*    paddingRight: 10,*/}
+                {/*    fontSize: 10,*/}
+                {/*  }}*/}
+                {/*>*/}
+                {/*  <FormattedMessage*/}
+                {/*    id="settings.terms"*/}
+                {/*    defaultMessage="Terms of Service"*/}
+                {/*  />*/}
+                {/*</Text>*/}
+                <Text
+                  onPress={() => {
+                    const url = configStore.isObi()
+                      ? "https://www.obi.money/privacy-policy"
+                      : "https://mail.loop.onl/privacy-policy/";
+                    void Linking.openURL(url);
+                  }}
+                  style={{
+                    color: "#F6F5FF",
+                    marginLeft: 10,
+                    fontSize: 10,
+                  }}
+                >
+                  <FormattedMessage
+                    id="settings.privacy"
+                    defaultMessage="Privacy Policy"
+                  />
+                </Text>
+              </View>
+
+              <Text
                 style={{
                   color: "#F6F5FF",
                   marginLeft: 10,
+                  marginBottom: 20,
                   fontSize: 10,
+                  textAlign: "center",
                 }}
               >
-                <FormattedMessage
-                  id="settings.privacy"
-                  defaultMessage="Privacy Policy"
-                />
+                {/*Obi {appMetadata?.appVersion} {appMetadata?.label}*/}
               </Text>
             </View>
-
-            <Text
-              style={{
-                color: "#F6F5FF",
-                marginLeft: 10,
-                marginBottom: 20,
-                fontSize: 10,
-                textAlign: "center",
-              }}
-            >
-              {/*Obi {appMetadata?.appVersion} {appMetadata?.label}*/}
-            </Text>
           </View>
-        </View>
-      </ScrollView>
-    </Container>
+        </ScrollView>
+      </Container>
+    </OsmosisScreenContainer>
   );
 });
 
@@ -351,13 +352,10 @@ export const Setting = observer(function Setting({
   );
 });
 
-const Container = styled.SafeAreaView(
-  {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  (props) => ({ backgroundColor: props.theme.colors.background })
-);
+const Container = styled.SafeAreaView({
+  flex: 1,
+  paddingHorizontal: 20,
+});
 
 const TilesContainer = styled.View({
   paddingHorizontal: 10,
@@ -422,8 +420,8 @@ const SettingContainer = styled.View<{ brand: Brand }>(
     ...styles.setting,
     ...styles.flex1,
   },
-  (props) => ({
-    backgroundColor: props.brand === Brand.Loop ? "#111023" : "#272727",
+  ({ theme }) => ({
+    backgroundColor: theme.colors.panelBackground,
   })
 );
 const SettingButton = styled.TouchableOpacity<{ brand: Brand }>(
@@ -431,8 +429,8 @@ const SettingButton = styled.TouchableOpacity<{ brand: Brand }>(
     ...styles.setting,
     ...styles.flex1,
   },
-  (props) => ({
-    backgroundColor: props.brand === Brand.Loop ? "#111023" : "#272727",
+  ({ theme }) => ({
+    backgroundColor: theme.colors.panelBackground,
   })
 );
 
