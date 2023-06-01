@@ -1,7 +1,13 @@
 import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
-import { SafeAreaView, View } from "react-native";
+import {
+  Image,
+  ImageSourcePropType,
+  Platform,
+  SafeAreaView,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useStore } from "../../../contexts";
@@ -9,7 +15,6 @@ import { BrandToggle } from "../../brand-toggle";
 import { LanguagePicker } from "../../language-picker";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 import { Text } from "../../typography";
-
 export interface WelcomeLayoutProps {
   title: string;
   subTitle: string;
@@ -24,7 +29,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
     const theme = useTheme();
 
     return (
-      <OsmosisScreenContainer>
+      <OsmosisScreenContainer hideLogo>
         <SafeAreaView
           style={{
             flex: 1,
@@ -105,6 +110,19 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
                 {/*    source={require("../../app/screens/onboarding/welcome/assets/loop.png")}*/}
                 {/*  />*/}
                 {/*)}*/}
+
+                {Platform.OS === "web" && (
+                  <Image
+                    source={{ uri: "/osmosis-home.png" }}
+                    style={{
+                      flex: 1,
+                      height: "80%",
+                      width: "80%",
+                      resizeMode: "contain",
+                      marginTop: 50,
+                    }}
+                  />
+                )}
               </View>
             </BrandToggle>
             {isObi ? (

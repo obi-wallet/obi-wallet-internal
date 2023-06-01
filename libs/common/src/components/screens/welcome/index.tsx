@@ -170,12 +170,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
 
   function renderTitle() {
     if (Platform.OS === "web") {
-      return intl
-        .formatMessage({
-          id: "onboarding1.welcometo.obi",
-          defaultMessage: "Welcome to Obi",
-        })
-        .replace("Obi", "Osmosis");
+      return "Osmosis Smart Account";
     }
     if (isObi) {
       return intl.formatMessage({

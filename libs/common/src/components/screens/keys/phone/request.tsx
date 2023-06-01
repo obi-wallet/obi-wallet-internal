@@ -199,7 +199,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                       <TextInput
                         label="Security Answer"
                         placeholder="Type your answer here"
-                        style={{ flex: 1 }}
+                        style={{ flex: 1, marginVertical: 20 }}
                         invalidMessage={fieldState.error?.message}
                         value={field.value}
                         onChangeText={field.onChange}
