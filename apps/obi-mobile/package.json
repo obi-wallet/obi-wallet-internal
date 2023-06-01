@@ -78,7 +78,7 @@
     "react-error-boundary": "*",
     "react-hook-form": "*",
     "react-intl": "*",
-    "react-native": "0.71.7",
+    "react-native": "0.71.8",
     "react-native-animatable": "*",
     "react-native-asset": "*",
     "react-native-camera": "*",
