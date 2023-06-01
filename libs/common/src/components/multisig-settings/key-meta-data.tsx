@@ -1,6 +1,7 @@
 import { KeyType } from "@obi-wallet/sdk";
 import { ComponentType } from "react";
 import { useIntl } from "react-intl";
+import { Platform } from "react-native";
 import { SvgProps } from "react-native-svg";
 
 import { useStore } from "../../contexts";
@@ -14,6 +15,7 @@ import {
   PhoneKeyIcon,
   SendIcon as TelegramKeyIcon,
   SocialKeyIcon,
+  PhoneKeyOutlineIcon,
 } from "../icons";
 
 export enum ComingSoonKeyType {
@@ -58,7 +60,7 @@ export function useKeyMetaData() {
         id: "settings.multisig.option.phonekey",
         defaultMessage: "Phone Key",
       }),
-      Icon: PhoneKeyIcon,
+      Icon: Platform.OS === "web" ? PhoneKeyOutlineIcon : PhoneKeyIcon,
     },
     [KeyType.Social]: {
       label: intl.formatMessage({
