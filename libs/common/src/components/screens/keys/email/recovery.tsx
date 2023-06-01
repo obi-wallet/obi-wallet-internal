@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { generateSec256k1KeyPair, MultisigKey } from "@obi-wallet/sdk";
+import { MultisigKey } from "@obi-wallet/sdk";
 import { useIsFocused } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -63,10 +63,10 @@ const schema = z.object({
 
 export const EmailRecovery = observer<EmailRecoveryProps>(
   function EmailRecovery({ draftId, flow, onSubmit }) {
-    const { configStore, draftsStore } = useStore();
+    const { draftsStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({ id: draftId });
     const [selectedTab, setSelectedTab] = useState(EmailTab.EmailKeyV1);
-    const isObi = configStore.isObi();
+
     const getPrivateKeyFromText = (text: string) => {
       return findPrivateKeys(text)[0];
     };
@@ -82,7 +82,7 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
         <>
           <Text
             style={{
-              color: isObi ? "#fff" : "#999CB6",
+              color: "#fff",
               fontSize: isSmallScreenNumber(12, 14),
               marginTop: 10,
             }}
@@ -143,7 +143,7 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
         <EmailTabs
           selectedTab={selectedTab}
           flow={flow}
-          isObi={isObi}
+          isObi={true}
           onPress={setSelectedTab}
         >
           {renderTabContent()}

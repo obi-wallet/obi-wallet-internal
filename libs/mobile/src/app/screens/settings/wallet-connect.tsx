@@ -7,8 +7,7 @@ import { ScrollView, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export const WalletConnect = observer(function WalletConnect() {
-  const { configStore, walletConnectStore } = useStore();
-  const isObi = configStore.isObi();
+  const { walletConnectStore } = useStore();
   const theme = useTheme();
 
   return (
@@ -33,7 +32,7 @@ export const WalletConnect = observer(function WalletConnect() {
                 style={{
                   height: 79,
                   width: "100%",
-                  backgroundColor: isObi ? "#272727" : "#111023",
+                  backgroundColor: "#272727",
                   marginBottom: 20,
                   flexDirection: "row",
                   borderRadius: 12,
@@ -58,7 +57,7 @@ export const WalletConnect = observer(function WalletConnect() {
                   </Text>
                   <Text
                     style={{
-                      color: isObi ? "#ffffff80" : "#999CB6",
+                      color: true ? "#ffffff80" : "#999CB6",
                       fontSize: 14,
                       fontWeight: "600",
                     }}
@@ -93,7 +92,7 @@ export const WalletConnect = observer(function WalletConnect() {
                 >
                   <FontAwesomeIcon
                     icon={faTrash}
-                    style={{ color: isObi ? "#fff" : "#7B87A8" }}
+                    style={{ color: true ? "#fff" : "#7B87A8" }}
                   />
                 </IconButton>
               </TouchableOpacity>

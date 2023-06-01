@@ -1,4 +1,3 @@
-import { useTheme } from "@emotion/react";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   generateSec256k1KeyPair,
@@ -8,13 +7,11 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { Platform } from "react-native";
 import { View } from "react-native-animatable";
 import { Switch } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Setting } from ".";
-import { useStore } from "../../../contexts";
 import { Alert, isSmallScreenNumber, isWeb } from "../../../helpers";
 import { RootStackParamList, SettingsRoute } from "../../../router";
 import { Draft } from "../../../stores";
@@ -31,7 +28,6 @@ export type OsmosisSettingsScreenProps = NativeStackScreenProps<
 export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
   function OsmosisSettingsScreen({ navigation }) {
     const wallet = useCurrentWallet();
-    const isObi = useStore().configStore.isObi();
     const [sessionKeyEnabled, setSessionKeyEnabled] = useState<boolean>(false);
     const [spendLimit, setSpendLimit] = useState<string>("0");
     const [slippageLimit, setSlippageLimit] = useState<string>("0");
@@ -41,7 +37,7 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
         <SafeAreaView style={{ flex: 1 }}>
           <View
             style={{
-              marginTop: isObi ? 10 : isSmallScreenNumber(10, 25),
+              marginTop: 10,
               paddingTop: isSmallScreenNumber(0, 32),
               paddingBottom: 20,
               flexDirection: "row",
@@ -192,9 +188,6 @@ const SessionKeySpendLimitSetting = observer<SessionKeySpendLimitSettingProps>(
 );
 const SlippageLimitSetting = observer<SessionKeySpendLimitSettingProps>(
   function SessionKeySpendLimitSetting({ value, onChange }) {
-    const theme = useTheme();
-    const isObi = useStore().configStore.isObi();
-
     return (
       <Setting
         disableButton={true}
@@ -237,10 +230,9 @@ interface SessionKeySettingProps {
   value: boolean;
   onChange: () => void;
 }
+
 const SessionKeySetting = observer<SessionKeySettingProps>(
   function SessionKeySetting({ value, onChange }) {
-    const theme = useTheme();
-    const isObi = useStore().configStore.isObi();
     return (
       <Setting
         disableButton={true}

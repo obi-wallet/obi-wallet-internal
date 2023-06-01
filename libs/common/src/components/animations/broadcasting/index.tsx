@@ -1,16 +1,9 @@
-import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 
-import { useStore } from "../../../contexts";
-import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 import broadcastAnimation from "../assets/broadcast.json";
 import { Loader } from "../loader";
 
 export const BroadcastingAnimation = observer(function BroadcastingAnimation() {
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
-  const theme = useTheme();
-
   return (
     <Loader
       loadingText="Broadcasting"

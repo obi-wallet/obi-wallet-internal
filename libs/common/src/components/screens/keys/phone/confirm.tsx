@@ -25,12 +25,6 @@ import { PhoneOneTimeCodeInput } from "../../../phone-key";
 import { Text } from "../../../typography";
 import { VerifyAndProceedButton } from "../../../verify-and-proceed-button";
 
-// TODO:
-// import InsuranceLogo from "./assets/insurance-logo.svg";
-const InsuranceLogo = observer(function InsuranceLogo() {
-  return null;
-});
-
 export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<
   KeyStackParamList,
   KeyRoute.PhoneKeyConfirm
@@ -87,9 +81,8 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
     securityAnswer,
     onSubmit,
   }) {
-    const { configStore, chainStore, draftsStore } = useStore();
+    const { chainStore, draftsStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({ id: draftId });
-    const isObi = configStore.isObi();
     const chainId = chainStore.currentChain;
     const env = useEnv();
     const [key, setKey] = useState("");
@@ -133,11 +126,10 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                 <View
                   style={{
                     justifyContent: "flex-end",
-                    marginTop: isObi ? 10 : 43,
+                    marginTop: 10,
                   }}
                 >
                   <View>
-                    {isObi ? null : <InsuranceLogo />}
                     <Text
                       style={{
                         color: "#F6F5FF",
@@ -165,7 +157,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                     </Text>
                     <Text
                       style={{
-                        color: isObi ? "white" : "#999CB6",
+                        color: "white",
                         fontSize: isSmallScreenNumber(12, 14),
                         marginTop: 10,
                       }}

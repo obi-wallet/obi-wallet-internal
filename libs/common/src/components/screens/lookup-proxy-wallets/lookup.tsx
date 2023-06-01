@@ -32,8 +32,7 @@ export const Lookup = observer(function Lookup({
   onSelect,
   onCancel,
 }: LookupProps) {
-  const { chainStore, configStore } = useStore();
-  const isObi = configStore.isObi();
+  const { chainStore } = useStore();
   const [wallets, setWallets] = useState<A.SerializedProxyWallet[] | null>(
     null
   );
@@ -88,7 +87,6 @@ export const Lookup = observer(function Lookup({
         <View
           style={{
             justifyContent: "flex-end",
-            marginTop: isObi ? 0 : 43,
           }}
         >
           <View>
@@ -97,7 +95,6 @@ export const Lookup = observer(function Lookup({
                 color: "#F6F5FF",
                 fontSize: isSmallScreenNumber(18, 24),
                 fontWeight: "600",
-                marginTop: isObi ? 0 : 32,
               }}
             >
               <FormattedMessage
@@ -107,7 +104,7 @@ export const Lookup = observer(function Lookup({
             </Text>
             <Text
               style={{
-                color: isObi ? "white" : "#999CB6",
+                color: "white",
                 fontSize: 14,
                 marginVertical: 10,
               }}
@@ -141,7 +138,7 @@ export const Lookup = observer(function Lookup({
                   flexDirection: "row",
                   borderRadius: 12,
                   paddingHorizontal: 10,
-                  ...(isObi && active
+                  ...(active
                     ? {
                         borderWidth: 1,
                         borderColor: "white",
@@ -163,7 +160,7 @@ export const Lookup = observer(function Lookup({
                 >
                   <FontAwesomeIcon
                     icon={active ? faCircleCheck : faCircle}
-                    style={{ color: isObi ? "white" : "#7B87A8" }}
+                    style={{ color: "white" }}
                   />
                 </View>
                 <View
@@ -200,10 +197,7 @@ export const Lookup = observer(function Lookup({
                     );
                   }}
                 >
-                  <FontAwesomeIcon
-                    icon={faShare}
-                    style={{ color: isObi ? "white" : "#7B87A8" }}
-                  />
+                  <FontAwesomeIcon icon={faShare} style={{ color: "white" }} />
                 </IconButton>
               </TouchableOpacity>
             );
@@ -233,7 +227,7 @@ export const Lookup = observer(function Lookup({
           >
             <Text
               style={{
-                color: isObi ? "white" : "#787B9C",
+                color: "white",
                 textAlign: "center",
               }}
             >

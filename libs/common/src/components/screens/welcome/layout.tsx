@@ -1,21 +1,13 @@
 import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
-import {
-  Image,
-  ImageSourcePropType,
-  Platform,
-  SafeAreaView,
-  View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Image, SafeAreaView, View } from "react-native";
 
-import { useStore } from "../../../contexts";
 import { isWeb } from "../../../helpers";
-import { BrandToggle } from "../../brand-toggle";
 import { LanguagePicker } from "../../language-picker";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 import { Text } from "../../typography";
+
 export interface WelcomeLayoutProps {
   title: string;
   subTitle: string;
@@ -24,9 +16,6 @@ export interface WelcomeLayoutProps {
 
 export const WelcomeLayout = observer<WelcomeLayoutProps>(
   function WelcomeLayout({ title, subTitle, children }) {
-    const { configStore } = useStore();
-    const safeArea = useSafeAreaInsets();
-    const isObi = configStore.isObi();
     const theme = useTheme();
 
     return (
@@ -87,55 +76,51 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
               justifyContent: "flex-end",
             }}
           >
-            <BrandToggle>
-              <View
-                style={{
-                  aspectRatio: 1,
-                  alignItems: isObi ? "center" : "flex-start",
-                  justifyContent: "flex-end",
-                }}
-              >
-                {/* TODO: modal: fix images for web */}
-                {/*{isObi ? (*/}
-                {/*  <Image*/}
-                {/*    source={require("../../app/screens/onboarding/welcome/assets/obi-wallet-icon.png")}*/}
-                {/*    resizeMode="contain"*/}
-                {/*    style={{*/}
-                {/*      width: isSmallScreen() ? "50%" : "70%",*/}
-                {/*      height: isSmallScreen() ? "50%" : "70%",*/}
-                {/*      aspectRatio: 1 / 1,*/}
-                {/*    }}*/}
-                {/*  />*/}
-                {/*) : (*/}
-                {/*  <Image*/}
-                {/*    source={require("../../app/screens/onboarding/welcome/assets/loop.png")}*/}
-                {/*  />*/}
-                {/*)}*/}
+            <View
+              style={{
+                aspectRatio: 1,
+                alignItems: "center",
+                justifyContent: "flex-end",
+              }}
+            >
+              {/* TODO: modal: fix images for web */}
+              {/*{isObi ? (*/}
+              {/*  <Image*/}
+              {/*    source={require("../../app/screens/onboarding/welcome/assets/obi-wallet-icon.png")}*/}
+              {/*    resizeMode="contain"*/}
+              {/*    style={{*/}
+              {/*      width: isSmallScreen() ? "50%" : "70%",*/}
+              {/*      height: isSmallScreen() ? "50%" : "70%",*/}
+              {/*      aspectRatio: 1 / 1,*/}
+              {/*    }}*/}
+              {/*  />*/}
+              {/*) : (*/}
+              {/*  <Image*/}
+              {/*    source={require("../../app/screens/onboarding/welcome/assets/loop.png")}*/}
+              {/*  />*/}
+              {/*)}*/}
 
-                {isWeb() && (
-                  <Image
-                    source={{ uri: "/osmosis-home.png" }}
-                    style={{
-                      flex: 1,
-                      height: "80%",
-                      width: "80%",
-                      resizeMode: "contain",
-                      marginTop: 50,
-                    }}
-                  />
-                )}
-              </View>
-            </BrandToggle>
-            {isObi ? (
-              <View
-                style={{
-                  marginBottom: theme.spacing["12"],
-                  zIndex: 2,
-                }}
-              >
-                <LanguagePicker />
-              </View>
-            ) : null}
+              {isWeb() && (
+                <Image
+                  source={{ uri: "/osmosis-home.png" }}
+                  style={{
+                    flex: 1,
+                    height: "80%",
+                    width: "80%",
+                    resizeMode: "contain",
+                    marginTop: 50,
+                  }}
+                />
+              )}
+            </View>
+            <View
+              style={{
+                marginBottom: theme.spacing["12"],
+                zIndex: 2,
+              }}
+            >
+              <LanguagePicker />
+            </View>
 
             <Text
               style={{
@@ -149,10 +134,10 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
             <Text
               style={{
                 ...theme.typography.subhead,
-                color: isObi ? "white" : "#999CB6",
+                color: "white",
                 fontWeight: "400",
                 marginTop: theme.spacing["12"],
-                textAlign: isObi ? "justify" : "left",
+                textAlign: "justify",
               }}
             >
               {subTitle}

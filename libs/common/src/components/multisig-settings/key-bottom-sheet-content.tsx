@@ -7,7 +7,6 @@ import { TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useKeyMetaData } from "./key-meta-data";
-import { useStore } from "../../contexts";
 import { Text } from "../typography";
 
 export interface KeyBottomSheetContentProps {
@@ -29,10 +28,6 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
     const title = label;
     const activated = multisigKey.hasKeyOfType(type);
 
-    const { configStore } = useStore();
-    const isLoop = configStore.isLoop();
-    const isObi = configStore.isObi();
-
     const safeArea = useSafeAreaInsets();
 
     const getRecoverButton = () => {
@@ -47,7 +42,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
           style={{
             paddingVertical: 5,
             width: "100%",
-            backgroundColor: isLoop ? "#59D6E6" : "#437DFF",
+            backgroundColor: "#437DFF",
             borderRadius: 12,
             alignItems: "center",
           }}
@@ -56,7 +51,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
             style={{
               fontSize: 15,
               fontWeight: "700",
-              ...(isObi ? { color: "white" } : {}),
+              color: "white",
             }}
           >
             {action.label}
@@ -120,27 +115,23 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
           <View
             style={{
               padding: 10,
-              backgroundColor: isLoop ? "#1D1C37" : "#437DFF",
+              backgroundColor: "#437DFF",
               alignSelf: "flex-start",
               borderRadius: 12,
             }}
           >
-            <Icon fill={isLoop ? "#7B87A8" : "white"} width={24} height={24} />
+            <Icon fill="white" width={24} height={24} />
           </View>
           <View
             style={{
               padding: 10,
-              backgroundColor: isLoop
-                ? "#1D1C37"
-                : activated
-                ? "#437DFF"
-                : "#1a1a1a",
+              backgroundColor: activated ? "#437DFF" : "#1a1a1a",
               borderRadius: 12,
             }}
           >
             <Text
               style={{
-                color: isLoop ? (activated ? "#89F5C2" : "#999CB6") : "white",
+                color: "white",
                 fontSize: 18,
                 fontWeight: "600",
               }}

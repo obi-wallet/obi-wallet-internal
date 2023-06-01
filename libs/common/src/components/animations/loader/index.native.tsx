@@ -1,8 +1,7 @@
 import LottieView, { AnimationObject } from "lottie-react-native";
 import { observer } from "mobx-react-lite";
-import { ActivityIndicator, StyleProp, View, ViewStyle } from "react-native";
+import { StyleProp, View, ViewStyle } from "react-native";
 
-import { useStore } from "../../../contexts";
 import { Text } from "../../typography";
 
 export interface LoaderProps {
@@ -18,10 +17,7 @@ export const Loader = observer(function Loader({
   animation,
   animationStyles,
 }: LoaderProps) {
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
   const getAnimation = () => {
-    if (isLoop) return <ActivityIndicator size="large" color="#8877EA" />;
     if (animation) {
       return (
         <LottieView
@@ -35,6 +31,7 @@ export const Loader = observer(function Loader({
         />
       );
     }
+
     return (
       <LottieView
         source={require("../assets/obi-spinner.json")}

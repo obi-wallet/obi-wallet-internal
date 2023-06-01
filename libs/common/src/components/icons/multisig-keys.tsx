@@ -8,16 +8,12 @@ import Svg, {
   SvgProps,
 } from "react-native-svg";
 
-import { useStore } from "../../contexts";
-
 export const MultisigKeysIcon = observer(function KeysIcon(
   props: SvgProps & { keys: number }
 ) {
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
   const { keys } = props;
   const filledColor = "#89F5C2";
-  const emptyColor = isLoop ? "#1D1C37" : "#272727";
+  const emptyColor = "#272727";
 
   return (
     <Svg width={160} height={160} fill="none" {...props}>
@@ -58,6 +54,7 @@ export const MultisigKeysIcon = observer(function KeysIcon(
     </Svg>
   );
 });
+
 const getBackgroundColor = (keys: number) => {
   if (keys > 4) {
     return "#89F5C2";

@@ -83,10 +83,9 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   flow,
   onSubmit,
 }) {
-  const { configStore, draftsStore } = useStore();
+  const { draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
   const [selectedTab, setSelectedTab] = useState(EmailTab.EmailKeyV1);
-  const isObi = configStore.isObi();
   const [emailKey, setEmailKey] = useState<Secp256k1PublicKey | undefined>();
 
   const onPressRef = useRef<() => void>();
@@ -138,7 +137,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
           <>
             <Text
               style={{
-                color: isObi ? "#fff" : "#999CB6",
+                color: "#fff",
                 fontSize: isSmallScreenNumber(12, 14),
                 marginTop: 10,
               }}
@@ -212,7 +211,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
       <EmailTabs
         selectedTab={selectedTab}
         flow={KeyFlow.RecoverWallet}
-        isObi={isObi}
+        isObi={true}
         onPress={setSelectedTab}
       >
         {renderTabContent()}

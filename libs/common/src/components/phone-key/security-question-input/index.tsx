@@ -4,7 +4,6 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { TextInputProps, View } from "react-native";
 
 import { DropDownPicker } from "./drop-down-picker";
-import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
 import { TextInput } from "../../text-input";
 import { BaseTextInput, Text } from "../../typography";
@@ -76,13 +75,11 @@ export const SecurityQuestionInput = observer(function SecurityQuestionInput({
     useSecurityQuestions()
   );
 
-  const isObi = useStore().configStore.isObi();
-
   return (
     <>
       <Text
         style={{
-          color: isObi ? "white" : "#787B9C",
+          color: "white",
           fontSize: 10,
           textTransform: "uppercase",
           marginTop: isSmallScreenNumber(20, 36),
@@ -112,11 +109,11 @@ export const SecurityQuestionInput = observer(function SecurityQuestionInput({
           fontSize: isSmallScreenNumber(10, 14),
         }}
         dropDownContainerStyle={{
-          backgroundColor: isObi ? "#1E1E1E" : "#000",
+          backgroundColor: "#1E1E1E",
         }}
         style={{
-          borderRadius: isObi ? 30 : 12,
-          borderColor: isObi ? "white" : "#787B9C",
+          borderRadius: 30,
+          borderColor: "white",
           minHeight: isSmallScreenNumber(46, 56),
         }}
         scrollViewProps={{

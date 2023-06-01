@@ -73,8 +73,7 @@ export interface PhoneKeyRequestProps {
 export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
   function PhoneKeyRequest({ demoMode, flow, onSubmit }) {
     const intl = useIntl();
-    const { configStore, chainStore } = useStore();
-    const isObi = configStore.isObi();
+    const { chainStore } = useStore();
     const chainId = chainStore.currentChain;
     const env = useEnv();
     const securityQuestions = useSecurityQuestions();
@@ -109,17 +108,11 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
               <View>
                 <View
                   style={{
-                    marginTop: isObi ? 10 : isSmallScreenNumber(10, 25),
+                    marginTop: 10,
                     paddingTop: isSmallScreenNumber(0, 32),
                   }}
                 >
                   <View>
-                    {isObi ? null : (
-                      <Image
-                        source={require("./assets/phone.png")}
-                        style={{ marginBottom: 20 }}
-                      />
-                    )}
                     <Text
                       style={{
                         color: "#F6F5FF",
@@ -147,7 +140,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                     </Text>
                     <Text
                       style={{
-                        color: isObi ? "white" : "#999CB6",
+                        color: "white",
                         fontSize: isSmallScreenNumber(12, 14),
                       }}
                     >

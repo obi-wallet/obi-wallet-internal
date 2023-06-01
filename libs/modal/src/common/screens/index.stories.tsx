@@ -1,10 +1,12 @@
 import {
+  AccountsScreen,
   CloudKeyScreen,
   CreateWalletScreen,
   DeviceKeyScreen,
   EmailKeyScreen,
   getBiometricsPublicKey,
   getTwilioClient,
+  HomeBottomTabRoute,
   KeyRoute,
   LookupProxyWalletsScreen,
   Modals,
@@ -12,6 +14,7 @@ import {
   OnboardingRoute,
   PhoneKeyConfirmScreen,
   PhoneKeyRequestScreen,
+  RootRoute,
   RootStack,
   SelectRecoveryMethodScreen,
   SocialKeyScreen,
@@ -130,6 +133,10 @@ function App({ initialRouteName }: { initialRouteName: string }) {
             draftId: MultisigDraft.draftId,
           }}
         />
+        <RootStack.Screen
+          name={HomeBottomTabRoute.Accounts}
+          component={AccountsScreen}
+        />
       </RootStack.Navigator>
       <Modals />
     </MultisigDraft.Container>
@@ -208,5 +215,11 @@ export const LookupProxyWallets: Story = {
 export const SelectRecoveryMethod: Story = {
   render: () => {
     return <App initialRouteName={OnboardingRoute.SelectRecoveryMethod} />;
+  },
+};
+
+export const Accounts: Story = {
+  render: () => {
+    return <App initialRouteName={HomeBottomTabRoute.Accounts} />;
   },
 };

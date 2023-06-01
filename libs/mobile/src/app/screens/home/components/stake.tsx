@@ -16,7 +16,6 @@ import {
   Text,
   TokenController,
   useBalances,
-  useStore,
 } from "@obi-wallet/common";
 import {
   useCurrentWallet,
@@ -291,11 +290,8 @@ const TabPill = observer(function TabPill({
 });
 
 const Balance = observer(function Balance() {
-  const { configStore } = useStore();
   const rewards = useRewards();
   const wallet = useCurrentWallet();
-
-  const isObi = configStore.isObi();
 
   const totalRewards = rewards.data.total;
   const formattedRewards = enrichToken({
@@ -309,7 +305,7 @@ const Balance = observer(function Balance() {
         justifyContent: "center",
         alignItems: "center",
         marginTop: isSmallScreenNumber(5, 15),
-        backgroundColor: isObi ? "#437DFF" : "transparent",
+        backgroundColor: "#437DFF",
         borderRadius: 7,
         padding: 10,
       }}

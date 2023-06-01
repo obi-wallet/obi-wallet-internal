@@ -2,7 +2,7 @@ import { useTheme } from "@emotion/react";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { observer } from "mobx-react-lite";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 
@@ -33,8 +33,7 @@ export function useAccountPickerModalProps() {
 
 export const AccountPickerModal = observer<AccountPickerModalProps>(
   function AccountPickerModal({ visible, close }) {
-    const { walletsStore, configStore } = useStore();
-    const isObi = configStore.isObi();
+    const { walletsStore } = useStore();
     const theme = useTheme();
 
     return (
@@ -70,7 +69,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
               </Text>
               <Text
                 style={{
-                  color: isObi ? "#fff" : "#999CB6",
+                  color: "#fff",
                   fontSize: 14,
                   marginTop: 10,
                 }}
@@ -118,7 +117,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                       </Text>
                       <Text
                         style={{
-                          color: isObi ? "#ffffff80" : "#999CB6",
+                          color: "#ffffff80",
                           fontSize: 14,
                           fontWeight: "600",
                         }}
@@ -153,7 +152,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                     >
                       <FontAwesomeIcon
                         icon={faTrash}
-                        style={{ color: isObi ? "#fff" : "#7B87A8" }}
+                        style={{ color: "#fff" }}
                       />
                     </IconButton>
                   </TouchableOpacity>
@@ -170,7 +169,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                 onPress={() => close()}
                 style={{ paddingVertical: 15 }}
               >
-                <Text style={{ color: isObi ? "#fff" : "#787B9C" }}>
+                <Text style={{ color: "#fff" }}>
                   <FormattedMessage
                     id="accountpickermodal.close"
                     defaultMessage="Close"

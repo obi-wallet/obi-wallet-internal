@@ -12,7 +12,6 @@ import {
 import type { Country, CountryCode } from "react-native-country-picker-modal";
 
 import { CountryPicker } from "./country-picker";
-import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
 import { BaseTextInput as OriginalTextInput, Text } from "../../typography";
 
@@ -63,10 +62,7 @@ export const PhoneNumberInput = observer(function PhoneNumberInput({
   inputStyle?: StyleProp<TextStyle>;
   handlePhoneNumberCountryCode: (param: string) => void;
 }) {
-  const { configStore } = useStore();
-  const isObi = configStore.isObi();
-
-  const styles = getStyles(isObi);
+  const styles = getStyles(true);
 
   const [value, setValue] = useState<{
     countryCode: CountryCode;
@@ -99,7 +95,7 @@ export const PhoneNumberInput = observer(function PhoneNumberInput({
           <View style={styles.inputview}>
             <CustomTextInput
               style={[styles.input, inputStyle]}
-              placeholderTextColor={isObi ? "rgba(255,255,255,0.6)" : "#4B4E6E"}
+              placeholderTextColor="rgba(255,255,255,0.6)"
               {...props}
             />
           </View>

@@ -67,12 +67,10 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
   targetPublicKey,
   onSubmit,
 }) {
-  const { configStore, draftsStore } = useStore();
+  const { draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
   const selectedTagType = useRef("");
   const queryClient = useQueryClient();
-  const isObi = configStore.isObi();
-
   const isRecovering = typeof targetPublicKey === "string";
 
   const handleGoogleDrive = async () => {
@@ -179,7 +177,7 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
                   </Text>
                   <Text
                     style={{
-                      color: isObi ? "#fff" : "#999CB6",
+                      color: "#fff",
                       fontSize: isSmallScreenNumber(12, 14),
                       marginTop: 10,
                     }}

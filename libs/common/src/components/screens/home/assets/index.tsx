@@ -2,16 +2,13 @@ import { useTheme } from "@emotion/react";
 import { faSortAsc } from "@fortawesome/free-solid-svg-icons/faSortAsc";
 import { faSortDesc } from "@fortawesome/free-solid-svg-icons/faSortDesc";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Feature } from "@obi-wallet/config";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import {
-  ImageBackground,
   ListRenderItemInfo,
-  Platform,
   TouchableHighlight,
   TouchableOpacity,
   View,
@@ -28,16 +25,17 @@ import {
   UsdBalance,
   useEnrichedBalances,
 } from "../../../../hooks";
-import { RootRoute, RootStackParamList } from "../../../../router";
-import { HomeBottomTabRoute } from "../../../../router";
+import {
+  HomeBottomTabRoute,
+  RootRoute,
+  RootStackParamList,
+} from "../../../../router";
 import { IconButton } from "../../../buttons";
 import {
   CoinIcon,
   NewSettingsIcon,
-  ObiSettingsActiveIcon,
   ReceiveIcon,
   SendIcon,
-  StakingIcon,
 } from "../../../icons";
 import { NetworkAccountPickerLayout } from "../../../network-account-picker-layout";
 import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
@@ -45,11 +43,6 @@ import { RefreshableFlatList } from "../../../refreshable-flat-list";
 import { Text } from "../../../typography";
 
 export const Assets = observer(function Assets() {
-  const theme = useTheme();
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
-
-  // TODO: image
   return (
     <OsmosisScreenContainer>
       <NetworkAccountPickerLayout>
@@ -62,9 +55,6 @@ export const Assets = observer(function Assets() {
 
 const BalanceAndActions = observer(function BalanceAndActions() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
-  const isObi = configStore.isObi();
   const wallet = useCurrentWallet();
 
   return (
@@ -95,7 +85,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
           flexDirection: "row",
           justifyContent: "space-around",
           alignItems: "center",
-          width: isObi ? 300 : 200,
+          width: 300,
           marginTop: isSmallScreenNumber(10, 36),
         }}
       >
@@ -107,7 +97,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               // @ts-expect-error Works in web
               background: "linear-gradient(to right, #df05cb, #2c07e3)",
               // backgroundColor: isLoop ? "#100F1E" : "#437DFF",
-              borderRadius: isLoop ? 16 : 56,
+              borderRadius: 56,
               justifyContent: "center",
               alignItems: "center",
             }}
@@ -127,7 +117,6 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               fontWeight: "500",
               marginTop: 10,
               letterSpacing: 0.09,
-              textTransform: isLoop ? "uppercase" : "none",
             }}
           >
             <FormattedMessage id="assets.send" defaultMessage="Send" />
@@ -140,7 +129,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               height: 56,
               // @ts-expect-error Works in web
               background: "linear-gradient(to right, #df05cb, #2c07e3)",
-              borderRadius: isLoop ? 16 : 56,
+              borderRadius: 56,
               justifyContent: "center",
               alignItems: "center",
             }}
@@ -162,7 +151,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               fontWeight: "500",
               marginTop: 10,
               letterSpacing: 0.09,
-              textTransform: isLoop ? "uppercase" : "none",
+              textTransform: "none",
             }}
           >
             <FormattedMessage id="assets.receive" defaultMessage="Receive" />
@@ -176,7 +165,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               height: 56,
               // @ts-expect-error Works in web
               background: "linear-gradient(to right, #df05cb, #2c07e3)",
-              borderRadius: isLoop ? 16 : 56,
+              borderRadius: 56,
               justifyContent: "center",
               alignItems: "center",
             }}
@@ -191,7 +180,6 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               fontWeight: "500",
               marginTop: 10,
               letterSpacing: 0.09,
-              textTransform: isLoop ? "uppercase" : "none",
             }}
           >
             Settings
@@ -240,8 +228,6 @@ const AssetsList = observer(function AssetsList() {
     chainId: wallet.chainId,
     sortAscending,
   });
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
   const theme = useTheme();
 
   return (
@@ -252,8 +238,8 @@ const AssetsList = observer(function AssetsList() {
         justifyContent: "center",
         marginTop: isSmallScreenNumber(20, 40),
         backgroundColor: theme.colors.panelBackground,
-        borderTopLeftRadius: isLoop ? 30 : 7,
-        borderTopRightRadius: isLoop ? 30 : 7,
+        borderTopLeftRadius: 7,
+        borderTopRightRadius: 7,
         paddingHorizontal: 16,
         marginHorizontal: 10,
       }}
@@ -274,7 +260,7 @@ const AssetsList = observer(function AssetsList() {
         >
           <Text
             style={{
-              color: isLoop ? "#787B9C" : "white",
+              color: "white",
               fontSize: 11,
               letterSpacing: 0.7,
               textTransform: "uppercase",
@@ -289,7 +275,7 @@ const AssetsList = observer(function AssetsList() {
           >
             <Text
               style={{
-                color: isLoop ? "#787B9C" : "white",
+                color: "white",
                 fontSize: 11,
                 letterSpacing: 0.7,
                 textTransform: "uppercase",
@@ -309,22 +295,14 @@ const AssetsList = observer(function AssetsList() {
               <FontAwesomeIcon
                 icon={faSortAsc}
                 style={{
-                  color: sortAscending
-                    ? "#F6F5FF"
-                    : isLoop
-                    ? "#393853"
-                    : "#7E7E7E",
+                  color: sortAscending ? "#F6F5FF" : "#7E7E7E",
                   marginLeft: 12,
                 }}
               />
               <FontAwesomeIcon
                 icon={faSortDesc}
                 style={{
-                  color: sortAscending
-                    ? isLoop
-                      ? "#393853"
-                      : "#7E7E7E"
-                    : "#F6F5FF",
+                  color: sortAscending ? "#7E7E7E" : "#F6F5FF",
                   marginLeft: 12,
                   marginTop: -15,
                 }}

@@ -3,12 +3,11 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 
-import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
 import {
-  OnboardingStackParamList,
-  OnboardingRoute,
   KeyRoute,
+  OnboardingRoute,
+  OnboardingStackParamList,
 } from "../../../router";
 import { KeysList } from "../../multisig-settings";
 import { OnboardingScreenContainer } from "../../onboarding-screen-container";
@@ -24,16 +23,13 @@ export const SelectRecoveryMethodScreen =
     route,
     navigation,
   }) {
-    const { configStore } = useStore();
-    const isObi = configStore.isObi();
-
     const { params } = route;
 
     return (
       <OnboardingScreenContainer>
         <View
           style={{
-            marginTop: isObi ? 10 : isSmallScreenNumber(10, 25),
+            marginTop: 10,
             paddingTop: isSmallScreenNumber(0, 32),
             flex: 1,
           }}
@@ -50,7 +46,7 @@ export const SelectRecoveryMethodScreen =
           </Text>
           <Text
             style={{
-              color: isObi ? "white" : "#999CB6",
+              color: "white",
               fontSize: isSmallScreenNumber(12, 14),
             }}
           >

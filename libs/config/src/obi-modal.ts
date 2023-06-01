@@ -1,11 +1,9 @@
 import { KeyType } from "@obi-wallet/sdk";
 
-import { Brand } from "./brand";
 import { Config } from "./config";
 import { Feature } from "./feature";
 
 export const obiModalConfig: Config = {
-  brand: Brand.Obi,
   chains: {
     enabled: ["osmo-test-5"],
     default: "osmo-test-5",

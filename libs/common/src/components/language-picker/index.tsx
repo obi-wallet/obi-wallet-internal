@@ -43,8 +43,6 @@ const allLanguages = [
 export const LanguagePicker = observer(function LanguagePicker() {
   const languageStore = useStore().languageStore;
   const { currentLanguage, enabledLanguages } = languageStore;
-  const { configStore } = useStore();
-  const isObi = configStore.isObi();
   const theme = useTheme();
 
   const handleLanguageChoice = (language: Language | null) => {
@@ -83,7 +81,7 @@ export const LanguagePicker = observer(function LanguagePicker() {
         borderWidth: 0,
       }}
       style={{
-        backgroundColor: isObi ? theme.colors.background : "transparent",
+        backgroundColor: theme.colors.background,
         borderWidth: 0,
       }}
       textStyle={{

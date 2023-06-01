@@ -1,6 +1,5 @@
 import styled from "@emotion/native";
 import {
-  BrandToggle,
   isSmallScreenNumber,
   ObiIcon,
   RootStack,
@@ -8,10 +7,10 @@ import {
   useRootNavigation,
   useStore,
 } from "@obi-wallet/common";
-import { Brand, Feature } from "@obi-wallet/config";
+import { Feature } from "@obi-wallet/config";
 import * as Sentry from "@sentry/react-native";
 import { observer } from "mobx-react-lite";
-import { FC, useState } from "react";
+import { FC, ReactNode, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   Linking,
@@ -34,8 +33,6 @@ import CogIcon from "../home/assets/obi-settings-active.svg";
 
 export const SettingsScreen = observer(function SettingsScreen() {
   const { configStore, walletsStore } = useStore();
-  const isObi = configStore.isObi();
-  const isLoop = configStore.isLoop();
   const intl = useIntl();
   const navigation = useRootNavigation();
   const [appMetadata, setAppMetadata] = useState<LocalPackage | null>(null);
@@ -68,7 +65,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
             marginBottom: 10,
           }}
         >
-          <BrandToggle
+          <View
             style={{
               borderRadius: 32,
               marginRight: 10,
@@ -81,7 +78,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
                 height: 64,
               }}
             />
-          </BrandToggle>
+          </View>
 
           <View style={{ flexDirection: "column" }}>
             <Heading>
@@ -174,26 +171,15 @@ export const SettingsScreen = observer(function SettingsScreen() {
             id: "settings.helpsupport",
             defaultMessage: "Help & Support",
           })}
-          subtitle={intl.formatMessage(
-            isObi
-              ? {
-                  id: "settings.helpsupport.subtext.obi",
-                  defaultMessage: "Contact Obi support.",
-                }
-              : {
-                  id: "settings.helpsupport.subtext",
-                  defaultMessage: "Contact Loop support.",
-                }
-          )}
-          onPress={() =>
-            Linking.openURL(
-              isObi ? "https://obi.money/contact" : "https://loop.markets/help"
-            )
-          }
+          subtitle={intl.formatMessage({
+            id: "settings.helpsupport.subtext.obi",
+            defaultMessage: "Contact Obi support.",
+          })}
+          onPress={() => Linking.openURL("https://obi.money/contact")}
         />
 
         <Setting
-          Icon={() => <LogoutIcon fill={isLoop ? "#E36B7D" : "white"} />}
+          Icon={() => <LogoutIcon fill="white" />}
           title={intl.formatMessage({
             id: "settings.logout",
             defaultMessage: "Log Out",
@@ -246,9 +232,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
               {/*</Text>*/}
               <Text
                 onPress={() => {
-                  const url = configStore.isObi()
-                    ? "https://www.obi.money/privacy-policy"
-                    : "https://mail.loop.onl/privacy-policy/";
+                  const url = "https://www.obi.money/privacy-policy";
                   void Linking.openURL(url);
                 }}
                 style={{
@@ -287,7 +271,7 @@ interface SettingProps {
   title: string;
   subtitle: string;
   onPress?: () => void;
-  children?: React.ReactNode;
+  children?: ReactNode;
   disableButton?: boolean;
 }
 
@@ -299,9 +283,6 @@ export const Setting = observer(function Setting({
   children,
   disableButton,
 }: SettingProps) {
-  const { configStore } = useStore();
-  const brand = configStore.brand;
-  const isLoop = configStore.isLoop();
   const renderContent = () => (
     <>
       <View style={{ flex: 1, flexDirection: "row" }}>
@@ -309,13 +290,13 @@ export const Setting = observer(function Setting({
           <View
             style={{
               padding: 10,
-              backgroundColor: isLoop ? "#1D1C37" : "#437DFF",
+              backgroundColor: "#437DFF",
               alignSelf: "flex-start",
 
               borderRadius: 12,
             }}
           >
-            <Icon fill={isLoop ? "#7B87A8" : "white"} />
+            <Icon fill="white" />
           </View>
         )}
         <TilesContainer>
@@ -329,7 +310,6 @@ export const Setting = observer(function Setting({
   return (
     <SettingButton
       onPress={() => onPress && onPress()}
-      brand={brand}
       disabled={disableButton}
     >
       {renderContent()}
@@ -394,13 +374,13 @@ const styles = StyleSheet.create({
     color: "#3D4661",
   },
 });
-const SettingButton = styled.TouchableOpacity<{ brand: Brand }>(
+const SettingButton = styled.TouchableOpacity(
   {
     ...styles.setting,
     ...styles.flex1,
   },
-  (props) => ({
-    backgroundColor: props.brand === Brand.Loop ? "#111023" : "#272727",
+  () => ({
+    backgroundColor: "#272727",
   })
 );
 

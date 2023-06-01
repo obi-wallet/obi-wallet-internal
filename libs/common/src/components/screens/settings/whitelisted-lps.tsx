@@ -7,7 +7,6 @@ import { ScrollView, Switch } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAsyncEffect } from "rooks";
 
-import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
 import { RootStackParamList, SettingsRoute } from "../../../router";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
@@ -106,7 +105,6 @@ interface Pool {
 
 export const WhitelistedLpsScreen = observer<WhitelistedLpsScreenProps>(
   function WhitelistedLPsScreen({ navigation }) {
-    const isObi = useStore().configStore.isObi();
     const [loading, setLoading] = useState<boolean>(true);
     const [lpList, setLpList] = useState<any[]>([]);
 
@@ -132,7 +130,7 @@ export const WhitelistedLpsScreen = observer<WhitelistedLpsScreenProps>(
         <SafeAreaView style={{ flex: 1 }}>
           <View
             style={{
-              marginTop: isObi ? 10 : isSmallScreenNumber(10, 25),
+              marginTop: 10,
               paddingTop: isSmallScreenNumber(0, 32),
               paddingBottom: 20,
               flexDirection: "row",

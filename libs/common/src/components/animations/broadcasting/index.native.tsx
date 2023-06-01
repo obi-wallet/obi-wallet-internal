@@ -1,12 +1,9 @@
 import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 
-import { useStore } from "../../../contexts";
 import { Loader } from "../loader";
 
 export const BroadcastingAnimation = observer(function BroadcastingAnimation() {
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
   const theme = useTheme();
 
   return (
@@ -18,7 +15,7 @@ export const BroadcastingAnimation = observer(function BroadcastingAnimation() {
         alignItems: "center",
         zIndex: 999,
         position: "absolute",
-        backgroundColor: isLoop ? "#100F1D" : theme.colors.background,
+        backgroundColor: theme.colors.background,
         top: 0,
         left: 0,
         right: 0,

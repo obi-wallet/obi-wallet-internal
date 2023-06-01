@@ -47,7 +47,6 @@ import { GestureResponderEvent } from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { z } from "zod";
 
-import { useStore } from "../../../contexts";
 import { TokenController } from "../../../forms";
 import { isSmallScreen, isSmallScreenNumber } from "../../../helpers";
 import { enrichToken, useBalances } from "../../../hooks";
@@ -287,11 +286,8 @@ const TabPill = observer(function TabPill({
 });
 
 const Balance = observer(function Balance() {
-  const { configStore } = useStore();
   const rewards = useRewards();
   const wallet = useCurrentWallet();
-
-  const isObi = configStore.isObi();
 
   const totalRewards = rewards.data.total;
   const formattedRewards = enrichToken({
@@ -305,7 +301,7 @@ const Balance = observer(function Balance() {
         justifyContent: "center",
         alignItems: "center",
         marginTop: isSmallScreenNumber(5, 15),
-        backgroundColor: isObi ? "#437DFF" : "transparent",
+        backgroundColor: "#437DFF",
         borderRadius: 7,
         padding: 10,
       }}

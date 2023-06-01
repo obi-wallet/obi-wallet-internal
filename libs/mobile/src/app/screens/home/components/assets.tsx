@@ -27,7 +27,6 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import {
-  ImageBackground,
   ListRenderItemInfo,
   TouchableHighlight,
   TouchableOpacity,
@@ -36,17 +35,8 @@ import {
 
 export const Assets = observer(function Assets() {
   const theme = useTheme();
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
-
   return (
-    <ImageBackground
-      source={require("../assets/background.png")}
-      resizeMode="cover"
-      imageStyle={{
-        height: isLoop ? 403 : 0,
-        marginTop: isSmallScreenNumber(0, 60),
-      }}
+    <View
       style={{
         backgroundColor: theme.colors.background,
         flex: 1,
@@ -56,15 +46,13 @@ export const Assets = observer(function Assets() {
         <BalanceAndActions />
         <AssetsList />
       </NetworkAccountPickerLayout>
-    </ImageBackground>
+    </View>
   );
 });
 
 const BalanceAndActions = observer(function BalanceAndActions() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
-  const isObi = configStore.isObi();
   const wallet = useCurrentWallet();
 
   return (
@@ -95,7 +83,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
           flexDirection: "row",
           justifyContent: "space-around",
           alignItems: "center",
-          width: isObi ? 300 : 200,
+          width: 300,
           marginTop: isSmallScreenNumber(10, 36),
         }}
       >
@@ -104,8 +92,8 @@ const BalanceAndActions = observer(function BalanceAndActions() {
             style={{
               width: 56,
               height: 56,
-              backgroundColor: isLoop ? "#100F1E" : "#437DFF",
-              borderRadius: isLoop ? 16 : 56,
+              backgroundColor: "#437DFF",
+              borderRadius: 56,
               justifyContent: "center",
               alignItems: "center",
             }}
@@ -125,7 +113,6 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               fontWeight: "500",
               marginTop: 10,
               letterSpacing: 0.09,
-              textTransform: isLoop ? "uppercase" : "none",
             }}
           >
             <FormattedMessage id="assets.send" defaultMessage="Send" />
@@ -136,8 +123,8 @@ const BalanceAndActions = observer(function BalanceAndActions() {
             style={{
               width: 56,
               height: 56,
-              backgroundColor: isLoop ? "#100F1E" : "#437DFF",
-              borderRadius: isLoop ? 16 : 56,
+              backgroundColor: "#437DFF",
+              borderRadius: 56,
               justifyContent: "center",
               alignItems: "center",
             }}
@@ -159,7 +146,6 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               fontWeight: "500",
               marginTop: 10,
               letterSpacing: 0.09,
-              textTransform: isLoop ? "uppercase" : "none",
             }}
           >
             <FormattedMessage id="assets.receive" defaultMessage="Receive" />
@@ -171,8 +157,8 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               style={{
                 width: 56,
                 height: 56,
-                backgroundColor: isLoop ? "#100F1E" : "#437DFF",
-                borderRadius: isLoop ? 16 : 56,
+                backgroundColor: "#437DFF",
+                borderRadius: 56,
                 justifyContent: "center",
                 alignItems: "center",
               }}
@@ -187,7 +173,6 @@ const BalanceAndActions = observer(function BalanceAndActions() {
                 fontWeight: "500",
                 marginTop: 10,
                 letterSpacing: 0.09,
-                textTransform: isLoop ? "uppercase" : "none",
               }}
             >
               <FormattedMessage id="assets.staking" defaultMessage="Staking" />
@@ -207,9 +192,6 @@ const AssetsList = observer(function AssetsList() {
     chainId: wallet.chainId,
     sortAscending,
   });
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
-
   return (
     <View
       style={{
@@ -217,9 +199,9 @@ const AssetsList = observer(function AssetsList() {
         flexDirection: "row",
         justifyContent: "center",
         marginTop: isSmallScreenNumber(20, 40),
-        backgroundColor: isLoop ? "#100F1E" : "#272727",
-        borderTopLeftRadius: isLoop ? 30 : 7,
-        borderTopRightRadius: isLoop ? 30 : 7,
+        backgroundColor: "#272727",
+        borderTopLeftRadius: 7,
+        borderTopRightRadius: 7,
         paddingHorizontal: 16,
         marginHorizontal: 10,
       }}
@@ -240,7 +222,7 @@ const AssetsList = observer(function AssetsList() {
         >
           <Text
             style={{
-              color: isLoop ? "#787B9C" : "white",
+              color: "white",
               fontSize: 11,
               letterSpacing: 0.7,
               textTransform: "uppercase",
@@ -255,7 +237,7 @@ const AssetsList = observer(function AssetsList() {
           >
             <Text
               style={{
-                color: isLoop ? "#787B9C" : "white",
+                color: "white",
                 fontSize: 11,
                 letterSpacing: 0.7,
                 textTransform: "uppercase",
@@ -275,22 +257,14 @@ const AssetsList = observer(function AssetsList() {
               <FontAwesomeIcon
                 icon={faSortAsc}
                 style={{
-                  color: sortAscending
-                    ? "#F6F5FF"
-                    : isLoop
-                    ? "#393853"
-                    : "#7E7E7E",
+                  color: sortAscending ? "#F6F5FF" : "#7E7E7E",
                   marginLeft: 12,
                 }}
               />
               <FontAwesomeIcon
                 icon={faSortDesc}
                 style={{
-                  color: sortAscending
-                    ? isLoop
-                      ? "#393853"
-                      : "#7E7E7E"
-                    : "#F6F5FF",
+                  color: sortAscending ? "#7E7E7E" : "#F6F5FF",
                   marginLeft: 12,
                   marginTop: -15,
                 }}

@@ -2,7 +2,6 @@ import { useTheme } from "@emotion/react";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Brand } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { ComponentType, useState } from "react";
@@ -22,7 +21,6 @@ import {
   TextInput,
   TextInputInvalidMessage,
 } from "../../components";
-import { useStore } from "../../contexts";
 import { EnrichedToken } from "../../hooks";
 
 export type TokenControllerProps = {
@@ -49,9 +47,6 @@ export const TokenController = observer<TokenControllerProps>(
     fieldState,
     ...bottomSheetProps
   }) {
-    const { configStore } = useStore();
-    const isObi = configStore.isObi();
-    const isLoop = configStore.isLoop();
     const theme = useTheme();
 
     const [denominationOpened, setDenominationOpened] = useState(false);
@@ -68,7 +63,7 @@ export const TokenController = observer<TokenControllerProps>(
       <>
         <Text
           style={{
-            color: isLoop ? "#787B9C" : "#ffffff",
+            color: "#ffffff",
             textTransform: "uppercase",
             fontSize: 10,
             marginBottom: 10,
@@ -79,7 +74,7 @@ export const TokenController = observer<TokenControllerProps>(
         <View
           style={[
             {
-              borderColor: isLoop ? "#2F2B4C" : "#ffffff",
+              borderColor: "#ffffff",
               borderWidth: 1,
               borderRadius: 7,
               flexDirection: "row",
@@ -126,7 +121,7 @@ export const TokenController = observer<TokenControllerProps>(
               <View style={{ paddingHorizontal: 10, alignItems: "center" }}>
                 <FontAwesomeIcon
                   icon={faAngleDown}
-                  style={{ color: isLoop ? "#7B87A8" : "white" }}
+                  style={{ color: "white" }}
                 />
               </View>
             ) : null}
@@ -199,7 +194,7 @@ export const TokenController = observer<TokenControllerProps>(
                     style={{
                       fontSize: 12,
                       color: "#f6f5ff",
-                      opacity: isLoop ? 0.6 : 1,
+                      opacity: 1,
                     }}
                   >
                     <FormattedMessage
@@ -224,11 +219,7 @@ export const TokenController = observer<TokenControllerProps>(
                 style={{
                   backgroundColor: theme.colors.panelBackground,
                   flex: 1,
-                  ...(isObi
-                    ? {
-                        borderRadius: 7,
-                      }
-                    : {}),
+                  borderRadius: 7,
                 }}
               >
                 <View
@@ -241,8 +232,7 @@ export const TokenController = observer<TokenControllerProps>(
                   <Text
                     style={{
                       fontSize: 12,
-                      color: isLoop ? "#f6f5ff" : "white",
-                      opacity: isLoop ? 0.6 : 1,
+                      color: "white",
                       textTransform: "uppercase",
                     }}
                   >
@@ -251,8 +241,7 @@ export const TokenController = observer<TokenControllerProps>(
                   <Text
                     style={{
                       fontSize: 12,
-                      color: isLoop ? "#f6f5ff" : "white",
-                      opacity: isLoop ? 0.6 : 1,
+                      color: "white",
                       textTransform: "uppercase",
                     }}
                   >
@@ -434,19 +423,11 @@ interface CoinRendererProps {
   onPress: () => void;
 }
 
-const getBrandBackground = (brand: Brand) => {
-  switch (brand) {
-    case Brand.Loop:
-      return {
-        selected: "#17162C",
-        unselected: "#100F1E",
-      };
-    case Brand.Obi:
-      return {
-        selected: "rgba(0,0,0,0.1)",
-        unselected: "transparent",
-      };
-  }
+const getBrandBackground = () => {
+  return {
+    selected: "rgba(0,0,0,0.1)",
+    unselected: "transparent",
+  };
 };
 
 const CoinRenderer = observer(function CoinRenderer({
@@ -454,8 +435,8 @@ const CoinRenderer = observer(function CoinRenderer({
   selected,
   onPress,
 }: CoinRendererProps) {
-  const { configStore } = useStore();
-  const brandColors = getBrandBackground(configStore.brand);
+  const brandColors = getBrandBackground();
+
   return (
     <TouchableOpacity
       style={{

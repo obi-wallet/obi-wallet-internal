@@ -14,7 +14,6 @@ import * as R from "ramda";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import {
-  ImageBackground,
   LayoutAnimation,
   ListRenderItemInfo,
   TouchableOpacity,
@@ -60,8 +59,7 @@ export const AccountsOverviewScreen = observer<AccountsOverviewScreenProps>(
 );
 
 const AccountScreenInner = observer(function AccountScreenInner() {
-  const { configStore, draftsStore } = useStore();
-  const isLoop = configStore.isLoop();
+  const { draftsStore } = useStore();
   const navigation = useRootNavigation();
 
   const wallet = useCurrentWallet();
@@ -82,21 +80,14 @@ const AccountScreenInner = observer(function AccountScreenInner() {
       <View style={{ paddingHorizontal: 10, flex: 1 }}>
         <TouchableOpacity
           style={{
-            backgroundColor: isLoop ? "#1C0C3F" : "#437DFF",
+            backgroundColor: "#437DFF",
             borderRadius: 16,
           }}
           onPress={() => {
             wallet.setCurrentAccountByMeta(null);
           }}
         >
-          <ImageBackground
-            source={
-              isLoop ? require("./assets/loop-account-background.png") : null
-            }
-            style={{ padding: 10, position: "relative" }}
-            resizeMode="cover"
-            borderRadius={16}
-          >
+          <View style={{ padding: 10, position: "relative" }}>
             <TouchableOpacity
               style={{
                 position: "absolute",
@@ -151,7 +142,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                 />
               </View>
             </View>
-          </ImageBackground>
+          </View>
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <AccountsList />

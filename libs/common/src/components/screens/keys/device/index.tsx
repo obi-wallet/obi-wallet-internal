@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -68,13 +69,12 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   demoMode,
   onSubmit,
 }) {
-  const { configStore, draftsStore } = useStore();
+  const { draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
   const queryClient = useQueryClient();
-  const isObi = configStore.isObi();
-
   const [scannedBiometrics, setScannedBiometrics] = useState(false);
   const intl = useIntl();
+  const theme = useTheme();
 
   async function scanBiometrics() {
     try {
@@ -136,9 +136,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
             >
               <View
                 style={{
-                  backgroundColor: isObi
-                    ? "rgba(219, 222, 255,0.07)"
-                    : "rgba(86, 84, 141, 0.07)",
+                  backgroundColor: "rgba(219, 222, 255, 0.07)",
                   justifyContent: "center",
                   alignItems: "center",
                   width: isSmallScreenNumber(200, 296),
@@ -148,9 +146,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
               >
                 <View
                   style={{
-                    backgroundColor: isObi
-                      ? "rgba(219, 222, 255,0.17)"
-                      : "rgba(86, 84, 141, 0.17)",
+                    backgroundColor: "rgba(219, 222, 255, 0.17)",
                     justifyContent: "center",
                     alignItems: "center",
                     width: isSmallScreenNumber(140, 224),
@@ -196,12 +192,10 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
             </Text>
             <Text
               style={{
-                color: isObi ? "white" : "#999CB6",
+                color: "white",
                 fontSize: isSmallScreenNumber(12, 14),
-                fontWeight: "400",
                 marginTop: 10,
-                // TODO: might be required for native
-                // ...(isObi ? { fontFamily: "poppins-light" } : {}),
+                ...theme.textStyles.light,
               }}
             >
               <FormattedMessage

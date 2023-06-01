@@ -3,10 +3,8 @@ import { useTheme } from "@emotion/react";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Feature } from "@obi-wallet/config";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Chain } from "@obi-wallet/sdk";
-import { BottomTabBar } from "@react-navigation/bottom-tabs";
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
@@ -51,7 +49,6 @@ import {
   ObiSettingsIcon,
 } from "../../icons";
 import { Text } from "../../typography";
-import { AccountsScreen } from "../accounts";
 import { SettingsScreen } from "../settings";
 
 export type HomeScreenProps = NativeStackScreenProps<
@@ -70,9 +67,6 @@ export type TabNavigationProps = DrawerScreenProps<ParamListBase>;
 export const TabNavigation = observer<TabNavigationProps>(
   function TabNavigation() {
     const intl = useIntl();
-    const { configStore } = useStore();
-    const isLoop = configStore.isLoop();
-    const isObi = configStore.isObi();
     const theme = useTheme();
 
     return (
@@ -111,7 +105,7 @@ export const TabNavigation = observer<TabNavigationProps>(
             }
           },
           tabBarStyle: {
-            backgroundColor: isLoop ? "#17162C" : "#437DFF",
+            backgroundColor: "#437DFF",
             borderTopColor: "#1E1D33",
             borderTopWidth: 1,
             paddingTop: 20,
@@ -132,12 +126,11 @@ export const TabNavigation = observer<TabNavigationProps>(
           },
           headerShown: false,
           tabBarHideOnKeyboard: true,
-          tabBarActiveTintColor: isLoop ? "#F6F5FF" : "white",
-          tabBarInactiveTintColor: isLoop ? "#4D5070" : "white",
+          tabBarActiveTintColor: "white",
+          tabBarInactiveTintColor: "white",
           tabBarLabelStyle: {
             ...theme.textStyles.light,
-            fontSize: isObi ? 8 : 10,
-            textTransform: isLoop ? "uppercase" : "none",
+            fontSize: 8,
             marginTop: 15,
             letterSpacing: 0.6,
           },
@@ -201,7 +194,7 @@ export const HomeScreen = observer<HomeScreenProps>(function HomeScreen(props) {
   );
 });
 
-const UpdateFooter = observer(function UpdateHeader() {
+const UpdateFooter = observer(function UpdateFooter() {
   const { walletsStore } = useStore();
   const theme = useTheme();
 
@@ -281,14 +274,10 @@ const CustomDrawerContent = observer(function CustomDrawerContent(
   const { chainStore, configStore } = useStore();
   const theme = useTheme();
 
-  const isLoop = configStore.isLoop();
   const networks = configStore.config.chains.enabled.map(Chain.information);
 
   return (
-    <DrawerContentScrollView
-      {...props}
-      style={{ backgroundColor: isLoop ? "#100F1E" : "#437DFF" }}
-    >
+    <DrawerContentScrollView {...props} style={{ backgroundColor: "#437DFF" }}>
       <TouchableHighlight
         style={{
           alignSelf: "flex-start",
@@ -299,14 +288,11 @@ const CustomDrawerContent = observer(function CustomDrawerContent(
         }}
         onPress={() => navigation.closeDrawer()}
       >
-        <FontAwesomeIcon
-          icon={faTimes}
-          style={{ color: isLoop ? "#4d5070" : "white" }}
-        />
+        <FontAwesomeIcon icon={faTimes} style={{ color: "white" }} />
       </TouchableHighlight>
       <Text
         style={{
-          color: isLoop ? "#787B9C" : "white",
+          color: "white",
           marginLeft: 16,
           marginBottom: 17,
           fontSize: 11,
@@ -323,10 +309,8 @@ const CustomDrawerContent = observer(function CustomDrawerContent(
             key={network.chainId}
             label={network.label}
             activeTintColor="#F6F5FF"
-            inactiveTintColor={isLoop ? "#787B9C" : "#aaa"}
-            activeBackgroundColor={
-              isLoop ? "#27253E" : "rgba(255, 255, 255, 0.1)"
-            }
+            inactiveTintColor="#aaa"
+            activeBackgroundColor="rgba(255, 255, 255, 0.1)"
             labelStyle={[
               theme.textStyles.regular,
               {
@@ -342,7 +326,7 @@ const CustomDrawerContent = observer(function CustomDrawerContent(
       })}
       <Text
         style={{
-          color: isLoop ? "#787B9C" : "white",
+          color: "white",
           marginLeft: 16,
           marginTop: 17,
           fontSize: 11,

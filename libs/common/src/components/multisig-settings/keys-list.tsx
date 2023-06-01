@@ -18,7 +18,6 @@ import {
 import { SvgProps } from "react-native-svg";
 
 import { ComingSoonKeyType, useKeyMetaData } from "./key-meta-data";
-import { useStore } from "../../contexts";
 import { triggerImpactLight, triggerNotificationSuccess } from "../../helpers";
 import {
   ConfirmAnimation,
@@ -107,9 +106,6 @@ export const KeyListItem = observer(function KeyListItem({
   animate,
 }: KeyListItemProps) {
   const { label, description, Icon, right, onPress, signed } = item;
-  const { configStore } = useStore();
-  const isObi = configStore.isObi();
-  const isLoop = configStore.isLoop();
   const theme = useTheme();
 
   const [pending, setPending] = useState(false);
@@ -150,18 +146,18 @@ export const KeyListItem = observer(function KeyListItem({
     return (
       <>
         {signed ? <ConfirmAnimation /> : <PromptAnimation loop={animate} />}
-        <Icon fill={isObi ? "#fff" : "#7B87A8"} width={24} height={24} />
+        <Icon fill="#fff" width={24} height={24} />
       </>
     );
   };
 
   return tiled ? (
     <TouchableOpacity
-      onPress={() => {
+      onPress={async () => {
         if (onPress && !pending) {
           if (!signed) {
             triggerImpactLight();
-            onPressSingleton();
+            await onPressSingleton();
           }
         }
       }}
@@ -170,14 +166,13 @@ export const KeyListItem = observer(function KeyListItem({
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           <View
             style={{
-              backgroundColor: isObi ? "transparent" : "#1D1C37",
               width: 50,
               height: 50,
               justifyContent: "center",
               alignItems: "center",
               borderRadius: 36,
               borderWidth: 5,
-              borderColor: signed && isLoop ? "#89F5C2" : "transparent",
+              borderColor: "transparent",
             }}
           >
             {renderContent()}
@@ -212,7 +207,6 @@ export const KeyListItem = observer(function KeyListItem({
       <View style={{ flex: 2, justifyContent: "center", alignItems: "center" }}>
         <View
           style={{
-            backgroundColor: isObi ? "transparent" : "#1D1C37",
             width: 36,
             height: 36,
             justifyContent: "center",
@@ -220,7 +214,7 @@ export const KeyListItem = observer(function KeyListItem({
             borderRadius: 12,
           }}
         >
-          <Icon fill={isLoop ? "#7B87A8" : "white"} width={24} height={24} />
+          <Icon fill="#ffffff" width={24} height={24} />
         </View>
       </View>
       <View style={{ flex: 6, justifyContent: "center" }}>

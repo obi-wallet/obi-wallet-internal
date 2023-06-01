@@ -1,9 +1,7 @@
-import { faQrcode } from "@fortawesome/free-solid-svg-icons/faQrcode";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { ChainId, Sdk } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ControllerFieldState } from "react-hook-form";
-import { Platform, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 
 import {
   SendIcon,
@@ -11,7 +9,6 @@ import {
   TextInputInvalidMessage,
   useQrCodeScannerModal,
 } from "../../components";
-import { useStore } from "../../contexts";
 import { isSmallScreenNumber, isWeb } from "../../helpers";
 
 // TODO:
@@ -37,10 +34,6 @@ export const AddressController = observer<AddressControllerProps>(
     field,
     fieldState,
   }) {
-    const { configStore } = useStore();
-    const isObi = configStore.isObi();
-    const isLoop = configStore.isLoop();
-
     const hasError = fieldState.error !== undefined;
 
     const qrCodeScannerModal = useQrCodeScannerModal(({ data, close }) => {
@@ -99,11 +92,10 @@ export const AddressController = observer<AddressControllerProps>(
                 height: isSmallScreenNumber(46, 56),
                 justifyContent: "center",
                 alignItems: "center",
-                padding: isObi ? 0 : 5,
-                borderTopRightRadius: isObi ? 32 : 12,
-                borderBottomRightRadius: isObi ? 32 : 12,
+                borderTopRightRadius: 32,
+                borderBottomRightRadius: 32,
                 borderWidth: 1,
-                borderColor: isLoop ? "#2F2B4C" : "white",
+                borderColor: "white",
                 borderLeftWidth: 0,
               },
               hasError
@@ -121,7 +113,7 @@ export const AddressController = observer<AddressControllerProps>(
                 {
                   position: "absolute",
                   width: 1,
-                  backgroundColor: isLoop ? "#2F2B4C" : "white",
+                  backgroundColor: "white",
                   height: "100%",
                   left: 0,
                 },
@@ -132,15 +124,7 @@ export const AddressController = observer<AddressControllerProps>(
                   : null,
               ]}
             />
-            {isObi ? (
-              <ObiQr />
-            ) : (
-              <FontAwesomeIcon
-                icon={faQrcode}
-                style={{ color: isLoop ? "#887CEB" : "white" }}
-                size={32}
-              />
-            )}
+            <ObiQr />
           </TouchableOpacity>
         </View>
         <TextInputInvalidMessage message={fieldState.error?.message} />

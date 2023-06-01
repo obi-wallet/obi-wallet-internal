@@ -4,7 +4,6 @@ import { ObservableMultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
-import { Platform } from "react-native";
 
 import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
@@ -98,7 +97,6 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
   onEnterDemoMode,
 }) {
   const { configStore, walletsStore } = useStore();
-  const isObi = configStore.isObi();
   const intl = useIntl();
   const theme = useTheme();
 
@@ -172,17 +170,10 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
     if (isWeb()) {
       return "Osmosis Smart Account";
     }
-    if (isObi) {
-      return intl.formatMessage({
-        id: "onboarding1.welcometo.obi",
-        defaultMessage: "Welcome to Obi",
-      });
-    } else {
-      return intl.formatMessage({
-        id: "onboarding1.welcometo.loop",
-        defaultMessage: "Welcome to Loop",
-      });
-    }
+    return intl.formatMessage({
+      id: "onboarding1.welcometo.obi",
+      defaultMessage: "Welcome to Obi",
+    });
   }
 
   function renderSubTitle() {
@@ -190,14 +181,6 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
       return "Welcome to the most secure and convenient way to manage your trading on Osmosis!";
     }
 
-    if (isObi) {
-      return "Obi is the most secure and convenient way to manage assets in the Cosmos.";
-    } else {
-      return intl.formatMessage({
-        id: "onboarding1.welcomesubtext",
-        defaultMessage:
-          "Loop, powered by Obi, is the world's most powerful wallet for Web3.",
-      });
-    }
+    return "Obi is the most secure and convenient way to manage assets in the Cosmos.";
   }
 });

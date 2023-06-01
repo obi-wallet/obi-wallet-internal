@@ -1,20 +1,12 @@
 import { observer } from "mobx-react-lite";
 import Svg, { Path, SvgProps } from "react-native-svg";
 
-import { useStore } from "../../contexts";
-
 export const SendIcon = observer(function SendIcon(
   props: SvgProps & { color?: string }
 ) {
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
   const getColor = () => {
     if (props.color) {
       return props.color;
-    }
-
-    if (isLoop) {
-      return "#89F5C2";
     }
 
     return "#fff";

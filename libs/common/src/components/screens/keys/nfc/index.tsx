@@ -76,14 +76,12 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
   targetPublicKey,
   onSubmit,
 }) {
-  const { configStore, draftsStore } = useStore();
+  const { draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
   const intl = useIntl();
   const selectedTagType = useRef<string>("");
   const queryClient = useQueryClient();
   const [reading, setReading] = useState(false);
-
-  const isObi = configStore.isObi();
 
   const [hasNfc, setHasNfc] = useState(false);
   const [scannedNfc, setScannedNfc] = useState(false);
@@ -207,7 +205,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
                   </Text>
                   <Text
                     style={{
-                      color: isObi ? "#fff" : "#999CB6",
+                      color: "#fff",
                       fontSize: isSmallScreenNumber(12, 14),
                       marginTop: 10,
                     }}
@@ -217,7 +215,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
                   </Text>
                   <Text
                     style={{
-                      color: isObi ? "#fff" : "#999CB6",
+                      color: "#fff",
                       fontSize: isSmallScreenNumber(12, 14),
                       marginTop: 20,
                       fontWeight: "600",

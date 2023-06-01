@@ -5,9 +5,7 @@ import { FormattedMessage } from "react-intl";
 import { View } from "react-native";
 
 import { ConfirmMessages, ConfirmMessagesProps } from "./confirm-messages";
-import { useStore } from "../../../contexts";
 import { Alert } from "../../../helpers";
-import { LinearGradient } from "../../linear-gradient";
 import { KeysList, KeysListProps } from "../../multisig-settings";
 import { Text } from "../../typography";
 
@@ -37,19 +35,11 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
     safeSpendLimitExceeded,
     ...props
   }) {
-    const { configStore } = useStore();
     const theme = useTheme();
-    const isObi = configStore.isObi();
-    const isLoop = configStore.isLoop();
     const enoughSignatures = numberOfSignatures >= threshold;
 
     const [loading, setLoading] = useState(false);
 
-    const getSignaturePercentage = () => {
-      const percentage = (numberOfSignatures / threshold) * 100;
-      if (percentage > 100) return "100%";
-      return `${percentage}%`;
-    };
     return (
       <ConfirmMessages
         {...props}
@@ -69,91 +59,34 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
           }
         }}
       >
-        {isLoop && (
-          <View
-            style={{
-              height: 10,
-              backgroundColor: "#1E1D3A",
-              borderRadius: 10,
-            }}
-          >
-            <LinearGradient
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              colors={["#FCCFF7", "#E659D6", "#8877EA", "#86E2EE"]}
-              style={{
-                flex: 1,
-                width: getSignaturePercentage(),
-                borderRadius: 10,
-              }}
-            />
-          </View>
-        )}
-        {isLoop && (
-          <View>
-            <Text
-              style={{
-                textAlign: "center",
-                color: "#F6F5FF",
-                fontSize: 12,
-                fontWeight: "600",
-                opacity: 0.6,
-                marginTop: 5,
-              }}
-            >
-              <FormattedMessage
-                id="signature.keysrequired"
-                defaultMessage="Keys Required"
-              />
-              : {numberOfSignatures}/{threshold}
-            </Text>
-          </View>
-        )}
         <KeysList
           data={data}
           tiled
           animate={!enoughSignatures}
           style={{
             marginVertical: 10,
-            backgroundColor: isObi ? "transparent" : "#130F23",
             borderRadius: 12,
             alignItems: "center",
           }}
         />
-        {isObi && (
-          <View>
-            {safeSpendLimitExceeded ? (
-              <View style={{ marginBottom: theme.spacing["16"] }}>
-                <Text
-                  style={[
-                    theme.typography.body,
-                    {
-                      textAlign: "center",
-                      color: "#F6F5FF",
-                      // fontSize: numberOfSignatures >= threshold ? 14 : 12,
-                      fontWeight: theme.fontWeights.bold,
-                      // opacity: numberOfSignatures >= threshold ? 1 : 0.6,
-                      marginVertical: numberOfSignatures >= threshold ? 5 : 2,
-                    },
-                  ]}
-                >
-                  Safe Spend Limit Exceeded
-                </Text>
-                <Text
-                  style={{
+        <View>
+          {safeSpendLimitExceeded ? (
+            <View style={{ marginBottom: theme.spacing["16"] }}>
+              <Text
+                style={[
+                  theme.typography.body,
+                  {
                     textAlign: "center",
                     color: "#F6F5FF",
-                    fontSize: numberOfSignatures >= threshold ? 14 : 12,
-                    fontWeight: "600",
-                    opacity: numberOfSignatures >= threshold ? 1 : 0.6,
+                    // fontSize: numberOfSignatures >= threshold ? 14 : 12,
+                    fontWeight: theme.fontWeights.bold,
+                    // opacity: numberOfSignatures >= threshold ? 1 : 0.6,
                     marginVertical: numberOfSignatures >= threshold ? 5 : 2,
-                  }}
-                >
-                  Transaction requires {threshold}/{numberOfUsableKeys}{" "}
-                  signatures
-                </Text>
-              </View>
-            ) : (
+                  },
+                ]}
+              >
+                Safe Spend Limit Exceeded
+              </Text>
               <Text
                 style={{
                   textAlign: "center",
@@ -164,15 +97,28 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
                   marginVertical: numberOfSignatures >= threshold ? 5 : 2,
                 }}
               >
-                <FormattedMessage
-                  id="signature.keysrequired"
-                  defaultMessage="Keys Required"
-                />
-                : {numberOfSignatures}/{threshold}
+                Transaction requires {threshold}/{numberOfUsableKeys} signatures
               </Text>
-            )}
-          </View>
-        )}
+            </View>
+          ) : (
+            <Text
+              style={{
+                textAlign: "center",
+                color: "#F6F5FF",
+                fontSize: numberOfSignatures >= threshold ? 14 : 12,
+                fontWeight: "600",
+                opacity: numberOfSignatures >= threshold ? 1 : 0.6,
+                marginVertical: numberOfSignatures >= threshold ? 5 : 2,
+              }}
+            >
+              <FormattedMessage
+                id="signature.keysrequired"
+                defaultMessage="Keys Required"
+              />
+              : {numberOfSignatures}/{threshold}
+            </Text>
+          )}
+        </View>
       </ConfirmMessages>
     );
   }

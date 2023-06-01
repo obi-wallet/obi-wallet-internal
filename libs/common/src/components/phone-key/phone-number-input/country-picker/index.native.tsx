@@ -12,27 +12,24 @@ import OriginalCountryPicker, {
 import { useStore } from "../../../../contexts";
 import { isSmallScreenNumber } from "../../../../helpers";
 
-const getStyles = (isObi: boolean) =>
-  StyleSheet.create({
-    buttonview: {
-      flex: 1,
-      flexDirection: "row",
-      justifyContent: "center",
-      alignItems: "center",
-      fontSize: 14,
-      fontWeight: 500,
-    },
-  });
+const styles = StyleSheet.create({
+  buttonview: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: 500,
+  },
+});
 
 export const CountryPicker = observer<{
   value: { countryCode: CountryCode; country: Country };
   onChange: (value: { countryCode: CountryCode; country: Country }) => void;
 }>(function CountryPicker({ value, onChange }) {
-  const { languageStore, configStore } = useStore();
+  const { languageStore } = useStore();
   const { currentLanguage } = languageStore;
-  const isObi = configStore.isObi();
   const theme = useTheme();
-  const styles = getStyles(isObi);
 
   const [visible, setVisible] = useState(false);
   const switchVisible = () => setVisible(!visible);

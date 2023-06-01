@@ -1,7 +1,7 @@
 import styled from "@emotion/native";
-import { Brand, Feature } from "@obi-wallet/config";
+import { Feature } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   Linking,
@@ -34,8 +34,6 @@ import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 
 export const SettingsScreen = observer(function SettingsScreen() {
   const { configStore, walletsStore } = useStore();
-  const isObi = configStore.isObi();
-  const isLoop = configStore.isLoop();
   const intl = useIntl();
   const navigation = useRootNavigation();
 
@@ -178,28 +176,15 @@ export const SettingsScreen = observer(function SettingsScreen() {
               id: "settings.helpsupport",
               defaultMessage: "Help & Support",
             })}
-            subtitle={intl.formatMessage(
-              isObi
-                ? {
-                    id: "settings.helpsupport.subtext.obi",
-                    defaultMessage: "Contact Obi support.",
-                  }
-                : {
-                    id: "settings.helpsupport.subtext",
-                    defaultMessage: "Contact Loop support.",
-                  }
-            )}
-            onPress={() =>
-              Linking.openURL(
-                isObi
-                  ? "https://obi.money/contact"
-                  : "https://loop.markets/help"
-              )
-            }
+            subtitle={intl.formatMessage({
+              id: "settings.helpsupport.subtext.obi",
+              defaultMessage: "Contact Obi support.",
+            })}
+            onPress={() => Linking.openURL("https://obi.money/contact")}
           />
 
           <Setting
-            Icon={() => <LogoutIcon fill={isLoop ? "#E36B7D" : "white"} />}
+            Icon={() => <LogoutIcon fill="white" />}
             title={intl.formatMessage({
               id: "settings.logout",
               defaultMessage: "Log Out",
@@ -252,9 +237,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
                 {/*</Text>*/}
                 <Text
                   onPress={() => {
-                    const url = configStore.isObi()
-                      ? "https://www.obi.money/privacy-policy"
-                      : "https://mail.loop.onl/privacy-policy/";
+                    const url = "https://www.obi.money/privacy-policy";
                     void Linking.openURL(url);
                   }}
                   style={{
@@ -294,7 +277,7 @@ interface SettingProps {
   title: string;
   subtitle: string;
   onPress?: () => void;
-  children?: React.ReactNode;
+  children?: ReactNode;
   disableButton?: boolean;
 }
 
@@ -306,9 +289,6 @@ export const Setting = observer(function Setting({
   children,
   disableButton,
 }: SettingProps) {
-  const { configStore } = useStore();
-  const brand = configStore.brand;
-  const isLoop = configStore.isLoop();
   const renderContent = () => (
     <>
       <View
@@ -329,7 +309,7 @@ export const Setting = observer(function Setting({
               borderRadius: 12,
             }}
           >
-            <Icon fill={isLoop ? "#7B87A8" : "white"} />
+            <Icon fill="white" />
           </View>
         )}
         <TilesContainer>
@@ -341,11 +321,10 @@ export const Setting = observer(function Setting({
     </>
   );
   return disableButton ? (
-    <SettingContainer brand={brand}>{renderContent()}</SettingContainer>
+    <SettingContainer>{renderContent()}</SettingContainer>
   ) : (
     <SettingButton
       onPress={() => onPress && onPress()}
-      brand={brand}
       // disabled={disableButton}
     >
       {renderContent()}
@@ -416,7 +395,8 @@ const styles = StyleSheet.create({
     color: "#3D4661",
   },
 });
-const SettingContainer = styled.View<{ brand: Brand }>(
+
+const SettingContainer = styled.View(
   {
     ...styles.setting,
     ...styles.flex1,
@@ -425,7 +405,8 @@ const SettingContainer = styled.View<{ brand: Brand }>(
     backgroundColor: theme.colors.panelBackground,
   })
 );
-const SettingButton = styled.TouchableOpacity<{ brand: Brand }>(
+
+const SettingButton = styled.TouchableOpacity(
   {
     ...styles.setting,
     ...styles.flex1,

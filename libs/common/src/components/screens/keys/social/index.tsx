@@ -65,7 +65,7 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
   flow,
   onSubmit,
 }) {
-  const { chainStore, configStore, draftsStore } = useStore();
+  const { chainStore, draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
   const [address, setAddress] = useState("");
   const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true); // Verify&Proceed Button disabled by default
@@ -95,7 +95,6 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
       return "Terra";
     },
   });
-  const isObi = configStore.isObi();
   const intl = useIntl();
 
   const minAddressInputChars = 43;
@@ -171,7 +170,7 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
                   </Text>
                   <Text
                     style={{
-                      color: isObi ? "#fff" : "#999CB6",
+                      color: "#fff",
                       fontSize: isSmallScreenNumber(12, 14),
                       marginTop: 10,
                     }}
@@ -190,7 +189,7 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
               />
               <Text
                 style={{
-                  color: isObi ? "#fff" : "#999CB6",
+                  color: "#fff",
                   fontSize: isSmallScreenNumber(12, 14),
                   marginTop: 10,
                 }}

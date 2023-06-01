@@ -3,10 +3,6 @@ import {
   AminoMsgInstantiateContract,
 } from "@cosmjs/cosmwasm-stargate/build/modules";
 import { AminoMsgSend } from "@cosmjs/stargate";
-import { faPaperPlane } from "@fortawesome/free-solid-svg-icons/faPaperPlane";
-import { faPlay } from "@fortawesome/free-solid-svg-icons/faPlay";
-import { faWallet } from "@fortawesome/free-solid-svg-icons/faWallet";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { useQuery, useValidators } from "@obi-wallet/headless-ui";
 import {
@@ -37,12 +33,6 @@ import { useStore } from "../../../contexts";
 import { enrichToken } from "../../../hooks";
 import { CoinIcon } from "../../icons";
 import { Text } from "../../typography";
-
-// TODO:
-// import ArrowUpIcon from "./assets/arrowUpIcon.svg";
-const ArrowUpIcon = observer(function ArrowUpIcon() {
-  return null;
-});
 
 const ChainIdContext = createContext<ChainId | null>(null);
 
@@ -120,7 +110,6 @@ const PrettyMessageStaking = observer<
           rawAmount: value.amount.amount,
         },
       ]}
-      icon={<ArrowUpIcon />}
       title={label}
     >
       <Text style={{ color: "white" }}>
@@ -152,7 +141,6 @@ const PrettyMessageWithdrawDelegatorReward =
 
       return (
         <MessageElement
-          icon={<ArrowUpIcon />}
           title="Withdrawing staking rewards from:"
           coins={reward?.rewards ? [reward.rewards] : undefined}
         >
@@ -167,10 +155,6 @@ const PrettyMessageWithdrawDelegatorReward =
 
 const PrettyMessageSend = observer<AminoMsgSend | MsgSend.Amino>(
   function PrettyMessageSend({ value }) {
-    const chainId = useChainId();
-    const { configStore } = useStore();
-    const isObi = configStore.isObi();
-
     const tokens = value.amount.map((coin) => {
       return {
         id: coin.denom,
@@ -179,34 +163,10 @@ const PrettyMessageSend = observer<AminoMsgSend | MsgSend.Amino>(
     });
 
     return (
-      <MessageElement
-        icon={<FontAwesomeIcon icon={faPaperPlane} size={33} color="white" />}
-        title={isObi ? "To:" : "Send"}
-        coins={tokens}
-      >
-        {isObi ? (
-          <Text style={{ color: "white" }}>
-            {Bech32Address.shortenAddress(value.to_address, 35)}
-          </Text>
-        ) : (
-          <>
-            <Text style={{ color: "white" }}>
-              {Bech32Address.shortenAddress(value.to_address, 20)}
-              <Text style={{ opacity: 0.6 }}> will receive:</Text>
-            </Text>
-            {tokens.map((token) => {
-              const { amount, denom } = enrichToken({
-                chainId,
-                token,
-              });
-              return (
-                <Text key={token.id} style={{ color: "white" }}>
-                  {amount} {denom}
-                </Text>
-              );
-            })}
-          </>
-        )}
+      <MessageElement title="To:" coins={tokens}>
+        <Text style={{ color: "white" }}>
+          {Bech32Address.shortenAddress(value.to_address, 35)}
+        </Text>
       </MessageElement>
     );
   }
@@ -225,7 +185,6 @@ const PrettyMessageInstantiateContract = observer<
   ) {
     return (
       <MessageElement
-        icon={<FontAwesomeIcon icon={faWallet} size={33} color="white" />}
         title={intl.formatMessage({
           id: "signature.modal.createobiwallet",
           defaultMessage: "Create Obi Wallet",
@@ -236,7 +195,6 @@ const PrettyMessageInstantiateContract = observer<
 
   return (
     <MessageElement
-      icon={<ArrowUpIcon />}
       title={intl.formatMessage({
         id: "signature.modal.initcontract",
         defaultMessage: "Init Contract",
@@ -248,18 +206,12 @@ const PrettyMessageInstantiateContract = observer<
 const PrettyMessageExecuteContract = observer<
   AminoMsgExecuteContract | MsgExecuteContract.Amino
 >(function PrettyMessageExecuteContract({ value }) {
-  const chainId = useChainId();
   const intl = useIntl();
   const message = getMessage();
   const funds = getFunds();
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
-  const isObi = configStore.isObi();
-
   if (typeof message === "object" && R.has("propose_update_owner", message)) {
     return (
       <MessageElement
-        icon={<ArrowUpIcon />}
         title="Update Multikey (step 1 of 2)"
         coins={[...funds]}
       />
@@ -268,18 +220,13 @@ const PrettyMessageExecuteContract = observer<
 
   if (typeof message === "object" && R.has("confirm_update_owner", message)) {
     return (
-      <MessageElement
-        icon={<ArrowUpIcon />}
-        title="Confirm Update (step 2 of 2)"
-        coins={[...funds]}
-      />
+      <MessageElement title="Confirm Update (step 2 of 2)" coins={[...funds]} />
     );
   }
 
   if (typeof message === "object" && R.has("propose_update_admin", message)) {
     return (
       <MessageElement
-        icon={<ArrowUpIcon />}
         title={intl.formatMessage({
           id: "signature.modal.proposeupdateadmin",
           defaultMessage: "Update Multikey (step 1 of 2)",
@@ -292,7 +239,6 @@ const PrettyMessageExecuteContract = observer<
   if (typeof message === "object" && R.has("confirm_update_admin", message)) {
     return (
       <MessageElement
-        icon={<ArrowUpIcon />}
         title={intl.formatMessage({
           id: "signature.modal.confirmupdateadmin",
           defaultMessage: "Confirm Update (step 2 of 2)",
@@ -303,23 +249,11 @@ const PrettyMessageExecuteContract = observer<
   }
 
   if (typeof message === "object" && R.has("new_account", message)) {
-    return (
-      <MessageElement
-        coins={[...funds]}
-        icon={<ArrowUpIcon />}
-        title="Create Obi Wallet"
-      />
-    );
+    return <MessageElement coins={[...funds]} title="Create Obi Wallet" />;
   }
 
   if (typeof message === "object" && R.has("wrapped_migrate", message)) {
-    return (
-      <MessageElement
-        coins={[...funds]}
-        icon={<ArrowUpIcon />}
-        title="Update Obi Wallet"
-      />
-    );
+    return <MessageElement coins={[...funds]} title="Update Obi Wallet" />;
   }
   if (
     typeof message === "object" &&
@@ -335,7 +269,6 @@ const PrettyMessageExecuteContract = observer<
     return (
       <MessageElement
         coins={[...funds]}
-        icon={<ArrowUpIcon />}
         title="Add/Update Permissioned Address"
       >
         <Text style={{ color: "white" }}>
@@ -357,11 +290,7 @@ const PrettyMessageExecuteContract = observer<
       };
     };
     return (
-      <MessageElement
-        coins={[...funds]}
-        icon={<ArrowUpIcon />}
-        title="Remove Permissioned Address"
-      >
+      <MessageElement coins={[...funds]} title="Remove Permissioned Address">
         <Text style={{ color: "white" }}>
           {Bech32Address.shortenAddress(
             msg.rm_permissioned_address?.doomed_permissioned_address,
@@ -378,11 +307,7 @@ const PrettyMessageExecuteContract = observer<
       };
     };
     return (
-      <MessageElement
-        coins={[...funds]}
-        icon={<ArrowUpIcon />}
-        title="Create Session Key"
-      >
+      <MessageElement coins={[...funds]} title="Create Session Key">
         <Text style={{ color: "white" }}>
           {Bech32Address.shortenAddress(msg.create_session_key.address, 35)}
         </Text>
@@ -396,11 +321,7 @@ const PrettyMessageExecuteContract = observer<
       };
     };
     return (
-      <MessageElement
-        coins={[...funds]}
-        icon={<ArrowUpIcon />}
-        title="Destroy Session Key"
-      >
+      <MessageElement coins={[...funds]} title="Destroy Session Key">
         <Text style={{ color: "white" }}>
           {Bech32Address.shortenAddress(msg.destroy_session_key.address, 35)}
         </Text>
@@ -426,23 +347,19 @@ const PrettyMessageExecuteContract = observer<
     const cooldown = msg.upsert_beneficiary.new_beneficiary.cooldown / 30;
     const percent =
       msg.upsert_beneficiary.new_beneficiary.spend_limits[0].amount;
-    // if period_multiple is 1, then it's a monthly payment else it's a annually payment
+    // if period_multiple is 1, then it's a monthly payment else it's an annual payment
     const period =
       msg.upsert_beneficiary.new_beneficiary.period_multiple === 1
         ? "monthly"
         : "annually";
 
     return (
-      <MessageElement
-        coins={[...funds]}
-        icon={<ArrowUpIcon />}
-        title="Add/Update Beneficiary"
-      >
+      <MessageElement coins={[...funds]} title="Add/Update Beneficiary">
         <View
           style={{
             flex: 1,
             width: "100%",
-            alignItems: isObi ? "center" : "flex-start",
+            alignItems: "center",
           }}
         >
           <Text style={{ color: "white" }}>
@@ -464,41 +381,17 @@ const PrettyMessageExecuteContract = observer<
     );
   }
   return (
-    <MessageElement
-      icon={<FontAwesomeIcon icon={faPlay} size={33} color="white" />}
-      title="Execute Wasm Contract"
-      coins={funds}
-    >
+    <MessageElement title="Execute Wasm Contract" coins={funds}>
       <View
         style={{
           flex: 1,
           width: "100%",
-          alignItems: isObi ? "center" : "flex-start",
+          alignItems: "center",
         }}
       >
         <Text style={{ fontWeight: "700", color: "#fff" }}>
           {Bech32Address.shortenAddress(value.contract, 35)}
         </Text>
-        {isLoop ? (
-          <View>
-            {funds.length > 0 && (
-              <View>
-                <Text style={{ color: "#fff" }}>by sending: </Text>
-              </View>
-            )}
-            {funds.map((token) => {
-              const { amount, denom } = enrichToken({
-                chainId,
-                token,
-              });
-              return (
-                <Text style={{ color: "white" }} key={token.id}>
-                  {amount} {denom}
-                </Text>
-              );
-            })}
-          </View>
-        ) : null}
         <Text style={{ color: "white" }}>
           Check the data tab for the full message
         </Text>
@@ -540,7 +433,6 @@ const PrettyMessageUnknown = observer(function PrettyMessageUnknown() {
   const intl = useIntl();
   return (
     <MessageElement
-      icon={<ArrowUpIcon />}
       title={intl.formatMessage({
         id: "signature.modal.unknownmessage.heading",
         defaultMessage: "Unknown message",
@@ -554,7 +446,6 @@ const PrettyMessageUnknown = observer(function PrettyMessageUnknown() {
 });
 
 interface MessageElementProps {
-  icon?: ReactNode;
   title?: string;
   subTitle?: string;
   children?: ReactNode;
@@ -562,49 +453,12 @@ interface MessageElementProps {
 }
 
 const MessageElement = observer<MessageElementProps>(function MessageElement({
-  icon,
   title,
   subTitle,
   children,
   coins,
 }) {
-  const { configStore } = useStore();
-  const isLoop = configStore.isLoop();
-
-  return isLoop ? (
-    <View
-      style={{
-        minHeight: 50,
-        flexDirection: "row",
-        borderBottomColor: "rgba(255,255,255, 0.6)",
-        borderBottomWidth: 1,
-        paddingVertical: 15,
-        paddingHorizontal: 10,
-      }}
-    >
-      <View style={{ justifyContent: "flex-start", alignItems: "center" }}>
-        {icon}
-      </View>
-      <View
-        style={{ flex: 1, justifyContent: "space-around", paddingLeft: 10 }}
-      >
-        <Text
-          style={{
-            color: "white",
-            fontWeight: "600",
-            fontSize: 16,
-            marginBottom: 10,
-          }}
-        >
-          {title ? title : ""}
-        </Text>
-        {subTitle ? (
-          <Text style={{ color: "white", opacity: 0.6 }}>{subTitle}</Text>
-        ) : null}
-        {children}
-      </View>
-    </View>
-  ) : (
+  return (
     <View>
       <View
         style={{

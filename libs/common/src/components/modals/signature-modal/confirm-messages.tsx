@@ -9,7 +9,6 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { ModalProps, ScrollView, TouchableOpacity, View } from "react-native";
 
 import { PrettyMessage } from "./pretty-message";
-import { useStore } from "../../../contexts";
 import { Alert } from "../../../helpers";
 import { BroadcastingAnimation } from "../../animations";
 import { BaseModal } from "../../base-modal";
@@ -55,9 +54,6 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
   }) {
     const intl = useIntl();
     const [selectedTab, setSelectedTab] = useState(Tab.TransactionDetails);
-    const { configStore } = useStore();
-    const isObi = configStore.isObi();
-    const isLoop = configStore.isLoop();
     const theme = useTheme();
 
     return (
@@ -100,11 +96,9 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
                   style={{
                     flexDirection: "row",
                     height: 50,
-                    ...(isObi && {
-                      borderBottomColor: "rgba(250,250,250,.2)",
-                      borderBottomWidth: 1,
-                    }),
-                    marginHorizontal: isObi ? 10 : 0,
+                    borderBottomColor: "rgba(250,250,250,.2)",
+                    borderBottomWidth: 1,
+                    marginHorizontal: 10,
                   }}
                 >
                   {renderTabButton({
@@ -113,7 +107,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
                       id: "signature.modal.txdetails",
                       defaultMessage: "Tx Details",
                     }),
-                    isObi,
+                    isObi: true,
                   })}
                   {renderTabButton({
                     tab: Tab.Data,
@@ -121,7 +115,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
                       id: "signature.modal.data",
                       defaultMessage: "Data",
                     }),
-                    isObi,
+                    isObi: true,
                   })}
                 </View>
 
@@ -141,7 +135,6 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
                       style={{
                         flex: 1,
                         padding: 10,
-                        ...{ backgroundColor: isLoop ? "#130F23" : "" },
                         marginBottom: 10,
                         borderRadius: 12,
                         borderTopRightRadius: Tab.Data === selectedTab ? 0 : 12,
@@ -168,7 +161,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
                   />
                   {cancelable && (
                     <Button
-                      flavor={isObi ? "cancel" : "blue"}
+                      flavor="cancel"
                       label={intl.formatMessage({
                         id: "signature.modal.cancel",
                         defaultMessage: "Cancel",

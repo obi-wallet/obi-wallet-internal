@@ -1,5 +1,4 @@
 import { Theme, useTheme } from "@emotion/react";
-import { Brand } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { FC, useCallback, useState } from "react";
@@ -18,7 +17,6 @@ import {
 import type { SvgProps } from "react-native-svg";
 import { useEffectOnceWhen } from "rooks";
 
-import { useStore } from "../../contexts";
 import { isSmallScreenNumber } from "../../helpers";
 import { Text } from "../typography";
 
@@ -95,71 +93,34 @@ const baseStyles = StyleSheet.create({
 });
 
 const getFlavorStyles = (
-  brand: Brand,
   flavor: keyof typeof loopFlavors | keyof typeof obiFlavors,
   theme: Theme,
   disabled: boolean
 ) => {
-  switch (brand) {
-    case Brand.Obi: {
-      if (disabled) return baseStyles;
+  if (disabled) return baseStyles;
 
-      const flavorStyles: Flavor = R.propOr(
-        { text: {}, button: {} },
-        flavor,
-        obiFlavors
-      );
+  const flavorStyles: Flavor = R.propOr(
+    { text: {}, button: {} },
+    flavor,
+    obiFlavors
+  );
 
-      return {
-        ...baseStyles,
-        text: {
-          ...baseStyles.text,
-          ...theme.textStyles.light,
-          color: "#fff",
-          ...flavorStyles.text,
-        },
-        button: {
-          ...baseStyles.button,
-          // backgroundColor: "#437DFF",
-          background: "linear-gradient(to right, #df05cb, #2c07e3)",
-          opacity: 1,
-          ...flavorStyles.button,
-        },
-      };
-    }
-    case Brand.Loop: {
-      const loopBorderRadius = 12;
-      if (disabled)
-        return {
-          ...baseStyles,
-          fontWeight: baseStyles.text.fontWeight,
-          button: {
-            ...baseStyles.button,
-            borderRadius: loopBorderRadius,
-          },
-        };
-
-      const flavorStyles: Flavor = R.propOr(
-        { text: {}, button: {} },
-        flavor,
-        loopFlavors
-      );
-      return {
-        ...baseStyles,
-        text: {
-          ...baseStyles.text,
-          ...flavorStyles.text,
-          ...theme.textStyles.bold,
-        },
-        button: {
-          ...baseStyles.button,
-          ...flavorStyles.button,
-          borderRadius: loopBorderRadius,
-          opacity: 1,
-        },
-      };
-    }
-  }
+  return {
+    ...baseStyles,
+    text: {
+      ...baseStyles.text,
+      ...theme.textStyles.light,
+      color: "#fff",
+      ...flavorStyles.text,
+    },
+    button: {
+      ...baseStyles.button,
+      // backgroundColor: "#437DFF",
+      background: "linear-gradient(to right, #df05cb, #2c07e3)",
+      opacity: 1,
+      ...flavorStyles.button,
+    },
+  };
 };
 
 export interface ButtonProps
@@ -184,10 +145,8 @@ export const Button = observer(function Button({
   buttonStyle,
   ...props
 }: ButtonProps) {
-  const { configStore } = useStore();
   const theme = useTheme();
-  const brand = configStore.brand;
-  const flavorStyles = getFlavorStyles(brand, flavor, theme, disabled);
+  const flavorStyles = getFlavorStyles(flavor, theme, disabled);
   const children = (
     <View style={flavorStyles.button}>
       {LeftIcon ? (

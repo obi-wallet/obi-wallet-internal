@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { View } from "react-native";
 
-import { useStore } from "../../../contexts";
 import { Alert } from "../../../helpers";
 import { BottomSheetTextInput } from "../../bottom-sheet";
 import {
@@ -34,8 +33,6 @@ export const PhoneNumberBottomSheetContent =
     }) {
       const intl = useIntl();
       const { securityAnswer, setSecurityAnswer } = useSecurityQuestionInput();
-      const { configStore } = useStore();
-      const isLoop = configStore.isLoop();
       const [sentMessage, setSentMessage] = useState(false);
       const [key, setKey] = useState("");
 
@@ -84,7 +81,7 @@ export const PhoneNumberBottomSheetContent =
             <View>
               <Text
                 style={{
-                  color: isLoop ? "#999CB6" : "#fff",
+                  color: "#fff",
                   fontSize: 14,
                   marginTop: 10,
                 }}

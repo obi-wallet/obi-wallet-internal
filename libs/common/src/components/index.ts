@@ -5,7 +5,6 @@ export * from "./avatar";
 export * from "./back";
 export * from "./base-modal";
 export * from "./bottom-sheet";
-export * from "./brand-toggle";
 export * from "./buttons";
 export * from "./icons";
 export * from "./initial-background";
