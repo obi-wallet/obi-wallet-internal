@@ -17,7 +17,7 @@ import { MultisigSettingsScreen } from "./multisig-settings";
 import { OsmosisSettingsScreen } from "./osmosis-settings";
 import { WhitelistedLpsScreen } from "./whitelisted-lps";
 import { useStore } from "../../../contexts";
-import { isSmallScreenNumber } from "../../../helpers";
+import { isSmallScreenNumber, isWeb } from "../../../helpers";
 import {
   HomeBottomTabRoute,
   RootStack,
@@ -315,8 +315,6 @@ export const Setting = observer(function Setting({
         style={{
           flex: 1,
           flexDirection: "row",
-
-          ...(Platform.OS === "web" ? {} : {}),
         }}
       >
         {Icon && (
@@ -378,7 +376,7 @@ const SubHeading = styled.Text({
   color: "#F6F5FF",
   opacity: 0.6,
   fontSize: 12,
-  ...(Platform.OS === "web" ? { wordBreak: "break-word" } : {}),
+  ...(isWeb() ? { wordBreak: "break-word" } : {}),
 });
 
 const styles = StyleSheet.create({
@@ -386,7 +384,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     flexDirection: "row",
-    ...(Platform.OS === "web"
+    ...(isWeb()
       ? {
           minHeight: "max-content",
           paddingVertical: 10,

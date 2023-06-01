@@ -5,7 +5,7 @@ import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
@@ -15,7 +15,7 @@ import {
 import { useKeyMetaData } from "./key-meta-data";
 import { Key, KeysList } from "./keys-list";
 import { useStore } from "../../contexts";
-import { isSmallScreenNumber } from "../../helpers";
+import { isSmallScreenNumber, isWeb } from "../../helpers";
 import { BottomSheetNew } from "../bottom-sheet";
 import { CheckIcon, MultisigKeysIcon, WarningIcon } from "../icons";
 import { OsmosisScreenContainer } from "../osmosis-screen-container";
@@ -79,49 +79,75 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
             <Text style={styles.heading}>{title}</Text>
             <Text style={styles.subHeading}>{subTitle}</Text>
           </View>
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: 20,
-            }}
-          >
+          {isWeb() ? (
             <View
               style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+                paddingVertical: 10,
+                backgroundColor: "white",
+                borderRadius: 32,
+                paddingHorizontal: 20,
+                justifyContent: "space-between",
+                flexDirection: "row",
+                marginTop: 20,
               }}
             >
-              <MultisigKeysIcon keys={activatedKeys} />
+              <Text
+                style={{ color: theme.colors.background, fontWeight: "bold" }}
+              >
+                Threshold
+              </Text>
+              <Text
+                style={{ color: theme.colors.background, fontWeight: "bold" }}
+              >
+                {multisigKey.threshold} of {activatedKeys}
+              </Text>
+            </View>
+          ) : (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 20,
+              }}
+            >
+              <View
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <MultisigKeysIcon keys={activatedKeys} />
+                <Text
+                  style={[
+                    styles.heading,
+                    {
+                      position: "absolute",
+                      fontSize: 24,
+                    },
+                  ]}
+                >
+                  {multisigKey.threshold}/{activatedKeys}
+                </Text>
+              </View>
+
               <Text
                 style={[
                   styles.heading,
                   {
-                    position: "absolute",
-                    fontSize: 24,
+                    marginTop: 0,
+                    fontSize: isSmallScreenNumber(14, 18),
+                    marginBottom: 8,
                   },
                 ]}
               >
-                {multisigKey.threshold}/{activatedKeys}
+                <FormattedMessage
+                  id="settings.multisig.risk.high"
+                  defaultMessage="Security Tier: Basic"
+                />
               </Text>
             </View>
-            <Text
-              style={[
-                styles.heading,
-                {
-                  marginTop: 0,
-                  fontSize: isSmallScreenNumber(14, 18),
-                  marginBottom: 8,
-                },
-              ]}
-            >
-              <FormattedMessage
-                id="settings.multisig.risk.high"
-                defaultMessage="Security Tier: Basic"
-              />
-            </Text>
-          </View>
+          )}
           <View style={{ flex: 1, marginTop: 20 }}>
             <KeysList data={data} />
           </View>

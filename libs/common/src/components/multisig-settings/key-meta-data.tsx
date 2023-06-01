@@ -5,6 +5,7 @@ import { Platform } from "react-native";
 import { SvgProps } from "react-native-svg";
 
 import { useStore } from "../../contexts";
+import { isWeb } from "../../helpers";
 import {
   CloudKeyIcon,
   DeviceKeyIcon,
@@ -60,7 +61,7 @@ export function useKeyMetaData() {
         id: "settings.multisig.option.phonekey",
         defaultMessage: "Phone Key",
       }),
-      Icon: Platform.OS === "web" ? PhoneKeyOutlineIcon : PhoneKeyIcon,
+      Icon: isWeb() ? PhoneKeyOutlineIcon : PhoneKeyIcon,
     },
     [KeyType.Social]: {
       label: intl.formatMessage({

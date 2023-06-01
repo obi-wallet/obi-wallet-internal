@@ -12,6 +12,7 @@ import {
   useQrCodeScannerModal,
   useRootNavigation,
   useStore,
+  isWeb,
 } from "@obi-wallet/common";
 import { Card, Tile, Tiles } from "@obi-wallet/common-deprecated";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
@@ -342,7 +343,7 @@ const AppsScreen = observer(function AppsScreen() {
                 <FontAwesomeIcon
                   icon={faPaperclip}
                   // @ts-expect-error web platform is not correctly handled by FontAwesomeIcon's types
-                  size={Platform.OS === "web" ? "1x" : 24}
+                  size={isWeb() ? "1x" : 24}
                   style={{ color: "#393853", marginRight: 6 }}
                 />
 
@@ -460,7 +461,7 @@ const AppsScreen = observer(function AppsScreen() {
               <FontAwesomeIcon
                 icon={faChevronRight}
                 // @ts-expect-error web platform is not correctly handled by FontAwesomeIcon's types
-                size={Platform.OS === "web" ? "1x" : 24}
+                size={isWeb() ? "1x" : 24}
                 wa
                 color="#fff"
               />
