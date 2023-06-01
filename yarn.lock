@@ -10972,6 +10972,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dexie@npm:^3.2.4":
+  version: 3.2.4
+  resolution: "dexie@npm:3.2.4"
+  checksum: 4e5294a954118b6862c864b8c3970904a1733daebcd919488624520696411e2e81ed1bceeac3634c5c15a21e37ce4b8502ed41c4edfbc5ba3f5925c34d56497b
+  languageName: node
+  linkType: hard
+
 "dezalgo@npm:^1.0.4":
   version: 1.0.4
   resolution: "dezalgo@npm:1.0.4"
@@ -18463,6 +18470,7 @@ __metadata:
     crypto-browserify: ^3.12.0
     crypto-js: ^4.1.1
     detox: ^20.7.1
+    dexie: ^3.2.4
     eslint: ^8.39.0
     eslint-config-prettier: ^8.8.0
     eslint-plugin-import: ^2.27.5

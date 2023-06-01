@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { AbstractKVStore } from "./abstract";
+import { AbstractKVStore } from "../abstract";
 
 export class KVStore implements AbstractKVStore {
   constructor(protected readonly _prefix: string) {}

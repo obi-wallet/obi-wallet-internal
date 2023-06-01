@@ -1,4 +1,3 @@
-import { KVStore } from "@obi-wallet/headless-ui";
 import { generateSec256k1KeyPair } from "@obi-wallet/sdk";
 import { isEmulator } from "react-native-device-info";
 import * as Keychain from "react-native-keychain";
@@ -9,21 +8,13 @@ const BIOMETRICS_KEY = "obi-wallet-biometrics";
 const DEMO_PUBLIC_KEY = "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI";
 const DEMO_PRIVATE_KEY = "jrfHogEDo91xaC0Kym/BMheAhlm5z93fVwMT8mKTGy4=";
 
-const kvStore = new KVStore("device-keys");
-
 export async function existsKeyOnDevice({ publicKey }: { publicKey: string }) {
   if (publicKey === DEMO_PUBLIC_KEY) return true;
 
-  const isKeyOnDevice = await kvStore.get<boolean>(publicKey);
-
-  if (typeof isKeyOnDevice === "boolean") return isKeyOnDevice;
-
   try {
     await getBiometricsPrivateKey({ publicKey });
-    await kvStore.set(publicKey, true);
     return true;
   } catch (e) {
-    await kvStore.set(publicKey, false);
     return false;
   }
 }
@@ -123,7 +114,7 @@ export async function getBiometricsKeyPair({
 
 async function fetchCredentialsFromKeyChain({ service }: { service: string }) {
   const isEmu = await isEmulator();
-  const credentials = await Keychain.getGenericPassword({
+  return await Keychain.getGenericPassword({
     authenticationPrompt: {
       title: "Authentication Required",
     },
@@ -135,10 +126,6 @@ async function fetchCredentialsFromKeyChain({ service }: { service: string }) {
             Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
         }),
   });
-  if (credentials) {
-    await kvStore.set(credentials.username, true);
-  }
-  return credentials;
 }
 
 async function saveCredentialsToKeyChain({
@@ -151,7 +138,7 @@ async function saveCredentialsToKeyChain({
   password: string;
 }) {
   const isEmu = await isEmulator();
-  const result = await Keychain.setGenericPassword(username, password, {
+  return await Keychain.setGenericPassword(username, password, {
     service,
     ...(isEmu
       ? {}
@@ -160,6 +147,4 @@ async function saveCredentialsToKeyChain({
             Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
         }),
   });
-  await kvStore.set(username, true);
-  return result;
 }
