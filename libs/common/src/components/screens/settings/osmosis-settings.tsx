@@ -66,7 +66,7 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
               </Text>
             </View>
           </View>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, paddingHorizontal: 20 }}>
             <SessionKeySetting
               value={sessionKeyEnabled}
               onChange={() => setSessionKeyEnabled(!sessionKeyEnabled)}
@@ -182,7 +182,9 @@ const SessionKeySpendLimitSetting = observer<SessionKeySpendLimitSettingProps>(
               onChange(res);
             }}
           />
-          <Text style={{ fontSize: 16, color: "white" }}>OSMO</Text>
+          <Text style={{ fontSize: 16, color: "white", marginLeft: 10 }}>
+            OSMO
+          </Text>
         </View>
       </Setting>
     );
@@ -222,7 +224,9 @@ const SlippageLimitSetting = observer<SessionKeySpendLimitSettingProps>(
               onChange(res);
             }}
           />
-          <Text style={{ fontSize: 16, color: "white" }}>%</Text>
+          <Text style={{ fontSize: 16, color: "white", marginLeft: 10 }}>
+            %
+          </Text>
         </View>
       </Setting>
     );
