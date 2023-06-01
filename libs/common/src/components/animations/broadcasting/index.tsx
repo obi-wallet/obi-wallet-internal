@@ -12,30 +12,27 @@ export const BroadcastingAnimation = observer(function BroadcastingAnimation() {
   const theme = useTheme();
 
   return (
-    <OsmosisScreenContainer>
-      <Loader
-        loadingText="Broadcasting"
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 999,
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          paddingTop: 50,
-          marginTop: -150,
-        }}
-        animation={broadcastAnimation}
-        animationStyles={{
-          width: 300,
-          height: 300,
-          maxHeight: "100%",
-          maxWidth: "100%",
-        }}
-      />
-    </OsmosisScreenContainer>
+    <Loader
+      loadingText="Broadcasting"
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 999,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        paddingTop: 50,
+        marginTop: -150,
+      }}
+      animation={broadcastAnimation}
+      animationStyles={{
+        width: 300,
+        height: 300,
+        maxHeight: "100%",
+        maxWidth: "100%",
+      }}
+    />
   );
 });
