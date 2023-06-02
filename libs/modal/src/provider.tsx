@@ -5,29 +5,40 @@ import {
   Provider as OriginalProvider,
 } from "@obi-wallet/common";
 import { obiModalConfig } from "@obi-wallet/config";
+import { CustomTheme } from "@obi-wallet/theme";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useRef } from "react";
+import { ReactNode, useMemo, useRef } from "react";
 
-export const Provider = observer<{ children: ReactNode; env: Env }>(
-  function Provider({ children, env }) {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+export const Provider = observer<{
+  children: ReactNode;
+  env: Env;
+  theme?: CustomTheme;
+}>(function Provider({ children, env, theme }) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const config = useMemo(() => {
+    if (!theme) return obiModalConfig;
 
-    return (
-      <div
-        style={{
-          display: "flex",
-          flex: 1,
-          transform: "scale(1)",
-        }}
-        ref={containerRef}
-      >
-        <OriginalProvider config={obiModalConfig} env={env}>
-          <BottomSheetContainerContext.Provider value={containerRef}>
-            {children}
-            <PortalHost name="modals" />
-          </BottomSheetContainerContext.Provider>
-        </OriginalProvider>
-      </div>
-    );
-  }
-);
+    return {
+      ...obiModalConfig,
+      theme,
+    };
+  }, [theme]);
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flex: 1,
+        transform: "scale(1)",
+      }}
+      ref={containerRef}
+    >
+      <OriginalProvider config={config} env={env}>
+        <BottomSheetContainerContext.Provider value={containerRef}>
+          {children}
+          <PortalHost name="modals" />
+        </BottomSheetContainerContext.Provider>
+      </OriginalProvider>
+    </div>
+  );
+});

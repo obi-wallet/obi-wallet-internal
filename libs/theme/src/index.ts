@@ -93,7 +93,23 @@ export const common: CommonTheme = {
   fontWeights,
 };
 
-export const obiTheme = {
+export interface CustomTheme extends CommonTheme {
+  colors: {
+    background: string;
+    panelBackground: string;
+  };
+  background: {
+    image: string | undefined;
+    color: string;
+  };
+  textStyles: {
+    bold: Pick<TextStyle, "fontFamily" | "fontWeight">;
+    regular: Pick<TextStyle, "fontFamily" | "fontWeight">;
+    light: Pick<TextStyle, "fontFamily" | "fontWeight">;
+  };
+}
+
+export const obiTheme: CustomTheme = {
   ...common,
   colors: {
     background: "#1a1a1a",
@@ -117,10 +133,10 @@ export const obiTheme = {
       fontFamily: "Poppins",
       fontWeight: "300",
     },
-  } as const,
+  },
 };
 
-export const osmosisTheme = {
+export const osmosisTheme: CustomTheme = {
   ...obiTheme,
   colors: {
     background: "#131032",
@@ -130,6 +146,4 @@ export const osmosisTheme = {
     image: "/background.png",
     color: "#131032",
   },
-} as const;
-
-export type CustomTheme = typeof obiTheme;
+};

@@ -1,8 +1,7 @@
-import { Theme, ThemeProvider } from "@emotion/react";
+import { ThemeProvider } from "@emotion/react";
 import { PortalProvider } from "@gorhom/portal";
 import { Config } from "@obi-wallet/config";
 import { Provider as SdkProvider } from "@obi-wallet/headless-ui";
-import { osmosisTheme } from "@obi-wallet/theme";
 import { NavigationContainer } from "@react-navigation/native";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -83,7 +82,7 @@ export const Provider = observer<ProviderProps>(function Provider({
             <SafeAreaProvider>
               <PortalProvider>
                 <NavigationContainer {...navigationContainerProps}>
-                  <ThemeProvider theme={getTheme()}>
+                  <ThemeProvider theme={config.theme}>
                     <StatusBar barStyle="light-content" />
                     {children}
                   </ThemeProvider>
@@ -96,9 +95,3 @@ export const Provider = observer<ProviderProps>(function Provider({
     </SdkProvider>
   );
 });
-
-export function getTheme(): Theme {
-  // @ts-expect-error Ignore for now
-  // TODO: should be prop / part of config instead
-  return osmosisTheme;
-}

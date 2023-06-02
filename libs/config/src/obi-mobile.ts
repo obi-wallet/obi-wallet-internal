@@ -1,4 +1,5 @@
 import { KeyType } from "@obi-wallet/sdk";
+import { obiTheme } from "@obi-wallet/theme";
 
 import { Config } from "./config";
 import { Feature } from "./feature";
@@ -22,4 +23,5 @@ export const obiMobileConfig: Config = {
     [Feature.DemoMode]: true,
   },
   requiredKeys: [KeyType.Device, KeyType.Phone],
+  theme: obiTheme,
 };
