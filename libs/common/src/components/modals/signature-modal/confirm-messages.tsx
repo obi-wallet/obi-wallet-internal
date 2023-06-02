@@ -150,7 +150,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
 
                   <Button
                     disabled={disabled}
-                    flavor="green"
+                    flavor="primary"
                     label={intl.formatMessage({
                       id: "signature.modal.confirm",
                       defaultMessage: "Confirm",

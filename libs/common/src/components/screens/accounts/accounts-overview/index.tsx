@@ -173,7 +173,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
               <FontAwesomeIcon icon={faTimes} style={{ color: "#F6F5FF" }} />
             </TouchableOpacity>
             <Button
-              flavor="blue"
+              flavor="primary"
               label="Save Changes"
               buttonStyle={{ flex: 1, margin: 10 }}
               onPress={async () => {

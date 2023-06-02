@@ -25,42 +25,11 @@ type Flavor = {
   button: ViewStyle;
 };
 
-const loopFlavors: Record<string, Flavor> = {
-  blue: {
-    text: {
-      color: "#040317",
-    },
-    button: {
-      // backgroundColor: "linear-gradient(#e66465, #9198e5)",
-    },
+const flavors: Record<string, Flavor> = {
+  primary: {
+    button: {},
+    text: {},
   },
-  green: {
-    text: {
-      color: "#040317",
-    },
-    button: {
-      backgroundColor: "#48C95F",
-    },
-  },
-  purple: {
-    text: {
-      color: "#FFFFFF",
-    },
-    button: {
-      backgroundColor: "#8877EA",
-    },
-  },
-  gray: {
-    text: {
-      color: "#00000082",
-    },
-    button: {
-      backgroundColor: "#949494cc",
-    },
-  },
-};
-
-const obiFlavors: Record<string, Flavor> = {
   cancel: {
     button: {
       backgroundColor: "transparent",
@@ -93,7 +62,7 @@ const baseStyles = StyleSheet.create({
 });
 
 const getFlavorStyles = (
-  flavor: keyof typeof loopFlavors | keyof typeof obiFlavors,
+  flavor: "primary" | "cancel",
   theme: Theme,
   disabled: boolean
 ) => {
@@ -102,7 +71,7 @@ const getFlavorStyles = (
   const flavorStyles: Flavor = R.propOr(
     { text: {}, button: {} },
     flavor,
-    obiFlavors
+    flavors
   );
 
   return {
@@ -115,7 +84,6 @@ const getFlavorStyles = (
     },
     button: {
       ...baseStyles.button,
-      // backgroundColor: "#437DFF",
       background: "linear-gradient(to right, #df05cb, #2c07e3)",
       opacity: 1,
       ...flavorStyles.button,
@@ -128,7 +96,7 @@ export interface ButtonProps
     TouchableWithoutFeedbackProps,
     "children" | "hitSlop" | "style"
   > {
-  flavor: keyof typeof loopFlavors | keyof typeof obiFlavors;
+  flavor: "primary" | "cancel";
   label: string;
   disabled?: boolean;
   LeftIcon?: FC<SvgProps>;

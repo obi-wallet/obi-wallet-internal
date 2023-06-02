@@ -110,7 +110,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
             id: "onboarding1.login",
             defaultMessage: "Login",
           })}
-          flavor="green"
+          flavor="primary"
           onPress={() => {
             accountPickerModalProps.open();
           }}
@@ -118,7 +118,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
       ) : null}
       <Button
         label={intl.formatMessage({ id: "onboarding1.getstarted" })}
-        flavor="green"
+        flavor="primary"
         buttonStyle={{
           marginTop: theme.spacing[4],
         }}
@@ -126,7 +126,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
       />
       <Button
         label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
-        flavor="blue"
+        flavor="primary"
         buttonStyle={{
           marginTop: theme.spacing[4],
         }}
@@ -155,7 +155,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
             id: "onboarding1.demo",
             defaultMessage: "Enter Demo Mode",
           })}
-          flavor="blue"
+          flavor="primary"
           buttonStyle={{
             marginTop: theme.spacing[4],
           }}

@@ -141,7 +141,7 @@ export const CreateBeneficiaryAccountScreen =
           {isAndroid && keyboardVisible ? null : (
             <View style={{ marginTop: 20 }}>
               <Button
-                flavor="blue"
+                flavor="primary"
                 disabled={!formState.isValid}
                 onPress={handleSubmit((data) => {
                   gatekeeperConfig.value.upsertBeneficiary(

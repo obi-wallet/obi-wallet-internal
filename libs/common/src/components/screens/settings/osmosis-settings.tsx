@@ -90,7 +90,7 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
             }}
           >
             <Button
-              flavor="blue"
+              flavor="primary"
               label="Save Changes"
               buttonStyle={{ flex: 1, margin: 10 }}
               disabled={!sessionKeyEnabled}

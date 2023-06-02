@@ -95,7 +95,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
         </KeyboardAwareScrollView>
         <View style={{ marginTop: 20 }}>
           <Button
-            flavor="blue"
+            flavor="primary"
             disabled={!formState.isValid}
             onPress={handleSubmit((data) => {
               const { publicKey, privateKey } = generateSec256k1KeyPair();

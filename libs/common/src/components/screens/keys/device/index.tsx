@@ -211,7 +211,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
               label={intl.formatMessage({
                 id: "onboarding4.biometrics.button",
               })}
-              flavor="blue"
+              flavor="primary"
               onPress={async () => {
                 if (scannedBiometrics) {
                   onSubmit();

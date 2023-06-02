@@ -194,7 +194,7 @@ export const SendScreenComponent = observer<
             </View>
           </View>
           <Button
-            flavor="blue"
+            flavor="primary"
             label={intl.formatMessage({
               id: "send.next",
               defaultMessage: "Next",
@@ -272,7 +272,7 @@ const SuccessModal = observer(function SuccessModal({
           </Text>
           <View style={{ marginHorizontal: 20 }}>
             <Button
-              flavor="blue"
+              flavor="primary"
               label="Dismiss"
               onPress={() => {
                 onDismiss();
@@ -317,7 +317,7 @@ const FailureModal = observer(function FailureModal({
           </Text>
           <View style={{ marginHorizontal: 20 }}>
             <Button
-              flavor="blue"
+              flavor="primary"
               label="Dismiss"
               onPress={() => {
                 onDismiss();

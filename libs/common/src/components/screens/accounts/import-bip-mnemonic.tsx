@@ -68,7 +68,7 @@ export const ImportBipMnemonicScreen = observer<ImportBipMnemonicScreenProps>(
         </View>
         <View style={{ marginTop: 20 }}>
           <Button
-            flavor="blue"
+            flavor="primary"
             disabled={!formState.isValid}
             onPress={handleSubmit((data) => {
               const key = new MnemonicKey({

@@ -21,7 +21,7 @@ export const VerifyAndProceedButton = observer(function VerifyAndProceedButton({
         id: "onboarding3.verifyandproceed",
         defaultMessage: "Verify & Proceed",
       })}
-      flavor={disabled ? "gray" : "blue"}
+      flavor="primary"
       onPress={async () => {
         Keyboard.dismiss();
         if (!disabled) {

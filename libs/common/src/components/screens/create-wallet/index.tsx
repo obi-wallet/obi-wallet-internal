@@ -154,7 +154,7 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
       }}
     >
       <View style={{ paddingTop: 10 }}>
-        <Button flavor="blue" label="Create Wallet" onPress={onSubmit} />
+        <Button flavor="primary" label="Create Wallet" onPress={onSubmit} />
       </View>
     </MultisigSettings>
   );

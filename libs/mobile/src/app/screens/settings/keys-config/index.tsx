@@ -156,7 +156,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
       {draft.isDirty ? (
         <View style={{ paddingTop: 10 }}>
           <AsyncButton
-            flavor="blue"
+            flavor="primary"
             label="Confirm Changes"
             onPress={async () => {
               setLoading(true);

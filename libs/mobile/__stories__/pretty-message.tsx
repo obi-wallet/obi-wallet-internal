@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { PrettyMessage, useStore } from "@obi-wallet/common";
+import * as R from "ramda";
 import { ScrollView } from "react-native";
 
 import {
@@ -40,7 +41,11 @@ export default function PrettyMessages() {
         chainId={chainStore.currentChain}
       />
       <PrettyMessage
-        message={messageNewAccount.toAmino()}
+        message={
+          R.has("osmo", messageNewAccount)
+            ? messageNewAccount.osmo
+            : messageNewAccount.toAmino()
+        }
         chainId={chainStore.currentChain}
       />
       <PrettyMessage

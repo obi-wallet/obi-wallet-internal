@@ -129,7 +129,7 @@ export const AddAccountScreen = observer<AddAccountScreenProps>(
         </View>
         <View style={{ marginTop: 20 }}>
           <Button
-            flavor="blue"
+            flavor="primary"
             onPress={() => {
               navigation.navigate(...selectedItem.route);
             }}

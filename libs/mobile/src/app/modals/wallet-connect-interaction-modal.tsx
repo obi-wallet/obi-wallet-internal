@@ -100,7 +100,7 @@ const InteractionModalInner = observer(function InteractionModalInner({
         </View>
         <View>
           <Button
-            flavor="blue"
+            flavor="primary"
             label="Allow"
             onPress={() => {
               interaction.resolve({ approved: true });

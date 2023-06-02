@@ -229,7 +229,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
       >
         <View style={{ paddingTop: 10 }}>
           <AsyncButton
-            flavor="blue"
+            flavor="primary"
             label="Recover Wallet"
             onPress={onSubmit}
           />

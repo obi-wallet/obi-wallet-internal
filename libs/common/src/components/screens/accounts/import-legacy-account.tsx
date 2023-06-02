@@ -182,7 +182,7 @@ export const ImportLegacyAccountScreen =
         </ScrollView>
         <View style={{ marginTop: 20 }}>
           <Button
-            flavor="blue"
+            flavor="primary"
             onPress={() => {
               if (selected?.route) {
                 navigation.navigate(...selected.route);

@@ -12,6 +12,6 @@ type Story = StoryObj<typeof Button>;
 
 export const Primary: Story = {
   render: () => {
-    return <Button label="Test" flavor="blue" />;
+    return <Button label="Test" flavor="primary" />;
   },
 };

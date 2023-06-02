@@ -28,7 +28,7 @@ export const QrCodeScannerModal = observer(function QrCodeScannerModal({
         cameraStyle={{ height: "100%" }}
         bottomContent={
           <Button
-            flavor="green"
+            flavor="primary"
             label="Cancel"
             onPress={() => {
               onClose();
