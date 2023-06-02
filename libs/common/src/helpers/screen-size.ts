@@ -70,22 +70,6 @@ export const isSmallScreenSubstr = (
   }
 };
 
-// export isPlatform
-export const isAndrod = () => {
-  return Platform.OS === "android";
-};
-export const isIos = () => {
-  return Platform.OS === "ios";
-};
 export const isWeb = () => {
   return Platform.OS === "web";
-};
-export const isMacOs = () => {
-  return Platform.OS === "macos";
-};
-export const isWindows = () => {
-  return Platform.OS === "windows";
-};
-export const isNative = () => {
-  return isAndrod() || isIos();
 };

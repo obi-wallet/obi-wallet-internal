@@ -1,5 +1,4 @@
 import { KeyType } from "@obi-wallet/sdk";
-import { obiTheme } from "@obi-wallet/theme";
 
 import { Config } from "./config";
 import { obiMobileConfig } from "./obi-mobile";
@@ -11,5 +10,4 @@ export const obiMobileMultichainConfig: Config = {
     default: "oasis-3",
   },
   requiredKeys: [KeyType.Device, KeyType.Phone],
-  theme: obiTheme,
 };
