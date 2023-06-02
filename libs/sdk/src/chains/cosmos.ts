@@ -28,9 +28,9 @@ export const cosmosChains = {
     accountCreatorAddress:
       "osmo1f8j9afc8a4j2mr2c9nw20wrrjwr4a084z7fmvv3pkxruzge4ghdsz8t48s",
     currentCodeIds: {
-      userAccount: 385,
-      spendLimitGatekeeper: 381,
-      debtGatekeeper: 378,
+      userAccount: 461,
+      spendLimitGatekeeper: 465,
+      debtGatekeeper: 462,
     },
     rpcs: ["https://rpc.osmotest5.osmosis.zone/"],
     denom: "uosmo",
