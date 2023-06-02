@@ -1,3 +1,5 @@
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons/faTimesCircle";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
@@ -47,7 +49,7 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
               style={{ width: 29 }}
               hitSlop={{ top: 29, bottom: 29, left: 29, right: 29 }}
             >
-              <BackIcon width={29} height={29} />
+              <FontAwesomeIcon icon={faTimesCircle} size={29} color="#ffffff" />
             </IconButton>
           ) : undefined}
         </View>

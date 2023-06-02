@@ -3,15 +3,18 @@ import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { View } from "react-native";
 
+import { useOnClose } from "../../contexts";
 import { OsmosisHeader, OsmosisHeaderProps } from "../osmosis-header";
 
-export interface OsmosisScreenContainerProps extends OsmosisHeaderProps {
+export interface OsmosisScreenContainerProps
+  extends Omit<OsmosisHeaderProps, "onClose"> {
   children: ReactNode;
 }
 
 export const OsmosisScreenContainer = observer<OsmosisScreenContainerProps>(
   function OsmosisScreenContainer({ children, ...props }) {
     const theme = useTheme();
+    const onClose = useOnClose();
 
     return (
       <View
@@ -24,7 +27,7 @@ export const OsmosisScreenContainer = observer<OsmosisScreenContainerProps>(
           backgroundColor: theme.background.color,
         }}
       >
-        <OsmosisHeader {...props} />
+        <OsmosisHeader {...props} onClose={onClose} />
         {children}
       </View>
     );

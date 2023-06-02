@@ -1,4 +1,4 @@
-import { Modals, useStore } from "@obi-wallet/common";
+import { Modals, OnCloseContext, useStore } from "@obi-wallet/common";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { autorun } from "mobx";
 import { observer } from "mobx-react-lite";
@@ -18,11 +18,11 @@ export function Modal() {
 
 export const ModalWithoutProvider = observer(function ModalWithoutProvider() {
   return (
-    <>
+    <OnCloseContext.Provider value={onClose}>
       <StateRenderer />
       <Modals />
       <MessageHandlers />
-    </>
+    </OnCloseContext.Provider>
   );
 });
 
@@ -66,7 +66,16 @@ const MessageHandlers = observer(function MessageHandlers() {
     return () => {
       window.removeEventListener("message", listener);
     };
-  }, []);
+  }, [walletsStore]);
 
   return null;
 });
+
+function onClose() {
+  window.parent?.postMessage(
+    {
+      type: "@obi/close",
+    },
+    "*"
+  );
+}
