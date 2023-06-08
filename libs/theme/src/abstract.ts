@@ -42,6 +42,11 @@ export interface CustomTheme extends CommonTheme {
     image?: string;
     color: string;
   };
+  header?: {
+    image: string;
+    width: number;
+    height: number;
+  };
   buttonFlavors: {
     primary: ViewStyle & { background?: string };
     cancel: ViewStyle & { background?: string };

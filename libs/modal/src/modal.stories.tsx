@@ -14,3 +14,7 @@ type Story = StoryObj<typeof ModalWithoutProvider>;
 export const Primary: Story = {
   render: () => <ModalWithoutProvider />,
 };
+
+export const Themes: Story = {
+  render: () => <ModalWithoutProvider />,
+};

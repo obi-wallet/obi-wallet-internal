@@ -10,6 +10,11 @@ export const vertexTheme: CustomTheme = {
   background: {
     color: "#1A191E",
   },
+  header: {
+    image: "/vertex-header.png",
+    width: 177,
+    height: 48,
+  },
   buttonFlavors: {
     primary: {
       background: "linear-gradient(to right, #A47CD0, #523E68)",

@@ -1,4 +1,5 @@
 import styled from "@emotion/native";
+import { useTheme } from "@emotion/react";
 import { Feature } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
 import { FC, ReactNode } from "react";
@@ -289,6 +290,8 @@ export const Setting = observer(function Setting({
   children,
   disableButton,
 }: SettingProps) {
+  const theme = useTheme();
+
   const renderContent = () => (
     <>
       <View
@@ -299,15 +302,14 @@ export const Setting = observer(function Setting({
       >
         {Icon && (
           <View
-            style={{
-              padding: 10,
-              // backgroundColor: isLoop ? "#1D1C37" : "#437DFF",
-              // @ts-expect-error Works in web
-              background: "linear-gradient(to right, #df05cb, #2c07e3)",
-              alignSelf: "flex-start",
-
-              borderRadius: 12,
-            }}
+            style={[
+              theme.buttonFlavors.primary,
+              {
+                padding: 10,
+                alignSelf: "flex-start",
+                borderRadius: 12,
+              },
+            ]}
           >
             <Icon fill="white" />
           </View>

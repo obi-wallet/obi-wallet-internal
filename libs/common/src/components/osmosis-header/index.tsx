@@ -1,8 +1,9 @@
+import { useTheme } from "@emotion/react";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons/faTimesCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { View } from "react-native";
+import { Image, View } from "react-native";
 
 import { IconButton } from "../buttons";
 import { BackIcon, OsmosisSmartAccountIcon } from "../icons";
@@ -16,6 +17,7 @@ export interface OsmosisHeaderProps {
 export const OsmosisHeader = observer<OsmosisHeaderProps>(
   function OsmosisHeader({ onBack, onClose, hideLogo }) {
     const navigation = useNavigation();
+    const theme = useTheme();
 
     const onBackPress = getBackHandler();
 
@@ -41,7 +43,15 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
             </IconButton>
           ) : undefined}
         </View>
-        {!hideLogo && <OsmosisSmartAccountIcon />}
+        {theme.header && !hideLogo ? (
+          <Image
+            source={{ uri: theme.header.image }}
+            style={{
+              width: theme.header.width,
+              height: theme.header.height,
+            }}
+          />
+        ) : null}
         <View style={{ width: 29 }}>
           {onClose ? (
             <IconButton

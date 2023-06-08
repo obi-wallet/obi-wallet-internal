@@ -11,6 +11,11 @@ export const osmosisTheme: CustomTheme = {
     image: "/background.png",
     color: "#131032",
   },
+  header: {
+    image: "/osmosis-header.png",
+    width: 208,
+    height: 41,
+  },
   buttonFlavors: {
     primary: {
       background: "linear-gradient(to right, #df05cb, #2c07e3)",

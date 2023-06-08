@@ -56,6 +56,7 @@ export const Assets = observer(function Assets() {
 const BalanceAndActions = observer(function BalanceAndActions() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const wallet = useCurrentWallet();
+  const theme = useTheme();
 
   return (
     <View
@@ -91,16 +92,16 @@ const BalanceAndActions = observer(function BalanceAndActions() {
       >
         <View style={{ alignItems: "center" }}>
           <TouchableHighlight
-            style={{
-              width: 56,
-              height: 56,
-              // @ts-expect-error Works in web
-              background: "linear-gradient(to right, #df05cb, #2c07e3)",
-              // backgroundColor: isLoop ? "#100F1E" : "#437DFF",
-              borderRadius: 56,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+            style={[
+              theme.buttonFlavors.primary,
+              {
+                width: 56,
+                height: 56,
+                borderRadius: 56,
+                justifyContent: "center",
+                alignItems: "center",
+              },
+            ]}
             onPress={() => navigation.navigate(RootRoute.Send, {})}
           >
             <SendIcon
@@ -124,15 +125,16 @@ const BalanceAndActions = observer(function BalanceAndActions() {
         </View>
         <View style={{ alignItems: "center" }}>
           <TouchableHighlight
-            style={{
-              width: 56,
-              height: 56,
-              // @ts-expect-error Works in web
-              background: "linear-gradient(to right, #df05cb, #2c07e3)",
-              borderRadius: 56,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+            style={[
+              theme.buttonFlavors.primary,
+              {
+                width: 56,
+                height: 56,
+                borderRadius: 56,
+                justifyContent: "center",
+                alignItems: "center",
+              },
+            ]}
             onPress={() => navigation.navigate(RootRoute.Receive)}
           >
             <ReceiveIcon
@@ -160,15 +162,16 @@ const BalanceAndActions = observer(function BalanceAndActions() {
 
         <View style={{ alignItems: "center" }}>
           <TouchableHighlight
-            style={{
-              width: 56,
-              height: 56,
-              // @ts-expect-error Works in web
-              background: "linear-gradient(to right, #df05cb, #2c07e3)",
-              borderRadius: 56,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+            style={[
+              theme.buttonFlavors.primary,
+              {
+                width: 56,
+                height: 56,
+                borderRadius: 56,
+                justifyContent: "center",
+                alignItems: "center",
+              },
+            ]}
             onPress={() => navigation.navigate(HomeBottomTabRoute.Settings)}
           >
             <NewSettingsIcon width={30} height={30} />
