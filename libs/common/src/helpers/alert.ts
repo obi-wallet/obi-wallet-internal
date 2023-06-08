@@ -1,6 +1,6 @@
 import type { Alert as RNAlert } from "react-native";
 
-const alert: typeof RNAlert.alert = (title, description, options, extra) => {
+const alert: typeof RNAlert.alert = (title, description, options, _extra) => {
   const result = window.confirm(
     [title, description].filter(Boolean).join("\n")
   );

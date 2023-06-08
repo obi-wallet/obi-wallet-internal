@@ -1,6 +1,11 @@
 import "../src/shim";
 
-import { CustomTheme, obiTheme, osmosisTheme } from "@obi-wallet/theme";
+import {
+  CustomTheme,
+  obiTheme,
+  osmosisTheme,
+  vertexTheme,
+} from "@obi-wallet/theme";
 import { Preview } from "@storybook/react";
 
 import { Container } from "../src/container";
@@ -16,6 +21,7 @@ const preview: Preview = {
         <div style={{ display: "flex" }}>
           <div style={{ padding: 5 }}>{renderStory(osmosisTheme)}</div>
           <div style={{ padding: 5 }}>{renderStory(obiTheme)}</div>
+          <div style={{ padding: 5 }}>{renderStory(vertexTheme)}</div>
         </div>
       );
 
