@@ -41,5 +41,7 @@ export const vertexTheme: CustomTheme = {
     },
     accountName: "Vertex Smart Account",
   },
-  welcome: undefined,
+  welcome: {
+    image: "/vertex-home@2x.png",
+  },
 };
