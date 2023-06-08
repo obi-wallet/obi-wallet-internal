@@ -43,6 +43,9 @@ export interface CustomTheme extends CommonTheme {
     image?: string;
     color: string;
   };
+  modal: {
+    borderRadius?: string;
+  };
   header?: {
     image: string;
     width: number;

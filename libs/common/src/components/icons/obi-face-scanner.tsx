@@ -1,6 +1,6 @@
+import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import Svg, { SvgProps, G, Path } from "react-native-svg";
-import { useTheme } from "@emotion/react";
 
 export const ObiFaceScannerIcon = observer<SvgProps>(
   function ObiFaceScannerIcon(props) {

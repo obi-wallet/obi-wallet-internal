@@ -14,7 +14,10 @@ import { Provider } from "../src/provider";
 const preview: Preview = {
   decorators: [
     (Story, context) => {
-      if (context.id === "modal--primary") return renderStoryWithContainer();
+      if (context.id === "modal--primary") {
+        return renderStoryWithContainer(osmosisTheme);
+      }
+
       if (context.id === "modal--vertex")
         return (
           <div
@@ -41,15 +44,13 @@ const preview: Preview = {
         </div>
       );
 
-      function renderStoryWithContainer(theme?: CustomTheme) {
-        return <Container>{renderStoryWithProvider(theme)}</Container>;
-      }
-
-      function renderStoryWithProvider(theme?: CustomTheme) {
+      function renderStoryWithContainer(theme: CustomTheme) {
         return (
-          <Provider env={process.env} theme={theme}>
-            <Story />
-          </Provider>
+          <Container theme={theme}>
+            <Provider env={process.env} theme={theme}>
+              <Story />
+            </Provider>
+          </Container>
         );
       }
     },

@@ -12,6 +12,9 @@ export const osmosisTheme: CustomTheme = {
     image: "/background.png",
     color: "#131032",
   },
+  modal: {
+    borderRadius: "25px",
+  },
   header: {
     image: "/osmosis-header.png",
     width: 208,

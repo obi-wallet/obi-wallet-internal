@@ -11,6 +11,9 @@ export const obiTheme: CustomTheme = {
   background: {
     color: "#1a1a1a",
   },
+  modal: {
+    borderRadius: "25px",
+  },
   buttonFlavors: {
     primary: {
       backgroundColor: "#437DFF",

@@ -1,11 +1,18 @@
 import { Global } from "@emotion/react";
+import { CustomTheme } from "@obi-wallet/theme";
 import { ReactNode } from "react";
 // @ts-expect-error internal import w/o types
 import { render } from "react-native-web";
 import root from "react-shadow/emotion";
 
 // eslint-disable-next-line mobx/missing-observer
-export function Container({ children }: { children: ReactNode }) {
+export function Container({
+  children,
+  theme,
+}: {
+  children: ReactNode;
+  theme: CustomTheme;
+}) {
   return (
     <>
       <root.div>
@@ -17,9 +24,9 @@ export function Container({ children }: { children: ReactNode }) {
               height: "844px",
               maxWidth: "100vw",
               maxHeight: "100vh",
-              borderRadius: "25px",
               display: "flex",
               overflow: "hidden",
+              ...theme.modal,
             },
           }}
         />

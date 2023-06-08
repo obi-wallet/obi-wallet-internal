@@ -11,6 +11,9 @@ export const vertexTheme: CustomTheme = {
   background: {
     color: "#1A191E",
   },
+  modal: {
+    borderRadius: "4px",
+  },
   header: {
     image: "/vertex-header.png",
     width: 177,

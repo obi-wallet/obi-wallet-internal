@@ -1,5 +1,6 @@
 import { Modals, OnCloseContext, useStore } from "@obi-wallet/common";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
+import { CustomTheme } from "@obi-wallet/theme";
 import { autorun } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
@@ -8,9 +9,9 @@ import { Container } from "./container";
 import { StateRenderer } from "./state-renderer";
 
 // eslint-disable-next-line mobx/missing-observer
-export function Modal() {
+export function Modal({ theme }: { theme: CustomTheme }) {
   return (
-    <Container>
+    <Container theme={theme}>
       <ModalWithoutProvider />
     </Container>
   );
