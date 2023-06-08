@@ -14,24 +14,42 @@ import { Provider } from "../src/provider";
 const preview: Preview = {
   decorators: [
     (Story, context) => {
-      if (context.id === "modal--primary") return renderStory();
+      if (context.id === "modal--primary") return renderStoryWithContainer();
+      if (context.id === "modal--vertex")
+        return (
+          <div
+            style={{
+              position: "fixed",
+              top: 5,
+              right: 5,
+            }}
+          >
+            {renderStoryWithContainer(vertexTheme)}
+          </div>
+        );
 
       // Side-by-side view with different themes
       return (
         <div style={{ display: "flex" }}>
-          <div style={{ padding: 5 }}>{renderStory(osmosisTheme)}</div>
-          <div style={{ padding: 5 }}>{renderStory(obiTheme)}</div>
-          <div style={{ padding: 5 }}>{renderStory(vertexTheme)}</div>
+          <div style={{ padding: 5 }}>
+            {renderStoryWithContainer(osmosisTheme)}
+          </div>
+          <div style={{ padding: 5 }}>{renderStoryWithContainer(obiTheme)}</div>
+          <div style={{ padding: 5 }}>
+            {renderStoryWithContainer(vertexTheme)}
+          </div>
         </div>
       );
 
-      function renderStory(theme?: CustomTheme) {
+      function renderStoryWithContainer(theme?: CustomTheme) {
+        return <Container>{renderStoryWithProvider(theme)}</Container>;
+      }
+
+      function renderStoryWithProvider(theme?: CustomTheme) {
         return (
-          <Container>
-            <Provider env={process.env} theme={theme}>
-              <Story />
-            </Provider>
-          </Container>
+          <Provider env={process.env} theme={theme}>
+            <Story />
+          </Provider>
         );
       }
     },

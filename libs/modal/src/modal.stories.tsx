@@ -15,6 +15,12 @@ export const Primary: Story = {
   render: () => <ModalWithoutProvider />,
 };
 
+export const Vertex: Story = {
+  render: () => {
+    return <ModalWithoutProvider />;
+  },
+};
+
 export const Themes: Story = {
   render: () => <ModalWithoutProvider />,
 };
