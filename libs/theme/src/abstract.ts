@@ -56,4 +56,14 @@ export interface CustomTheme extends CommonTheme {
     regular: Pick<TextStyle, "fontFamily" | "fontWeight">;
     light: Pick<TextStyle, "fontFamily" | "fontWeight">;
   };
+  i18n: {
+    welcome: {
+      title: string;
+      subTitle: string;
+    };
+    accountName: string;
+  };
+  welcome?: {
+    image: string;
+  };
 }

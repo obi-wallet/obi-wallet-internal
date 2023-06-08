@@ -7,7 +7,7 @@ import { useIntl } from "react-intl";
 
 import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
-import { Alert, isWeb } from "../../../helpers";
+import { Alert } from "../../../helpers";
 import {
   KeyFlow,
   KeyRoute,
@@ -167,20 +167,10 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
   );
 
   function renderTitle() {
-    if (isWeb()) {
-      return "Osmosis Smart Account";
-    }
-    return intl.formatMessage({
-      id: "onboarding1.welcometo.obi",
-      defaultMessage: "Welcome to Obi",
-    });
+    return theme.i18n.welcome.title;
   }
 
   function renderSubTitle() {
-    if (isWeb()) {
-      return "Welcome to the most secure and convenient way to manage your trading on Osmosis!";
-    }
-
-    return "Obi is the most secure and convenient way to manage assets in the Cosmos.";
+    return theme.i18n.welcome.subTitle;
   }
 });

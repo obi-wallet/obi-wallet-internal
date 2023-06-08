@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Feature } from "@obi-wallet/config";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { Sdk } from "@obi-wallet/sdk";
@@ -7,12 +8,7 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
-import {
-  Platform,
-  TouchableHighlight,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useStore } from "../../contexts";
@@ -173,24 +169,19 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
 
   function getCurrentAccountName() {
     const account = wallet.currentAccount;
-    return "Osmosis Smart Account";
-    // if (account && account.type === "flex-account") {
-    //   return account.meta.name || "Flex Account";
-    // } else if (account && account.type === "singlesig-wallet") {
-    //   return Bech32Address.shortenAddress(
-    //     Sdk.chainId(wallet.chainId).transactions.getAddressOfPublicKey(
-    //       account.publicKey
-    //     ),
-    //     20
-    //   );
-    // } else {
-    //   return (
-    //     <FormattedMessage
-    //       id="accountscreen.accountname"
-    //       defaultMessage="Obi Smart Account"
-    //     />
-    //   );
-    // }
+    // return "Osmosis Smart Account";
+    if (account && account.type === "flex-account") {
+      return account.meta.name || "Flex Account";
+    } else if (account && account.type === "singlesig-wallet") {
+      return Bech32Address.shortenAddress(
+        Sdk.chainId(wallet.chainId).transactions.getAddressOfPublicKey(
+          account.publicKey
+        ),
+        20
+      );
+    } else {
+      return theme.i18n.accountName;
+    }
   }
 
   function getCurrentAccountAvatar() {

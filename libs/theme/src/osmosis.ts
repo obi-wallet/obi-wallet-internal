@@ -25,4 +25,15 @@ export const osmosisTheme: CustomTheme = {
       borderColor: "#ffffff",
     },
   },
+  i18n: {
+    welcome: {
+      title: "Osmosis Smart Account",
+      subTitle:
+        "Welcome to the most secure and convenient way to manage your trading on Osmosis!",
+    },
+    accountName: "Osmosis Smart Account",
+  },
+  welcome: {
+    image: "/osmosis-home.png",
+  },
 };

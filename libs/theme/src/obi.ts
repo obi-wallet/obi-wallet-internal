@@ -34,4 +34,15 @@ export const obiTheme: CustomTheme = {
       fontWeight: "300",
     },
   },
+  i18n: {
+    welcome: {
+      title: "Welcome to Obi",
+      subTitle:
+        "Obi is the most secure and convenient way to manage assets in the Cosmos.",
+    },
+    accountName: "Obi Smart Account",
+  },
+  welcome: {
+    image: "/obi-home.png",
+  },
 };

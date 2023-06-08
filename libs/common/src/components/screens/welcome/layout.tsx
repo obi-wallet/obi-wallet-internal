@@ -100,9 +100,9 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
               {/*  />*/}
               {/*)}*/}
 
-              {isWeb() && (
+              {theme.welcome ? (
                 <Image
-                  source={{ uri: "/osmosis-home.png" }}
+                  source={{ uri: theme.welcome.image }}
                   style={{
                     flex: 1,
                     height: "80%",
@@ -111,7 +111,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
                     marginTop: 50,
                   }}
                 />
-              )}
+              ) : null}
             </View>
             <View
               style={{

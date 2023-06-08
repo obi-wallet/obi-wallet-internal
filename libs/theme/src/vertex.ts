@@ -24,4 +24,13 @@ export const vertexTheme: CustomTheme = {
       borderColor: "#ffffff",
     },
   },
+  i18n: {
+    welcome: {
+      title: "Vertex Smart Account",
+      subTitle:
+        "Welcome to the most secure and convenient way to manage your trading on Vertex!",
+    },
+    accountName: "Vertex Smart Account",
+  },
+  welcome: undefined,
 };
