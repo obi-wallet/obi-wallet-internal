@@ -4,6 +4,7 @@ import { common } from "./common";
 export const obiTheme: CustomTheme = {
   ...common,
   colors: {
+    primary: "#437DFF",
     background: "#1a1a1a",
     panelBackground: "#272727",
   },

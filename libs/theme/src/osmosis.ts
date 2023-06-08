@@ -4,6 +4,7 @@ import { obiTheme } from "./obi";
 export const osmosisTheme: CustomTheme = {
   ...obiTheme,
   colors: {
+    primary: "#437DFF",
     background: "#131032",
     panelBackground: "#27284E",
   },

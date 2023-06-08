@@ -35,6 +35,7 @@ export interface CommonTheme {
 
 export interface CustomTheme extends CommonTheme {
   colors: {
+    primary: string;
     background: string;
     panelBackground: string;
   };

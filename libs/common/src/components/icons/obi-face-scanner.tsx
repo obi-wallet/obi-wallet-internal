@@ -1,14 +1,17 @@
 import { observer } from "mobx-react-lite";
 import Svg, { SvgProps, G, Path } from "react-native-svg";
+import { useTheme } from "@emotion/react";
 
 export const ObiFaceScannerIcon = observer<SvgProps>(
   function ObiFaceScannerIcon(props) {
+    const theme = useTheme();
+
     return (
       <Svg viewBox="0 0 75.419 75.419" {...props}>
         <G data-name="Interface-Essential / FaceID / face-id">
           <G
             fill="none"
-            stroke="#437dff"
+            stroke={theme.colors.primary}
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={5}

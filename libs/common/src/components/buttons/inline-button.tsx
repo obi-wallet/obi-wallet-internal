@@ -10,21 +10,20 @@ import {
   View,
 } from "react-native";
 
-import { useStore } from "../../contexts";
 import { Text } from "../typography";
 
 const getBaseStyles = (theme: CustomTheme) =>
   StyleSheet.create({
     text: {
       fontSize: 12,
-      color: "#437DFF",
+      color: theme.colors.primary,
       ...theme.textStyles.regular,
     },
     button: {
       height: 29,
       borderWidth: 1,
       borderRadius: 19,
-      borderColor: "#437DFF",
+      borderColor: theme.colors.primary,
       justifyContent: "center",
       alignItems: "center",
       paddingHorizontal: 15,
