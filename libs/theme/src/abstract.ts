@@ -39,7 +39,7 @@ export interface CustomTheme extends CommonTheme {
     panelBackground: string;
   };
   background: {
-    image: string | undefined;
+    image?: string;
     color: string;
   };
   textStyles: {

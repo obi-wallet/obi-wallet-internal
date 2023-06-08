@@ -4,11 +4,10 @@ import { obiTheme } from "./obi";
 export const vertexTheme: CustomTheme = {
   ...obiTheme,
   colors: {
-    background: "#131032",
-    panelBackground: "#27284E",
+    background: "#1A191E",
+    panelBackground: "#51455F",
   },
   background: {
-    image: "/background.png",
-    color: "#131032",
+    color: "#1A191E",
   },
 };

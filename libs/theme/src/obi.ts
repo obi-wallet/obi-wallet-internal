@@ -8,7 +8,6 @@ export const obiTheme: CustomTheme = {
     panelBackground: "#272727",
   },
   background: {
-    image: undefined,
     color: "#1a1a1a",
   },
   // TODO: modal: review web & native
