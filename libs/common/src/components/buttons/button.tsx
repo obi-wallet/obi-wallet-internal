@@ -7,7 +7,6 @@ import {
   Platform,
   StyleProp,
   StyleSheet,
-  TextStyle,
   TouchableHighlight,
   TouchableNativeFeedback,
   TouchableWithoutFeedbackProps,
@@ -19,26 +18,6 @@ import { useEffectOnceWhen } from "rooks";
 
 import { isSmallScreenNumber } from "../../helpers";
 import { Text } from "../typography";
-
-type Flavor = {
-  text: TextStyle;
-  button: ViewStyle;
-};
-
-const flavors: Record<string, Flavor> = {
-  primary: {
-    button: {},
-    text: {},
-  },
-  cancel: {
-    button: {
-      backgroundColor: "transparent",
-      borderWidth: 1,
-      borderColor: "#ffffff",
-    },
-    text: {},
-  },
-};
 
 const baseStyles = StyleSheet.create({
   leftIcon: {
@@ -57,7 +36,6 @@ const baseStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    opacity: 0.5,
   },
 });
 
@@ -66,27 +44,17 @@ const getFlavorStyles = (
   theme: Theme,
   disabled: boolean
 ) => {
-  if (disabled) return baseStyles;
-
-  const flavorStyles: Flavor = R.propOr(
-    { text: {}, button: {} },
-    flavor,
-    flavors
-  );
-
   return {
     ...baseStyles,
     text: {
       ...baseStyles.text,
       ...theme.textStyles.light,
       color: "#fff",
-      ...flavorStyles.text,
     },
     button: {
       ...baseStyles.button,
-      background: "linear-gradient(to right, #df05cb, #2c07e3)",
-      opacity: 1,
-      ...flavorStyles.button,
+      ...theme.buttonFlavors[flavor],
+      opacity: disabled ? 0.5 : 1,
     },
   };
 };

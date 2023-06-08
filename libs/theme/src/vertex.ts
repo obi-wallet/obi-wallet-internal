@@ -10,4 +10,13 @@ export const vertexTheme: CustomTheme = {
   background: {
     color: "#1A191E",
   },
+  buttonFlavors: {
+    primary: {
+      background: "linear-gradient(to right, #A47CD0, #523E68)",
+    },
+    cancel: {
+      borderWidth: 1,
+      borderColor: "#ffffff",
+    },
+  },
 };

@@ -1,4 +1,4 @@
-import { TextStyle } from "react-native";
+import { TextStyle, ViewStyle } from "react-native";
 
 export interface CommonTheme {
   spacing: {
@@ -41,6 +41,10 @@ export interface CustomTheme extends CommonTheme {
   background: {
     image?: string;
     color: string;
+  };
+  buttonFlavors: {
+    primary: ViewStyle & { background?: string };
+    cancel: ViewStyle & { background?: string };
   };
   textStyles: {
     bold: Pick<TextStyle, "fontFamily" | "fontWeight">;

@@ -10,6 +10,15 @@ export const obiTheme: CustomTheme = {
   background: {
     color: "#1a1a1a",
   },
+  buttonFlavors: {
+    primary: {
+      backgroundColor: "#437DFF",
+    },
+    cancel: {
+      borderWidth: 1,
+      borderColor: "#ffffff",
+    },
+  },
   // TODO: modal: review web & native
   textStyles: {
     bold: {

@@ -11,4 +11,13 @@ export const osmosisTheme: CustomTheme = {
     image: "/background.png",
     color: "#131032",
   },
+  buttonFlavors: {
+    primary: {
+      background: "linear-gradient(to right, #df05cb, #2c07e3)",
+    },
+    cancel: {
+      borderWidth: 1,
+      borderColor: "#ffffff",
+    },
+  },
 };
