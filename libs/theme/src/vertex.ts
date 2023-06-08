@@ -25,6 +25,14 @@ export const vertexTheme: CustomTheme = {
       borderColor: "#ffffff",
     },
   },
+  iconButtonFlavors: {
+    primary: {
+      background: "linear-gradient(to right, #A47CD0, #523E68)",
+    },
+    panel: {
+      backgroundColor: "#CDADEF",
+    },
+  },
   i18n: {
     welcome: {
       title: "Vertex Smart Account",

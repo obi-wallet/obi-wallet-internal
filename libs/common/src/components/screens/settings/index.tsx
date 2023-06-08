@@ -303,7 +303,7 @@ export const Setting = observer(function Setting({
         {Icon && (
           <View
             style={[
-              theme.buttonFlavors.primary,
+              theme.iconButtonFlavors.panel,
               {
                 padding: 10,
                 alignSelf: "flex-start",

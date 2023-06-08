@@ -20,6 +20,14 @@ export const obiTheme: CustomTheme = {
       borderColor: "#ffffff",
     },
   },
+  iconButtonFlavors: {
+    primary: {
+      backgroundColor: "#437DFF",
+    },
+    panel: {
+      backgroundColor: "#437DFF",
+    },
+  },
   // TODO: modal: review web & native
   textStyles: {
     bold: {

@@ -52,6 +52,10 @@ export interface CustomTheme extends CommonTheme {
     primary: ViewStyle & { background?: string };
     cancel: ViewStyle & { background?: string };
   };
+  iconButtonFlavors: {
+    primary: ViewStyle & { background?: string };
+    panel: ViewStyle & { background?: string };
+  };
   textStyles: {
     bold: Pick<TextStyle, "fontFamily" | "fontWeight">;
     regular: Pick<TextStyle, "fontFamily" | "fontWeight">;

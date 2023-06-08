@@ -26,6 +26,14 @@ export const osmosisTheme: CustomTheme = {
       borderColor: "#ffffff",
     },
   },
+  iconButtonFlavors: {
+    primary: {
+      background: "linear-gradient(to right, #df05cb, #2c07e3)",
+    },
+    panel: {
+      background: "linear-gradient(to right, #df05cb, #2c07e3)",
+    },
+  },
   i18n: {
     welcome: {
       title: "Osmosis Smart Account",
