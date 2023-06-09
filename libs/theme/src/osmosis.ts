@@ -1,4 +1,4 @@
-import { CustomTheme } from "./abstract";
+import { AccountSettingComponent, CustomTheme } from "./abstract";
 import { obiTheme } from "./obi";
 
 export const osmosisTheme: CustomTheme = {
@@ -14,6 +14,11 @@ export const osmosisTheme: CustomTheme = {
   },
   modal: {
     borderRadius: "25px",
+    accountSettings: [
+      AccountSettingComponent.MaxSpend,
+      AccountSettingComponent.SlippageLimit,
+      AccountSettingComponent.WhitelistedLps,
+    ],
   },
   header: {
     image: "/osmosis-header.png",

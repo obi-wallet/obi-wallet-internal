@@ -1,4 +1,4 @@
-import { CustomTheme } from "./abstract";
+import { AccountSettingComponent, CustomTheme } from "./abstract";
 import { obiTheme } from "./obi";
 
 export const vertexTheme: CustomTheme = {
@@ -13,6 +13,11 @@ export const vertexTheme: CustomTheme = {
   },
   modal: {
     borderRadius: "4px",
+    accountSettings: [
+      AccountSettingComponent.MaxSpend,
+      AccountSettingComponent.AutoStopLoss,
+      AccountSettingComponent.WeeklyDca,
+    ],
   },
   header: {
     image: "/vertex-header.png",

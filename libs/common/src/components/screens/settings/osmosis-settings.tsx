@@ -1,19 +1,34 @@
+import { useTheme } from "@emotion/react";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   generateSec256k1KeyPair,
   ObservableFlexAccount,
   Sdk,
 } from "@obi-wallet/sdk";
+import { AccountSettingComponent } from "@obi-wallet/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  Reducer,
+  ReducerAction,
+  ReducerState,
+  useContext,
+  useReducer,
+  useState,
+} from "react";
 import { View } from "react-native-animatable";
 import { Switch } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Setting } from ".";
 import { Alert, isSmallScreenNumber, isWeb } from "../../../helpers";
-import { RootStackParamList, SettingsRoute } from "../../../router";
+import {
+  RootStackParamList,
+  SettingsRoute,
+  useRootNavigation,
+} from "../../../router";
 import { Draft } from "../../../stores";
 import { Button } from "../../buttons";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
@@ -25,130 +40,179 @@ export type OsmosisSettingsScreenProps = NativeStackScreenProps<
   SettingsRoute.OsmosisSettings
 >;
 
+type OsmosisSettingsScreenState = {
+  [AccountSettingComponent.MaxSpend]: string;
+  [AccountSettingComponent.SlippageLimit]: string;
+  [AccountSettingComponent.AutoStopLoss]: string;
+  [AccountSettingComponent.WeeklyDca]: string;
+};
+
+type R = Reducer<
+  OsmosisSettingsScreenState,
+  {
+    component: AccountSettingComponent;
+    value: string;
+  }
+>;
+
+const reducer: R = (state, action) => {
+  return {
+    ...state,
+    [action.component]: action.value,
+  };
+};
+
+const StateContext = createContext<
+  [ReducerState<R>, Dispatch<ReducerAction<R>>]
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+>(null!);
+
 export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
-  function OsmosisSettingsScreen({ navigation }) {
+  function OsmosisSettingsScreen() {
     const wallet = useCurrentWallet();
+    const theme = useTheme();
     const [sessionKeyEnabled, setSessionKeyEnabled] = useState<boolean>(false);
-    const [spendLimit, setSpendLimit] = useState<string>("0");
-    const [slippageLimit, setSlippageLimit] = useState<string>("0");
+    const stateContextValue = useReducer(reducer, {
+      [AccountSettingComponent.MaxSpend]: "0",
+      [AccountSettingComponent.SlippageLimit]: "0",
+      [AccountSettingComponent.AutoStopLoss]: "0",
+      [AccountSettingComponent.WeeklyDca]: "0",
+    });
 
     return (
-      <OsmosisScreenContainer>
-        <SafeAreaView style={{ flex: 1 }}>
-          <View
-            style={{
-              marginTop: 10,
-              paddingTop: isSmallScreenNumber(0, 32),
-              paddingBottom: 20,
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
+      <StateContext.Provider value={stateContextValue}>
+        <OsmosisScreenContainer>
+          <SafeAreaView style={{ flex: 1 }}>
             <View
               style={{
+                marginTop: 10,
+                paddingTop: isSmallScreenNumber(0, 32),
+                paddingBottom: 20,
+                flexDirection: "row",
                 alignItems: "center",
-                justifyContent: "center",
-                flex: 1,
               }}
             >
-              <Text
+              <View
                 style={{
-                  color: "#F6F5FF",
-                  fontSize: isSmallScreenNumber(20, 24),
-                  fontWeight: "600",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flex: 1,
                 }}
               >
-                Account Settings
-              </Text>
+                <Text
+                  style={{
+                    color: "#F6F5FF",
+                    fontSize: isSmallScreenNumber(20, 24),
+                    fontWeight: "600",
+                  }}
+                >
+                  Account Settings
+                </Text>
+              </View>
             </View>
-          </View>
-          <View style={{ flex: 1, paddingHorizontal: 20 }}>
-            <SessionKeySetting
-              value={sessionKeyEnabled}
-              onChange={() => setSessionKeyEnabled(!sessionKeyEnabled)}
-            />
-            <SessionKeySpendLimitSetting
-              value={spendLimit}
-              onChange={setSpendLimit}
-            />
-            <SlippageLimitSetting
-              value={slippageLimit}
-              onChange={setSlippageLimit}
-            />
-            <Setting
-              title="Whitelisted LPs"
-              subtitle="Manage whitelisted LPs"
-              onPress={() => navigation.navigate(SettingsRoute.WhitelistedLPs)}
-            />
-          </View>
-          <View
-            style={{
-              margin: 5,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Button
-              flavor="primary"
-              label="Save Changes"
-              buttonStyle={{ flex: 1, margin: 10 }}
-              disabled={!sessionKeyEnabled}
-              onPress={async () => {
-                const { publicKey, privateKey } = generateSec256k1KeyPair();
-                const address = Sdk.chainId(
-                  wallet.chainId
-                ).transactions.getAddressOfPublicKey(publicKey);
-                const draft = new Draft({
-                  original: wallet.gatekeeperConfig,
-                });
-                draft.value.upsertFlexAccount(
-                  ObservableFlexAccount.create({
-                    type: "flex-account",
-                    meta: {
-                      icon: "",
-                      name: "",
-                    },
-                    autoSign: null,
-                    spendLimit: {
-                      amount: parseFloat(spendLimit),
-                      period: { days: 1 },
-                    },
-                    address,
-                    publicKey,
-                    privateKey,
-                  })
-                );
-                const response = await wallet.updateGatekeeperConfig(
-                  draft.value
-                );
-                if (response.approved) {
-                  if (response.payload.success) {
-                    console.log(
-                      wallet.gatekeeperConfig.flexAccounts[0].toJSON()
-                    );
-                  } else {
-                    Alert.alert(
-                      "Error",
-                      response.payload.rawLog ?? "Unknown error"
-                    );
-                  }
-                }
+            <View style={{ flex: 1, paddingHorizontal: 20 }}>
+              <SessionKeySetting
+                value={sessionKeyEnabled}
+                onChange={() => setSessionKeyEnabled(!sessionKeyEnabled)}
+              />
+              {theme.modal.accountSettings.map((component, i) => {
+                return <AccountSetting component={component} key={i} />;
+              })}
+            </View>
+            <View
+              style={{
+                margin: 5,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
               }}
-            />
-          </View>
-        </SafeAreaView>
-      </OsmosisScreenContainer>
+            >
+              <Button
+                flavor="primary"
+                label="Save Changes"
+                buttonStyle={{ flex: 1, margin: 10 }}
+                disabled={!sessionKeyEnabled}
+                onPress={async () => {
+                  const { publicKey, privateKey } = generateSec256k1KeyPair();
+                  const address = Sdk.chainId(
+                    wallet.chainId
+                  ).transactions.getAddressOfPublicKey(publicKey);
+                  const draft = new Draft({
+                    original: wallet.gatekeeperConfig,
+                  });
+                  draft.value.upsertFlexAccount(
+                    ObservableFlexAccount.create({
+                      type: "flex-account",
+                      meta: {
+                        icon: "",
+                        name: "",
+                      },
+                      autoSign: null,
+                      spendLimit: {
+                        amount: parseFloat(
+                          stateContextValue[0][AccountSettingComponent.MaxSpend]
+                        ),
+                        period: { days: 1 },
+                      },
+                      address,
+                      publicKey,
+                      privateKey,
+                    })
+                  );
+                  const response = await wallet.updateGatekeeperConfig(
+                    draft.value
+                  );
+                  if (response.approved) {
+                    if (response.payload.success) {
+                      console.log(
+                        wallet.gatekeeperConfig.flexAccounts[0].toJSON()
+                      );
+                    } else {
+                      Alert.alert(
+                        "Error",
+                        response.payload.rawLog ?? "Unknown error"
+                      );
+                    }
+                  }
+                }}
+              />
+            </View>
+          </SafeAreaView>
+        </OsmosisScreenContainer>
+      </StateContext.Provider>
     );
   }
 );
-interface SessionKeySpendLimitSettingProps {
-  value: string;
-  onChange: (value: string) => void;
-}
 
-const SessionKeySpendLimitSetting = observer<SessionKeySpendLimitSettingProps>(
-  function SessionKeySpendLimitSetting({ value, onChange }) {
+const AccountSetting = observer<{
+  component: AccountSettingComponent;
+}>(function AccountSetting({ component }) {
+  switch (component) {
+    case AccountSettingComponent.MaxSpend:
+      return <SessionKeySpendLimitSetting />;
+    case AccountSettingComponent.SlippageLimit:
+      return <SlippageLimitSetting />;
+    case AccountSettingComponent.WhitelistedLps:
+      return <WhitelistedLPsSetting />;
+    case AccountSettingComponent.AutoStopLoss:
+      return <AutoStopLossSetting />;
+    case AccountSettingComponent.WeeklyDca:
+      return <WeeklyDcaSetting />;
+  }
+});
+
+const SessionKeySpendLimitSetting = observer(
+  function SessionKeySpendLimitSetting() {
+    const [state, dispatch] = useContext(StateContext);
+    const value = state[AccountSettingComponent.MaxSpend];
+    const onChange = (value: string) => {
+      dispatch({
+        component: AccountSettingComponent.MaxSpend,
+        value,
+      });
+    };
+    const theme = useTheme();
+
     return (
       <Setting
         disableButton={true}
@@ -163,6 +227,11 @@ const SessionKeySpendLimitSetting = observer<SessionKeySpendLimitSettingProps>(
             alignItems: "center",
           }}
         >
+          {theme.ethDemo ? (
+            <Text style={{ fontSize: 16, color: "white", marginRight: 10 }}>
+              $
+            </Text>
+          ) : null}
           <TextInput
             inputStyle={{
               fontSize: 14,
@@ -172,59 +241,165 @@ const SessionKeySpendLimitSetting = observer<SessionKeySpendLimitSettingProps>(
             style={isWeb() ? { flex: 1, maxWidth: 100 } : {}}
             value={value}
             onChangeText={(text: string) => {
-              console.log("text", text);
-              //get regex to only allow numbers, decimals and empty string
               const res = text.replace(/[^0-9.]/g, "");
               onChange(res);
             }}
           />
-          <Text style={{ fontSize: 16, color: "white", marginLeft: 10 }}>
-            OSMO
-          </Text>
+          {theme.ethDemo ? null : (
+            <Text style={{ fontSize: 16, color: "white", marginLeft: 10 }}>
+              OSMO
+            </Text>
+          )}
         </View>
       </Setting>
     );
   }
 );
-const SlippageLimitSetting = observer<SessionKeySpendLimitSettingProps>(
-  function SessionKeySpendLimitSetting({ value, onChange }) {
-    return (
-      <Setting
-        disableButton={true}
-        title="Slippage Limit"
-        subtitle="Any transaction above the amount entered will automatically be declined."
-      >
-        <View
-          style={{
-            minWidth: 100,
-            flex: 1,
-            flexDirection: "row",
 
-            justifyContent: "flex-end",
-            alignItems: "center",
+const SlippageLimitSetting = observer(function SlippageLimitSetting() {
+  const [state, dispatch] = useContext(StateContext);
+  const value = state[AccountSettingComponent.SlippageLimit];
+  const onChange = (value: string) => {
+    dispatch({
+      component: AccountSettingComponent.SlippageLimit,
+      value,
+    });
+  };
+
+  return (
+    <Setting
+      disableButton={true}
+      title="Slippage Limit"
+      subtitle="Any transaction above the amount entered will automatically be declined."
+    >
+      <View
+        style={{
+          minWidth: 100,
+          flex: 1,
+          flexDirection: "row",
+
+          justifyContent: "flex-end",
+          alignItems: "center",
+        }}
+      >
+        <TextInput
+          inputStyle={{
+            fontSize: 14,
+            backgroundColor: "#1a1a1a",
+            borderWidth: 0,
           }}
-        >
-          <TextInput
-            inputStyle={{
-              fontSize: 14,
-              backgroundColor: "#1a1a1a",
-              borderWidth: 0,
-            }}
-            value={value}
-            style={{ maxWidth: 100, flex: 1 }}
-            onChangeText={(text: string) => {
-              const res = text.replace(/[^0-9./s]/g, "");
-              onChange(res);
-            }}
-          />
-          <Text style={{ fontSize: 16, color: "white", marginLeft: 10 }}>
-            %
-          </Text>
-        </View>
-      </Setting>
-    );
-  }
-);
+          value={value}
+          style={{ maxWidth: 100, flex: 1 }}
+          onChangeText={(text: string) => {
+            const res = text.replace(/[^0-9./s]/g, "");
+            onChange(res);
+          }}
+        />
+        <Text style={{ fontSize: 16, color: "white", marginLeft: 10 }}>%</Text>
+      </View>
+    </Setting>
+  );
+});
+
+const WhitelistedLPsSetting = observer(function WhitelistedLPsSetting() {
+  const navigation = useRootNavigation();
+
+  return (
+    <Setting
+      title="Whitelisted LPs"
+      subtitle="Manage whitelisted LPs"
+      onPress={() => navigation.navigate(SettingsRoute.WhitelistedLPs)}
+    />
+  );
+});
+
+const AutoStopLossSetting = observer(function AutoStopLossSetting() {
+  const [state, dispatch] = useContext(StateContext);
+  const value = state[AccountSettingComponent.AutoStopLoss];
+  const onChange = (value: string) => {
+    dispatch({
+      component: AccountSettingComponent.AutoStopLoss,
+      value,
+    });
+  };
+
+  return (
+    <Setting
+      disableButton={true}
+      title="Auto Stop Loss"
+      subtitle="Positions automatically open Stop Loss (SL) at this percentage loss."
+    >
+      <View
+        style={{
+          minWidth: 100,
+          flex: 1,
+          flexDirection: "row",
+
+          justifyContent: "flex-end",
+          alignItems: "center",
+        }}
+      >
+        <TextInput
+          inputStyle={{
+            fontSize: 14,
+            backgroundColor: "#1a1a1a",
+            borderWidth: 0,
+          }}
+          value={value}
+          style={{ maxWidth: 100, flex: 1 }}
+          onChangeText={(text: string) => {
+            const res = text.replace(/[^0-9./s]/g, "");
+            onChange(res);
+          }}
+        />
+        <Text style={{ fontSize: 16, color: "white", marginLeft: 10 }}>%</Text>
+      </View>
+    </Setting>
+  );
+});
+
+const WeeklyDcaSetting = observer(function WeeklyDcaSetting() {
+  const [state, dispatch] = useContext(StateContext);
+  const value = state[AccountSettingComponent.WeeklyDca];
+  const onChange = (value: string) => {
+    dispatch({
+      component: AccountSettingComponent.WeeklyDca,
+      value,
+    });
+  };
+
+  return (
+    <Setting
+      disableButton={true}
+      title="Weekly DCA"
+      subtitle="This amount will be added to your margin balance on a weekly basis. Powered by Kado."
+    >
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text style={{ fontSize: 16, color: "white", marginRight: 10 }}>$</Text>
+        <TextInput
+          inputStyle={{
+            fontSize: 14,
+            backgroundColor: "#1a1a1a",
+            borderWidth: 0,
+          }}
+          style={isWeb() ? { flex: 1, maxWidth: 100 } : {}}
+          value={value}
+          onChangeText={(text: string) => {
+            const res = text.replace(/[^0-9.]/g, "");
+            onChange(res);
+          }}
+        />
+      </View>
+    </Setting>
+  );
+});
 
 interface SessionKeySettingProps {
   value: boolean;
@@ -233,6 +408,7 @@ interface SessionKeySettingProps {
 
 const SessionKeySetting = observer<SessionKeySettingProps>(
   function SessionKeySetting({ value, onChange }) {
+    const theme = useTheme();
     return (
       <Setting
         disableButton={true}
@@ -240,7 +416,7 @@ const SessionKeySetting = observer<SessionKeySettingProps>(
         subtitle="Enabling session key will only require you to sign one transaction when connecting your Osmosis smart account."
       >
         <Switch
-          thumbColor="#437DFF"
+          thumbColor={theme.colors.primary}
           value={value}
           onValueChange={(value) => {
             onChange();

@@ -13,6 +13,7 @@ export const obiTheme: CustomTheme = {
   },
   modal: {
     borderRadius: "25px",
+    accountSettings: [],
   },
   buttonFlavors: {
     primary: {

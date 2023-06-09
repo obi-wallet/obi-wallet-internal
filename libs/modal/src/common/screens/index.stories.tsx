@@ -17,6 +17,8 @@ import {
   RootRoute,
   RootStack,
   SelectRecoveryMethodScreen,
+  SettingsRoute,
+  settingsScreens,
   SocialKeyScreen,
   useEnv,
   useSecurityQuestions,
@@ -137,6 +139,7 @@ function App({ initialRouteName }: { initialRouteName: string }) {
           name={HomeBottomTabRoute.Accounts}
           component={AccountsScreen}
         />
+        {settingsScreens()}
       </RootStack.Navigator>
       <Modals />
     </MultisigDraft.Container>
@@ -221,5 +224,11 @@ export const SelectRecoveryMethod: Story = {
 export const Accounts: Story = {
   render: () => {
     return <App initialRouteName={HomeBottomTabRoute.Accounts} />;
+  },
+};
+
+export const SessionKey: Story = {
+  render: () => {
+    return <App initialRouteName={SettingsRoute.OsmosisSettings} />;
   },
 };

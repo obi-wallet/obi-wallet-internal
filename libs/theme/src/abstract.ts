@@ -1,5 +1,13 @@
 import { TextStyle, ViewStyle } from "react-native";
 
+export enum AccountSettingComponent {
+  MaxSpend = "MaxSpend",
+  SlippageLimit = "SlippageLimit",
+  WhitelistedLps = "WhitelistedLps",
+  AutoStopLoss = "AutoStopLoss",
+  WeeklyDca = "WeeklyDca",
+}
+
 export interface CommonTheme {
   spacing: {
     0: 0;
@@ -45,6 +53,7 @@ export interface CustomTheme extends CommonTheme {
   };
   modal: {
     borderRadius?: string;
+    accountSettings: AccountSettingComponent[];
   };
   header?: {
     image: string;
