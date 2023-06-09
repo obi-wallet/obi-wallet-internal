@@ -127,6 +127,28 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
               {address}
             </Text>
           </TouchableOpacity>
+          {theme.ethDemo ? (
+            <Text
+              style={[
+                {
+                  textAlign: "center",
+                  color: theme.background.color,
+                  fontSize: 12,
+                  fontWeight: "500",
+                  opacity: 0.6,
+                  marginTop: 10,
+                },
+                isWeb()
+                  ? {
+                      // @ts-expect-error web-only prop
+                      overflowWrap: "anywhere",
+                    }
+                  : undefined,
+              ]}
+            >
+              {walletsStore.address}
+            </Text>
+          ) : null}
         </View>
       </SafeAreaView>
     </OsmosisScreenContainer>
