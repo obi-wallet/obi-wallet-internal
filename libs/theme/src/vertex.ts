@@ -47,4 +47,5 @@ export const vertexTheme: CustomTheme = {
   welcome: {
     image: "/vertex-home@2x.png",
   },
+  ethDemo: true,
 };

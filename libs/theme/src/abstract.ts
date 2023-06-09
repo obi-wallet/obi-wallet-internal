@@ -74,4 +74,5 @@ export interface CustomTheme extends CommonTheme {
   welcome?: {
     image: string;
   };
+  ethDemo?: boolean;
 }

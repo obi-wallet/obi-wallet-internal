@@ -67,6 +67,19 @@ export class CosmJsBankSdk extends AbstractBankSdk {
           usdValue: null,
         };
       }
+      case "ibc/6F34E1BD664C36CE49ACC28E60D62559A5F96C4F9A6CCE4FC5A67B2852E24CFE": {
+        const digits = 6;
+        return {
+          ...token,
+          amount: parseInt(token.rawAmount, 10) / 10 ** digits,
+          contract: null,
+          icon: "https://app.osmosis.zone/_next/image?url=/tokens/usdc.svg&w=48&q=75",
+          denom: "USDC",
+          digits,
+          label: "USDC",
+          usdValue: 1,
+        };
+      }
       default:
         return super.enrichTokenWithoutUsdValue(token);
     }
