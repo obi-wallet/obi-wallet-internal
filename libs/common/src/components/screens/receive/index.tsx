@@ -12,7 +12,9 @@ import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 export const ReceiveScreen = observer(function ReceiveScreen() {
   const { walletsStore } = useStore();
   const theme = useTheme();
-  const address = walletsStore.address;
+  const address = theme.ethDemo
+    ? "0x0bA689a1a10c77E58e62fb49c5b89DF768105342"
+    : walletsStore.address;
 
   if (!address) return null;
 
