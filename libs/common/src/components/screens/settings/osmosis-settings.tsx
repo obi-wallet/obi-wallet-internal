@@ -90,13 +90,15 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
                 paddingBottom: 20,
                 flexDirection: "row",
                 alignItems: "center",
+                marginBottom: 20,
               }}
             >
               <View
                 style={{
-                  alignItems: "center",
+                  alignItems: "flex-start",
                   justifyContent: "center",
                   flex: 1,
+                  paddingLeft: 25,
                 }}
               >
                 <Text
@@ -107,6 +109,15 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
                   }}
                 >
                   Account Settings
+                </Text>
+                <Text
+                  style={{
+                    color: "#F6F5FF",
+                    fontSize: isSmallScreenNumber(14, 18),
+                    opacity: 0.7,
+                  }}
+                >
+                  Manage your Smart Account Settings.
                 </Text>
               </View>
             </View>
@@ -235,21 +246,27 @@ const SessionKeySpendLimitSetting = observer(
           <TextInput
             inputStyle={{
               fontSize: 14,
-              backgroundColor: "#1a1a1a",
+              backgroundColor: "#120F32",
               borderWidth: 0,
+              padding: 0,
+              textAlign: "center",
             }}
-            style={isWeb() ? { flex: 1, maxWidth: 100 } : {}}
+            style={
+              isWeb()
+                ? {
+                    flex: 1,
+                    maxWidth: 100,
+                    height: 25,
+                    width: 60,
+                  }
+                : {}
+            }
             value={value}
             onChangeText={(text: string) => {
               const res = text.replace(/[^0-9.]/g, "");
               onChange(res);
             }}
           />
-          {theme.ethDemo ? null : (
-            <Text style={{ fontSize: 16, color: "white", marginLeft: 10 }}>
-              OSMO
-            </Text>
-          )}
         </View>
       </Setting>
     );
@@ -285,17 +302,30 @@ const SlippageLimitSetting = observer(function SlippageLimitSetting() {
         <TextInput
           inputStyle={{
             fontSize: 14,
-            backgroundColor: "#1a1a1a",
+            backgroundColor: "#120F32",
             borderWidth: 0,
+            padding: 0,
+            textAlign: "center",
           }}
+          maxLength={3}
           value={value}
-          style={{ maxWidth: 100, flex: 1 }}
+          style={{ height: 25, width: 60 }}
           onChangeText={(text: string) => {
             const res = text.replace(/[^0-9./s]/g, "");
             onChange(res);
           }}
         />
-        <Text style={{ fontSize: 16, color: "white", marginLeft: 10 }}>%</Text>
+        <Text
+          style={{
+            fontSize: 12,
+            color: "white",
+            position: "absolute",
+            right: 5,
+            zIndex: 2,
+          }}
+        >
+          %
+        </Text>
       </View>
     </Setting>
   );
@@ -342,8 +372,10 @@ const AutoStopLossSetting = observer(function AutoStopLossSetting() {
         <TextInput
           inputStyle={{
             fontSize: 14,
-            backgroundColor: "#1a1a1a",
+            backgroundColor: "#120F32",
             borderWidth: 0,
+            padding: 0,
+            textAlign: "center",
           }}
           value={value}
           style={{ maxWidth: 100, flex: 1 }}
@@ -386,8 +418,10 @@ const WeeklyDcaSetting = observer(function WeeklyDcaSetting() {
         <TextInput
           inputStyle={{
             fontSize: 14,
-            backgroundColor: "#1a1a1a",
+            backgroundColor: "#120F32",
             borderWidth: 0,
+            padding: 0,
+            textAlign: "center",
           }}
           style={isWeb() ? { flex: 1, maxWidth: 100 } : {}}
           value={value}
@@ -415,13 +449,22 @@ const SessionKeySetting = observer<SessionKeySettingProps>(
         title="Session Key"
         subtitle="Enabling session key will only require you to sign one transaction when connecting your Osmosis smart account."
       >
-        <Switch
-          thumbColor={theme.colors.primary}
-          value={value}
-          onValueChange={(value) => {
-            onChange();
-          }}
-        />
+        <View
+          style={{ justifyContent: "center", alignItems: "center", flex: 1 }}
+        >
+          <Switch
+            thumbColor={theme.colors.primary}
+            trackColor={{
+              false: "#120F32",
+              true: "#120F32",
+            }}
+            style={{ height: 25, width: 60 }}
+            value={value}
+            onValueChange={(value) => {
+              onChange();
+            }}
+          />
+        </View>
       </Setting>
     );
   }
