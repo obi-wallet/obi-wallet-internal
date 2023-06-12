@@ -319,16 +319,13 @@ export const Setting = observer(function Setting({
           <SubHeading>{subtitle}</SubHeading>
         </TilesContainer>
       </View>
-      <View style={{ backgroundColor: "" }}>{children}</View>
+      <View>{children}</View>
     </>
   );
   return disableButton ? (
     <SettingContainer>{renderContent()}</SettingContainer>
   ) : (
-    <SettingButton
-      onPress={() => onPress && onPress()}
-      // disabled={disableButton}
-    >
+    <SettingButton onPress={() => onPress && onPress()}>
       {renderContent()}
     </SettingButton>
   );
