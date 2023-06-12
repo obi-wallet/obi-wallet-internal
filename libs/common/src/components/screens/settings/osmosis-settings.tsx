@@ -18,6 +18,7 @@ import {
   useReducer,
   useState,
 } from "react";
+import { TextStyle } from "react-native";
 import { View } from "react-native-animatable";
 import { Switch } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -32,7 +33,7 @@ import {
 import { Draft } from "../../../stores";
 import { Button } from "../../buttons";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
-import { TextInput } from "../../text-input";
+import { CustomTextInputProps, TextInput } from "../../text-input";
 import { Text } from "../../typography";
 
 export type OsmosisSettingsScreenProps = NativeStackScreenProps<
@@ -239,29 +240,22 @@ const SessionKeySpendLimitSetting = observer(
           }}
         >
           {theme.ethDemo ? (
-            <Text style={{ fontSize: 16, color: "white", marginRight: 10 }}>
+            <Text
+              style={{
+                fontSize: 14,
+                color: "white",
+                position: "absolute",
+                left: 5,
+                zIndex: 2,
+              }}
+            >
               $
             </Text>
           ) : null}
-          <TextInput
+          <SettingsTextInput
             inputStyle={{
-              fontSize: 14,
               backgroundColor: "#120F32",
-              borderWidth: 0,
-              padding: 0,
-              textAlign: "center",
             }}
-            style={
-              isWeb()
-                ? {
-                    flex: 1,
-                    maxWidth: 100,
-                    height: 25,
-                    width: 60,
-                  }
-                : {}
-            }
-            value={value}
             onChangeText={(text: string) => {
               const res = text.replace(/[^0-9.]/g, "");
               onChange(res);
@@ -270,6 +264,27 @@ const SessionKeySpendLimitSetting = observer(
         </View>
       </Setting>
     );
+  }
+);
+const SettingsTextInput = observer<CustomTextInputProps>(
+  function SettingsTextInput(props) {
+    const newProps = {
+      ...props,
+      inputStyle: {
+        fontSize: 14,
+        borderWidth: 0,
+        padding: 0,
+        textAlign: "center",
+        ...(props.inputStyle as object),
+      } as TextStyle,
+      style: {
+        height: 25,
+        width: 60,
+        ...(props.style as object),
+      } as TextStyle,
+    };
+
+    return <TextInput {...newProps} />;
   }
 );
 
@@ -299,17 +314,12 @@ const SlippageLimitSetting = observer(function SlippageLimitSetting() {
           alignItems: "center",
         }}
       >
-        <TextInput
+        <SettingsTextInput
           inputStyle={{
-            fontSize: 14,
             backgroundColor: "#120F32",
-            borderWidth: 0,
-            padding: 0,
-            textAlign: "center",
           }}
           maxLength={3}
           value={value}
-          style={{ height: 25, width: 60 }}
           onChangeText={(text: string) => {
             const res = text.replace(/[^0-9./s]/g, "");
             onChange(res);
@@ -317,7 +327,7 @@ const SlippageLimitSetting = observer(function SlippageLimitSetting() {
         />
         <Text
           style={{
-            fontSize: 12,
+            fontSize: 14,
             color: "white",
             position: "absolute",
             right: 5,
@@ -369,22 +379,27 @@ const AutoStopLossSetting = observer(function AutoStopLossSetting() {
           alignItems: "center",
         }}
       >
-        <TextInput
+        <SettingsTextInput
           inputStyle={{
-            fontSize: 14,
             backgroundColor: "#120F32",
-            borderWidth: 0,
-            padding: 0,
-            textAlign: "center",
           }}
           value={value}
-          style={{ maxWidth: 100, flex: 1 }}
           onChangeText={(text: string) => {
             const res = text.replace(/[^0-9./s]/g, "");
             onChange(res);
           }}
         />
-        <Text style={{ fontSize: 16, color: "white", marginLeft: 10 }}>%</Text>
+        <Text
+          style={{
+            fontSize: 14,
+            color: "white",
+            position: "absolute",
+            right: 5,
+            zIndex: 2,
+          }}
+        >
+          %
+        </Text>
       </View>
     </Setting>
   );
@@ -414,14 +429,21 @@ const WeeklyDcaSetting = observer(function WeeklyDcaSetting() {
           alignItems: "center",
         }}
       >
-        <Text style={{ fontSize: 16, color: "white", marginRight: 10 }}>$</Text>
-        <TextInput
-          inputStyle={{
+        <Text
+          style={{
             fontSize: 14,
+            color: "white",
+            position: "absolute",
+            left: 5,
+            zIndex: 2,
+          }}
+        >
+          $
+        </Text>
+
+        <SettingsTextInput
+          inputStyle={{
             backgroundColor: "#120F32",
-            borderWidth: 0,
-            padding: 0,
-            textAlign: "center",
           }}
           style={isWeb() ? { flex: 1, maxWidth: 100 } : {}}
           value={value}
