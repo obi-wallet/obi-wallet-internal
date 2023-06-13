@@ -229,7 +229,9 @@ const SessionKeySpendLimitSetting = observer(
       <Setting
         disableButton={true}
         title="Session Key Max Spend"
-        subtitle="Any transaction up to this OSMO amount won't require a signature."
+        subtitle={`Any transaction up to this ${
+          theme.ethDemo ? "USD" : `OSMO`
+        } amount won't require a signature.`}
       >
         <View
           style={{
@@ -239,19 +241,6 @@ const SessionKeySpendLimitSetting = observer(
             alignItems: "center",
           }}
         >
-          {theme.ethDemo ? (
-            <Text
-              style={{
-                fontSize: 14,
-                color: "white",
-                position: "absolute",
-                left: 5,
-                zIndex: 2,
-              }}
-            >
-              $
-            </Text>
-          ) : null}
           <SettingsTextInput
             inputStyle={{
               backgroundColor: "#120F32",
