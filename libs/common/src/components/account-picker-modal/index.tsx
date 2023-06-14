@@ -82,6 +82,10 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
             </View>
             <ScrollView>
               {walletsStore.wallets.map((wallet) => {
+                const address = theme.ethDemo
+                  ? "0x0bA689a1...05342"
+                  : wallet.shortenedAddress;
+
                 return (
                   <TouchableOpacity
                     key={wallet.id}
@@ -113,7 +117,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                           fontWeight: "600",
                         }}
                       >
-                        {wallet.shortenedAddress}
+                        {address}
                       </Text>
                       <Text
                         style={{
