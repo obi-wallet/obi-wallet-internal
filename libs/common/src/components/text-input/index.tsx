@@ -31,16 +31,14 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
 });
-
-export const TextInput = observer<
-  TextInputProps & {
-    CustomTextInput?: ComponentType<TextInputProps>;
-    label?: string;
-    style?: StyleProp<ViewStyle>;
-    inputStyle?: StyleProp<TextStyle>;
-    invalidMessage?: string;
-  }
->(function TextInput({
+export type CustomTextInputProps = TextInputProps & {
+  CustomTextInput?: ComponentType<TextInputProps>;
+  label?: string;
+  style?: StyleProp<ViewStyle>;
+  inputStyle?: StyleProp<TextStyle>;
+  invalidMessage?: string;
+};
+export const TextInput = observer<CustomTextInputProps>(function TextInput({
   label,
   style,
   inputStyle,
