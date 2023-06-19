@@ -23,6 +23,7 @@ import {
   useEnv,
   useSecurityQuestions,
   useStore,
+  EmailRecoveryScreen,
   WelcomeScreen,
 } from "@obi-wallet/common";
 import { ObservableMultisigKey } from "@obi-wallet/sdk";
@@ -138,6 +139,13 @@ function App({ initialRouteName }: { initialRouteName: string }) {
         <RootStack.Screen
           name={HomeBottomTabRoute.Accounts}
           component={AccountsScreen}
+        />
+        <RootStack.Screen
+          name={OnboardingRoute.EmailRecovery}
+          component={EmailRecoveryScreen}
+          initialParams={{
+            draftId: MultisigDraft.draftId,
+          }}
         />
         {settingsScreens()}
       </RootStack.Navigator>
