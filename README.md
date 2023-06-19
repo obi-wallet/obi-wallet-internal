@@ -2,7 +2,7 @@
 
 > ## Disclaimer
 >
-> Obi is in alpha. Security audits are pending. Current implementations are only intended for trial purposes.
+> Obi is in alpha. Security audits are pending. Current implementations are intended for trial purposes.
 
 This project was generated using [Nx](https://nx.dev).
 
