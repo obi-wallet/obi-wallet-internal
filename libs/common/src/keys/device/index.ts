@@ -69,42 +69,46 @@ export async function getBiometricsPrivateKey({
   invariant(false, "Key not found on device.");
 }
 
-export async function getBiometricsKeyPair(_: { demoMode: boolean }) {
-  // TODO: remove this once we have Osmosis-specific fix for prepareKeyPair
-  // eslint-disable-next-line no-constant-condition
-  return {
-    privateKey: DEMO_PRIVATE_KEY,
-    publicKey: DEMO_PUBLIC_KEY,
-  };
+export async function getBiometricsKeyPair({
+  demoMode,
+}: {
+  demoMode: boolean;
+}) {
+  if (demoMode) {
+    return {
+      privateKey: DEMO_PRIVATE_KEY,
+      publicKey: DEMO_PUBLIC_KEY,
+    };
+  }
 
-  // const credentials = await fetchCredentialsFromLocalStorage({
-  //   service: BIOMETRICS_KEY,
-  // });
-  //
-  // if (credentials) {
-  //   return {
-  //     publicKey: credentials.username,
-  //     privateKey: credentials.password,
-  //   };
-  // } else {
-  //   const { publicKey, privateKey } = generateSec256k1KeyPair();
-  //
-  //   saveCredentialsToLocalStorage({
-  //     service: BIOMETRICS_KEY,
-  //     username: publicKey.value,
-  //     password: privateKey,
-  //   });
-  //   saveCredentialsToLocalStorage({
-  //     service: `${BIOMETRICS_KEY}/${publicKey}`,
-  //     username: publicKey.value,
-  //     password: privateKey,
-  //   });
-  //
-  //   return {
-  //     publicKey: publicKey.value,
-  //     privateKey,
-  //   };
-  // }
+  const credentials = await fetchCredentialsFromLocalStorage({
+    service: BIOMETRICS_KEY,
+  });
+
+  if (credentials) {
+    return {
+      publicKey: credentials.username,
+      privateKey: credentials.password,
+    };
+  } else {
+    const { publicKey, privateKey } = generateSec256k1KeyPair();
+
+    saveCredentialsToLocalStorage({
+      service: BIOMETRICS_KEY,
+      username: publicKey.value,
+      password: privateKey,
+    });
+    saveCredentialsToLocalStorage({
+      service: `${BIOMETRICS_KEY}/${publicKey.value}`,
+      username: publicKey.value,
+      password: privateKey,
+    });
+
+    return {
+      publicKey: publicKey.value,
+      privateKey,
+    };
+  }
 }
 
 function fetchCredentialsFromLocalStorage({ service }: { service: string }) {

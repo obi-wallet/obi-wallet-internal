@@ -91,13 +91,18 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
           prefix: this.chain.prefix,
         }),
         async (client) => {
-          await client.sendTokens(
+          const response = await client.sendTokens(
             address,
             address,
             coins(1, this.chain.denom),
-            "auto",
+            this.client.defaultFee,
             ""
           );
+          if (!isDeliverTxSuccess(response)) {
+            throw new Error(
+              `Failed to send tokens to ${address}: ${response.rawLog}`
+            );
+          }
         }
       );
       while (
