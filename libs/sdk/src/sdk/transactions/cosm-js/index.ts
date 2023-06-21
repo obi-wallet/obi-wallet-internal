@@ -70,7 +70,7 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
     if (!account) {
       return AccountValidationResult.ACCOUNT_NOT_READY;
     }
-    if (!account.pubkey) {
+    if (!account.pubkey || account.sequence === 0) {
       return AccountValidationResult.PUBLIC_KEY_NOT_READY;
     }
     return AccountValidationResult.READY;
