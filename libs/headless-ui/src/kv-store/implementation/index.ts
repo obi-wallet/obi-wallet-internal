@@ -1,12 +1,20 @@
 import Dexie, { Table } from "dexie";
+import * as R from "ramda";
 
 import { KVStore as LegacyKvStore } from "./async-storage";
 import { AbstractKVStore } from "../abstract";
 
-interface Entry {
+interface LegacyEntry {
   key: string;
   value: string;
 }
+
+interface EncryptedEntry {
+  key: string;
+  encrypted: Uint8Array;
+}
+
+type Entry = LegacyEntry | EncryptedEntry;
 
 class KVDexie extends Dexie {
   public entries!: Table<Entry>;
@@ -43,6 +51,11 @@ export class KVStore implements AbstractKVStore {
       }
       return undefined;
     }
+
+    if (R.has("encrypted", entry)) {
+      return JSON.parse(await decrypt(entry.encrypted));
+    }
+
     return JSON.parse(entry.value);
   }
 
@@ -53,7 +66,7 @@ export class KVStore implements AbstractKVStore {
     } else {
       await this.db.entries.put({
         key,
-        value: JSON.stringify(data),
+        encrypted: await encrypt(JSON.stringify(data)),
       });
     }
   }
@@ -61,4 +74,64 @@ export class KVStore implements AbstractKVStore {
   public prefix() {
     return this._prefix;
   }
+}
+
+class EncryptionKeyDexie extends Dexie {
+  public entries!: Table<{
+    key: "key";
+    value: CryptoKey;
+  }>;
+
+  public constructor() {
+    super(`kv-store/encryption-key`);
+    this.version(1).stores({
+      entries: "key",
+    });
+  }
+}
+
+async function getEncryptionKey() {
+  const db = new EncryptionKeyDexie();
+  const entry = await db.entries.get("key");
+  if (entry) return entry.value;
+
+  const key = await window.crypto.subtle.generateKey(
+    {
+      name: "AES-GCM",
+      length: 256,
+    },
+    false,
+    ["encrypt", "decrypt"]
+  );
+  await db.entries.put({
+    key: "key",
+    value: key,
+  });
+  return key;
+}
+
+async function encrypt(data: string) {
+  const enc = new TextEncoder();
+  const encoded = enc.encode(data);
+
+  console.log(await getEncryptionKey());
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+  const encrypted = await window.crypto.subtle.encrypt(
+    { name: "AES-GCM", iv: iv },
+    await getEncryptionKey(),
+    encoded
+  );
+  return new Uint8Array([...iv, ...new Uint8Array(encrypted)]);
+}
+
+async function decrypt(data: Uint8Array) {
+  const iv = data.slice(0, 12);
+  const encrypted = data.slice(12);
+  const decrypted = await window.crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: iv },
+    await getEncryptionKey(),
+    encrypted
+  );
+  const dec = new TextDecoder();
+  return dec.decode(decrypted);
 }
