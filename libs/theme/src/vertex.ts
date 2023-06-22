@@ -3,6 +3,7 @@ import { obiTheme } from "./obi";
 
 export const vertexTheme: CustomTheme = {
   ...obiTheme,
+
   colors: {
     primary: "#CDADEF",
     background: "#1A191E",

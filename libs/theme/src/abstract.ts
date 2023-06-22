@@ -50,6 +50,7 @@ export interface CustomTheme extends CommonTheme {
   background: {
     image?: string;
     color: string;
+    backgroundBlendMode?: string;
   };
   modal: {
     borderRadius?: string;
@@ -81,7 +82,8 @@ export interface CustomTheme extends CommonTheme {
     accountName: string;
   };
   welcome?: {
-    image: string;
+    backgroundImage?: string;
+    image?: string;
   };
   ethDemo?: boolean;
 }

@@ -19,7 +19,10 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
     const theme = useTheme();
 
     return (
-      <OsmosisScreenContainer hideLogo>
+      <OsmosisScreenContainer
+        hideLogo
+        backgroundImage={theme.welcome?.backgroundImage}
+      >
         <SafeAreaView
           style={{
             flex: 1,
