@@ -1,133 +1,47 @@
-import { KVStore } from "@obi-wallet/headless-ui";
-import { generateSec256k1KeyPair } from "@obi-wallet/sdk";
-import invariant from "tiny-invariant";
+import {
+  generateSec256k1KeyPair,
+  KeySubclassTypeMapping,
+  KeyType,
+  Secp256k1KeyPair,
+} from "@obi-wallet/sdk";
 
-// TODO: this is a temporary & insecure mock implementation using localStorage. We want to use WebAuthn in the future.
-const BIOMETRICS_KEY = "obi-wallet-biometrics";
+import { getBiometricsPrivateKey } from "./legacy";
 
 const DEMO_PUBLIC_KEY = "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI";
 const DEMO_PRIVATE_KEY = "jrfHogEDo91xaC0Kym/BMheAhlm5z93fVwMT8mKTGy4=";
 
-const kvStore = new KVStore("device-keys");
-
-export async function existsKeyOnDevice({ publicKey }: { publicKey: string }) {
-  if (publicKey === DEMO_PUBLIC_KEY) return true;
-
-  const isKeyOnDevice = await kvStore.get<boolean>(publicKey);
-
-  if (typeof isKeyOnDevice === "boolean") return isKeyOnDevice;
-
-  try {
-    await getBiometricsPrivateKey({ publicKey });
-    await kvStore.set(publicKey, true);
-    return true;
-  } catch (e) {
-    await kvStore.set(publicKey, false);
-    return false;
-  }
-}
-
-export async function resetBiometricsKeyPair() {
-  localStorage.removeItem(BIOMETRICS_KEY);
-}
-
-export async function getBiometricsPublicKey({
-  demoMode,
-}: {
-  demoMode: boolean;
-}) {
-  const { publicKey } = await getBiometricsKeyPair({ demoMode });
-  return publicKey;
-}
-
-export async function getBiometricsPrivateKey({
-  publicKey,
-}: {
-  publicKey: string;
-}) {
-  if (publicKey === DEMO_PUBLIC_KEY) return DEMO_PRIVATE_KEY;
-
-  const credentials = fetchCredentialsFromLocalStorage({
-    service: `${BIOMETRICS_KEY}/${publicKey}`,
-  });
-
-  if (credentials) return credentials.password;
-
-  const fallbackCredentials = fetchCredentialsFromLocalStorage({
-    service: BIOMETRICS_KEY,
-  });
-
-  if (fallbackCredentials && fallbackCredentials.username === publicKey) {
-    saveCredentialsToLocalStorage({
-      service: `${BIOMETRICS_KEY}/${publicKey}`,
-      username: publicKey,
-      password: fallbackCredentials.password,
-    });
-    return fallbackCredentials.password;
-  }
-
-  invariant(false, "Key not found on device.");
-}
-
-export async function getBiometricsKeyPair({
-  demoMode,
-}: {
-  demoMode: boolean;
-}) {
+export function createDeviceKeyPair(demoMode: boolean): Secp256k1KeyPair {
   if (demoMode) {
     return {
+      publicKey: {
+        type: "tendermint/PubKeySecp256k1",
+        value: DEMO_PUBLIC_KEY,
+      },
       privateKey: DEMO_PRIVATE_KEY,
-      publicKey: DEMO_PUBLIC_KEY,
     };
   }
 
-  const credentials = await fetchCredentialsFromLocalStorage({
-    service: BIOMETRICS_KEY,
-  });
-
-  if (credentials) {
-    return {
-      publicKey: credentials.username,
-      privateKey: credentials.password,
-    };
-  } else {
-    const { publicKey, privateKey } = generateSec256k1KeyPair();
-
-    saveCredentialsToLocalStorage({
-      service: BIOMETRICS_KEY,
-      username: publicKey.value,
-      password: privateKey,
-    });
-    saveCredentialsToLocalStorage({
-      service: `${BIOMETRICS_KEY}/${publicKey.value}`,
-      username: publicKey.value,
-      password: privateKey,
-    });
-
-    return {
-      publicKey: publicKey.value,
-      privateKey,
-    };
-  }
+  return generateSec256k1KeyPair();
 }
 
-function fetchCredentialsFromLocalStorage({ service }: { service: string }) {
-  const credentials = localStorage.getItem(service);
-  if (credentials) {
-    return JSON.parse(credentials) as { username: string; password: string };
-  }
-  return null;
-}
+export async function getDevicePrivateKey(
+  key: KeySubclassTypeMapping[KeyType.Device]
+): Promise<string | null> {
+  if (key.payload.privateKey) return key.payload.privateKey;
 
-function saveCredentialsToLocalStorage({
-  service,
-  username,
-  password,
-}: {
-  service: string;
-  username: string;
-  password: string;
-}) {
-  localStorage.setItem(service, JSON.stringify({ username, password }));
-  return { username, password };
+  try {
+    const privateKey = await getBiometricsPrivateKey({
+      publicKey: key.publicKey.value,
+    });
+    key.setSerialized({
+      type: KeyType.Device,
+      payload: {
+        publicKey: key.publicKey,
+        privateKey,
+      },
+    });
+    return privateKey;
+  } catch (e) {
+    return null;
+  }
 }

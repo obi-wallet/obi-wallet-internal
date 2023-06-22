@@ -59,7 +59,7 @@ test("create wallet", async () => {
   const multisigKey = MultisigKey.create("phoenix-1");
 
   const deviceKeyPair = generateSec256k1KeyPair();
-  multisigKey.setDeviceKey(deviceKeyPair.publicKey);
+  multisigKey.setDeviceKey(deviceKeyPair);
 
   const mockPhoneKeyPair = generateSec256k1KeyPair();
   multisigKey.setPhoneKey({

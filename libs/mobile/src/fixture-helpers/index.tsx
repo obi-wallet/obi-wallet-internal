@@ -1,8 +1,7 @@
-import { pubkeyType } from "@cosmjs/amino";
 import {
   Alert,
+  createDeviceKeyPair,
   getGatekeeperConfigDraftId,
-  getBiometricsPublicKey,
   getTwilioClient,
   useEnv,
   useSecurityQuestions,
@@ -43,12 +42,7 @@ export const MultisigDraft = {
     useAsyncEffect(async () => {
       if (!draft) {
         const original = ObservableMultisigKey.create(chainStore.currentChain);
-        original.setDeviceKey({
-          type: pubkeyType.secp256k1,
-          value: await getBiometricsPublicKey({
-            demoMode: true,
-          }),
-        });
+        original.setDeviceKey(createDeviceKeyPair(true));
         original.setPhoneKey({
           publicKey: await getTwilioClient({
             demoMode: true,

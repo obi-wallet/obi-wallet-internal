@@ -102,12 +102,13 @@ export class MultisigKey {
     });
   }
 
-  public setDeviceKey(publicKey: Secp256k1PublicKey) {
+  public setDeviceKey(keyPair: {
+    publicKey: Secp256k1PublicKey;
+    privateKey?: string;
+  }) {
     this.setKey({
       type: KeyType.Device,
-      payload: {
-        publicKey,
-      },
+      payload: keyPair,
     });
   }
 

@@ -1,10 +1,11 @@
 import {
   AccountsScreen,
   CloudKeyScreen,
+  createDeviceKeyPair,
   CreateWalletScreen,
   DeviceKeyScreen,
   EmailKeyScreen,
-  getBiometricsPublicKey,
+  EmailRecoveryScreen,
   getTwilioClient,
   HomeBottomTabRoute,
   KeyRoute,
@@ -14,7 +15,6 @@ import {
   OnboardingRoute,
   PhoneKeyConfirmScreen,
   PhoneKeyRequestScreen,
-  RootRoute,
   RootStack,
   SelectRecoveryMethodScreen,
   SettingsRoute,
@@ -23,7 +23,6 @@ import {
   useEnv,
   useSecurityQuestions,
   useStore,
-  EmailRecoveryScreen,
   WelcomeScreen,
 } from "@obi-wallet/common";
 import { ObservableMultisigKey } from "@obi-wallet/sdk";
@@ -46,12 +45,7 @@ const MultisigDraft = {
     useAsyncEffect(async () => {
       if (!draft) {
         const original = ObservableMultisigKey.create(chainStore.currentChain);
-        original.setDeviceKey({
-          type: "tendermint/PubKeySecp256k1",
-          value: await getBiometricsPublicKey({
-            demoMode: true,
-          }),
-        });
+        original.setDeviceKey(createDeviceKeyPair(true));
         original.setPhoneKey({
           publicKey: await getTwilioClient({
             demoMode: true,

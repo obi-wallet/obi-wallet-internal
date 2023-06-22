@@ -12,11 +12,7 @@ import invariant from "tiny-invariant";
 
 import { NfcKeySigner } from "./nfc-key-signer";
 import { Env } from "../../../../contexts";
-import {
-  existsKeyOnDevice,
-  getBiometricsPrivateKey,
-  getTwilioClient,
-} from "../../../../keys";
+import { getDevicePrivateKey, getTwilioClient } from "../../../../keys";
 
 export async function createUsableSigners({
   multisigKey,
@@ -74,11 +70,7 @@ async function createUsableSigner({
 }): Promise<Signer | null> {
   switch (key.type) {
     case KeyType.Device: {
-      if (
-        !(await existsKeyOnDevice({
-          publicKey: key.publicKey.value,
-        }))
-      ) {
+      if (!(await getDevicePrivateKey(key))) {
         return null;
       }
       return new DeviceKeySigner(key);
@@ -114,9 +106,8 @@ export class DeviceKeySigner extends Signer {
   }
 
   public async signHash(hash: Uint8Array) {
-    const privateKey = await getBiometricsPrivateKey({
-      publicKey: this.key.publicKey.value,
-    });
+    const privateKey = await getDevicePrivateKey(this.key);
+    invariant(privateKey, "Expected private key to exist.");
     return new Secp256k1PrivateKeySigner(privateKey).signHash(hash);
   }
 }

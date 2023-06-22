@@ -176,7 +176,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
 
             draft.commit({ original: currentOwner });
             const newOwner = draft.value;
-            draft.value.setDeviceKey(newDeviceKey.payload.publicKey);
+            draft.value.setDeviceKey(newDeviceKey.payload);
             if (recoveredEmailKey) {
               newOwner.removeKeyOfType(KeyType.EmailRecovery);
 

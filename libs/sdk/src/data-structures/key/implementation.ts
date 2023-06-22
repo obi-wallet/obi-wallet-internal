@@ -18,6 +18,10 @@ export abstract class Key {
   public toJSON() {
     return this._serialize(this.serialized);
   }
+
+  public setSerialized(serialized: AbstractSerialized<typeof KeySchema>) {
+    this.serialized = serialized;
+  }
 }
 
 export class UsableKey<

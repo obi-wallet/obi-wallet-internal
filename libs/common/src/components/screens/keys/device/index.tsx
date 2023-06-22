@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
+import { MultisigKey, Sdk } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useStore } from "../../../../contexts";
 import { Alert, isSmallScreen, isSmallScreenNumber } from "../../../../helpers";
-import { getBiometricsKeyPair, resetBiometricsKeyPair } from "../../../../keys";
+import { createDeviceKeyPair } from "../../../../keys";
 import {
   KeyFlow,
   KeyRoute,
@@ -78,21 +78,8 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 
   async function scanBiometrics() {
     try {
-      // TODO: should return keypair instead
-      const { publicKey, privateKey } = await getBiometricsKeyPair({
-        demoMode,
-      });
-      const keyPair: Secp256k1KeyPair = {
-        publicKey: {
-          type: "tendermint/PubKeySecp256k1",
-          value: publicKey,
-        },
-        privateKey,
-      };
-      draft.value.setDeviceKey({
-        type: "tendermint/PubKeySecp256k1",
-        value: publicKey,
-      });
+      const keyPair = createDeviceKeyPair(demoMode);
+      draft.value.setDeviceKey(keyPair);
       void queryClient.prefetchQuery(
         Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
           keyPair
@@ -101,7 +88,6 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       setScannedBiometrics(true);
     } catch (e) {
       setScannedBiometrics(false);
-      await resetBiometricsKeyPair();
       const error = e as Error;
 
       if (error.message === "code: 13, msg: Cancel") return;
