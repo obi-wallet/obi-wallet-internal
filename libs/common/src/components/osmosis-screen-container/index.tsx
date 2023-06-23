@@ -1,5 +1,4 @@
 import { useTheme } from "@emotion/react";
-import { brands } from "@obi-wallet/theme";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { View } from "react-native";
