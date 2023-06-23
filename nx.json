@@ -38,6 +38,12 @@
       "library": {
         "unitTestRunner": "jest"
       }
+    },
+    "@nx/next": {
+      "application": {
+        "style": "none",
+        "linter": "eslint"
+      }
     }
   }
 }

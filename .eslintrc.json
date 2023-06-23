@@ -50,6 +50,7 @@
               "{apps,libs}/*/test-setup.ts",
               "apps/*-e2e/**/*",
               "apps/*/metro.config.js",
+              "apps/*/next.config.js",
               "jest*.[jt]s"
             ],
             "optionalDependencies": false
@@ -155,6 +156,7 @@
     },
     {
       "files": [
+        "app/**/*.{ts,tsx,js,jsx}",
         "__stories__/**/*.{ts,tsx,js,jsx}",
         "*.stories.{ts,tsx,js,jsx}"
       ],

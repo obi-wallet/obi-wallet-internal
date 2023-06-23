@@ -16,3 +16,6 @@ cosmos.userdeps.js
 
 # Highflux
 .highflux/
+
+# Next
+.next/
