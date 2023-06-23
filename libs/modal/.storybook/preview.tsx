@@ -16,6 +16,9 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       if (context.id === "modal--primary") {
+        return renderStoryWithContainer(osmosisTheme);
+      }
+      if (context.id === "modal--ztx") {
         return renderStoryWithContainer(ztxTheme);
       }
 

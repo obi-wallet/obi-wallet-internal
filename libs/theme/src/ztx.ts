@@ -10,7 +10,6 @@ export const ztxTheme: CustomTheme = {
   },
   background: {
     color: "#16151D",
-    backgroundBlendMode: "luminosity",
   },
   modal: {
     borderRadius: "25px",
@@ -62,6 +61,11 @@ export const ztxTheme: CustomTheme = {
     accountName: "Obi Smart Account",
   },
   welcome: {
-    backgroundImage: "/ztx-home.png",
+    background: {
+      image: "/ztx-home.png",
+      color: "#16151D",
+      blendMode: "luminosity",
+      position: "center",
+    },
   },
 };

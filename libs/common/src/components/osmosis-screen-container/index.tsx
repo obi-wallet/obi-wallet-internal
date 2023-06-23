@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { BackgroundStyle } from "@obi-wallet/theme";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { View } from "react-native";
@@ -9,42 +10,26 @@ import { OsmosisHeader, OsmosisHeaderProps } from "../osmosis-header";
 export interface OsmosisScreenContainerProps
   extends Omit<OsmosisHeaderProps, "onClose"> {
   children: ReactNode;
-  backgroundImage?: string;
+  backgroundStyle?: BackgroundStyle;
 }
 
+const getBackgroundStyles = (style: BackgroundStyle) => {
+  return {
+    flex: 1,
+    backgroundColor: style.color,
+    backgroundSize: style.size,
+    backgroundPosition: style.position,
+    backgroundImage: style.image && `url(${style.image})`,
+    backgroundBlendMode: style.blendMode,
+  };
+};
 export const OsmosisScreenContainer = observer<OsmosisScreenContainerProps>(
-  function OsmosisScreenContainer({ children, backgroundImage, ...props }) {
+  function OsmosisScreenContainer({ children, backgroundStyle, ...props }) {
     const theme = useTheme();
     const onClose = useOnClose();
-    const getBackgroundImage = () => {
-      const baseImageStyles = {
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundBlendMode: "luminosity",
-      };
-      if (backgroundImage) {
-        return {
-          ...baseImageStyles,
-          backgroundImage: `url(${backgroundImage})`,
-        };
-      }
-      if (theme.background.image) {
-        return {
-          ...baseImageStyles,
-          backgroundImage: `url(${theme.background.image})`,
-        };
-      }
-      return {};
-    };
 
     return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: theme.background.color,
-          ...getBackgroundImage(),
-        }}
-      >
+      <View style={getBackgroundStyles(backgroundStyle ?? theme.background)}>
         <OsmosisHeader {...props} onClose={onClose} />
         {children}
       </View>

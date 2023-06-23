@@ -20,6 +20,11 @@ export const Vertex: Story = {
     return <ModalWithoutProvider />;
   },
 };
+export const Ztx: Story = {
+  render: () => {
+    return <ModalWithoutProvider />;
+  },
+};
 
 export const Themes: Story = {
   render: () => <ModalWithoutProvider />,
