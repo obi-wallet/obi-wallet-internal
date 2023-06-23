@@ -46,6 +46,10 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
     path.join(appDir, ".env"),
     path.join(__dirname, "../libs/modal/.env")
   );
+  await copyFile(
+    path.join(appDir, ".env"),
+    path.join(__dirname, "../apps/modal-web/.env")
+  );
 
   // Handle ios/Mobile/AppCenter-Config.plist
   await modifyFile(
