@@ -40,17 +40,20 @@ export interface CommonTheme {
     bold: TextStyle["fontWeight"];
   };
 }
-
+export interface BackgroundStyle {
+  image?: string;
+  color: string;
+  blendMode?: string;
+  size?: string;
+  position?: string;
+}
 export interface CustomTheme extends CommonTheme {
   colors: {
     primary: string;
     background: string;
     panelBackground: string;
   };
-  background: {
-    image?: string;
-    color: string;
-  };
+  background: BackgroundStyle;
   modal: {
     borderRadius?: string;
     accountSettings: AccountSettingComponent[];
@@ -81,7 +84,8 @@ export interface CustomTheme extends CommonTheme {
     accountName: string;
   };
   welcome?: {
-    image: string;
+    background?: BackgroundStyle;
+    image?: string;
   };
   ethDemo?: boolean;
 }

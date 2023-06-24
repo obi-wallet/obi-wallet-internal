@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
@@ -23,7 +24,7 @@ export interface KeyBottomSheetContentProps {
 export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
   function KeyBottomSheetContent({ type, multisigKey, action, onClose }) {
     const keyMetaData = useKeyMetaData();
-
+    const theme = useTheme();
     const { label, Icon } = keyMetaData.metaData[type];
     const title = label;
     const activated = multisigKey.hasKeyOfType(type);
@@ -42,7 +43,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
           style={{
             paddingVertical: 5,
             width: "100%",
-            backgroundColor: "#437DFF",
+            backgroundColor: theme.colors.primary,
             borderRadius: 12,
             alignItems: "center",
           }}
@@ -115,7 +116,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
           <View
             style={{
               padding: 10,
-              backgroundColor: "#437DFF",
+              backgroundColor: theme.colors.primary,
               alignSelf: "flex-start",
               borderRadius: 12,
             }}
@@ -125,7 +126,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
           <View
             style={{
               padding: 10,
-              backgroundColor: activated ? "#437DFF" : "#1a1a1a",
+              backgroundColor: activated ? theme.colors.primary : "#1a1a1a",
               borderRadius: 12,
             }}
           >

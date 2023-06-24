@@ -45,6 +45,7 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
         </View>
         {theme.header && !hideLogo ? (
           <Image
+            resizeMode="contain"
             source={{ uri: theme.header.image }}
             style={{
               width: theme.header.width,

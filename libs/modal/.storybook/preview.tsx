@@ -5,6 +5,7 @@ import {
   obiTheme,
   osmosisTheme,
   vertexTheme,
+  ztxTheme,
 } from "@obi-wallet/theme";
 import { Preview } from "@storybook/react";
 
@@ -16,6 +17,9 @@ const preview: Preview = {
     (Story, context) => {
       if (context.id === "modal--primary") {
         return renderStoryWithContainer(osmosisTheme);
+      }
+      if (context.id === "modal--ztx") {
+        return renderStoryWithContainer(ztxTheme);
       }
 
       if (context.id === "modal--vertex")
@@ -41,6 +45,7 @@ const preview: Preview = {
           <div style={{ padding: 5 }}>
             {renderStoryWithContainer(vertexTheme)}
           </div>
+          <div style={{ padding: 5 }}>{renderStoryWithContainer(ztxTheme)}</div>
         </div>
       );
 
