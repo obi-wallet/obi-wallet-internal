@@ -21,7 +21,7 @@ async function generateEthereumAccount(): Promise<EthereumAccount> {
   const keyPair = generateSec256k1KeyPair();
   const address = await generateEthereumAddress(keyPair);
   return {
-    keyPair: generateSec256k1KeyPair(),
+    keyPair,
     address,
   };
 }
