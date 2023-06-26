@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   isTerraChain,
+  EnrichedToken as OriginalEnrichedToken,
   Message,
   Messages,
   SignAndBroadcastTransactionUserInteraction,
@@ -22,7 +23,11 @@ import { z } from "zod";
 import { useStore } from "../../../contexts";
 import { address, AddressController, TokenController } from "../../../forms";
 import { isSmallScreenNumber } from "../../../helpers";
-import { EnrichedToken, useEnrichedBalances } from "../../../hooks";
+import {
+  EnrichedToken,
+  enrichToken,
+  useEnrichedBalances,
+} from "../../../hooks";
 import {
   HomeBottomTabRoute,
   RootRoute,
@@ -50,6 +55,7 @@ export const SendScreenComponent = observer<
     address: wallet.address,
     chainId: wallet.chainId,
   });
+  const theme = useTheme();
 
   const { control, formState, handleSubmit, getValues, setValue } = useForm({
     defaultValues: {
@@ -62,10 +68,16 @@ export const SendScreenComponent = observer<
     mode: "onChange",
     resolver: zodResolver(
       z.object({
-        address: address(wallet.chainId),
+        address: theme.ethereumBalances ? z.string() : address(wallet.chainId),
         token: tokenGivenBalances({
           chainId: wallet.chainId,
           balances: balances.data,
+          enrichToken: (token) => {
+            return enrichToken({
+              chainId: wallet.chainId,
+              token,
+            }) as OriginalEnrichedToken;
+          },
         }),
       })
     ),
@@ -95,7 +107,6 @@ export const SendScreenComponent = observer<
   }>({});
   const { chainStore } = useStore();
   const intl = useIntl();
-  const theme = useTheme();
 
   return (
     <OsmosisScreenContainer>
@@ -201,11 +212,22 @@ export const SendScreenComponent = observer<
             })}
             disabled={!formState.isValid}
             onPress={handleSubmit(async (data) => {
-              console.log(data);
               invariant(wallet, "Expected wallet to be defined.");
 
               function getMessages(): Message[] {
                 if (!wallet.address) return [];
+
+                if (theme.ethereumBalances) {
+                  return [
+                    {
+                      // @ts-expect-error ETH messages aren't supported by SDK yet
+                      eth: {
+                        to: data.address,
+                        token: data.token,
+                      },
+                    },
+                  ];
+                }
 
                 return Messages.chainId(wallet.chainId).getSendMessages({
                   fromAddress: wallet.address,
@@ -215,9 +237,6 @@ export const SendScreenComponent = observer<
                 });
               }
 
-              const chain = wallet.chainId;
-              // TODO:
-              invariant(isTerraChain(chain), "Expected Terra chain");
               const response =
                 await SignAndBroadcastTransactionUserInteraction.start({
                   messages: getMessages(),

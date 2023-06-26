@@ -2,24 +2,29 @@ import BigNumber from "bignumber.js";
 import { z } from "zod";
 
 import { ChainId } from "../chains";
-import type { Token } from "../sdk";
+import type { EnrichedToken, Token } from "../sdk";
 import { Sdk } from "../sdk";
 
 /**
  * Zod schema that validates a token amount with potential decimal separator (e.g. "123.456")
  * and returns a {@link Token}.
  */
-export function token(chainId: ChainId) {
+export function token(
+  chainId: ChainId,
+  enrichToken?: (token: Token) => EnrichedToken
+) {
   return z
     .object({
       id: z.string(),
       amount: z.string(),
     })
     .transform(({ id, amount }) => {
-      const { digits } = Sdk.chainId(chainId).bank.enrichToken({
-        id,
-        rawAmount: "0",
-      });
+      const { digits } = (enrichToken ?? Sdk.chainId(chainId).bank.enrichToken)(
+        {
+          id,
+          rawAmount: "0",
+        }
+      );
       return {
         id,
         amount: amount.trim().replace(",", "."),
@@ -65,11 +70,13 @@ export function token(chainId: ChainId) {
 export function tokenGivenBalances({
   chainId,
   balances,
+  enrichToken,
 }: {
   chainId: ChainId;
   balances?: Token[];
+  enrichToken?: (token: Token) => EnrichedToken;
 }) {
-  return token(chainId)
+  return token(chainId, enrichToken)
     .refine((token) => {
       return token.id !== "";
     }, "No token selected")

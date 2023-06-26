@@ -17,6 +17,9 @@ export const SignInteractionModal = observer(function SignInteractionModal() {
   console.log(
     JSON.stringify(
       interaction.payload.messages.map((m) => {
+        if (R.has("eth", m)) {
+          return m.eth;
+        }
         if (R.has("osmo", m)) {
           return m.osmo;
         }
