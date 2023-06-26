@@ -55,10 +55,13 @@ export class EthereumDemoStore {
   protected async init() {
     const data = await this.kvStore.get<Accounts>("accounts");
 
-    runInAction(() => {
-      if (data) {
-        this.accounts = data;
-      }
+    await new Promise<void>((resolve) => {
+      runInAction(() => {
+        if (data) {
+          this.accounts = data;
+        }
+        resolve();
+      });
     });
 
     autorun(async () => {
@@ -73,6 +76,7 @@ export class EthereumDemoStore {
   }
 
   public async getEthereumAccount(): Promise<EthereumAccount> {
+    await this.initPromise;
     return this.ethereumAccount ?? (await this.createEthereumAccount());
   }
 
