@@ -3,7 +3,7 @@ import { useTheme } from "@emotion/react";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { useQuery } from "@obi-wallet/headless-ui";
+import { useQuery, useRootStore } from "@obi-wallet/headless-ui";
 import { Chain } from "@obi-wallet/sdk";
 import {
   DrawerContentComponentProps,
@@ -15,6 +15,7 @@ import { ParamListBase } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { action } from "mobx";
 import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   Platform,

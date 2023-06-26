@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { useQuery } from "@obi-wallet/headless-ui";
+import { useQuery, useRootStore } from "@obi-wallet/headless-ui";
 import {
   ChainId,
   EnrichedToken as OriginalEnrichedToken,
@@ -53,12 +53,11 @@ export function useBalances({
   address: string;
   chainId: ChainId;
 }) {
-  const { sdkRootStore } = useStore();
+  const rootStore = useRootStore();
   const theme = useTheme();
-  const ethAccount = sdkRootStore.ethereumDemoStore.ethereumAccount;
   return useQuery(
     theme.ethereumBalances
-      ? ethereumBalancesQuery(ethAccount)
+      ? ethereumBalancesQuery({ address, rootStore })
       : Sdk.chainId(chainId).bank.balancesQuery(address)
   );
 }
