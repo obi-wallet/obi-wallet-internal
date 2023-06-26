@@ -10,11 +10,20 @@ import { isSmallScreenNumber, isWeb } from "../../../helpers";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 
 export const ReceiveScreen = observer(function ReceiveScreen() {
-  const { walletsStore } = useStore();
+  const { walletsStore, sdkRootStore } = useStore();
   const theme = useTheme();
-  const address = theme.ethDemo
-    ? "0x0bA689a1a10c77E58e62fb49c5b89DF768105342"
-    : walletsStore.address;
+
+  function getAddress() {
+    if (theme.ethDemo) {
+      return "0x0bA689a1a10c77E58e62fb49c5b89DF768105342";
+    }
+    if (theme.ethereumBalances) {
+      return sdkRootStore.ethereumDemoStore.ethereumAccount?.address;
+    }
+    return walletsStore.address;
+  }
+
+  const address = getAddress();
 
   if (!address) return null;
 
