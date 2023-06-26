@@ -9,7 +9,7 @@ export const osmosisTheme: CustomTheme = {
     panelBackground: "#27284E",
   },
   background: {
-    image: "/background.png",
+    image: "/background@2.png",
     color: "#131032",
     size: "cover",
     position: "center",
@@ -23,7 +23,7 @@ export const osmosisTheme: CustomTheme = {
     ],
   },
   header: {
-    image: "/osmosis-header.png",
+    image: "/osmosis-header@2.png",
     width: 208,
     height: 41,
   },

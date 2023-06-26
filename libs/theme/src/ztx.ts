@@ -17,7 +17,7 @@ export const ztxTheme: CustomTheme = {
     accountSettings: [],
   },
   header: {
-    image: "/ztx-header.png",
+    image: "/ztx-header@2.png",
     width: 177,
     height: 48,
   },
@@ -63,7 +63,7 @@ export const ztxTheme: CustomTheme = {
   },
   welcome: {
     background: {
-      image: "/ztx-home.png",
+      image: "/ztx-home@2.png",
       color: "#16151D",
       blendMode: "luminosity",
       position: "center",

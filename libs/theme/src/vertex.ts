@@ -21,7 +21,7 @@ export const vertexTheme: CustomTheme = {
     ],
   },
   header: {
-    image: "/vertex-header.png",
+    image: "/vertex-header@2.png",
     width: 177,
     height: 48,
   },
