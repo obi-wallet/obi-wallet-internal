@@ -113,8 +113,6 @@ async function getEncryptionKey() {
 async function encrypt(data: string) {
   const enc = new TextEncoder();
   const encoded = enc.encode(data);
-
-  console.log(await getEncryptionKey());
   const iv = window.crypto.getRandomValues(new Uint8Array(12));
   const encrypted = await window.crypto.subtle.encrypt(
     { name: "AES-GCM", iv: iv },

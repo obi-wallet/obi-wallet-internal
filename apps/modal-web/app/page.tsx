@@ -1,16 +1,12 @@
 import dynamic from "next/dynamic";
 // import { Provider } from "@obi-wallet/modal";
 
-const Modal = dynamic(() => import('../src/modal'),
-  {
-    ssr: false,
-  }
-);
+const Modal = dynamic(() => import("../src/modal"), {
+  ssr: false,
+});
 
 export default async function Index() {
-  return (
-    <Modal />
-  );
+  return <Modal />;
 
   /*
    * Replace the elements below with your own.
