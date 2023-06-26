@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { Modals, OnCloseContext, useStore } from "@obi-wallet/common";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { CustomTheme } from "@obi-wallet/theme";
@@ -7,6 +8,8 @@ import { useEffect } from "react";
 
 import { Container } from "./container";
 import { StateRenderer } from "./state-renderer";
+
+import "./vuplex-polyfill.js";
 
 // eslint-disable-next-line mobx/missing-observer
 export function Modal({ theme }: { theme: CustomTheme }) {
@@ -28,31 +31,32 @@ export const ModalWithoutProvider = observer(function ModalWithoutProvider() {
 });
 
 const MessageHandlers = observer(function MessageHandlers() {
-  const { walletsStore } = useStore();
+  const store = useStore();
+  const theme = useTheme();
 
   useEffect(() => {
     return autorun(() => {
+      const address = theme.ethereumBalances
+        ? store.sdkRootStore.ethereumDemoStore.ethereumAccount?.address
+        : store.walletsStore.address;
       // Expose current wallet address (or null) to the parent window
-      window.parent?.postMessage(
-        {
-          type: "@obi/current-wallet",
-          address: walletsStore.address,
-        },
-        "*"
-      );
+      postMessage({
+        type: "@obi/current-wallet",
+        address: address ?? null,
+      });
     });
-  }, [walletsStore]);
+  }, [theme, store]);
 
   useEffect(() => {
     async function listener(event: MessageEvent) {
       if (event.data.type !== "@obi/sign-and-broadcast-transaction") return;
-      if (!walletsStore.currentWallet) return;
+      if (!store.walletsStore.currentWallet) return;
 
       const response = await SignAndBroadcastTransactionUserInteraction.start({
         messages: event.data.payload,
         cancelable: true,
-        walletMeta: walletsStore.currentWallet.meta,
-        demoMode: walletsStore.currentWallet.isDemo,
+        walletMeta: store.walletsStore.currentWallet.meta,
+        demoMode: store.walletsStore.currentWallet.isDemo,
       });
       event.source?.postMessage(
         {
@@ -63,20 +67,26 @@ const MessageHandlers = observer(function MessageHandlers() {
         "*"
       );
     }
-    window.addEventListener("message", listener, false);
-    return () => {
-      window.removeEventListener("message", listener);
-    };
-  }, [walletsStore]);
+
+    return addEventListener(listener);
+  }, [store]);
 
   return null;
 });
 
 function onClose() {
-  window.parent?.postMessage(
-    {
-      type: "@obi/close",
-    },
-    "*"
-  );
+  postMessage({ type: "@obi/close" });
+}
+
+function postMessage(message: unknown) {
+  window.parent?.postMessage(message, "*");
+  // @ts-expect-error: set by ./vuplex-polyfill.js
+  window.vuplex?.postMessage(message);
+}
+
+function addEventListener(listener: (event: MessageEvent) => void) {
+  window.addEventListener("message", listener, false);
+  return () => {
+    window.removeEventListener("message", listener);
+  };
 }
