@@ -11,6 +11,7 @@ import { FC } from "react";
 import { ImageRequireSource, ImageURISource, View } from "react-native";
 import type { SvgProps } from "react-native-svg";
 
+import { ethereumBalancesQuery } from "./ethereum-demo";
 import { Text } from "../../components";
 import { useStore } from "../../contexts";
 
@@ -51,7 +52,15 @@ export function useBalances({
   address: string;
   chainId: ChainId;
 }) {
-  return useQuery(Sdk.chainId(chainId).bank.balancesQuery(address));
+  const { sdkRootStore } = useStore();
+  // TODO:
+  const useEthereumBalances = false;
+  const ethAccount = sdkRootStore.ethereumDemoStore.ethereumAccount;
+  return useQuery(
+    useEthereumBalances
+      ? ethereumBalancesQuery(ethAccount)
+      : Sdk.chainId(chainId).bank.balancesQuery(address)
+  );
 }
 
 export function usePrices() {
@@ -116,6 +125,35 @@ export function enrichToken({
   prices?: Record<string, number>;
 }): EnrichedToken {
   const enrichedToken = Sdk.chainId(chainId).bank.enrichToken(token, prices);
+
+  switch (token.id) {
+    case "0x5CF29823CCFC73008fa53630d54A424AB82dE6F2": {
+      const digits = 18;
+      return {
+        ...token,
+        icon: null,
+        amount: parseInt(token.rawAmount, 10) / 10 ** digits,
+        contract: token.id,
+        denom: "ZTX",
+        digits,
+        label: "Obi ZTX",
+        usdValue: null,
+      };
+    }
+    case "eth": {
+      const digits = 18;
+      return {
+        ...token,
+        icon: null,
+        amount: parseInt(token.rawAmount, 10) / 10 ** digits,
+        contract: token.id,
+        denom: "ETH",
+        digits,
+        label: "ETH",
+        usdValue: null,
+      };
+    }
+  }
 
   function getIcon() {
     if (enrichedToken.icon) {
