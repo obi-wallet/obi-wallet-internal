@@ -88,4 +88,5 @@ export interface CustomTheme extends CommonTheme {
     image?: string;
   };
   ethDemo?: boolean;
+  ethereumBalances?: boolean;
 }

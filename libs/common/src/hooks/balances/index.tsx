@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
   ChainId,
@@ -53,11 +54,10 @@ export function useBalances({
   chainId: ChainId;
 }) {
   const { sdkRootStore } = useStore();
-  // TODO:
-  const useEthereumBalances = false;
+  const theme = useTheme();
   const ethAccount = sdkRootStore.ethereumDemoStore.ethereumAccount;
   return useQuery(
-    useEthereumBalances
+    theme.ethereumBalances
       ? ethereumBalancesQuery(ethAccount)
       : Sdk.chainId(chainId).bank.balancesQuery(address)
   );
