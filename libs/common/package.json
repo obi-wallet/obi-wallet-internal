@@ -29,6 +29,7 @@
     "@robinbobin/react-native-google-drive-api-wrapper": "*",
     "@tanstack/react-query": "*",
     "@terra-money/feather.js": "*",
+    "bignumber.js": "*",
     "fuse.js": "*",
     "isomorphic-unfetch": "*",
     "lottie-react": "*",

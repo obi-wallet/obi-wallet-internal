@@ -1,4 +1,4 @@
-import { CustomTheme } from "./abstract";
+import { AccountSettingComponent, CustomTheme } from "./abstract";
 import { common } from "./common";
 
 export const ztxTheme: CustomTheme = {
@@ -14,7 +14,7 @@ export const ztxTheme: CustomTheme = {
   },
   modal: {
     borderRadius: "25px",
-    accountSettings: [],
+    accountSettings: [AccountSettingComponent.MaxSpend],
   },
   header: {
     image: "/ztx-header@2x.png",
