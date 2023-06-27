@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { ImagePosition } from "@obi-wallet/theme";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { Image, SafeAreaView, View } from "react-native";
@@ -18,14 +19,34 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
   function WelcomeLayout({ title, subTitle, children }) {
     const theme = useTheme();
 
+    const getImagePosition = () => {
+      switch (theme.welcome?.imagePosition) {
+        case ImagePosition.Top:
+          return "flex-start";
+        case ImagePosition.Center:
+          return "center";
+        case ImagePosition.Bottom:
+        default:
+          return "flex-end";
+      }
+    };
+
+    const getImageSize = () => {
+      const buttons = theme.welcome?.buttons?.length;
+      return buttons && buttons >= 3 ? "80%" : "60%";
+    };
+
     return (
       <OsmosisScreenContainer
-        hideLogo
+        hideLogo={theme.welcome?.hideHeaderLogo}
         backgroundStyle={theme.welcome?.background}
       >
         <SafeAreaView
           style={{
             flex: 1,
+            ...(theme.welcome?.horizontalSpacing
+              ? { paddingHorizontal: theme.welcome?.horizontalSpacing }
+              : {}),
           }}
         >
           {/*<View*/}
@@ -75,15 +96,16 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
             style={{
               paddingHorizontal: theme.spacing["16"],
               zIndex: -1,
-              flex: 2,
-              justifyContent: "flex-end",
+              flex: 1,
+
+              justifyContent: "space-between",
             }}
           >
             <View
               style={{
-                aspectRatio: 1,
+                flex: 1,
                 alignItems: "center",
-                justifyContent: "flex-end",
+                justifyContent: getImagePosition(),
               }}
             >
               {/* TODO: modal: fix images for web */}
@@ -103,15 +125,13 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
               {/*  />*/}
               {/*)}*/}
 
-              {theme.welcome ? (
+              {theme.welcome?.image ? (
                 <Image
                   source={{ uri: theme.welcome.image }}
+                  resizeMode="contain"
                   style={{
-                    flex: 1,
-                    height: "80%",
-                    width: "80%",
-                    resizeMode: "contain",
-                    marginTop: 50,
+                    height: getImageSize(),
+                    aspectRatio: 1,
                   }}
                 />
               ) : null}
@@ -124,34 +144,35 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
             >
               <LanguagePicker />
             </View>
-
-            <Text
-              style={{
-                ...theme.typography.largeTitle,
-                color: "#F6F5FF",
-                marginTop: theme.spacing["24"],
-              }}
-            >
-              {title}
-            </Text>
-            <Text
-              style={{
-                ...theme.typography.subhead,
-                color: "white",
-                fontWeight: "400",
-                marginTop: theme.spacing["12"],
-                textAlign: "justify",
-              }}
-            >
-              {subTitle}
-            </Text>
+            <View style={{ marginBottom: 20 }}>
+              <Text
+                style={{
+                  ...theme.typography.largeTitle,
+                  color: "#F6F5FF",
+                  marginTop: theme.spacing["24"],
+                }}
+              >
+                {title}
+              </Text>
+              <Text
+                style={{
+                  ...theme.typography.subhead,
+                  color: "white",
+                  fontWeight: "400",
+                  marginTop: theme.spacing["12"],
+                  textAlign: "left",
+                }}
+              >
+                {subTitle}
+              </Text>
+            </View>
           </View>
           <View
             style={{
-              flex: 1,
               justifyContent: "flex-end",
               paddingHorizontal: theme.spacing["16"],
               marginTop: theme.spacing["12"],
+              paddingBottom: theme.spacing["16"],
             }}
           >
             {children}

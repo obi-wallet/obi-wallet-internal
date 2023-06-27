@@ -1,4 +1,8 @@
-import { AccountSettingComponent, CustomTheme } from "./abstract";
+import {
+  AccountSettingComponent,
+  WelcomeButton,
+  CustomTheme,
+} from "./abstract";
 import { common } from "./common";
 
 export const ztxTheme: CustomTheme = {
@@ -68,5 +72,11 @@ export const ztxTheme: CustomTheme = {
       blendMode: "luminosity",
       position: "center",
     },
+    hideHeaderLogo: false,
+    horizontalSpacing: 20,
+    buttons: [WelcomeButton.Zepeto, WelcomeButton.Login, WelcomeButton.NewUser],
+  },
+  settings: {
+    textInputBackgroundColor: "#16151D",
   },
 };

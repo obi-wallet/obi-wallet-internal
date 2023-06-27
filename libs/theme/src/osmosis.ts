@@ -1,4 +1,8 @@
-import { AccountSettingComponent, CustomTheme } from "./abstract";
+import {
+  WelcomeButton,
+  AccountSettingComponent,
+  CustomTheme,
+} from "./abstract";
 import { obiTheme } from "./obi";
 
 export const osmosisTheme: CustomTheme = {
@@ -54,5 +58,12 @@ export const osmosisTheme: CustomTheme = {
   },
   welcome: {
     image: "/osmosis-home.png",
+    hideHeaderLogo: false,
+    buttons: [
+      WelcomeButton.Login,
+      WelcomeButton.Getstarted,
+      WelcomeButton.Recoverwallet,
+      WelcomeButton.Demo,
+    ],
   },
 };
