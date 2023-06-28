@@ -10,3 +10,4 @@ export * from "./send";
 export * from "./settings";
 export * from "./stake";
 export * from "./welcome";
+export * from "./login";

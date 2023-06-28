@@ -17,6 +17,7 @@ export enum HomeBottomTabRoute {
   Assets = "Assets",
   Apps = "Apps",
   Settings = "Settings",
+  Login = "Login",
 }
 
 export interface HomeBottomTabParamList extends ParamListBase {
@@ -24,6 +25,7 @@ export interface HomeBottomTabParamList extends ParamListBase {
   [HomeBottomTabRoute.Assets]: undefined;
   [HomeBottomTabRoute.Apps]: undefined;
   [HomeBottomTabRoute.Settings]: undefined;
+  [HomeBottomTabRoute.Login]: undefined;
 }
 
 export const HomeBottomTab = createBottomTabNavigator<HomeBottomTabParamList>();
