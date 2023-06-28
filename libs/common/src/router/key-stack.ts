@@ -67,7 +67,9 @@ interface CommonKeyParams {
 export interface KeyStackParamList extends ParamListBase {
   [KeyRoute.DeviceKey]: CommonKeyParams;
   [KeyRoute.EmailKey]: CommonKeyParams;
-  [KeyRoute.PhoneKeyRequest]: CommonKeyParams;
+  [KeyRoute.PhoneKeyRequest]: CommonKeyParams & {
+    phoneNumber?: string;
+  };
   [KeyRoute.PhoneKeyConfirm]: CommonKeyParams & {
     phoneNumber: string;
     securityQuestion: string;
