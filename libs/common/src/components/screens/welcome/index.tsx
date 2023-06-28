@@ -1,7 +1,11 @@
 import { useTheme } from "@emotion/react";
-import { Feature } from "@obi-wallet/config";
-import { MultisigKey, ObservableMultisigKey } from "@obi-wallet/sdk";
+import {
+  MultisigKey,
+  ObservableMultisigKey,
+  generateSec256k1KeyPair,
+} from "@obi-wallet/sdk";
 import { WelcomeButton } from "@obi-wallet/theme";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
@@ -10,6 +14,7 @@ import { Image, TouchableOpacity, View, Text } from "react-native";
 import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
 import { Alert } from "../../../helpers";
+import { createDeviceKeyPair } from "../../../keys";
 import {
   KeyFlow,
   KeyRoute,
@@ -22,6 +27,7 @@ import {
   useAccountPickerModalProps,
 } from "../../account-picker-modal";
 import { Button } from "../../buttons";
+
 
 export type WelcomeScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -49,6 +55,21 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
           type: "tendermint/PubKeySecp256k1",
           value: "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI",
         });
+        const { publicKey: emailKey } = generateSec256k1KeyPair();
+
+        draft?.value.setEmailKey(emailKey);
+
+        const deviceKeyPair = createDeviceKeyPair(false);
+
+        draft?.value.setDeviceKey(deviceKeyPair);
+
+        navigation.navigate(KeyRoute.PhoneKeyRequest, {
+          draftId,
+          flow: KeyFlow.CreateWallet,
+          demoMode: false,
+          phoneNumber: "+14847071947",
+        });
+        return;
       }
 
       navigation.navigate(KeyRoute.DeviceKey, {
@@ -124,13 +145,12 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
   const theme = useTheme();
 
   const accountPickerModalProps = useAccountPickerModalProps();
-  const allowedButtons = theme.welcome?.buttons ?? [];
 
   const getButtons = () => {
     const buttons = theme.welcome.buttons.map((button) => {
       switch (button) {
         case WelcomeButton.Zepeto:
-          return <ZepetoButton />;
+          return <ZepetoButton onPress={onCreate} />;
         case WelcomeButton.NewUser:
           return (
             <Button
@@ -229,13 +249,17 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
   }
 });
 
-const ZepetoButton = observer(function ZepetoButton() {
+const ZepetoButton = observer(function ZepetoButton({
+  onPress,
+}: {
+  onPress?: () => void;
+}) {
   const theme = useTheme();
+  const { chainStore, draftsStore } = useStore();
+  const navigation = useRootNavigation();
   return (
     <TouchableOpacity
-      onPress={() => {
-        console.log("Zepeto");
-      }}
+      onPress={onPress}
       style={{
         backgroundColor: "white",
         padding: 10,

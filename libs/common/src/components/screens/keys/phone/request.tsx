@@ -62,7 +62,7 @@ const schema = z.object({
 export interface PhoneKeyRequestProps {
   flow: KeyFlow;
   demoMode: boolean;
-
+  phoneNumber?: string;
   onSubmit(payload: {
     phoneNumber: string;
     securityQuestion: string;
@@ -71,7 +71,7 @@ export interface PhoneKeyRequestProps {
 }
 
 export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
-  function PhoneKeyRequest({ demoMode, flow, onSubmit }) {
+  function PhoneKeyRequest({ demoMode, flow, onSubmit, ...params }) {
     const intl = useIntl();
     const { chainStore } = useStore();
     const chainId = chainStore.currentChain;
@@ -82,7 +82,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
       defaultValues: {
         securityQuestion: securityQuestions[0].value,
         securityAnswer: "",
-        phoneNumber: "",
+        phoneNumber: params.phoneNumber || "",
       },
       mode: "onChange",
       resolver: zodResolver(schema),
