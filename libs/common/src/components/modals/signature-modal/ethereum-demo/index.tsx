@@ -49,8 +49,10 @@ export const SignatureModalEthereumDemo =
       ];
 
       function handleSessionKey() {
-        const sessionKey = wallet?.gatekeeperConfig.flexAccounts[0];
-        const spendLimit = sessionKey?.spendLimit?.amount;
+        // const sessionKey = wallet?.gatekeeperConfig.flexAccounts[0];
+        // const spendLimit = sessionKey?.spendLimit?.amount;
+        const sessionKey = true;
+        const spendLimit = "6";
 
         if (sessionKey && spendLimit) {
           const ztxToken = "0x5CF29823CCFC73008fa53630d54A424AB82dE6F2";
@@ -58,25 +60,24 @@ export const SignatureModalEthereumDemo =
           if (message.eth.token.id === ztxToken) {
             const factor = new BigNumber(10).pow(18);
             const spendLimitBN = new BigNumber(spendLimit).times(factor);
-            const spentSoFar =
-              localStorage.getItem(`session-key-spent-${sessionKey.address}`) ??
-              "0";
-            const spentSoFarBN = new BigNumber(spentSoFar);
-            const remaining = spendLimitBN.minus(spentSoFarBN);
+            // const spentSoFar =
+            //   localStorage.getItem(`session-key-spent-${sessionKey.address}`) ??
+            //   "0";
+            // const spentSoFarBN = new BigNumber(spentSoFar);
+            // const remaining = spendLimitBN.minus(spentSoFarBN);
             return {
               isUsingSessionKey: true,
-              // kludge
-              hasSpendLimitExceeded: new BigNumber(
-                message.eth.token.rawAmount
-              ).isLessThan(new BigNumber(6).times(factor)),
+              hasSpendLimitExceeded: spendLimitBN.isLessThan(
+                new BigNumber(message.eth.token.rawAmount)
+              ),
               onSuccess() {
-                const newSpentSoFar = new BigNumber(
-                  message.eth.token.rawAmount
-                );
-                localStorage.setItem(
-                  `session-key-spent-${sessionKey.address}`,
-                  newSpentSoFar.toString()
-                );
+                // const newSpentSoFar = spentSoFarBN.plus(
+                //   new BigNumber(message.eth.token.rawAmount)
+                // );
+                // localStorage.setItem(
+                //   `session-key-spent-${sessionKey.address}`,
+                //   newSpentSoFar.toString()
+                // );
               },
             };
           } else {
@@ -176,12 +177,12 @@ export const SignatureModalEthereumDemo =
         },
       });
 
-      useEffectOnceWhen(
-        broadcast.mutate,
-        interaction.payload.autoBroadcast &&
-          isUsingSessionKey &&
-          !hasSpendLimitExceeded
-      );
+      // useEffectOnceWhen(
+      //   broadcast.mutate,
+      //   interaction.payload.autoBroadcast &&
+      //     isUsingSessionKey &&
+      //     !hasSpendLimitExceeded
+      // );
 
       const cancel = () => {
         interaction.resolve({ approved: false });
