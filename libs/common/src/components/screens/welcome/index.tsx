@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { Feature } from "@obi-wallet/config";
-import { ObservableMultisigKey } from "@obi-wallet/sdk";
+import { MultisigKey, ObservableMultisigKey } from "@obi-wallet/sdk";
 import { WelcomeButton } from "@obi-wallet/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -32,6 +32,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
   function WelcomeScreen() {
     const navigation = useRootNavigation();
     const { chainStore, draftsStore } = useStore();
+    const theme = useTheme();
 
     function onCreate() {
       const newMultisigKey = ObservableMultisigKey.create(
@@ -40,6 +41,16 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });
+
+      // Fake platform recovery key
+      if (theme.ethereumBalances) {
+        const draft = draftsStore.get<MultisigKey>({ id: draftId });
+        draft.value.setSocialKey({
+          type: "tendermint/PubKeySecp256k1",
+          value: "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI",
+        });
+      }
+
       navigation.navigate(KeyRoute.DeviceKey, {
         draftId,
         flow: KeyFlow.CreateWallet,
@@ -68,6 +79,16 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });
+
+      // Fake platform recovery key
+      if (theme.ethereumBalances) {
+        const draft = draftsStore.get<MultisigKey>({ id: draftId });
+        draft.value.setSocialKey({
+          type: "tendermint/PubKeySecp256k1",
+          value: "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI",
+        });
+      }
+
       navigation.navigate(KeyRoute.DeviceKey, {
         draftId,
         flow: KeyFlow.CreateWallet,

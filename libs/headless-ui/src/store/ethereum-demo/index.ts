@@ -71,8 +71,7 @@ export class EthereumDemoStore {
 
   public get ethereumAccount(): EthereumAccount | null {
     const address = this.walletsStore.wallets.currentWallet?.proxyAddress;
-    invariant(address, "No current wallet");
-    return this.accounts[address] ?? null;
+    return (address ? this.accounts[address] : null) ?? null;
   }
 
   public async getEthereumAccount(): Promise<EthereumAccount> {
