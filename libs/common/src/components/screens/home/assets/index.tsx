@@ -66,18 +66,22 @@ const BalanceAndActions = observer(function BalanceAndActions() {
         marginTop: isSmallScreenNumber(5, 15),
       }}
     >
-      <Text
-        style={{
-          color: "#787B9C",
-          fontSize: 11,
-          fontWeight: "500",
-          marginBottom: 10,
-          textTransform: "uppercase",
-          letterSpacing: 0.7,
-        }}
+      <TouchableWithoutFeedback
+        onPress={() => navigation.navigate(HomeBottomTabRoute.Login)}
       >
-        <FormattedMessage id="assets.balance" defaultMessage="Balance" />
-      </Text>
+        <Text
+          style={{
+            color: "#787B9C",
+            fontSize: 11,
+            fontWeight: "500",
+            marginBottom: 10,
+            textTransform: "uppercase",
+            letterSpacing: 0.7,
+          }}
+        >
+          <FormattedMessage id="assets.balance" defaultMessage="Balance" />
+        </Text>
+      </TouchableWithoutFeedback>
 
       <UsdBalance address={wallet.address} chainId={wallet.chainId} />
 
