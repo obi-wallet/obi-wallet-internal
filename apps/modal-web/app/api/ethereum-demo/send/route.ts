@@ -30,6 +30,10 @@ export async function POST(request: Request) {
     };
   } = await request.json();
 
+  const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(
+    config.paymaster.rpcUrl!,
+    config.paymaster.context
+  );
   const client = await Client.init(config.rpcUrl!);
   const amount = parseUnits(body.token.rawAmount, 0);
   const signingKey = new SigningKey(
@@ -39,7 +43,8 @@ export async function POST(request: Request) {
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
     signer,
-    config.rpcUrl
+    config.rpcUrl,
+    { paymasterMiddleware }
   );
 
   async function handleUserOperation() {
