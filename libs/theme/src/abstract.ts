@@ -6,6 +6,7 @@ export enum AccountSettingComponent {
   WhitelistedLps = "WhitelistedLps",
   AutoStopLoss = "AutoStopLoss",
   WeeklyDca = "WeeklyDca",
+  VerifiedItems = "VerifiedItems",
 }
 
 export interface CommonTheme {

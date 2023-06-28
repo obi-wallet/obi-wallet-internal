@@ -1,7 +1,7 @@
 import {
   AccountSettingComponent,
-  WelcomeButton,
   CustomTheme,
+  WelcomeButton,
 } from "./abstract";
 import { common } from "./common";
 
@@ -18,7 +18,10 @@ export const ztxTheme: CustomTheme = {
   },
   modal: {
     borderRadius: "25px",
-    accountSettings: [AccountSettingComponent.MaxSpend],
+    accountSettings: [
+      AccountSettingComponent.MaxSpend,
+      AccountSettingComponent.VerifiedItems,
+    ],
   },
   header: {
     image: "/ztx-header@2x.png",

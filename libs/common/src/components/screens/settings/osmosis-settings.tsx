@@ -210,6 +210,8 @@ const AccountSetting = observer<{
       return <AutoStopLossSetting />;
     case AccountSettingComponent.WeeklyDca:
       return <WeeklyDcaSetting />;
+    case AccountSettingComponent.VerifiedItems:
+      return <VerifiedItemsSetting />;
   }
 });
 
@@ -491,3 +493,33 @@ const SessionKeySetting = observer<SessionKeySettingProps>(
     );
   }
 );
+
+const VerifiedItemsSetting = observer(function SessionKeySetting() {
+  const theme = useTheme();
+  const subtitle =
+    "Restrict transactions involving 3rd party or unverified items on the ZTX platform.";
+  const [value, onChange] = useState(false);
+
+  return (
+    <Setting
+      disableButton={true}
+      title="Verified Items Only"
+      subtitle={subtitle}
+    >
+      <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
+        <Switch
+          thumbColor={theme.colors.primary}
+          trackColor={{
+            false: theme.settings?.textInputBackgroundColor ?? "#120F32",
+            true: theme.settings?.textInputBackgroundColor ?? "#120F32",
+          }}
+          style={{ height: 25, width: 60 }}
+          value={value}
+          onValueChange={(value) => {
+            onChange(value);
+          }}
+        />
+      </View>
+    </Setting>
+  );
+});
