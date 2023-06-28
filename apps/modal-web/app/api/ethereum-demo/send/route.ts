@@ -83,9 +83,12 @@ export async function POST(request: Request) {
 
   try {
     const userOperation = await handleUserOperation();
+    console.log("userOp", userOperation);
     const event = await userOperation.wait();
+    console.log("event", event);
     return NextResponse.json(event);
   } catch (e) {
+    console.log("error", e);
     return NextResponse.json(e);
   }
 }
