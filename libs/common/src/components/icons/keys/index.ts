@@ -6,3 +6,4 @@ export * from "./map";
 export * from "./nfc";
 export * from "./phone";
 export * from "./social";
+export * from "./ztx";

@@ -1,10 +1,9 @@
+import { useTheme } from "@emotion/react";
 import { KeyType } from "@obi-wallet/sdk";
 import { ComponentType } from "react";
 import { useIntl } from "react-intl";
-import { Platform } from "react-native";
 import { SvgProps } from "react-native-svg";
 
-import { useStore } from "../../contexts";
 import { isWeb } from "../../helpers";
 import {
   CloudKeyIcon,
@@ -17,6 +16,7 @@ import {
   SendIcon as TelegramKeyIcon,
   SocialKeyIcon,
   PhoneKeyOutlineIcon,
+  ZtxPlatformRecoveryIcon,
 } from "../icons";
 
 export enum ComingSoonKeyType {
@@ -27,6 +27,7 @@ export enum ComingSoonKeyType {
 
 export function useKeyMetaData() {
   const intl = useIntl();
+  const theme = useTheme();
 
   const keys = [
     KeyType.Device,
@@ -64,11 +65,13 @@ export function useKeyMetaData() {
       Icon: isWeb() ? PhoneKeyOutlineIcon : PhoneKeyIcon,
     },
     [KeyType.Social]: {
-      label: intl.formatMessage({
-        id: "settings.multisig.option.socialkey",
-        defaultMessage: "Social Recovery Key",
-      }),
-      Icon: SocialKeyIcon,
+      label: theme.ethereumBalances
+        ? "Platform Recovery"
+        : intl.formatMessage({
+            id: "settings.multisig.option.socialkey",
+            defaultMessage: "Social Recovery Key",
+          }),
+      Icon: theme.ethereumBalances ? ZtxPlatformRecoveryIcon : SocialKeyIcon,
     },
     [KeyType.Nfc]: {
       label: "NFC Tap Key",
