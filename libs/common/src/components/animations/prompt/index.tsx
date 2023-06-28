@@ -14,7 +14,15 @@ export const PromptAnimation = observer<PromptAnimationProps>(
         animationData={promptAnimation}
         autoPlay
         loop={loop}
-        style={{ width: 60, zIndex: -1, position: "absolute" }}
+        style={{
+          width: 60,
+          height: 60,
+          zIndex: -1,
+          position: "absolute",
+          top: 0,
+          bottom: 0,
+          margin: "auto",
+        }}
       />
     );
   }

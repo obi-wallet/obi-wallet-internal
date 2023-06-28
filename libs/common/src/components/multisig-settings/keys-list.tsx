@@ -144,10 +144,24 @@ export const KeyListItem = observer(function KeyListItem({
     }
 
     return (
-      <>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          height: "100%",
+        }}
+      >
         {signed ? <ConfirmAnimation /> : <PromptAnimation loop={animate} />}
-        <Icon fill="#fff" width={24} height={24} />
-      </>
+        <Icon
+          fill="#fff"
+          width={24}
+          height={24}
+          // hacky center device key svg
+          style={label === "Device Key" ? { marginTop: 2, marginLeft: 2 } : {}}
+        />
+      </View>
     );
   };
 
@@ -163,14 +177,19 @@ export const KeyListItem = observer(function KeyListItem({
       }}
     >
       <View style={{ padding: 10, width: 100 }}>
-        <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <View
             style={{
-              width: 50,
-              height: 50,
+              width: 60,
+              height: 60,
               justifyContent: "center",
               alignItems: "center",
-              borderRadius: 36,
+              borderRadius: 60,
               borderWidth: 5,
               borderColor: "transparent",
             }}
