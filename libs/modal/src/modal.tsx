@@ -51,24 +51,36 @@ const MessageHandlers = observer(function MessageHandlers() {
 
   useEffect(() => {
     async function listener(event: MessageEvent) {
-      if (event.data.type !== "@obi/sign-and-broadcast-transaction") return;
+      let data = event.data;
+      if (typeof data === "string") {
+        data = JSON.parse(data);
+      }
+      console.log("Received message", data);
+
+      if (data.type !== "@obi/sign-and-broadcast-transaction") return;
       if (!store.walletsStore.currentWallet) return;
 
       const response = await SignAndBroadcastTransactionUserInteraction.start({
-        messages: event.data.payload,
+        messages: data.payload,
         cancelable: true,
         walletMeta: store.walletsStore.currentWallet.meta,
         demoMode: store.walletsStore.currentWallet.isDemo,
         autoBroadcast,
       });
-      event.source?.postMessage(
-        {
-          type: "@obi/sign-and-broadcast-transaction-response",
-          payload: response,
-        },
-        // @ts-expect-error this is fine
-        "*"
-      );
+
+      const message = {
+        type: "@obi/sign-and-broadcast-transaction-response",
+        payload: response,
+      };
+      if (event.source) {
+        event.source?.postMessage(
+          message,
+          // @ts-expect-error this is fine
+          "*"
+        );
+      } else {
+        postMessage(message);
+      }
     }
 
     return addEventListener(listener);
@@ -89,7 +101,11 @@ function postMessage(message: unknown) {
 
 function addEventListener(listener: (event: MessageEvent) => void) {
   window.addEventListener("message", listener, false);
+  // @ts-expect-error: set by ./vuplex-polyfill.js
+  window.vuplex?.addEventListener("message", listener);
   return () => {
     window.removeEventListener("message", listener);
+    // @ts-expect-error: set by ./vuplex-polyfill.js
+    window.vuplex?.removeEventListener("message", listener);
   };
 }

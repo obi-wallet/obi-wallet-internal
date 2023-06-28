@@ -155,6 +155,8 @@ export const SignatureModalEthereumDemo =
         onSuccess(payload) {
           if (payload.success) {
             onSuccess();
+          } else {
+            console.log(payload);
           }
           interaction.resolve({
             approved: true,
