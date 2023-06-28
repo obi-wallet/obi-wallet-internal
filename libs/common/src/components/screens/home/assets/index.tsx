@@ -11,10 +11,9 @@ import {
   ListRenderItemInfo,
   TouchableHighlight,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
-
-import { useStore } from "../../../../contexts";
 import {
   isSmallScreenNumber,
   isSmallScreenSubstr,
@@ -261,16 +260,22 @@ const AssetsList = observer(function AssetsList() {
             justifyContent: "space-between",
           }}
         >
-          <Text
-            style={{
-              color: "white",
-              fontSize: 11,
-              letterSpacing: 0.7,
-              textTransform: "uppercase",
+          <TouchableWithoutFeedback
+            onPress={() => {
+              balances.refetch();
             }}
           >
-            <FormattedMessage id="assets.name" defaultMessage="Name" />
-          </Text>
+            <Text
+              style={{
+                color: "white",
+                fontSize: 11,
+                letterSpacing: 0.7,
+                textTransform: "uppercase",
+              }}
+            >
+              <FormattedMessage id="assets.name" defaultMessage="Name" />
+            </Text>
+          </TouchableWithoutFeedback>
           <View
             style={{
               flexDirection: "row",
