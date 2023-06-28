@@ -14,6 +14,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+
 import {
   isSmallScreenNumber,
   isSmallScreenSubstr,

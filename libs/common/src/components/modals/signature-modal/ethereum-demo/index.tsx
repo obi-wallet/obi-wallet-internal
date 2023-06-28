@@ -153,7 +153,9 @@ export const SignatureModalEthereumDemo =
           };
         },
         onSuccess(payload) {
-          onSuccess();
+          if (payload.success) {
+            onSuccess();
+          }
           interaction.resolve({
             approved: true,
             payload,
