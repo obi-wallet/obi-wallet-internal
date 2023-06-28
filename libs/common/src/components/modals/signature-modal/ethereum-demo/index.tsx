@@ -9,7 +9,9 @@ import { MsgSend } from "@terra-money/feather.js";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
+import { useEffect } from "react";
 import { View } from "react-native";
+import { useEffectOnceWhen } from "rooks";
 
 import { useStore } from "../../../../contexts";
 import { Alert } from "../../../../helpers";
@@ -19,8 +21,6 @@ import {
   SignatureModalMultisigKey,
   SignatureModalMultisigKeyProps,
 } from "../multisig-key";
-import { useEffect } from "react";
-import { useEffectOnceWhen } from "rooks";
 
 export type SignatureModalEthereumDemoProps = {
   interaction: SignAndBroadcastTransactionUserInteraction;
