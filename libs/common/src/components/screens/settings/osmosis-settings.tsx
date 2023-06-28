@@ -230,7 +230,7 @@ const SessionKeySpendLimitSetting = observer(
         disableButton={true}
         title="Session Key Max Spend"
         subtitle={`Any transaction up to this ${
-          theme.ethDemo ? "USD" : `OSMO`
+          theme.ethDemo ? "USD" : "OSMO"
         } amount won't require a signature.`}
       >
         <View

@@ -19,6 +19,8 @@ import {
   SignatureModalMultisigKey,
   SignatureModalMultisigKeyProps,
 } from "../multisig-key";
+import { useEffect } from "react";
+import { useEffectOnceWhen } from "rooks";
 
 export type SignatureModalEthereumDemoProps = {
   interaction: SignAndBroadcastTransactionUserInteraction;
@@ -156,6 +158,13 @@ export const SignatureModalEthereumDemo =
         },
         retry: 2,
       });
+
+      useEffectOnceWhen(
+        broadcast.mutate,
+        interaction.payload.autoBroadcast &&
+          isUsingSessionKey &&
+          !hasSpendLimitExceeded
+      );
 
       const cancel = () => {
         interaction.resolve({ approved: false });

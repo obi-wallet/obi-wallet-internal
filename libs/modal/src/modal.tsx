@@ -33,6 +33,8 @@ export const ModalWithoutProvider = observer(function ModalWithoutProvider() {
 const MessageHandlers = observer(function MessageHandlers() {
   const store = useStore();
   const theme = useTheme();
+  // Enable auto-broadcast for ethereum demo
+  const autoBroadcast = theme.ethereumBalances;
 
   useEffect(() => {
     return autorun(() => {
@@ -57,6 +59,7 @@ const MessageHandlers = observer(function MessageHandlers() {
         cancelable: true,
         walletMeta: store.walletsStore.currentWallet.meta,
         demoMode: store.walletsStore.currentWallet.isDemo,
+        autoBroadcast,
       });
       event.source?.postMessage(
         {
@@ -69,7 +72,7 @@ const MessageHandlers = observer(function MessageHandlers() {
     }
 
     return addEventListener(listener);
-  }, [store]);
+  }, [store, autoBroadcast]);
 
   return null;
 });
