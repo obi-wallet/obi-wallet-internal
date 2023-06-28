@@ -225,13 +225,17 @@ const SessionKeySpendLimitSetting = observer(
     };
     const theme = useTheme();
 
+    const denom = theme.ethereumBalances
+      ? "ZTX"
+      : theme.ethDemo
+      ? "USD"
+      : "OSMO";
+
     return (
       <Setting
         disableButton={true}
         title="Session Key Max Spend"
-        subtitle={`Any transaction up to this ${
-          theme.ethDemo ? "USD" : "OSMO"
-        } amount won't require a signature.`}
+        subtitle={`Any transaction up to this ${denom} amount won't require a signature.`}
       >
         <View
           style={{
@@ -461,12 +465,12 @@ interface SessionKeySettingProps {
 const SessionKeySetting = observer<SessionKeySettingProps>(
   function SessionKeySetting({ value, onChange }) {
     const theme = useTheme();
+    const subtitle = theme.ethereumBalances
+      ? "Enabling session key will only require you to sign one transaction when connecting your ZTX smart account."
+      : "Enabling session key will only require you to sign one transaction when connecting your Osmosis smart account.";
+
     return (
-      <Setting
-        disableButton={true}
-        title="Session Key"
-        subtitle="Enabling session key will only require you to sign one transaction when connecting your Osmosis smart account."
-      >
+      <Setting disableButton={true} title="Session Key" subtitle={subtitle}>
         <View
           style={{ justifyContent: "center", alignItems: "center", flex: 1 }}
         >
