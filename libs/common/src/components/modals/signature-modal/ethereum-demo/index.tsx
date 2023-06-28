@@ -143,9 +143,12 @@ export const SignatureModalEthereumDemo =
             }),
           });
           const event = await response.json();
+          if (!R.has("transactionHash", event)) {
+            throw new Error(JSON.stringify(event));
+          }
           return {
-            success: !!event.transactionHash,
-            transactionHash: event.transactionHash,
+            success: true,
+            transactionHash: event.transactionHash as string,
             rawResult: JSON.stringify(event),
           };
         },
@@ -156,7 +159,16 @@ export const SignatureModalEthereumDemo =
             payload,
           });
         },
-        retry: 2,
+        onError(error) {
+          interaction.resolve({
+            approved: true,
+            payload: {
+              success: false,
+              transactionHash: "",
+              rawResult: error,
+            },
+          });
+        },
       });
 
       useEffectOnceWhen(

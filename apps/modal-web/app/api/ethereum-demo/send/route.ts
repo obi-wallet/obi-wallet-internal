@@ -81,7 +81,11 @@ export async function POST(request: Request) {
     }
   }
 
-  const userOperation = await handleUserOperation();
-  const event = await userOperation.wait();
-  return NextResponse.json(event);
+  try {
+    const userOperation = await handleUserOperation();
+    const event = await userOperation.wait();
+    return NextResponse.json(event);
+  } catch (e) {
+    return NextResponse.json(e);
+  }
 }
