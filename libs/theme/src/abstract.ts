@@ -83,10 +83,32 @@ export interface CustomTheme extends CommonTheme {
     };
     accountName: string;
   };
-  welcome?: {
+  welcome: {
     background?: BackgroundStyle;
     image?: string;
+    imagePosition?: ImagePosition;
+    buttons: WelcomeButton[];
+    hideHeaderLogo?: boolean;
+    horizontalSpacing?: number;
+    buttonSpacing?: number;
   };
   ethDemo?: boolean;
   ethereumBalances?: boolean;
+  settings?: {
+    textInputBackgroundColor?: string;
+  };
+}
+export enum WelcomeButton {
+  Login = "login",
+  NewUser = "newUser",
+  Getstarted = "getStarted",
+  Recoverwallet = "recoverWallet",
+  Demo = "demo",
+  Zepeto = "zepeto",
+}
+
+export enum ImagePosition {
+  Center = "center",
+  Top = "top",
+  Bottom = "bottom",
 }

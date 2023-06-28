@@ -31,7 +31,7 @@ export const OsmosisScreenContainer = observer<OsmosisScreenContainerProps>(
     return (
       <View style={getBackgroundStyles(backgroundStyle ?? theme.background)}>
         <OsmosisHeader {...props} onClose={onClose} />
-        {children}
+        <View style={{ flex: 1 }}>{children}</View>
       </View>
     );
   }

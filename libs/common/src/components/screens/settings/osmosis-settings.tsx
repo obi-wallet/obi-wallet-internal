@@ -243,7 +243,8 @@ const SessionKeySpendLimitSetting = observer(
         >
           <SettingsTextInput
             inputStyle={{
-              backgroundColor: "#120F32",
+              backgroundColor:
+                theme.settings?.textInputBackgroundColor ?? "#120F32",
             }}
             onChangeText={(text: string) => {
               const res = text.replace(/[^0-9.]/g, "");
@@ -280,6 +281,7 @@ const SettingsTextInput = observer<CustomTextInputProps>(
 const SlippageLimitSetting = observer(function SlippageLimitSetting() {
   const [state, dispatch] = useContext(StateContext);
   const value = state[AccountSettingComponent.SlippageLimit];
+  const theme = useTheme();
   const onChange = (value: string) => {
     dispatch({
       component: AccountSettingComponent.SlippageLimit,
@@ -305,7 +307,8 @@ const SlippageLimitSetting = observer(function SlippageLimitSetting() {
       >
         <SettingsTextInput
           inputStyle={{
-            backgroundColor: "#120F32",
+            backgroundColor:
+              theme.settings?.textInputBackgroundColor ?? "#120F32",
           }}
           maxLength={3}
           value={value}
@@ -345,6 +348,7 @@ const WhitelistedLPsSetting = observer(function WhitelistedLPsSetting() {
 const AutoStopLossSetting = observer(function AutoStopLossSetting() {
   const [state, dispatch] = useContext(StateContext);
   const value = state[AccountSettingComponent.AutoStopLoss];
+  const theme = useTheme();
   const onChange = (value: string) => {
     dispatch({
       component: AccountSettingComponent.AutoStopLoss,
@@ -370,7 +374,8 @@ const AutoStopLossSetting = observer(function AutoStopLossSetting() {
       >
         <SettingsTextInput
           inputStyle={{
-            backgroundColor: "#120F32",
+            backgroundColor:
+              theme.settings?.textInputBackgroundColor ?? "#120F32",
           }}
           value={value}
           onChangeText={(text: string) => {
@@ -397,6 +402,7 @@ const AutoStopLossSetting = observer(function AutoStopLossSetting() {
 const WeeklyDcaSetting = observer(function WeeklyDcaSetting() {
   const [state, dispatch] = useContext(StateContext);
   const value = state[AccountSettingComponent.WeeklyDca];
+  const theme = useTheme();
   const onChange = (value: string) => {
     dispatch({
       component: AccountSettingComponent.WeeklyDca,
@@ -432,7 +438,8 @@ const WeeklyDcaSetting = observer(function WeeklyDcaSetting() {
 
         <SettingsTextInput
           inputStyle={{
-            backgroundColor: "#120F32",
+            backgroundColor:
+              theme.settings?.textInputBackgroundColor ?? "#120F32",
           }}
           style={isWeb() ? { flex: 1, maxWidth: 100 } : {}}
           value={value}
@@ -466,8 +473,8 @@ const SessionKeySetting = observer<SessionKeySettingProps>(
           <Switch
             thumbColor={theme.colors.primary}
             trackColor={{
-              false: "#120F32",
-              true: "#120F32",
+              false: theme.settings?.textInputBackgroundColor ?? "#120F32",
+              true: theme.settings?.textInputBackgroundColor ?? "#120F32",
             }}
             style={{ height: 25, width: 60 }}
             value={value}

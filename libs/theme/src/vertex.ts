@@ -1,4 +1,8 @@
-import { AccountSettingComponent, CustomTheme } from "./abstract";
+import {
+  WelcomeButton,
+  AccountSettingComponent,
+  CustomTheme,
+} from "./abstract";
 import { obiTheme } from "./obi";
 
 export const vertexTheme: CustomTheme = {
@@ -52,6 +56,16 @@ export const vertexTheme: CustomTheme = {
   },
   welcome: {
     image: "/vertex-home@2x.png",
+    hideHeaderLogo: false,
+    buttons: [
+      WelcomeButton.Login,
+      WelcomeButton.Getstarted,
+      WelcomeButton.Recoverwallet,
+      WelcomeButton.Demo,
+    ],
+  },
+  settings: {
+    textInputBackgroundColor: "#16151D",
   },
   ethDemo: true,
 };

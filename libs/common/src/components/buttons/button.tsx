@@ -1,6 +1,5 @@
 import { Theme, useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
-import * as R from "ramda";
 import { FC, useCallback, useState } from "react";
 import {
   GestureResponderEvent,

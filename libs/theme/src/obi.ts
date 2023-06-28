@@ -1,4 +1,4 @@
-import { CustomTheme } from "./abstract";
+import { WelcomeButton, CustomTheme, ImagePosition } from "./abstract";
 import { common } from "./common";
 
 export const obiTheme: CustomTheme = {
@@ -57,5 +57,13 @@ export const obiTheme: CustomTheme = {
   },
   welcome: {
     image: "/obi-home.png",
+    imagePosition: ImagePosition.Center,
+    hideHeaderLogo: false,
+    buttons: [
+      WelcomeButton.Login,
+      WelcomeButton.Getstarted,
+      WelcomeButton.Recoverwallet,
+      WelcomeButton.Demo,
+    ],
   },
 };
