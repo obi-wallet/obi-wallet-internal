@@ -66,11 +66,13 @@ export const SignatureModalEthereumDemo =
             return {
               isUsingSessionKey: true,
               // kludge
-              hasSpendLimitExceeded: new BigNumber(message.eth.token.rawAmount).isLessThan(
-                new BigNumber(6).times(factor)
-              ),
+              hasSpendLimitExceeded: new BigNumber(
+                message.eth.token.rawAmount
+              ).isLessThan(new BigNumber(6).times(factor)),
               onSuccess() {
-                const newSpentSoFar = new BigNumber(message.eth.token.rawAmount);
+                const newSpentSoFar = new BigNumber(
+                  message.eth.token.rawAmount
+                );
                 localStorage.setItem(
                   `session-key-spent-${sessionKey.address}`,
                   newSpentSoFar.toString()
