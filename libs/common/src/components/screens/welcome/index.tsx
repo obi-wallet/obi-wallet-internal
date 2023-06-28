@@ -28,7 +28,6 @@ import {
 } from "../../account-picker-modal";
 import { Button } from "../../buttons";
 
-
 export type WelcomeScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,
   OnboardingRoute.Welcome
