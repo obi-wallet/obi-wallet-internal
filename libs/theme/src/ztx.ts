@@ -30,7 +30,9 @@ export const ztxTheme: CustomTheme = {
       backgroundColor: "#243FEA",
       borderRadius: 5,
     },
+
     cancel: {
+      borderRadius: 5,
       borderWidth: 1,
       borderColor: "#ffffff",
     },
