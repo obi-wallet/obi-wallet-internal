@@ -14,6 +14,7 @@ import { Image, TouchableOpacity, View, Text } from "react-native";
 import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
 import { Alert } from "../../../helpers";
+import { createDeviceKeyPair } from "../../../keys";
 import {
   KeyFlow,
   KeyRoute,
@@ -26,6 +27,7 @@ import {
   useAccountPickerModalProps,
 } from "../../account-picker-modal";
 import { Button } from "../../buttons";
+
 
 export type WelcomeScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -56,6 +58,10 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
         const { publicKey: emailKey } = generateSec256k1KeyPair();
 
         draft?.value.setEmailKey(emailKey);
+
+        const deviceKeyPair = createDeviceKeyPair(false);
+
+        draft?.value.setDeviceKey(deviceKeyPair);
 
         navigation.navigate(KeyRoute.PhoneKeyRequest, {
           draftId,
