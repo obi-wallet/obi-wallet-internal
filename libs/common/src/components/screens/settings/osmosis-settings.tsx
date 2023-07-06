@@ -2,6 +2,7 @@ import { useTheme } from "@emotion/react";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   generateSec256k1KeyPair,
+  MultisigWallet,
   ObservableFlexAccount,
   Sdk,
 } from "@obi-wallet/sdk";
@@ -24,7 +25,12 @@ import { Switch } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Setting } from ".";
-import { Alert, isSmallScreenNumber, isWeb } from "../../../helpers";
+import {
+  Alert,
+  isSmallScreenNumber,
+  isWeb,
+  setSessionKey,
+} from "../../../helpers";
 import {
   RootStackParamList,
   SettingsRoute,
@@ -145,47 +151,10 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
                 buttonStyle={{ flex: 1, margin: 10 }}
                 disabled={!sessionKeyEnabled}
                 onPress={async () => {
-                  const { publicKey, privateKey } = generateSec256k1KeyPair();
-                  const address = Sdk.chainId(
-                    wallet.chainId
-                  ).transactions.getAddressOfPublicKey(publicKey);
-                  const draft = new Draft({
-                    original: wallet.gatekeeperConfig,
-                  });
-                  draft.value.upsertFlexAccount(
-                    ObservableFlexAccount.create({
-                      type: "flex-account",
-                      meta: {
-                        icon: "",
-                        name: "",
-                      },
-                      autoSign: null,
-                      spendLimit: {
-                        amount: parseFloat(
-                          stateContextValue[0][AccountSettingComponent.MaxSpend]
-                        ),
-                        period: { days: 1 },
-                      },
-                      address,
-                      publicKey,
-                      privateKey,
-                    })
+                  const maxSpend = parseFloat(
+                    stateContextValue[0][AccountSettingComponent.MaxSpend]
                   );
-                  const response = await wallet.updateGatekeeperConfig(
-                    draft.value
-                  );
-                  if (response.approved) {
-                    if (response.payload.success) {
-                      console.log(
-                        wallet.gatekeeperConfig.flexAccounts[0].toJSON()
-                      );
-                    } else {
-                      Alert.alert(
-                        "Error",
-                        response.payload.rawLog ?? "Unknown error"
-                      );
-                    }
-                  }
+                  setSessionKey({ wallet, maxSpend });
                 }}
               />
             </View>

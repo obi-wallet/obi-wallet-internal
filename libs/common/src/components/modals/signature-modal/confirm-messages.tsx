@@ -34,27 +34,84 @@ export interface ConfirmMessagesProps extends ModalProps {
   onCancel(): void;
 
   isOnboarding?: boolean;
-
+  isLogin?: boolean;
   onConfirm(): void;
 }
 
 export const ConfirmMessages = observer<ConfirmMessagesProps>(
-  function ConfirmMessages({
-    loading,
-    disabled,
-    cancelable = true,
-    messages,
-    chainId,
-    onCancel,
-    onConfirm,
-    footer,
-    children,
-    isOnboarding,
-    ...props
-  }) {
+  function ConfirmMessages(confirmProps) {
+    // if (confirmProps.isLogin) return <ConfirmMessagesLogin {...confirmProps} />;
+    const {
+      loading,
+      disabled,
+      cancelable = true,
+      messages,
+      chainId,
+      onCancel,
+      onConfirm,
+      footer,
+      children,
+      isOnboarding,
+
+      ...props
+    } = confirmProps;
+
     const intl = useIntl();
     const [selectedTab, setSelectedTab] = useState(Tab.TransactionDetails);
     const theme = useTheme();
+    const renderButtons = () => {
+      return (
+        <>
+          <Button
+            disabled={disabled}
+            flavor="primary"
+            label={intl.formatMessage({
+              id: "signature.modal.confirm",
+              defaultMessage: "Confirm",
+            })}
+            onPress={() => {
+              onConfirm();
+            }}
+          />
+          {cancelable && (
+            <Button
+              flavor="cancel"
+              label={intl.formatMessage({
+                id: "signature.modal.cancel",
+                defaultMessage: "Cancel",
+              })}
+              onPress={() => {
+                onCancel();
+              }}
+            />
+          )}
+        </>
+      );
+    };
+
+    const renderTitle = () => {
+      if (isOnboarding) {
+        return (
+          <>
+            <Text style={{ color: "white", fontWeight: "700" }}>
+              Now sign your first Obi transaction
+            </Text>
+            <Text style={{ color: "white", opacity: 0.6 }}>
+              Use your keys to create your wallet
+            </Text>
+          </>
+        );
+      } else {
+        return (
+          <Text style={{ color: "white", fontSize: 16, fontWeight: "500" }}>
+            <FormattedMessage
+              id="signature.modal.confirmtx"
+              defaultMessage="Confirm Transaction"
+            />
+          </Text>
+        );
+      }
+    };
 
     return (
       <BaseModal {...props} visible>
@@ -70,25 +127,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
                   alignItems: "center",
                 }}
               >
-                {isOnboarding ? (
-                  <>
-                    <Text style={{ color: "white", fontWeight: "700" }}>
-                      Now sign your first Obi transaction
-                    </Text>
-                    <Text style={{ color: "white", opacity: 0.6 }}>
-                      Use your keys to create your wallet
-                    </Text>
-                  </>
-                ) : (
-                  <Text
-                    style={{ color: "white", fontSize: 16, fontWeight: "500" }}
-                  >
-                    <FormattedMessage
-                      id="signature.modal.confirmtx"
-                      defaultMessage="Confirm Transaction"
-                    />
-                  </Text>
-                )}
+                {renderTitle()}
               </View>
 
               <View style={{ flex: 1 }}>
@@ -147,30 +186,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
                   </View>
 
                   {children}
-
-                  <Button
-                    disabled={disabled}
-                    flavor="primary"
-                    label={intl.formatMessage({
-                      id: "signature.modal.confirm",
-                      defaultMessage: "Confirm",
-                    })}
-                    onPress={() => {
-                      onConfirm();
-                    }}
-                  />
-                  {cancelable && (
-                    <Button
-                      flavor="cancel"
-                      label={intl.formatMessage({
-                        id: "signature.modal.cancel",
-                        defaultMessage: "Cancel",
-                      })}
-                      onPress={() => {
-                        onCancel();
-                      }}
-                    />
-                  )}
+                  {renderButtons()}
                 </View>
               </View>
 
@@ -248,6 +264,54 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
         }
       }
     }
+  }
+);
+
+export const ConfirmMessagesLogin = observer<ConfirmMessagesProps>(
+  function ConfirmMessagesLogin({
+    loading,
+    disabled,
+    onCancel,
+    footer,
+    children,
+    ...props
+  }) {
+    return (
+      <BaseModal {...props} visible>
+        <OsmosisScreenContainer>
+          {loading ? (
+            <BroadcastingAnimation />
+          ) : (
+            <ScreenContainer>
+              <View
+                style={{
+                  height: 50,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{ color: "white", fontWeight: "700", fontSize: 16 }}
+                >
+                  Welcome Back
+                </Text>
+              </View>
+
+              {children}
+              <Button
+                flavor="primary"
+                label="Skip & Sign For Each Transaction"
+                onPress={() => {
+                  onCancel();
+                }}
+                buttonStyle={{ marginBottom: 40 }}
+              />
+              {footer}
+            </ScreenContainer>
+          )}
+        </OsmosisScreenContainer>
+      </BaseModal>
+    );
   }
 );
 

@@ -49,6 +49,7 @@ export interface BackgroundStyle {
   position?: string;
 }
 export interface CustomTheme extends CommonTheme {
+  loginModal?: boolean;
   colors: {
     primary: string;
     background: string;

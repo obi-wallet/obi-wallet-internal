@@ -17,6 +17,7 @@ export type SignAndBroadcastTransactionUserInteraction = UserInteraction<
     readonly demoMode: boolean;
     readonly cancelable: boolean;
     readonly autoBroadcast?: boolean;
+    readonly isLogin?: boolean;
   } & (CommonPayloadMultisigKey | CommonPayloadWalletMeta),
   { approved: true; payload: BroadcastTransactionResult } | { approved: false }
 >;

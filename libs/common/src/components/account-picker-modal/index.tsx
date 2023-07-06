@@ -7,7 +7,7 @@ import { FormattedMessage } from "react-intl";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 
 import { useStore } from "../../contexts";
-import { Alert } from "../../helpers";
+import { Alert, setSessionKey } from "../../helpers";
 import { BaseModal } from "../base-modal";
 import { IconButton } from "../buttons";
 import { Text } from "../typography";
@@ -100,6 +100,13 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                     }}
                     onPress={() => {
                       walletsStore.setCurrentWallet(wallet);
+                      if (theme.loginModal) {
+                        setSessionKey({
+                          wallet,
+                          maxSpend: 5,
+                          isLogin: true,
+                        });
+                      }
                       close();
                     }}
                   >

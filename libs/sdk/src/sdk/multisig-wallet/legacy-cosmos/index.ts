@@ -13,7 +13,10 @@ import { Message, SignedTransaction } from "../../../transactions";
 import { BroadcastTransactionResult, CodeIds, Token } from "../../common";
 import { Messages } from "../../messages";
 import { Sdk } from "../../sdk";
-import { AbstractMultisigWalletSdk } from "../abstract";
+import {
+  AbstractMultisigWalletSdk,
+  updateGatekeeperConfigParams,
+} from "../abstract";
 
 function notImplemented(message: string) {
   warning(false, message);
@@ -74,7 +77,7 @@ export class LegacyCosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
     return null;
   }
 
-  public async updateGatekeeperConfig(_: GatekeeperConfig): Promise<
+  public async updateGatekeeperConfig(_: updateGatekeeperConfigParams): Promise<
     | {
         approved: true;
         payload: BroadcastTransactionResult | { success: true };
