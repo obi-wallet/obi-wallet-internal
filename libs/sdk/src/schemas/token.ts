@@ -19,12 +19,15 @@ export function token(
       amount: z.string(),
     })
     .transform(({ id, amount }) => {
-      const { digits } = (enrichToken ?? Sdk.chainId(chainId).bank.enrichToken)(
-        {
-          id,
-          rawAmount: "0",
-        }
-      );
+      if (!enrichToken) {
+        const sdk = Sdk.chainId(chainId);
+        enrichToken = sdk.bank.enrichToken.bind(sdk.bank);
+      }
+
+      const { digits } = enrichToken({
+        id,
+        rawAmount: "0",
+      });
       return {
         id,
         amount: amount.trim().replace(",", "."),

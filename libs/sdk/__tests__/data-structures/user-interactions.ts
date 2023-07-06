@@ -7,11 +7,13 @@ import {
   UserInteraction,
 } from "../../src/user-interactions/abstract";
 
+const TestMessageSymbol = Symbol();
 const TestMessage =
-  createUserInteractionType<
-    UserInteraction<{ foo: "bar" }, { success: true }>
-  >();
-const AnotherMessage = createUserInteractionType();
+  createUserInteractionType<UserInteraction<{ foo: "bar" }, { success: true }>>(
+    TestMessageSymbol
+  );
+const AnotherMessageSymbol = Symbol();
+const AnotherMessage = createUserInteractionType(AnotherMessageSymbol);
 
 function createTest<
   A extends (factory: typeof UserInteractions) => Promise<UserInteractions>

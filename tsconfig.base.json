@@ -24,7 +24,6 @@
       "@obi-wallet/mobile": ["libs/mobile/src/index.ts"],
       "@obi-wallet/mobile-shim": ["libs/mobile-shim/src/index.ts"],
       "@obi-wallet/modal": ["libs/modal/src/index.ts"],
-      "@obi-wallet/proxy-contract": ["libs/proxy-contract/src/index.ts"],
       "@obi-wallet/sdk": ["libs/sdk/src/index.ts"],
       "@obi-wallet/theme": ["libs/theme/src/index.ts"]
     }
