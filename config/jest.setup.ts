@@ -10,11 +10,52 @@ jest.mock("@fortawesome/react-native-fontawesome", () => ({
   FontAwesomeIcon: "",
 }));
 
+jest.mock("@react-native-google-signin/google-signin", () => {
+  return {
+    GoogleSignin: {
+      configure: jest.fn(),
+    },
+  };
+});
+
+jest.mock("@robinbobin/react-native-google-drive-api-wrapper", () => {
+  return {};
+});
+
 jest.mock("react-native-code-push", () => ({
   NativeCodePush: {},
 }));
 
+jest.mock("@react-native-clipboard/clipboard", () => {
+  return {};
+});
+
+jest.mock("react-native-linear-gradient", () => {
+  return {};
+});
+
+jest.mock("react-native-nfc-manager", () => {
+  return {};
+});
+
+jest.mock("react-native-country-picker-modal", () => {
+  return {};
+});
+
+jest.mock("react-native-qrcode-scanner", () => {
+  return {};
+});
+
+jest.mock("react-native-animatable", () => {
+  return {};
+});
+
+jest.mock("react-native-modal", () => {
+  return {};
+});
+
 jest.mock("react-native-safe-area-context", () => mockSafeAreaContext);
+
 jest.mock("react-native", () => {
   const RN = jest.requireActual("react-native"); // use original implementation, which comes with mocks out of the box
 
@@ -24,6 +65,7 @@ jest.mock("react-native", () => {
       AppleLanguages: ["en-US"],
     },
   };
+  RN.NativeModules.RNDeviceInfo = {};
 
   return RN;
 });

@@ -9,13 +9,30 @@ import { z } from "zod";
  * @param schema - The base schema to create a migratable schema for.
  * @returns The migratable schema.
  */
-export function migratable<T extends z.ZodTypeAny>(schema: T) {
+export function migratable<T extends z.ZodTypeAny>(
+  schema: T
+): AbstractMigratableSchema<T, T> {
   return createMigratableSchema({
     anyVersion: schema,
     currentVersion: schema,
     migrate: (data) => data,
   });
 }
+
+export type AbstractMigratableSchema<
+  Any extends z.ZodTypeAny,
+  Current extends z.ZodTypeAny
+> = {
+  currentSchema: Current;
+  migratableSchema: z.ZodEffects<Any, z.TypeOf<Current>, z.input<Any>>;
+  addMigration: <Next extends z.ZodTypeAny>({
+    nextSchema,
+    migrate,
+  }: {
+    nextSchema: Next;
+    migrate: (data: z.infer<Current>) => z.infer<Next>;
+  }) => AbstractMigratableSchema<z.ZodUnion<[Next, Any]>, Next>;
+};
 
 function createMigratableSchema<
   Any extends z.ZodTypeAny,
@@ -28,7 +45,7 @@ function createMigratableSchema<
   anyVersion: Any;
   currentVersion: Current;
   migrate: (data: z.infer<Any>) => z.infer<Current>;
-}) {
+}): AbstractMigratableSchema<Any, Current> {
   const previousMigrate = migrate;
 
   return {
@@ -56,19 +73,22 @@ function createMigratableSchema<
   };
 }
 
-export type AbstractMigratableSchema = ReturnType<
-  typeof createMigratableSchema
->;
-
 /**
  * Union type of all versions of the migratable data.
  */
-export type AbstractMigratable<T extends AbstractMigratableSchema> = z.input<
-  T["migratableSchema"]
->;
+export type AbstractMigratable<T> = T extends AbstractMigratableSchema<
+  infer Any,
+  infer _Current
+>
+  ? z.input<Any>
+  : never;
+
 /**
  * The current version of the migratable data.
  */
-export type AbstractSerialized<T extends AbstractMigratableSchema> = z.infer<
-  T["currentSchema"]
->;
+export type AbstractSerialized<T> = T extends AbstractMigratableSchema<
+  infer _Any,
+  infer Current
+>
+  ? z.input<Current>
+  : never;

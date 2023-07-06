@@ -1,8 +1,9 @@
-import { pubkeyToAddress } from "@cosmjs/amino";
+import { Coin, pubkeyToAddress } from "@cosmjs/amino";
 import { coins } from "@cosmjs/proto-signing";
 import { isDeliverTxSuccess } from "@cosmjs/stargate";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { AuthInfo, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import * as R from "ramda";
 import invariant from "tiny-invariant";
 
 import { CosmJsMultisigSigner } from "./multisigs-signer";
@@ -19,7 +20,7 @@ import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
 import { AbstractTransactionsSdk } from "../abstract";
 
 export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
-  protected chainId: CosmosChainId | LegacyCosmosChainId;
+  protected override chainId: CosmosChainId | LegacyCosmosChainId;
   protected client: CosmJsClient;
 
   public constructor({
@@ -69,7 +70,7 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
     if (!account) {
       return AccountValidationResult.ACCOUNT_NOT_READY;
     }
-    if (!account.pubkey) {
+    if (!account.pubkey || account.sequence === 0) {
       return AccountValidationResult.PUBLIC_KEY_NOT_READY;
     }
     return AccountValidationResult.READY;
@@ -90,13 +91,18 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
           prefix: this.chain.prefix,
         }),
         async (client) => {
-          await client.sendTokens(
+          const response = await client.sendTokens(
             address,
             address,
             coins(1, this.chain.denom),
-            "auto",
+            this.client.defaultFee,
             ""
           );
+          if (!isDeliverTxSuccess(response)) {
+            throw new Error(
+              `Failed to send tokens to ${address}: ${response.rawLog}`
+            );
+          }
         }
       );
       while (
@@ -127,6 +133,9 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
     invariant(account, "Account not found.");
 
     const aminoMessages = messages.map((message) => {
+      if (R.has("osmo", message)) {
+        return message.osmo;
+      }
       return message.toAmino();
     });
     const encodeObjects = aminoMessages.map((aminoMessage) => {
@@ -195,7 +204,7 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
   }: {
     address: string;
     denom: string;
-  }) {
+  }): Promise<Coin> {
     return this.client.withStargateClient(async (client) => {
       return await client.getBalance(address, denom);
     });

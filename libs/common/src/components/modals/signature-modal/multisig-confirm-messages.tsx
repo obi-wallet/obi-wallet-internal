@@ -1,0 +1,125 @@
+import { useTheme } from "@emotion/react";
+import { observer } from "mobx-react-lite";
+import { ReactNode, useState } from "react";
+import { FormattedMessage } from "react-intl";
+import { View } from "react-native";
+
+import { ConfirmMessages, ConfirmMessagesProps } from "./confirm-messages";
+import { Alert } from "../../../helpers";
+import { KeysList, KeysListProps } from "../../multisig-settings";
+import { Text } from "../../typography";
+
+export interface MultisigConfirmMessagesProps
+  extends Omit<
+    ConfirmMessagesProps,
+    "messages" | "loading" | "disabled" | "onConfirm"
+  > {
+  footer: ReactNode;
+  threshold: number;
+  numberOfUsableKeys: number;
+  numberOfSignatures: number;
+  innerMessages: ConfirmMessagesProps["messages"];
+  safeSpendLimitExceeded?: boolean;
+  data: KeysListProps["data"];
+
+  onConfirm(): Promise<void>;
+}
+
+export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
+  function SignatureModal({
+    onConfirm,
+    numberOfSignatures,
+    numberOfUsableKeys,
+    threshold,
+    data,
+    safeSpendLimitExceeded,
+    ...props
+  }) {
+    const theme = useTheme();
+    const enoughSignatures = numberOfSignatures >= threshold;
+
+    const [loading, setLoading] = useState(false);
+
+    return (
+      <ConfirmMessages
+        {...props}
+        messages={props.innerMessages}
+        loading={loading}
+        disabled={!enoughSignatures}
+        onConfirm={async () => {
+          try {
+            setLoading(true);
+            await onConfirm();
+            setLoading(false);
+          } catch (e) {
+            const error = e as Error;
+            setLoading(false);
+            console.error(error);
+            Alert.alert("Error confirming signature", error.message);
+          }
+        }}
+      >
+        <KeysList
+          data={data}
+          tiled
+          animate={!enoughSignatures}
+          style={{
+            marginVertical: 10,
+            borderRadius: 12,
+            alignItems: "center",
+          }}
+        />
+        <View>
+          {safeSpendLimitExceeded ? (
+            <View style={{ marginBottom: theme.spacing["16"] }}>
+              <Text
+                style={[
+                  theme.typography.body,
+                  {
+                    textAlign: "center",
+                    color: "#F6F5FF",
+                    // fontSize: numberOfSignatures >= threshold ? 14 : 12,
+                    fontWeight: theme.fontWeights.bold,
+                    // opacity: numberOfSignatures >= threshold ? 1 : 0.6,
+                    marginVertical: numberOfSignatures >= threshold ? 5 : 2,
+                  },
+                ]}
+              >
+                Safe Spend Limit Exceeded
+              </Text>
+              <Text
+                style={{
+                  textAlign: "center",
+                  color: "#F6F5FF",
+                  fontSize: numberOfSignatures >= threshold ? 14 : 12,
+                  fontWeight: "600",
+                  opacity: numberOfSignatures >= threshold ? 1 : 0.6,
+                  marginVertical: numberOfSignatures >= threshold ? 5 : 2,
+                }}
+              >
+                Transaction requires {threshold}/{numberOfUsableKeys} signatures
+              </Text>
+            </View>
+          ) : (
+            <Text
+              style={{
+                textAlign: "center",
+                color: "#F6F5FF",
+                fontSize: numberOfSignatures >= threshold ? 14 : 12,
+                fontWeight: "600",
+                opacity: numberOfSignatures >= threshold ? 1 : 0.6,
+                marginVertical: numberOfSignatures >= threshold ? 5 : 2,
+              }}
+            >
+              <FormattedMessage
+                id="signature.keysrequired"
+                defaultMessage="Keys Required"
+              />
+              : {numberOfSignatures}/{threshold}
+            </Text>
+          )}
+        </View>
+      </ConfirmMessages>
+    );
+  }
+);

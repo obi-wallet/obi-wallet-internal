@@ -1,22 +1,17 @@
 import { useTheme } from "@emotion/react";
-import { healthChecks, JunoChecks, Text } from "@obi-wallet/common";
+import { Alert, Text } from "@obi-wallet/common";
+import { Back } from "@obi-wallet/common";
+import { healthChecks, JunoChecks } from "@obi-wallet/common-deprecated";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { MultisigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import {
-  Alert,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import WarningIcon from "../../../assets/warning.svg";
-import { Back } from "../components/back";
 
 export const HealthChecksScreen = observer(function HealthChecksScreen() {
   const intl = useIntl();

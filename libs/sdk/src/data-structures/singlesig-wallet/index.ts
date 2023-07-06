@@ -1,6 +1,6 @@
 import {
-  createSinglesigWallet,
   createObservableSinglesigWallet,
+  createSinglesigWallet,
 } from "./factories";
 import { SinglesigWallet as SinglesigWalletInterface } from "./implementation";
 import { SinglesigWalletSchema } from "./schema";
@@ -11,9 +11,15 @@ export type SinglesigWallet = SinglesigWalletInterface;
 export const SinglesigWallet = {
   schema: SinglesigWalletSchema,
   create: createSinglesigWallet,
-} satisfies AbstractDataStructure<SinglesigWallet>;
+} satisfies AbstractDataStructure<
+  SinglesigWallet,
+  typeof SinglesigWalletSchema
+>;
 
 export const ObservableSinglesigWallet = {
   schema: SinglesigWalletSchema,
   create: createObservableSinglesigWallet,
-} satisfies AbstractDataStructure<SinglesigWallet>;
+} satisfies AbstractDataStructure<
+  SinglesigWallet,
+  typeof SinglesigWalletSchema
+>;

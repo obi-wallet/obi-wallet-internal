@@ -4,8 +4,8 @@ import {
   // eslint-disable-next-line no-restricted-imports
   useQuery as useOriginalQuery,
   UseQueryOptions,
+  UseQueryResult,
 } from "@tanstack/react-query";
-import { UseQueryResult } from "@tanstack/react-query/src/types";
 import { useCallback, useRef } from "react";
 
 export function useQuery<

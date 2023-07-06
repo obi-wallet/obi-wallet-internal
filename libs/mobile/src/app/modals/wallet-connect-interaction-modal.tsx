@@ -1,13 +1,10 @@
-import { Text } from "@obi-wallet/common";
+import { Button, BaseModal, Text, useStore } from "@obi-wallet/common";
+import { ScreenContainer } from "@obi-wallet/common";
 import { InitiateWalletConnectSessionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 
-import { Modal } from "../../components/modal";
-import { Button } from "../button";
-import { ScreenContainer } from "../screens/components/screen-container";
 import Wc from "../screens/dapp-explorer/assets/wallet-connect.svg";
-import { useStore } from "../stores";
 
 export const WalletConnectInteractionModal = observer(
   function WalletConnectInteractionModal() {
@@ -29,7 +26,7 @@ const InteractionModalInner = observer(function InteractionModalInner({
   interaction: InitiateWalletConnectSessionUserInteraction;
 }) {
   return (
-    <Modal visible>
+    <BaseModal visible>
       <ScreenContainer>
         <Text
           style={{
@@ -103,7 +100,7 @@ const InteractionModalInner = observer(function InteractionModalInner({
         </View>
         <View>
           <Button
-            flavor="blue"
+            flavor="primary"
             label="Allow"
             onPress={() => {
               interaction.resolve({ approved: true });
@@ -118,6 +115,6 @@ const InteractionModalInner = observer(function InteractionModalInner({
           />
         </View>
       </ScreenContainer>
-    </Modal>
+    </BaseModal>
   );
 });

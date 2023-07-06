@@ -5,6 +5,7 @@ build/
 dist/
 /tmp
 /out-tsc
+stats.html
 
 # TypeDoc output
 docs/
@@ -120,3 +121,6 @@ apps/obi-mobile-e2e/artifacts
 
 # Sentry
 sentry.properties
+
+# Next.js
+.next

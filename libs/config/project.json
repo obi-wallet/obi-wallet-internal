@@ -3,13 +3,29 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/config/src",
   "projectType": "library",
-  "tags": [],
   "targets": {
+    "build": {
+      "executor": "@nx/rollup:rollup",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/config",
+        "main": "libs/config/src/index.ts",
+        "tsConfig": "libs/config/tsconfig.lib.json",
+        "assets": [],
+        "project": "libs/config/package.json",
+        "rollupConfig": "@nx/react/plugins/bundle-rollup",
+        "format": ["esm"]
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs config {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/config/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": ["libs/config/**/*.ts"]
       }
     },
     "tsc": {
@@ -18,5 +34,6 @@
         "commands": ["tsc --project libs/config/tsconfig.lib.json --noEmit"]
       }
     }
-  }
+  },
+  "tags": []
 }

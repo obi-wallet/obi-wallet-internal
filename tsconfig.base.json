@@ -18,11 +18,12 @@
     "paths": {
       "@obi-wallet/background": ["libs/background/src/index.ts"],
       "@obi-wallet/common": ["libs/common/src/index.ts"],
+      "@obi-wallet/common-deprecated": ["libs/common-deprecated/src/index.ts"],
       "@obi-wallet/config": ["libs/config/src/index.ts"],
       "@obi-wallet/headless-ui": ["libs/headless-ui/src/index.ts"],
       "@obi-wallet/mobile": ["libs/mobile/src/index.ts"],
       "@obi-wallet/mobile-shim": ["libs/mobile-shim/src/index.ts"],
-      "@obi-wallet/proxy-contract": ["libs/proxy-contract/src/index.ts"],
+      "@obi-wallet/modal": ["libs/modal/src/index.ts"],
       "@obi-wallet/sdk": ["libs/sdk/src/index.ts"],
       "@obi-wallet/theme": ["libs/theme/src/index.ts"]
     }

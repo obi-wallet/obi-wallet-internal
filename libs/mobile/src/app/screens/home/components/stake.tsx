@@ -4,7 +4,19 @@ import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Text, TextInput } from "@obi-wallet/common";
+import {
+  Back,
+  BaseTextInput,
+  CoinIcon,
+  enrichToken,
+  isSmallScreen,
+  isSmallScreenNumber,
+  KeyboardAvoidingView,
+  RefreshableFlatList,
+  Text,
+  TokenController,
+  useBalances,
+} from "@obi-wallet/common";
 import {
   useCurrentWallet,
   useDelegations,
@@ -37,28 +49,16 @@ import { Controller, useForm } from "react-hook-form";
 import {
   FlatList,
   Image,
+  ScrollView,
   StyleProp,
   TouchableHighlight,
   TouchableOpacity,
   View,
   ViewStyle,
 } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
 import { GestureResponderEvent } from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { z } from "zod";
-
-import { TokenController } from "../../../../forms";
-import { enrichToken, useBalances } from "../../../balances";
-import { useStore } from "../../../stores";
-import { Back } from "../../components/back";
-import { CoinIcon } from "../../components/coin-icon";
-import { KeyboardAvoidingView } from "../../components/keyboard-avoiding-view";
-import { RefreshableFlatList } from "../../components/refreshable-flat-list";
-import {
-  isSmallScreen,
-  isSmallScreenNumber,
-} from "../../components/screen-size";
 
 enum StakeTab {
   Validators = "Validators",
@@ -290,11 +290,8 @@ const TabPill = observer(function TabPill({
 });
 
 const Balance = observer(function Balance() {
-  const { configStore } = useStore();
   const rewards = useRewards();
   const wallet = useCurrentWallet();
-
-  const isObi = configStore.isObi();
 
   const totalRewards = rewards.data.total;
   const formattedRewards = enrichToken({
@@ -308,7 +305,7 @@ const Balance = observer(function Balance() {
         justifyContent: "center",
         alignItems: "center",
         marginTop: isSmallScreenNumber(5, 15),
-        backgroundColor: isObi ? "#437DFF" : "transparent",
+        backgroundColor: "#437DFF",
         borderRadius: 7,
         padding: 10,
       }}
@@ -419,7 +416,7 @@ const Validators = observer(function Validators() {
             </Text>
           </View>
           <View style={{ flex: 1 }}>
-            <TextInput
+            <BaseTextInput
               style={{
                 color: "#ffffff",
                 borderColor: "#ffffff",

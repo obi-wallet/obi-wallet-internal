@@ -1,6 +1,22 @@
 import { useTheme } from "@emotion/react";
 import { PortalHost } from "@gorhom/portal";
-import { Config, Text } from "@obi-wallet/common";
+import {
+  CreateWalletScreen,
+  EmailRecoveryScreen,
+  LookupProxyWalletsScreen,
+  OnboardingRoute,
+  ReceiveScreen,
+  RecoverWalletScreen,
+  RootRoute,
+  RootStack,
+  SelectRecoveryMethodScreen,
+  SendScreen,
+  Text,
+  UpdatingAppBundleAnimation,
+  useStore,
+  WelcomeScreen,
+} from "@obi-wallet/common";
+import { Config } from "@obi-wallet/config";
 import {
   useCodePushBackgroundUpdate,
   WalletState,
@@ -11,26 +27,14 @@ import KeyboardManager from "react-native-keyboard-manager";
 import { FullWindowOverlay } from "react-native-screens";
 
 import { deploymentKey } from "./code-push";
-import { Loader } from "./loader";
 import { Modals } from "./modals";
 import { Provider, ProviderProps } from "./provider";
-import { RootRoute, RootStack } from "./root-stack";
 import { HomeScreen } from "./screens/home";
 import { Stake } from "./screens/home/components/stake";
-import { OnboardingRoute } from "./screens/onboarding/onboarding-stack";
-import { ReceiveScreen } from "./screens/receive";
-import { SendScreen } from "./screens/send";
 import { settingsScreens } from "./screens/settings";
 import { SplashScreen } from "./screens/splash";
 import { WebViewScreen } from "./screens/web-view";
-import { useStore } from "./stores";
-import { CreateWalletScreen } from "../screens/create-wallet";
-import { EmailRecoveryScreen } from "../screens/keys/email/email-recovery";
 import { keyScreens } from "../screens/keys/key-screens";
-import { LookupProxyWalletsScreen } from "../screens/lookup-proxy-wallets";
-import { RecoverWalletScreen } from "../screens/recover-wallet";
-import { SelectMethodScreen } from "../screens/recover-wallet/select-method";
-import { WelcomeScreen } from "../screens/welcome";
 
 if (Platform.OS === "ios") {
   KeyboardManager?.setToolbarPreviousNextButtonEnable(true);
@@ -86,27 +90,7 @@ const Load = observer(function Load() {
         flex: 1,
       }}
     >
-      <Loader
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 999,
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          marginBottom: 150,
-        }}
-        loadingText="Updating app bundle"
-        animation={require("./loader/broadcast.json")}
-        animationStyles={{
-          width: 300,
-          height: 300,
-          maxHeight: "100%",
-          maxWidth: "100%",
-        }}
-      />
+      <UpdatingAppBundleAnimation />
     </View>
   );
 });
@@ -187,8 +171,8 @@ export const StateRenderer = observer(function StateRenderer() {
           component={RecoverWalletScreen}
         />
         <RootStack.Screen
-          name={OnboardingRoute.SelectMethod}
-          component={SelectMethodScreen}
+          name={OnboardingRoute.SelectRecoveryMethod}
+          component={SelectRecoveryMethodScreen}
         />
         <RootStack.Screen
           name={OnboardingRoute.EmailRecovery}

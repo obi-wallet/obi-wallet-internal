@@ -1,35 +1,41 @@
 import styled from "@emotion/native";
-import { Brand, Feature } from "@obi-wallet/common";
+import {
+  isSmallScreenNumber,
+  ObiIcon,
+  RootStack,
+  SettingsRoute,
+  useRootNavigation,
+  useStore,
+} from "@obi-wallet/common";
+import { Feature } from "@obi-wallet/config";
 import * as Sentry from "@sentry/react-native";
 import { observer } from "mobx-react-lite";
-import { FC, useState } from "react";
+import { FC, ReactNode, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Linking, StyleSheet, Text, View } from "react-native";
+import {
+  Linking,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import codePush, { LocalPackage } from "react-native-code-push";
-import { ScrollView } from "react-native-gesture-handler";
 import { SvgProps } from "react-native-svg";
 import { useAsyncEffect } from "rooks";
 
 import MultiSigIcon from "./assets/edit.svg";
 import HelpAndSupport from "./assets/headset.svg";
 import LogoutIcon from "./assets/power-red.svg";
-import { HealthChecksScreen } from "./health-checks";
+// import { HealthChecksScreen } from "./health-checks";
 import { KeysConfigScreen } from "./keys-config";
-import { SettingsRoute } from "./settings-stack";
-import { RootStack, useRootNavigation } from "../../root-stack";
-import { useStore } from "../../stores";
-import { ObiLogo } from "../components/obi-logo";
-import { BrandToggle } from "../components/obi-mode-toggle";
-import { isSmallScreenNumber } from "../components/screen-size";
+import CogIcon from "../home/assets/obi-settings-active.svg";
 
 export const SettingsScreen = observer(function SettingsScreen() {
   const { configStore, walletsStore } = useStore();
-  const isObi = configStore.isObi();
-  const isLoop = configStore.isLoop();
   const intl = useIntl();
   const navigation = useRootNavigation();
   const [appMetadata, setAppMetadata] = useState<LocalPackage | null>(null);
-
   useAsyncEffect(async () => {
     const metadata = await codePush.getUpdateMetadata();
     if (metadata) {
@@ -59,20 +65,20 @@ export const SettingsScreen = observer(function SettingsScreen() {
             marginBottom: 10,
           }}
         >
-          <BrandToggle
+          <View
             style={{
               borderRadius: 32,
               marginRight: 10,
               marginLeft: 10,
             }}
           >
-            <ObiLogo
+            <ObiIcon
               style={{
                 width: 64,
                 height: 64,
               }}
             />
-          </BrandToggle>
+          </View>
 
           <View style={{ flexDirection: "column" }}>
             <Heading>
@@ -119,6 +125,12 @@ export const SettingsScreen = observer(function SettingsScreen() {
                 navigation.navigate(SettingsRoute.MultisigSettings)
               }
             />
+            <Setting
+              Icon={CogIcon}
+              title="Account Settings"
+              subtitle="Manage your account settings."
+              onPress={() => navigation.navigate(SettingsRoute.OsmosisSettings)}
+            />
             {configStore.isFeatureEnabled(Feature.HealthChecks) ? (
               <Setting
                 Icon={MultiSigIcon}
@@ -138,45 +150,36 @@ export const SettingsScreen = observer(function SettingsScreen() {
             ) : null}
           </>
         ) : null}
-        <View
-          style={[
-            styles.flex1,
-            styles.separatorContainer,
-            { flexDirection: "row" },
-          ]}
-        >
-          <View style={[styles.separator]} />
-          <Text style={[styles.separatorText]}>
-            <FormattedMessage id="settings.more" defaultMessage="More" />
-          </Text>
-          <View style={[styles.separator]} />
-        </View>
+        {Platform.OS !== "web" && (
+          <View
+            style={[
+              styles.flex1,
+              styles.separatorContainer,
+              { flexDirection: "row" },
+            ]}
+          >
+            <View style={[styles.separator]} />
+            <Text style={[styles.separatorText]}>
+              <FormattedMessage id="settings.more" defaultMessage="More" />
+            </Text>
+            <View style={[styles.separator]} />
+          </View>
+        )}
         <Setting
           Icon={HelpAndSupport}
           title={intl.formatMessage({
             id: "settings.helpsupport",
             defaultMessage: "Help & Support",
           })}
-          subtitle={intl.formatMessage(
-            isObi
-              ? {
-                  id: "settings.helpsupport.subtext.obi",
-                  defaultMessage: "Contact Obi support.",
-                }
-              : {
-                  id: "settings.helpsupport.subtext",
-                  defaultMessage: "Contact Loop support.",
-                }
-          )}
-          onPress={() =>
-            Linking.openURL(
-              isObi ? "https://obi.money/contact" : "https://loop.markets/help"
-            )
-          }
+          subtitle={intl.formatMessage({
+            id: "settings.helpsupport.subtext.obi",
+            defaultMessage: "Contact Obi support.",
+          })}
+          onPress={() => Linking.openURL("https://obi.money/contact")}
         />
 
         <Setting
-          Icon={() => <LogoutIcon fill={isLoop ? "#E36B7D" : "white"} />}
+          Icon={() => <LogoutIcon fill="white" />}
           title={intl.formatMessage({
             id: "settings.logout",
             defaultMessage: "Log Out",
@@ -229,9 +232,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
               {/*</Text>*/}
               <Text
                 onPress={() => {
-                  const url = configStore.isObi()
-                    ? "https://www.obi.money/privacy-policy"
-                    : "https://mail.loop.onl/privacy-policy/";
+                  const url = "https://www.obi.money/privacy-policy";
                   void Linking.openURL(url);
                 }}
                 style={{
@@ -266,37 +267,52 @@ export const SettingsScreen = observer(function SettingsScreen() {
 });
 
 interface SettingProps {
-  Icon: FC<SvgProps>;
+  Icon?: FC<SvgProps>;
   title: string;
   subtitle: string;
   onPress?: () => void;
+  children?: ReactNode;
+  disableButton?: boolean;
 }
 
-const Setting = observer(function Setting({
+export const Setting = observer(function Setting({
   Icon,
   title,
   subtitle,
   onPress,
+  children,
+  disableButton,
 }: SettingProps) {
-  const { configStore } = useStore();
-  const brand = configStore.brand;
-  const isLoop = configStore.isLoop();
-  return (
-    <SettingButton onPress={() => onPress && onPress()} brand={brand}>
-      <View
-        style={{
-          padding: 10,
-          backgroundColor: isLoop ? "#1D1C37" : "#437DFF",
-          alignSelf: "flex-start",
-          borderRadius: 12,
-        }}
-      >
-        <Icon fill={isLoop ? "#7B87A8" : "white"} />
+  const renderContent = () => (
+    <>
+      <View style={{ flex: 1, flexDirection: "row" }}>
+        {Icon && (
+          <View
+            style={{
+              padding: 10,
+              backgroundColor: "#437DFF",
+              alignSelf: "flex-start",
+
+              borderRadius: 12,
+            }}
+          >
+            <Icon fill="white" />
+          </View>
+        )}
+        <TilesContainer>
+          <Heading style={[{ fontSize: 14 }]}>{title}</Heading>
+          <SubHeading>{subtitle}</SubHeading>
+        </TilesContainer>
       </View>
-      <TilesContainer>
-        <Heading style={[{ fontSize: 14 }]}>{title}</Heading>
-        <SubHeading>{subtitle}</SubHeading>
-      </TilesContainer>
+      <View>{children}</View>
+    </>
+  );
+  return (
+    <SettingButton
+      onPress={() => onPress && onPress()}
+      disabled={disableButton}
+    >
+      {renderContent()}
     </SettingButton>
   );
 });
@@ -331,6 +347,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     flexDirection: "row",
+    justifyContent: "space-between",
   },
   flex1: {
     flex: 0,
@@ -357,13 +374,13 @@ const styles = StyleSheet.create({
     color: "#3D4661",
   },
 });
-const SettingButton = styled.TouchableOpacity<{ brand: Brand }>(
+const SettingButton = styled.TouchableOpacity(
   {
     ...styles.setting,
     ...styles.flex1,
   },
-  (props) => ({
-    backgroundColor: props.brand === Brand.Loop ? "#111023" : "#272727",
+  () => ({
+    backgroundColor: "#272727",
   })
 );
 
@@ -377,12 +394,25 @@ export const settingsScreens = () => {
         component={KeysConfigScreen}
         options={{ headerShown: false }}
       />
-      <RootStack.Screen
-        name={SettingsRoute.MultisigHealthChecks}
-        key={SettingsRoute.MultisigHealthChecks}
-        component={HealthChecksScreen}
-        options={{ headerShown: false }}
-      />
+
+      {/*<RootStack.Screen*/}
+      {/*  name={SettingsRoute.MultisigHealthChecks}*/}
+      {/*  key={SettingsRoute.MultisigHealthChecks}*/}
+      {/*  component={HealthChecksScreen}*/}
+      {/*  options={{ headerShown: false }}*/}
+      {/*/>*/}
+      {/*<RootStack.Screen*/}
+      {/*  name={SettingsRoute.OsmosisSettings}*/}
+      {/*  key={SettingsRoute.OsmosisSettings}*/}
+      {/*  component={OsmosisSettingsScreen}*/}
+      {/*  options={{ headerShown: false }}*/}
+      {/*/>*/}
+      {/*<RootStack.Screen*/}
+      {/*  name={SettingsRoute.WhitelistedLPs}*/}
+      {/*  key={SettingsRoute.WhitelistedLPs}*/}
+      {/*  component={WhitelistedLPsScreen}*/}
+      {/*  options={{ headerShown: false }}*/}
+      {/*/>*/}
     </RootStack.Group>
   );
 };

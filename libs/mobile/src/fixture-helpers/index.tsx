@@ -1,4 +1,12 @@
-import { pubkeyType } from "@cosmjs/amino";
+import {
+  Alert,
+  createDeviceKeyPair,
+  getGatekeeperConfigDraftId,
+  getTwilioClient,
+  useEnv,
+  useSecurityQuestions,
+  useStore,
+} from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   GatekeeperConfig,
@@ -12,14 +20,7 @@ import {
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect } from "react";
-import { Alert } from "react-native";
 import { useAsyncEffect } from "rooks";
-
-import { getBiometricsPublicKey } from "../app/biometrics";
-import { useSecurityQuestions } from "../app/screens/components/phone-number/security-question-input";
-import { useStore } from "../app/stores";
-import { getTwilioClient } from "../app/text-message";
-import { getGatekeeperConfigDraftId } from "../screens/accounts/draft-id";
 
 export function mockAction(message: string) {
   return () => {
@@ -36,20 +37,17 @@ export const MultisigDraft = {
     const { chainStore, draftsStore } = useStore();
     const draft = draftsStore.get({ id: multisigDraftId });
     const securityQuestions = useSecurityQuestions();
+    const env = useEnv();
 
     useAsyncEffect(async () => {
       if (!draft) {
         const original = ObservableMultisigKey.create(chainStore.currentChain);
-        original.setDeviceKey({
-          type: pubkeyType.secp256k1,
-          value: await getBiometricsPublicKey({
-            demoMode: true,
-          }),
-        });
+        original.setDeviceKey(createDeviceKeyPair(true));
         original.setPhoneKey({
-          publicKey: await getTwilioClient(
-            true
-          ).parsePublicKeyMagicCodeResponse({
+          publicKey: await getTwilioClient({
+            demoMode: true,
+            env,
+          }).parsePublicKeyMagicCodeResponse({
             key: "",
           }),
           phoneNumber: "+1234567890",

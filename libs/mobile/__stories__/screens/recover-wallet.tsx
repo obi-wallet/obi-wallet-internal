@@ -1,5 +1,6 @@
+import { RecoverWallet } from "@obi-wallet/common";
+
 import { mockAction, MultisigDraft } from "../../src/fixture-helpers";
-import { RecoverWallet } from "../../src/screens/recover-wallet";
 
 export default (
   <MultisigDraft.Container>

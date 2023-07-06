@@ -6,7 +6,7 @@ import {
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
 } from "@terra-money/feather.js";
-import { Duration } from "luxon";
+import { DateTime, Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
@@ -22,7 +22,9 @@ import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
 
 export class CosmosSdkMessages extends AbstractMessages {
-  protected constructor(protected chainId: CosmosChainId | TerraChainId) {
+  protected constructor(
+    protected override chainId: CosmosChainId | TerraChainId
+  ) {
     super(chainId);
   }
 
@@ -296,124 +298,177 @@ export class CosmosSdkMessages extends AbstractMessages {
       );
 
       newGatekeeperConfig.flexAccounts.forEach((flexAccount) => {
-        const previousFlexAccount = wallet.gatekeeperConfig.flexAccounts.find(
-          (previousFlexAccount) => {
-            return previousFlexAccount.address === flexAccount.address;
-          }
-        );
-
-        if (
-          !previousFlexAccount ||
-          !R.equals(
-            flexAccount.remainingAutoSignDuration,
-            previousFlexAccount.remainingAutoSignDuration
-          )
-        ) {
-          if (flexAccount.autoSignEndTime) {
-            const rawMessage = {
-              create_session_key: {
-                address: flexAccount.address,
-                admin_permissions: true,
-                max_duration: flexAccount.autoSignEndTime.toUnixInteger(),
-                use_limit: 999,
-              },
-            };
-
-            messages.push(
-              new MsgExecuteContract(
-                wallet.owner.address,
-                sessionKeyGatekeeper,
-                rawMessage
-              )
-            );
-          } else if (
-            previousFlexAccount?.hasActiveAutoSign &&
-            !flexAccount.hasActiveAutoSign
-          ) {
-            const rawMessage = {
-              destroy_session_key: {
-                address: flexAccount.address,
-              },
-            };
-
-            messages.push(
-              new MsgExecuteContract(
-                wallet.owner.address,
-                sessionKeyGatekeeper,
-                rawMessage
-              )
-            );
-          }
-        }
-
-        if (previousFlexAccount && flexAccount.equals(previousFlexAccount)) {
-          return;
-        }
-
-        const additionalProperties = (() => {
-          if (flexAccount.spendLimit) {
-            const { period } = flexAccount.spendLimit;
-
-            const periodProperties = (() => {
-              if (R.has("days", period)) {
-                return {
-                  period_multiple: period.days,
-                  period_type: "days",
-                };
-              } else if (R.has("months", period)) {
-                return {
-                  period_multiple: period.months,
-                  period_type: "months",
-                };
-              } else {
-                return {
-                  period_multiple: period.years * 12,
-                  period_type: "months",
-                };
-              }
-            })();
-
-            const amount = `${1_000_000 * flexAccount.spendLimit.amount}`;
-
-            return {
-              ...periodProperties,
-              spend_limits: [
-                {
-                  amount,
-                  current_balance: "0",
-                  denom:
-                    "ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4",
-                  limit_remaining: amount,
-                },
-              ],
-            };
-          } else {
-            return {
-              period_multiple: 0,
-              period_type: "days",
-              spend_limits: [],
-            };
-          }
-        })();
+        const expiration = DateTime.utc().plus({ minutes: 30 });
+        const amount = `${Math.floor(
+          1_000_000 * (flexAccount.spendLimit?.amount ?? 0)
+        )}`;
 
         const rawMessage = {
-          upsert_permissioned_address: {
-            new_permissioned_address: {
-              address: flexAccount.address,
-              cooldown: 0,
-              inheritance_records: [],
-              offset: 0,
-              ...additionalProperties,
+          add_abstraction_rule: {
+            new_rule: {
+              actor: flexAccount.address,
+              ty: "sessionkey",
+              main_rule: {
+                session_key: {
+                  expiration: expiration.toUnixInteger(),
+                  admin_permissions: false,
+                },
+              },
+              sub_rules: [
+                [
+                  "spendlimit",
+                  {
+                    spendlimit: {
+                      address: flexAccount.address,
+                      cooldown: 0,
+                      inheritance_records: [],
+                      offset: 0,
+                      period_multiple: 1,
+                      period_type: "days",
+                      spend_limits: [
+                        {
+                          amount: amount,
+                          current_balance: "0",
+                          limit_remaining: amount,
+                          denom: "uosmo",
+                        },
+                      ],
+                    },
+                  },
+                ],
+              ],
             },
           },
         };
         messages.push(
           new MsgExecuteContract(
             wallet.owner.address,
-            spendLimitGatekeeper,
+            wallet.proxyAddress,
             rawMessage
           )
         );
+        //
+        //
+        //
+        //
+        // const previousFlexAccount = wallet.gatekeeperConfig.flexAccounts.find(
+        //   (previousFlexAccount) => {
+        //     return previousFlexAccount.address === flexAccount.address;
+        //   }
+        // );
+        //
+        // if (
+        //   !previousFlexAccount ||
+        //   !R.equals(
+        //     flexAccount.remainingAutoSignDuration,
+        //     previousFlexAccount.remainingAutoSignDuration
+        //   )
+        // ) {
+        //   if (flexAccount.autoSignEndTime) {
+        //     const rawMessage = {
+        //       create_session_key: {
+        //         address: flexAccount.address,
+        //         admin_permissions: true,
+        //         max_duration: flexAccount.autoSignEndTime.toUnixInteger(),
+        //         use_limit: 999,
+        //       },
+        //     };
+        //
+        //     messages.push(
+        //       new MsgExecuteContract(
+        //         wallet.owner.address,
+        //         sessionKeyGatekeeper,
+        //         rawMessage
+        //       )
+        //     );
+        //   } else if (
+        //     previousFlexAccount?.hasActiveAutoSign &&
+        //     !flexAccount.hasActiveAutoSign
+        //   ) {
+        //     const rawMessage = {
+        //       destroy_session_key: {
+        //         address: flexAccount.address,
+        //       },
+        //     };
+        //
+        //     messages.push(
+        //       new MsgExecuteContract(
+        //         wallet.owner.address,
+        //         sessionKeyGatekeeper,
+        //         rawMessage
+        //       )
+        //     );
+        //   }
+        // }
+        //
+        // if (previousFlexAccount && flexAccount.equals(previousFlexAccount)) {
+        //   return;
+        // }
+        //
+        // const additionalProperties = (() => {
+        //   if (flexAccount.spendLimit) {
+        //     const { period } = flexAccount.spendLimit;
+        //
+        //     const periodProperties = (() => {
+        //       if (R.has("days", period)) {
+        //         return {
+        //           period_multiple: period.days,
+        //           period_type: "days",
+        //         };
+        //       } else if (R.has("months", period)) {
+        //         return {
+        //           period_multiple: period.months,
+        //           period_type: "months",
+        //         };
+        //       } else {
+        //         return {
+        //           period_multiple: period.years * 12,
+        //           period_type: "months",
+        //         };
+        //       }
+        //     })();
+        //
+        //     const amount = `${1_000_000 * flexAccount.spendLimit.amount}`;
+        //
+        //     return {
+        //       ...periodProperties,
+        //       spend_limits: [
+        //         {
+        //           amount,
+        //           current_balance: "0",
+        //           denom:
+        //             "ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4",
+        //           limit_remaining: amount,
+        //         },
+        //       ],
+        //     };
+        //   } else {
+        //     return {
+        //       period_multiple: 0,
+        //       period_type: "days",
+        //       spend_limits: [],
+        //     };
+        //   }
+        // })();
+        //
+        // const rawMessage = {
+        //   upsert_permissioned_address: {
+        //     new_permissioned_address: {
+        //       address: flexAccount.address,
+        //       cooldown: 0,
+        //       inheritance_records: [],
+        //       offset: 0,
+        //       ...additionalProperties,
+        //     },
+        //   },
+        // };
+        // messages.push(
+        //   new MsgExecuteContract(
+        //     wallet.owner.address,
+        //     spendLimitGatekeeper,
+        //     rawMessage
+        //   )
+        // );
       });
 
       removedAddresses.forEach((address) => {

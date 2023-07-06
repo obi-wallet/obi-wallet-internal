@@ -1,0 +1,33 @@
+{
+  "name": "common-deprecated",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/common-deprecated/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/common-deprecated/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["coverage/libs/common"],
+      "options": {
+        "jestConfig": "libs/common-deprecated/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "tsc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tsc --project libs/common-deprecated/tsconfig.lib.json --noEmit",
+          "tsc --project libs/common-deprecated/tsconfig.spec.json --noEmit"
+        ]
+      }
+    }
+  }
+}

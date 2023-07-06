@@ -17,7 +17,7 @@ import {
 import { AbstractStakingSdk } from "../abstract";
 
 export class FeatherJsStakingSdk extends AbstractStakingSdk {
-  protected chainId: TerraChainId;
+  protected override chainId: TerraChainId;
   protected client: FeatherJsClient;
 
   public constructor({

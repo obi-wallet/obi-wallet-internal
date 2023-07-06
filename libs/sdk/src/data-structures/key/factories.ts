@@ -1,4 +1,4 @@
-import { makeObservable, observable, toJS } from "mobx";
+import { action, makeObservable, observable, toJS } from "mobx";
 import * as R from "ramda";
 
 import { Key, PendingRecoveryKey, UsableKey } from "./implementation";
@@ -27,6 +27,7 @@ export function createObservableKey(
     {
       serialized: observable,
       toJSON: false,
+      setSerialized: action,
     },
     {
       name: "Key",

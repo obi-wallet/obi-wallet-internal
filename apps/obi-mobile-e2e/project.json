@@ -5,31 +5,31 @@
   "projectType": "application",
   "targets": {
     "build-ios-small": {
-      "executor": "@nrwl/detox:build",
+      "executor": "@nx/detox:build",
       "options": {
         "detoxConfiguration": "ios.sim.debug.small"
       }
     },
     "build-ios-large": {
-      "executor": "@nrwl/detox:build",
+      "executor": "@nx/detox:build",
       "options": {
         "detoxConfiguration": "ios.sim.debug.large"
       }
     },
     "test-ios-small": {
-      "executor": "@nrwl/detox:test",
+      "executor": "@nx/detox:test",
       "options": {
         "detoxConfiguration": "ios.sim.debug.small"
       }
     },
     "test-ios-large": {
-      "executor": "@nrwl/detox:test",
+      "executor": "@nx/detox:test",
       "options": {
         "detoxConfiguration": "ios.sim.debug.large"
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/obi-mobile-e2e/**/*.{ts,tsx,js,jsx}"]

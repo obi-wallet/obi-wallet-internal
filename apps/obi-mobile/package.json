@@ -101,7 +101,6 @@
     "react-native-nfc-manager": "*",
     "react-native-permissions": "*",
     "react-native-qrcode-scanner": "*",
-    "react-native-qrcode-svg": "*",
     "react-native-randombytes": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": "*",
@@ -117,6 +116,6 @@
     "zod": "*"
   },
   "devDependencies": {
-    "@nrwl/react-native": "*"
+    "@nx/react-native": "*"
   }
 }

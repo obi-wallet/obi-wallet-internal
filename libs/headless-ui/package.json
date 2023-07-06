@@ -1,0 +1,32 @@
+{
+  "name": "@obi-wallet/headless-ui",
+  "version": "0.0.1",
+  "repository": "https://github.com/obi-wallet/obi-wallet-internal.git",
+  "dependencies": {
+    "@obi-wallet/sdk": "*",
+    "@tanstack/query-async-storage-persister": "*",
+    "@tanstack/react-query": "*",
+    "@tanstack/react-query-persist-client": "*",
+    "dexie": "*",
+    "mobx": "*",
+    "mobx-react-lite": "*",
+    "ramda": "*",
+    "rooks": "*",
+    "tiny-invariant": "*",
+    "tiny-warning": "*"
+  },
+  "devDependencies": {
+    "@testing-library/jest-native": "*"
+  },
+  "peerDependencies": {
+    "@react-native-async-storage/async-storage": "*",
+    "@react-navigation/native": "*",
+    "@terra-money/feather.js": "*",
+    "react": "*",
+    "react-native": "*",
+    "react-native-code-push": "*"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}

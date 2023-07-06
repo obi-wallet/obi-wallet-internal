@@ -207,7 +207,7 @@ export class FeatherJsBankSdk extends AbstractBankSdk {
     }, prices);
   }
 
-  public enrichTokenWithoutUsdValue(token: Token): EnrichedToken {
+  public override enrichTokenWithoutUsdValue(token: Token): EnrichedToken {
     if (!R.has(token.id, this.tokens)) {
       return super.enrichTokenWithoutUsdValue(token);
     }

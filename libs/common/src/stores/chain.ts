@@ -16,7 +16,16 @@ export class ChainStore {
   }) {
     this.configStore = configStore;
     this.walletsStore = walletsStore;
-    makeObservable(this);
+    makeObservable<ChainStore, "configStore" | "walletsStore" | "currentChain">(
+      this,
+      {
+        configStore: false,
+        walletsStore: false,
+        currentChain: false,
+        setCurrentChain: action,
+        currentChainInformation: computed,
+      }
+    );
 
     autorun(() => {
       this.setCurrentChain(configStore.config.chains.default);
@@ -29,12 +38,10 @@ export class ChainStore {
     );
   }
 
-  @action
   public setCurrentChain(chain: ChainId) {
     this.walletsStore.setCurrentChain(chain);
   }
 
-  @computed
   public get currentChainInformation() {
     return Chain.information(this.currentChain);
   }

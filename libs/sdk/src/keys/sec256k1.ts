@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto";
-import secp256k1 from "secp256k1";
+import * as secp256k1 from "secp256k1";
 import { z } from "zod";
 
 export const Secp256k1PublicKey = z.object({

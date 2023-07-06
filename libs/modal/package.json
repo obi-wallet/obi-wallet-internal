@@ -1,0 +1,35 @@
+{
+  "name": "@obi-wallet/modal",
+  "version": "0.0.1",
+  "repository": "https://github.com/obi-wallet/obi-wallet-internal.git",
+  "dependencies": {
+    "@emotion/react": "*",
+    "@gorhom/portal": "*",
+    "@obi-wallet/common": "*",
+    "@obi-wallet/config": "*",
+    "@obi-wallet/headless-ui": "*",
+    "@obi-wallet/sdk": "*",
+    "@react-navigation/native": "*",
+    "@react-navigation/stack": "*",
+    "buffer": "*",
+    "mobx": "*",
+    "mobx-react-lite": "*",
+    "react-native-web": "*",
+    "react-shadow": "*",
+    "rooks": "*"
+  },
+  "devDependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "*",
+    "@rollup/plugin-inject": "*",
+    "@storybook/react": "*",
+    "@vitejs/plugin-react": "*",
+    "vite": "*"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}

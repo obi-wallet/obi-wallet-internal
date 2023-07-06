@@ -1,5 +1,6 @@
+import { Welcome } from "@obi-wallet/common";
+
 import { mockAction } from "../../src/fixture-helpers";
-import { Welcome } from "../../src/screens/welcome";
 
 export default (
   <Welcome

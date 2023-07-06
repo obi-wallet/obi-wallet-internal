@@ -1,14 +1,14 @@
-import { CommonActions } from "@react-navigation/native";
-import { useEffect } from "react";
-
 import {
+  AccountsRoute,
   HomeBottomTabRoute,
   HomeDrawerRoute,
   useRootNavigation,
-} from "../../src";
+} from "@obi-wallet/common";
+import { CommonActions } from "@react-navigation/native";
+import { useEffect } from "react";
+
 import { BaseAppWithoutProvider } from "../../src/app";
 import { GatekeeperConfigDraft } from "../../src/fixture-helpers";
-import { AccountsRoute } from "../../src/screens/accounts/accounts-stack";
 
 const flexAccountRoutes = [
   {

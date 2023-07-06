@@ -15,13 +15,35 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"]
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "test",
+          "e2e",
+          "build-storybook"
+        ]
       }
     }
   },
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"]
+    }
+  },
+  "generators": {
+    "@nx/react": {
+      "application": {
+        "babel": true
+      },
+      "library": {
+        "unitTestRunner": "jest"
+      }
+    },
+    "@nx/next": {
+      "application": {
+        "style": "none",
+        "linter": "eslint"
+      }
     }
   }
 }

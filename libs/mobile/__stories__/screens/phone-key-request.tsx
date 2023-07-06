@@ -1,9 +1,10 @@
-import { mockAction, MultisigDraft } from "../../src/fixture-helpers";
-import { KeyFlow } from "../../src/screens/keys";
 import {
+  KeyFlow,
   PhoneKeyRequest,
   PhoneKeyRequestProps,
-} from "../../src/screens/keys/phone";
+} from "@obi-wallet/common";
+
+import { mockAction, MultisigDraft } from "../../src/fixture-helpers";
 
 function renderFlavor(flow: PhoneKeyRequestProps["flow"]) {
   return (

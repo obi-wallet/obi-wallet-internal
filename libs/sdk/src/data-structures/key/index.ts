@@ -9,9 +9,9 @@ export type Key = KeyInterface;
 export const Key = {
   schema: KeySchema,
   create: createKey,
-} satisfies AbstractDataStructure<Key>;
+} satisfies AbstractDataStructure<Key, typeof KeySchema>;
 
 export const ObservableKey = {
   schema: KeySchema,
   create: createObservableKey,
-} satisfies AbstractDataStructure<Key>;
+} satisfies AbstractDataStructure<Key, typeof KeySchema>;

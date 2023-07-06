@@ -1,8 +1,10 @@
-import { Brand, Config, Feature } from "@obi-wallet/common";
 import { KeyType } from "@obi-wallet/sdk";
+import { obiTheme } from "@obi-wallet/theme";
+
+import { Config } from "./config";
+import { Feature } from "./feature";
 
 export const obiMobileConfig: Config = {
-  brand: Brand.Obi,
   chains: {
     enabled: ["phoenix-1"],
     default: "phoenix-1",
@@ -21,4 +23,5 @@ export const obiMobileConfig: Config = {
     [Feature.DemoMode]: true,
   },
   requiredKeys: [KeyType.Device, KeyType.Phone],
+  theme: obiTheme,
 };

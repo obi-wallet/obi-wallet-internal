@@ -1,7 +1,7 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
-  "plugins": ["@nrwl/nx", "mobx", "import", "react", "react-hooks", "unicorn"],
+  "plugins": ["@nx", "mobx", "import", "react", "react-hooks", "unicorn"],
   "settings": {
     "react": {
       "version": "detect",
@@ -18,7 +18,7 @@
         "plugin:react-hooks/recommended"
       ],
       "rules": {
-        "@nrwl/nx/enforce-module-boundaries": [
+        "@nx/enforce-module-boundaries": [
           "error",
           {
             "enforceBuildableLibDependency": true,
@@ -46,9 +46,11 @@
           "error",
           {
             "devDependencies": [
-              "{apps,libs}/*/{__fixtures__,__stories__,__tests__,__tests-integration__,scripts}/**/*",
+              "{apps,libs}/*/{.storybook,__fixtures__,__stories__,__tests__,__tests-integration__,scripts}/**/*",
+              "{apps,libs}/*/test-setup.ts",
               "apps/*-e2e/**/*",
               "apps/*/metro.config.js",
+              "apps/*/next.config.js",
               "jest*.[jt]s"
             ],
             "optionalDependencies": false
@@ -144,16 +146,20 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "extends": ["plugin:@nrwl/nx/typescript"],
+      "extends": ["plugin:@nx/typescript"],
       "rules": {}
     },
     {
       "files": ["*.js", "*.jsx"],
-      "extends": ["plugin:@nrwl/nx/javascript"],
+      "extends": ["plugin:@nx/javascript"],
       "rules": {}
     },
     {
-      "files": ["__stories__/**/*.{ts,tsx,js,jsx}"],
+      "files": [
+        "app/**/*.{ts,tsx,js,jsx}",
+        "__stories__/**/*.{ts,tsx,js,jsx}",
+        "*.stories.{ts,tsx,js,jsx}"
+      ],
       "rules": {
         "import/no-default-export": "off",
 

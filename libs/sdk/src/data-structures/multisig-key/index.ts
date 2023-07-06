@@ -8,9 +8,9 @@ export type MultisigKey = MultisigKeyInterface;
 export const MultisigKey = {
   schema: MultisigKeySchema,
   create: createMultisigKey,
-} satisfies AbstractDataStructure<MultisigKey>;
+} satisfies AbstractDataStructure<MultisigKey, typeof MultisigKeySchema>;
 
 export const ObservableMultisigKey = {
   schema: MultisigKeySchema,
   create: createObservableMultisigKey,
-} satisfies AbstractDataStructure<MultisigKey>;
+} satisfies AbstractDataStructure<MultisigKey, typeof MultisigKeySchema>;

@@ -1,16 +1,15 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "jsx": "react-native",
-    "allowJs": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
+    "module": "commonjs",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "files": ["../theme/emotion.d.ts"],
+  "files": [],
   "include": [],
   "references": [
     {

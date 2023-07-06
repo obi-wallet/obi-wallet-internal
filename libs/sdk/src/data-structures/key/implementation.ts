@@ -18,14 +18,18 @@ export abstract class Key {
   public toJSON() {
     return this._serialize(this.serialized);
   }
+
+  public setSerialized(serialized: AbstractSerialized<typeof KeySchema>) {
+    this.serialized = serialized;
+  }
 }
 
 export class UsableKey<
   T extends AbstractSerialized<typeof UsableKeySchema>
 > extends Key {
   public constructor(
-    protected serialized: T,
-    protected _serialize: <T>(serialized: T) => T
+    protected override serialized: T,
+    protected override _serialize: <T>(serialized: T) => T
   ) {
     super(serialized, _serialize);
   }
@@ -45,8 +49,10 @@ export class UsableKey<
 
 export class PendingRecoveryKey extends Key {
   public constructor(
-    protected serialized: AbstractSerialized<typeof PendingRecoveryKeySchema>,
-    protected _serialize: <T>(serialized: T) => T
+    protected override serialized: AbstractSerialized<
+      typeof PendingRecoveryKeySchema
+    >,
+    protected override _serialize: <T>(serialized: T) => T
   ) {
     super(serialized, _serialize);
   }

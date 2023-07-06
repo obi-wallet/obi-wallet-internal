@@ -20,7 +20,7 @@ function notImplemented(message: string) {
 }
 
 export class LegacyCosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
-  protected chainId: LegacyCosmosChainId;
+  protected override chainId: LegacyCosmosChainId;
   protected client: CosmJsClient;
 
   public constructor({

@@ -1,0 +1,103 @@
+import { useTheme } from "@emotion/react";
+import { Language } from "@obi-wallet/config";
+import { observer } from "mobx-react-lite";
+import { useState } from "react";
+import { Image } from "react-native";
+
+import { DropDownPicker } from "./drop-down-picker";
+import { useStore } from "../../contexts";
+
+const allLanguages = [
+  {
+    code: "en",
+    language: "English",
+    icon: () => (
+      <Image
+        source={require("./assets/flag-us.png")}
+        style={{ width: 25, height: 25, marginRight: 10 }}
+      />
+    ),
+  },
+  {
+    code: "de",
+    language: "Deutsch",
+    icon: () => (
+      <Image
+        source={require("./assets/flag-de.png")}
+        style={{ width: 25, height: 25, marginRight: 10 }}
+      />
+    ),
+  },
+  {
+    code: "es",
+    language: "Espanol",
+    icon: () => (
+      <Image
+        source={require("./assets/flag-es.png")}
+        style={{ width: 25, height: 25, marginRight: 10 }}
+      />
+    ),
+  },
+];
+
+export const LanguagePicker = observer(function LanguagePicker() {
+  const languageStore = useStore().languageStore;
+  const { currentLanguage, enabledLanguages } = languageStore;
+  const theme = useTheme();
+
+  const handleLanguageChoice = (language: Language | null) => {
+    if (language) {
+      languageStore.setCurrentLanguage(language);
+    }
+  };
+
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(currentLanguage);
+  const [items, setItems] = useState(() => {
+    return allLanguages.filter((lang) =>
+      enabledLanguages.includes(lang.code as Language)
+    );
+  });
+
+  if (items.length <= 1) return null;
+
+  return (
+    <DropDownPicker
+      open={open}
+      value={value}
+      items={items}
+      setOpen={setOpen}
+      setValue={setValue}
+      setItems={setItems}
+      schema={{
+        label: "language",
+        value: "code",
+        icon: "icon",
+      }}
+      itemKey="code"
+      itemSeparator={false}
+      closeAfterSelecting={true}
+      listItemContainerStyle={{
+        borderWidth: 0,
+      }}
+      style={{
+        backgroundColor: theme.colors.background,
+        borderWidth: 0,
+      }}
+      textStyle={{
+        fontSize: 16,
+        color: "#F6F5FF",
+        textAlign: "left",
+      }}
+      maxHeight={300}
+      disableBorderRadius={true}
+      stickyHeader={true}
+      showArrowIcon={true}
+      showTickIcon={false}
+      hideSelectedItemIcon={false}
+      onChangeValue={(value) => {
+        handleLanguageChoice(value);
+      }}
+    />
+  );
+});

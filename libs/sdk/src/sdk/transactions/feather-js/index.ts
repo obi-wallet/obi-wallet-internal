@@ -2,6 +2,7 @@ import {
   AccAddress,
   isTxError,
   LegacyAminoMultisigPublicKey,
+  Msg,
   MsgSend,
   SimplePublicKey,
   Tx,
@@ -24,7 +25,7 @@ import { FeatherJsKey } from "../../common/feather-js";
 import { AbstractTransactionsSdk } from "../abstract";
 
 export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
-  protected chainId: TerraChainId;
+  protected override chainId: TerraChainId;
   protected client: FeatherJsClient;
 
   public constructor({
@@ -130,7 +131,8 @@ export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
       if (
         error.response?.status === 404 &&
         result.success &&
-        result.data.message.includes("not found")
+        (result.data.message.includes("not found") ||
+          result.data.message.includes("code = NotFound"))
       ) {
         return null;
       }
@@ -163,7 +165,8 @@ export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
           ],
           {
             chainID: this.chainId,
-            msgs: messages,
+            // TODO:
+            msgs: messages as Msg[],
           }
         );
         return new FeatherJsMultisigSigner({

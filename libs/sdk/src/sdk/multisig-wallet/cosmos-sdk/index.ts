@@ -12,7 +12,12 @@ import {
 } from "../../../data-structures";
 import { queryClient } from "../../../query-client";
 import { Signer } from "../../../signers";
-import { Message, SignedTransaction, wrapMessage } from "../../../transactions";
+import {
+  Message,
+  SignedTransaction,
+  wrapMessage,
+  wrapOsmoMessage,
+} from "../../../transactions";
 import { SignAndBroadcastTransactionUserInteraction } from "../../../user-interactions";
 import { BroadcastTransactionResult, CodeIds, Token } from "../../common";
 import { Messages } from "../../messages";
@@ -20,7 +25,7 @@ import { Sdk } from "../../sdk";
 import { AbstractMultisigWalletSdk } from "../abstract";
 
 export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
-  protected chainId: CosmosChainId | TerraChainId;
+  protected override chainId: CosmosChainId | TerraChainId;
   protected client: AbstractClient;
 
   public constructor({
@@ -316,7 +321,9 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
               can_execute: {
                 funds: [],
                 address: flexAccount.address,
-                msg: { legacy: wrapMessage(message) },
+                msg: R.has("osmo", message)
+                  ? { osmo: wrapOsmoMessage(message) }
+                  : { legacy: wrapMessage(message) },
               },
             },
             schema,

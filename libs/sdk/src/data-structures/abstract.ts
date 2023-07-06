@@ -1,21 +1,14 @@
-import {
-  AbstractMigratable,
-  AbstractMigratableSchema,
-  AbstractSerialized,
-} from "./migratable";
+import { AbstractMigratable, AbstractSerialized } from "./migratable";
 
-export interface AttachedSchema {
-  schema: AbstractMigratableSchema;
-}
-
-export interface AbstractDataStructure<T> extends AttachedSchema {
+export interface AbstractDataStructure<T, S> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   create: (...args: any[]) => T;
+  schema: S;
 }
 
 export type AbstractDataStructureToSchema<T> =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  T extends AttachedSchema ? T["schema"] : never;
+  T extends { schema: infer S } ? S : never;
 export type Migratable<T> = AbstractMigratable<
   AbstractDataStructureToSchema<T>
 >;

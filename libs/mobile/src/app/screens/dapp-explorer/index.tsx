@@ -1,8 +1,16 @@
 import { useTheme } from "@emotion/react";
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
-import { faPaperclip } from "@fortawesome/free-solid-svg-icons/faPaperclip";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { App, Card, Text, TextInput, Tile, Tiles } from "@obi-wallet/common";
+import {
+  App,
+  BaseTextInput,
+  Button as ObiButton,
+  InlineButton,
+  RootRoute,
+  Text,
+  useQrCodeScannerModal,
+  useRootNavigation,
+  useStore,
+} from "@obi-wallet/common";
+import { Card, Tile, Tiles } from "@obi-wallet/common-deprecated";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { isTerraChain } from "@obi-wallet/sdk";
 import WalletConnect from "@walletconnect/client";
@@ -12,24 +20,19 @@ import { useIntl } from "react-intl";
 import {
   Button,
   KeyboardAvoidingView,
-  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableHighlight,
+  TouchableOpacity,
   View,
 } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import ChevronCircleLeft from "./assets/chevron-circle-left.svg";
 import HistoryIcon from "./assets/history.svg";
 import Wcqr from "./assets/wcqr.svg";
-import { Button as ObiButton, InlineButton } from "../../button";
-import { RootRoute, useRootNavigation } from "../../root-stack";
-import { useStore } from "../../stores";
 import { parseDynamicLinkURL } from "../components/connected-web-view";
-import { useQrCodeScannerModal } from "../components/qr-code-scanner-modal";
 
 const styles = StyleSheet.create({
   card: {
@@ -235,9 +238,7 @@ const ConnectedDapp = observer(function ConnectedDapp({
 });
 
 const AppsScreen = observer(function AppsScreen() {
-  const { configStore, appsStore } = useStore();
-  const isObi = configStore.isObi();
-  const isLoop = configStore.isLoop();
+  const { appsStore } = useStore();
   const [editMode, setEditMode] = useState(false);
   const [url, setUrl] = useState("");
   const navigation = useRootNavigation();
@@ -312,54 +313,14 @@ const AppsScreen = observer(function AppsScreen() {
             style={{
               flex: 1,
               height: 1,
-              backgroundColor: isLoop ? "#16152B" : "#272727",
+              backgroundColor: "#272727",
             }}
           />
           <View
             style={{
-              position: "absolute",
-              margin: "auto",
-              width: "100%",
-            }}
-          >
-            {isLoop && (
-              <View
-                style={{
-                  flexDirection: "row",
-                  backgroundColor: "#090817",
-                  alignSelf: "center",
-                  alignItems: "center",
-                  paddingHorizontal: 20,
-                }}
-              >
-                <FontAwesomeIcon
-                  icon={faPaperclip}
-                  // @ts-expect-error web platform is not correctly handled by FontAwesomeIcon's types
-                  size={Platform.OS === "web" ? "1x" : 24}
-                  style={{ color: "#393853", marginRight: 6 }}
-                />
-
-                <View>
-                  <Text style={{ color: "#787B9C" }}>GO TO SPECIFIC LINK</Text>
-                  <Text
-                    style={{
-                      color: "white",
-                      textAlign: "center",
-                      fontSize: 10,
-                      marginBottom: 5,
-                    }}
-                  >
-                    Some apps not yet supported
-                  </Text>
-                </View>
-              </View>
-            )}
-          </View>
-          <View
-            style={{
               flex: 1,
               height: 1,
-              backgroundColor: isLoop ? "#16152B" : "#272727",
+              backgroundColor: "#272727",
               zIndex: -1,
             }}
           />
@@ -367,23 +328,23 @@ const AppsScreen = observer(function AppsScreen() {
 
         <View
           style={{
-            backgroundColor: isLoop ? "#6959E6" : "transparent",
-            borderColor: isLoop ? "transparent" : "white",
+            backgroundColor: "transparent",
+            borderColor: "white",
             borderWidth: 1,
 
             padding: 1,
-            borderRadius: isLoop ? 12 : 32,
+            borderRadius: 32,
             flexDirection: "row",
           }}
         >
-          <TextInput
+          <BaseTextInput
             defaultValue=""
             style={{
               flex: 1,
-              backgroundColor: isLoop ? "#090817" : "#1A1A1A",
+              backgroundColor: "#1A1A1A",
               fontSize: 14,
               fontWeight: "500",
-              borderRadius: isLoop ? 12 : 32,
+              borderRadius: 32,
               paddingLeft: 20,
               color: "#F6F5FF",
             }}
@@ -441,23 +402,13 @@ const AppsScreen = observer(function AppsScreen() {
               }
             }}
           >
-            {isObi ? (
-              <View
-                style={{
-                  transform: [{ rotate: "180deg" }],
-                }}
-              >
-                <ChevronCircleLeft />
-              </View>
-            ) : (
-              <FontAwesomeIcon
-                icon={faChevronRight}
-                // @ts-expect-error web platform is not correctly handled by FontAwesomeIcon's types
-                size={Platform.OS === "web" ? "1x" : 24}
-                wa
-                color="#fff"
-              />
-            )}
+            <View
+              style={{
+                transform: [{ rotate: "180deg" }],
+              }}
+            >
+              <ChevronCircleLeft />
+            </View>
           </TouchableHighlight>
         </View>
       </View>
@@ -472,12 +423,11 @@ export const DefaultApps = observer(function DefaultApps({
   onAppPress: (app: App) => void;
   onLongPress: () => void;
 }) {
-  const { chainStore, configStore } = useStore();
+  const { chainStore } = useStore();
   const wallet = useCurrentWallet();
   const intl = useIntl();
 
   const isTerra = isTerraChain(wallet.chainId);
-  const isObi = configStore.isObi();
 
   return (
     <>
@@ -510,20 +460,18 @@ export const DefaultApps = observer(function DefaultApps({
           }}
         />
       ) : null}
-      {isObi ? (
-        <Tile
-          onLongPress={onLongPress}
-          source={require("./assets/coinhall.png")}
-          label="Coinhall"
-          onPress={() => {
-            onAppPress({
-              label: "Coinhall",
-              url: "https://coinhall.org",
-              icon: "https://place-hold.it/180x180",
-            });
-          }}
-        />
-      ) : null}
+      <Tile
+        onLongPress={onLongPress}
+        source={require("./assets/coinhall.png")}
+        label="Coinhall"
+        onPress={() => {
+          onAppPress({
+            label: "Coinhall",
+            url: "https://coinhall.org",
+            icon: "https://place-hold.it/180x180",
+          });
+        }}
+      />
       {isTerra ? (
         <Tile
           onLongPress={onLongPress}

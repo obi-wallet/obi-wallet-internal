@@ -1,22 +1,17 @@
-import {
-  loopMobileDevConfig,
-  obiMobileConfig,
-  obiMobileMultichainConfig,
-} from "@obi-wallet/config";
+import { obiMobileConfig, obiMobileMultichainConfig } from "@obi-wallet/config";
 import { KVStore } from "@obi-wallet/headless-ui";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useRef } from "react";
 import { useSelect } from "react-cosmos/fixture";
 import { useAsyncEffect } from "rooks";
 
-import { Provider } from "../src";
+import { Provider } from "../src/app/provider";
 
 const kvStore = new KVStore("react-cosmos");
 
 enum Config {
   ObiMobile = "obi-mobile",
   ObiMobileMultichain = "obi-mobile-multichain",
-  LoopMobile = "loop-mobile",
 }
 
 export default observer(function CosmosDecorator({
@@ -50,8 +45,6 @@ export default observer(function CosmosDecorator({
         return obiMobileConfig;
       case Config.ObiMobileMultichain:
         return obiMobileMultichainConfig;
-      case Config.LoopMobile:
-        return loopMobileDevConfig;
     }
   }
 });

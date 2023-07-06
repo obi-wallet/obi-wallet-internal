@@ -14,7 +14,7 @@ import {
 import { AbstractStakingSdk } from "../abstract";
 
 export class CosmJsStakingSdk extends AbstractStakingSdk {
-  protected chainId: CosmosChainId | LegacyCosmosChainId;
+  protected override chainId: CosmosChainId | LegacyCosmosChainId;
   protected client: CosmJsClient;
 
   public constructor({

@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { isObservable, isObservableProp } from "mobx";
-import secp256k1 from "secp256k1";
+import * as secp256k1 from "secp256k1";
 import invariant from "tiny-invariant";
 
 export function expectIsPureObject(serialized: unknown) {

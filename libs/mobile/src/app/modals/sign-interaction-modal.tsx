@@ -1,8 +1,7 @@
+import { SignatureModal, useStore } from "@obi-wallet/common";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
-
-import { SignatureModal } from "./signature-modal";
-import { useStore } from "../stores";
+import * as R from "ramda";
 
 export const SignInteractionModal = observer(function SignInteractionModal() {
   const { userInteractionsStore } = useStore();
@@ -15,7 +14,9 @@ export const SignInteractionModal = observer(function SignInteractionModal() {
 
   console.log(
     JSON.stringify(
-      interaction.payload.messages.map((m) => m.toAmino()),
+      interaction.payload.messages.map((m) => {
+        R.has("osmo", m) ? m.osmo : m.toAmino();
+      }),
       null,
       2
     )

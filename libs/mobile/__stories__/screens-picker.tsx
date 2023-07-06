@@ -1,7 +1,3 @@
-import { CommonActions } from "@react-navigation/native";
-import { useEffect } from "react";
-import { useSelect } from "react-cosmos/fixture";
-
 import {
   HomeBottomTabRoute,
   HomeDrawerRoute,
@@ -9,7 +5,11 @@ import {
   RootRoute,
   SettingsRoute,
   useRootNavigation,
-} from "../src";
+} from "@obi-wallet/common";
+import { CommonActions } from "@react-navigation/native";
+import { useEffect } from "react";
+import { useSelect } from "react-cosmos/fixture";
+
 import { BaseAppWithoutProvider } from "../src/app";
 
 type Route = RootRoute | OnboardingRoute | SettingsRoute | HomeBottomTabRoute;

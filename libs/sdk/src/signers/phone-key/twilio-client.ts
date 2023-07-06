@@ -105,13 +105,13 @@ export class TwilioClient implements TwilioClientInterface {
   public async requestPublicKeyMagicCode({
     phoneNumber,
     securityAnswer,
-    voice,
     chainId,
+    voice,
   }: {
     phoneNumber: string;
     securityAnswer: string;
-    voice: boolean;
     chainId: ChainId;
+    voice: boolean;
   }) {
     await this.encryptAndSendMessage({
       message: `pub:${securityAnswer}`,

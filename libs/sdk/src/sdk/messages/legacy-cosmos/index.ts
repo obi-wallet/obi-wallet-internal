@@ -15,7 +15,7 @@ function notImplemented(message: string) {
 }
 
 export class LegacyCosmosMessages extends AbstractMessages {
-  protected constructor(protected chainId: LegacyCosmosChainId) {
+  protected constructor(protected override chainId: LegacyCosmosChainId) {
     super(chainId);
   }
 

@@ -93,6 +93,7 @@ describe("Empty gatekeeper config", () => {
       ...gatekeepers,
     });
     expect(messages.length).toEqual(1);
+    // @ts-expect-error Ignore for now
     expect(messages[0].toAmino()).toEqual({
       type: "wasm/MsgExecuteContract",
       value: {
@@ -146,6 +147,7 @@ describe("Empty gatekeeper config", () => {
       ...gatekeepers,
     });
     expect(messages.length).toEqual(1);
+    // @ts-expect-error Ignore for now
     expect(messages[0].toAmino()).toEqual({
       type: "wasm/MsgExecuteContract",
       value: {
@@ -196,6 +198,7 @@ describe("Empty gatekeeper config", () => {
       ...gatekeepers,
     });
     expect(messages.length).toEqual(1);
+    // @ts-expect-error Ignore for now
     expect(messages[0].toAmino()).toEqual({
       type: "wasm/MsgExecuteContract",
       value: {
@@ -256,6 +259,7 @@ describe("Empty gatekeeper config", () => {
       ...gatekeepers,
     });
     expect(messages.length).toEqual(2);
+    // @ts-expect-error Ignore for now
     expect(messages.map((message) => message.toAmino())).toContainEqual({
       type: "wasm/MsgExecuteContract",
       value: {
@@ -315,6 +319,7 @@ test("Remove single flex account", async () => {
     ...gatekeepers,
   });
   expect(messages.length).toEqual(1);
+  // @ts-expect-error Ignore for now
   expect(messages[0].toAmino()).toEqual({
     type: "wasm/MsgExecuteContract",
     value: {
@@ -369,6 +374,7 @@ test("Make unlocked flex account locked", async () => {
     ...gatekeepers,
   });
   expect(messages.length).toEqual(1);
+  // @ts-expect-error Ignore for now
   expect(messages[0].toAmino()).toEqual({
     type: "wasm/MsgExecuteContract",
     value: {

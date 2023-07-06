@@ -4,7 +4,7 @@ import { EnrichedToken, Token } from "../../common";
 import { AbstractBankSdk } from "../abstract";
 
 export class CosmJsBankSdk extends AbstractBankSdk {
-  protected chainId: CosmosChainId | LegacyCosmosChainId;
+  protected override chainId: CosmosChainId | LegacyCosmosChainId;
   protected client: CosmJsClient;
 
   public constructor({
@@ -39,7 +39,7 @@ export class CosmJsBankSdk extends AbstractBankSdk {
     return {};
   }
 
-  protected enrichTokenWithoutUsdValue(token: Token): EnrichedToken {
+  protected override enrichTokenWithoutUsdValue(token: Token): EnrichedToken {
     switch (token.id) {
       case this.chain.denom: {
         const digits = 6;
@@ -47,15 +47,41 @@ export class CosmJsBankSdk extends AbstractBankSdk {
           ...token,
           amount: parseInt(token.rawAmount, 10) / 10 ** digits,
           contract: null,
-          icon: null,
+          icon: "https://app.osmosis.zone/_next/image?url=%2Ftokens%2Fosmo.svg&w=48&q=75",
           denom: this.chain.denom.slice(1).toUpperCase(),
           digits,
-          label: this.chain.denom[1].toUpperCase() + this.chain.denom.slice(2),
+          label: this.chain.denom.slice(1).toUpperCase(),
           usdValue: null,
         };
       }
+      case "ibc/A8C2D23A1E6F95DA4E48BA349667E322BD7A6C996D8A4AAE8BA72E190F3D1477": {
+        const digits = 6;
+        return {
+          ...token,
+          amount: parseInt(token.rawAmount, 10) / 10 ** digits,
+          contract: null,
+          icon: "https://app.osmosis.zone/_next/image?url=%2Ftokens%2Fatom.svg&w=48&q=75",
+          denom: "ATOM",
+          digits,
+          label: "ATOM",
+          usdValue: null,
+        };
+      }
+      case "ibc/6F34E1BD664C36CE49ACC28E60D62559A5F96C4F9A6CCE4FC5A67B2852E24CFE": {
+        const digits = 6;
+        return {
+          ...token,
+          amount: parseInt(token.rawAmount, 10) / 10 ** digits,
+          contract: null,
+          icon: "https://app.osmosis.zone/_next/image?url=/tokens/usdc.svg&w=48&q=75",
+          denom: "USDC",
+          digits,
+          label: "USDC",
+          usdValue: 1,
+        };
+      }
       default:
-        return super.enrichToken(token);
+        return super.enrichTokenWithoutUsdValue(token);
     }
   }
 

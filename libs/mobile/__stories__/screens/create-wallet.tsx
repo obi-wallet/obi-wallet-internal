@@ -1,5 +1,6 @@
+import { CreateWallet } from "@obi-wallet/common";
+
 import { mockAction, MultisigDraft } from "../../src/fixture-helpers";
-import { CreateWallet } from "../../src/screens/create-wallet";
 
 export default (
   <MultisigDraft.Container>

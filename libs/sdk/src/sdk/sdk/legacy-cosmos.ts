@@ -16,7 +16,7 @@ export class LegacyCosmosSdk extends AbstractSdk {
 
   protected client: CosmJsClient;
 
-  protected constructor(protected chainId: LegacyCosmosChainId) {
+  protected constructor(protected override chainId: LegacyCosmosChainId) {
     super(chainId);
     this.client = new CosmJsClient(chainId);
     this.bank = new LegacyCosmosBankSdk({

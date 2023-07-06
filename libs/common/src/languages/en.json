@@ -109,7 +109,6 @@
   "onboarding3.verifyandproceed": "Verify & Proceed",
   "onboarding3.sendagain.info.counter": "Your Magic SMS has been resent! Give it some time to arrive. You can try again in",
   "onboarding3.sendagain.info.checknumber": "If you haven't received the Obi magic code please check if your phone number is correct:",
-
   "onboarding4.authyourkeys": "Create a Device Key",
   "onboarding4.authyourkeys.subtext": "Onboarding with Obi creates a multi-key login to keep your account secure and recoverable without needing seed phrases. Obi does NOT store any information.",
   "onboarding4.biometrics.button": "Create My Device Key",
@@ -178,8 +177,8 @@
   "settings.terms": "Terms of Service",
   "settings.privacy": "Privacy Policy",
 
-  "settings.multisig.title": "Manage Multi-Key",
-  "settings.multisig.subtitle": "Add/edit keys to improve security. Tap on any of the following",
+  "settings.multisig.title": "Key Management",
+  "settings.multisig.subtitle": "Add or update your keys. Tap on any of the options below.",
   "settings.multisig.risk.norisk": "Security Tier: Ultimate",
   "settings.multisig.risk.low": "Security Tier: High",
   "settings.multisig.risk.medium": "Security Tier: Medium",

@@ -6,16 +6,22 @@ export interface Draftable {
 }
 
 export class Draft<T extends Draftable> {
-  @observable
   protected _original: T;
 
-  @observable
   protected _value: T;
 
   constructor({ original, value }: { original: T; value?: T }) {
     this._original = original;
     this._value = value ?? original.clone();
-    makeObservable(this);
+    makeObservable<Draft<T>, "_original" | "_value">(this, {
+      original: false,
+      value: false,
+      isDirty: false,
+      _original: observable,
+      _value: observable,
+      reset: action,
+      commit: action,
+    });
   }
 
   public get original() {
@@ -30,12 +36,10 @@ export class Draft<T extends Draftable> {
     return !this._original.equals(this._value);
   }
 
-  @action
   public reset() {
     this._value = this._original.clone();
   }
 
-  @action
   public commit({ original }: { original: T }) {
     this._original = original;
     this.reset();

@@ -1,4 +1,4 @@
-import { isTxError, LCDClient, Tx } from "@terra-money/feather.js";
+import { isTxError, LCDClient, Msg, Tx } from "@terra-money/feather.js";
 import {
   Pagination,
   PaginationOptions,
@@ -111,7 +111,8 @@ export class FeatherJsClient extends AbstractClient {
       try {
         const transaction = await wallet.createAndSignTx({
           chainID: this.chainId,
-          msgs: messages,
+          // TODO:
+          msgs: messages as Msg[],
         });
         return transaction.toBytes();
       } catch (e) {

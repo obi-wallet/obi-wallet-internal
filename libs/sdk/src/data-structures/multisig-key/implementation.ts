@@ -16,6 +16,7 @@ import {
   KeySubclassTypeMapping,
   KeyType,
 } from "../key";
+import { KeySchema } from "../key/schema";
 import { AbstractSerialized } from "../migratable";
 
 export class MultisigKey {
@@ -28,7 +29,7 @@ export class MultisigKey {
     protected _keys: Key[],
     protected _threshold: number,
     protected _factories: {
-      Key: AbstractDataStructure<Key>;
+      Key: AbstractDataStructure<Key, typeof KeySchema>;
       createMultisigKey: (
         chain: ChainId,
         serialized: AbstractSerialized<typeof MultisigKeySchema>
@@ -101,12 +102,13 @@ export class MultisigKey {
     });
   }
 
-  public setDeviceKey(publicKey: Secp256k1PublicKey) {
+  public setDeviceKey(keyPair: {
+    publicKey: Secp256k1PublicKey;
+    privateKey?: string;
+  }) {
     this.setKey({
       type: KeyType.Device,
-      payload: {
-        publicKey,
-      },
+      payload: keyPair,
     });
   }
 
@@ -155,6 +157,7 @@ export class MultisigKey {
       },
     });
   }
+
   public setEmailRecoveryKey(key: Secp256k1KeyPair) {
     this.setKey({
       type: KeyType.EmailRecovery,

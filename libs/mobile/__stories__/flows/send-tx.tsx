@@ -1,3 +1,4 @@
+import { SignatureModal } from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   Messages,
@@ -7,7 +8,6 @@ import {
 import { MsgSend } from "@terra-money/feather.js";
 import invariant from "tiny-invariant";
 
-import { SignatureModal } from "../../src/app/modals/signature-modal";
 import { mockAction } from "../../src/fixture-helpers";
 
 function SendMultisigTxFixture() {

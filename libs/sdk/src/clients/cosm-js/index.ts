@@ -27,6 +27,7 @@ import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { PageResponse } from "cosmjs-types/cosmos/base/query/v1beta1/pagination";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import * as R from "ramda";
 import { z } from "zod";
 
 import { Chain, CosmosChainId, LegacyCosmosChainId } from "../../chains";
@@ -279,6 +280,9 @@ export class CosmJsClient extends AbstractClient {
       }),
       async (client) => {
         const encodeObjects = messages.map((message) => {
+          if (R.has("osmo", message)) {
+            return this.aminoTypes.fromAmino(message.osmo as any);
+          }
           return this.aminoTypes.fromAmino(message.toAmino());
         });
         const gas = await client.simulate(

@@ -1,4 +1,4 @@
-import { makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 
 import { Draft, Draftable } from "./draft";
 import { Entities, EntityId } from "../entities";
@@ -6,13 +6,16 @@ import { Entities, EntityId } from "../entities";
 export { Draft };
 
 export class DraftsStore {
-  @observable
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected _drafts: Entities<any>;
 
   constructor() {
     this._drafts = new Entities();
-    makeObservable(this);
+    makeObservable<DraftsStore, "_drafts">(this, {
+      create: action,
+      get: false,
+      _drafts: observable,
+    });
   }
 
   public create<T extends Draftable>({

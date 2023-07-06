@@ -1,7 +1,8 @@
-import { Brand } from "@obi-wallet/common";
-import { loopMobileDevConfig, obiMobileConfig } from "@obi-wallet/config";
+import { PrettyMessage } from "@obi-wallet/common";
+import { obiMobileConfig } from "@obi-wallet/config";
 import {
   createGatekeeperConfig,
+  Message,
   Messages,
   MultisigKey,
   MultisigWallet,
@@ -18,6 +19,7 @@ import {
 } from "@terra-money/feather.js";
 import { render, screen } from "@testing-library/react-native";
 import { observer } from "mobx-react-lite";
+import * as R from "ramda";
 import { ReactNode } from "react";
 
 import {
@@ -28,17 +30,7 @@ import {
   upsertBeneficiaryAnnually,
   upsertFlex,
 } from "../__fixtures__/messages";
-import { PrettyMessage } from "../src/app/modals/signature-modal/pretty-message";
 import { Provider } from "../src/app/provider";
-
-function getConfig(brand: Brand) {
-  switch (brand) {
-    case Brand.Obi:
-      return obiMobileConfig;
-    case Brand.Loop:
-      return loopMobileDevConfig;
-  }
-}
 
 describe("Terra", () => {
   const address = "terra18aw4eedj4v3253dvj9h5ucx9uedl9ggaayktq4";
@@ -64,21 +56,12 @@ describe("Terra", () => {
     const message = new MsgSend(address, address, { uluna: 1 });
 
     test("Obi", () => {
-      renderPrettyMessage({ message, brand: Brand.Obi });
+      renderPrettyMessage({ message });
       expect(screen.getByText("To:")).toBeDefined();
       expect(
         screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
       ).toBeDefined();
       expect(screen.getByText("0.000001LUNA")).toBeDefined();
-    });
-
-    test("Loop", () => {
-      renderPrettyMessage({ message, brand: Brand.Loop });
-      expect(screen.getByText("Send")).toBeDefined();
-      expect(
-        screen.getByText("terra18aw4ee...yktq4 will receive:")
-      ).toBeDefined();
-      expect(screen.getByText("0.000001 LUNA")).toBeDefined();
     });
   });
 
@@ -86,14 +69,9 @@ describe("Terra", () => {
     const message = new MsgInstantiateContract(address, address, 1, {});
 
     test("Obi", () => {
-      renderPrettyMessage({ message, brand: Brand.Obi });
+      renderPrettyMessage({ message });
       expect(screen.getByText("Init Contract")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
-    });
-
-    test("Loop", () => {
-      renderPrettyMessage({ message, brand: Brand.Loop });
-      expect(screen.getByText("Init Contract")).toBeDefined();
     });
   });
 
@@ -101,7 +79,7 @@ describe("Terra", () => {
     const message = new MsgExecuteContract(address, address, {});
 
     test("Obi", () => {
-      renderPrettyMessage({ message, brand: Brand.Obi });
+      renderPrettyMessage({ message });
       expect(screen.getByText("Execute Wasm Contract")).toBeDefined();
       expect(
         screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
@@ -110,14 +88,6 @@ describe("Terra", () => {
         screen.getByText("Check the data tab for the full message")
       ).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
-    });
-
-    test("Loop", () => {
-      renderPrettyMessage({ message, brand: Brand.Loop });
-      expect(screen.getByText("Execute Wasm Contract")).toBeDefined();
-      expect(
-        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
-      ).toBeDefined();
     });
   });
 
@@ -129,14 +99,9 @@ describe("Terra", () => {
     });
 
     test("Obi", () => {
-      renderPrettyMessage({ message, brand: Brand.Obi });
+      renderPrettyMessage({ message });
       expect(screen.getByText("Update Multikey (step 1 of 2)")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
-    });
-
-    test("Loop", () => {
-      renderPrettyMessage({ message, brand: Brand.Loop });
-      expect(screen.getByText("Update Multikey (step 1 of 2)")).toBeDefined();
     });
   });
 
@@ -147,14 +112,9 @@ describe("Terra", () => {
     });
 
     test("Obi", () => {
-      renderPrettyMessage({ message, brand: Brand.Obi });
+      renderPrettyMessage({ message });
       expect(screen.getByText("Confirm Update (step 2 of 2)")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
-    });
-
-    test("Loop", () => {
-      renderPrettyMessage({ message, brand: Brand.Loop });
-      expect(screen.getByText("Confirm Update (step 2 of 2)")).toBeDefined();
     });
   });
 
@@ -164,14 +124,9 @@ describe("Terra", () => {
     );
 
     test("Obi", () => {
-      renderPrettyMessage({ message, brand: Brand.Obi });
+      renderPrettyMessage({ message });
       expect(screen.getByText("Create Obi Wallet")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
-    });
-
-    test("Loop", () => {
-      renderPrettyMessage({ message, brand: Brand.Loop });
-      expect(screen.getByText("Create Obi Wallet")).toBeDefined();
     });
   });
 
@@ -182,14 +137,9 @@ describe("Terra", () => {
     });
 
     test("Obi", () => {
-      renderPrettyMessage({ message, brand: Brand.Obi });
+      renderPrettyMessage({ message });
       expect(screen.getByText("Update Obi Wallet")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
-    });
-
-    test("Loop", () => {
-      renderPrettyMessage({ message, brand: Brand.Loop });
-      expect(screen.getByText("Update Obi Wallet")).toBeDefined();
     });
   });
 
@@ -204,14 +154,7 @@ describe("Terra", () => {
     });
 
     test("Obi", () => {
-      renderPrettyMessage({ message, brand: Brand.Obi });
-      expect(screen.getByText("Staking to:")).toBeDefined();
-      expect(screen.getByText("0.000001LUNA")).toBeDefined();
-    });
-
-    // TODO: Loop's not showing the amount
-    test.skip("Loop", () => {
-      renderPrettyMessage({ message, brand: Brand.Loop });
+      renderPrettyMessage({ message });
       expect(screen.getByText("Staking to:")).toBeDefined();
       expect(screen.getByText("0.000001LUNA")).toBeDefined();
     });
@@ -228,14 +171,7 @@ describe("Terra", () => {
     });
 
     test("Obi", () => {
-      renderPrettyMessage({ message, brand: Brand.Obi });
-      expect(screen.getByText("Unstaking from:")).toBeDefined();
-      expect(screen.getByText("0.000001LUNA")).toBeDefined();
-    });
-
-    // TODO: Loop's not showing the amount
-    test.skip("Loop", () => {
-      renderPrettyMessage({ message, brand: Brand.Loop });
+      renderPrettyMessage({ message });
       expect(screen.getByText("Unstaking from:")).toBeDefined();
       expect(screen.getByText("0.000001LUNA")).toBeDefined();
     });
@@ -248,16 +184,7 @@ describe("Terra", () => {
     });
 
     test("Obi", () => {
-      renderPrettyMessage({ message, brand: Brand.Obi });
-      expect(
-        screen.getByText("Withdrawing staking rewards from:")
-      ).toBeDefined();
-      expect(screen.getByText("0LUNA")).toBeDefined();
-    });
-
-    // TODO: Loop's not showing the amount
-    test.skip("Loop", () => {
-      renderPrettyMessage({ message, brand: Brand.Loop });
+      renderPrettyMessage({ message });
       expect(
         screen.getByText("Withdrawing staking rewards from:")
       ).toBeDefined();
@@ -267,16 +194,9 @@ describe("Terra", () => {
 
   describe("Add/Update Permissioned Address ", () => {
     test("Obi", () => {
-      renderPrettyMessage({ message: upsertFlex, brand: Brand.Obi });
+      renderPrettyMessage({ message: upsertFlex });
       expect(screen.getByText("Add/Update Permissioned Address")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
-      expect(
-        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
-      ).toBeDefined();
-    });
-    test("Loop", () => {
-      renderPrettyMessage({ message: upsertFlex, brand: Brand.Loop });
-      expect(screen.getByText("Add/Update Permissioned Address")).toBeDefined();
       expect(
         screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
       ).toBeDefined();
@@ -285,16 +205,9 @@ describe("Terra", () => {
 
   describe("Remove Permissioned Address", () => {
     test("Obi", () => {
-      renderPrettyMessage({ message: rmFlex, brand: Brand.Obi });
+      renderPrettyMessage({ message: rmFlex });
       expect(screen.getByText("Remove Permissioned Address")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
-      expect(
-        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
-      ).toBeDefined();
-    });
-    test("Loop", () => {
-      renderPrettyMessage({ message: rmFlex, brand: Brand.Loop });
-      expect(screen.getByText("Remove Permissioned Address")).toBeDefined();
       expect(
         screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
       ).toBeDefined();
@@ -303,16 +216,9 @@ describe("Terra", () => {
 
   describe("Create Session Key", () => {
     test("Obi", () => {
-      renderPrettyMessage({ message: createSessionKey, brand: Brand.Obi });
+      renderPrettyMessage({ message: createSessionKey });
       expect(screen.getByText("Create Session Key")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
-      expect(
-        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
-      ).toBeDefined();
-    });
-    test("Loop", () => {
-      renderPrettyMessage({ message: createSessionKey, brand: Brand.Loop });
-      expect(screen.getByText("Create Session Key")).toBeDefined();
       expect(
         screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
       ).toBeDefined();
@@ -321,16 +227,9 @@ describe("Terra", () => {
 
   describe("Destroy Session Key", () => {
     it("Obi", () => {
-      renderPrettyMessage({ message: destroySessionKey, brand: Brand.Obi });
+      renderPrettyMessage({ message: destroySessionKey });
       expect(screen.getByText("Destroy Session Key")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
-      expect(
-        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
-      ).toBeDefined();
-    });
-    test("Loop", () => {
-      renderPrettyMessage({ message: destroySessionKey, brand: Brand.Loop });
-      expect(screen.getByText("Destroy Session Key")).toBeDefined();
       expect(
         screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
       ).toBeDefined();
@@ -339,7 +238,7 @@ describe("Terra", () => {
 
   describe("Add/Update Beneficiary", () => {
     test("Obi", () => {
-      renderPrettyMessage({ message: upsertBeneficiary, brand: Brand.Obi });
+      renderPrettyMessage({ message: upsertBeneficiary });
       expect(screen.getByText("Add/Update Beneficiary")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
       expect(
@@ -351,22 +250,10 @@ describe("Terra", () => {
         )
       ).toBeDefined();
     });
-    test("Loop", () => {
-      renderPrettyMessage({ message: upsertBeneficiary, brand: Brand.Loop });
-      expect(screen.getByText("Add/Update Beneficiary")).toBeDefined();
-      expect(
-        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
-      ).toBeDefined();
-      expect(
-        screen.getByText(
-          "will receive 1% monthly after 12 months of inactivity"
-        )
-      ).toBeDefined();
-    });
+
     test("Annually", () => {
       renderPrettyMessage({
         message: upsertBeneficiaryAnnually,
-        brand: Brand.Obi,
       });
 
       expect(
@@ -386,13 +273,7 @@ describe("Terra", () => {
     );
 
     test("Obi", () => {
-      renderPrettyMessage({ message, brand: Brand.Obi });
-      expect(screen.getByText("Unknown message")).toBeDefined();
-      expect(screen.getByText("Please check data tab")).toBeDefined();
-    });
-
-    test("Loop", () => {
-      renderPrettyMessage({ message, brand: Brand.Loop });
+      renderPrettyMessage({ message });
       expect(screen.getByText("Unknown message")).toBeDefined();
       expect(screen.getByText("Please check data tab")).toBeDefined();
     });
@@ -415,38 +296,31 @@ describe("Terra", () => {
     });
 
     test("Obi", () => {
-      renderPrettyMessage({ message, brand: Brand.Obi });
-      expect(screen.getByText("Unknown message")).toBeDefined();
-    });
-
-    test("Loop", () => {
-      renderPrettyMessage({ message, brand: Brand.Loop });
+      renderPrettyMessage({ message });
       expect(screen.getByText("Unknown message")).toBeDefined();
     });
   });
 
-  function renderPrettyMessage({
-    message,
-    brand,
-  }: {
-    message: Msg;
-    brand: Brand;
-  }) {
-    const Wrapper = createWrapper({ brand });
+  function renderPrettyMessage({ message }: { message: Message }) {
+    const Wrapper = createWrapper();
+
+    const aminoMessage = R.has("osmo", message)
+      ? message.osmo
+      : message.toAmino();
+
     return render(
       <Wrapper>
-        <PrettyMessage message={message.toAmino()} chainId="phoenix-1" />
+        <PrettyMessage message={aminoMessage} chainId="phoenix-1" />
       </Wrapper>
     );
   }
 
-  function createWrapper({ brand }: { brand: Brand }) {
+  function createWrapper() {
     // eslint-disable-next-line react/function-component-definition
     return observer(function Wrapper({ children }: { children: ReactNode }) {
       return (
         <Provider
-          key={brand}
-          config={getConfig(brand)}
+          config={obiMobileConfig}
           QueryClientProvider={QueryClientProvider}
         >
           {children}

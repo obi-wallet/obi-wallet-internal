@@ -12,9 +12,9 @@ export type WalletConnect = WalletConnectInterface;
 export const WalletConnect = {
   schema: WalletConnectSchema,
   create: createWalletConnect,
-} satisfies AbstractDataStructure<WalletConnect>;
+} satisfies AbstractDataStructure<WalletConnect, typeof WalletConnectSchema>;
 
 export const ObservableWalletConnect = {
   schema: WalletConnectSchema,
   create: createObservableWalletConnect,
-};
+} satisfies AbstractDataStructure<WalletConnect, typeof WalletConnectSchema>;

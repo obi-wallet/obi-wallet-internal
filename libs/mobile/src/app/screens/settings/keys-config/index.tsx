@@ -1,16 +1,20 @@
 import { useTheme } from "@emotion/react";
+import {
+  Alert,
+  AsyncButton,
+  Button,
+  KeyFlow,
+  KeyRoute,
+  MultisigSettings,
+  useRootNavigation,
+  useStore,
+} from "@obi-wallet/common";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { KeyType, MultisigKey, MultisigWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
-import { Alert, View } from "react-native";
-
-import { MultisigSettings } from "../../../../components/multisig-settings";
-import { KeyFlow, KeyRoute } from "../../../../screens/keys";
-import { AsyncButton, Button } from "../../../button";
-import { useRootNavigation } from "../../../root-stack";
-import { useStore } from "../../../stores";
+import { View } from "react-native";
 
 function getMultisigSettingsDraftId(wallet: MultisigWallet) {
   return `multisig-settings/${wallet.id}`;
@@ -152,7 +156,7 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
       {draft.isDirty ? (
         <View style={{ paddingTop: 10 }}>
           <AsyncButton
-            flavor="blue"
+            flavor="primary"
             label="Confirm Changes"
             onPress={async () => {
               setLoading(true);

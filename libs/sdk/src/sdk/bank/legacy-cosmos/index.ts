@@ -7,7 +7,7 @@ import { EnrichedToken, Token } from "../../common";
 import { AbstractBankSdk } from "../abstract";
 
 export class LegacyCosmosBankSdk extends AbstractBankSdk {
-  protected chainId: LegacyCosmosChainId;
+  protected override chainId: LegacyCosmosChainId;
   protected client: CosmJsClient;
 
   public constructor({
@@ -194,7 +194,7 @@ export class LegacyCosmosBankSdk extends AbstractBankSdk {
     });
   }
 
-  protected enrichTokenWithoutUsdValue(token: Token): EnrichedToken {
+  protected override enrichTokenWithoutUsdValue(token: Token): EnrichedToken {
     switch (token.id) {
       case this.chain.denom: {
         const digits = 6;
