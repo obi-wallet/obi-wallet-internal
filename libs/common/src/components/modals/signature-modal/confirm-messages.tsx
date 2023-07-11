@@ -40,7 +40,6 @@ export interface ConfirmMessagesProps extends ModalProps {
 
 export const ConfirmMessages = observer<ConfirmMessagesProps>(
   function ConfirmMessages(confirmProps) {
-    // if (confirmProps.isLogin) return <ConfirmMessagesLogin {...confirmProps} />;
     const {
       loading,
       disabled,
@@ -270,7 +269,6 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
 export const ConfirmMessagesLogin = observer<ConfirmMessagesProps>(
   function ConfirmMessagesLogin({
     loading,
-    disabled,
     onCancel,
     footer,
     children,
