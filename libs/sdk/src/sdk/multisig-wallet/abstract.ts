@@ -84,9 +84,10 @@ export abstract class AbstractMultisigWalletSdk {
 
   public abstract proposedOwner(): Promise<string | null>;
 
-  public abstract updateGatekeeperConfig(
-    newGatekeeperConfig: GatekeeperConfig
-  ): Promise<
+  public abstract updateGatekeeperConfig({
+    newGatekeeperConfig,
+    isLogin,
+  }: UpdateGatekeeperConfigParams): Promise<
     | {
         approved: true;
         payload: BroadcastTransactionResult | { success: true };
@@ -140,4 +141,8 @@ export abstract class AbstractMultisigWalletSdk {
   public abstract broadcastSignedTransaction(
     signedTransaction: SignedTransaction
   ): Promise<BroadcastTransactionResult>;
+}
+export interface UpdateGatekeeperConfigParams {
+  newGatekeeperConfig: GatekeeperConfig;
+  isLogin?: boolean;
 }

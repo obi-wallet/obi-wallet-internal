@@ -8,6 +8,7 @@ import { common } from "./common";
 export const ztxTheme: CustomTheme = {
   ...common,
   ethereumBalances: true,
+  loginModal: true,
   colors: {
     primary: "#243FEA",
     background: "#000000",

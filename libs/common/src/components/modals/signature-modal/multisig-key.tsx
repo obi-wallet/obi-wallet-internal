@@ -7,7 +7,10 @@ import { KeySubclassTypeMapping, KeyType, Signer } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useRef, useState } from "react";
 
-import { MultisigConfirmMessages } from "./multisig-confirm-messages";
+import {
+  MultisigConfirmMessages,
+  MultisigConfirmMessagesLogin,
+} from "./multisig-confirm-messages";
 import { PhoneNumberBottomSheetContent } from "./phone-number-bottom-sheet-content";
 import { createUsableSigners, PhoneKeySigner } from "./signers";
 import { useEnv } from "../../../contexts";
@@ -94,33 +97,38 @@ export const SignatureModalMultisigKey =
         return payload.key.type === KeyType.Phone;
       }
     );
+    const getFooter = () => {
+      if (!phoneKeyPayload) return null;
+      return (
+        <BottomSheetNew
+          open={bottomSheetOpen}
+          onClose={() => {
+            phoneKeyPayload.signer.cancelSignature();
+            setBottomSheetOpen(false);
+          }}
+        >
+          <PhoneNumberBottomSheetContent
+            phoneNumber={phoneKeyPayload.key.payload.phoneNumber}
+            securityQuestion={phoneKeyPayload.key.payload.securityQuestion}
+            onRequest={async (data) => {
+              setBottomSheetOpen(true);
+              await phoneKeyPayload.signer.requestSignature(data);
+            }}
+            onConfirm={async (key) => {
+              await phoneKeyPayload.signer.confirmSignature(key);
+              setBottomSheetOpen(false);
+            }}
+          />
+        </BottomSheetNew>
+      );
+    };
+    const Component = interaction.payload.isLogin
+      ? MultisigConfirmMessagesLogin
+      : MultisigConfirmMessages;
 
     return (
-      <MultisigConfirmMessages
-        footer={
-          phoneKeyPayload ? (
-            <BottomSheetNew
-              open={bottomSheetOpen}
-              onClose={() => {
-                phoneKeyPayload.signer.cancelSignature();
-                setBottomSheetOpen(false);
-              }}
-            >
-              <PhoneNumberBottomSheetContent
-                phoneNumber={phoneKeyPayload.key.payload.phoneNumber}
-                securityQuestion={phoneKeyPayload.key.payload.securityQuestion}
-                onRequest={async (data) => {
-                  setBottomSheetOpen(true);
-                  await phoneKeyPayload.signer.requestSignature(data);
-                }}
-                onConfirm={async (key) => {
-                  await phoneKeyPayload.signer.confirmSignature(key);
-                  setBottomSheetOpen(false);
-                }}
-              />
-            </BottomSheetNew>
-          ) : null
-        }
+      <Component
+        footer={getFooter()}
         threshold={multisigKey.threshold}
         numberOfSignatures={multisigSigner.current?.numberOfSignatures || 0}
         numberOfUsableKeys={usableSigners.data.length}

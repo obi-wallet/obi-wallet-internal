@@ -22,7 +22,10 @@ import { SignAndBroadcastTransactionUserInteraction } from "../../../user-intera
 import { BroadcastTransactionResult, CodeIds, Token } from "../../common";
 import { Messages } from "../../messages";
 import { Sdk } from "../../sdk";
-import { AbstractMultisigWalletSdk } from "../abstract";
+import {
+  AbstractMultisigWalletSdk,
+  UpdateGatekeeperConfigParams,
+} from "../abstract";
 
 export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
   protected override chainId: CosmosChainId | TerraChainId;
@@ -192,9 +195,10 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
     return response;
   }
 
-  public async updateGatekeeperConfig(
-    newGatekeeperConfig: GatekeeperConfig
-  ): Promise<
+  public async updateGatekeeperConfig({
+    newGatekeeperConfig,
+    isLogin,
+  }: UpdateGatekeeperConfigParams): Promise<
     | {
         approved: true;
         payload: BroadcastTransactionResult | { success: true };
@@ -223,6 +227,7 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
       demoMode: this.wallet.isDemo,
       cancelable: true,
       multisigKey: this.wallet.owner,
+      isLogin,
     });
   }
 

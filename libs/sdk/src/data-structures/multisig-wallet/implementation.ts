@@ -10,6 +10,7 @@ import {
   Sdk,
   Token,
 } from "../../sdk";
+import { UpdateGatekeeperConfigParams } from "../../sdk/multisig-wallet/abstract";
 import { Secp256k1PrivateKeySigner } from "../../signers";
 import { Message, wrapMessages } from "../../transactions";
 import { FlexAccount } from "../flex-account";
@@ -173,10 +174,15 @@ export class MultisigWallet {
     this._gatekeeperConfig = gatekeeperConfig;
   }
 
-  public async updateGatekeeperConfig(newGatekeeperConfig: GatekeeperConfig) {
-    const response = await this.multisigWalletSdk.updateGatekeeperConfig(
-      newGatekeeperConfig
-    );
+  public async updateGatekeeperConfig({
+    newGatekeeperConfig,
+    isLogin,
+  }: UpdateGatekeeperConfigParams) {
+    const response = await this.multisigWalletSdk.updateGatekeeperConfig({
+      newGatekeeperConfig,
+      isLogin,
+    });
+
     if (response.approved && response.payload.success) {
       this.setGatekeeperConfig(newGatekeeperConfig);
     }

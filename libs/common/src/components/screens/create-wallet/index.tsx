@@ -1,10 +1,17 @@
-import { KeyType, MultisigKey } from "@obi-wallet/sdk";
+import { useTheme } from "@emotion/react";
+import {
+  KeyType,
+  MultisigKey,
+  ObservableFlexAccount,
+  Sdk,
+  generateSec256k1KeyPair,
+} from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 
 import { useStore } from "../../../contexts";
-import { Alert } from "../../../helpers";
+import { Alert, createSessionKey } from "../../../helpers";
 import {
   KeyFlow,
   KeyRoute,
@@ -12,6 +19,7 @@ import {
   OnboardingStackParamList,
   useRootNavigation,
 } from "../../../router";
+import { Draft } from "../../../stores";
 import { Button } from "../../buttons";
 import { MultisigSettings } from "../../multisig-settings";
 
@@ -23,6 +31,7 @@ export type CreateWalletScreenProps = NativeStackScreenProps<
 export const CreateWalletScreen = observer<CreateWalletScreenProps>(
   function CreateWalletScreen({ route }) {
     const navigation = useRootNavigation();
+    const theme = useTheme();
     const { params } = route;
 
     const { draftsStore, walletsStore } = useStore();
@@ -44,6 +53,19 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             console.log(response.payload.originalPayload);
             Alert.alert("Something went wrong", response.payload.description);
             return;
+          }
+          if (theme.loginModal) {
+            const wallet = walletsStore.currentWallet;
+            if (!wallet) {
+              console.log("no wallet");
+              return;
+            }
+
+            await createSessionKey({
+              wallet,
+              maxSpend: 5,
+              isLogin: true,
+            });
           }
         }}
         onAddSocial={() => {

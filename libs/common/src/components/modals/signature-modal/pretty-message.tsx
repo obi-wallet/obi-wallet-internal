@@ -525,9 +525,11 @@ const PrettyCoins = observer<PrettyTokensProps>(function PrettyTokens({
               alignItems: "center",
             }}
           >
-            <View style={{ width: 36, height: 36, marginRight: 10 }}>
-              <CoinIcon source={icon ? icon : null} />
-            </View>
+            {icon && (
+              <View style={{ width: 36, height: 36, marginRight: 10 }}>
+                <CoinIcon source={icon} />
+              </View>
+            )}
             <Text style={{ color: "white", fontSize: 49 }} key={denom}>
               {amount}
               <Text style={{ fontSize: 16 }}>{denom}</Text>

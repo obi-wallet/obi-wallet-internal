@@ -177,9 +177,9 @@ const AccountScreenInner = observer(function AccountScreenInner() {
               label="Save Changes"
               buttonStyle={{ flex: 1, margin: 10 }}
               onPress={async () => {
-                const response = await wallet.updateGatekeeperConfig(
-                  draft.value
-                );
+                const response = await wallet.updateGatekeeperConfig({
+                  newGatekeeperConfig: draft.value,
+                });
                 if (response.approved) {
                   if (response.payload.success) {
                     draft.commit({ original: wallet.gatekeeperConfig });

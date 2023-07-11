@@ -50,7 +50,6 @@ import {
   ObiSettingsIcon,
 } from "../../icons";
 import { Text } from "../../typography";
-import { LoginScreen } from "../login";
 import { SettingsScreen } from "../settings";
 
 export type HomeScreenProps = NativeStackScreenProps<
@@ -169,10 +168,6 @@ export const TabNavigation = observer<TabNavigationProps>(
             }),
           }}
           component={SettingsScreen}
-        />
-        <HomeBottomTab.Screen
-          name={HomeBottomTabRoute.Login}
-          component={LoginScreen}
         />
       </HomeBottomTab.Navigator>
     );

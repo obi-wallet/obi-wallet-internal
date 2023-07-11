@@ -25,7 +25,6 @@ export interface HomeBottomTabParamList extends ParamListBase {
   [HomeBottomTabRoute.Assets]: undefined;
   [HomeBottomTabRoute.Apps]: undefined;
   [HomeBottomTabRoute.Settings]: undefined;
-  [HomeBottomTabRoute.Login]: undefined;
 }
 
 export const HomeBottomTab = createBottomTabNavigator<HomeBottomTabParamList>();
