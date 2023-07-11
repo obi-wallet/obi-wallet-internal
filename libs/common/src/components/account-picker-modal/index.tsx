@@ -98,10 +98,10 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                       borderRadius: 12,
                       paddingHorizontal: 10,
                     }}
-                    onPress={() => {
+                    onPress={async () => {
                       walletsStore.setCurrentWallet(wallet);
                       if (theme.loginModal) {
-                        createSessionKey({
+                        await createSessionKey({
                           wallet,
                           maxSpend: 5,
                           isLogin: true,

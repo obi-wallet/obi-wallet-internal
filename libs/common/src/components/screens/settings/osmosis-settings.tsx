@@ -154,7 +154,7 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
                   const maxSpend = parseFloat(
                     stateContextValue[0][AccountSettingComponent.MaxSpend]
                   );
-                  createSessionKey({ wallet, maxSpend });
+                  await createSessionKey({ wallet, maxSpend });
                 }}
               />
             </View>
