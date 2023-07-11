@@ -131,48 +131,48 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
       actions={{
         [KeyType.Social]: hasSocialKey
           ? {
-            label: "Remove",
-            onPress: () => {
-              draft.value.removeKeyOfType(KeyType.Social);
-            },
-          }
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeKeyOfType(KeyType.Social);
+              },
+            }
           : {
-            label: "Add",
-            onPress: onAddSocial,
-          },
+              label: "Add",
+              onPress: onAddSocial,
+            },
         [KeyType.Nfc]: hasNfcKey
           ? {
-            label: "Remove",
-            onPress: () => {
-              draft.value.removeKeyOfType(KeyType.Nfc);
-            },
-          }
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeKeyOfType(KeyType.Nfc);
+              },
+            }
           : {
-            label: "Add",
-            onPress: onAddNfc,
-          },
+              label: "Add",
+              onPress: onAddNfc,
+            },
         [KeyType.Cloud]: hasCloudKey
           ? {
-            label: "Remove",
-            onPress: () => {
-              draft.value.removeKeyOfType(KeyType.Cloud);
-            },
-          }
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeKeyOfType(KeyType.Cloud);
+              },
+            }
           : {
-            label: "Add",
-            onPress: onAddCloud,
-          },
+              label: "Add",
+              onPress: onAddCloud,
+            },
         [KeyType.Email]: hasEmailKey
           ? {
-            label: "Remove",
-            onPress: () => {
-              draft.value.removeKeyOfType(KeyType.Email);
-            },
-          }
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeKeyOfType(KeyType.Email);
+              },
+            }
           : {
-            label: "Add",
-            onPress: onAddEmail,
-          },
+              label: "Add",
+              onPress: onAddEmail,
+            },
       }}
     >
       <View style={{ paddingTop: 10 }}>

@@ -52,9 +52,9 @@ export class LegacyCosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
 
   public async updateWallet(): Promise<
     | {
-      approved: true;
-      payload: BroadcastTransactionResult | { success: true };
-    }
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
     | { approved: false }
   > {
     notImplemented("updateWallet not implemented for Cosmos");
@@ -63,9 +63,9 @@ export class LegacyCosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
 
   public async updateOwner(_: MultisigKey): Promise<
     | {
-      approved: true;
-      payload: BroadcastTransactionResult | { success: true };
-    }
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
     | { approved: false }
   > {
     notImplemented("updateOwner not implemented for Cosmos");
@@ -79,9 +79,9 @@ export class LegacyCosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
 
   public async updateGatekeeperConfig(_: UpdateGatekeeperConfigParams): Promise<
     | {
-      approved: true;
-      payload: BroadcastTransactionResult | { success: true };
-    }
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
     | { approved: false }
   > {
     notImplemented("updateGatekeeperConfig not implemented for Cosmos");

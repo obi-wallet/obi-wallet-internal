@@ -71,7 +71,7 @@ const reducer: R = (state, action) => {
 
 const StateContext = createContext<
   [ReducerState<R>, Dispatch<ReducerAction<R>>]
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 >(null!);
 
 export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
@@ -199,8 +199,8 @@ const SessionKeySpendLimitSetting = observer(
     const denom = theme.ethereumBalances
       ? "ZTX"
       : theme.ethDemo
-        ? "USD"
-        : "OSMO";
+      ? "USD"
+      : "OSMO";
 
     return (
       <Setting

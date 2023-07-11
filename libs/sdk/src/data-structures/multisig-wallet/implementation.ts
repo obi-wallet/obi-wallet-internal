@@ -240,11 +240,11 @@ export class MultisigWallet {
   public async signAndBroadcastTransaction(
     payload: (
       | {
-        flexAccount: FlexAccount;
-      }
+          flexAccount: FlexAccount;
+        }
       | {
-        singlesigWallet: SinglesigWallet;
-      }
+          singlesigWallet: SinglesigWallet;
+        }
     ) & { messages: Message[] }
   ): Promise<BroadcastTransactionResult> {
     if (R.has("flexAccount", payload)) {

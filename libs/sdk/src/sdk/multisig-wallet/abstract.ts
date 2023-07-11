@@ -68,17 +68,17 @@ export abstract class AbstractMultisigWalletSdk {
 
   public abstract updateWallet(): Promise<
     | {
-      approved: true;
-      payload: BroadcastTransactionResult | { success: true };
-    }
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
     | { approved: false }
   >;
 
   public abstract updateOwner(newOwner: MultisigKey): Promise<
     | {
-      approved: true;
-      payload: BroadcastTransactionResult | { success: true };
-    }
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
     | { approved: false }
   >;
 
@@ -89,9 +89,9 @@ export abstract class AbstractMultisigWalletSdk {
     isLogin,
   }: UpdateGatekeeperConfigParams): Promise<
     | {
-      approved: true;
-      payload: BroadcastTransactionResult | { success: true };
-    }
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
     | { approved: false }
   >;
 

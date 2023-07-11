@@ -71,7 +71,7 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
       codeIds.userAccount < this.chain.currentCodeIds.userAccount ||
       codeIds.spendLimitGatekeeper === null ||
       codeIds.spendLimitGatekeeper <
-      this.chain.currentCodeIds.spendLimitGatekeeper ||
+        this.chain.currentCodeIds.spendLimitGatekeeper ||
       codeIds.debtGatekeeper === null ||
       codeIds.debtGatekeeper < this.chain.currentCodeIds.debtGatekeeper
     );
@@ -79,9 +79,9 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
 
   public async updateWallet(): Promise<
     | {
-      approved: true;
-      payload: BroadcastTransactionResult | { success: true };
-    }
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
     | { approved: false }
   > {
     if (!(await this.isOutdated())) {
@@ -104,9 +104,9 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
 
   public async updateOwner(newOwner: MultisigKey): Promise<
     | {
-      approved: true;
-      payload: BroadcastTransactionResult | { success: true };
-    }
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
     | { approved: false }
   > {
     if ((await this.proposedOwner()) !== newOwner.address) {
@@ -135,9 +135,9 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
 
   protected async proposeUpdateOwner(newOwner: MultisigKey): Promise<
     | {
-      approved: true;
-      payload: BroadcastTransactionResult | { success: true };
-    }
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
     | { approved: false }
   > {
     const codeIds = await queryClient.ensureQueryData(this.codeIdsQuery());
@@ -167,9 +167,9 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
 
   protected async confirmUpdateOwner(newOwner: MultisigKey): Promise<
     | {
-      approved: true;
-      payload: BroadcastTransactionResult | { success: true };
-    }
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
     | { approved: false }
   > {
     const message = this.messages.getConfirmUpdateOwnerMessage({
@@ -200,9 +200,9 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
     isLogin,
   }: UpdateGatekeeperConfigParams): Promise<
     | {
-      approved: true;
-      payload: BroadcastTransactionResult | { success: true };
-    }
+        approved: true;
+        payload: BroadcastTransactionResult | { success: true };
+      }
     | { approved: false }
   > {
     const { spendLimitGatekeeper, sessionKeyGatekeeper } =

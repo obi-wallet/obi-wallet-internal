@@ -9,7 +9,9 @@ import { Alert } from "react-native";
 import { Draft } from "../stores";
 
 export async function createSessionKey({
-  wallet, maxSpend, isLogin,
+  wallet,
+  maxSpend,
+  isLogin,
 }: {
   wallet: MultisigWallet;
   maxSpend: number;
