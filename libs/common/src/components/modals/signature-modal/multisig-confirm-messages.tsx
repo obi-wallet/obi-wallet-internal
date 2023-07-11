@@ -29,17 +29,15 @@ export interface MultisigConfirmMessagesProps
 }
 
 export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
-  function SignatureModal(MultisigConfirmMessagesProps) {
-    const {
-      onConfirm,
-      numberOfSignatures,
-      numberOfUsableKeys,
-      threshold,
-      data,
-      safeSpendLimitExceeded,
-      ...props
-    } = MultisigConfirmMessagesProps;
-
+  function SignatureModal({
+    onConfirm,
+    numberOfSignatures,
+    numberOfUsableKeys,
+    threshold,
+    data,
+    safeSpendLimitExceeded,
+    ...props
+  }) {
     const theme = useTheme();
     const enoughSignatures = numberOfSignatures >= threshold;
     const [loading, setLoading] = useState(false);
@@ -135,7 +133,7 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
 );
 
 export const MultisigConfirmMessagesLogin =
-  observer<MultisigConfirmMessagesProps>(function MultisigLoginConfirmMessage({
+  observer<MultisigConfirmMessagesProps>(function MultisigConfirmMessagesLogin({
     onConfirm,
     numberOfSignatures,
     threshold,
