@@ -134,7 +134,7 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
   }
 );
 
-export const MultisigLoginConfirmMessage =
+export const MultisigConfirmMessagesLogin =
   observer<MultisigConfirmMessagesProps>(function MultisigLoginConfirmMessage({
     onConfirm,
     numberOfSignatures,

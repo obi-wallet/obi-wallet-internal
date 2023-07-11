@@ -9,7 +9,7 @@ import { useRef, useState } from "react";
 
 import {
   MultisigConfirmMessages,
-  MultisigLoginConfirmMessage,
+  MultisigConfirmMessagesLogin,
 } from "./multisig-confirm-messages";
 import { PhoneNumberBottomSheetContent } from "./phone-number-bottom-sheet-content";
 import { createUsableSigners, PhoneKeySigner } from "./signers";
@@ -123,7 +123,7 @@ export const SignatureModalMultisigKey =
       );
     };
     const Component = interaction.payload.isLogin
-      ? MultisigLoginConfirmMessage
+      ? MultisigConfirmMessagesLogin
       : MultisigConfirmMessages;
 
     return (
