@@ -10,7 +10,7 @@ import {
   Sdk,
   Token,
 } from "../../sdk";
-import { updateGatekeeperConfigParams } from "../../sdk/multisig-wallet/abstract";
+import { UpdateGatekeeperConfigParams } from "../../sdk/multisig-wallet/abstract";
 import { Secp256k1PrivateKeySigner } from "../../signers";
 import { Message, wrapMessages } from "../../transactions";
 import { FlexAccount } from "../flex-account";
@@ -177,7 +177,7 @@ export class MultisigWallet {
   public async updateGatekeeperConfig({
     newGatekeeperConfig,
     isLogin,
-  }: updateGatekeeperConfigParams) {
+  }: UpdateGatekeeperConfigParams) {
     const response = await this.multisigWalletSdk.updateGatekeeperConfig({
       newGatekeeperConfig,
       isLogin,
@@ -240,11 +240,11 @@ export class MultisigWallet {
   public async signAndBroadcastTransaction(
     payload: (
       | {
-          flexAccount: FlexAccount;
-        }
+        flexAccount: FlexAccount;
+      }
       | {
-          singlesigWallet: SinglesigWallet;
-        }
+        singlesigWallet: SinglesigWallet;
+      }
     ) & { messages: Message[] }
   ): Promise<BroadcastTransactionResult> {
     if (R.has("flexAccount", payload)) {
