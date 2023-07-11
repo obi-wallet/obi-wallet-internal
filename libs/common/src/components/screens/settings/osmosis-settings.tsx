@@ -29,7 +29,7 @@ import {
   Alert,
   isSmallScreenNumber,
   isWeb,
-  setSessionKey,
+  createSessionKey,
 } from "../../../helpers";
 import {
   RootStackParamList,
@@ -71,7 +71,7 @@ const reducer: R = (state, action) => {
 
 const StateContext = createContext<
   [ReducerState<R>, Dispatch<ReducerAction<R>>]
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 >(null!);
 
 export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
@@ -154,7 +154,7 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
                   const maxSpend = parseFloat(
                     stateContextValue[0][AccountSettingComponent.MaxSpend]
                   );
-                  setSessionKey({ wallet, maxSpend });
+                  createSessionKey({ wallet, maxSpend });
                 }}
               />
             </View>
@@ -199,8 +199,8 @@ const SessionKeySpendLimitSetting = observer(
     const denom = theme.ethereumBalances
       ? "ZTX"
       : theme.ethDemo
-      ? "USD"
-      : "OSMO";
+        ? "USD"
+        : "OSMO";
 
     return (
       <Setting

@@ -8,15 +8,13 @@ import { Alert } from "react-native";
 
 import { Draft } from "../stores";
 
-export const setSessionKey = async ({
-  wallet,
-  maxSpend,
-  isLogin,
+export async function createSessionKey({
+  wallet, maxSpend, isLogin,
 }: {
   wallet: MultisigWallet;
   maxSpend: number;
   isLogin?: boolean;
-}) => {
+}) {
   const { publicKey, privateKey } = generateSec256k1KeyPair();
   const address = Sdk.chainId(
     wallet.chainId
@@ -52,4 +50,4 @@ export const setSessionKey = async ({
       Alert.alert("Error", response.payload.rawLog ?? "Unknown error");
     }
   }
-};
+}

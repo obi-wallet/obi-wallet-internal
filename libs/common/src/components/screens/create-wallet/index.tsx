@@ -11,7 +11,7 @@ import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 
 import { useStore } from "../../../contexts";
-import { Alert, setSessionKey } from "../../../helpers";
+import { Alert, createSessionKey } from "../../../helpers";
 import {
   KeyFlow,
   KeyRoute,
@@ -61,7 +61,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
               return;
             }
 
-            await setSessionKey({
+            await createSessionKey({
               wallet,
               maxSpend: 5,
               isLogin: true,
@@ -131,48 +131,48 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
       actions={{
         [KeyType.Social]: hasSocialKey
           ? {
-              label: "Remove",
-              onPress: () => {
-                draft.value.removeKeyOfType(KeyType.Social);
-              },
-            }
-          : {
-              label: "Add",
-              onPress: onAddSocial,
+            label: "Remove",
+            onPress: () => {
+              draft.value.removeKeyOfType(KeyType.Social);
             },
+          }
+          : {
+            label: "Add",
+            onPress: onAddSocial,
+          },
         [KeyType.Nfc]: hasNfcKey
           ? {
-              label: "Remove",
-              onPress: () => {
-                draft.value.removeKeyOfType(KeyType.Nfc);
-              },
-            }
-          : {
-              label: "Add",
-              onPress: onAddNfc,
+            label: "Remove",
+            onPress: () => {
+              draft.value.removeKeyOfType(KeyType.Nfc);
             },
+          }
+          : {
+            label: "Add",
+            onPress: onAddNfc,
+          },
         [KeyType.Cloud]: hasCloudKey
           ? {
-              label: "Remove",
-              onPress: () => {
-                draft.value.removeKeyOfType(KeyType.Cloud);
-              },
-            }
-          : {
-              label: "Add",
-              onPress: onAddCloud,
+            label: "Remove",
+            onPress: () => {
+              draft.value.removeKeyOfType(KeyType.Cloud);
             },
+          }
+          : {
+            label: "Add",
+            onPress: onAddCloud,
+          },
         [KeyType.Email]: hasEmailKey
           ? {
-              label: "Remove",
-              onPress: () => {
-                draft.value.removeKeyOfType(KeyType.Email);
-              },
-            }
-          : {
-              label: "Add",
-              onPress: onAddEmail,
+            label: "Remove",
+            onPress: () => {
+              draft.value.removeKeyOfType(KeyType.Email);
             },
+          }
+          : {
+            label: "Add",
+            onPress: onAddEmail,
+          },
       }}
     >
       <View style={{ paddingTop: 10 }}>
