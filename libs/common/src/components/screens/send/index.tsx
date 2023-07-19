@@ -219,7 +219,6 @@ export const SendScreenComponent = observer<
                 if (theme.ethereumBalances) {
                   return [
                     {
-                      // @ts-expect-error ETH messages aren't supported by SDK yet
                       eth: {
                         to: data.address,
                         token: data.token,

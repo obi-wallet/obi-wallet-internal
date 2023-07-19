@@ -10,11 +10,11 @@ import {
   ChainId,
   isLegacyCosmosChain,
   legacyCosmosChains,
+  MessageJson,
   Sdk,
   Token,
 } from "@obi-wallet/sdk";
 import {
-  Msg,
   MsgDelegate,
   MsgExecuteContract,
   MsgInstantiateContract,
@@ -44,7 +44,7 @@ function useChainId() {
 }
 
 export interface PrettyMessageProps {
-  message: Msg.Amino;
+  message: MessageJson;
   chainId: ChainId;
 }
 
@@ -62,31 +62,33 @@ export const PrettyMessage = observer<PrettyMessageProps>(
 
 const PrettyMessageUnsafe = observer<Omit<PrettyMessageProps, "chainId">>(
   function PrettyMessageUnsafe({ message }) {
-    switch (message.type) {
+    const type = R.has("type", message) ? message.type : null;
+
+    switch (type) {
       case "bank/MsgSend":
       case "cosmos-sdk/MsgSend": {
-        const msg = message as MsgSend.Amino;
+        const msg = message as unknown as MsgSend.Amino;
         return <PrettyMessageSend {...msg} />;
       }
       case "wasm/MsgInstantiateContract": {
-        const msg = message as MsgInstantiateContract.Amino;
+        const msg = message as unknown as MsgInstantiateContract.Amino;
         return <PrettyMessageInstantiateContract {...msg} />;
       }
       case "wasm/MsgExecuteContract": {
-        const msg = message as MsgExecuteContract.Amino;
+        const msg = message as unknown as MsgExecuteContract.Amino;
         return <PrettyMessageExecuteContract {...msg} />;
       }
       case "cosmos-sdk/MsgDelegate": {
-        const msg = message as MsgDelegate.Amino;
+        const msg = message as unknown as MsgDelegate.Amino;
         return <PrettyMessageStaking {...msg} label="Staking to:" />;
       }
       case "cosmos-sdk/MsgUndelegate": {
-        const msg = message as MsgUndelegate.Amino;
+        const msg = message as unknown as MsgUndelegate.Amino;
         return <PrettyMessageStaking {...msg} label="Unstaking from:" />;
       }
       case "distribution/MsgWithdrawDelegationReward":
       case "cosmos-sdk/MsgWithdrawDelegationReward": {
-        const msg = message as MsgWithdrawDelegatorReward.Amino;
+        const msg = message as unknown as MsgWithdrawDelegatorReward.Amino;
         return <PrettyMessageWithdrawDelegatorReward {...msg} />;
       }
       default:

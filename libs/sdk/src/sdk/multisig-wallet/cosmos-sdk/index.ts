@@ -11,15 +11,11 @@ import {
 } from "../../../data-structures";
 import { queryClient } from "../../../query-client";
 import { Signer } from "../../../signers";
-import {
-  Message,
-  SignedTransaction,
-  wrapMessage,
-  wrapOsmoMessage,
-} from "../../../transactions";
+import { SignedTransaction } from "../../../transactions";
 import { SignAndBroadcastTransactionUserInteraction } from "../../../user-interactions";
 import { BroadcastTransactionResult, CodeIds, Token } from "../../common";
 import { Messages } from "../../messages";
+import { CosmosSdkMessages } from "../../messages/cosmos-sdk";
 import { Sdk } from "../../sdk";
 import {
   AbstractMultisigWalletSdk,
@@ -304,7 +300,7 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
     messages,
   }: {
     flexAccount: FlexAccount;
-    messages: Message[];
+    messages: Messages[];
   }): Promise<boolean> {
     const schema = z.object({
       can_execute: z.object({
@@ -321,8 +317,8 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
                 funds: [],
                 address: flexAccount.address,
                 msg: R.has("osmo", message)
-                  ? { osmo: wrapOsmoMessage(message) }
-                  : { legacy: wrapMessage(message) },
+                  ? { osmo: this.messages.wrapOsmoMessage(message) }
+                  : { legacy: this.messages.wrapMessage(message) },
               },
             },
             schema,
@@ -341,7 +337,7 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
     messages,
   }: {
     signer: Signer;
-    messages: Message[];
+    messages: Messages[];
   }): Promise<SignedTransaction> {
     return await this.createAndSignTransaction({ signer, messages });
   }
@@ -376,7 +372,7 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
   }
 
   protected get messages() {
-    return Messages.chainId(this.chainId);
+    return Messages.chainId(this.chainId) as CosmosSdkMessages;
   }
 
   protected get sdk() {

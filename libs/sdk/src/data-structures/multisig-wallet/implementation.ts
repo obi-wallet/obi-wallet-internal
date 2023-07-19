@@ -6,13 +6,14 @@ import { Chain, ChainId } from "../../chains";
 import {
   AbstractMultisigWalletSdk,
   BroadcastTransactionResult,
+  Messages,
   MultisigWalletSdk,
   Sdk,
   Token,
 } from "../../sdk";
 import { UpdateGatekeeperConfigParams } from "../../sdk/multisig-wallet/abstract";
 import { Secp256k1PrivateKeySigner } from "../../signers";
-import { Message, wrapMessages } from "../../transactions";
+import { Message } from "../../transactions";
 import { FlexAccount } from "../flex-account";
 import { GatekeeperConfig } from "../gatekeeper-config";
 import { AbstractSerialized } from "../migratable";
@@ -254,7 +255,7 @@ export class MultisigWallet {
         publicKey: flexAccount.publicKey,
         privateKey: flexAccount.privateKey,
       });
-      const wrappedMessages = wrapMessages({
+      const wrappedMessages = this.messages.wrapMessages({
         messages,
         contract: this.proxyAddress,
         sender: flexAccount.address,
@@ -314,5 +315,9 @@ export class MultisigWallet {
 
   protected get sdk() {
     return Sdk.chainId(this.chainId);
+  }
+
+  protected get messages() {
+    return Messages.chainId(this.chainId);
   }
 }

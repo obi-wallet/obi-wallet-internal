@@ -1,9 +1,10 @@
 import {
   MultisigSigner,
-  Message,
   Sdk,
   SignAndBroadcastTransactionUserInteraction,
-  wrapMessages as sdkWrapMessages,
+  Messages,
+  ChainId,
+  Message,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import * as R from "ramda";
@@ -67,6 +68,7 @@ export function useSignAndBroadcastTransaction({
           messages: payload.messages,
           proxyAddress: wallet?.proxyAddress,
           sender: multisigKey?.address,
+          chainId: multisigKey?.chainId,
         }),
       });
     },
@@ -176,14 +178,16 @@ function wrapMessages({
   messages,
   proxyAddress,
   sender,
+  chainId,
 }: {
   messages: Message[];
   proxyAddress?: string;
   sender?: string;
+  chainId?: ChainId;
 }): Message[] {
-  if (!proxyAddress || !sender) return messages;
+  if (!proxyAddress || !sender || !chainId) return messages;
 
-  return sdkWrapMessages({
+  return Messages.chainId(chainId).wrapMessages({
     messages,
     sender,
     contract: proxyAddress,

@@ -6,7 +6,7 @@ import {
   MultisigKey,
   MultisigWallet,
 } from "../../../data-structures";
-import { Message } from "../../../transactions";
+import { Message, MessageJson } from "../../../transactions";
 import { CodeIds, Token } from "../../common";
 import { AbstractMessages } from "../abstract";
 
@@ -17,6 +17,20 @@ function notImplemented(message: string) {
 export class LegacyCosmosMessages extends AbstractMessages {
   protected constructor(protected override chainId: LegacyCosmosChainId) {
     super(chainId);
+  }
+
+  public toJSON(_: Message): MessageJson {
+    notImplemented("toJSON not implemented for Cosmos");
+    throw new Error("toJSON not implemented for Cosmos");
+  }
+
+  public wrapMessages(_: {
+    messages: Message[];
+    sender: string;
+    contract: string;
+  }): Message[] {
+    notImplemented("wrapMessages not implemented for Cosmos");
+    return [];
   }
 
   public getSendMessages(_: {
