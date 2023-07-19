@@ -245,7 +245,7 @@
     "webpack": "^5.88.0",
     "yargs-parser": "^21.1.1"
   },
-  "packageManager": "yarn@3.3.0",
+  "packageManager": "yarn@3.6.1",
   "reactNativePermissionsIOS": [
     "Camera",
     "FaceID",
