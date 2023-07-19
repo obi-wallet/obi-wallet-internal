@@ -39,7 +39,7 @@ function select<T>({
   chainId: ChainId;
   onCosmosChain(chain: (typeof cosmosChains)[CosmosChainId]): T;
   onLegacyCosmosChain(
-    chain: (typeof legacyCosmosChains)[LegacyCosmosChainId]
+    chain: (typeof legacyCosmosChains)[LegacyCosmosChainId],
   ): T;
   onTerraChain(chain: (typeof terraChains)[TerraChainId]): T;
 }) {
@@ -59,7 +59,7 @@ export function isCosmosChain(chainId: ChainId): chainId is CosmosChainId {
 }
 
 export function isLegacyCosmosChain(
-  chainId: ChainId
+  chainId: ChainId,
 ): chainId is LegacyCosmosChainId {
   return Object.keys(legacyCosmosChains).includes(chainId);
 }

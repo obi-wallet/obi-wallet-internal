@@ -53,7 +53,7 @@ export abstract class AbstractBankSdk {
 
   public enrichToken(
     token: Token,
-    prices?: Record<string, number>
+    prices?: Record<string, number>,
   ): EnrichedToken {
     const enrichedToken = this.enrichTokenWithoutUsdValue(token);
     return {

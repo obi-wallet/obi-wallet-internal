@@ -322,7 +322,7 @@ const Container = styled.SafeAreaView(
     flex: 1,
     paddingHorizontal: 20,
   },
-  (props) => ({ backgroundColor: props.theme.colors.background })
+  (props) => ({ backgroundColor: props.theme.colors.background }),
 );
 
 const TilesContainer = styled.View({
@@ -381,7 +381,7 @@ const SettingButton = styled.TouchableOpacity(
   },
   () => ({
     backgroundColor: "#272727",
-  })
+  }),
 );
 
 // This can't be a React component because `Stack.Navigator` doesn't want that.

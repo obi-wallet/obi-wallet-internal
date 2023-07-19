@@ -15,7 +15,7 @@ export abstract class MultisigSigner<T = unknown> {
   public createSignedTransaction() {
     invariant(
       this.enoughSignatures,
-      "Not enough signatures to create signed transaction"
+      "Not enough signatures to create signed transaction",
     );
     return this.unsafeCreateSignedTransaction();
   }
@@ -23,7 +23,7 @@ export abstract class MultisigSigner<T = unknown> {
   public async addSigner(signer: Signer) {
     this.signatures.set(
       signer.publicKey.value,
-      await this.createSignature(signer)
+      await this.createSignature(signer),
     );
   }
 

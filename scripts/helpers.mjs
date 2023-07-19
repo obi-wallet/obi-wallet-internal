@@ -10,8 +10,8 @@ const unlink = util.promisify(fs.unlink);
 export async function get1PasswordItem(id) {
   return JSON.parse(
     await execCommand(
-      `op item get ${id} --account AURDFTDQCVHDRIBVN3MRH5PSFA --format json`
-    )
+      `op item get ${id} --account AURDFTDQCVHDRIBVN3MRH5PSFA --format json`,
+    ),
   );
 }
 
@@ -22,7 +22,7 @@ export async function download1PasswordFile(id, outFile) {
     // noop
   }
   await execCommand(
-    `op document get ${id} --account AURDFTDQCVHDRIBVN3MRH5PSFA --out-file ${outFile}`
+    `op document get ${id} --account AURDFTDQCVHDRIBVN3MRH5PSFA --out-file ${outFile}`,
   );
 }
 

@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { ComponentType, Dispatch, useState } from "react";
+import { ComponentType, Dispatch, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { TextInputProps, View } from "react-native";
 
@@ -60,7 +60,7 @@ export const SecurityQuestionInputWithAnswer =
           />
         </View>
       );
-    }
+    },
   );
 
 export const SecurityQuestionInput = observer(function SecurityQuestionInput({
@@ -72,7 +72,7 @@ export const SecurityQuestionInput = observer(function SecurityQuestionInput({
 }: SecurityQuestionInputProps) {
   const [dropdownPickerOpen, setDropdownPickerOpen] = useState(false);
   const [securityQuestions, setSecurityQuestions] = useState(
-    useSecurityQuestions()
+    useSecurityQuestions(),
   );
 
   return (
@@ -131,7 +131,7 @@ export const SecurityQuestionInput = observer(function SecurityQuestionInput({
 
 export function useSecurityQuestionInput() {
   const [securityQuestion, setSecurityQuestion] = useState(
-    useSecurityQuestions()[0].value
+    useSecurityQuestions()[0].value,
   );
   const [securityAnswer, setSecurityAnswer] = useState("");
 
@@ -146,35 +146,42 @@ export function useSecurityQuestionInput() {
 export function useSecurityQuestions() {
   const intl = useIntl();
 
-  return [
-    {
-      label: intl.formatMessage({
-        id: "onboarding2.securityquestion.birthplace",
-        defaultMessage: "What city and country were you born in?",
-      }),
-      value: "birthplace",
-    },
-    {
-      label: intl.formatMessage({
-        id: "onboarding2.securityquestion.schoolname",
-        defaultMessage:
-          "What is the full name of the last elementary/primary school I attended?",
-      }),
-      value: "schoolname",
-    },
-    {
-      label: intl.formatMessage({
-        id: "onboarding2.securityquestion.firstcar",
-        defaultMessage: "What was the make and model of your first car?",
-      }),
-      value: "firstcar",
-    },
-    {
-      label: intl.formatMessage({
-        id: "onboarding2.securityquestion.firstkiss",
-        defaultMessage: "What is the full name of my first kiss?",
-      }),
-      value: "firstkiss",
-    },
-  ];
+  const birthPlaceLabel = intl.formatMessage({
+    id: "onboarding2.securityquestion.birthplace",
+    defaultMessage: "What city and country were you born in?",
+  });
+  const schoolnameLabel = intl.formatMessage({
+    id: "onboarding2.securityquestion.schoolname",
+    defaultMessage:
+      "What is the full name of the last elementary/primary school I attended?",
+  });
+  const firstcarLabel = intl.formatMessage({
+    id: "onboarding2.securityquestion.firstcar",
+    defaultMessage: "What was the make and model of your first car?",
+  });
+  const firstkissLabel = intl.formatMessage({
+    id: "onboarding2.securityquestion.firstkiss",
+    defaultMessage: "What is the full name of my first kiss?",
+  });
+
+  return useMemo(() => {
+    return [
+      {
+        label: birthPlaceLabel,
+        value: "birthplace",
+      },
+      {
+        label: schoolnameLabel,
+        value: "schoolname",
+      },
+      {
+        label: firstcarLabel,
+        value: "firstcar",
+      },
+      {
+        label: firstkissLabel,
+        value: "firstkiss",
+      },
+    ];
+  }, [birthPlaceLabel, firstcarLabel, firstkissLabel, schoolnameLabel]);
 }

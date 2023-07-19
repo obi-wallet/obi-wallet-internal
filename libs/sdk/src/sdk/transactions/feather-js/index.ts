@@ -46,7 +46,7 @@ export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
         return SimplePublicKey.fromAmino(publicKey).address(this.chain.prefix);
       case "tendermint/PubKeyMultisigThreshold":
         return LegacyAminoMultisigPublicKey.fromAmino(publicKey).address(
-          this.chain.prefix
+          this.chain.prefix,
         );
       default:
         throw new Error("Unsupported public key type");
@@ -70,7 +70,7 @@ export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
   }
 
   public async validateAccount(
-    address: string
+    address: string,
   ): Promise<AccountValidationResult> {
     if (!this.validateAddress(address)) {
       return AccountValidationResult.INVALID_ADDRESS;
@@ -87,7 +87,7 @@ export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
 
   protected async prepareKeyPairQueryFn(keyPair: Secp256k1KeyPair) {
     const key = FeatherJsKey.fromSigner(
-      new Secp256k1PrivateKeySigner(keyPair.privateKey)
+      new Secp256k1PrivateKeySigner(keyPair.privateKey),
     );
     const address = key.accAddress(this.chain.prefix);
 
@@ -96,7 +96,7 @@ export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
     const validationResult = await this.validateAccount(address);
     invariant(
       validationResult >= AccountValidationResult.PUBLIC_KEY_NOT_READY,
-      "Account not ready"
+      "Account not ready",
     );
     if (validationResult <= AccountValidationResult.PUBLIC_KEY_NOT_READY) {
       await this.client.withClient(async (client) => {
@@ -167,7 +167,7 @@ export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
             chainID: this.chainId,
             // TODO:
             msgs: messages as Msg[],
-          }
+          },
         );
         return new FeatherJsMultisigSigner({
           chainId: this.chainId,
@@ -198,7 +198,7 @@ export class FeatherJsTransactionsSdk extends AbstractTransactionsSdk {
       const transaction = Tx.fromBuffer(Buffer.from(signedTransaction));
       const rawResult = await client.tx.broadcastBlock(
         transaction,
-        this.chainId
+        this.chainId,
       );
       return {
         success: !isTxError(rawResult),

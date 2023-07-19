@@ -79,6 +79,7 @@ interface Token {
 interface PoolParams {
   swap_fee: string;
   exit_fee: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   smooth_weight_change_params: any; // You can replace 'any' with the specific type if available
 }
 
@@ -104,21 +105,22 @@ interface Pool {
 }
 
 export const WhitelistedLpsScreen = observer<WhitelistedLpsScreenProps>(
-  function WhitelistedLPsScreen({ navigation }) {
+  function WhitelistedLPsScreen() {
     const [loading, setLoading] = useState<boolean>(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lpList, setLpList] = useState<any[]>([]);
 
     useAsyncEffect(async () => {
       // const lpList = await setLpList(lpList);
       const { pools }: { pools: Pool[] } = await fetch(
-        "https://lcd.osmotest5.osmosis.zone/osmosis/gamm/v1beta1/pools?pagination.limit=1000"
+        "https://lcd.osmotest5.osmosis.zone/osmosis/gamm/v1beta1/pools?pagination.limit=1000",
       ).then((res) => res.json());
       const lpList = pools
         .filter((pool) => osmosisWhitelistedLps.includes(pool.id))
         .sort(
           (a, b) =>
             osmosisWhitelistedLps.indexOf(a.id) -
-            osmosisWhitelistedLps.indexOf(b.id)
+            osmosisWhitelistedLps.indexOf(b.id),
         );
 
       setLpList(lpList);
@@ -177,7 +179,7 @@ export const WhitelistedLpsScreen = observer<WhitelistedLpsScreenProps>(
         </SafeAreaView>
       </OsmosisScreenContainer>
     );
-  }
+  },
 );
 interface PoolListItemProps {
   item: Pool;

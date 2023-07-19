@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 
 export const CountryPicker = observer<{
   value: { countryCode: CountryCode; country: Country };
-  onChange: (value: { countryCode: CountryCode; country: Country }) => void;
+  onChange: (_value: { countryCode: CountryCode; country: Country }) => void;
 }>(function CountryPicker({ value, onChange }) {
   const { languageStore } = useStore();
   const { currentLanguage } = languageStore;

@@ -6,5 +6,5 @@ export const QrCodeScanner = observer<RNQRCodeScannerProps>(
   function QrCodeScanner() {
     warning(false, "QrCodeScanner not implemented for web");
     return null;
-  }
+  },
 );

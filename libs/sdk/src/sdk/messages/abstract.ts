@@ -66,12 +66,10 @@ export abstract class AbstractMessages {
     wallet,
     newGatekeeperConfig,
     spendLimitGatekeeper,
-    sessionKeyGatekeeper,
   }: {
     wallet: MultisigWallet;
     newGatekeeperConfig: GatekeeperConfig;
     spendLimitGatekeeper: string;
-    sessionKeyGatekeeper: string;
   }): Message[];
 
   /**

@@ -202,5 +202,5 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
         </View>
       </View>
     );
-  }
+  },
 );

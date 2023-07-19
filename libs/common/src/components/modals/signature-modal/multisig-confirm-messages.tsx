@@ -129,7 +129,7 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
         <View>{renderBottomContent()}</View>
       </ConfirmMessages>
     );
-  }
+  },
 );
 
 export const MultisigConfirmMessagesLogin =

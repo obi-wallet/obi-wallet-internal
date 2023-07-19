@@ -33,7 +33,7 @@ export class AppsStore {
 
   protected *init() {
     const favorites = yield* toGenerator(
-      this.kvStore.get<App[] | undefined>("favorites")
+      this.kvStore.get<App[] | undefined>("favorites"),
     );
     this.favorites = favorites ?? knownApps;
   }

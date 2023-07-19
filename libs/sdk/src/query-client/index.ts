@@ -20,11 +20,11 @@ export const queryClient = new QueryClient({
 
 export class QueryClientNamespace<
   TNamespace extends string = string,
-  TNamespaceParams extends Record<string, unknown> = Record<string, unknown>
+  TNamespaceParams extends Record<string, unknown> = Record<string, unknown>,
 > {
   public constructor(
     protected namespace: TNamespace,
-    protected namespaceParams: TNamespaceParams
+    protected namespaceParams: TNamespaceParams,
   ) {}
 
   public createQuery<TFnParams, TFnReturn>(
@@ -39,7 +39,7 @@ export class QueryClientNamespace<
           fn: (args: TFnParams) => Promise<TFnReturn>;
           params: TFnParams;
         }
-    )
+    ),
   ) {
     if (R.has("params", params)) {
       return this.createQueryWithParams(params);

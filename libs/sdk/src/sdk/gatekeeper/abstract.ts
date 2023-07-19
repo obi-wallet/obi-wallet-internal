@@ -33,7 +33,7 @@ export abstract class AbstractGatekeeperSdk {
   }
 
   protected abstract contractAddressesQueryFn(
-    proxyAddress: string
+    proxyAddress: string,
   ): Promise<GatekeeperContractAddresses>;
 
   /**
@@ -44,7 +44,7 @@ export abstract class AbstractGatekeeperSdk {
    */
   public permissionedAddresses(proxyAddress: string) {
     return queryClient.fetchQuery(
-      this.permissionedAddressesQuery(proxyAddress)
+      this.permissionedAddressesQuery(proxyAddress),
     );
   }
 
@@ -57,6 +57,6 @@ export abstract class AbstractGatekeeperSdk {
   }
 
   protected abstract permissionedAddressesQueryFn(
-    proxyAddress: string
+    proxyAddress: string,
   ): Promise<PermissionedAddress[]>;
 }

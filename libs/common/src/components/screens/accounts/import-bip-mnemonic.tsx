@@ -79,7 +79,7 @@ export const ImportBipMnemonicScreen = observer<ImportBipMnemonicScreenProps>(
               const publicKey = key.publicKey?.toAmino();
               invariant(
                 publicKey && publicKey.type === "tendermint/PubKeySecp256k1",
-                'Expected key to be of type "tendermint/PubKeySecp256k1"'
+                'Expected key to be of type "tendermint/PubKeySecp256k1"',
               );
 
               wallet.upsertSinglesigWallet(
@@ -87,7 +87,7 @@ export const ImportBipMnemonicScreen = observer<ImportBipMnemonicScreenProps>(
                   type: "singlesig-wallet",
                   publicKey,
                   privateKey: key.privateKey.toString("base64"),
-                })
+                }),
               );
 
               navigation.navigate(AccountsRoute.AccountsOverview);
@@ -104,5 +104,5 @@ export const ImportBipMnemonicScreen = observer<ImportBipMnemonicScreenProps>(
         </View>
       </ScreenContainer>
     );
-  }
+  },
 );

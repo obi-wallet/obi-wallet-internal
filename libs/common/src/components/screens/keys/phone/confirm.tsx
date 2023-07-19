@@ -56,7 +56,7 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
         }}
       />
     );
-  }
+  },
 );
 
 export interface PhoneKeyConfirmProps {
@@ -214,7 +214,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                       console.error(error);
                       Alert.alert(
                         "Error VerifyAndProceedButton (2)",
-                        error.message
+                        error.message,
                       );
                     }
                   }}
@@ -230,5 +230,5 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
         </KeyboardAvoidingView>
       </OsmosisScreenContainer>
     );
-  }
+  },
 );

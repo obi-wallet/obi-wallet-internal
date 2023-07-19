@@ -83,7 +83,7 @@ async function saveKeyPairToCloud({
         publicKey,
         privateKey,
       }),
-      "application/json"
+      "application/json",
     )
     .setRequestBody({
       name,
@@ -94,7 +94,7 @@ async function saveKeyPairToCloud({
       name,
       spaces: ["appDataFolder"],
     },
-    uploader
+    uploader,
   );
 }
 

@@ -161,7 +161,7 @@ export const CreateBeneficiaryAccountScreen =
                           months: 1,
                         },
                       },
-                    })
+                    }),
                   );
 
                   navigation.navigate(AccountsRoute.AccountsOverview);
@@ -179,5 +179,5 @@ export const CreateBeneficiaryAccountScreen =
           )}
         </ScreenContainer>
       );
-    }
+    },
   );

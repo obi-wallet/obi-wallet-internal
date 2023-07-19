@@ -35,14 +35,14 @@ export class CosmJsStakingSdk extends AbstractStakingSdk {
         async (paginationKey) => {
           const { validators, pagination } = await staking.validators(
             "",
-            paginationKey
+            paginationKey,
           );
           return [validators, pagination];
-        }
+        },
       );
 
       const totalStaked = BigNumber.sum(
-        ...rawValidators.map(({ tokens = 0 }) => Number(tokens))
+        ...rawValidators.map(({ tokens = 0 }) => Number(tokens)),
       ).toNumber();
 
       return rawValidators.map((validator): EnrichedValidator => {
@@ -58,7 +58,7 @@ export class CosmJsStakingSdk extends AbstractStakingSdk {
           label: validator.description?.moniker ?? validator.operatorAddress,
           address: validator.operatorAddress,
           votingPower: ((Number(validator.tokens) / totalStaked) * 100).toFixed(
-            2
+            2,
           ),
           commission: commissionRate.toFixed(2),
           promoted,
@@ -77,14 +77,14 @@ export class CosmJsStakingSdk extends AbstractStakingSdk {
           const { delegationResponses, pagination } =
             await staking.delegatorDelegations(address, paginationKey);
           return [delegationResponses, pagination];
-        }
+        },
       );
       return (
         await Promise.all(
           rawDelegations.map(async (delegation): Promise<Delegation | null> => {
             if (!delegation.balance || !delegation.delegation) return null;
             const validator = await staking.validator(
-              delegation.delegation.validatorAddress
+              delegation.delegation.validatorAddress,
             );
             return {
               balance: {
@@ -99,14 +99,14 @@ export class CosmJsStakingSdk extends AbstractStakingSdk {
                 address: delegation.delegation.validatorAddress,
               },
             };
-          })
+          }),
         )
       ).filter((delegation): delegation is Delegation => !!delegation);
     });
   }
 
   protected async unbondingDelegationsQueryFn(
-    address: string
+    address: string,
   ): Promise<UnbondingDelegation[]> {
     return await this.client.withStakingExtensions(async ({ staking }) => {
       const rawUnbondingDelegations = await this.client.fetchAllPages(
@@ -114,14 +114,14 @@ export class CosmJsStakingSdk extends AbstractStakingSdk {
           const { unbondingResponses, pagination } =
             await staking.delegatorUnbondingDelegations(address, paginationKey);
           return [unbondingResponses, pagination];
-        }
+        },
       );
       return R.flatten(
         await Promise.all(
           rawUnbondingDelegations.map(
             async (unbondingDelegation): Promise<UnbondingDelegation[]> => {
               const validator = await staking.validator(
-                unbondingDelegation.validatorAddress
+                unbondingDelegation.validatorAddress,
               );
 
               return unbondingDelegation.entries.map(
@@ -139,14 +139,14 @@ export class CosmJsStakingSdk extends AbstractStakingSdk {
                       address: unbondingDelegation.validatorAddress,
                     },
                     completionTime: new Date(
-                      entry.completionTime?.seconds.toNumber() ?? 0
+                      entry.completionTime?.seconds.toNumber() ?? 0,
                     ),
                   };
-                }
+                },
               );
-            }
-          )
-        )
+            },
+          ),
+        ),
       );
     });
   }

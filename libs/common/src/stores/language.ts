@@ -37,7 +37,7 @@ export class LanguageStore {
         currentLanguage: observable,
         setCurrentLanguage: action,
         init: flow,
-      }
+      },
     );
     this.init();
   }
@@ -48,7 +48,7 @@ export class LanguageStore {
 
   protected async *init() {
     const currentLanguage = yield* toGenerator(
-      this.kvStore.get<Language | undefined>("currentLanguage")
+      this.kvStore.get<Language | undefined>("currentLanguage"),
     );
 
     if (currentLanguage && this.enabledLanguages.includes(currentLanguage)) {

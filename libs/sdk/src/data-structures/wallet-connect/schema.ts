@@ -18,6 +18,6 @@ export const WalletConnectSchema = migratable(
           })
           .nullable(),
       }),
-    })
-  )
+    }),
+  ),
 );

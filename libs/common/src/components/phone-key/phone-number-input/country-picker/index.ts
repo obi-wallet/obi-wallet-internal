@@ -4,7 +4,7 @@ import warning from "tiny-warning";
 
 export const CountryPicker = observer<{
   value: { countryCode: CountryCode; country: Country };
-  onChange: (value: { countryCode: CountryCode; country: Country }) => void;
+  onChange: (_value: { countryCode: CountryCode; country: Country }) => void;
 }>(function CountryPicker() {
   warning(false, "CountryPicker is not implemented for web");
   return null;

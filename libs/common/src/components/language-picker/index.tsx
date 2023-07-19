@@ -55,7 +55,7 @@ export const LanguagePicker = observer(function LanguagePicker() {
   const [value, setValue] = useState(currentLanguage);
   const [items, setItems] = useState(() => {
     return allLanguages.filter((lang) =>
-      enabledLanguages.includes(lang.code as Language)
+      enabledLanguages.includes(lang.code as Language),
     );
   });
 

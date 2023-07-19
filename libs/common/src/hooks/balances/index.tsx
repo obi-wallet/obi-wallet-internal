@@ -58,7 +58,7 @@ export function useBalances({
   return useQuery(
     theme.ethereumBalances
       ? ethereumBalancesQuery({ address, rootStore })
-      : Sdk.chainId(chainId).bank.balancesQuery(address)
+      : Sdk.chainId(chainId).bank.balancesQuery(address),
   );
 }
 
@@ -79,7 +79,7 @@ export function useUsdBalance({
   const balanceInUsd = R.sum(
     balances.data.map((coin) => {
       return coin.usdValue ?? 0;
-    })
+    }),
   );
   return `$${balanceInUsd.toFixed(2)}`;
 }
@@ -107,7 +107,7 @@ export const UsdBalance = observer<{ address: string; chainId: ChainId }>(
         </Text>
       </View>
     );
-  }
+  },
 );
 
 export interface EnrichedToken extends Omit<OriginalEnrichedToken, "icon"> {

@@ -9,7 +9,7 @@ export const WalletsSchema = migratable(
   z.object({
     currentWalletIndex: ArrayIndex.nullable(),
     wallets: z.array(MultisigWallet.schema.migratableSchema),
-  })
+  }),
 ).addMigration({
   nextSchema: z.object({
     currentChainId: ChainIdSchema.nullable(),

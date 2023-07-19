@@ -11,8 +11,8 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
   // Increment codepush version
   const [deployment] = JSON.parse(
     await execCommand(
-      "appcenter codepush deployment list -a Obi-Money/obi-mobile-android --output json"
-    )
+      "appcenter codepush deployment list -a Obi-Money/obi-mobile-android --output json",
+    ),
   );
   const label = deployment.latestRelease.label;
   const version = parseInt(label.replace("v", ""), 10);
@@ -28,11 +28,11 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
   await Promise.all([
     execCommand(
       "appcenter codepush release-react -a Obi-Money/obi-mobile-android -d Staging -e ./src/main.tsx --sourcemap-output --output-dir ./build/android",
-      { cwd: appDir }
+      { cwd: appDir },
     ),
     execCommand(
       "appcenter codepush release-react -a Obi-Money/obi-mobile-ios -d Staging -e ./src/main.tsx --xcode-project-file ios/Mobile.xcodeproj/project.pbxproj -p ios/Mobile/Info.plist --sourcemap-output --output-dir ./build/ios",
-      { cwd: appDir }
+      { cwd: appDir },
     ),
   ]);
 
@@ -57,7 +57,7 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
           ...process.env,
           SENTRY_PROPERTIES: "./android/sentry.properties",
         },
-      }
+      },
     ),
     spawnCommand(
       "sentry-cli",
@@ -75,7 +75,7 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
       {
         cwd: appDir,
         env: { ...process.env, SENTRY_PROPERTIES: "./ios/sentry.properties" },
-      }
+      },
     ),
   ]);
 })();

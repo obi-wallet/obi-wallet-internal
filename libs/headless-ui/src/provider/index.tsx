@@ -34,7 +34,7 @@ const QueryClientProviderWithPersister = observer<QueryClientProviderProps>(
         {children}
       </PersistQueryClientProvider>
     );
-  }
+  },
 );
 
 export const Provider = observer(function Provider({
@@ -59,7 +59,7 @@ export const Provider = observer(function Provider({
       if (!focused) return;
       void rootStore.recoverConnectors();
     },
-    [rootStore]
+    [rootStore],
   );
 
   return (

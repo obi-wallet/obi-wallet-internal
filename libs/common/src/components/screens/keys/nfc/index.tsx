@@ -81,7 +81,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
   const intl = useIntl();
   const selectedTagType = useRef<string>("");
   const queryClient = useQueryClient();
-  const [reading, setReading] = useState(false);
+  const [_reading, setReading] = useState(false);
 
   const [hasNfc, setHasNfc] = useState(false);
   const [scannedNfc, setScannedNfc] = useState(false);
@@ -91,7 +91,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
   } | null>(null);
 
   // TODO: if target public key is passed, we are recovering an existing NFC key
-  const isRecovering = typeof targetPublicKey === "string";
+  const _isRecovering = typeof targetPublicKey === "string";
 
   useAsyncEffect(
     async () => {
@@ -120,27 +120,27 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
     [intl],
     () => {
       NfcManager.unregisterTagEvent();
-    }
+    },
   );
 
   const readYubikey = async () => {
     setReading(true);
     await startReading(
-      "Hold a YubiKey NFC near the top back of your phone to use it as entropy for a new deterministic keypair. No information is stored by Obi."
+      "Hold a YubiKey NFC near the top back of your phone to use it as entropy for a new deterministic keypair. No information is stored by Obi.",
     );
   };
 
   const readCard = async () => {
     setReading(true);
     await startReading(
-      "Hold a credit, debit, or other card near the top back of your phone to use it as entropy for a new deterministic keypair. NOTE: some cards' NFC capabilities may be too weak for iOS devices. No information is stored by Obi."
+      "Hold a credit, debit, or other card near the top back of your phone to use it as entropy for a new deterministic keypair. NOTE: some cards' NFC capabilities may be too weak for iOS devices. No information is stored by Obi.",
     );
   };
 
   const readTag = async () => {
     setReading(true);
     await startReading(
-      "Hold an NFC Tag near the top back of your phone to use its information as entropy for a new deterministic keypair. No information is stored by Obi."
+      "Hold an NFC Tag near the top back of your phone to use its information as entropy for a new deterministic keypair. No information is stored by Obi.",
     );
   };
 
@@ -310,8 +310,8 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
 
                     void queryClient.prefetchQuery(
                       Sdk.chainId(
-                        draft.value.chainId
-                      ).transactions.prepareKeyPairQuery(keyPair)
+                        draft.value.chainId,
+                      ).transactions.prepareKeyPairQuery(keyPair),
                     );
                     onSubmit();
                   } else {
@@ -331,7 +331,7 @@ export const NfcKey = observer<NfcKeyProps>(function NfcKey({
                             defaultMessage: "OK",
                           }),
                         },
-                      ]
+                      ],
                     );
                   }
                 }}

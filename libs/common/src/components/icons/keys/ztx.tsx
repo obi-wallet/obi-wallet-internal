@@ -25,5 +25,5 @@ export const ZtxPlatformRecoveryIcon = observer<SvgProps>(
         </G>
       </Svg>
     );
-  }
+  },
 );

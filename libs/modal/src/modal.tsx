@@ -76,7 +76,7 @@ const MessageHandlers = observer(function MessageHandlers() {
         event.source?.postMessage(
           message,
           // @ts-expect-error this is fine
-          "*"
+          "*",
         );
       } else {
         postMessage(message);

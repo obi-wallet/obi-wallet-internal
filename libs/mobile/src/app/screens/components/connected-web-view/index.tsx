@@ -47,7 +47,7 @@ export const ConnectedWebView = observer(function ConnectedWebView({
     (event: WebViewMessageEvent) => {
       eventEmitter.emit("message", event.nativeEvent);
     },
-    [eventEmitter]
+    [eventEmitter],
   );
 
   return (
@@ -75,7 +75,7 @@ export const ConnectedWebView = observer(function ConnectedWebView({
           }
           if (e.url.startsWith("https://terrastation.page.link")) {
             const payload = parseDynamicLinkURL(e.url)?.searchParams.get(
-              "payload"
+              "payload",
             );
             if (payload) {
               void walletConnectStore.connect({

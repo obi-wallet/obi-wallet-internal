@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import Svg, { Path, SvgProps } from "react-native-svg";
 
 export const SendIcon = observer(function SendIcon(
-  props: SvgProps & { color?: string }
+  props: SvgProps & { color?: string },
 ) {
   const getColor = () => {
     if (props.color) {

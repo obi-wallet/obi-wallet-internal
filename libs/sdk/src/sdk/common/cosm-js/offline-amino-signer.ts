@@ -12,7 +12,10 @@ import { Sha256 } from "@cosmjs/crypto";
 import { Signer } from "../../../signers";
 
 export class CosmJsOfflineAminoSigner implements AbstractOfflineAminoSigner {
-  protected constructor(protected signer: Signer, protected prefix: string) {}
+  protected constructor(
+    protected signer: Signer,
+    protected prefix: string,
+  ) {}
 
   public static fromSigner({
     signer,
@@ -44,7 +47,7 @@ export class CosmJsOfflineAminoSigner implements AbstractOfflineAminoSigner {
 
   public async signAmino(
     signerAddress: string,
-    signDoc: StdSignDoc
+    signDoc: StdSignDoc,
   ): Promise<AminoSignResponse> {
     if (signerAddress !== this.address) {
       throw new Error(`Address ${signerAddress} not found in wallet`);

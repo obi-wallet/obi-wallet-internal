@@ -24,10 +24,10 @@ export class LegacyCosmosGatekeeperSdk extends AbstractGatekeeperSdk {
   }
 
   protected async contractAddressesQueryFn(
-    _: string
+    _: string,
   ): Promise<GatekeeperContractAddresses> {
     notImplemented(
-      "fetchGatekeeperContractAddresses not implemented for Cosmos"
+      "fetchGatekeeperContractAddresses not implemented for Cosmos",
     );
     return {
       spendLimitGatekeeper: null,
@@ -37,7 +37,7 @@ export class LegacyCosmosGatekeeperSdk extends AbstractGatekeeperSdk {
   }
 
   protected async permissionedAddressesQueryFn(
-    _: string
+    _: string,
   ): Promise<PermissionedAddress[]> {
     notImplemented("fetchPermissionedAddresses not implemented for Cosmos");
     return [];

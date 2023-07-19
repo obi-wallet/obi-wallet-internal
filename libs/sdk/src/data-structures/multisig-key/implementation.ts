@@ -32,9 +32,9 @@ export class MultisigKey {
       Key: AbstractDataStructure<Key, typeof KeySchema>;
       createMultisigKey: (
         chain: ChainId,
-        serialized: AbstractSerialized<typeof MultisigKeySchema>
+        serialized: AbstractSerialized<typeof MultisigKeySchema>,
       ) => MultisigKey;
-    }
+    },
   ) {}
 
   public toJSON(): AbstractSerialized<typeof MultisigKeySchema> {

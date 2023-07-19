@@ -78,5 +78,5 @@ export const TextInputInvalidMessage = observer<{ message?: string }>(
         {message}
       </Text>
     );
-  }
+  },
 );

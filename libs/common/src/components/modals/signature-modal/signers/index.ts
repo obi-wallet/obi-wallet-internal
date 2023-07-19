@@ -46,14 +46,14 @@ export async function createUsableSigners({
           key,
           signer,
         };
-      })
+      }),
     )
   ).filter(
     (
-      result
+      result,
     ): result is { key: KeySubclassTypeMapping[KeyType]; signer: Signer } => {
       return !!result?.signer;
-    }
+    },
   );
 }
 

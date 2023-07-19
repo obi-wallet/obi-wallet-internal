@@ -32,7 +32,7 @@ export function wrapMessages({
       return new MsgExecuteContract(sender, contract, {
         execute: {
           msg: Buffer.from(
-            JSON.stringify({ osmo: wrapOsmoMessage(msg) })
+            JSON.stringify({ osmo: wrapOsmoMessage(msg) }),
           ).toString("base64"),
         },
       });
@@ -41,7 +41,7 @@ export function wrapMessages({
     return new MsgExecuteContract(sender, contract, {
       execute: {
         msg: Buffer.from(JSON.stringify({ legacy: wrapMessage(msg) })).toString(
-          "base64"
+          "base64",
         ),
       },
     });
@@ -50,6 +50,7 @@ export function wrapMessages({
 
 export function wrapOsmoMessage(message: { osmo: unknown }) {
   return {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     swap_exact_amount_in: (message.osmo as any).value,
   };
 }
@@ -133,7 +134,7 @@ export function wrapMessage(message: Msg) {
           contract_addr: message.contract,
           funds: wrapCoins(message.coins),
           msg: Buffer.from(JSON.stringify(message.execute_msg)).toString(
-            "base64"
+            "base64",
           ),
         },
       },

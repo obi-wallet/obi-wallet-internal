@@ -31,5 +31,5 @@ export const SignatureModalSinglesigWallet =
           onConfirm={broadcast.mutateAsync}
         />
       );
-    }
+    },
   );

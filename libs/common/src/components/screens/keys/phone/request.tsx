@@ -3,7 +3,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Image, View } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 
@@ -47,7 +47,7 @@ export const PhoneKeyRequestScreen = observer<PhoneKeyRequestScreenProps>(
         }}
       />
     );
-  }
+  },
 );
 
 const schema = z.object({
@@ -161,7 +161,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                 <Controller
                   name="securityQuestion"
                   control={control}
-                  render={({ field, fieldState }) => {
+                  render={({ field }) => {
                     // TODO: dropdown / select
                     return (
                       <SecurityQuestionInput
@@ -247,7 +247,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                         intl.formatMessage({
                           id: "onboarding2.error.sendingsmsfailed",
                         }),
-                        error.message
+                        error.message,
                       );
                     }
                   })}
@@ -258,5 +258,5 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
         </SafeAreaView>
       </OsmosisScreenContainer>
     );
-  }
+  },
 );

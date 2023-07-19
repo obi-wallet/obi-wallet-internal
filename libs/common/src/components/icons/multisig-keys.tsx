@@ -9,7 +9,7 @@ import Svg, {
 } from "react-native-svg";
 
 export const MultisigKeysIcon = observer(function KeysIcon(
-  props: SvgProps & { keys: number }
+  props: SvgProps & { keys: number },
 ) {
   const { keys } = props;
   const filledColor = "#89F5C2";

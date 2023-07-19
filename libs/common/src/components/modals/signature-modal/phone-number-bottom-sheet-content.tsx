@@ -118,7 +118,7 @@ export const PhoneNumberBottomSheetContent =
                       id: "general.error",
                       defaultMessage: "Error",
                     }) + "VerifyAndProceedButton (1)",
-                    error.message
+                    error.message,
                   );
                 }
               }}
@@ -172,5 +172,5 @@ export const PhoneNumberBottomSheetContent =
           />
         </View>
       );
-    }
+    },
   );

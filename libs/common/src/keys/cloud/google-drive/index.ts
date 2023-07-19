@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import invariant from "tiny-invariant";
 
 const CLOUD_KEY = "key.json";

@@ -65,7 +65,7 @@ describe("ObservableMultisigWallet", () => {
           type: "tendermint/PubKeySecp256k1",
           value: "bar",
         },
-      })
+      }),
     );
     expect(isObservable(key.singlesigWallets[0])).toEqual(true);
     key.removeSinglesigWallet(key.singlesigWallets[0]);

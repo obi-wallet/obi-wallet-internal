@@ -10,13 +10,13 @@ import {
 const TestMessageSymbol = Symbol();
 const TestMessage =
   createUserInteractionType<UserInteraction<{ foo: "bar" }, { success: true }>>(
-    TestMessageSymbol
+    TestMessageSymbol,
   );
 const AnotherMessageSymbol = Symbol();
 const AnotherMessage = createUserInteractionType(AnotherMessageSymbol);
 
 function createTest<
-  A extends (factory: typeof UserInteractions) => Promise<UserInteractions>
+  A extends (factory: typeof UserInteractions) => Promise<UserInteractions>,
 >(name: string, fn: A) {
   return describe(name, () => {
     test.each([
@@ -42,37 +42,37 @@ function expectIsObservable(userInteractions: UserInteractions) {
   expect(isObservableProp(userInteractions, "_userInteractions")).toEqual(true);
   expect(
     isAction(
-      (userInteractions as UserInteractionsInternal)["addUserInteraction"]
-    )
+      (userInteractions as UserInteractionsInternal)["addUserInteraction"],
+    ),
   ).toEqual(true);
   expect(
     isAction(
       (userInteractions as UserInteractionsInternal)[
         "removeUserInteractionWithId"
-      ]
-    )
+      ],
+    ),
   ).toEqual(true);
 }
 
 createTest("approve", async (UserInteractions) => {
   const userInteractions = UserInteractions.create();
   expect(
-    userInteractions.getPendingUserInteractionsOfType(TestMessage).length
+    userInteractions.getPendingUserInteractionsOfType(TestMessage).length,
   ).toEqual(0);
   expect(
-    userInteractions.hasPendingUserInteractionsOfType(TestMessage)
+    userInteractions.hasPendingUserInteractionsOfType(TestMessage),
   ).toEqual(false);
 
   const pendingMessage = TestMessage.start({ foo: "bar" });
 
   expect(
-    userInteractions.getPendingUserInteractionsOfType(TestMessage).length
+    userInteractions.getPendingUserInteractionsOfType(TestMessage).length,
   ).toEqual(1);
   expect(
-    userInteractions.hasPendingUserInteractionsOfType(TestMessage)
+    userInteractions.hasPendingUserInteractionsOfType(TestMessage),
   ).toEqual(true);
   expect(
-    userInteractions.hasPendingUserInteractionsOfType(AnotherMessage)
+    userInteractions.hasPendingUserInteractionsOfType(AnotherMessage),
   ).toEqual(false);
 
   const [message] =
@@ -84,10 +84,10 @@ createTest("approve", async (UserInteractions) => {
   await expect(pendingMessage).resolves.toEqual({ success: true });
 
   expect(
-    userInteractions.getPendingUserInteractionsOfType(TestMessage).length
+    userInteractions.getPendingUserInteractionsOfType(TestMessage).length,
   ).toEqual(0);
   expect(
-    userInteractions.hasPendingUserInteractionsOfType(TestMessage)
+    userInteractions.hasPendingUserInteractionsOfType(TestMessage),
   ).toEqual(false);
   return userInteractions;
 });
@@ -103,10 +103,10 @@ createTest("reject", async (UserInteractions) => {
   await expect(pendingMessage).rejects.toEqual(error);
 
   expect(
-    userInteractions.getPendingUserInteractionsOfType(TestMessage).length
+    userInteractions.getPendingUserInteractionsOfType(TestMessage).length,
   ).toEqual(0);
   expect(
-    userInteractions.hasPendingUserInteractionsOfType(TestMessage)
+    userInteractions.hasPendingUserInteractionsOfType(TestMessage),
   ).toEqual(false);
   return userInteractions;
 });

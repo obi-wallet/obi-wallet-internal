@@ -414,7 +414,7 @@ export const TokenController = observer<TokenControllerProps>(
         {/*) : null}*/}
       </>
     );
-  }
+  },
 );
 
 interface CoinRendererProps {

@@ -67,7 +67,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
           amount,
         });
       },
-      [account]
+      [account],
     );
     const [throttledSetAmount] = useThrottle(setAmount, 50);
 
@@ -116,7 +116,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
     ];
 
     const [remainingTime, setRemainingTime] = useState(
-      originalAccount?.remainingAutoSignDuration
+      originalAccount?.remainingAutoSignDuration,
     );
 
     const getActiveFlexRule = () => {
@@ -157,7 +157,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                 period: {
                   days: 1,
                 },
-              }
+              },
             );
             account.clearAutoSign();
             break;
@@ -191,13 +191,13 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
     const permissionedAddresses = useContext(PermissionedAddressesContext);
     const permissionedAddress = permissionedAddresses?.find(
       (
-        permissionedAddress
+        permissionedAddress,
       ): permissionedAddress is FlexAccountPermissionedAddress => {
         return (
           permissionedAddress.address === account.address &&
           FlexAccountPermissionedAddress.safeParse(permissionedAddress).success
         );
-      }
+      },
     );
     const spendLimit = permissionedAddress?.params.spend_limits?.[0];
     const progressbarAmount = spendLimit
@@ -271,7 +271,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
                     key={fr}
                     onPress={() => {
                       LayoutAnimation.configureNext(
-                        LayoutAnimation.Presets.easeInEaseOut
+                        LayoutAnimation.Presets.easeInEaseOut,
                       );
                       setNextFlexRule(fr);
                     }}
@@ -426,7 +426,7 @@ export const FlexAccountItem = observer<FlexAccountItemProps>(
         </AnimatableView>
       </AccountContainer>
     );
-  }
+  },
 );
 
 const ProgressBar = observer(function ProgressBar({

@@ -12,12 +12,12 @@ export function useQuery<
   TQueryFnData = unknown,
   TError = unknown,
   TData = TQueryFnData,
-  TQueryKey extends QueryKey = QueryKey
+  TQueryKey extends QueryKey = QueryKey,
 >(
   query: Omit<
     UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>,
     "initialData"
-  > & { initialData?: () => undefined }
+  > & { initialData?: () => undefined },
 ): UseQueryResult<TData, TError> {
   const firstTimeRef = useRef(true);
 

@@ -55,7 +55,7 @@ export const BottomSheetNew = observer<BottomSheetNewProps>(
         </Sheet>
       </FullWindowOverlay>
     );
-  }
+  },
 );
 
 export type BottomSheet = BottomSheetType;
@@ -74,5 +74,5 @@ export const BottomSheet = observer<BottomSheetProps>(function BottomSheet() {
 export const BottomSheetTextInput = observer<BottomSheetTextInputProps>(
   function BottomSheetTextInput(props) {
     return <TextInput {...props} />;
-  }
+  },
 );

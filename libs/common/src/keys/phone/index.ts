@@ -23,7 +23,7 @@ export function getTwilioClient({
   if (demoMode) return demoModeTwilioClient;
 
   const TWILIO_BASIC_AUTH = `Basic ${Buffer.from(
-    `${env.PHONE_NUMBER_TWILIO_BASIC_AUTH_USER}:${env.PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD}`
+    `${env.PHONE_NUMBER_TWILIO_BASIC_AUTH_USER}:${env.PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD}`,
   ).toString("base64")}`;
 
   return new TwilioClient({

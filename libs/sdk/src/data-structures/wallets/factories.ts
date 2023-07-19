@@ -12,7 +12,7 @@ export function createWallets(
     currentWalletIndex: null,
   },
   factory = MultisigWallet,
-  serialize = R.identity
+  serialize = R.identity,
 ) {
   const serialized = WalletsSchema.migratableSchema.parse(migratable);
   return new Wallets(
@@ -20,12 +20,12 @@ export function createWallets(
     serialized.currentChainId,
     serialized.currentWalletIndexPerChain,
     factory,
-    serialize
+    serialize,
   );
 }
 
 export function createObservableWallets(
-  migratable?: AbstractMigratable<typeof WalletsSchema>
+  migratable?: AbstractMigratable<typeof WalletsSchema>,
 ) {
   const wallets = createWallets(migratable, ObservableMultisigWallet, toJS);
   makeObservable<
@@ -47,7 +47,7 @@ export function createObservableWallets(
     },
     {
       name: "Wallets",
-    }
+    },
   );
   return wallets;
 }

@@ -41,7 +41,7 @@ const baseStyles = StyleSheet.create({
 const getFlavorStyles = (
   flavor: "primary" | "cancel",
   theme: Theme,
-  disabled: boolean
+  disabled: boolean,
 ) => {
   return {
     ...baseStyles,

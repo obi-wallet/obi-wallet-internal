@@ -20,7 +20,7 @@ export function useCodePushBackgroundUpdate(options: SyncOptions) {
       const options = optionsRef.current;
 
       const updateAvailable = await codePush.checkForUpdate(
-        options.deploymentKey
+        options.deploymentKey,
       );
       if (!updateAvailable) return;
 
@@ -36,7 +36,7 @@ export function useCodePushBackgroundUpdate(options: SyncOptions) {
         setUpdating(false);
       }
     }, []),
-    5000
+    5000,
   );
 
   useAppStateEffect(
@@ -44,7 +44,7 @@ export function useCodePushBackgroundUpdate(options: SyncOptions) {
       if (appState !== "active") return;
       void backgroundUpdate();
     },
-    [backgroundUpdate]
+    [backgroundUpdate],
   );
 
   return updating;

@@ -23,6 +23,6 @@ export function address(chainId: ChainId) {
     },
     {
       message: "Invalid address",
-    }
+    },
   );
 }

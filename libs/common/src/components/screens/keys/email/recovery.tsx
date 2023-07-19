@@ -48,7 +48,7 @@ export const EmailRecoveryScreen = observer<EmailRecoveryScreenProps>(
         }}
       />
     );
-  }
+  },
 );
 
 export interface EmailRecoveryProps {
@@ -72,7 +72,7 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
     };
     const isKeyboardVisible = useKeyboardVisible();
 
-    const { control, handleSubmit, formState, setValue, getValues } = useForm({
+    const { control, handleSubmit, formState } = useForm({
       resolver: zodResolver(schema),
       mode: "onChange",
     });
@@ -156,8 +156,8 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
               onPress={handleSubmit(async (data) => {
                 const publicKey = Buffer.from(
                   secp256k1.publicKeyCreate(
-                    new Uint8Array(Buffer.from(data.privateKey, "base64"))
-                  )
+                    new Uint8Array(Buffer.from(data.privateKey, "base64")),
+                  ),
                 ).toString("base64");
 
                 draft.value.setEmailRecoveryKey({
@@ -176,5 +176,5 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
         </View>
       </EmailContainer>
     );
-  }
+  },
 );

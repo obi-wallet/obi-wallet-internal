@@ -15,5 +15,5 @@ export const PromptAnimation = observer<PromptAnimationProps>(
         style={{ width: 60, zIndex: -1, position: "absolute" }}
       />
     );
-  }
+  },
 );

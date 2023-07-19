@@ -20,7 +20,7 @@ export class FlexAccount {
     protected _privateKey: string,
     protected _spendLimit: z.infer<typeof SpendLimit> | null,
     protected _autoSign: z.infer<typeof AutoSign> | null,
-    protected _serialize: <T>(serialized: T) => T
+    protected _serialize: <T>(serialized: T) => T,
   ) {}
 
   public toJSON(): AbstractSerialized<typeof FlexAccountSchema> {
@@ -38,7 +38,7 @@ export class FlexAccount {
   public equals(other: FlexAccount) {
     return R.equals(
       R.omit(["autoSign"], this.toJSON()),
-      R.omit(["autoSign"], other.toJSON())
+      R.omit(["autoSign"], other.toJSON()),
     );
   }
 
@@ -78,7 +78,7 @@ export class FlexAccount {
     if (!this._autoSign) return null;
     const remainingTime = DateTime.fromISO(this._autoSign.endTime).diff(
       DateTime.now(),
-      "seconds"
+      "seconds",
     );
     return remainingTime.toMillis() >= 0 ? remainingTime : null;
   }

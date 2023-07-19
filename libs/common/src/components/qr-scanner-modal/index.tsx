@@ -48,7 +48,7 @@ export const QrCodeScannerModal = observer(function QrCodeScannerModal({
 });
 
 export function useQrCodeScannerModal(
-  onScan: (params: { data: string; close(): void }) => void
+  onScan: (params: { data: string; close(): void }) => void,
 ) {
   const [visible, setVisible] = useState(false);
 

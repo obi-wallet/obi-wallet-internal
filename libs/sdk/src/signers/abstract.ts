@@ -14,7 +14,7 @@ export abstract class Signer {
   protected createHash(payload: Buffer): Uint8Array {
     const hash = Buffer.from(
       SHA256.hash(new Word32Array(payload)).toString(),
-      "hex"
+      "hex",
     );
     return Uint8Array.from(hash);
   }

@@ -10,5 +10,5 @@ export const OnboardingScreenContainer = observer<ScreenContainerProps>(
         <ScreenContainer style={[style]}>{children}</ScreenContainer>
       </OsmosisScreenContainer>
     );
-  }
+  },
 );

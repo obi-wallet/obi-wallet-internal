@@ -32,7 +32,7 @@ export class WalletConnectStore {
         kvStore: false,
         walletsStore: false,
         recoverConnectors: false,
-      }
+      },
     );
     void this.init();
   }
@@ -40,7 +40,7 @@ export class WalletConnectStore {
   public async recoverConnectors() {
     await this.walletsStore.initPromise;
     const data = await this.kvStore.get<Migratable<WalletConnect> | undefined>(
-      "sessions"
+      "sessions",
     );
     if (!data) return;
     await this.walletConnect.recoverConnectors(data);
@@ -51,7 +51,7 @@ export class WalletConnectStore {
 
     autorun(async () => {
       const data = WalletConnect.schema.currentSchema.parse(
-        toJS(this.walletConnect.toJSON())
+        toJS(this.walletConnect.toJSON()),
       );
       await this.kvStore.set("sessions", data);
     });

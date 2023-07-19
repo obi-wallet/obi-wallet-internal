@@ -96,7 +96,7 @@ export const GatekeeperConfigDraft = {
 
       const { publicKey, privateKey } = generateSec256k1KeyPair();
       const address = Sdk.chainId(
-        wallet.chainId
+        wallet.chainId,
       ).transactions.getAddressOfPublicKey(publicKey);
 
       draft.value.upsertBeneficiary(
@@ -116,7 +116,7 @@ export const GatekeeperConfigDraft = {
               years: 1,
             },
           },
-        })
+        }),
       );
       draft.value.upsertFlexAccount(
         ObservableFlexAccount.create({
@@ -130,7 +130,7 @@ export const GatekeeperConfigDraft = {
           privateKey: privateKey,
           spendLimit: null,
           autoSign: null,
-        })
+        }),
       );
       draft.value.upsertFlexAccount(
         ObservableFlexAccount.create({
@@ -149,7 +149,7 @@ export const GatekeeperConfigDraft = {
             amount: 10,
           },
           autoSign: null,
-        })
+        }),
       );
       draft.value.upsertFlexAccount(
         ObservableFlexAccount.create({
@@ -170,7 +170,7 @@ export const GatekeeperConfigDraft = {
           autoSign: {
             endTime: DateTime.local().plus({ minutes: 30 }).toISO()!,
           },
-        })
+        }),
       );
 
       draft.commit({ original: draft.value });
@@ -180,7 +180,7 @@ export const GatekeeperConfigDraft = {
           type: "singlesig-wallet",
           publicKey,
           privateKey: privateKey,
-        })
+        }),
       );
     }, [draftsStore, wallet]);
 

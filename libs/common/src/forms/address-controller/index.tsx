@@ -131,5 +131,5 @@ export const AddressController = observer<AddressControllerProps>(
         {qrCodeScannerModal.render()}
       </>
     );
-  }
+  },
 );

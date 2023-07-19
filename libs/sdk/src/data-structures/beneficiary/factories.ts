@@ -7,7 +7,7 @@ import { AbstractMigratable } from "../migratable";
 
 export function createBeneficiary(
   migratable: AbstractMigratable<typeof BeneficiarySchema>,
-  serialize = R.identity
+  serialize = R.identity,
 ) {
   const serialized = BeneficiarySchema.migratableSchema.parse(migratable);
   return new Beneficiary(
@@ -15,12 +15,12 @@ export function createBeneficiary(
     serialized.address,
     serialized.dormancyThreshold,
     serialized.dripSchedule,
-    serialize
+    serialize,
   );
 }
 
 export function createObservableBeneficiary(
-  migratable: AbstractMigratable<typeof BeneficiarySchema>
+  migratable: AbstractMigratable<typeof BeneficiarySchema>,
 ) {
   const beneficiary = createBeneficiary(migratable, toJS);
   makeObservable<
@@ -40,7 +40,7 @@ export function createObservableBeneficiary(
     },
     {
       name: "Beneficiary",
-    }
+    },
   );
   return beneficiary;
 }

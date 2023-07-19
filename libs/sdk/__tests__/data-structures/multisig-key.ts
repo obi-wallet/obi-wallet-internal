@@ -31,7 +31,7 @@ describe("ObservableMultisigKey", () => {
 
   test(".deserialize observable", () => {
     expect(isObservable(ObservableMultisigKey.create(chain, fixture))).toEqual(
-      true
+      true,
     );
   });
 

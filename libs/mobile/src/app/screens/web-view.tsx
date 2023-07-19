@@ -148,7 +148,7 @@ export const WebViewScreen = observer<WebViewScreenProps>(
         </BottomSheet>
       </View>
     );
-  }
+  },
 );
 
 const FavButton = observer<{ title: string; url: string }>(function FavButton({

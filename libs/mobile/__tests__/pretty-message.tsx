@@ -59,7 +59,7 @@ describe("Terra", () => {
       renderPrettyMessage({ message });
       expect(screen.getByText("To:")).toBeDefined();
       expect(
-        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4"),
       ).toBeDefined();
       expect(screen.getByText("0.000001LUNA")).toBeDefined();
     });
@@ -82,10 +82,10 @@ describe("Terra", () => {
       renderPrettyMessage({ message });
       expect(screen.getByText("Execute Wasm Contract")).toBeDefined();
       expect(
-        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4"),
       ).toBeDefined();
       expect(
-        screen.getByText("Check the data tab for the full message")
+        screen.getByText("Check the data tab for the full message"),
       ).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
     });
@@ -120,7 +120,7 @@ describe("Terra", () => {
 
   describe("MsgExecuteContract (create wallet)", () => {
     const message = messages.getCreateWalletMessage(
-      MultisigKey.create(chainId)
+      MultisigKey.create(chainId),
     );
 
     test("Obi", () => {
@@ -186,7 +186,7 @@ describe("Terra", () => {
     test("Obi", () => {
       renderPrettyMessage({ message });
       expect(
-        screen.getByText("Withdrawing staking rewards from:")
+        screen.getByText("Withdrawing staking rewards from:"),
       ).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
     });
@@ -198,7 +198,7 @@ describe("Terra", () => {
       expect(screen.getByText("Add/Update Permissioned Address")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
       expect(
-        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4"),
       ).toBeDefined();
     });
   });
@@ -209,7 +209,7 @@ describe("Terra", () => {
       expect(screen.getByText("Remove Permissioned Address")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
       expect(
-        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4"),
       ).toBeDefined();
     });
   });
@@ -220,7 +220,7 @@ describe("Terra", () => {
       expect(screen.getByText("Create Session Key")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
       expect(
-        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4"),
       ).toBeDefined();
     });
   });
@@ -231,7 +231,7 @@ describe("Terra", () => {
       expect(screen.getByText("Destroy Session Key")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
       expect(
-        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4"),
       ).toBeDefined();
     });
   });
@@ -242,12 +242,12 @@ describe("Terra", () => {
       expect(screen.getByText("Add/Update Beneficiary")).toBeDefined();
       expect(screen.getByText("0LUNA")).toBeDefined();
       expect(
-        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4")
+        screen.getByText("terra18aw4eedj4v325...edl9ggaayktq4"),
       ).toBeDefined();
       expect(
         screen.getByText(
-          "will receive 1% monthly after 12 months of inactivity"
-        )
+          "will receive 1% monthly after 12 months of inactivity",
+        ),
       ).toBeDefined();
     });
 
@@ -258,8 +258,8 @@ describe("Terra", () => {
 
       expect(
         screen.getByText(
-          "will receive 10% annually after 12 months of inactivity"
-        )
+          "will receive 10% annually after 12 months of inactivity",
+        ),
       ).toBeDefined();
     });
   });
@@ -269,7 +269,7 @@ describe("Terra", () => {
       address,
       address,
       address,
-      Coin.fromAmino({ denom: "uluna", amount: "1" })
+      Coin.fromAmino({ denom: "uluna", amount: "1" }),
     );
 
     test("Obi", () => {
@@ -311,7 +311,7 @@ describe("Terra", () => {
     return render(
       <Wrapper>
         <PrettyMessage message={aminoMessage} chainId="phoenix-1" />
-      </Wrapper>
+      </Wrapper>,
     );
   }
 

@@ -107,7 +107,7 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
         }}
       />
     );
-  }
+  },
 );
 
 export interface RecoverWalletProps {
@@ -236,5 +236,5 @@ export const RecoverWallet = observer<RecoverWalletProps>(
         </View>
       </MultisigSettings>
     );
-  }
+  },
 );

@@ -263,7 +263,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
         }
       }
     }
-  }
+  },
 );
 
 export const ConfirmMessagesLogin = observer<ConfirmMessagesProps>(
@@ -310,7 +310,7 @@ export const ConfirmMessagesLogin = observer<ConfirmMessagesProps>(
         </OsmosisScreenContainer>
       </BaseModal>
     );
-  }
+  },
 );
 
 interface MessageViewProps {

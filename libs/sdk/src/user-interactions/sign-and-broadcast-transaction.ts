@@ -25,5 +25,5 @@ export type SignAndBroadcastTransactionUserInteraction = UserInteraction<
 export const SignAndBroadcastTransactionUserInteractionSymbol = Symbol();
 export const SignAndBroadcastTransactionUserInteraction =
   createUserInteractionType<SignAndBroadcastTransactionUserInteraction>(
-    SignAndBroadcastTransactionUserInteractionSymbol
+    SignAndBroadcastTransactionUserInteractionSymbol,
   );

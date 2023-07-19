@@ -6,7 +6,7 @@ import { useCurrentWallet } from "../provider";
 export function useDelegations() {
   const wallet = useCurrentWallet();
   return useQuery(
-    Sdk.chainId(wallet.chainId).staking.delegationsQuery(wallet.address)
+    Sdk.chainId(wallet.chainId).staking.delegationsQuery(wallet.address),
   );
 }
 
@@ -14,8 +14,8 @@ export function useUnbondingDelegations() {
   const wallet = useCurrentWallet();
   return useQuery(
     Sdk.chainId(wallet.chainId).staking.unbondingDelegationsQuery(
-      wallet.address
-    )
+      wallet.address,
+    ),
   );
 }
 
@@ -26,7 +26,7 @@ export function useValidators(chainId: ChainId) {
 export function useRewards() {
   const wallet = useCurrentWallet();
   const response = useQuery(
-    Sdk.chainId(wallet.chainId).staking.rewardsQuery(wallet.address)
+    Sdk.chainId(wallet.chainId).staking.rewardsQuery(wallet.address),
   );
   const fallback: Rewards = {
     perDelegator: [],

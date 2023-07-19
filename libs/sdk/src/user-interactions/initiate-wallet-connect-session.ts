@@ -17,5 +17,5 @@ export type InitiateWalletConnectSessionUserInteraction = UserInteraction<
 export const InitiateWalletConnectSessionUserInteractionSymbol = Symbol();
 export const InitiateWalletConnectSessionUserInteraction =
   createUserInteractionType<InitiateWalletConnectSessionUserInteraction>(
-    InitiateWalletConnectSessionUserInteractionSymbol
+    InitiateWalletConnectSessionUserInteractionSymbol,
   );

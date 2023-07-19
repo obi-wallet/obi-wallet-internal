@@ -19,7 +19,7 @@ export async function createSessionKey({
 }) {
   const { publicKey, privateKey } = generateSec256k1KeyPair();
   const address = Sdk.chainId(
-    wallet.chainId
+    wallet.chainId,
   ).transactions.getAddressOfPublicKey(publicKey);
   const draft = new Draft({
     original: wallet.gatekeeperConfig,

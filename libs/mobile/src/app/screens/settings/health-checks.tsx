@@ -29,12 +29,12 @@ export const HealthChecksScreen = observer(function HealthChecksScreen() {
           type,
           isProblem,
         };
-      }, types)
+      }, types),
     );
     setProblems(
       potentialProblems
         .filter(({ isProblem }) => isProblem)
-        .map(({ type }) => type)
+        .map(({ type }) => type),
     );
   }, [wallet]);
 
@@ -71,7 +71,7 @@ export const HealthChecksScreen = observer(function HealthChecksScreen() {
               id: "settings.multisighealthchecks.juno.correctadmin.message",
               defaultMessage:
                 "Please move your funds out and create a new wallet.",
-            })
+            }),
           );
         };
       },

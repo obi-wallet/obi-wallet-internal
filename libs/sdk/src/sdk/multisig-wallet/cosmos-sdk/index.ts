@@ -6,7 +6,6 @@ import { Chain, CosmosChainId, TerraChainId } from "../../../chains";
 import { AbstractClient } from "../../../clients";
 import {
   FlexAccount,
-  GatekeeperConfig,
   MultisigKey,
   MultisigWallet,
 } from "../../../data-structures";
@@ -49,7 +48,7 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
     const addresses = {
       userAccount: this.wallet.proxyAddress,
       ...(await this.sdk.gatekeeper.contractAddresses(
-        this.wallet.proxyAddress
+        this.wallet.proxyAddress,
       )),
     };
 
@@ -60,7 +59,7 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
           key,
           address ? await this.sdk.contracts.codeId(address) : null,
         ] as [string, number | null];
-      })
+      }),
     );
     return R.fromPairs(pairsWithCodeIds) as unknown as CodeIds;
   }
@@ -205,21 +204,16 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
       }
     | { approved: false }
   > {
-    const { spendLimitGatekeeper, sessionKeyGatekeeper } =
+    const { spendLimitGatekeeper } =
       await this.sdk.gatekeeper.contractAddresses(this.wallet.proxyAddress);
     invariant(
       spendLimitGatekeeper,
-      "Spend limit gatekeeper address is not set"
-    );
-    invariant(
-      sessionKeyGatekeeper,
-      "Session key gatekeeper address is not set"
+      "Spend limit gatekeeper address is not set",
     );
     const messages = this.messages.getUpdateGatekeeperMessages({
       wallet: this.wallet,
       newGatekeeperConfig,
       spendLimitGatekeeper,
-      sessionKeyGatekeeper,
     });
 
     return await SignAndBroadcastTransactionUserInteraction.start({
@@ -333,7 +327,7 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
             },
             schema,
           };
-        })
+        }),
       );
       return responses.every((response) => !!response.can_execute.yes);
     } catch (e) {
@@ -353,7 +347,7 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
   }
 
   public async broadcastSignedTransaction(
-    signedTransaction: SignedTransaction
+    signedTransaction: SignedTransaction,
   ): Promise<BroadcastTransactionResult> {
     return await this.client.broadcastSignedTransaction(signedTransaction);
   }

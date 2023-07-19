@@ -46,7 +46,7 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
       BeneficiaryPeriodicity.Annually,
     ];
     const selectedPeriodicity = ((
-      period: Beneficiary["dripSchedule"]["period"]
+      period: Beneficiary["dripSchedule"]["period"],
     ) => {
       if (R.equals(period, { months: 1 }))
         return BeneficiaryPeriodicity.Monthly;
@@ -195,5 +195,5 @@ export const BeneficiaryItem = observer<BeneficiaryItemProps>(
         )}
       </AccountContainer>
     );
-  }
+  },
 );

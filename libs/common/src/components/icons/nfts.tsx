@@ -25,7 +25,7 @@ export const NftsIcon = observer(function NftsIcon(props: SvgProps) {
 });
 
 export const NftsActiveIcon = observer(function NftsActiveIcon(
-  props: SvgProps
+  props: SvgProps,
 ) {
   return (
     <Svg width={28} height={28} fill="none" {...props}>

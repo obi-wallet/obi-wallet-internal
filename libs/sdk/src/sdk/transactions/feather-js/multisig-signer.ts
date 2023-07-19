@@ -41,7 +41,7 @@ export class FeatherJsMultisigSigner extends AbstractMultisigSigner<SignatureV2>
       account.getAccountNumber(),
       account.getSequenceNumber(),
       transaction.auth_info,
-      transaction.body
+      transaction.body,
     );
   }
 
@@ -57,7 +57,7 @@ export class FeatherJsMultisigSigner extends AbstractMultisigSigner<SignatureV2>
       new SignatureV2(
         this.key,
         multiSignature.toSignatureDescriptor(),
-        this.account.getSequenceNumber()
+        this.account.getSequenceNumber(),
       ),
     ]);
     return this.transaction.toBytes();

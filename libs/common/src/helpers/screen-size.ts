@@ -32,7 +32,7 @@ export const isSmallScreen = () => {
 };
 export const isSmallScreenNumber = (
   smallScreenValue: number,
-  defaultScreenValue: number
+  defaultScreenValue: number,
 ) => {
   if (isSmallScreen()) {
     return smallScreenValue;
@@ -45,7 +45,7 @@ export const isSmallScreenSubstr = (
   string: string,
   substr_placeholder: string,
   stringcutvalue_smallScreen: number,
-  stringcutvalue_defaultScreen: number
+  stringcutvalue_defaultScreen: number,
 ) => {
   if (
     getScreenDimensions().SCREEN_WIDTH <=

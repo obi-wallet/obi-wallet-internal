@@ -47,5 +47,5 @@ export const ObiFaceScannerIcon = observer<SvgProps>(
         </G>
       </Svg>
     );
-  }
+  },
 );

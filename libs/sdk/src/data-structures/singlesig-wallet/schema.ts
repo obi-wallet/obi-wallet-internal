@@ -8,5 +8,5 @@ export const SinglesigWalletSchema = migratable(
     type: z.literal("singlesig-wallet"),
     publicKey: Secp256k1PublicKey,
     privateKey: z.string(),
-  })
+  }),
 );

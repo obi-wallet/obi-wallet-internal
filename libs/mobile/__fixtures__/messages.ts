@@ -14,22 +14,22 @@ export const messageSend = new MsgSend(address, address, { uluna: 1000000 });
 export const messageDelegate = new MsgDelegate(
   address,
   "terravaloper1src9wvawtfl6ztxss8zu45zuxnwj4ytpnr30jn",
-  new Coin("uluna", 100000000000000)
+  new Coin("uluna", 100000000000000),
 );
 export const messageUndelegate = new MsgUndelegate(
   address,
   "terravaloper1src9wvawtfl6ztxss8zu45zuxnwj4ytpnr30jn",
-  new Coin("uluna", 100000000000000)
+  new Coin("uluna", 100000000000000),
 );
 export const messageNewAccount = Messages.chainId(
-  "phoenix-1"
+  "phoenix-1",
 ).getCreateWalletMessage(MultisigKey.create("phoenix-1"));
 
 export const instantiateMessage = new MsgInstantiateContract(
   address,
   address,
   1,
-  {}
+  {},
 );
 export const ExecuteMessage = new MsgExecuteContract(address, address, {});
 export const upsertFlex = new MsgExecuteContract(address, address, {
@@ -108,13 +108,13 @@ export const upsertBeneficiaryAnnually = new MsgExecuteContract(
         ],
       },
     },
-  }
+  },
 );
 
 export const unknownMessage = new MsgBeginRedelegate(
   address,
   address,
   address,
-  Coin.fromAmino({ amount: "1", denom: "uluna" })
+  Coin.fromAmino({ amount: "1", denom: "uluna" }),
 );
 export const initMessage = new MsgInstantiateContract(address, address, 1, {});

@@ -61,7 +61,7 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
   }
 
   public async validateAccount(
-    address: string
+    address: string,
   ): Promise<AccountValidationResult> {
     if (!this.validateAddress(address)) {
       return AccountValidationResult.INVALID_ADDRESS;
@@ -82,7 +82,7 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
     const validationResult = await this.validateAccount(address);
     invariant(
       validationResult >= AccountValidationResult.PUBLIC_KEY_NOT_READY,
-      "Account not ready"
+      "Account not ready",
     );
     if (validationResult <= AccountValidationResult.PUBLIC_KEY_NOT_READY) {
       await this.client.withSigningStargateClient(
@@ -96,14 +96,14 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
             address,
             coins(1, this.chain.denom),
             this.client.defaultFee,
-            ""
+            "",
           );
           if (!isDeliverTxSuccess(response)) {
             throw new Error(
-              `Failed to send tokens to ${address}: ${response.rawLog}`
+              `Failed to send tokens to ${address}: ${response.rawLog}`,
             );
           }
-        }
+        },
       );
       while (
         (await this.validateAccount(address)) <=

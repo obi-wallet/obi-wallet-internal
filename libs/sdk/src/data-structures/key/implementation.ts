@@ -8,7 +8,7 @@ export abstract class Key {
 
   protected constructor(
     protected serialized: AbstractSerialized<typeof KeySchema>,
-    protected _serialize: <T>(serialized: T) => T
+    protected _serialize: <T>(serialized: T) => T,
   ) {}
   public get publicKey() {
     return this.serialized.payload.publicKey;
@@ -25,11 +25,11 @@ export abstract class Key {
 }
 
 export class UsableKey<
-  T extends AbstractSerialized<typeof UsableKeySchema>
+  T extends AbstractSerialized<typeof UsableKeySchema>,
 > extends Key {
   public constructor(
     protected override serialized: T,
-    protected override _serialize: <T>(serialized: T) => T
+    protected override _serialize: <T>(serialized: T) => T,
   ) {
     super(serialized, _serialize);
   }
@@ -52,7 +52,7 @@ export class PendingRecoveryKey extends Key {
     protected override serialized: AbstractSerialized<
       typeof PendingRecoveryKeySchema
     >,
-    protected override _serialize: <T>(serialized: T) => T
+    protected override _serialize: <T>(serialized: T) => T,
   ) {
     super(serialized, _serialize);
   }

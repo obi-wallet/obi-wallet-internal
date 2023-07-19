@@ -1,11 +1,5 @@
 import { useTheme } from "@emotion/react";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
-import {
-  generateSec256k1KeyPair,
-  MultisigWallet,
-  ObservableFlexAccount,
-  Sdk,
-} from "@obi-wallet/sdk";
 import { AccountSettingComponent } from "@obi-wallet/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -25,18 +19,12 @@ import { Switch } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Setting } from ".";
-import {
-  Alert,
-  isSmallScreenNumber,
-  isWeb,
-  createSessionKey,
-} from "../../../helpers";
+import { isSmallScreenNumber, isWeb, createSessionKey } from "../../../helpers";
 import {
   RootStackParamList,
   SettingsRoute,
   useRootNavigation,
 } from "../../../router";
-import { Draft } from "../../../stores";
 import { Button } from "../../buttons";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 import { CustomTextInputProps, TextInput } from "../../text-input";
@@ -152,7 +140,7 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
                 disabled={!sessionKeyEnabled}
                 onPress={async () => {
                   const maxSpend = parseFloat(
-                    stateContextValue[0][AccountSettingComponent.MaxSpend]
+                    stateContextValue[0][AccountSettingComponent.MaxSpend],
                   );
                   await createSessionKey({ wallet, maxSpend });
                 }}
@@ -162,7 +150,7 @@ export const OsmosisSettingsScreen = observer<OsmosisSettingsScreenProps>(
         </OsmosisScreenContainer>
       </StateContext.Provider>
     );
-  }
+  },
 );
 
 const AccountSetting = observer<{
@@ -186,8 +174,7 @@ const AccountSetting = observer<{
 
 const SessionKeySpendLimitSetting = observer(
   function SessionKeySpendLimitSetting() {
-    const [state, dispatch] = useContext(StateContext);
-    const value = state[AccountSettingComponent.MaxSpend];
+    const [_state, dispatch] = useContext(StateContext);
     const onChange = (value: string) => {
       dispatch({
         component: AccountSettingComponent.MaxSpend,
@@ -229,7 +216,7 @@ const SessionKeySpendLimitSetting = observer(
         </View>
       </Setting>
     );
-  }
+  },
 );
 const SettingsTextInput = observer<CustomTextInputProps>(
   function SettingsTextInput(props) {
@@ -250,7 +237,7 @@ const SettingsTextInput = observer<CustomTextInputProps>(
     };
 
     return <TextInput {...newProps} />;
-  }
+  },
 );
 
 const SlippageLimitSetting = observer(function SlippageLimitSetting() {
@@ -453,14 +440,14 @@ const SessionKeySetting = observer<SessionKeySettingProps>(
             }}
             style={{ height: 25, width: 60 }}
             value={value}
-            onValueChange={(value) => {
+            onValueChange={() => {
               onChange();
             }}
           />
         </View>
       </Setting>
     );
-  }
+  },
 );
 
 const VerifiedItemsSetting = observer(function SessionKeySetting() {

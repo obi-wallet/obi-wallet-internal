@@ -5,7 +5,7 @@ import { Beneficiary, ObservableBeneficiary, Serialized } from "../../src";
 import { expectIsPureObject } from "../__helpers__";
 
 function createTest<
-  A extends (factory: typeof Beneficiary) => Beneficiary[] | void
+  A extends (factory: typeof Beneficiary) => Beneficiary[] | void,
 >(name: string, fn: A) {
   return describe(name, () => {
     test.each([

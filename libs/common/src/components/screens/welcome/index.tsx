@@ -1,15 +1,14 @@
 import { useTheme } from "@emotion/react";
 import {
+  generateSec256k1KeyPair,
   MultisigKey,
   ObservableMultisigKey,
-  generateSec256k1KeyPair,
 } from "@obi-wallet/sdk";
 import { WelcomeButton } from "@obi-wallet/theme";
-import { useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
-import { Image, TouchableOpacity, View, Text } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
@@ -41,7 +40,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
 
     function onCreate() {
       const newMultisigKey = ObservableMultisigKey.create(
-        chainStore.currentChain
+        chainStore.currentChain,
       );
       const draftId = draftsStore.create({
         original: newMultisigKey,
@@ -80,7 +79,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
 
     function onRecover() {
       const newMultisigKey = ObservableMultisigKey.create(
-        chainStore.currentChain
+        chainStore.currentChain,
       );
       const draftId = draftsStore.create({
         original: newMultisigKey,
@@ -94,7 +93,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
 
     function onEnterDemoMode() {
       const newMultisigKey = ObservableMultisigKey.create(
-        chainStore.currentChain
+        chainStore.currentChain,
       );
       const draftId = draftsStore.create({
         original: newMultisigKey,
@@ -123,7 +122,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
         onEnterDemoMode={onEnterDemoMode}
       />
     );
-  }
+  },
 );
 
 export interface WelcomeProps {
@@ -145,96 +144,91 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
 
   const accountPickerModalProps = useAccountPickerModalProps();
 
-  const getButtons = () => {
-    const buttons = theme.welcome.buttons.map((button) => {
-      switch (button) {
-        case WelcomeButton.Zepeto:
-          return <ZepetoButton onPress={onCreate} />;
-        case WelcomeButton.NewUser:
-          return (
-            <Button
-              label="New User"
-              flavor="primary"
-              onPress={onEnterDemoMode}
-            />
-          );
-        case WelcomeButton.Login:
-          if (walletsStore.wallets.length === 0) return null;
-          return (
-            <Button
-              label={intl.formatMessage({
-                id: "onboarding1.login",
-                defaultMessage: "Login",
-              })}
-              flavor="primary"
-              onPress={() => {
-                accountPickerModalProps.open();
-              }}
-            />
-          );
-        case WelcomeButton.Getstarted:
-          return (
-            <Button
-              label={intl.formatMessage({ id: "onboarding1.getstarted" })}
-              flavor="primary"
-              buttonStyle={{
-                marginTop: theme.spacing[4],
-              }}
-              onPress={onCreate}
-            />
-          );
-        case WelcomeButton.Recoverwallet:
-          return (
-            <Button
-              label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
-              flavor="primary"
-              buttonStyle={{
-                marginTop: theme.spacing[4],
-              }}
-              onPress={() => {
-                Alert.alert(
-                  "Recover Existing Wallet",
-                  "Only use this if you have made a wallet using the Obi app before.",
-                  [
-                    {
-                      text: "Cancel",
-                      style: "cancel",
-                      // eslint-disable-next-line @typescript-eslint/no-empty-function
-                      onPress() {},
-                    },
-                    {
-                      text: "Continue",
-                      onPress: onRecover,
-                    },
-                  ]
-                );
-              }}
-            />
-          );
-        case WelcomeButton.Demo:
-          return (
-            <Button
-              label={intl.formatMessage({
-                id: "onboarding1.demo",
-                defaultMessage: "Enter Demo Mode",
-              })}
-              flavor="primary"
-              buttonStyle={{
-                marginTop: theme.spacing[4],
-              }}
-              onPress={onEnterDemoMode}
-            />
-          );
-        default:
-          return null;
-      }
-    });
-    return buttons;
-  };
-
   return (
     <WelcomeLayout title={renderTitle()} subTitle={renderSubTitle()}>
-      {getButtons()}
+      {theme.welcome.buttons.map((button) => {
+        switch (button) {
+          case WelcomeButton.Zepeto:
+            return <ZepetoButton onPress={onCreate} />;
+          case WelcomeButton.NewUser:
+            return (
+              <Button
+                label="New User"
+                flavor="primary"
+                onPress={onEnterDemoMode}
+              />
+            );
+          case WelcomeButton.Login:
+            if (walletsStore.wallets.length === 0) return null;
+            return (
+              <Button
+                label={intl.formatMessage({
+                  id: "onboarding1.login",
+                  defaultMessage: "Login",
+                })}
+                flavor="primary"
+                onPress={() => {
+                  accountPickerModalProps.open();
+                }}
+              />
+            );
+          case WelcomeButton.Getstarted:
+            return (
+              <Button
+                label={intl.formatMessage({ id: "onboarding1.getstarted" })}
+                flavor="primary"
+                buttonStyle={{
+                  marginTop: theme.spacing[4],
+                }}
+                onPress={onCreate}
+              />
+            );
+          case WelcomeButton.Recoverwallet:
+            return (
+              <Button
+                label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
+                flavor="primary"
+                buttonStyle={{
+                  marginTop: theme.spacing[4],
+                }}
+                onPress={() => {
+                  Alert.alert(
+                    "Recover Existing Wallet",
+                    "Only use this if you have made a wallet using the Obi app before.",
+                    [
+                      {
+                        text: "Cancel",
+                        style: "cancel",
+                        // eslint-disable-next-line @typescript-eslint/no-empty-function
+                        onPress() {},
+                      },
+                      {
+                        text: "Continue",
+                        onPress: onRecover,
+                      },
+                    ],
+                  );
+                }}
+              />
+            );
+          case WelcomeButton.Demo:
+            return (
+              <Button
+                label={intl.formatMessage({
+                  id: "onboarding1.demo",
+                  defaultMessage: "Enter Demo Mode",
+                })}
+                flavor="primary"
+                buttonStyle={{
+                  marginTop: theme.spacing[4],
+                }}
+                onPress={onEnterDemoMode}
+              />
+            );
+          default:
+            return null;
+        }
+      })}
       <AccountPickerModal {...accountPickerModalProps} />
     </WelcomeLayout>
   );
@@ -254,8 +248,6 @@ const ZepetoButton = observer(function ZepetoButton({
   onPress?: () => void;
 }) {
   const theme = useTheme();
-  const { chainStore, draftsStore } = useStore();
-  const navigation = useRootNavigation();
   return (
     <TouchableOpacity
       onPress={onPress}

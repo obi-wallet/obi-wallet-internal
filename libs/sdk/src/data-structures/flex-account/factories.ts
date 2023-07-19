@@ -7,7 +7,7 @@ import { AbstractMigratable } from "../migratable";
 
 export function createFlexAccount(
   migratable: AbstractMigratable<typeof FlexAccountSchema>,
-  serialize = R.identity
+  serialize = R.identity,
 ) {
   const serialized = FlexAccountSchema.migratableSchema.parse(migratable);
   return new FlexAccount(
@@ -17,12 +17,12 @@ export function createFlexAccount(
     serialized.privateKey,
     serialized.spendLimit,
     serialized.autoSign,
-    serialize
+    serialize,
   );
 }
 
 export function createObservableFlexAccount(
-  migratable: AbstractMigratable<typeof FlexAccountSchema>
+  migratable: AbstractMigratable<typeof FlexAccountSchema>,
 ) {
   const flexAccount = createFlexAccount(migratable, toJS);
   makeObservable<
@@ -49,7 +49,7 @@ export function createObservableFlexAccount(
     },
     {
       name: "FlexAccount",
-    }
+    },
   );
   return flexAccount;
 }

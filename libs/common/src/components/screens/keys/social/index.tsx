@@ -51,7 +51,7 @@ export const SocialKeyScreen = observer<SocialKeyScreenProps>(
         }}
       />
     );
-  }
+  },
 );
 
 export interface SocialKeyProps {
@@ -116,7 +116,7 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
 
   async function getAccountPubkey(key: string) {
     const publicKey = await Sdk.chainId(
-      draft.value.chainId
+      draft.value.chainId,
     ).transactions.getPublicKeyOfAddress(key);
     const result = Secp256k1PublicKey.safeParse(publicKey);
     if (result.success) {
@@ -234,7 +234,7 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
                       }),
                       intl.formatMessage({
                         id: "onboarding5.error.noactivity.subtext",
-                      })
+                      }),
                     );
                   }
                 }}

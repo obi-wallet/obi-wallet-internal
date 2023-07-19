@@ -13,7 +13,7 @@ export const BeneficiaryPermissionedAddress = z.object({
         amount: z.string(),
         current_balance: z.string(),
         limit_remaining: z.string(),
-      })
+      }),
     ),
   }),
   params: z.null(),
@@ -36,7 +36,7 @@ export const FlexAccountPermissionedAddress = z.object({
         amount: z.string(),
         current_balance: z.string(),
         limit_remaining: z.string(),
-      })
+      }),
     ),
   }),
 });

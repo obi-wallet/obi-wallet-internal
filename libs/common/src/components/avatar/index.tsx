@@ -31,7 +31,6 @@ export interface Icon {
 
 export const AvatarPicker = observer(function AvatarPicker({
   icon,
-  onChange,
   FallbackSvg,
 }: {
   icon: Icon | null;
@@ -247,7 +246,7 @@ export const Avatar = observer<{
   }
 });
 const getDefaultAvatar = (
-  account: Beneficiary | FlexAccount | SinglesigWallet
+  account: Beneficiary | FlexAccount | SinglesigWallet,
 ) => {
   switch (account.type) {
     case "flex-account":
@@ -275,5 +274,5 @@ export const SinglesigAvatar = observer<{ style?: StyleProp<ViewStyle> }>(
         <CoinIcon source={formatted?.icon ?? null} />
       </View>
     );
-  }
+  },
 );

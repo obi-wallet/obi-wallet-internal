@@ -101,7 +101,7 @@ async function getEncryptionKey() {
       length: 256,
     },
     false,
-    ["encrypt", "decrypt"]
+    ["encrypt", "decrypt"],
   );
   await db.entries.put({
     key: "key",
@@ -117,7 +117,7 @@ async function encrypt(data: string) {
   const encrypted = await window.crypto.subtle.encrypt(
     { name: "AES-GCM", iv: iv },
     await getEncryptionKey(),
-    encoded
+    encoded,
   );
   return new Uint8Array([...iv, ...new Uint8Array(encrypted)]);
 }
@@ -128,7 +128,7 @@ async function decrypt(data: Uint8Array) {
   const decrypted = await window.crypto.subtle.decrypt(
     { name: "AES-GCM", iv: iv },
     await getEncryptionKey(),
-    encrypted
+    encrypted,
   );
   const dec = new TextDecoder();
   return dec.decode(decrypted);

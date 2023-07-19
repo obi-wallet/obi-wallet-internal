@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import Svg, { G, Path, SvgProps } from "react-native-svg";
 
 export const LegacyAccountIcon = observer<SvgProps>(function LegacyAccountIcon(
-  props: SvgProps
+  props: SvgProps,
 ) {
   return (
     <Svg width={60} height={58} {...props}>

@@ -2,7 +2,6 @@ import { useTheme } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
-  isTerraChain,
   EnrichedToken as OriginalEnrichedToken,
   Message,
   Messages,
@@ -79,7 +78,7 @@ export const SendScreenComponent = observer<
             }) as OriginalEnrichedToken;
           },
         }),
-      })
+      }),
     ),
   });
 
@@ -90,7 +89,7 @@ export const SendScreenComponent = observer<
         amount: getValues().token.amount,
       });
     },
-    [getValues, setValue]
+    [getValues, setValue],
   );
 
   const selectedTokenId = getValues().token.id;

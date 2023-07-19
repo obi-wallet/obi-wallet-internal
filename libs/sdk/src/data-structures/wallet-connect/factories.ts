@@ -23,7 +23,7 @@ export function createObservableWalletConnect(wallets: Wallets) {
     },
     {
       name: "WalletConnect",
-    }
+    },
   );
   return walletConnect;
 }

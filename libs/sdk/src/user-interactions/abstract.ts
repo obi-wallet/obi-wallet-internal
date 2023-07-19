@@ -32,7 +32,7 @@ export interface UserInteraction<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TPayload = any,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  TResult = any
+  TResult = any,
 > {
   payload: TPayload;
   resolve: (result: TResult) => void;
@@ -57,14 +57,14 @@ export interface UserInteractionWithType<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TPayload = any,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  TResult = any
+  TResult = any,
 > extends UserInteraction<TPayload, TResult> {
   type: T;
 }
 
 export function createUserInteractionType<
   T extends UserInteraction,
-  U extends symbol = symbol
+  U extends symbol = symbol,
 >(type: U) {
   type TPayload = UserInteractionPayload<T>;
   type TResult = UserInteractionResult<T>;
@@ -80,13 +80,13 @@ export function createUserInteractionType<
         };
         warning(
           eventEmitter.listenerCount(userInteractionEvent) > 0,
-          "No listener registered yet. Did you initialize `UserInteractions`?"
+          "No listener registered yet. Did you initialize `UserInteractions`?",
         );
         eventEmitter.emit(userInteractionEvent, message);
       });
     },
     is(
-      userInteraction: UserInteractionWithType
+      userInteraction: UserInteractionWithType,
     ): userInteraction is UserInteractionWithType<
       typeof type,
       TPayload,

@@ -27,8 +27,8 @@ describe("ObservableWallets", () => {
         ObservableWallets.create({
           wallets: [],
           currentWalletIndex: null,
-        })
-      )
+        }),
+      ),
     ).toEqual(true);
   });
 
@@ -46,7 +46,7 @@ describe("ObservableWallets", () => {
 
   test("currentWalletIndexPerChain observable", () => {
     expect(isObservableProp(wallets, "_currentWalletIndexPerChain")).toEqual(
-      true
+      true,
     );
   });
 });
@@ -75,17 +75,17 @@ test("create wallet", async () => {
   await waitFor(() => {
     expect(
       userInteractions.hasPendingUserInteractionsOfType(
-        SignAndBroadcastTransactionUserInteraction
-      )
+        SignAndBroadcastTransactionUserInteraction,
+      ),
     ).toEqual(true);
   });
   const userInteraction = userInteractions.getPendingUserInteractionsOfType(
-    SignAndBroadcastTransactionUserInteraction
+    SignAndBroadcastTransactionUserInteraction,
   )[0];
 
   expect(userInteraction.payload.messages).toMatchInlineSnapshot(`
     [
-      "{"@type":"/cosmwasm.wasm.v1.MsgExecuteContract","contract":"terra1a9zykuft0ngvq6ug2j60hz0an2kz72c3vs73tj5m87xcm0dt8w2sdkflln","funds":[],"msg":{"new_account":{"fee_debt":0,"gatekeeper_authorizations":{"beneficiary_auths":[],"message_auths":[],"session_keys":[],"spendlimit_auths":[]},"owner":"terra1fjctx996zndxxvcvyx9a8w5gthtnhptzllzp4t","signers":{"signers":[{"address":"terra1wmnxjjc3tpcw3l7u2qypvxrqzjwlre9aj6vd3e","ty":"device"},{"address":"terra1nmme5gjwhucd0a9ag4tay2sjc4dleyzku954qp","ty":"phone"}]},"update_delay":0}},"sender":"terra1fjctx996zndxxvcvyx9a8w5gthtnhptzllzp4t"}",
+      "{"@type":"/cosmwasm.wasm.v1.MsgExecuteContract","contract":"terra1a9zykuft0ngvq6ug2j60hz0an2kz72c3vs73tj5m87xcm0dt8w2sdkflln","funds":[],"msg":{"new_account":{"fee_debt":0,"gatekeeper_authorizations":{"beneficiary_auths":[],"message_auths":[],"session_keys":[],"spendlimit_auths":[]},"owner":"terra1agjsnu7r8m30ef9dpnek0sd75h4f555atyhsk7","signers":{"signers":[{"address":"terra1wfyf0qmq78h2c5px4y78qgkad0z2msnakqfvtd","ty":"device"},{"address":"terra1w3ms5wee3akjtpwyd6pnh62hrd7q84lvuhlzu4","ty":"phone"}]},"update_delay":0}},"sender":"terra1agjsnu7r8m30ef9dpnek0sd75h4f555atyhsk7"}",
     ]
   `);
 
