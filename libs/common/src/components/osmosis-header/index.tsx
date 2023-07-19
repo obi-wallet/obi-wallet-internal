@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite";
 import { Image, View } from "react-native";
 
 import { IconButton } from "../buttons";
-import { BackIcon, OsmosisSmartAccountIcon } from "../icons";
+import { BackIcon } from "../icons";
 
 export interface OsmosisHeaderProps {
   onBack?: () => void;
@@ -80,5 +80,5 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
 
       return undefined;
     }
-  }
+  },
 );

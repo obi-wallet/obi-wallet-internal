@@ -48,5 +48,5 @@ export const OsmosisSmartAccountIcon = observer(
         </G>
       </Svg>
     );
-  }
+  },
 );

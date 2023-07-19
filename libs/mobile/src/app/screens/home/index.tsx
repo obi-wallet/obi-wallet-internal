@@ -110,14 +110,14 @@ export const TabNavigation = observer<TabNavigationProps>(
             paddingBottom: Platform.select({
               ios: isSmallScreenNumber(
                 getScreenDimensions().SCREEN_HEIGHT <= 667 ? 10 : 25,
-                27
+                27,
               ),
               android: 10,
             }),
             height: Platform.select({
               ios: isSmallScreenNumber(
                 getScreenDimensions().SCREEN_HEIGHT <= 667 ? 65 : 82,
-                85
+                85,
               ),
               android: 65,
             }),
@@ -189,7 +189,7 @@ export const TabNavigation = observer<TabNavigationProps>(
         />
       </HomeBottomTab.Navigator>
     );
-  }
+  },
 );
 
 export const HomeScreen = observer(function HomeScreen() {
@@ -284,7 +284,7 @@ const UpdateFooter = observer(function UpdateFooter() {
 });
 
 const CustomDrawerContent = observer(function CustomDrawerContent(
-  props: DrawerContentComponentProps
+  props: DrawerContentComponentProps,
 ) {
   const { navigation } = props;
   const { chainStore, configStore } = useStore();

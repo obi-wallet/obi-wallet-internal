@@ -29,7 +29,7 @@ export abstract class AbstractTransactionsSdk {
    * Public key of the given address
    */
   public abstract getPublicKeyOfAddress(
-    address: string
+    address: string,
   ): Promise<unknown | null>;
 
   /**
@@ -41,7 +41,7 @@ export abstract class AbstractTransactionsSdk {
    * Validates the account of the given address
    */
   public abstract validateAccount(
-    address: string
+    address: string,
   ): Promise<AccountValidationResult>;
 
   /**
@@ -66,7 +66,7 @@ export abstract class AbstractTransactionsSdk {
   }
 
   protected abstract prepareKeyPairQueryFn(
-    keyPair: Secp256k1KeyPair
+    keyPair: Secp256k1KeyPair,
   ): Promise<void>;
 
   /**
@@ -76,7 +76,7 @@ export abstract class AbstractTransactionsSdk {
     const validationResult = await this.validateAccount(address);
     invariant(
       validationResult !== AccountValidationResult.INVALID_ADDRESS,
-      "Invalid address"
+      "Invalid address",
     );
 
     if (validationResult <= AccountValidationResult.ACCOUNT_NOT_READY) {
@@ -129,7 +129,7 @@ export abstract class AbstractTransactionsSdk {
       {
         method: "POST",
         body: `${this.chainId},${address}`,
-      }
+      },
     );
     if (response.status !== 200) {
       console.log(response);

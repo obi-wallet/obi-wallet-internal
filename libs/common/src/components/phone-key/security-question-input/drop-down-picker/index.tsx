@@ -47,5 +47,5 @@ export const DropDownPicker = observer<DropDownPickerProps<unknown | null>>(
         </Picker>
       </View>
     );
-  }
+  },
 );

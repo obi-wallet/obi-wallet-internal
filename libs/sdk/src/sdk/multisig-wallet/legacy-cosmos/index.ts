@@ -4,7 +4,6 @@ import { LegacyCosmosChainId, legacyCosmosChains } from "../../../chains";
 import { CosmJsClient } from "../../../clients";
 import {
   FlexAccount,
-  GatekeeperConfig,
   MultisigKey,
   MultisigWallet,
 } from "../../../data-structures";
@@ -137,7 +136,7 @@ export class LegacyCosmosMultisigWalletSdk extends AbstractMultisigWalletSdk {
   }
 
   public async broadcastSignedTransaction(
-    signedTransaction: SignedTransaction
+    signedTransaction: SignedTransaction,
   ): Promise<BroadcastTransactionResult> {
     return await this.client.broadcastSignedTransaction(signedTransaction);
   }

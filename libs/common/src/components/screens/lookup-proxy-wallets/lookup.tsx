@@ -34,7 +34,7 @@ export const Lookup = observer(function Lookup({
 }: LookupProps) {
   const { chainStore } = useStore();
   const [wallets, setWallets] = useState<A.SerializedProxyWallet[] | null>(
-    null
+    null,
   );
   const [selectedWallet, setSelectedWallet] =
     useState<A.SerializedProxyWallet | null>(null);
@@ -67,7 +67,7 @@ export const Lookup = observer(function Lookup({
             "Api-Version": "v1",
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       const proxyWallets = (await response.json()) as A.SerializedProxyWallet[];
       setWallets(proxyWallets);
@@ -179,7 +179,7 @@ export const Lookup = observer(function Lookup({
                   >
                     {Bech32Address.shortenAddress(
                       wallet.proxyAddress.address,
-                      20
+                      20,
                     )}
                   </Text>
                 </View>
@@ -192,8 +192,8 @@ export const Lookup = observer(function Lookup({
                   onPress={async () => {
                     await Linking.openURL(
                       chainStore.currentChainInformation.explorerUrl(
-                        wallet.proxyAddress.address
-                      )
+                        wallet.proxyAddress.address,
+                      ),
                     );
                   }}
                 >

@@ -1,11 +1,5 @@
 import { useTheme } from "@emotion/react";
-import {
-  KeyType,
-  MultisigKey,
-  ObservableFlexAccount,
-  Sdk,
-  generateSec256k1KeyPair,
-} from "@obi-wallet/sdk";
+import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
@@ -19,7 +13,6 @@ import {
   OnboardingStackParamList,
   useRootNavigation,
 } from "../../../router";
-import { Draft } from "../../../stores";
 import { Button } from "../../buttons";
 import { MultisigSettings } from "../../multisig-settings";
 
@@ -94,7 +87,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
         }}
       />
     );
-  }
+  },
 );
 
 export interface CreateWalletProps {

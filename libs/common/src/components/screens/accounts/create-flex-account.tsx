@@ -100,7 +100,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
             onPress={handleSubmit((data) => {
               const { publicKey, privateKey } = generateSec256k1KeyPair();
               const address = Sdk.chainId(
-                wallet.chainId
+                wallet.chainId,
               ).transactions.getAddressOfPublicKey(publicKey);
               gatekeeperConfig.value.upsertFlexAccount(
                 ObservableFlexAccount.create({
@@ -114,7 +114,7 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
                   spendLimit: null,
                   privateKey,
                   publicKey,
-                })
+                }),
               );
 
               navigation.navigate(AccountsRoute.AccountsOverview);
@@ -131,5 +131,5 @@ export const CreateFlexAccountScreen = observer<CreateFlexAccountScreenProps>(
         </View>
       </ScreenContainer>
     );
-  }
+  },
 );

@@ -44,11 +44,11 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
   await copyFile(
     path.join(appDir, ".env"),
-    path.join(__dirname, "../libs/modal/.env")
+    path.join(__dirname, "../libs/modal/.env"),
   );
   await copyFile(
     path.join(appDir, ".env"),
-    path.join(__dirname, "../apps/modal-web/.env")
+    path.join(__dirname, "../apps/modal-web/.env"),
   );
 
   // Handle ios/Mobile/AppCenter-Config.plist
@@ -65,7 +65,7 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
     </dict>
 </plist>
 `;
-    }
+    },
   );
 
   // Handle android/app/src/main/assets/appcenter-config.json
@@ -77,11 +77,11 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
   "app_secret": "${field.value}"
 }
 `;
-    }
+    },
   );
 
   const androidSigningKeystore = await get1PasswordItem(
-    "pkorkoqekc7coziqrkqjsehbx4"
+    "pkorkoqekc7coziqrkqjsehbx4",
   );
 
   // Handle android/local.properties
@@ -105,29 +105,29 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
           .join("\n") + "\n";
 
       return result;
-    }
+    },
   );
 
   // Handle android/app/<KEYSTORE_NAME>.keystore
   await download1PasswordFile(
     "pkorkoqekc7coziqrkqjsehbx4",
-    path.join(appDir, `android/app/${androidSigningKeystore.files[0].name}`)
+    path.join(appDir, `android/app/${androidSigningKeystore.files[0].name}`),
   );
 
   // Handle ios/sentry.properties
   await download1PasswordFile(
     "m3blhrmel4shejdaayto7b5bou",
-    path.join(appDir, "ios/sentry.properties")
+    path.join(appDir, "ios/sentry.properties"),
   );
 
   // Handle android/sentry.properties
   await download1PasswordFile(
     "m3blhrmel4shejdaayto7b5bou",
-    path.join(appDir, "android/sentry.properties")
+    path.join(appDir, "android/sentry.properties"),
   );
 
   // Handle libs/mobile/cosmos.userdeps.js
   await execCommand(
-    `touch ${path.join(__dirname, "..", "libs/mobile/cosmos.userdeps.js")}`
+    `touch ${path.join(__dirname, "..", "libs/mobile/cosmos.userdeps.js")}`,
   );
 })();

@@ -21,7 +21,7 @@ export class CosmosSdkGatekeeperSdk extends AbstractGatekeeperSdk {
   }
 
   protected async contractAddressesQueryFn(
-    proxyAddress: string
+    proxyAddress: string,
   ): Promise<GatekeeperContractAddresses> {
     return await this.client.queryContract({
       contract: proxyAddress,
@@ -45,7 +45,7 @@ export class CosmosSdkGatekeeperSdk extends AbstractGatekeeperSdk {
   }
 
   protected async permissionedAddressesQueryFn(
-    proxyAddress: string
+    proxyAddress: string,
   ): Promise<PermissionedAddress[]> {
     const { spendLimitGatekeeper } = await this.contractAddresses(proxyAddress);
     invariant(spendLimitGatekeeper, "spendLimitGatekeeper is required");

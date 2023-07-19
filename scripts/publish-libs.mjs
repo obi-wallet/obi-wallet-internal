@@ -11,7 +11,7 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
   let { version } = JSON.parse(
     await fs.readFile(path.join(__dirname, "../libs/modal/package.json"), {
       encoding: "utf-8",
-    })
+    }),
   );
   const sha = (await execCommand("git rev-parse --short HEAD")).trim();
   version += `-0.${sha}`;
@@ -31,9 +31,9 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
             }
           }
           return JSON.stringify(parsedInput, null, 2);
-        }
+        },
       );
-    })
+    }),
   );
 
   await Promise.all(
@@ -41,6 +41,6 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
       await spawnCommand("npm", ["publish"], {
         cwd: path.join(distPath, lib),
       });
-    })
+    }),
   );
 })();

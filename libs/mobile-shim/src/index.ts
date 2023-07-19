@@ -24,7 +24,7 @@ global.crypto.getRandomValues = (values) => {
     !(values instanceof Uint8ClampedArray)
   ) {
     throw new TypeError(
-      `The provided ArrayBuffer view is not an integer-typed array`
+      `The provided ArrayBuffer view is not an integer-typed array`,
     );
   }
 
@@ -35,7 +35,7 @@ global.crypto.getRandomValues = (values) => {
   const randomValues = new TypedArrayConstructor(
     randomBytes.buffer,
     randomBytes.byteOffset,
-    values.length
+    values.length,
   );
   // Copy the data into the given TypedArray, letting the VM optimize the copy if possible
   values.set(randomValues);

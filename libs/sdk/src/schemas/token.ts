@@ -11,7 +11,7 @@ import { Sdk } from "../sdk";
  */
 export function token(
   chainId: ChainId,
-  enrichToken?: (token: Token) => EnrichedToken
+  enrichToken?: (token: Token) => EnrichedToken,
 ) {
   return z
     .object({
@@ -90,7 +90,7 @@ export function tokenGivenBalances({
         rawAmount: "0",
       };
       return new BigNumber(balance.rawAmount).isGreaterThanOrEqualTo(
-        token.rawAmount
+        token.rawAmount,
       );
     }, "Insufficient balance");
 }

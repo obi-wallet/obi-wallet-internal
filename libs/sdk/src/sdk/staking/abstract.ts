@@ -73,7 +73,7 @@ export abstract class AbstractStakingSdk {
   }
 
   protected abstract unbondingDelegationsQueryFn(
-    address: string
+    address: string,
   ): Promise<UnbondingDelegation[]>;
 
   /**

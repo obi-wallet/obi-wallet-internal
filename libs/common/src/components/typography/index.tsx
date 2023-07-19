@@ -18,7 +18,7 @@ export const Text = observer<TextProps & { children: ReactNode }>(
         {children}
       </OriginalText>
     );
-  }
+  },
 );
 
 export const BaseTextInput = observer<TextInputProps>(function TextInput({

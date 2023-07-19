@@ -23,7 +23,7 @@ import { AbstractMessages } from "../abstract";
 
 export class CosmosSdkMessages extends AbstractMessages {
   protected constructor(
-    protected override chainId: CosmosChainId | TerraChainId
+    protected override chainId: CosmosChainId | TerraChainId,
   ) {
     super(chainId);
   }
@@ -42,7 +42,7 @@ export class CosmosSdkMessages extends AbstractMessages {
     });
     const [contractTokens, nativeTokens] = R.partition(
       (token) => token.contract !== null,
-      enrichedTokens
+      enrichedTokens,
     );
     const nativeCoinsMessages =
       nativeTokens.length > 0
@@ -51,8 +51,8 @@ export class CosmosSdkMessages extends AbstractMessages {
               fromAddress,
               toAddress,
               R.fromPairs(
-                nativeTokens.map((token) => [token.id, token.rawAmount])
-              )
+                nativeTokens.map((token) => [token.id, token.rawAmount]),
+              ),
             ),
           ]
         : [];
@@ -148,7 +148,7 @@ export class CosmosSdkMessages extends AbstractMessages {
     return new MsgExecuteContract(
       wallet.owner.address,
       wallet.proxyAddress,
-      rawMessage
+      rawMessage,
     );
   }
 
@@ -165,7 +165,7 @@ export class CosmosSdkMessages extends AbstractMessages {
     return new MsgExecuteContract(
       newOwner.address,
       wallet.proxyAddress,
-      rawMessage
+      rawMessage,
     );
   }
 
@@ -173,12 +173,10 @@ export class CosmosSdkMessages extends AbstractMessages {
     wallet,
     newGatekeeperConfig,
     spendLimitGatekeeper,
-    sessionKeyGatekeeper,
   }: {
     wallet: MultisigWallet;
     newGatekeeperConfig: GatekeeperConfig;
     spendLimitGatekeeper: string;
-    sessionKeyGatekeeper: string;
   }): Message[] {
     function handleBeneficiaries() {
       const messages: MsgExecuteContract[] = [];
@@ -190,19 +188,19 @@ export class CosmosSdkMessages extends AbstractMessages {
       const nextBeneficiaryAddresses = newGatekeeperConfig.beneficiaries.map(
         (beneficiary) => {
           return beneficiary.address;
-        }
+        },
       );
 
       const removedAddresses = R.difference(
         previousBeneficiaryAddresses,
-        nextBeneficiaryAddresses
+        nextBeneficiaryAddresses,
       );
 
       newGatekeeperConfig.beneficiaries.forEach((beneficiary) => {
         const previousBeneficiary = wallet.gatekeeperConfig.beneficiaries.find(
           (previousBeneficiary) => {
             return previousBeneficiary.address === beneficiary.address;
-          }
+          },
         );
 
         if (previousBeneficiary && beneficiary.equals(previousBeneficiary)) {
@@ -235,7 +233,7 @@ export class CosmosSdkMessages extends AbstractMessages {
             new_beneficiary: {
               address: beneficiary.address,
               cooldown: Duration.fromObject(beneficiary.dormancyThreshold).as(
-                "days"
+                "days",
               ),
               inheritance_records: [],
               offset: 0,
@@ -256,8 +254,8 @@ export class CosmosSdkMessages extends AbstractMessages {
           new MsgExecuteContract(
             wallet.owner.address,
             spendLimitGatekeeper,
-            rawMessage
-          )
+            rawMessage,
+          ),
         );
       });
 
@@ -271,8 +269,8 @@ export class CosmosSdkMessages extends AbstractMessages {
           new MsgExecuteContract(
             wallet.owner.address,
             spendLimitGatekeeper,
-            rawMessage
-          )
+            rawMessage,
+          ),
         );
       });
 
@@ -289,18 +287,18 @@ export class CosmosSdkMessages extends AbstractMessages {
       const nextFlexAccountAddresses = newGatekeeperConfig.flexAccounts.map(
         (flexAccount) => {
           return flexAccount.address;
-        }
+        },
       );
 
       const removedAddresses = R.difference(
         previousFlexAccountAddresses,
-        nextFlexAccountAddresses
+        nextFlexAccountAddresses,
       );
 
       newGatekeeperConfig.flexAccounts.forEach((flexAccount) => {
         const expiration = DateTime.utc().plus({ minutes: 30 });
         const amount = `${Math.floor(
-          1_000_000 * (flexAccount.spendLimit?.amount ?? 0)
+          1_000_000 * (flexAccount.spendLimit?.amount ?? 0),
         )}`;
 
         const rawMessage = {
@@ -344,8 +342,8 @@ export class CosmosSdkMessages extends AbstractMessages {
           new MsgExecuteContract(
             wallet.owner.address,
             wallet.proxyAddress,
-            rawMessage
-          )
+            rawMessage,
+          ),
         );
         //
         //
@@ -481,8 +479,8 @@ export class CosmosSdkMessages extends AbstractMessages {
           new MsgExecuteContract(
             wallet.owner.address,
             spendLimitGatekeeper,
-            rawMessage
-          )
+            rawMessage,
+          ),
         );
       });
 
@@ -504,7 +502,7 @@ export class CosmosSdkMessages extends AbstractMessages {
     return new MsgDelegate(
       wallet.address,
       validator,
-      new TerraCoin(amount.id, amount.rawAmount)
+      new TerraCoin(amount.id, amount.rawAmount),
     );
   }
 
@@ -520,7 +518,7 @@ export class CosmosSdkMessages extends AbstractMessages {
     return new MsgUndelegate(
       wallet.address,
       validator,
-      new TerraCoin(amount.id, amount.rawAmount)
+      new TerraCoin(amount.id, amount.rawAmount),
     );
   }
 
@@ -555,7 +553,7 @@ export class CosmosSdkMessages extends AbstractMessages {
     return new MsgExecuteContract(
       owner.address,
       this.chain.accountCreatorAddress,
-      rawMessage
+      rawMessage,
     );
   }
 
@@ -568,7 +566,7 @@ export class CosmosSdkMessages extends AbstractMessages {
         return { address, ty };
       },
       addresses,
-      multisigKey.signerTypes
+      multisigKey.signerTypes,
     );
   }
 

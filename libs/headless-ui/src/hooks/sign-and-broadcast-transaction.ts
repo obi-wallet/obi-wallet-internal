@@ -110,7 +110,7 @@ export function useSignAndBroadcastTransaction({
       const multisigSigner = await awaitableMultisigSigner.getAsync();
       const signedTransaction = multisigSigner.createSignedTransaction();
       return await Sdk.chainId(
-        multisigKey.chainId
+        multisigKey.chainId,
       ).transactions.broadcastSignedTransactionAndLendFees({
         signedTransaction,
         sender: multisigKey.address,

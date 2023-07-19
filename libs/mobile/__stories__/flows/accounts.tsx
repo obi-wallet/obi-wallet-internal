@@ -81,7 +81,7 @@ function StepInner({
             },
           },
         ],
-      })
+      }),
     );
   }, [step, navigation, routes]);
 

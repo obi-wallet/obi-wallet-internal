@@ -5,7 +5,7 @@ import { FlexAccount, ObservableFlexAccount, Serialized } from "../../src";
 import { expectIsPureObject } from "../__helpers__";
 
 function createTest<
-  A extends (factory: typeof FlexAccount) => FlexAccount[] | void
+  A extends (factory: typeof FlexAccount) => FlexAccount[] | void,
 >(name: string, fn: A) {
   return describe(name, () => {
     test.each([
@@ -85,7 +85,7 @@ function createFlexAccounts(Factory: typeof FlexAccount) {
     limitedFlexAccount: Factory.create(limitedFlexAccount),
     unlockedFlexAccount: Factory.create(unlockedFlexAccount),
     previouslyUnlockedFlexAccount: Factory.create(
-      previouslyUnlockedFlexAccount
+      previouslyUnlockedFlexAccount,
     ),
   };
 
@@ -160,7 +160,7 @@ createTest("spendLimit", (FlexAccount) => {
         },
         amount: 100,
       });
-    }
+    },
   );
   return accounts.all;
 });
@@ -194,8 +194,8 @@ createTest("remainingAutoSignDuration", (FlexAccount) => {
   expect(
     parseInt(
       unlockedFlexAccount.remainingAutoSignDuration?.toFormat("m") ?? "",
-      10
-    )
+      10,
+    ),
   ).toBeGreaterThanOrEqual(29);
   expect(previouslyUnlockedFlexAccount.remainingAutoSignDuration).toEqual(null);
 
@@ -216,8 +216,8 @@ createTest("autoSignEndTime", (FlexAccount) => {
   expect(
     parseInt(
       unlockedFlexAccount.autoSignEndTime?.diffNow().toFormat("m") ?? "",
-      10
-    )
+      10,
+    ),
   ).toBeGreaterThanOrEqual(29);
   expect(previouslyUnlockedFlexAccount.autoSignEndTime).toEqual(null);
 
@@ -235,16 +235,18 @@ createTest("equals", (FlexAccount) => {
   const accountsA = createFlexAccounts(FlexAccount);
   const accountsB = createFlexAccounts(FlexAccount);
   expect(
-    accountsA.strictFlexAccount.equals(accountsB.strictFlexAccount)
+    accountsA.strictFlexAccount.equals(accountsB.strictFlexAccount),
   ).toEqual(true);
   expect(
-    accountsA.limitedFlexAccount.equals(accountsB.limitedFlexAccount)
+    accountsA.limitedFlexAccount.equals(accountsB.limitedFlexAccount),
   ).toEqual(true);
   expect(
-    accountsA.unlockedFlexAccount.equals(accountsB.unlockedFlexAccount)
+    accountsA.unlockedFlexAccount.equals(accountsB.unlockedFlexAccount),
   ).toEqual(true);
   expect(
-    accountsA.previouslyUnlockedFlexAccount.equals(accountsB.limitedFlexAccount)
+    accountsA.previouslyUnlockedFlexAccount.equals(
+      accountsB.limitedFlexAccount,
+    ),
   ).toEqual(true);
 });
 

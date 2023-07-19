@@ -34,5 +34,5 @@ export const OsmosisScreenContainer = observer<OsmosisScreenContainerProps>(
         <View style={{ flex: 1 }}>{children}</View>
       </View>
     );
-  }
+  },
 );

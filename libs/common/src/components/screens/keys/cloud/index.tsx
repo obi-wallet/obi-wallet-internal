@@ -50,7 +50,7 @@ export const CloudKeyScreen = observer<CloudKeyScreenProps>(
         }}
       />
     );
-  }
+  },
 );
 
 export interface CloudKeyProps {
@@ -96,7 +96,7 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
       } else {
         Alert.alert(
           "Error",
-          "We could not find the key with that cloud provider / account combination."
+          "We could not find the key with that cloud provider / account combination.",
         );
       }
     } else {
@@ -107,7 +107,9 @@ export const CloudKey = observer<CloudKeyProps>(function CloudKey({
     }
 
     void queryClient.prefetchQuery(
-      Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(keyPair)
+      Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
+        keyPair,
+      ),
     );
     onSubmit();
   };

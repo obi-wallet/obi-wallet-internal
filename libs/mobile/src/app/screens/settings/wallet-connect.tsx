@@ -86,7 +86,7 @@ export const WalletConnect = observer(function WalletConnect() {
                             await walletConnectStore.disconnect(info.connector);
                           },
                         },
-                      ]
+                      ],
                     );
                   }}
                 >

@@ -15,7 +15,7 @@ import { AbstractClient } from "../abstract";
 
 export async function withFeatherJsClient<T>(
   chainId: TerraChainId,
-  f: (client: LCDClient) => T
+  f: (client: LCDClient) => T,
 ) {
   let error;
 
@@ -30,7 +30,7 @@ export async function withFeatherJsClient<T>(
             gasPrices: { uluna: 0.015 },
             prefix: "terra",
           },
-        })
+        }),
       );
     } catch (e) {
       const axiosError = e as AxiosError;
@@ -55,8 +55,8 @@ export class FeatherJsClient extends AbstractClient {
 
   public async fetchAllPages<T>(
     f: (
-      paginationOptions: Partial<PaginationOptions>
-    ) => Promise<[T[], Pagination]>
+      paginationOptions: Partial<PaginationOptions>,
+    ) => Promise<[T[], Pagination]>,
   ): Promise<T[]> {
     const result: T[] = [];
     let key: string | null = "";
@@ -83,17 +83,17 @@ export class FeatherJsClient extends AbstractClient {
       contract: string;
       query: unknown;
       schema: T;
-    }[]
+    }[],
   ): Promise<z.infer<T>[]> {
     return await this.withClient(async (client) => {
       return await Promise.all(
         queries.map(async ({ contract, query, schema }) => {
           const response = await client.wasm.contractQuery(
             contract,
-            query as string | object
+            query as string | object,
           );
           return schema.parse(response);
-        })
+        }),
       );
     });
   }
@@ -130,13 +130,13 @@ export class FeatherJsClient extends AbstractClient {
   }
 
   public async broadcastSignedTransaction(
-    signedTransaction: SignedTransaction
+    signedTransaction: SignedTransaction,
   ): Promise<BroadcastTransactionResult> {
     return await this.withClient(async (client) => {
       const transaction = Tx.fromBuffer(Buffer.from(signedTransaction));
       const rawResult = await client.tx.broadcastBlock(
         transaction,
-        this.chainId
+        this.chainId,
       );
       return {
         success: !isTxError(rawResult),

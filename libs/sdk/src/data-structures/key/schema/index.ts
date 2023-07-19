@@ -19,7 +19,7 @@ export const UsableKeySchema = migratable(
     CloudKey,
     EmailKey,
     EmailRecoveryKey,
-  ])
+  ]),
 );
 
 export const PendingRecoveryKeySchema = migratable(
@@ -28,12 +28,12 @@ export const PendingRecoveryKeySchema = migratable(
       type: z.string(),
       publicKey: Secp256k1PublicKey,
     }),
-  })
+  }),
 );
 
 export const KeySchema = migratable(
   z.union([
     UsableKeySchema.migratableSchema,
     PendingRecoveryKeySchema.migratableSchema,
-  ])
+  ]),
 );

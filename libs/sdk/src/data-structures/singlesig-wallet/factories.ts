@@ -5,7 +5,7 @@ import { SinglesigWalletSchema } from "./schema";
 import { AbstractMigratable } from "../migratable";
 
 export function createSinglesigWallet(
-  migratable: AbstractMigratable<typeof SinglesigWalletSchema>
+  migratable: AbstractMigratable<typeof SinglesigWalletSchema>,
 ) {
   const serialized = SinglesigWalletSchema.migratableSchema.parse(migratable);
   return new SinglesigWallet({
@@ -15,7 +15,7 @@ export function createSinglesigWallet(
 }
 
 export function createObservableSinglesigWallet(
-  migratable: AbstractMigratable<typeof SinglesigWalletSchema>
+  migratable: AbstractMigratable<typeof SinglesigWalletSchema>,
 ) {
   const wallet = createSinglesigWallet(migratable);
   makeObservable<SinglesigWallet, "_keyPair">(
@@ -23,7 +23,7 @@ export function createObservableSinglesigWallet(
     {
       _keyPair: observable,
     },
-    { name: "SinglesigWallet" }
+    { name: "SinglesigWallet" },
   );
   return wallet;
 }

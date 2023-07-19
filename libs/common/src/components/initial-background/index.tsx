@@ -8,7 +8,7 @@ export interface InitialBackgroundProps {
 }
 
 export const InitialBackground = observer(function InitialBackground(
-  props: InitialBackgroundProps
+  props: InitialBackgroundProps,
 ) {
   const theme = useTheme();
   return (

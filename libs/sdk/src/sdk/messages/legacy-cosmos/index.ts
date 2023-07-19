@@ -57,7 +57,6 @@ export class LegacyCosmosMessages extends AbstractMessages {
     wallet: MultisigWallet;
     newGatekeeperConfig: GatekeeperConfig;
     spendLimitGatekeeper: string;
-    sessionKeyGatekeeper: string;
   }): Message[] {
     notImplemented("getUpdateGatekeeperMessages not implemented for Cosmos");
     return [];

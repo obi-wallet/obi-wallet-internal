@@ -7,7 +7,7 @@ import invariant from "tiny-invariant";
  */
 export function useAwaitableState<T>() {
   const [value, setValue] = useState<T | undefined>();
-  const resolveRef = useRef<(value: T) => void>();
+  const resolveRef = useRef<(_value: T) => void>();
   const promiseRef = useRef<Promise<T>>();
 
   if (!promiseRef.current) {
@@ -26,7 +26,7 @@ export function useAwaitableState<T>() {
       setValue(value);
       resolveRef.current?.(value);
     },
-    [setValue]
+    [setValue],
   );
 
   return {

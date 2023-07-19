@@ -18,7 +18,7 @@ export function createObservableUserInteractions() {
       addUserInteraction: action,
       removeUserInteractionWithId: action,
     },
-    { name: "UserInteractions" }
+    { name: "UserInteractions" },
   );
   return userInteractions;
 }

@@ -4,7 +4,6 @@ import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { Image, SafeAreaView, View } from "react-native";
 
-import { isWeb } from "../../../helpers";
 import { LanguagePicker } from "../../language-picker";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 import { Text } from "../../typography";
@@ -180,5 +179,5 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
         </SafeAreaView>
       </OsmosisScreenContainer>
     );
-  }
+  },
 );

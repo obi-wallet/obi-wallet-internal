@@ -16,7 +16,7 @@ export function ethereumBalancesQuery({
       if (!address) return [];
       const ethAccount = await rootStore.ethereumDemoStore.getEthereumAccount();
       const response = await fetch(
-        `/api/ethereum-demo/balances/${ethAccount.address}`
+        `/api/ethereum-demo/balances/${ethAccount.address}`,
       );
       return await response.json();
     },

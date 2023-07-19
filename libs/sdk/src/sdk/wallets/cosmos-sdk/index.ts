@@ -26,7 +26,7 @@ export class CosmosSdkWalletsSdk extends AbstractWalletsSdk {
     const response = await SignAndBroadcastTransactionUserInteraction.start({
       messages: [
         Messages.chainId(multisigKey.chainId).getCreateWalletMessage(
-          multisigKey
+          multisigKey,
         ),
       ],
       demoMode,
@@ -63,7 +63,7 @@ export class CosmosSdkWalletsSdk extends AbstractWalletsSdk {
       });
       invariant(
         Array.isArray(contractAddresses) && contractAddresses.length > 0,
-        "No contract address found"
+        "No contract address found",
       );
       return {
         approved: true,

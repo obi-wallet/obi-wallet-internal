@@ -24,7 +24,7 @@ export class ChainStore {
         currentChain: false,
         setCurrentChain: action,
         currentChainInformation: computed,
-      }
+      },
     );
 
     autorun(() => {

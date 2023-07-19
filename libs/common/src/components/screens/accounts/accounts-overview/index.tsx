@@ -55,7 +55,7 @@ export const AccountsOverviewScreen = observer<AccountsOverviewScreenProps>(
         </View>
       </NetworkAccountPickerLayout>
     );
-  }
+  },
 );
 
 const AccountScreenInner = observer(function AccountScreenInner() {
@@ -71,8 +71,8 @@ const AccountScreenInner = observer(function AccountScreenInner() {
 
   const { data: permissionedAddresses, refetch } = useQuery(
     Sdk.chainId(wallet.chainId).gatekeeper.permissionedAddressesQuery(
-      wallet.proxyAddress
-    )
+      wallet.proxyAddress,
+    ),
   );
 
   return (
@@ -187,7 +187,7 @@ const AccountScreenInner = observer(function AccountScreenInner() {
                   } else {
                     Alert.alert(
                       "Error",
-                      response.payload.rawLog ?? "Unknown error"
+                      response.payload.rawLog ?? "Unknown error",
                     );
                   }
                 }
@@ -272,10 +272,10 @@ const AccountsList = observer(function AccountsList() {
         originalAccount: draft.original.beneficiaries.find(
           (originalAccount) => {
             return originalAccount.address === account.address;
-          }
+          },
         ),
       };
-    }
+    },
   );
   const flexAccountsData = draft.value.flexAccounts.map(
     (account): AccountData<FlexAccount> => {
@@ -289,7 +289,7 @@ const AccountsList = observer(function AccountsList() {
           return originalAccount.address === account.address;
         }),
       };
-    }
+    },
   );
   const singlesigWalletsData = wallet.singlesigWallets.map(
     (account): AccountData<SinglesigWallet> => {
@@ -301,7 +301,7 @@ const AccountsList = observer(function AccountsList() {
         account,
         originalAccount: account,
       };
-    }
+    },
   );
 
   const data = [
@@ -321,7 +321,7 @@ const AccountsList = observer(function AccountsList() {
           <AccountItem
             onOpenToggle={() => {
               LayoutAnimation.configureNext(
-                LayoutAnimation.Presets.easeInEaseOut
+                LayoutAnimation.Presets.easeInEaseOut,
               );
               R.equals(itemOpened, element.item.meta)
                 ? setItemOpened(null)

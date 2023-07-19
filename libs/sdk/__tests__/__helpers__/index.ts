@@ -13,7 +13,7 @@ export function expectIsPureObject(serialized: unknown) {
 }
 
 export function generateSec256k1KeyPair() {
-  const privateKeyBuffer = Buffer.from(faker.random.alphaNumeric(32), "utf-8");
+  const privateKeyBuffer = Buffer.from(faker.string.alphanumeric(32), "utf-8");
   const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer);
 
   const privateKey = Buffer.from(privateKeyBuffer).toString("base64");

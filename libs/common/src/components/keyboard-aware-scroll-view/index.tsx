@@ -8,12 +8,12 @@ import type {
 export const KeyboardAwareScrollView = observer<KeyboardAwareScrollViewProps>(
   function KeyboardAwareScrollView(props) {
     return <ScrollView {...props} />;
-  }
+  },
 );
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const KeyboardAwareFlatList = observer<KeyboardAwareFlatListProps<any>>(
   function KeyboardAwareFlatList(props) {
     return <FlatList {...props} />;
-  }
+  },
 );

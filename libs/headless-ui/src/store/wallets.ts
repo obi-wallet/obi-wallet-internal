@@ -35,7 +35,7 @@ export class WalletsStore {
   protected async init() {
     try {
       const data = await this.kvStore.get<Migratable<Wallets> | undefined>(
-        "wallets"
+        "wallets",
       );
 
       runInAction(() => {
@@ -47,7 +47,7 @@ export class WalletsStore {
 
       autorun(async () => {
         const data = Wallets.schema.currentSchema.parse(
-          toJS(this.wallets.toJSON())
+          toJS(this.wallets.toJSON()),
         );
         await this.kvStore.set("wallets", data);
       });

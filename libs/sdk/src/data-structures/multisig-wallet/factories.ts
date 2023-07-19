@@ -19,7 +19,7 @@ export function createMultisigWallet(
     MultisigKey,
     SinglesigWallet,
     createGatekeeperConfig,
-  }
+  },
 ) {
   const serialized = MultisigWalletSchema.migratableSchema.parse(migratable);
   return new MultisigWallet(
@@ -29,12 +29,12 @@ export function createMultisigWallet(
     factories.createGatekeeperConfig(serialized.data.gatekeeperConfig),
     serialized.data.singlesigWallets.map((s) => SinglesigWallet.create(s)),
     serialized.data.currentAccount,
-    serialized.type === "multisig-demo"
+    serialized.type === "multisig-demo",
   );
 }
 
 export function createObservableMultisigWallet(
-  serialized: AbstractMigratable<typeof MultisigWalletSchema>
+  serialized: AbstractMigratable<typeof MultisigWalletSchema>,
 ) {
   const wallet = createMultisigWallet(serialized, {
     MultisigKey: ObservableMultisigKey,
@@ -69,7 +69,7 @@ export function createObservableMultisigWallet(
     },
     {
       name: "MultisigWallet",
-    }
+    },
   );
   return wallet;
 }

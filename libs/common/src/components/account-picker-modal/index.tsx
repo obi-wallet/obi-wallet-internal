@@ -157,7 +157,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
                                 walletsStore.removeWallet(wallet);
                               },
                             },
-                          ]
+                          ],
                         );
                       }}
                     >
@@ -192,5 +192,5 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
         </View>
       </BaseModal>
     );
-  }
+  },
 );

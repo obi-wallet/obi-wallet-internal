@@ -31,5 +31,5 @@ export const BeneficiaryAccountIcon = observer<SvgProps>(
         </G>
       </Svg>
     );
-  }
+  },
 );

@@ -32,7 +32,7 @@ async function generateEthereumAddress(keyPair: Secp256k1KeyPair) {
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
     signer,
-    config.rpcUrl
+    config.rpcUrl,
   );
   return simpleAccount.getSender();
 }

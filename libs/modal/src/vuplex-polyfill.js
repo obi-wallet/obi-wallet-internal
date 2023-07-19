@@ -33,7 +33,7 @@ class VuplexPolyfill {
         type: "vuplex.postMessage",
         message: messageString,
       },
-      "*"
+      "*",
     );
   }
 
@@ -47,7 +47,7 @@ class VuplexPolyfill {
       } catch (error) {
         console.error(
           `An error occurred while invoking the '${eventName}' event handler.`,
-          error
+          error,
         );
       }
     }

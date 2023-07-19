@@ -7,19 +7,19 @@ import { AbstractMigratable } from "../migratable";
 
 export function createKey(
   serialized: AbstractMigratable<typeof KeySchema>,
-  serialize = R.identity
+  serialize = R.identity,
 ) {
   const result =
     PendingRecoveryKeySchema.migratableSchema.safeParse(serialized);
   if (result.success) return new PendingRecoveryKey(result.data, serialize);
   return new UsableKey(
     UsableKeySchema.migratableSchema.parse(serialized),
-    serialize
+    serialize,
   );
 }
 
 export function createObservableKey(
-  serialized: AbstractMigratable<typeof KeySchema>
+  serialized: AbstractMigratable<typeof KeySchema>,
 ) {
   const key = createKey(serialized, toJS);
   makeObservable<Key, "serialized">(
@@ -31,7 +31,7 @@ export function createObservableKey(
     },
     {
       name: "Key",
-    }
+    },
   );
   return key;
 }

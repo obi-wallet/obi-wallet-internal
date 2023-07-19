@@ -5,7 +5,7 @@ import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { Platform, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
@@ -199,7 +199,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
         </SafeAreaView>
       </OsmosisScreenContainer>
     );
-  }
+  },
 );
 
 const styles = StyleSheet.create({

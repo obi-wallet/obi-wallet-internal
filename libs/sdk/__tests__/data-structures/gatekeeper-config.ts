@@ -18,8 +18,8 @@ describe("ObservableGatekeeperConfig", () => {
         createObservableGatekeeperConfig({
           beneficiaries: [],
           flexAccounts: [],
-        })
-      )
+        }),
+      ),
     ).toEqual(true);
   });
 

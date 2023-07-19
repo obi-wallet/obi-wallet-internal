@@ -15,7 +15,7 @@ export function createMultisigKey(
   factories = {
     Key,
     createMultisigKey,
-  }
+  },
 ) {
   const { keys, threshold } =
     MultisigKeySchema.migratableSchema.parse(migratable);
@@ -26,13 +26,13 @@ export function createMultisigKey(
     {
       Key: factories.Key,
       createMultisigKey: factories.createMultisigKey,
-    }
+    },
   );
 }
 
 export function createObservableMultisigKey(
   chain: ChainId,
-  migratable?: AbstractMigratable<typeof MultisigKeySchema>
+  migratable?: AbstractMigratable<typeof MultisigKeySchema>,
 ) {
   const key = createMultisigKey(chain, migratable, {
     Key: ObservableKey,
@@ -52,7 +52,7 @@ export function createObservableMultisigKey(
     },
     {
       name: "MultisigKey",
-    }
+    },
   );
   return key;
 }

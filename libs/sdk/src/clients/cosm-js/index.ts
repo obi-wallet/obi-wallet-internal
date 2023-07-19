@@ -42,7 +42,7 @@ export async function withCosmJsClients<T>(
   f: (clients: {
     stargateClient: StargateClient;
     cosmWasmClient: CosmWasmClient;
-  }) => T
+  }) => T,
 ) {
   const [stargateClient, cosmWasmClient] = await Promise.all([
     createCosmJsStargateClient(chainId),
@@ -58,7 +58,7 @@ export async function withCosmJsClients<T>(
 
 export async function withCosmJsStargateClient<T>(
   chainId: CosmosChainId | LegacyCosmosChainId,
-  f: (client: StargateClient) => T
+  f: (client: StargateClient) => T,
 ) {
   const client = await createCosmJsStargateClient(chainId);
   try {
@@ -73,7 +73,7 @@ export async function withCosmJsSigningStargateClient<T>(
     chainId,
     signer,
   }: { chainId: CosmosChainId | LegacyCosmosChainId; signer: OfflineSigner },
-  f: (client: SigningStargateClient) => T
+  f: (client: SigningStargateClient) => T,
 ) {
   const client = await createCosmJsSigningStargateClient({ chainId, signer });
   try {
@@ -85,7 +85,7 @@ export async function withCosmJsSigningStargateClient<T>(
 
 export async function withCosmJsCosmWasmClient<T>(
   chainId: CosmosChainId | LegacyCosmosChainId,
-  f: (client: CosmWasmClient) => T
+  f: (client: CosmWasmClient) => T,
 ) {
   const client = await createCosmJsCosmWasmClient(chainId);
   try {
@@ -97,7 +97,7 @@ export async function withCosmJsCosmWasmClient<T>(
 
 export async function withCosmJsTendermint34Client<T>(
   chainId: CosmosChainId | LegacyCosmosChainId,
-  f: (client: Tendermint34Client) => T
+  f: (client: Tendermint34Client) => T,
 ) {
   const client = await createCosmJsTendermint34Client(chainId);
   try {
@@ -108,7 +108,7 @@ export async function withCosmJsTendermint34Client<T>(
 }
 
 async function createCosmJsStargateClient(
-  chainId: CosmosChainId | LegacyCosmosChainId
+  chainId: CosmosChainId | LegacyCosmosChainId,
 ) {
   const { rpcs } = cosmosChainInformation(chainId);
   for (const rpc of rpcs) {
@@ -146,7 +146,7 @@ export async function createCosmJsSigningStargateClient({
 }
 
 async function createCosmJsCosmWasmClient(
-  chainId: CosmosChainId | LegacyCosmosChainId
+  chainId: CosmosChainId | LegacyCosmosChainId,
 ) {
   const { rpcs } = cosmosChainInformation(chainId);
   for (const rpc of rpcs) {
@@ -160,7 +160,7 @@ async function createCosmJsCosmWasmClient(
 }
 
 async function createCosmJsTendermint34Client(
-  chainId: CosmosChainId | LegacyCosmosChainId
+  chainId: CosmosChainId | LegacyCosmosChainId,
 ) {
   const { rpcs } = cosmosChainInformation(chainId);
   for (const rpc of rpcs) {
@@ -194,7 +194,7 @@ export class CosmJsClient extends AbstractClient {
   }
 
   public async fetchAllPages<T>(
-    f: (paginationKey?: Uint8Array) => Promise<[T[], PageResponse | undefined]>
+    f: (paginationKey?: Uint8Array) => Promise<[T[], PageResponse | undefined]>,
   ): Promise<T[]> {
     const result: T[] = [];
     let key: Uint8Array | undefined = undefined;
@@ -217,26 +217,26 @@ export class CosmJsClient extends AbstractClient {
   }
 
   public async withStakingExtensions<T>(
-    f: (extensions: DistributionExtension & StakingExtension) => T
+    f: (extensions: DistributionExtension & StakingExtension) => T,
   ) {
     return await withCosmJsTendermint34Client(this.chainId, async (client) => {
       return f(
         QueryClient.withExtensions(
           client,
           setupDistributionExtension,
-          setupStakingExtension
-        )
+          setupStakingExtension,
+        ),
       );
     });
   }
 
   public withSigningStargateClient<T>(
     signer: OfflineSigner,
-    f: (client: SigningStargateClient) => T
+    f: (client: SigningStargateClient) => T,
   ) {
     return withCosmJsSigningStargateClient(
       { chainId: this.chainId, signer },
-      f
+      f,
     );
   }
 
@@ -244,7 +244,7 @@ export class CosmJsClient extends AbstractClient {
     f: (clients: {
       stargateClient: StargateClient;
       cosmWasmClient: CosmWasmClient;
-    }) => T
+    }) => T,
   ) {
     return withCosmJsClients(this.chainId, f);
   }
@@ -254,14 +254,14 @@ export class CosmJsClient extends AbstractClient {
       contract: string;
       query: unknown;
       schema: T;
-    }[]
+    }[],
   ): Promise<z.infer<T>[]> {
     return await this.withCosmWasmClient(async (client) => {
       return await Promise.all(
         queries.map(async ({ contract, query, schema }) => {
           const response = await client.queryContractSmart(contract, query);
           return schema.parse(response);
-        })
+        }),
       );
     });
   }
@@ -281,6 +281,7 @@ export class CosmJsClient extends AbstractClient {
       async (client) => {
         const encodeObjects = messages.map((message) => {
           if (R.has("osmo", message)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return this.aminoTypes.fromAmino(message.osmo as any);
           }
           return this.aminoTypes.fromAmino(message.toAmino());
@@ -288,7 +289,7 @@ export class CosmJsClient extends AbstractClient {
         const gas = await client.simulate(
           this.sdk.transactions.getAddressOfPublicKey(signer.publicKey),
           encodeObjects,
-          ""
+          "",
         );
         const transaction = await client.sign(
           this.sdk.transactions.getAddressOfPublicKey(signer.publicKey),
@@ -297,15 +298,15 @@ export class CosmJsClient extends AbstractClient {
             ...this.defaultFee,
             gas: gas.toString(),
           },
-          ""
+          "",
         );
         return TxRaw.encode(transaction).finish();
-      }
+      },
     );
   }
 
   public async broadcastSignedTransaction(
-    signedTransaction: SignedTransaction
+    signedTransaction: SignedTransaction,
   ): Promise<BroadcastTransactionResult> {
     return await this.withStargateClient(async (client) => {
       const rawResult = await client.broadcastTx(signedTransaction);

@@ -55,7 +55,7 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
         }}
       />
     );
-  }
+  },
 );
 
 export interface DeviceKeyProps {
@@ -82,8 +82,8 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       draft.value.setDeviceKey(keyPair);
       void queryClient.prefetchQuery(
         Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
-          keyPair
-        )
+          keyPair,
+        ),
       );
       setScannedBiometrics(true);
     } catch (e) {
@@ -94,7 +94,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       console.error(error);
       Alert.alert(
         intl.formatMessage({ id: "general.error" }) + " ScanMyBiometrics",
-        error.message
+        error.message,
       );
     }
   }

@@ -1,4 +1,3 @@
-import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { StyleProp, ViewStyle } from "react-native";
@@ -10,8 +9,6 @@ export interface ScreenContainerProps {
 }
 export const ScreenContainer = observer<ScreenContainerProps>(
   function ScreenContainer({ children, style }) {
-    const theme = useTheme();
-
     return (
       <SafeAreaView
         style={[
@@ -27,5 +24,5 @@ export const ScreenContainer = observer<ScreenContainerProps>(
         {children}
       </SafeAreaView>
     );
-  }
+  },
 );

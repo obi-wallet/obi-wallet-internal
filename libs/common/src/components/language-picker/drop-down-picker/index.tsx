@@ -7,5 +7,5 @@ export const DropDownPicker = observer<DropDownPickerProps<Language | null>>(
   function DropDownPicker() {
     warning(false, "DropDownPicker not implemented for web");
     return null;
-  }
+  },
 );

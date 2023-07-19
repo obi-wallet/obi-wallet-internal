@@ -5,7 +5,7 @@ import {
 } from "@obi-wallet/headless-ui";
 import { KeySubclassTypeMapping, KeyType, Signer } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 import {
   MultisigConfirmMessages,
@@ -14,7 +14,7 @@ import {
 import { PhoneNumberBottomSheetContent } from "./phone-number-bottom-sheet-content";
 import { createUsableSigners, PhoneKeySigner } from "./signers";
 import { useEnv } from "../../../contexts";
-import { BottomSheet, BottomSheetNew } from "../../bottom-sheet";
+import { BottomSheetNew } from "../../bottom-sheet";
 import { CheckIcon } from "../../icons";
 import { Key } from "../../multisig-settings";
 
@@ -63,7 +63,7 @@ export const SignatureModalMultisigKey =
 
     const keys: Key[] = usableSigners.data.map(({ key, signer }) => {
       const alreadySigned = multisigSigner.current?.alreadySigned(
-        key.publicKey
+        key.publicKey,
       );
       const onPress = async () => {
         if (multisigSigner.current?.alreadySigned(key.publicKey)) {
@@ -89,13 +89,13 @@ export const SignatureModalMultisigKey =
 
     const phoneKeyPayload = usableSigners.data.find(
       (
-        payload
+        payload,
       ): payload is {
         key: KeySubclassTypeMapping[KeyType.Phone];
         signer: PhoneKeySigner;
       } => {
         return payload.key.type === KeyType.Phone;
-      }
+      },
     );
     const getFooter = () => {
       if (!phoneKeyPayload) return null;

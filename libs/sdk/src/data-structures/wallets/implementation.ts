@@ -19,7 +19,7 @@ export class Wallets {
       Record<ChainId, number | null>
     >,
     protected _factory: typeof MultisigWallet,
-    protected _serialize: <T>(serialized: T) => T
+    protected _serialize: <T>(serialized: T) => T,
   ) {}
 
   public toJSON(): AbstractSerialized<typeof WalletsSchema> {
@@ -27,7 +27,7 @@ export class Wallets {
       wallets: this._wallets.map((w) => w.toJSON()),
       currentChainId: this._currentChainId,
       currentWalletIndexPerChain: this._serialize(
-        this._currentWalletIndexPerChain
+        this._currentWalletIndexPerChain,
       ),
     };
   }

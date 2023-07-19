@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { randomBytes } from "crypto";
 import type { TagEvent } from "react-native-nfc-manager";
 import invariant from "tiny-invariant";
@@ -43,6 +44,7 @@ export async function checkIsSupported() {
   return false;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function decodeNdefRecord(record: any) {
   invariant(false, "decodeNdefRecord not implemented for web");
   return ["unknown", "---"];

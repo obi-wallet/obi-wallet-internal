@@ -37,14 +37,14 @@ export class FeatherJsStakingSdk extends AbstractStakingSdk {
       const rawValidators = await this.client.fetchAllPages(
         (paginationOptions) => {
           return client.staking.validators(this.chainId, paginationOptions);
-        }
+        },
       );
 
       const MAX_COMMISSION = 0.05;
       const VOTE_POWER_INCLUDE = 0.65;
 
       const totalStaked = BigNumber.sum(
-        ...rawValidators.map(({ tokens = 0 }) => Number(tokens))
+        ...rawValidators.map(({ tokens = 0 }) => Number(tokens)),
       ).toNumber();
       const getVotePower = (v: RawValidator) => Number(v.tokens) / totalStaked;
 
@@ -61,13 +61,13 @@ export class FeatherJsStakingSdk extends AbstractStakingSdk {
           {
             sumVotePower: 0,
             eligible: [] as RawValidator[],
-          }
+          },
         )
         .eligible.filter(
           ({ commission, status }) =>
             bondStatusFromJSON(BondStatus[status]) ===
               BondStatus.BOND_STATUS_BONDED &&
-            Number(commission.commission_rates.rate) <= MAX_COMMISSION
+            Number(commission.commission_rates.rate) <= MAX_COMMISSION,
         )
         .map(({ operator_address }) => operator_address);
 
@@ -114,14 +114,14 @@ export class FeatherJsStakingSdk extends AbstractStakingSdk {
           return client.staking.delegations(
             address,
             undefined,
-            paginationOptions
+            paginationOptions,
           );
-        }
+        },
       );
       return await Promise.all(
         rawDelegations.map(async (delegation): Promise<Delegation> => {
           const validator = await client.staking.validator(
-            delegation.validator_address
+            delegation.validator_address,
           );
           return {
             balance: {
@@ -134,13 +134,13 @@ export class FeatherJsStakingSdk extends AbstractStakingSdk {
               address: delegation.validator_address,
             },
           };
-        })
+        }),
       );
     });
   }
 
   protected async unbondingDelegationsQueryFn(
-    address: string
+    address: string,
   ): Promise<UnbondingDelegation[]> {
     return await this.client.withClient(async (client) => {
       const rawUnbondingDelegations = await this.client.fetchAllPages(
@@ -148,16 +148,16 @@ export class FeatherJsStakingSdk extends AbstractStakingSdk {
           return client.staking.unbondingDelegations(
             address,
             undefined,
-            paginationOptions
+            paginationOptions,
           );
-        }
+        },
       );
       return R.flatten(
         await Promise.all(
           rawUnbondingDelegations.map(
             async (unbondingDelegation): Promise<UnbondingDelegation[]> => {
               const validator = await client.staking.validator(
-                unbondingDelegation.validator_address
+                unbondingDelegation.validator_address,
               );
 
               return unbondingDelegation.entries.map((entry) => {
@@ -174,9 +174,9 @@ export class FeatherJsStakingSdk extends AbstractStakingSdk {
                   completionTime: entry.completion_time,
                 };
               });
-            }
-          )
-        )
+            },
+          ),
+        ),
       );
     });
   }
@@ -206,7 +206,7 @@ export class FeatherJsStakingSdk extends AbstractStakingSdk {
             address,
             rewards: handleRewards(rewards),
           };
-        }, rewards.rewards)
+        }, rewards.rewards),
       );
       const total = handleRewards(rewards.total);
 

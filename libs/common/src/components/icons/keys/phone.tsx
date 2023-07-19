@@ -10,7 +10,7 @@ export const PhoneKeyIcon = observer(function PhoneKeyIcon(props: SvgProps) {
 });
 
 export const PhoneKeyOutlineIcon = observer(function PhoneKeyOutlineIcon(
-  props: SvgProps
+  props: SvgProps,
 ) {
   return (
     <Svg {...props}>

@@ -62,7 +62,7 @@ describe("Empty gatekeeper config", () => {
         wallet,
         newGatekeeperConfig,
         ...gatekeepers,
-      })
+      }),
     ).toEqual([]);
   });
 
@@ -85,7 +85,7 @@ describe("Empty gatekeeper config", () => {
             years: 1,
           },
         },
-      })
+      }),
     );
     const messages = messagesSdk.getUpdateGatekeeperMessages({
       wallet,
@@ -139,7 +139,7 @@ describe("Empty gatekeeper config", () => {
         privateKey: privateKey,
         spendLimit: null,
         autoSign: null,
-      })
+      }),
     );
     const messages = messagesSdk.getUpdateGatekeeperMessages({
       wallet,
@@ -190,7 +190,7 @@ describe("Empty gatekeeper config", () => {
           amount: 10,
         },
         autoSign: null,
-      })
+      }),
     );
     const messages = messagesSdk.getUpdateGatekeeperMessages({
       wallet,
@@ -251,7 +251,7 @@ describe("Empty gatekeeper config", () => {
         autoSign: {
           endTime: DateTime.now().plus({ minutes: 30 }).toISO()!,
         },
-      })
+      }),
     );
     const messages = messagesSdk.getUpdateGatekeeperMessages({
       wallet,
@@ -310,7 +310,7 @@ test("Remove single flex account", async () => {
         amount: 10,
       },
       autoSign: null,
-    })
+    }),
   );
   const newGatekeeperConfig = createObservableGatekeeperConfig();
   const messages = messagesSdk.getUpdateGatekeeperMessages({
@@ -359,14 +359,14 @@ test("Make unlocked flex account locked", async () => {
       autoSign: {
         endTime: DateTime.now().plus({ minutes: 30 }).toISO()!,
       },
-    })
+    }),
   );
   const newGatekeeperConfig = createObservableGatekeeperConfig();
   newGatekeeperConfig.upsertFlexAccount(
     ObservableFlexAccount.create({
       ...flexAccount,
       autoSign: null,
-    })
+    }),
   );
   const messages = messagesSdk.getUpdateGatekeeperMessages({
     wallet,

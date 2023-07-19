@@ -25,7 +25,7 @@ export function createDeviceKeyPair(demoMode: boolean): Secp256k1KeyPair {
 }
 
 export async function getDevicePrivateKey(
-  key: KeySubclassTypeMapping[KeyType.Device]
+  key: KeySubclassTypeMapping[KeyType.Device],
 ): Promise<string | null> {
   if (key.payload.privateKey) return key.payload.privateKey;
 

@@ -62,7 +62,7 @@ function StepInner({ step }: { step: number }) {
       CommonActions.reset({
         index: 0,
         routes: routes.slice(0, step + 1),
-      })
+      }),
     );
   }, [step, navigation]);
 

@@ -17,7 +17,7 @@ export const SinglesigWalletItem = observer<SinglesigWalletItemProps>(
   function SinglesigWalletItem({ account, active, onSetActive }) {
     const wallet = useCurrentWallet();
     const address = Sdk.chainId(
-      wallet.chainId
+      wallet.chainId,
     ).transactions.getAddressOfPublicKey(account.publicKey);
     const usdBalance = useUsdBalance({ address, chainId: wallet.chainId });
 
@@ -52,5 +52,5 @@ export const SinglesigWalletItem = observer<SinglesigWalletItemProps>(
         </View>
       </TouchableOpacity>
     );
-  }
+  },
 );

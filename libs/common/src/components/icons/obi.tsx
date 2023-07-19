@@ -17,7 +17,7 @@ export const ObiIcon = observer<{ style?: StyleProp<ViewStyle> }>(
         <Icon />
       </View>
     );
-  }
+  },
 );
 
 const Icon = observer<SvgProps>(function Icon(props) {

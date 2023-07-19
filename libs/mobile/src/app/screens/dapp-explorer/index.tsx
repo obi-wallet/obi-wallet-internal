@@ -193,7 +193,7 @@ const ConnectionsScreen = observer(function ConnectionsScreen() {
                   await Promise.all(
                     walletConnectStore.connectors.map(async ({ connector }) => {
                       await walletConnectStore.disconnect(connector);
-                    })
+                    }),
                   );
                 }}
               />

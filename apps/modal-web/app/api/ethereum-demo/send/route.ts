@@ -32,19 +32,19 @@ export async function POST(request: Request) {
 
   const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(
     config.paymaster.rpcUrl!,
-    config.paymaster.context
+    config.paymaster.context,
   );
   const client = await Client.init(config.rpcUrl!);
   const amount = parseUnits(body.token.rawAmount, 0);
   const signingKey = new SigningKey(
-    Buffer.from(body.account.keyPair.privateKey, "base64")
+    Buffer.from(body.account.keyPair.privateKey, "base64"),
   );
   const signer: Signer = new Wallet(signingKey);
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
     signer,
     config.rpcUrl,
-    { paymasterMiddleware }
+    { paymasterMiddleware },
   );
 
   async function handleUserOperation() {
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
         simpleAccount.execute(body.to, amount, "0x"),
         {
           dryRun: false,
-        }
+        },
       );
     } else {
       const erc20 = new Contract(
@@ -71,17 +71,17 @@ export async function POST(request: Request) {
           // Events
           "event Transfer(address indexed from, address indexed to, uint amount)",
         ] as const,
-        provider
+        provider,
       );
       return await client.sendUserOperation(
         simpleAccount.execute(
           await erc20.getAddress(),
           0,
-          erc20.interface.encodeFunctionData("transfer", [body.to, amount])
+          erc20.interface.encodeFunctionData("transfer", [body.to, amount]),
         ),
         {
           dryRun: false,
-        }
+        },
       );
     }
   }

@@ -18,7 +18,7 @@ const transformer = require("metro-react-native-babel-transformer");
 const nodeFiles = new RegExp(
   [
     "/metro(?:-[^/]*)?/", // metro, metro-core, metro-source-map, metro-etc.
-  ].join("|")
+  ].join("|"),
 );
 const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
@@ -68,13 +68,13 @@ module.exports = {
         sourceFileName: file,
         sourceMaps: true,
       },
-      src
+      src,
     );
   },
 
-  getCacheKey: (createCacheKeyFunction([
+  getCacheKey: createCacheKeyFunction([
     __filename,
     require.resolve("metro-react-native-babel-transformer"),
     require.resolve("@babel/core/package.json"),
-  ]) /*: any */),
+  ]) /*: any */,
 };

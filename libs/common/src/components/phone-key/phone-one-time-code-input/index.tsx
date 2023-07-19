@@ -125,5 +125,5 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
         ) : null}
       </>
     );
-  }
+  },
 );

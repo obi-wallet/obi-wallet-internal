@@ -7,12 +7,7 @@ export interface ModalProps extends Partial<RNModalProps> {
   onClose: () => void;
 }
 
-export const Modal = observer(function Modal({
-  children,
-  isVisible,
-  onClose,
-  ...props
-}: ModalProps) {
+export const Modal = observer<ModalProps>(function Modal() {
   warning(false, "Modal is not implemented for web");
   return null;
 });

@@ -7,7 +7,7 @@ export const SignInteractionModal = observer(function SignInteractionModal() {
   const { userInteractionsStore } = useStore();
 
   const interaction = userInteractionsStore.getPendingUserInteractionsOfType(
-    SignAndBroadcastTransactionUserInteraction
+    SignAndBroadcastTransactionUserInteraction,
   )[0];
 
   if (!interaction) return null;
@@ -18,8 +18,8 @@ export const SignInteractionModal = observer(function SignInteractionModal() {
         R.has("osmo", m) ? m.osmo : m.toAmino();
       }),
       null,
-      2
-    )
+      2,
+    ),
   );
 
   return <SignatureModal interaction={interaction} />;

@@ -17,11 +17,11 @@ async function expectScreenshotSnapshotToEqual({ name }: { name: string }) {
 
   const snapshottedImagePath = path.join(
     __dirname,
-    `../snapshots/${deviceType}/${name}.png`
+    `../snapshots/${deviceType}/${name}.png`,
   );
 
   const imagePath = await element(by.id("detox-container")).takeScreenshot(
-    name
+    name,
   );
   expectBitmapsToBeEqual(imagePath, snapshottedImagePath);
 }
@@ -38,7 +38,7 @@ function expectBitmapsToBeEqual(imagePath, expectedImagePath) {
     const expectedBitmapBuffer = fs.readFileSync(expectedImagePath);
     if (!bitmapBuffer.equals(expectedBitmapBuffer)) {
       throw new Error(
-        `Expected image at ${imagePath} to be equal to image at ${expectedImagePath}, but it was different!`
+        `Expected image at ${imagePath} to be equal to image at ${expectedImagePath}, but it was different!`,
       );
     }
   }

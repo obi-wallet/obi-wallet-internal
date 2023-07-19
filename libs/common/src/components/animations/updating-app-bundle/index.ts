@@ -5,5 +5,5 @@ export const UpdatingAppBundleAnimation = observer(
   function UpdatingAppBundleAnimation() {
     warning(false, "UpdatingAppBundleAnimation is not implemented for web");
     return null;
-  }
+  },
 );

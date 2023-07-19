@@ -63,7 +63,7 @@ export class WalletConnect {
         {
           session: IWalletConnectSession;
           walletMeta: WalletMeta;
-        }
+        },
       ][],
       Record<
         HandshakeTopic,
@@ -82,7 +82,7 @@ export class WalletConnect {
           walletMeta: info.walletMeta,
         },
       ]),
-      R.fromPairs
+      R.fromPairs,
     )(this._connectors);
   }
 
@@ -115,7 +115,7 @@ export class WalletConnect {
   }
 
   public async recoverConnectors(
-    migratable: AbstractMigratable<typeof WalletConnectSchema>
+    migratable: AbstractMigratable<typeof WalletConnectSchema>,
   ) {
     try {
       const data = WalletConnectSchema.migratableSchema.parse(migratable);
@@ -130,8 +130,8 @@ export class WalletConnect {
               connector,
               walletMeta: info.walletMeta,
             });
-          }, data)
-        )
+          }, data),
+        ),
       );
     } catch (e) {
       // noop
@@ -217,7 +217,7 @@ export class WalletConnect {
           try {
             invariant(
               isTerraChain(wallet?.chainId),
-              "Expected wallet to be terra multisig."
+              "Expected wallet to be terra multisig.",
             );
 
             const { msgs } = params[0] as {

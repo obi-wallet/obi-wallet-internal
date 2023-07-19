@@ -10,7 +10,7 @@ import { z } from "zod";
  * @returns The migratable schema.
  */
 export function migratable<T extends z.ZodTypeAny>(
-  schema: T
+  schema: T,
 ): AbstractMigratableSchema<T, T> {
   return createMigratableSchema({
     anyVersion: schema,
@@ -21,7 +21,7 @@ export function migratable<T extends z.ZodTypeAny>(
 
 export type AbstractMigratableSchema<
   Any extends z.ZodTypeAny,
-  Current extends z.ZodTypeAny
+  Current extends z.ZodTypeAny,
 > = {
   currentSchema: Current;
   migratableSchema: z.ZodEffects<Any, z.TypeOf<Current>, z.input<Any>>;
@@ -36,7 +36,7 @@ export type AbstractMigratableSchema<
 
 function createMigratableSchema<
   Any extends z.ZodTypeAny,
-  Current extends z.ZodTypeAny
+  Current extends z.ZodTypeAny,
 >({
   anyVersion,
   currentVersion,

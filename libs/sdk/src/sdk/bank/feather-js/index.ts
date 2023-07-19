@@ -63,7 +63,7 @@ export class FeatherJsBankSdk extends AbstractBankSdk {
         async (paginationOptions) => {
           const [coins, pagination] = await client.bank.balance(
             address,
-            paginationOptions
+            paginationOptions,
           );
           return [
             coins.map((coin): Token => {
@@ -74,7 +74,7 @@ export class FeatherJsBankSdk extends AbstractBankSdk {
             }),
             pagination,
           ];
-        }
+        },
       );
 
       const contractTokens = await Promise.all(
@@ -87,19 +87,19 @@ export class FeatherJsBankSdk extends AbstractBankSdk {
               balance: {
                 address,
               },
-            }
+            },
           );
           return {
             id: token.token,
             rawAmount: response.balance,
           };
-        })
+        }),
       );
 
       return [...nativeCoins, ...contractTokens].filter(
         (coin): coin is Token => {
           return coin !== null && coin.rawAmount !== "0";
-        }
+        },
       );
     });
   }
@@ -146,7 +146,7 @@ export class FeatherJsBankSdk extends AbstractBankSdk {
           default:
             throw new Error("Unsupported dex");
         }
-      })
+      }),
     );
 
     while (stack.length > 0) {
@@ -193,7 +193,7 @@ export class FeatherJsBankSdk extends AbstractBankSdk {
         invariant(otherAsset, "otherAsset should exist");
 
         const price = item.usdPrice.times(
-          new BigNumber(thisAsset.amount).div(otherAsset.amount)
+          new BigNumber(thisAsset.amount).div(otherAsset.amount),
         );
 
         if (price && !price.isNaN()) {

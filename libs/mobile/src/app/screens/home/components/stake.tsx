@@ -160,7 +160,7 @@ const StakingOptions = observer(function StakingOptions() {
     rawAmount: R.sum(
       delegations.data?.map((delegation) => {
         return parseInt(delegation.balance.rawAmount, 10);
-      }) ?? []
+      }) ?? [],
     ).toString(),
   };
 
@@ -175,7 +175,7 @@ const StakingOptions = observer(function StakingOptions() {
     rawAmount: R.sum(
       unbondingDelegations.data?.map((delegation) => {
         return parseInt(delegation.balance.rawAmount, 10);
-      }) ?? []
+      }) ?? [],
     ).toString(),
   };
 
@@ -525,7 +525,7 @@ const ValidatorItem = observer(function ValidatorItem({
           chainId: currentChainInformation.chainId,
           balances,
         }),
-      })
+      }),
     ),
   });
 

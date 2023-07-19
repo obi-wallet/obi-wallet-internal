@@ -11,7 +11,7 @@ export const ProxyAddress = migratable(
   z.object({
     address: z.string(),
     codeId: z.number().int().positive(),
-  })
+  }),
 ).addMigration({
   nextSchema: z.object({
     v: z.literal(1),
@@ -41,7 +41,7 @@ const MultisigWalletData = migratable(
         index: ArrayIndex,
       })
       .nullable(),
-  })
+  }),
 ).addMigration({
   nextSchema: z.object({
     chain: ChainIdSchema,
@@ -71,5 +71,5 @@ export const MultisigWalletSchema = migratable(
   z.object({
     type: z.union([z.literal("multisig"), z.literal("multisig-demo")]),
     data: MultisigWalletData.migratableSchema,
-  })
+  }),
 );

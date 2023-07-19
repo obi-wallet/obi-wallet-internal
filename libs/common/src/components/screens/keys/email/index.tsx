@@ -65,7 +65,7 @@ export const EmailKeyScreen = observer<EmailKeyScreenProps>(
         }}
       />
     );
-  }
+  },
 );
 
 export interface EmailKeyProps {
@@ -112,11 +112,11 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
               onPress: onPressRef.current,
             },
           ],
-          { cancelable: false }
+          { cancelable: false },
         );
       }
     },
-    [emailKey]
+    [emailKey],
   );
 
   const isKeyboardVisible = useKeyboardVisible();
@@ -231,7 +231,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                     "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
                     "DO NOT DELETE this email unless you are saving its contents to a password manager or physical location. In future versions " +
                     "of Obi, email recovery will use zero-knowledge proofs, and so saving an email will be unnecessary.  " +
-                    privateKey
+                    privateKey,
                 )}`;
 
                 setEmailKey(publicKey);

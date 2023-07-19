@@ -14,7 +14,7 @@ const GatekeeperConfigSchema = migratable(
   z.object({
     beneficiaries: z.array(Beneficiary.schema.migratableSchema),
     flexAccounts: z.array(FlexAccount.schema.migratableSchema),
-  })
+  }),
 );
 
 export class GatekeeperConfig {
@@ -26,8 +26,8 @@ export class GatekeeperConfig {
     protected _beneficiaries: Beneficiary[],
     protected _flexAccounts: FlexAccount[],
     protected _factory: (
-      serialized: AbstractSerialized<typeof GatekeeperConfigSchema>
-    ) => GatekeeperConfig
+      serialized: AbstractSerialized<typeof GatekeeperConfigSchema>,
+    ) => GatekeeperConfig,
   ) {}
 
   public toJSON(): AbstractSerialized<typeof GatekeeperConfigSchema> {
@@ -56,13 +56,13 @@ export class GatekeeperConfig {
   public upsertBeneficiary(beneficiary: Beneficiary) {
     this._beneficiaries = this.upsertArrayItem(
       this._beneficiaries,
-      beneficiary
+      beneficiary,
     );
   }
 
   public removeBeneficiary(beneficiary: Beneficiary) {
     this._beneficiaries = this._beneficiaries.filter(
-      (b) => b.address !== beneficiary.address
+      (b) => b.address !== beneficiary.address,
     );
   }
 
@@ -72,13 +72,13 @@ export class GatekeeperConfig {
 
   public removeFlexAccount(flexAccount: FlexAccount) {
     this._flexAccounts = this._flexAccounts.filter(
-      (f) => f.address !== flexAccount.address
+      (f) => f.address !== flexAccount.address,
     );
   }
 
   protected upsertArrayItem<T extends { address: string }>(
     array: T[],
-    item: T
+    item: T,
   ) {
     const result = [...array];
     const index = result.findIndex((b) => b.address === item.address);
@@ -100,19 +100,19 @@ export function createGatekeeperConfig(
     createGatekeeperConfig,
     Beneficiary,
     FlexAccount,
-  }
+  },
 ) {
   const { beneficiaries, flexAccounts } =
     GatekeeperConfigSchema.migratableSchema.parse(serialized);
   return new GatekeeperConfig(
     beneficiaries.map((b) => factories.Beneficiary.create(b)),
     flexAccounts.map((b) => factories.FlexAccount.create(b)),
-    factories.createGatekeeperConfig
+    factories.createGatekeeperConfig,
   );
 }
 
 export function createObservableGatekeeperConfig(
-  serialized?: AbstractMigratable<typeof GatekeeperConfigSchema>
+  serialized?: AbstractMigratable<typeof GatekeeperConfigSchema>,
 ) {
   const config = createGatekeeperConfig(serialized, {
     createGatekeeperConfig: createObservableGatekeeperConfig,
@@ -133,7 +133,7 @@ export function createObservableGatekeeperConfig(
     },
     {
       name: "GatekeeperConfig",
-    }
+    },
   );
   return config;
 }

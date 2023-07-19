@@ -55,7 +55,7 @@ function getRouteParams(route: Route) {
 }
 
 function getRouteAction(
-  route: RootRoute | OnboardingRoute | SettingsRoute | HomeBottomTabRoute
+  route: RootRoute | OnboardingRoute | SettingsRoute | HomeBottomTabRoute,
 ) {
   const params = getRouteParams(route);
 
@@ -103,12 +103,12 @@ function getRouteAction(
 
 function isHomeBottomTabRoute(route: Route): route is HomeBottomTabRoute {
   return Object.values(HomeBottomTabRoute).includes(
-    route as unknown as HomeBottomTabRoute
+    route as unknown as HomeBottomTabRoute,
   );
 }
 
 function isOnboardingRoute(route: Route): route is OnboardingRoute {
   return Object.values(OnboardingRoute).includes(
-    route as unknown as OnboardingRoute
+    route as unknown as OnboardingRoute,
   );
 }

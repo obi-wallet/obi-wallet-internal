@@ -57,7 +57,7 @@ export const PrettyMessage = observer<PrettyMessageProps>(
         </ErrorBoundary>
       </ChainIdContext.Provider>
     );
-  }
+  },
 );
 
 const PrettyMessageUnsafe = observer<Omit<PrettyMessageProps, "chainId">>(
@@ -92,7 +92,7 @@ const PrettyMessageUnsafe = observer<Omit<PrettyMessageProps, "chainId">>(
       default:
         return <PrettyMessageUnknown />;
     }
-  }
+  },
 );
 const PrettyMessageStaking = observer<
   (MsgDelegate.Amino | MsgUndelegate.Amino) & { label: string }
@@ -100,7 +100,7 @@ const PrettyMessageStaking = observer<
   const chainId = useChainId();
   const validators = useValidators(chainId);
   const validator = validators.data?.find(
-    (val) => val.address === value.validator_address
+    (val) => val.address === value.validator_address,
   );
 
   return (
@@ -130,14 +130,14 @@ const PrettyMessageWithdrawDelegatorReward =
 
       const rewards = useQuery(
         Sdk.chainId(chainStore.currentChain).staking.rewardsQuery(
-          value.delegator_address
-        )
+          value.delegator_address,
+        ),
       );
       const validator = validators.data?.find(
-        (validator) => validator.address === value.validator_address
+        (validator) => validator.address === value.validator_address,
       );
       const reward = rewards.data?.perDelegator.find(
-        (delegator) => delegator.address === value.validator_address
+        (delegator) => delegator.address === value.validator_address,
       );
 
       return (
@@ -151,7 +151,7 @@ const PrettyMessageWithdrawDelegatorReward =
           </Text>
         </MessageElement>
       );
-    }
+    },
   );
 
 const PrettyMessageSend = observer<AminoMsgSend | MsgSend.Amino>(
@@ -170,7 +170,7 @@ const PrettyMessageSend = observer<AminoMsgSend | MsgSend.Amino>(
         </Text>
       </MessageElement>
     );
-  }
+  },
 );
 
 const PrettyMessageInstantiateContract = observer<
@@ -275,7 +275,7 @@ const PrettyMessageExecuteContract = observer<
         <Text style={{ color: "white" }}>
           {Bech32Address.shortenAddress(
             msg.upsert_permissioned_address.new_permissioned_address.address,
-            35
+            35,
           )}
         </Text>
       </MessageElement>
@@ -295,7 +295,7 @@ const PrettyMessageExecuteContract = observer<
         <Text style={{ color: "white" }}>
           {Bech32Address.shortenAddress(
             msg.rm_permissioned_address?.doomed_permissioned_address,
-            35
+            35,
           )}
         </Text>
       </MessageElement>
@@ -339,7 +339,7 @@ const PrettyMessageExecuteContract = observer<
           spend_limits: [
             {
               amount: string;
-            }
+            },
           ];
         };
       };
@@ -366,7 +366,7 @@ const PrettyMessageExecuteContract = observer<
           <Text style={{ color: "white" }}>
             {Bech32Address.shortenAddress(
               msg.upsert_beneficiary.new_beneficiary.address,
-              35
+              35,
             )}
           </Text>
           <Text style={{ color: "rgba(255,255,255,0.6)" }}>
@@ -421,7 +421,7 @@ const PrettyMessageExecuteContract = observer<
   }
 
   function isAminoV1Value(
-    value: (AminoMsgExecuteContract | MsgExecuteContract.Amino)["value"]
+    value: (AminoMsgExecuteContract | MsgExecuteContract.Amino)["value"],
   ): value is MsgExecuteContract.AminoV1["value"] {
     return (
       typeof (value as MsgExecuteContract.AminoV1["value"]).execute_msg !==

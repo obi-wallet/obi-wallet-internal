@@ -15,18 +15,18 @@ export class UserInteractions {
       userInteractionEvent,
       (emitted: UserInteractionWithType) => {
         this.addUserInteraction(emitted);
-      }
+      },
     );
   }
 
   public getPendingUserInteractionsOfType<
-    T extends UserInteractionWithType
+    T extends UserInteractionWithType,
   >(messageType: { is(message: UserInteractionWithType): message is T }): T[] {
     return this.userInteractions.filter(messageType.is);
   }
 
   public hasPendingUserInteractionsOfType<
-    T extends UserInteractionWithType
+    T extends UserInteractionWithType,
   >(messageType: {
     is(message: UserInteractionWithType): message is T;
   }): boolean {
@@ -55,7 +55,7 @@ export class UserInteractions {
 
   protected removeUserInteractionWithId(id: string) {
     this._userInteractions = this._userInteractions.filter(
-      (message) => message.id !== id
+      (message) => message.id !== id,
     );
   }
 }

@@ -12,7 +12,7 @@ export const Cosmos = observer(function Cosmos() {
   if (!isNativeFixtureLoaderProps(pkg)) {
     invariant(
       false,
-      "Since `COSMOS_ENABLED === 'true'`, `../cosmos.userdeps.js` should exist. Did you forget to run `yarn cosmos`?"
+      "Since `COSMOS_ENABLED === 'true'`, `../cosmos.userdeps.js` should exist. Did you forget to run `yarn cosmos`?",
     );
     return null;
   }
@@ -21,7 +21,7 @@ export const Cosmos = observer(function Cosmos() {
 });
 
 function isNativeFixtureLoaderProps(
-  pkg: ComponentProps<typeof NativeFixtureLoader> | Record<string, never>
+  pkg: ComponentProps<typeof NativeFixtureLoader> | Record<string, never>,
 ): pkg is ComponentProps<typeof NativeFixtureLoader> {
   return typeof pkg === "object" && Object.keys(pkg).length > 0;
 }

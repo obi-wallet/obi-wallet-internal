@@ -41,7 +41,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
     const usableKey = draft.value.getUsableKeyOfType(
       params.recoverFrom === RecoverFrom.Email
         ? KeyType.EmailRecovery
-        : KeyType.Phone
+        : KeyType.Phone,
     );
     invariant(usableKey, "No usable key found");
     const publicKey = usableKey.payload.publicKey.value;
@@ -58,16 +58,16 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
         onSelect={async (serializedProxyWallet) => {
           const newDeviceKey = draft.value.getUsableKeyOfType(KeyType.Device);
           const recoveredPhoneKey = draft.value.getUsableKeyOfType(
-            KeyType.Phone
+            KeyType.Phone,
           );
           const recoveredEmailKey = draft.value.getUsableKeyOfType(
-            KeyType.EmailRecovery
+            KeyType.EmailRecovery,
           );
 
           invariant(newDeviceKey, "Device key is required");
           invariant(
             recoveredPhoneKey || recoveredEmailKey,
-            "Phone or email key is required"
+            "Phone or email key is required",
           );
 
           const serializedData: Serialized<MultisigWallet>["data"] = {
@@ -90,9 +90,9 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
                         invariant(
                           R.equals(
                             recoveredPhoneKey.payload.publicKey,
-                            key.publicKey
+                            key.publicKey,
                           ),
-                          "Recovered phone key must match the one in the proxy wallet"
+                          "Recovered phone key must match the one in the proxy wallet",
                         );
                         return {
                           type: KeyType.Phone,
@@ -152,7 +152,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
                         },
                       };
                   }
-                }
+                },
               ),
             },
             proxyAddress: {
@@ -171,7 +171,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
           try {
             const currentOwner = ObservableMultisigKey.create(
               serializedData.chain,
-              serializedData.owner
+              serializedData.owner,
             );
 
             draft.commit({ original: currentOwner });
@@ -197,5 +197,5 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
         }}
       />
     );
-  }
+  },
 );

@@ -59,7 +59,7 @@ export class CosmJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     this.encodeObjects = encodeObjects;
     this.key = createMultisigThresholdPubkey(
       multisigPublicKey.value.pubkeys,
-      parseInt(multisigPublicKey.value.threshold, 10)
+      parseInt(multisigPublicKey.value.threshold, 10),
     );
     this.signDoc = {
       memo: "",
@@ -106,7 +106,7 @@ export class CosmJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       this.account.sequence,
       this.fee,
       bodyBytes,
-      signatures
+      signatures,
     );
 
     return TxRaw.encode(transaction).finish();

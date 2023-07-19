@@ -3,7 +3,7 @@ import { useTheme } from "@emotion/react";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { useQuery, useRootStore } from "@obi-wallet/headless-ui";
+import { useQuery } from "@obi-wallet/headless-ui";
 import { Chain } from "@obi-wallet/sdk";
 import {
   DrawerContentComponentProps,
@@ -15,7 +15,6 @@ import { ParamListBase } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { action } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   Platform,
@@ -115,14 +114,14 @@ export const TabNavigation = observer<TabNavigationProps>(
             paddingBottom: Platform.select({
               ios: isSmallScreenNumber(
                 getScreenDimensions().SCREEN_HEIGHT <= 667 ? 10 : 25,
-                27
+                27,
               ),
               android: 10,
             }),
             height: Platform.select({
               ios: isSmallScreenNumber(
                 getScreenDimensions().SCREEN_HEIGHT <= 667 ? 65 : 82,
-                85
+                85,
               ),
               android: 65,
             }),
@@ -140,7 +139,7 @@ export const TabNavigation = observer<TabNavigationProps>(
           lazy: false,
         })}
         initialRouteName={HomeBottomTabRoute.Assets}
-        tabBar={(props) => {
+        tabBar={() => {
           return (
             <>
               <UpdateFooter />
@@ -171,10 +170,10 @@ export const TabNavigation = observer<TabNavigationProps>(
         />
       </HomeBottomTab.Navigator>
     );
-  }
+  },
 );
 
-export const HomeScreen = observer<HomeScreenProps>(function HomeScreen(props) {
+export const HomeScreen = observer<HomeScreenProps>(function HomeScreen() {
   const { chainStore } = useStore();
 
   // TODO: drawer not working in web
@@ -268,7 +267,7 @@ const UpdateFooter = observer(function UpdateFooter() {
 });
 
 const CustomDrawerContent = observer(function CustomDrawerContent(
-  props: DrawerContentComponentProps
+  props: DrawerContentComponentProps,
 ) {
   // TODO:
   return null;

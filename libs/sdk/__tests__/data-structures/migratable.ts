@@ -74,7 +74,7 @@ describe("migratable", () => {
 
   it("should apply migrations to the data", () => {
     expect(migratableSchemaV1.migratableSchema.parse(userDataV1)).toEqual(
-      userDataV1
+      userDataV1,
     );
 
     expect(migratableSchemaV2.migratableSchema.parse(userDataV1)).toEqual({
@@ -82,7 +82,7 @@ describe("migratable", () => {
       email: null,
     });
     expect(migratableSchemaV2.migratableSchema.parse(userDataV2)).toEqual(
-      userDataV2
+      userDataV2,
     );
 
     expect(migratableSchemaV3.migratableSchema.parse(userDataV1)).toEqual({
@@ -90,10 +90,10 @@ describe("migratable", () => {
       email: null,
     });
     expect(migratableSchemaV3.migratableSchema.parse(userDataV2)).toEqual(
-      userDataV3
+      userDataV3,
     );
     expect(migratableSchemaV3.migratableSchema.parse(userDataV3)).toEqual(
-      userDataV3
+      userDataV3,
     );
   });
 });

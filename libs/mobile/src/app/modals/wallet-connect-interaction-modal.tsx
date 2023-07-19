@@ -11,13 +11,13 @@ export const WalletConnectInteractionModal = observer(
     const { userInteractionsStore } = useStore();
 
     const interaction = userInteractionsStore.getPendingUserInteractionsOfType(
-      InitiateWalletConnectSessionUserInteraction
+      InitiateWalletConnectSessionUserInteraction,
     )[0];
 
     if (!interaction) return null;
 
     return <InteractionModalInner interaction={interaction} />;
-  }
+  },
 );
 
 const InteractionModalInner = observer(function InteractionModalInner({

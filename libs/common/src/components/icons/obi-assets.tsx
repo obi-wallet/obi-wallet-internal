@@ -56,5 +56,5 @@ export const ObiAssetsActiveIcon = observer<SvgProps>(
         </G>
       </Svg>
     );
-  }
+  },
 );

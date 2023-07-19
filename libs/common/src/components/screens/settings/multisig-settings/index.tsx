@@ -162,7 +162,7 @@ export const MultisigSettingsScreen = observer(
                   if (response.approved && !response.payload.success) {
                     Alert.alert(
                       "Updating owner failed",
-                      response.payload.rawLog
+                      response.payload.rawLog,
                     );
                   }
                 } finally {
@@ -181,5 +181,5 @@ export const MultisigSettingsScreen = observer(
         ) : null}
       </MultisigSettings>
     );
-  }
+  },
 );

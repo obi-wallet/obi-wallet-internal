@@ -9,9 +9,7 @@ import { MsgSend } from "@terra-money/feather.js";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
-import { useEffect } from "react";
 import { View } from "react-native";
-import { useEffectOnceWhen } from "rooks";
 
 import { useStore } from "../../../../contexts";
 import { Alert } from "../../../../helpers";
@@ -29,13 +27,10 @@ export type SignatureModalEthereumDemoProps = {
 export const SignatureModalEthereumDemo =
   observer<SignatureModalEthereumDemoProps>(
     function SignatureModalEthereumDemo({ interaction }) {
-      const { sdkRootStore, walletsStore } = useStore();
+      const { sdkRootStore } = useStore();
       const { payload } = interaction;
       const walletMeta = R.has("walletMeta", payload)
         ? payload.walletMeta
-        : null;
-      const wallet = walletMeta
-        ? walletsStore.getWalletByProxyAddress(walletMeta.walletId)
         : null;
       const theme = useTheme();
 
@@ -68,7 +63,7 @@ export const SignatureModalEthereumDemo =
             return {
               isUsingSessionKey: true,
               hasSpendLimitExceeded: spendLimitBN.isLessThan(
-                new BigNumber(message.eth.token.rawAmount)
+                new BigNumber(message.eth.token.rawAmount),
               ),
               onSuccess() {
                 // const newSpentSoFar = spentSoFarBN.plus(
@@ -251,5 +246,5 @@ export const SignatureModalEthereumDemo =
           />
         );
       }
-    }
+    },
   );

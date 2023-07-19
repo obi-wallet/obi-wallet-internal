@@ -6,5 +6,5 @@ export const AccountMetaData = migratable(
   z.object({
     name: z.string(),
     icon: z.string(),
-  })
+  }),
 );

@@ -50,7 +50,7 @@ export async function getNFCKeyPair({
       " " +
       boostEntropy +
       " " +
-      localEntropy
+      localEntropy,
   );
   if (demoMode) {
     return {
@@ -74,7 +74,7 @@ export async function getNFCKeyPair({
       {
         method: "POST",
         body: privateKeyBuffer,
-      }
+      },
     );
     if (response.status !== 200) {
       console.warn("Entropy boost failed");
@@ -87,7 +87,7 @@ export async function getNFCKeyPair({
       const rehashed = new Sha256(Buffer.from(salted + localEntropy));
       const saltedPrivateKeyBuffer = rehashed.digest();
       const saltedPublicKeyBuffer = secp256k1.publicKeyCreate(
-        saltedPrivateKeyBuffer
+        saltedPrivateKeyBuffer,
       );
 
       const privateKey = Buffer.from(saltedPrivateKeyBuffer).toString("base64");
@@ -116,6 +116,7 @@ export async function checkIsSupported() {
   return deviceIsSupported;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function decodeNdefRecord(record: any) {
   if (Ndef.isType(record, Ndef.TNF_WELL_KNOWN, Ndef.RTD_TEXT)) {
     return ["text", Ndef.text.decodePayload(record.payload)];
@@ -186,7 +187,7 @@ export function parseNFCData(tag: TagEvent): string {
         }
         if (data.status != "OK") {
           throw Error(
-            "Instead of OK response from Yubikey, received: " + data.status
+            "Instead of OK response from Yubikey, received: " + data.status,
           );
         }
         /// TODO

@@ -2,7 +2,6 @@ import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
 import { Keyboard } from "react-native";
 
-import { useStore } from "../../contexts";
 import { AsyncButton } from "../buttons";
 
 export interface VerifyAndProceedButtonProps {

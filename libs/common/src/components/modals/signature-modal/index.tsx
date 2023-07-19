@@ -36,7 +36,7 @@ export const SignatureModal = observer<SignatureModalProps>(
     ) : (
       <SignatureModalSdk interaction={interaction} />
     );
-  }
+  },
 );
 
 const SignatureModalSdk = observer<SignatureModalProps>(
@@ -65,5 +65,5 @@ const SignatureModalSdk = observer<SignatureModalProps>(
       case SignAndBroadcastTransactionType.MultisigKey:
         return <SignatureModalMultisigKey {...payload} />;
     }
-  }
+  },
 );

@@ -3,8 +3,6 @@ import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Feature } from "@obi-wallet/config";
 import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import { Sdk } from "@obi-wallet/sdk";
-import type { DrawerNavigationProp } from "@react-navigation/drawer";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
@@ -13,7 +11,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useStore } from "../../contexts";
 import { isWeb } from "../../helpers";
-import { RootStackParamList } from "../../router";
 import { Avatar } from "../avatar";
 import { ObiIcon } from "../icons";
 import { Text } from "../typography";
@@ -40,16 +37,10 @@ export const NetworkAccountPickerLayout =
           {children}
         </SafeAreaView>
       );
-    }
+    },
   );
 
-export const Header = observer<{ currentNetwork: string }>(function Header({
-  currentNetwork,
-}) {
-  const navigation = useNavigation<
-    DrawerNavigationProp<Record<string, object>> &
-      NavigationProp<RootStackParamList>
-  >();
+export const Header = observer<{ currentNetwork: string }>(function Header() {
   const { configStore } = useStore();
   const wallet = useCurrentWallet();
   const theme = useTheme();
@@ -175,9 +166,9 @@ export const Header = observer<{ currentNetwork: string }>(function Header({
     } else if (account && account.type === "singlesig-wallet") {
       return Bech32Address.shortenAddress(
         Sdk.chainId(wallet.chainId).transactions.getAddressOfPublicKey(
-          account.publicKey
+          account.publicKey,
         ),
-        20
+        20,
       );
     } else {
       return theme.i18n.accountName;

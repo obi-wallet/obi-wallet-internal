@@ -15,5 +15,5 @@ export const BeneficiarySchema = migratable(
       rate: Percentage,
       period: Duration,
     }),
-  })
+  }),
 );

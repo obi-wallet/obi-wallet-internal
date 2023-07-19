@@ -19,7 +19,7 @@ export class Beneficiary {
       rate: number;
       period: z.infer<typeof Duration>;
     },
-    protected _serialize: <T>(serialized: T) => T
+    protected _serialize: <T>(serialized: T) => T,
   ) {}
 
   public toJSON(): AbstractSerialized<typeof BeneficiarySchema> {

@@ -13,7 +13,7 @@ export class RootStore {
   public readonly ethereumDemoStore: EthereumDemoStore;
 
   public constructor(
-    KVStore: new (prefix: string) => AbstractKVStore = DefaultKVStore
+    KVStore: new (prefix: string) => AbstractKVStore = DefaultKVStore,
   ) {
     this.userInteractionsStore = ObservableUserInteractions.create();
     this._walletsStore = new WalletsStore({

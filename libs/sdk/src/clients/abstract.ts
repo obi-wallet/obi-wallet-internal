@@ -23,7 +23,7 @@ export abstract class AbstractClient {
       contract: string;
       query: unknown;
       schema: T;
-    }[]
+    }[],
   ): Promise<z.infer<T>[]>;
 
   public abstract createAndSignTransaction({
@@ -35,6 +35,6 @@ export abstract class AbstractClient {
   }): Promise<SignedTransaction>;
 
   public abstract broadcastSignedTransaction(
-    signedTransaction: SignedTransaction
+    signedTransaction: SignedTransaction,
   ): Promise<BroadcastTransactionResult>;
 }

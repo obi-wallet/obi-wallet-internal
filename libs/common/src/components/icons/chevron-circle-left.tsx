@@ -20,5 +20,5 @@ export const ChevronCircleLeftIcon = observer<SvgProps>(
         </G>
       </Svg>
     );
-  }
+  },
 );

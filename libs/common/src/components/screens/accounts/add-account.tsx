@@ -145,5 +145,5 @@ export const AddAccountScreen = observer<AddAccountScreenProps>(
         </View>
       </ScreenContainer>
     );
-  }
+  },
 );

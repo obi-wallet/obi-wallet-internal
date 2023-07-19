@@ -78,7 +78,7 @@ export const BaseAppWithoutProvider = observer(
         </FullWindowOverlay>
       </>
     );
-  }
+  },
 );
 
 const Load = observer(function Load() {

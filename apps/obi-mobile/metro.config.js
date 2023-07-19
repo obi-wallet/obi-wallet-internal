@@ -39,6 +39,6 @@ module.exports = (async () => {
       extensions: [],
       // the project root to start the metro server
       projectRoot: __dirname,
-    }
+    },
   );
 })();

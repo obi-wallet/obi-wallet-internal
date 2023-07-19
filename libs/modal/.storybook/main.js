@@ -49,7 +49,7 @@ const config = {
           "@obi-wallet/config": path.join(__dirname, "../../config/src"),
           "@obi-wallet/headless-ui": path.join(
             __dirname,
-            "../../headless-ui/src"
+            "../../headless-ui/src",
           ),
           "@obi-wallet/sdk": path.join(__dirname, "../../sdk/src"),
           "@obi-wallet/theme": path.join(__dirname, "../../theme/src"),

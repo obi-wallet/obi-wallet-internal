@@ -6,5 +6,5 @@ export const LinearGradient = observer<LinearGradientProps>(
   function LinearGradient() {
     warning(false, "LinearGradient not implemented for web");
     return null;
-  }
+  },
 );

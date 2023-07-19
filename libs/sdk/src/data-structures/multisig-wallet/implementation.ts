@@ -43,7 +43,7 @@ export class MultisigWallet {
     protected _gatekeeperConfig: GatekeeperConfig,
     protected _singlesigWallets: SinglesigWallet[],
     protected _currentAccount: CurrentAccountMeta | null,
-    protected _isDemo: boolean
+    protected _isDemo: boolean,
   ) {
     this.multisigWalletSdk = MultisigWalletSdk.wallet(this);
   }
@@ -97,14 +97,14 @@ export class MultisigWallet {
   }
 
   public getAddressByAccountMeta(
-    currentAccountMeta: CurrentAccountMeta | null
+    currentAccountMeta: CurrentAccountMeta | null,
   ) {
     const currentAccount = currentAccountMeta
       ? this.getAccountByMeta(currentAccountMeta)
       : null;
     if (currentAccount?.type === "singlesig-wallet") {
       return Sdk.chainId(this._chainId).transactions.getAddressOfPublicKey(
-        currentAccount.publicKey
+        currentAccount.publicKey,
       );
     }
 
@@ -195,7 +195,7 @@ export class MultisigWallet {
 
   public upsertSinglesigWallet(singlesig: SinglesigWallet) {
     const index = this._singlesigWallets.findIndex(
-      (s) => s.publicKey === singlesig.publicKey
+      (s) => s.publicKey === singlesig.publicKey,
     );
     if (index === -1) {
       this._singlesigWallets.push(singlesig);
@@ -206,7 +206,7 @@ export class MultisigWallet {
 
   public removeSinglesigWallet(singlesig: SinglesigWallet) {
     this._singlesigWallets = this._singlesigWallets.filter(
-      (s) => s.publicKey !== singlesig.publicKey
+      (s) => s.publicKey !== singlesig.publicKey,
     );
   }
 
@@ -245,7 +245,7 @@ export class MultisigWallet {
       | {
           singlesigWallet: SinglesigWallet;
         }
-    ) & { messages: Message[] }
+    ) & { messages: Message[] },
   ): Promise<BroadcastTransactionResult> {
     if (R.has("flexAccount", payload)) {
       const { flexAccount, messages } = payload;
@@ -277,7 +277,7 @@ export class MultisigWallet {
           messages,
         });
       return await this.multisigWalletSdk.broadcastSignedTransaction(
-        signedTransaction
+        signedTransaction,
       );
     }
   }

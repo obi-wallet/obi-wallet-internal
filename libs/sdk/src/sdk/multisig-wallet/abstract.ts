@@ -139,7 +139,7 @@ export abstract class AbstractMultisigWalletSdk {
   }): Promise<SignedTransaction>;
 
   public abstract broadcastSignedTransaction(
-    signedTransaction: SignedTransaction
+    signedTransaction: SignedTransaction,
   ): Promise<BroadcastTransactionResult>;
 }
 export interface UpdateGatekeeperConfigParams {

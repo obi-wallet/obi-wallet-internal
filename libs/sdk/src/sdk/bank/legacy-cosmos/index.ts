@@ -56,16 +56,16 @@ export class LegacyCosmosBankSdk extends AbstractBankSdk {
                 customToken.contract,
                 {
                   balance: { address: address },
-                }
+                },
               );
               return {
                 id: customToken.contract,
                 rawAmount: response.balance,
               };
-            })
+            }),
           );
         }
-      }
+      },
     );
   }
 
@@ -127,7 +127,7 @@ export class LegacyCosmosBankSdk extends AbstractBankSdk {
               token1_for_token2_price: {
                 token1_amount: "10000000",
               },
-            }
+            },
           );
           dexBasePrice = Number(dexBasePriceElements.token2_amount) / 10;
         } else if (route[0] !== "") {
@@ -142,7 +142,7 @@ export class LegacyCosmosBankSdk extends AbstractBankSdk {
                   },
                 },
               },
-            }
+            },
           );
           dexBasePrice =
             (Number(dexBasePriceElements.commissionAmount) +
@@ -188,8 +188,8 @@ export class LegacyCosmosBankSdk extends AbstractBankSdk {
         await Promise.all(
           denoms.map(async (denom) => {
             return [denom, (await getUsdRate(denom)) / 10 ** 6];
-          })
-        )
+          }),
+        ),
       );
     });
   }

@@ -60,7 +60,7 @@ export const SecurityQuestionInputWithAnswer =
           />
         </View>
       );
-    }
+    },
   );
 
 export const SecurityQuestionInput = observer(function SecurityQuestionInput({
@@ -72,7 +72,7 @@ export const SecurityQuestionInput = observer(function SecurityQuestionInput({
 }: SecurityQuestionInputProps) {
   const [dropdownPickerOpen, setDropdownPickerOpen] = useState(false);
   const [securityQuestions, setSecurityQuestions] = useState(
-    useSecurityQuestions()
+    useSecurityQuestions(),
   );
 
   return (
@@ -131,7 +131,7 @@ export const SecurityQuestionInput = observer(function SecurityQuestionInput({
 
 export function useSecurityQuestionInput() {
   const [securityQuestion, setSecurityQuestion] = useState(
-    useSecurityQuestions()[0].value
+    useSecurityQuestions()[0].value,
   );
   const [securityAnswer, setSecurityAnswer] = useState("");
 

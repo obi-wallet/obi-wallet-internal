@@ -3,14 +3,14 @@ import Web3 from "web3";
 
 const web3 = new Web3(
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  new Web3.providers.HttpProvider(process.env.WEB3_PROVIDER_URL!)
+  new Web3.providers.HttpProvider(process.env.WEB3_PROVIDER_URL!),
 );
 
 const ztxToken = "0x5CF29823CCFC73008fa53630d54A424AB82dE6F2";
 
 export async function GET(
   request: Request,
-  { params }: { params: { address: string } }
+  { params }: { params: { address: string } },
 ) {
   const balances = await fetchBalances(params.address);
   return NextResponse.json(balances);
@@ -63,7 +63,7 @@ async function fetchTokenBalance({
         type: "function",
       } as const,
     ],
-    id
+    id,
   );
   return await tokenContract.methods.balanceOf(address).call();
 }

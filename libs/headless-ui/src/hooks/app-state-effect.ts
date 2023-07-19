@@ -3,7 +3,7 @@ import { AppState, AppStateStatus } from "react-native";
 
 export function useAppStateEffect(
   fn: (appState: AppStateStatus) => void,
-  deps: DependencyList
+  deps: DependencyList,
 ) {
   const fnRef = useRef(fn);
   fnRef.current = fn;

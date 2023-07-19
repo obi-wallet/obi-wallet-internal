@@ -62,9 +62,9 @@ const stat = util.promisify(fs.stat);
               .replace(versionRe, `MARKETING_VERSION = ${newVersion};`)
               .replace(
                 buildNumberRe,
-                `CURRENT_PROJECT_VERSION = ${newBuildNumber};`
+                `CURRENT_PROJECT_VERSION = ${newBuildNumber};`,
               );
-          }
+          },
         );
       }
 
@@ -86,7 +86,7 @@ const stat = util.promisify(fs.stat);
             return input
               .replace(versionRe, `versionName "${newVersion}"`)
               .replace(buildNumberRe, `versionCode ${newBuildNumber}`);
-          }
+          },
         );
       }
 
@@ -95,6 +95,6 @@ const stat = util.promisify(fs.stat);
         await handlePodInstall();
         await Promise.all([handleMain(), handleIos(), handleAndroid()]);
       }
-    })
+    }),
   );
 })();

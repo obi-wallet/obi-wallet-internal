@@ -23,5 +23,5 @@ export const FlexAccountSchema = migratable(
     privateKey: z.string(),
     spendLimit: SpendLimit.nullable(),
     autoSign: AutoSign.nullable(),
-  })
+  }),
 );
