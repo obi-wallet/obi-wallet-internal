@@ -3,7 +3,6 @@ import { coins } from "@cosmjs/proto-signing";
 import { isDeliverTxSuccess } from "@cosmjs/stargate";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { AuthInfo, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import * as R from "ramda";
 import invariant from "tiny-invariant";
 
 import { CosmJsMultisigSigner } from "./multisigs-signer";
@@ -17,6 +16,8 @@ import {
   BroadcastTransactionResult,
 } from "../../common";
 import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
+import { Messages } from "../../messages";
+import { CosmosSdkMessages } from "../../messages/cosmos-sdk";
 import { AbstractTransactionsSdk } from "../abstract";
 
 export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
@@ -133,10 +134,7 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
     invariant(account, "Account not found.");
 
     const aminoMessages = messages.map((message) => {
-      if (R.has("osmo", message)) {
-        return message.osmo;
-      }
-      return message.toAmino();
+      return this.messages.toJSON(message);
     });
     const encodeObjects = aminoMessages.map((aminoMessage) => {
       return this.client.aminoTypes.fromAmino(aminoMessage);
@@ -212,5 +210,9 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
 
   protected get chain() {
     return Chain.information(this.chainId);
+  }
+
+  protected get messages() {
+    return Messages.chainId(this.chainId) as CosmosSdkMessages;
   }
 }

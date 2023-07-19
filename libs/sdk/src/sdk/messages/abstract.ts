@@ -4,7 +4,7 @@ import {
   MultisigKey,
   MultisigWallet,
 } from "../../data-structures";
-import { Message } from "../../transactions";
+import { Message, MessageJson } from "../../transactions";
 import { CodeIds, Token } from "../common";
 
 /**
@@ -13,6 +13,18 @@ import { CodeIds, Token } from "../common";
  */
 export abstract class AbstractMessages {
   protected constructor(protected chainId: ChainId) {}
+
+  public abstract toJSON(message: Message): MessageJson;
+
+  public abstract wrapMessages({
+    messages,
+    sender,
+    contract,
+  }: {
+    messages: Message[];
+    sender: string;
+    contract: string;
+  }): Message[];
 
   public abstract getSendMessages({
     fromAddress,

@@ -1,9 +1,7 @@
 import { useTheme } from "@emotion/react";
-import { ChainId, Message } from "@obi-wallet/sdk";
+import { ChainId, Message, MessageJson, Messages } from "@obi-wallet/sdk";
 import Clipboard from "@react-native-clipboard/clipboard";
-import { Msg } from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
-import * as R from "ramda";
 import { ReactNode, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { ModalProps, ScrollView, TouchableOpacity, View } from "react-native";
@@ -237,18 +235,14 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
     }
 
     function renderTabContent() {
-      const aminoMessages = messages.map((message) => {
-        if (R.has("osmo", message)) {
-          return message.osmo;
-        }
-        return message.toAmino();
-      });
+      const messagesSdk = Messages.chainId(chainId);
+      const messagesJson = messages.map(messagesSdk.toJSON.bind(messagesSdk));
 
       switch (selectedTab) {
         case Tab.TransactionDetails:
-          return <MessageView messages={aminoMessages} chainId={chainId} />;
+          return <MessageView messages={messagesJson} chainId={chainId} />;
         case Tab.Data: {
-          const data = JSON.stringify(aminoMessages, null, 2);
+          const data = JSON.stringify(messagesJson, null, 2);
           return (
             <Text
               style={{ color: "#ffffff" }}
@@ -314,7 +308,7 @@ export const ConfirmMessagesLogin = observer<ConfirmMessagesProps>(
 );
 
 interface MessageViewProps {
-  messages: Msg.Amino[];
+  messages: MessageJson[];
   chainId: ChainId;
   isObi?: boolean;
 }

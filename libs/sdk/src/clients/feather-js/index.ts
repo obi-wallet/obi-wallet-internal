@@ -111,7 +111,6 @@ export class FeatherJsClient extends AbstractClient {
       try {
         const transaction = await wallet.createAndSignTx({
           chainID: this.chainId,
-          // TODO:
           msgs: messages as Msg[],
         });
         return transaction.toBytes();

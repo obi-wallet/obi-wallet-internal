@@ -27,12 +27,12 @@ import { createVestingAminoConverters } from "@cosmjs/stargate/build/modules";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { PageResponse } from "cosmjs-types/cosmos/base/query/v1beta1/pagination";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import * as R from "ramda";
 import { z } from "zod";
 
 import { Chain, CosmosChainId, LegacyCosmosChainId } from "../../chains";
-import { BroadcastTransactionResult, Sdk } from "../../sdk";
+import { BroadcastTransactionResult, Messages, Sdk } from "../../sdk";
 import { CosmJsOfflineAminoSigner } from "../../sdk/common/cosm-js";
+import { CosmosSdkMessages } from "../../sdk/messages/cosmos-sdk";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { AbstractClient } from "../abstract";
@@ -280,11 +280,7 @@ export class CosmJsClient extends AbstractClient {
       }),
       async (client) => {
         const encodeObjects = messages.map((message) => {
-          if (R.has("osmo", message)) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return this.aminoTypes.fromAmino(message.osmo as any);
-          }
-          return this.aminoTypes.fromAmino(message.toAmino());
+          return this.aminoTypes.fromAmino(this.messages.toJSON(message));
         });
         const gas = await client.simulate(
           this.sdk.transactions.getAddressOfPublicKey(signer.publicKey),
@@ -346,5 +342,9 @@ export class CosmJsClient extends AbstractClient {
 
   protected get sdk() {
     return Sdk.chainId(this.chainId);
+  }
+
+  protected get messages() {
+    return Messages.chainId(this.chainId) as CosmosSdkMessages;
   }
 }

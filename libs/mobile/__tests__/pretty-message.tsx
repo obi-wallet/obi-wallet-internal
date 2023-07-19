@@ -19,7 +19,6 @@ import {
 } from "@terra-money/feather.js";
 import { render, screen } from "@testing-library/react-native";
 import { observer } from "mobx-react-lite";
-import * as R from "ramda";
 import { ReactNode } from "react";
 
 import {
@@ -303,14 +302,9 @@ describe("Terra", () => {
 
   function renderPrettyMessage({ message }: { message: Message }) {
     const Wrapper = createWrapper();
-
-    const aminoMessage = R.has("osmo", message)
-      ? message.osmo
-      : message.toAmino();
-
     return render(
       <Wrapper>
-        <PrettyMessage message={aminoMessage} chainId="phoenix-1" />
+        <PrettyMessage message={messages.toJSON(message)} chainId="phoenix-1" />
       </Wrapper>,
     );
   }
