@@ -1,7 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { Modals, OnCloseContext, useStore } from "@obi-wallet/common";
+import { Config } from "@obi-wallet/config";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
-import { CustomTheme } from "@obi-wallet/theme";
 import { autorun } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
@@ -12,9 +12,9 @@ import { StateRenderer } from "./state-renderer";
 import "./vuplex-polyfill.js";
 
 // eslint-disable-next-line mobx/missing-observer
-export function Modal({ theme }: { theme: CustomTheme }) {
+export function Modal({ config }: { config: Config }) {
   return (
-    <Container theme={theme}>
+    <Container config={config}>
       <ModalWithoutProvider />
     </Container>
   );

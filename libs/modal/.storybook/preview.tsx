@@ -1,25 +1,24 @@
 import "../src/shim";
 
 import {
-  CustomTheme,
-  obiTheme,
-  osmosisTheme,
-  vertexTheme,
-  ztxTheme,
-} from "@obi-wallet/theme";
+  Config,
+  obiModalConfig,
+  osmosisModalConfig,
+  vertexModalConfig,
+  ztxModalConfig,
+} from "@obi-wallet/config";
 import { Preview } from "@storybook/react";
 
-import { Container } from "../src/container";
-import { Provider } from "../src/provider";
+import { Container, Provider } from "../src";
 
 const preview: Preview = {
   decorators: [
     (Story, context) => {
       if (context.id === "modal--primary") {
-        return renderStoryWithContainer(osmosisTheme);
+        return renderStoryWithContainer(osmosisModalConfig);
       }
       if (context.id === "modal--ztx") {
-        return renderStoryWithContainer(ztxTheme);
+        return renderStoryWithContainer(ztxModalConfig);
       }
 
       if (context.id === "modal--vertex")
@@ -31,7 +30,7 @@ const preview: Preview = {
               right: 5,
             }}
           >
-            {renderStoryWithContainer(vertexTheme)}
+            {renderStoryWithContainer(vertexModalConfig)}
           </div>
         );
 
@@ -39,20 +38,24 @@ const preview: Preview = {
       return (
         <div style={{ display: "flex" }}>
           <div style={{ padding: 5 }}>
-            {renderStoryWithContainer(osmosisTheme)}
+            {renderStoryWithContainer(osmosisModalConfig)}
           </div>
-          <div style={{ padding: 5 }}>{renderStoryWithContainer(obiTheme)}</div>
           <div style={{ padding: 5 }}>
-            {renderStoryWithContainer(vertexTheme)}
+            {renderStoryWithContainer(obiModalConfig)}
           </div>
-          <div style={{ padding: 5 }}>{renderStoryWithContainer(ztxTheme)}</div>
+          <div style={{ padding: 5 }}>
+            {renderStoryWithContainer(vertexModalConfig)}
+          </div>
+          <div style={{ padding: 5 }}>
+            {renderStoryWithContainer(ztxModalConfig)}
+          </div>
         </div>
       );
 
-      function renderStoryWithContainer(theme: CustomTheme) {
+      function renderStoryWithContainer(config: Config) {
         return (
-          <Container theme={theme}>
-            <Provider env={process.env} theme={theme}>
+          <Container config={config}>
+            <Provider env={process.env} config={config}>
               <Story />
             </Provider>
           </Container>

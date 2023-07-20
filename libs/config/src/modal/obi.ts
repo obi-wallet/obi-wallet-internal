@@ -1,8 +1,8 @@
 import { KeyType } from "@obi-wallet/sdk";
-import { osmosisTheme } from "@obi-wallet/theme";
+import { obiTheme } from "@obi-wallet/theme";
 
-import { Config } from "./config";
-import { Feature } from "./feature";
+import { Config } from "../config";
+import { Feature } from "../feature";
 
 export const obiModalConfig: Config = {
   chains: {
@@ -23,5 +23,5 @@ export const obiModalConfig: Config = {
     [Feature.DemoMode]: true,
   },
   requiredKeys: [KeyType.Device, KeyType.Phone],
-  theme: osmosisTheme,
+  theme: obiTheme,
 };

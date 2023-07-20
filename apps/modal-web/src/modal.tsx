@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 "use client";
 
-import * as M from "@obi-wallet/modal";
 import {
-  obiTheme,
-  osmosisTheme,
-  vertexTheme,
-  ztxTheme,
-} from "@obi-wallet/theme";
+  obiModalConfig,
+  osmosisModalConfig,
+  vertexModalConfig,
+  ztxModalConfig,
+} from "@obi-wallet/config";
+import * as M from "@obi-wallet/modal";
 
 // eslint-disable-next-line mobx/missing-observer,import/no-default-export
-export default function Modal(props: { theme: string }) {
-  const theme = getTheme();
+export default function Modal(props: { config: string }) {
+  const config = getConfig();
 
   return (
-    <M.Container theme={theme}>
+    <M.Container config={config}>
       <M.Provider
         env={{
           PHONE_NUMBER_KEY_SECRET:
@@ -24,25 +24,25 @@ export default function Modal(props: { theme: string }) {
           PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD:
             process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD!,
         }}
-        theme={theme}
+        config={config}
       >
         <M.ModalWithoutProvider />
       </M.Provider>
     </M.Container>
   );
 
-  function getTheme() {
-    switch (props.theme) {
+  function getConfig() {
+    switch (props.config) {
       case "obi":
-        return obiTheme;
+        return obiModalConfig;
       case "osmosis":
-        return osmosisTheme;
+        return osmosisModalConfig;
       case "vertex":
-        return vertexTheme;
+        return vertexModalConfig;
       case "ztx":
-        return ztxTheme;
+        return ztxModalConfig;
       default:
-        return obiTheme;
+        return obiModalConfig;
     }
   }
 }
