@@ -59,8 +59,8 @@ export const vertexTheme: CustomTheme = {
     hideHeaderLogo: false,
     buttons: [
       WelcomeButton.Login,
-      WelcomeButton.Getstarted,
-      WelcomeButton.Recoverwallet,
+      WelcomeButton.GetStarted,
+      WelcomeButton.RecoverWallet,
       WelcomeButton.Demo,
     ],
   },
