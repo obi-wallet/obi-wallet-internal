@@ -87,4 +87,5 @@ export interface KeyStackParamList extends ParamListBase {
   [KeyRoute.CloudKey]: CommonKeyParams & {
     targetPublicKey?: string;
   };
+  [KeyRoute.ZAuthKey]: CommonKeyParams;
 }

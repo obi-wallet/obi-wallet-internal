@@ -23,6 +23,7 @@ import {
   StakeScreen,
   useStore,
   WelcomeScreen,
+  ZAuthKeyScreen,
 } from "@obi-wallet/common";
 import { WalletState } from "@obi-wallet/headless-ui";
 import { observer } from "mobx-react-lite";
@@ -151,6 +152,12 @@ export const keyScreens = (navigationKey: string) => {
         name={KeyRoute.EmailKey}
         key={KeyRoute.EmailKey}
         component={EmailKeyScreen}
+        options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name={KeyRoute.ZAuthKey}
+        key={KeyRoute.ZAuthKey}
+        component={ZAuthKeyScreen}
         options={{ headerShown: false }}
       />
     </RootStack.Group>
