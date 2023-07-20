@@ -11,6 +11,7 @@ export enum KeyRoute {
   SocialKey = "SocialKey",
   NfcKey = "NfcKey",
   CloudKey = "CloudKey",
+  ZAuthKey = "ZAuthKey",
 }
 
 export function keyRouteToKeyType(route: KeyRoute) {
@@ -29,6 +30,8 @@ export function keyRouteToKeyType(route: KeyRoute) {
       return KeyType.Nfc;
     case KeyRoute.CloudKey:
       return KeyType.Cloud;
+    case KeyRoute.ZAuthKey:
+      return KeyType.ZAuth;
   }
 }
 
@@ -48,6 +51,8 @@ export function keyTypeToKeyRoute(type: KeyType) {
       return KeyRoute.CloudKey;
     case KeyType.EmailRecovery:
       return OnboardingRoute.EmailRecovery;
+    case KeyType.ZAuth:
+      return KeyRoute.ZAuthKey;
   }
 }
 

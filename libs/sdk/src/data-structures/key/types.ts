@@ -10,6 +10,7 @@ export enum KeyType {
   Cloud = "cloud",
   Email = "email",
   EmailRecovery = "email-recovery",
+  ZAuth = "z-auth",
 }
 
 export type KeyAbstractSerializedMapping = {

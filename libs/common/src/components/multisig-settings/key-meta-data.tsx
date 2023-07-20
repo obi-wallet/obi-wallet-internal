@@ -29,7 +29,9 @@ export function useKeyMetaData() {
   const intl = useIntl();
   const theme = useTheme();
 
+  // TODO: make configurable
   const keys = [
+    KeyType.ZAuth,
     KeyType.Device,
     KeyType.Phone,
     KeyType.Social,
@@ -94,6 +96,12 @@ export function useKeyMetaData() {
         defaultMessage: "Email Recovery Key",
       }),
       Icon: EmailKeyIcon,
+    },
+    [KeyType.ZAuth]: {
+      // TODO:
+      label: "ZAuth Key",
+      // TODO:
+      Icon: DeviceKeyIcon,
     },
     [ComingSoonKeyType.Telegram]: {
       label: "Telegram Key",
