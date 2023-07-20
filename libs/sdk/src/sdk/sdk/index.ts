@@ -19,6 +19,10 @@ export class Sdk {
       onLegacyCosmosChain({ chainId }) {
         return LegacyCosmosSdk.chainId(chainId);
       },
+      onSecretJsChain() {
+        // TODO:
+        throw new Error("SecretJS does not support SDK");
+      },
       onTerraChain({ chainId }) {
         return TerraSdk.chainId(chainId);
       },

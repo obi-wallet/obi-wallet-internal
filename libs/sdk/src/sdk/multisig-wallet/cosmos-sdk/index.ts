@@ -365,6 +365,9 @@ export class CosmosSdkMultisigWalletSdk extends AbstractMultisigWalletSdk {
       onLegacyCosmosChain() {
         throw new Error("Not a Cosmos SDK chain");
       },
+      onSecretJsChain() {
+        throw new Error("Not a Cosmos SDK chain");
+      },
       onTerraChain(chain) {
         return chain;
       },

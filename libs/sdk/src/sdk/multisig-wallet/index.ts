@@ -21,6 +21,10 @@ export class MultisigWalletSdk {
       onLegacyCosmosChain({ chainId }) {
         return new LegacyCosmosMultisigWalletSdk({ chainId, wallet });
       },
+      onSecretJsChain() {
+        // TODO:
+        throw new Error("SecretJS does not support multisig wallets");
+      },
       onTerraChain({ chainId }) {
         return new CosmosSdkMultisigWalletSdk({
           chainId,

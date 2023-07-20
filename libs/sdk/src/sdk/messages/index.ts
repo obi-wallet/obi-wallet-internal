@@ -18,6 +18,10 @@ export class Messages {
       onLegacyCosmosChain({ chainId }) {
         return LegacyCosmosMessages.chainId(chainId);
       },
+      onSecretJsChain() {
+        // TODO:
+        throw new Error("SecretJS does not support messages");
+      },
       onTerraChain({ chainId }) {
         return CosmosSdkMessages.chainId(chainId);
       },

@@ -50,6 +50,9 @@ export const Lookup = observer(function Lookup({
         onLegacyCosmosChain(chain) {
           return chain.currentCodeId;
         },
+        onSecretJsChain(chain) {
+          return chain.currentCodeIds.userAccount;
+        },
         onTerraChain(chain) {
           return chain.currentCodeIds.userAccount;
         },

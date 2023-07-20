@@ -32,6 +32,10 @@ export class WalletsSdk extends AbstractWalletsSdk {
       onLegacyCosmosChain() {
         return new LegacyCosmosWalletsSdk();
       },
+      onSecretJsChain() {
+        // TODO:
+        throw new Error("SecretJS does not support wallets");
+      },
       onTerraChain() {
         return new CosmosSdkWalletsSdk();
       },
