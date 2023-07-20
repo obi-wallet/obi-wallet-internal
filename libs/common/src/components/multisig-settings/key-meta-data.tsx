@@ -1,9 +1,11 @@
 import { useTheme } from "@emotion/react";
+import { ComingSoonKeyType } from "@obi-wallet/config";
 import { KeyType } from "@obi-wallet/sdk";
 import { ComponentType } from "react";
 import { useIntl } from "react-intl";
 import { SvgProps } from "react-native-svg";
 
+import { useStore } from "../../contexts";
 import { isWeb } from "../../helpers";
 import {
   CloudKeyIcon,
@@ -19,31 +21,16 @@ import {
   ZtxPlatformRecoveryIcon,
 } from "../icons";
 
-export enum ComingSoonKeyType {
-  Telegram = "telegram",
-  Map = "map",
-  Ledger = "ledger",
-}
+export { ComingSoonKeyType };
 
 export function useKeyMetaData() {
+  const { configStore } = useStore();
+
   const intl = useIntl();
   const theme = useTheme();
 
-  // TODO: make configurable
-  const keys = [
-    KeyType.ZAuth,
-    KeyType.Device,
-    KeyType.Phone,
-    KeyType.Social,
-    KeyType.Nfc,
-    KeyType.Cloud,
-    KeyType.Email,
-  ];
-  const comingSoonKeys = [
-    ComingSoonKeyType.Telegram,
-    ComingSoonKeyType.Map,
-    ComingSoonKeyType.Ledger,
-  ];
+  const keys = configStore.config.keys.enabled;
+  const comingSoonKeys = configStore.config.keys.comingSoon;
 
   const metaData: Record<
     KeyType | ComingSoonKeyType,
