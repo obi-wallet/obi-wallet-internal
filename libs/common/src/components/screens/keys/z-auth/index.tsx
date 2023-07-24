@@ -22,11 +22,11 @@ import {
   SecretNetworkClient,
 } from "secretjs";
 import {
+  encodeSecp256k1Signature,
   AccountData,
   AminoSigner,
   StdSignDoc,
 } from "secretjs/dist/wallet_amino";
-import { encodeSecp256k1Signature } from "secretjs/src/wallet_amino";
 import invariant from "tiny-invariant";
 
 import { useStore } from "../../../../contexts";
