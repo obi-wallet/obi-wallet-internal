@@ -5,6 +5,7 @@ import { TerraChainId, terraChains } from "./terra";
 
 export * from "./cosmos";
 export * from "./legacy-cosmos";
+export * from "./secret-js";
 export * from "./terra";
 
 export type ChainId =

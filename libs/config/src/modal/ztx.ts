@@ -7,6 +7,10 @@ import { Config } from "../config";
 export const ztxModalConfig: Config = {
   ...obiModalConfig,
   theme: ztxTheme,
+  chains: {
+    enabled: ["pulsar-2"],
+    default: "pulsar-2",
+  },
   keys: {
     enabled: [KeyType.ZAuth],
     required: [KeyType.ZAuth],

@@ -11,11 +11,11 @@ export const secretJsChains = {
     },
     urls: ["https://api.pulsar.scrttestnet.com:443"],
     denom: "uscrt",
+    startingUsdDebt: "0",
     ...commonTwilioConfig,
     bip: [{ path: "m/44'/529'/0'/0/0" }],
-    explorerUrl(_address: string) {
-      // TODO:
-      return "";
+    explorerUrl(address: string) {
+      return `https://testnet.ping.pub/secret/account/${address}`;
     },
   },
 };

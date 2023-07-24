@@ -1,6 +1,7 @@
 import { AbstractMultisigWalletSdk } from "./abstract";
 import { CosmosSdkMultisigWalletSdk } from "./cosmos-sdk";
 import { LegacyCosmosMultisigWalletSdk } from "./legacy-cosmos";
+import { SecretJsMultisigWalletSdk } from "./secret-js";
 import { Chain } from "../../chains";
 import { CosmJsClient, FeatherJsClient } from "../../clients";
 import { MultisigWallet } from "../../data-structures";
@@ -21,9 +22,8 @@ export class MultisigWalletSdk {
       onLegacyCosmosChain({ chainId }) {
         return new LegacyCosmosMultisigWalletSdk({ chainId, wallet });
       },
-      onSecretJsChain() {
-        // TODO:
-        throw new Error("SecretJS does not support multisig wallets");
+      onSecretJsChain({ chainId }) {
+        return new SecretJsMultisigWalletSdk({ chainId, wallet });
       },
       onTerraChain({ chainId }) {
         return new CosmosSdkMultisigWalletSdk({

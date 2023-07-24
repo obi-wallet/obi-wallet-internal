@@ -29,6 +29,13 @@ export class ChainStore {
 
     autorun(() => {
       this.setCurrentChain(configStore.config.chains.default);
+
+      if (
+        walletsStore.currentChainId &&
+        !configStore.config.chains.enabled.includes(walletsStore.currentChainId)
+      ) {
+        this.setCurrentChain(configStore.config.chains.default);
+      }
     });
   }
 
