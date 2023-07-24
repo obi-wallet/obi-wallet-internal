@@ -55,4 +55,8 @@ export const healthChecks: Record<
     types: [],
     checks: {},
   },
+  "pulsar-3": {
+    types: [],
+    checks: {},
+  },
 };

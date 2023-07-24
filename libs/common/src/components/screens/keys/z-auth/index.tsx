@@ -1,5 +1,3 @@
-import { AminoSignResponse, serializeSignDoc } from "@cosmjs/amino";
-import { Sha256 } from "@cosmjs/crypto";
 import { useTheme } from "@emotion/react";
 import {
   isSecretJsChain,
@@ -7,7 +5,6 @@ import {
   RpcError,
   Secp256k1PrivateKeySigner,
   secretJsChains,
-  Signer,
   Wallets,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -18,20 +15,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {
   BroadcastMode,
   MsgExecuteContract,
-  pubkeyToAddress,
   SecretNetworkClient,
 } from "secretjs";
-import {
-  encodeSecp256k1Signature,
-  AccountData,
-  AminoSigner,
-  StdSignDoc,
-} from "secretjs/dist/wallet_amino";
 import invariant from "tiny-invariant";
 
 import { useStore } from "../../../../contexts";
 import { createSessionKey, isSmallScreenNumber } from "../../../../helpers";
 import { KeyRoute, KeyStackParamList } from "../../../../router";
+import { SecretJsAminoSigner } from "../../../../secret-js-demo";
 import { Draft } from "../../../../stores";
 import { AsyncButton } from "../../../buttons";
 import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
@@ -155,60 +146,6 @@ export const ZAuthKey = observer<ZAuthKeyProps>(function ZAuthKey({
   );
 });
 
-class SecretJsAminoSigner implements AminoSigner {
-  protected constructor(
-    protected signer: Signer,
-    protected prefix: string,
-  ) {}
-
-  public static fromSigner({
-    signer,
-    prefix,
-  }: {
-    signer: Signer;
-    prefix: string;
-  }) {
-    return new SecretJsAminoSigner(signer, prefix);
-  }
-
-  public get address(): string {
-    return pubkeyToAddress(this.publicKey, this.prefix);
-  }
-
-  protected get publicKey(): Uint8Array {
-    return new Uint8Array(Buffer.from(this.signer.publicKey.value, "base64"));
-  }
-
-  public async getAccounts(): Promise<readonly AccountData[]> {
-    return [
-      {
-        algo: "secp256k1",
-        address: this.address,
-        pubkey: this.publicKey,
-      },
-    ];
-  }
-
-  public async signAmino(
-    signerAddress: string,
-    signDoc: StdSignDoc,
-  ): Promise<AminoSignResponse> {
-    if (signerAddress !== this.address) {
-      throw new Error(`Address ${signerAddress} not found in wallet`);
-    }
-    const signature = await this.signStdSignDoc(signDoc);
-    return {
-      signed: signDoc,
-      signature: encodeSecp256k1Signature(this.publicKey, signature),
-    };
-  }
-
-  public async signStdSignDoc(signDoc: StdSignDoc) {
-    const hash = new Sha256(serializeSignDoc(signDoc)).digest();
-    return await this.signer.signHash(hash);
-  }
-}
-
 async function createSecretJsWallet({
   draft,
   walletsStore,
@@ -252,16 +189,9 @@ async function createSecretJsWallet({
 
   const message = new MsgExecuteContract({
     sender: walletAddress,
-    contract_address: chain.accountCreatorAddress,
+    contract_address: chain.accountCreator.address,
     msg: {
       new_account: {
-        fee_debt: parseInt(chain.startingUsdDebt, 10),
-        gatekeeper_authorizations: {
-          beneficiary_auths: [],
-          message_auths: [],
-          sessionkeys: [],
-          spendlimit_auths: [],
-        },
         owner: walletAddress,
         signers: {
           signers: [
@@ -274,19 +204,16 @@ async function createSecretJsWallet({
         update_delay: 0,
       },
     },
-    code_hash:
-      // TODO: fetch & cache via TanStack Query
-      "b60a33a7753647900c2708028d8c370e0a5f1b42ab10a5558ef58031f7e4a8a7",
+    code_hash: chain.accountCreator.codeHash,
   });
 
-  const txOptions = {
+  const response = await client.tx.broadcast([message], {
     gasLimit: 4_000_000,
     gasPriceInFeeDenom: 0.1,
     feeDenom: "uscrt",
     broadcastMode: BroadcastMode.Block,
     waitForCommit: true,
-  };
-  const response = await client.tx.broadcast([message], txOptions);
+  });
 
   try {
     const contractAddress = response.arrayLog?.find((log) => {

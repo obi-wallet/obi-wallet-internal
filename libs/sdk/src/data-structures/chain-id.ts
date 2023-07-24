@@ -10,4 +10,5 @@ export const ChainIdSchema: z.ZodType<ChainId> = z.union([
   z.literal("phoenix-1"),
   z.literal("osmo-test-5"),
   z.literal("pulsar-2"),
+  z.literal("pulsar-3"),
 ]);

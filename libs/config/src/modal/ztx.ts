@@ -8,8 +8,8 @@ export const ztxModalConfig: Config = {
   ...obiModalConfig,
   theme: ztxTheme,
   chains: {
-    enabled: ["pulsar-2"],
-    default: "pulsar-2",
+    enabled: ["pulsar-3"],
+    default: "pulsar-3",
   },
   keys: {
     enabled: [KeyType.ZAuth],
