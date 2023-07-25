@@ -14,30 +14,28 @@ export class LegacyCosmosSdk extends AbstractSdk {
   public staking: CosmJsStakingSdk;
   public transactions: CosmJsTransactionsSdk;
 
-  protected client: CosmJsClient;
-
   protected constructor(protected override chainId: LegacyCosmosChainId) {
     super(chainId);
-    this.client = new CosmJsClient(chainId);
+    const client = new CosmJsClient(chainId);
     this.bank = new LegacyCosmosBankSdk({
       chainId,
-      client: this.client,
+      client,
     });
     this.contracts = new CosmJsContractsSdk({
       chainId,
-      client: this.client,
+      client,
     });
     this.gatekeeper = new LegacyCosmosGatekeeperSdk({
       chainId,
-      client: this.client,
+      client,
     });
     this.staking = new CosmJsStakingSdk({
       chainId,
-      client: this.client,
+      client,
     });
     this.transactions = new CosmJsTransactionsSdk({
       chainId,
-      client: this.client,
+      client,
     });
   }
 

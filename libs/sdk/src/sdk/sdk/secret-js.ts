@@ -1,7 +1,8 @@
 import { AbstractSdk } from "./abstract";
 import { SecretJsChainId } from "../../chains";
+import { SecretJsClient } from "../../clients";
 import { SecretJsBankSdk } from "../bank";
-import { AbstractContractsSdk } from "../contracts";
+import { AbstractContractsSdk, SecretJsContractsSdk } from "../contracts";
 import { AbstractGatekeeperSdk } from "../gatekeeper";
 import { AbstractStakingSdk } from "../staking";
 import { AbstractTransactionsSdk } from "../transactions";
@@ -15,9 +16,10 @@ export class SecretJsSdk extends AbstractSdk {
 
   protected constructor(protected override chainId: SecretJsChainId) {
     super(chainId);
+    const client = new SecretJsClient(chainId);
     this.bank = new SecretJsBankSdk({ chainId });
+    this.contracts = new SecretJsContractsSdk({ chainId, client });
     // TODO:
-    this.contracts = null!;
     this.gatekeeper = null!;
     this.staking = null!;
     this.transactions = null!;
