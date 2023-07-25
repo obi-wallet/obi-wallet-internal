@@ -155,15 +155,7 @@ export class CosmJsTransactionsSdk extends AbstractTransactionsSdk {
   }: {
     signedTransaction: SignedTransaction;
   }): Promise<BroadcastTransactionResult> {
-    return await this.client.withStargateClient(async (client) => {
-      const rawResult = await client.broadcastTx(signedTransaction);
-      return {
-        success: isDeliverTxSuccess(rawResult),
-        transactionHash: rawResult.transactionHash,
-        rawLog: rawResult.rawLog,
-        rawResult,
-      };
-    });
+    return await this.client.broadcastSignedTransaction(signedTransaction);
   }
 
   public async broadcastSignedTransactionAndLendFees({

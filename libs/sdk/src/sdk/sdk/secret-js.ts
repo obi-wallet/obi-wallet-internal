@@ -2,20 +2,17 @@ import { AbstractSdk } from "./abstract";
 import { SecretJsChainId } from "../../chains";
 import { SecretJsClient } from "../../clients";
 import { SecretJsBankSdk } from "../bank";
-import { AbstractContractsSdk, SecretJsContractsSdk } from "../contracts";
-import {
-  AbstractGatekeeperSdk,
-  NotImplementedGatekeeperSdk,
-} from "../gatekeeper";
-import { AbstractStakingSdk, NotImplementedStakingSdk } from "../staking";
-import { AbstractTransactionsSdk } from "../transactions";
+import { SecretJsContractsSdk } from "../contracts";
+import { NotImplementedGatekeeperSdk } from "../gatekeeper";
+import { NotImplementedStakingSdk } from "../staking";
+import { SecretJsTransactionsSdk } from "../transactions";
 
 export class SecretJsSdk extends AbstractSdk {
   public bank: SecretJsBankSdk;
-  public contracts: AbstractContractsSdk;
-  public gatekeeper: AbstractGatekeeperSdk;
-  public staking: AbstractStakingSdk;
-  public transactions: AbstractTransactionsSdk;
+  public contracts: SecretJsContractsSdk;
+  public gatekeeper: NotImplementedGatekeeperSdk;
+  public staking: NotImplementedStakingSdk;
+  public transactions: SecretJsTransactionsSdk;
 
   protected constructor(protected override chainId: SecretJsChainId) {
     super(chainId);
@@ -24,8 +21,7 @@ export class SecretJsSdk extends AbstractSdk {
     this.contracts = new SecretJsContractsSdk({ chainId, client });
     this.gatekeeper = new NotImplementedGatekeeperSdk(chainId);
     this.staking = new NotImplementedStakingSdk(chainId);
-    // TODO:
-    this.transactions = null!;
+    this.transactions = new SecretJsTransactionsSdk({ chainId, client });
   }
 
   public static chainId(chainId: SecretJsChainId) {
