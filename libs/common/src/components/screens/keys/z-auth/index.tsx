@@ -1,34 +1,19 @@
 import { useTheme } from "@emotion/react";
-import {
-  AccountValidationResult,
-  isSecretJsChain,
-  Messages,
-  MultisigKey,
-  Sdk,
-  Secp256k1PrivateKeySigner,
-  SecretJsAminoSigner,
-  secretJsChains,
-  SecretJsClient,
-  Wallets,
-} from "@obi-wallet/sdk";
+import { MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TxResponse } from "secretjs";
-import invariant from "tiny-invariant";
 
 import { useStore } from "../../../../contexts";
 import { createSessionKey, isSmallScreenNumber } from "../../../../helpers";
 import { KeyRoute, KeyStackParamList } from "../../../../router";
-import { Draft } from "../../../../stores";
 import { AsyncButton } from "../../../buttons";
 import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
 import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { Text } from "../../../typography";
 
 const DEMO_PUBLIC_KEY = "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI";
-const DEMO_PRIVATE_KEY = "jrfHogEDo91xaC0Kym/BMheAhlm5z93fVwMT8mKTGy4=";
 
 export type ZAuthKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -129,11 +114,10 @@ export const ZAuthKey = observer<ZAuthKeyProps>(function ZAuthKey({
                   value: DEMO_PUBLIC_KEY,
                 });
 
-                await createSecretJsWallet({
-                  draft,
-                  walletsStore,
+                await walletsStore.createWallet({
+                  multisigKey: draft.value,
+                  demoMode: false,
                 });
-
                 await onSubmit();
               }}
             />
@@ -143,57 +127,3 @@ export const ZAuthKey = observer<ZAuthKeyProps>(function ZAuthKey({
     </OsmosisScreenContainer>
   );
 });
-
-async function createSecretJsWallet({
-  draft,
-  walletsStore,
-}: {
-  draft: Draft<MultisigKey>;
-  walletsStore: Wallets;
-}) {
-  const chainId = draft.value.chainId;
-  invariant(isSecretJsChain(chainId), "Expected Secret.js chain");
-
-  const chain = secretJsChains[chainId];
-  const sdk = Sdk.chainId(chainId);
-  const messagesSdk = Messages.chainId(chainId);
-
-  const signer = SecretJsAminoSigner.fromSigner({
-    signer: new Secp256k1PrivateKeySigner(DEMO_PRIVATE_KEY),
-    prefix: chain.prefix,
-  });
-  const client = new SecretJsClient(chainId);
-
-  const walletAddress = signer.address;
-  const accountValidationResult = await sdk.transactions.validateAccount(
-    walletAddress,
-  );
-  if (accountValidationResult < AccountValidationResult.ACCOUNT_NOT_READY) {
-    console.log("Need to prepare account", walletAddress);
-    return;
-  }
-
-  const signedTransaction = await client.createAndSignTransaction({
-    signer: new Secp256k1PrivateKeySigner(DEMO_PRIVATE_KEY),
-    messages: [messagesSdk.getCreateWalletMessage(draft.value)],
-  });
-  const response = (await client.broadcastSignedTransaction(signedTransaction))
-    .rawResult as TxResponse;
-
-  try {
-    const contractAddress = response.arrayLog?.find((log) => {
-      return log.type === "instantiate" && log.key === "contract_address";
-    })?.value;
-
-    invariant(contractAddress, "No contract address found");
-
-    await walletsStore.__internal_createWallet({
-      multisigKey: draft.value,
-      proxyAddress: contractAddress,
-      demoMode: false,
-    });
-  } catch (e) {
-    console.log("original error", e);
-    console.log("Could not parse log", response);
-  }
-}

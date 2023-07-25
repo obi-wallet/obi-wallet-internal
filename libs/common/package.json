@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "repository": "https://github.com/obi-wallet/obi-wallet-internal.git",
   "dependencies": {
-    "@cosmjs/amino": "*",
     "@cosmjs/cosmwasm-stargate": "*",
     "@cosmjs/crypto": "*",
     "@cosmjs/stargate": "*",
@@ -31,7 +30,6 @@
     "@tanstack/react-query": "*",
     "@terra-money/feather.js": "*",
     "bignumber.js": "*",
-    "cosmjs-types": "*",
     "fuse.js": "*",
     "isomorphic-unfetch": "*",
     "lottie-react": "*",
@@ -62,7 +60,6 @@
     "react-native-svg": "*",
     "react-qr-code": "*",
     "rooks": "*",
-    "secretjs": "*",
     "secp256k1": "*",
     "tiny-invariant": "*",
     "tiny-warning": "*",

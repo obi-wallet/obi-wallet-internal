@@ -94,23 +94,6 @@ export class Wallets {
       demoMode,
     });
     if (!response.approved || !response.payload.success) return response;
-    await this.__internal_createWallet({
-      multisigKey,
-      proxyAddress: response.payload.proxyAddress,
-      demoMode,
-    });
-    return response;
-  }
-
-  public async __internal_createWallet({
-    multisigKey,
-    proxyAddress,
-    demoMode,
-  }: {
-    multisigKey: MultisigKey;
-    proxyAddress: string;
-    demoMode: boolean;
-  }) {
     const wallet = this._factory.create({
       type: demoMode ? "multisig-demo" : "multisig",
       data: {
@@ -119,13 +102,14 @@ export class Wallets {
         owner: multisigKey.toJSON(),
         proxyAddress: {
           v: 1,
-          address: proxyAddress,
+          address: response.payload.proxyAddress,
         },
         singlesigWallets: [],
         currentAccount: null,
       },
     });
     this.upsertWallet(wallet);
+    return response;
   }
 
   public async recoverWallet({
