@@ -7,7 +7,7 @@ import {
   AbstractGatekeeperSdk,
   NotImplementedGatekeeperSdk,
 } from "../gatekeeper";
-import { AbstractStakingSdk } from "../staking";
+import { AbstractStakingSdk, NotImplementedStakingSdk } from "../staking";
 import { AbstractTransactionsSdk } from "../transactions";
 
 export class SecretJsSdk extends AbstractSdk {
@@ -23,8 +23,8 @@ export class SecretJsSdk extends AbstractSdk {
     this.bank = new SecretJsBankSdk({ chainId });
     this.contracts = new SecretJsContractsSdk({ chainId, client });
     this.gatekeeper = new NotImplementedGatekeeperSdk(chainId);
+    this.staking = new NotImplementedStakingSdk(chainId);
     // TODO:
-    this.staking = null!;
     this.transactions = null!;
   }
 
