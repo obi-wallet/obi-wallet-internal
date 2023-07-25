@@ -1,8 +1,10 @@
 import { useTheme } from "@emotion/react";
 import {
+  AccountValidationResult,
   isSecretJsChain,
+  Messages,
   MultisigKey,
-  RpcError,
+  Sdk,
   Secp256k1PrivateKeySigner,
   SecretJsAminoSigner,
   secretJsChains,
@@ -10,11 +12,10 @@ import {
   Wallets,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { BaseAccount } from "cosmjs-types/cosmos/auth/v1beta1/auth";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BroadcastMode, MsgExecuteContract } from "secretjs";
+import { TxResponse } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { useStore } from "../../../../contexts";
@@ -152,7 +153,10 @@ async function createSecretJsWallet({
 }) {
   const chainId = draft.value.chainId;
   invariant(isSecretJsChain(chainId), "Expected Secret.js chain");
+
   const chain = secretJsChains[chainId];
+  const sdk = Sdk.chainId(chainId);
+  const messagesSdk = Messages.chainId(chainId);
 
   const signer = SecretJsAminoSigner.fromSigner({
     signer: new Secp256k1PrivateKeySigner(DEMO_PRIVATE_KEY),
@@ -160,69 +164,36 @@ async function createSecretJsWallet({
   });
   const client = new SecretJsClient(chainId);
 
-  await client.withSigningSecretNetworkClient(signer, async (client) => {
-    const walletAddress = signer.address;
+  const walletAddress = signer.address;
+  const accountValidationResult = await sdk.transactions.validateAccount(
+    walletAddress,
+  );
+  if (accountValidationResult < AccountValidationResult.ACCOUNT_NOT_READY) {
+    console.log("Need to prepare account", walletAddress);
+    return;
+  }
 
-    // TODO: handle key preparation
-    let account: { account?: BaseAccount | undefined } = {};
-    try {
-      account = (await client.query.auth.account({
-        address: walletAddress,
-      })) as { account?: BaseAccount | undefined };
-    } catch (e) {
-      const data = RpcError.safeParse(e);
-      if (data.success && data.data.message.includes("code = NotFound")) {
-        // TODO: lend fees
-        console.log("Need to prepare account", walletAddress);
-        return;
-      }
-    }
-
-    if (!account.account) return;
-
-    const message = new MsgExecuteContract({
-      sender: walletAddress,
-      contract_address: chain.accountCreator.address,
-      msg: {
-        new_account: {
-          owner: walletAddress,
-          signers: {
-            signers: [
-              {
-                address: walletAddress,
-                ty: "z-auth",
-              },
-            ],
-          },
-          update_delay: 0,
-        },
-      },
-      code_hash: chain.accountCreator.codeHash,
-    });
-
-    const response = await client.tx.broadcast([message], {
-      gasLimit: 4_000_000,
-      gasPriceInFeeDenom: 0.1,
-      feeDenom: "uscrt",
-      broadcastMode: BroadcastMode.Block,
-      waitForCommit: true,
-    });
-
-    try {
-      const contractAddress = response.arrayLog?.find((log) => {
-        return log.type === "instantiate" && log.key === "contract_address";
-      })?.value;
-
-      invariant(contractAddress, "No contract address found");
-
-      await walletsStore.__internal_createWallet({
-        multisigKey: draft.value,
-        proxyAddress: contractAddress,
-        demoMode: false,
-      });
-    } catch (e) {
-      console.log("original error", e);
-      console.log("Could not parse log", response);
-    }
+  const signedTransaction = await client.createAndSignTransaction({
+    signer: new Secp256k1PrivateKeySigner(DEMO_PRIVATE_KEY),
+    messages: [messagesSdk.getCreateWalletMessage(draft.value)],
   });
+  const response = (await client.broadcastSignedTransaction(signedTransaction))
+    .rawResult as TxResponse;
+
+  try {
+    const contractAddress = response.arrayLog?.find((log) => {
+      return log.type === "instantiate" && log.key === "contract_address";
+    })?.value;
+
+    invariant(contractAddress, "No contract address found");
+
+    await walletsStore.__internal_createWallet({
+      multisigKey: draft.value,
+      proxyAddress: contractAddress,
+      demoMode: false,
+    });
+  } catch (e) {
+    console.log("original error", e);
+    console.log("Could not parse log", response);
+  }
 }
