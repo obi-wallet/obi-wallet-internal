@@ -3,14 +3,14 @@ import { LegacyCosmosChainId } from "../../chains";
 import { CosmJsClient } from "../../clients";
 import { LegacyCosmosBankSdk } from "../bank";
 import { CosmJsContractsSdk } from "../contracts";
-import { LegacyCosmosGatekeeperSdk } from "../gatekeeper";
+import { NotImplementedGatekeeperSdk } from "../gatekeeper";
 import { CosmJsStakingSdk } from "../staking";
 import { CosmJsTransactionsSdk } from "../transactions";
 
 export class LegacyCosmosSdk extends AbstractSdk {
   public bank: LegacyCosmosBankSdk;
   public contracts: CosmJsContractsSdk;
-  public gatekeeper: LegacyCosmosGatekeeperSdk;
+  public gatekeeper: NotImplementedGatekeeperSdk;
   public staking: CosmJsStakingSdk;
   public transactions: CosmJsTransactionsSdk;
 
@@ -25,10 +25,7 @@ export class LegacyCosmosSdk extends AbstractSdk {
       chainId,
       client,
     });
-    this.gatekeeper = new LegacyCosmosGatekeeperSdk({
-      chainId,
-      client,
-    });
+    this.gatekeeper = new NotImplementedGatekeeperSdk(chainId);
     this.staking = new CosmJsStakingSdk({
       chainId,
       client,

@@ -3,7 +3,10 @@ import { SecretJsChainId } from "../../chains";
 import { SecretJsClient } from "../../clients";
 import { SecretJsBankSdk } from "../bank";
 import { AbstractContractsSdk, SecretJsContractsSdk } from "../contracts";
-import { AbstractGatekeeperSdk } from "../gatekeeper";
+import {
+  AbstractGatekeeperSdk,
+  NotImplementedGatekeeperSdk,
+} from "../gatekeeper";
 import { AbstractStakingSdk } from "../staking";
 import { AbstractTransactionsSdk } from "../transactions";
 
@@ -19,8 +22,8 @@ export class SecretJsSdk extends AbstractSdk {
     const client = new SecretJsClient(chainId);
     this.bank = new SecretJsBankSdk({ chainId });
     this.contracts = new SecretJsContractsSdk({ chainId, client });
+    this.gatekeeper = new NotImplementedGatekeeperSdk(chainId);
     // TODO:
-    this.gatekeeper = null!;
     this.staking = null!;
     this.transactions = null!;
   }
