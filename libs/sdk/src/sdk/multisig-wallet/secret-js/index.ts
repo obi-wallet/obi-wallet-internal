@@ -43,7 +43,6 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
   }
 
   protected async isOutdatedQueryFn(): Promise<boolean> {
-    notImplemented("isOutdatedQueryFn not implemented for SecretJS");
     return false;
   }
 

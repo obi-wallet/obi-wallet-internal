@@ -4,7 +4,9 @@ import {
   MultisigKey,
   RpcError,
   Secp256k1PrivateKeySigner,
+  SecretJsAminoSigner,
   secretJsChains,
+  SecretJsClient,
   Wallets,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -12,17 +14,12 @@ import { BaseAccount } from "cosmjs-types/cosmos/auth/v1beta1/auth";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  BroadcastMode,
-  MsgExecuteContract,
-  SecretNetworkClient,
-} from "secretjs";
+import { BroadcastMode, MsgExecuteContract } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { useStore } from "../../../../contexts";
 import { createSessionKey, isSmallScreenNumber } from "../../../../helpers";
 import { KeyRoute, KeyStackParamList } from "../../../../router";
-import { SecretJsAminoSigner } from "../../../../secret-js-demo";
 import { Draft } from "../../../../stores";
 import { AsyncButton } from "../../../buttons";
 import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
@@ -157,78 +154,75 @@ async function createSecretJsWallet({
   invariant(isSecretJsChain(chainId), "Expected Secret.js chain");
   const chain = secretJsChains[chainId];
 
-  const wallet = SecretJsAminoSigner.fromSigner({
+  const signer = SecretJsAminoSigner.fromSigner({
     signer: new Secp256k1PrivateKeySigner(DEMO_PRIVATE_KEY),
     prefix: chain.prefix,
   });
-  const walletAddress = wallet.address;
-  const client = new SecretNetworkClient({
-    // Create a client to interact with the network
-    url: chain.urls[0],
-    chainId: chain.chainId,
-    wallet,
-    walletAddress,
-  });
+  const client = new SecretJsClient(chainId);
 
-  // TODO: handle key preparation
-  let account: { account?: BaseAccount | undefined } = {};
-  try {
-    account = (await client.query.auth.account({
-      address: walletAddress,
-    })) as { account?: BaseAccount | undefined };
-  } catch (e) {
-    const data = RpcError.safeParse(e);
-    if (data.success && data.data.message.includes("code = NotFound")) {
-      // TODO: lend fees
-      console.log("Need to prepare account", walletAddress);
-      return;
+  await client.withSigningSecretNetworkClient(signer, async (client) => {
+    const walletAddress = signer.address;
+
+    // TODO: handle key preparation
+    let account: { account?: BaseAccount | undefined } = {};
+    try {
+      account = (await client.query.auth.account({
+        address: walletAddress,
+      })) as { account?: BaseAccount | undefined };
+    } catch (e) {
+      const data = RpcError.safeParse(e);
+      if (data.success && data.data.message.includes("code = NotFound")) {
+        // TODO: lend fees
+        console.log("Need to prepare account", walletAddress);
+        return;
+      }
     }
-  }
 
-  if (!account.account) return;
+    if (!account.account) return;
 
-  const message = new MsgExecuteContract({
-    sender: walletAddress,
-    contract_address: chain.accountCreator.address,
-    msg: {
-      new_account: {
-        owner: walletAddress,
-        signers: {
-          signers: [
-            {
-              address: walletAddress,
-              ty: "z-auth",
-            },
-          ],
+    const message = new MsgExecuteContract({
+      sender: walletAddress,
+      contract_address: chain.accountCreator.address,
+      msg: {
+        new_account: {
+          owner: walletAddress,
+          signers: {
+            signers: [
+              {
+                address: walletAddress,
+                ty: "z-auth",
+              },
+            ],
+          },
+          update_delay: 0,
         },
-        update_delay: 0,
       },
-    },
-    code_hash: chain.accountCreator.codeHash,
-  });
-
-  const response = await client.tx.broadcast([message], {
-    gasLimit: 4_000_000,
-    gasPriceInFeeDenom: 0.1,
-    feeDenom: "uscrt",
-    broadcastMode: BroadcastMode.Block,
-    waitForCommit: true,
-  });
-
-  try {
-    const contractAddress = response.arrayLog?.find((log) => {
-      return log.type === "instantiate" && log.key === "contract_address";
-    })?.value;
-
-    invariant(contractAddress, "No contract address found");
-
-    await walletsStore.__internal_createWallet({
-      multisigKey: draft.value,
-      proxyAddress: contractAddress,
-      demoMode: false,
+      code_hash: chain.accountCreator.codeHash,
     });
-  } catch (e) {
-    console.log("original error", e);
-    console.log("Could not parse log", response);
-  }
+
+    const response = await client.tx.broadcast([message], {
+      gasLimit: 4_000_000,
+      gasPriceInFeeDenom: 0.1,
+      feeDenom: "uscrt",
+      broadcastMode: BroadcastMode.Block,
+      waitForCommit: true,
+    });
+
+    try {
+      const contractAddress = response.arrayLog?.find((log) => {
+        return log.type === "instantiate" && log.key === "contract_address";
+      })?.value;
+
+      invariant(contractAddress, "No contract address found");
+
+      await walletsStore.__internal_createWallet({
+        multisigKey: draft.value,
+        proxyAddress: contractAddress,
+        demoMode: false,
+      });
+    } catch (e) {
+      console.log("original error", e);
+      console.log("Could not parse log", response);
+    }
+  });
 }

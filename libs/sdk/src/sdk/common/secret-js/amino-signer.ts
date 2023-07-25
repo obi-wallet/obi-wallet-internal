@@ -4,7 +4,6 @@ import {
   serializeSignDoc,
 } from "@cosmjs/amino";
 import { Sha256 } from "@cosmjs/crypto";
-import { Signer } from "@obi-wallet/sdk";
 import { pubkeyToAddress } from "secretjs";
 import type {
   AccountData,
@@ -12,7 +11,13 @@ import type {
   StdSignDoc,
 } from "secretjs/dist/wallet_amino";
 
-export class SecretJsAminoSigner implements AminoSigner {
+import { Signer } from "../../../signers";
+
+export interface AminoSignerWithAddress extends AminoSigner {
+  readonly address: string;
+}
+
+export class SecretJsAminoSigner implements AminoSignerWithAddress {
   protected constructor(
     protected signer: Signer,
     protected prefix: string,

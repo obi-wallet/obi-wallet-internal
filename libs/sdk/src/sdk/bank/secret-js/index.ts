@@ -22,7 +22,6 @@ export class SecretJsBankSdk extends AbstractBankSdk {
   }
 
   protected async pricesQueryFn(): Promise<Record<string, number>> {
-    notImplemented("pricesQueryFn not implemented for SecretJS");
     return {};
   }
 
