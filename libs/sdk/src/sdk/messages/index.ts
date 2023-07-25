@@ -1,6 +1,7 @@
 import { AbstractMessages } from "./abstract";
 import { CosmosSdkMessages } from "./cosmos-sdk";
 import { LegacyCosmosMessages } from "./legacy-cosmos";
+import { SecretJsMessages } from "./secret-js";
 import { Chain, ChainId } from "../../chains";
 
 export class Messages {
@@ -18,9 +19,8 @@ export class Messages {
       onLegacyCosmosChain({ chainId }) {
         return LegacyCosmosMessages.chainId(chainId);
       },
-      onSecretJsChain() {
-        // TODO:
-        throw new Error("SecretJS does not support messages");
+      onSecretJsChain({ chainId }) {
+        return SecretJsMessages.chainId(chainId);
       },
       onTerraChain({ chainId }) {
         return CosmosSdkMessages.chainId(chainId);
