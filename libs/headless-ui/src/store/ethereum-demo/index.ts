@@ -147,50 +147,60 @@ export class EthereumDemoStore {
   protected async generateEthereumAccount(): Promise<EthereumAccount> {
     const response = await fetch("/api/ethereum-demo/create-account", {
       method: "POST",
+      body: JSON.stringify({
+        publicKey: this.zAuthKey.publicKey,
+        chainId: this.chain.chainId,
+      }),
     });
-    const { keyPair, address } =
-      (await response.json()) as EthereumAccountWithPrivateKey;
+    const { keyPair, address } = (await response.json()) as {
+      keyPair: {
+        publicKey: Secp256k1PublicKey;
+        privateKey?: string;
+      };
+      address: string;
+    };
 
-    const zAuthKeyAddress = this.sdk.transactions.getAddressOfPublicKey(
-      this.zAuthKey.publicKey,
-    );
+    if (keyPair.privateKey) {
+      const zAuthKeyAddress = this.sdk.transactions.getAddressOfPublicKey(
+        this.zAuthKey.publicKey,
+      );
 
-    const hash = await this.client.withSecretNetworkClient(async (client) => {
-      const contract = await client.query.compute.contractInfo({
-        contract_address: this.wallet.proxyAddress,
+      const hash = await this.client.withSecretNetworkClient(async (client) => {
+        const contract = await client.query.compute.contractInfo({
+          contract_address: this.wallet.proxyAddress,
+        });
+        return client.query.compute.codeHashByCodeId({
+          code_id: contract.ContractInfo?.code_id,
+        });
       });
-      return client.query.compute.codeHashByCodeId({
-        code_id: contract.ContractInfo?.code_id,
-      });
-    });
-    const signedTransaction = await this.client.createAndSignTransaction({
-      signer: new ZAuthKeySigner(this.zAuthKey),
-      messages: [
-        new MsgExecuteContract({
-          sender: zAuthKeyAddress,
-          contract_address: this.chain.secretSigner.address,
-          msg: {
-            add_key: {
-              public_key: Buffer.from(
-                this.zAuthKey.publicKey.value,
-                "base64",
-              ).toString("hex"),
-              user_entry_address: this.wallet.proxyAddress,
-              user_entry_code_hash: hash.code_hash,
-              inject_privkey: Buffer.from(
-                keyPair.privateKey,
-                "base64",
-              ).toString("hex"),
+      const signedTransaction = await this.client.createAndSignTransaction({
+        signer: new ZAuthKeySigner(this.zAuthKey),
+        messages: [
+          new MsgExecuteContract({
+            sender: zAuthKeyAddress,
+            contract_address: this.chain.secretSigner.address,
+            msg: {
+              add_key: {
+                public_key: Buffer.from(
+                  this.zAuthKey.publicKey.value,
+                  "base64",
+                ).toString("hex"),
+                user_entry_address: this.wallet.proxyAddress,
+                user_entry_code_hash: hash.code_hash,
+                inject_privkey: Buffer.from(
+                  keyPair.privateKey,
+                  "base64",
+                ).toString("hex"),
+              },
             },
-          },
-          code_hash: this.chain.secretSigner.codeHash,
-        }),
-      ],
-    });
-    const broadcastTransactionResult =
-      await this.client.broadcastSignedTransaction(signedTransaction);
-    console.log(broadcastTransactionResult);
-    console.log("Paymaster address", address);
+            code_hash: this.chain.secretSigner.codeHash,
+          }),
+        ],
+      });
+      const broadcastTransactionResult =
+        await this.client.broadcastSignedTransaction(signedTransaction);
+      console.log(broadcastTransactionResult);
+    }
 
     return {
       publicKey: keyPair.publicKey,
