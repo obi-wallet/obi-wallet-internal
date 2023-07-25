@@ -1,4 +1,4 @@
-import { EthereumAccount } from "@obi-wallet/headless-ui";
+import { EthereumAccountWithPrivateKey } from "@obi-wallet/headless-ui";
 import { generateSec256k1KeyPair, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { Signer, SigningKey, Wallet } from "ethers";
 import { NextResponse } from "next/server";
@@ -17,7 +17,7 @@ export async function POST(_: Request) {
   return NextResponse.json(account);
 }
 
-async function generateEthereumAccount(): Promise<EthereumAccount> {
+async function generateEthereumAccount(): Promise<EthereumAccountWithPrivateKey> {
   const keyPair = generateSec256k1KeyPair();
   const address = await generateEthereumAddress(keyPair);
   return {

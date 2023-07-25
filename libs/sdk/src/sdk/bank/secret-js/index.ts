@@ -28,7 +28,7 @@ export class SecretJsBankSdk extends AbstractBankSdk {
   protected override enrichTokenWithoutUsdValue(token: Token): EnrichedToken {
     switch (token.id) {
       default:
-        return super.enrichToken(token);
+        return super.enrichTokenWithoutUsdValue(token);
     }
   }
 
