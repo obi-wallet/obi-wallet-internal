@@ -1,14 +1,9 @@
-import { EthereumAccount } from "@obi-wallet/headless-ui";
-import {
-  Contract,
-  JsonRpcProvider,
-  parseUnits,
-  Signer,
-  SigningKey,
-  Wallet,
-} from "ethers";
+import { Secp256k1PublicKey, SecretJsChainId } from "@obi-wallet/sdk";
+import { Contract, JsonRpcProvider, parseUnits } from "ethers";
 import { NextResponse } from "next/server";
 import { Client, Presets } from "userop";
+
+import { SecretJsSigner } from "../../../../src/secret-js-signer";
 
 const config = {
   rpcUrl: process.env.STACKUP_RPC_URL,
@@ -22,7 +17,8 @@ const provider = new JsonRpcProvider(config.rpcUrl);
 
 export async function POST(request: Request) {
   const body: {
-    account: EthereumAccount;
+    chainId: SecretJsChainId;
+    publicKey: Secp256k1PublicKey;
     to: string;
     token: {
       id: string;
@@ -36,10 +32,10 @@ export async function POST(request: Request) {
   );
   const client = await Client.init(config.rpcUrl!);
   const amount = parseUnits(body.token.rawAmount, 0);
-  const signingKey = new SigningKey(
-    Buffer.from(body.account.keyPair.privateKey, "base64"),
-  );
-  const signer: Signer = new Wallet(signingKey);
+  const signer = new SecretJsSigner({
+    chainId: body.chainId,
+    publicKey: body.publicKey,
+  });
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
     signer,
