@@ -1,7 +1,7 @@
 import { Secp256k1PublicKey, SecretJsChainId } from "@obi-wallet/sdk";
 import { Contract, JsonRpcProvider, parseUnits } from "ethers";
 import { NextResponse } from "next/server";
-import { Client, Presets } from "userop";
+import { Client, IUserOperation, Presets } from "userop";
 
 import { SecretJsSigner } from "../../../../src/secret-js-signer";
 
@@ -43,13 +43,10 @@ export async function POST(request: Request) {
     { paymasterMiddleware },
   );
 
-  async function handleUserOperation() {
+  async function buildUserOperation() {
     if (body.token.id === "eth") {
-      return await client.sendUserOperation(
+      return await client.buildUserOperation(
         simpleAccount.execute(body.to, amount, "0x"),
-        {
-          dryRun: false,
-        },
       );
     } else {
       const erc20 = new Contract(
@@ -69,21 +66,32 @@ export async function POST(request: Request) {
         ] as const,
         provider,
       );
-      return await client.sendUserOperation(
+      return await client.buildUserOperation(
         simpleAccount.execute(
           await erc20.getAddress(),
           0,
           erc20.interface.encodeFunctionData("transfer", [body.to, amount]),
         ),
-        {
-          dryRun: false,
-        },
       );
     }
   }
 
+  async function handleUserOperation(userOperation: IUserOperation) {
+    try {
+      return await client.execUserOperation(userOperation);
+    } catch (e) {
+      const signature = userOperation.signature as string;
+      userOperation.signature = `${signature.substring(
+        0,
+        userOperation.signature.length - 2,
+      )}1b`;
+      return await client.execUserOperation(userOperation);
+    }
+  }
+
   try {
-    const userOperation = await handleUserOperation();
+    const builtUserOperation = await buildUserOperation();
+    const userOperation = await handleUserOperation(builtUserOperation);
     console.log("userOp", userOperation);
     const event = await userOperation.wait();
     console.log("event", event);
@@ -92,4 +100,5 @@ export async function POST(request: Request) {
     console.log("error", e);
     return NextResponse.json(e);
   }
+  return NextResponse.json({});
 }
