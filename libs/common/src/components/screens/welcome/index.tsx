@@ -47,18 +47,14 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       });
     }
 
-    function onZepeto() {
-      const newMultisigKey = ObservableMultisigKey.create(
-        chainStore.currentChain,
-      );
-      const draftId = draftsStore.create({
-        original: newMultisigKey,
+    async function onZepeto() {
+      const response = await fetch("/api/zauth/create-account", {
+        method: "POST",
+        body: JSON.stringify({
+          chainId: chainStore.currentChain,
+        }),
       });
-      navigation.navigate(KeyRoute.ZAuthKey, {
-        draftId,
-        flow: KeyFlow.CreateWallet,
-        demoMode: false,
-      });
+      console.log(await response.json());
     }
 
     function onRecover() {

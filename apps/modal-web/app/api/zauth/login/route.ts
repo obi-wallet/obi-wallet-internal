@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { fetchUserId } from "../../../../src/zauth";
@@ -22,22 +23,22 @@ export async function POST(request: Request) {
     );
   }
 
-  const headers = new Headers();
-  headers.append(
-    "Set-Cookie",
-    `zepetoAccessToken=${accessToken}; HttpOnly; Max-Age=3600000; Path=/`,
-  );
-  headers.append(
-    "Set-Cookie",
-    `zepetoRefreshToken=${refreshToken}; HttpOnly; Max-Age=3600000; Path=/`,
-  );
+  cookies().set({
+    name: "zepetoAccessToken",
+    value: accessToken,
+    httpOnly: true,
+    maxAge: 3600000,
+    path: "/",
+  });
+  cookies().set({
+    name: "zepetoRefreshToken",
+    value: refreshToken,
+    httpOnly: true,
+    maxAge: 3600000,
+    path: "/",
+  });
 
-  return NextResponse.json(
-    {
-      userId,
-    },
-    {
-      headers,
-    },
-  );
+  return NextResponse.json({
+    userId,
+  });
 }

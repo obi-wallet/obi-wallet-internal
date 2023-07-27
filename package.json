@@ -93,6 +93,7 @@
     "mobx": "^6.10.0",
     "mobx-react-lite": "^4.0.3",
     "mobx-utils": "^6.0.7",
+    "mongoose": "^7.4.1",
     "nanoid": "^4.0.2",
     "next": "^13.4.10",
     "node-html-parser": "^5.4.2",
