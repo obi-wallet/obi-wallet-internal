@@ -1,14 +1,12 @@
-import { EthereumAccount } from "@obi-wallet/headless-ui";
-import {
-  Contract,
-  JsonRpcProvider,
-  parseUnits,
-  Signer,
-  SigningKey,
-  Wallet,
-} from "ethers";
+import { Secp256k1PublicKey, SecretJsChainId } from "@obi-wallet/sdk";
+import { Contract, JsonRpcProvider, parseUnits } from "ethers";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { Client, Presets } from "userop";
+import { Client, IUserOperation, Presets } from "userop";
+
+import { connect } from "../../../../src/db";
+import { SecretJsSigner } from "../../../../src/secret-js-signer";
+import { fetchUserId } from "../../../../src/zauth";
 
 const config = {
   rpcUrl: process.env.STACKUP_RPC_URL,
@@ -22,7 +20,8 @@ const provider = new JsonRpcProvider(config.rpcUrl);
 
 export async function POST(request: Request) {
   const body: {
-    account: EthereumAccount;
+    chainId: SecretJsChainId;
+    publicKey: Secp256k1PublicKey;
     to: string;
     token: {
       id: string;
@@ -30,16 +29,39 @@ export async function POST(request: Request) {
     };
   } = await request.json();
 
+  const accessToken = cookies().get("zepetoAccessToken")?.value;
+  const refreshToken = cookies().get("zepetoRefreshToken")?.value;
+
+  const userId = accessToken ? await fetchUserId(accessToken) : null;
+
+  if (!accessToken || !refreshToken || !userId) {
+    return NextResponse.json(
+      {
+        error: "invalid token",
+      },
+      { status: 401 },
+    );
+  }
+
+  const UserModel = await connect();
+  const user = await UserModel.findOne({ userId });
+
   const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(
     config.paymaster.rpcUrl!,
     config.paymaster.context,
   );
   const client = await Client.init(config.rpcUrl!);
   const amount = parseUnits(body.token.rawAmount, 0);
-  const signingKey = new SigningKey(
-    Buffer.from(body.account.keyPair.privateKey, "base64"),
-  );
-  const signer: Signer = new Wallet(signingKey);
+  const signer = new SecretJsSigner({
+    chainId: body.chainId,
+    keyPair: {
+      publicKey: {
+        type: "tendermint/PubKeySecp256k1",
+        value: user.publicKey,
+      },
+      privateKey: user.privateKey,
+    },
+  });
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
     signer,
@@ -47,13 +69,10 @@ export async function POST(request: Request) {
     { paymasterMiddleware },
   );
 
-  async function handleUserOperation() {
+  async function buildUserOperation() {
     if (body.token.id === "eth") {
-      return await client.sendUserOperation(
+      return await client.buildUserOperation(
         simpleAccount.execute(body.to, amount, "0x"),
-        {
-          dryRun: false,
-        },
       );
     } else {
       const erc20 = new Contract(
@@ -73,21 +92,32 @@ export async function POST(request: Request) {
         ] as const,
         provider,
       );
-      return await client.sendUserOperation(
+      return await client.buildUserOperation(
         simpleAccount.execute(
           await erc20.getAddress(),
           0,
           erc20.interface.encodeFunctionData("transfer", [body.to, amount]),
         ),
-        {
-          dryRun: false,
-        },
       );
     }
   }
 
+  async function handleUserOperation(userOperation: IUserOperation) {
+    try {
+      return await client.execUserOperation(userOperation);
+    } catch (e) {
+      const signature = userOperation.signature as string;
+      userOperation.signature = `${signature.substring(
+        0,
+        userOperation.signature.length - 2,
+      )}1b`;
+      return await client.execUserOperation(userOperation);
+    }
+  }
+
   try {
-    const userOperation = await handleUserOperation();
+    const builtUserOperation = await buildUserOperation();
+    const userOperation = await handleUserOperation(builtUserOperation);
     console.log("userOp", userOperation);
     const event = await userOperation.wait();
     console.log("event", event);
@@ -96,4 +126,5 @@ export async function POST(request: Request) {
     console.log("error", e);
     return NextResponse.json(e);
   }
+  return NextResponse.json({});
 }

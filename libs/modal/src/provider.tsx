@@ -4,25 +4,16 @@ import {
   Env,
   Provider as OriginalProvider,
 } from "@obi-wallet/common";
-import { obiModalConfig } from "@obi-wallet/config";
-import { CustomTheme } from "@obi-wallet/theme";
+import { Config } from "@obi-wallet/config";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useMemo, useRef } from "react";
+import { ReactNode, useRef } from "react";
 
 export const Provider = observer<{
   children: ReactNode;
   env: Env;
-  theme?: CustomTheme;
-}>(function Provider({ children, env, theme }) {
+  config: Config;
+}>(function Provider({ children, env, config }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const config = useMemo(() => {
-    if (!theme) return obiModalConfig;
-
-    return {
-      ...obiModalConfig,
-      theme,
-    };
-  }, [theme]);
 
   return (
     <div

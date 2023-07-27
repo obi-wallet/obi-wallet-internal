@@ -44,7 +44,7 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
             navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
             return;
           }
-          const { requiredKeys } = configStore.config;
+          const requiredKeys = configStore.config.keys.required;
           const requiredRoutes = requiredKeys.map(keyTypeToKeyRoute);
           const index = requiredRoutes.indexOf(KeyRoute.DeviceKey);
           if (index === -1 || index + 1 === requiredRoutes.length) {

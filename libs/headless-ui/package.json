@@ -12,6 +12,7 @@
     "mobx-react-lite": "*",
     "ramda": "*",
     "rooks": "*",
+    "secretjs": "*",
     "tiny-invariant": "*",
     "tiny-warning": "*"
   },

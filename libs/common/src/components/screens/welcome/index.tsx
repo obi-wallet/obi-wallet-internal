@@ -1,9 +1,5 @@
 import { useTheme } from "@emotion/react";
-import {
-  generateSec256k1KeyPair,
-  MultisigKey,
-  ObservableMultisigKey,
-} from "@obi-wallet/sdk";
+import { MultisigKey, ObservableMultisigKey } from "@obi-wallet/sdk";
 import { WelcomeButton } from "@obi-wallet/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -13,7 +9,6 @@ import { Image, Text, TouchableOpacity, View } from "react-native";
 import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
 import { Alert } from "../../../helpers";
-import { createDeviceKeyPair } from "../../../keys";
 import {
   KeyFlow,
   KeyRoute,
@@ -45,36 +40,21 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });
-
-      // Fake platform recovery key
-      if (theme.ethereumBalances) {
-        const draft = draftsStore.get<MultisigKey>({ id: draftId });
-        draft.value.setSocialKey({
-          type: "tendermint/PubKeySecp256k1",
-          value: "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI",
-        });
-        const { publicKey: emailKey } = generateSec256k1KeyPair();
-
-        draft?.value.setEmailKey(emailKey);
-
-        const deviceKeyPair = createDeviceKeyPair(false);
-
-        draft?.value.setDeviceKey(deviceKeyPair);
-
-        navigation.navigate(KeyRoute.PhoneKeyRequest, {
-          draftId,
-          flow: KeyFlow.CreateWallet,
-          demoMode: false,
-          phoneNumber: "+14847071947",
-        });
-        return;
-      }
-
       navigation.navigate(KeyRoute.DeviceKey, {
         draftId,
         flow: KeyFlow.CreateWallet,
         demoMode: false,
       });
+    }
+
+    async function onZepeto() {
+      const response = await fetch("/api/zauth/create-account", {
+        method: "POST",
+        body: JSON.stringify({
+          chainId: chainStore.currentChain,
+        }),
+      });
+      console.log(await response.json());
     }
 
     function onRecover() {
@@ -118,6 +98,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     return (
       <Welcome
         onCreate={onCreate}
+        onZepeto={onZepeto}
         onRecover={onRecover}
         onEnterDemoMode={onEnterDemoMode}
       />
@@ -127,14 +108,14 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
 
 export interface WelcomeProps {
   onCreate(): void;
-
+  onZepeto(): void;
   onRecover(): void;
-
   onEnterDemoMode(): void;
 }
 
 export const Welcome = observer<WelcomeProps>(function Welcome({
   onCreate,
+  onZepeto,
   onRecover,
   onEnterDemoMode,
 }) {
@@ -149,19 +130,12 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
       {theme.welcome.buttons.map((button) => {
         switch (button) {
           case WelcomeButton.Zepeto:
-            return <ZepetoButton onPress={onCreate} />;
-          case WelcomeButton.NewUser:
-            return (
-              <Button
-                label="New User"
-                flavor="primary"
-                onPress={onEnterDemoMode}
-              />
-            );
+            return <ZepetoButton key={button} onPress={onZepeto} />;
           case WelcomeButton.Login:
             if (walletsStore.wallets.length === 0) return null;
             return (
               <Button
+                key={button}
                 label={intl.formatMessage({
                   id: "onboarding1.login",
                   defaultMessage: "Login",
@@ -172,9 +146,10 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
                 }}
               />
             );
-          case WelcomeButton.Getstarted:
+          case WelcomeButton.GetStarted:
             return (
               <Button
+                key={button}
                 label={intl.formatMessage({ id: "onboarding1.getstarted" })}
                 flavor="primary"
                 buttonStyle={{
@@ -183,9 +158,10 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
                 onPress={onCreate}
               />
             );
-          case WelcomeButton.Recoverwallet:
+          case WelcomeButton.RecoverWallet:
             return (
               <Button
+                key={button}
                 label={intl.formatMessage({ id: "onboarding1.recoverwallet" })}
                 flavor="primary"
                 buttonStyle={{
@@ -214,6 +190,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
           case WelcomeButton.Demo:
             return (
               <Button
+                key={button}
                 label={intl.formatMessage({
                   id: "onboarding1.demo",
                   defaultMessage: "Enter Demo Mode",

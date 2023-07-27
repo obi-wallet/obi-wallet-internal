@@ -800,6 +800,9 @@ export class CosmosSdkMessages extends AbstractMessages {
       onLegacyCosmosChain() {
         throw new Error("Not a Cosmos SDK chain");
       },
+      onSecretJsChain() {
+        throw new Error("Not a Cosmos SDK chain");
+      },
       onTerraChain(chain) {
         return chain;
       },

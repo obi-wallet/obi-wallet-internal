@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import invariant from "tiny-invariant";
 
 import { useStore } from "../../../../contexts";
 import { Alert, isSmallScreenNumber } from "../../../../helpers";
@@ -79,6 +80,10 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
     onLegacyCosmosChain: () => {
       return "juno17w77rnps59cnallfskg42s3ntnlhrzu2mjkr3e";
     },
+    onSecretJsChain: () => {
+      invariant(false, "Obi Address not implemented for Secret.js");
+      return "";
+    },
     onTerraChain: () => {
       return "terra18aw4eedj4v3253dvj9h5ucx9uedl9ggaayktq4";
     },
@@ -90,6 +95,9 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
     },
     onLegacyCosmosChain: () => {
       return "Juno";
+    },
+    onSecretJsChain: () => {
+      return "Secret Network";
     },
     onTerraChain: () => {
       return "Terra";

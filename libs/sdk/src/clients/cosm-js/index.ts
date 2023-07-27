@@ -182,6 +182,9 @@ function cosmosChainInformation(chainId: CosmosChainId | LegacyCosmosChainId) {
     onLegacyCosmosChain(chain) {
       return chain;
     },
+    onSecretJsChain() {
+      throw new Error("Not a Cosmos chain");
+    },
     onTerraChain() {
       throw new Error("Not a Cosmos chain");
     },

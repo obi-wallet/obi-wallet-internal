@@ -17,6 +17,7 @@
     "nanoid": "*",
     "otplib": "*",
     "ramda": "*",
+    "secretjs": "*",
     "secp256k1": "*",
     "tiny-invariant": "*",
     "tiny-warning": "*",

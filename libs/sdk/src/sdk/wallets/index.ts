@@ -1,6 +1,7 @@
 import { AbstractWalletsSdk } from "./abstract";
 import { CosmosSdkWalletsSdk } from "./cosmos-sdk";
 import { LegacyCosmosWalletsSdk } from "./legacy-cosmos";
+import { SecretJsWalletsSdk } from "./secret-js";
 import { Chain } from "../../chains";
 import { MultisigKey } from "../../data-structures";
 import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
@@ -31,6 +32,9 @@ export class WalletsSdk extends AbstractWalletsSdk {
       },
       onLegacyCosmosChain() {
         return new LegacyCosmosWalletsSdk();
+      },
+      onSecretJsChain() {
+        return new SecretJsWalletsSdk();
       },
       onTerraChain() {
         return new CosmosSdkWalletsSdk();

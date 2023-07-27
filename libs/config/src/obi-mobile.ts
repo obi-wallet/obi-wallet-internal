@@ -3,6 +3,7 @@ import { obiTheme } from "@obi-wallet/theme";
 
 import { Config } from "./config";
 import { Feature } from "./feature";
+import { ComingSoonKeyType } from "./key";
 
 export const obiMobileConfig: Config = {
   chains: {
@@ -22,6 +23,21 @@ export const obiMobileConfig: Config = {
     [Feature.BrandToggle]: false,
     [Feature.DemoMode]: true,
   },
-  requiredKeys: [KeyType.Device, KeyType.Phone],
+  keys: {
+    enabled: [
+      KeyType.Device,
+      KeyType.Phone,
+      KeyType.Social,
+      KeyType.Nfc,
+      KeyType.Cloud,
+      KeyType.Email,
+    ],
+    required: [KeyType.Device, KeyType.Phone],
+    comingSoon: [
+      ComingSoonKeyType.Telegram,
+      ComingSoonKeyType.Map,
+      ComingSoonKeyType.Ledger,
+    ],
+  },
   theme: obiTheme,
 };

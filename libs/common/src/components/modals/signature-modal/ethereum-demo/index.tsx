@@ -1,6 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { useSignAndBroadcastTransaction } from "@obi-wallet/headless-ui";
 import {
+  KeyType,
   SignAndBroadcastTransactionUserInteraction,
   Token,
 } from "@obi-wallet/sdk";
@@ -129,12 +130,13 @@ export const SignatureModalEthereumDemo =
           const message = interaction.payload.messages[0] as unknown as {
             eth: { to: string; token: Token };
           };
-          const account =
-            await sdkRootStore.ethereumDemoStore.getEthereumAccount();
+          const wallet = sdkRootStore.walletsStore.currentWallet;
+          const zAuthKey = wallet?.owner.getUsableKeyOfType(KeyType.ZAuth);
           const response = await fetch("/api/ethereum-demo/send", {
             method: "POST",
             body: JSON.stringify({
-              account,
+              chainId: wallet?.chainId,
+              publicKey: zAuthKey?.publicKey,
               to: message.eth.to,
               token: message.eth.token,
             }),

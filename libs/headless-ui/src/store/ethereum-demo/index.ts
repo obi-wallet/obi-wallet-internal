@@ -1,12 +1,26 @@
-import { Secp256k1KeyPair } from "@obi-wallet/sdk";
-import { autorun, makeObservable, observable, runInAction, toJS } from "mobx";
+import {
+  isSecretJsChain,
+  KeyType,
+  Sdk,
+  Secp256k1PublicKey,
+  secretJsChains,
+  SecretJsClient,
+} from "@obi-wallet/sdk";
+import {
+  action,
+  autorun,
+  makeObservable,
+  observable,
+  runInAction,
+  toJS,
+} from "mobx";
 import invariant from "tiny-invariant";
 
 import { AbstractKVStore } from "../../kv-store";
 import { WalletsStore } from "../wallets";
 
 export interface EthereumAccount {
-  keyPair: Secp256k1KeyPair;
+  publicKey: Secp256k1PublicKey;
   address: string;
 }
 
@@ -35,9 +49,17 @@ export class EthereumDemoStore {
       | "kvStore"
       | "walletsStore"
       | "accounts"
-      | "generateEthereumAccount"
-      | "generateEthereumAddress"
+      | "sdk"
+      | "client"
+      | "chain"
+      | "zAuthKey"
+      | "wallet"
     >(this, {
+      sdk: false,
+      client: false,
+      chain: false,
+      zAuthKey: false,
+      wallet: false,
       kvStore: false,
       walletsStore: false,
       accounts: observable,
@@ -45,9 +67,7 @@ export class EthereumDemoStore {
       init: false,
       ethereumAccount: false,
       getEthereumAccount: false,
-      createEthereumAccount: false,
-      generateEthereumAccount: false,
-      generateEthereumAddress: false,
+      setEthereumAccount: action,
     });
     this.initPromise = this.init();
   }
@@ -76,23 +96,40 @@ export class EthereumDemoStore {
 
   public async getEthereumAccount(): Promise<EthereumAccount> {
     await this.initPromise;
-    return this.ethereumAccount ?? (await this.createEthereumAccount());
+    invariant(this.ethereumAccount, "No Ethereum account");
+    return this.ethereumAccount;
   }
 
-  public async createEthereumAccount(): Promise<EthereumAccount> {
-    const address = this.walletsStore.wallets.currentWallet?.proxyAddress;
-    invariant(address, "No current wallet");
-    const account = await this.generateEthereumAccount();
-    runInAction(() => {
-      this.accounts[address] = account;
-    });
-    return account;
+  public setEthereumAccount(address: string, account: EthereumAccount) {
+    this.accounts[address] = account;
   }
 
-  protected async generateEthereumAccount(): Promise<EthereumAccount> {
-    const response = await fetch("/api/ethereum-demo/create-account", {
-      method: "POST",
-    });
-    return await response.json();
+  protected get sdk() {
+    return Sdk.chainId(this.chain.chainId);
+  }
+
+  protected get client(): SecretJsClient {
+    return new SecretJsClient(this.chain.chainId);
+  }
+
+  protected get chain() {
+    const chainId = this.wallet.chainId;
+    invariant(isSecretJsChain(chainId), "Not a SecretJS chain");
+
+    return secretJsChains[chainId];
+  }
+
+  protected get zAuthKey() {
+    const zAuthKey = this.wallet.owner.getUsableKeyOfType(KeyType.ZAuth);
+    invariant(zAuthKey, "No ZAuth key");
+
+    return zAuthKey;
+  }
+
+  protected get wallet() {
+    const wallet = this.walletsStore.wallets.currentWallet;
+    invariant(wallet, "No current wallet");
+
+    return wallet;
   }
 }

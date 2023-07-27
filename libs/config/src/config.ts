@@ -2,6 +2,7 @@ import { ChainId, KeyType } from "@obi-wallet/sdk";
 import { CustomTheme } from "@obi-wallet/theme";
 
 import { Feature } from "./feature";
+import { ComingSoonKeyType } from "./key";
 import { Language } from "./language";
 
 export interface Config {
@@ -14,6 +15,10 @@ export interface Config {
     default: Language;
   };
   features: Record<Feature, boolean>;
-  requiredKeys: KeyType[];
+  keys: {
+    enabled: KeyType[];
+    required: KeyType[];
+    comingSoon: ComingSoonKeyType[];
+  };
   theme: CustomTheme;
 }

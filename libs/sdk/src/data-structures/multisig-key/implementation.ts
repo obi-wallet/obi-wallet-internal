@@ -165,6 +165,15 @@ export class MultisigKey {
     });
   }
 
+  public setZAuthKey(publicKey: Secp256k1PublicKey) {
+    this.setKey({
+      type: KeyType.ZAuth,
+      payload: {
+        publicKey,
+      },
+    });
+  }
+
   protected setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
     this._keys = this._keys.filter((k) => key.type !== k.type);
     this._keys.push(this._factories.Key.create(key));

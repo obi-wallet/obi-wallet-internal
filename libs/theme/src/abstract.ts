@@ -102,9 +102,8 @@ export interface CustomTheme extends CommonTheme {
 }
 export enum WelcomeButton {
   Login = "login",
-  NewUser = "newUser",
-  Getstarted = "getStarted",
-  Recoverwallet = "recoverWallet",
+  GetStarted = "get-started",
+  RecoverWallet = "recover-wallet",
   Demo = "demo",
   Zepeto = "zepeto",
 }
