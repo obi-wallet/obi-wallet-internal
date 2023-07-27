@@ -1,12 +1,10 @@
 import {
-  Key,
-  KeyType,
-  Secp256k1PublicKey,
   SecretJsChainId,
   secretJsChains,
   SecretJsClient,
   Signer as SdkSigner,
-  ZAuthKeySigner,
+  Secp256k1KeyPair,
+  Secp256k1PrivateKeySigner,
 } from "@obi-wallet/sdk";
 import { ethers } from "ethers";
 import secp256k1 from "secp256k1";
@@ -14,27 +12,20 @@ import secp256k1 from "secp256k1";
 export class SecretJsSigner {
   protected chain: (typeof secretJsChains)[SecretJsChainId];
   protected client: SecretJsClient;
-  protected publicKey: Secp256k1PublicKey;
+  protected keyPair: Secp256k1KeyPair;
   protected signer: SdkSigner;
 
   public constructor({
     chainId,
-    publicKey,
+    keyPair,
   }: {
     chainId: SecretJsChainId;
-    publicKey: Secp256k1PublicKey;
+    keyPair: Secp256k1KeyPair;
   }) {
     this.chain = secretJsChains[chainId];
-    this.publicKey = publicKey;
+    this.keyPair = keyPair;
     this.client = new SecretJsClient(chainId);
-    const key = Key.create({
-      type: KeyType.ZAuth as const,
-      payload: {
-        publicKey: this.publicKey,
-      },
-    });
-    // @ts-expect-error this should be fine
-    this.signer = new ZAuthKeySigner(key);
+    this.signer = new Secp256k1PrivateKeySigner(this.keyPair.privateKey);
   }
 
   public async getAddress(): Promise<string> {
@@ -50,7 +41,7 @@ export class SecretJsSigner {
           query: {
             eth_pubkey: {
               user_public_key: Buffer.from(
-                this.publicKey.value,
+                this.keyPair.publicKey.value,
                 "base64",
               ).toString("hex"),
             },
@@ -85,7 +76,7 @@ export class SecretJsSigner {
           {
             sign_bytes: {
               user_public_key: Buffer.from(
-                this.publicKey.value,
+                this.keyPair.publicKey.value,
                 "base64",
               ).toString("hex"),
               bytes: messageToSign.toString("hex"),
@@ -103,7 +94,7 @@ export class SecretJsSigner {
         query: {
           sign_bytes: {
             user_public_key: Buffer.from(
-              this.publicKey.value,
+              this.keyPair.publicKey.value,
               "base64",
             ).toString("hex"),
             bytes: messageToSign.toString("hex"),

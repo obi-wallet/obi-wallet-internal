@@ -4,20 +4,20 @@ import {
   Messages,
   MultisigKey,
   Sdk,
+  Secp256k1KeyPair,
   Secp256k1PrivateKeySigner,
-  Secp256k1PublicKey,
   SecretJsChainId,
   SecretJsClient,
   generateSec256k1KeyPair,
 } from "@obi-wallet/sdk";
-import mongoose from "mongoose";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { TxResponse } from "secretjs";
+import invariant from "tiny-invariant";
 
+import { connect } from "../../../../src/db";
 import { recoverOrCreateEthereumAccount } from "../../../../src/stackup";
 import { fetchUserId } from "../../../../src/zauth";
-import { UserModel } from "../../../../src/zauth/schema";
 
 export async function POST(request: Request) {
   const body: {
@@ -43,33 +43,32 @@ export async function POST(request: Request) {
   }
 
   async function fetchOrCreateUser() {
-    await mongoose.connect(process.env.MONGODB_URI);
-
+    const UserModel = await connect();
     const existingUser = await UserModel.findOne({ userId });
 
     if (existingUser) {
-      const publicKey: Secp256k1PublicKey = {
-        type: "tendermint/PubKeySecp256k1",
-        value: existingUser.publicKey,
+      const keyPair: Secp256k1KeyPair = {
+        publicKey: {
+          type: "tendermint/PubKeySecp256k1",
+          value: existingUser.publicKey,
+        },
+        privateKey: existingUser.privateKey,
       };
       const ethereumAccount = await recoverOrCreateEthereumAccount({
-        publicKey,
+        keyPair,
         chainId: body.chainId,
+        proxyAddress: existingUser.proxyAddress,
       });
 
       return {
-        publicKey,
+        newUser: false,
+        publicKey: keyPair.publicKey,
         proxyAddress: existingUser.proxyAddress,
         ethereumAccount,
       };
     }
 
     const keyPair = generateSec256k1KeyPair();
-
-    const ethereumAccount = await recoverOrCreateEthereumAccount({
-      publicKey: keyPair.publicKey,
-      chainId: body.chainId,
-    });
 
     const messagesSdk = Messages.chainId(body.chainId);
     const sdk = Sdk.chainId(body.chainId);
@@ -124,6 +123,14 @@ export async function POST(request: Request) {
       return log.type === "instantiate" && log.key === "contract_address";
     })?.value;
 
+    invariant(contractAddress, "Contract address not found");
+
+    const ethereumAccount = await recoverOrCreateEthereumAccount({
+      keyPair,
+      chainId: body.chainId,
+      proxyAddress: contractAddress,
+    });
+
     await UserModel.create({
       userId,
       publicKey: keyPair.publicKey.value,
@@ -132,6 +139,7 @@ export async function POST(request: Request) {
     });
 
     return {
+      newUser: true,
       publicKey: keyPair.publicKey,
       proxyAddress: contractAddress,
       ethereumAccount,

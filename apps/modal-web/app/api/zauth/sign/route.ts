@@ -1,10 +1,9 @@
 import { Secp256k1PrivateKeySigner, SecretJsChainId } from "@obi-wallet/sdk";
-import mongoose from "mongoose";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+import { connect } from "../../../../src/db";
 import { fetchUserId } from "../../../../src/zauth";
-import { UserModel } from "../../../../src/zauth/schema";
 
 export async function POST(request: Request) {
   const body: {
@@ -31,7 +30,7 @@ export async function POST(request: Request) {
     );
   }
 
-  await mongoose.connect(process.env.MONGODB_URI);
+  const UserModel = await connect();
   const user = await UserModel.findOne({ userId });
 
   const signer = new Secp256k1PrivateKeySigner(user.privateKey);

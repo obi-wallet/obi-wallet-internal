@@ -2,14 +2,18 @@ import {
   isSecretJsChain,
   KeyType,
   Sdk,
-  Secp256k1KeyPair,
   Secp256k1PublicKey,
   secretJsChains,
   SecretJsClient,
-  ZAuthKeySigner,
 } from "@obi-wallet/sdk";
-import { autorun, makeObservable, observable, runInAction, toJS } from "mobx";
-import { MsgExecuteContract } from "secretjs";
+import {
+  action,
+  autorun,
+  makeObservable,
+  observable,
+  runInAction,
+  toJS,
+} from "mobx";
 import invariant from "tiny-invariant";
 
 import { AbstractKVStore } from "../../kv-store";
@@ -17,11 +21,6 @@ import { WalletsStore } from "../wallets";
 
 export interface EthereumAccount {
   publicKey: Secp256k1PublicKey;
-  address: string;
-}
-
-export interface EthereumAccountWithPrivateKey {
-  keyPair: Secp256k1KeyPair;
   address: string;
 }
 
@@ -50,15 +49,12 @@ export class EthereumDemoStore {
       | "kvStore"
       | "walletsStore"
       | "accounts"
-      | "generateEthereumAccount"
-      | "generateEthereumAddress"
       | "sdk"
       | "client"
       | "chain"
       | "zAuthKey"
       | "wallet"
     >(this, {
-      fetchEthereumAccountFromChain: true,
       sdk: false,
       client: false,
       chain: false,
@@ -71,9 +67,7 @@ export class EthereumDemoStore {
       init: false,
       ethereumAccount: false,
       getEthereumAccount: false,
-      createEthereumAccount: false,
-      generateEthereumAccount: false,
-      generateEthereumAddress: false,
+      setEthereumAccount: action,
     });
     this.initPromise = this.init();
   }
@@ -102,110 +96,12 @@ export class EthereumDemoStore {
 
   public async getEthereumAccount(): Promise<EthereumAccount> {
     await this.initPromise;
-    return (
-      this.ethereumAccount ??
-      (await this.fetchEthereumAccountFromChain()) ??
-      (await this.createEthereumAccount())
-    );
+    invariant(this.ethereumAccount, "No Ethereum account");
+    return this.ethereumAccount;
   }
 
-  public async fetchEthereumAccountFromChain(): Promise<EthereumAccount | null> {
-    return await this.client.withSecretNetworkClient(async (client) => {
-      const zAuthKey = this.zAuthKey;
-      invariant(zAuthKey, "No ZAuth key");
-
-      try {
-        const response = await client.query.compute.queryContract({
-          contract_address: this.chain.secretSigner.address,
-          code_hash: this.chain.secretSigner.codeHash,
-          query: {
-            eth_pubkey: {
-              user_public_key: Buffer.from(
-                zAuthKey.publicKey.value,
-                "base64",
-              ).toString("hex"),
-            },
-          },
-        });
-        console.log(response);
-      } catch (e) {
-        console.log(e);
-      }
-      return null;
-    });
-  }
-
-  public async createEthereumAccount(): Promise<EthereumAccount> {
-    const address = this.wallet.proxyAddress;
-    const account = await this.generateEthereumAccount();
-    runInAction(() => {
-      this.accounts[address] = account;
-    });
-    return account;
-  }
-
-  protected async generateEthereumAccount(): Promise<EthereumAccount> {
-    const response = await fetch("/api/ethereum-demo/create-account", {
-      method: "POST",
-      body: JSON.stringify({
-        publicKey: this.zAuthKey.publicKey,
-        chainId: this.chain.chainId,
-      }),
-    });
-    const { keyPair, address } = (await response.json()) as {
-      keyPair: {
-        publicKey: Secp256k1PublicKey;
-        privateKey?: string;
-      };
-      address: string;
-    };
-
-    if (keyPair.privateKey) {
-      const zAuthKeyAddress = this.sdk.transactions.getAddressOfPublicKey(
-        this.zAuthKey.publicKey,
-      );
-
-      const hash = await this.client.withSecretNetworkClient(async (client) => {
-        const contract = await client.query.compute.contractInfo({
-          contract_address: this.wallet.proxyAddress,
-        });
-        return client.query.compute.codeHashByCodeId({
-          code_id: contract.ContractInfo?.code_id,
-        });
-      });
-      const signedTransaction = await this.client.createAndSignTransaction({
-        signer: new ZAuthKeySigner(this.zAuthKey),
-        messages: [
-          new MsgExecuteContract({
-            sender: zAuthKeyAddress,
-            contract_address: this.chain.secretSigner.address,
-            msg: {
-              add_key: {
-                public_key: Buffer.from(
-                  this.zAuthKey.publicKey.value,
-                  "base64",
-                ).toString("hex"),
-                user_entry_address: this.wallet.proxyAddress,
-                user_entry_code_hash: hash.code_hash,
-                inject_privkey: Buffer.from(
-                  keyPair.privateKey,
-                  "base64",
-                ).toString("hex"),
-              },
-            },
-            code_hash: this.chain.secretSigner.codeHash,
-          }),
-        ],
-      });
-      const broadcastTransactionResult =
-        await this.client.broadcastSignedTransaction(signedTransaction);
-      console.log(broadcastTransactionResult);
-    }
-
-    return {
-      publicKey: keyPair.publicKey,
-      address,
-    };
+  public setEthereumAccount(address: string, account: EthereumAccount) {
+    this.accounts[address] = account;
   }
 
   protected get sdk() {

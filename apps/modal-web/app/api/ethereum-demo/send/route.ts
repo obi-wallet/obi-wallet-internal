@@ -1,9 +1,12 @@
 import { Secp256k1PublicKey, SecretJsChainId } from "@obi-wallet/sdk";
 import { Contract, JsonRpcProvider, parseUnits } from "ethers";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { Client, IUserOperation, Presets } from "userop";
 
+import { connect } from "../../../../src/db";
 import { SecretJsSigner } from "../../../../src/secret-js-signer";
+import { fetchUserId } from "../../../../src/zauth";
 
 const config = {
   rpcUrl: process.env.STACKUP_RPC_URL,
@@ -26,6 +29,23 @@ export async function POST(request: Request) {
     };
   } = await request.json();
 
+  const accessToken = cookies().get("zepetoAccessToken")?.value;
+  const refreshToken = cookies().get("zepetoRefreshToken")?.value;
+
+  const userId = accessToken ? await fetchUserId(accessToken) : null;
+
+  if (!accessToken || !refreshToken || !userId) {
+    return NextResponse.json(
+      {
+        error: "invalid token",
+      },
+      { status: 401 },
+    );
+  }
+
+  const UserModel = await connect();
+  const user = await UserModel.findOne({ userId });
+
   const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(
     config.paymaster.rpcUrl!,
     config.paymaster.context,
@@ -34,7 +54,13 @@ export async function POST(request: Request) {
   const amount = parseUnits(body.token.rawAmount, 0);
   const signer = new SecretJsSigner({
     chainId: body.chainId,
-    publicKey: body.publicKey,
+    keyPair: {
+      publicKey: {
+        type: "tendermint/PubKeySecp256k1",
+        value: user.publicKey,
+      },
+      privateKey: user.privateKey,
+    },
   });
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine

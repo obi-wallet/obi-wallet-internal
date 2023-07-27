@@ -1,12 +1,16 @@
-import { EthereumAccountWithPrivateKey } from "@obi-wallet/headless-ui";
+import { EthereumAccount } from "@obi-wallet/headless-ui";
 import {
   generateSec256k1KeyPair,
+  Sdk,
   Secp256k1KeyPair,
-  Secp256k1PublicKey,
+  Secp256k1PrivateKeySigner,
   SecretJsChainId,
+  secretJsChains,
+  SecretJsClient,
 } from "@obi-wallet/sdk";
 import { Signer, SigningKey, Wallet } from "ethers";
 import secp256k1 from "secp256k1";
+import { MsgExecuteContract } from "secretjs";
 import { Presets } from "userop";
 
 import { SecretJsSigner } from "./secret-js-signer";
@@ -20,30 +24,32 @@ const config = {
 };
 
 export async function recoverOrCreateEthereumAccount({
-  publicKey,
+  keyPair,
   chainId,
+  proxyAddress,
 }: {
-  publicKey: Secp256k1PublicKey;
+  keyPair: Secp256k1KeyPair;
   chainId: SecretJsChainId;
+  proxyAddress: string;
 }) {
   try {
-    return await recoverEthereumAccount({ publicKey, chainId });
+    return await recoverEthereumAccount({ keyPair, chainId });
   } catch (e) {
     console.log(e);
-    return await generateEthereumAccount();
+    return await generateEthereumAccount({ keyPair, chainId, proxyAddress });
   }
 }
 
 async function recoverEthereumAccount({
-  publicKey,
+  keyPair,
   chainId,
 }: {
-  publicKey: Secp256k1PublicKey;
+  keyPair: Secp256k1KeyPair;
   chainId: SecretJsChainId;
 }) {
   const signer = new SecretJsSigner({
     chainId,
-    publicKey,
+    keyPair,
   });
   // @ts-expect-error this should be fine
   const address = await generateEthereumAddressFromSigner(signer);
@@ -53,21 +59,69 @@ async function recoverEthereumAccount({
   const compressed = secp256k1.publicKeyConvert(pubKeyRaw, true);
 
   return {
-    keyPair: {
-      publicKey: {
-        type: "tendermint/PubKeySecp256k1",
-        value: new Buffer(compressed).toString("base64"),
-      },
+    publicKey: {
+      type: "tendermint/PubKeySecp256k1",
+      value: new Buffer(compressed).toString("base64"),
     },
     address,
   };
 }
 
-async function generateEthereumAccount(): Promise<EthereumAccountWithPrivateKey> {
-  const keyPair = generateSec256k1KeyPair();
+async function generateEthereumAccount({
+  chainId,
+  proxyAddress,
+  keyPair,
+}: {
+  chainId: SecretJsChainId;
+  proxyAddress: string;
+  keyPair: Secp256k1KeyPair;
+}): Promise<EthereumAccount> {
+  const chain = secretJsChains[chainId];
+  const ethKeyPair = generateSec256k1KeyPair();
   const address = await generateEthereumAddress(keyPair);
+
+  const client = new SecretJsClient(chainId);
+  const hash = await client.withSecretNetworkClient(async (client) => {
+    const contract = await client.query.compute.contractInfo({
+      contract_address: proxyAddress,
+    });
+    return client.query.compute.codeHashByCodeId({
+      code_id: contract.ContractInfo?.code_id,
+    });
+  });
+
+  const signedTransaction = await client.createAndSignTransaction({
+    signer: new Secp256k1PrivateKeySigner(keyPair.privateKey),
+    messages: [
+      new MsgExecuteContract({
+        sender: Sdk.chainId(chainId).transactions.getAddressOfPublicKey(
+          keyPair.publicKey,
+        ),
+        contract_address: chain.secretSigner.address,
+        msg: {
+          add_key: {
+            public_key: Buffer.from(keyPair.publicKey.value, "base64").toString(
+              "hex",
+            ),
+            user_entry_address: proxyAddress,
+            user_entry_code_hash: hash.code_hash,
+            inject_privkey: Buffer.from(
+              ethKeyPair.privateKey,
+              "base64",
+            ).toString("hex"),
+          },
+        },
+        code_hash: chain.secretSigner.codeHash,
+      }),
+    ],
+  });
+  const broadcastTransactionResult = await client.broadcastSignedTransaction(
+    signedTransaction,
+  );
+  console.log(broadcastTransactionResult);
+
   return {
-    keyPair,
+    publicKey: ethKeyPair.publicKey,
     address,
   };
 }
