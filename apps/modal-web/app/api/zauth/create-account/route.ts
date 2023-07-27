@@ -12,7 +12,7 @@ import {
 } from "@obi-wallet/sdk";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { TxResponse } from "secretjs";
+import { MsgSend, TxResponse, Wallet, stringToCoins } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { connect } from "../../../../src/db";
@@ -81,11 +81,19 @@ export async function POST(request: Request) {
     const accountValidationResult = await sdk.transactions.validateAccount(
       address,
     );
-    if (accountValidationResult < AccountValidationResult.ACCOUNT_NOT_READY) {
-      console.log("Need to prepare account", address);
-      return {
-        approved: false,
-      };
+    if (accountValidationResult <= AccountValidationResult.ACCOUNT_NOT_READY) {
+      const feeLenders = JSON.parse(process.env.FEE_LENDERS || "[]");
+      const feeLender =
+        feeLenders[Math.floor(Math.random() * feeLenders.length)];
+      const wallet = new Wallet(feeLender);
+      const msg = new MsgSend({
+        from_address: wallet.address,
+        to_address: address,
+        amount: stringToCoins("200000uscrt"),
+      });
+      await client.withSigningSecretNetworkClient(wallet, async (c) => {
+        return await c.tx.broadcast([msg], client.defaultTxOptions);
+      });
     }
 
     const multisigKey = MultisigKey.create(body.chainId, {

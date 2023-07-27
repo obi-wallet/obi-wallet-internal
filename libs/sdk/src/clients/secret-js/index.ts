@@ -126,7 +126,7 @@ export class SecretJsClient extends AbstractClient {
 
   public get defaultTxOptions(): TxOptions {
     return {
-      gasLimit: 4_000_000,
+      gasLimit: 1_000_000,
       gasPriceInFeeDenom: 0.1,
       feeDenom: this.chain.denom,
       broadcastMode: BroadcastMode.Block,

@@ -15,6 +15,7 @@ import { Message, SignedTransaction } from "../../../transactions";
 import {
   AccountValidationResult,
   BroadcastTransactionResult,
+  RpcError,
 } from "../../common";
 import { AbstractTransactionsSdk } from "../abstract";
 
@@ -97,10 +98,18 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
 
   protected async fetchAccount(address: string) {
     return await this.client.withSecretNetworkClient(async (client) => {
-      const { account } = await client.query.auth.account({
-        address,
-      });
-      return account;
+      try {
+        const { account } = await client.query.auth.account({
+          address,
+        });
+        return account;
+      } catch (e) {
+        const result = RpcError.safeParse(e);
+        if (result.success && result.data.message.includes("code = NotFound")) {
+          return null;
+        }
+        throw e;
+      }
     });
   }
 
