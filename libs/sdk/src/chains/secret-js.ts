@@ -32,17 +32,17 @@ export const secretJsChains = {
     label: "Secret Network Testnet",
     prefix: "secret",
     accountCreator: {
-      address: "secret1duxxpn9ufxmu0072fheesfmcjfyt0l6mnxrqfq",
+      address: "secret1ulkz05xf7d8jyxhgwlkfv4gtapd9zgzlfwsfmk",
       codeHash:
-        "41504971185998f6c92adde96ec127f3221d3f8547e3366feb2404eacb0c9506",
+        "fe9e7f8f7a5e72863c5d226230fedd47e0bb7e3be240b7f13a51e4b409abfefc",
     },
     secretSigner: {
-      address: "secret1m0w5hkjlarlhxxaktgsjf8yfetx2gk054v8mxf",
+      address: "secret1ap4h2rr65309np8qhrhzj89t0zpuwku8m59g5a",
       codeHash:
-        "49c23e64fc32a63476b5d2d54fbaa8330d404fa93136487930b64d6b33b5fc18",
+        "c067459b155f46a07e7feff315c57ea36c39f9663bd2c70460d35d3d8fd811bf",
     },
     currentCodeIds: {
-      userAccount: 65,
+      userAccount: 135,
     },
     urls: ["https://api.pulsar3.scrttestnet.com:443"],
     denom: "uscrt",
