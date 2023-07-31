@@ -1,4 +1,3 @@
-import { useTheme } from "@emotion/react";
 import { Modals, OnCloseContext, useStore } from "@obi-wallet/common";
 import { Config } from "@obi-wallet/config";
 import {
@@ -41,13 +40,12 @@ export const ModalWithoutProvider = observer(function ModalWithoutProvider() {
 
 const MessageHandlers = observer(function MessageHandlers() {
   const store = useStore();
-  const theme = useTheme();
   // Enable auto-broadcast for ethereum demo
-  const autoBroadcast = theme.ethereumBalances;
+  const autoBroadcast = store.configStore.config.ethereumBalances;
 
   useEffect(() => {
     return autorun(() => {
-      const address = theme.ethereumBalances
+      const address = store.configStore.config.ethereumBalances
         ? store.sdkRootStore.ethereumDemoStore.ethereumAccount?.address
         : store.walletsStore.address;
       // Expose current wallet address (or null) to the parent window
@@ -56,7 +54,7 @@ const MessageHandlers = observer(function MessageHandlers() {
         address: address ?? null,
       });
     });
-  }, [theme, store]);
+  }, [store]);
 
   useEffect(() => {
     async function listener(event: MessageEvent) {

@@ -16,4 +16,5 @@ export const ztxModalConfig: Config = {
     required: [KeyType.ZAuth],
     comingSoon: [],
   },
+  ethereumBalances: true,
 };

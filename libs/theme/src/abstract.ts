@@ -94,8 +94,6 @@ export interface CustomTheme extends CommonTheme {
     horizontalSpacing?: number;
     buttonSpacing?: number;
   };
-  ethDemo?: boolean;
-  ethereumBalances?: boolean;
   settings?: {
     textInputBackgroundColor?: string;
   };

@@ -30,8 +30,7 @@ export type WelcomeScreenProps = NativeStackScreenProps<
 export const WelcomeScreen = observer<WelcomeScreenProps>(
   function WelcomeScreen() {
     const navigation = useRootNavigation();
-    const { chainStore, draftsStore } = useStore();
-    const theme = useTheme();
+    const { chainStore, configStore, draftsStore } = useStore();
 
     function onCreate() {
       const newMultisigKey = ObservableMultisigKey.create(
@@ -80,7 +79,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       });
 
       // Fake platform recovery key
-      if (theme.ethereumBalances) {
+      if (configStore.config.ethereumBalances) {
         const draft = draftsStore.get<MultisigKey>({ id: draftId });
         draft.value.setSocialKey({
           type: "tendermint/PubKeySecp256k1",

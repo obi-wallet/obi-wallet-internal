@@ -3,7 +3,6 @@ import {
   AminoMsgInstantiateContract,
 } from "@cosmjs/cosmwasm-stargate/build/modules";
 import { AminoMsgSend } from "@cosmjs/stargate";
-import { useTheme } from "@emotion/react";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { useQuery, useValidators } from "@obi-wallet/headless-ui";
 import {
@@ -502,9 +501,8 @@ const PrettyCoins = observer<PrettyTokensProps>(function PrettyTokens({
   tokens,
 }) {
   const chainId = useChainId();
-  const { chainStore } = useStore();
-  const theme = useTheme();
-  const denom = theme.ethereumBalances
+  const { chainStore, configStore } = useStore();
+  const denom = configStore.config.ethereumBalances
     ? "0x5CF29823CCFC73008fa53630d54A424AB82dE6F2"
     : chainStore.currentChainInformation.denom;
   const coinsArray =

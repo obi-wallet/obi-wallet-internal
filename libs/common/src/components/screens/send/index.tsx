@@ -49,12 +49,12 @@ export const SendScreen = observer<SendScreenProps>(function SendScreen(props) {
 export const SendScreenComponent = observer<
   SendScreenProps & { asset?: EnrichedToken }
 >(function SendScreen({ navigation, asset }) {
+  const { configStore } = useStore();
   const wallet = useCurrentWallet();
   const balances = useEnrichedBalances({
     address: wallet.address,
     chainId: wallet.chainId,
   });
-  const theme = useTheme();
 
   const { control, formState, handleSubmit, getValues, setValue } = useForm({
     defaultValues: {
@@ -67,7 +67,9 @@ export const SendScreenComponent = observer<
     mode: "onChange",
     resolver: zodResolver(
       z.object({
-        address: theme.ethereumBalances ? z.string() : address(wallet.chainId),
+        address: configStore.config.ethereumBalances
+          ? z.string()
+          : address(wallet.chainId),
         token: tokenGivenBalances({
           chainId: wallet.chainId,
           balances: balances.data,
@@ -216,7 +218,7 @@ export const SendScreenComponent = observer<
               function getMessages(): Message[] {
                 if (!wallet.address) return [];
 
-                if (theme.ethereumBalances) {
+                if (configStore.config.ethereumBalances) {
                   return [
                     {
                       eth: {

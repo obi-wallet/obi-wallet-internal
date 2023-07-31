@@ -21,4 +21,5 @@ export interface Config {
     comingSoon: ComingSoonKeyType[];
   };
   theme?: CustomTheme;
+  ethereumBalances?: boolean;
 }

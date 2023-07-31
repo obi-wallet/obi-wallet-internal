@@ -1,4 +1,3 @@
-import { useTheme } from "@emotion/react";
 import { ComingSoonKeyType } from "@obi-wallet/config";
 import { KeyType } from "@obi-wallet/sdk";
 import { ComponentType } from "react";
@@ -27,7 +26,6 @@ export function useKeyMetaData() {
   const { configStore } = useStore();
 
   const intl = useIntl();
-  const theme = useTheme();
 
   const keys = configStore.config.keys.enabled;
   const comingSoonKeys = configStore.config.keys.comingSoon;
@@ -54,13 +52,15 @@ export function useKeyMetaData() {
       Icon: isWeb() ? PhoneKeyOutlineIcon : PhoneKeyIcon,
     },
     [KeyType.Social]: {
-      label: theme.ethereumBalances
+      label: configStore.config.ethereumBalances
         ? "Platform Recovery"
         : intl.formatMessage({
             id: "settings.multisig.option.socialkey",
             defaultMessage: "Social Recovery Key",
           }),
-      Icon: theme.ethereumBalances ? ZtxPlatformRecoveryIcon : SocialKeyIcon,
+      Icon: configStore.config.ethereumBalances
+        ? ZtxPlatformRecoveryIcon
+        : SocialKeyIcon,
     },
     [KeyType.Nfc]: {
       label: "NFC Tap Key",
