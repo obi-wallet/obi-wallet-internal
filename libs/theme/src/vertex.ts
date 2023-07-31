@@ -67,5 +67,4 @@ export const vertexTheme: CustomTheme = {
   settings: {
     textInputBackgroundColor: "#16151D",
   },
-  ethDemo: true,
 };

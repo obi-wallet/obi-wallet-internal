@@ -81,7 +81,7 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
   );
 
   const androidSigningKeystore = await get1PasswordItem(
-    "pkorkoqekc7coziqrkqjsehbx4",
+    "m4xgsyqjpzbgbs4s5qbwkq3pgy",
   );
 
   // Handle android/local.properties
@@ -110,7 +110,7 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
   // Handle android/app/<KEYSTORE_NAME>.keystore
   await download1PasswordFile(
-    "pkorkoqekc7coziqrkqjsehbx4",
+    "m4xgsyqjpzbgbs4s5qbwkq3pgy",
     path.join(appDir, `android/app/${androidSigningKeystore.files[0].name}`),
   );
 

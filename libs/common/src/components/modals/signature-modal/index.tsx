@@ -1,4 +1,3 @@
-import { useTheme } from "@emotion/react";
 import {
   SignAndBroadcastTransactionType,
   useSignAndBroadcastTransaction,
@@ -11,6 +10,7 @@ import { SignatureModalEthereumDemo } from "./ethereum-demo";
 import { SignatureModalFlexAccount } from "./flex-account";
 import { SignatureModalMultisigKey } from "./multisig-key";
 import { SignatureModalSinglesigWallet } from "./singlesig-wallet";
+import { useStore } from "../../../contexts";
 import { Alert } from "../../../helpers";
 
 export * from "./confirm-messages";
@@ -23,10 +23,10 @@ export interface SignatureModalProps {
 
 export const SignatureModal = observer<SignatureModalProps>(
   function SignatureModal({ interaction }) {
-    const theme = useTheme();
+    const { configStore } = useStore();
 
     const ethereumDemo =
-      theme.ethereumBalances &&
+      configStore.config.ethereumBalances &&
       interaction.payload.messages.every((message) => {
         return R.has("eth", message);
       });

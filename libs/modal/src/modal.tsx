@@ -1,5 +1,4 @@
-import { useTheme } from "@emotion/react";
-import { Modals, OnCloseContext, useStore } from "@obi-wallet/common";
+import { Env, Modals, OnCloseContext, useStore } from "@obi-wallet/common";
 import { Config } from "@obi-wallet/config";
 import {
   KeyType,
@@ -12,15 +11,26 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 
 import { Container } from "./container";
+import { Provider } from "./provider";
 import { StateRenderer } from "./state-renderer";
 
 import "./vuplex-polyfill.js";
 
 // eslint-disable-next-line mobx/missing-observer
-export function Modal({ config }: { config: Config }) {
+export function Modal({ config, env }: { config: Config; env: Env }) {
+  if (config.headless)
+    return (
+      <Provider config={config} env={env}>
+        <Modals />
+        <MessageHandlers />
+      </Provider>
+    );
+
   return (
-    <Container config={config}>
-      <ModalWithoutProvider />
+    <Container theme={config.theme}>
+      <Provider config={config} env={env}>
+        <ModalWithoutProvider />
+      </Provider>
     </Container>
   );
 }
@@ -37,13 +47,12 @@ export const ModalWithoutProvider = observer(function ModalWithoutProvider() {
 
 const MessageHandlers = observer(function MessageHandlers() {
   const store = useStore();
-  const theme = useTheme();
   // Enable auto-broadcast for ethereum demo
-  const autoBroadcast = theme.ethereumBalances;
+  const autoBroadcast = store.configStore.config.ethereumBalances;
 
   useEffect(() => {
     return autorun(() => {
-      const address = theme.ethereumBalances
+      const address = store.configStore.config.ethereumBalances
         ? store.sdkRootStore.ethereumDemoStore.ethereumAccount?.address
         : store.walletsStore.address;
       // Expose current wallet address (or null) to the parent window
@@ -52,7 +61,7 @@ const MessageHandlers = observer(function MessageHandlers() {
         address: address ?? null,
       });
     });
-  }, [theme, store]);
+  }, [store]);
 
   useEffect(() => {
     async function listener(event: MessageEvent) {

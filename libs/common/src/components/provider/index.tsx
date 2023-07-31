@@ -1,4 +1,4 @@
-import { ThemeProvider } from "@emotion/react";
+import { Theme, ThemeProvider } from "@emotion/react";
 import { PortalProvider } from "@gorhom/portal";
 import { Config } from "@obi-wallet/config";
 import { Provider as SdkProvider } from "@obi-wallet/headless-ui";
@@ -82,10 +82,10 @@ export const Provider = observer<ProviderProps>(function Provider({
             <SafeAreaProvider>
               <PortalProvider>
                 <NavigationContainer {...navigationContainerProps}>
-                  <ThemeProvider theme={config.theme}>
+                  <Container theme={config.theme}>
                     <StatusBar barStyle="light-content" />
                     {children}
-                  </ThemeProvider>
+                  </Container>
                 </NavigationContainer>
               </PortalProvider>
             </SafeAreaProvider>
@@ -94,4 +94,23 @@ export const Provider = observer<ProviderProps>(function Provider({
       </EnvContext.Provider>
     </SdkProvider>
   );
+});
+
+const Container = observer(function Container({
+  children,
+  theme,
+}: {
+  children: ReactNode;
+  theme?: Theme;
+}) {
+  if (theme) {
+    return (
+      <ThemeProvider theme={theme}>
+        <StatusBar barStyle="light-content" />
+        {children}
+      </ThemeProvider>
+    );
+  }
+
+  return children;
 });

@@ -82,9 +82,7 @@ export const AccountPickerModal = observer<AccountPickerModalProps>(
             </View>
             <ScrollView>
               {walletsStore.wallets.map((wallet) => {
-                const address = theme.ethDemo
-                  ? "0x0bA689a1...05342"
-                  : wallet.shortenedAddress;
+                const address = wallet.shortenedAddress;
 
                 return (
                   <TouchableOpacity

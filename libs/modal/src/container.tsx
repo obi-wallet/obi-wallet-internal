@@ -1,5 +1,4 @@
-import { Global } from "@emotion/react";
-import { Config } from "@obi-wallet/config";
+import { Global, Theme } from "@emotion/react";
 import { ReactNode } from "react";
 // @ts-expect-error internal import w/o types
 import { render } from "react-native-web";
@@ -8,10 +7,10 @@ import root from "react-shadow/emotion";
 // eslint-disable-next-line mobx/missing-observer
 export function Container({
   children,
-  config,
+  theme,
 }: {
   children: ReactNode;
-  config: Config;
+  theme: Theme;
 }) {
   return (
     <>
@@ -26,7 +25,7 @@ export function Container({
               maxHeight: "100vh",
               display: "flex",
               overflow: "hidden",
-              ...config.theme.modal,
+              ...theme.modal,
             },
           }}
         />

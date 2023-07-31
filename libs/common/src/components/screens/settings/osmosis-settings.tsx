@@ -19,6 +19,7 @@ import { Switch } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Setting } from ".";
+import { useStore } from "../../../contexts";
 import { isSmallScreenNumber, isWeb, createSessionKey } from "../../../helpers";
 import {
   RootStackParamList,
@@ -174,6 +175,7 @@ const AccountSetting = observer<{
 
 const SessionKeySpendLimitSetting = observer(
   function SessionKeySpendLimitSetting() {
+    const { configStore } = useStore();
     const [_state, dispatch] = useContext(StateContext);
     const onChange = (value: string) => {
       dispatch({
@@ -183,11 +185,7 @@ const SessionKeySpendLimitSetting = observer(
     };
     const theme = useTheme();
 
-    const denom = theme.ethereumBalances
-      ? "ZTX"
-      : theme.ethDemo
-      ? "USD"
-      : "OSMO";
+    const denom = configStore.config.ethereumBalances ? "ZTX" : "OSMO";
 
     return (
       <Setting
@@ -422,8 +420,9 @@ interface SessionKeySettingProps {
 
 const SessionKeySetting = observer<SessionKeySettingProps>(
   function SessionKeySetting({ value, onChange }) {
+    const { configStore } = useStore();
     const theme = useTheme();
-    const subtitle = theme.ethereumBalances
+    const subtitle = configStore.config.ethereumBalances
       ? "Enabling session key will only require you to sign one transaction when connecting your ZTX smart account."
       : "Enabling session key will only require you to sign one transaction when connecting your Osmosis smart account.";
 
