@@ -506,8 +506,6 @@ const PrettyCoins = observer<PrettyTokensProps>(function PrettyTokens({
   const theme = useTheme();
   const denom = theme.ethereumBalances
     ? "0x5CF29823CCFC73008fa53630d54A424AB82dE6F2"
-    : theme.ethDemo
-    ? "ibc/6F34E1BD664C36CE49ACC28E60D62559A5F96C4F9A6CCE4FC5A67B2852E24CFE"
     : chainStore.currentChainInformation.denom;
   const coinsArray =
     tokens && tokens.length > 0 ? tokens : [{ id: denom, rawAmount: "0" }];

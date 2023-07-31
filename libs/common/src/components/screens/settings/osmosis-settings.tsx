@@ -183,11 +183,7 @@ const SessionKeySpendLimitSetting = observer(
     };
     const theme = useTheme();
 
-    const denom = theme.ethereumBalances
-      ? "ZTX"
-      : theme.ethDemo
-      ? "USD"
-      : "OSMO";
+    const denom = theme.ethereumBalances ? "ZTX" : "OSMO";
 
     return (
       <Setting

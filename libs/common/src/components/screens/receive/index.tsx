@@ -14,9 +14,6 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
   const theme = useTheme();
 
   function getAddress() {
-    if (theme.ethDemo) {
-      return "0x0bA689a1a10c77E58e62fb49c5b89DF768105342";
-    }
     if (theme.ethereumBalances) {
       return sdkRootStore.ethereumDemoStore.ethereumAccount?.address;
     }
@@ -136,28 +133,6 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
               {address}
             </Text>
           </TouchableOpacity>
-          {theme.ethDemo ? (
-            <Text
-              style={[
-                {
-                  textAlign: "center",
-                  color: theme.background.color,
-                  fontSize: 12,
-                  fontWeight: "500",
-                  opacity: 0.6,
-                  marginTop: 10,
-                },
-                isWeb()
-                  ? {
-                      // @ts-expect-error web-only prop
-                      overflowWrap: "anywhere",
-                    }
-                  : undefined,
-              ]}
-            >
-              {walletsStore.address}
-            </Text>
-          ) : null}
         </View>
       </SafeAreaView>
     </OsmosisScreenContainer>
