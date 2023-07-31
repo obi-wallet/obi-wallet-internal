@@ -1,4 +1,4 @@
-import { Modals, OnCloseContext, useStore } from "@obi-wallet/common";
+import { Env, Modals, OnCloseContext, useStore } from "@obi-wallet/common";
 import { Config } from "@obi-wallet/config";
 import {
   KeyType,
@@ -11,21 +11,28 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 
 import { Container } from "./container";
+import { Provider } from "./provider";
 import { StateRenderer } from "./state-renderer";
 
 import "./vuplex-polyfill.js";
 
 // eslint-disable-next-line mobx/missing-observer
-export function Modal({ config }: { config: Config }) {
-  if (config.theme) {
+export function Modal({ config, env }: { config: Config; env: Env }) {
+  if (config.headless)
     return (
-      <Container theme={config.theme}>
-        <ModalWithoutProvider />
-      </Container>
+      <Provider config={config} env={env}>
+        <Modals />
+        <MessageHandlers />
+      </Provider>
     );
-  }
 
-  return <ModalWithoutProvider />;
+  return (
+    <Container theme={config.theme}>
+      <Provider config={config} env={env}>
+        <ModalWithoutProvider />
+      </Provider>
+    </Container>
+  );
 }
 
 export const ModalWithoutProvider = observer(function ModalWithoutProvider() {

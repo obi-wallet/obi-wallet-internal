@@ -14,21 +14,17 @@ export default function Modal(props: { config: string }) {
   const config = getConfig();
 
   return (
-    <M.Container config={config}>
-      <M.Provider
-        env={{
-          PHONE_NUMBER_KEY_SECRET:
-            process.env.NEXT_PUBLIC_PHONE_NUMBER_KEY_SECRET!,
-          PHONE_NUMBER_TWILIO_BASIC_AUTH_USER:
-            process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_USER!,
-          PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD:
-            process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD!,
-        }}
-        config={config}
-      >
-        <M.ModalWithoutProvider />
-      </M.Provider>
-    </M.Container>
+    <M.Modal
+      config={config}
+      env={{
+        PHONE_NUMBER_KEY_SECRET:
+          process.env.NEXT_PUBLIC_PHONE_NUMBER_KEY_SECRET!,
+        PHONE_NUMBER_TWILIO_BASIC_AUTH_USER:
+          process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_USER!,
+        PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD:
+          process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD!,
+      }}
+    />
   );
 
   function getConfig() {

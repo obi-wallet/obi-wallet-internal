@@ -17,4 +17,5 @@ export const ztxModalConfig: Config = {
     comingSoon: [],
   },
   ethereumBalances: true,
+  headless: true,
 };
