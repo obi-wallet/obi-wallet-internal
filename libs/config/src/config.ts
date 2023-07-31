@@ -20,5 +20,5 @@ export interface Config {
     required: KeyType[];
     comingSoon: ComingSoonKeyType[];
   };
-  theme: CustomTheme;
+  theme?: CustomTheme;
 }

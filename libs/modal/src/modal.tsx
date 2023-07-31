@@ -18,11 +18,15 @@ import "./vuplex-polyfill.js";
 
 // eslint-disable-next-line mobx/missing-observer
 export function Modal({ config }: { config: Config }) {
-  return (
-    <Container config={config}>
-      <ModalWithoutProvider />
-    </Container>
-  );
+  if (config.theme) {
+    return (
+      <Container theme={config.theme}>
+        <ModalWithoutProvider />
+      </Container>
+    );
+  }
+
+  return <ModalWithoutProvider />;
 }
 
 export const ModalWithoutProvider = observer(function ModalWithoutProvider() {
