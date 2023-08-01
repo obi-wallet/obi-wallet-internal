@@ -165,7 +165,9 @@ const MessageHandlers = observer(function MessageHandlers() {
       }
     }
 
-    return addEventListener(listener);
+    const cleanup = addEventListener(listener);
+    postMessage({ type: "@obi/ready" });
+    return cleanup;
   }, [store, autoBroadcast]);
 
   return null;
