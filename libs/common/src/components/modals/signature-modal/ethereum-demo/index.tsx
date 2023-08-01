@@ -21,20 +21,38 @@ export const SignatureModalEthereumDemo =
 
       const broadcast = useMutation({
         mutationFn: async () => {
-          const message = interaction.payload.messages[0] as unknown as {
-            eth: { to: string; token: Token };
-          };
+          const message = interaction.payload.messages[0] as unknown as
+            | {
+                eth: { to: string; token: Token };
+              }
+            | { userop: string };
           const wallet = sdkRootStore.walletsStore.currentWallet;
           const zAuthKey = wallet?.owner.getUsableKeyOfType(KeyType.ZAuth);
-          const response = await fetch("/api/ethereum-demo/send", {
-            method: "POST",
-            body: JSON.stringify({
-              chainId: wallet?.chainId,
-              publicKey: zAuthKey?.publicKey,
-              to: message.eth.to,
-              token: message.eth.token,
-            }),
-          });
+
+          async function handleMessage() {
+            if (R.has("userop", message)) {
+              return await fetch("/api/send-userop", {
+                method: "POST",
+                body: JSON.stringify({
+                  chainId: wallet?.chainId,
+                  publicKey: zAuthKey?.publicKey,
+                  data: message.userop,
+                }),
+              });
+            }
+
+            return await fetch("/api/ethereum-demo/send", {
+              method: "POST",
+              body: JSON.stringify({
+                chainId: wallet?.chainId,
+                publicKey: zAuthKey?.publicKey,
+                to: message.eth.to,
+                token: message.eth.token,
+              }),
+            });
+          }
+
+          const response = await handleMessage();
           const event = await response.json();
           if (!R.has("transactionHash", event)) {
             throw new Error(JSON.stringify(event));

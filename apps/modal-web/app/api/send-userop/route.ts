@@ -1,12 +1,11 @@
 import { Secp256k1PublicKey, SecretJsChainId } from "@obi-wallet/sdk";
-import { Contract, JsonRpcProvider, parseUnits } from "ethers";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { Client, IUserOperation, Presets } from "userop";
 
-import { connect } from "../../../../src/db";
-import { SecretJsSigner } from "../../../../src/secret-js-signer";
-import { fetchUserId } from "../../../../src/zauth";
+import { connect } from "../../../src/db";
+import { SecretJsSigner } from "../../../src/secret-js-signer";
+import { fetchUserId } from "../../../src/zauth";
 
 const config = {
   rpcUrl: process.env.STACKUP_RPC_URL,
@@ -16,17 +15,11 @@ const config = {
   },
 };
 
-const provider = new JsonRpcProvider(config.rpcUrl);
-
 export async function POST(request: Request) {
   const body: {
     chainId: SecretJsChainId;
     publicKey: Secp256k1PublicKey;
-    to: string;
-    token: {
-      id: string;
-      rawAmount: string;
-    };
+    data: string;
   } = await request.json();
 
   const accessToken = cookies().get("zepetoAccessToken")?.value;
@@ -51,7 +44,6 @@ export async function POST(request: Request) {
     config.paymaster.context,
   );
   const client = await Client.init(config.rpcUrl!);
-  const amount = parseUnits(body.token.rawAmount, 0);
   const signer = new SecretJsSigner({
     chainId: body.chainId,
     keyPair: {
@@ -70,36 +62,9 @@ export async function POST(request: Request) {
   );
 
   async function buildUserOperation() {
-    if (body.token.id === "eth") {
-      return await client.buildUserOperation(
-        simpleAccount.execute(body.to, amount, "0x"),
-      );
-    } else {
-      const erc20 = new Contract(
-        body.token.id,
-        [
-          // Read-Only Functions
-          "function balanceOf(address owner) view returns (uint256)",
-          "function decimals() view returns (uint8)",
-          "function symbol() view returns (string)",
-
-          // Authenticated Functions
-          "function transfer(address to, uint amount) returns (bool)",
-          "function approve(address spender, uint amount) returns (bool)",
-
-          // Events
-          "event Transfer(address indexed from, address indexed to, uint amount)",
-        ] as const,
-        provider,
-      );
-      return await client.buildUserOperation(
-        simpleAccount.execute(
-          await erc20.getAddress(),
-          0,
-          erc20.interface.encodeFunctionData("transfer", [body.to, amount]),
-        ),
-      );
-    }
+    return await client.buildUserOperation(
+      simpleAccount.setCallData(body.data),
+    );
   }
 
   async function handleUserOperation(userOperation: IUserOperation) {
