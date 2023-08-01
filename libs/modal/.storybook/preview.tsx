@@ -54,7 +54,7 @@ const preview: Preview = {
 
       function renderStoryWithContainer(config: Config) {
         return (
-          <Container config={config}>
+          <Container theme={config.theme}>
             <Provider env={process.env} config={config}>
               <Story />
             </Provider>
