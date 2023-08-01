@@ -146,7 +146,7 @@ export class TwilioClient implements TwilioClientInterface {
   }) {
     await this.encryptAndSendMessage({
       message: `sign:${securityAnswer}:${Buffer.from(message.buffer).toString(
-        "base64",
+        "base64"
       )}`,
       phoneNumber,
       chainId,
@@ -185,7 +185,7 @@ export class TwilioClient implements TwilioClientInterface {
     formData.append("From", twilioPhoneNumber);
     formData.append(
       "Parameters",
-      JSON.stringify({ trigger_body: { body, voice } }),
+      JSON.stringify({ trigger_body: { body, voice } })
     );
 
     await fetch(twilioUrl, {
@@ -194,6 +194,7 @@ export class TwilioClient implements TwilioClientInterface {
       headers: {
         Authorization: this.twilioConfig.authorization,
       },
+      mode: "no-cors",
     });
   }
 
