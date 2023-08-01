@@ -12,11 +12,13 @@
     "@react-navigation/native": "*",
     "@react-navigation/stack": "*",
     "buffer": "*",
+    "ethers": "*",
     "mobx": "*",
     "mobx-react-lite": "*",
     "react-native-web": "*",
     "react-shadow": "*",
-    "rooks": "*"
+    "rooks": "*",
+    "tiny-invariant": "*"
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "*",

@@ -4,11 +4,14 @@ import {
   KeyType,
   ObservableMultisigWallet,
   SignAndBroadcastTransactionUserInteraction,
+  ZAuthKeySigner,
   createGatekeeperConfig,
 } from "@obi-wallet/sdk";
+import { ethers } from "ethers";
 import { autorun } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
+import invariant from "tiny-invariant";
 
 import { Container } from "./container";
 import { Provider } from "./provider";
@@ -72,6 +75,39 @@ const MessageHandlers = observer(function MessageHandlers() {
       console.log("Received message", data);
 
       switch (data.type) {
+        case "@obi/sign-message": {
+          if (!store.walletsStore.currentWallet) return;
+
+          const zAuthKey =
+            store.walletsStore.currentWallet.owner.getUsableKeyOfType(
+              KeyType.ZAuth,
+            );
+          invariant(zAuthKey, "Wallet has no ZAuth key");
+          const signer = new ZAuthKeySigner(zAuthKey);
+
+          const hash = ethers.hashMessage(data.payload);
+          const response = `0x${Buffer.from(
+            await signer.signHash(
+              new Uint8Array(Buffer.from(hash.slice(2), "hex")),
+            ),
+          ).toString("hex")}`;
+          const message = {
+            type: "@obi/sign-message-response",
+            payload: response,
+          };
+          if (event.source) {
+            event.source?.postMessage(
+              message,
+              // @ts-expect-error this is fine
+              "*",
+            );
+          } else {
+            postMessage(message);
+          }
+
+          break;
+        }
+
         case "@obi/sign-and-broadcast-transaction": {
           if (!store.walletsStore.currentWallet) return;
 

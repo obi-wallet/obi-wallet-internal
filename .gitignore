@@ -124,3 +124,6 @@ sentry.properties
 
 # Next.js
 .next
+
+# Vercel
+.vercel
