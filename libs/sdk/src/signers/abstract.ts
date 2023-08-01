@@ -8,6 +8,9 @@ export abstract class Signer {
   public abstract signHash(hash: Uint8Array): Promise<Uint8Array>;
 
   public async sign(payload: Buffer): Promise<Buffer> {
+    console.log("signing payload", payload);
+    console.log("signing hash", this.createHash(payload));
+
     return Buffer.from(await this.signHash(this.createHash(payload)));
   }
 
@@ -36,7 +39,9 @@ export class AsyncKeySigner<T extends KeyType> extends Signer {
   }
 
   public async signHash(hash: Uint8Array) {
+    console.log("signing hash", hash);
     return new Promise<Uint8Array>((resolve, reject) => {
+      console.log(this, "this");
       this.pendingSignature = {
         hash,
         resolve,
@@ -46,6 +51,7 @@ export class AsyncKeySigner<T extends KeyType> extends Signer {
   }
 
   protected finishSignature(signature: Uint8Array) {
+    console.log("finishing signature", this);
     if (!this.pendingSignature) {
       throw new Error("No pending signature found.");
     }

@@ -135,6 +135,7 @@ export class PhoneKeySigner extends Signer {
   }
 
   public async signHash(hash: Uint8Array) {
+    console.log("signing hash", hash);
     return await this.signer.signHash(hash);
   }
 

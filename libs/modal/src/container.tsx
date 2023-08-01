@@ -37,6 +37,7 @@ export function Container({
             render(children, container);
           }}
         />
+        
       </root.div>
       {/* This doesn't work inside the shadow dom */}
       <style>

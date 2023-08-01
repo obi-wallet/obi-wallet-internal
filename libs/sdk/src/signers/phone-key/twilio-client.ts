@@ -1,6 +1,3 @@
-import { AES } from "crypto-js";
-import { totp } from "otplib";
-
 import { Chain, ChainId } from "../../chains";
 import { Secp256k1KeyPair, Secp256k1PublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
@@ -123,14 +120,14 @@ export class TwilioClient implements TwilioClientInterface {
 
   public async parsePublicKeyMagicCodeResponse({ key }: { key: string }) {
     const decrypted = await this.fetchAndDecryptResponse(key);
-
-    if (!decrypted?.startsWith("pubkey:")) {
+    console.log({ decrypted });
+    if (!decrypted?.pubkey) {
       throw new Error("This doesn't seem to be a public key");
     }
 
     return {
       type: "tendermint/PubKeySecp256k1" as const,
-      value: decrypted.replace("pubkey:", ""),
+      value: decrypted.pubkey,
     };
   }
 
@@ -159,13 +156,13 @@ export class TwilioClient implements TwilioClientInterface {
 
   public async parseSignatureMagicCodeResponse({ key }: { key: string }) {
     const decrypted = await this.fetchAndDecryptResponse(key);
-
-    if (!decrypted?.startsWith("signature::")) {
+    console.log({ decrypted });
+    if (!decrypted?.signature) {
       throw new Error("This doesn't seem to be a signature");
     }
 
-    const signature = decrypted.replace("signature::", "");
-    return new Uint8Array(Buffer.from(signature, "base64"));
+    // const signature = decrypted.replace("signature::", "");
+    return new Uint8Array(Buffer.from(decrypted.signature, "base64"));
   }
 
   protected async encryptAndSendMessage({
@@ -202,7 +199,8 @@ export class TwilioClient implements TwilioClientInterface {
 
   protected async fetchAndDecryptResponse(key: string) {
     const result = await fetch(`https://obi-hastebin.herokuapp.com/raw/${key}`);
-    return await result.text();
+    const json = await result.json();
+    return json;
 
     // Decryption hasn't been implemented on Twilio yet
     // const token = totp.generate(DEV_SHARED_SECRET);
@@ -219,19 +217,19 @@ export class TwilioClient implements TwilioClientInterface {
 
   protected async getMessageBody(message: string) {
     // absurdly large step for dev convenience
-    totp.options = { digits: 64, step: 600 };
-    const token = totp.generate(this.twilioConfig.secret);
+    // totp.options = { digits: 64, step: 600 };
+    // const token = totp.generate(this.twilioConfig.secret);
 
-    totp.verify({ token, secret: this.twilioConfig.secret });
+    // totp.verify({ token, secret: this.twilioConfig.secret });
 
-    const encrypted = AES.encrypt(message, token).toString();
+    // const encrypted = AES.encrypt(message, token).toString();
 
     const result = await fetch("https://obi-hastebin.herokuapp.com/documents", {
       headers: {
         "Content-type": "application/text",
       },
       method: "POST",
-      body: encrypted,
+      body: message,
     });
     const { key } = JSON.parse(await result.text());
     return key;
