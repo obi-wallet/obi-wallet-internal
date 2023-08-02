@@ -29,6 +29,12 @@ export async function POST(request: Request) {
     httpOnly: true,
     maxAge: 3600000,
     path: "/",
+    ...(process.env.NODE_ENV === "production"
+      ? {
+          sameSite: "none",
+          secure: true,
+        }
+      : {}),
   });
   cookies().set({
     name: "zepetoRefreshToken",
@@ -36,6 +42,12 @@ export async function POST(request: Request) {
     httpOnly: true,
     maxAge: 3600000,
     path: "/",
+    ...(process.env.NODE_ENV === "production"
+      ? {
+          sameSite: "none",
+          secure: true,
+        }
+      : {}),
   });
 
   return NextResponse.json({
