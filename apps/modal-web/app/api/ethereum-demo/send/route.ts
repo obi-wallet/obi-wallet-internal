@@ -69,11 +69,6 @@ export async function POST(request: Request) {
     { paymasterMiddleware },
   );
 
-  // @ts-expect-error this should be fine
-  const builder = await Presets.Builder.Kernel.init(signer, config.rpcUrl, {
-    paymasterMiddleware,
-  });
-
   async function buildUserOperation() {
     if (body.token.id === "eth") {
       return await client.buildUserOperation(
@@ -97,25 +92,33 @@ export async function POST(request: Request) {
         ] as const,
         provider,
       );
-      const excuted = builder.executeBatch([
-        {
-          to: await erc20.getAddress(),
-          value: 0,
-          data: erc20.interface.encodeFunctionData("transfer", [
-            body.to,
-            amount,
-          ]),
-        },
-        {
-          to: await erc20.getAddress(),
-          value: 0,
-          data: erc20.interface.encodeFunctionData("transfer", [
-            "0xE423063E7ee6be8c5E482ce07a913710EceDc17D", // OBI ERC20 wallet
-            amount,
-          ]),
-        },
-      ]);
-      return await client.buildUserOperation(excuted);
+
+      // console.log({
+      //   user,
+      //   amount,
+      //   token: body.token,
+      //   address: await erc20.getAddress(),
+      //   excuted,
+      // });
+
+      const dest = await erc20.getAddress();
+
+      console.log({ dest, amount, to: body.to });
+      const userop = await client.buildUserOperation(
+        simpleAccount.executeBatch(
+          [dest, dest],
+          [
+            erc20.interface.encodeFunctionData("transfer", [body.to, amount]),
+            erc20.interface.encodeFunctionData("transfer", [
+              "0xE423063E7ee6be8c5E482ce07a913710EceDc17D",
+              1,
+            ]),
+          ],
+        ),
+      );
+
+      console.log({ userop });
+      return userop;
     }
   }
 
