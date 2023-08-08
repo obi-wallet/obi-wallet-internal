@@ -70,7 +70,9 @@ const MessageHandlers = observer(function MessageHandlers() {
     async function listener(event: MessageEvent) {
       let data = event.data;
       if (typeof data === "string") {
-        data = JSON.parse(data);
+        try {
+          data = JSON.parse(data);
+        } catch (error) {}
       }
       console.log("Received message", data);
 
