@@ -6,6 +6,7 @@ import {
   download1PasswordFile,
   execCommand,
   get1PasswordItem,
+  getField,
   modifyFile,
 } from "./helpers.mjs";
 
@@ -16,10 +17,6 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
   const appDir = path.join(__dirname, "../apps/obi-mobile");
   const { fields } = await get1PasswordItem("di22m5775squt3l34ep477fl4e");
-
-  function getField(label) {
-    return fields.find((field) => field.label === label);
-  }
 
   // Handle .env
   await modifyFile(path.join(appDir, ".env"), async (input) => {
@@ -55,7 +52,7 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
   await modifyFile(
     path.join(appDir, "ios/Mobile/AppCenter-Config.plist"),
     async () => {
-      const field = getField("IOS_APP_CENTER_SECRET");
+      const field = getField({ fields, label: "IOS_APP_CENTER_SECRET" });
       return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -72,7 +69,7 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
   await modifyFile(
     path.join(appDir, "android/app/src/main/assets/appcenter-config.json"),
     async () => {
-      const field = getField("ANDROID_APP_CENTER_SECRET");
+      const field = getField({ fields, label: "ANDROID_APP_CENTER_SECRET" });
       return `{
   "app_secret": "${field.value}"
 }
@@ -130,4 +127,10 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
   await execCommand(
     `touch ${path.join(__dirname, "..", "libs/mobile/cosmos.userdeps.js")}`,
   );
+
+  // Handle apps/modal-web/.env
+  await modifyFile(path.join(__dirname, "../apps/modal-web/.env"), async () => {
+    const { fields } = await get1PasswordItem("m25pudvyrvnsfd2u3emjjsi7ja");
+    return getField({ fields, label: "notesPlain" }).value;
+  });
 })();

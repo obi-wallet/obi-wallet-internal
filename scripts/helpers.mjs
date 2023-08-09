@@ -58,3 +58,7 @@ export async function modifyFile(path, f) {
   const output = await f(input);
   await writeFile(path, output, "utf8");
 }
+
+export function getField({ fields, label }) {
+  return fields.find((field) => field.label === label);
+}
