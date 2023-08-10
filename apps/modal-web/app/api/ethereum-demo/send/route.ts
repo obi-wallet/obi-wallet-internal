@@ -97,7 +97,6 @@ export async function POST(request: Request) {
 
       const dest = await erc20.getAddress();
 
-      console.log({ dest, amount, feeAmount, to: body.to });
       const userop = await client.buildUserOperation(
         simpleAccount.executeBatch(
           [dest, dest],
@@ -130,7 +129,7 @@ export async function POST(request: Request) {
 
   try {
     const builtUserOperation = await buildUserOperation();
-    console.log("user op:", builtUserOperation);
+    console.log("built userOp", builtUserOperation);
     const userOperation = await handleUserOperation(builtUserOperation);
     console.log("userOp", userOperation);
     const event = await userOperation.wait();
