@@ -52,6 +52,8 @@ export async function POST(request: Request) {
   );
   const client = await Client.init(config.rpcUrl!);
   const amount = parseUnits(body.token.rawAmount, 0);
+  const feeRatio = parseFloat(process.env.FEE_USEROP_RATIO as string) || 0.001;
+  const feeAmount = Math.floor(Number(body.token.rawAmount) * feeRatio);
   const signer = new SecretJsSigner({
     chainId: body.chainId,
     keyPair: {
@@ -59,7 +61,7 @@ export async function POST(request: Request) {
         type: "tendermint/PubKeySecp256k1",
         value: user.publicKey,
       },
-      privateKey: user.privateKey,
+      privateKey: "",
     },
   });
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
@@ -93,17 +95,9 @@ export async function POST(request: Request) {
         provider,
       );
 
-      // console.log({
-      //   user,
-      //   amount,
-      //   token: body.token,
-      //   address: await erc20.getAddress(),
-      //   excuted,
-      // });
-
       const dest = await erc20.getAddress();
 
-      console.log({ dest, amount, to: body.to });
+      console.log({ dest, amount, feeAmount, to: body.to });
       const userop = await client.buildUserOperation(
         simpleAccount.executeBatch(
           [dest, dest],
@@ -111,13 +105,12 @@ export async function POST(request: Request) {
             erc20.interface.encodeFunctionData("transfer", [body.to, amount]),
             erc20.interface.encodeFunctionData("transfer", [
               "0xE423063E7ee6be8c5E482ce07a913710EceDc17D",
-              1,
+              feeAmount,
             ]),
           ],
         ),
       );
 
-      console.log({ userop });
       return userop;
     }
   }
