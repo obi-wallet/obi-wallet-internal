@@ -54,6 +54,8 @@ export async function POST(request: Request) {
   const amount = parseUnits(body.token.rawAmount, 0);
   const feeRatio = parseFloat(process.env.FEE_USEROP_RATIO as string) || 0.001;
   const feeAmount = Math.floor(Number(body.token.rawAmount) * feeRatio);
+  const feeAddress = process.env.FEE_OBI_WALLET;
+
   const signer = new SecretJsSigner({
     chainId: body.chainId,
     keyPair: {
@@ -61,7 +63,7 @@ export async function POST(request: Request) {
         type: "tendermint/PubKeySecp256k1",
         value: user.publicKey,
       },
-      privateKey: "",
+      privateKey: user.privateKey,
     },
   });
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
@@ -103,7 +105,7 @@ export async function POST(request: Request) {
           [
             erc20.interface.encodeFunctionData("transfer", [body.to, amount]),
             erc20.interface.encodeFunctionData("transfer", [
-              "0xE423063E7ee6be8c5E482ce07a913710EceDc17D",
+              feeAddress,
               feeAmount,
             ]),
           ],
