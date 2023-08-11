@@ -82,7 +82,7 @@
     "react-hook-form": "*",
     "react-intl": "*",
     "react-modal-sheet": "*",
-    "react-native": "0.71.12",
+    "react-native": "0.72.3",
     "react-native-animatable": "*",
     "react-native-asset": "*",
     "react-native-camera": "*",
@@ -119,7 +119,8 @@
     "secretjs": "*",
     "tiny-invariant": "*",
     "tiny-warning": "*",
-    "zod": "*"
+    "zod": "*",
+    "@react-native/metro-config": "*"
   },
   "devDependencies": {
     "@nx/react-native": "*"
