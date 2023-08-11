@@ -1,4 +1,5 @@
 import { Secp256k1PublicKey, SecretJsChainId } from "@obi-wallet/sdk";
+import BigNumber from "bignumber.js";
 import { Contract, JsonRpcProvider, parseUnits } from "ethers";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -52,9 +53,6 @@ export async function POST(request: Request) {
   );
   const client = await Client.init(config.rpcUrl!);
   const amount = parseUnits(body.token.rawAmount, 0);
-  const feeRatio = parseFloat(process.env.FEE_USEROP_RATIO as string) || 0.001;
-  const feeAmount = Math.floor(Number(body.token.rawAmount) * feeRatio);
-  const feeAddress = process.env.FEE_OBI_WALLET;
 
   const signer = new SecretJsSigner({
     chainId: body.chainId,
@@ -66,6 +64,7 @@ export async function POST(request: Request) {
       privateKey: user.privateKey,
     },
   });
+
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
     signer,
@@ -99,13 +98,17 @@ export async function POST(request: Request) {
 
       const dest = await erc20.getAddress();
 
+      const temp = new BigNumber(body.token.rawAmount);
+      const feeDetails = await signer.getFeeDetails();
+      const feeAmount = temp.dividedBy(feeDetails.feeDivisor).toFixed(0);
+
       const userop = await client.buildUserOperation(
         simpleAccount.executeBatch(
           [dest, dest],
           [
             erc20.interface.encodeFunctionData("transfer", [body.to, amount]),
             erc20.interface.encodeFunctionData("transfer", [
-              feeAddress,
+              feeDetails.feePayAddress,
               feeAmount,
             ]),
           ],
@@ -131,7 +134,6 @@ export async function POST(request: Request) {
 
   try {
     const builtUserOperation = await buildUserOperation();
-    console.log("built userOp", builtUserOperation);
     const userOperation = await handleUserOperation(builtUserOperation);
     console.log("userOp", userOperation);
     const event = await userOperation.wait();

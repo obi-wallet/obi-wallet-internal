@@ -105,4 +105,25 @@ export class SecretJsSigner {
       return response.signature;
     });
   }
+
+  public async getFeeDetails(): Promise<{
+    feePayAddress: string;
+    feeDivisor: number;
+  }> {
+    return await this.client.withSecretNetworkClient(async (client) => {
+      const response = (await client.query.compute.queryContract({
+        contract_address: this.chain.feeManager.address,
+        code_hash: this.chain.feeManager.codeHash,
+        query: {
+          fee_details: {
+            chain_id: this.chain.feeManager.homeChainId,
+          },
+        },
+      })) as { fee_pay_address: string; fee_divisor: number };
+      return {
+        feePayAddress: `0x${response.fee_pay_address}`,
+        feeDivisor: response.fee_divisor,
+      };
+    });
+  }
 }

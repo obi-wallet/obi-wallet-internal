@@ -15,6 +15,11 @@ export const secretJsChains = {
       codeHash:
         "c679e7b6be611e804d34b2b4a6514bcd2cfe8b23d6ead87df80306b109f9babf",
     },
+    feeManager: {
+      address: "",
+      codeHash: "",
+      homeChainId: "",
+    },
     currentCodeIds: {
       userAccount: 22474,
     },
@@ -40,6 +45,12 @@ export const secretJsChains = {
       address: "secret1cy4kqk25sha6slfywln9aud7epw4mkgw2r5edt",
       codeHash:
         "801ea84592db2ff6618c9fc50030100beeb0042ff48481e0e7bfd1f553a6093a",
+    },
+    feeManager: {
+      address: "secret1kj8n9kr9k4fvztewxg6pzh4tmq6h79y2y0pma2",
+      codeHash:
+        "dae6836c9c01179e24b82d9dcb16f5917f4e4e9eceea0b7b66fd5aa79b75982c",
+      homeChainId: "5",
     },
     currentCodeIds: {
       userAccount: 135,
