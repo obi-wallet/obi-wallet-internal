@@ -169,33 +169,6 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
               />
             ) : null}
           </BottomSheetNew>
-          {/*<BaseBottomSheet*/}
-          {/*  handleIndicatorStyle={{ backgroundColor: "white" }}*/}
-          {/*  backgroundStyle={{ backgroundColor: isLoop ? "#100F1E" : "#272727" }}*/}
-          {/*  handleStyle={{ backgroundColor: "transparent" }}*/}
-          {/*  snapPoints={["50%"]}*/}
-          {/*  enablePanDownToClose={true}*/}
-          {/*  ref={bottomSheetRef}*/}
-          {/*  index={-1}*/}
-          {/*>*/}
-          {/*  <BottomSheetView*/}
-          {/*    style={{*/}
-          {/*      flex: 1,*/}
-          {/*      backgroundColor: "transparent",*/}
-          {/*      position: "relative",*/}
-          {/*    }}*/}
-          {/*  >*/}
-          {/*    {selectedType ? (*/}
-          {/*      <KeyBottomSheetContent*/}
-          {/*        type={selectedType}*/}
-          {/*        action={actions[selectedType]}*/}
-          {/*        multisigKey={multisigKey}*/}
-          {/*        onClose={() => {*/}
-          {/*          triggerBottomSheet(-1);*/}
-          {/*        }}*/}
-          {/*      />*/}
-          {/*    ) : null}*/}
-          {/*  </BottomSheetView>*/}
         </SafeAreaView>
       </OsmosisScreenContainer>
     );
