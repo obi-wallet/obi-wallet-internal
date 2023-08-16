@@ -5,7 +5,7 @@ import OriginalBottomSheet, {
 } from "@gorhom/bottom-sheet";
 import { BlurView } from "@react-native-community/blur";
 import { observer } from "mobx-react-lite";
-import { ReactNode, Ref } from "react";
+import { ReactNode, Ref, useEffect, useRef } from "react";
 import {
   Platform,
   StyleProp,
@@ -19,13 +19,55 @@ export type BottomSheet = OriginalBottomSheet;
 
 export { BottomSheetView, BottomSheetTextInput };
 
+export interface BottomSheetNewProps {
+  open: boolean;
+  onClose(): void;
+  children: ReactNode;
+}
+
+export const BottomSheetNew = observer<BottomSheetNewProps>(
+  function BottomSheetNew({ open, onClose, children }) {
+    const bottomSheetRef = useRef<BottomSheet>(null);
+    const onCloseRef = useRef(onClose);
+
+    useEffect(() => {
+      if (open) {
+        bottomSheetRef.current?.expand();
+      } else {
+        bottomSheetRef.current?.close();
+        onCloseRef.current();
+      }
+    }, [open]);
+
+    return (
+      <OriginalBottomSheet
+        handleIndicatorStyle={{ backgroundColor: "white" }}
+        backgroundStyle={{ backgroundColor: "#272727" }}
+        handleStyle={{ backgroundColor: "transparent" }}
+        snapPoints={["50%"]}
+        enablePanDownToClose={true}
+        ref={bottomSheetRef}
+        index={-1}
+      >
+        <BottomSheetView
+          style={{
+            flex: 1,
+            backgroundColor: "transparent",
+            position: "relative",
+          }}
+        >
+          {children}
+        </BottomSheetView>
+      </OriginalBottomSheet>
+    );
+  },
+);
+
 export interface BottomSheetProps {
   children: ReactNode;
   bottomSheetRef: Ref<OriginalBottomSheet>;
   onClose?: () => void;
 }
-
-export const BaseBottomSheet = OriginalBottomSheet;
 
 export const BottomSheet = observer(function BottomSheet({
   children,

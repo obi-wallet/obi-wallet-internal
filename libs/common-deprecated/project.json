@@ -14,7 +14,7 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["coverage/libs/common"],
+      "outputs": ["{workspaceRoot}/coverage/libs/common"],
       "options": {
         "jestConfig": "libs/common-deprecated/jest.config.ts",
         "passWithNoTests": true
