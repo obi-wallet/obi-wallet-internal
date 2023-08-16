@@ -28,7 +28,7 @@ export const SignatureModal = observer<SignatureModalProps>(
     const ethereumDemo =
       configStore.config.ethereumBalances &&
       interaction.payload.messages.every((message) => {
-        return R.has("eth", message);
+        return R.has("eth", message) || R.has("userop", message);
       });
 
     return ethereumDemo ? (

@@ -1,3 +1,4 @@
+import * as R from "ramda";
 import { MsgExecuteContract } from "secretjs";
 import invariant from "tiny-invariant";
 import warning from "tiny-warning";
@@ -23,9 +24,14 @@ export class SecretJsMessages extends AbstractMessages {
     super(chainId);
   }
 
-  public toJSON(_: Message): MessageJson {
-    notImplemented("toJSON not implemented for SecretJS");
-    throw new Error("toJSON not implemented for SecretJS");
+  public toJSON(message: Message): MessageJson {
+    if (R.has("eth", message)) {
+      return MessageJson.parse(message.eth);
+    }
+    if (R.has("userop", message)) {
+      return MessageJson.parse(message.userop);
+    }
+    throw new Error("Unknown message");
   }
 
   public wrapMessages(_: {
