@@ -25,7 +25,12 @@ export const SignatureModalEthereumDemo =
             | {
                 eth: { to: string; token: Token };
               }
-            | { userop: string };
+            | {
+                userop: {
+                  contractAddress: string;
+                  callData: string;
+                };
+              };
           const wallet = sdkRootStore.walletsStore.currentWallet;
           const zAuthKey = wallet?.owner.getUsableKeyOfType(KeyType.ZAuth);
 
@@ -36,7 +41,8 @@ export const SignatureModalEthereumDemo =
                 body: JSON.stringify({
                   chainId: wallet?.chainId,
                   publicKey: zAuthKey?.publicKey,
-                  data: message.userop,
+                  contractAddress: message.userop.contractAddress,
+                  data: message.userop.callData,
                 }),
               });
             }

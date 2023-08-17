@@ -1,4 +1,4 @@
-import { Secp256k1PublicKey, SecretJsChainId } from "@obi-wallet/sdk";
+import { SecretJsChainId } from "@obi-wallet/sdk";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { Client, IUserOperation, Presets } from "userop";
@@ -18,7 +18,7 @@ const config = {
 export async function POST(request: Request) {
   const body: {
     chainId: SecretJsChainId;
-    publicKey: Secp256k1PublicKey;
+    contractAddress: string;
     data: string;
   } = await request.json();
 
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
 
   async function buildUserOperation() {
     return await client.buildUserOperation(
-      simpleAccount.setCallData(body.data),
+      simpleAccount.execute(body.contractAddress, 0, body.data),
     );
   }
 
