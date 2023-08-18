@@ -1,3 +1,4 @@
+import { TargetChainId } from "@obi-wallet/config";
 import { SecretJsChainId } from "@obi-wallet/sdk";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -5,22 +6,35 @@ import { Client, IUserOperation, Presets } from "userop";
 
 import { connect } from "../../../src/db";
 import { SecretJsSigner } from "../../../src/secret-js-signer";
+import { getStackupRpcUrls } from "../../../src/stackup";
 import { fetchUserId } from "../../../src/zauth";
-
-const config = {
-  rpcUrl: process.env.STACKUP_RPC_URL,
-  paymaster: {
-    rpcUrl: process.env.STACKUP_PAYMASTER_RPC_URL,
-    context: { type: "payg" },
-  },
-};
 
 export async function POST(request: Request) {
   const body: {
     chainId: SecretJsChainId;
     contractAddress: string;
     data: string;
+    targetChainId: TargetChainId;
   } = await request.json();
+
+  const envStackupRpcApiKey =
+    process.env[`STACKUP_${body.targetChainId}_API_KEY`];
+
+  if (!envStackupRpcApiKey)
+    return NextResponse.json("invalid target chain id", {
+      status: 404,
+    });
+
+  const stackupRpcUrls = getStackupRpcUrls(envStackupRpcApiKey);
+
+  const config = {
+    rpcUrl: stackupRpcUrls.rpcUrl ?? process.env.STACKUP_RPC_URL,
+    paymaster: {
+      rpcUrl:
+        stackupRpcUrls.paymasterRpcUrl ?? process.env.STACKUP_PAYMASTER_RPC_URL,
+      context: { type: "payg" },
+    },
+  };
 
   const accessToken = cookies().get("zepetoAccessToken")?.value;
   const refreshToken = cookies().get("zepetoRefreshToken")?.value;
