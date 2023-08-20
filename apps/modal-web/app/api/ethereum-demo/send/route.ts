@@ -20,7 +20,7 @@ const provider = new JsonRpcProvider(config.rpcUrl);
 
 export async function POST(request: Request) {
   const body: {
-    chainId: SecretJsChainId;
+    homeChainId: SecretJsChainId;
     publicKey: Secp256k1PublicKey;
     to: string;
     token: {
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
   const client = await Client.init(config.rpcUrl!);
   const amount = parseUnits(body.token.rawAmount, 0);
   const signer = new SecretJsSigner({
-    chainId: body.chainId,
+    homeChainId: body.homeChainId,
     keyPair: {
       publicKey: {
         type: "tendermint/PubKeySecp256k1",

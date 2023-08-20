@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   const body: {
     accessToken?: string;
     refreshToken?: string;
-    chainId: SecretJsChainId;
+    homeChainId: SecretJsChainId;
   } = await request.json();
 
   const accessToken =
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       };
       const ethereumAccount = await recoverOrCreateEthereumAccount({
         keyPair,
-        chainId: body.chainId,
+        chainId: body.homeChainId,
         proxyAddress: existingUser.proxyAddress,
       });
 
@@ -70,11 +70,11 @@ export async function POST(request: Request) {
 
     const keyPair = generateSec256k1KeyPair();
 
-    const messagesSdk = Messages.chainId(body.chainId);
-    const sdk = Sdk.chainId(body.chainId);
+    const messagesSdk = Messages.chainId(body.homeChainId);
+    const sdk = Sdk.chainId(body.homeChainId);
 
     const signer = new Secp256k1PrivateKeySigner(keyPair.privateKey);
-    const client = new SecretJsClient(body.chainId);
+    const client = new SecretJsClient(body.homeChainId);
 
     const address = sdk.transactions.getAddressOfPublicKey(keyPair.publicKey);
 
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const multisigKey = MultisigKey.create(body.chainId, {
+    const multisigKey = MultisigKey.create(body.homeChainId, {
       keys: [
         {
           type: KeyType.ZAuth,
@@ -135,7 +135,7 @@ export async function POST(request: Request) {
 
     const ethereumAccount = await recoverOrCreateEthereumAccount({
       keyPair,
-      chainId: body.chainId,
+      chainId: body.homeChainId,
       proxyAddress: contractAddress,
     });
 

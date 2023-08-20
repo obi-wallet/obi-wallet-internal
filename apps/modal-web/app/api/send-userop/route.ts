@@ -1,4 +1,4 @@
-import { TargetChainId } from "@obi-wallet/config";
+import { TargetChainId } from "@obi-wallet/sdk";
 import { SecretJsChainId } from "@obi-wallet/sdk";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -11,7 +11,7 @@ import { fetchUserId } from "../../../src/zauth";
 
 export async function POST(request: Request) {
   const body: {
-    chainId: SecretJsChainId;
+    homeChainId: SecretJsChainId;
     contractAddress: string;
     data: string;
     targetChainId: TargetChainId;
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
   );
   const client = await Client.init(config.rpcUrl!);
   const signer = new SecretJsSigner({
-    chainId: body.chainId,
+    homeChainId: body.homeChainId,
     keyPair: {
       publicKey: {
         type: "tendermint/PubKeySecp256k1",

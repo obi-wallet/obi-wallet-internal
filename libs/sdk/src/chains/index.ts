@@ -7,6 +7,7 @@ export * from "./cosmos";
 export * from "./legacy-cosmos";
 export * from "./secret-js";
 export * from "./terra";
+export * from "./chains";
 
 export type ChainId =
   | CosmosChainId

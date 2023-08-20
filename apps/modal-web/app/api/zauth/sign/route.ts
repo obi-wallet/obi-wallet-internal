@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   const body: {
     accessToken?: string;
     refreshToken?: string;
-    chainId: SecretJsChainId;
+    homeChainId: SecretJsChainId;
     hash?: string;
     message?: string;
   } = await request.json();
