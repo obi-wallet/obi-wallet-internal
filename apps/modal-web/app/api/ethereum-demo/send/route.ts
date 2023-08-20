@@ -53,7 +53,7 @@ export async function POST(request: Request) {
   const client = await Client.init(config.rpcUrl!);
   const amount = parseUnits(body.token.rawAmount, 0);
   const signer = new SecretJsSigner({
-    homeChainId: body.homeChainId,
+    chainId: body.homeChainId,
     keyPair: {
       publicKey: {
         type: "tendermint/PubKeySecp256k1",
