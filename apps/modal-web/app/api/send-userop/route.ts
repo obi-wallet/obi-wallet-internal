@@ -1,4 +1,4 @@
-import { TargetChainId } from "@obi-wallet/sdk";
+import { TargetChainId, getStackupRpcUrls } from "@obi-wallet/sdk";
 import { SecretJsChainId } from "@obi-wallet/sdk";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -6,7 +6,6 @@ import { Client, IUserOperation, Presets } from "userop";
 
 import { connect } from "../../../src/db";
 import { SecretJsSigner } from "../../../src/secret-js-signer";
-import { getStackupRpcUrls } from "../../../src/stackup";
 import { fetchUserId } from "../../../src/zauth";
 
 export async function POST(request: Request) {
@@ -59,7 +58,7 @@ export async function POST(request: Request) {
   );
   const client = await Client.init(config.rpcUrl!);
   const signer = new SecretJsSigner({
-    homeChainId: body.homeChainId,
+    chainId: body.homeChainId,
     keyPair: {
       publicKey: {
         type: "tendermint/PubKeySecp256k1",

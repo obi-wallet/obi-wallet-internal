@@ -6,3 +6,4 @@ export * from "./gatekeeper";
 export * from "./rpc-error";
 export * from "./secret-js";
 export * from "./staking";
+export * from "./userop-js";
