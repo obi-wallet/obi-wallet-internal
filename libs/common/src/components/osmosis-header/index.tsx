@@ -12,10 +12,11 @@ export interface OsmosisHeaderProps {
   onBack?: () => void;
   onClose?: () => void;
   hideLogo?: boolean;
+  hideBack?: boolean;
 }
 
 export const OsmosisHeader = observer<OsmosisHeaderProps>(
-  function OsmosisHeader({ onBack, onClose, hideLogo }) {
+  function OsmosisHeader({ onBack, onClose, hideLogo, hideBack }) {
     const navigation = useNavigation();
     const theme = useTheme();
 
@@ -33,7 +34,7 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
         }}
       >
         <View style={{ width: 29 }}>
-          {onBackPress ? (
+          {!hideBack && onBackPress ? (
             <IconButton
               onPress={onBackPress}
               style={{ width: 29 }}

@@ -112,7 +112,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
 
     return (
       <BaseModal {...props} visible>
-        <OsmosisScreenContainer>
+        <OsmosisScreenContainer hideBack>
           {loading ? (
             <BroadcastingAnimation />
           ) : (
