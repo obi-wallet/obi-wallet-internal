@@ -62,9 +62,9 @@ export async function POST(request: Request) {
     keyPair: {
       publicKey: {
         type: "tendermint/PubKeySecp256k1",
-        value: user.publicKey,
+        value: user.homePublicKey,
       },
-      privateKey: user.privateKey,
+      privateKey: user.homePrivateKey,
     },
   });
   const simpleAccount = await Presets.Builder.SimpleAccount.init(

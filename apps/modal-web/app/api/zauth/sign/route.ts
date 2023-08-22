@@ -33,7 +33,7 @@ export async function POST(request: Request) {
   const UserModel = await connect();
   const user = await UserModel.findOne({ userId });
 
-  const signer = new Secp256k1PrivateKeySigner(user.privateKey);
+  const signer = new Secp256k1PrivateKeySigner(user.homePrivateKey);
 
   const response: { signedHash?: string; signedMessage?: string } = {};
   if (body.hash) {

@@ -141,14 +141,14 @@ export async function POST(request: Request) {
 
     await UserModel.create({
       userId,
-      publicKey: keyPair.publicKey.value,
-      privateKey: keyPair.privateKey,
+      homePublicKey: keyPair.publicKey.value,
+      homePrivateKey: keyPair.privateKey,
       proxyAddress: contractAddress,
     });
 
     return {
       newUser: true,
-      publicKey: keyPair.publicKey,
+      homePublicKey: keyPair.publicKey,
       proxyAddress: contractAddress,
       ethereumAccount,
     };

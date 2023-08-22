@@ -21,7 +21,7 @@ const provider = new JsonRpcProvider(config.rpcUrl);
 export async function POST(request: Request) {
   const body: {
     homeChainId: SecretJsChainId;
-    publicKey: Secp256k1PublicKey;
+    homePublicKey: Secp256k1PublicKey;
     to: string;
     token: {
       id: string;
@@ -57,9 +57,9 @@ export async function POST(request: Request) {
     keyPair: {
       publicKey: {
         type: "tendermint/PubKeySecp256k1",
-        value: user.publicKey,
+        value: user.homePublicKey,
       },
-      privateKey: user.privateKey,
+      privateKey: user.homePrivateKey,
     },
   });
   const simpleAccount = await Presets.Builder.SimpleAccount.init(

@@ -2,15 +2,15 @@ import mongoose, { Schema } from "mongoose";
 
 export interface User {
   userId: string;
-  publicKey: string;
-  privateKey: string;
+  homePublicKey: string;
+  homePrivateKey: string;
   proxyAddress: string;
 }
 
 const schema = new Schema<User>({
   userId: { type: String, required: true, index: true, unique: true },
-  publicKey: { type: String, required: true },
-  privateKey: { type: String, required: true },
+  homePublicKey: { type: String, required: true },
+  homePrivateKey: { type: String, required: true },
   proxyAddress: { type: String, required: true },
 });
 
