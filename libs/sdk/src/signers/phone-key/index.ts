@@ -17,10 +17,7 @@ export class PhoneKeySigner extends AsyncKeySigner<KeyType.Phone> {
     twilioClient: TwilioClientInterface;
     voice: boolean;
   }) {
-    if (!this.pendingSignature) {
-      throw new Error("No pending signature found.");
-    }
-    const { hash } = this.pendingSignature;
+    const { hash } = await this.waitForPendingSignature();
     await twilioClient.requestSignatureMagicCode({
       phoneNumber: this.key.payload.phoneNumber,
       securityAnswer,
@@ -39,13 +36,10 @@ export class PhoneKeySigner extends AsyncKeySigner<KeyType.Phone> {
     key: string;
     twilioClient: TwilioClientInterface;
   }) {
-    if (!this.pendingSignature) {
-      throw new Error("No pending signature found.");
-    }
     const signature = await twilioClient.parseSignatureMagicCodeResponse({
       key,
       chainId,
     });
-    this.finishSignature(signature);
+    await this.finishSignature(signature);
   }
 }
