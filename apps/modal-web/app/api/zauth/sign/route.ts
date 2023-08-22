@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       {
         error: "invalid params",
       },
-      { status: 404 },
+      { status: 400 },
     );
   }
 
