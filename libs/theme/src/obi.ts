@@ -51,7 +51,7 @@ export const obiTheme: CustomTheme = {
     welcome: {
       title: "Welcome to Obi",
       subTitle:
-        "Obi is the most secure and convenient way to manage assets in the Cosmos.",
+        "Obi is the most secure and convenient way to manage assets on all your favorite networks.",
     },
     accountName: "Obi Smart Account",
   },
