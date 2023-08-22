@@ -17,6 +17,8 @@ const config = {
   },
 };
 
+console.log("config")
+
 const provider = new JsonRpcProvider(config.rpcUrl);
 
 export async function POST(request: Request) {
