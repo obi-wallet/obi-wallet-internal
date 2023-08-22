@@ -59,7 +59,7 @@ async function recoverEthereumAccount({
   const compressed = secp256k1.publicKeyConvert(pubKeyRaw, true);
 
   return {
-    publicKey: {
+    homePublicKey: {
       type: "tendermint/PubKeySecp256k1",
       value: new Buffer(compressed).toString("base64"),
     },
@@ -121,7 +121,7 @@ async function generateEthereumAccount({
   console.log(broadcastTransactionResult);
 
   return {
-    publicKey: ethKeyPair.publicKey,
+    homePublicKey: ethKeyPair.publicKey,
     address,
   };
 }
