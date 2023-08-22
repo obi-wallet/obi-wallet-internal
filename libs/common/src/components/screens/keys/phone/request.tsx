@@ -14,8 +14,10 @@ import {
   KeyFlow,
   KeyRoute,
   KeyStackParamList,
+  OnboardingRoute,
   useRootNavigation,
 } from "../../../../router";
+import { Button } from "../../../buttons";
 import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
 import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import {
@@ -45,6 +47,9 @@ export const PhoneKeyRequestScreen = observer<PhoneKeyRequestScreenProps>(
             ...payload,
           });
         }}
+        onSkip={() => {
+          navigation.navigate(OnboardingRoute.CreateWallet, params);
+        }}
       />
     );
   },
@@ -63,6 +68,7 @@ export interface PhoneKeyRequestProps {
   flow: KeyFlow;
   demoMode: boolean;
   phoneNumber?: string;
+  onSkip: () => void;
   onSubmit(payload: {
     phoneNumber: string;
     securityQuestion: string;
@@ -71,7 +77,7 @@ export interface PhoneKeyRequestProps {
 }
 
 export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
-  function PhoneKeyRequest({ demoMode, flow, onSubmit, ...params }) {
+  function PhoneKeyRequest({ demoMode, flow, onSubmit, onSkip, ...params }) {
     const intl = useIntl();
     const { chainStore } = useStore();
     const chainId = chainStore.currentChain;
@@ -158,6 +164,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                     </Text>
                   </View>
                 </View>
+
                 <Controller
                   name="securityQuestion"
                   control={control}
@@ -219,6 +226,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                   }}
                 />
               </View>
+
               <View
                 style={{
                   flex: 1,
@@ -251,6 +259,16 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                       );
                     }
                   })}
+                />
+                <Button
+                  label="Skip"
+                  flavor="cancel"
+                  buttonStyle={{
+                    borderWidth: 0,
+                    borderColor: "transparent",
+                    height: 30,
+                  }}
+                  onPress={onSkip}
                 />
               </View>
             </View>

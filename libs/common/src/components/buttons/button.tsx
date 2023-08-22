@@ -83,7 +83,7 @@ export const Button = observer(function Button({
   const theme = useTheme();
   const flavorStyles = getFlavorStyles(flavor, theme, disabled);
   const children = (
-    <View style={flavorStyles.button}>
+    <View style={[flavorStyles.button, buttonStyle]}>
       {LeftIcon ? (
         <LeftIcon width={24} height={24} style={baseStyles.leftIcon} />
       ) : null}

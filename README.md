@@ -9,6 +9,7 @@ This is a monorepo containing our mobile app and our web modal. To enable code-s
 ## ZTX's implementation
 
 ZTX's implementation has three stages:
+
 - Claim NFT promotional
 - Website modal
 - Unity modal
