@@ -8,13 +8,19 @@ This is a monorepo containing our mobile app and our web modal. To enable code-s
 
 ## ZTX's implementation
 
-ZTX's initial implementation has various characteristics that remove the need of most of the code in this repository:
+ZTX's implementation has three stages:
 
-- ZTX uses the web modal approach. Therefore, anything mobile-related won't be used.
-- ZTX doesn't use the UI that we usually provide.
-- In this early stage, ZTX's implementation uses only a subset of the features provided by our SDK.
+- Claim NFT promotional
+- Website modal
+- Unity modal
 
-The code used by ZTX is outlined next:
+The initial stage (Claim NFT) has various characteristics that remove the need of most of the code in this repository:
+
+- Like the other two stages, Claim NFT uses the web modal approach. Therefore, anything mobile app-related won't be used.
+- Unlike the other two stages, Claim NFT doesn't use the UI that we usually provide.
+- The Claim NFT implementation uses only a subset of the features provided by our SDK. The modal implementations will use more, including Multikey components.
+
+The code used by Claim NFT is outlined next:
 
 - ZTX uses our `@obi-wallet/modal-ztx` npm package (see https://github.com/obi-wallet/modal-ztx) to embed an iframe with URL https://wallet.obimoney.games/ztx. `@obi-wallet/modal-ztx` exposes functions that communicate with that iframe via `window.postMessage` (see `MessageHandler` in `libs/modal/src/modal.tsx`).
 - https://wallet.obimoney.games/ztx is handled by the Next.js located in `apps/modal-web`. The entry point is therefore the route `[config]` with route param `ztx`. As seen in `apps/modal-web/src/modal.tsx`, the route param specifies the config to be used and utilizes the modal package located in `libs/modal`.

@@ -20,12 +20,17 @@ export abstract class Signer {
   }
 }
 
+export interface PendingSignature {
+  hash: Uint8Array;
+  resolve: (signature: Uint8Array) => void;
+  reject: () => void;
+}
+
 export class AsyncKeySigner<T extends KeyType> extends Signer {
-  protected pendingSignature: {
-    hash: Uint8Array;
-    resolve: (signature: Uint8Array) => void;
-    reject: () => void;
-  } | null = null;
+  protected pendingSignature: PendingSignature | null = null;
+  protected pendingSignaturePromise:
+    | ((signature: PendingSignature) => void)
+    | null = null;
 
   public constructor(protected key: KeySubclassTypeMapping[T]) {
     super();
@@ -42,14 +47,25 @@ export class AsyncKeySigner<T extends KeyType> extends Signer {
         resolve,
         reject,
       };
+      if (this.pendingSignaturePromise) {
+        this.pendingSignaturePromise(this.pendingSignature);
+        this.pendingSignaturePromise = null;
+      }
     });
   }
 
-  protected finishSignature(signature: Uint8Array) {
-    if (!this.pendingSignature) {
-      throw new Error("No pending signature found.");
+  public async waitForPendingSignature(): Promise<PendingSignature> {
+    if (this.pendingSignature) {
+      return this.pendingSignature;
     }
-    const { resolve } = this.pendingSignature;
+
+    return await new Promise<PendingSignature>((resolve) => {
+      this.pendingSignaturePromise = resolve;
+    });
+  }
+
+  protected async finishSignature(signature: Uint8Array) {
+    const { resolve } = await this.waitForPendingSignature();
     resolve(signature);
     this.pendingSignature = null;
   }
