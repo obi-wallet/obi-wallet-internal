@@ -150,6 +150,25 @@ const MessageHandlers = observer(function MessageHandlers() {
             }),
           });
 
+          if (response.status !== 200) {
+            const message = {
+              type: "@obi/create-account-response",
+              payload: {
+                error: "invalid token",
+              },
+            };
+            if (event.source) {
+              event.source?.postMessage(
+                message,
+                // @ts-expect-error this is fine
+                "*",
+              );
+            } else {
+              postMessage(message);
+            }
+            return;
+          }
+
           const { publicKey, proxyAddress, ethereumAccount, newUser } =
             await response.json();
 

@@ -8,6 +8,7 @@ import {
   PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD,
   PHONE_NUMBER_TWILIO_BASIC_AUTH_USER,
 } from "react-native-dotenv";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export type ProviderProps = Omit<OriginalProviderProps, "env">;
 
@@ -18,5 +19,9 @@ export const Provider = observer<ProviderProps>(function Provider(props) {
     PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD,
   };
 
-  return <OriginalProvider {...props} env={env} />;
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <OriginalProvider {...props} env={env} />
+    </GestureHandlerRootView>
+  );
 });

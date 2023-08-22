@@ -14,7 +14,8 @@
         "assets": [],
         "project": "libs/sdk/package.json",
         "rollupConfig": "@nx/react/plugins/bundle-rollup",
-        "format": ["esm"]
+        "format": ["esm"],
+        "updateBuildableProjectDepsInPackageJson": true
       }
     },
     "publish": {

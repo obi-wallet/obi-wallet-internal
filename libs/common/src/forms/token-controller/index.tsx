@@ -2,6 +2,7 @@ import { useTheme } from "@emotion/react";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { Portal } from "@gorhom/portal";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { ComponentType, useState } from "react";
@@ -16,6 +17,7 @@ import {
 
 import {
   BottomSheetNew,
+  BottomSheetBackdrop,
   CoinIcon,
   RefreshableFlatList,
   TextInput,
@@ -154,124 +156,130 @@ export const TokenController = observer<TokenControllerProps>(
         </View>
         <TextInputInvalidMessage message={fieldState.error?.message} />
         {R.has("refetch", bottomSheetProps) ? (
-          <BottomSheetNew
-            open={denominationOpened}
-            onClose={() => {
-              setDenominationOpened(false);
-            }}
-          >
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: "transparent",
-                position: "relative",
-                paddingHorizontal: 5,
+          <Portal hostName="bottom-sheet">
+            <BottomSheetBackdrop
+              onPress={() => setDenominationOpened(false)}
+              visible={denominationOpened}
+            />
+            <BottomSheetNew
+              open={denominationOpened}
+              onClose={() => {
+                setDenominationOpened(false);
               }}
             >
               <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                }}
-              >
-                <View>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "600",
-                      color: "#f6f5ff",
-                    }}
-                  >
-                    <FormattedMessage
-                      id="send.denomination"
-                      defaultMessage="Denomination"
-                    />
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: "#f6f5ff",
-                      opacity: 1,
-                    }}
-                  >
-                    <FormattedMessage
-                      id="send.selectcoin"
-                      defaultMessage="Select the coin you'd like to send"
-                    />
-                  </Text>
-                </View>
-                <TouchableOpacity
-                  onPress={() => {
-                    setDenominationOpened(false);
-                  }}
-                  style={{ alignSelf: "flex-start" }}
-                >
-                  <FontAwesomeIcon
-                    icon={faTimes}
-                    style={{ color: "#F6F5FF" }}
-                  />
-                </TouchableOpacity>
-              </View>
-              <View
-                style={{
-                  backgroundColor: theme.colors.panelBackground,
                   flex: 1,
-                  borderRadius: 7,
+                  backgroundColor: "transparent",
+                  position: "relative",
+                  paddingHorizontal: 5,
                 }}
               >
                 <View
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
-                    padding: 10,
+                    alignItems: "center",
+                    paddingBottom: 10,
+                    paddingLeft: 10,
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: "white",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    <FormattedMessage id="send.name" defaultMessage="Name" />
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: "white",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    <FormattedMessage
-                      id="send.holdings"
-                      defaultMessage="Holdings"
-                    />
-                  </Text>
-                </View>
-                <RefreshableFlatList
-                  data={balances ?? []}
-                  keyExtractor={(item) => item.id}
-                  renderItem={(props) => (
-                    <CoinRenderer
-                      {...props}
-                      selected={props.item.id === field.value.id}
-                      onPress={() => {
-                        setDenominationOpened(false);
-                        field.onChange({
-                          ...field.value,
-                          id: props.item.id,
-                        });
+                  <View>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: "600",
+                        color: "#f6f5ff",
                       }}
+                    >
+                      <FormattedMessage
+                        id="send.denomination"
+                        defaultMessage="Denomination"
+                      />
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: "#f6f5ff",
+                        opacity: 1,
+                      }}
+                    >
+                      <FormattedMessage
+                        id="send.selectcoin"
+                        defaultMessage="Select the coin you'd like to send"
+                      />
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setDenominationOpened(false);
+                    }}
+                    style={{ alignSelf: "flex-start" }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faTimes}
+                      style={{ color: "#F6F5FF" }}
                     />
-                  )}
-                  refetch={bottomSheetProps.refetch}
-                />
+                  </TouchableOpacity>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: theme.colors.panelBackground,
+                    flex: 1,
+                    borderRadius: 7,
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      padding: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: "white",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      <FormattedMessage id="send.name" defaultMessage="Name" />
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: "white",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      <FormattedMessage
+                        id="send.holdings"
+                        defaultMessage="Holdings"
+                      />
+                    </Text>
+                  </View>
+                  <RefreshableFlatList
+                    data={balances ?? []}
+                    keyExtractor={(item) => item.id}
+                    renderItem={(props) => (
+                      <CoinRenderer
+                        {...props}
+                        selected={props.item.id === field.value.id}
+                        onPress={() => {
+                          setDenominationOpened(false);
+                          field.onChange({
+                            ...field.value,
+                            id: props.item.id,
+                          });
+                        }}
+                      />
+                    )}
+                    refetch={bottomSheetProps.refetch}
+                  />
+                </View>
               </View>
-            </View>
-          </BottomSheetNew>
+            </BottomSheetNew>
+          </Portal>
         ) : null}
         {/*{R.has("refetch", bottomSheetProps) ? (*/}
         {/*  <Portal hostName="bottom-sheet">*/}

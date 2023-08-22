@@ -9,7 +9,7 @@ export const PromptAnimation = observer<PromptAnimationProps>(
   function PromptAnimation({ loop }) {
     return (
       <LottieView
-        source={require("../assets/prompt.json.json")}
+        source={require("../assets/prompt.json")}
         autoPlay
         loop={loop}
         style={{ width: 60, zIndex: -1, position: "absolute" }}

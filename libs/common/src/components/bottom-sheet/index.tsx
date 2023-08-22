@@ -11,7 +11,7 @@ import {
 } from "react";
 import Sheet from "react-modal-sheet";
 // eslint-disable-next-line no-restricted-imports
-import { TextInput } from "react-native";
+import { StyleProp, TextInput, ViewStyle } from "react-native";
 import { FullWindowOverlay } from "react-native-screens";
 import warning from "tiny-warning";
 
@@ -74,5 +74,17 @@ export const BottomSheet = observer<BottomSheetProps>(function BottomSheet() {
 export const BottomSheetTextInput = observer<BottomSheetTextInputProps>(
   function BottomSheetTextInput(props) {
     return <TextInput {...props} />;
+  },
+);
+
+export interface BottomSheetBackdropProps {
+  onPress: () => void;
+  style?: StyleProp<ViewStyle>;
+  visible: boolean;
+}
+
+export const BottomSheetBackdrop = observer<BottomSheetBackdropProps>(
+  function BottomSheetBackdrop() {
+    return null;
   },
 );

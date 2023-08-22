@@ -358,6 +358,7 @@ const SubHeading = styled.Text({
 });
 
 const styles = StyleSheet.create({
+  // @ts-expect-error `minHeight: "max-content"` is not in the react-native StyleSheet type
   setting: {
     borderRadius: 12,
     padding: 20,

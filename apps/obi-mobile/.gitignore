@@ -7,3 +7,6 @@ android/app/src/main/assets/appcenter-config.json
 
 # Xcode config
 ios/debug.xcconfig
+
+# testing
+/coverage

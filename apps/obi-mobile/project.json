@@ -8,7 +8,8 @@
       "executor": "@nx/react-native:start",
       "options": {
         "port": 8081
-      }
+      },
+      "dependsOn": ["ensure-symlink", "sync-deps", "pod-install"]
     },
     "serve": {
       "executor": "nx:run-commands",
@@ -17,14 +18,20 @@
       }
     },
     "run-ios": {
-      "dependsOn": ["react-native-asset", "react-native-permissions"],
+      "dependsOn": [
+        "react-native-asset",
+        "react-native-permissions",
+        "ensure-symlink",
+        "sync-deps",
+        "pod-install"
+      ],
       "executor": "@nx/react-native:run-ios",
       "options": {}
     },
     "bundle-ios": {
-      "dependsOn": ["react-native-asset"],
+      "dependsOn": ["react-native-asset", "ensure-symlink"],
       "executor": "@nx/react-native:bundle",
-      "outputs": ["apps/obi-mobile/build"],
+      "outputs": ["{projectRoot}/build"],
       "options": {
         "entryFile": "src/main.tsx",
         "platform": "ios",
@@ -32,21 +39,21 @@
       }
     },
     "run-android": {
-      "dependsOn": ["react-native-asset"],
+      "dependsOn": ["react-native-asset", "ensure-symlink", "sync-deps"],
       "executor": "@nx/react-native:run-android",
       "options": {}
     },
     "build-android": {
-      "dependsOn": ["react-native-asset"],
+      "dependsOn": ["react-native-asset", "ensure-symlink", "sync-deps"],
       "executor": "@nx/react-native:build-android",
       "outputs": [
-        "apps/obi-mobile/android/app/build/outputs/bundle",
-        "apps/obi-mobile/android/app/build/outputs/apk"
+        "{projectRoot}/android/app/build/outputs/bundle",
+        "{projectRoot}/android/app/build/outputs/apk"
       ],
       "options": {}
     },
     "bundle-android": {
-      "dependsOn": ["react-native-asset"],
+      "dependsOn": ["react-native-asset", "ensure-symlink"],
       "executor": "@nx/react-native:bundle",
       "options": {
         "entryFile": "src/main.tsx",
@@ -71,7 +78,7 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["coverage/apps/obi-mobile"],
+      "outputs": ["{workspaceRoot}/coverage/apps/obi-mobile"],
       "options": {
         "jestConfig": "apps/obi-mobile/jest.config.ts",
         "passWithNoTests": true
