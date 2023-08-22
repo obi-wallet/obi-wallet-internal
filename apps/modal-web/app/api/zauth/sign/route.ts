@@ -30,6 +30,15 @@ export async function POST(request: Request) {
     );
   }
 
+  if (!body.homeChainId || !body.hash || !body.message) {
+    return NextResponse.json(
+      {
+        error: "invalid params",
+      },
+      { status: 404 },
+    );
+  }
+
   const UserModel = await connect();
   const user = await UserModel.findOne({ userId });
 

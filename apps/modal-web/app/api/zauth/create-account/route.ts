@@ -42,6 +42,15 @@ export async function POST(request: Request) {
     );
   }
 
+  if (!body.homeChainId) {
+    return NextResponse.json(
+      {
+        error: "invalid home chainid",
+      },
+      { status: 401 },
+    );
+  }
+
   async function fetchOrCreateUser() {
     const UserModel = await connect();
     const existingUser = await UserModel.findOne({ userId });

@@ -19,10 +19,19 @@ export async function POST(request: Request) {
   const envStackupRpcApiKey =
     process.env[`STACKUP_${body.targetChainId}_API_KEY`];
 
-  if (!envStackupRpcApiKey)
-    return NextResponse.json("invalid target chain id", {
-      status: 404,
-    });
+  if (
+    !envStackupRpcApiKey ||
+    !body.homeChainId ||
+    !body.contractAddress ||
+    !body.data ||
+    !body.targetChainId
+  )
+    return NextResponse.json(
+      {
+        error: "invalid params",
+      },
+      { status: 404 },
+    );
 
   const stackupRpcUrls = getStackupRpcUrls(envStackupRpcApiKey);
 
