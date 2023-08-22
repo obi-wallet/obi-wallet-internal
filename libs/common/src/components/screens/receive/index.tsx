@@ -1,8 +1,11 @@
 import { useTheme } from "@emotion/react";
+import { KeyType } from "@obi-wallet/sdk";
+import { ethers } from "ethers";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage } from "react-intl";
 import { Platform, Share, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import invariant from "tiny-invariant";
 
 import { QrCode } from "./qr-code";
 import { useStore } from "../../../contexts";
@@ -14,6 +17,13 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
   const theme = useTheme();
 
   function getAddress() {
+    const deviceKey = walletsStore.currentWallet?.owner.getUsableKeyOfType(
+      KeyType.Device,
+    );
+    invariant(deviceKey, "Device Key")
+    return ethers.computeAddress(
+      `0x${Buffer.from(deviceKey?.publicKey.value, "base64").toString("hex")}`,
+    );
     if (configStore.config.ethereumBalances) {
       return sdkRootStore.ethereumDemoStore.ethereumAccount?.address;
     }

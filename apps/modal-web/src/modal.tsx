@@ -2,6 +2,7 @@
 "use client";
 
 import {
+  obiEthereumModalConfig,
   obiModalConfig,
   osmosisModalConfig,
   vertexModalConfig,
@@ -31,6 +32,8 @@ export default function Modal(props: { config: string }) {
     switch (props.config) {
       case "obi":
         return obiModalConfig;
+      case "obi-ethereum":
+        return obiEthereumModalConfig;
       case "osmosis":
         return osmosisModalConfig;
       case "vertex":
