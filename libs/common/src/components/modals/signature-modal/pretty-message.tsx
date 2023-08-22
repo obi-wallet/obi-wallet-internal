@@ -510,10 +510,12 @@ const PrettyCoins = observer<PrettyTokensProps>(function PrettyTokens({
   return (
     <View>
       {coinsArray.map((token) => {
-        const { amount, denom, icon } = enrichToken({
+        const { amount } = enrichToken({
           chainId,
           token,
         });
+        const denom = "ETH"
+        const icon = null
         return (
           <View
             key={denom}
