@@ -29,6 +29,10 @@ export const SignatureModalEthereumDemo =
                 userop: {
                   contractAddress: string;
                   callData: string;
+                  tokens: {
+                    zepetoAccessToken: string;
+                    zepetoRefreshToken: string;
+                  };
                 };
               };
           const wallet = sdkRootStore.walletsStore.currentWallet;
@@ -43,6 +47,7 @@ export const SignatureModalEthereumDemo =
                   publicKey: zAuthKey?.publicKey,
                   contractAddress: message.userop.contractAddress,
                   data: message.userop.callData,
+                  tokens: message.userop.tokens,
                 }),
               });
             }

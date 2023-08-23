@@ -20,10 +20,17 @@ export async function POST(request: Request) {
     chainId: SecretJsChainId;
     contractAddress: string;
     data: string;
+    tokens: {
+      zepetoAccessToken: string;
+      zepetoRefreshToken: string;
+    };
   } = await request.json();
 
-  const accessToken = cookies().get("zepetoAccessToken")?.value;
-  const refreshToken = cookies().get("zepetoRefreshToken")?.value;
+  const accessToken =
+    cookies().get("zepetoAccessToken")?.value ?? body.tokens.zepetoAccessToken;
+  const refreshToken =
+    cookies().get("zepetoRefreshToken")?.value ??
+    body.tokens.zepetoRefreshToken;
 
   const userId = accessToken ? await fetchUserId(accessToken) : null;
 
