@@ -50,7 +50,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       const response = await fetch("/api/zauth/create-account", {
         method: "POST",
         body: JSON.stringify({
-          chainId: chainStore.currentChain,
+          homeChainId: chainStore.currentChain,
         }),
       });
       console.log(await response.json());

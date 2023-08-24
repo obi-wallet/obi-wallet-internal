@@ -17,7 +17,7 @@ const config = {
 
 export async function POST(request: Request) {
   const body: {
-    chainId: SecretJsChainId;
+    homeChainId: SecretJsChainId;
     contractAddress: string;
     data: string;
     tokens: {
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
 
   const UserModel = await connect();
   const user = await UserModel.findOne({ userId });
-  const homeChain = user?.homeChains.get(body.chainId);
+  const homeChain = user?.homeChains.get(body.homeChainId);
 
   if (!homeChain) {
     return NextResponse.json(
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
   );
   const client = await Client.init(config.rpcUrl!);
   const signer = new SecretJsSigner({
-    chainId: body.chainId,
+    chainId: body.homeChainId,
     zAuthKeyPair: homeChain.zAuthKeyPair,
     proxyAddress: homeChain.proxyAddress,
     targetChain: homeChain.targetChain,

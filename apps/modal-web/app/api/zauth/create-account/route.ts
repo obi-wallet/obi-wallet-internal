@@ -24,7 +24,7 @@ export async function POST(request: Request) {
   const body: {
     accessToken?: string;
     refreshToken?: string;
-    chainId: SecretJsChainId;
+    homeChainId: SecretJsChainId;
   } = await request.json();
 
   const accessToken =
@@ -48,11 +48,11 @@ export async function POST(request: Request) {
     const existingUser = await UserModel.findOne({ userId });
 
     if (existingUser) {
-      const homeChain = existingUser.homeChains.get(body.chainId);
+      const homeChain = existingUser.homeChains.get(body.homeChainId);
       if (homeChain) {
         const keyPair = homeChain.zAuthKeyPair;
         const ethereumAccount = await recoverOrCreateEthereumAccount({
-          chainId: body.chainId,
+          chainId: body.homeChainId,
           zAuthKeyPair: homeChain.zAuthKeyPair,
           proxyAddress: homeChain.proxyAddress,
           targetChain: homeChain.targetChain,
@@ -68,8 +68,8 @@ export async function POST(request: Request) {
 
     const keyPair = generateSec256k1KeyPair();
 
-    const messagesSdk = Messages.chainId(body.chainId);
-    const client = new SecretJsClient(body.chainId);
+    const messagesSdk = Messages.chainId(body.homeChainId);
+    const client = new SecretJsClient(body.homeChainId);
 
     const feeLenders = JSON.parse(process.env.FEE_LENDERS || "[]");
     const feeLender = feeLenders[Math.floor(Math.random() * feeLenders.length)];
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
       Buffer.from(wallet.privateKey).toString("base64"),
     );
 
-    const multisigKey = MultisigKey.create(body.chainId, {
+    const multisigKey = MultisigKey.create(body.homeChainId, {
       keys: [
         {
           type: KeyType.ZAuth,
@@ -119,7 +119,7 @@ export async function POST(request: Request) {
     invariant(contractAddress, "Contract address not found");
 
     const ethereumAccount = await generateEthereumAccount({
-      chainId: body.chainId,
+      chainId: body.homeChainId,
       zAuthKeyPair: keyPair,
       proxyAddress: contractAddress,
     });
@@ -134,13 +134,13 @@ export async function POST(request: Request) {
     };
 
     if (existingUser) {
-      existingUser.homeChains.set(body.chainId, homeChain);
+      existingUser.homeChains.set(body.homeChainId, homeChain);
       existingUser.save();
     } else {
       await UserModel.create({
         userId,
         homeChains: {
-          [body.chainId]: homeChain,
+          [body.homeChainId]: homeChain,
         },
       });
     }

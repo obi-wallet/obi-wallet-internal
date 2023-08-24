@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   const body: {
     accessToken?: string;
     refreshToken?: string;
-    chainId: SecretJsChainId;
+    homeChainId: SecretJsChainId;
     hash?: string;
     message?: string;
   } = await request.json();
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
   const UserModel = await connect();
   const user = await UserModel.findOne({ userId });
-  const homeChain = user?.homeChains.get(body.chainId);
+  const homeChain = user?.homeChains.get(body.homeChainId);
 
   if (!homeChain) {
     return NextResponse.json(

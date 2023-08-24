@@ -140,7 +140,7 @@ const MessageHandlers = observer(function MessageHandlers() {
           const response = await fetch("/api/zauth/create-account", {
             method: "POST",
             body: JSON.stringify({
-              chainId: store.chainStore.currentChain,
+              homeChainId: store.chainStore.currentChain,
               accessToken: data.payload.accessToken,
               refreshToken: data.payload.refreshToken,
             }),

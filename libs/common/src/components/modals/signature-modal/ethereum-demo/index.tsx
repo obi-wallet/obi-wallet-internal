@@ -43,7 +43,7 @@ export const SignatureModalEthereumDemo =
               return await fetch("/api/send-userop", {
                 method: "POST",
                 body: JSON.stringify({
-                  chainId: wallet?.chainId,
+                  homeChainId: wallet?.chainId,
                   publicKey: zAuthKey?.publicKey,
                   contractAddress: message.userop.contractAddress,
                   data: message.userop.callData,
@@ -55,7 +55,7 @@ export const SignatureModalEthereumDemo =
             return await fetch("/api/ethereum-demo/send", {
               method: "POST",
               body: JSON.stringify({
-                chainId: wallet?.chainId,
+                homeChainId: wallet?.chainId,
                 publicKey: zAuthKey?.publicKey,
                 to: message.eth.to,
                 token: message.eth.token,
