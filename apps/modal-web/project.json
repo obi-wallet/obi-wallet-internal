@@ -48,6 +48,12 @@
       "options": {
         "lintFilePatterns": ["apps/modal-web/**/*.{ts,tsx,js,jsx}"]
       }
+    },
+    "tsc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc --project apps/modal-web/tsconfig.json --noEmit"]
+      }
     }
   },
   "tags": []

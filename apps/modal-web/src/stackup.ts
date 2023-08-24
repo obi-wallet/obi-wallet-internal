@@ -4,16 +4,15 @@ import {
   Sdk,
   Secp256k1KeyPair,
   Secp256k1PrivateKeySigner,
-  SecretJsChainId,
+  Secp256k1PublicKey,
   secretJsChains,
   SecretJsClient,
 } from "@obi-wallet/sdk";
 import { Signer, SigningKey, Wallet } from "ethers";
-import secp256k1 from "secp256k1";
 import { MsgExecuteContract } from "secretjs";
 import { Presets } from "userop";
 
-import { SecretJsSigner } from "./secret-js-signer";
+import { HomeChainWithId } from "./db/schema";
 
 const config = {
   rpcUrl: process.env.STACKUP_RPC_URL,
@@ -23,62 +22,37 @@ const config = {
   },
 };
 
-export async function recoverOrCreateEthereumAccount({
-  keyPair,
-  chainId,
-  proxyAddress,
-}: {
-  keyPair: Secp256k1KeyPair;
-  chainId: SecretJsChainId;
-  proxyAddress: string;
-}) {
+export async function recoverOrCreateEthereumAccount(
+  homeChain: HomeChainWithId,
+) {
   try {
-    return await recoverEthereumAccount({ keyPair, chainId });
+    return await recoverEthereumAccount(homeChain);
   } catch (e) {
     console.log(e);
-    return await generateEthereumAccount({ keyPair, chainId, proxyAddress });
+    return await generateEthereumAccount(homeChain);
   }
 }
 
 async function recoverEthereumAccount({
-  keyPair,
-  chainId,
-}: {
-  keyPair: Secp256k1KeyPair;
-  chainId: SecretJsChainId;
-}) {
-  const signer = new SecretJsSigner({
-    chainId,
-    keyPair,
-  });
-  // @ts-expect-error this should be fine
-  const address = await generateEthereumAddressFromSigner(signer);
-  const pubKeyRaw = new Uint8Array(
-    Buffer.from((await signer.getPublicKey()).slice(2), "hex"),
-  );
-  const compressed = secp256k1.publicKeyConvert(pubKeyRaw, true);
-
+  targetChain,
+}: HomeChainWithId): Promise<{
+  publicKey: Secp256k1PublicKey;
+  address: string;
+}> {
   return {
-    publicKey: {
-      type: "tendermint/PubKeySecp256k1",
-      value: new Buffer(compressed).toString("base64"),
-    },
-    address,
+    publicKey: targetChain.publicKey,
+    address: targetChain.evmAddress,
   };
 }
 
-async function generateEthereumAccount({
+export async function generateEthereumAccount({
   chainId,
+  zAuthKeyPair,
   proxyAddress,
-  keyPair,
-}: {
-  chainId: SecretJsChainId;
-  proxyAddress: string;
-  keyPair: Secp256k1KeyPair;
-}): Promise<EthereumAccount> {
+}: Omit<HomeChainWithId, "targetChain">): Promise<EthereumAccount> {
   const chain = secretJsChains[chainId];
   const ethKeyPair = generateSec256k1KeyPair();
-  const address = await generateEthereumAddress(keyPair);
+  const address = await generateEthereumAddress(ethKeyPair);
 
   const client = new SecretJsClient(chainId);
   const hash = await client.withSecretNetworkClient(async (client) => {
@@ -91,18 +65,19 @@ async function generateEthereumAccount({
   });
 
   const signedTransaction = await client.createAndSignTransaction({
-    signer: new Secp256k1PrivateKeySigner(keyPair.privateKey),
+    signer: new Secp256k1PrivateKeySigner(zAuthKeyPair.privateKey),
     messages: [
       new MsgExecuteContract({
         sender: Sdk.chainId(chainId).transactions.getAddressOfPublicKey(
-          keyPair.publicKey,
+          zAuthKeyPair.publicKey,
         ),
         contract_address: chain.secretSigner.address,
         msg: {
           add_key: {
-            public_key: Buffer.from(keyPair.publicKey.value, "base64").toString(
-              "hex",
-            ),
+            public_key: Buffer.from(
+              zAuthKeyPair.publicKey.value,
+              "base64",
+            ).toString("hex"),
             user_entry_address: proxyAddress,
             user_entry_code_hash: hash.code_hash,
             inject_privkey: Buffer.from(
@@ -129,15 +104,6 @@ async function generateEthereumAccount({
 async function generateEthereumAddress(keyPair: Secp256k1KeyPair) {
   const signingKey = new SigningKey(Buffer.from(keyPair.privateKey, "base64"));
   const signer: Signer = new Wallet(signingKey);
-  const simpleAccount = await Presets.Builder.SimpleAccount.init(
-    // @ts-expect-error this should be fine
-    signer,
-    config.rpcUrl,
-  );
-  return simpleAccount.getSender();
-}
-
-async function generateEthereumAddressFromSigner(signer: Signer) {
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
     signer,

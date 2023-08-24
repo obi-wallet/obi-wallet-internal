@@ -45,6 +45,16 @@ export async function POST(request: Request) {
 
   const UserModel = await connect();
   const user = await UserModel.findOne({ userId });
+  const homeChain = user?.homeChains.get(body.chainId);
+
+  if (!homeChain) {
+    return NextResponse.json(
+      {
+        error: "user / home chain combination not found",
+      },
+      { status: 400 },
+    );
+  }
 
   const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(
     config.paymaster.rpcUrl!,
@@ -54,13 +64,9 @@ export async function POST(request: Request) {
   const amount = parseUnits(body.token.rawAmount, 0);
   const signer = new SecretJsSigner({
     chainId: body.chainId,
-    keyPair: {
-      publicKey: {
-        type: "tendermint/PubKeySecp256k1",
-        value: user.publicKey,
-      },
-      privateKey: user.privateKey,
-    },
+    zAuthKeyPair: homeChain.zAuthKeyPair,
+    proxyAddress: homeChain.proxyAddress,
+    targetChain: homeChain.targetChain,
   });
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine

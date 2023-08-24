@@ -32,8 +32,20 @@ export async function POST(request: Request) {
 
   const UserModel = await connect();
   const user = await UserModel.findOne({ userId });
+  const homeChain = user?.homeChains.get(body.chainId);
 
-  const signer = new Secp256k1PrivateKeySigner(user.privateKey);
+  if (!homeChain) {
+    return NextResponse.json(
+      {
+        error: "user / home chain combination not found",
+      },
+      { status: 400 },
+    );
+  }
+
+  const signer = new Secp256k1PrivateKeySigner(
+    homeChain.zAuthKeyPair.privateKey,
+  );
 
   const response: { signedHash?: string; signedMessage?: string } = {};
   if (body.hash) {

@@ -4,7 +4,6 @@ import {
   Messages,
   MultisigKey,
   Sdk,
-  Secp256k1KeyPair,
   Secp256k1PrivateKeySigner,
   SecretJsChainId,
   SecretJsClient,
@@ -16,7 +15,11 @@ import { MsgSend, TxResponse, Wallet, stringToCoins } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { connect } from "../../../../src/db";
-import { recoverOrCreateEthereumAccount } from "../../../../src/stackup";
+import { HomeChain } from "../../../../src/db/schema";
+import {
+  generateEthereumAccount,
+  recoverOrCreateEthereumAccount,
+} from "../../../../src/stackup";
 import { fetchUserId } from "../../../../src/zauth";
 
 export async function POST(request: Request) {
@@ -47,25 +50,22 @@ export async function POST(request: Request) {
     const existingUser = await UserModel.findOne({ userId });
 
     if (existingUser) {
-      const keyPair: Secp256k1KeyPair = {
-        publicKey: {
-          type: "tendermint/PubKeySecp256k1",
-          value: existingUser.publicKey,
-        },
-        privateKey: existingUser.privateKey,
-      };
-      const ethereumAccount = await recoverOrCreateEthereumAccount({
-        keyPair,
-        chainId: body.chainId,
-        proxyAddress: existingUser.proxyAddress,
-      });
-
-      return {
-        newUser: false,
-        publicKey: keyPair.publicKey,
-        proxyAddress: existingUser.proxyAddress,
-        ethereumAccount,
-      };
+      const homeChain = existingUser.homeChains.get(body.chainId);
+      if (homeChain) {
+        const keyPair = homeChain.zAuthKeyPair;
+        const ethereumAccount = await recoverOrCreateEthereumAccount({
+          chainId: body.chainId,
+          zAuthKeyPair: homeChain.zAuthKeyPair,
+          proxyAddress: homeChain.proxyAddress,
+          targetChain: homeChain.targetChain,
+        });
+        return {
+          newUser: false,
+          publicKey: keyPair.publicKey,
+          proxyAddress: homeChain.proxyAddress,
+          ethereumAccount,
+        };
+      }
     }
 
     const keyPair = generateSec256k1KeyPair();
@@ -133,18 +133,32 @@ export async function POST(request: Request) {
 
     invariant(contractAddress, "Contract address not found");
 
-    const ethereumAccount = await recoverOrCreateEthereumAccount({
-      keyPair,
+    const ethereumAccount = await generateEthereumAccount({
       chainId: body.chainId,
+      zAuthKeyPair: keyPair,
       proxyAddress: contractAddress,
     });
 
-    await UserModel.create({
-      userId,
-      publicKey: keyPair.publicKey.value,
-      privateKey: keyPair.privateKey,
+    const homeChain: HomeChain = {
+      zAuthKeyPair: keyPair,
+      targetChain: {
+        publicKey: ethereumAccount.publicKey,
+        evmAddress: ethereumAccount.address,
+      },
       proxyAddress: contractAddress,
-    });
+    };
+
+    if (existingUser) {
+      existingUser.homeChains.set(body.chainId, homeChain);
+      existingUser.save();
+    } else {
+      await UserModel.create({
+        userId,
+        homeChains: {
+          [body.chainId]: homeChain,
+        },
+      });
+    }
 
     return {
       newUser: true,

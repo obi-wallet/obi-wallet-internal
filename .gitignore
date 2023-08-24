@@ -107,7 +107,6 @@ cosmos.userdeps.js
 google-services.json
 GoogleService-Info.plist
 
-
 # Yarn
 .yarn/*
 !.yarn/cache

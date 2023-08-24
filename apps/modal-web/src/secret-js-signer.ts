@@ -1,64 +1,48 @@
 import {
-  SecretJsChainId,
   secretJsChains,
   SecretJsClient,
   Signer as SdkSigner,
-  Secp256k1KeyPair,
   Secp256k1PrivateKeySigner,
 } from "@obi-wallet/sdk";
 import { ethers } from "ethers";
 import secp256k1 from "secp256k1";
 
-export class SecretJsSigner {
-  protected chain: (typeof secretJsChains)[SecretJsChainId];
-  protected client: SecretJsClient;
-  protected keyPair: Secp256k1KeyPair;
-  protected signer: SdkSigner;
+import { HomeChainWithId } from "./db/schema";
 
-  public constructor({
-    chainId,
-    keyPair,
-  }: {
-    chainId: SecretJsChainId;
-    keyPair: Secp256k1KeyPair;
-  }) {
-    this.chain = secretJsChains[chainId];
-    this.keyPair = keyPair;
-    this.client = new SecretJsClient(chainId);
-    this.signer = new Secp256k1PrivateKeySigner(this.keyPair.privateKey);
+export class SecretJsSigner {
+  protected homeChain: HomeChainWithId;
+  protected client: SecretJsClient;
+  protected zAuthSigner: SdkSigner;
+
+  public constructor(homeChain: HomeChainWithId) {
+    this.homeChain = homeChain;
+    this.client = new SecretJsClient(homeChain.chainId);
+    this.zAuthSigner = new Secp256k1PrivateKeySigner(
+      homeChain.zAuthKeyPair.privateKey,
+    );
+  }
+
+  protected get chainData() {
+    return secretJsChains[this.homeChain.chainId];
   }
 
   public async getAddress(): Promise<string> {
     return ethers.computeAddress(await this.getPublicKey());
   }
 
+  protected get publicKeyRaw() {
+    return Buffer.from(this.homeChain.targetChain.publicKey.value, "base64");
+  }
+
   public async getPublicKey(): Promise<string> {
-    const ethPublicKey = await this.client.withSecretNetworkClient(
-      async (client) => {
-        const response = (await client.query.compute.queryContract({
-          contract_address: this.chain.secretSigner.address,
-          code_hash: this.chain.secretSigner.codeHash,
-          query: {
-            eth_pubkey: {
-              user_public_key: Buffer.from(
-                this.keyPair.publicKey.value,
-                "base64",
-              ).toString("hex"),
-            },
-          },
-        })) as { eth_pubkey: string };
-        return response.eth_pubkey;
-      },
-    );
-    return `0x${ethPublicKey}`;
+    return `0x${new Buffer(
+      secp256k1.publicKeyConvert(this.publicKeyRaw, false),
+    ).toString("hex")}`;
   }
 
   public async getCompressedPublicKey(): Promise<string> {
-    const pubKeyRaw = new Uint8Array(
-      Buffer.from((await this.getPublicKey()).slice(2), "hex"),
-    );
     return `0x${new Buffer(
-      secp256k1.publicKeyConvert(pubKeyRaw, true),
+      secp256k1.publicKeyConvert(this.publicKeyRaw, true),
     ).toString("hex")}`;
   }
 
@@ -68,7 +52,7 @@ export class SecretJsSigner {
         ? Buffer.from(message, "utf-8")
         : new Buffer(message);
     console.log({ messageToSign: messageToSign.toString("hex") });
-    const signed = await this.signer.sign(messageToSign);
+    const signed = await this.zAuthSigner.sign(messageToSign);
 
     return await this.client.withSecretNetworkClient(async (client) => {
       console.log(
@@ -76,7 +60,7 @@ export class SecretJsSigner {
           {
             sign_bytes: {
               user_public_key: Buffer.from(
-                this.keyPair.publicKey.value,
+                this.homeChain.zAuthKeyPair.publicKey.value,
                 "base64",
               ).toString("hex"),
               bytes: messageToSign.toString("hex"),
@@ -89,12 +73,12 @@ export class SecretJsSigner {
       );
 
       const response = (await client.query.compute.queryContract({
-        contract_address: this.chain.secretSigner.address,
-        code_hash: this.chain.secretSigner.codeHash,
+        contract_address: this.chainData.secretSigner.address,
+        code_hash: this.chainData.secretSigner.codeHash,
         query: {
           sign_bytes: {
             user_public_key: Buffer.from(
-              this.keyPair.publicKey.value,
+              this.homeChain.zAuthKeyPair.publicKey.value,
               "base64",
             ).toString("hex"),
             bytes: messageToSign.toString("hex"),
