@@ -1,4 +1,8 @@
-import { Secp256k1PublicKey, SecretJsChainId } from "@obi-wallet/sdk";
+import {
+  Secp256k1PublicKey,
+  SecretJsChainId,
+  TargetChainId,
+} from "@obi-wallet/sdk";
 import { Contract, JsonRpcProvider, parseUnits } from "ethers";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -6,21 +10,13 @@ import { Client, IUserOperation, Presets } from "userop";
 
 import { connect } from "../../../../src/db";
 import { SecretJsSigner } from "../../../../src/secret-js-signer";
+import { getConfig } from "../../../../src/stackup";
 import { fetchUserId } from "../../../../src/zauth";
-
-const config = {
-  rpcUrl: process.env.STACKUP_RPC_URL,
-  paymaster: {
-    rpcUrl: process.env.STACKUP_PAYMASTER_RPC_URL,
-    context: { type: "payg" },
-  },
-};
-
-const provider = new JsonRpcProvider(config.rpcUrl);
 
 export async function POST(request: Request) {
   const body: {
     homeChainId: SecretJsChainId;
+    targetChainId: TargetChainId;
     publicKey: Secp256k1PublicKey;
     to: string;
     token: {
@@ -56,6 +52,17 @@ export async function POST(request: Request) {
     );
   }
 
+  const config = getConfig(body.targetChainId);
+  if (!config) {
+    return NextResponse.json(
+      {
+        error: "invalid target chain",
+      },
+      { status: 400 },
+    );
+  }
+
+  const provider = new JsonRpcProvider(config.rpcUrl);
   const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(
     config.paymaster.rpcUrl!,
     config.paymaster.context,

@@ -111,9 +111,15 @@ const MessageHandlers = observer(function MessageHandlers() {
         case "@obi/sign-and-broadcast-transaction": {
           if (!store.walletsStore.currentWallet) return;
 
+          const payload = Array.isArray(data.payload)
+            ? {
+                messages: data.payload,
+              }
+            : data.payload;
           const response =
             await SignAndBroadcastTransactionUserInteraction.start({
-              messages: data.payload,
+              messages: payload.messages,
+              targetChainId: payload.targetChainId,
               cancelable: true,
               walletMeta: store.walletsStore.currentWallet.meta,
               demoMode: store.walletsStore.currentWallet.isDemo,
@@ -137,10 +143,12 @@ const MessageHandlers = observer(function MessageHandlers() {
         }
 
         case "@obi/create-account": {
+          const homeChainId =
+            data.payload.homeChainId ?? store.chainStore.currentChain;
           const response = await fetch("/api/zauth/create-account", {
             method: "POST",
             body: JSON.stringify({
-              homeChainId: store.chainStore.currentChain,
+              homeChainId,
               accessToken: data.payload.accessToken,
               refreshToken: data.payload.refreshToken,
             }),
@@ -171,7 +179,7 @@ const MessageHandlers = observer(function MessageHandlers() {
           const wallet = ObservableMultisigWallet.create({
             type: "multisig",
             data: {
-              chain: store.chainStore.currentChain,
+              chain: homeChainId,
               owner: {
                 keys: [
                   {

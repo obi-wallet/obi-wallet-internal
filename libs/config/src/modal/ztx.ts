@@ -8,7 +8,7 @@ export const ztxModalConfig: Config = {
   ...obiModalConfig,
   theme: ztxTheme,
   chains: {
-    enabled: ["pulsar-3"],
+    enabled: ["pulsar-3", "secret-4"],
     default: "pulsar-3",
   },
   keys: {

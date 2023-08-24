@@ -1,6 +1,7 @@
 import {
   KeyType,
   SignAndBroadcastTransactionUserInteraction,
+  TargetChain,
   Token,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
@@ -44,6 +45,9 @@ export const SignatureModalEthereumDemo =
                 method: "POST",
                 body: JSON.stringify({
                   homeChainId: wallet?.chainId,
+                  targetChainId:
+                    interaction.payload.targetChainId ??
+                    TargetChain.ArbitrumOneGoerliTestnet,
                   publicKey: zAuthKey?.publicKey,
                   contractAddress: message.userop.contractAddress,
                   data: message.userop.callData,
@@ -56,6 +60,9 @@ export const SignatureModalEthereumDemo =
               method: "POST",
               body: JSON.stringify({
                 homeChainId: wallet?.chainId,
+                targetChainId:
+                  interaction.payload.targetChainId ??
+                  TargetChain.ArbitrumOneGoerliTestnet,
                 publicKey: zAuthKey?.publicKey,
                 to: message.eth.to,
                 token: message.eth.token,

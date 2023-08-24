@@ -1,6 +1,7 @@
 import { createUserInteractionType, UserInteraction } from "./abstract";
 import { MultisigKey, WalletMeta } from "../data-structures";
 import { BroadcastTransactionResult } from "../sdk";
+import { TargetChainId } from "../target-chains";
 import { Message } from "../transactions";
 
 interface CommonPayloadWalletMeta {
@@ -18,6 +19,7 @@ export type SignAndBroadcastTransactionUserInteraction = UserInteraction<
     readonly cancelable: boolean;
     readonly autoBroadcast?: boolean;
     readonly isLogin?: boolean;
+    readonly targetChainId?: TargetChainId;
   } & (CommonPayloadMultisigKey | CommonPayloadWalletMeta),
   { approved: true; payload: BroadcastTransactionResult } | { approved: false }
 >;

@@ -5,6 +5,8 @@ import {
   Secp256k1PublicKey,
   secretJsChains,
   SecretJsClient,
+  TargetChain,
+  TargetChainId,
 } from "@obi-wallet/sdk";
 import { Signer, SigningKey, Wallet } from "ethers";
 import { MsgExecuteContract } from "secretjs";
@@ -12,14 +14,6 @@ import { Presets } from "userop";
 
 import { HomeChainWithId } from "./db/schema";
 import { getFeeLender } from "./fee-lender";
-
-const config = {
-  rpcUrl: process.env.STACKUP_RPC_URL,
-  paymaster: {
-    rpcUrl: process.env.STACKUP_PAYMASTER_RPC_URL,
-    context: { type: "payg" },
-  },
-};
 
 export async function recoverOrCreateEthereumAccount(
   homeChain: HomeChainWithId,
@@ -94,6 +88,7 @@ export async function generateEthereumAccount({
 }
 
 async function generateEthereumAddress(keyPair: Secp256k1KeyPair) {
+  const config = getConfig(TargetChain.EthereumMainnet)!;
   const signingKey = new SigningKey(Buffer.from(keyPair.privateKey, "base64"));
   const signer: Signer = new Wallet(signingKey);
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
@@ -102,4 +97,19 @@ async function generateEthereumAddress(keyPair: Secp256k1KeyPair) {
     config.rpcUrl,
   );
   return simpleAccount.getSender();
+}
+
+export function getConfig(chainId: TargetChainId) {
+  const apiKeys = JSON.parse(process.env.STACKUP_API_KEYS ?? "{}");
+  const apiKey = apiKeys[chainId];
+
+  if (!apiKey) return null;
+
+  return {
+    rpcUrl: `https://api.stackup.sh/v1/node/${apiKey}`,
+    paymaster: {
+      rpcUrl: `https://api.stackup.sh/v1/paymaster/${apiKey}`,
+      context: { type: "payg" },
+    },
+  };
 }

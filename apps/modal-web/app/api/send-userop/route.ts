@@ -1,23 +1,17 @@
-import { SecretJsChainId } from "@obi-wallet/sdk";
+import { SecretJsChainId, TargetChainId } from "@obi-wallet/sdk";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { Client, IUserOperation, Presets } from "userop";
 
 import { connect } from "../../../src/db";
 import { SecretJsSigner } from "../../../src/secret-js-signer";
+import { getConfig } from "../../../src/stackup";
 import { fetchUserId } from "../../../src/zauth";
-
-const config = {
-  rpcUrl: process.env.STACKUP_RPC_URL,
-  paymaster: {
-    rpcUrl: process.env.STACKUP_PAYMASTER_RPC_URL,
-    context: { type: "payg" },
-  },
-};
 
 export async function POST(request: Request) {
   const body: {
     homeChainId: SecretJsChainId;
+    targetChainId: TargetChainId;
     contractAddress: string;
     data: string;
     tokens: {
@@ -51,6 +45,16 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error: "user / home chain combination not found",
+      },
+      { status: 400 },
+    );
+  }
+
+  const config = getConfig(body.targetChainId);
+  if (!config) {
+    return NextResponse.json(
+      {
+        error: "invalid target chain",
       },
       { status: 400 },
     );
