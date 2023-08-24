@@ -47,21 +47,15 @@ async function recoverEthereumAccount({
 export async function generateEthereumAccount({
   chainId,
   zAuthKeyPair,
-  proxyAddress,
-}: Omit<HomeChainWithId, "targetChain">): Promise<EthereumAccount> {
+}: Omit<
+  HomeChainWithId,
+  "targetChain" | "proxyAddress"
+>): Promise<EthereumAccount> {
   const chain = secretJsChains[chainId];
   const ethKeyPair = generateSec256k1KeyPair();
   const address = await generateEthereumAddress(ethKeyPair);
 
   const client = new SecretJsClient(chainId);
-  const hash = await client.withSecretNetworkClient(async (client) => {
-    const contract = await client.query.compute.contractInfo({
-      contract_address: proxyAddress,
-    });
-    return client.query.compute.codeHashByCodeId({
-      code_id: contract.ContractInfo?.code_id,
-    });
-  });
 
   const feeLenders = JSON.parse(process.env.FEE_LENDERS || "[]");
   const feeLender = feeLenders[Math.floor(Math.random() * feeLenders.length)];
@@ -81,8 +75,8 @@ export async function generateEthereumAccount({
               zAuthKeyPair.publicKey.value,
               "base64",
             ).toString("hex"),
-            user_entry_address: proxyAddress,
-            user_entry_code_hash: hash.code_hash,
+            user_entry_address: null,
+            user_entry_code_hash: null,
             inject_privkey: Buffer.from(
               ethKeyPair.privateKey,
               "base64",

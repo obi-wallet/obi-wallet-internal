@@ -1,3 +1,4 @@
+import { EthereumAccount } from "@obi-wallet/headless-ui";
 import {
   KeyType,
   Messages,
@@ -78,51 +79,54 @@ export async function POST(request: Request) {
       Buffer.from(wallet.privateKey).toString("base64"),
     );
 
-    const multisigKey = MultisigKey.create(body.homeChainId, {
-      keys: [
-        {
-          type: KeyType.ZAuth,
-          payload: {
-            publicKey: keyPair.publicKey,
+    async function generateProxyAddress() {
+      const multisigKey = MultisigKey.create(body.homeChainId, {
+        keys: [
+          {
+            type: KeyType.ZAuth,
+            payload: {
+              publicKey: keyPair.publicKey,
+            },
           },
-        },
-      ],
-      threshold: 1,
-    });
-    const message = messagesSdk.getCreateWalletMessage(multisigKey);
-    (message as { sender: string }).sender = wallet.address;
-    const signedTransaction = await client.createAndSignTransaction({
-      signer,
-      messages: [message],
-    });
-    const broadcastTransactionResult = await client.broadcastSignedTransaction(
-      signedTransaction,
-    );
-    console.log(broadcastTransactionResult);
+        ],
+        threshold: 1,
+      });
+      const message = messagesSdk.getCreateWalletMessage(multisigKey);
+      (message as { sender: string }).sender = wallet.address;
+      const signedTransaction = await client.createAndSignTransaction({
+        signer,
+        messages: [message],
+      });
+      const broadcastTransactionResult =
+        await client.broadcastSignedTransaction(signedTransaction);
+      console.log(broadcastTransactionResult);
 
-    if (!broadcastTransactionResult.success) {
-      return {
-        approved: true,
-        payload: {
-          success: false,
-          description: "Transaction failed",
-          originalPayload: broadcastTransactionResult,
-        },
-      };
+      if (!broadcastTransactionResult.success) {
+        return {
+          approved: true,
+          payload: {
+            success: false,
+            description: "Transaction failed",
+            originalPayload: broadcastTransactionResult,
+          },
+        };
+      }
+
+      const response = broadcastTransactionResult.rawResult as TxResponse;
+      const contractAddress = response.arrayLog?.find((log) => {
+        return log.type === "instantiate" && log.key === "contract_address";
+      })?.value;
+      invariant(contractAddress, "Contract address not found");
+      return contractAddress;
     }
 
-    const response = broadcastTransactionResult.rawResult as TxResponse;
-    const contractAddress = response.arrayLog?.find((log) => {
-      return log.type === "instantiate" && log.key === "contract_address";
-    })?.value;
-
-    invariant(contractAddress, "Contract address not found");
-
-    const ethereumAccount = await generateEthereumAccount({
-      chainId: body.homeChainId,
-      zAuthKeyPair: keyPair,
-      proxyAddress: contractAddress,
-    });
+    const [proxyAddress, ethereumAccount] = await Promise.all([
+      generateProxyAddress(),
+      generateEthereumAccount({
+        chainId: body.homeChainId,
+        zAuthKeyPair: keyPair,
+      }),
+    ] as [Promise<string>, Promise<EthereumAccount>]);
 
     const homeChain: HomeChain = {
       zAuthKeyPair: keyPair,
@@ -130,7 +134,7 @@ export async function POST(request: Request) {
         publicKey: ethereumAccount.publicKey,
         evmAddress: ethereumAccount.address,
       },
-      proxyAddress: contractAddress,
+      proxyAddress,
     };
 
     if (existingUser) {
@@ -148,7 +152,7 @@ export async function POST(request: Request) {
     return {
       newUser: true,
       publicKey: keyPair.publicKey,
-      proxyAddress: contractAddress,
+      proxyAddress,
       ethereumAccount,
     };
   }
