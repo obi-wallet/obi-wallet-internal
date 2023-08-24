@@ -1,32 +1,6 @@
 import { commonTwilioConfig } from "./common";
 
 export const secretJsChains = {
-  "pulsar-2": {
-    chainId: "pulsar-2" as const,
-    label: "Secret Network Testnet",
-    prefix: "secret",
-    accountCreator: {
-      address: "secret1ejwjc5kevr4vycgt58gtjnvhgqcjnnptsrt32s",
-      codeHash:
-        "41504971185998f6c92adde96ec127f3221d3f8547e3366feb2404eacb0c9506",
-    },
-    secretSigner: {
-      address: "secret1tsd3hfrx6djddl74wmd2q2n99ug4gwhaxjrrrj",
-      codeHash:
-        "c679e7b6be611e804d34b2b4a6514bcd2cfe8b23d6ead87df80306b109f9babf",
-    },
-    currentCodeIds: {
-      userAccount: 22474,
-    },
-    urls: ["https://api.pulsar.scrttestnet.com:443"],
-    denom: "uscrt",
-    startingUsdDebt: "0",
-    ...commonTwilioConfig,
-    bip: [{ path: "m/44'/529'/0'/0/0" }],
-    explorerUrl(address: string) {
-      return `https://testnet.ping.pub/secret/account/${address}`;
-    },
-  },
   "pulsar-3": {
     chainId: "pulsar-3" as const,
     label: "Secret Network Testnet",
@@ -45,6 +19,32 @@ export const secretJsChains = {
       userAccount: 135,
     },
     urls: ["https://api.pulsar3.scrttestnet.com:443"],
+    denom: "uscrt",
+    startingUsdDebt: "0",
+    ...commonTwilioConfig,
+    bip: [{ path: "m/44'/529'/0'/0/0" }],
+    explorerUrl(address: string) {
+      return `https://testnet.ping.pub/secret/account/${address}`;
+    },
+  },
+  "secret-4": {
+    chainId: "secret-4" as const,
+    label: "Secret Network",
+    prefix: "secret",
+    accountCreator: {
+      address: "secret15n33l0gyyrdl787hdem6hxlz6wuknxd739r825",
+      codeHash:
+        "66147ad6e8febf45f6678157e11e32fe0c3f2bd353988e91059f1888260fdde0",
+    },
+    secretSigner: {
+      address: "secret1asy0zvhauqs0tknvgdzh5rdqlgvq0qyv977l2j",
+      codeHash:
+        "85cecdb5dd9447c43114abd35de4b99450994e411e77bc15b0f7d6d3a2b5aacc",
+    },
+    currentCodeIds: {
+      userAccount: 135,
+    },
+    urls: ["https://scrt-api.dalnim.finance", "https://lcd.secret.express/"],
     denom: "uscrt",
     startingUsdDebt: "0",
     ...commonTwilioConfig,

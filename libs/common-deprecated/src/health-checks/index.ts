@@ -51,11 +51,11 @@ export const healthChecks: Record<
     types: [],
     checks: {},
   },
-  "pulsar-2": {
+  "pulsar-3": {
     types: [],
     checks: {},
   },
-  "pulsar-3": {
+  "secret-4": {
     types: [],
     checks: {},
   },

@@ -35,13 +35,13 @@ export class SecretJsSigner {
   }
 
   public async getPublicKey(): Promise<string> {
-    return `0x${new Buffer(
+    return `0x${Buffer.from(
       secp256k1.publicKeyConvert(this.publicKeyRaw, false),
     ).toString("hex")}`;
   }
 
   public async getCompressedPublicKey(): Promise<string> {
-    return `0x${new Buffer(
+    return `0x${Buffer.from(
       secp256k1.publicKeyConvert(this.publicKeyRaw, true),
     ).toString("hex")}`;
   }
@@ -50,7 +50,7 @@ export class SecretJsSigner {
     const messageToSign =
       typeof message === "string"
         ? Buffer.from(message, "utf-8")
-        : new Buffer(message);
+        : Buffer.from(message);
     console.log({ messageToSign: messageToSign.toString("hex") });
     const signed = await this.zAuthSigner.sign(messageToSign);
 

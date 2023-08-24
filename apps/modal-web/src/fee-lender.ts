@@ -1,0 +1,30 @@
+import { Secp256k1PrivateKeySigner, SecretJsChainId } from "@obi-wallet/sdk";
+import { Wallet } from "secretjs";
+
+export function getFeeLender(chainId: SecretJsChainId) {
+  switch (chainId) {
+    case "pulsar-3": {
+      const feeLenders = JSON.parse(process.env.FEE_LENDERS_PULSAR_3 ?? "[]");
+      const feeLender =
+        feeLenders[Math.floor(Math.random() * feeLenders.length)];
+      const wallet = new Wallet(feeLender);
+      const signer = new Secp256k1PrivateKeySigner(
+        Buffer.from(wallet.privateKey).toString("base64"),
+      );
+      return { wallet, signer };
+    }
+    case "secret-4": {
+      const feeLender = process.env.FEE_LENDER_SECRET_4 ?? "";
+      const feeLenderIndex = Math.floor(Math.random() * 500);
+      const wallet = new Wallet(feeLender, {
+        hdAccountIndex: feeLenderIndex,
+      });
+      const signer = new Secp256k1PrivateKeySigner(
+        Buffer.from(wallet.privateKey).toString("base64"),
+      );
+      return { wallet, signer };
+    }
+  }
+
+  throw new Error("Unknown chain ID");
+}

@@ -39,7 +39,7 @@ export const SignatureModalFlexAccount =
         onPress: async () => {
           if (!multisigKey) return;
           const signer = await createDeviceKeySigner({ multisigKey });
-          await signer.sign(new Buffer(""));
+          await signer.sign(Buffer.from(""));
           setSigned(true);
         },
       },

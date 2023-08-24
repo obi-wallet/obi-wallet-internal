@@ -3,18 +3,18 @@ import {
   KeyType,
   Messages,
   MultisigKey,
-  Secp256k1PrivateKeySigner,
   SecretJsChainId,
   SecretJsClient,
   generateSec256k1KeyPair,
 } from "@obi-wallet/sdk";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { TxResponse, Wallet } from "secretjs";
+import { TxResponse } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { connect } from "../../../../src/db";
 import { HomeChain } from "../../../../src/db/schema";
+import { getFeeLender } from "../../../../src/fee-lender";
 import {
   generateEthereumAccount,
   recoverOrCreateEthereumAccount,
@@ -71,13 +71,7 @@ export async function POST(request: Request) {
 
     const messagesSdk = Messages.chainId(body.homeChainId);
     const client = new SecretJsClient(body.homeChainId);
-
-    const feeLenders = JSON.parse(process.env.FEE_LENDERS || "[]");
-    const feeLender = feeLenders[Math.floor(Math.random() * feeLenders.length)];
-    const wallet = new Wallet(feeLender);
-    const signer = new Secp256k1PrivateKeySigner(
-      Buffer.from(wallet.privateKey).toString("base64"),
-    );
+    const { wallet, signer } = getFeeLender(body.homeChainId);
 
     async function generateProxyAddress() {
       const multisigKey = MultisigKey.create(body.homeChainId, {
