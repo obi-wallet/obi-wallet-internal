@@ -1,7 +1,6 @@
 import { EthereumAccount } from "@obi-wallet/headless-ui";
 import {
   generateSec256k1KeyPair,
-  Sdk,
   Secp256k1KeyPair,
   Secp256k1PrivateKeySigner,
   Secp256k1PublicKey,
@@ -9,7 +8,7 @@ import {
   SecretJsClient,
 } from "@obi-wallet/sdk";
 import { Signer, SigningKey, Wallet } from "ethers";
-import { MsgExecuteContract } from "secretjs";
+import { MsgExecuteContract, Wallet as SecretJsWallet } from "secretjs";
 import { Presets } from "userop";
 
 import { HomeChainWithId } from "./db/schema";
@@ -64,13 +63,17 @@ export async function generateEthereumAccount({
     });
   });
 
+  const feeLenders = JSON.parse(process.env.FEE_LENDERS || "[]");
+  const feeLender = feeLenders[Math.floor(Math.random() * feeLenders.length)];
+  const wallet = new SecretJsWallet(feeLender);
+
   const signedTransaction = await client.createAndSignTransaction({
-    signer: new Secp256k1PrivateKeySigner(zAuthKeyPair.privateKey),
+    signer: new Secp256k1PrivateKeySigner(
+      Buffer.from(wallet.privateKey).toString("base64"),
+    ),
     messages: [
       new MsgExecuteContract({
-        sender: Sdk.chainId(chainId).transactions.getAddressOfPublicKey(
-          zAuthKeyPair.publicKey,
-        ),
+        sender: wallet.address,
         contract_address: chain.secretSigner.address,
         msg: {
           add_key: {

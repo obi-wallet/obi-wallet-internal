@@ -1,9 +1,7 @@
 import {
-  AccountValidationResult,
   KeyType,
   Messages,
   MultisigKey,
-  Sdk,
   Secp256k1PrivateKeySigner,
   SecretJsChainId,
   SecretJsClient,
@@ -11,7 +9,7 @@ import {
 } from "@obi-wallet/sdk";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { MsgSend, TxResponse, Wallet, stringToCoins } from "secretjs";
+import { TxResponse, Wallet } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { connect } from "../../../../src/db";
@@ -71,30 +69,14 @@ export async function POST(request: Request) {
     const keyPair = generateSec256k1KeyPair();
 
     const messagesSdk = Messages.chainId(body.chainId);
-    const sdk = Sdk.chainId(body.chainId);
-
-    const signer = new Secp256k1PrivateKeySigner(keyPair.privateKey);
     const client = new SecretJsClient(body.chainId);
 
-    const address = sdk.transactions.getAddressOfPublicKey(keyPair.publicKey);
-
-    const accountValidationResult = await sdk.transactions.validateAccount(
-      address,
+    const feeLenders = JSON.parse(process.env.FEE_LENDERS || "[]");
+    const feeLender = feeLenders[Math.floor(Math.random() * feeLenders.length)];
+    const wallet = new Wallet(feeLender);
+    const signer = new Secp256k1PrivateKeySigner(
+      Buffer.from(wallet.privateKey).toString("base64"),
     );
-    if (accountValidationResult <= AccountValidationResult.ACCOUNT_NOT_READY) {
-      const feeLenders = JSON.parse(process.env.FEE_LENDERS || "[]");
-      const feeLender =
-        feeLenders[Math.floor(Math.random() * feeLenders.length)];
-      const wallet = new Wallet(feeLender);
-      const msg = new MsgSend({
-        from_address: wallet.address,
-        to_address: address,
-        amount: stringToCoins("200000uscrt"),
-      });
-      await client.withSigningSecretNetworkClient(wallet, async (c) => {
-        return await c.tx.broadcast([msg], client.defaultTxOptions);
-      });
-    }
 
     const multisigKey = MultisigKey.create(body.chainId, {
       keys: [
@@ -107,13 +89,16 @@ export async function POST(request: Request) {
       ],
       threshold: 1,
     });
+    const message = messagesSdk.getCreateWalletMessage(multisigKey);
+    (message as { sender: string }).sender = wallet.address;
     const signedTransaction = await client.createAndSignTransaction({
       signer,
-      messages: [messagesSdk.getCreateWalletMessage(multisigKey)],
+      messages: [message],
     });
     const broadcastTransactionResult = await client.broadcastSignedTransaction(
       signedTransaction,
     );
+    console.log(broadcastTransactionResult);
 
     if (!broadcastTransactionResult.success) {
       return {
