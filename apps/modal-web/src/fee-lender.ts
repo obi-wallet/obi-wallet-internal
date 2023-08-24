@@ -15,7 +15,7 @@ export function getFeeLender(chainId: SecretJsChainId) {
     }
     case "secret-4": {
       const feeLender = process.env.FEE_LENDER_SECRET_4 ?? "";
-      const feeLenderIndex = Math.floor(Math.random() * 500);
+      const feeLenderIndex = Math.floor(Math.random() * 1000);
       const wallet = new Wallet(feeLender, {
         hdAccountIndex: feeLenderIndex,
       });
