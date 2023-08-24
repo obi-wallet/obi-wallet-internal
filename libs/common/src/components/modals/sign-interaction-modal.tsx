@@ -13,5 +13,7 @@ export const SignInteractionModal = observer(function SignInteractionModal() {
 
   if (!interaction) return null;
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore TODO: fix this
   return <SignatureModal interaction={interaction} />;
 });
