@@ -89,15 +89,20 @@ export class SecretJsClient extends AbstractClient {
   public async createAndSignTransaction({
     signer,
     messages,
+    gasLimit,
   }: {
     signer: Signer;
     messages: Message[];
+    gasLimit?: number;
   }): Promise<SignedTransaction> {
     return await this.withSigningSecretNetworkClient(
       SecretJsAminoSigner.fromSigner({ signer, prefix: this.chain.prefix }),
       async (client) => {
         return fromBase64(
-          await client.tx.signTx(messages as Msg[], this.defaultTxOptions),
+          await client.tx.signTx(messages as Msg[], {
+            ...this.defaultTxOptions,
+            gasLimit: gasLimit ?? this.defaultTxOptions.gasLimit,
+          }),
         );
       },
     );
@@ -107,10 +112,28 @@ export class SecretJsClient extends AbstractClient {
     signedTransaction: SignedTransaction,
   ): Promise<BroadcastTransactionResult> {
     return await this.withSecretNetworkClient(async (client) => {
-      const rawResult = await client.tx.broadcastSignedTx(
+      const { transactionHash } = await client.tx.broadcastSignedTx(
         toBase64(signedTransaction),
-        this.defaultTxOptions,
+        {
+          ...this.defaultTxOptions,
+          broadcastMode: BroadcastMode.Async,
+          waitForCommit: false,
+        },
       );
+      await new Promise((resolve) => {
+        setTimeout(resolve, 10_000);
+      });
+      const rawResult = await client.query.getTx(transactionHash);
+
+      if (!rawResult) {
+        return {
+          success: false,
+          transactionHash,
+          rawLog: "",
+          rawResult: null,
+        };
+      }
+
       return {
         success: rawResult.code === 0,
         transactionHash: rawResult.transactionHash,

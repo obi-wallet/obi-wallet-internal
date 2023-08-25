@@ -73,6 +73,7 @@ export async function POST(request: Request) {
     const client = new SecretJsClient(body.homeChainId);
     const { wallet, signer } = getFeeLender(body.homeChainId);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async function generateProxyAddress() {
       const multisigKey = MultisigKey.create(body.homeChainId, {
         keys: [
@@ -115,7 +116,8 @@ export async function POST(request: Request) {
     }
 
     const [proxyAddress, ethereumAccount] = await Promise.all([
-      generateProxyAddress(),
+      // generateProxyAddress(),
+      Promise.resolve("MISSING"),
       generateEthereumAccount({
         chainId: body.homeChainId,
         zAuthKeyPair: keyPair,
