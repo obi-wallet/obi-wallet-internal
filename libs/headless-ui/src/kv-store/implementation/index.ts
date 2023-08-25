@@ -1,5 +1,5 @@
 import Dexie, { Table } from "dexie";
-import * as R from "ramda";
+// import * as R from "ramda";
 
 import { KVStore as LegacyKvStore } from "./async-storage";
 import { AbstractKVStore } from "../abstract";
@@ -36,39 +36,41 @@ export class KVStore implements AbstractKVStore {
     this.legacy = new LegacyKvStore(_prefix);
   }
 
-  public async get<T = unknown>(key: string): Promise<T | undefined> {
-    const entry = await this.db.entries.get(key);
-    if (!entry) {
-      try {
-        const legacyData = await this.legacy.get<T>(key);
-        if (legacyData) {
-          await this.set(key, legacyData);
-          await this.legacy.set(key, null);
-          return legacyData;
-        }
-      } catch (_e) {
-        // Ignore errors
-      }
-      return undefined;
-    }
+  public async get<T = unknown>(_key: string): Promise<T | undefined> {
+    return undefined;
+    // const entry = await this.db.entries.get(key);
+    // if (!entry) {
+    //   try {
+    //     const legacyData = await this.legacy.get<T>(key);
+    //     if (legacyData) {
+    //       await this.set(key, legacyData);
+    //       await this.legacy.set(key, null);
+    //       return legacyData;
+    //     }
+    //   } catch (_e) {
+    //     // Ignore errors
+    //   }
+    //   return undefined;
+    // }
 
-    if (R.has("encrypted", entry)) {
-      return JSON.parse(await decrypt(entry.encrypted));
-    }
+    // if (R.has("encrypted", entry)) {
+    //   return JSON.parse(await decrypt(entry.encrypted));
+    // }
 
-    return JSON.parse(entry.value);
+    // return JSON.parse(entry.value);
   }
 
-  public async set<T = unknown>(key: string, data: T | null) {
-    // Passing `null` or `undefined` means we want to delete the existing data item.
-    if (data === null || data === undefined) {
-      await this.db.entries.delete(key);
-    } else {
-      await this.db.entries.put({
-        key,
-        encrypted: await encrypt(JSON.stringify(data)),
-      });
-    }
+  public async set<T = unknown>(_key: string, _data: T | null) {
+    return;
+    // // Passing `null` or `undefined` means we want to delete the existing data item.
+    // if (data === null || data === undefined) {
+    //   await this.db.entries.delete(key);
+    // } else {
+    //   await this.db.entries.put({
+    //     key,
+    //     encrypted: await encrypt(JSON.stringify(data)),
+    //   });
+    // }
   }
 
   public prefix() {
