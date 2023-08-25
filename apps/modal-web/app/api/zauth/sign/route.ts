@@ -2,7 +2,7 @@ import { Secp256k1PrivateKeySigner, SecretJsChainId } from "@obi-wallet/sdk";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { connect } from "../../../../src/db";
+import { connectWorkaround } from "../../../../src/db";
 import { fetchUserId } from "../../../../src/zauth";
 
 export async function POST(request: Request) {
@@ -30,22 +30,19 @@ export async function POST(request: Request) {
     );
   }
 
-  const UserModel = await connect();
+  const UserModel = await connectWorkaround();
   const user = await UserModel.findOne({ userId });
-  const homeChain = user?.homeChains.get(body.homeChainId);
 
-  if (!homeChain) {
+  if (!user) {
     return NextResponse.json(
       {
-        error: "user / home chain combination not found",
+        error: "user not found",
       },
       { status: 400 },
     );
   }
 
-  const signer = new Secp256k1PrivateKeySigner(
-    homeChain.zAuthKeyPair.privateKey,
-  );
+  const signer = new Secp256k1PrivateKeySigner(user.zAuthKeyPair.privateKey);
 
   const response: { signedHash?: string; signedMessage?: string } = {};
   if (body.hash) {

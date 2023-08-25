@@ -87,7 +87,7 @@ export async function generateEthereumAccount({
   };
 }
 
-async function generateEthereumAddress(keyPair: Secp256k1KeyPair) {
+export async function generateEthereumAddress(keyPair: Secp256k1KeyPair) {
   const config = getConfig(TargetChain.EthereumMainnet)!;
   const signingKey = new SigningKey(Buffer.from(keyPair.privateKey, "base64"));
   const signer: Signer = new Wallet(signingKey);
