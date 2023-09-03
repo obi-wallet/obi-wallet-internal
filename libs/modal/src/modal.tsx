@@ -143,7 +143,10 @@ const MessageHandlers = observer(function MessageHandlers() {
           }
           break;
         }
-
+        case "@obi/set-zauth-tokens": {
+          store.zauthStore.setCurrentTokens(data.payload);
+          break;
+        }
         case "@obi/create-account": {
           const homeChainId =
             data.payload.homeChainId ?? store.chainStore.currentChain;
@@ -160,7 +163,7 @@ const MessageHandlers = observer(function MessageHandlers() {
             const message = {
               type: "@obi/create-account-response",
               payload: {
-                error: "invalid token",
+                error: "invalid token"
               },
             };
             if (event.source) {

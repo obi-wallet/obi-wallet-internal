@@ -30,7 +30,8 @@ export type WelcomeScreenProps = NativeStackScreenProps<
 export const WelcomeScreen = observer<WelcomeScreenProps>(
   function WelcomeScreen() {
     const navigation = useRootNavigation();
-    const { chainStore, configStore, draftsStore } = useStore();
+    const { chainStore, configStore, draftsStore, zauthStore } = useStore();
+    const tokens = zauthStore.currentTokens;
 
     function onCreate() {
       const newMultisigKey = ObservableMultisigKey.create(
@@ -51,6 +52,8 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
         method: "POST",
         body: JSON.stringify({
           homeChainId: chainStore.currentChain,
+          targetChainId: 421613,
+          tokens,
         }),
       });
       console.log(await response.json());
@@ -258,15 +261,7 @@ const ZepetoButton = observer(function ZepetoButton({
             color: theme.colors.primary,
           }}
         >
-          USE MY ZEPETO DETAILS
-        </Text>
-        <Text
-          style={{
-            fontSize: 10,
-            color: theme.colors.primary,
-          }}
-        >
-          (Non-Custodial)
+          USE MY ZEPETO APP
         </Text>
       </View>
     </TouchableOpacity>
