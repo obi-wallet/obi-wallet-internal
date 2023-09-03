@@ -76,9 +76,15 @@ export async function POST(request: Request) {
   );
 
   async function buildUserOperation() {
-    return await client.buildUserOperation(
-      simpleAccount.execute(body.contractAddress, 0, body.data),
-    );
+    if (body.contractAddress) {
+      return await client.buildUserOperation(
+          simpleAccount.execute(body.contractAddress, 0, body.data)
+      );
+    } else {
+      return await client.buildUserOperation(
+          simpleAccount.setCallData(body.data)
+      );
+    }
   }
 
   async function handleUserOperation(userOperation: IUserOperation) {

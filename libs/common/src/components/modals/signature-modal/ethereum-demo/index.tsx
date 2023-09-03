@@ -28,7 +28,7 @@ export const SignatureModalEthereumDemo =
               }
             | {
                 userop: {
-                  contractAddress: string;
+                  contractAddress?: string;
                   callData: string;
                   tokens: {
                     zepetoAccessToken: string;
