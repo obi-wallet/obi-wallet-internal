@@ -69,10 +69,12 @@ const MessageHandlers = observer(function MessageHandlers() {
   useEffect(() => {
     async function listener(event: MessageEvent) {
       let data = event.data;
-      if (typeof data === "string") {
+      if (typeof data === "string" && data.startsWith("setImmediate")) {
+        console.log("Ignoring setImmediate message");
+      } else if (typeof data === "string") { 
         data = JSON.parse(data);
+        console.log("Received message", data);
       }
-      console.log("Received message", data);
 
       switch (data.type) {
         case "@obi/sign-message": {
