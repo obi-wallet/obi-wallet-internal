@@ -51,10 +51,10 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       const response = await fetch("/api/zauth/create-account", {
         method: "POST",
         body: JSON.stringify({
-          homeChainId: chainStore.currentChain,
-          targetChainId: 421613,
-          tokens,
-        }),
+          homeChainId: "pulsar-3",
+          accessToken: zauthStore.currentTokens!!.accessToken,
+          refreshToken: zauthStore.currentTokens!!.refreshToken,
+    }),
       });
       console.log(await response.json());
     }
