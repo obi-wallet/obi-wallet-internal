@@ -148,6 +148,7 @@ const MessageHandlers = observer(function MessageHandlers() {
           break;
         }
         case "@obi/create-account": {
+          console.log("Handling create-account message");
           const homeChainId =
             data.payload.homeChainId ?? store.chainStore.currentChain;
           const response = await fetch("/api/zauth/create-account", {

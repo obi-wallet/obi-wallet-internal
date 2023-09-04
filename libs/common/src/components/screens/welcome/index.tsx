@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { MultisigKey, ObservableMultisigKey } from "@obi-wallet/sdk";
+import { KeyType, MultisigKey, ObservableMultisigKey, ObservableMultisigWallet, createGatekeeperConfig } from "@obi-wallet/sdk";
 import { WelcomeButton } from "@obi-wallet/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -10,6 +10,7 @@ import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
 import { Alert } from "../../../helpers";
 import {
+  HomeBottomTabRoute,
   KeyFlow,
   KeyRoute,
   OnboardingRoute,
@@ -29,6 +30,7 @@ export type WelcomeScreenProps = NativeStackScreenProps<
 
 export const WelcomeScreen = observer<WelcomeScreenProps>(
   function WelcomeScreen() {
+    const store = useStore();
     const navigation = useRootNavigation();
     const { chainStore, configStore, draftsStore, zauthStore } = useStore();
     const tokens = zauthStore.currentTokens;
@@ -52,11 +54,45 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
         method: "POST",
         body: JSON.stringify({
           homeChainId: "pulsar-3",
-          accessToken: zauthStore.currentTokens!!.accessToken,
-          refreshToken: zauthStore.currentTokens!!.refreshToken,
-    }),
+          accessToken: store.zauthStore.currentTokens!!.accessToken,
+          refreshToken: store.zauthStore.currentTokens!!.refreshToken,
+        }),
       });
-      console.log(await response.json());
+
+      const { publicKey, proxyAddress, ethereumAccount, newUser } =
+        await response.json();
+
+      const wallet = ObservableMultisigWallet.create({
+        type: "multisig",
+        data: {
+          chain: "pulsar-3",
+          owner: {
+            keys: [
+              {
+                type: KeyType.ZAuth,
+                payload: {
+                  publicKey,
+                },
+              },
+            ],
+            threshold: 1,
+          },
+          proxyAddress: {
+            v: 1,
+            address: proxyAddress,
+          },
+          gatekeeperConfig: createGatekeeperConfig().toJSON(),
+          singlesigWallets: [],
+          currentAccount: null,
+        },
+      });
+
+      store.sdkRootStore.ethereumDemoStore.setEthereumAccount(
+        proxyAddress,
+        ethereumAccount,
+      );
+      store.walletsStore.upsertWallet(wallet);
+      store.walletsStore.setCurrentWallet(wallet);
     }
 
     function onRecover() {
