@@ -2,30 +2,29 @@ import {
   KeyType,
   SignAndBroadcastTransactionUserInteraction,
   TargetChain,
-  Token,
+  // Token,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
+import { Interface } from "ethers";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { useEffectOnceWhen } from "rooks";
 
 import { useStore } from "../../../../contexts";
 
-import { Interface } from 'ethers';
-
 export type SignatureModalEthereumDemoProps = {
   interaction: SignAndBroadcastTransactionUserInteraction;
 };
 
 type EthTxInput = {
-  abi: any[],
-  contractAddress: string,
-  functionName: string,
-  params: any[],
+  abi: any[];
+  contractAddress: string;
+  functionName: string;
+  params: any[];
   tokens: {
-    zepetoAccessToken: string,
-    zepetoRefreshToken: string,
-  },
+    zepetoAccessToken: string;
+    zepetoRefreshToken: string;
+  };
 };
 
 function encodeCallData({ abi, functionName, params }: EthTxInput): string {
@@ -33,7 +32,9 @@ function encodeCallData({ abi, functionName, params }: EthTxInput): string {
 
   // Ensure the function exists in the ABI
   if (!contractInterface.getFunction(functionName)) {
-    throw new Error(`Function ${functionName} does not exist in the provided ABI.`);
+    throw new Error(
+      `Function ${functionName} does not exist in the provided ABI.`,
+    );
   }
 
   return contractInterface.encodeFunctionData(functionName, params);

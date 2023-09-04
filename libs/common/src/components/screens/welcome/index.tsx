@@ -1,5 +1,11 @@
 import { useTheme } from "@emotion/react";
-import { KeyType, MultisigKey, ObservableMultisigKey, ObservableMultisigWallet, createGatekeeperConfig } from "@obi-wallet/sdk";
+import {
+  KeyType,
+  MultisigKey,
+  ObservableMultisigKey,
+  ObservableMultisigWallet,
+  createGatekeeperConfig,
+} from "@obi-wallet/sdk";
 import { WelcomeButton } from "@obi-wallet/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -10,7 +16,7 @@ import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
 import { Alert } from "../../../helpers";
 import {
-  HomeBottomTabRoute,
+  // HomeBottomTabRoute,
   KeyFlow,
   KeyRoute,
   OnboardingRoute,
@@ -32,8 +38,13 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
   function WelcomeScreen() {
     const store = useStore();
     const navigation = useRootNavigation();
-    const { chainStore, configStore, draftsStore, zauthStore } = useStore();
-    const tokens = zauthStore.currentTokens;
+    const {
+      chainStore,
+      configStore,
+      draftsStore,
+      // zauthStore
+    } = useStore();
+    // const tokens = zauthStore.currentTokens;
 
     function onCreate() {
       const newMultisigKey = ObservableMultisigKey.create(
@@ -54,18 +65,18 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
         method: "POST",
         body: JSON.stringify({
           homeChainId: "pulsar-3",
-          accessToken: store.zauthStore.currentTokens!!.accessToken,
-          refreshToken: store.zauthStore.currentTokens!!.refreshToken,
+          accessToken: store.zauthStore.currentTokens!.accessToken,
+          refreshToken: store.zauthStore.currentTokens!.refreshToken,
         }),
       });
 
-      const { publicKey, proxyAddress, ethereumAccount, newUser } =
+      const { publicKey, proxyAddress, ethereumAccount } =
         await response.json();
 
       const wallet = ObservableMultisigWallet.create({
         type: "multisig",
         data: {
-          chain: "pulsar-3",
+          chain: "secret-4",
           owner: {
             keys: [
               {

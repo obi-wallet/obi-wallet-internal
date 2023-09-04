@@ -1,18 +1,19 @@
-import { action, autorun, computed, makeObservable } from "mobx";
+import { autorun, makeObservable } from "mobx";
 
 export class ZauthStore {
-  protected tokens: {
-    accessToken: string;
-    refreshToken: string;
-  } | undefined
+  protected tokens:
+    | {
+        accessToken: string;
+        refreshToken: string;
+      }
+    | undefined;
 
   constructor() {
-    makeObservable<ZauthStore, "tokens">(
-      this,
-      {
-        tokens: false,
-      },
-    );
+    makeObservable<ZauthStore, "tokens">(this, {
+      currentTokens: true,
+      setCurrentTokens: true,
+      tokens: false,
+    });
 
     autorun(() => {
       //
@@ -20,12 +21,13 @@ export class ZauthStore {
   }
 
   public get currentTokens() {
-    return (
-      this.tokens
-    );
+    return this.tokens;
   }
 
-  public setCurrentTokens(tokens: { accessToken: string; refreshToken: string; }) {
+  public setCurrentTokens(tokens: {
+    accessToken: string;
+    refreshToken: string;
+  }) {
     this.tokens = tokens;
   }
 }

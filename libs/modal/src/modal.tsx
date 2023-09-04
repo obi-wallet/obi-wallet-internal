@@ -71,7 +71,7 @@ const MessageHandlers = observer(function MessageHandlers() {
       let data = event.data;
       if (typeof data === "string" && data.startsWith("setImmediate")) {
         console.log("Ignoring setImmediate message");
-      } else if (typeof data === "string") { 
+      } else if (typeof data === "string") {
         data = JSON.parse(data);
         console.log("Received message", data);
       }
@@ -164,7 +164,7 @@ const MessageHandlers = observer(function MessageHandlers() {
             const message = {
               type: "@obi/create-account-response",
               payload: {
-                error: "invalid token"
+                error: "invalid token",
               },
             };
             if (event.source) {

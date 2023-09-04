@@ -13408,7 +13408,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethers@npm:^6.6.4":
+"ethers@npm:^6.7.1":
   version: 6.7.1
   resolution: "ethers@npm:6.7.1"
   dependencies:
@@ -19667,7 +19667,7 @@ __metadata:
     eslint-plugin-mobx: ^0.0.9
     eslint-plugin-react: ^7.32.2
     eslint-plugin-unicorn: ^48.0.0
-    ethers: ^6.6.4
+    ethers: ^6.7.1
     eventemitter3: ^5.0.1
     fastestsmallesttextencoderdecoder: ^1.0.22
     framer-motion: ^10.12.22
