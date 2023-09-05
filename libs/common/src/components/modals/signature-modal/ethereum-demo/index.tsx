@@ -22,8 +22,8 @@ type EthTxInput = {
   functionName: string;
   params: any[];
   tokens: {
-    zepetoAccessToken: string;
-    zepetoRefreshToken: string;
+    accessToken: string;
+    refreshToken: string;
   };
 };
 
@@ -56,8 +56,8 @@ export const SignatureModalEthereumDemo =
                   contractAddress?: string;
                   callData: string;
                   tokens: {
-                    zepetoAccessToken: string;
-                    zepetoRefreshToken: string;
+                    accessToken: string;
+                    refreshToken: string;
                   };
                 };
               };

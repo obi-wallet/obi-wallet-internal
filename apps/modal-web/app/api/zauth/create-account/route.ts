@@ -14,9 +14,9 @@ export async function POST(request: Request) {
   } = await request.json();
 
   const accessToken =
-    body.accessToken ?? cookies().get("zepetoAccessToken")?.value;
+    body.accessToken ?? cookies().get("accessToken")?.value;
   const refreshToken =
-    body.refreshToken ?? cookies().get("zepetoRefreshToken")?.value;
+    body.refreshToken ?? cookies().get("refreshToken")?.value;
 
   const userId = accessToken ? await fetchUserId(accessToken) : null;
 
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
   const user = await fetchOrCreateUser();
 
   cookies().set({
-    name: "zepetoAccessToken",
+    name: "accessToken",
     value: accessToken,
     httpOnly: true,
     maxAge: 3600000,
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
       : {}),
   });
   cookies().set({
-    name: "zepetoRefreshToken",
+    name: "refreshToken",
     value: refreshToken,
     httpOnly: true,
     maxAge: 3600000,
