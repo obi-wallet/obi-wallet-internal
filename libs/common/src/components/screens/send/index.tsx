@@ -222,6 +222,7 @@ export const SendScreenComponent = observer<
 
                 if (configStore.config.ethereumBalances) {
                   console.warn("sending as userop...");
+                  console.warn(`sending ${(data.token as any).rawAmount} ${data.token.id} to ${data.address}`);
                   return [
                   {
                     eth: {
@@ -253,7 +254,7 @@ export const SendScreenComponent = observer<
                       ],
                       functionName: "transfer",
 
-                      params: [data.address, (data.token as any).amount],
+                      params: [data.address, (data.token as any).rawAmount],
                       tokens: {
                         accessToken: zauthStore.currentTokens?.accessToken!!,
                         refreshToken: zauthStore.currentTokens?.refreshToken!!
