@@ -67,7 +67,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
         accessToken: zauthStore.currentTokens?.accessToken,
         refreshToken: zauthStore.currentTokens?.refreshToken,
       });
-      console.error("on zepeto create account msg: " + body);
+      console.log("on zepeto create account msg: " + body);
       const response = await fetch("/api/zauth/create-account", {
         method: "POST",
         body: body,

@@ -36,6 +36,8 @@ import { BaseModal } from "../../base-modal";
 import { Button } from "../../buttons";
 import { KeyboardAvoidingView } from "../../keyboard-avoiding-view";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
+import { BigNumberish, parseUnits } from "ethers";
+import BigNumber from "bignumber.js";
 
 export type SendScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -61,7 +63,7 @@ export const SendScreenComponent = observer<
       address: "",
       token: {
         id: asset?.id ?? balances.data[0]?.id ?? "",
-        amount: "",
+        rawAmount: "",
       },
     },
     mode: "onChange",
@@ -106,7 +108,7 @@ export const SendScreenComponent = observer<
     visible?: boolean;
     success?: boolean;
   }>({});
-  const { chainStore } = useStore();
+  const { chainStore, zauthStore } = useStore();
   const intl = useIntl();
 
   return (
@@ -219,14 +221,50 @@ export const SendScreenComponent = observer<
                 if (!wallet.address) return [];
 
                 if (configStore.config.ethereumBalances) {
+                  console.warn("sending as userop...");
                   return [
-                    {
-                      eth: {
-                        to: data.address,
-                        token: data.token,
-                      },
+                  {
+                    eth: {
+                      contractAddress: data.token.id,
+                      abi: [
+                        {
+                            "constant": false,
+                            "inputs": [
+                                {
+                                    "name": "_to",
+                                    "type": "address"
+                                },
+                                {
+                                    "name": "_value",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "transfer",
+                            "outputs": [
+                                {
+                                    "name": "",
+                                    "type": "bool"
+                                }
+                            ],
+                            "payable": false,
+                            "stateMutability": "nonpayable",
+                            "type": "function"
+                        }
+                      ],
+                      functionName: "transfer",
+                      params: [data.address, data.token.rawAmount],
+                      tokens: {
+                        accessToken: zauthStore.currentTokens?.accessToken!!,
+                        refreshToken: zauthStore.currentTokens?.refreshToken!!
+                      }
                     },
-                  ];
+                    targetChainId: 421613,
+                    homeChainId: "secret-4",
+                    tokens: {
+                      accessToken: zauthStore.currentTokens?.accessToken!!,
+                      refreshToken: zauthStore.currentTokens?.refreshToken!!
+                    }
+                  }];
                 }
 
                 return Messages.chainId(wallet.chainId).getSendMessages({
