@@ -10,6 +10,7 @@ import { ChainStore } from "./chain";
 import { ConfigStore } from "./config";
 import { DraftsStore } from "./drafts";
 import { LanguageStore } from "./language";
+import { ZauthStore } from "./zauth";
 
 export class RootStore {
   public readonly appsStore: AppsStore;
@@ -18,6 +19,7 @@ export class RootStore {
   public readonly draftsStore: DraftsStore;
   public readonly languageStore: LanguageStore;
   public readonly sdkRootStore: SdkRootStore;
+  public readonly zauthStore: ZauthStore;
 
   constructor({
     deviceLanguage,
@@ -32,6 +34,7 @@ export class RootStore {
     this.configStore = new ConfigStore({ initialConfig });
     this.draftsStore = new DraftsStore();
     this.sdkRootStore = new SdkRootStore(KVStore);
+    this.zauthStore = new ZauthStore();
 
     this.languageStore = new LanguageStore({
       deviceLanguage,

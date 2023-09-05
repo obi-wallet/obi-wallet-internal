@@ -24,7 +24,7 @@ export async function POST(request: Request) {
   }
 
   cookies().set({
-    name: "zepetoAccessToken",
+    name: "accessToken",
     value: accessToken,
     httpOnly: true,
     maxAge: 3600000,
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
       : {}),
   });
   cookies().set({
-    name: "zepetoRefreshToken",
+    name: "refreshToken",
     value: refreshToken,
     httpOnly: true,
     maxAge: 3600000,

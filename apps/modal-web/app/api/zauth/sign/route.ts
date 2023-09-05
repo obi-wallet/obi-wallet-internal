@@ -15,9 +15,9 @@ export async function POST(request: Request) {
   } = await request.json();
 
   const accessToken =
-    body.accessToken ?? cookies().get("zepetoAccessToken")?.value;
+    body.accessToken ?? cookies().get("accessToken")?.value;
   const refreshToken =
-    body.refreshToken ?? cookies().get("zepetoRefreshToken")?.value;
+    body.refreshToken ?? cookies().get("refreshToken")?.value;
 
   const userId = accessToken ? await fetchUserId(accessToken) : null;
 
