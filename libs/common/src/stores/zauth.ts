@@ -1,6 +1,8 @@
-import { autorun, makeObservable } from "mobx";
+import { makeObservable } from "mobx";
 
 export class ZauthStore {
+  private static instance?: ZauthStore;
+
   protected tokens:
     | {
         accessToken: string;
@@ -9,15 +11,15 @@ export class ZauthStore {
     | undefined;
 
   constructor() {
+    if (ZauthStore.instance) {
+      return ZauthStore.instance;
+    }
     makeObservable<ZauthStore, "tokens">(this, {
       currentTokens: true,
       setCurrentTokens: true,
       tokens: false,
     });
-
-    autorun(() => {
-      //
-    });
+    ZauthStore.instance = this;
   }
 
   public get currentTokens() {

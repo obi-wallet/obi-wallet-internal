@@ -36,13 +36,14 @@ export type WelcomeScreenProps = NativeStackScreenProps<
 
 export const WelcomeScreen = observer<WelcomeScreenProps>(
   function WelcomeScreen() {
-    const store = useStore();
     const navigation = useRootNavigation();
     const {
       chainStore,
       configStore,
       draftsStore,
-      // zauthStore
+      sdkRootStore,
+      walletsStore,
+      zauthStore,
     } = useStore();
     // const tokens = zauthStore.currentTokens;
 
@@ -61,13 +62,15 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     }
 
     async function onZepeto() {
+      const body = JSON.stringify({
+        homeChainId: "secret-4",
+        accessToken: zauthStore.currentTokens?.accessToken,
+        refreshToken: zauthStore.currentTokens?.refreshToken,
+      });
+      console.error("on zepeto create account msg: " + body);
       const response = await fetch("/api/zauth/create-account", {
         method: "POST",
-        body: JSON.stringify({
-          homeChainId: "pulsar-3",
-          accessToken: store.zauthStore.currentTokens!.accessToken,
-          refreshToken: store.zauthStore.currentTokens!.refreshToken,
-        }),
+        body: body,
       });
 
       const { publicKey, proxyAddress, ethereumAccount } =
@@ -98,12 +101,12 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
         },
       });
 
-      store.sdkRootStore.ethereumDemoStore.setEthereumAccount(
+      sdkRootStore.ethereumDemoStore.setEthereumAccount(
         proxyAddress,
         ethereumAccount,
       );
-      store.walletsStore.upsertWallet(wallet);
-      store.walletsStore.setCurrentWallet(wallet);
+      walletsStore.upsertWallet(wallet);
+      walletsStore.setCurrentWallet(wallet);
     }
 
     function onRecover() {

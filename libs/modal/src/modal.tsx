@@ -143,6 +143,17 @@ const MessageHandlers = observer(function MessageHandlers() {
           }
           break;
         }
+        case "@obi/get-zauth-tokens": {
+          const tokens = store.zauthStore.currentTokens;
+          // error for expediency in unity
+          console.error("Get tokens: ", tokens);
+          const message = {
+            type: "@obi/get-tokens-response",
+            tokens: tokens,
+          };
+          postMessage(message);
+          break;
+        }
         case "@obi/set-zauth-tokens": {
           store.zauthStore.setCurrentTokens(data.payload);
           break;
