@@ -16,7 +16,6 @@ import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
 import { Alert } from "../../../helpers";
 import {
-  // HomeBottomTabRoute,
   KeyFlow,
   KeyRoute,
   OnboardingRoute,
@@ -45,7 +44,6 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       walletsStore,
       zauthStore,
     } = useStore();
-    // const tokens = zauthStore.currentTokens;
 
     function onCreate() {
       const newMultisigKey = ObservableMultisigKey.create(
@@ -70,7 +68,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       console.error("on zepeto create account msg: " + body);
       const response = await fetch("/api/zauth/create-account", {
         method: "POST",
-        body: body,
+        body,
       });
 
       const { publicKey, proxyAddress, ethereumAccount } =
