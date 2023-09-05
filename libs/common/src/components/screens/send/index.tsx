@@ -63,7 +63,7 @@ export const SendScreenComponent = observer<
       address: "",
       token: {
         id: asset?.id ?? balances.data[0]?.id ?? "",
-        rawAmount: "",
+        amount: "",
       },
     },
     mode: "onChange",
@@ -252,7 +252,8 @@ export const SendScreenComponent = observer<
                         }
                       ],
                       functionName: "transfer",
-                      params: [data.address, data.token.rawAmount],
+
+                      params: [data.address, (data.token as any).amount],
                       tokens: {
                         accessToken: zauthStore.currentTokens?.accessToken!!,
                         refreshToken: zauthStore.currentTokens?.refreshToken!!
