@@ -2,7 +2,7 @@ import { Secp256k1PrivateKeySigner, SecretJsChainId } from "@obi-wallet/sdk";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { connectWorkaround } from "../../../../src/db";
+import { connect } from "../../../../src/db";
 import { fetchUserId } from "../../../../src/zauth";
 
 export async function POST(request: Request) {
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const UserModel = await connectWorkaround();
+  const UserModel = await connect();
   const user = await UserModel.findOne({ userId });
 
   if (!user) {
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const signer = new Secp256k1PrivateKeySigner(user.zAuthKeyPair.privateKey);
+  const signer = new Secp256k1PrivateKeySigner(user.homeChains.get("secret-4")?.zAuthKeyPair.privateKey!);
 
   const response: { signedHash?: string; signedMessage?: string } = {};
   if (body.hash) {
