@@ -2,9 +2,10 @@ import {
   KeyType,
   SignAndBroadcastTransactionUserInteraction,
   TargetChain,
-  Token,
+  // Token,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
+import { Interface } from "ethers";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { useEffectOnceWhen } from "rooks";
@@ -15,6 +16,30 @@ export type SignatureModalEthereumDemoProps = {
   interaction: SignAndBroadcastTransactionUserInteraction;
 };
 
+type EthTxInput = {
+  abi: any[];
+  contractAddress: string;
+  functionName: string;
+  params: any[];
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+  };
+};
+
+function encodeCallData({ abi, functionName, params }: EthTxInput): string {
+  const contractInterface = new Interface(abi);
+
+  // Ensure the function exists in the ABI
+  if (!contractInterface.getFunction(functionName)) {
+    throw new Error(
+      `Function ${functionName} does not exist in the provided ABI.`,
+    );
+  }
+
+  return contractInterface.encodeFunctionData(functionName, params);
+}
+
 export const SignatureModalEthereumDemo =
   observer<SignatureModalEthereumDemoProps>(
     function SignatureModalEthereumDemo({ interaction }) {
@@ -24,15 +49,15 @@ export const SignatureModalEthereumDemo =
         mutationFn: async () => {
           const message = interaction.payload.messages[0] as unknown as
             | {
-                eth: { to: string; token: Token };
+                eth: EthTxInput;
               }
             | {
                 userop: {
-                  contractAddress: string;
+                  contractAddress?: string;
                   callData: string;
                   tokens: {
-                    zepetoAccessToken: string;
-                    zepetoRefreshToken: string;
+                    accessToken: string;
+                    refreshToken: string;
                   };
                 };
               };
@@ -56,7 +81,7 @@ export const SignatureModalEthereumDemo =
               });
             }
 
-            return await fetch("/api/ethereum-demo/send", {
+            return await fetch("/api/send-userop", {
               method: "POST",
               body: JSON.stringify({
                 homeChainId: wallet?.chainId,
@@ -64,8 +89,9 @@ export const SignatureModalEthereumDemo =
                   interaction.payload.targetChainId ??
                   TargetChain.ArbitrumOneGoerliTestnet,
                 publicKey: zAuthKey?.publicKey,
-                to: message.eth.to,
-                token: message.eth.token,
+                contractAddress: message.eth.contractAddress,
+                data: encodeCallData(message.eth),
+                tokens: message.eth.tokens,
               }),
             });
           }

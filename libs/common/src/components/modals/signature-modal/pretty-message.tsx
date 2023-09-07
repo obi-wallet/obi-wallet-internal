@@ -503,7 +503,7 @@ const PrettyCoins = observer<PrettyTokensProps>(function PrettyTokens({
   const chainId = useChainId();
   const { chainStore, configStore } = useStore();
   const denom = configStore.config.ethereumBalances
-    ? "0x5CF29823CCFC73008fa53630d54A424AB82dE6F2"
+    ? "0xf0F8FC7365C0c9F87189B6c8703e4719270A3318"
     : chainStore.currentChainInformation.denom;
   const coinsArray =
     tokens && tokens.length > 0 ? tokens : [{ id: denom, rawAmount: "0" }];

@@ -12,10 +12,10 @@ export const ztxModalConfig: Config = {
     default: "secret-4",
   },
   keys: {
-    enabled: [KeyType.ZAuth],
-    required: [KeyType.ZAuth],
+    enabled: [KeyType.ZAuth, KeyType.Phone],
+    required: [KeyType.ZAuth, KeyType.Phone],
     comingSoon: [],
   },
   ethereumBalances: true,
-  headless: true,
+  headless: false,
 };

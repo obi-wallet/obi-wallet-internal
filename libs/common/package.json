@@ -30,6 +30,7 @@
     "@tanstack/react-query": "*",
     "@terra-money/feather.js": "*",
     "bignumber.js": "*",
+    "ethers": "*",
     "fuse.js": "*",
     "isomorphic-unfetch": "*",
     "lottie-react": "*",

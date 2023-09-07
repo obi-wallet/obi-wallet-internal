@@ -124,7 +124,7 @@ export function enrichToken({
   const enrichedToken = Sdk.chainId(chainId).bank.enrichToken(token, prices);
 
   switch (token.id) {
-    case "0x5CF29823CCFC73008fa53630d54A424AB82dE6F2": {
+    case "0xf0F8FC7365C0c9F87189B6c8703e4719270A3318": {
       const digits = 18;
       return {
         ...token,

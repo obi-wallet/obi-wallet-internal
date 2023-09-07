@@ -69,10 +69,12 @@ const MessageHandlers = observer(function MessageHandlers() {
   useEffect(() => {
     async function listener(event: MessageEvent) {
       let data = event.data;
-      if (typeof data === "string") {
+      if (typeof data === "string" && data.startsWith("setImmediate")) {
+        console.log("Ignoring setImmediate message");
+      } else if (typeof data === "string") {
         data = JSON.parse(data);
+        console.log("Received message", data);
       }
-      console.log("Received message", data);
 
       switch (data.type) {
         case "@obi/sign-message": {
@@ -141,8 +143,23 @@ const MessageHandlers = observer(function MessageHandlers() {
           }
           break;
         }
-
+        case "@obi/get-zauth-tokens": {
+          const tokens = store.zauthStore.currentTokens;
+          // error for expediency in unity
+          console.error("Get tokens: ", tokens);
+          const message = {
+            type: "@obi/get-tokens-response",
+            tokens: tokens,
+          };
+          postMessage(message);
+          break;
+        }
+        case "@obi/set-zauth-tokens": {
+          store.zauthStore.setCurrentTokens(data.payload);
+          break;
+        }
         case "@obi/create-account": {
+          console.log("Handling create-account message");
           const homeChainId =
             data.payload.homeChainId ?? store.chainStore.currentChain;
           const response = await fetch("/api/zauth/create-account", {

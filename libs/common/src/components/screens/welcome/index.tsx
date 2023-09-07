@@ -1,5 +1,11 @@
 import { useTheme } from "@emotion/react";
-import { MultisigKey, ObservableMultisigKey } from "@obi-wallet/sdk";
+import {
+  KeyType,
+  MultisigKey,
+  ObservableMultisigKey,
+  ObservableMultisigWallet,
+  createGatekeeperConfig,
+} from "@obi-wallet/sdk";
 import { WelcomeButton } from "@obi-wallet/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -30,7 +36,14 @@ export type WelcomeScreenProps = NativeStackScreenProps<
 export const WelcomeScreen = observer<WelcomeScreenProps>(
   function WelcomeScreen() {
     const navigation = useRootNavigation();
-    const { chainStore, configStore, draftsStore } = useStore();
+    const {
+      chainStore,
+      configStore,
+      draftsStore,
+      sdkRootStore,
+      walletsStore,
+      zauthStore,
+    } = useStore();
 
     function onCreate() {
       const newMultisigKey = ObservableMultisigKey.create(
@@ -47,13 +60,51 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     }
 
     async function onZepeto() {
+      const body = JSON.stringify({
+        homeChainId: "secret-4",
+        accessToken: zauthStore.currentTokens?.accessToken,
+        refreshToken: zauthStore.currentTokens?.refreshToken,
+      });
+      console.log("on zepeto create account msg: " + body);
       const response = await fetch("/api/zauth/create-account", {
         method: "POST",
-        body: JSON.stringify({
-          homeChainId: chainStore.currentChain,
-        }),
+        body,
       });
-      console.log(await response.json());
+
+      const { publicKey, proxyAddress, ethereumAccount } =
+        await response.json();
+
+      const wallet = ObservableMultisigWallet.create({
+        type: "multisig",
+        data: {
+          chain: "secret-4",
+          owner: {
+            keys: [
+              {
+                type: KeyType.ZAuth,
+                payload: {
+                  publicKey,
+                },
+              },
+            ],
+            threshold: 1,
+          },
+          proxyAddress: {
+            v: 1,
+            address: proxyAddress,
+          },
+          gatekeeperConfig: createGatekeeperConfig().toJSON(),
+          singlesigWallets: [],
+          currentAccount: null,
+        },
+      });
+
+      sdkRootStore.ethereumDemoStore.setEthereumAccount(
+        proxyAddress,
+        ethereumAccount,
+      );
+      walletsStore.upsertWallet(wallet);
+      walletsStore.setCurrentWallet(wallet);
     }
 
     function onRecover() {
@@ -258,15 +309,7 @@ const ZepetoButton = observer(function ZepetoButton({
             color: theme.colors.primary,
           }}
         >
-          USE MY ZEPETO DETAILS
-        </Text>
-        <Text
-          style={{
-            fontSize: 10,
-            color: theme.colors.primary,
-          }}
-        >
-          (Non-Custodial)
+          USE MY ZEPETO APP
         </Text>
       </View>
     </TouchableOpacity>

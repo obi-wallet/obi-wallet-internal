@@ -6,7 +6,7 @@ const web3 = new Web3(
   new Web3.providers.HttpProvider(process.env.WEB3_PROVIDER_URL!),
 );
 
-const ztxToken = "0x5CF29823CCFC73008fa53630d54A424AB82dE6F2";
+const ztxToken = "0xf0F8FC7365C0c9F87189B6c8703e4719270A3318";
 
 export async function GET(
   request: Request,
