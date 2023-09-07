@@ -153,4 +153,38 @@ export async function POST(request: Request) {
       ethereumAccount,
     };
   }
+
+
+  const user = await fetchOrCreateUser();
+
+  /*
+  cookies().set({
+    name: "zepetoAccessToken",
+    value: accessToken,
+    httpOnly: true,
+    maxAge: 3600000,
+    path: "/",
+    ...(process.env.NODE_ENV === "production"
+      ? {
+          sameSite: "none",
+          secure: true,
+        }
+      : {}),
+  });
+  cookies().set({
+    name: "zepetoRefreshToken",
+    value: refreshToken,
+    httpOnly: true,
+    maxAge: 3600000,
+    path: "/",
+    ...(process.env.NODE_ENV === "production"
+      ? {
+          sameSite: "none",
+          secure: true,
+        }
+      : {}),
+  });
+  */
+
+  return NextResponse.json(user);
 }
