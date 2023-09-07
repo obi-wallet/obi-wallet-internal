@@ -6,6 +6,14 @@
 
 This is a monorepo containing our mobile app and our web modal. To enable code-sharing, we utilize `react-native-web`.
 
+## Running the Modal
+You must have 1Password CLI installed and access to the appropriate vault in order to run setup.
+- `yarn`
+- `yarn setup`
+- `nx serve modal-web`
+- Open a browser to `localhost:4200/<THEME>`, e.g. `localhost:4200/ztx`
+
+
 ## ZTX's implementation
 
 ZTX's implementation has three stages:
