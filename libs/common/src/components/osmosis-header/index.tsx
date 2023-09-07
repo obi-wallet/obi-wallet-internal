@@ -30,6 +30,8 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
           flexDirection: "row",
           alignItems: "flex-start",
           justifyContent: "space-between",
+          borderBottomColor: "#ffffff",
+          ...theme.header,
         }}
       >
         <View style={{ width: 29 }}>
@@ -46,10 +48,11 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
         {theme.header && !hideLogo ? (
           <Image
             resizeMode="contain"
-            source={{ uri: theme.header.image }}
+            source={{ uri: theme.header.image.url }}
             style={{
-              width: theme.header.width,
-              height: theme.header.height,
+              // width: theme.header.width,
+              // height: theme.header.height,
+              ...theme.header.image,
             }}
           />
         ) : null}

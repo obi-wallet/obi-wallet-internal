@@ -1,4 +1,5 @@
-import { TextStyle, ViewStyle } from "react-native";
+import React = require("react");
+import { ImageStyle, TextStyle, ViewStyle } from "react-native";
 
 export enum AccountSettingComponent {
   MaxSpend = "MaxSpend",
@@ -60,10 +61,11 @@ export interface CustomTheme extends CommonTheme {
     borderRadius?: string;
     accountSettings: AccountSettingComponent[];
   };
-  header?: {
-    image: string;
-    width: number;
-    height: number;
+  header?: ViewStyle & {
+    image: ImageStyle & {
+      url: string;
+    };
+    closeIcon?: React.ReactNode;
   };
   buttonFlavors: {
     primary: ViewStyle & { background?: string };
@@ -93,6 +95,8 @@ export interface CustomTheme extends CommonTheme {
     hideHeaderLogo?: boolean;
     horizontalSpacing?: number;
     buttonSpacing?: number;
+    subtitleStyles?: TextStyle;
+    titleStyles?: TextStyle;
   };
   settings?: {
     textInputBackgroundColor?: string;
