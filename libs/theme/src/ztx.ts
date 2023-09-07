@@ -5,6 +5,8 @@ import {
   WelcomeButton,
 } from "./abstract";
 import { common } from "./common";
+import { observer } from "mobx-react-lite";
+import Svg, { SvgProps, Path } from "react-native-svg";
 
 const colors = {
   gray8: "#F6F8FC",
