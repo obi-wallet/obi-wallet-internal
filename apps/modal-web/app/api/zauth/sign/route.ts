@@ -2,7 +2,7 @@ import { Secp256k1PrivateKeySigner, SecretJsChainId } from "@obi-wallet/sdk";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { connectWorkaround } from "../../../../src/db";
+import { connect } from "../../../../src/db";
 import { fetchUserId } from "../../../../src/zauth";
 
 export async function POST(request: Request) {
@@ -14,8 +14,7 @@ export async function POST(request: Request) {
     message?: string;
   } = await request.json();
 
-  const accessToken =
-    body.accessToken ?? cookies().get("accessToken")?.value;
+  const accessToken = body.accessToken ?? cookies().get("accessToken")?.value;
   const refreshToken =
     body.refreshToken ?? cookies().get("refreshToken")?.value;
 
@@ -30,7 +29,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const UserModel = await connectWorkaround();
+  const UserModel = await connect();
   const user = await UserModel.findOne({ userId });
 
   if (!user) {
@@ -42,7 +41,16 @@ export async function POST(request: Request) {
     );
   }
 
-  const signer = new Secp256k1PrivateKeySigner(user.zAuthKeyPair.privateKey);
+  const privkey = user.homeChains.get("secret-4")?.zAuthKeyPair.privateKey;
+  if (!privkey) {
+    return NextResponse.json(
+      {
+        error: "privkey unavailable",
+      },
+      { status: 400 },
+    );
+  }
+  const signer = new Secp256k1PrivateKeySigner(privkey);
 
   const response: { signedHash?: string; signedMessage?: string } = {};
   if (body.hash) {

@@ -5,7 +5,7 @@ import {
   // Token,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
-import { Interface } from "ethers";
+import { Interface, InterfaceAbi } from "ethers";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { useEffectOnceWhen } from "rooks";
@@ -17,10 +17,10 @@ export type SignatureModalEthereumDemoProps = {
 };
 
 type EthTxInput = {
-  abi: any[];
+  abi: InterfaceAbi;
   contractAddress: string;
   functionName: string;
-  params: any[];
+  params: unknown[];
   tokens: {
     accessToken: string;
     refreshToken: string;

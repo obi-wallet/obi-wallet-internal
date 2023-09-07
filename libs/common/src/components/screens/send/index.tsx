@@ -36,8 +36,6 @@ import { BaseModal } from "../../base-modal";
 import { Button } from "../../buttons";
 import { KeyboardAvoidingView } from "../../keyboard-avoiding-view";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
-import { BigNumberish, parseUnits } from "ethers";
-import BigNumber from "bignumber.js";
 
 export type SendScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -222,51 +220,57 @@ export const SendScreenComponent = observer<
 
                 if (configStore.config.ethereumBalances) {
                   console.warn("sending as userop...");
-                  console.warn(`sending ${(data.token as any).rawAmount} ${data.token.id} to ${data.address}`);
+                  console.warn(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    `sending ${(data.token as any).rawAmount} ${
+                      data.token.id
+                    } to ${data.address}`,
+                  );
                   return [
-                  {
-                    eth: {
-                      contractAddress: data.token.id,
-                      abi: [
-                        {
-                            "constant": false,
-                            "inputs": [
-                                {
-                                    "name": "_to",
-                                    "type": "address"
-                                },
-                                {
-                                    "name": "_value",
-                                    "type": "uint256"
-                                }
+                    {
+                      eth: {
+                        contractAddress: data.token.id,
+                        abi: [
+                          {
+                            constant: false,
+                            inputs: [
+                              {
+                                name: "_to",
+                                type: "address",
+                              },
+                              {
+                                name: "_value",
+                                type: "uint256",
+                              },
                             ],
-                            "name": "transfer",
-                            "outputs": [
-                                {
-                                    "name": "",
-                                    "type": "bool"
-                                }
+                            name: "transfer",
+                            outputs: [
+                              {
+                                name: "",
+                                type: "bool",
+                              },
                             ],
-                            "payable": false,
-                            "stateMutability": "nonpayable",
-                            "type": "function"
-                        }
-                      ],
-                      functionName: "transfer",
-
-                      params: [data.address, (data.token as any).rawAmount],
+                            payable: false,
+                            stateMutability: "nonpayable",
+                            type: "function",
+                          },
+                        ],
+                        functionName: "transfer",
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        params: [data.address, (data.token as any).rawAmount],
+                        tokens: {
+                          accessToken: zauthStore.currentTokens?.accessToken,
+                          refreshToken: zauthStore.currentTokens?.refreshToken,
+                        },
+                      },
+                      targetChainId: 421613,
+                      homeChainId: "secret-4",
                       tokens: {
-                        accessToken: zauthStore.currentTokens?.accessToken!!,
-                        refreshToken: zauthStore.currentTokens?.refreshToken!!
-                      }
+                        accessToken: zauthStore.currentTokens?.accessToken,
+                        refreshToken: zauthStore.currentTokens?.refreshToken,
+                      },
                     },
-                    targetChainId: 421613,
-                    homeChainId: "secret-4",
-                    tokens: {
-                      accessToken: zauthStore.currentTokens?.accessToken!!,
-                      refreshToken: zauthStore.currentTokens?.refreshToken!!
-                    }
-                  }];
+                  ];
                 }
 
                 return Messages.chainId(wallet.chainId).getSendMessages({

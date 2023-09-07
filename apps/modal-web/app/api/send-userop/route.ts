@@ -1,10 +1,11 @@
 import { SecretJsChainId, TargetChainId } from "@obi-wallet/sdk";
-import { Signer, SigningKey, Wallet } from "ethers";
+// import { Signer, SigningKey, Wallet } from "ethers";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { Client, IUserOperation, Presets } from "userop";
 
-import { connectWorkaround } from "../../../src/db";
+import { connect } from "../../../src/db";
+import { SecretJsSigner } from "../../../src/secret-js-signer";
 import { getConfig } from "../../../src/stackup";
 import { fetchUserId } from "../../../src/zauth";
 
@@ -23,8 +24,7 @@ export async function POST(request: Request) {
   const accessToken =
     cookies().get("accessToken")?.value ?? body.tokens.accessToken;
   const refreshToken =
-    cookies().get("refreshToken")?.value ??
-    body.tokens.refreshToken;
+    cookies().get("refreshToken")?.value ?? body.tokens.refreshToken;
 
   const userId = accessToken ? await fetchUserId(accessToken) : null;
 
@@ -37,13 +37,13 @@ export async function POST(request: Request) {
     );
   }
 
-  const UserModel = await connectWorkaround();
+  const UserModel = await connect();
   const user = await UserModel.findOne({ userId });
-
-  if (!user) {
+  const homeChain = user?.homeChains.get(body.homeChainId);
+  if (!homeChain) {
     return NextResponse.json(
       {
-        error: "user not found",
+        error: "user / home chain combination not found",
       },
       { status: 400 },
     );
@@ -64,10 +64,12 @@ export async function POST(request: Request) {
     config.paymaster.context,
   );
   const client = await Client.init(config.rpcUrl!);
-  const signingKey = new SigningKey(
-    Buffer.from(user.ethKeyPair.privateKey, "base64"),
-  );
-  const signer: Signer = new Wallet(signingKey);
+  const signer = new SecretJsSigner({
+    chainId: body.homeChainId,
+    zAuthKeyPair: homeChain.zAuthKeyPair,
+    proxyAddress: homeChain.proxyAddress,
+    targetChain: homeChain.targetChain,
+  });
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
     signer,
