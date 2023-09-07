@@ -34,7 +34,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
       const buttons = theme.welcome?.buttons?.length;
       return buttons && buttons >= 3 ? "80%" : "60%";
     };
-
+    console.log(theme.welcome.subtitleStyles);
     return (
       <OsmosisScreenContainer
         hideLogo={theme.welcome?.hideHeaderLogo}
@@ -149,6 +149,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
                   ...theme.typography.largeTitle,
                   color: "#F6F5FF",
                   marginTop: theme.spacing["24"],
+                  ...theme.welcome?.titleStyles,
                 }}
               >
                 {title}
@@ -160,6 +161,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
                   fontWeight: "400",
                   marginTop: theme.spacing["12"],
                   textAlign: "left",
+                  ...theme.welcome?.subtitleStyles,
                 }}
               >
                 {subTitle}
