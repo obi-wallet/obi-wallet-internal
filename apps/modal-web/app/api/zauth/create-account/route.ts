@@ -10,6 +10,7 @@ import {
 import { NextResponse } from "next/server";
 import { TxResponse } from "secretjs";
 import invariant from "tiny-invariant";
+
 // import { cookies } from "next/headers";
 import { connect } from "../../../../src/db";
 import { HomeChain } from "../../../../src/db/schema";
@@ -27,13 +28,11 @@ export async function POST(request: Request) {
     homeChainId: SecretJsChainId;
   } = await request.json();
 
-  const accessToken =
-    body.accessToken
-    // ?? cookies().get("accessToken")?.value;
+  const accessToken = body.accessToken;
+  // ?? cookies().get("accessToken")?.value;
 
-  const refreshToken =
-    body.accessToken
-    // ?? cookies().get("refreshToken")?.value;
+  const refreshToken = body.accessToken;
+  // ?? cookies().get("refreshToken")?.value;
 
   const userId = accessToken ? await fetchUserId(accessToken) : null;
   if (!accessToken || !refreshToken || !userId) {
@@ -117,8 +116,7 @@ export async function POST(request: Request) {
     }
 
     const [proxyAddress, ethereumAccount] = await Promise.all([
-      // generateProxyAddress(),
-      Promise.resolve("MISSING"),
+      generateProxyAddress(),
       generateEthereumAccount({
         chainId: body.homeChainId,
         zAuthKeyPair: keyPair,
@@ -153,7 +151,6 @@ export async function POST(request: Request) {
       ethereumAccount,
     };
   }
-
 
   const user = await fetchOrCreateUser();
 

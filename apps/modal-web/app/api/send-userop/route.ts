@@ -1,13 +1,13 @@
 import { SecretJsChainId, TargetChainId } from "@obi-wallet/sdk";
-import { Signer, SigningKey, Wallet } from "ethers";
+// import { Signer, SigningKey, Wallet } from "ethers";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { Client, IUserOperation, Presets } from "userop";
 
 import { connect } from "../../../src/db";
+import { SecretJsSigner } from "../../../src/secret-js-signer";
 import { getConfig } from "../../../src/stackup";
 import { fetchUserId } from "../../../src/zauth";
-import { SecretJsSigner } from "apps/modal-web/src/secret-js-signer";
 
 export async function POST(request: Request) {
   const body: {
@@ -24,8 +24,7 @@ export async function POST(request: Request) {
   const accessToken =
     cookies().get("accessToken")?.value ?? body.tokens.accessToken;
   const refreshToken =
-    cookies().get("refreshToken")?.value ??
-    body.tokens.refreshToken;
+    cookies().get("refreshToken")?.value ?? body.tokens.refreshToken;
 
   const userId = accessToken ? await fetchUserId(accessToken) : null;
 
