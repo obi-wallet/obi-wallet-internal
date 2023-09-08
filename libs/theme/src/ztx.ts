@@ -79,7 +79,11 @@ export const ztxTheme: CustomTheme = {
     },
     hideHeaderLogo: false,
     horizontalSpacing: 20,
-    buttons: [WelcomeButton.Zepeto, WelcomeButton.Login],
+    buttons: [
+      WelcomeButton.Zepeto,
+      WelcomeButton.Login,
+      WelcomeButton.GetStarted,
+    ],
   },
   settings: {
     textInputBackgroundColor: "#16151D",
