@@ -34,7 +34,7 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
           ...theme.header,
         }}
       >
-        <View style={{ width: 29 }}>
+        <View style={{ width: 29, paddingTop: 20 }}>
           {onBackPress ? (
             <IconButton
               onPress={onBackPress}
@@ -63,7 +63,24 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
               style={{ width: 29 }}
               hitSlop={{ top: 29, bottom: 29, left: 29, right: 29 }}
             >
-              <FontAwesomeIcon icon={faTimesCircle} size={29} color="#ffffff" />
+              {theme.header?.closeIcon ? (
+                <Image
+                  resizeMode="contain"
+                  source={{ uri: theme.header.closeIcon.src }}
+                  style={{
+                    width: 12,
+                    height: 12,
+                    marginLeft: "auto",
+                    ...theme.header?.closeIcon,
+                  }}
+                />
+              ) : (
+                <FontAwesomeIcon
+                  icon={faTimesCircle}
+                  size={29}
+                  color="#ffffff"
+                />
+              )}
             </IconButton>
           ) : undefined}
         </View>

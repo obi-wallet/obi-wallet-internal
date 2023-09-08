@@ -1,4 +1,3 @@
-import React = require("react");
 import { ImageStyle, TextStyle, ViewStyle } from "react-native";
 
 export enum AccountSettingComponent {
@@ -62,10 +61,9 @@ export interface CustomTheme extends CommonTheme {
     accountSettings: AccountSettingComponent[];
   };
   header?: ViewStyle & {
-    image: ImageStyle & {
-      url: string;
-    };
-    closeIcon?: React.ReactNode;
+    image: ImageStyle & { src: string };
+    closeIcon?: ImageStyle & { src: string };
+    backIcon?: ImageStyle & { src: string };
   };
   buttonFlavors: {
     primary: ViewStyle & { background?: string };
