@@ -20,7 +20,7 @@ export const ztxTheme: CustomTheme = {
     color: "#16151D",
   },
   modal: {
-    borderRadius: "25px",
+    borderRadius: "3px",
     accountSettings: [
       AccountSettingComponent.MaxSpend,
       AccountSettingComponent.VerifiedItems,
@@ -28,7 +28,7 @@ export const ztxTheme: CustomTheme = {
   },
   header: {
     image: {
-      url: "/ztx-header@2x.png",
+      src: "/ztx-header@2x.png",
       flex: 1,
       maxWidth: 76,
       height: 18,
@@ -38,7 +38,13 @@ export const ztxTheme: CustomTheme = {
     height: 74,
     borderBottomColor: "#3E4859",
     borderBottomWidth: 1,
-    closeIcon: ZtxCloseIcon,
+    closeIcon: {
+      src: "./ztx-close-icon.svg",
+      marginTop: 16,
+      marginRight: 16,
+    },
+    paddingHorizontal: 0,
+    marginVertical: 0,
   },
   buttonFlavors: {
     primary: {
