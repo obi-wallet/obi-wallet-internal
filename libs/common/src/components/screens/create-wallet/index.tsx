@@ -61,6 +61,12 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             });
           }
         }}
+        onAddZAuth={() => {
+          navigation.navigate(KeyRoute.ZAuthKey, {
+            ...params,
+            flow: KeyFlow.CreateWallet,
+          });
+        }}
         onAddSocial={() => {
           navigation.navigate(KeyRoute.SocialKey, {
             ...params,
@@ -94,6 +100,7 @@ export interface CreateWalletProps {
   draftId: string;
 
   onSubmit(): void;
+  onAddZAuth(): void;
   onAddSocial(): void;
   onAddNfc(): void;
   onAddCloud(): void;
@@ -103,6 +110,7 @@ export interface CreateWalletProps {
 export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   draftId,
   onSubmit,
+  onAddZAuth,
   onAddNfc,
   onAddSocial,
   onAddCloud,
@@ -111,6 +119,7 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   const { draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
+  const hasZAuthKey = draft.value.hasKeyOfType(KeyType.ZAuth);
   const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
   const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
   const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
@@ -122,6 +131,17 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
       title="Create Wallet"
       subTitle="Add keys to improve security."
       actions={{
+        [KeyType.ZAuth]: hasZAuthKey
+        ? {
+            label: "Remove",
+            onPress: () => {
+              draft.value.removeKeyOfType(KeyType.ZAuth);
+            },
+          }
+        : {
+            label: "Add",
+            onPress: onAddZAuth,
+          },
         [KeyType.Social]: hasSocialKey
           ? {
               label: "Remove",
