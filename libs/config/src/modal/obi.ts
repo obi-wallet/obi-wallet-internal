@@ -7,8 +7,8 @@ import { ComingSoonKeyType } from "../key";
 
 export const obiModalConfig: Config = {
   chains: {
-    enabled: ["osmo-test-5"],
-    default: "osmo-test-5",
+    enabled: ["pulsar-3"],
+    default: "pulsar-3",
   },
   languages: {
     enabled: ["en"],

@@ -154,9 +154,10 @@ export const PhoneNumberBottomSheetContent =
               setMagicButtonDisabledDoubleclick(true);
 
               try {
-                await onRequest({ securityAnswer, voice: false });
+                const res = await onRequest({ securityAnswer, voice: false });
                 setSentMessage(true);
                 setMagicButtonDisabledDoubleclick(false);
+                console.log({ res });
               } catch (e) {
                 const error = e as Error;
                 setMagicButtonDisabledDoubleclick(false);

@@ -124,13 +124,13 @@ export class TwilioClient implements TwilioClientInterface {
   public async parsePublicKeyMagicCodeResponse({ key }: { key: string }) {
     const decrypted = await this.fetchAndDecryptResponse(key);
 
-    if (!decrypted?.startsWith("pubkey:")) {
-      throw new Error("This doesn't seem to be a public key");
-    }
+    // if (!decrypted?.startsWith("pubkey:")) {
+    //   throw new Error("This doesn't seem to be a public key");
+    // }
 
     return {
       type: "tendermint/PubKeySecp256k1" as const,
-      value: decrypted.replace("pubkey:", ""),
+      value: decrypted.pubkey,
     };
   }
 
@@ -147,7 +147,7 @@ export class TwilioClient implements TwilioClientInterface {
     chainId: ChainId;
     voice: boolean;
   }) {
-    await this.encryptAndSendMessage({
+    return await this.encryptAndSendMessage({
       message: `sign:${securityAnswer}:${Buffer.from(message.buffer).toString(
         "base64",
       )}`,
@@ -158,14 +158,11 @@ export class TwilioClient implements TwilioClientInterface {
   }
 
   public async parseSignatureMagicCodeResponse({ key }: { key: string }) {
-    const decrypted = await this.fetchAndDecryptResponse(key);
-
-    if (!decrypted?.startsWith("signature::")) {
+    const response = await this.fetchAndDecryptResponse(key);
+    if (!response?.startsWith("signature:")) {
       throw new Error("This doesn't seem to be a signature");
     }
-
-    const signature = decrypted.replace("signature::", "");
-    return new Uint8Array(Buffer.from(signature, "base64"));
+    return new Uint8Array(Buffer.from(response.signature, "base64"));
   }
 
   protected async encryptAndSendMessage({
@@ -179,6 +176,9 @@ export class TwilioClient implements TwilioClientInterface {
     chainId: ChainId;
     voice: boolean;
   }) {
+    console.log({
+      message,
+    });
     const body = await this.getMessageBody(`${message}:${chainId}`);
     const formData = new FormData();
     const { twilioPhoneNumbers, twilioUrl } = Chain.information(chainId);
@@ -191,7 +191,7 @@ export class TwilioClient implements TwilioClientInterface {
       JSON.stringify({ trigger_body: { body, voice } }),
     );
 
-    await fetch(twilioUrl, {
+    return await fetch(twilioUrl, {
       body: formData,
       method: "post",
       headers: {
@@ -202,36 +202,27 @@ export class TwilioClient implements TwilioClientInterface {
 
   protected async fetchAndDecryptResponse(key: string) {
     const result = await fetch(`https://obi-hastebin.herokuapp.com/raw/${key}`);
-    return await result.text();
-
-    // Decryption hasn't been implemented on Twilio yet
-    // const token = totp.generate(DEV_SHARED_SECRET);
-    // try {
-    //   totp.verify({ token, secret: DEV_SHARED_SECRET });
-    // } catch (err) {
-    //   // Possible errors
-    //   // - options validation
-    //   // - "Invalid input - it is not base32 encoded string"
-    //   console.error(err);
-    // }
-    // const decrypted = AES.decrypt(message, token).toString(enc.Utf8);
+    console.log({ result });
+    const text = await result.json();
+    console.log({ text });
+    return text;
   }
 
   protected async getMessageBody(message: string) {
-    // absurdly large step for dev convenience
-    totp.options = { digits: 64, step: 600 };
-    const token = totp.generate(this.twilioConfig.secret);
+    console.log("getmessagebody"); // absurdly large step for dev convenience
+    // totp.options = { digits: 64, step: 600 };
+    // const token = totp.generate(this.twilioConfig.secret);
 
-    totp.verify({ token, secret: this.twilioConfig.secret });
-
-    const encrypted = AES.encrypt(message, token).toString();
+    // totp.verify({ token, secret: this.twilioConfig.secret });
+    // console.log(message);
+    // const encrypted = AES.encrypt(message, token).toString();
 
     const result = await fetch("https://obi-hastebin.herokuapp.com/documents", {
       headers: {
         "Content-type": "application/text",
       },
       method: "POST",
-      body: encrypted,
+      body: message,
     });
     const { key } = JSON.parse(await result.text());
     return key;
