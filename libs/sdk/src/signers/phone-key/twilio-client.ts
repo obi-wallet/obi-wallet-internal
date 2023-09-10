@@ -147,7 +147,7 @@ export class TwilioClient implements TwilioClientInterface {
     chainId: ChainId;
     voice: boolean;
   }) {
-    await this.encryptAndSendMessage({
+    return await this.encryptAndSendMessage({
       message: `sign:${securityAnswer}:${Buffer.from(message.buffer).toString(
         "base64",
       )}`,
@@ -159,13 +159,9 @@ export class TwilioClient implements TwilioClientInterface {
 
   public async parseSignatureMagicCodeResponse({ key }: { key: string }) {
     const response = await this.fetchAndDecryptResponse(key);
-
-    // if (!decrypted?.startsWith("signature::")) {
-    //   throw new Error("This doesn't seem to be a signature");
-    // }
-
-    // const signature = decrypted.replace("signature::", "");
-    console.log({ response });
+    if (!response?.startsWith("signature:")) {
+      throw new Error("This doesn't seem to be a signature");
+    }
     return new Uint8Array(Buffer.from(response.signature, "base64"));
   }
 
@@ -195,7 +191,7 @@ export class TwilioClient implements TwilioClientInterface {
       JSON.stringify({ trigger_body: { body, voice } }),
     );
 
-    await fetch(twilioUrl, {
+    return await fetch(twilioUrl, {
       body: formData,
       method: "post",
       headers: {
