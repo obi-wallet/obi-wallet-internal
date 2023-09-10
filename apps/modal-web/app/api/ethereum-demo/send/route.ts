@@ -1,3 +1,4 @@
+// use client 
 import { getOrCreateDeviceKeyPair } from "@obi-wallet/common";
 import {
   Secp256k1PublicKey,
