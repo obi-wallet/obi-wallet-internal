@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useStore } from "../../../../contexts";
 import { Alert, isSmallScreen, isSmallScreenNumber } from "../../../../helpers";
-import { createDeviceKeyPair } from "../../../../keys";
+import { getOrCreateDeviceKeyPair } from "../../../../keys";
 import {
   KeyFlow,
   KeyRoute,
@@ -79,7 +79,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   async function scanBiometrics() {
     try {
       // setting webauthn to true here for now
-      const keyPair = await createDeviceKeyPair(true, demoMode);
+      const keyPair = await getOrCreateDeviceKeyPair(true, demoMode);
       draft.value.setDeviceKey(keyPair);
       void queryClient.prefetchQuery(
         Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(

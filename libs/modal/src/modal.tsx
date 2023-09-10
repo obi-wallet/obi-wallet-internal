@@ -3,6 +3,7 @@ import { Config } from "@obi-wallet/config";
 import {
   KeyType,
   ObservableMultisigWallet,
+  Secp256k1PrivateKeySigner,
   SignAndBroadcastTransactionUserInteraction,
   ZAuthKeySigner,
   createGatekeeperConfig,
@@ -84,8 +85,21 @@ const MessageHandlers = observer(function MessageHandlers() {
             store.walletsStore.currentWallet.owner.getUsableKeyOfType(
               KeyType.ZAuth,
             );
-          invariant(zAuthKey, "Wallet has no ZAuth key");
-          const signer = new ZAuthKeySigner(zAuthKey);
+          const deviceKey =
+            store.walletsStore.currentWallet.owner.getUsableKeyOfType(
+              KeyType.Device,
+            );
+          invariant(zAuthKey || deviceKey, "Wallet has no ZAuth or device key");
+          let signer;
+          if (zAuthKey) {
+            signer = new ZAuthKeySigner(zAuthKey);
+          } else if (deviceKey?.payload.privateKey) {
+            signer = new Secp256k1PrivateKeySigner(
+              deviceKey.payload.privateKey,
+            );
+          } else {
+            throw new Error("Wallet has no ZAuth or device key");
+          }
 
           const hash = ethers.hashMessage(data.payload);
           const response = `0x${Buffer.from(

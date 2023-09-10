@@ -1,3 +1,4 @@
+import { getOrCreateDeviceKeyPair } from "@obi-wallet/common";
 import { SecretJsChainId, TargetChainId } from "@obi-wallet/sdk";
 // import { Signer, SigningKey, Wallet } from "ethers";
 import { cookies } from "next/headers";
@@ -64,12 +65,19 @@ export async function POST(request: Request) {
     config.paymaster.context,
   );
   const client = await Client.init(config.rpcUrl!);
-  const signer = new SecretJsSigner({
-    chainId: body.homeChainId,
-    zAuthKeyPair: homeChain.zAuthKeyPair,
-    proxyAddress: homeChain.proxyAddress,
-    targetChain: homeChain.targetChain,
-  });
+  let deviceKey;
+  if (!homeChain.zAuthKeyPair) {
+    deviceKey = await getOrCreateDeviceKeyPair(true, false);
+  }
+  const signer = new SecretJsSigner(
+    {
+      chainId: body.homeChainId,
+      zAuthKeyPair: homeChain.zAuthKeyPair,
+      proxyAddress: homeChain.proxyAddress,
+      targetChain: homeChain.targetChain,
+    },
+    deviceKey,
+  );
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
     signer,

@@ -30,9 +30,12 @@ interface CustomPublicKeyCredentialCreationOptions {
     type: "public-key"; // Use a string literal type here
     alg: number;
   }>;
+  authenticatorSelection: {
+    authenticatorAttachment: "platform";
+  };
 }
 
-export async function createDeviceKeyPair(
+export async function getOrCreateDeviceKeyPair(
   webauthn: boolean,
   demoMode: boolean,
 ): Promise<Secp256k1KeyPair> {
@@ -57,6 +60,9 @@ export async function createDeviceKeyPair(
             alg: -7, // This indicates the algorithm type (e.g., ES256 for elliptic curve)
           },
         ],
+        authenticatorSelection: {
+          authenticatorAttachment: "platform",
+        },
       };
 
       let credential = await navigator.credentials.get({ publicKey });
