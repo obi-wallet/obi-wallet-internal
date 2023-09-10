@@ -1,6 +1,3 @@
-import { AES } from "crypto-js";
-import { totp } from "otplib";
-
 import { Chain, ChainId } from "../../chains";
 import { Secp256k1KeyPair, Secp256k1PublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
@@ -147,7 +144,7 @@ export class TwilioClient implements TwilioClientInterface {
     chainId: ChainId;
     voice: boolean;
   }) {
-    return await this.encryptAndSendMessage({
+    await this.encryptAndSendMessage({
       message: `sign:${securityAnswer}:${Buffer.from(message.buffer).toString(
         "base64",
       )}`,

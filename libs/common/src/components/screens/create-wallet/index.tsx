@@ -141,16 +141,16 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
       subTitle="Add keys to improve security."
       actions={{
         [KeyType.ZAuth]: hasZAuthKey
-        ? {
-            label: "Remove",
-            onPress: () => {
-              draft.value.removeKeyOfType(KeyType.ZAuth);
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeKeyOfType(KeyType.ZAuth);
+              },
+            }
+          : {
+              label: "Add",
+              onPress: onAddZAuth,
             },
-          }
-        : {
-            label: "Add",
-            onPress: onAddZAuth,
-          },
         [KeyType.Social]: hasSocialKey
           ? {
               label: "Remove",

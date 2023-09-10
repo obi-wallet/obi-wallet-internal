@@ -5,15 +5,16 @@ import {
   Secp256k1KeyPair,
   Secp256k1PrivateKeySigner,
 } from "@obi-wallet/sdk";
+import invariant from "tiny-invariant";
 
 import { getBiometricsPrivateKey } from "./legacy";
-import { sha256 } from "@cosmjs/crypto";
-import invariant from "tiny-invariant";
 
 const DEMO_PUBLIC_KEY = "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI";
 const DEMO_PRIVATE_KEY = "jrfHogEDo91xaC0Kym/BMheAhlm5z93fVwMT8mKTGy4=";
 // Max valid secp256k1 private key value
-const SECP256K1_MAX = BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140");
+const SECP256K1_MAX = BigInt(
+  "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140",
+);
 
 interface CustomPublicKeyCredentialCreationOptions {
   challenge: Uint8Array;
@@ -31,7 +32,10 @@ interface CustomPublicKeyCredentialCreationOptions {
   }>;
 }
 
-export async function createDeviceKeyPair(webauthn: boolean, demoMode: boolean): Promise<Secp256k1KeyPair> {
+export async function createDeviceKeyPair(
+  webauthn: boolean,
+  demoMode: boolean,
+): Promise<Secp256k1KeyPair> {
   if (webauthn) {
     try {
       const challenge = new Uint8Array(32); // Normally, this challenge is provided by the server.
@@ -40,19 +44,19 @@ export async function createDeviceKeyPair(webauthn: boolean, demoMode: boolean):
       const publicKey: CustomPublicKeyCredentialCreationOptions = {
         challenge: challenge,
         rp: {
-          name: "Obi"
+          name: "Obi",
         },
         user: {
           id: new Uint8Array(16),
           name: "My Obi Device Key",
-          displayName: "My Obi Device Key"
+          displayName: "My Obi Device Key",
         },
         pubKeyCredParams: [
           {
             type: "public-key",
-            alg: -7 // This indicates the algorithm type (e.g., ES256 for elliptic curve)
-          }
-        ]
+            alg: -7, // This indicates the algorithm type (e.g., ES256 for elliptic curve)
+          },
+        ],
       };
 
       let credential = await navigator.credentials.get({ publicKey });
@@ -62,17 +66,18 @@ export async function createDeviceKeyPair(webauthn: boolean, demoMode: boolean):
       console.log("webauthn credential id: " + JSON.stringify(credential?.id));
 
       invariant(credential?.id, "Expected credential to have an id");
-      const combinedPrivateKey = await combineKeys(DEMO_PRIVATE_KEY, Buffer.from(credential?.id).toString('hex'));
-
-      const signer = new Secp256k1PrivateKeySigner(
-        combinedPrivateKey
+      const combinedPrivateKey = await combineKeys(
+        DEMO_PRIVATE_KEY,
+        Buffer.from(credential?.id).toString("hex"),
       );
+
+      const signer = new Secp256k1PrivateKeySigner(combinedPrivateKey);
       console.log("Resulting public key: " + signer.publicKey.value);
 
       return {
         publicKey: {
           type: "tendermint/PubKeySecp256k1",
-          value: signer.publicKey.value
+          value: signer.publicKey.value,
         },
         privateKey: combinedPrivateKey,
       };
@@ -93,19 +98,31 @@ export async function createDeviceKeyPair(webauthn: boolean, demoMode: boolean):
 }
 
 // Function to combine the DEMO_PRIVATE_KEY with the credential.id
-const combineKeys = async (demoKey: string, credentialKey: string): Promise<string> => {
+const combineKeys = async (
+  demoKey: string,
+  credentialKey: string,
+): Promise<string> => {
   const combinedString = demoKey + credentialKey;
-  const combinedUint8Array = new Uint8Array(combinedString.split('').map(char => char.charCodeAt(0)));
-  
+  const combinedUint8Array = new Uint8Array(
+    combinedString.split("").map((char) => char.charCodeAt(0)),
+  );
+
   // Hash the combined Uint8Array
-  const hashBuffer = await crypto.subtle.digest('SHA-256', combinedUint8Array);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", combinedUint8Array);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+  const hashHex = hashArray
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
 
   // Convert the hash to a BigInt and ensure it's in the valid range
   let privateKeyBigInt = BigInt(`0x${hashHex}`);
   while (privateKeyBigInt >= SECP256K1_MAX) {
-    privateKeyBigInt = BigInt(`0x${crypto.subtle.digest('SHA-256', new TextEncoder().encode(privateKeyBigInt.toString(16)))}`);
+    privateKeyBigInt = BigInt(
+      `0x${crypto.subtle.digest(
+        "SHA-256",
+        new TextEncoder().encode(privateKeyBigInt.toString(16)),
+      )}`,
+    );
   }
 
   // Convert the hex to base64
@@ -116,7 +133,9 @@ const combineKeys = async (demoKey: string, credentialKey: string): Promise<stri
 
 // Helper function to convert hex to base64
 const hexToBase64 = (hex: string) => {
-  const byteArray = new Uint8Array(hex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+  const byteArray = new Uint8Array(
+    hex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)),
+  );
   return btoa(String.fromCharCode(...byteArray));
 };
 

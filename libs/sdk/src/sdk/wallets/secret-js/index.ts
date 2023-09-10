@@ -34,7 +34,10 @@ export class SecretJsWalletsSdk extends AbstractWalletsSdk {
 
     const zAuthKey = multisigKey.getKeyOfType(KeyType.ZAuth);
     const deviceKey = multisigKey.getUsableKeyOfType(KeyType.Device);
-    invariant(zAuthKey || deviceKey, "Expected ZAuth or device key to be present");
+    invariant(
+      zAuthKey || deviceKey,
+      "Expected ZAuth or device key to be present",
+    );
 
     let signer, address;
     if (zAuthKey) {
@@ -47,7 +50,7 @@ export class SecretJsWalletsSdk extends AbstractWalletsSdk {
       signer = new Secp256k1PrivateKeySigner(deviceKey.payload?.privateKey);
       address = Sdk.chainId(chainId).transactions.getAddressOfPublicKey(
         deviceKey.publicKey,
-      )
+      );
     } else {
       throw new Error("Expected ZAuth or device key to be present");
     }
