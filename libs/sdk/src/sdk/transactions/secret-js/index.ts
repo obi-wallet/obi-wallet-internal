@@ -18,6 +18,8 @@ import {
   RpcError,
 } from "../../common";
 import { AbstractTransactionsSdk } from "../abstract";
+import invariant from "tiny-invariant";
+import { CosmJsMultisigSigner } from "../cosm-js/multisigs-signer";
 
 function notImplemented(message: string) {
   warning(false, message);
@@ -113,12 +115,33 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     });
   }
 
-  public async createMultisigSigner(_: {
+  public async createMultisigSigner({
+    multisigPublicKey,
+    messages,
+  }: {
     multisigPublicKey: MultisigPublicKey;
     messages: Message[];
-  }): Promise<MultisigSigner> {
-    notImplemented("createMultisigSigner not implemented for SecretJS");
-    return null!;
+  }) {
+    const address = this.getAddressOfPublicKey(multisigPublicKey);
+    await this.prepareAccount(address);
+    const account = await this.fetchAccount(address);
+    invariant(account, "Account not found.");
+
+    const aminoMessages = messages.map((message) => {
+      return this.messages.toJSON(message);
+    });
+    const encodeObjects = aminoMessages.map((aminoMessage) => {
+      return this.client.aminoTypes.fromAmino(aminoMessage);
+    });
+
+    return new CosmJsMultisigSigner({
+      chainId: this.chainId,
+      account,
+      fee: this.client.defaultFee,
+      encodeObjects,
+      messages: aminoMessages,
+      multisigPublicKey,
+    });
   }
 
   public async broadcastSignedTransaction({

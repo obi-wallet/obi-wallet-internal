@@ -19,7 +19,7 @@ import {
 } from "@cosmjs/stargate";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
-import { Chain, CosmosChainId, LegacyCosmosChainId } from "../../../chains";
+import { Chain, CosmosChainId, LegacyCosmosChainId, SecretJsChainId } from "../../../chains";
 import { MultisigPublicKey } from "../../../keys";
 import {
   MultisigSigner as AbstractMultisigSigner,
@@ -30,7 +30,7 @@ import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
 const registry = new Registry([...defaultRegistryTypes, ...wasmTypes]);
 
 export class CosmJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
-  protected chainId: CosmosChainId | LegacyCosmosChainId;
+  protected chainId: CosmosChainId | LegacyCosmosChainId | SecretJsChainId;
   protected account: Account;
   protected fee: StdFee;
   protected signDoc: StdSignDoc;
@@ -45,7 +45,7 @@ export class CosmJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     messages,
     multisigPublicKey,
   }: {
-    chainId: CosmosChainId | LegacyCosmosChainId;
+    chainId: CosmosChainId | LegacyCosmosChainId | SecretJsChainId;
     account: Account;
     fee: StdFee;
     encodeObjects: EncodeObject[];

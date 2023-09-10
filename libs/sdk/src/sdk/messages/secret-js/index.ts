@@ -25,11 +25,15 @@ export class SecretJsMessages extends AbstractMessages {
   }
 
   public toJSON(message: Message): MessageJson {
+    console.log("Parsing message: ", message);
     if (R.has("eth", message)) {
       return MessageJson.parse(message.eth);
     }
     if (R.has("userop", message)) {
       return MessageJson.parse(message.userop);
+    }
+    if (R.has("warnCodeHash", message)) {
+      return MessageJson.parse(message);
     }
     throw new Error("Unknown message");
   }
@@ -117,32 +121,31 @@ export class SecretJsMessages extends AbstractMessages {
   }
 
   public getCreateWalletMessage(owner: MultisigKey): Message {
-    const zAuthKey = owner.getKeyOfType(KeyType.ZAuth);
-    invariant(zAuthKey, "Expected ZAuth key to be present");
-
-    const address = this.sdk.transactions.getAddressOfPublicKey(
-      zAuthKey.publicKey,
-    );
-
     return new MsgExecuteContract({
-      sender: address,
+      sender: owner.address,
       contract_address: this.chain.accountCreator.address,
       msg: {
         new_account: {
-          owner: address,
-          signers: {
-            signers: [
-              {
-                address: address,
-                ty: "z-auth",
-              },
-            ],
-          },
+          owner: owner.address,
+          signers: this.getSigners(owner),
           update_delay: 0,
         },
       },
       code_hash: this.chain.accountCreator.codeHash,
     });
+  }
+
+  protected getSigners(multisigKey: MultisigKey) {
+    const addresses = multisigKey.keys.map((key) => {
+      return this.sdk.transactions.getAddressOfPublicKey(key.publicKey);
+    });
+    return R.zipWith(
+      (address, ty) => {
+        return { address, ty };
+      },
+      addresses,
+      multisigKey.signerTypes,
+    );
   }
 
   protected get chain() {
