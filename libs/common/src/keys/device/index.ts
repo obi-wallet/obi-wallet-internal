@@ -40,12 +40,12 @@ export async function createDeviceKeyPair(webauthn: boolean, demoMode: boolean):
       const publicKey: CustomPublicKeyCredentialCreationOptions = {
         challenge: challenge,
         rp: {
-          name: "Your App Name"
+          name: "Obi"
         },
         user: {
           id: new Uint8Array(16),
-          name: "username",
-          displayName: "Display Name"
+          name: "My Obi Device Key",
+          displayName: "My Obi Device Key"
         },
         pubKeyCredParams: [
           {
@@ -55,8 +55,11 @@ export async function createDeviceKeyPair(webauthn: boolean, demoMode: boolean):
         ]
       };
 
-      const credential = await navigator.credentials.create({ publicKey });
-      console.log(credential);
+      let credential = await navigator.credentials.get({ publicKey });
+      if (!credential) {
+        credential = await navigator.credentials.create({ publicKey });
+      }
+      console.log("webauthn credential id: " + JSON.stringify(credential?.id));
 
       invariant(credential?.id, "Expected credential to have an id");
       const combinedPrivateKey = await combineKeys(DEMO_PRIVATE_KEY, Buffer.from(credential?.id).toString('hex'));
@@ -64,6 +67,7 @@ export async function createDeviceKeyPair(webauthn: boolean, demoMode: boolean):
       const signer = new Secp256k1PrivateKeySigner(
         combinedPrivateKey
       );
+      console.log("Resulting public key: " + signer.publicKey.value);
 
       return {
         publicKey: {

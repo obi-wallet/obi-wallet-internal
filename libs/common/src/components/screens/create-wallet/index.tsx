@@ -67,6 +67,12 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             flow: KeyFlow.CreateWallet,
           });
         }}
+        onAddPhone={() => {
+          navigation.navigate(KeyRoute.PhoneKeyRequest, {
+            ...params,
+            flow: KeyFlow.CreateWallet,
+          });
+        }}
         onAddSocial={() => {
           navigation.navigate(KeyRoute.SocialKey, {
             ...params,
@@ -101,6 +107,7 @@ export interface CreateWalletProps {
 
   onSubmit(): void;
   onAddZAuth(): void;
+  onAddPhone(): void;
   onAddSocial(): void;
   onAddNfc(): void;
   onAddCloud(): void;
@@ -111,6 +118,7 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   draftId,
   onSubmit,
   onAddZAuth,
+  onAddPhone,
   onAddNfc,
   onAddSocial,
   onAddCloud,
@@ -120,6 +128,7 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
   const hasZAuthKey = draft.value.hasKeyOfType(KeyType.ZAuth);
+  const hasPhoneKey = draft.value.hasKeyOfType(KeyType.Phone);
   const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
   const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
   const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
@@ -152,6 +161,17 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
           : {
               label: "Add",
               onPress: onAddSocial,
+            },
+        [KeyType.Phone]: hasPhoneKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeKeyOfType(KeyType.Phone);
+              },
+            }
+          : {
+              label: "Add",
+              onPress: onAddPhone,
             },
         [KeyType.Nfc]: hasNfcKey
           ? {

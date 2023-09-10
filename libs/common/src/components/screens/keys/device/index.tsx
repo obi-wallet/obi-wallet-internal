@@ -78,7 +78,8 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 
   async function scanBiometrics() {
     try {
-      const keyPair = await createDeviceKeyPair(false, demoMode);
+      // setting webauthn to true here for now
+      const keyPair = await createDeviceKeyPair(true, demoMode);
       draft.value.setDeviceKey(keyPair);
       void queryClient.prefetchQuery(
         Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
