@@ -112,14 +112,16 @@ export class SecretJsClient extends AbstractClient {
     signedTransaction: SignedTransaction,
   ): Promise<BroadcastTransactionResult> {
     return await this.withSecretNetworkClient(async (client) => {
-      const { transactionHash } = await client.tx.broadcastSignedTx(
+      /* const { transactionHash } = await client.tx.broadcastSignedTx( */
+      const rawResult = await client.tx.broadcastSignedTx(
         toBase64(signedTransaction),
         {
           ...this.defaultTxOptions,
-          broadcastMode: BroadcastMode.Async,
+          broadcastMode: BroadcastMode.Block,
           waitForCommit: false,
         },
       );
+      /*
       await new Promise((resolve) => {
         setTimeout(resolve, 10_000);
       });
@@ -133,6 +135,7 @@ export class SecretJsClient extends AbstractClient {
           rawResult: null,
         };
       }
+      */
 
       return {
         success: rawResult.code === 0,
