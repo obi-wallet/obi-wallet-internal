@@ -205,7 +205,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 if (scannedBiometrics) {
                   onSubmit();
                 } else {
-                  const success = await scanBiometrics(false);
+                  const success = await scanBiometrics(true);
                   console.log("Success is: ", success);
                   if (success && Platform.OS !== "ios") {
                     onSubmit();
