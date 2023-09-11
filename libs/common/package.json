@@ -30,6 +30,7 @@
     "@tanstack/react-query": "*",
     "@terra-money/feather.js": "*",
     "bignumber.js": "*",
+    "elliptic": "*",
     "ethers": "*",
     "fuse.js": "*",
     "isomorphic-unfetch": "*",
@@ -67,7 +68,8 @@
     "zod": "*"
   },
   "devDependencies": {
-    "@testing-library/jest-native": "*"
+    "@testing-library/jest-native": "*",
+    "@types/elliptic": "*"
   },
   "peerDependencies": {
     "@react-navigation/native": "*",

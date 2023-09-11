@@ -1,10 +1,7 @@
 import { useTheme } from "@emotion/react";
-import {
-  KeyType,
-  MultisigKey,
-  getOrCreateDeviceKeyPair,
-} from "@obi-wallet/sdk";
+import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { elliptic } from "elliptic";
 import { ethers } from "ethers";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
@@ -53,16 +50,18 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             return;
           }
           // TODO: migrate to key management; currently derived from device key
-          const deviceKey = await getOrCreateDeviceKeyPair(
-            true,
-            false,
-            params.demoMode,
+          const deviceKey = walletsStore.currentWallet?.owner.getKeyOfType(
+            KeyType.Device,
           );
-          const pubKey = deviceKey.publicKey.value;
-          invariant(pubKey, "WebAuthN rejected");
-
+          invariant(
+            deviceKey?.publicKey.value,
+            "Wallet must have a device public key",
+          );
           // convert this base64 string pubKey to an ethereum address
-          const pubKeyBuffer = Buffer.from(pubKey, "base64");
+          const pubKeyBuffer = Buffer.from(
+            deviceKey?.publicKey.value,
+            "base64",
+          );
           // Remove prefix byte (0x04) for uncompressed public keys
           let keyBytes: Buffer;
           if (pubKeyBuffer.length === 65 && pubKeyBuffer[0] === 0x04) {
@@ -71,7 +70,13 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             keyBytes = pubKeyBuffer;
           }
           const pubKeyHex = keyBytes.toString("hex");
-          const evmAddress = ethers.computeAddress(pubKeyHex);
+          // Decompress the public key
+          const ec = new elliptic.ec("secp256k1");
+          const keyPair = ec.keyFromPublic(pubKeyHex, "hex");
+          const decompressedPubKey = keyPair.getPublic(false, "hex");
+
+          // Calculate the Ethereum address
+          const evmAddress = ethers.computeAddress("0x" + decompressedPubKey);
 
           let wallet;
           if (theme.loginModal) {
