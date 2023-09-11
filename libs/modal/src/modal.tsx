@@ -128,6 +128,8 @@ const MessageHandlers = observer(function MessageHandlers() {
           if (!store.walletsStore.currentWallet) {
             console.log("no current wallet");
             return;
+          } else {
+            console.log("current wallet retrieved");
           }
 
           const payload = Array.isArray(data.payload)
