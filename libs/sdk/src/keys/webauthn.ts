@@ -84,11 +84,12 @@ export async function getOrCreateDeviceKeyPair(
       const client = new SecretJsClient("secret-4");
       const webauthnSigner = new Secp256k1PrivateKeySigner(combinedPrivateKey);
       console.log("Resulting public key: " + webauthnSigner.publicKey.value);
-
-      /// fund address
-      const webauthnAddress = pubkeyToAddress(
-        Buffer.from(webauthnSigner.publicKey.value),
+      const compressedPubkey = base64ToCompressedPubKey(
+        webauthnSigner.publicKey.value,
       );
+      invariant(compressedPubkey, "Unable to correctly compress public key");
+      /// fund address
+      const webauthnAddress = pubkeyToAddress(compressedPubkey);
       console.log("webauthn Signer address: " + webauthnAddress);
       const { wallet, signer } = await getFeeLender();
 
@@ -210,4 +211,18 @@ async function getFeeLender() {
     Buffer.from(wallet.privateKey).toString("base64"),
   );
   return { wallet, signer };
+}
+
+function base64ToCompressedPubKey(base64PubKey: string): Uint8Array | null {
+  const decodedBytes = Uint8Array.from(atob(base64PubKey), (c) =>
+    c.charCodeAt(0),
+  );
+  if (
+    decodedBytes.length !== 33 ||
+    (decodedBytes[0] !== 0x02 && decodedBytes[0] !== 0x03)
+  ) {
+    console.error("Not a valid compressed secp256k1 public key");
+    return null;
+  }
+  return decodedBytes;
 }
