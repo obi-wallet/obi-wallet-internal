@@ -1,6 +1,4 @@
-import { useStore } from "@obi-wallet/common";
 import { NextResponse } from "next/server";
-import invariant from "tiny-invariant";
 import Web3 from "web3";
 
 const web3 = new Web3(
@@ -14,10 +12,7 @@ export async function GET(
   request: Request,
   { params }: { params: { address: string } },
 ) {
-  const { walletsStore } = useStore();
-  const evmAddress = walletsStore.currentWallet?.evmAddress;
-  invariant(evmAddress, "evm address not set");
-  const balances = await fetchBalances(walletsStore.currentWallet?.evmAddress);
+  const balances = await fetchBalances(params.address);
   return NextResponse.json(balances);
 }
 
