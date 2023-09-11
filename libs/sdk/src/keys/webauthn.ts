@@ -80,39 +80,26 @@ export async function getOrCreateDeviceKeyPair(
         DEMO_PRIVATE_KEY,
         Buffer.from(credential?.id).toString("hex"),
       );
-      //const client = new SecretJsClient("secret-4");
       const webauthnSigner = new Secp256k1PrivateKeySigner(combinedPrivateKey);
       console.log("Resulting public key: " + webauthnSigner.publicKey.value);
       const compressedPubkey = base64ToCompressedPubKey(
         webauthnSigner.publicKey.value,
       );
       invariant(compressedPubkey, "Unable to correctly compress public key");
-      /// fund address
       const webauthnAddress = pubkeyToAddress(compressedPubkey);
       console.log("webauthn Signer address: " + webauthnAddress);
-      /*
-      const { wallet, signer } = await getFeeLender();
-      console.log("fee lender address: " + wallet.address);
 
-      const signedFundTransaction = await client.createAndSignTransaction({
-        signer,
-        messages: [
-          new MsgSend({
-            from_address: wallet.address,
-            to_address: webauthnAddress,
-            amount: [
-              {
-                denom: "uscrt",
-                amount: "25000",
-              },
-            ],
-          }),
-        ],
+      const response = await fetch("/api/lend", {
+        method: "POST",
+        body: JSON.stringify({
+          homeChainId: "secret-4",
+          address: webauthnAddress,
+        }),
       });
-      const broadcastTransactionResult =
-        await client.broadcastSignedTransaction(signedFundTransaction);
-      console.log(broadcastTransactionResult);
-      */
+
+      if (response.status !== 200) {
+        throw new Error("Failed to fund webauthn signer");
+      }
 
       return {
         publicKey: {
