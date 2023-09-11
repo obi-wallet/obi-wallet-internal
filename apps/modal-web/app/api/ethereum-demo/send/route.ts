@@ -73,7 +73,7 @@ export async function POST(request: Request) {
   const amount = parseUnits(body.token.rawAmount, 0);
   let deviceKey;
   if (!homeChain.zAuthKeyPair) {
-    deviceKey = await getOrCreateDeviceKeyPair(true, false);
+    deviceKey = await getOrCreateDeviceKeyPair(true, false, false);
   }
   const signer = new SecretJsSigner(
     {

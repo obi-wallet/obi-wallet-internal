@@ -70,7 +70,7 @@ export async function POST(request: Request) {
   const client = await Client.init(config.rpcUrl!);
   let deviceKey;
   if (!homeChain.zAuthKeyPair) {
-    deviceKey = await getOrCreateDeviceKeyPair(true, false);
+    deviceKey = await getOrCreateDeviceKeyPair(true, false, false);
   }
   const signer = new SecretJsSigner(
     {

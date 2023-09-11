@@ -111,7 +111,8 @@
   "onboarding3.sendagain.info.checknumber": "If you haven't received the Obi magic code please check if your phone number is correct:",
   "onboarding4.authyourkeys": "Create a Device Key",
   "onboarding4.authyourkeys.subtext": "Onboarding with Obi creates a multi-key login to keep your account secure and recoverable without needing seed phrases. Obi does NOT store any information.",
-  "onboarding4.biometrics.button": "Create My Device Key",
+  "onboarding4.biometrics.button": "Create New Device Key",
+  "onboarding4.ihaveadevicekey.button": "I've Used This Device",
 
   "onboarding4.error.biometrickeyexists.title": "You already have a device key",
   "onboarding4.error.biometrickeyexists.text": "Do you want to reuse your existing device key?",

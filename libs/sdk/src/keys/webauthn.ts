@@ -33,6 +33,7 @@ interface CustomPublicKeyCredentialCreationOptions {
 
 export async function getOrCreateDeviceKeyPair(
   webauthn: boolean,
+  create: boolean,
   demoMode: boolean,
 ): Promise<Secp256k1KeyPair> {
   if (webauthn) {
@@ -60,10 +61,14 @@ export async function getOrCreateDeviceKeyPair(
           authenticatorAttachment: "platform",
         },
       };
-
-      let credential = await navigator.credentials.get({ publicKey });
-      if (!credential) {
+      let credential;
+      if (create) {
         credential = await navigator.credentials.create({ publicKey });
+      } else {
+        credential = await navigator.credentials.get({ publicKey });
+        if (!credential) {
+          credential = await navigator.credentials.create({ publicKey });
+        }
       }
       console.log("webauthn credential id: " + JSON.stringify(credential?.id));
 
@@ -85,6 +90,7 @@ export async function getOrCreateDeviceKeyPair(
       };
     } catch (err) {
       console.error("WebAuthn error:", err);
+      throw new Error("WebAuthn request rejected");
     }
   } else if (demoMode) {
     return {

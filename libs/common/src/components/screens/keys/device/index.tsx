@@ -76,10 +76,10 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   const intl = useIntl();
   const theme = useTheme();
 
-  async function scanBiometrics() {
+  async function scanBiometrics(create: boolean): Promise<boolean> {
     try {
       // setting webauthn to true here for now
-      const keyPair = await getOrCreateDeviceKeyPair(true, demoMode);
+      const keyPair = await getOrCreateDeviceKeyPair(true, demoMode, create);
       draft.value.setDeviceKey(keyPair);
       void queryClient.prefetchQuery(
         Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
@@ -87,16 +87,18 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         ),
       );
       setScannedBiometrics(true);
+      return true;
     } catch (e) {
       setScannedBiometrics(false);
       const error = e as Error;
 
-      if (error.message === "code: 13, msg: Cancel") return;
+      if (error.message === "code: 13, msg: Cancel") return false;
       console.error(error);
       Alert.alert(
         intl.formatMessage({ id: "general.error" }) + " ScanMyBiometrics",
         error.message,
       );
+      return false;
     }
   }
 
@@ -203,8 +205,27 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 if (scannedBiometrics) {
                   onSubmit();
                 } else {
-                  await scanBiometrics();
-                  if (Platform.OS !== "ios") {
+                  const success = await scanBiometrics(false);
+                  console.log("Success is: ", success);
+                  if (success && Platform.OS !== "ios") {
+                    onSubmit();
+                  }
+                }
+              }}
+              autoPress={Platform.OS === "ios"}
+            />
+            <AsyncButton
+              label={intl.formatMessage({
+                id: "onboarding4.ihaveadevicekey.button",
+              })}
+              flavor="primary"
+              onPress={async () => {
+                if (scannedBiometrics) {
+                  onSubmit();
+                } else {
+                  const success = await scanBiometrics(false);
+                  console.log("Success is: ", success);
+                  if (success && Platform.OS !== "ios") {
                     onSubmit();
                   }
                 }
