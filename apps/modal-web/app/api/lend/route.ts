@@ -1,6 +1,10 @@
-import { Secp256k1PrivateKeySigner, SecretJsClient } from "@obi-wallet/sdk";
+import {
+  Secp256k1PrivateKeySigner,
+  SecretJsClient,
+  secretJsChains,
+} from "@obi-wallet/sdk";
 import { NextResponse } from "next/server";
-import { MsgSend, Wallet } from "secretjs";
+import { MsgSend, SecretNetworkClient, Wallet } from "secretjs";
 import invariant from "tiny-invariant";
 
 export async function POST(request: Request) {
@@ -21,26 +25,39 @@ export async function POST(request: Request) {
     );
     const client = new SecretJsClient(body.homeChainId);
 
-    const signedTransaction = await client.createAndSignTransaction({
-      signer,
-      messages: [
-        new MsgSend({
-          to_address: body.address,
-          from_address: wallet.address,
-          amount: [
-            {
-              amount: "20000",
-              denom: "uscrt",
-            },
-          ],
-        }),
-      ],
+    const stockClient = new SecretNetworkClient({
+      chainId: "secret-4",
+      url: secretJsChains["secret-4"].urls[0],
     });
-    const broadcastTransactionResult = await client.broadcastSignedTransaction(
-      signedTransaction,
-    );
-    console.log(broadcastTransactionResult);
-    return NextResponse.json(broadcastTransactionResult);
+    const bal = await stockClient.query.bank.balance({
+      address: wallet.address,
+      denom: "uscrt",
+    });
+    if (bal.balance?.amount === "0") {
+      const signedTransaction = await client.createAndSignTransaction({
+        signer,
+        messages: [
+          new MsgSend({
+            to_address: body.address,
+            from_address: wallet.address,
+            amount: [
+              {
+                amount: "20000",
+                denom: "uscrt",
+              },
+            ],
+          }),
+        ],
+      });
+      const broadcastTransactionResult =
+        await client.broadcastSignedTransaction(signedTransaction);
+      console.log(broadcastTransactionResult);
+      return NextResponse.json(broadcastTransactionResult);
+    } else {
+      return NextResponse.json({
+        body: "WebAuthN signer account already initialized",
+      });
+    }
   } catch (e) {
     console.log("error", e);
     return NextResponse.json(e);
