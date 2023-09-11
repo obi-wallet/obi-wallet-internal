@@ -44,7 +44,7 @@ export const secretJsChains = {
     currentCodeIds: {
       userAccount: 135,
     },
-    urls: ["https://scrt-api.dalnim.finance", "https://lcd.secret.express/"],
+    urls: ["https://lcd.secret.express/", "https://scrt-api.dalnim.finance"],
     denom: "uscrt",
     startingUsdDebt: "0",
     ...commonTwilioConfig,

@@ -7,6 +7,7 @@ import {
   Secp256k1PrivateKeySigner,
   Signer,
   TwilioClientInterface,
+  ZAuthKeySigner,
   getDevicePrivateKey,
 } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
@@ -70,6 +71,8 @@ async function createUsableSigner({
   env: Env;
 }): Promise<Signer | null> {
   switch (key.type) {
+    case KeyType.ZAuth:
+      return new ZAuthKeySigner(key);
     case KeyType.Device: {
       if (!(await getDevicePrivateKey(key))) {
         return null;
