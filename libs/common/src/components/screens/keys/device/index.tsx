@@ -39,8 +39,8 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
     return (
       <DeviceKey
         {...params}
-        onSubmit={() => {
-          if (params.flow !== KeyFlow.CreateWallet) {
+        onSubmit={(done: boolean) => {
+          if (params.flow !== KeyFlow.CreateWallet && !done) {
             navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
             return;
           }
@@ -62,7 +62,7 @@ export interface DeviceKeyProps {
   draftId: string;
   demoMode: boolean;
 
-  onSubmit(): void;
+  onSubmit(done: boolean): void;
 }
 export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   draftId,
@@ -76,10 +76,14 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   const intl = useIntl();
   const theme = useTheme();
 
-  async function scanBiometrics(create: boolean): Promise<boolean> {
+  async function scanBiometrics(create: boolean): Promise<[boolean, boolean]> {
     try {
       // setting webauthn to true here for now
-      const keyPair = await getOrCreateDeviceKeyPair(true, create, demoMode);
+      const [keyPair, newUser] = await getOrCreateDeviceKeyPair(
+        true,
+        create,
+        demoMode,
+      );
       draft.value.setDeviceKey(keyPair);
       void queryClient.prefetchQuery(
         Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
@@ -87,18 +91,18 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         ),
       );
       setScannedBiometrics(true);
-      return true;
+      return [true, newUser];
     } catch (e) {
       setScannedBiometrics(false);
       const error = e as Error;
 
-      if (error.message === "code: 13, msg: Cancel") return false;
+      if (error.message === "code: 13, msg: Cancel") return [false, false];
       console.error(error);
       Alert.alert(
         intl.formatMessage({ id: "general.error" }) + " ScanMyBiometrics",
         error.message,
       );
-      return false;
+      return [false, false];
     }
   }
 
@@ -203,12 +207,12 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
               flavor="primary"
               onPress={async () => {
                 if (scannedBiometrics) {
-                  onSubmit();
+                  onSubmit(false);
                 } else {
-                  const success = await scanBiometrics(true);
+                  const [success, newUser] = await scanBiometrics(true);
                   console.log("Success is: ", success);
                   if (success && Platform.OS !== "ios") {
-                    onSubmit();
+                    onSubmit(!newUser);
                   }
                 }
               }}
@@ -221,12 +225,12 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
               flavor="primary"
               onPress={async () => {
                 if (scannedBiometrics) {
-                  onSubmit();
+                  onSubmit(false);
                 } else {
-                  const success = await scanBiometrics(false);
+                  const [success, newUser] = await scanBiometrics(false);
                   console.log("Success is: ", success);
                   if (success && Platform.OS !== "ios") {
-                    onSubmit();
+                    onSubmit(!newUser);
                   }
                 }
               }}
