@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { MultisigKey, Sdk } from "@obi-wallet/sdk";
+import { getOrCreateDeviceKeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -10,7 +11,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useStore } from "../../../../contexts";
 import { Alert, isSmallScreen, isSmallScreenNumber } from "../../../../helpers";
-import { getOrCreateDeviceKeyPair } from "../../../../keys";
 import {
   KeyFlow,
   KeyRoute,

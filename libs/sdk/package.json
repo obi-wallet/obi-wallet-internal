@@ -17,6 +17,8 @@
     "nanoid": "*",
     "otplib": "*",
     "ramda": "*",
+    "react-native-device-info": "*",
+    "react-native-keychain": "*",
     "secretjs": "*",
     "secp256k1": "*",
     "tiny-invariant": "*",

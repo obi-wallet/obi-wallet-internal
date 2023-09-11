@@ -1,5 +1,8 @@
-import { getOrCreateDeviceKeyPair } from "@obi-wallet/common";
-import { SecretJsChainId, TargetChainId } from "@obi-wallet/sdk";
+import {
+  SecretJsChainId,
+  TargetChainId,
+  getOrCreateDeviceKeyPair,
+} from "@obi-wallet/sdk";
 // import { Signer, SigningKey, Wallet } from "ethers";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";

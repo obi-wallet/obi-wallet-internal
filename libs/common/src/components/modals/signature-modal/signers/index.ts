@@ -7,12 +7,13 @@ import {
   Secp256k1PrivateKeySigner,
   Signer,
   TwilioClientInterface,
+  getDevicePrivateKey,
 } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
 import { NfcKeySigner } from "./nfc-key-signer";
 import { Env } from "../../../../contexts";
-import { getDevicePrivateKey, getTwilioClient } from "../../../../keys";
+import { getTwilioClient } from "../../../../keys";
 
 export async function createUsableSigners({
   multisigKey,

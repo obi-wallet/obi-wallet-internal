@@ -1,7 +1,6 @@
 import {
   AccountsScreen,
   CloudKeyScreen,
-  getOrCreateDeviceKeyPair,
   CreateWalletScreen,
   DeviceKeyScreen,
   EmailKeyScreen,
@@ -25,7 +24,10 @@ import {
   useStore,
   WelcomeScreen,
 } from "@obi-wallet/common";
-import { ObservableMultisigKey } from "@obi-wallet/sdk";
+import {
+  ObservableMultisigKey,
+  getOrCreateDeviceKeyPair,
+} from "@obi-wallet/sdk";
 import type { Meta, StoryObj } from "@storybook/react";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";

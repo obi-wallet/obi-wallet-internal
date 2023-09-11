@@ -1,5 +1,5 @@
-// use client 
-import { getOrCreateDeviceKeyPair } from "@obi-wallet/common";
+// use client
+import { getOrCreateDeviceKeyPair } from "@obi-wallet/sdk";
 import {
   Secp256k1PublicKey,
   SecretJsChainId,

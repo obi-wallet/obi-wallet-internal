@@ -1,6 +1,5 @@
 import {
   Alert,
-  getOrCreateDeviceKeyPair,
   getGatekeeperConfigDraftId,
   getTwilioClient,
   useEnv,
@@ -11,6 +10,7 @@ import { useCurrentWallet } from "@obi-wallet/headless-ui";
 import {
   GatekeeperConfig,
   generateSec256k1KeyPair,
+  getOrCreateDeviceKeyPair,
   ObservableBeneficiary,
   ObservableFlexAccount,
   ObservableMultisigKey,
