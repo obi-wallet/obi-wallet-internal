@@ -1,7 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { elliptic } from "elliptic";
+import * as elliptic from "elliptic";
 import { ethers } from "ethers";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
