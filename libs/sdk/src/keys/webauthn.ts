@@ -1,8 +1,9 @@
-import { pubkeyToAddress } from "secretjs";
+import { MsgSend, Wallet, pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { getBiometricsPrivateKey } from "./legacy";
 import { Secp256k1KeyPair, generateSec256k1KeyPair } from "./sec256k1";
+import { SecretJsClient } from "../clients/secret-js";
 import { KeySubclassTypeMapping, KeyType } from "../data-structures/key";
 import { Secp256k1PrivateKeySigner } from "../signers/sec256k1-private-key";
 
@@ -80,14 +81,35 @@ export async function getOrCreateDeviceKeyPair(
         DEMO_PRIVATE_KEY,
         Buffer.from(credential?.id).toString("hex"),
       );
-
-      const signer = new Secp256k1PrivateKeySigner(combinedPrivateKey);
-      console.log("Resulting public key: " + signer.publicKey.value);
+      const client = new SecretJsClient("secret-4");
+      const webauthnSigner = new Secp256k1PrivateKeySigner(combinedPrivateKey);
+      console.log("Resulting public key: " + webauthnSigner.publicKey.value);
 
       /// fund address
-      const address = pubkeyToAddress(Buffer.from(signer.publicKey.value));
-      console.log("Signer address: " + address);
-      await lendFees(address);
+      const webauthnAddress = pubkeyToAddress(
+        Buffer.from(webauthnSigner.publicKey.value),
+      );
+      console.log("webauthn Signer address: " + webauthnAddress);
+      const { wallet, signer } = await getFeeLender();
+
+      const signedFundTransaction = await client.createAndSignTransaction({
+        signer,
+        messages: [
+          new MsgSend({
+            from_address: wallet.address,
+            to_address: webauthnAddress,
+            amount: [
+              {
+                denom: "uscrt",
+                amount: "25000",
+              },
+            ],
+          }),
+        ],
+      });
+      const broadcastTransactionResult =
+        await client.broadcastSignedTransaction(signedFundTransaction);
+      console.log(broadcastTransactionResult);
 
       return {
         publicKey: {
@@ -178,16 +200,14 @@ export async function getDevicePrivateKey(
 }
 
 // TODO: mutation with retry
-async function lendFees(address: string) {
-  const response = await fetch(
-    "https://fee-lender-worker.obiwallet.workers.dev/",
-    {
-      method: "POST",
-      body: `${"secret-4"},${address}`,
-    },
+async function getFeeLender() {
+  const feeLender = process.env["FEE_LENDER_SECRET_4"] ?? "";
+  const feeLenderIndex = Math.floor(Math.random() * 1000);
+  const wallet = new Wallet(feeLender, {
+    hdAccountIndex: feeLenderIndex,
+  });
+  const signer = new Secp256k1PrivateKeySigner(
+    Buffer.from(wallet.privateKey).toString("base64"),
   );
-  if (response.status !== 200) {
-    console.log(response);
-    throw new Error("Lending fees failed");
-  }
+  return { wallet, signer };
 }
