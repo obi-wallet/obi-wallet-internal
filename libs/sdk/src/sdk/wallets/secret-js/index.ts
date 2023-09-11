@@ -26,6 +26,7 @@ export class SecretJsWalletsSdk extends AbstractWalletsSdk {
       }
     >
   > {
+    console.log("Multisig key: ", JSON.stringify(multisigKey, null, 2));
     const chainId = multisigKey.chainId;
     invariant(isSecretJsChain(chainId), "Expected Secret.js chain");
 
