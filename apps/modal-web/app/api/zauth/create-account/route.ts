@@ -17,7 +17,7 @@ import { HomeChain } from "../../../../src/db/schema";
 import { getFeeLender } from "../../../../src/fee-lender";
 import {
   generateEthereumAccount,
-  recoverOrCreateEthereumAccount,
+  recoverEthereumAccount,
 } from "../../../../src/stackup";
 import { fetchUserId } from "../../../../src/zauth";
 
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
       const homeChain = existingUser.homeChains.get(body.homeChainId);
       if (homeChain) {
         const keyPair = homeChain.zAuthKeyPair;
-        const ethereumAccount = await recoverOrCreateEthereumAccount({
+        const ethereumAccount = await recoverEthereumAccount({
           chainId: body.homeChainId,
           zAuthKeyPair: homeChain.zAuthKeyPair,
           proxyAddress: homeChain.proxyAddress,
@@ -115,11 +115,16 @@ export async function POST(request: Request) {
       return contractAddress;
     }
 
+    async function missing(): Promise<string> {
+      return "MISSING";
+    }
+
     const [proxyAddress, ethereumAccount] = await Promise.all([
-      generateProxyAddress(),
+      // generateProxyAddress()
+      missing(),
       generateEthereumAccount({
         chainId: body.homeChainId,
-        zAuthKeyPair: keyPair,
+        keyPair,
       }),
     ] as [Promise<string>, Promise<EthereumAccount>]);
 

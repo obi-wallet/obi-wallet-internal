@@ -1,9 +1,8 @@
-import { MsgSend, Wallet, pubkeyToAddress } from "secretjs";
+import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { getBiometricsPrivateKey } from "./legacy";
 import { Secp256k1KeyPair, generateSec256k1KeyPair } from "./sec256k1";
-import { SecretJsClient } from "../clients/secret-js";
 import { KeySubclassTypeMapping, KeyType } from "../data-structures/key";
 import { Secp256k1PrivateKeySigner } from "../signers/sec256k1-private-key";
 
@@ -81,7 +80,7 @@ export async function getOrCreateDeviceKeyPair(
         DEMO_PRIVATE_KEY,
         Buffer.from(credential?.id).toString("hex"),
       );
-      const client = new SecretJsClient("secret-4");
+      //const client = new SecretJsClient("secret-4");
       const webauthnSigner = new Secp256k1PrivateKeySigner(combinedPrivateKey);
       console.log("Resulting public key: " + webauthnSigner.publicKey.value);
       const compressedPubkey = base64ToCompressedPubKey(
@@ -91,6 +90,7 @@ export async function getOrCreateDeviceKeyPair(
       /// fund address
       const webauthnAddress = pubkeyToAddress(compressedPubkey);
       console.log("webauthn Signer address: " + webauthnAddress);
+      /*
       const { wallet, signer } = await getFeeLender();
       console.log("fee lender address: " + wallet.address);
 
@@ -112,6 +112,7 @@ export async function getOrCreateDeviceKeyPair(
       const broadcastTransactionResult =
         await client.broadcastSignedTransaction(signedFundTransaction);
       console.log(broadcastTransactionResult);
+      */
 
       return {
         publicKey: {
@@ -199,20 +200,6 @@ export async function getDevicePrivateKey(
   } catch (e) {
     return null;
   }
-}
-
-// TODO: mutation with retry
-async function getFeeLender() {
-  const feeLender: string | undefined = process.env?.["FEE_LENDER_SECRET_4"];
-  invariant(feeLender, "FEE_LENDER env var not set");
-  const feeLenderIndex = Math.floor(Math.random() * 1000);
-  const wallet = new Wallet(feeLender, {
-    hdAccountIndex: feeLenderIndex,
-  });
-  const signer = new Secp256k1PrivateKeySigner(
-    Buffer.from(wallet.privateKey).toString("base64"),
-  );
-  return { wallet, signer };
 }
 
 function base64ToCompressedPubKey(base64PubKey: string): Uint8Array | null {
