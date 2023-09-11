@@ -1,10 +1,10 @@
+import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { getBiometricsPrivateKey } from "./legacy";
 import { Secp256k1KeyPair, generateSec256k1KeyPair } from "./sec256k1";
 import { KeySubclassTypeMapping, KeyType } from "../data-structures/key";
 import { Secp256k1PrivateKeySigner } from "../signers/sec256k1-private-key";
-import { pubkeyToAddress } from "secretjs";
 
 const DEMO_PUBLIC_KEY = "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI";
 const DEMO_PRIVATE_KEY = "jrfHogEDo91xaC0Kym/BMheAhlm5z93fVwMT8mKTGy4=";
@@ -68,7 +68,7 @@ export async function getOrCreateDeviceKeyPair(
       } else {
         try {
           credential = await navigator.credentials.get({ publicKey });
-        } catch(e) {
+        } catch (e) {
           credential = await navigator.credentials.create({ publicKey });
           create = true;
         }
