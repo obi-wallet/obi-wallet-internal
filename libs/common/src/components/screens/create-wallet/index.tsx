@@ -1,8 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import * as elliptic from "elliptic";
-import { ethers } from "ethers";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 import invariant from "tiny-invariant";
@@ -57,26 +55,6 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             deviceKey?.publicKey.value,
             "Wallet must have a device public key",
           );
-          // convert this base64 string pubKey to an ethereum address
-          const pubKeyBuffer = Buffer.from(
-            deviceKey?.publicKey.value,
-            "base64",
-          );
-          // Remove prefix byte (0x04) for uncompressed public keys
-          let keyBytes: Buffer;
-          if (pubKeyBuffer.length === 65 && pubKeyBuffer[0] === 0x04) {
-            keyBytes = pubKeyBuffer.slice(1);
-          } else {
-            keyBytes = pubKeyBuffer;
-          }
-          const pubKeyHex = keyBytes.toString("hex");
-          // Decompress the public key
-          const ec = new elliptic.ec("secp256k1");
-          const keyPair = ec.keyFromPublic(pubKeyHex, "hex");
-          const decompressedPubKey = keyPair.getPublic(false, "hex");
-
-          // Calculate the Ethereum address
-          const evmAddress = ethers.computeAddress("0x" + decompressedPubKey);
 
           let wallet;
           if (theme.loginModal) {
@@ -85,7 +63,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
               console.log("no wallet");
               return;
             } else {
-              wallet.setEvmAddress(evmAddress);
+              wallet.setEvmAddress(deviceKey?.publicKey.value);
             }
           }
         }}

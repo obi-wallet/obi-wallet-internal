@@ -93,7 +93,9 @@ export class Wallets {
       multisigKey,
       demoMode,
     });
+
     if (!response.approved || !response.payload.success) return response;
+
     const wallet = this._factory.create({
       type: demoMode ? "multisig-demo" : "multisig",
       data: {
@@ -110,6 +112,34 @@ export class Wallets {
     });
     this.upsertWallet(wallet);
     return response;
+  }
+
+  public async recoverLocalWallet({
+    multisigKey,
+    demoMode,
+    evmPubkey,
+  }: {
+    multisigKey: MultisigKey;
+    demoMode: boolean;
+    evmPubkey: string;
+  }) {
+    const wallet = this._factory.create({
+      type: demoMode ? "multisig-demo" : "multisig",
+      data: {
+        chain: multisigKey.chainId,
+        gatekeeperConfig: createGatekeeperConfig().toJSON(),
+        owner: multisigKey.toJSON(),
+        proxyAddress: {
+          v: 1,
+          address: "MISSING", // TODO dummy for now – need to look up
+        },
+        singlesigWallets: [],
+        currentAccount: null,
+      },
+    });
+    wallet.setEvmAddress(evmPubkey);
+    this.upsertWallet(wallet);
+    this.setCurrentWallet(wallet);
   }
 
   public async recoverWallet({

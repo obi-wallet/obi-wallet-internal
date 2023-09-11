@@ -10,6 +10,8 @@
     "axios": "*",
     "bignumber.js": "*",
     "crypto-js": "*",
+    "elliptic": "*",
+    "ethers": "*",
     "eventemitter3": "*",
     "isomorphic-unfetch": "*",
     "jscrypto": "*",
