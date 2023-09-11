@@ -125,7 +125,10 @@ const MessageHandlers = observer(function MessageHandlers() {
         }
 
         case "@obi/sign-and-broadcast-transaction": {
-          if (!store.walletsStore.currentWallet) return;
+          if (!store.walletsStore.currentWallet) {
+            console.log("no current wallet");
+            return;
+          }
 
           const payload = Array.isArray(data.payload)
             ? {

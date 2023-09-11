@@ -14,6 +14,7 @@ import { connect } from "../../../../src/db";
 import { SecretJsSigner } from "../../../../src/secret-js-signer";
 import { getConfig } from "../../../../src/stackup";
 import { fetchUserId } from "../../../../src/zauth";
+import invariant from "tiny-invariant";
 
 export async function POST(request: Request) {
   const body: {
@@ -77,6 +78,7 @@ export async function POST(request: Request) {
   } else {
     signingKey = homeChain.zAuthKeyPair;
   }
+  invariant(signingKey, "signingKey must be defined");
   const signer = new SecretJsSigner(
     {
       chainId: body.homeChainId,
