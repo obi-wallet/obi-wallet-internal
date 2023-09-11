@@ -1,11 +1,17 @@
 import { useTheme } from "@emotion/react";
-import { KeyType, MultisigKey } from "@obi-wallet/sdk";
+import {
+  KeyType,
+  MultisigKey,
+  getOrCreateDeviceKeyPair,
+} from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { ethers } from "ethers";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
+import invariant from "tiny-invariant";
 
 import { useStore } from "../../../contexts";
-import { Alert, createSessionKey } from "../../../helpers";
+import { Alert } from "../../../helpers";
 import {
   KeyFlow,
   KeyRoute,
@@ -40,25 +46,42 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             multisigKey: draft.value,
             demoMode: params.demoMode,
           });
-
           if (!response.approved) return;
           if (!response.payload.success) {
             console.log(response.payload.originalPayload);
             Alert.alert("Something went wrong", response.payload.description);
             return;
           }
+          // TODO: migrate to key management; currently derived from device key
+          const deviceKey = await getOrCreateDeviceKeyPair(
+            true,
+            false,
+            params.demoMode,
+          );
+          const pubKey = deviceKey.publicKey.value;
+          invariant(pubKey, "WebAuthN rejected");
+
+          // convert this base64 string pubKey to an ethereum address
+          const pubKeyBuffer = Buffer.from(pubKey, "base64");
+          // Remove prefix byte (0x04) for uncompressed public keys
+          let keyBytes: Buffer;
+          if (pubKeyBuffer.length === 65 && pubKeyBuffer[0] === 0x04) {
+            keyBytes = pubKeyBuffer.slice(1);
+          } else {
+            keyBytes = pubKeyBuffer;
+          }
+          const pubKeyHex = keyBytes.toString("hex");
+          const evmAddress = ethers.computeAddress(pubKeyHex);
+
+          let wallet;
           if (theme.loginModal) {
-            const wallet = walletsStore.currentWallet;
+            wallet = walletsStore.currentWallet;
             if (!wallet) {
               console.log("no wallet");
               return;
+            } else {
+              wallet.setEvmAddress(evmAddress);
             }
-
-            await createSessionKey({
-              wallet,
-              maxSpend: 5,
-              isLogin: true,
-            });
           }
         }}
         onAddZAuth={() => {

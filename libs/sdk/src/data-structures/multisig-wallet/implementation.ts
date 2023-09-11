@@ -41,6 +41,7 @@ export class MultisigWallet {
     protected _chainId: ChainId,
     protected _owner: MultisigKey,
     protected _proxyAddress: string,
+    protected _evmAddress: string,
     protected _gatekeeperConfig: GatekeeperConfig,
     protected _singlesigWallets: SinglesigWallet[],
     protected _currentAccount: CurrentAccountMeta | null,
@@ -83,6 +84,10 @@ export class MultisigWallet {
 
   public get chain() {
     return Chain.information(this._chainId);
+  }
+
+  public get evmAddress() {
+    return this._evmAddress;
   }
 
   public get isDemo() {
@@ -157,6 +162,10 @@ export class MultisigWallet {
 
   public setCurrentAccountByMeta(account: CurrentAccountMeta | null) {
     this._currentAccount = account;
+  }
+
+  public setEvmAddress(evmAddress: string) {
+    this._evmAddress = evmAddress;
   }
 
   public get owner() {
