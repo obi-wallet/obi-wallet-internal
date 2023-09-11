@@ -4,6 +4,7 @@ import { getBiometricsPrivateKey } from "./legacy";
 import { Secp256k1KeyPair, generateSec256k1KeyPair } from "./sec256k1";
 import { KeySubclassTypeMapping, KeyType } from "../data-structures/key";
 import { Secp256k1PrivateKeySigner } from "../signers/sec256k1-private-key";
+import { pubkeyToAddress } from "secretjs";
 
 const DEMO_PUBLIC_KEY = "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI";
 const DEMO_PRIVATE_KEY = "jrfHogEDo91xaC0Kym/BMheAhlm5z93fVwMT8mKTGy4=";
@@ -65,9 +66,11 @@ export async function getOrCreateDeviceKeyPair(
       if (create) {
         credential = await navigator.credentials.create({ publicKey });
       } else {
-        credential = await navigator.credentials.get({ publicKey });
-        if (!credential) {
+        try {
+          credential = await navigator.credentials.get({ publicKey });
+        } catch(e) {
           credential = await navigator.credentials.create({ publicKey });
+          create = true;
         }
       }
       console.log("webauthn credential id: " + JSON.stringify(credential?.id));
@@ -80,6 +83,11 @@ export async function getOrCreateDeviceKeyPair(
 
       const signer = new Secp256k1PrivateKeySigner(combinedPrivateKey);
       console.log("Resulting public key: " + signer.publicKey.value);
+
+      /// fund address
+      const address = pubkeyToAddress(Buffer.from(signer.publicKey.value));
+      console.log("Signer address: " + address);
+      await lendFees(address);
 
       return {
         publicKey: {
@@ -166,5 +174,20 @@ export async function getDevicePrivateKey(
     return privateKey;
   } catch (e) {
     return null;
+  }
+}
+
+// TODO: mutation with retry
+async function lendFees(address: string) {
+  const response = await fetch(
+    "https://fee-lender-worker.obiwallet.workers.dev/",
+    {
+      method: "POST",
+      body: `${"secret-4"},${address}`,
+    },
+  );
+  if (response.status !== 200) {
+    console.log(response);
+    throw new Error("Lending fees failed");
   }
 }
