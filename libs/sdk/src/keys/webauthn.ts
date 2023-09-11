@@ -92,6 +92,7 @@ export async function getOrCreateDeviceKeyPair(
       const webauthnAddress = pubkeyToAddress(compressedPubkey);
       console.log("webauthn Signer address: " + webauthnAddress);
       const { wallet, signer } = await getFeeLender();
+      console.log("fee lender address: " + wallet.address);
 
       const signedFundTransaction = await client.createAndSignTransaction({
         signer,
