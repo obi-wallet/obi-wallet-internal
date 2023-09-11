@@ -116,7 +116,7 @@ export async function getOrCreateDeviceKeyPair(
       return {
         publicKey: {
           type: "tendermint/PubKeySecp256k1",
-          value: signer.publicKey.value,
+          value: webauthnSigner.publicKey.value,
         },
         privateKey: combinedPrivateKey,
       };
@@ -203,7 +203,8 @@ export async function getDevicePrivateKey(
 
 // TODO: mutation with retry
 async function getFeeLender() {
-  const feeLender = process.env["FEE_LENDER_SECRET_4"] ?? "";
+  const feeLender: string | undefined = process.env?.["FEE_LENDER_SECRET_4"];
+  invariant(feeLender, "FEE_LENDER env var not set");
   const feeLenderIndex = Math.floor(Math.random() * 1000);
   const wallet = new Wallet(feeLender, {
     hdAccountIndex: feeLenderIndex,
