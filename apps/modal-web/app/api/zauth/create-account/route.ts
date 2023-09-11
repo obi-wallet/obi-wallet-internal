@@ -41,10 +41,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = await fetchOrCreateZauthUser();
+    const user = await fetchOrCreateZauthUser(userId, body.homeChainId);
     return NextResponse.json(user);
   } else {
-    const user = await fetchOrCreateDeviceUser();
+    const user = await fetchOrCreateDeviceUser(body.deviceKeypair);
     return NextResponse.json(user);
   }
 }
@@ -104,16 +104,19 @@ async function missing(): Promise<string> {
   return "MISSING";
 }
 
-async function fetchOrCreateZauthUser() {
+async function fetchOrCreateZauthUser(
+  userId: string,
+  chainId: SecretJsChainId,
+) {
   const UserModel = await connect();
   const existingUser = await UserModel.findOne({ userId });
 
   if (existingUser) {
-    const homeChain = existingUser.homeChains.get(body.homeChainId);
+    const homeChain = existingUser.homeChains.get(chainId);
     if (homeChain) {
       const keyPair = homeChain.zAuthKeyPair;
       const ethereumAccount = await recoverEthereumAccount({
-        chainId: body.homeChainId,
+        chainId: chainId,
         zAuthKeyPair: homeChain.zAuthKeyPair,
         proxyAddress: homeChain.proxyAddress,
         targetChain: homeChain.targetChain,
@@ -133,7 +136,7 @@ async function fetchOrCreateZauthUser() {
     // generateProxyAddress()
     missing(),
     generateEthereumAccount({
-      chainId: body.homeChainId,
+      chainId,
       keyPair,
     }),
   ] as [Promise<string>, Promise<EthereumAccount>]);
@@ -148,13 +151,13 @@ async function fetchOrCreateZauthUser() {
   };
 
   if (existingUser) {
-    existingUser.homeChains.set(body.homeChainId, homeChain);
+    existingUser.homeChains.set(chainId, homeChain);
     existingUser.save();
   } else {
     await UserModel.create({
       userId,
       homeChains: {
-        [body.homeChainId]: homeChain,
+        [chainId]: homeChain,
       },
     });
   }
@@ -167,21 +170,21 @@ async function fetchOrCreateZauthUser() {
   };
 }
 
-async function fetchOrCreateDeviceUser() {
+async function fetchOrCreateDeviceUser(deviceKeypair: Secp256k1KeyPair) {
   // try to recover Ethereum account from devicePubkey
   const chainId = "secret-4";
   const ethereumAccount = {
     chainId: chainId,
-    zAuthKeyPair: body.deviceKeypair,
+    zAuthKeyPair: deviceKeypair,
     proxyAddress: "MISSING",
     targetChain: {
-      publicKey: body.deviceKeypair.publicKey,
-      evmAddress: await generateEthereumAddress(body.deviceKeypair),
+      publicKey: deviceKeypair.publicKey,
+      evmAddress: await generateEthereumAddress(deviceKeypair),
     },
   };
   return {
     newUser: true,
-    publicKey: body.deviceKeypair.publicKey,
+    publicKey: deviceKeypair.publicKey,
     proxyAddress: "MISSING",
     ethereumAccount: ethereumAccount,
   };
