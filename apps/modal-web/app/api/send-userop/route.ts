@@ -68,9 +68,11 @@ export async function POST(request: Request) {
     config.paymaster.context,
   );
   const client = await Client.init(config.rpcUrl!);
-  let deviceKey;
+  let signingKey, _;
   if (!homeChain.zAuthKeyPair) {
-    deviceKey = await getOrCreateDeviceKeyPair(true, false, false);
+    [signingKey, _] = await getOrCreateDeviceKeyPair(true, false, false);
+  } else {
+    signingKey = homeChain.zAuthKeyPair;
   }
   const signer = new SecretJsSigner(
     {
@@ -79,7 +81,7 @@ export async function POST(request: Request) {
       proxyAddress: homeChain.proxyAddress,
       targetChain: homeChain.targetChain,
     },
-    deviceKey,
+    signingKey,
   );
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
