@@ -51,8 +51,8 @@ export const ModalWithoutProvider = observer(function ModalWithoutProvider() {
 
 const MessageHandlers = observer(function MessageHandlers() {
   const store = useStore();
-  // Enable auto-broadcast for ethereum demo
-  const autoBroadcast = store.configStore.config.ethereumBalances;
+  // TODO: More robut auto-broadcast handling
+  const autoBroadcast = false;
 
   useEffect(() => {
     return autorun(() => {
