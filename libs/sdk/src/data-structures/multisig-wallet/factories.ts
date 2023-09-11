@@ -26,6 +26,7 @@ export function createMultisigWallet(
     serialized.data.chain,
     factories.MultisigKey.create(serialized.data.chain, serialized.data.owner),
     serialized.data.proxyAddress.address,
+    "", // evm address currently added manually
     factories.createGatekeeperConfig(serialized.data.gatekeeperConfig),
     serialized.data.singlesigWallets.map((s) => SinglesigWallet.create(s)),
     serialized.data.currentAccount,
