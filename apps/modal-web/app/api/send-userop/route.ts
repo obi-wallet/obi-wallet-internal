@@ -9,7 +9,6 @@ import { Signer, Wallet } from "ethers";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { Client, IUserOperation, Presets } from "userop";
 
 import { connect } from "../../../src/db";
