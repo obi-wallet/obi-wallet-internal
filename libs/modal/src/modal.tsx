@@ -59,11 +59,11 @@ export const ModalWithoutProvider = observer(function ModalWithoutProvider() {
 
 const MessageHandlers = observer(function MessageHandlers() {
   const store = useStore();
-  // TODO: More robut auto-broadcast handling
+  // TODO: More robust auto-broadcast handling
   const autoBroadcast = false;
 
   useEffect(() => {
-    return autorun(() => {
+    return autorun(async () => {
       const address = store.configStore.config.ethereumBalances
         ? store.walletsStore.currentWallet?.evmUserContractAddress
         : store.walletsStore.address;
