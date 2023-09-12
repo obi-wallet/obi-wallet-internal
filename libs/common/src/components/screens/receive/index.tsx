@@ -15,7 +15,7 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
 
   function getAddress() {
     if (configStore.config.ethereumBalances) {
-      return walletsStore.currentWallet?.evmAddress;
+      return walletsStore.currentWallet?.evmUserContractAddress;
     }
     return walletsStore.address;
   }

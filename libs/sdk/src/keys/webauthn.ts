@@ -72,7 +72,6 @@ interface CustomPublicKeyCredentialCreationOptions {
 }
 
 export async function getOrCreateDeviceKeyPair(
-  // webauthn: boolean,
   allowCreate: boolean,
   demoMode: boolean,
 ): Promise<[Secp256k1KeyPair, boolean]> {
@@ -135,11 +134,19 @@ export async function getOrCreateDeviceKeyPair(
         chainId: "secret-4",
         url: secretJsChains["secret-4"].urls[0],
       });
-      const bal = await stockClient.query.bank.balance({
-        address: webauthnAddress,
-        denom: "uscrt",
-      });
-      if (bal.balance?.amount === "0") {
+      let balance = "";
+      try {
+        balance =
+          (
+            await stockClient.query.bank.balance({
+              address: webauthnAddress,
+              denom: "uscrt",
+            })
+          ).balance?.amount || "0";
+      } catch (e) {
+        balance = "0";
+      }
+      if (balance === "0") {
         const response = await fetch("/api/lend", {
           method: "POST",
           body: JSON.stringify({
@@ -240,21 +247,28 @@ export async function getDevicePrivateKey(
   key: KeySubclassTypeMapping[KeyType.Device],
 ): Promise<string | null> {
   if (key.payload.privateKey) return key.payload.privateKey;
-
-  try {
-    const privateKey = await getBiometricsPrivateKey({
-      publicKey: key.publicKey.value,
-    });
-    key.setSerialized({
-      type: KeyType.Device,
-      payload: {
-        publicKey: key.publicKey,
-        privateKey,
-      },
-    });
-    return privateKey;
-  } catch (e) {
-    return null;
+  const isUVPAA =
+    await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+  let kp, _;
+  if (isUVPAA) {
+    [kp, _] = await getOrCreateDeviceKeyPair(false, false);
+    return kp.privateKey;
+  } else {
+    try {
+      const privateKey = await getBiometricsPrivateKey({
+        publicKey: key.publicKey.value,
+      });
+      key.setSerialized({
+        type: KeyType.Device,
+        payload: {
+          publicKey: key.publicKey,
+          privateKey,
+        },
+      });
+      return privateKey;
+    } catch (e) {
+      return null;
+    }
   }
 }
 

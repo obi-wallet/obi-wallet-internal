@@ -11,7 +11,7 @@ import { connect } from "../../../../src/db";
 import { HomeChain } from "../../../../src/db/schema";
 import {
   generateEthereumAccount,
-  generateEthereumAddress,
+  generateEthereumAddresses,
   recoverEthereumAccount,
 } from "../../../../src/stackup";
 import { fetchUserId } from "../../../../src/zauth";
@@ -145,7 +145,7 @@ async function fetchOrCreateZauthUser(
     zAuthKeyPair: keyPair,
     targetChain: {
       publicKey: ethereumAccount.publicKey,
-      evmAddress: ethereumAccount.address,
+      evmAddress: ethereumAccount.evmUserContractAddress,
     },
     proxyAddress,
   };
@@ -179,7 +179,7 @@ async function fetchOrCreateDeviceUser(deviceKeypair: Secp256k1KeyPair) {
     proxyAddress: "MISSING",
     targetChain: {
       publicKey: deviceKeypair.publicKey,
-      evmAddress: await generateEthereumAddress(deviceKeypair),
+      evmAddress: await generateEthereumAddresses(deviceKeypair),
     },
   };
   return {

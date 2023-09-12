@@ -37,7 +37,8 @@ export async function generateEthereumAccount({
 }): Promise<EthereumAccount> {
   const chain = secretJsChains[chainId];
   const ethKeyPair = generateSec256k1KeyPair();
-  const address = await generateEthereumAddress(ethKeyPair);
+  const { evmSignerAddress, evmUserContractAddress } =
+    await generateEthereumAddresses(ethKeyPair);
 
   const client = new SecretJsClient(chainId);
   const { wallet, signer } = getFeeLender(chainId);
@@ -72,11 +73,12 @@ export async function generateEthereumAccount({
 
   return {
     publicKey: ethKeyPair.publicKey,
-    address,
+    evmSignerAddress,
+    evmUserContractAddress,
   };
 }
 
-export async function generateEthereumAddress(keyPair: Secp256k1KeyPair) {
+export async function generateEthereumAddresses(keyPair: Secp256k1KeyPair) {
   const config = getConfig(TargetChain.EthereumMainnet)!;
   const signingKey = new SigningKey(Buffer.from(keyPair.privateKey, "base64"));
   const signer: Signer = new Wallet(signingKey);
@@ -85,7 +87,10 @@ export async function generateEthereumAddress(keyPair: Secp256k1KeyPair) {
     signer,
     config.rpcUrl,
   );
-  return simpleAccount.getSender();
+  return {
+    evmSignerAddress: await signer.getAddress(),
+    evmUserContractAddress: simpleAccount.getSender(),
+  };
 }
 
 export function getConfig(chainId: TargetChainId) {
