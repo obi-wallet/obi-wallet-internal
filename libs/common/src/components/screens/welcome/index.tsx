@@ -180,7 +180,14 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
       {theme.welcome.buttons.map((button) => {
         switch (button) {
           case WelcomeButton.Zepeto:
-            return <ZepetoButton key={button} onPress={onZepeto} />;
+            return (
+              <Button
+                key={button}
+                label={"Login"}
+                flavor="primary"
+                onPress={onZepeto}
+              />
+            );
           case WelcomeButton.Login:
             if (walletsStore.wallets.length === 0) return null;
             return (
@@ -200,7 +207,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
             return (
               <Button
                 key={button}
-                label={intl.formatMessage({ id: "onboarding1.getstarted" })}
+                label={"Sign Up"}
                 flavor="primary"
                 buttonStyle={{
                   marginTop: theme.spacing[4],

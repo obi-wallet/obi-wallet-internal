@@ -5,9 +5,19 @@ import {
   WelcomeButton,
 } from "./abstract";
 import { common } from "./common";
-import { observer } from "mobx-react-lite";
-import Svg, { SvgProps, Path } from "react-native-svg";
 
+const colors = {
+  gray8: "#F6F8FC",
+  gray6: "#929EB5",
+  white: "#FFFFFF",
+  grey5: "#3E4859",
+  grey2: "#16161E",
+  grey4: "#24242E",
+  black: "#000000",
+  primaryGold: "#CAA767",
+  hoverGold: "#B0915A",
+  errorRed: "#E10E34",
+};
 export const ztxTheme: CustomTheme = {
   ...common,
   loginModal: true,
@@ -48,11 +58,13 @@ export const ztxTheme: CustomTheme = {
   },
   buttonFlavors: {
     primary: {
-      backgroundColor: "#243FEA",
+      backgroundColor: "transparent",
       borderRadius: 5,
+      borderWidth: 1,
+      borderColor: colors.primaryGold,
     },
-
     cancel: {
+      backgroundColor: "transparent",
       borderRadius: 5,
       borderWidth: 1,
       borderColor: "#ffffff",
@@ -60,7 +72,10 @@ export const ztxTheme: CustomTheme = {
   },
   iconButtonFlavors: {
     primary: {
-      backgroundColor: "#243fea",
+      backgroundColor: "transparent",
+      borderRadius: 5,
+      borderWidth: 1,
+      borderColor: colors.primaryGold,
     },
     panel: {
       backgroundColor: "#243fea",
@@ -89,12 +104,6 @@ export const ztxTheme: CustomTheme = {
     accountName: "Obi Smart Account",
   },
   welcome: {
-    // background: {
-    //   // image: "/ztx-home@2x.png",
-    //   color: "#16151D",
-    //   blendMode: "luminosity",
-    //   position: "center",
-    // },
     image: "ztx-welcome.png",
     imagePosition: ImagePosition.Center,
     hideHeaderLogo: false,
