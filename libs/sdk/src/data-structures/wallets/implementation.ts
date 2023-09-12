@@ -1,5 +1,9 @@
+import { Signer, SigningKey, Wallet } from "ethers";
+import { Presets } from "userop";
+
 import { WalletsSchema } from "./schema";
 import { ChainId } from "../../chains";
+import { Secp256k1KeyPair } from "../../keys/sec256k1";
 import { WalletsSdk } from "../../sdk/wallets";
 import { Serialized } from "../abstract";
 import { createGatekeeperConfig } from "../gatekeeper-config";
@@ -117,11 +121,11 @@ export class Wallets {
   public async recoverLocalWallet({
     multisigKey,
     demoMode,
-    evmPubkey,
+    evmKeypair,
   }: {
     multisigKey: MultisigKey;
     demoMode: boolean;
-    evmPubkey: string;
+    evmKeypair: Secp256k1KeyPair;
   }) {
     const wallet = this._factory.create({
       type: demoMode ? "multisig-demo" : "multisig",
@@ -137,9 +141,25 @@ export class Wallets {
         currentAccount: null,
       },
     });
-    wallet.setEvmSigningAddress(evmPubkey);
+    wallet.setEvmSigningAddress(evmKeypair.publicKey.value);
+    wallet.setEvmUserContractAddress(
+      await this.generate4337Address(evmKeypair),
+    );
     this.upsertWallet(wallet);
     this.setCurrentWallet(wallet);
+  }
+
+  async generate4337Address(keyPair: Secp256k1KeyPair) {
+    const signingKey = new SigningKey(
+      Buffer.from(keyPair.privateKey, "base64"),
+    );
+    const signer: Signer = new Wallet(signingKey);
+    const simpleAccount = await Presets.Builder.SimpleAccount.init(
+      // @ts-expect-error this should be fine
+      signer,
+      "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+    );
+    return simpleAccount.getSender();
   }
 
   public async recoverWallet({

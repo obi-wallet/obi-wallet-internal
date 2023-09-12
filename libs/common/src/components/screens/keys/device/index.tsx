@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { MultisigKey, Sdk } from "@obi-wallet/sdk";
+import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { getOrCreateDeviceKeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -39,7 +39,7 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
     return (
       <DeviceKey
         {...params}
-        onSubmit={async (done: boolean, devicePubkey: string) => {
+        onSubmit={async (done: boolean, deviceKeypair: Secp256k1KeyPair) => {
           if (!done) {
             if (params.flow !== KeyFlow.CreateWallet) {
               navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
@@ -60,7 +60,7 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
             await walletsStore.recoverLocalWallet({
               multisigKey: draft.value,
               demoMode: params.demoMode,
-              evmPubkey: devicePubkey,
+              evmKeypair: deviceKeypair,
             });
           }
         }}
@@ -89,7 +89,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 
   async function scanBiometrics(
     create: boolean,
-  ): Promise<[boolean, boolean, string]> {
+  ): Promise<[boolean, boolean, Secp256k1KeyPair | undefined]> {
     try {
       // setting webauthn to true here for now
       const [keyPair, newUser] = await getOrCreateDeviceKeyPair(
@@ -104,12 +104,13 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         ),
       );
       setScannedBiometrics(true);
-      return [true, newUser, keyPair.publicKey.value];
+      return [true, newUser, keyPair];
     } catch (e) {
       setScannedBiometrics(false);
       const error = e as Error;
 
-      if (error.message === "code: 13, msg: Cancel") return [false, false, ""];
+      if (error.message === "code: 13, msg: Cancel")
+        return [false, false, undefined];
       console.error(error);
       Alert.alert(
         intl.formatMessage({ id: "general.error" }) + " ScanMyBiometrics",

@@ -25,6 +25,7 @@
     "secp256k1": "*",
     "tiny-invariant": "*",
     "tiny-warning": "*",
+    "userop": "*",
     "zod": "*",
     "@github/webauthn-json": "*"
   },

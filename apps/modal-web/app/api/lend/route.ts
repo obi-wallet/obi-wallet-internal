@@ -29,7 +29,7 @@ export async function POST(request: Request) {
           from_address: wallet.address,
           amount: [
             {
-              amount: "20000",
+              amount: "40000",
               denom: "uscrt",
             },
           ],

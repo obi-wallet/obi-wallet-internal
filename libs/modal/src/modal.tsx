@@ -255,6 +255,7 @@ const MessageHandlers = observer(function MessageHandlers() {
           const { publicKey, proxyAddress, ethereumAccount, newUser } =
             await response.json();
           const evmAccount: EthereumAccount = ethereumAccount;
+          console.log("evm account is: " + JSON.stringify(evmAccount));
 
           const wallet = ObservableMultisigWallet.create({
             type: "multisig",
