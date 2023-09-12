@@ -198,7 +198,7 @@ export async function getOrCreateDeviceKeyPair(
       false,
     ];
   } catch (err) {
-    console.error("WebAuthn error:", err);
+    console.error("WebAuthn error:", JSON.stringify(err));
     throw new Error("WebAuthn request rejected");
   }
 }
