@@ -38,7 +38,7 @@ export async function getOrCreateDeviceKeyPair(
   create: boolean,
   demoMode: boolean,
 ): Promise<[Secp256k1KeyPair, boolean]> {
-  if (webauthn) {
+  if (webauthn && !process.env['STORYBOOK']) {
     try {
       const challenge = new Uint8Array(32); // Normally, this challenge is provided by the server.
       window.crypto.getRandomValues(challenge);
