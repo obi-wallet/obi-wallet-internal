@@ -111,6 +111,10 @@ export async function getOrCreateDeviceKeyPair(
           type: "public-key",
           alg: -7, // This indicates the algorithm type (e.g., ES256 for elliptic curve)
         },
+        {
+          type: "public-key",
+          alg: -257 // Value registered by this specification for "RS256"
+        }
       ],
       authenticatorSelection: {
         authenticatorAttachment: "platform",
