@@ -8,6 +8,7 @@ import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Platform, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import invariant from "tiny-invariant";
 
 import { useStore } from "../../../../contexts";
 import { Alert, isSmallScreen, isSmallScreenNumber } from "../../../../helpers";
@@ -73,7 +74,7 @@ export interface DeviceKeyProps {
   draftId: string;
   demoMode: boolean;
 
-  onSubmit(done: boolean, devicePubkey: string): void;
+  onSubmit(done: boolean, devicePubkey: Secp256k1KeyPair | undefined): void;
 }
 export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   draftId,
@@ -116,7 +117,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         intl.formatMessage({ id: "general.error" }) + " ScanMyBiometrics",
         error.message,
       );
-      return [false, false, ""];
+      return [false, false, undefined];
     }
   }
 
@@ -221,14 +222,14 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
               flavor="primary"
               onPress={async () => {
                 if (scannedBiometrics) {
-                  onSubmit(false, "");
+                  onSubmit(false, undefined);
                 } else {
-                  const [success, newUser, devicePubkey] = await scanBiometrics(
-                    true,
-                  );
+                  const [success, newUser, deviceKeypair] =
+                    await scanBiometrics(true);
+                  invariant(deviceKeypair, "could not get device keypair");
                   console.log("Success is: ", success);
                   if (success && Platform.OS !== "ios") {
-                    onSubmit(!newUser, devicePubkey);
+                    onSubmit(!newUser, deviceKeypair);
                   }
                 }
               }}
@@ -241,14 +242,14 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
               flavor="primary"
               onPress={async () => {
                 if (scannedBiometrics) {
-                  onSubmit(false, "");
+                  onSubmit(false, undefined);
                 } else {
-                  const [success, newUser, devicePubkey] = await scanBiometrics(
-                    false,
-                  );
+                  const [success, newUser, deviceKeypair] =
+                    await scanBiometrics(false);
+                  invariant(deviceKeypair, "could not get device keypair");
                   console.log("Success is: ", success);
                   if (success && Platform.OS !== "ios") {
-                    onSubmit(!newUser, devicePubkey);
+                    onSubmit(!newUser, deviceKeypair);
                   }
                 }
               }}

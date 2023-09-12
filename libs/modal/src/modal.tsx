@@ -65,7 +65,8 @@ const MessageHandlers = observer(function MessageHandlers() {
   useEffect(() => {
     return autorun(() => {
       const address = store.configStore.config.ethereumBalances
-        ? store.sdkRootStore.ethereumDemoStore.ethereumAccount?.address
+        ? store.sdkRootStore.ethereumDemoStore.ethereumAccount
+            ?.evmUserContractAddress
         : store.walletsStore.address;
       // Expose current wallet address (or null) to the parent window
       postMessage({
