@@ -135,22 +135,27 @@ export async function getOrCreateDeviceKeyPair(
         chainId: "secret-4",
         url: secretJsChains["secret-4"].urls[0],
       });
-      const bal = await stockClient.query.bank.balance({
-        address: webauthnAddress,
-        denom: "uscrt",
-      });
-      if (bal.balance?.amount === "0") {
-        const response = await fetch("/api/lend", {
-          method: "POST",
-          body: JSON.stringify({
-            homeChainId: "secret-4",
-            address: webauthnAddress,
-          }),
-        });
+      let balance = "";
+      try {
+        balance = (await stockClient.query.bank.balance({
+          address: webauthnAddress,
+          denom: "uscrt",
+        })).balance?.amount || "0";
+      } catch (e) {
+        balance = "0";
+      }
+        if (balance === "0") {
+          const response = await fetch("/api/lend", {
+            method: "POST",
+            body: JSON.stringify({
+              homeChainId: "secret-4",
+              address: webauthnAddress,
+            }),
+          });
 
-        if (response.status !== 200) {
-          throw new Error("Failed to fund webauthn signer");
-        }
+          if (response.status !== 200) {
+            throw new Error("Failed to fund webauthn signer");
+          }
 
         return [
           {
