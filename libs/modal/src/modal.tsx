@@ -8,6 +8,7 @@ import {
   ZAuthKeySigner,
   createGatekeeperConfig,
   Secp256k1PublicKey,
+  getOrCreateDeviceKeyPair,
 } from "@obi-wallet/sdk";
 import * as elliptic from "elliptic";
 import { ethers } from "ethers";
@@ -286,7 +287,8 @@ const MessageHandlers = observer(function MessageHandlers() {
             proxyAddress,
             ethereumAccount,
           );
-          wallet.setEvmSigningAddress(evmAccount.publicKey.value);
+          const [kp, _] = await getOrCreateDeviceKeyPair(false, false);
+          wallet.setEvmSigningAddress(kp.privateKey);
           wallet.setEvmUserContractAddress(evmAccount.evmUserContractAddress);
           store.walletsStore.upsertWallet(wallet);
 

@@ -2,6 +2,7 @@ import {
   KeyType,
   SignAndBroadcastTransactionUserInteraction,
   TargetChain,
+  getOrCreateDeviceKeyPair,
   // Token,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
@@ -44,9 +45,10 @@ export const SignatureModalEthereumDemo =
   observer<SignatureModalEthereumDemoProps>(
     function SignatureModalEthereumDemo({ interaction }) {
       const { sdkRootStore } = useStore();
-
       const broadcast = useMutation({
         mutationFn: async () => {
+          console.log("SignatureModalEthereumDemo()");
+          console.log("interaction: " + JSON.stringify(interaction));
           const message = interaction.payload.messages[0] as unknown as
             | {
                 eth: EthTxInput;
@@ -62,7 +64,45 @@ export const SignatureModalEthereumDemo =
                 };
               };
           const wallet = sdkRootStore.walletsStore.currentWallet;
+          let kp: {
+            type: KeyType;
+            payload: {
+              publicKey: {
+                value: string;
+                type: string;
+              };
+              privateKey: string;
+            };
+          };
           const zAuthKey = wallet?.owner.getUsableKeyOfType(KeyType.ZAuth);
+          if (!zAuthKey) {
+            const [deviceKeyPair, _] = await getOrCreateDeviceKeyPair(
+              false,
+              false,
+            );
+            kp = {
+              type: KeyType.Device,
+              payload: {
+                publicKey: {
+                  value: deviceKeyPair.publicKey.value,
+                  type: "tendermint/PubKeySecp256k1",
+                },
+                privateKey: deviceKeyPair.privateKey,
+              },
+            };
+          } else {
+            kp = {
+              type: KeyType.ZAuth,
+              payload: {
+                publicKey: {
+                  value: zAuthKey.publicKey.value,
+                  type: zAuthKey.publicKey.type,
+                },
+                privateKey: "",
+              },
+            };
+            console.log("using zauthkey");
+          }
 
           async function handleMessage() {
             if (R.has("userop", message)) {
@@ -73,10 +113,11 @@ export const SignatureModalEthereumDemo =
                   targetChainId:
                     interaction.payload.targetChainId ??
                     TargetChain.ArbitrumOneGoerliTestnet,
-                  publicKey: zAuthKey?.publicKey,
+                  publicKey: kp?.payload.publicKey,
                   contractAddress: message.userop.contractAddress,
                   data: message.userop.callData,
                   tokens: message.userop.tokens,
+                  deviceKeyPair: kp?.payload,
                 }),
               });
             }
@@ -88,10 +129,11 @@ export const SignatureModalEthereumDemo =
                 targetChainId:
                   interaction.payload.targetChainId ??
                   TargetChain.ArbitrumOneGoerliTestnet,
-                publicKey: zAuthKey?.publicKey,
+                publicKey: kp?.payload.publicKey,
                 contractAddress: message.eth.contractAddress,
                 data: encodeCallData(message.eth),
                 tokens: message.eth.tokens,
+                deviceKeyPair: kp.payload,
               }),
             });
           }
@@ -130,7 +172,7 @@ export const SignatureModalEthereumDemo =
 
       useEffectOnceWhen(() => {
         broadcast.mutate();
-      }, interaction.payload.autoBroadcast);
+      }, true);
 
       return null;
     },

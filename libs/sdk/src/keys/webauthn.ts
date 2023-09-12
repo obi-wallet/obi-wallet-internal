@@ -75,12 +75,27 @@ export async function getOrCreateDeviceKeyPair(
   allowCreate: boolean,
   demoMode: boolean,
 ): Promise<[Secp256k1KeyPair, boolean]> {
-  const isUVPAA =
-    await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-  if (isUVPAA) {
+  let tryWebAuthN = true;
+  if (
+    typeof window !== "undefined" &&
+    typeof PublicKeyCredential !== "undefined"
+  ) {
     try {
-      const challenge = new Uint8Array(32); // Normally, this challenge is provided by the server.
-      window.crypto.getRandomValues(challenge);
+      const isUVPAA =
+        await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      tryWebAuthN = isUVPAA;
+    } catch (e) {
+      // Handle the error appropriately here
+    }
+  }
+  if (tryWebAuthN) {
+    try {
+      let challenge = new Uint8Array(32); // Normally, this challenge is provided by the server.
+      if (typeof window !== "undefined") {
+        window.crypto.getRandomValues(challenge);
+      } else {
+        challenge = new Uint8Array(32).fill(0);
+      }
 
       const publicKey: CustomPublicKeyCredentialCreationOptions = {
         challenge: btoa(String.fromCharCode(...challenge)),
@@ -146,41 +161,44 @@ export async function getOrCreateDeviceKeyPair(
       } catch (e) {
         balance = "0";
       }
-      if (balance === "0") {
-        const response = await fetch("/api/lend", {
-          method: "POST",
-          body: JSON.stringify({
-            homeChainId: "secret-4",
-            address: webauthnAddress,
-          }),
-        });
+      try {
+        if (balance === "0") {
+          const response = await fetch("/api/lend", {
+            method: "POST",
+            body: JSON.stringify({
+              homeChainId: "secret-4",
+              address: webauthnAddress,
+            }),
+          });
 
-        if (response.status !== 200) {
-          throw new Error("Failed to fund webauthn signer");
+          if (response.status !== 200) {
+            throw new Error("Failed to fund webauthn signer");
+          }
+
+          return [
+            {
+              publicKey: {
+                type: "tendermint/PubKeySecp256k1",
+                value: webauthnSigner.publicKey.value,
+              },
+              privateKey: combinedPrivateKey,
+            },
+            true,
+          ];
         }
-
-        return [
-          {
-            publicKey: {
-              type: "tendermint/PubKeySecp256k1",
-              value: webauthnSigner.publicKey.value,
-            },
-            privateKey: combinedPrivateKey,
-          },
-          true,
-        ];
-      } else {
-        return [
-          {
-            publicKey: {
-              type: "tendermint/PubKeySecp256k1",
-              value: webauthnSigner.publicKey.value,
-            },
-            privateKey: combinedPrivateKey,
-          },
-          false,
-        ];
+      } catch (e) {
+        console.error("Failed to fund webauthn signer", e);
       }
+      return [
+        {
+          publicKey: {
+            type: "tendermint/PubKeySecp256k1",
+            value: webauthnSigner.publicKey.value,
+          },
+          privateKey: combinedPrivateKey,
+        },
+        false,
+      ];
     } catch (err) {
       console.error("WebAuthn error:", err);
       throw new Error("WebAuthn request rejected");
