@@ -72,7 +72,6 @@ interface CustomPublicKeyCredentialCreationOptions {
 }
 
 export async function getOrCreateDeviceKeyPair(
-  // webauthn: boolean,
   allowCreate: boolean,
   demoMode: boolean,
 ): Promise<[Secp256k1KeyPair, boolean]> {
@@ -248,21 +247,28 @@ export async function getDevicePrivateKey(
   key: KeySubclassTypeMapping[KeyType.Device],
 ): Promise<string | null> {
   if (key.payload.privateKey) return key.payload.privateKey;
-
-  try {
-    const privateKey = await getBiometricsPrivateKey({
-      publicKey: key.publicKey.value,
-    });
-    key.setSerialized({
-      type: KeyType.Device,
-      payload: {
-        publicKey: key.publicKey,
-        privateKey,
-      },
-    });
-    return privateKey;
-  } catch (e) {
-    return null;
+  const isUVPAA =
+    await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+  let kp, _;
+  if (isUVPAA) {
+    [kp, _] = await getOrCreateDeviceKeyPair(false, false);
+    return kp.privateKey;
+  } else {
+    try {
+      const privateKey = await getBiometricsPrivateKey({
+        publicKey: key.publicKey.value,
+      });
+      key.setSerialized({
+        type: KeyType.Device,
+        payload: {
+          publicKey: key.publicKey,
+          privateKey,
+        },
+      });
+      return privateKey;
+    } catch (e) {
+      return null;
+    }
   }
 }
 
