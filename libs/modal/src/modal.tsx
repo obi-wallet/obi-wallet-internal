@@ -130,6 +130,7 @@ const MessageHandlers = observer(function MessageHandlers() {
             return;
           } else {
             console.log("current wallet retrieved");
+            console.log("payload", data.payload);
           }
 
           const payload = Array.isArray(data.payload)
