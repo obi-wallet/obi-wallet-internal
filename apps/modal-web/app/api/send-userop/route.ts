@@ -26,10 +26,7 @@ export async function POST(request: Request) {
       refreshToken?: string;
     };
     // need to handle outside instead, and split this into two routes
-    deviceKeyPair?: {
-      type: string;
-      payload: Secp256k1KeyPair;
-    };
+    deviceKeyPair?: Secp256k1KeyPair;
   } = await request.json();
 
   const accessToken =
@@ -54,13 +51,13 @@ export async function POST(request: Request) {
     }
   } else {
     console.warn("incoming device key: " + JSON.stringify(body.deviceKeyPair));
-    invariant(body.deviceKeyPair?.payload.privateKey, "pass in device key");
+    invariant(body.deviceKeyPair?.privateKey, "pass in device key");
     homeChain = {
-      zAuthKeyPair: body.deviceKeyPair.payload,
+      zAuthKeyPair: body.deviceKeyPair,
       targetChain: {
-        publicKey: body.deviceKeyPair.payload.publicKey,
+        publicKey: body.deviceKeyPair.publicKey,
         evmAddress: (
-          await generateEthereumAddresses(body.deviceKeyPair.payload)
+          await generateEthereumAddresses(body.deviceKeyPair)
         ).evmUserContractAddress,
       },
       proxyAddress: "MISSING",
