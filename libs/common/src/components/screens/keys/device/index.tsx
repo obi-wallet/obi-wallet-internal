@@ -93,7 +93,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
     try {
       // setting webauthn to true here for now
       const [keyPair, newUser] = await getOrCreateDeviceKeyPair(
-        true,
+        // true,
         create,
         demoMode,
       );

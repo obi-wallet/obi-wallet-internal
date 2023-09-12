@@ -3139,6 +3139,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@github/webauthn-json@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@github/webauthn-json@npm:2.1.1"
+  bin:
+    webauthn-json: dist/bin/main.js
+  checksum: 2ae5c416d547ed5cd383bee7e1f9c5899bbe0e3928364364028d24ed0380704fe9e746b436b09af644d6737206444c16e934acc182ab04babd2ac68179becb27
+  languageName: node
+  linkType: hard
+
 "@gorhom/bottom-sheet@npm:^4.4.7":
   version: 4.4.7
   resolution: "@gorhom/bottom-sheet@npm:4.4.7"
@@ -5520,6 +5529,22 @@ __metadata:
   version: 2.0.0
   resolution: "@sideway/pinpoint@npm:2.0.0"
   checksum: 0f4491e5897fcf5bf02c46f5c359c56a314e90ba243f42f0c100437935daa2488f20482f0f77186bd6bf43345095a95d8143ecf8b1f4d876a7bc0806aba9c3d2
+  languageName: node
+  linkType: hard
+
+"@simplewebauthn/browser@npm:^8.0.2":
+  version: 8.0.2
+  resolution: "@simplewebauthn/browser@npm:8.0.2"
+  dependencies:
+    "@simplewebauthn/typescript-types": ^8.0.0
+  checksum: 3837a8a80dad90e4eecc116ecf42c61c4e51d0948bea41240bd18665c753425f50df89b4f9c18f99d862b931cd2c24d7bde23a9d7626fbe7a4d8b308160afc56
+  languageName: node
+  linkType: hard
+
+"@simplewebauthn/typescript-types@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "@simplewebauthn/typescript-types@npm:8.0.0"
+  checksum: 59b4ac9804170edbee50703428f5adcada70211117c8f458c805a4b6d4772b9ec678664dd3f00e400aee2e392c9da8e5a8c38448fb0c3d792aba535a3329bfe7
   languageName: node
   linkType: hard
 
@@ -19593,6 +19618,7 @@ __metadata:
     "@fortawesome/free-solid-svg-icons": ^6.4.0
     "@fortawesome/react-fontawesome": ^0.2.0
     "@fortawesome/react-native-fontawesome": ^0.3.0
+    "@github/webauthn-json": ^2.1.1
     "@gorhom/bottom-sheet": ^4.4.7
     "@gorhom/portal": ^1.0.14
     "@hookform/resolvers": ^3.1.1
@@ -19628,6 +19654,8 @@ __metadata:
     "@rollup/plugin-inject": ^5.0.3
     "@rollup/plugin-url": ^8.0.1
     "@sentry/react-native": ^5.7.1
+    "@simplewebauthn/browser": ^8.0.2
+    "@simplewebauthn/typescript-types": ^8.0.0
     "@storybook/addon-essentials": ^7.1.0
     "@storybook/core-server": ^7.1.0
     "@storybook/react-vite": ^7.1.0

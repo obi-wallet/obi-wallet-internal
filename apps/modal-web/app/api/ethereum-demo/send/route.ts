@@ -74,7 +74,7 @@ export async function POST(request: Request) {
   const amount = parseUnits(body.token.rawAmount, 0);
   let signingKey, _;
   if (!homeChain.zAuthKeyPair) {
-    [signingKey, _] = await getOrCreateDeviceKeyPair(true, false, false);
+    [signingKey, _] = await getOrCreateDeviceKeyPair(false, false);
   } else {
     signingKey = homeChain.zAuthKeyPair;
   }
