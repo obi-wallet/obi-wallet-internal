@@ -3139,6 +3139,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@github/webauthn-json@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@github/webauthn-json@npm:2.1.1"
+  bin:
+    webauthn-json: dist/bin/main.js
+  checksum: 2ae5c416d547ed5cd383bee7e1f9c5899bbe0e3928364364028d24ed0380704fe9e746b436b09af644d6737206444c16e934acc182ab04babd2ac68179becb27
+  languageName: node
+  linkType: hard
+
 "@gorhom/bottom-sheet@npm:^4.4.7":
   version: 4.4.7
   resolution: "@gorhom/bottom-sheet@npm:4.4.7"
@@ -5523,6 +5532,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@simplewebauthn/browser@npm:^8.0.2":
+  version: 8.0.2
+  resolution: "@simplewebauthn/browser@npm:8.0.2"
+  dependencies:
+    "@simplewebauthn/typescript-types": ^8.0.0
+  checksum: 3837a8a80dad90e4eecc116ecf42c61c4e51d0948bea41240bd18665c753425f50df89b4f9c18f99d862b931cd2c24d7bde23a9d7626fbe7a4d8b308160afc56
+  languageName: node
+  linkType: hard
+
+"@simplewebauthn/typescript-types@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "@simplewebauthn/typescript-types@npm:8.0.0"
+  checksum: 59b4ac9804170edbee50703428f5adcada70211117c8f458c805a4b6d4772b9ec678664dd3f00e400aee2e392c9da8e5a8c38448fb0c3d792aba535a3329bfe7
+  languageName: node
+  linkType: hard
+
 "@sinclair/typebox@npm:^0.27.8":
   version: 0.27.8
   resolution: "@sinclair/typebox@npm:0.27.8"
@@ -7149,6 +7174,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/bn.js@npm:*":
+  version: 5.1.1
+  resolution: "@types/bn.js@npm:5.1.1"
+  dependencies:
+    "@types/node": "*"
+  checksum: e50ed2dd3abe997e047caf90e0352c71e54fc388679735217978b4ceb7e336e51477791b715f49fd77195ac26dd296c7bad08a3be9750e235f9b2e1edb1b51c2
+  languageName: node
+  linkType: hard
+
 "@types/body-parser@npm:*":
   version: 1.19.2
   resolution: "@types/body-parser@npm:1.19.2"
@@ -7205,6 +7239,15 @@ __metadata:
   version: 3.1.2
   resolution: "@types/ejs@npm:3.1.2"
   checksum: e4f0745b6ed53a63c08bdfdeb019a7d0e0c400896722b44d6732b4ee6bf6061d2dc965206186b8b0ae2ecd71303c29f1af1feddbca2df0acbd7bd234a74ca518
+  languageName: node
+  linkType: hard
+
+"@types/elliptic@npm:^6.4.14":
+  version: 6.4.14
+  resolution: "@types/elliptic@npm:6.4.14"
+  dependencies:
+    "@types/bn.js": "*"
+  checksum: d5a64f540e0ed4b74a12dfa5cc88c0aa7b531eab3b7a9fab17948ffbfc6e01814230e63d7417ce1b607dbd8b5d70e1b64f5afac632deabf96e44875aaac0ae1b
   languageName: node
   linkType: hard
 
@@ -19575,6 +19618,7 @@ __metadata:
     "@fortawesome/free-solid-svg-icons": ^6.4.0
     "@fortawesome/react-fontawesome": ^0.2.0
     "@fortawesome/react-native-fontawesome": ^0.3.0
+    "@github/webauthn-json": ^2.1.1
     "@gorhom/bottom-sheet": ^4.4.7
     "@gorhom/portal": ^1.0.14
     "@hookform/resolvers": ^3.1.1
@@ -19610,6 +19654,8 @@ __metadata:
     "@rollup/plugin-inject": ^5.0.3
     "@rollup/plugin-url": ^8.0.1
     "@sentry/react-native": ^5.7.1
+    "@simplewebauthn/browser": ^8.0.2
+    "@simplewebauthn/typescript-types": ^8.0.0
     "@storybook/addon-essentials": ^7.1.0
     "@storybook/core-server": ^7.1.0
     "@storybook/react-vite": ^7.1.0
@@ -19629,6 +19675,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/react-native": ^12.1.2
     "@types/crypto-js": ^4.1.1
+    "@types/elliptic": ^6.4.14
     "@types/invariant": ^2.2.35
     "@types/jest": ^29.5.3
     "@types/luxon": ^3.3.0
@@ -19659,6 +19706,7 @@ __metadata:
     crypto-js: ^4.1.1
     detox: ^20.11.1
     dexie: ^3.2.4
+    elliptic: ^6.5.4
     eslint: ^8.45.0
     eslint-config-next: ^13.4.10
     eslint-config-prettier: ^8.8.0
@@ -19767,7 +19815,7 @@ __metadata:
     typedoc: ^0.24.8
     typescript: ^5.1.6
     unfetch: ^5.0.0
-    userop: ^0.3.1
+    userop: ^0.3.3
     vite: ^4.4.4
     web3: ^4.0.3
     webpack: ^5.88.2
@@ -25616,12 +25664,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"userop@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "userop@npm:0.3.1"
+"userop@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "userop@npm:0.3.3"
   dependencies:
     ethers: ^5.7.2
-  checksum: 251b3d70c937f9c73aed6e2db978a2c50697533c832223795d7a0bc371e092cfa74cc8c7b95644855397d69e8e86d16d5ccfbf622d0073d6277d1aa6404890a5
+  checksum: 62130dd479f130c378319010ebbb33e665e1a9e37575d4b8b41b8428c8bcd35df4d4fdf4ed18dd89f703d6739e4ad47897f50db13e2c6495c10c25e388fff04c
   languageName: node
   linkType: hard
 

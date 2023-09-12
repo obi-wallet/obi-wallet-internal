@@ -1,12 +1,18 @@
-import { SecretJsChainId, TargetChainId } from "@obi-wallet/sdk";
+import {
+  Secp256k1KeyPair,
+  SecretJsChainId,
+  TargetChainId,
+} from "@obi-wallet/sdk";
 // import { Signer, SigningKey, Wallet } from "ethers";
+import { HomeChain } from "apps/modal-web/src/db/schema";
+import { Signer, Wallet } from "ethers";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import invariant from "tiny-invariant";
 import { Client, IUserOperation, Presets } from "userop";
 
 import { connect } from "../../../src/db";
-import { SecretJsSigner } from "../../../src/secret-js-signer";
-import { getConfig } from "../../../src/stackup";
+import { generateEthereumAddresses, getConfig } from "../../../src/stackup";
 import { fetchUserId } from "../../../src/zauth";
 
 export async function POST(request: Request) {
@@ -16,8 +22,13 @@ export async function POST(request: Request) {
     contractAddress: string;
     data: string;
     tokens: {
-      accessToken: string;
-      refreshToken: string;
+      accessToken?: string;
+      refreshToken?: string;
+    };
+    // need to handle outside instead, and split this into two routes
+    deviceKeyPair?: {
+      type: string;
+      payload: Secp256k1KeyPair;
     };
   } = await request.json();
 
@@ -28,18 +39,33 @@ export async function POST(request: Request) {
 
   const userId = accessToken ? await fetchUserId(accessToken) : null;
 
-  if (!accessToken || !refreshToken || !userId) {
-    return NextResponse.json(
-      {
-        error: "invalid token",
+  let homeChain: HomeChain | undefined;
+  if (accessToken && refreshToken && userId) {
+    const UserModel = await connect();
+    const user = await UserModel.findOne({ userId });
+    const homeChain = user?.homeChains.get(body.homeChainId);
+    if (!homeChain) {
+      return NextResponse.json(
+        {
+          error: "user / home chain combination not found",
+        },
+        { status: 400 },
+      );
+    }
+  } else {
+    console.warn("incoming device key: " + JSON.stringify(body.deviceKeyPair));
+    invariant(body.deviceKeyPair?.payload.privateKey, "pass in device key");
+    homeChain = {
+      zAuthKeyPair: body.deviceKeyPair.payload,
+      targetChain: {
+        publicKey: body.deviceKeyPair.payload.publicKey,
+        evmAddress: (
+          await generateEthereumAddresses(body.deviceKeyPair.payload)
+        ).evmUserContractAddress,
       },
-      { status: 401 },
-    );
+      proxyAddress: "MISSING",
+    };
   }
-
-  const UserModel = await connect();
-  const user = await UserModel.findOne({ userId });
-  const homeChain = user?.homeChains.get(body.homeChainId);
   if (!homeChain) {
     return NextResponse.json(
       {
@@ -64,12 +90,18 @@ export async function POST(request: Request) {
     config.paymaster.context,
   );
   const client = await Client.init(config.rpcUrl!);
-  const signer = new SecretJsSigner({
-    chainId: body.homeChainId,
-    zAuthKeyPair: homeChain.zAuthKeyPair,
-    proxyAddress: homeChain.proxyAddress,
-    targetChain: homeChain.targetChain,
-  });
+  /*const signer = new SecretJsSigner(
+    {
+      chainId: body.homeChainId,
+      zAuthKeyPair: homeChain.zAuthKeyPair,
+      proxyAddress: homeChain.proxyAddress,
+      targetChain: homeChain.targetChain,
+    },
+    homeChain.zAuthKeyPair,
+  );*/
+  const signer: Signer = new Wallet(
+    Buffer.from(homeChain.zAuthKeyPair.privateKey, "base64").toString("hex"),
+  );
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
     signer,
@@ -105,7 +137,6 @@ export async function POST(request: Request) {
   try {
     const builtUserOperation = await buildUserOperation();
     const userOperation = await handleUserOperation(builtUserOperation);
-    console.log("userOp", userOperation);
     const event = await userOperation.wait();
     console.log("event", event);
     return NextResponse.json(event);

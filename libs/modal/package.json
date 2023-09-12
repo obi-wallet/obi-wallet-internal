@@ -12,6 +12,7 @@
     "@react-navigation/native": "*",
     "@react-navigation/stack": "*",
     "buffer": "*",
+    "elliptic": "*",
     "ethers": "*",
     "mobx": "*",
     "mobx-react-lite": "*",

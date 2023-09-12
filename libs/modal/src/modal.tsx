@@ -3,10 +3,14 @@ import { Config } from "@obi-wallet/config";
 import {
   KeyType,
   ObservableMultisigWallet,
+  Secp256k1PrivateKeySigner,
   SignAndBroadcastTransactionUserInteraction,
   ZAuthKeySigner,
   createGatekeeperConfig,
+  Secp256k1PublicKey,
+  getOrCreateDeviceKeyPair,
 } from "@obi-wallet/sdk";
+import * as elliptic from "elliptic";
 import { ethers } from "ethers";
 import { autorun } from "mobx";
 import { observer } from "mobx-react-lite";
@@ -18,6 +22,12 @@ import { Provider } from "./provider";
 import { StateRenderer } from "./state-renderer";
 
 import "./vuplex-polyfill.js";
+
+export interface EthereumAccount {
+  publicKey: Secp256k1PublicKey;
+  evmSignerAddress: string;
+  evmUserContractAddress: string;
+}
 
 // eslint-disable-next-line mobx/missing-observer
 export function Modal({ config, env }: { config: Config; env: Env }) {
@@ -50,13 +60,13 @@ export const ModalWithoutProvider = observer(function ModalWithoutProvider() {
 
 const MessageHandlers = observer(function MessageHandlers() {
   const store = useStore();
-  // Enable auto-broadcast for ethereum demo
-  const autoBroadcast = store.configStore.config.ethereumBalances;
+  // TODO: More robust auto-broadcast handling
+  const autoBroadcast = false;
 
   useEffect(() => {
-    return autorun(() => {
+    return autorun(async () => {
       const address = store.configStore.config.ethereumBalances
-        ? store.sdkRootStore.ethereumDemoStore.ethereumAccount?.address
+        ? store.walletsStore.currentWallet?.evmUserContractAddress
         : store.walletsStore.address;
       // Expose current wallet address (or null) to the parent window
       postMessage({
@@ -84,8 +94,21 @@ const MessageHandlers = observer(function MessageHandlers() {
             store.walletsStore.currentWallet.owner.getUsableKeyOfType(
               KeyType.ZAuth,
             );
-          invariant(zAuthKey, "Wallet has no ZAuth key");
-          const signer = new ZAuthKeySigner(zAuthKey);
+          const deviceKey =
+            store.walletsStore.currentWallet.owner.getUsableKeyOfType(
+              KeyType.Device,
+            );
+          invariant(zAuthKey || deviceKey, "Wallet has no ZAuth or device key");
+          let signer;
+          if (zAuthKey) {
+            signer = new ZAuthKeySigner(zAuthKey);
+          } else if (deviceKey?.payload.privateKey) {
+            signer = new Secp256k1PrivateKeySigner(
+              deviceKey.payload.privateKey,
+            );
+          } else {
+            throw new Error("Wallet has no ZAuth or device key");
+          }
 
           const hash = ethers.hashMessage(data.payload);
           const response = `0x${Buffer.from(
@@ -103,15 +126,23 @@ const MessageHandlers = observer(function MessageHandlers() {
               // @ts-expect-error this is fine
               "*",
             );
+            console.log(JSON.stringify(message));
           } else {
             postMessage(message);
+            console.log(JSON.stringify(message));
           }
 
           break;
         }
 
         case "@obi/sign-and-broadcast-transaction": {
-          if (!store.walletsStore.currentWallet) return;
+          if (!store.walletsStore.currentWallet) {
+            console.log("no current wallet");
+            return;
+          } else {
+            console.log("current wallet retrieved");
+            console.log("payload", data.payload);
+          }
 
           const payload = Array.isArray(data.payload)
             ? {
@@ -138,15 +169,17 @@ const MessageHandlers = observer(function MessageHandlers() {
               // @ts-expect-error this is fine
               "*",
             );
+            console.log(JSON.stringify(message));
           } else {
             postMessage(message);
+            console.log(JSON.stringify(message));
           }
           break;
         }
         case "@obi/get-zauth-tokens": {
           const tokens = store.zauthStore.currentTokens;
           // error for expediency in unity
-          console.error("Get tokens: ", tokens);
+          console.log("Get tokens: ", tokens);
           const message = {
             type: "@obi/get-tokens-response",
             tokens: tokens,
@@ -156,6 +189,34 @@ const MessageHandlers = observer(function MessageHandlers() {
         }
         case "@obi/set-zauth-tokens": {
           store.zauthStore.setCurrentTokens(data.payload);
+          break;
+        }
+        case "@obi/get-signing-address": {
+          const base64PubKey =
+            store.walletsStore.currentWallet?.owner.getKeyOfType(KeyType.Device)
+              ?.publicKey.value;
+          // TODO: prompt for webauthn if no device pubkey
+          invariant(base64PubKey, "no device pubkey");
+          const pubKeyBuffer = Buffer.from(base64PubKey, "base64");
+          // Remove prefix byte (0x04) for uncompressed public keys
+          let keyBytes: Buffer;
+          if (pubKeyBuffer.length === 65 && pubKeyBuffer[0] === 0x04) {
+            keyBytes = pubKeyBuffer.slice(1);
+          } else {
+            keyBytes = pubKeyBuffer;
+          }
+          const pubKeyHex = keyBytes.toString("hex");
+          // Decompress the public key
+          const ec = new elliptic.ec("secp256k1");
+          const keyPair = ec.keyFromPublic(pubKeyHex, "hex");
+          const decompressedPubKey = keyPair.getPublic(false, "hex");
+
+          const message = {
+            type: "@obi/signing-address-response",
+            payload: ethers.computeAddress("0x" + decompressedPubKey),
+          };
+          postMessage(message);
+          console.log(JSON.stringify(message));
           break;
         }
         case "@obi/create-account": {
@@ -184,14 +245,18 @@ const MessageHandlers = observer(function MessageHandlers() {
                 // @ts-expect-error this is fine
                 "*",
               );
+              console.log(JSON.stringify(message));
             } else {
               postMessage(message);
+              console.log(JSON.stringify(message));
             }
             return;
           }
 
           const { publicKey, proxyAddress, ethereumAccount, newUser } =
             await response.json();
+          const evmAccount: EthereumAccount = ethereumAccount;
+          console.log("evm account is: " + JSON.stringify(evmAccount));
 
           const wallet = ObservableMultisigWallet.create({
             type: "multisig",
@@ -222,6 +287,9 @@ const MessageHandlers = observer(function MessageHandlers() {
             proxyAddress,
             ethereumAccount,
           );
+          const [kp, _] = await getOrCreateDeviceKeyPair(false, false);
+          wallet.setEvmSigningAddress(kp.privateKey);
+          wallet.setEvmUserContractAddress(evmAccount.evmUserContractAddress);
           store.walletsStore.upsertWallet(wallet);
 
           const message = {
@@ -237,8 +305,10 @@ const MessageHandlers = observer(function MessageHandlers() {
               // @ts-expect-error this is fine
               "*",
             );
+            console.log(JSON.stringify(message));
           } else {
             postMessage(message);
+            console.log(JSON.stringify(message));
           }
           break;
         }

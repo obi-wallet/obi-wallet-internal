@@ -1,11 +1,16 @@
 import { useTheme } from "@emotion/react";
-import { KeyType, MultisigKey } from "@obi-wallet/sdk";
+import {
+  KeyType,
+  MultisigKey,
+  getOrCreateDeviceKeyPair,
+} from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
+import invariant from "tiny-invariant";
 
 import { useStore } from "../../../contexts";
-import { Alert, createSessionKey } from "../../../helpers";
+import { Alert } from "../../../helpers";
 import {
   KeyFlow,
   KeyRoute,
@@ -40,26 +45,41 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             multisigKey: draft.value,
             demoMode: params.demoMode,
           });
-
           if (!response.approved) return;
           if (!response.payload.success) {
             console.log(response.payload.originalPayload);
             Alert.alert("Something went wrong", response.payload.description);
             return;
           }
+          // TODO: migrate to key management; currently derived from device key
+          const [deviceKey, _] = await getOrCreateDeviceKeyPair(true, false);
+          invariant(
+            deviceKey?.privateKey,
+            "Wallet must have a device public key",
+          );
+
+          let wallet;
           if (theme.loginModal) {
-            const wallet = walletsStore.currentWallet;
+            wallet = walletsStore.currentWallet;
             if (!wallet) {
               console.log("no wallet");
               return;
+            } else {
+              wallet.setEvmSigningAddress(deviceKey?.privateKey);
             }
-
-            await createSessionKey({
-              wallet,
-              maxSpend: 5,
-              isLogin: true,
-            });
           }
+        }}
+        onAddZAuth={() => {
+          navigation.navigate(KeyRoute.ZAuthKey, {
+            ...params,
+            flow: KeyFlow.CreateWallet,
+          });
+        }}
+        onAddPhone={() => {
+          navigation.navigate(KeyRoute.PhoneKeyRequest, {
+            ...params,
+            flow: KeyFlow.CreateWallet,
+          });
         }}
         onAddSocial={() => {
           navigation.navigate(KeyRoute.SocialKey, {
@@ -94,6 +114,8 @@ export interface CreateWalletProps {
   draftId: string;
 
   onSubmit(): void;
+  onAddZAuth(): void;
+  onAddPhone(): void;
   onAddSocial(): void;
   onAddNfc(): void;
   onAddCloud(): void;
@@ -103,6 +125,8 @@ export interface CreateWalletProps {
 export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   draftId,
   onSubmit,
+  onAddZAuth,
+  onAddPhone,
   onAddNfc,
   onAddSocial,
   onAddCloud,
@@ -111,6 +135,8 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   const { draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
+  const hasZAuthKey = draft.value.hasKeyOfType(KeyType.ZAuth);
+  const hasPhoneKey = draft.value.hasKeyOfType(KeyType.Phone);
   const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
   const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
   const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
@@ -122,6 +148,17 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
       title="Create Wallet"
       subTitle="Add keys to improve security."
       actions={{
+        [KeyType.ZAuth]: hasZAuthKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeKeyOfType(KeyType.ZAuth);
+              },
+            }
+          : {
+              label: "Add",
+              onPress: onAddZAuth,
+            },
         [KeyType.Social]: hasSocialKey
           ? {
               label: "Remove",
@@ -132,6 +169,17 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
           : {
               label: "Add",
               onPress: onAddSocial,
+            },
+        [KeyType.Phone]: hasPhoneKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeKeyOfType(KeyType.Phone);
+              },
+            }
+          : {
+              label: "Add",
+              onPress: onAddPhone,
             },
         [KeyType.Nfc]: hasNfcKey
           ? {

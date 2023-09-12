@@ -7,12 +7,15 @@ import {
   Secp256k1PrivateKeySigner,
   Signer,
   TwilioClientInterface,
+  ZAuthKeySigner,
+  getDevicePrivateKey,
+  getOrCreateDeviceKeyPair,
 } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
 import { NfcKeySigner } from "./nfc-key-signer";
 import { Env } from "../../../../contexts";
-import { getDevicePrivateKey, getTwilioClient } from "../../../../keys";
+import { getTwilioClient } from "../../../../keys";
 
 export async function createUsableSigners({
   multisigKey,
@@ -69,6 +72,8 @@ async function createUsableSigner({
   env: Env;
 }): Promise<Signer | null> {
   switch (key.type) {
+    case KeyType.ZAuth:
+      return new ZAuthKeySigner(key);
     case KeyType.Device: {
       if (!(await getDevicePrivateKey(key))) {
         return null;
@@ -106,9 +111,17 @@ export class DeviceKeySigner extends Signer {
   }
 
   public async signHash(hash: Uint8Array) {
-    const privateKey = await getDevicePrivateKey(this.key);
-    invariant(privateKey, "Expected private key to exist.");
-    return new Secp256k1PrivateKeySigner(privateKey).signHash(hash);
+    const isUVPAA =
+      await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+    if (isUVPAA) {
+      const [kp, _] = await getOrCreateDeviceKeyPair(false, false);
+      invariant(kp, "device keypair not obtained");
+      return new Secp256k1PrivateKeySigner(kp.privateKey).signHash(hash);
+    } else {
+      const privateKey = await getDevicePrivateKey(this.key);
+      invariant(privateKey, "Expected private key to exist.");
+      return new Secp256k1PrivateKeySigner(privateKey).signHash(hash);
+    }
   }
 }
 

@@ -219,8 +219,8 @@ export const SendScreenComponent = observer<
                 if (!wallet.address) return [];
 
                 if (configStore.config.ethereumBalances) {
-                  console.warn("sending as userop...");
-                  console.warn(
+                  console.log("sending as userop...");
+                  console.log(
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     `sending ${(data.token as any).rawAmount} ${
                       data.token.id

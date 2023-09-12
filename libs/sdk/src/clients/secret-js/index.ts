@@ -116,7 +116,7 @@ export class SecretJsClient extends AbstractClient {
         toBase64(signedTransaction),
         {
           ...this.defaultTxOptions,
-          broadcastMode: BroadcastMode.Async,
+          broadcastMode: BroadcastMode.Sync,
           waitForCommit: false,
         },
       );
@@ -126,11 +126,19 @@ export class SecretJsClient extends AbstractClient {
       const rawResult = await client.query.getTx(transactionHash);
 
       if (!rawResult) {
+        const res = await client.tx.broadcastSignedTx(
+          toBase64(signedTransaction),
+          {
+            ...this.defaultTxOptions,
+            broadcastMode: BroadcastMode.Block,
+            waitForCommit: false,
+          },
+        );
         return {
-          success: false,
-          transactionHash,
-          rawLog: "",
-          rawResult: null,
+          success: res.code === 0,
+          transactionHash: res.transactionHash,
+          rawLog: res.rawLog,
+          rawResult: res,
         };
       }
 
@@ -149,8 +157,8 @@ export class SecretJsClient extends AbstractClient {
 
   public get defaultTxOptions(): TxOptions {
     return {
-      gasLimit: 1_000_000,
-      gasPriceInFeeDenom: 0.1,
+      gasLimit: 400_000,
+      gasPriceInFeeDenom: 0.05,
       feeDenom: this.chain.denom,
       broadcastMode: BroadcastMode.Block,
     };

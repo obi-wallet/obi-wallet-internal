@@ -1,7 +1,6 @@
 import {
   AccountsScreen,
   CloudKeyScreen,
-  createDeviceKeyPair,
   CreateWalletScreen,
   DeviceKeyScreen,
   EmailKeyScreen,
@@ -25,7 +24,10 @@ import {
   useStore,
   WelcomeScreen,
 } from "@obi-wallet/common";
-import { ObservableMultisigKey } from "@obi-wallet/sdk";
+import {
+  ObservableMultisigKey,
+  getOrCreateDeviceKeyPair,
+} from "@obi-wallet/sdk";
 import type { Meta, StoryObj } from "@storybook/react";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
@@ -45,7 +47,8 @@ const MultisigDraft = {
     useAsyncEffect(async () => {
       if (!draft) {
         const original = ObservableMultisigKey.create(chainStore.currentChain);
-        original.setDeviceKey(createDeviceKeyPair(true));
+        const [key, _] = await getOrCreateDeviceKeyPair(false, false);
+        original.setDeviceKey(key);
         original.setPhoneKey({
           publicKey: await getTwilioClient({
             demoMode: true,

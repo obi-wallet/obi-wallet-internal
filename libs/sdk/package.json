@@ -10,6 +10,8 @@
     "axios": "*",
     "bignumber.js": "*",
     "crypto-js": "*",
+    "elliptic": "*",
+    "ethers": "*",
     "eventemitter3": "*",
     "isomorphic-unfetch": "*",
     "jscrypto": "*",
@@ -17,11 +19,15 @@
     "nanoid": "*",
     "otplib": "*",
     "ramda": "*",
+    "react-native-device-info": "*",
+    "react-native-keychain": "*",
     "secretjs": "*",
     "secp256k1": "*",
     "tiny-invariant": "*",
     "tiny-warning": "*",
-    "zod": "*"
+    "userop": "*",
+    "zod": "*",
+    "@github/webauthn-json": "*"
   },
   "devDependencies": {
     "@faker-js/faker": "*",

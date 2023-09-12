@@ -3,6 +3,7 @@ import {
   generateSec256k1KeyPair,
   Secp256k1KeyPair,
   Secp256k1PublicKey,
+  SecretJsChainId,
   secretJsChains,
   SecretJsClient,
   TargetChain,
@@ -15,18 +16,7 @@ import { Presets } from "userop";
 import { HomeChainWithId } from "./db/schema";
 import { getFeeLender } from "./fee-lender";
 
-export async function recoverOrCreateEthereumAccount(
-  homeChain: HomeChainWithId,
-) {
-  try {
-    return await recoverEthereumAccount(homeChain);
-  } catch (e) {
-    console.log(e);
-    return await generateEthereumAccount(homeChain);
-  }
-}
-
-async function recoverEthereumAccount({
+export async function recoverEthereumAccount({
   targetChain,
 }: HomeChainWithId): Promise<{
   publicKey: Secp256k1PublicKey;
@@ -40,14 +30,15 @@ async function recoverEthereumAccount({
 
 export async function generateEthereumAccount({
   chainId,
-  zAuthKeyPair,
-}: Omit<
-  HomeChainWithId,
-  "targetChain" | "proxyAddress"
->): Promise<EthereumAccount> {
+  keyPair,
+}: {
+  chainId: SecretJsChainId;
+  keyPair: Secp256k1KeyPair;
+}): Promise<EthereumAccount> {
   const chain = secretJsChains[chainId];
   const ethKeyPair = generateSec256k1KeyPair();
-  const address = await generateEthereumAddress(ethKeyPair);
+  const { evmSignerAddress, evmUserContractAddress } =
+    await generateEthereumAddresses(ethKeyPair);
 
   const client = new SecretJsClient(chainId);
   const { wallet, signer } = getFeeLender(chainId);
@@ -60,10 +51,9 @@ export async function generateEthereumAccount({
         contract_address: chain.secretSigner.address,
         msg: {
           add_key: {
-            public_key: Buffer.from(
-              zAuthKeyPair.publicKey.value,
-              "base64",
-            ).toString("hex"),
+            public_key: Buffer.from(keyPair.publicKey.value, "base64").toString(
+              "hex",
+            ),
             user_entry_address: null,
             user_entry_code_hash: null,
             inject_privkey: Buffer.from(
@@ -83,11 +73,12 @@ export async function generateEthereumAccount({
 
   return {
     publicKey: ethKeyPair.publicKey,
-    address,
+    evmSignerAddress,
+    evmUserContractAddress,
   };
 }
 
-export async function generateEthereumAddress(keyPair: Secp256k1KeyPair) {
+export async function generateEthereumAddresses(keyPair: Secp256k1KeyPair) {
   const config = getConfig(TargetChain.EthereumMainnet)!;
   const signingKey = new SigningKey(Buffer.from(keyPair.privateKey, "base64"));
   const signer: Signer = new Wallet(signingKey);
@@ -96,7 +87,10 @@ export async function generateEthereumAddress(keyPair: Secp256k1KeyPair) {
     signer,
     config.rpcUrl,
   );
-  return simpleAccount.getSender();
+  return {
+    evmSignerAddress: await signer.getAddress(),
+    evmUserContractAddress: simpleAccount.getSender(),
+  };
 }
 
 export function getConfig(chainId: TargetChainId) {

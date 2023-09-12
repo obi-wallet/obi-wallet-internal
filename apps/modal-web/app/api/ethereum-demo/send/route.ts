@@ -1,3 +1,5 @@
+// use client
+import { getOrCreateDeviceKeyPair } from "@obi-wallet/sdk";
 import {
   Secp256k1PublicKey,
   SecretJsChainId,
@@ -6,6 +8,7 @@ import {
 import { Contract, JsonRpcProvider, parseUnits } from "ethers";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import invariant from "tiny-invariant";
 import { Client, IUserOperation, Presets } from "userop";
 
 import { connect } from "../../../../src/db";
@@ -69,12 +72,22 @@ export async function POST(request: Request) {
   );
   const client = await Client.init(config.rpcUrl!);
   const amount = parseUnits(body.token.rawAmount, 0);
-  const signer = new SecretJsSigner({
-    chainId: body.homeChainId,
-    zAuthKeyPair: homeChain.zAuthKeyPair,
-    proxyAddress: homeChain.proxyAddress,
-    targetChain: homeChain.targetChain,
-  });
+  let signingKey, _;
+  if (!homeChain.zAuthKeyPair) {
+    [signingKey, _] = await getOrCreateDeviceKeyPair(false, false);
+  } else {
+    signingKey = homeChain.zAuthKeyPair;
+  }
+  invariant(signingKey, "signingKey must be defined");
+  const signer = new SecretJsSigner(
+    {
+      chainId: body.homeChainId,
+      zAuthKeyPair: homeChain.zAuthKeyPair,
+      proxyAddress: homeChain.proxyAddress,
+      targetChain: homeChain.targetChain,
+    },
+    signingKey,
+  );
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
     signer,

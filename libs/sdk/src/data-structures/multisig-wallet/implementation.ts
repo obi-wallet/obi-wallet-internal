@@ -1,4 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { Wallet } from "ethers";
 import * as R from "ramda";
 
 import { MultisigWalletSchema } from "./schema";
@@ -41,6 +42,8 @@ export class MultisigWallet {
     protected _chainId: ChainId,
     protected _owner: MultisigKey,
     protected _proxyAddress: string,
+    protected _evmSigningAddress: string,
+    protected _evmUserContractAddress: string,
     protected _gatekeeperConfig: GatekeeperConfig,
     protected _singlesigWallets: SinglesigWallet[],
     protected _currentAccount: CurrentAccountMeta | null,
@@ -83,6 +86,14 @@ export class MultisigWallet {
 
   public get chain() {
     return Chain.information(this._chainId);
+  }
+
+  public get evmUserContractAddress() {
+    return this._evmUserContractAddress;
+  }
+
+  public get evmSigningAddress() {
+    return this._evmSigningAddress;
   }
 
   public get isDemo() {
@@ -157,6 +168,19 @@ export class MultisigWallet {
 
   public setCurrentAccountByMeta(account: CurrentAccountMeta | null) {
     this._currentAccount = account;
+  }
+
+  public setEvmUserContractAddress(address: string) {
+    this._evmUserContractAddress = address;
+  }
+
+  /// Also sets contract address, via paymaster
+  public setEvmSigningAddress(base64PrivKey: string) {
+    const wallet = new Wallet(
+      Buffer.from(base64PrivKey, "base64").toString("hex"),
+    );
+    // convert this base64 string pubKey to an ethereum address
+    this._evmSigningAddress = wallet.address;
   }
 
   public get owner() {

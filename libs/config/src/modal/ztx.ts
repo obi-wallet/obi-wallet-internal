@@ -4,6 +4,9 @@ import { ztxTheme } from "@obi-wallet/theme";
 import { obiModalConfig } from "./obi";
 import { Config } from "../config";
 
+/// `enabled` determines which keys show in key settings;
+/// `required` is which keys are shown by default during onboarding steps
+/// TODO: add a `minimumKeys` here which ZAuth can ignore
 export const ztxModalConfig: Config = {
   ...obiModalConfig,
   theme: ztxTheme,
@@ -12,8 +15,8 @@ export const ztxModalConfig: Config = {
     default: "secret-4",
   },
   keys: {
-    enabled: [KeyType.ZAuth, KeyType.Phone],
-    required: [KeyType.ZAuth, KeyType.Phone],
+    enabled: [KeyType.ZAuth, KeyType.Phone, KeyType.Device, KeyType.Email],
+    required: [KeyType.Device],
     comingSoon: [],
   },
   ethereumBalances: true,
