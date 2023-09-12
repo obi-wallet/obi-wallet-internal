@@ -75,12 +75,25 @@ export async function getOrCreateDeviceKeyPair(
   allowCreate: boolean,
   demoMode: boolean,
 ): Promise<[Secp256k1KeyPair, boolean]> {
-  const isUVPAA =
-    await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-  if (isUVPAA) {
+  let tryWebAuthN = true;
+  if (typeof window !== 'undefined' && typeof PublicKeyCredential !== 'undefined') {
     try {
-      const challenge = new Uint8Array(32); // Normally, this challenge is provided by the server.
-      window.crypto.getRandomValues(challenge);
+        const isUVPAA =
+            await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+        tryWebAuthN = isUVPAA;
+    } catch (e) {
+        // Handle the error appropriately here
+    }
+  }
+  if (tryWebAuthN) {
+    try {
+      let challenge = new Uint8Array(32); // Normally, this challenge is provided by the server.
+      if (typeof window !== 'undefined') {
+          window.crypto.getRandomValues(challenge);
+      } else {
+          const crypto = require('crypto');
+          challenge = crypto.randomBytes(32);
+      }
 
       const publicKey: CustomPublicKeyCredentialCreationOptions = {
         challenge: btoa(String.fromCharCode(...challenge)),

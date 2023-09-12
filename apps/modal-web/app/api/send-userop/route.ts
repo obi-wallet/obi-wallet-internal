@@ -10,8 +10,9 @@ import { Client, IUserOperation, Presets } from "userop";
 
 import { connect } from "../../../src/db";
 import { SecretJsSigner } from "../../../src/secret-js-signer";
-import { getConfig } from "../../../src/stackup";
+import { generateEthereumAddresses, getConfig } from "../../../src/stackup";
 import { fetchUserId } from "../../../src/zauth";
+import { HomeChain } from "apps/modal-web/src/db/schema";
 
 export async function POST(request: Request) {
   const body: {
@@ -20,8 +21,8 @@ export async function POST(request: Request) {
     contractAddress: string;
     data: string;
     tokens: {
-      accessToken: string;
-      refreshToken: string;
+      accessToken?: string;
+      refreshToken?: string;
     };
   } = await request.json();
 
@@ -32,18 +33,30 @@ export async function POST(request: Request) {
 
   const userId = accessToken ? await fetchUserId(accessToken) : null;
 
-  if (!accessToken || !refreshToken || !userId) {
-    return NextResponse.json(
-      {
-        error: "invalid token",
+  let homeChain: HomeChain | undefined;
+  if (accessToken && refreshToken && userId) {
+    const UserModel = await connect();
+    const user = await UserModel.findOne({ userId });
+    const homeChain = user?.homeChains.get(body.homeChainId);
+    if (!homeChain) {
+      return NextResponse.json(
+        {
+          error: "user / home chain combination not found",
+        },
+        { status: 400 },
+      );
+    }
+  } else {
+    let [deviceKeyPair, _] = await getOrCreateDeviceKeyPair(false, false);
+    homeChain = {
+      zAuthKeyPair: deviceKeyPair,
+      targetChain: {
+        publicKey: deviceKeyPair.publicKey,
+        evmAddress: (await generateEthereumAddresses(deviceKeyPair)).evmUserContractAddress
       },
-      { status: 401 },
-    );
+      proxyAddress: "MISSING"
+    };
   }
-
-  const UserModel = await connect();
-  const user = await UserModel.findOne({ userId });
-  const homeChain = user?.homeChains.get(body.homeChainId);
   if (!homeChain) {
     return NextResponse.json(
       {
@@ -68,12 +81,6 @@ export async function POST(request: Request) {
     config.paymaster.context,
   );
   const client = await Client.init(config.rpcUrl!);
-  let signingKey, _;
-  if (!homeChain.zAuthKeyPair) {
-    [signingKey, _] = await getOrCreateDeviceKeyPair(false, false);
-  } else {
-    signingKey = homeChain.zAuthKeyPair;
-  }
   const signer = new SecretJsSigner(
     {
       chainId: body.homeChainId,
@@ -81,7 +88,7 @@ export async function POST(request: Request) {
       proxyAddress: homeChain.proxyAddress,
       targetChain: homeChain.targetChain,
     },
-    signingKey,
+    homeChain.zAuthKeyPair,
   );
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
