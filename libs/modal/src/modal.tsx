@@ -241,6 +241,7 @@ const MessageHandlers = observer(function MessageHandlers() {
             proxyAddress,
             ethereumAccount,
           );
+          wallet.setEvmAddress(ethereumAccount.publicKey.value);
           store.walletsStore.upsertWallet(wallet);
 
           const message = {
