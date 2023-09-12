@@ -19815,7 +19815,7 @@ __metadata:
     typedoc: ^0.24.8
     typescript: ^5.1.6
     unfetch: ^5.0.0
-    userop: ^0.3.1
+    userop: ^0.3.3
     vite: ^4.4.4
     web3: ^4.0.3
     webpack: ^5.88.2
@@ -25664,12 +25664,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"userop@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "userop@npm:0.3.1"
+"userop@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "userop@npm:0.3.3"
   dependencies:
     ethers: ^5.7.2
-  checksum: 251b3d70c937f9c73aed6e2db978a2c50697533c832223795d7a0bc371e092cfa74cc8c7b95644855397d69e8e86d16d5ccfbf622d0073d6277d1aa6404890a5
+  checksum: 62130dd479f130c378319010ebbb33e665e1a9e37575d4b8b41b8428c8bcd35df4d4fdf4ed18dd89f703d6739e4ad47897f50db13e2c6495c10c25e388fff04c
   languageName: node
   linkType: hard
 

@@ -1,6 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import * as elliptic from "elliptic";
-import { ethers } from "ethers";
+import { Wallet } from "ethers";
 import * as R from "ramda";
 
 import { MultisigWalletSchema } from "./schema";
@@ -176,23 +175,12 @@ export class MultisigWallet {
   }
 
   /// Also sets contract address, via paymaster
-  public setEvmSigningAddress(base64PubKey: string) {
+  public setEvmSigningAddress(base64PrivKey: string) {
+    const wallet = new Wallet(
+      Buffer.from(base64PrivKey, "base64").toString("hex"),
+    );
     // convert this base64 string pubKey to an ethereum address
-    const pubKeyBuffer = Buffer.from(base64PubKey, "base64");
-    // Remove prefix byte (0x04) for uncompressed public keys
-    let keyBytes: Buffer;
-    if (pubKeyBuffer.length === 65 && pubKeyBuffer[0] === 0x04) {
-      keyBytes = pubKeyBuffer.slice(1);
-    } else {
-      keyBytes = pubKeyBuffer;
-    }
-    const pubKeyHex = keyBytes.toString("hex");
-    // Decompress the public key
-    const ec = new elliptic.ec("secp256k1");
-    const keyPair = ec.keyFromPublic(pubKeyHex, "hex");
-    const decompressedPubKey = keyPair.getPublic(false, "hex");
-
-    this._evmSigningAddress = ethers.computeAddress("0x" + decompressedPubKey);
+    this._evmSigningAddress = wallet.address;
   }
 
   public get owner() {

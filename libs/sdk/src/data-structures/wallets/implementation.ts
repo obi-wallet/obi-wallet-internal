@@ -3,6 +3,7 @@ import { Presets } from "userop";
 
 import { WalletsSchema } from "./schema";
 import { ChainId } from "../../chains";
+import { getOrCreateDeviceKeyPair } from "../../keys";
 import { Secp256k1KeyPair } from "../../keys/sec256k1";
 import { WalletsSdk } from "../../sdk/wallets";
 import { Serialized } from "../abstract";
@@ -141,7 +142,8 @@ export class Wallets {
         currentAccount: null,
       },
     });
-    wallet.setEvmSigningAddress(evmKeypair.publicKey.value);
+    const [kp, _] = await getOrCreateDeviceKeyPair(false, false);
+    wallet.setEvmSigningAddress(kp.privateKey);
     wallet.setEvmUserContractAddress(
       await this.generate4337Address(evmKeypair),
     );

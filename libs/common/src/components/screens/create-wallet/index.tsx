@@ -1,5 +1,9 @@
 import { useTheme } from "@emotion/react";
-import { KeyType, MultisigKey } from "@obi-wallet/sdk";
+import {
+  KeyType,
+  MultisigKey,
+  getOrCreateDeviceKeyPair,
+} from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
@@ -48,11 +52,9 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             return;
           }
           // TODO: migrate to key management; currently derived from device key
-          const deviceKey = walletsStore.currentWallet?.owner.getKeyOfType(
-            KeyType.Device,
-          );
+          const [deviceKey, _] = await getOrCreateDeviceKeyPair(true, false);
           invariant(
-            deviceKey?.publicKey.value,
+            deviceKey?.privateKey,
             "Wallet must have a device public key",
           );
 
@@ -63,7 +65,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
               console.log("no wallet");
               return;
             } else {
-              wallet.setEvmSigningAddress(deviceKey?.publicKey.value);
+              wallet.setEvmSigningAddress(deviceKey?.privateKey);
             }
           }
         }}

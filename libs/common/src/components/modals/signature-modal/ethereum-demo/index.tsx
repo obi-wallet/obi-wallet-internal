@@ -12,7 +12,6 @@ import * as R from "ramda";
 import { useEffectOnceWhen } from "rooks";
 
 import { useStore } from "../../../../contexts";
-import { UsableKey } from "libs/sdk/src/data-structures/key/implementation";
 
 export type SignatureModalEthereumDemoProps = {
   interaction: SignAndBroadcastTransactionUserInteraction;
@@ -65,22 +64,43 @@ export const SignatureModalEthereumDemo =
                 };
               };
           const wallet = sdkRootStore.walletsStore.currentWallet;
-          let kp: any;
+          let kp: {
+            type: KeyType;
+            payload: {
+              publicKey: {
+                value: string;
+                type: string;
+              };
+              privateKey: string;
+            };
+          };
           const zAuthKey = wallet?.owner.getUsableKeyOfType(KeyType.ZAuth);
           if (!zAuthKey) {
-            let [deviceKeyPair, _] = await getOrCreateDeviceKeyPair(false, false);
+            const [deviceKeyPair, _] = await getOrCreateDeviceKeyPair(
+              false,
+              false,
+            );
             kp = {
               type: KeyType.Device,
               payload: {
                 publicKey: {
-                  value: deviceKeyPair.publicKey,
-                  type: "tendermint/PubKeySecp256k1"
-                }
-              }
-            }
-            console.log("using device key");
+                  value: deviceKeyPair.publicKey.value,
+                  type: "tendermint/PubKeySecp256k1",
+                },
+                privateKey: deviceKeyPair.privateKey,
+              },
+            };
           } else {
-            kp = zAuthKey;
+            kp = {
+              type: KeyType.ZAuth,
+              payload: {
+                publicKey: {
+                  value: zAuthKey.publicKey.value,
+                  type: zAuthKey.publicKey.type,
+                },
+                privateKey: "",
+              },
+            };
             console.log("using zauthkey");
           }
 
@@ -93,10 +113,11 @@ export const SignatureModalEthereumDemo =
                   targetChainId:
                     interaction.payload.targetChainId ??
                     TargetChain.ArbitrumOneGoerliTestnet,
-                  publicKey: kp?.publicKey,
+                  publicKey: kp?.payload.publicKey,
                   contractAddress: message.userop.contractAddress,
                   data: message.userop.callData,
                   tokens: message.userop.tokens,
+                  deviceKeyPair: kp?.payload,
                 }),
               });
             }
@@ -108,10 +129,11 @@ export const SignatureModalEthereumDemo =
                 targetChainId:
                   interaction.payload.targetChainId ??
                   TargetChain.ArbitrumOneGoerliTestnet,
-                publicKey: kp?.publicKey,
+                publicKey: kp?.payload.publicKey,
                 contractAddress: message.eth.contractAddress,
                 data: encodeCallData(message.eth),
                 tokens: message.eth.tokens,
+                deviceKeyPair: kp.payload,
               }),
             });
           }

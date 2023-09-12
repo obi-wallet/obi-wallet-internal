@@ -1,18 +1,20 @@
 import {
+  Secp256k1KeyPair,
   SecretJsChainId,
   TargetChainId,
-  getOrCreateDeviceKeyPair,
 } from "@obi-wallet/sdk";
 // import { Signer, SigningKey, Wallet } from "ethers";
+import { HomeChain } from "apps/modal-web/src/db/schema";
+import { Signer, Wallet } from "ethers";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import invariant from "tiny-invariant";
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { Client, IUserOperation, Presets } from "userop";
 
 import { connect } from "../../../src/db";
-import { SecretJsSigner } from "../../../src/secret-js-signer";
 import { generateEthereumAddresses, getConfig } from "../../../src/stackup";
 import { fetchUserId } from "../../../src/zauth";
-import { HomeChain } from "apps/modal-web/src/db/schema";
 
 export async function POST(request: Request) {
   const body: {
@@ -23,6 +25,11 @@ export async function POST(request: Request) {
     tokens: {
       accessToken?: string;
       refreshToken?: string;
+    };
+    // need to handle outside instead, and split this into two routes
+    deviceKeyPair?: {
+      type: string;
+      payload: Secp256k1KeyPair;
     };
   } = await request.json();
 
@@ -47,14 +54,17 @@ export async function POST(request: Request) {
       );
     }
   } else {
-    let [deviceKeyPair, _] = await getOrCreateDeviceKeyPair(false, false);
+    console.warn("incoming device key: " + JSON.stringify(body.deviceKeyPair));
+    invariant(body.deviceKeyPair?.payload.privateKey, "pass in device key");
     homeChain = {
-      zAuthKeyPair: deviceKeyPair,
+      zAuthKeyPair: body.deviceKeyPair.payload,
       targetChain: {
-        publicKey: deviceKeyPair.publicKey,
-        evmAddress: (await generateEthereumAddresses(deviceKeyPair)).evmUserContractAddress
+        publicKey: body.deviceKeyPair.payload.publicKey,
+        evmAddress: (
+          await generateEthereumAddresses(body.deviceKeyPair.payload)
+        ).evmUserContractAddress,
       },
-      proxyAddress: "MISSING"
+      proxyAddress: "MISSING",
     };
   }
   if (!homeChain) {
@@ -81,7 +91,7 @@ export async function POST(request: Request) {
     config.paymaster.context,
   );
   const client = await Client.init(config.rpcUrl!);
-  const signer = new SecretJsSigner(
+  /*const signer = new SecretJsSigner(
     {
       chainId: body.homeChainId,
       zAuthKeyPair: homeChain.zAuthKeyPair,
@@ -89,6 +99,9 @@ export async function POST(request: Request) {
       targetChain: homeChain.targetChain,
     },
     homeChain.zAuthKeyPair,
+  );*/
+  const signer: Signer = new Wallet(
+    Buffer.from(homeChain.zAuthKeyPair.privateKey, "base64").toString("hex"),
   );
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
@@ -125,7 +138,6 @@ export async function POST(request: Request) {
   try {
     const builtUserOperation = await buildUserOperation();
     const userOperation = await handleUserOperation(builtUserOperation);
-    console.log("userOp", userOperation);
     const event = await userOperation.wait();
     console.log("event", event);
     return NextResponse.json(event);
