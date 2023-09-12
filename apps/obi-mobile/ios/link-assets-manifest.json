@@ -152,6 +152,22 @@
     {
       "path": "../../libs/mobile/src/assets/fonts/Poppins/Poppins-ThinItalic.ttf",
       "sha1": "fb8fccca21550e71135f92bbaf8a2e8a12c90465"
+    },
+    {
+      "path": "../../libs/mobile/src/assets/fonts/Sci Fi Bronze/SciFiBronze-Regular.eot",
+      "sha1": "2e19827d2d7b38db06460a0006c8a8c784e73c13"
+    },
+    {
+      "path": "../../libs/mobile/src/assets/fonts/Sci Fi Bronze/SciFiBronze-Regular.ttf",
+      "sha1": "9c4995488d98b06aab0be1029322bfefdb4b324a"
+    },
+    {
+      "path": "../../libs/mobile/src/assets/fonts/Sci Fi Bronze/SciFiBronze-Regular.woff",
+      "sha1": "d8956b1f52f7a1142828efd40ce6b9b3854469e8"
+    },
+    {
+      "path": "../../libs/mobile/src/assets/fonts/Sci Fi Bronze/SciFiBronze-Regular.woff2",
+      "sha1": "96eeead988f40a3822e12fdeeecde9a2fa3d82b8"
     }
   ]
 }

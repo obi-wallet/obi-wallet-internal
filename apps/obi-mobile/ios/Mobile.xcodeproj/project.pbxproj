@@ -12,6 +12,7 @@
 		0509669CE83D41FF956235EE /* Inter-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 5F32B54E35F54565911DD2EE /* Inter-Italic.otf */; };
 		089DA954C74546698AC6E6FB /* Inter-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = BE613EF4CDF14C9E9199ECEE /* Inter-Light.otf */; };
 		0AA1D1F907C940AFB244E854 /* Poppins-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0619193FD6EC4D5E958CA43E /* Poppins-SemiBoldItalic.ttf */; };
+		0CDBC9FD2AB07FC4007C2397 /* SciFiBronze-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0CDBC9FC2AB07FC4007C2397 /* SciFiBronze-Regular.ttf */; };
 		100474D9A4DB49CDB4969C9F /* Inter-BlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 617564C874F8499A8FB12966 /* Inter-BlackItalic.otf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -53,6 +54,9 @@
 		EA3F16BAA1E344D888E09F70 /* Poppins-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EF652EEFD2004A2E87B341BF /* Poppins-BoldItalic.ttf */; };
 		EC2640E8B3DC4CC0BB9F1A48 /* Poppins-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A9FB50AC247D410191AD24F6 /* Poppins-Italic.ttf */; };
 		F682A400D26245CC8F0E85CC /* Inter-ExtraBoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = A8A6042534AC4770A14794C7 /* Inter-ExtraBoldItalic.otf */; };
+		1C7F75ED65684D14A941761C /* SciFiBronze-Regular.eot in Resources */ = {isa = PBXBuildFile; fileRef = E0F98C1879DE464BB0840A76 /* SciFiBronze-Regular.eot */; };
+		446602751D524BA59DA81ABB /* SciFiBronze-Regular.woff in Resources */ = {isa = PBXBuildFile; fileRef = DF55D1D5168E4CF4AF6B17C2 /* SciFiBronze-Regular.woff */; };
+		62CF99B1A89F4051A476CFC1 /* SciFiBronze-Regular.woff2 in Resources */ = {isa = PBXBuildFile; fileRef = 84D2196C70D64D2CAE2F5544 /* SciFiBronze-Regular.woff2 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +74,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* MobileTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MobileTests.m; sourceTree = "<group>"; };
 		0619193FD6EC4D5E958CA43E /* Poppins-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBoldItalic.ttf"; path = "../../../libs/mobile/src/assets/fonts/Poppins/Poppins-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		0CDBC9FC2AB07FC4007C2397 /* SciFiBronze-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SciFiBronze-Regular.ttf"; path = "../../../libs/mobile/src/assets/fonts/Sci Fi Bronze/SciFiBronze-Regular.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Mobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Mobile/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = Mobile/AppDelegate.mm; sourceTree = "<group>"; };
@@ -123,6 +128,9 @@
 		EDFF299025684958B9C97483 /* Poppins-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBold.ttf"; path = "../../../libs/mobile/src/assets/fonts/Poppins/Poppins-ExtraBold.ttf"; sourceTree = "<group>"; };
 		EF652EEFD2004A2E87B341BF /* Poppins-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-BoldItalic.ttf"; path = "../../../libs/mobile/src/assets/fonts/Poppins/Poppins-BoldItalic.ttf"; sourceTree = "<group>"; };
 		FA78CC669352C60AEDCE53BF /* Pods-Mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Mobile.release.xcconfig"; path = "Target Support Files/Pods-Mobile/Pods-Mobile.release.xcconfig"; sourceTree = "<group>"; };
+		E0F98C1879DE464BB0840A76 /* SciFiBronze-Regular.eot */ = {isa = PBXFileReference; name = "SciFiBronze-Regular.eot"; path = "../../../libs/mobile/src/assets/fonts/Sci Fi Bronze/SciFiBronze-Regular.eot"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		DF55D1D5168E4CF4AF6B17C2 /* SciFiBronze-Regular.woff */ = {isa = PBXFileReference; name = "SciFiBronze-Regular.woff"; path = "../../../libs/mobile/src/assets/fonts/Sci Fi Bronze/SciFiBronze-Regular.woff"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		84D2196C70D64D2CAE2F5544 /* SciFiBronze-Regular.woff2 */ = {isa = PBXFileReference; name = "SciFiBronze-Regular.woff2"; path = "../../../libs/mobile/src/assets/fonts/Sci Fi Bronze/SciFiBronze-Regular.woff2"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -223,6 +231,7 @@
 		B22B7902EC1F44C6938472BD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0CDBC9FC2AB07FC4007C2397 /* SciFiBronze-Regular.ttf */,
 				1792286172834019AF797849 /* Inter-Black.otf */,
 				617564C874F8499A8FB12966 /* Inter-BlackItalic.otf */,
 				26D36425B36B41C9952CE564 /* Inter-Bold.otf */,
@@ -261,6 +270,9 @@
 				68DB782AA85D4EEA95D95ABF /* Poppins-Thin.ttf */,
 				8F71A8E44E3F400ABB9F3208 /* Poppins-ThinItalic.ttf */,
 				151C5E7CED3F46BBBE16BF77 /* OFL.txt */,
+				E0F98C1879DE464BB0840A76 /* SciFiBronze-Regular.eot */,
+				DF55D1D5168E4CF4AF6B17C2 /* SciFiBronze-Regular.woff */,
+				84D2196C70D64D2CAE2F5544 /* SciFiBronze-Regular.woff2 */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -377,6 +389,7 @@
 				AEE1F8B15CF34FC9B1583E05 /* Inter-Black.otf in Resources */,
 				100474D9A4DB49CDB4969C9F /* Inter-BlackItalic.otf in Resources */,
 				0128FA47819B4790B3841946 /* Inter-Bold.otf in Resources */,
+				0CDBC9FD2AB07FC4007C2397 /* SciFiBronze-Regular.ttf in Resources */,
 				2826F97BBD914FC09367D896 /* Inter-BoldItalic.otf in Resources */,
 				BB6F916C488C45C5812A03AE /* Inter-ExtraBold.otf in Resources */,
 				F682A400D26245CC8F0E85CC /* Inter-ExtraBoldItalic.otf in Resources */,
@@ -412,6 +425,9 @@
 				C22D4401BA9A441396C513EC /* Poppins-Thin.ttf in Resources */,
 				D24FFFC49B134DC48E422B86 /* Poppins-ThinItalic.ttf in Resources */,
 				CFF98A44C8A4478EA7CB4B19 /* OFL.txt in Resources */,
+				1C7F75ED65684D14A941761C /* SciFiBronze-Regular.eot in Resources */,
+				446602751D524BA59DA81ABB /* SciFiBronze-Regular.woff in Resources */,
+				62CF99B1A89F4051A476CFC1 /* SciFiBronze-Regular.woff2 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -785,7 +801,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -850,7 +866,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
