@@ -9,6 +9,7 @@ import {
   createGatekeeperConfig,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk";
+import * as elliptic from "elliptic";
 import { ethers } from "ethers";
 import { autorun } from "mobx";
 import { observer } from "mobx-react-lite";
@@ -190,12 +191,28 @@ const MessageHandlers = observer(function MessageHandlers() {
           break;
         }
         case "@obi/get-signing-address": {
-          const evmSigningAddress =
-            store.walletsStore.currentWallet?.evmSigningAddress;
-          invariant(evmSigningAddress, "no evmSigningAddress in store");
+          const base64PubKey =
+            store.walletsStore.currentWallet?.owner.getKeyOfType(KeyType.Device)
+              ?.publicKey.value;
+          // TODO: prompt for webauthn if no device pubkey
+          invariant(base64PubKey, "no device pubkey");
+          const pubKeyBuffer = Buffer.from(base64PubKey, "base64");
+          // Remove prefix byte (0x04) for uncompressed public keys
+          let keyBytes: Buffer;
+          if (pubKeyBuffer.length === 65 && pubKeyBuffer[0] === 0x04) {
+            keyBytes = pubKeyBuffer.slice(1);
+          } else {
+            keyBytes = pubKeyBuffer;
+          }
+          const pubKeyHex = keyBytes.toString("hex");
+          // Decompress the public key
+          const ec = new elliptic.ec("secp256k1");
+          const keyPair = ec.keyFromPublic(pubKeyHex, "hex");
+          const decompressedPubKey = keyPair.getPublic(false, "hex");
+
           const message = {
             type: "@obi/signing-address-response",
-            payload: evmSigningAddress,
+            payload: ethers.computeAddress("0x" + decompressedPubKey),
           };
           postMessage(message);
           console.log(JSON.stringify(message));

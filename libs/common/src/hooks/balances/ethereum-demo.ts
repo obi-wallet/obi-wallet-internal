@@ -16,7 +16,8 @@ export function ethereumBalancesQuery({
     name: "balances",
     fn: async (address?: string): Promise<Token[]> => {
       if (!address) return [];
-      const evmAddress = rootStore.walletsStore.currentWallet?.evmUserContractAddress;
+      const evmAddress =
+        rootStore.walletsStore.currentWallet?.evmUserContractAddress;
       invariant(evmAddress, "evm address not set");
       console.log({ ethAccount: toJS(evmAddress) });
       const response = await fetch(`/api/ethereum-demo/balances/${evmAddress}`);
