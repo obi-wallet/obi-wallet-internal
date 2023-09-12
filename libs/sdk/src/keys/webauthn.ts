@@ -137,25 +137,28 @@ export async function getOrCreateDeviceKeyPair(
       });
       let balance = "";
       try {
-        balance = (await stockClient.query.bank.balance({
-          address: webauthnAddress,
-          denom: "uscrt",
-        })).balance?.amount || "0";
+        balance =
+          (
+            await stockClient.query.bank.balance({
+              address: webauthnAddress,
+              denom: "uscrt",
+            })
+          ).balance?.amount || "0";
       } catch (e) {
         balance = "0";
       }
-        if (balance === "0") {
-          const response = await fetch("/api/lend", {
-            method: "POST",
-            body: JSON.stringify({
-              homeChainId: "secret-4",
-              address: webauthnAddress,
-            }),
-          });
+      if (balance === "0") {
+        const response = await fetch("/api/lend", {
+          method: "POST",
+          body: JSON.stringify({
+            homeChainId: "secret-4",
+            address: webauthnAddress,
+          }),
+        });
 
-          if (response.status !== 200) {
-            throw new Error("Failed to fund webauthn signer");
-          }
+        if (response.status !== 200) {
+          throw new Error("Failed to fund webauthn signer");
+        }
 
         return [
           {

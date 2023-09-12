@@ -43,7 +43,8 @@ export class MultisigWallet {
     protected _chainId: ChainId,
     protected _owner: MultisigKey,
     protected _proxyAddress: string,
-    protected _evmAddress: string,
+    protected _evmSigningAddress: string,
+    protected _evmUserContractAddress: string,
     protected _gatekeeperConfig: GatekeeperConfig,
     protected _singlesigWallets: SinglesigWallet[],
     protected _currentAccount: CurrentAccountMeta | null,
@@ -88,8 +89,12 @@ export class MultisigWallet {
     return Chain.information(this._chainId);
   }
 
-  public get evmAddress() {
-    return this._evmAddress;
+  public get evmUserContractAddress() {
+    return this._evmUserContractAddress;
+  }
+
+  public get evmSigningAddress() {
+    return this._evmSigningAddress;
   }
 
   public get isDemo() {
@@ -166,7 +171,12 @@ export class MultisigWallet {
     this._currentAccount = account;
   }
 
-  public setEvmAddress(base64PubKey: string) {
+  public setEvmUserContractAddress(address: string) {
+    this._evmUserContractAddress = address;
+  }
+
+  /// Also sets contract address, via paymaster
+  public setEvmSigningAddress(base64PubKey: string) {
     // convert this base64 string pubKey to an ethereum address
     const pubKeyBuffer = Buffer.from(base64PubKey, "base64");
     // Remove prefix byte (0x04) for uncompressed public keys
@@ -182,7 +192,7 @@ export class MultisigWallet {
     const keyPair = ec.keyFromPublic(pubKeyHex, "hex");
     const decompressedPubKey = keyPair.getPublic(false, "hex");
 
-    this._evmAddress = ethers.computeAddress("0x" + decompressedPubKey);
+    this._evmSigningAddress = ethers.computeAddress("0x" + decompressedPubKey);
   }
 
   public get owner() {

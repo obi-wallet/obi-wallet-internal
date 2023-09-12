@@ -137,7 +137,7 @@ export class Wallets {
         currentAccount: null,
       },
     });
-    wallet.setEvmAddress(evmPubkey);
+    wallet.setEvmSigningAddress(evmPubkey);
     this.upsertWallet(wallet);
     this.setCurrentWallet(wallet);
   }

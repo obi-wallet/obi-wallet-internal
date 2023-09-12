@@ -7,6 +7,7 @@ import {
   SignAndBroadcastTransactionUserInteraction,
   ZAuthKeySigner,
   createGatekeeperConfig,
+  Secp256k1PublicKey,
 } from "@obi-wallet/sdk";
 import { ethers } from "ethers";
 import { autorun } from "mobx";
@@ -19,6 +20,12 @@ import { Provider } from "./provider";
 import { StateRenderer } from "./state-renderer";
 
 import "./vuplex-polyfill.js";
+
+export interface EthereumAccount {
+  publicKey: Secp256k1PublicKey;
+  evmSignerAddress: string;
+  evmUserContractAddress: string;
+}
 
 // eslint-disable-next-line mobx/missing-observer
 export function Modal({ config, env }: { config: Config; env: Env }) {
@@ -117,8 +124,10 @@ const MessageHandlers = observer(function MessageHandlers() {
               // @ts-expect-error this is fine
               "*",
             );
+            console.log(JSON.stringify(message));
           } else {
             postMessage(message);
+            console.log(JSON.stringify(message));
           }
 
           break;
@@ -158,15 +167,17 @@ const MessageHandlers = observer(function MessageHandlers() {
               // @ts-expect-error this is fine
               "*",
             );
+            console.log(JSON.stringify(message));
           } else {
             postMessage(message);
+            console.log(JSON.stringify(message));
           }
           break;
         }
         case "@obi/get-zauth-tokens": {
           const tokens = store.zauthStore.currentTokens;
           // error for expediency in unity
-          console.error("Get tokens: ", tokens);
+          console.log("Get tokens: ", tokens);
           const message = {
             type: "@obi/get-tokens-response",
             tokens: tokens,
@@ -176,6 +187,18 @@ const MessageHandlers = observer(function MessageHandlers() {
         }
         case "@obi/set-zauth-tokens": {
           store.zauthStore.setCurrentTokens(data.payload);
+          break;
+        }
+        case "@obi/get-signing-address": {
+          const evmSigningAddress =
+            store.walletsStore.currentWallet?.evmSigningAddress;
+          invariant(evmSigningAddress, "no evmSigningAddress in store");
+          const message = {
+            type: "@obi/signing-address-response",
+            payload: evmSigningAddress,
+          };
+          postMessage(message);
+          console.log(JSON.stringify(message));
           break;
         }
         case "@obi/create-account": {
@@ -204,14 +227,17 @@ const MessageHandlers = observer(function MessageHandlers() {
                 // @ts-expect-error this is fine
                 "*",
               );
+              console.log(JSON.stringify(message));
             } else {
               postMessage(message);
+              console.log(JSON.stringify(message));
             }
             return;
           }
 
           const { publicKey, proxyAddress, ethereumAccount, newUser } =
             await response.json();
+          const evmAccount: EthereumAccount = ethereumAccount;
 
           const wallet = ObservableMultisigWallet.create({
             type: "multisig",
@@ -242,7 +268,8 @@ const MessageHandlers = observer(function MessageHandlers() {
             proxyAddress,
             ethereumAccount,
           );
-          wallet.setEvmAddress(ethereumAccount.publicKey.value);
+          wallet.setEvmSigningAddress(evmAccount.publicKey.value);
+          wallet.setEvmUserContractAddress(evmAccount.evmUserContractAddress);
           store.walletsStore.upsertWallet(wallet);
 
           const message = {
@@ -258,8 +285,10 @@ const MessageHandlers = observer(function MessageHandlers() {
               // @ts-expect-error this is fine
               "*",
             );
+            console.log(JSON.stringify(message));
           } else {
             postMessage(message);
+            console.log(JSON.stringify(message));
           }
           break;
         }

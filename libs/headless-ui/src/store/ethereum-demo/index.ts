@@ -21,7 +21,8 @@ import { WalletsStore } from "../wallets";
 
 export interface EthereumAccount {
   publicKey: Secp256k1PublicKey;
-  address: string;
+  evmSignerAddress: string;
+  evmUserContractAddress: string;
 }
 
 type Accounts = Record<string, EthereumAccount>;

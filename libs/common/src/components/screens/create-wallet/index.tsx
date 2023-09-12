@@ -63,7 +63,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
               console.log("no wallet");
               return;
             } else {
-              wallet.setEvmAddress(deviceKey?.publicKey.value);
+              wallet.setEvmSigningAddress(deviceKey?.publicKey.value);
             }
           }
         }}
