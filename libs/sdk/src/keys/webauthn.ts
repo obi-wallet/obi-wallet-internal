@@ -1,3 +1,5 @@
+import { create, get } from "@github/webauthn-json";
+import type { CredentialDeviceType } from "@simplewebauthn/typescript-types";
 import { SecretNetworkClient, pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 
@@ -14,13 +16,41 @@ const SECP256K1_MAX = BigInt(
   "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140",
 );
 
+type AttestationFormat =
+  | "fido-u2f"
+  | "packed"
+  | "android-safetynet"
+  | "android-key"
+  | "tpm"
+  | "apple"
+  | "none";
+
+interface EncodedDevicePublicKey {
+  aaguid: string;
+  devicePubKey: string;
+  scope: number;
+  nonce?: string;
+  fmt?: AttestationFormat;
+  attStmt?: {
+    sig?: string;
+    x5c?: string[];
+    response?: string;
+    alg?: number;
+    ver?: string;
+    certInfo?: string;
+    pubArea?: string;
+  };
+  sig?: string;
+  credentialID: string;
+}
+
 interface CustomPublicKeyCredentialCreationOptions {
-  challenge: Uint8Array;
+  challenge: string;
   rp: {
     name: string;
   };
   user: {
-    id: Uint8Array;
+    id: string;
     name: string;
     displayName: string;
   };
@@ -29,27 +59,38 @@ interface CustomPublicKeyCredentialCreationOptions {
     alg: number;
   }>;
   authenticatorSelection: {
-    authenticatorAttachment: "platform";
+    authenticatorAttachment: "platform" | "cross-platform";
+    browser?: string;
+    os?: string;
+    platform?: string;
+    lastUsed?: number;
+    credentialDeviceType?: CredentialDeviceType;
+    credentialBackedUp?: boolean;
+    clientExtensionResults?: unknown;
+    devicePubKeys?: EncodedDevicePublicKey[];
   };
 }
 
 export async function getOrCreateDeviceKeyPair(
-  webauthn: boolean,
-  create: boolean,
+  // webauthn: boolean,
+  allowCreate: boolean,
   demoMode: boolean,
 ): Promise<[Secp256k1KeyPair, boolean]> {
-  if (webauthn) {
+  const isUVPAA =
+    await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+  if (isUVPAA) {
     try {
       const challenge = new Uint8Array(32); // Normally, this challenge is provided by the server.
       window.crypto.getRandomValues(challenge);
 
       const publicKey: CustomPublicKeyCredentialCreationOptions = {
-        challenge: challenge,
+        challenge: btoa(String.fromCharCode(...challenge)),
         rp: {
           name: "Obi",
+          // id: new URL(window.location.origin).hostname,
         },
         user: {
-          id: new Uint8Array(16),
+          id: btoa(String.fromCharCode(...new Uint8Array(16))),
           name: "My Obi Device Key",
           displayName: "My Obi Device Key",
         },
@@ -64,14 +105,14 @@ export async function getOrCreateDeviceKeyPair(
         },
       };
       let credential;
-      if (create) {
-        credential = await navigator.credentials.create({ publicKey });
+      if (allowCreate) {
+        credential = await create({ publicKey });
       } else {
         try {
-          credential = await navigator.credentials.get({ publicKey });
+          credential = await get({ publicKey });
         } catch (e) {
-          credential = await navigator.credentials.create({ publicKey });
-          create = true;
+          credential = await create({ publicKey });
+          allowCreate = true;
         }
       }
       console.log("webauthn credential id: " + JSON.stringify(credential?.id));

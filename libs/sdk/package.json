@@ -25,7 +25,8 @@
     "secp256k1": "*",
     "tiny-invariant": "*",
     "tiny-warning": "*",
-    "zod": "*"
+    "zod": "*",
+    "@github/webauthn-json": "*"
   },
   "devDependencies": {
     "@faker-js/faker": "*",
