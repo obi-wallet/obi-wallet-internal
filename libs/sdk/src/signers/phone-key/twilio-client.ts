@@ -1,5 +1,3 @@
-import * as secp256k1 from "secp256k1";
-
 import { Chain, ChainId } from "../../chains";
 import { Secp256k1KeyPair, Secp256k1PublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
@@ -43,20 +41,6 @@ export interface TwilioClientInterface {
     chainId: ChainId;
   }): Promise<void>;
 
-  requestKeyMagicCode({
-    phoneNumber,
-    securityAnswer,
-    message,
-    chainId,
-    voice,
-  }: {
-    phoneNumber: string;
-    securityAnswer: string;
-    message: Uint8Array;
-    chainId: ChainId;
-    voice: boolean;
-  }): Promise<void>;
-
   parseSignatureMagicCodeResponse({
     key,
     chainId,
@@ -72,14 +56,6 @@ export class DemoModeTwilioClient implements TwilioClientInterface {
   public constructor(protected keyPair: Secp256k1KeyPair) {}
 
   public async requestPublicKeyMagicCode(_: {
-    phoneNumber: string;
-    securityAnswer: string;
-    chainId: ChainId;
-  }) {
-    return;
-  }
-
-  public async requestKeyMagicCode(_: {
     phoneNumber: string;
     securityAnswer: string;
     chainId: ChainId;
@@ -179,21 +155,11 @@ export class TwilioClient implements TwilioClientInterface {
     key,
   }: {
     key: string;
-  }): Promise<Secp256k1KeyPair> {
+  }): Promise<string> {
     const decrypted = await this.fetchAndDecryptResponse(key);
     // convert to base64
     const base64PrivKey = this.stringToBase64(decrypted);
-    return {
-      privateKey: base64PrivKey,
-      publicKey: {
-        type: "tendermint/PubKeySecp256k1",
-        value: Buffer.from(
-          secp256k1.publicKeyCreate(
-            new Uint8Array(Buffer.from(base64PrivKey, "base64")),
-          ),
-        ).toString("base64"),
-      },
-    };
+    return base64PrivKey;
   }
 
   public async requestSignatureMagicCode({
@@ -213,34 +179,6 @@ export class TwilioClient implements TwilioClientInterface {
       phoneNumber,
       chainId,
     });
-  }
-
-  public async requestKeyMagicCode({
-    phoneNumber,
-    securityAnswer,
-    chainId,
-    voice,
-  }: {
-    phoneNumber: string;
-    securityAnswer: string;
-    chainId: ChainId;
-    voice: boolean;
-  }) {
-    return {
-      phoneNumber,
-      securityAnswer,
-      chainId,
-      voice,
-    };
-    // reenable when Jose is done
-    /*
-    await this.encryptAndSendMessage({
-      message: `key:${securityAnswer}`,
-      phoneNumber,
-      chainId,
-      voice,
-    });
-    */
   }
 
   public async parseSignatureMagicCodeResponse({ key }: { key: string }) {

@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as secp256k1 from "secp256k1";
 import invariant from "tiny-invariant";
 import { Presets } from "userop";
 
@@ -274,9 +275,21 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                     try {
                       setVerifyButtonDisabledDoubleclick(true);
                       const twilioClient = getTwilioClient({ demoMode, env });
-                      const kp = await twilioClient.parseKeyMagicCodeResponse({
-                        key,
-                      });
+                      const privkey: string =
+                        await twilioClient.parseKeyMagicCodeResponse({
+                          key,
+                        });
+                      const kp = {
+                        privateKey: privkey,
+                        publicKey: {
+                          type: "tendermint/PubKeySecp256k1",
+                          value: Buffer.from(
+                            secp256k1.publicKeyCreate(
+                              new Uint8Array(Buffer.from(privkey, "base64")),
+                            ),
+                          ).toString("base64"),
+                        },
+                      };
                       /*
                       if (publicKey) {
                         draft.value.setPhoneKey({

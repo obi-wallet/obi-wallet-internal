@@ -7,8 +7,8 @@ import { ComingSoonKeyType } from "../key";
 
 export const obiModalConfig: Config = {
   chains: {
-    enabled: ["pulsar-3"],
-    default: "pulsar-3",
+    enabled: ["secret-4"],
+    default: "secret-4",
   },
   languages: {
     enabled: ["en"],
