@@ -138,7 +138,7 @@ export class SecretJsMessages extends AbstractMessages {
         "phone key does not have private key",
       );
       address = this.sdk.transactions.getAddressOfPublicKey(
-        phoneKey.payload.privateKey,
+        phoneKey.payload.publicKey,
       );
     } else {
       throw new Error("Expected ZAuth, phone, or device key to be present");
