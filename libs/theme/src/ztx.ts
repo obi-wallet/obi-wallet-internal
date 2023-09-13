@@ -134,9 +134,6 @@ export const ztxTheme: CustomTheme = {
       lineHeight: 22,
     },
   },
-  deviceKey: {
-    isShowTouchImage: false,
-  },
   settings: {
     textInputBackgroundColor: "#16151D",
   },

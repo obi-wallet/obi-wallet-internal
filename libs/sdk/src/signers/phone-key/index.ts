@@ -17,13 +17,14 @@ export class PhoneKeySigner extends AsyncKeySigner<KeyType.Phone> {
     twilioClient: TwilioClientInterface;
     voice: boolean;
   }) {
+    const _voice = voice;
     const { hash } = await this.waitForPendingSignature();
     await twilioClient.requestSignatureMagicCode({
       phoneNumber: this.key.payload.phoneNumber,
       securityAnswer,
       message: hash,
       chainId,
-      voice,
+      // voice,
     });
   }
 

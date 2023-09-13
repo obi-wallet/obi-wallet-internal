@@ -1,16 +1,10 @@
 import { useTheme } from "@emotion/react";
-import {
-  KeyType,
-  MultisigKey,
-  ObservableMultisigKey,
-  ObservableMultisigWallet,
-  createGatekeeperConfig,
-} from "@obi-wallet/sdk";
+import { MultisigKey, ObservableMultisigKey } from "@obi-wallet/sdk";
 import { WelcomeButton } from "@obi-wallet/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+//import { Image, Text, TouchableOpacity, View } from "react-native";
 
 import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
@@ -36,14 +30,7 @@ export type WelcomeScreenProps = NativeStackScreenProps<
 export const WelcomeScreen = observer<WelcomeScreenProps>(
   function WelcomeScreen() {
     const navigation = useRootNavigation();
-    const {
-      chainStore,
-      configStore,
-      draftsStore,
-      sdkRootStore,
-      walletsStore,
-      zauthStore,
-    } = useStore();
+    const { chainStore, configStore, draftsStore } = useStore();
 
     function onCreate() {
       const newMultisigKey = ObservableMultisigKey.create(
@@ -52,13 +39,14 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });
-      navigation.navigate(KeyRoute.DeviceKey, {
+      navigation.navigate(KeyRoute.PhoneKeyRequest, {
         draftId,
         flow: KeyFlow.CreateWallet,
         demoMode: false,
       });
     }
 
+    /*
     async function onZepeto() {
       const body = JSON.stringify({
         homeChainId: "secret-4",
@@ -84,6 +72,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
                 type: KeyType.ZAuth,
                 payload: {
                   publicKey,
+                  privateKey: "",
                 },
               },
             ],
@@ -106,6 +95,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       walletsStore.upsertWallet(wallet);
       walletsStore.setCurrentWallet(wallet);
     }
+    */
 
     function onRecover() {
       const newMultisigKey = ObservableMultisigKey.create(
@@ -148,7 +138,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     return (
       <Welcome
         onCreate={onCreate}
-        onZepeto={onZepeto}
+        //onZepeto={onZepeto}
         onRecover={onRecover}
         onEnterDemoMode={onEnterDemoMode}
       />
@@ -158,7 +148,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
 
 export interface WelcomeProps {
   onCreate(): void;
-  onZepeto(): void;
+  //onZepeto(): void;
   onRecover(): void;
   onEnterDemoMode(): void;
 }
@@ -276,7 +266,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
   }
 });
 
-const ZepetoButton = observer(function ZepetoButton({
+/* const ZepetoButton = observer(function ZepetoButton({
   onPress,
 }: {
   onPress?: () => void;
@@ -321,4 +311,4 @@ const ZepetoButton = observer(function ZepetoButton({
       </View>
     </TouchableOpacity>
   );
-});
+}); */

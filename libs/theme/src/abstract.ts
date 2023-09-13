@@ -98,9 +98,6 @@ export interface CustomTheme extends CommonTheme {
     subtitleStyles?: TextStyle;
     titleStyles?: TextStyle;
   };
-  deviceKey: {
-    isShowTouchImage: boolean;
-  };
   settings?: {
     textInputBackgroundColor?: string;
   };

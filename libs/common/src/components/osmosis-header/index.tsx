@@ -35,7 +35,7 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
           ...theme.header,
         }}
       >
-        <View style={{ width: 29 }}>
+        <View style={{ width: 29, paddingTop: 20 }}>
           {onBackPress ? (
             <IconButton onPress={onBackPress}>
               {theme.header?.backIcon?.src ? (

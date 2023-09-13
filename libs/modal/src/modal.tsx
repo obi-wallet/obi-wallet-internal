@@ -255,8 +255,19 @@ const MessageHandlers = observer(function MessageHandlers() {
 
           const { publicKey, proxyAddress, ethereumAccount, newUser } =
             await response.json();
-          const evmAccount: EthereumAccount = ethereumAccount;
-          console.log("evm account is: " + JSON.stringify(evmAccount));
+          console.log("ethereumAccount in modal.tsx is: " + ethereumAccount);
+          let evmUserContractAddress: string;
+          try {
+            evmUserContractAddress = ethereumAccount.address;
+            if (!evmUserContractAddress) {
+              evmUserContractAddress = ethereumAccount.targetChain.evmAddress;
+            }
+          } catch (e) {
+            evmUserContractAddress = ethereumAccount.targetChain.evmAddress;
+          }
+          console.log(
+            "evm account is: " + JSON.stringify(evmUserContractAddress),
+          );
 
           const wallet = ObservableMultisigWallet.create({
             type: "multisig",
@@ -268,6 +279,7 @@ const MessageHandlers = observer(function MessageHandlers() {
                     type: KeyType.ZAuth,
                     payload: {
                       publicKey,
+                      privateKey: "",
                     },
                   },
                 ],
@@ -287,9 +299,17 @@ const MessageHandlers = observer(function MessageHandlers() {
             proxyAddress,
             ethereumAccount,
           );
-          const [kp, _] = await getOrCreateDeviceKeyPair(false, false);
-          wallet.setEvmSigningAddress(kp.privateKey);
-          wallet.setEvmUserContractAddress(evmAccount.evmUserContractAddress);
+          let kp;
+          let _;
+          if (!data.payload.accessToken) {
+            [kp, _] = await getOrCreateDeviceKeyPair(false, false);
+            wallet.setEvmSigningAddress(kp.privateKey);
+            wallet.setEvmUserContractAddress(evmUserContractAddress);
+          } else {
+            wallet.setEvmSigningAddress("Uncalculated", true);
+            wallet.setEvmUserContractAddress(evmUserContractAddress);
+          }
+
           store.walletsStore.upsertWallet(wallet);
 
           const message = {

@@ -1,8 +1,6 @@
 import {
-  KeyType,
   SignAndBroadcastTransactionUserInteraction,
   TargetChain,
-  getOrCreateDeviceKeyPair,
   // Token,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
@@ -10,6 +8,7 @@ import { Interface, InterfaceAbi } from "ethers";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { useEffectOnceWhen } from "rooks";
+import invariant from "tiny-invariant";
 
 import { useStore } from "../../../../contexts";
 
@@ -28,100 +27,71 @@ type EthTxInput = {
   };
 };
 
-function encodeCallData({ abi, functionName, params }: EthTxInput): string {
-  const contractInterface = new Interface(abi);
+export class EthTransaction {
+  abi: InterfaceAbi;
+  contractAddress: string;
+  functionName: string;
+  params: unknown[];
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+  };
 
-  // Ensure the function exists in the ABI
-  if (!contractInterface.getFunction(functionName)) {
-    throw new Error(
-      `Function ${functionName} does not exist in the provided ABI.`,
-    );
+  constructor(input: EthTxInput) {
+    this.abi = input.abi;
+    this.contractAddress = input.contractAddress;
+    this.functionName = input.functionName;
+    this.params = input.params;
+    this.tokens = input.tokens;
   }
 
-  return contractInterface.encodeFunctionData(functionName, params);
+  getEncodedCallData(): string {
+    const contractInterface = new Interface(this.abi);
+
+    // Ensure the function exists in the ABI
+    if (!contractInterface.getFunction(this.functionName)) {
+      throw new Error(
+        `Function ${this.functionName} does not exist in the provided ABI.`,
+      );
+    }
+
+    return contractInterface.encodeFunctionData(this.functionName, this.params);
+  }
 }
 
 export const SignatureModalEthereumDemo =
   observer<SignatureModalEthereumDemoProps>(
     function SignatureModalEthereumDemo({ interaction }) {
-      const { sdkRootStore } = useStore();
+      const { phoneSessionStore, sdkRootStore } = useStore();
       const broadcast = useMutation({
         mutationFn: async () => {
           console.log("SignatureModalEthereumDemo()");
           console.log("interaction: " + JSON.stringify(interaction));
-          const message = interaction.payload.messages[0] as unknown as
-            | {
-                eth: EthTxInput;
-              }
-            | {
-                userop: {
-                  contractAddress?: string;
-                  callData: string;
-                  tokens: {
-                    accessToken: string;
-                    refreshToken: string;
-                  };
-                };
-              };
-          const wallet = sdkRootStore.walletsStore.currentWallet;
-          let kp: {
-            type: KeyType;
-            payload: {
-              publicKey: {
-                value: string;
-                type: string;
-              };
-              privateKey: string;
-            };
+          const message = interaction.payload.messages[0] as /* unknown as
+            | */ {
+            eth: EthTxInput;
           };
-          const zAuthKey = wallet?.owner.getUsableKeyOfType(KeyType.ZAuth);
-          if (!zAuthKey) {
-            const [deviceKeyPair, _] = await getOrCreateDeviceKeyPair(
-              false,
-              false,
-            );
-            kp = {
-              type: KeyType.Device,
-              payload: {
-                publicKey: {
-                  value: deviceKeyPair.publicKey.value,
-                  type: "tendermint/PubKeySecp256k1",
-                },
-                privateKey: deviceKeyPair.privateKey,
-              },
-            };
-          } else {
-            kp = {
-              type: KeyType.ZAuth,
-              payload: {
-                publicKey: {
-                  value: zAuthKey.publicKey.value,
-                  type: zAuthKey.publicKey.type,
-                },
-                privateKey: "",
-              },
-            };
-            console.log("using zauthkey");
-          }
+          // | {
+          //     userop: {
+          //       contractAddress?: string;
+          //       callData: string;
+          //       tokens: {
+          //         accessToken: string;
+          //         refreshToken: string;
+          //       };
+          //     };
+          //   };
+
+          const wallet = sdkRootStore.walletsStore.currentWallet;
 
           async function handleMessage() {
-            if (R.has("userop", message)) {
-              return await fetch("/api/send-userop", {
-                method: "POST",
-                body: JSON.stringify({
-                  homeChainId: wallet?.chainId,
-                  targetChainId:
-                    interaction.payload.targetChainId ??
-                    TargetChain.ArbitrumOneGoerliTestnet,
-                  publicKey: kp?.payload.publicKey,
-                  contractAddress: message.userop.contractAddress,
-                  data: message.userop.callData,
-                  tokens: message.userop.tokens,
-                  deviceKeyPair: kp?.payload,
-                }),
-              });
-            }
-
+            const phoneKp = phoneSessionStore.getKp;
+            invariant(
+              phoneKp?.privateKey,
+              "no phone session key, sign in again",
+            );
+            const tx = new EthTransaction(message.eth);
+            const data = tx.getEncodedCallData();
             return await fetch("/api/send-userop", {
               method: "POST",
               body: JSON.stringify({
@@ -129,17 +99,19 @@ export const SignatureModalEthereumDemo =
                 targetChainId:
                   interaction.payload.targetChainId ??
                   TargetChain.ArbitrumOneGoerliTestnet,
-                publicKey: kp?.payload.publicKey,
+                publicKey: phoneKp?.publicKey,
                 contractAddress: message.eth.contractAddress,
-                data: encodeCallData(message.eth),
+                data: data,
                 tokens: message.eth.tokens,
-                deviceKeyPair: kp.payload,
+                deviceKeyPair: phoneKp,
               }),
             });
           }
 
           const response = await handleMessage();
           const event = await response.json();
+          console.log("handling message");
+
           if (!R.has("transactionHash", event)) {
             throw new Error(JSON.stringify(event));
           }

@@ -119,8 +119,9 @@ export class SecretJsMessages extends AbstractMessages {
   public getCreateWalletMessage(owner: MultisigKey): Message {
     const zAuthKey = owner.getKeyOfType(KeyType.ZAuth);
     const deviceKey = owner.getKeyOfType(KeyType.Device);
+    const phoneKey = owner.getUsableKeyOfType(KeyType.Phone);
     invariant(
-      zAuthKey || deviceKey,
+      zAuthKey || deviceKey || phoneKey,
       "Expected ZAuth or device key to be present",
     );
 
@@ -131,8 +132,16 @@ export class SecretJsMessages extends AbstractMessages {
       address = this.sdk.transactions.getAddressOfPublicKey(
         deviceKey.publicKey,
       );
+    } else if (phoneKey) {
+      invariant(
+        phoneKey.payload.privateKey,
+        "phone key does not have private key",
+      );
+      address = this.sdk.transactions.getAddressOfPublicKey(
+        phoneKey.payload.publicKey,
+      );
     } else {
-      throw new Error("Expected ZAuth or device key to be present");
+      throw new Error("Expected ZAuth, phone, or device key to be present");
     }
 
     return new MsgExecuteContract({

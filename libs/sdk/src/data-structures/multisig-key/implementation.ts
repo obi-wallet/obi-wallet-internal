@@ -114,6 +114,7 @@ export class MultisigKey {
 
   public setPhoneKey(payload: {
     publicKey: Secp256k1PublicKey;
+    privateKey: string;
     phoneNumber: string;
     securityQuestion: string;
   }) {
@@ -170,6 +171,7 @@ export class MultisigKey {
       type: KeyType.ZAuth,
       payload: {
         publicKey,
+        privateKey: "",
       },
     });
   }

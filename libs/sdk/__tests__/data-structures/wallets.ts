@@ -66,6 +66,7 @@ test("create wallet", async () => {
     publicKey: mockPhoneKeyPair.publicKey,
     phoneNumber: faker.phone.number("+49##########"),
     securityQuestion: "birthplace",
+    privateKey: "",
   });
 
   const createWalletPromise = wallets.createWallet({

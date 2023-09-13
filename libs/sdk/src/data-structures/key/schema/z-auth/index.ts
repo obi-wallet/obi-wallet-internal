@@ -7,5 +7,6 @@ export const ZAuthKey = z.object({
   type: z.literal(KeyType.ZAuth),
   payload: z.object({
     publicKey: Secp256k1PublicKey,
+    privateKey: z.string(),
   }),
 });

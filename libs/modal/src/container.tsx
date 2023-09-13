@@ -42,8 +42,20 @@ export function Container({
       {/* This doesn't work inside the shadow dom */}
       <style>
         {`
-          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
-        `}
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
+        @font-face {
+            font-family: 'Sci Fi Bronze';
+            src: url('/fonts/SciFiBronze/SciFiBronze-Regular.eot');
+            src: local('Sci Fi Bronze'), local('SciFiBronze-Regular'),
+                url('/fonts/SciFiBronze/SciFiBronze-Regular.eot?#iefix') format('embedded-opentype'),
+                url('/fonts/SciFiBronze/SciFiBronze-Regular.woff2') format('woff2'),
+                url('/fonts/SciFiBronze/SciFiBronze-Regular.woff') format('woff'),
+                url('/fonts/SciFiBronze/SciFiBronze-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+      `}
       </style>
     </>
   );
