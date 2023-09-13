@@ -131,7 +131,7 @@ export class TwilioClient implements TwilioClientInterface {
 
     return {
       type: "tendermint/PubKeySecp256k1" as const,
-      value: decrypted.pubkey,
+      value: decrypted, // decrypted.pubkey,
     };
   }
 
@@ -192,7 +192,9 @@ export class TwilioClient implements TwilioClientInterface {
     if (!response?.startsWith("signature:")) {
       throw new Error("This doesn't seem to be a signature");
     }
-    return new Uint8Array(Buffer.from(response.signature, "base64"));
+    return new Uint8Array(Buffer.from(response, "base64"));
+
+    // return new Uint8Array(Buffer.from(response.signature, "base64"));
   }
 
   protected async encryptAndSendMessage({
