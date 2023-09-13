@@ -10,6 +10,7 @@ import { ChainStore } from "./chain";
 import { ConfigStore } from "./config";
 import { DraftsStore } from "./drafts";
 import { LanguageStore } from "./language";
+import { PhoneSessionStore } from "./phone-session";
 import { ZauthStore } from "./zauth";
 
 export class RootStore {
@@ -18,6 +19,7 @@ export class RootStore {
   public readonly configStore: ConfigStore;
   public readonly draftsStore: DraftsStore;
   public readonly languageStore: LanguageStore;
+  public readonly phoneSessionStore: PhoneSessionStore;
   public readonly sdkRootStore: SdkRootStore;
   public readonly zauthStore: ZauthStore;
 
@@ -33,6 +35,7 @@ export class RootStore {
     this.appsStore = new AppsStore({ kvStore: new KVStore("apps-store") });
     this.configStore = new ConfigStore({ initialConfig });
     this.draftsStore = new DraftsStore();
+    this.phoneSessionStore = new PhoneSessionStore({ kp: null });
     this.sdkRootStore = new SdkRootStore(KVStore);
     this.zauthStore = new ZauthStore();
 
