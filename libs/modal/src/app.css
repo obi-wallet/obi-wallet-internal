@@ -1,0 +1,24 @@
+@font-face {
+  font-family: "Sci Fi Bronze";
+  src: url("./assets/fonts/SciFiBronze/SciFiBronze-Regular.eot");
+  src:
+    local("Sci Fi Bronze"),
+    local("SciFiBronze-Regular"),
+    url("./assets/fonts/SciFiBronze/SciFiBronze-Regular.eot?#iefix")
+      format("embedded-opentype"),
+    url("./assets/fonts/SciFiBronze/SciFiBronze-Regular.woff2") format("woff2"),
+    url("./assets/fonts/SciFiBronze/SciFiBronze-Regular.woff") format("woff"),
+    url("./assets/fonts/SciFiBronze/SciFiBronze-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TT Hoves Pro";
+  src: url("./assets/fonts/TTHoves/TTHovesPro-Rg.ttf");
+
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

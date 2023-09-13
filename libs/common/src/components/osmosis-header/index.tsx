@@ -21,6 +21,7 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
 
     const onBackPress = getBackHandler();
 
+    console.log({ theme });
     return (
       <View
         style={{
@@ -34,21 +35,29 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
           ...theme.header,
         }}
       >
-        <View style={{ width: 29, paddingTop: 20 }}>
+        <View style={{ width: 29 }}>
           {onBackPress ? (
-            <IconButton
-              onPress={onBackPress}
-              style={{ width: 29 }}
-              hitSlop={{ top: 29, bottom: 29, left: 29, right: 29 }}
-            >
-              <BackIcon width={29} height={29} />
+            <IconButton onPress={onBackPress}>
+              {theme.header?.backIcon?.src ? (
+                <Image
+                  resizeMode="contain"
+                  source={{ uri: theme.header.backIcon.src }}
+                  style={{
+                    width: 12,
+                    height: 12,
+                    ...theme.header?.backIcon,
+                  }}
+                />
+              ) : (
+                <BackIcon width={29} height={29} />
+              )}
             </IconButton>
           ) : undefined}
         </View>
         {theme.header && !hideLogo ? (
           <Image
             resizeMode="contain"
-            source={{ uri: theme.header.image.url }}
+            source={{ uri: theme.header.image.src }}
             style={{
               // width: theme.header.width,
               // height: theme.header.height,

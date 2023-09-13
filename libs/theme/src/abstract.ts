@@ -59,6 +59,8 @@ export interface CustomTheme extends CommonTheme {
   modal: {
     borderRadius?: string;
     accountSettings: AccountSettingComponent[];
+    width?: number;
+    height?: number;
   };
   header?: ViewStyle & {
     image: ImageStyle & { src: string };
@@ -95,6 +97,9 @@ export interface CustomTheme extends CommonTheme {
     buttonSpacing?: number;
     subtitleStyles?: TextStyle;
     titleStyles?: TextStyle;
+  };
+  deviceKey: {
+    isShowTouchImage: boolean;
   };
   settings?: {
     textInputBackgroundColor?: string;

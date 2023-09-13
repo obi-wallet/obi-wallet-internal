@@ -31,6 +31,8 @@ export const ztxTheme: CustomTheme = {
   },
   modal: {
     borderRadius: "3px",
+    width: 375,
+    height: 750,
     accountSettings: [
       AccountSettingComponent.MaxSpend,
       AccountSettingComponent.VerifiedItems,
@@ -55,6 +57,13 @@ export const ztxTheme: CustomTheme = {
     },
     paddingHorizontal: 0,
     marginVertical: 0,
+    backIcon: {
+      src: "./ztx-back-icon.svg",
+      width: 8,
+      height: 16,
+      marginLeft: 22,
+      marginTop: 29,
+    },
   },
   buttonFlavors: {
     primary: {
@@ -83,15 +92,15 @@ export const ztxTheme: CustomTheme = {
   },
   textStyles: {
     bold: {
-      fontFamily: "Poppins",
+      fontFamily: "TT Hoves Pro",
       fontWeight: "bold",
     },
     regular: {
-      fontFamily: "Poppins",
+      fontFamily: "TT Hoves Pro",
       fontWeight: "normal",
     },
     light: {
-      fontFamily: "Poppins",
+      fontFamily: "TT Hoves Pro",
       fontWeight: "300",
     },
   },
@@ -124,6 +133,9 @@ export const ztxTheme: CustomTheme = {
       fontWeight: "400",
       lineHeight: 22,
     },
+  },
+  deviceKey: {
+    isShowTouchImage: false,
   },
   settings: {
     textInputBackgroundColor: "#16151D",
