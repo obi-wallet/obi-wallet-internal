@@ -199,20 +199,16 @@ export class TwilioClient implements TwilioClientInterface {
   public async requestKeyMagicCode({
     phoneNumber,
     securityAnswer,
-    message,
     chainId,
     voice,
   }: {
     phoneNumber: string;
     securityAnswer: string;
-    message: Uint8Array;
     chainId: ChainId;
     voice: boolean;
   }) {
     await this.encryptAndSendMessage({
-      message: `key:${securityAnswer}:${Buffer.from(message.buffer).toString(
-        "base64",
-      )}`,
+      message: `key:${securityAnswer}`,
       phoneNumber,
       chainId,
       voice,

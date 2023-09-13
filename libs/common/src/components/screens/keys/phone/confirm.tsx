@@ -1,4 +1,4 @@
-import { MultisigKey } from "@obi-wallet/sdk";
+import { generateSec256k1KeyPair, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -81,7 +81,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
     securityAnswer,
     onSubmit,
   }) {
-    const { chainStore, draftsStore } = useStore();
+    const { chainStore, draftsStore, phoneSessionStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({ id: draftId });
     const chainId = chainStore.currentChain;
     const env = useEnv();
@@ -179,7 +179,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                   onResend={async (voice) => {
                     const twilioClient = getTwilioClient({ demoMode, env });
                     // TODO: factor back out this workaround
-                    const res = await twilioClient.requestKeyMagicCode({
+                    await twilioClient.requestKeyMagicCode({
                       phoneNumber,
                       securityAnswer,
                       chainId,
@@ -200,17 +200,36 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                   onPress={async () => {
                     try {
                       setVerifyButtonDisabledDoubleclick(true);
-                      const twilioClient = getTwilioClient({ demoMode, env });
-                      const publicKey =
-                        await twilioClient.parsePublicKeyMagicCodeResponse({
+                      // const twilioClient = getTwilioClient({ demoMode, env });
+                      // TODO: Reenable when Jose is done!
+                      /*
+                      const kp =
+                        await twilioClient.parseKeyMagicCodeResponse({
                           key,
                         });
+                      */
+                      const kp = generateSec256k1KeyPair();
+                      /*
                       if (publicKey) {
                         draft.value.setPhoneKey({
                           publicKey,
                           phoneNumber,
                           securityQuestion,
                         });
+                        setVerifyButtonDisabledDoubleclick(false);
+                        onSubmit();
+                      } else {
+                        setVerifyButtonDisabledDoubleclick(false);
+                      }
+                      */
+
+                      if (kp.privateKey) {
+                        draft.value.setPhoneKey({
+                          publicKey: kp.publicKey,
+                          phoneNumber,
+                          securityQuestion,
+                        });
+                        phoneSessionStore.setKp({ kp });
                         setVerifyButtonDisabledDoubleclick(false);
                         onSubmit();
                       } else {

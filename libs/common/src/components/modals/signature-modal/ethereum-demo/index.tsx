@@ -233,8 +233,9 @@ export const SignatureModalEthereumDemo =
             */
           }
 
-          const response = await handleMessage();
-          const event = await response.json();
+          /*const response = await handleMessage();
+          const event = await response.json();*/
+          const event = await handleMessage();
           if (!R.has("transactionHash", event)) {
             throw new Error(JSON.stringify(event));
           }

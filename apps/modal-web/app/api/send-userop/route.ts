@@ -6,7 +6,7 @@ import {
 // import { Signer, SigningKey, Wallet } from "ethers";
 import { HomeChain } from "apps/modal-web/src/db/schema";
 import { Signer, Wallet } from "ethers";
-import { cookies } from "next/headers";
+//import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 import { Client, IUserOperation, Presets } from "userop";
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   const refreshToken =
     body.tokens.refreshToken;
   let homeChain: HomeChain | undefined;
-  if (!body.deviceKeyPair?.privateKey && accessToken) {
+  if (!body.deviceKeyPair?.privateKey && accessToken && refreshToken) {
     const userId = await fetchUserId(accessToken);
     console.log("in send op, access token is:" + accessToken);
     const UserModel = await connect();
