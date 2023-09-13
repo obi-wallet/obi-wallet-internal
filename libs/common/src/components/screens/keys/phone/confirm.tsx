@@ -279,7 +279,14 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                         await twilioClient.parseKeyMagicCodeResponse({
                           key,
                         });
-                      const kp = {
+                      type Kp = {
+                        privateKey: string;
+                        publicKey: {
+                          type: "tendermint/PubKeySecp256k1";
+                          value: string;
+                        };
+                      };
+                      const kp: Kp = {
                         privateKey: privkey,
                         publicKey: {
                           type: "tendermint/PubKeySecp256k1",

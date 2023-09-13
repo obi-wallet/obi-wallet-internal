@@ -279,6 +279,7 @@ const MessageHandlers = observer(function MessageHandlers() {
                     type: KeyType.ZAuth,
                     payload: {
                       publicKey,
+                      privateKey: "",
                     },
                   },
                 ],

@@ -58,6 +58,7 @@ const MultisigDraft = {
           }),
           phoneNumber: "+1234567890",
           securityQuestion: securityQuestions[0].value,
+          privateKey: "",
         });
         draftsStore.create({
           original,

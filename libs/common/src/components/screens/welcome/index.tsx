@@ -84,6 +84,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
                 type: KeyType.ZAuth,
                 payload: {
                   publicKey,
+                  privateKey: "",
                 },
               },
             ],
