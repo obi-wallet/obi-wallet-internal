@@ -34,13 +34,11 @@ export interface TwilioClientInterface {
     securityAnswer,
     message,
     chainId,
-    voice,
   }: {
     phoneNumber: string;
     securityAnswer: string;
     message: Uint8Array;
     chainId: ChainId;
-    voice: boolean;
   }): Promise<void>;
 
   requestKeyMagicCode({
@@ -139,19 +137,15 @@ export class TwilioClient implements TwilioClientInterface {
     voice: boolean;
   }) {
     await this.encryptAndSendMessage({
-      message: `pub:${securityAnswer}`,
+      answer: securityAnswer,
       phoneNumber,
       chainId,
-      voice,
+      // voice,
     });
   }
 
   public async parsePublicKeyMagicCodeResponse({ key }: { key: string }) {
     const decrypted = await this.fetchAndDecryptResponse(key);
-
-    // if (!decrypted?.startsWith("pubkey:")) {
-    //   throw new Error("This doesn't seem to be a public key");
-    // }
 
     return {
       type: "tendermint/PubKeySecp256k1" as const,
@@ -174,21 +168,17 @@ export class TwilioClient implements TwilioClientInterface {
     securityAnswer,
     message,
     chainId,
-    voice,
   }: {
     phoneNumber: string;
     securityAnswer: string;
     message: Uint8Array;
     chainId: ChainId;
-    voice: boolean;
   }) {
     await this.encryptAndSendMessage({
-      message: `sign:${securityAnswer}:${Buffer.from(message.buffer).toString(
-        "base64",
-      )}`,
+      answer: securityAnswer,
+      signature: Buffer.from(message.buffer).toString("base64"),
       phoneNumber,
       chainId,
-      voice,
     });
   }
 
@@ -229,37 +219,39 @@ export class TwilioClient implements TwilioClientInterface {
   }
 
   protected async encryptAndSendMessage({
-    message,
+    answer,
     phoneNumber,
     chainId,
-    voice,
+    signature,
   }: {
-    message: string;
+    answer: string;
+    signature?: string;
     phoneNumber: string;
     chainId: ChainId;
-    voice: boolean;
   }) {
-    console.log({
-      message,
-    });
-    const body = await this.getMessageBody(`${message}:${chainId}`);
-    const formData = new FormData();
+    const key = await this.getMessageBody(
+      JSON.stringify({
+        answer,
+        chainId,
+        ...(signature ? { signature } : {}),
+      }),
+    );
+
     const { twilioPhoneNumbers, twilioUrl } = Chain.information(chainId);
     const twilioPhoneNumber =
       twilioPhoneNumbers[Math.floor(Math.random() * twilioPhoneNumbers.length)];
-    formData.append("To", phoneNumber);
-    formData.append("From", twilioPhoneNumber);
-    formData.append(
-      "Parameters",
-      JSON.stringify({ trigger_body: { body, voice } }),
-    );
+
+    const reqBody = {
+      To: phoneNumber,
+      From: twilioPhoneNumber,
+      key,
+    };
 
     return await fetch(twilioUrl, {
-      body: formData,
+      body: JSON.stringify(reqBody),
       method: "post",
-      headers: {
-        Authorization: this.twilioConfig.authorization,
-      },
+
+      headers: new Headers({ "content-type": "application/json" }),
     });
   }
 
@@ -273,21 +265,14 @@ export class TwilioClient implements TwilioClientInterface {
 
   protected async getMessageBody(message: string) {
     console.log("getmessagebody"); // absurdly large step for dev convenience
-    // totp.options = { digits: 64, step: 600 };
-    // const token = totp.generate(this.twilioConfig.secret);
-
-    // totp.verify({ token, secret: this.twilioConfig.secret });
-    // console.log(message);
-    // const encrypted = AES.encrypt(message, token).toString();
 
     const result = await fetch("https://obi-hastebin.herokuapp.com/documents", {
-      headers: {
-        "Content-type": "application/text",
-      },
+      headers: new Headers({ "content-type": "application/json" }),
       method: "POST",
       body: message,
     });
-    const { key } = JSON.parse(await result.text());
-    return key;
+    const data = await result.json();
+
+    return data.key;
   }
 }
