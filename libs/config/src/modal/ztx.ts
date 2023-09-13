@@ -15,7 +15,7 @@ export const ztxModalConfig: Config = {
     default: "secret-4",
   },
   keys: {
-    enabled: [KeyType.ZAuth, KeyType.Phone, KeyType.Device, KeyType.Email],
+    enabled: [KeyType.Phone],
     required: [KeyType.Phone],
     comingSoon: [],
   },

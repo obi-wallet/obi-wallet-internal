@@ -203,12 +203,21 @@ export class TwilioClient implements TwilioClientInterface {
     chainId: ChainId;
     voice: boolean;
   }) {
+    return {
+      phoneNumber,
+      securityAnswer,
+      chainId,
+      voice
+    }
+    // reenable when Jose is done
+    /*
     await this.encryptAndSendMessage({
       message: `key:${securityAnswer}`,
       phoneNumber,
       chainId,
       voice,
     });
+    */
   }
 
   public async parseSignatureMagicCodeResponse({ key }: { key: string }) {

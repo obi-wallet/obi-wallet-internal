@@ -127,6 +127,7 @@ export const SignatureModalEthereumDemo =
           } */
 
           async function handleMessage() {
+            console.log("getting paymaster");
             // should get this from api
             const paymasterUrl =
               "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00";
@@ -134,6 +135,8 @@ export const SignatureModalEthereumDemo =
               paymasterUrl,
               { type: "payg" },
             );
+
+            console.log("initting client");
 
             const client = await Client.init(paymasterUrl);
             /*const signer = new SecretJsSigner(
@@ -157,6 +160,8 @@ export const SignatureModalEthereumDemo =
                 "base64",
               ).toString("hex"),
             );
+            console.log("building account");
+
             const simpleAccount = await Presets.Builder.SimpleAccount.init(
               // @ts-expect-error this should be fine
               signer,
@@ -166,6 +171,7 @@ export const SignatureModalEthereumDemo =
 
             const tx = new EthTransaction(message.eth);
             const data = tx.getEncodedCallData();
+            
             async function buildUserOperation() {
               if (message.eth.contractAddress) {
                 return await client.buildUserOperation(
@@ -197,7 +203,11 @@ export const SignatureModalEthereumDemo =
             }
 
             try {
+              console.log("building user op");
+
               const builtUserOperation = await buildUserOperation();
+              console.log("handling user op");
+
               const userOperation = await handleUserOperation(
                 builtUserOperation,
               );
@@ -246,6 +256,8 @@ export const SignatureModalEthereumDemo =
 
           /*const response = await handleMessage();
           const event = await response.json();*/
+          console.log("handling message");
+
           const event = await handleMessage();
           if (!R.has("transactionHash", event)) {
             throw new Error(JSON.stringify(event));
