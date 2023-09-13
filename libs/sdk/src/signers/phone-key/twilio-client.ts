@@ -207,8 +207,8 @@ export class TwilioClient implements TwilioClientInterface {
       phoneNumber,
       securityAnswer,
       chainId,
-      voice
-    }
+      voice,
+    };
     // reenable when Jose is done
     /*
     await this.encryptAndSendMessage({

@@ -49,7 +49,9 @@ export async function POST(request: Request) {
       );
     }
   } else {
-    //console.warn("incoming device key: " + JSON.stringify(body.deviceKeyPair?.privateKey));
+    console.warn(
+      "incoming device key: " + JSON.stringify(body.deviceKeyPair?.privateKey),
+    );
     invariant(body.deviceKeyPair?.privateKey, "pass in device key");
     homeChain = {
       zAuthKeyPair: body.deviceKeyPair,

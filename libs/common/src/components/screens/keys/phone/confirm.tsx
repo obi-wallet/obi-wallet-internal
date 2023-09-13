@@ -1,4 +1,10 @@
-import { createGatekeeperConfig, generateSec256k1KeyPair, KeyType, MultisigKey, ObservableMultisigWallet, Secp256k1KeyPair } from "@obi-wallet/sdk";
+import {
+  createGatekeeperConfig,
+  generateSec256k1KeyPair,
+  KeyType,
+  ObservableMultisigWallet,
+  Secp256k1KeyPair,
+} from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Signer, SigningKey, Wallet } from "ethers";
 import { observer } from "mobx-react-lite";
@@ -40,7 +46,9 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
     const { params } = route;
 
     async function generateEthereumAddresses(keyPair: Secp256k1KeyPair) {
-      const signingKey = new SigningKey(Buffer.from(keyPair.privateKey, "base64"));
+      const signingKey = new SigningKey(
+        Buffer.from(keyPair.privateKey, "base64"),
+      );
       const signer: Signer = new Wallet(signingKey);
       const simpleAccount = await Presets.Builder.SimpleAccount.init(
         // @ts-expect-error this should be fine
@@ -79,7 +87,7 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
                     type: KeyType.ZAuth,
                     payload: {
                       publicKey: phoneKp.publicKey,
-                      privateKey: phoneKp.privateKey
+                      privateKey: phoneKp.privateKey,
                     },
                   },
                 ],
@@ -94,7 +102,7 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
               currentAccount: null,
             },
           });
-    
+
           sdkRootStore.ethereumDemoStore.setEthereumAccount(
             proxyAddress,
             ethereumAccount,
@@ -148,7 +156,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
     securityAnswer,
     onSubmit,
   }) {
-    const { chainStore, draftsStore, phoneSessionStore } = useStore();
+    const { chainStore, phoneSessionStore } = useStore();
     const chainId = chainStore.currentChain;
     const env = useEnv();
     const [key, setKey] = useState("");

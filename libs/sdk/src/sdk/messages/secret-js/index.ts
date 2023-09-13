@@ -133,8 +133,13 @@ export class SecretJsMessages extends AbstractMessages {
         deviceKey.publicKey,
       );
     } else if (phoneKey) {
-      invariant(phoneKey.payload.privateKey, "phone key does not have private key");
-      address = this.sdk.transactions.getAddressOfPublicKey(phoneKey.payload.privateKey);
+      invariant(
+        phoneKey.payload.privateKey,
+        "phone key does not have private key",
+      );
+      address = this.sdk.transactions.getAddressOfPublicKey(
+        phoneKey.payload.privateKey,
+      );
     } else {
       throw new Error("Expected ZAuth, phone, or device key to be present");
     }
