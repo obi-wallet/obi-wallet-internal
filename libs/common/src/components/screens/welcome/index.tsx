@@ -149,7 +149,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     return (
       <Welcome
         onCreate={onCreate}
-        onZepeto={onZepeto}
+        //onZepeto={onZepeto}
         onRecover={onRecover}
         onEnterDemoMode={onEnterDemoMode}
       />
