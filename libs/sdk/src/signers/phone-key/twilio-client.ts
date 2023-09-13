@@ -1,3 +1,4 @@
+import invariant from "tiny-invariant";
 import { Chain, ChainId } from "../../chains";
 import { Secp256k1KeyPair, Secp256k1PublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
@@ -157,6 +158,7 @@ export class TwilioClient implements TwilioClientInterface {
     key: string;
   }): Promise<string> {
     const decrypted = await this.fetchAndDecryptResponse(key);
+    invariant(decrypted, "Received null haste response");
     // convert to base64
     const base64PrivKey = this.stringToBase64(decrypted);
     return base64PrivKey;
