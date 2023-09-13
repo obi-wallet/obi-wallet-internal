@@ -1,11 +1,5 @@
 import { useTheme } from "@emotion/react";
-import {
-  KeyType,
-  MultisigKey,
-  ObservableMultisigKey,
-  ObservableMultisigWallet,
-  createGatekeeperConfig,
-} from "@obi-wallet/sdk";
+import { MultisigKey, ObservableMultisigKey } from "@obi-wallet/sdk";
 import { WelcomeButton } from "@obi-wallet/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -36,14 +30,7 @@ export type WelcomeScreenProps = NativeStackScreenProps<
 export const WelcomeScreen = observer<WelcomeScreenProps>(
   function WelcomeScreen() {
     const navigation = useRootNavigation();
-    const {
-      chainStore,
-      configStore,
-      draftsStore,
-      sdkRootStore,
-      walletsStore,
-      zauthStore,
-    } = useStore();
+    const { chainStore, configStore, draftsStore } = useStore();
 
     function onCreate() {
       const newMultisigKey = ObservableMultisigKey.create(
@@ -59,6 +46,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       });
     }
 
+    /*
     async function onZepeto() {
       const body = JSON.stringify({
         homeChainId: "secret-4",
@@ -107,6 +95,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       walletsStore.upsertWallet(wallet);
       walletsStore.setCurrentWallet(wallet);
     }
+    */
 
     function onRecover() {
       const newMultisigKey = ObservableMultisigKey.create(
