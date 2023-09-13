@@ -10,7 +10,7 @@ import { WelcomeButton } from "@obi-wallet/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+//import { Image, Text, TouchableOpacity, View } from "react-native";
 
 import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
@@ -159,14 +159,14 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
 
 export interface WelcomeProps {
   onCreate(): void;
-  onZepeto(): void;
+  //onZepeto(): void;
   onRecover(): void;
   onEnterDemoMode(): void;
 }
 
 export const Welcome = observer<WelcomeProps>(function Welcome({
   onCreate,
-  onZepeto,
+  //onZepeto,
   onRecover,
   onEnterDemoMode,
 }) {
@@ -181,7 +181,8 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
       {theme.welcome.buttons.map((button) => {
         switch (button) {
           case WelcomeButton.Zepeto:
-            return <ZepetoButton key={button} onPress={onZepeto} />;
+            return null;
+          // <ZepetoButton key={button} onPress={onZepeto} />;
           case WelcomeButton.Login:
             if (walletsStore.wallets.length === 0) return null;
             return (
@@ -270,7 +271,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
   }
 });
 
-const ZepetoButton = observer(function ZepetoButton({
+/* const ZepetoButton = observer(function ZepetoButton({
   onPress,
 }: {
   onPress?: () => void;
@@ -315,4 +316,4 @@ const ZepetoButton = observer(function ZepetoButton({
       </View>
     </TouchableOpacity>
   );
-});
+}); */

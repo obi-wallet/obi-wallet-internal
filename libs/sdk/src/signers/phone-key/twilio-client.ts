@@ -136,6 +136,7 @@ export class TwilioClient implements TwilioClientInterface {
   }
 
   stringToBase64(input: string): string {
+    console.log("input in stringToBase64: " + input);
     // Convert the comma-separated string into an array of numbers
     const numbers = input.split(",").map((num) => parseInt(num, 10));
 
