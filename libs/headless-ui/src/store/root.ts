@@ -29,7 +29,7 @@ export class RootStore {
       walletsStore: this._walletsStore,
     });
   }
-  
+
   public get walletsStoreState() {
     return this._walletsStore.state;
   }

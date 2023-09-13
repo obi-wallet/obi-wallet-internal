@@ -62,27 +62,27 @@ export class EthTransaction {
 export const SignatureModalEthereumDemo =
   observer<SignatureModalEthereumDemoProps>(
     function SignatureModalEthereumDemo({ interaction }) {
-      const { phoneSessionStore, /*sdkRootStore*/ } = useStore();
+      const { phoneSessionStore /*sdkRootStore*/ } = useStore();
       const broadcast = useMutation({
         mutationFn: async () => {
           console.log("SignatureModalEthereumDemo()");
           console.log("interaction: " + JSON.stringify(interaction));
           const message = interaction.payload.messages[0] as /* unknown as
             | */ {
-                eth: EthTxInput;
-              };
-            // | {
-            //     userop: {
-            //       contractAddress?: string;
-            //       callData: string;
-            //       tokens: {
-            //         accessToken: string;
-            //         refreshToken: string;
-            //       };
-            //     };
-            //   };
-          
-          // zauth code disabled for now 
+            eth: EthTxInput;
+          };
+          // | {
+          //     userop: {
+          //       contractAddress?: string;
+          //       callData: string;
+          //       tokens: {
+          //         accessToken: string;
+          //         refreshToken: string;
+          //       };
+          //     };
+          //   };
+
+          // zauth code disabled for now
           /*
           const wallet = sdkRootStore.walletsStore.currentWallet;
 
@@ -128,12 +128,13 @@ export const SignatureModalEthereumDemo =
 
           async function handleMessage() {
             // should get this from api
-            const paymasterUrl = "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00";
+            const paymasterUrl =
+              "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00";
             const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(
               paymasterUrl,
               { type: "payg" },
             );
-            
+
             const client = await Client.init(paymasterUrl);
             /*const signer = new SecretJsSigner(
               {
@@ -146,9 +147,15 @@ export const SignatureModalEthereumDemo =
             );*/
 
             // TODO: if session unavailable, re-request phone sign in
-            invariant(phoneSessionStore.getKp?.privateKey, "no phone session key, sign in again");
+            invariant(
+              phoneSessionStore.getKp?.privateKey,
+              "no phone session key, sign in again",
+            );
             const signer: Signer = new Wallet(
-              Buffer.from(phoneSessionStore.getKp.privateKey, "base64").toString("hex"),
+              Buffer.from(
+                phoneSessionStore.getKp.privateKey,
+                "base64",
+              ).toString("hex"),
             );
             const simpleAccount = await Presets.Builder.SimpleAccount.init(
               // @ts-expect-error this should be fine
@@ -156,7 +163,7 @@ export const SignatureModalEthereumDemo =
               paymasterUrl,
               { paymasterMiddleware },
             );
-            
+
             const tx = new EthTransaction(message.eth);
             const data = tx.getEncodedCallData();
             async function buildUserOperation() {
@@ -170,10 +177,12 @@ export const SignatureModalEthereumDemo =
                   simpleAccount.setCallData(message.data),
                 );
                 */
-                throw new Error("raw userop data not yet supported for phone key");
+                throw new Error(
+                  "raw userop data not yet supported for phone key",
+                );
               }
             }
-          
+
             async function handleUserOperation(userOperation: IUserOperation) {
               try {
                 return await client.execUserOperation(userOperation);
@@ -186,17 +195,19 @@ export const SignatureModalEthereumDemo =
                 return await client.execUserOperation(userOperation);
               }
             }
-          
+
             try {
               const builtUserOperation = await buildUserOperation();
-              const userOperation = await handleUserOperation(builtUserOperation);
+              const userOperation = await handleUserOperation(
+                builtUserOperation,
+              );
               const event = await userOperation.wait();
               console.log("event", event);
               return event;
             } catch (e) {
               console.log("error", e);
             }
-            
+
             // only zauth key solo sign should call the api
             /*
             if (R.has("userop", message)) {

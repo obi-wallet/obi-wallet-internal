@@ -265,7 +265,9 @@ const MessageHandlers = observer(function MessageHandlers() {
           } catch (e) {
             evmUserContractAddress = ethereumAccount.targetChain.evmAddress;
           }
-          console.log("evm account is: " + JSON.stringify(evmUserContractAddress));
+          console.log(
+            "evm account is: " + JSON.stringify(evmUserContractAddress),
+          );
 
           const wallet = ObservableMultisigWallet.create({
             type: "multisig",
@@ -301,12 +303,12 @@ const MessageHandlers = observer(function MessageHandlers() {
           if (!data.payload.accessToken) {
             [kp, _] = await getOrCreateDeviceKeyPair(false, false);
             wallet.setEvmSigningAddress(kp.privateKey);
-            wallet.setEvmUserContractAddress(evmUserContractAddress);  
+            wallet.setEvmUserContractAddress(evmUserContractAddress);
           } else {
             wallet.setEvmSigningAddress("Uncalculated", true);
-            wallet.setEvmUserContractAddress(evmUserContractAddress);  
+            wallet.setEvmUserContractAddress(evmUserContractAddress);
           }
-          
+
           store.walletsStore.upsertWallet(wallet);
 
           const message = {

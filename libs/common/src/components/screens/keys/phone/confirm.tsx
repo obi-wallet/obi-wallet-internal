@@ -229,7 +229,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                           phoneNumber,
                           securityQuestion,
                         });
-                        phoneSessionStore.setKp({ kp });
+                        phoneSessionStore.setKp(kp);
                         setVerifyButtonDisabledDoubleclick(false);
                         onSubmit();
                       } else {

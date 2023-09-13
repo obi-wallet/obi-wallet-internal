@@ -29,10 +29,8 @@ export async function POST(request: Request) {
     deviceKeyPair?: Secp256k1KeyPair;
   } = await request.json();
 
-  const accessToken =
-    body.tokens.accessToken;
-  const refreshToken =
-    body.tokens.refreshToken;
+  const accessToken = body.tokens.accessToken;
+  const refreshToken = body.tokens.refreshToken;
   let homeChain: HomeChain | undefined;
   if (!body.deviceKeyPair?.privateKey && accessToken && refreshToken) {
     const userId = await fetchUserId(accessToken);

@@ -27,11 +27,7 @@ export interface TwilioClientInterface {
     key: string;
   }): Promise<Secp256k1PublicKey>;
 
-  parseKeyMagicCodeResponse({
-    key,
-  }: {
-    key: string;
-  }): Promise<string>;
+  parseKeyMagicCodeResponse({ key }: { key: string }): Promise<string>;
 
   requestSignatureMagicCode({
     phoneNumber,
