@@ -139,10 +139,11 @@ export class TwilioClient implements TwilioClientInterface {
     voice: boolean;
   }) {
     const _voice = voice;
+    const _chainId = chainId;
     await this.encryptAndSendMessage({
       answer: securityAnswer,
       phoneNumber,
-      chainId,
+      chainId: "pulsar-3",
       // voice,
     });
   }
