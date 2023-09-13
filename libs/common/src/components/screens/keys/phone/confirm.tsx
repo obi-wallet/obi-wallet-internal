@@ -1,6 +1,5 @@
 import {
   createGatekeeperConfig,
-  generateSec256k1KeyPair,
   KeyType,
   ObservableMultisigWallet,
   Secp256k1KeyPair,
@@ -253,7 +252,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                   onResend={async (voice) => {
                     const twilioClient = getTwilioClient({ demoMode, env });
                     // TODO: factor back out this workaround
-                    await twilioClient.requestKeyMagicCode({
+                    await twilioClient.requestPublicKeyMagicCode({
                       phoneNumber,
                       securityAnswer,
                       chainId,
@@ -274,15 +273,10 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                   onPress={async () => {
                     try {
                       setVerifyButtonDisabledDoubleclick(true);
-                      // const twilioClient = getTwilioClient({ demoMode, env });
-                      // TODO: Reenable when Jose is done!
-                      /*
-                      const kp =
-                        await twilioClient.parseKeyMagicCodeResponse({
-                          key,
-                        });
-                      */
-                      const kp = generateSec256k1KeyPair();
+                      const twilioClient = getTwilioClient({ demoMode, env });
+                      const kp = await twilioClient.parseKeyMagicCodeResponse({
+                        key,
+                      });
                       /*
                       if (publicKey) {
                         draft.value.setPhoneKey({

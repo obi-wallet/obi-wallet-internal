@@ -235,7 +235,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                     try {
                       const twilioClient = getTwilioClient({ demoMode, env });
                       // TODO: factor back out this workaround
-                      const res = await twilioClient.requestKeyMagicCode({
+                      const res = await twilioClient.requestPublicKeyMagicCode({
                         ...data,
                         chainId,
                         voice: false,

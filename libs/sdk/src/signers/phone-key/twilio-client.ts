@@ -1,3 +1,5 @@
+import * as secp256k1 from "secp256k1";
+
 import { Chain, ChainId } from "../../chains";
 import { Secp256k1KeyPair, Secp256k1PublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
@@ -136,6 +138,7 @@ export class TwilioClient implements TwilioClientInterface {
     chainId: ChainId;
     voice: boolean;
   }) {
+    const _voice = voice;
     await this.encryptAndSendMessage({
       answer: securityAnswer,
       phoneNumber,
@@ -153,14 +156,43 @@ export class TwilioClient implements TwilioClientInterface {
     };
   }
 
-  public async parseKeyMagicCodeResponse({ key }: { key: string }) {
+  stringToBase64(input: string): string {
+    // Convert the comma-separated string into an array of numbers
+    const numbers = input.split(",").map((num) => parseInt(num, 10));
+
+    // Convert the numbers into a Uint8Array
+    const byteArray = new Uint8Array(numbers);
+
+    // Convert the Uint8Array into a base64 string
+    let binary = "";
+    const len = byteArray.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(byteArray[i]);
+    }
+    const base64 = btoa(binary);
+
+    return base64;
+  }
+
+  public async parseKeyMagicCodeResponse({
+    key,
+  }: {
+    key: string;
+  }): Promise<Secp256k1KeyPair> {
     const decrypted = await this.fetchAndDecryptResponse(key);
-
-    // if (!decrypted?.startsWith("pubkey:")) {
-    //   throw new Error("This doesn't seem to be a public key");
-    // }
-
-    return decrypted.key;
+    // convert to base64
+    const base64PrivKey = this.stringToBase64(decrypted);
+    return {
+      privateKey: base64PrivKey,
+      publicKey: {
+        type: "tendermint/PubKeySecp256k1",
+        value: Buffer.from(
+          secp256k1.publicKeyCreate(
+            new Uint8Array(Buffer.from(base64PrivKey, "base64")),
+          ),
+        ).toString("base64"),
+      },
+    };
   }
 
   public async requestSignatureMagicCode({
