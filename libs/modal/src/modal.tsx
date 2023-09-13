@@ -10,7 +10,6 @@ import {
   Secp256k1PublicKey,
   getOrCreateDeviceKeyPair,
 } from "@obi-wallet/sdk";
-import * as elliptic from "elliptic";
 import { ethers } from "ethers";
 import { autorun } from "mobx";
 import { observer } from "mobx-react-lite";
@@ -98,9 +97,15 @@ const MessageHandlers = observer(function MessageHandlers() {
             store.walletsStore.currentWallet.owner.getUsableKeyOfType(
               KeyType.Device,
             );
-          invariant(zAuthKey || deviceKey, "Wallet has no ZAuth or device key");
+          const phoneKey = store.phoneSessionStore.getKp;
+          invariant(
+            zAuthKey || deviceKey || phoneKey,
+            "Wallet has no ZAuth or device key",
+          );
           let signer;
-          if (zAuthKey) {
+          if (phoneKey) {
+            signer = new Secp256k1PrivateKeySigner(phoneKey.privateKey);
+          } else if (zAuthKey) {
             signer = new ZAuthKeySigner(zAuthKey);
           } else if (deviceKey?.payload.privateKey) {
             signer = new Secp256k1PrivateKeySigner(
@@ -192,28 +197,12 @@ const MessageHandlers = observer(function MessageHandlers() {
           break;
         }
         case "@obi/get-signing-address": {
-          const base64PubKey =
-            store.walletsStore.currentWallet?.owner.getKeyOfType(KeyType.Device)
-              ?.publicKey.value;
-          // TODO: prompt for webauthn if no device pubkey
-          invariant(base64PubKey, "no device pubkey");
-          const pubKeyBuffer = Buffer.from(base64PubKey, "base64");
-          // Remove prefix byte (0x04) for uncompressed public keys
-          let keyBytes: Buffer;
-          if (pubKeyBuffer.length === 65 && pubKeyBuffer[0] === 0x04) {
-            keyBytes = pubKeyBuffer.slice(1);
-          } else {
-            keyBytes = pubKeyBuffer;
-          }
-          const pubKeyHex = keyBytes.toString("hex");
-          // Decompress the public key
-          const ec = new elliptic.ec("secp256k1");
-          const keyPair = ec.keyFromPublic(pubKeyHex, "hex");
-          const decompressedPubKey = keyPair.getPublic(false, "hex");
-
+          const evmAddress =
+            store.walletsStore.currentWallet?.evmSigningAddress;
+          invariant(evmAddress, "no evm signing address");
           const message = {
             type: "@obi/signing-address-response",
-            payload: ethers.computeAddress("0x" + decompressedPubKey),
+            payload: evmAddress,
           };
           postMessage(message);
           console.log(JSON.stringify(message));
