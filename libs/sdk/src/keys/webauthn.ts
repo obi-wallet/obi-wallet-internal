@@ -4,7 +4,7 @@ import { SecretNetworkClient, pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { getBiometricsPrivateKey } from "./legacy";
-import { Secp256k1KeyPair, generateSec256k1KeyPair } from "./sec256k1";
+import { Secp256k1KeyPair } from "./sec256k1";
 import { secretJsChains } from "../chains/secret-js";
 import { KeySubclassTypeMapping, KeyType } from "../data-structures/key";
 import { Secp256k1PrivateKeySigner } from "../signers/sec256k1-private-key";
@@ -75,135 +75,7 @@ export async function getOrCreateDeviceKeyPair(
   allowCreate: boolean,
   demoMode: boolean,
 ): Promise<[Secp256k1KeyPair, boolean]> {
-  let tryWebAuthN = true;
-  if (
-    typeof window !== "undefined" &&
-    typeof PublicKeyCredential !== "undefined"
-  ) {
-    try {
-      const isUVPAA =
-        await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-      tryWebAuthN = isUVPAA;
-    } catch (e) {
-      // Handle the error appropriately here
-    }
-  }
-  if (tryWebAuthN) {
-    try {
-      let challenge = new Uint8Array(32); // Normally, this challenge is provided by the server.
-      if (typeof window !== "undefined") {
-        window.crypto.getRandomValues(challenge);
-      } else {
-        challenge = new Uint8Array(32).fill(0);
-      }
-
-      const publicKey: CustomPublicKeyCredentialCreationOptions = {
-        challenge: btoa(String.fromCharCode(...challenge)),
-        rp: {
-          name: "Obi",
-          // id: new URL(window.location.origin).hostname,
-        },
-        user: {
-          id: btoa(String.fromCharCode(...new Uint8Array(16))),
-          name: "My Obi Device Key",
-          displayName: "My Obi Device Key",
-        },
-        pubKeyCredParams: [
-          {
-            type: "public-key",
-            alg: -7, // This indicates the algorithm type (e.g., ES256 for elliptic curve)
-          },
-        ],
-        authenticatorSelection: {
-          authenticatorAttachment: "platform",
-        },
-      };
-      let credential;
-      if (allowCreate) {
-        credential = await create({ publicKey });
-      } else {
-        try {
-          credential = await get({ publicKey });
-        } catch (e) {
-          credential = await create({ publicKey });
-          allowCreate = true;
-        }
-      }
-      console.log("webauthn credential id: " + JSON.stringify(credential?.id));
-
-      invariant(credential?.id, "Expected credential to have an id");
-      const combinedPrivateKey = await combineKeys(
-        DEMO_PRIVATE_KEY,
-        Buffer.from(credential?.id).toString("hex"),
-      );
-      const webauthnSigner = new Secp256k1PrivateKeySigner(combinedPrivateKey);
-      console.log("Resulting public key: " + webauthnSigner.publicKey.value);
-      const compressedPubkey = base64ToCompressedPubKey(
-        webauthnSigner.publicKey.value,
-      );
-      invariant(compressedPubkey, "Unable to correctly compress public key");
-      const webauthnAddress = pubkeyToAddress(compressedPubkey);
-      console.log("webauthn Signer address: " + webauthnAddress);
-
-      const stockClient = new SecretNetworkClient({
-        chainId: "secret-4",
-        url: secretJsChains["secret-4"].urls[0],
-      });
-      let balance = "";
-      try {
-        balance =
-          (
-            await stockClient.query.bank.balance({
-              address: webauthnAddress,
-              denom: "uscrt",
-            })
-          ).balance?.amount || "0";
-      } catch (e) {
-        balance = "0";
-      }
-      try {
-        if (balance === "0") {
-          const response = await fetch("/api/lend", {
-            method: "POST",
-            body: JSON.stringify({
-              homeChainId: "secret-4",
-              address: webauthnAddress,
-            }),
-          });
-
-          if (response.status !== 200) {
-            throw new Error("Failed to fund webauthn signer");
-          }
-
-          return [
-            {
-              publicKey: {
-                type: "tendermint/PubKeySecp256k1",
-                value: webauthnSigner.publicKey.value,
-              },
-              privateKey: combinedPrivateKey,
-            },
-            true,
-          ];
-        }
-      } catch (e) {
-        console.error("Failed to fund webauthn signer", e);
-      }
-      return [
-        {
-          publicKey: {
-            type: "tendermint/PubKeySecp256k1",
-            value: webauthnSigner.publicKey.value,
-          },
-          privateKey: combinedPrivateKey,
-        },
-        false,
-      ];
-    } catch (err) {
-      console.error("WebAuthn error:", err);
-      throw new Error("WebAuthn request rejected");
-    }
-  } else if (demoMode) {
+  if (demoMode) {
     return [
       {
         publicKey: {
@@ -215,8 +87,124 @@ export async function getOrCreateDeviceKeyPair(
       true,
     ];
   }
+  try {
+    let challenge = new Uint8Array(32); // Normally, this challenge is provided by the server.
+    if (typeof window !== "undefined") {
+      window.crypto.getRandomValues(challenge);
+    } else {
+      challenge = new Uint8Array(32).fill(0);
+    }
 
-  return [generateSec256k1KeyPair(), true];
+    const publicKey: CustomPublicKeyCredentialCreationOptions = {
+      challenge: btoa(String.fromCharCode(...challenge)),
+      rp: {
+        name: "Obi",
+        // id: new URL(window.location.origin).hostname,
+      },
+      user: {
+        id: btoa(String.fromCharCode(...new Uint8Array(16))),
+        name: "My Obi Device Key",
+        displayName: "My Obi Device Key",
+      },
+      pubKeyCredParams: [
+        {
+          type: "public-key",
+          alg: -7, // This indicates the algorithm type (e.g., ES256 for elliptic curve)
+        },
+        {
+          type: "public-key",
+          alg: -257 // Value registered by this specification for "RS256"
+        }
+      ],
+      authenticatorSelection: {
+        authenticatorAttachment: "platform",
+      },
+    };
+    let credential;
+    if (allowCreate) {
+      credential = await create({ publicKey });
+    } else {
+      try {
+        credential = await get({ publicKey });
+      } catch (e) {
+        credential = await create({ publicKey });
+        allowCreate = true;
+      }
+    }
+    console.log("webauthn credential id: " + JSON.stringify(credential?.id));
+
+    invariant(credential?.id, "Expected credential to have an id");
+    const combinedPrivateKey = await combineKeys(
+      DEMO_PRIVATE_KEY,
+      Buffer.from(credential?.id).toString("hex"),
+    );
+    const webauthnSigner = new Secp256k1PrivateKeySigner(combinedPrivateKey);
+    console.log("Resulting public key: " + webauthnSigner.publicKey.value);
+    const compressedPubkey = base64ToCompressedPubKey(
+      webauthnSigner.publicKey.value,
+    );
+    invariant(compressedPubkey, "Unable to correctly compress public key");
+    const webauthnAddress = pubkeyToAddress(compressedPubkey);
+    console.log("webauthn Signer address: " + webauthnAddress);
+
+    const stockClient = new SecretNetworkClient({
+      chainId: "secret-4",
+      url: secretJsChains["secret-4"].urls[0],
+    });
+    let balance = "";
+    try {
+      balance =
+        (
+          await stockClient.query.bank.balance({
+            address: webauthnAddress,
+            denom: "uscrt",
+          })
+        ).balance?.amount || "0";
+    } catch (e) {
+      balance = "0";
+    }
+    try {
+      if (balance === "0") {
+        const response = await fetch("/api/lend", {
+          method: "POST",
+          body: JSON.stringify({
+            homeChainId: "secret-4",
+            address: webauthnAddress,
+          }),
+        });
+
+        if (response.status !== 200) {
+          throw new Error("Failed to fund webauthn signer");
+        }
+
+        return [
+          {
+            publicKey: {
+              type: "tendermint/PubKeySecp256k1",
+              value: webauthnSigner.publicKey.value,
+            },
+            privateKey: combinedPrivateKey,
+          },
+          true,
+        ];
+      }
+    } catch (e) {
+      console.error("Failed to fund webauthn signer", e);
+    }
+    return [
+      {
+        publicKey: {
+          type: "tendermint/PubKeySecp256k1",
+          value: webauthnSigner.publicKey.value,
+        },
+        privateKey: combinedPrivateKey,
+      },
+      false,
+    ];
+  } catch (err) {
+    console.error("WebAuthn error:", JSON.stringify(err));
+    throw new Error("WebAuthn request rejected");
+  }
 }
 
 // Function to combine the DEMO_PRIVATE_KEY with the credential.id
@@ -265,13 +253,11 @@ export async function getDevicePrivateKey(
   key: KeySubclassTypeMapping[KeyType.Device],
 ): Promise<string | null> {
   if (key.payload.privateKey) return key.payload.privateKey;
-  const isUVPAA =
-    await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
   let kp, _;
-  if (isUVPAA) {
+  try {
     [kp, _] = await getOrCreateDeviceKeyPair(false, false);
     return kp.privateKey;
-  } else {
+  } catch (e) {
     try {
       const privateKey = await getBiometricsPrivateKey({
         publicKey: key.publicKey.value,
@@ -283,6 +269,7 @@ export async function getDevicePrivateKey(
           privateKey,
         },
       });
+      invariant(privateKey, "no private key");
       return privateKey;
     } catch (e) {
       return null;

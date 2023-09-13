@@ -56,9 +56,8 @@ export async function POST(request: Request) {
       zAuthKeyPair: body.deviceKeyPair,
       targetChain: {
         publicKey: body.deviceKeyPair.publicKey,
-        evmAddress: (
-          await generateEthereumAddresses(body.deviceKeyPair)
-        ).evmUserContractAddress,
+        evmAddress: (await generateEthereumAddresses(body.deviceKeyPair))
+          .evmUserContractAddress,
       },
       proxyAddress: "MISSING",
     };
