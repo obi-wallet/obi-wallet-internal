@@ -234,8 +234,8 @@ export class TwilioClient implements TwilioClientInterface {
 
   protected async fetchAndDecryptResponse(key: string) {
     const result = await fetch(`https://obi-hastebin.herokuapp.com/raw/${key}`);
-    console.log({ result });
-    const text = await result.json();
+    console.log(JSON.stringify({ result }));
+    const text = await result.text();
     console.log({ text });
     return text;
   }
