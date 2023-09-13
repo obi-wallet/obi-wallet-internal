@@ -171,6 +171,7 @@ export class MultisigKey {
       type: KeyType.ZAuth,
       payload: {
         publicKey,
+        privateKey: "",
       },
     });
   }
