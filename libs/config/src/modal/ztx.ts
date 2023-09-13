@@ -16,7 +16,7 @@ export const ztxModalConfig: Config = {
   },
   keys: {
     enabled: [KeyType.ZAuth, KeyType.Phone, KeyType.Device, KeyType.Email],
-    required: [KeyType.Device],
+    required: [KeyType.Phone],
     comingSoon: [],
   },
   ethereumBalances: true,

@@ -42,8 +42,12 @@ export const MultisigDraft = {
     useAsyncEffect(async () => {
       if (!draft) {
         const original = ObservableMultisigKey.create(chainStore.currentChain);
-        const [key, _] = await getOrCreateDeviceKeyPair(false, false);
-        original.setDeviceKey(key);
+        try {
+          const [key, _] = await getOrCreateDeviceKeyPair(false, false);
+          original.setDeviceKey(key);
+        } catch (e) {
+          console.error(e);
+        }
         original.setPhoneKey({
           publicKey: await getTwilioClient({
             demoMode: true,

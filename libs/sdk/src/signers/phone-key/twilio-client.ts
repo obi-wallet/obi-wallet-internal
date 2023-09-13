@@ -27,7 +27,27 @@ export interface TwilioClientInterface {
     key: string;
   }): Promise<Secp256k1PublicKey>;
 
+  parseKeyMagicCodeResponse({
+    key,
+  }: {
+    key: string;
+  }): Promise<string>;
+
   requestSignatureMagicCode({
+    phoneNumber,
+    securityAnswer,
+    message,
+    chainId,
+    voice,
+  }: {
+    phoneNumber: string;
+    securityAnswer: string;
+    message: Uint8Array;
+    chainId: ChainId;
+    voice: boolean;
+  }): Promise<void>;
+
+  requestKeyMagicCode({
     phoneNumber,
     securityAnswer,
     message,
@@ -63,8 +83,20 @@ export class DemoModeTwilioClient implements TwilioClientInterface {
     return;
   }
 
+  public async requestKeyMagicCode(_: {
+    phoneNumber: string;
+    securityAnswer: string;
+    chainId: ChainId;
+  }) {
+    return;
+  }
+
   public async parsePublicKeyMagicCodeResponse(_: { key: string }) {
     return this.keyPair.publicKey;
+  }
+
+  public async parseKeyMagicCodeResponse(_: { key: string }) {
+    return this.keyPair.privateKey;
   }
 
   public async requestSignatureMagicCode({
@@ -131,6 +163,16 @@ export class TwilioClient implements TwilioClientInterface {
     };
   }
 
+  public async parseKeyMagicCodeResponse({ key }: { key: string }) {
+    const decrypted = await this.fetchAndDecryptResponse(key);
+
+    // if (!decrypted?.startsWith("pubkey:")) {
+    //   throw new Error("This doesn't seem to be a public key");
+    // }
+
+    return decrypted.key;
+  }
+
   public async requestSignatureMagicCode({
     phoneNumber,
     securityAnswer,
@@ -146,6 +188,29 @@ export class TwilioClient implements TwilioClientInterface {
   }) {
     await this.encryptAndSendMessage({
       message: `sign:${securityAnswer}:${Buffer.from(message.buffer).toString(
+        "base64",
+      )}`,
+      phoneNumber,
+      chainId,
+      voice,
+    });
+  }
+
+  public async requestKeyMagicCode({
+    phoneNumber,
+    securityAnswer,
+    message,
+    chainId,
+    voice,
+  }: {
+    phoneNumber: string;
+    securityAnswer: string;
+    message: Uint8Array;
+    chainId: ChainId;
+    voice: boolean;
+  }) {
+    await this.encryptAndSendMessage({
+      message: `key:${securityAnswer}:${Buffer.from(message.buffer).toString(
         "base64",
       )}`,
       phoneNumber,

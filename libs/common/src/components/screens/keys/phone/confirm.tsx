@@ -178,12 +178,20 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                   setValue={setKey}
                   onResend={async (voice) => {
                     const twilioClient = getTwilioClient({ demoMode, env });
-                    await twilioClient.requestPublicKeyMagicCode({
+                    // TODO: factor back out this workaround
+                    const res = await twilioClient.requestKeyMagicCode({
                       phoneNumber,
                       securityAnswer,
                       chainId,
                       voice,
                     });
+                    /*
+                    const res = await twilioClient.requestPublicKeyMagicCode({
+                      ...data,
+                      chainId,
+                      voice: false,
+                    });
+                    */
                   }}
                 />
               </View>

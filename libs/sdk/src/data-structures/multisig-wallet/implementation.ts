@@ -175,12 +175,17 @@ export class MultisigWallet {
   }
 
   /// Also sets contract address, via paymaster
-  public setEvmSigningAddress(base64PrivKey: string) {
-    const wallet = new Wallet(
-      Buffer.from(base64PrivKey, "base64").toString("hex"),
-    );
-    // convert this base64 string pubKey to an ethereum address
-    this._evmSigningAddress = wallet.address;
+  public setEvmSigningAddress(base64PrivKey: string, isAddress?: boolean) {
+    if (isAddress) {
+      this._evmSigningAddress = base64PrivKey;
+      return;
+    } else {
+      const wallet = new Wallet(
+        Buffer.from(base64PrivKey, "base64").toString("hex"),
+      );
+      // convert this base64 string pubKey to an ethereum address
+      this._evmSigningAddress = wallet.address;
+    }
   }
 
   public get owner() {
