@@ -6,17 +6,28 @@ import {
 } from "./abstract";
 import { common } from "./common";
 
-const colors = {
-  gray8: "#F6F8FC",
-  gray6: "#929EB5",
-  white: "#FFFFFF",
-  grey5: "#3E4859",
+export const colors = {
   grey2: "#16161E",
   grey4: "#24242E",
+  grey5: "#3E4859",
+  grey6: "#929EB5",
+  grey7: "#D5DDE5",
+  grey8: "#F6F8FC",
+  white: "#FFFFFF",
   black: "#000000",
   primaryGold: "#CAA767",
   hoverGold: "#B0915A",
   errorRed: "#E10E34",
+};
+const buttonsDefaultStyle = {
+  backgroundColor: "transparent",
+  borderRadius: 5,
+  borderWidth: 1,
+  height: 36,
+  marginVertical: 9,
+  text: {
+    textTransform: "uppercase",
+  },
 };
 export const ztxTheme: CustomTheme = {
   ...common,
@@ -39,7 +50,16 @@ export const ztxTheme: CustomTheme = {
     ],
     paddingHorizontal: 22,
   },
+  buttonsContainerStyle: {
+    paddingHorizontal: 0,
+    paddingBottom: 22,
+    // backgroundColor: "yellow",
+    minHeight: 131,
+    justifyContent: "space-between",
+  },
+
   header: {
+    paddingLeft: 22,
     image: {
       src: "/ztx-header@2x.png",
       flex: 1,
@@ -62,22 +82,18 @@ export const ztxTheme: CustomTheme = {
       src: "./ztx-back-icon.svg",
       width: 8,
       height: 16,
-      marginLeft: 22,
-      marginTop: 29,
+      justifyContent: "center",
+      alignItems: "center",
     },
   },
   buttonFlavors: {
     primary: {
-      backgroundColor: "transparent",
-      borderRadius: 5,
-      borderWidth: 1,
+      ...buttonsDefaultStyle,
       borderColor: colors.primaryGold,
     },
     cancel: {
-      backgroundColor: "transparent",
-      borderRadius: 5,
-      borderWidth: 1,
-      borderColor: "#ffffff",
+      borderColor: colors.grey6,
+      ...buttonsDefaultStyle,
     },
   },
   iconButtonFlavors: {
@@ -105,6 +121,43 @@ export const ztxTheme: CustomTheme = {
       fontWeight: "300",
     },
   },
+  dropdown: {
+    labelStyle: {
+      color: colors.grey7,
+      textTransform: "none",
+      fontSize: 12,
+      fontFamily: "TT Hoves Pro",
+    },
+    containerStyle: {
+      borderWidth: 0,
+      borderRadius: 3,
+      backgroundColor: colors.grey4,
+      paddingHorizontal: 16,
+    },
+  },
+  textInput: {
+    labelStyle: {
+      fontSize: 12,
+      fontFamily: "TT Hoves Pro",
+      fontStyle: "normal",
+      fontWeight: "300",
+      color: colors.grey7,
+      textTransform: "none",
+    },
+    inputStyle: {
+      fontSize: 14,
+      fontFamily: "TT Hoves Pro",
+      fontStyle: "normal",
+      fontWeight: "400",
+      color: colors.grey8,
+      borderRadius: 3,
+      padding: 12,
+      height: 42,
+      borderWidth: 0,
+      backgroundColor: colors.grey4,
+    },
+    placeholderTextColor: colors.grey6,
+  },
   i18n: {
     welcome: {
       title: "Welcome to ZTX",
@@ -112,6 +165,34 @@ export const ztxTheme: CustomTheme = {
         "The ZTX smart account is the most convenient and secure way to manage your assets in the metaverse.",
     },
     accountName: "Obi Smart Account",
+  },
+  phoneKey: {
+    title1: {
+      fontFamily: "TT Hoves Pro",
+      fontWeight: "500",
+      fontSize: 22,
+      lineHeight: 22,
+      color: colors.grey8,
+    },
+    title2: {
+      fontFamily: "TT Hoves Pro",
+      fontWeight: "500",
+      fontSize: 22,
+      lineHeight: 22,
+      color: colors.grey6,
+    },
+    info: {
+      backgroundColor: colors.grey4,
+      padding: 16,
+      marginVertical: 36,
+      text: {
+        fontFamily: "TT Hoves Pro",
+        fontWeight: "400",
+        fontSize: 14,
+        lineHeight: 18,
+        color: colors.grey8,
+      },
+    },
   },
   welcome: {
     image: "ztx-welcome.png",

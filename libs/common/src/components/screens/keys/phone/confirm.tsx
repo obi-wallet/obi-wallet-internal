@@ -212,7 +212,14 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                         marginTop: 32,
                       }}
                     >
-                      {flow === KeyFlow.EditWallet ? (
+                      <Text style={theme.phoneKey.title1}>
+                        Create
+                        <Text style={theme.phoneKey.title2}>
+                          {" "}
+                          a phone number key
+                        </Text>
+                      </Text>
+                      {/* {flow === KeyFlow.EditWallet ? (
                         <FormattedMessage
                           id="onboarding2.recovery.authyourkeys"
                           defaultMessage="Create a Replacement Phone Number Key"
@@ -227,7 +234,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                           id="onboarding3.authyourkeys"
                           defaultMessage="Authenticate Your Keys"
                         />
-                      )}
+                      )} */}
                     </Text>
                     <Text
                       style={{

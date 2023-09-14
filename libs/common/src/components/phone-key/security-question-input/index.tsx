@@ -7,6 +7,7 @@ import { DropDownPicker } from "./drop-down-picker";
 import { isSmallScreenNumber } from "../../../helpers";
 import { TextInput } from "../../text-input";
 import { BaseTextInput, Text } from "../../typography";
+import { useTheme } from "@emotion/react";
 
 export type SetStateCallback<S> = (prevState: S) => S;
 export type OnSecurityQuestionChange = Dispatch<SetStateCallback<string>>;
@@ -74,6 +75,7 @@ export const SecurityQuestionInput = observer(function SecurityQuestionInput({
   const [securityQuestions, setSecurityQuestions] = useState(
     useSecurityQuestions(),
   );
+  const theme = useTheme();
 
   return (
     <>
@@ -82,8 +84,9 @@ export const SecurityQuestionInput = observer(function SecurityQuestionInput({
           color: "white",
           fontSize: 10,
           textTransform: "uppercase",
-          marginTop: isSmallScreenNumber(20, 36),
+          // marginTop: isSmallScreenNumber(20, 36),
           marginBottom: 5,
+          ...theme.dropdown.labelStyle,
         }}
       >
         <FormattedMessage

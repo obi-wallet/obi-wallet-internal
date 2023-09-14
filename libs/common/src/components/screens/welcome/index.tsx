@@ -198,7 +198,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
               <Button
                 key={button}
                 label={"Sign Up"}
-                flavor="primary"
+                flavor="cancel"
                 buttonStyle={{
                   marginTop: theme.spacing[4],
                 }}

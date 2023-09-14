@@ -48,6 +48,7 @@ const getFlavorStyles = (
     text: {
       ...baseStyles.text,
       ...theme.textStyles.light,
+      ...theme.buttonFlavors[flavor].text,
       color: "#fff",
     },
     button: {

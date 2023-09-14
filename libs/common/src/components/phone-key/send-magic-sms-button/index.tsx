@@ -23,7 +23,7 @@ export const SendMagicSmsButton = observer(function SendMagicSmsButton({
   const intl = useIntl();
   return (
     <View>
-      {description ? (
+      {/* {description ? (
         <View
           style={{
             flex: 1,
@@ -50,13 +50,13 @@ export const SendMagicSmsButton = observer(function SendMagicSmsButton({
             {description}
           </Text>
         </View>
-      ) : null}
+      ) : null} */}
       <AsyncButton
         label={intl.formatMessage({
           id: "onboarding2.sendmagicsms",
           defaultMessage: "Get Magic SMS",
         })}
-        flavor="primary"
+        flavor="cancel"
         disabled={disabled}
         onPress={onPress}
       />

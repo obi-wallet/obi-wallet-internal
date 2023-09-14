@@ -48,6 +48,7 @@ export interface BackgroundStyle {
   size?: string;
   position?: string;
 }
+type ButtonStyleType = ViewStyle & { text?: TextStyle };
 export interface CustomTheme extends CommonTheme {
   loginModal?: boolean;
   colors: {
@@ -55,6 +56,7 @@ export interface CustomTheme extends CommonTheme {
     background: string;
     panelBackground: string;
   };
+  buttonsContainerStyle?: ViewStyle;
   background: BackgroundStyle;
   modal: {
     borderRadius?: string;
@@ -69,17 +71,32 @@ export interface CustomTheme extends CommonTheme {
     backIcon?: ImageStyle & { src: string };
   };
   buttonFlavors: {
-    primary: ViewStyle & { background?: string };
-    cancel: ViewStyle & { background?: string };
+    primary: ButtonStyleType;
+    cancel: ButtonStyleType;
   };
   iconButtonFlavors: {
-    primary: ViewStyle & { background?: string };
-    panel: ViewStyle & { background?: string };
+    primary: ButtonStyleType;
+    panel: ButtonStyleType;
   };
   textStyles: {
     bold: Pick<TextStyle, "fontFamily" | "fontWeight">;
     regular: Pick<TextStyle, "fontFamily" | "fontWeight">;
     light: Pick<TextStyle, "fontFamily" | "fontWeight">;
+  };
+  textInput: {
+    inputContainerStyle?: ViewStyle;
+    inputStyle?: TextStyle;
+    labelStyle?: TextStyle;
+    errorStyle?: TextStyle;
+    containerStyle?: ViewStyle;
+    placeholderTextColor?: string;
+  };
+  dropdown: {
+    containerStyle?: ViewStyle;
+    labelStyle?: TextStyle;
+    errorStyle?: TextStyle;
+    inputContainerStyle?: ViewStyle;
+    inputStyle?: TextStyle;
   };
   i18n: {
     welcome: {
@@ -87,6 +104,13 @@ export interface CustomTheme extends CommonTheme {
       subTitle: string;
     };
     accountName: string;
+  };
+  phoneKey: {
+    title1: TextStyle;
+    title2: TextStyle;
+    info: ViewStyle & {
+      text: TextStyle;
+    };
   };
   welcome: {
     background?: BackgroundStyle;

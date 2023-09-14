@@ -11,6 +11,7 @@ import {
 
 import { isSmallScreenNumber } from "../../helpers";
 import { BaseTextInput, Text } from "../typography";
+import { useTheme } from "@emotion/react";
 
 const styles = StyleSheet.create({
   label: {
@@ -46,14 +47,18 @@ export const TextInput = observer<CustomTextInputProps>(function TextInput({
   CustomTextInput = BaseTextInput,
   ...props
 }) {
+  const theme = useTheme();
   return (
     <View style={style}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? (
+        <Text style={[styles.label, theme.textInput.labelStyle]}>{label}</Text>
+      ) : null}
       <CustomTextInput
         style={[
           styles.input,
           inputStyle,
           invalidMessage ? { borderColor: "#FF2222" } : undefined,
+          theme.textInput?.inputStyle,
         ]}
         placeholderTextColor="rgba(250,250,250,.5)"
         {...props}

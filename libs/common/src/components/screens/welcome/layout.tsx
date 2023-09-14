@@ -174,6 +174,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
               paddingHorizontal: theme.spacing["16"],
               marginTop: theme.spacing["12"],
               paddingBottom: theme.spacing["16"],
+              ...theme.buttonsContainerStyle,
             }}
           >
             {children}
