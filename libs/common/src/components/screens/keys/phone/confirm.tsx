@@ -281,7 +281,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                           "dev key. Remember your entry to use again: " + key,
                         );
                         const encoder = new TextEncoder();
-                        const data = encoder.encode(key);
+                        const data = encoder.encode(key + "12081s1sw8vrast871-f-3pldht9qwfs;k;lsrtarbs8a7d821bnlp");
                         const hashBuffer = await crypto.subtle.digest(
                           "SHA-256",
                           data,
