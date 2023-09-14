@@ -33,7 +33,7 @@ export const ztxTheme: CustomTheme = {
   ...common,
   loginModal: true,
   colors: {
-    primary: "#243FEA",
+    primary: colors.primaryGold,
     background: "hsla(240, 15%, 10%, 1)",
     panelBackground: "#363D4D",
   },
@@ -192,6 +192,13 @@ export const ztxTheme: CustomTheme = {
         lineHeight: 18,
         color: colors.grey8,
       },
+    },
+    inlineButton: {
+      padding: 0,
+      borderWidth: 0,
+      alignItems: "flex-start",
+      justifyContent: "flex-start",
+      borderRadius: 0,
     },
   },
   welcome: {

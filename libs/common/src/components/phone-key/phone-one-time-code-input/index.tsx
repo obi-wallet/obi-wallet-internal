@@ -6,6 +6,7 @@ import { View } from "react-native";
 import { InlineButton } from "../../buttons";
 import { TextInput } from "../../text-input";
 import { Text } from "../../typography";
+import { useTheme } from "@emotion/react";
 
 export interface PhoneOneTimeCodeInputProps {
   phoneNumber: string;
@@ -25,7 +26,7 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
   }) {
     const intl = useIntl();
     const waitTime = 45;
-
+    const theme = useTheme();
     const [resendButtonDisabled, setResendButtonDisabled] = useState(false);
     const [resendCounter, setResendCounter] = useState(waitTime);
     const [resendButtonHit, setResendButtonHit] = useState(false);
@@ -47,9 +48,10 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
           placeholder={intl.formatMessage({
             id: "onboarding3.smscodelabel",
           })}
+          label={"Enter SMS Code"}
           textContentType="oneTimeCode"
           keyboardType="number-pad"
-          style={{ marginTop: 25 }}
+          style={{}}
           value={value}
           onChangeText={(value) => {
             const reg = /^\d*$/;
@@ -60,24 +62,30 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
         />
         <View
           style={{
-            flexDirection: "column",
+            flexDirection: "row",
             alignItems: "flex-start",
-            marginTop: 24,
+            justifyContent: "flex-start",
+            marginTop: 16,
             width: "100%",
           }}
         >
           <Text style={{ color: "rgba(246, 245, 255, 0.6)", fontSize: 12 }}>
-            <FormattedMessage
+            {/* <FormattedMessage
               id="onboarding3.noresponselabel"
               defaultMessage="Didn't receive a response?"
-            />
+            /> */}
+            Didn’t get a code?
           </Text>
           {resendCounter === 0 ? (
-            <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <View style={{ flexDirection: "row" }}>
               <InlineButton
-                label={`${intl.formatMessage({
-                  id: "onboarding3.sendagain",
-                })} SMS`}
+                // label={`${intl.formatMessage({
+                //   id: "onboarding3.sendagain",
+                // })} SMS`}
+                style={{
+                  ...theme.phoneKey.inlineButton,
+                }}
+                label="Resend"
                 onPress={async () => {
                   setResendCounter(waitTime);
                   setResendButtonHit(true);
@@ -88,7 +96,7 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
                 }}
                 disabled={resendButtonDisabled}
               />
-              <InlineButton
+              {/* <InlineButton
                 label="Get a voice call instead"
                 onPress={async () => {
                   setResendCounter(waitTime);
@@ -99,10 +107,11 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
                   await onResend(true);
                 }}
                 disabled={resendButtonDisabled}
-              />
+              /> */}
             </View>
           ) : (
             <Text style={{ color: "rgba(246, 245, 255, 0.6)", fontSize: 12 }}>
+              {" "}
               Wait {resendCounter} seconds to request a new code
             </Text>
           )}

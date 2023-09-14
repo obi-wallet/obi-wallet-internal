@@ -33,6 +33,7 @@ import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { PhoneOneTimeCodeInput } from "../../../phone-key";
 import { Text } from "../../../typography";
 import { VerifyAndProceedButton } from "../../../verify-and-proceed-button";
+import { useTheme } from "@emotion/react";
 
 export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -166,7 +167,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
       verifyButtonDisabledDoubleclick,
       setVerifyButtonDisabledDoubleclick,
     ] = useState(false); // Magic Button disable on button-click
-
+    const theme = useTheme();
     const minInputCharsSMSCode = 8;
 
     useEffect(() => {
@@ -189,7 +190,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
             <KeyboardAwareScrollView
               style={{
                 flex: 1,
-                paddingHorizontal: 20,
+                paddingHorizontal: 22,
               }}
               contentContainerStyle={{
                 flex: 1,
@@ -209,7 +210,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                         color: "#F6F5FF",
                         fontSize: isSmallScreenNumber(20, 24),
                         fontWeight: "600",
-                        marginTop: 32,
+                        marginTop: 36,
                       }}
                     >
                       <Text style={theme.phoneKey.title1}>
@@ -236,19 +237,40 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                         />
                       )} */}
                     </Text>
-                    <Text
+                    <View
                       style={{
-                        color: "white",
-                        fontSize: isSmallScreenNumber(12, 14),
-                        marginTop: 10,
+                        ...theme.phoneKey.info,
                       }}
                     >
-                      <FormattedMessage
-                        id="onboarding3.pastereponse"
-                        defaultMessage="Paste in the response you received to"
-                      />{" "}
-                      <Text style={{ fontWeight: "600" }}>{phoneNumber}.</Text>
-                    </Text>
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: isSmallScreenNumber(12, 14),
+                          ...theme.phoneKey.info.text,
+                        }}
+                      >
+                        <FormattedMessage
+                          id="onboarding3.pastereponse"
+                          defaultMessage="Paste in the response you received to"
+                        />{" "}
+                        <Text
+                          style={{
+                            fontWeight: "600",
+                            ...theme.phoneKey.info.text,
+                          }}
+                        >
+                          {phoneNumber}.
+                        </Text>
+                      </Text>
+                      <Text
+                        style={{
+                          marginTop: 8,
+                          ...theme.phoneKey.info.text,
+                        }}
+                      >
+                        ZTX does not store any information.
+                      </Text>
+                    </View>
                   </View>
                 </View>
 

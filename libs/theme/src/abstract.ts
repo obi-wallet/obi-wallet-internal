@@ -111,6 +111,7 @@ export interface CustomTheme extends CommonTheme {
     info: ViewStyle & {
       text: TextStyle;
     };
+    inlineButton: ViewStyle;
   };
   welcome: {
     background?: BackgroundStyle;
