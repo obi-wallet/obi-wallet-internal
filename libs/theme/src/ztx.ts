@@ -37,6 +37,7 @@ export const ztxTheme: CustomTheme = {
       AccountSettingComponent.MaxSpend,
       AccountSettingComponent.VerifiedItems,
     ],
+    paddingHorizontal: 22,
   },
   header: {
     image: {
@@ -136,5 +137,47 @@ export const ztxTheme: CustomTheme = {
   },
   settings: {
     textInputBackgroundColor: "#16151D",
+  },
+  balance: {
+    marginTop: 28,
+    title: {
+      textTransform: "none",
+      fontSize: 14,
+      marginBottom: 12,
+    },
+    style: "ztx",
+    button: {
+      borderWidth: 0,
+    },
+    buttonLabel: {
+      fontSize: 12,
+      marginTop: 8,
+    },
+
+    assets: {
+      borderTopLeftRadius: 3,
+      borderTopRightRadius: 3,
+      paddingHorizontal: 0,
+      marginHorizontal: 16,
+      backgroundColor: "#24242E",
+    },
+    assetsHeader: {
+      // height: 56,
+      textTransform: "none",
+      fontSize: 14,
+      borderBottomColor: "#3E4859",
+      paddingHorizontal: 22,
+    },
+    assetsList: {
+      paddingHorizontal: 22,
+    },
+    assetIcon: {
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      backgroundColor: "black",
+      labelColor: "#F6F8FC",
+      denomColor: "#929EB5",
+    },
   },
 };

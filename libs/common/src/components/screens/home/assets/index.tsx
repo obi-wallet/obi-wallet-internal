@@ -1,4 +1,6 @@
 import { useTheme } from "@emotion/react";
+import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
+import { faAngleUp } from "@fortawesome/free-solid-svg-icons/faAngleUp";
 import { faSortAsc } from "@fortawesome/free-solid-svg-icons/faSortAsc";
 import { faSortDesc } from "@fortawesome/free-solid-svg-icons/faSortDesc";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -57,7 +59,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const wallet = useCurrentWallet();
   const theme = useTheme();
-
+  console.log({ theme });
   return (
     <View
       style={{
@@ -67,14 +69,17 @@ const BalanceAndActions = observer(function BalanceAndActions() {
       }}
     >
       <Text
-        style={{
-          color: "#787B9C",
-          fontSize: 11,
-          fontWeight: "500",
-          marginBottom: 10,
-          textTransform: "uppercase",
-          letterSpacing: 0.7,
-        }}
+        style={[
+          {
+            color: "#F6F8FC",
+            fontSize: 11,
+            fontWeight: "500",
+            marginBottom: 10,
+            textTransform: "uppercase",
+            letterSpacing: 0.7,
+          },
+          theme.balance?.title,
+        ]}
       >
         <FormattedMessage id="assets.balance" defaultMessage="Balance" />
       </Text>
@@ -101,6 +106,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
                 justifyContent: "center",
                 alignItems: "center",
               },
+              theme.balance?.button,
             ]}
             onPress={() => navigation.navigate(RootRoute.Send, {})}
           >
@@ -109,16 +115,20 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               height={25}
               viewBox={undefined}
               style={{ marginLeft: -5 }}
+              themeMode={theme.balance?.style}
             />
           </TouchableHighlight>
           <Text
-            style={{
-              color: "#F6F5FF",
-              fontSize: 9,
-              fontWeight: "500",
-              marginTop: 10,
-              letterSpacing: 0.09,
-            }}
+            style={[
+              {
+                color: "#F6F5FF",
+                fontSize: 9,
+                fontWeight: "500",
+                marginTop: 10,
+                letterSpacing: 0.09,
+              },
+              theme.balance?.buttonLabel,
+            ]}
           >
             <FormattedMessage id="assets.send" defaultMessage="Send" />
           </Text>
@@ -134,6 +144,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
                 justifyContent: "center",
                 alignItems: "center",
               },
+              theme.balance?.button,
             ]}
             onPress={() => navigation.navigate(RootRoute.Receive)}
           >
@@ -144,17 +155,21 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               style={{
                 marginTop: -5,
               }}
+              themeMode={theme.balance?.style}
             />
           </TouchableHighlight>
           <Text
-            style={{
-              color: "#F6F5FF",
-              fontSize: 9,
-              fontWeight: "500",
-              marginTop: 10,
-              letterSpacing: 0.09,
-              textTransform: "none",
-            }}
+            style={[
+              {
+                color: "#F6F5FF",
+                fontSize: 9,
+                fontWeight: "500",
+                marginTop: 10,
+                letterSpacing: 0.09,
+                textTransform: "none",
+              },
+              theme.balance?.buttonLabel,
+            ]}
           >
             <FormattedMessage id="assets.receive" defaultMessage="Receive" />
           </Text>
@@ -171,19 +186,27 @@ const BalanceAndActions = observer(function BalanceAndActions() {
                 justifyContent: "center",
                 alignItems: "center",
               },
+              theme.balance?.button,
             ]}
             onPress={() => navigation.navigate(HomeBottomTabRoute.Settings)}
           >
-            <NewSettingsIcon width={30} height={30} />
+            <NewSettingsIcon
+              width={30}
+              height={30}
+              themeMode={theme.balance?.style}
+            />
           </TouchableHighlight>
           <Text
-            style={{
-              color: "#F6F5FF",
-              fontSize: 9,
-              fontWeight: "500",
-              marginTop: 10,
-              letterSpacing: 0.09,
-            }}
+            style={[
+              {
+                color: "#F6F5FF",
+                fontSize: 9,
+                fontWeight: "500",
+                marginTop: 10,
+                letterSpacing: 0.09,
+              },
+              theme.balance?.buttonLabel,
+            ]}
           >
             Settings
           </Text>
@@ -233,19 +256,23 @@ const AssetsList = observer(function AssetsList() {
   });
   const theme = useTheme();
 
+  console.log({ balances });
   return (
     <View
-      style={{
-        flexGrow: 1,
-        flexDirection: "row",
-        justifyContent: "center",
-        marginTop: isSmallScreenNumber(20, 40),
-        backgroundColor: theme.colors.panelBackground,
-        borderTopLeftRadius: 7,
-        borderTopRightRadius: 7,
-        paddingHorizontal: 16,
-        marginHorizontal: 10,
-      }}
+      style={[
+        {
+          flexGrow: 1,
+          flexDirection: "row",
+          justifyContent: "center",
+          marginTop: isSmallScreenNumber(20, 40),
+          backgroundColor: theme.colors.panelBackground,
+          borderTopLeftRadius: 7,
+          borderTopRightRadius: 7,
+          paddingHorizontal: 16,
+          marginHorizontal: 10,
+        },
+        theme.balance?.assets,
+      ]}
     >
       <View
         style={{
@@ -253,13 +280,19 @@ const AssetsList = observer(function AssetsList() {
         }}
       >
         <View
-          style={{
-            height: 20,
-            width: "100%",
-            marginTop: 30,
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
+          style={[
+            {
+              height: 50,
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderBottomColor: "white",
+              borderBottomWidth: 1,
+              paddingHorizontal: 22,
+            },
+            theme.balance?.assetsHeader,
+          ]}
         >
           <TouchableWithoutFeedback
             onPress={() => {
@@ -269,9 +302,10 @@ const AssetsList = observer(function AssetsList() {
             <Text
               style={{
                 color: "white",
-                fontSize: 11,
+                fontSize: theme.balance?.assetsHeader?.fontSize || 11,
                 letterSpacing: 0.7,
-                textTransform: "uppercase",
+                textTransform:
+                  theme.balance?.assetsHeader?.textTransform || "uppercase",
               }}
             >
               <FormattedMessage id="assets.name" defaultMessage="Name" />
@@ -285,9 +319,10 @@ const AssetsList = observer(function AssetsList() {
             <Text
               style={{
                 color: "white",
-                fontSize: 11,
+                fontSize: theme.balance?.assetsHeader?.fontSize || 11,
                 letterSpacing: 0.7,
-                textTransform: "uppercase",
+                textTransform:
+                  theme.balance?.assetsHeader?.textTransform || "uppercase",
               }}
             >
               <FormattedMessage
@@ -296,45 +331,84 @@ const AssetsList = observer(function AssetsList() {
               />
             </Text>
             <IconButton
-              style={{ justifyContent: "center", marginBottom: 5 }}
+              style={{ justifyContent: "center" }}
               onPress={() => {
                 setSortAscending((value) => !value);
               }}
             >
-              <FontAwesomeIcon
-                icon={faSortAsc}
-                style={{
-                  color: sortAscending ? "#F6F5FF" : "#7E7E7E",
-                  marginLeft: 12,
-                }}
-              />
-              <FontAwesomeIcon
-                icon={faSortDesc}
-                style={{
-                  color: sortAscending ? "#7E7E7E" : "#F6F5FF",
-                  marginLeft: 12,
-                  marginTop: -15,
-                }}
-              />
+              {theme.balance?.style === "ztx" ? (
+                <>
+                  <FontAwesomeIcon
+                    icon={faAngleUp}
+                    style={{
+                      color: sortAscending
+                        ? "#FFFFFF"
+                        : "rgba(255, 255, 255, 0.3)",
+                      marginLeft: 12,
+                      width: 10,
+                      height: 6,
+                      outline: "none",
+                    }}
+                  />
+                  <FontAwesomeIcon
+                    icon={faAngleDown}
+                    style={{
+                      color: sortAscending
+                        ? "rgba(255, 255, 255, 0.3)"
+                        : "#FFFFFF",
+                      marginLeft: 12,
+                      // marginTop: -15,
+                      width: 10,
+                      height: 6,
+                      outline: "none",
+                    }}
+                  />
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon
+                    icon={faSortAsc}
+                    style={{
+                      color: sortAscending ? "#F6F5FF" : "#7E7E7E",
+                      marginLeft: 12,
+                    }}
+                  />
+                  <FontAwesomeIcon
+                    icon={faSortDesc}
+                    style={{
+                      color: sortAscending ? "#7E7E7E" : "#F6F5FF",
+                      marginLeft: 12,
+                      marginTop: -15,
+                    }}
+                  />
+                </>
+              )}
             </IconButton>
           </View>
         </View>
 
-        <RefreshableFlatList
-          keyExtractor={(token) => token.id}
-          data={balances.data}
-          renderItem={(props) => <AssetsListItem {...props} />}
-          style={
+        <View
+          style={[
             isWeb()
               ? {
                   marginTop: 10,
                 }
               : {
                   marginTop: 28,
-                }
-          }
-          refetch={balances.refetch}
-        />
+                },
+            {
+              paddingHorizontal: 22,
+            },
+            theme.balance?.assetsList,
+          ]}
+        >
+          <RefreshableFlatList
+            keyExtractor={(token) => token.id}
+            data={balances.data}
+            renderItem={(props) => <AssetsListItem {...props} />}
+            refetch={balances.refetch}
+          />
+        </View>
       </View>
     </View>
   );
@@ -344,6 +418,7 @@ const AssetsListItem = observer(function AssetsListItem({
   item,
 }: ListRenderItemInfo<EnrichedToken>) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const theme = useTheme();
 
   const onTouchAsset = (amount: number) => {
     if (Number(amount) > 0) {
@@ -359,19 +434,22 @@ const AssetsListItem = observer(function AssetsListItem({
         height: 36,
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center",
+        alignItems: "flex-start",
         marginBottom: 28,
       }}
     >
       <TouchableOpacity onPress={async () => onTouchAsset(item.amount)}>
         <View
-          style={{
-            height: 36,
-            width: 36,
-            backgroundColor: item.icon ? "transparent" : "#ccc",
-            borderRadius: 10,
-            marginRight: 12,
-          }}
+          style={[
+            {
+              height: 36,
+              width: 36,
+              backgroundColor: item.icon ? "transparent" : "#ccc",
+              borderRadius: 10,
+              marginRight: 12,
+            },
+            theme.balance?.assetIcon,
+          ]}
         >
           <CoinIcon source={item.icon} />
         </View>
@@ -386,12 +464,20 @@ const AssetsListItem = observer(function AssetsListItem({
       >
         <View>
           <TouchableOpacity onPress={async () => onTouchAsset(item.amount)}>
-            <Text style={{ color: "#F6F5FF", fontSize: 14, fontWeight: "500" }}>
+            <Text
+              style={{
+                color: theme.balance?.assetIcon?.labelColor || "#F6F5FF",
+                fontSize: 14,
+                fontWeight: "500",
+              }}
+            >
               {isSmallScreenSubstr(item.label, "...", 23, 30)}
             </Text>
             <Text
               style={{
-                color: "rgba(246, 245, 255, 0.6)",
+                color:
+                  theme.balance?.assetIcon?.denomColor ||
+                  "rgba(246, 245, 255, 0.6)",
                 fontSize: 12,
                 fontWeight: "400",
                 marginTop: 4,

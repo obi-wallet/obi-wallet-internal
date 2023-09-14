@@ -21,7 +21,6 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
 
     const onBackPress = getBackHandler();
 
-    console.log({ theme });
     return (
       <View
         style={{
@@ -65,12 +64,12 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
             }}
           />
         ) : null}
-        <View style={{ width: 29 }}>
+        <View style={{ width: 28 }}>
           {onClose ? (
             <IconButton
               onPress={onClose}
-              style={{ width: 29 }}
-              hitSlop={{ top: 29, bottom: 29, left: 29, right: 29 }}
+              style={{ width: 28 }}
+              hitSlop={{ top: 28, bottom: 28, left: 28, right: 28 }}
             >
               {theme.header?.closeIcon ? (
                 <Image
@@ -86,7 +85,7 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
               ) : (
                 <FontAwesomeIcon
                   icon={faTimesCircle}
-                  size={29}
+                  size={28}
                   color="#ffffff"
                 />
               )}

@@ -61,6 +61,7 @@ export interface CustomTheme extends CommonTheme {
     accountSettings: AccountSettingComponent[];
     width?: number;
     height?: number;
+    paddingHorizontal?: number;
   };
   header?: ViewStyle & {
     image: ImageStyle & { src: string };
@@ -100,6 +101,21 @@ export interface CustomTheme extends CommonTheme {
   };
   settings?: {
     textInputBackgroundColor?: string;
+  };
+  balance?: {
+    title?: ViewStyle & TextStyle;
+    style?: string;
+    marginTop?: number;
+    button?: ViewStyle;
+    assets?: ViewStyle;
+    buttonLabel?: ViewStyle & TextStyle;
+    assetsHeader: ViewStyle & TextStyle;
+    assetsList: ViewStyle & TextStyle;
+    assetIcon: ViewStyle &
+      TextStyle & {
+        labelColor?: string;
+        denomColor?: string;
+      };
   };
 }
 export enum WelcomeButton {

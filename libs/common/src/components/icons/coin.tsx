@@ -23,12 +23,16 @@ export const CoinIcon = observer(function CoinIcon({
 }) {
   if (!source) return <DefaultView />;
 
-  if (typeof source !== "object" || !source?.uri) {
+  if (typeof source !== "object" || (!source?.uri && !source?.default.src)) {
     warning(false, "URI must be defined for web");
     return <DefaultView />;
   }
 
+  console.log("image");
   return (
-    <Image source={source} style={{ flex: 1, width: "100%", height: "100%" }} />
+    <Image
+      source={source?.default.src || source.uri || source}
+      style={{ flex: 1, width: "100%", height: "100%" }}
+    />
   );
 });

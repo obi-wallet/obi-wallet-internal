@@ -127,7 +127,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         <KeyboardAwareScrollView
           style={{
             flex: 1,
-            paddingHorizontal: 20,
+            paddingHorizontal: theme.modal.paddingHorizontal || 20,
           }}
           contentContainerStyle={{
             flex: 1,
