@@ -81,7 +81,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
           </BrandToggle> */}
             <View style={{ flexDirection: "column" }}>
               <Heading>
-                Osmosis {isMultisigWallet ? <>Secure Multisig </> : null}Account
+                Obi {isMultisigWallet ? <>Secure Multisig </> : null}Account
               </Heading>
               {/*<Text style={styles.subHeading}>
               Profile picture, name and mail

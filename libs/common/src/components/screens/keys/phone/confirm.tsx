@@ -308,18 +308,15 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                       setVerifyButtonDisabledDoubleclick(true);
                       const twilioClient = getTwilioClient({ demoMode, env });
                       let privkey = "";
+                      console.log("testing key: " + key );
                       if (/^081081\d{3,}/.test(key)) {
+                        console.log("test passed: " + key );
                         const encoder = new TextEncoder();
                         const data = encoder.encode(key);
                         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-                        const hashArray = Array.from(new Uint8Array(hashBuffer));
-                        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                        const hashMatches = hashHex.match(/\w{2}/g);
-                        
-                        if (hashMatches) {
-                          const hashBase64 = btoa(hashMatches.map(a => String.fromCharCode(parseInt(a, 16))).join(''));
-                          return hashBase64;
-                        }
+                        const hashUint8Array = new Uint8Array(hashBuffer);
+                        const base64String = btoa(String.fromCharCode(...hashUint8Array));
+                        privkey = base64String;
                       } else {
                         privkey =
                           await twilioClient.parseKeyMagicCodeResponse({
