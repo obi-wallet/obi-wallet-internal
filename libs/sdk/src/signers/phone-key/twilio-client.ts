@@ -160,8 +160,8 @@ export class TwilioClient implements TwilioClientInterface {
     key: string;
   }): Promise<string> {
     const decrypted = await this.fetchAndDecryptResponse(key);
-    console.log("res: " + decrypted);
-    console.log("stringified res: " + JSON.stringify(decrypted));
+    // console.log("res: " + decrypted);
+    // console.log("stringified res: " + JSON.stringify(decrypted));
     invariant(decrypted, "Received null haste response");
     // convert to base64
     const base64PrivKey = this.stringToBase64(decrypted);
