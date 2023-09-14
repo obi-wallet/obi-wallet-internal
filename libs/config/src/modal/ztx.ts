@@ -11,8 +11,8 @@ export const ztxModalConfig: Config = {
   ...obiModalConfig,
   theme: ztxTheme,
   chains: {
-    enabled: ["secret-4", "pulsar-3"],
-    default: "pulsar-3",
+    enabled: ["secret-4"],
+    default: "secret-4",
   },
   keys: {
     enabled: [KeyType.Phone],

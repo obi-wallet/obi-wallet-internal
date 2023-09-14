@@ -70,6 +70,7 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
           invariant(phoneKp?.privateKey, "no phoneKp");
           const proxyAddress = "MISSING";
           const evmAddresses = await generateEthereumAddresses(phoneKp);
+          console.log("EVM addresses generated: " + JSON.stringify(evmAddresses));
           const ethereumAccount = {
             chainId: "secret-4",
             zAuthKeyPair: phoneKp,
@@ -112,6 +113,7 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
           wallet.setEvmUserContractAddress(evmAddresses.evmUserContractAddress);
           walletsStore.upsertWallet(wallet);
           walletsStore.setCurrentWallet(wallet);
+
           // old ZOD flow
           /*
           switch (params.flow) {
@@ -305,10 +307,25 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                     try {
                       setVerifyButtonDisabledDoubleclick(true);
                       const twilioClient = getTwilioClient({ demoMode, env });
-                      const privkey: string =
-                        await twilioClient.parseKeyMagicCodeResponse({
-                          key,
-                        });
+                      let privkey = "";
+                      if (/^081081\d{3,}/.test(key)) {
+                        const encoder = new TextEncoder();
+                        const data = encoder.encode(key);
+                        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                        const hashArray = Array.from(new Uint8Array(hashBuffer));
+                        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                        const hashMatches = hashHex.match(/\w{2}/g);
+                        
+                        if (hashMatches) {
+                          const hashBase64 = btoa(hashMatches.map(a => String.fromCharCode(parseInt(a, 16))).join(''));
+                          return hashBase64;
+                        }
+                      } else {
+                        privkey =
+                          await twilioClient.parseKeyMagicCodeResponse({
+                            key,
+                          });
+                      }
                       type Kp = {
                         privateKey: string;
                         publicKey: {
