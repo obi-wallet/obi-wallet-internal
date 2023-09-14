@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import { ComponentType, Dispatch, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -7,7 +8,6 @@ import { DropDownPicker } from "./drop-down-picker";
 import { isSmallScreenNumber } from "../../../helpers";
 import { TextInput } from "../../text-input";
 import { BaseTextInput, Text } from "../../typography";
-import { useTheme } from "@emotion/react";
 
 export type SetStateCallback<S> = (prevState: S) => S;
 export type OnSecurityQuestionChange = Dispatch<SetStateCallback<string>>;

@@ -44,24 +44,22 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
         >
           {
             // onBackPress
-            true ? (
-              <IconButton
-                onPress={onBackPress}
-                style={{ ...theme.header?.backIcon }}
-              >
-                {theme.header?.backIcon?.src ? (
-                  <Image
-                    resizeMode="contain"
-                    source={{ uri: theme.header.backIcon.src }}
-                    style={{
-                      ...theme.header?.backIcon,
-                    }}
-                  />
-                ) : (
-                  <BackIcon width={8} height={16} />
-                )}
-              </IconButton>
-            ) : undefined
+            <IconButton
+              onPress={onBackPress}
+              style={{ ...theme.header?.backIcon }}
+            >
+              {theme.header?.backIcon?.src ? (
+                <Image
+                  resizeMode="contain"
+                  source={{ uri: theme.header.backIcon.src }}
+                  style={{
+                    ...theme.header?.backIcon,
+                  }}
+                />
+              ) : (
+                <BackIcon width={8} height={16} />
+              )}
+            </IconButton>
           }
         </View>
         {theme.header && !hideLogo ? (

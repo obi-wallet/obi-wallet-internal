@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import {
   createGatekeeperConfig,
   KeyType,
@@ -33,7 +34,6 @@ import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { PhoneOneTimeCodeInput } from "../../../phone-key";
 import { Text } from "../../../typography";
 import { VerifyAndProceedButton } from "../../../verify-and-proceed-button";
-import { useTheme } from "@emotion/react";
 
 export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -157,6 +157,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
     securityAnswer,
     onSubmit,
   }) {
+    const _flow = flow;
     const { chainStore, phoneSessionStore } = useStore();
     const chainId = chainStore.currentChain;
     const env = useEnv();

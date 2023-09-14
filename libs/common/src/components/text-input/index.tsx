@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import { ComponentType } from "react";
 import {
@@ -11,7 +12,6 @@ import {
 
 import { isSmallScreenNumber } from "../../helpers";
 import { BaseTextInput, Text } from "../typography";
-import { useTheme } from "@emotion/react";
 
 const styles = StyleSheet.create({
   label: {

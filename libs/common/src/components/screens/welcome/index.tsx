@@ -173,7 +173,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
             return (
               <Button
                 key={button}
-                label={"Login"}
+                label="Login"
                 flavor="primary"
                 onPress={onZepeto}
               />
@@ -197,7 +197,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
             return (
               <Button
                 key={button}
-                label={"Sign Up"}
+                label="Sign Up"
                 flavor="cancel"
                 buttonStyle={{
                   marginTop: theme.spacing[4],

@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -6,7 +7,6 @@ import { View } from "react-native";
 import { InlineButton } from "../../buttons";
 import { TextInput } from "../../text-input";
 import { Text } from "../../typography";
-import { useTheme } from "@emotion/react";
 
 export interface PhoneOneTimeCodeInputProps {
   phoneNumber: string;
@@ -48,7 +48,7 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
           placeholder={intl.formatMessage({
             id: "onboarding3.smscodelabel",
           })}
-          label={"Enter SMS Code"}
+          label="Enter SMS Code"
           textContentType="oneTimeCode"
           keyboardType="number-pad"
           style={{}}

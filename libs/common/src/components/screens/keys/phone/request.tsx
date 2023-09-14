@@ -1,8 +1,9 @@
+import { useTheme } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { Controller, useForm } from "react-hook-form";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
@@ -25,8 +26,6 @@ import {
 } from "../../../phone-key";
 import { TextInput } from "../../../text-input";
 import { Text } from "../../../typography";
-import { useTheme } from "@emotion/react";
-import { T } from "ramda";
 
 export type PhoneKeyRequestScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -74,6 +73,7 @@ export interface PhoneKeyRequestProps {
 
 export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
   function PhoneKeyRequest({ demoMode, flow, onSubmit, ...params }) {
+    const _flow = flow;
     const intl = useIntl();
     const { chainStore } = useStore();
     const chainId = chainStore.currentChain;
