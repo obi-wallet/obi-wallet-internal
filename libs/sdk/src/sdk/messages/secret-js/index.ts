@@ -1,12 +1,10 @@
 import * as R from "ramda";
 import { MsgExecuteContract } from "secretjs";
-import invariant from "tiny-invariant";
 import warning from "tiny-warning";
 
 import { SecretJsChainId, secretJsChains } from "../../../chains";
 import {
   GatekeeperConfig,
-  KeyType,
   MultisigKey,
   MultisigWallet,
 } from "../../../data-structures";
@@ -116,47 +114,28 @@ export class SecretJsMessages extends AbstractMessages {
     throw new Error("getWithdrawRewardsMessage not implemented for SecretJS");
   }
 
-  public getCreateWalletMessage(owner: MultisigKey): Message {
-    const zAuthKey = owner.getKeyOfType(KeyType.ZAuth);
-    const deviceKey = owner.getKeyOfType(KeyType.Device);
-    const phoneKey = owner.getUsableKeyOfType(KeyType.Phone);
-    invariant(
-      zAuthKey || deviceKey || phoneKey,
-      "Expected ZAuth or device key to be present",
+  protected getSigners(multisigKey: MultisigKey) {
+    const addresses = multisigKey.keys.map((key) => {
+      return this.sdk.transactions.getAddressOfPublicKey(key.publicKey);
+    });
+    return R.zipWith(
+      (address, ty) => {
+        return { address, ty };
+      },
+      addresses,
+      multisigKey.signerTypes,
     );
+  }
 
-    let address;
-    if (zAuthKey) {
-      address = this.sdk.transactions.getAddressOfPublicKey(zAuthKey.publicKey);
-    } else if (deviceKey) {
-      address = this.sdk.transactions.getAddressOfPublicKey(
-        deviceKey.publicKey,
-      );
-    } else if (phoneKey) {
-      invariant(
-        phoneKey.payload.privateKey,
-        "phone key does not have private key",
-      );
-      address = this.sdk.transactions.getAddressOfPublicKey(
-        phoneKey.payload.publicKey,
-      );
-    } else {
-      throw new Error("Expected ZAuth, phone, or device key to be present");
-    }
-
+  public getCreateWalletMessage(owner: MultisigKey, sender: string): Message {
     return new MsgExecuteContract({
-      sender: address,
+      sender,
       contract_address: this.chain.accountCreator.address,
       msg: {
         new_account: {
-          owner: address,
+          owner: owner.address,
           signers: {
-            signers: [
-              {
-                address: address,
-                ty: zAuthKey ? "zauth" : "device",
-              },
-            ],
+            signers: this.getSigners(owner),
           },
           update_delay: 0,
         },

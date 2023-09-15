@@ -124,5 +124,8 @@ export abstract class AbstractMessages {
   /**
    * Message to create a new wallet with the given owner.
    */
-  public abstract getCreateWalletMessage(owner: MultisigKey): Message;
+  public abstract getCreateWalletMessage(
+    owner: MultisigKey,
+    sender?: string,
+  ): Message;
 }

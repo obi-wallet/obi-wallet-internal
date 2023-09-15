@@ -15,13 +15,11 @@ export class CosmosSdkWalletsSdk extends AbstractWalletsSdk {
     multisigKey: MultisigKey;
     demoMode: boolean;
   }): Promise<
-    AbstractUserInteractionResponse<
-      { proxyAddress: string },
-      {
-        description: string;
-        originalPayload: BroadcastTransactionResult;
-      }
-    >
+    | { homeAccountAddress: string }
+    | AbstractUserInteractionResponse<
+        { proxyAddress: string },
+        { description: string; originalPayload: BroadcastTransactionResult }
+      >
   > {
     const response = await SignAndBroadcastTransactionUserInteraction.start({
       messages: [

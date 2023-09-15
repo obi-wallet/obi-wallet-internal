@@ -18,13 +18,11 @@ export class SecretJsWalletsSdk extends AbstractWalletsSdk {
     multisigKey: MultisigKey;
     demoMode: boolean;
   }): Promise<
-    AbstractUserInteractionResponse<
-      { proxyAddress: string },
-      {
-        description: string;
-        originalPayload: BroadcastTransactionResult;
-      }
-    >
+    | { homeAccountAddress: string }
+    | AbstractUserInteractionResponse<
+        { proxyAddress: string },
+        { description: string; originalPayload: BroadcastTransactionResult }
+      >
   > {
     const chainId = multisigKey.chainId;
     invariant(isSecretJsChain(chainId), "Expected Secret.js chain");

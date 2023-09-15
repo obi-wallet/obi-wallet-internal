@@ -3,7 +3,6 @@ import { Presets } from "userop";
 
 import { WalletsSchema } from "./schema";
 import { ChainId } from "../../chains";
-import { getOrCreateDeviceKeyPair } from "../../keys";
 import { Secp256k1KeyPair } from "../../keys/sec256k1";
 import { WalletsSdk } from "../../sdk/wallets";
 import { Serialized } from "../abstract";

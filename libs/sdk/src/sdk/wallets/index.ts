@@ -17,13 +17,11 @@ export class WalletsSdk extends AbstractWalletsSdk {
     multisigKey: MultisigKey;
     demoMode: boolean;
   }): Promise<
-    AbstractUserInteractionResponse<
-      { proxyAddress: string },
-      {
-        description: string;
-        originalPayload: BroadcastTransactionResult;
-      }
-    >
+    | { homeAccountAddress: string }
+    | AbstractUserInteractionResponse<
+        { proxyAddress: string },
+        { description: string; originalPayload: BroadcastTransactionResult }
+      >
   > {
     return await Chain.select<AbstractWalletsSdk>({
       chainId: multisigKey.chainId,
