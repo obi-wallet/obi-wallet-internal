@@ -55,6 +55,7 @@ export interface CustomTheme extends CommonTheme {
     primary: string;
     background: string;
     panelBackground: string;
+    label: string;
   };
   buttonsContainerStyle?: ViewStyle;
   background: BackgroundStyle;
@@ -127,9 +128,9 @@ export interface CustomTheme extends CommonTheme {
   settings?: {
     textInputBackgroundColor?: string;
   };
+  style?: string;
   balance?: {
     title?: ViewStyle & TextStyle;
-    style?: string;
     marginTop?: number;
     button?: ViewStyle;
     assets?: ViewStyle;
@@ -141,6 +142,23 @@ export interface CustomTheme extends CommonTheme {
         labelColor?: string;
         denomColor?: string;
       };
+  };
+  send?: {
+    title: ViewStyle & TextStyle;
+    address: ViewStyle & TextStyle;
+    token: {
+      container: ViewStyle & TextStyle;
+      asset: ViewStyle & TextStyle;
+      amount: {
+        conatiner: ViewStyle & TextStyle;
+        input: ViewStyle & TextStyle;
+      };
+    };
+    next: {
+      marginTop: number;
+      button: ViewStyle & TextStyle;
+      label: TextStyle;
+    };
   };
 }
 export enum WelcomeButton {

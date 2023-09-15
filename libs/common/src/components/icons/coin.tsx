@@ -28,10 +28,9 @@ export const CoinIcon = observer(function CoinIcon({
     return <DefaultView />;
   }
 
-  console.log("image");
   return (
     <Image
-      source={source?.default.src || source.uri || source}
+      source={source.default.src || source.uri || source}
       style={{ flex: 1, width: "100%", height: "100%" }}
     />
   );

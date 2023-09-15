@@ -6,6 +6,7 @@ import {
   Platform,
   StyleProp,
   StyleSheet,
+  TextStyle,
   TouchableHighlight,
   TouchableNativeFeedback,
   TouchableWithoutFeedbackProps,
@@ -70,6 +71,7 @@ export interface ButtonProps
   LeftIcon?: FC<SvgProps>;
   RightIcon?: FC<SvgProps>;
   buttonStyle?: StyleProp<ViewStyle>;
+  labelStyle?: StyleProp<TextStyle>;
 }
 
 export const Button = observer(function Button({
@@ -79,16 +81,17 @@ export const Button = observer(function Button({
   LeftIcon,
   RightIcon,
   buttonStyle,
+  labelStyle,
   ...props
 }: ButtonProps) {
   const theme = useTheme();
   const flavorStyles = getFlavorStyles(flavor, theme, disabled);
   const children = (
-    <View style={flavorStyles.button}>
+    <View>
       {LeftIcon ? (
         <LeftIcon width={24} height={24} style={baseStyles.leftIcon} />
       ) : null}
-      <Text style={flavorStyles.text}>{label}</Text>
+      <Text style={[flavorStyles.text, labelStyle]}>{label}</Text>
       {RightIcon ? <RightIcon width={24} height={24} /> : null}
     </View>
   );

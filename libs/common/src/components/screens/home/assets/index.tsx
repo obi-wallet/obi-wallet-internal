@@ -115,7 +115,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               height={25}
               viewBox={undefined}
               style={{ marginLeft: -5 }}
-              themeMode={theme.balance?.style}
+              themeMode={theme.style}
             />
           </TouchableHighlight>
           <Text
@@ -155,7 +155,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
               style={{
                 marginTop: -5,
               }}
-              themeMode={theme.balance?.style}
+              themeMode={theme.style}
             />
           </TouchableHighlight>
           <Text
@@ -190,11 +190,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
             ]}
             onPress={() => navigation.navigate(HomeBottomTabRoute.Settings)}
           >
-            <NewSettingsIcon
-              width={30}
-              height={30}
-              themeMode={theme.balance?.style}
-            />
+            <NewSettingsIcon width={30} height={30} themeMode={theme.style} />
           </TouchableHighlight>
           <Text
             style={[
@@ -256,7 +252,6 @@ const AssetsList = observer(function AssetsList() {
   });
   const theme = useTheme();
 
-  console.log({ balances });
   return (
     <View
       style={[
@@ -336,7 +331,7 @@ const AssetsList = observer(function AssetsList() {
                 setSortAscending((value) => !value);
               }}
             >
-              {theme.balance?.style === "ztx" ? (
+              {theme.style === "ztx" ? (
                 <>
                   <FontAwesomeIcon
                     icon={faAngleUp}

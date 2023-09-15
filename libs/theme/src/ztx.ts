@@ -36,6 +36,7 @@ export const ztxTheme: CustomTheme = {
     primary: colors.primaryGold,
     background: "hsla(240, 15%, 10%, 1)",
     panelBackground: "#363D4D",
+    label: "#D5DDE5",
   },
   background: {
     color: "#16151D",
@@ -226,6 +227,7 @@ export const ztxTheme: CustomTheme = {
   settings: {
     textInputBackgroundColor: "#16151D",
   },
+  style: "ztx",
   balance: {
     marginTop: 28,
     title: {
@@ -233,7 +235,6 @@ export const ztxTheme: CustomTheme = {
       fontSize: 14,
       marginBottom: 12,
     },
-    style: "ztx",
     button: {
       borderWidth: 0,
     },
@@ -266,6 +267,65 @@ export const ztxTheme: CustomTheme = {
       backgroundColor: "black",
       labelColor: "#F6F8FC",
       denomColor: "#929EB5",
+    },
+  },
+  send: {
+    title: {
+      fontFamily: "TT Hoves Pro",
+      fontWeight: "normal",
+      fontSize: 22,
+      textAlign: "left",
+    },
+    address: {
+      borderRadius: 3,
+      borderWidth: 0,
+      backgroundColor: "#24242E",
+      outline: 0,
+      paddingLeft: 12,
+      height: 42,
+    },
+    asset: {
+      borderRadius: 3,
+      borderWidth: 1,
+      backgroundColor: "transparent",
+      outline: 0,
+      borderColor: "#929EB5",
+    },
+    token: {
+      container: {
+        flexDirection: "column",
+        borderColor: "transaprent",
+        backgroundColor: "transparent",
+        borderWidth: 0,
+      },
+      asset: {
+        height: 42,
+        borderRadius: 3,
+        borderColor: "#929EB5",
+        borderWidth: 1,
+        backgroundColor: "transparent",
+      },
+      amount: {
+        conatiner: {
+          paddingHorizontal: 12,
+          height: 42,
+          borderRadius: 3,
+          backgroundColor: "#24242E",
+        },
+        input: {
+          borderRadius: 0,
+          outline: 0,
+          textAlign: "left",
+          fontSize: 14,
+        },
+      },
+    },
+    next: {
+      marginTop: 36,
+      button: { marginVertical: 0, width: 180, height: 36, borderRadius: 3 },
+      label: {
+        textTransform: "uppercase",
+      },
     },
   },
 };

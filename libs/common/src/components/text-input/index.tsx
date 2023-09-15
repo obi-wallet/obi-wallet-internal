@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
   label: {
     color: "white",
     fontSize: 10,
-    marginBottom: 5,
+    marginBottom: 6,
     textTransform: "uppercase",
   },
   input: {
@@ -37,12 +37,14 @@ export type CustomTextInputProps = TextInputProps & {
   label?: string;
   style?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
+  labelStyle?: StyleProp<TextStyle>;
   invalidMessage?: string;
 };
 export const TextInput = observer<CustomTextInputProps>(function TextInput({
   label,
   style,
   inputStyle,
+  labelStyle,
   invalidMessage,
   CustomTextInput = BaseTextInput,
   ...props
@@ -74,7 +76,7 @@ export const TextInputInvalidMessage = observer<{ message?: string }>(
     return (
       <Text
         style={{
-          color: "#FF2222",
+          color: "#E10E34",
           fontSize: 12,
           marginTop: 5,
           marginLeft: 5,
