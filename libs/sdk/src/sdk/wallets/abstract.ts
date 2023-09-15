@@ -16,9 +16,5 @@ export abstract class AbstractWalletsSdk {
     demoMode: boolean;
   }): Promise<
     | { homeAccountAddress: string }
-    | AbstractUserInteractionResponse<
-        { proxyAddress: string },
-        { description: string; originalPayload: BroadcastTransactionResult }
-      >
   >;
 }

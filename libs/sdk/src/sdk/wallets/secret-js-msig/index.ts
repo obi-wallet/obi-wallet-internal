@@ -20,7 +20,7 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
     const response = await fetch("/api/setup/home-account", {
       method: "POST",
       body: JSON.stringify({
-        ownerAddress: multisigKey.address,
+        owner: multisigKey,
       }),
     });
 

@@ -16,10 +16,6 @@ export class CosmosSdkWalletsSdk extends AbstractWalletsSdk {
     demoMode: boolean;
   }): Promise<
     | { homeAccountAddress: string }
-    | AbstractUserInteractionResponse<
-        { proxyAddress: string },
-        { description: string; originalPayload: BroadcastTransactionResult }
-      >
   > {
     const response = await SignAndBroadcastTransactionUserInteraction.start({
       messages: [

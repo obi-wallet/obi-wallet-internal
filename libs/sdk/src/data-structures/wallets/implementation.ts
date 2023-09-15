@@ -98,8 +98,6 @@ export class Wallets {
       demoMode,
     });
 
-    if (!response.approved || !response.payload.success) return response;
-
     const wallet = this._factory.create({
       type: demoMode ? "multisig-demo" : "multisig",
       data: {
@@ -108,7 +106,7 @@ export class Wallets {
         owner: multisigKey.toJSON(),
         proxyAddress: {
           v: 1,
-          address: response.payload.proxyAddress,
+          address: response.homeAccountAddress,
         },
         singlesigWallets: [],
         currentAccount: null,

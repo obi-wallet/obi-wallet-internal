@@ -1,3 +1,4 @@
+import { PublicKey } from "libs/sdk/src/keys";
 import * as R from "ramda";
 import { MsgExecuteContract } from "secretjs";
 import warning from "tiny-warning";
@@ -114,34 +115,51 @@ export class SecretJsMessages extends AbstractMessages {
     throw new Error("getWithdrawRewardsMessage not implemented for SecretJS");
   }
 
-  protected getSigners(multisigKey: MultisigKey) {
-    const addresses = multisigKey.keys.map((key) => {
-      return this.sdk.transactions.getAddressOfPublicKey(key.publicKey);
+  protected getSigners(multisigKey: Array<
+      {type: string, payload: {
+        publicKey: PublicKey,
+      }}
+    >) {
+    console.warn("getting signers...");
+    console.warn("array is: " + JSON.stringify(multisigKey));
+    const addressAndTypes: Array<{ address: string, ty: string}> = multisigKey.map((key: {type: string, payload: {
+      publicKey: PublicKey,
+    }}) => {
+      console.log("key is " + JSON.stringify(key)); 
+      return {
+        address: this.sdk.transactions.getAddressOfPublicKey(key.payload.publicKey),
+        ty: key.type
+      }
     });
-    return R.zipWith(
-      (address, ty) => {
-        return { address, ty };
-      },
-      addresses,
-      multisigKey.signerTypes,
-    );
+    return addressAndTypes;
   }
 
+  // TODO fix types as they are forced here
   public getCreateWalletMessage(owner: MultisigKey, sender: string): Message {
-    return new MsgExecuteContract({
-      sender,
+    console.warn("owner multisigkey getting passed in is: " + JSON.stringify(owner));
+    const message = new MsgExecuteContract({
+      sender: sender ?? owner.address,
       contract_address: this.chain.accountCreator.address,
       msg: {
         new_account: {
           owner: owner.address,
           signers: {
-            signers: this.getSigners(owner),
+            signers: this.getSigners(owner.keys as unknown as { keys: Array<
+              { type: string;
+                payload: {
+                  publicKey: PublicKey;
+                  privateKey?: string;
+                }
+              }
+            >}),
           },
           update_delay: 0,
         },
       },
       code_hash: this.chain.accountCreator.codeHash,
     });
+    console.warn("getCreateWalletMessage returning:" + message);
+    return message;
   }
 
   protected get chain() {
