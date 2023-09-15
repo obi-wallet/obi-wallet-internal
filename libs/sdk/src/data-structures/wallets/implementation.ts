@@ -119,38 +119,6 @@ export class Wallets {
     return response;
   }
 
-  public async recoverLocalWallet({
-    multisigKey,
-    demoMode,
-    evmKeypair,
-  }: {
-    multisigKey: MultisigKey;
-    demoMode: boolean;
-    evmKeypair: Secp256k1KeyPair;
-  }) {
-    const wallet = this._factory.create({
-      type: demoMode ? "multisig-demo" : "multisig",
-      data: {
-        chain: multisigKey.chainId,
-        gatekeeperConfig: createGatekeeperConfig().toJSON(),
-        owner: multisigKey.toJSON(),
-        proxyAddress: {
-          v: 1,
-          address: "MISSING", // TODO dummy for now – need to look up
-        },
-        singlesigWallets: [],
-        currentAccount: null,
-      },
-    });
-    const [kp, _] = await getOrCreateDeviceKeyPair(false, false);
-    wallet.setEvmSigningAddress(kp.privateKey);
-    wallet.setEvmUserContractAddress(
-      await this.generate4337Address(evmKeypair),
-    );
-    this.upsertWallet(wallet);
-    this.setCurrentWallet(wallet);
-  }
-
   async generate4337Address(keyPair: Secp256k1KeyPair) {
     const signingKey = new SigningKey(
       Buffer.from(keyPair.privateKey, "base64"),

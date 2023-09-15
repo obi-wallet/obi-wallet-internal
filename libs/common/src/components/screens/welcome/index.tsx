@@ -39,7 +39,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });
-      navigation.navigate(KeyRoute.PhoneKeyRequest, {
+      navigation.navigate(KeyRoute.DeviceKey, {
         draftId,
         flow: KeyFlow.CreateWallet,
         demoMode: false,

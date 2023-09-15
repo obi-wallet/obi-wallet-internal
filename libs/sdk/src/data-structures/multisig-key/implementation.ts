@@ -110,6 +110,7 @@ export class MultisigKey {
       type: KeyType.Device,
       payload: keyPair,
     });
+    console.log("Current draft multisig: " + JSON.stringify(this));
   }
 
   public setPhoneKey(payload: {
@@ -122,6 +123,7 @@ export class MultisigKey {
       type: KeyType.Phone,
       payload,
     });
+    console.log("Current multisig draft is: " + JSON.stringify(this));
   }
 
   public setSocialKey(publicKey: Secp256k1PublicKey) {

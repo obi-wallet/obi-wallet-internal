@@ -1,6 +1,7 @@
 import {
   createGatekeeperConfig,
   KeyType,
+  MultisigKey,
   ObservableMultisigWallet,
   Secp256k1KeyPair,
 } from "@obi-wallet/sdk";
@@ -22,6 +23,10 @@ import {
   KeyFlow,
   KeyRoute,
   KeyStackParamList,
+  OnboardingRoute,
+  RecoverFrom,
+  SettingsRoute,
+  useRootNavigation,
   /* OnboardingRoute,
   RecoverFrom,
   SettingsRoute,
@@ -41,78 +46,13 @@ export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<
 
 export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
   function PhoneKeyConfirmScreen({ route }) {
-    //const navigation = useRootNavigation();
-    const { phoneSessionStore, sdkRootStore, walletsStore } = useStore();
+    const navigation = useRootNavigation();
     const { params } = route;
-
-    async function generateEthereumAddresses(keyPair: Secp256k1KeyPair) {
-      const signingKey = new SigningKey(
-        Buffer.from(keyPair.privateKey, "base64"),
-      );
-      const signer: Signer = new Wallet(signingKey);
-      const simpleAccount = await Presets.Builder.SimpleAccount.init(
-        // @ts-expect-error this should be fine
-        signer,
-        "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
-      );
-      return {
-        evmSignerAddress: await signer.getAddress(),
-        evmUserContractAddress: simpleAccount.getSender(),
-      };
-    }
 
     return (
       <PhoneKeyConfirm
         {...params}
         onSubmit={async () => {
-          const phoneKp = phoneSessionStore.getKp;
-          invariant(phoneKp?.privateKey, "no phoneKp");
-          const proxyAddress = "MISSING";
-          const evmAddresses = await generateEthereumAddresses(phoneKp);
-          const ethereumAccount = {
-            chainId: "secret-4",
-            zAuthKeyPair: phoneKp,
-            proxyAddress: "MISSING",
-            publicKey: phoneKp.publicKey,
-            evmSignerAddress: evmAddresses.evmSignerAddress,
-            evmUserContractAddress: evmAddresses.evmUserContractAddress,
-          };
-          const wallet = ObservableMultisigWallet.create({
-            type: "multisig",
-            data: {
-              chain: "secret-4",
-              owner: {
-                keys: [
-                  {
-                    type: KeyType.ZAuth,
-                    payload: {
-                      publicKey: phoneKp.publicKey,
-                      privateKey: phoneKp.privateKey,
-                    },
-                  },
-                ],
-                threshold: 1,
-              },
-              proxyAddress: {
-                v: 1,
-                address: proxyAddress,
-              },
-              gatekeeperConfig: createGatekeeperConfig().toJSON(),
-              singlesigWallets: [],
-              currentAccount: null,
-            },
-          });
-
-          sdkRootStore.ethereumDemoStore.setEthereumAccount(
-            proxyAddress,
-            ethereumAccount,
-          );
-          wallet.setEvmSigningAddress(evmAddresses.evmSignerAddress, true);
-          wallet.setEvmUserContractAddress(evmAddresses.evmUserContractAddress);
-          walletsStore.upsertWallet(wallet);
-          walletsStore.setCurrentWallet(wallet);
-          // old ZOD flow
-          /*
           switch (params.flow) {
             case KeyFlow.CreateWallet:
               navigation.navigate(OnboardingRoute.CreateWallet, params);
@@ -127,7 +67,6 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
               });
               break;
           }
-          */
         }}
       />
     );
@@ -138,7 +77,6 @@ export interface PhoneKeyConfirmProps {
   draftId: string;
   flow: KeyFlow;
   demoMode: boolean;
-
   phoneNumber: string;
   securityQuestion: string;
   securityAnswer: string;
@@ -148,15 +86,16 @@ export interface PhoneKeyConfirmProps {
 
 export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
   function PhoneKeyConfirm({
-    // draftId,
+    draftId,
     flow,
     demoMode,
     phoneNumber,
-    // securityQuestion,
+    securityQuestion,
     securityAnswer,
     onSubmit,
   }) {
-    const { chainStore, phoneSessionStore } = useStore();
+    const { chainStore, draftsStore, phoneSessionStore } = useStore();
+    const draft = draftsStore.get<MultisigKey>({ id: draftId });
     const chainId = chainStore.currentChain;
     const env = useEnv();
     const [key, setKey] = useState("");
