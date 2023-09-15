@@ -317,28 +317,15 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                           ).toString("base64"),
                         },
                       };
-                      /*
-                      if (publicKey) {
-                        draft.value.setPhoneKey({
-                          publicKey,
-                          phoneNumber,
-                          securityQuestion,
-                        });
-                        setVerifyButtonDisabledDoubleclick(false);
-                        onSubmit();
-                      } else {
-                        setVerifyButtonDisabledDoubleclick(false);
-                      }
-                      */
 
                       if (kp.privateKey) {
-                        /*
                         draft.value.setPhoneKey({
                           publicKey: kp.publicKey,
+                          // TODO: remove
+                          privateKey: kp.privateKey,
                           phoneNumber,
                           securityQuestion,
                         });
-                        */
                         phoneSessionStore.setKp(kp);
                         setVerifyButtonDisabledDoubleclick(false);
                         onSubmit();
