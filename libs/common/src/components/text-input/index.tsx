@@ -44,7 +44,6 @@ export const TextInput = observer<CustomTextInputProps>(function TextInput({
   label,
   style,
   inputStyle,
-  labelStyle,
   invalidMessage,
   CustomTextInput = BaseTextInput,
   ...props

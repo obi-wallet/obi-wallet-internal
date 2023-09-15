@@ -48,7 +48,7 @@ export interface BackgroundStyle {
   size?: string;
   position?: string;
 }
-type ButtonStyleType = ViewStyle & { text?: TextStyle };
+export type ButtonStyleType = ViewStyle & { text?: TextStyle };
 export interface CustomTheme extends CommonTheme {
   loginModal?: boolean;
   colors: {
@@ -127,6 +127,7 @@ export interface CustomTheme extends CommonTheme {
   };
   settings?: {
     textInputBackgroundColor?: string;
+    panelContainer?: ViewStyle;
   };
   style?: string;
   balance?: {

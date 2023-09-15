@@ -1,5 +1,6 @@
 import {
   AccountSettingComponent,
+  ButtonStyleType,
   CustomTheme,
   ImagePosition,
   WelcomeButton,
@@ -89,12 +90,12 @@ export const ztxTheme: CustomTheme = {
   },
   buttonFlavors: {
     primary: {
-      ...buttonsDefaultStyle,
+      ...(buttonsDefaultStyle as ButtonStyleType),
       borderColor: colors.primaryGold,
     },
     cancel: {
       borderColor: colors.grey6,
-      ...buttonsDefaultStyle,
+      ...(buttonsDefaultStyle as ButtonStyleType),
     },
   },
   iconButtonFlavors: {
@@ -105,7 +106,11 @@ export const ztxTheme: CustomTheme = {
       borderColor: colors.primaryGold,
     },
     panel: {
-      backgroundColor: "#243fea",
+      backgroundColor: "transparent",
+      padding: 0,
+      width: 24,
+      height: 24,
+      alignSelf: "center",
     },
   },
   textStyles: {
@@ -226,6 +231,14 @@ export const ztxTheme: CustomTheme = {
   },
   settings: {
     textInputBackgroundColor: "#16151D",
+    panelContainer: {
+      borderRadius: 3,
+      backgroundColor: "transparent",
+      borderWidth: 1,
+      paddingHorizontal: 14,
+      paddingVertical: 9,
+      borderColor: "#929EB5",
+    },
   },
   style: "ztx",
   balance: {
