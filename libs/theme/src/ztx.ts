@@ -280,6 +280,7 @@ export const ztxTheme: CustomTheme = {
       borderRadius: 3,
       borderWidth: 0,
       backgroundColor: "#24242E",
+      // @ts-expect-error web-only prop
       outline: 0,
       paddingLeft: 12,
       height: 42,
@@ -314,6 +315,7 @@ export const ztxTheme: CustomTheme = {
         },
         input: {
           borderRadius: 0,
+          // @ts-expect-error web-only prop
           outline: 0,
           textAlign: "left",
           fontSize: 14,
@@ -325,6 +327,44 @@ export const ztxTheme: CustomTheme = {
       button: { marginVertical: 0, width: 180, height: 36, borderRadius: 3 },
       label: {
         textTransform: "uppercase",
+      },
+    },
+  },
+  receive: {
+    title: {
+      fontFamily: "TT Hoves Pro",
+      fontWeight: "normal",
+      fontSize: 22,
+      textAlign: "left",
+    },
+    address: {
+      container: {
+        flex: undefined,
+        marginTop: 36,
+        paddingHorizontal: 42,
+        justifyContent: "flex-start",
+      },
+      qrCode: {
+        borderRadius: 0,
+        padding: 0,
+        width: "100%",
+        marginBottom: 36,
+      },
+      textInput: {
+        showLabel: false,
+        borderRadius: 3,
+        backgroundColor: "#24242E",
+        paddingHorizontal: 12,
+        paddingVertical: 12,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+      },
+      text: {
+        fontSize: 14,
+        color: "#ffffff",
+        marginTop: 0,
       },
     },
   },

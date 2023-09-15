@@ -158,7 +158,7 @@ export const TokenController = observer<TokenControllerProps>(
                           color: "#F6F8FC",
                           width: 15,
                           height: 9,
-                          // @ts-ignore
+                          // @ts-expect-error web-only prop
                           outline: 0,
                         }}
                       />

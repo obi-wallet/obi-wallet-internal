@@ -160,6 +160,15 @@ export interface CustomTheme extends CommonTheme {
       label: TextStyle;
     };
   };
+  receive?: {
+    title?: ViewStyle & TextStyle;
+    address?: {
+      container?: ViewStyle;
+      qrCode?: ViewStyle;
+      textInput?: ViewStyle & { showLabel: boolean };
+      text?: TextStyle;
+    };
+  };
 }
 export enum WelcomeButton {
   Login = "login",
