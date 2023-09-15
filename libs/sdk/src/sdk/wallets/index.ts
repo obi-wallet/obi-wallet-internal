@@ -2,10 +2,9 @@ import { AbstractWalletsSdk } from "./abstract";
 // import { CosmosSdkWalletsSdk } from "./cosmos-sdk";
 // import { LegacyCosmosWalletsSdk } from "./legacy-cosmos";
 // import { SecretJsWalletsSdk } from "./secret-js";
+import { SecretJsMsigWalletSdk } from "./secret-js-msig";
 import { Chain } from "../../chains";
 import { MultisigKey } from "../../data-structures";
-import { SecretJsMsigWalletSdk } from "./secret-js-msig";
-
 export { AbstractWalletsSdk };
 
 export class WalletsSdk extends AbstractWalletsSdk {

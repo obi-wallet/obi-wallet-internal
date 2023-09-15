@@ -1,4 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Wallet } from "ethers";
 import * as R from "ramda";
 

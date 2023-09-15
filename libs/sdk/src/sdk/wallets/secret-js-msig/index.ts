@@ -1,4 +1,5 @@
 import { MultisigKey } from "../../../data-structures";
+import { Sdk } from "../../sdk";
 import { AbstractWalletsSdk } from "../abstract";
 
 export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {

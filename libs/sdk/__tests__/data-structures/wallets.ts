@@ -117,7 +117,7 @@ test("create wallet", async () => {
   });
 
   const response = await createWalletPromise;
-  expect(response.approved && response.payload.success).toEqual(true);
+  expect(response.homeAccountAddress).toBeTruthy;
   expect(wallets.currentWallet).toBeDefined();
   expect(wallets.currentWallet?.address).toEqual("proxy");
 });

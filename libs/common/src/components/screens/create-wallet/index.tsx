@@ -2,15 +2,12 @@ import { useTheme } from "@emotion/react";
 import {
   KeyType,
   MultisigKey,
-  getOrCreateDeviceKeyPair,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
-import invariant from "tiny-invariant";
 
 import { useStore } from "../../../contexts";
-import { Alert } from "../../../helpers";
 import {
   KeyFlow,
   KeyRoute,

@@ -1,4 +1,6 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Signer, SigningKey, Wallet } from "ethers";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Presets } from "userop";
 
 import { WalletsSchema } from "./schema";

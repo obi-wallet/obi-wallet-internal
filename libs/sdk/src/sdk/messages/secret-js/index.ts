@@ -1,4 +1,3 @@
-import { PublicKey } from "libs/sdk/src/keys";
 import * as R from "ramda";
 import { MsgExecuteContract } from "secretjs";
 import warning from "tiny-warning";
@@ -9,6 +8,7 @@ import {
   MultisigKey,
   MultisigWallet,
 } from "../../../data-structures";
+import { PublicKey } from "../../../keys";
 import { Message, MessageJson } from "../../../transactions";
 import { CodeIds, Token } from "../../common";
 import { Sdk } from "../../sdk";
@@ -118,6 +118,8 @@ export class SecretJsMessages extends AbstractMessages {
   protected getSigners(multisigKey: Array<
       {type: string, payload: {
         publicKey: PublicKey,
+        // TODO: remove
+        privateKey?: string,
       }}
     >) {
     console.warn("getting signers...");
@@ -136,7 +138,7 @@ export class SecretJsMessages extends AbstractMessages {
 
   // TODO fix types as they are forced here
   public getCreateWalletMessage(owner: MultisigKey, sender: string): Message {
-    console.warn("owner multisigkey getting passed in is: " + JSON.stringify(owner));
+    console.warn("owner multisigkey address getting passed in is: " + JSON.stringify(owner));
     const message = new MsgExecuteContract({
       sender: sender ?? owner.address,
       contract_address: this.chain.accountCreator.address,
@@ -144,21 +146,20 @@ export class SecretJsMessages extends AbstractMessages {
         new_account: {
           owner: owner.address,
           signers: {
-            signers: this.getSigners(owner.keys as unknown as { keys: Array<
+            signers: this.getSigners(owner.keys as unknown as Array<
               { type: string;
                 payload: {
                   publicKey: PublicKey;
                   privateKey?: string;
                 }
               }
-            >}),
+            >),
           },
           update_delay: 0,
         },
       },
       code_hash: this.chain.accountCreator.codeHash,
     });
-    console.warn("getCreateWalletMessage returning:" + message);
     return message;
   }
 

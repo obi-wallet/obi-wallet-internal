@@ -1,6 +1,4 @@
 import { MultisigKey } from "../../data-structures";
-import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
-import { BroadcastTransactionResult } from "../common";
 
 /**
  * Methods are proxied by {@link WalletsSdk}.
