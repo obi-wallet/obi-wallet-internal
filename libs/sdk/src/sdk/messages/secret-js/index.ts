@@ -59,25 +59,51 @@ export class SecretJsMessages extends AbstractMessages {
     throw new Error("getUpdateWalletMessage not implemented for SecretJS");
   }
 
-  public getProposeUpdateOwnerMessage(_: {
+  public getProposeUpdateOwnerMessage({
+    wallet,
+    newOwner,
+  }: {
     wallet: MultisigWallet;
     newOwner: MultisigKey;
-    codeIds: CodeIds;
   }): Message {
-    notImplemented("getProposeUpdateOwnerMessage not implemented for SecretJS");
-    throw new Error(
-      "getProposeUpdateOwnerMessage not implemented for SecretJS",
-    );
+    const rawMessage = {
+      propose_update_owner: {
+        new_owner: newOwner.address,
+        signers: {
+          signers: this.getSigners(newOwner.keys as unknown as Array<{
+            type: string;
+            payload: {
+              publicKey: PublicKey;
+              privateKey?: string;
+            };
+          }>,
+          ),
+        },
+      },
+    };
+    return new MsgExecuteContract({
+      sender: wallet.owner.address,
+      contract_address: wallet.proxyAddress,
+      // code hash not added yet
+      msg: rawMessage,
+    });
   }
 
-  public getConfirmUpdateOwnerMessage(_: {
+  public getConfirmUpdateOwnerMessage({
+    wallet,
+    newOwner,
+  }: {
     wallet: MultisigWallet;
     newOwner: MultisigKey;
   }): Message {
-    notImplemented("getConfirmUpdateOwnerMessage not implemented for SecretJS");
-    throw new Error(
-      "getConfirmUpdateOwnerMessage not implemented for SecretJS",
-    );
+    const rawMessage = {
+      confirm_update_owner: {},
+    };
+    return new MsgExecuteContract({
+      sender: newOwner.address,
+      contract_address: wallet.proxyAddress,
+      msg: rawMessage,
+    });
   }
 
   public getUpdateGatekeeperMessages(_: {
@@ -151,7 +177,7 @@ export class SecretJsMessages extends AbstractMessages {
   public getCreateWalletMessage(owner: MultisigKey, sender: string): Message {
     console.warn(
       "owner multisigkey address getting passed in is: " +
-        JSON.stringify(owner),
+      JSON.stringify(owner),
     );
     const message = new MsgExecuteContract({
       sender: sender ?? owner.address,
