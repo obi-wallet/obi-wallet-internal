@@ -19,7 +19,8 @@
     "react-native-web": "*",
     "react-shadow": "*",
     "rooks": "*",
-    "tiny-invariant": "*"
+    "tiny-invariant": "*",
+    "react-native-webview": "*"
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "*",

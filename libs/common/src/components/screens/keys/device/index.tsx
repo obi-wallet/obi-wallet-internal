@@ -221,17 +221,18 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
               })}
               flavor="primary"
               onPress={async () => {
-                if (scannedBiometrics) {
-                  onSubmit(false, undefined);
-                } else {
-                  const [success, newUser, deviceKeypair] =
-                    await scanBiometrics(true);
-                  invariant(deviceKeypair, "could not get device keypair");
-                  console.log("Success is: ", success);
-                  if (success && Platform.OS !== "ios") {
-                    onSubmit(!newUser, deviceKeypair);
-                  }
-                }
+                // TODO: Pressing this button we need to invoke a WebView screen with a URL for a browser to go thru WebAuthn API layer
+                // if (scannedBiometrics) {
+                //   onSubmit(false, undefined);
+                // } else {
+                //   const [success, newUser, deviceKeypair] =
+                //     await scanBiometrics(true);
+                //   invariant(deviceKeypair, "could not get device keypair");
+                //   console.log("Success is: ", success);
+                //   if (success && Platform.OS !== "ios") {
+                //     onSubmit(!newUser, deviceKeypair);
+                //   }
+                // }
               }}
               autoPress={Platform.OS === "ios"}
             />
@@ -241,17 +242,18 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
               })}
               flavor="primary"
               onPress={async () => {
-                if (scannedBiometrics) {
-                  onSubmit(false, undefined);
-                } else {
-                  const [success, newUser, deviceKeypair] =
-                    await scanBiometrics(false);
-                  invariant(deviceKeypair, "could not get device keypair");
-                  console.log("Success is: ", success);
-                  if (success && Platform.OS !== "ios") {
-                    onSubmit(!newUser, deviceKeypair);
-                  }
-                }
+                // TODO: The same as above. But we can go through Authentication of credentials only
+                // if (scannedBiometrics) {
+                //   onSubmit(false, undefined);
+                // } else {
+                //   const [success, newUser, deviceKeypair] =
+                //     await scanBiometrics(false);
+                //   invariant(deviceKeypair, "could not get device keypair");
+                //   console.log("Success is: ", success);
+                //   if (success && Platform.OS !== "ios") {
+                //     onSubmit(!newUser, deviceKeypair);
+                //   }
+                // }
               }}
               autoPress={Platform.OS === "ios"}
             />
