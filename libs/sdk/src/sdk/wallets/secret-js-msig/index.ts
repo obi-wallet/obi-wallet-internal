@@ -18,9 +18,9 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
       "Multisig info. address: " + multisigKey.address,
       "chainId: " + multisigKey.chainId,
       "threshold: " + multisigKey.threshold,
-      "keys: " + multisigKey.keys,
+      "keys: " + JSON.stringify(multisigKey.keys),
       "signerTypes: " + multisigKey.signerTypes,
-      "publicKey: " + multisigKey.publicKey,
+      "publicKey: " + JSON.stringify(multisigKey.publicKey),
     );
     console.log(
       "Calling setup/home-account with owner address " + multisigKey.address,
