@@ -1,50 +1,44 @@
-import invariant from "tiny-invariant";
-
 import { MultisigKey } from "../../../data-structures";
-import { SignAndBroadcastTransactionUserInteraction } from "../../../user-interactions";
-import { AbstractUserInteractionResponse } from "../../../user-interactions/abstract";
-import { BroadcastTransactionResult } from "../../common";
-import { Messages } from "../../messages";
+import { Sdk } from "../../sdk";
 import { AbstractWalletsSdk } from "../abstract";
 
 export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
+  /// The creation transaction doesn't actually need a user interaction
+  /// since the API will create it for the user, allowing smoother UX
+  /// and better retry/interrupt handling.
   public async createHomeWalletAndAddKey({
     multisigKey,
+    // Demo Mode not implemented here for now
     demoMode,
   }: {
     multisigKey: MultisigKey;
     demoMode: boolean;
-  }): Promise<
-    AbstractUserInteractionResponse<
-      { proxyAddress: string },
-      {
-        description: string;
-        originalPayload: BroadcastTransactionResult;
-      }
-    >
-  > {
-    const response = await SignAndBroadcastTransactionUserInteraction.start({
-      messages: [
-        Messages.chainId(multisigKey.chainId).getCreateWalletMessage(
-          multisigKey,
-        ),
-      ],
-      demoMode,
-      cancelable: true,
-      multisigKey,
+  }): Promise<{ homeAccountAddress: string }> {
+    const _demoMode = demoMode;
+    console.log(
+      "Calling setup/home-account with owner address " + multisigKey.address,
+    );
+    const response = await fetch("/api/setup/home-account", {
+      method: "POST",
+      body: JSON.stringify({
+        owner: multisigKey,
+      }),
     });
 
-    if (!response.approved) return response;
-    if (!response.payload.success)
-      return {
-        approved: true,
-        payload: {
-          success: false,
-          description: "Transaction failed",
-          originalPayload: response.payload,
-        },
-      };
+    const { ownerAddress, homeAccountAddress, txHash } = await response.json();
+    console.log(
+      "home account: " +
+        homeAccountAddress +
+        " with owner " +
+        ownerAddress +
+        ", tx hash " +
+        txHash,
+    );
+    return {
+      homeAccountAddress,
+    };
 
+    /*
     const { rawLog } = response.payload;
     try {
       invariant(rawLog, "No log found");
@@ -82,5 +76,6 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
         },
       };
     }
+    */
   }
 }

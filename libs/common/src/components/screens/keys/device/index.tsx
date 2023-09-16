@@ -34,13 +34,13 @@ export type DeviceKeyScreenProps = NativeStackScreenProps<
 export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
   function DeviceKeyScreen({ route }) {
     const navigation = useRootNavigation();
-    const { configStore, draftsStore, walletsStore } = useStore();
+    const { configStore } = useStore();
     const { params } = route;
 
     return (
       <DeviceKey
         {...params}
-        onSubmit={async (deviceKeypair: Secp256k1KeyPair) => {
+        onSubmit={async () => {
           if (params.flow !== KeyFlow.CreateWallet) {
             navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
             return;
@@ -211,7 +211,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 if (scannedBiometrics) {
                   onSubmit(undefined);
                 } else {
-                  const [success, newUser, deviceKeypair] =
+                  const [success, _newUser, deviceKeypair] =
                     await scanBiometrics(true);
                   invariant(deviceKeypair, "could not get device keypair");
                   console.log("Success is: ", success);
@@ -231,7 +231,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 if (scannedBiometrics) {
                   onSubmit(undefined);
                 } else {
-                  const [success, newUser, deviceKeypair] =
+                  const [success, _newUser, deviceKeypair] =
                     await scanBiometrics(false);
                   invariant(deviceKeypair, "could not get device keypair");
                   console.log("Success is: ", success);

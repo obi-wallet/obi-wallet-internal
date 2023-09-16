@@ -203,7 +203,7 @@ export class CosmJsClient extends AbstractClient {
     let key: Uint8Array | undefined = undefined;
 
     do {
-      const [list, pagination] = await f(key);
+      const [list, pagination]: [T[], PageResponse | undefined] = await f(key);
       result.push(...list);
       key = pagination?.nextKey;
     } while (key?.length);

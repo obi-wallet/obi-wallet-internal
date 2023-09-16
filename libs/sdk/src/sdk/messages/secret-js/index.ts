@@ -1,15 +1,14 @@
 import * as R from "ramda";
 import { MsgExecuteContract } from "secretjs";
-import invariant from "tiny-invariant";
 import warning from "tiny-warning";
 
 import { SecretJsChainId, secretJsChains } from "../../../chains";
 import {
   GatekeeperConfig,
-  KeyType,
   MultisigKey,
   MultisigWallet,
 } from "../../../data-structures";
+import { PublicKey } from "../../../keys";
 import { Message, MessageJson } from "../../../transactions";
 import { CodeIds, Token } from "../../common";
 import { Sdk } from "../../sdk";
@@ -116,53 +115,52 @@ export class SecretJsMessages extends AbstractMessages {
     throw new Error("getWithdrawRewardsMessage not implemented for SecretJS");
   }
 
-  public getCreateWalletMessage(owner: MultisigKey): Message {
-    const zAuthKey = owner.getKeyOfType(KeyType.ZAuth);
-    const deviceKey = owner.getKeyOfType(KeyType.Device);
-    const phoneKey = owner.getUsableKeyOfType(KeyType.Phone);
-    invariant(
-      zAuthKey || deviceKey || phoneKey,
-      "Expected ZAuth or device key to be present",
-    );
+  protected getSigners(multisigKey: Array<
+      {type: string, payload: {
+        publicKey: PublicKey,
+        // TODO: remove
+        privateKey?: string,
+      }}
+    >) {
+    console.warn("getting signers...");
+    console.warn("array is: " + JSON.stringify(multisigKey));
+    const addressAndTypes: Array<{ address: string, ty: string}> = multisigKey.map((key: {type: string, payload: {
+      publicKey: PublicKey,
+    }}) => {
+      console.log("key is " + JSON.stringify(key)); 
+      return {
+        address: this.sdk.transactions.getAddressOfPublicKey(key.payload.publicKey),
+        ty: key.type
+      }
+    });
+    return addressAndTypes;
+  }
 
-    let address;
-    if (zAuthKey) {
-      address = this.sdk.transactions.getAddressOfPublicKey(zAuthKey.publicKey);
-    } else if (deviceKey) {
-      address = this.sdk.transactions.getAddressOfPublicKey(
-        deviceKey.publicKey,
-      );
-    } else if (phoneKey) {
-      invariant(
-        phoneKey.payload.privateKey,
-        "phone key does not have private key",
-      );
-      address = this.sdk.transactions.getAddressOfPublicKey(
-        phoneKey.payload.publicKey,
-      );
-    } else {
-      throw new Error("Expected ZAuth, phone, or device key to be present");
-    }
-
-    return new MsgExecuteContract({
-      sender: address,
+  // TODO fix types as they are forced here
+  public getCreateWalletMessage(owner: MultisigKey, sender: string): Message {
+    console.warn("owner multisigkey address getting passed in is: " + JSON.stringify(owner));
+    const message = new MsgExecuteContract({
+      sender: sender ?? owner.address,
       contract_address: this.chain.accountCreator.address,
       msg: {
         new_account: {
-          owner: address,
+          owner: owner.address,
           signers: {
-            signers: [
-              {
-                address: address,
-                ty: zAuthKey ? "zauth" : "device",
-              },
-            ],
+            signers: this.getSigners(owner.keys as unknown as Array<
+              { type: string;
+                payload: {
+                  publicKey: PublicKey;
+                  privateKey?: string;
+                }
+              }
+            >),
           },
           update_delay: 0,
         },
       },
       code_hash: this.chain.accountCreator.codeHash,
     });
+    return message;
   }
 
   protected get chain() {

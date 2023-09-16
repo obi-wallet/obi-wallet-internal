@@ -2,15 +2,12 @@ import { useTheme } from "@emotion/react";
 import {
   KeyType,
   MultisigKey,
-  getOrCreateDeviceKeyPair,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
-import invariant from "tiny-invariant";
 
 import { useStore } from "../../../contexts";
-import { Alert } from "../../../helpers";
 import {
   KeyFlow,
   KeyRoute,
@@ -45,12 +42,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             multisigKey: draft.value,
             demoMode: params.demoMode,
           });
-          if (!response.approved) return;
-          if (!response.payload.success) {
-            console.log(response.payload.originalPayload);
-            Alert.alert("Something went wrong", response.payload.description);
-            return;
-          }
+          console.log("wallet received: " + JSON.stringify(response));
 
           let wallet;
           if (theme.loginModal) {
@@ -59,7 +51,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
               console.log("no wallet");
               return;
             } else {
-              wallet.setEvmSigningAddress(deviceKey?.privateKey);
+              //wallet.setEvmSigningAddress(deviceKey?.privateKey);
             }
           }
         }}

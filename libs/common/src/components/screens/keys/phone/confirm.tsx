@@ -1,20 +1,11 @@
-import {
-  createGatekeeperConfig,
-  KeyType,
-  MultisigKey,
-  ObservableMultisigWallet,
-  Secp256k1KeyPair,
-} from "@obi-wallet/sdk";
+import { MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Signer, SigningKey, Wallet } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as secp256k1 from "secp256k1";
-import invariant from "tiny-invariant";
-import { Presets } from "userop";
 
 import { useEnv, useStore } from "../../../../contexts";
 import { Alert, isSmallScreenNumber } from "../../../../helpers";

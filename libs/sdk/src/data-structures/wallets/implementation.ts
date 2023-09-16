@@ -1,9 +1,10 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Signer, SigningKey, Wallet } from "ethers";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Presets } from "userop";
 
 import { WalletsSchema } from "./schema";
 import { ChainId } from "../../chains";
-import { getOrCreateDeviceKeyPair } from "../../keys";
 import { Secp256k1KeyPair } from "../../keys/sec256k1";
 import { WalletsSdk } from "../../sdk/wallets";
 import { Serialized } from "../abstract";
@@ -101,8 +102,6 @@ export class Wallets {
       demoMode,
     });
 
-    if (!response.approved || !response.payload.success) return response;
-
     const wallet = this._factory.create({
       type: demoMode ? "multisig-demo" : "multisig",
       data: {
@@ -111,7 +110,7 @@ export class Wallets {
         owner: multisigKey.toJSON(),
         proxyAddress: {
           v: 1,
-          address: response.payload.proxyAddress,
+          address: response.homeAccountAddress,
         },
         singlesigWallets: [],
         currentAccount: null,
