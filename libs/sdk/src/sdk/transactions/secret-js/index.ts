@@ -127,6 +127,8 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     await this.prepareAccount(address);
     const account = await this.fetchAccount(address);
     invariant(account, "Account not found.");
+    invariant(this.isBaseAccount(account), "account is not BaseAccount");
+    const baseAccount = account as Account & BaseAccount;
 
     const aminoMessages = messages.map((message) => {
       return this.messages.toJSON(message);
@@ -138,6 +140,8 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     return new SecretJsMultisigSigner({
       chainId: this.chainId,
       account,
+      accountNumber: baseAccount.accountNumber,
+      sequence: baseAccount.sequence,
       fee: this.client.defaultFee,
       encodeObjects,
       messages: aminoMessages,

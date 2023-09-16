@@ -224,6 +224,7 @@ export class TwilioClient implements TwilioClientInterface {
       To: phoneNumber,
       From: twilioPhoneNumber,
       key,
+      pk: true,
     };
 
     return await fetch(twilioUrl, {

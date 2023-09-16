@@ -8,30 +8,28 @@ import { MultisigKey } from "../../data-structures";
 export { AbstractWalletsSdk };
 
 export class WalletsSdk extends AbstractWalletsSdk {
-  public async createWallet({
+  public async createHomeAccountAndAddKey({
     multisigKey,
     demoMode,
   }: {
     multisigKey: MultisigKey;
     demoMode: boolean;
-  }): Promise<
-    | { homeAccountAddress: string }
-  > {
+  }): Promise<{ homeAccountAddress: string }> {
     return await Chain.select<AbstractWalletsSdk>({
       chainId: multisigKey.chainId,
       onCosmosChain(_) {
-        throw new Error ("non-secret home accounts disabled");
+        throw new Error("non-secret home accounts disabled");
       },
       onLegacyCosmosChain() {
-        throw new Error ("non-secret home accounts disabled");
+        throw new Error("non-secret home accounts disabled");
       },
       onSecretJsChain() {
         return new SecretJsMsigWalletSdk();
       },
       onTerraChain() {
-        throw new Error ("non-secret home accounts disabled");
+        throw new Error("non-secret home accounts disabled");
       },
-    }).createWallet({
+    }).createHomeAccountAndAddKey({
       multisigKey,
       demoMode,
     });

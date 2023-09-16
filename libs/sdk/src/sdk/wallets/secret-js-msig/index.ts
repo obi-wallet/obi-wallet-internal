@@ -1,12 +1,11 @@
 import { MultisigKey } from "../../../data-structures";
-import { Sdk } from "../../sdk";
 import { AbstractWalletsSdk } from "../abstract";
 
 export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
   /// The creation transaction doesn't actually need a user interaction
   /// since the API will create it for the user, allowing smoother UX
   /// and better retry/interrupt handling.
-  public async createWallet({
+  public async createHomeAccountAndAddKey({
     multisigKey,
     // Demo Mode not implemented here for now
     demoMode,
@@ -15,6 +14,14 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
     demoMode: boolean;
   }): Promise<{ homeAccountAddress: string }> {
     const _demoMode = demoMode;
+    console.warn(
+      "Multisig info. address: " + multisigKey.address,
+      "chainId: " + multisigKey.chainId,
+      "threshold: " + multisigKey.threshold,
+      "keys: " + JSON.stringify(multisigKey.keys),
+      "signerTypes: " + multisigKey.signerTypes,
+      "publicKey: " + JSON.stringify(multisigKey.publicKey),
+    );
     console.log(
       "Calling setup/home-account with owner address " + multisigKey.address,
     );
