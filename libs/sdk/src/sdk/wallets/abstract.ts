@@ -6,13 +6,11 @@ import { MultisigKey } from "../../data-structures";
  * @internal
  */
 export abstract class AbstractWalletsSdk {
-  public abstract createHomeWalletAndAddKey({
+  public abstract createHomeAccountAndAddKey({
     multisigKey,
     demoMode,
   }: {
     multisigKey: MultisigKey;
     demoMode: boolean;
-  }): Promise<
-    | { homeAccountAddress: string }
-  >;
+  }): Promise<{ homeAccountAddress: string }>;
 }

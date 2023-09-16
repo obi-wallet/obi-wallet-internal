@@ -115,30 +115,44 @@ export class SecretJsMessages extends AbstractMessages {
     throw new Error("getWithdrawRewardsMessage not implemented for SecretJS");
   }
 
-  protected getSigners(multisigKey: Array<
-      {type: string, payload: {
-        publicKey: PublicKey,
+  protected getSigners(
+    multisigKey: Array<{
+      type: string;
+      payload: {
+        publicKey: PublicKey;
         // TODO: remove
-        privateKey?: string,
-      }}
-    >) {
+        privateKey?: string;
+      };
+    }>,
+  ) {
     console.warn("getting signers...");
     console.warn("array is: " + JSON.stringify(multisigKey));
-    const addressAndTypes: Array<{ address: string, ty: string}> = multisigKey.map((key: {type: string, payload: {
-      publicKey: PublicKey,
-    }}) => {
-      console.log("key is " + JSON.stringify(key)); 
-      return {
-        address: this.sdk.transactions.getAddressOfPublicKey(key.payload.publicKey),
-        ty: key.type
-      }
-    });
+    const addressAndTypes: Array<{ address: string; ty: string }> =
+      multisigKey.map(
+        (key: {
+          type: string;
+          payload: {
+            publicKey: PublicKey;
+          };
+        }) => {
+          console.log("key is " + JSON.stringify(key));
+          return {
+            address: this.sdk.transactions.getAddressOfPublicKey(
+              key.payload.publicKey,
+            ),
+            ty: key.type,
+          };
+        },
+      );
     return addressAndTypes;
   }
 
   // TODO fix types as they are forced here
   public getCreateWalletMessage(owner: MultisigKey, sender: string): Message {
-    console.warn("owner multisigkey address getting passed in is: " + JSON.stringify(owner));
+    console.warn(
+      "owner multisigkey address getting passed in is: " +
+        JSON.stringify(owner),
+    );
     const message = new MsgExecuteContract({
       sender: sender ?? owner.address,
       contract_address: this.chain.accountCreator.address,
@@ -146,14 +160,15 @@ export class SecretJsMessages extends AbstractMessages {
         new_account: {
           owner: owner.address,
           signers: {
-            signers: this.getSigners(owner.keys as unknown as Array<
-              { type: string;
+            signers: this.getSigners(
+              owner.keys as unknown as Array<{
+                type: string;
                 payload: {
                   publicKey: PublicKey;
                   privateKey?: string;
-                }
-              }
-            >),
+                };
+              }>,
+            ),
           },
           update_delay: 0,
         },

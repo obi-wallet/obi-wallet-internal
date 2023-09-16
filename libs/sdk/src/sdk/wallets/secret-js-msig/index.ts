@@ -1,12 +1,11 @@
 import { MultisigKey } from "../../../data-structures";
-import { Sdk } from "../../sdk";
 import { AbstractWalletsSdk } from "../abstract";
 
 export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
   /// The creation transaction doesn't actually need a user interaction
   /// since the API will create it for the user, allowing smoother UX
   /// and better retry/interrupt handling.
-  public async createHomeWalletAndAddKey({
+  public async createHomeAccountAndAddKey({
     multisigKey,
     // Demo Mode not implemented here for now
     demoMode,

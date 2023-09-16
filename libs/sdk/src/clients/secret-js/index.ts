@@ -1,5 +1,15 @@
 import { createWasmAminoConverters } from "@cosmjs/cosmwasm-stargate";
-import { AminoTypes, createAuthzAminoConverters, createBankAminoConverters, createDistributionAminoConverters, createFeegrantAminoConverters, createGovAminoConverters, createIbcAminoConverters, createStakingAminoConverters, createVestingAminoConverters } from "@cosmjs/stargate";
+import {
+  AminoTypes,
+  createAuthzAminoConverters,
+  createBankAminoConverters,
+  createDistributionAminoConverters,
+  createFeegrantAminoConverters,
+  createGovAminoConverters,
+  createIbcAminoConverters,
+  createStakingAminoConverters,
+  createVestingAminoConverters,
+} from "@cosmjs/stargate";
 import {
   BroadcastMode,
   fromBase64,
@@ -155,7 +165,7 @@ export class SecretJsClient extends AbstractClient {
       };
     });
   }
-  
+
   public get aminoTypes() {
     return new AminoTypes({
       ...createAuthzAminoConverters(),
@@ -169,17 +179,19 @@ export class SecretJsClient extends AbstractClient {
       ...createWasmAminoConverters(),
     });
   }
-  
+
   protected get chain() {
     return secretJsChains[this.chainId];
   }
 
   public get defaultFee(): StdFee {
     return {
-      amount: [{ 
-        amount: "20000",
-        denom: "uscrt"
-      }],
+      amount: [
+        {
+          amount: "20000",
+          denom: "uscrt",
+        },
+      ],
       gas: "2560000",
     };
   }

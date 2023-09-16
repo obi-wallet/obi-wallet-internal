@@ -97,7 +97,7 @@ export class Wallets {
     multisigKey: MultisigKey;
     demoMode: boolean;
   }) {
-    const response = await this.walletsSdk.createHomeWalletAndAddKey({
+    const response = await this.walletsSdk.createHomeAccountAndAddKey({
       multisigKey,
       demoMode,
     });
