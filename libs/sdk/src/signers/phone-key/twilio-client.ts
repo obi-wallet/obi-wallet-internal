@@ -55,7 +55,7 @@ export interface TwilioClientInterface {
 export class DemoModeTwilioClient implements TwilioClientInterface {
   protected demoPayload: Uint8Array | null = null;
 
-  public constructor(protected keyPair: Secp256k1KeyPair) {}
+  public constructor(protected keyPair: Secp256k1KeyPair) { }
 
   public async requestPublicKeyMagicCode(_: {
     phoneNumber: string;
@@ -103,7 +103,7 @@ export class DemoModeTwilioClient implements TwilioClientInterface {
 }
 
 export class TwilioClient implements TwilioClientInterface {
-  public constructor(protected twilioConfig: TwilioConfig) {}
+  public constructor(protected twilioConfig: TwilioConfig) { }
 
   public async requestPublicKeyMagicCode({
     phoneNumber,
@@ -225,7 +225,7 @@ export class TwilioClient implements TwilioClientInterface {
       From: twilioPhoneNumber,
       key,
       //TODO: undo this workaround
-      pk: true
+      pk: false,
     };
 
     return await fetch(twilioUrl, {
