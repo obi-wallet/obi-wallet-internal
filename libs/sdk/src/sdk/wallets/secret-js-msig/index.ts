@@ -14,6 +14,14 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
     demoMode: boolean;
   }): Promise<{ homeAccountAddress: string }> {
     const _demoMode = demoMode;
+    console.warn(
+      "Multisig info. address: " + multisigKey.address,
+      "chainId: " + multisigKey.chainId,
+      "threshold: " + multisigKey.threshold,
+      "keys: " + multisigKey.keys,
+      "signerTypes: " + multisigKey.signerTypes,
+      "publicKey: " + multisigKey.publicKey,
+    );
     console.log(
       "Calling setup/home-account with owner address " + multisigKey.address,
     );
