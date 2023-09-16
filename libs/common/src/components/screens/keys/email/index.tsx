@@ -30,7 +30,6 @@ import {
 import { TextInput } from "../../../text-input";
 import { Text } from "../../../typography";
 import { VerifyAndProceedButton } from "../../../verify-and-proceed-button";
-
 export { EmailRecoveryScreen } from "./recovery";
 export type { EmailRecoveryScreenProps } from "./recovery";
 
@@ -38,6 +37,46 @@ export type EmailKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
   KeyRoute.EmailKey
 >;
+
+async function encryptWithPublicKey(
+  publicKeyPem: string,
+  data: string,
+): Promise<ArrayBuffer> {
+  const encoder = new TextEncoder();
+  const encodedData = encoder.encode(data);
+  console.log("importing key...");
+  const base64 = publicKeyPem
+    .split("\n")
+    .filter((row) => row.trim().length > 0 && !row.includes("---"))
+    .join("");
+
+  const binaryDerString = atob(base64);
+  const binaryDer = new Uint8Array(binaryDerString.length);
+
+  for (let i = 0; i < binaryDerString.length; i++) {
+    binaryDer[i] = binaryDerString.charCodeAt(i);
+  }
+
+  const importedKey = await window.crypto.subtle.importKey(
+    "spki",
+    binaryDer.buffer,
+    {
+      name: "RSA-OAEP",
+      hash: "SHA-256",
+    },
+    true,
+    ["encrypt"],
+  );
+  console.log("key imported");
+  const encryptedData = await window.crypto.subtle.encrypt(
+    {
+      name: "RSA-OAEP",
+    },
+    importedKey,
+    encodedData,
+  );
+  return encryptedData;
+}
 
 export const EmailKeyScreen = observer<EmailKeyScreenProps>(
   function EmailKeyScreen({ route }) {
@@ -219,29 +258,84 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
 
       <View style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}>
         {!isKeyboardVisible && (
-          <VerifyAndProceedButton
-            disabled={!formState.isValid}
-            onPress={handleSubmit(async (data) => {
-              try {
-                const { publicKey, privateKey } = generateSec256k1KeyPair();
-                const URL = `mailto:${
-                  data.email
-                }?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
-                  "This is a v1 recovery key. You are sending it to yourself; Obi can never access its contents. " +
-                    "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
-                    "DO NOT DELETE this email unless you are saving its contents to a password manager or physical location. In future versions " +
-                    "of Obi, email recovery will use zero-knowledge proofs, and so saving an email will be unnecessary.  " +
-                    privateKey,
-                )}`;
+          <>
+            <VerifyAndProceedButton
+              labelOverride="Send Email to Myself"
+              disabled={!formState.isValid}
+              onPress={handleSubmit(async (data) => {
+                try {
+                  const { publicKey, privateKey } = generateSec256k1KeyPair();
+                  // TODO: more secure path here. Right now this is a public key
+                  // whose private key is known by next.js app. Of course, the app
+                  // doesn't know this encrypted value, and so cannot know the private
+                  // key until recovery is used.
+                  const emailRecoveryLinkPubkey =
+                    "-----BEGIN PUBLIC KEY-----" +
+                    "\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp0FKcmzdpuUdgLlD3gCD" +
+                    "iVsN+KLIbRX/P2LG/luAXmL5A+Fo+5uQF/kb2Yd80WMY6LxUi8KuZBYXoMRyB6r1" +
+                    "xcDxl2/qiKghfrwM8F3+jaPqHOnYHF6Ge34CS9yVl0ufyEh24VRe8c2FetGFdyv/" +
+                    "zAUjd89D9ZWoRX6G4e1U3zEw3wsOSPIl3HCFNoEFPDF5lsyzC2tFDOcieutaeTBX" +
+                    "Hnf9cDZ+Zi4uha5TKIRzWg4+meTCdcWncJiM3mk4+4WzVAymoV9aMrqJRGk6BfD7" +
+                    "SHmHQgKww8o9yEd//r/ycXfrZTPX7ojynSFnvCnaO61LkH1tifsOBXPo3QQHJxLm" +
+                    "UwIDAQAB\n" +
+                    "-----END PUBLIC KEY-----";
+                  // convert the base64 emailRecoveryLinkPubkey to a CryptoKey for window.crypto.subtle
+                  const emailRecoveryLink: ArrayBuffer =
+                    await encryptWithPublicKey(
+                      emailRecoveryLinkPubkey,
+                      privateKey,
+                    );
+                  // convert to base64 string
+                  const emailRecoveryLinkString: string = btoa(
+                    String.fromCharCode(...new Uint8Array(emailRecoveryLink)),
+                  );
+                  console.log(
+                    "encrypted private key for email link: " +
+                      emailRecoveryLinkString,
+                  );
 
-                setEmailKey(publicKey);
-                await Linking.openURL(URL);
-              } catch (e) {
-                console.error(e);
-                // noop
-              }
-            })}
-          />
+                  const URL = `mailto:${
+                    data.email
+                  }?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
+                    "This is an Obi email key recovery link. You are sending it to yourself; Obi can never access its contents. " +
+                      "This link is one-time use and can be used to help you recover if you lose multiple factors. " +
+                      "DO NOT DELETE this email, unless you are saving its contents to a password manager or physical location." +
+                      "\n\nTo initiate email key recovery, use this link:\n\nhttps://wallet.obimoney.games/ztx/" +
+                      emailRecoveryLinkString,
+                  )}`;
+
+                  setEmailKey(publicKey);
+                  await Linking.openURL(URL);
+                } catch (e) {
+                  console.error(e);
+                  // noop
+                }
+              })}
+            />
+            <VerifyAndProceedButton
+              labelOverride="Auto-Send with Obi Service"
+              disabled={!formState.isValid}
+              onPress={handleSubmit(async (data) => {
+                try {
+                  const { publicKey, privateKey } = generateSec256k1KeyPair();
+                  const URL = `mailto:${
+                    data.email
+                  }?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
+                    "This is an Obi email key recovery link. You are sending it to yourself; Obi can never access its contents. " +
+                      "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
+                      "DO NOT DELETE this email, unless you are saving its contents to a password manager or physical location." +
+                      privateKey,
+                  )}`;
+
+                  setEmailKey(publicKey);
+                  await Linking.openURL(URL);
+                } catch (e) {
+                  console.error(e);
+                  // noop
+                }
+              })}
+            />
+          </>
         )}
       </View>
     </EmailContainer>
