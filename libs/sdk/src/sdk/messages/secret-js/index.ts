@@ -70,13 +70,14 @@ export class SecretJsMessages extends AbstractMessages {
       propose_update_owner: {
         new_owner: newOwner.address,
         signers: {
-          signers: this.getSigners(newOwner.keys as unknown as Array<{
-            type: string;
-            payload: {
-              publicKey: PublicKey;
-              privateKey?: string;
-            };
-          }>,
+          signers: this.getSigners(
+            newOwner.keys as unknown as Array<{
+              type: string;
+              payload: {
+                publicKey: PublicKey;
+                privateKey?: string;
+              };
+            }>,
           ),
         },
       },
@@ -177,7 +178,7 @@ export class SecretJsMessages extends AbstractMessages {
   public getCreateWalletMessage(owner: MultisigKey, sender: string): Message {
     console.warn(
       "owner multisigkey address getting passed in is: " +
-      JSON.stringify(owner),
+        JSON.stringify(owner),
     );
     const message = new MsgExecuteContract({
       sender: sender ?? owner.address,
