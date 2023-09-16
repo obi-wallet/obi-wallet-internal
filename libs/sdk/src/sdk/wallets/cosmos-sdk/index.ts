@@ -8,7 +8,7 @@ import { Messages } from "../../messages";
 import { AbstractWalletsSdk } from "../abstract";
 
 export class CosmosSdkWalletsSdk extends AbstractWalletsSdk {
-  public async createWallet({
+  public async createHomeWalletAndAddKey({
     multisigKey,
     demoMode,
   }: {

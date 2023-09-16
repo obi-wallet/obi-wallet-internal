@@ -8,7 +8,7 @@ import { BroadcastTransactionResult } from "../common";
  * @internal
  */
 export abstract class AbstractWalletsSdk {
-  public abstract createWallet({
+  public abstract createHomeWalletAndAddKey({
     multisigKey,
     demoMode,
   }: {

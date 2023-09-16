@@ -51,12 +51,6 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             Alert.alert("Something went wrong", response.payload.description);
             return;
           }
-          // TODO: migrate to key management; currently derived from device key
-          const [deviceKey, _] = await getOrCreateDeviceKeyPair(true, false);
-          invariant(
-            deviceKey?.privateKey,
-            "Wallet must have a device public key",
-          );
 
           let wallet;
           if (theme.loginModal) {

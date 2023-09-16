@@ -10,7 +10,7 @@ function notImplemented(message: string) {
 }
 
 export class LegacyCosmosWalletsSdk extends AbstractWalletsSdk {
-  public async createWallet(_: {
+  public async createHomeWalletAndAddKey(_: {
     multisigKey: MultisigKey;
     demoMode: boolean;
   }): Promise<

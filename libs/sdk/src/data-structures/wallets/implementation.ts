@@ -87,6 +87,8 @@ export class Wallets {
     return this._wallets.find((w) => w.proxyAddress === proxyAddress);
   }
 
+  /// Creates a home chain account for the user owned by `multisigKey.`
+  /// Also adds a new simple signer key that is owned by the multisig.
   public async createWallet({
     multisigKey,
     demoMode,
@@ -94,7 +96,7 @@ export class Wallets {
     multisigKey: MultisigKey;
     demoMode: boolean;
   }) {
-    const response = await this.walletsSdk.createWallet({
+    const response = await this.walletsSdk.createHomeWalletAndAddKey({
       multisigKey,
       demoMode,
     });

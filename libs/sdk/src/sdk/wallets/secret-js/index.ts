@@ -12,7 +12,9 @@ import { Messages } from "../../messages";
 import { AbstractWalletsSdk } from "../abstract";
 
 export class SecretJsWalletsSdk extends AbstractWalletsSdk {
-  public async createWallet({
+  /// Creates a home chain account for the user owned by `multisigKey.`
+  /// Also adds a new simple signer key that is owned by the multisig.
+  public async createHomeWalletAndAddKey({
     multisigKey,
   }: {
     multisigKey: MultisigKey;
@@ -32,28 +34,12 @@ export class SecretJsWalletsSdk extends AbstractWalletsSdk {
     const messagesSdk = Messages.chainId(chainId);
     const sdk = Sdk.chainId(chainId);
 
-    const zAuthKey = multisigKey.getKeyOfType(KeyType.ZAuth);
-    const deviceKey = multisigKey.getUsableKeyOfType(KeyType.Device);
-    invariant(
-      zAuthKey || deviceKey,
-      "Expected ZAuth or device key to be present",
-    );
-
-    let signer, address;
-    if (zAuthKey) {
-      signer = new ZAuthKeySigner(zAuthKey);
-      address = Sdk.chainId(chainId).transactions.getAddressOfPublicKey(
-        zAuthKey.publicKey,
-      );
-    } else if (deviceKey) {
-      invariant(deviceKey.payload?.privateKey, "Device key inaccessible");
-      signer = new Secp256k1PrivateKeySigner(deviceKey.payload?.privateKey);
-      address = Sdk.chainId(chainId).transactions.getAddressOfPublicKey(
-        deviceKey.publicKey,
-      );
-    } else {
-      throw new Error("Expected ZAuth or device key to be present");
-    }
+    console.log("Creating new multisig account owned by multisig key: " + JSON.stringify(multisigKey, null, 2));
+    
+    /// Here we need to do three things:
+    /// 1. generate an ETH keypair
+    /// 2. create a home account (signed by secret multisig signer)
+    /// 3. add the ETH keypair to the simple signer
 
     const client = new SecretJsClient(chainId);
 

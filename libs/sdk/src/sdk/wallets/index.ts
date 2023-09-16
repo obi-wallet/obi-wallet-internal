@@ -10,7 +10,7 @@ import { BroadcastTransactionResult } from "../common";
 export { AbstractWalletsSdk };
 
 export class WalletsSdk extends AbstractWalletsSdk {
-  public async createWallet({
+  public async createHomeWalletAndAddKey({
     multisigKey,
     demoMode,
   }: {
@@ -39,7 +39,7 @@ export class WalletsSdk extends AbstractWalletsSdk {
       onTerraChain() {
         return new CosmosSdkWalletsSdk();
       },
-    }).createWallet({
+    }).createHomeWalletAndAddKey({
       multisigKey,
       demoMode,
     });
