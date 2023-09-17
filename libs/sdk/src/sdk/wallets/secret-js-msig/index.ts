@@ -1,5 +1,7 @@
+import { TxResponse } from "secretjs";
 import { MultisigKey } from "../../../data-structures";
 import { AbstractWalletsSdk } from "../abstract";
+import { Secp256k1PublicKey } from "libs/sdk/src/keys";
 
 export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
   /// The creation transaction doesn't actually need a user interaction
@@ -12,7 +14,11 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
   }: {
     multisigKey: MultisigKey;
     demoMode: boolean;
-  }): Promise<{ homeAccountAddress: string }> {
+  }): Promise<{
+    homeAccountAddress: string,
+    evmSignerAddress: string,
+    evmUserContractAddress: string,
+  }> {
     const _demoMode = demoMode;
     console.warn(
       "Multisig info. address: " + multisigKey.address,
@@ -29,60 +35,47 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
       method: "POST",
       body: JSON.stringify({
         owner: multisigKey,
+        ownerAddress: multisigKey.address,
+      }),
+    });
+    // add key will return an address quickly, before it's actually ready
+    const addKeyResponse = await fetch("/api/setup/add-key", {
+      method: "POST",
+      body: JSON.stringify({
+        ownerPublicKey: multisigKey.publicKey,
       }),
     });
 
-    const { ownerAddress, homeAccountAddress, txHash } = await response.json();
-    console.log(
-      "home account: " +
-        homeAccountAddress +
-        " with owner " +
-        ownerAddress +
-        ", tx hash " +
-        txHash,
-    );
-    return {
-      homeAccountAddress,
-    };
+    const { ownerAddress, homeAccountAddress, txResult }: {
+      ownerAddress: string;
+      homeAccountAddress: string;
+      txResult: TxResponse;
+    } = await response.json();
+    const addKeyResponseJson = await addKeyResponse.json();
+    if (addKeyResponseJson.success) {
+      const { success, publicKey, evmSignerAddress, evmUserContractAddress }:
+        { success: boolean,
+          publicKey: Secp256k1PublicKey,
+          evmSignerAddress: string,
+          evmUserContractAddress: string
+      } = addKeyResponseJson;
 
-    /*
-    const { rawLog } = response.payload;
-    try {
-      invariant(rawLog, "No log found");
-      // TODO: zod
-      const { events } = JSON.parse(rawLog)[0] as {
-        events: {
-          type: string;
-          attributes: { key: string; value: string }[];
-        }[];
-      };
-      const instantiateEvent = events.find((e) => {
-        return e.type === "instantiate";
-      });
-      const contractAddresses = instantiateEvent?.attributes.filter((a) => {
-        return a.key === "_contract_address";
-      });
-      invariant(
-        Array.isArray(contractAddresses) && contractAddresses.length > 0,
-        "No contract address found",
+      console.log(
+        "home account: " +
+          homeAccountAddress +
+          " with owner " +
+          ownerAddress +
+          ", tx hash " +
+          txResult.transactionHash,
       );
       return {
-        approved: true,
-        payload: {
-          success: true,
-          proxyAddress: contractAddresses[0].value,
-        },
+        homeAccountAddress,
+        evmSignerAddress,
+        evmUserContractAddress,
       };
-    } catch (e) {
-      return {
-        approved: true,
-        payload: {
-          success: false,
-          description: "Could not parse log",
-          originalPayload: response.payload,
-        },
-      };
+    } else {
+      throw new Error("failed to save evm key");
     }
-    */
+
   }
 }

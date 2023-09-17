@@ -5,7 +5,11 @@ export class LegacyCosmosWalletsSdk extends AbstractWalletsSdk {
   public async createHomeAccountAndAddKey(_: {
     multisigKey: MultisigKey;
     demoMode: boolean;
-  }): Promise<{ homeAccountAddress: string }> {
+  }): Promise<{
+    homeAccountAddress: string,
+    evmSignerAddress: string,
+    evmUserContractAddress: string,
+  }> {
     throw new Error("createWallet not implemented for Cosmos");
   }
 }

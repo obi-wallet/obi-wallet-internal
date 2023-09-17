@@ -12,5 +12,9 @@ export abstract class AbstractWalletsSdk {
   }: {
     multisigKey: MultisigKey;
     demoMode: boolean;
-  }): Promise<{ homeAccountAddress: string }>;
+  }): Promise<{
+    homeAccountAddress: string,
+    evmSignerAddress: string,
+    evmUserContractAddress: string,
+  }> ;
 }

@@ -1,5 +1,6 @@
-import { Messages, MultisigKey, SecretJsClient } from "@obi-wallet/sdk";
+import { Messages, MultisigKey, SecretJsClient, secretJsChains } from "@obi-wallet/sdk";
 import { getFeeLender } from "apps/modal-web/src/fee-lender";
+import { NextResponse } from "next/server";
 import { TxResponse } from "secretjs";
 import invariant from "tiny-invariant";
 
@@ -8,6 +9,7 @@ import invariant from "tiny-invariant";
 export async function POST(request: Request) {
   const body: {
     owner: MultisigKey;
+    ownerAddress: string;
   } = await request.json();
 
   const chainId = "secret-4";
@@ -21,6 +23,7 @@ export async function POST(request: Request) {
   invariant(wallet.address, "no fee lender wallet address");
   const message = messagesSdk.getCreateWalletMessage(
     body.owner,
+    body.ownerAddress,
     wallet.address,
   );
   console.log(
@@ -53,16 +56,16 @@ export async function POST(request: Request) {
       return log.type === "instantiate" && log.key === "contract_address";
     })?.value;
     invariant(homeAccountAddress, "Contract address not found");
-    return {
-      ownerAddress: body.owner.address,
+    return NextResponse.json({
+      ownerAddress: body.ownerAddress,
       homeAccountAddress,
       txResult,
-    };
+    });
   } catch (e) {
-    return {
-      ownerAddress: body.owner.address,
+    return NextResponse.json({
+      ownerAddress: body.ownerAddress,
       homeAccountAddress: "PARSE ERROR",
       txResult: broadcastTransactionResult,
-    };
+    });
   }
 }

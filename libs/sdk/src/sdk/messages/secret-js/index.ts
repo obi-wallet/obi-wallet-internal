@@ -153,7 +153,6 @@ export class SecretJsMessages extends AbstractMessages {
     }>,
   ) {
     console.warn("getting signers...");
-    console.warn("array is: " + JSON.stringify(multisigKey));
     const addressAndTypes: Array<{ address: string; ty: string }> =
       multisigKey.map(
         (key: {
@@ -162,7 +161,6 @@ export class SecretJsMessages extends AbstractMessages {
             publicKey: PublicKey;
           };
         }) => {
-          console.log("key is " + JSON.stringify(key));
           return {
             address: this.sdk.transactions.getAddressOfPublicKey(
               key.payload.publicKey,
@@ -175,7 +173,7 @@ export class SecretJsMessages extends AbstractMessages {
   }
 
   // TODO fix types as they are forced here
-  public getCreateWalletMessage(owner: MultisigKey, sender: string): Message {
+  public getCreateWalletMessage(owner: MultisigKey, ownerAddress: string, sender: string): Message {
     console.warn(
       "owner multisigkey address getting passed in is: " +
         JSON.stringify(owner),
@@ -183,9 +181,10 @@ export class SecretJsMessages extends AbstractMessages {
     const message = new MsgExecuteContract({
       sender: sender ?? owner.address,
       contract_address: this.chain.accountCreator.address,
+      code_hash: this.chain.accountCreator.codeHash,
       msg: {
         new_account: {
-          owner: owner.address,
+          owner: ownerAddress,
           signers: {
             signers: this.getSigners(
               owner.keys as unknown as Array<{
@@ -200,7 +199,6 @@ export class SecretJsMessages extends AbstractMessages {
           update_delay: 0,
         },
       },
-      code_hash: this.chain.accountCreator.codeHash,
     });
     return message;
   }

@@ -126,6 +126,7 @@ export abstract class AbstractMessages {
    */
   public abstract getCreateWalletMessage(
     owner: MultisigKey,
+    ownerAddress: string,
     sender?: string,
   ): Message;
 }

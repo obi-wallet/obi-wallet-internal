@@ -116,6 +116,8 @@ export class Wallets {
         currentAccount: null,
       },
     });
+    wallet.setEvmSigningAddress(response.evmSignerAddress, true);
+    wallet.setEvmUserContractAddress(response.evmUserContractAddress);
     this.upsertWallet(wallet);
     return response;
   }

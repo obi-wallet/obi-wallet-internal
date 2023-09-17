@@ -14,7 +14,11 @@ export class WalletsSdk extends AbstractWalletsSdk {
   }: {
     multisigKey: MultisigKey;
     demoMode: boolean;
-  }): Promise<{ homeAccountAddress: string }> {
+  }): Promise<{
+    homeAccountAddress: string,
+    evmSignerAddress: string,
+    evmUserContractAddress: string,
+  }> {
     return await Chain.select<AbstractWalletsSdk>({
       chainId: multisigKey.chainId,
       onCosmosChain(_) {

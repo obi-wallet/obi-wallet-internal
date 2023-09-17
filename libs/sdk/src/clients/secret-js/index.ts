@@ -131,13 +131,13 @@ export class SecretJsClient extends AbstractClient {
           ...this.defaultTxOptions,
           // TODO: need to do Sync/Async here
           broadcastMode: BroadcastMode.Block,
-          waitForCommit: false,
+          waitForCommit: true,
         },
       );
       await new Promise((resolve) => {
         setTimeout(resolve, 10_000);
       });
-      console.warn("Sync broadcast response: " + JSON.stringify(txResponse));
+      console.warn("Async broadcast response: " + JSON.stringify(txResponse));
       const rawResult = await client.query.getTx(txResponse.transactionHash);
 
       if (!rawResult) {
