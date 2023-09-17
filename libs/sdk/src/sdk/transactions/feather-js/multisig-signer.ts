@@ -50,7 +50,7 @@ export class FeatherJsMultisigSigner extends AbstractMultisigSigner<SignatureV2>
     return await key.createSignatureAmino(this.signDoc);
   }
 
-  protected unsafeCreateSignedTransaction() {
+  protected unsafeCreateSignedTransactionOrMessage() {
     const multiSignature = new MultiSignature(this.key);
     multiSignature.appendSignatureV2s(this.orderedSignatures);
     this.transaction.appendSignatures([

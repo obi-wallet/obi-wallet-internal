@@ -7,6 +7,8 @@ import {
   StdSignDoc,
 } from "@cosmjs/amino";
 import { wasmTypes } from "@cosmjs/cosmwasm-stargate/build/modules";
+import { MultiSignature } from "cosmjs-types/cosmos/crypto/multisig/v1beta1/multisig";
+
 import {
   EncodeObject,
   Registry,
@@ -24,6 +26,7 @@ import {
   Signer,
 } from "../../../signers";
 import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
+import { Secp256k1, Sha256 } from "@cosmjs/crypto";
 
 const registry = new Registry([...defaultRegistryTypes, ...wasmTypes]);
 
@@ -170,16 +173,7 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
   }
   */
 
-  protected unsafeCreateSignedTransaction() {
-    const body: TxBodyEncodeObject = {
-      typeUrl: "/cosmos.tx.v1beta1.TxBody",
-      value: {
-        messages: this.encodeObjects!,
-        memo: "",
-      },
-    };
-    const bodyBytes = registry.encode(body);
-
+  protected unsafeCreateSignedTransactionOrMessage() {
     const signatures = new Map();
     for (const publicKey of this.key.value.pubkeys) {
       const signature = this.signatures.get(publicKey.value);
@@ -188,14 +182,40 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       }
     }
 
-    const transaction = makeMultisignedTx(
-      this.key,
-      this.sequence,
-      this.fee,
-      bodyBytes,
-      signatures,
-    );
+    // if we're signing a native tx...
+    if (this.encodeObjects) {
+      const body: TxBodyEncodeObject = {
+        typeUrl: "/cosmos.tx.v1beta1.TxBody",
+        value: {
+          messages: this.encodeObjects!,
+          memo: "",
+        },
+      };
+      const bodyBytes = registry.encode(body);
 
-    return TxRaw.encode(transaction).finish();
+      const transaction = makeMultisignedTx(
+        this.key,
+        this.sequence,
+        this.fee,
+        bodyBytes,
+        signatures,
+      );
+
+      return TxRaw.encode(transaction).finish();
+    } else {
+      // otherwise we're signing a message
+      const signaturesList = new Array<Uint8Array>();
+      for (let i = 0; i < this.key.value.pubkeys.length; i++) {
+        const signerAddress = pubkeyToAddress(this.key.value.pubkeys[i], "secret");
+        const signature = signatures.get(signerAddress);
+        if (signature) {
+          signaturesList.push(signature);
+        }
+      }
+      console.log("Partial signatures: " + JSON.stringify(signaturesList));
+      const finalSig = MultiSignature.encode(MultiSignature.fromPartial({ signatures: signaturesList })).finish();
+      console.log("Final signature: " + JSON.stringify(finalSig));
+      return finalSig;
+    }
   }
 }

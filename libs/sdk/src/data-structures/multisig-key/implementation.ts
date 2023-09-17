@@ -188,7 +188,7 @@ export class MultisigKey {
   }
 
   public async createSigner({ messages }: { messages: Message[] }) {
-    console.log("in (), messages are: " + JSON.stringify(messages));
+    console.log("in createSigner(), messages are: " + JSON.stringify(messages));
     return await this.sdk.transactions.createMultisigSigner({
       multisigPublicKey: this.publicKey,
       messages,

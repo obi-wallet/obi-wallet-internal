@@ -10,14 +10,14 @@ export abstract class MultisigSigner<T = unknown> {
   protected constructor(protected publicKey: MultisigPublicKey) {}
 
   protected abstract createSignature(signer: Signer): Promise<T>;
-  protected abstract unsafeCreateSignedTransaction(): SignedTransaction;
+  protected abstract unsafeCreateSignedTransactionOrMessage(): SignedTransaction;
 
   public createSignedTransaction() {
     invariant(
       this.enoughSignatures,
       "Not enough signatures to create signed transaction",
     );
-    return this.unsafeCreateSignedTransaction();
+    return this.unsafeCreateSignedTransactionOrMessage();
   }
 
   public async addSigner(signer: Signer) {

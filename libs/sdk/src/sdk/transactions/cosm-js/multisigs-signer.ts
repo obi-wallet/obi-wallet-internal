@@ -83,7 +83,7 @@ export class CosmJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     return await offlineAminoSigner.signStdSignDoc(this.signDoc);
   }
 
-  protected unsafeCreateSignedTransaction() {
+  protected unsafeCreateSignedTransactionOrMessage() {
     const body: TxBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
       value: {
