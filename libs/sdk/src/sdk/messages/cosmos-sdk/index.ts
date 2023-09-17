@@ -55,13 +55,14 @@ export class CosmosSdkMessages extends AbstractMessages {
     messages,
     sender,
     userEntryContract,
-    userEntryCodeHash
+    userEntryCodeHash,
   }: {
     messages: Message[];
     sender: string;
     userEntryContract: string;
     userEntryCodeHash?: string;
   }): Message[] {
+    const _userEntryCodeHash = userEntryCodeHash;
     return messages.map((msg) => {
       if (R.has("osmo", msg)) {
         return new MsgExecuteContract(sender, userEntryContract, {

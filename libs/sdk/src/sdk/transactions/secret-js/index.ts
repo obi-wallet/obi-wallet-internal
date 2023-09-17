@@ -134,8 +134,12 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
       return this.messages.toJSON(message);
     });
     console.log("aminoMessages is: " + JSON.stringify(aminoMessages));
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     if ((aminoMessages[0] as any).raw) {
-      invariant(aminoMessages.length === 1, "Only one message supported for raw signing");
+      invariant(
+        aminoMessages.length === 1,
+        "Only one message supported for raw signing",
+      );
       return new SecretJsMultisigSigner({
         chainId: this.chainId,
         account,
@@ -143,6 +147,7 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
         sequence: baseAccount.sequence,
         fee: this.client.defaultFee,
         encodeObjects: undefined,
+        /* eslint-disable @typescript-eslint/no-explicit-any */
         messages: [{ type: "raw", value: (aminoMessages[0] as any).raw }],
         multisigPublicKey,
       });

@@ -1,5 +1,15 @@
 import * as R from "ramda";
-import { Msg, MsgBeginRedelegate, MsgDelegate, MsgExecuteContract, MsgInstantiateContract, MsgSend, MsgSetWithdrawAddress, MsgUndelegate, MsgWithdrawDelegatorReward } from "secretjs";
+import {
+  Msg,
+  MsgBeginRedelegate,
+  MsgDelegate,
+  MsgExecuteContract,
+  MsgInstantiateContract,
+  MsgSend,
+  MsgSetWithdrawAddress,
+  MsgUndelegate,
+  MsgWithdrawDelegatorReward,
+} from "secretjs";
 import warning from "tiny-warning";
 
 import { SecretJsChainId, secretJsChains } from "../../../chains";
@@ -31,7 +41,7 @@ export class SecretJsMessages extends AbstractMessages {
       return MessageJson.parse(message.userop);
     }
     if (R.has("raw", message)) {
-      return MessageJson.parse(message)
+      return MessageJson.parse(message);
     }
     throw new Error("Unknown message");
   }
@@ -61,9 +71,9 @@ export class SecretJsMessages extends AbstractMessages {
             msg: Buffer.from(
               JSON.stringify({ legacy: this.wrapMessage(msg as Msg) }),
             ).toString("base64"),
-          }
+          },
         },
-        sent_funds: []
+        sent_funds: [],
       });
     });
   }
@@ -147,9 +157,7 @@ export class SecretJsMessages extends AbstractMessages {
             contract_addr: message.contractAddress,
             code_hash: message.codeHash,
             funds: this.wrapCoins(message.sentFunds),
-            msg: Buffer.from(JSON.stringify(message.msg)).toString(
-              "base64",
-            ),
+            msg: Buffer.from(JSON.stringify(message.msg)).toString("base64"),
           },
         },
       };
@@ -174,11 +182,11 @@ export class SecretJsMessages extends AbstractMessages {
     );
   }
 
-  protected wrapCoins(coins: { amount: string, denom: string }[]) {
+  protected wrapCoins(coins: { amount: string; denom: string }[]) {
     return coins.map(this.wrapCoin.bind(this));
   }
 
-  protected wrapCoin(coin: { amount: string, denom: string} ) {
+  protected wrapCoin(coin: { amount: string; denom: string }) {
     return {
       denom: coin.denom,
       amount: coin.amount.toString(),

@@ -14,20 +14,16 @@ import {
 } from "@cosmjs/proto-signing";
 import { defaultRegistryTypes, makeMultisignedTx } from "@cosmjs/stargate";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { Account, QueryContractRequest } from "secretjs";
+import { Account } from "secretjs";
+import invariant from "tiny-invariant";
 
-import { Chain, SecretJsChainId, secretJsChains } from "../../../chains";
+import { Chain, SecretJsChainId } from "../../../chains";
 import { MultisigPublicKey } from "../../../keys";
 import {
   MultisigSigner as AbstractMultisigSigner,
-  MultisigSigner,
   Signer,
 } from "../../../signers";
 import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
-import { SecretJsAminoSigner } from "../../common";
-import { SecretJsTransactionsSdk } from ".";
-import { SecretJsClient } from "libs/sdk/src/clients";
-import invariant from "tiny-invariant";
 
 const registry = new Registry([...defaultRegistryTypes, ...wasmTypes]);
 
@@ -102,7 +98,9 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       return await offlineAminoSigner.signStdSignDoc(this.signDoc);
     } else {
       invariant(this.signMessage, "signMessage must be defined");
-      return await offlineAminoSigner.signMessage(Buffer.from(this.signMessage));
+      return await offlineAminoSigner.signMessage(
+        Buffer.from(this.signMessage),
+      );
     }
   }
 

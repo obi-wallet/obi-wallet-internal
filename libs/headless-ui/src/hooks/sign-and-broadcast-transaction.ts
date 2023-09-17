@@ -63,6 +63,7 @@ export function useSignAndBroadcastTransaction({
   const multisigSignerMutation = useMutation({
     mutationFn: async () => {
       if (!multisigKey || (await awaitableCanExecute.getAsync())) return null;
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       if ((payload.messages[0] as any).raw) {
         return await multisigKey.createSigner({
           messages: payload.messages,

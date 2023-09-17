@@ -1,4 +1,3 @@
-import { messages } from "@obi-wallet/common";
 import { Messages, MultisigKey, SecretJsClient } from "@obi-wallet/sdk";
 import { getFeeLender } from "apps/modal-web/src/fee-lender";
 import { NextResponse } from "next/server";
@@ -18,15 +17,17 @@ export async function POST(request: Request) {
   console.log("funding multisig (for later)...");
   const client = new SecretJsClient(chainId);
   const messagesSdk = Messages.chainId(chainId);
-  let lender1 = getFeeLender(chainId);
+  const lender1 = getFeeLender(chainId);
   const sendMessage = new MsgSend({
     from_address: lender1.wallet.address,
     to_address: body.ownerAddress,
-    amount: [{
-      amount: "100",
-      denom: "uscrt"
-    }]
-  })
+    amount: [
+      {
+        amount: "100",
+        denom: "uscrt",
+      },
+    ],
+  });
   const lendSignedTransaction = await client.createAndSignTransaction({
     signer: lender1.signer,
     messages: [sendMessage],
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
   console.log("setup/home-account setting up...");
   // new lender so we don't run into sequence errors
   // need to update this so it doesn't happen to pick same as before
-  let { wallet, signer } = getFeeLender(chainId);
+  const { wallet, signer } = getFeeLender(chainId);
 
   console.log("setup/home-account creating message...");
   invariant(wallet.address, "no fee lender wallet address");

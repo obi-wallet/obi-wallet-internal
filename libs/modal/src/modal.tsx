@@ -3,9 +3,7 @@ import { Config } from "@obi-wallet/config";
 import {
   KeyType,
   ObservableMultisigWallet,
-  Secp256k1PrivateKeySigner,
   SignAndBroadcastTransactionUserInteraction,
-  ZAuthKeySigner,
   createGatekeeperConfig,
   Secp256k1PublicKey,
   getOrCreateDeviceKeyPair,
@@ -90,12 +88,18 @@ const MessageHandlers = observer(function MessageHandlers() {
           if (!store.walletsStore.currentWallet) return;
 
           const signatureResponse =
-          await SignAndBroadcastTransactionUserInteraction.start({
-            messages: [{ raw: data.ethereumPrepend ? ethers.hashMessage(data.payload) : data.payload }],
-            demoMode: store.walletsStore.currentWallet.isDemo,
-            cancelable: true,
-            walletMeta: store.walletsStore.currentWallet.meta,
-          });
+            await SignAndBroadcastTransactionUserInteraction.start({
+              messages: [
+                {
+                  raw: data.ethereumPrepend
+                    ? ethers.hashMessage(data.payload)
+                    : data.payload,
+                },
+              ],
+              demoMode: store.walletsStore.currentWallet.isDemo,
+              cancelable: true,
+              walletMeta: store.walletsStore.currentWallet.meta,
+            });
 
           /* const response = `0x${Buffer.from(
             await signer.signHash(
