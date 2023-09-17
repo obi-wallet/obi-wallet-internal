@@ -81,13 +81,13 @@ export const SettingsScreen = observer(function SettingsScreen() {
           </BrandToggle> */}
             <View style={{ flexDirection: "column" }}>
               {theme.style === "ztx" ? (
-                <Text style={theme.phoneKey.title1}>
-                  Obi
-                  <Text style={theme.phoneKey.title2}>
+                <View style={{ flexDirection: "row" }}>
+                  <Text style={theme.titleFalvors.title}>Obi</Text>
+                  <Text style={theme.titleFalvors.subTitle}>
                     {" "}
                     secure multisig account
                   </Text>
-                </Text>
+                </View>
               ) : (
                 <Heading>
                   Obi {isMultisigWallet ? <>Secure Multisig </> : null}Account

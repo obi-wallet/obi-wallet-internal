@@ -106,6 +106,10 @@ export interface CustomTheme extends CommonTheme {
     };
     accountName: string;
   };
+  titleFalvors: {
+    title: TextStyle;
+    subTitle: TextStyle;
+  };
   phoneKey: {
     title1: TextStyle;
     title2: TextStyle;
@@ -168,6 +172,13 @@ export interface CustomTheme extends CommonTheme {
       qrCode?: ViewStyle;
       textInput?: ViewStyle & { showLabel: boolean };
       text?: TextStyle;
+    };
+  };
+  keyManagement?: {
+    threshold?: {
+      container?: ViewStyle;
+      threshold?: TextStyle;
+      activated?: TextStyle;
     };
   };
 }

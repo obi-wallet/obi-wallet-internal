@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faCog } from "@fortawesome/free-solid-svg-icons/faCog";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
@@ -48,7 +49,12 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
         if (activated) {
           return key?.isUsable ? <CheckIcon /> : <WarningIcon />;
         }
-        return <FontAwesomeIcon icon={faCog} style={{ color: "white" }} />;
+        return (
+          <FontAwesomeIcon
+            icon={theme.style === "ztx" ? faPlus : faCog}
+            style={{ color: "white" }}
+          />
+        );
       };
 
       return {
@@ -71,35 +77,69 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
       <OsmosisScreenContainer>
         <SafeAreaView
           style={{
-            paddingHorizontal: 20,
+            paddingHorizontal: 22,
+            paddingTop: 36,
             flex: 1,
           }}
         >
           <View>
-            <Text style={styles.heading}>{title}</Text>
-            <Text style={styles.subHeading}>{subTitle}</Text>
+            {theme.style === "ztx" ? (
+              <View style={{ flexDirection: "row" }}>
+                <Text style={theme.titleFalvors.title}>
+                  {title.split(" ")[0]}
+                </Text>
+                {title.replace(title.split(" ")[0], "") && (
+                  <Text style={theme.titleFalvors.subTitle}>
+                    {` ${title.split(" ")[1].toLowerCase()}`}
+                  </Text>
+                )}
+              </View>
+            ) : (
+              <Text style={theme.titleFalvors.title}>{title}</Text>
+            )}
+            <View
+              style={{
+                marginTop: 36,
+                borderRadius: 3,
+                backgroundColor: "#24242E",
+                padding: 16,
+              }}
+            >
+              <Text style={styles.subHeading}>{subTitle}</Text>
+            </View>
           </View>
           {isWeb() ? (
             <View
-              style={{
-                paddingVertical: 10,
-                backgroundColor: "white",
-                borderRadius: 32,
-                paddingHorizontal: 20,
-                justifyContent: "space-between",
-                flexDirection: "row",
-                marginTop: 20,
-              }}
+              style={[
+                {
+                  paddingVertical: 10,
+                  backgroundColor: "white",
+                  borderRadius: 32,
+                  paddingHorizontal: 20,
+                  justifyContent: "space-between",
+                  flexDirection: "row",
+                  marginTop: 20,
+                },
+                theme.keyManagement?.threshold?.container,
+              ]}
             >
               <Text
-                style={{ color: theme.colors.background, fontWeight: "bold" }}
+                style={[
+                  { color: theme.colors.background, fontWeight: "bold" },
+                  theme.keyManagement?.threshold?.threshold,
+                ]}
               >
-                Threshold
+                {`Threshold${theme.style === "ztx" && ": "}`}
               </Text>
               <Text
-                style={{ color: theme.colors.background, fontWeight: "bold" }}
+                style={[
+                  { color: theme.colors.background, fontWeight: "bold" },
+                  theme.keyManagement?.threshold?.activated,
+                ]}
               >
-                {multisigKey.threshold} of {activatedKeys}
+                {`${multisigKey.threshold}${
+                  theme.style === "ztx" ? "/" : "of"
+                }${activatedKeys}`}
               </Text>
             </View>
           ) : (
@@ -184,7 +224,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   subHeading: {
-    color: "#999CB6",
+    color: "#F6F8FC",
     fontSize: isSmallScreenNumber(10, 14),
   },
 });

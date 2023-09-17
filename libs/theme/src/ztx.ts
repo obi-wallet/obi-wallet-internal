@@ -172,6 +172,22 @@ export const ztxTheme: CustomTheme = {
     },
     accountName: "Obi Smart Account",
   },
+  titleFalvors: {
+    title: {
+      fontFamily: "TT Hoves Pro",
+      fontWeight: "500",
+      fontSize: 22,
+      lineHeight: 22,
+      color: colors.grey8,
+    },
+    subTitle: {
+      fontFamily: "TT Hoves Pro",
+      fontWeight: "500",
+      fontSize: 22,
+      lineHeight: 22,
+      color: colors.grey6,
+    },
+  },
   phoneKey: {
     title1: {
       fontFamily: "TT Hoves Pro",
@@ -236,8 +252,9 @@ export const ztxTheme: CustomTheme = {
       backgroundColor: "transparent",
       borderWidth: 1,
       paddingHorizontal: 14,
-      paddingVertical: 9,
       borderColor: "#929EB5",
+      height: 52,
+      alignItems: "center",
     },
   },
   style: "ztx",
@@ -378,6 +395,24 @@ export const ztxTheme: CustomTheme = {
         fontSize: 14,
         color: "#ffffff",
         marginTop: 0,
+      },
+    },
+  },
+  keyManagement: {
+    threshold: {
+      container: {
+        marginTop: 36,
+        backgroundColor: "transparent",
+        justifyContent: "center",
+        padding: 0,
+      },
+      threshold: {
+        fontWeight: "500",
+        color: colors.grey8,
+      },
+      activated: {
+        fontWeight: "500",
+        color: colors.primaryGold,
       },
     },
   },
