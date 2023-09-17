@@ -1,5 +1,5 @@
 import * as R from "ramda";
-import { MsgExecuteContract } from "secretjs";
+import { Msg, MsgBeginRedelegate, MsgDelegate, MsgExecuteContract, MsgInstantiateContract, MsgSend, MsgSetWithdrawAddress, MsgUndelegate, MsgWithdrawDelegatorReward } from "secretjs";
 import warning from "tiny-warning";
 
 import { SecretJsChainId, secretJsChains } from "../../../chains";
@@ -30,16 +30,159 @@ export class SecretJsMessages extends AbstractMessages {
     if (R.has("userop", message)) {
       return MessageJson.parse(message.userop);
     }
+    if (R.has("raw", message)) {
+      return MessageJson.parse(message)
+    }
     throw new Error("Unknown message");
   }
 
-  public wrapMessages(_: {
+  public wrapMessages({
+    messages,
+    sender,
+    userEntryContract,
+    userEntryCodeHash,
+  }: {
     messages: Message[];
     sender: string;
-    contract: string;
+    userEntryContract: string;
+    userEntryCodeHash?: string;
   }): Message[] {
-    notImplemented("wrapMessages not implemented for SecretJS");
-    return [];
+    return messages.map((msg) => {
+      if (R.has("raw", msg)) {
+        return;
+      }
+
+      return new MsgExecuteContract({
+        sender,
+        contract_address: userEntryContract,
+        code_hash: userEntryCodeHash!,
+        msg: {
+          execute: {
+            msg: Buffer.from(
+              JSON.stringify({ legacy: this.wrapMessage(msg as Msg) }),
+            ).toString("base64"),
+          }
+        },
+        sent_funds: []
+      });
+    });
+  }
+
+  public wrapMessage(message: Message) {
+    if (message instanceof MsgSend) {
+      return {
+        bank: {
+          send: {
+            amount: message.amount.map((coin) => {
+              return {
+                denom: coin.denom,
+                amount: coin.amount.toString(),
+              };
+            }),
+            from_address: message.from_address,
+            to_address: message.to_address,
+          },
+        },
+      };
+    }
+
+    if (message instanceof MsgDelegate) {
+      return {
+        staking: {
+          delegate: {
+            amount: this.wrapCoin(message.params.amount),
+            validator: message.params.validator_address,
+          },
+        },
+      };
+    }
+
+    if (message instanceof MsgBeginRedelegate) {
+      return {
+        staking: {
+          redelegate: {
+            amount: this.wrapCoin(message.params.amount),
+            src_validator: message.params.validator_src_address,
+            dst_validator: message.params.validator_dst_address,
+          },
+        },
+      };
+    }
+
+    if (message instanceof MsgUndelegate) {
+      return {
+        staking: {
+          undelegate: {
+            amount: this.wrapCoin(message.params.amount),
+            validator: message.params.validator_address,
+          },
+        },
+      };
+    }
+
+    if (message instanceof MsgWithdrawDelegatorReward) {
+      return {
+        distribution: {
+          withdraw_delegator_reward: {
+            validator: message.params.validator_address,
+          },
+        },
+      };
+    }
+
+    if (message instanceof MsgSetWithdrawAddress) {
+      return {
+        distribution: {
+          set_withdraw_address: {
+            address: message.params.withdraw_address,
+          },
+        },
+      };
+    }
+
+    if (message instanceof MsgExecuteContract) {
+      return {
+        wasm: {
+          execute: {
+            contract_addr: message.contractAddress,
+            code_hash: message.codeHash,
+            funds: this.wrapCoins(message.sentFunds),
+            msg: Buffer.from(JSON.stringify(message.msg)).toString(
+              "base64",
+            ),
+          },
+        },
+      };
+    }
+
+    if (message instanceof MsgInstantiateContract) {
+      return {
+        wasm: {
+          instantiate: {
+            code_id: message.codeId,
+            code_hash: message.codeHash,
+            funds: this.wrapCoins(message.initFunds),
+            label: message.label,
+            msg: message.initMsg,
+          },
+        },
+      };
+    }
+
+    throw new Error(
+      `Unknown encode object: ` + JSON.stringify(message, null, 2),
+    );
+  }
+
+  protected wrapCoins(coins: { amount: string, denom: string }[]) {
+    return coins.map(this.wrapCoin.bind(this));
+  }
+
+  protected wrapCoin(coin: { amount: string, denom: string} ) {
+    return {
+      denom: coin.denom,
+      amount: coin.amount.toString(),
+    };
   }
 
   public getSendMessages(_: {

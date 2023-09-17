@@ -54,15 +54,17 @@ export class CosmosSdkMessages extends AbstractMessages {
   public wrapMessages({
     messages,
     sender,
-    contract,
+    userEntryContract,
+    userEntryCodeHash
   }: {
     messages: Message[];
     sender: string;
-    contract: string;
+    userEntryContract: string;
+    userEntryCodeHash?: string;
   }): Message[] {
     return messages.map((msg) => {
       if (R.has("osmo", msg)) {
-        return new MsgExecuteContract(sender, contract, {
+        return new MsgExecuteContract(sender, userEntryContract, {
           execute: {
             msg: Buffer.from(
               JSON.stringify({ osmo: this.wrapOsmoMessage(msg) }),
@@ -71,7 +73,7 @@ export class CosmosSdkMessages extends AbstractMessages {
         });
       }
 
-      return new MsgExecuteContract(sender, contract, {
+      return new MsgExecuteContract(sender, userEntryContract, {
         execute: {
           msg: Buffer.from(
             JSON.stringify({ legacy: this.wrapMessage(msg as Msg) }),

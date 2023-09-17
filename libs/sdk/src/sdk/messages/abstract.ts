@@ -19,11 +19,13 @@ export abstract class AbstractMessages {
   public abstract wrapMessages({
     messages,
     sender,
-    contract,
+    userEntryContract,
+    userEntryCodeHash,
   }: {
     messages: Message[];
     sender: string;
-    contract: string;
+    userEntryContract: string;
+    userEntryCodeHash?: string;
   }): Message[];
 
   public abstract getSendMessages({

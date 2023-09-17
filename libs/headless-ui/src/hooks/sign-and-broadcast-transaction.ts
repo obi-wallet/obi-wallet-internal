@@ -63,14 +63,20 @@ export function useSignAndBroadcastTransaction({
   const multisigSignerMutation = useMutation({
     mutationFn: async () => {
       if (!multisigKey || (await awaitableCanExecute.getAsync())) return null;
-      return await multisigKey.createSigner({
-        messages: wrapMessages({
+      if ((payload.messages[0] as any).raw) {
+        return await multisigKey.createSigner({
           messages: payload.messages,
-          proxyAddress: wallet?.proxyAddress,
-          sender: multisigKey?.address,
-          chainId: multisigKey?.chainId,
-        }),
-      });
+        });
+      } else {
+        return await multisigKey.createSigner({
+          messages: wrapMessages({
+            messages: payload.messages,
+            proxyAddress: wallet?.proxyAddress,
+            sender: multisigKey?.address,
+            chainId: multisigKey?.chainId,
+          }),
+        });
+      }
     },
     onSuccess(value) {
       if (value) {
@@ -190,6 +196,6 @@ function wrapMessages({
   return Messages.chainId(chainId).wrapMessages({
     messages,
     sender,
-    contract: proxyAddress,
+    userEntryContract: proxyAddress,
   });
 }

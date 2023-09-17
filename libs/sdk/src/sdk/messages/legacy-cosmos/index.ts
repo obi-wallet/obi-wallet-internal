@@ -27,7 +27,8 @@ export class LegacyCosmosMessages extends AbstractMessages {
   public wrapMessages(_: {
     messages: Message[];
     sender: string;
-    contract: string;
+    userEntryContract: string;
+    userEntryCodeHash?: string;
   }): Message[] {
     notImplemented("wrapMessages not implemented for Cosmos");
     return [];

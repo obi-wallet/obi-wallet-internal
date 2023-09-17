@@ -14,15 +14,20 @@ import {
 } from "@cosmjs/proto-signing";
 import { defaultRegistryTypes, makeMultisignedTx } from "@cosmjs/stargate";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { Account } from "secretjs";
+import { Account, QueryContractRequest } from "secretjs";
 
-import { Chain, SecretJsChainId } from "../../../chains";
+import { Chain, SecretJsChainId, secretJsChains } from "../../../chains";
 import { MultisigPublicKey } from "../../../keys";
 import {
   MultisigSigner as AbstractMultisigSigner,
+  MultisigSigner,
   Signer,
 } from "../../../signers";
 import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
+import { SecretJsAminoSigner } from "../../common";
+import { SecretJsTransactionsSdk } from ".";
+import { SecretJsClient } from "libs/sdk/src/clients";
+import invariant from "tiny-invariant";
 
 const registry = new Registry([...defaultRegistryTypes, ...wasmTypes]);
 
@@ -31,9 +36,11 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
   protected account: Account;
   protected sequence: number;
   protected fee: StdFee;
-  protected signDoc: StdSignDoc;
-  protected encodeObjects: EncodeObject[];
+  protected signDoc: StdSignDoc | undefined;
+  protected signMessage: string | undefined;
+  protected encodeObjects: EncodeObject[] | undefined;
   protected key: MultisigThresholdPubkey;
+  protected multisigPublicKey: MultisigPublicKey;
 
   public constructor({
     chainId,
@@ -50,7 +57,7 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     accountNumber: number;
     sequence: number;
     fee: StdFee;
-    encodeObjects: EncodeObject[];
+    encodeObjects: EncodeObject[] | undefined;
     messages: AminoMsg[];
     multisigPublicKey: MultisigPublicKey;
   }) {
@@ -60,18 +67,26 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     this.sequence = sequence;
     this.fee = fee;
     this.encodeObjects = encodeObjects;
+    this.multisigPublicKey = multisigPublicKey;
     this.key = createMultisigThresholdPubkey(
       multisigPublicKey.value.pubkeys,
       parseInt(multisigPublicKey.value.threshold, 10),
     );
-    this.signDoc = {
-      memo: "",
-      account_number: accountNumber.toString(),
-      chain_id: chainId,
-      fee: fee,
-      msgs: messages,
-      sequence: sequence.toString(),
-    };
+    this.signMessage = undefined;
+    if (messages[0].type === "raw") {
+      this.signMessage = messages[0].value;
+      this.signDoc = undefined;
+    } else {
+      this.signDoc = {
+        memo: "",
+        account_number: accountNumber.toString(),
+        chain_id: chainId,
+        fee: fee,
+        msgs: messages,
+        sequence: sequence.toString(),
+      };
+      this.signMessage = undefined;
+    }
   }
 
   protected get prefix() {
@@ -83,14 +98,85 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       signer,
       prefix: this.prefix,
     });
-    return await offlineAminoSigner.signStdSignDoc(this.signDoc);
+    if (this.signDoc) {
+      return await offlineAminoSigner.signStdSignDoc(this.signDoc);
+    } else {
+      invariant(this.signMessage, "signMessage must be defined");
+      return await offlineAminoSigner.signMessage(Buffer.from(this.signMessage));
+    }
   }
+
+  /*
+  protected async querySignMessage(multisigPubkey: string, message: string | Uint8Array): Promise<string> {
+    const messageToSign =
+      typeof message === "string"
+        ? Buffer.from(message, "utf-8")
+        : Buffer.from(message);
+    console.log({ messageToSign: messageToSign.toString("hex") });
+    const chain = secretJsChains["secret-4"];
+
+    // here we'll need to start an interaction
+    type MsgQuerySign = {
+      sign_bytes: {
+        user_public_key: string;
+        bytes: string;
+        bytes_signed_by_upk: string;
+      };
+    }
+    const signed = Buffer.from("todo", "base64");
+    const querySignBytesMsg: QueryContractRequest<MsgQuerySign> =  {
+      contract_address: chain.secretSigner.address,
+      code_hash: chain.secretSigner.codeHash,
+      query: { sign_bytes: {
+        user_public_key: Buffer.from(multisigPubkey, "base64").toString(
+          "hex",
+        ),
+        bytes: messageToSign.toString("hex"),
+        bytes_signed_by_upk: signed.toString("hex"),
+      }},
+    };
+
+    return await this.client.withSecretNetworkClient(async (client) => {
+      let bufferSource;
+      if (!this.homeChain.zAuthKeyPair.publicKey) {
+        bufferSource = this.deviceKeySigner?.publicKey.value;
+      } else {
+        bufferSource = this.homeChain.zAuthKeyPair.publicKey.value;
+      }
+      invariant(bufferSource, "Public key unavailable");
+      console.log(
+        JSON.stringify(
+          {
+            sign_bytes: {
+              user_public_key: Buffer.from(bufferSource, "base64").toString(
+                "hex",
+              ),
+              bytes: messageToSign.toString("hex"),
+              bytes_signed_by_upk: signed.toString("hex"),
+            },
+          },
+          null,
+          2,
+        ),
+      );
+
+      const response = (await client.query.compute.queryContract({
+        contract_address: this.chainData.secretSigner.address,
+        code_hash: this.chainData.secretSigner.codeHash,
+        query: {
+         
+        },
+      })) as { plain_signature: string; signature: string };
+      return response.signature;
+    });
+  }
+  */
 
   protected unsafeCreateSignedTransaction() {
     const body: TxBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
       value: {
-        messages: this.encodeObjects,
+        messages: this.encodeObjects!,
         memo: "",
       },
     };

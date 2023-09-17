@@ -89,41 +89,22 @@ const MessageHandlers = observer(function MessageHandlers() {
         case "@obi/sign-message": {
           if (!store.walletsStore.currentWallet) return;
 
-          const zAuthKey =
-            store.walletsStore.currentWallet.owner.getUsableKeyOfType(
-              KeyType.ZAuth,
-            );
-          const deviceKey =
-            store.walletsStore.currentWallet.owner.getUsableKeyOfType(
-              KeyType.Device,
-            );
-          const phoneKey = store.phoneSessionStore.getKp;
-          invariant(
-            zAuthKey || deviceKey || phoneKey,
-            "Wallet has no ZAuth or device key",
-          );
-          let signer;
-          if (phoneKey) {
-            signer = new Secp256k1PrivateKeySigner(phoneKey.privateKey);
-          } else if (zAuthKey) {
-            signer = new ZAuthKeySigner(zAuthKey);
-          } else if (deviceKey?.payload.privateKey) {
-            signer = new Secp256k1PrivateKeySigner(
-              deviceKey.payload.privateKey,
-            );
-          } else {
-            throw new Error("Wallet has no ZAuth or device key");
-          }
+          const signatureResponse =
+          await SignAndBroadcastTransactionUserInteraction.start({
+            messages: [{ raw: data.ethereumPrepend ? ethers.hashMessage(data.payload) : data.payload }],
+            demoMode: store.walletsStore.currentWallet.isDemo,
+            cancelable: true,
+            walletMeta: store.walletsStore.currentWallet.meta,
+          });
 
-          const hash = ethers.hashMessage(data.payload);
-          const response = `0x${Buffer.from(
+          /* const response = `0x${Buffer.from(
             await signer.signHash(
               new Uint8Array(Buffer.from(hash.slice(2), "hex")),
             ),
-          ).toString("hex")}`;
+          ).toString("hex")}`; */
           const message = {
             type: "@obi/sign-message-response",
-            payload: response,
+            payload: signatureResponse,
           };
           if (event.source) {
             event.source?.postMessage(

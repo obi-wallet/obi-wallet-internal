@@ -133,20 +133,34 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     const aminoMessages = messages.map((message) => {
       return this.messages.toJSON(message);
     });
-    const encodeObjects = aminoMessages.map((aminoMessage) => {
-      return this.client.aminoTypes.fromAmino(aminoMessage);
-    });
-
-    return new SecretJsMultisigSigner({
-      chainId: this.chainId,
-      account,
-      accountNumber: baseAccount.accountNumber,
-      sequence: baseAccount.sequence,
-      fee: this.client.defaultFee,
-      encodeObjects,
-      messages: aminoMessages,
-      multisigPublicKey,
-    });
+    console.log("aminoMessages is: " + JSON.stringify(aminoMessages));
+    if ((aminoMessages[0] as any).raw) {
+      invariant(aminoMessages.length === 1, "Only one message supported for raw signing");
+      return new SecretJsMultisigSigner({
+        chainId: this.chainId,
+        account,
+        accountNumber: baseAccount.accountNumber,
+        sequence: baseAccount.sequence,
+        fee: this.client.defaultFee,
+        encodeObjects: undefined,
+        messages: [{ type: "raw", value: (aminoMessages[0] as any).raw }],
+        multisigPublicKey,
+      });
+    } else {
+      const encodeObjects = aminoMessages.map((aminoMessage) => {
+        return this.client.aminoTypes.fromAmino(aminoMessage);
+      });
+      return new SecretJsMultisigSigner({
+        chainId: this.chainId,
+        account,
+        accountNumber: baseAccount.accountNumber,
+        sequence: baseAccount.sequence,
+        fee: this.client.defaultFee,
+        encodeObjects,
+        messages: aminoMessages,
+        multisigPublicKey,
+      });
+    }
   }
 
   public async broadcastSignedTransaction({
