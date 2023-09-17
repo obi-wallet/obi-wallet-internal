@@ -6,9 +6,9 @@ export class LegacyCosmosWalletsSdk extends AbstractWalletsSdk {
     multisigKey: MultisigKey;
     demoMode: boolean;
   }): Promise<{
-    homeAccountAddress: string,
-    evmSignerAddress: string,
-    evmUserContractAddress: string,
+    homeAccountAddress: string;
+    evmSignerAddress: string;
+    evmUserContractAddress: string;
   }> {
     throw new Error("createWallet not implemented for Cosmos");
   }

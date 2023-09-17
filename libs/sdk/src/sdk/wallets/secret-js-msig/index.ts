@@ -1,7 +1,8 @@
 import { TxResponse } from "secretjs";
+
 import { MultisigKey } from "../../../data-structures";
+import { Secp256k1PublicKey } from "../../../keys/multisig";
 import { AbstractWalletsSdk } from "../abstract";
-import { Secp256k1PublicKey } from "libs/sdk/src/keys";
 
 export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
   /// The creation transaction doesn't actually need a user interaction
@@ -15,9 +16,9 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
     multisigKey: MultisigKey;
     demoMode: boolean;
   }): Promise<{
-    homeAccountAddress: string,
-    evmSignerAddress: string,
-    evmUserContractAddress: string,
+    homeAccountAddress: string;
+    evmSignerAddress: string;
+    evmUserContractAddress: string;
   }> {
     const _demoMode = demoMode;
     console.warn(
@@ -46,20 +47,29 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
       }),
     });
 
-    const { ownerAddress, homeAccountAddress, txResult }: {
+    const {
+      ownerAddress,
+      homeAccountAddress,
+      txResult,
+    }: {
       ownerAddress: string;
       homeAccountAddress: string;
       txResult: TxResponse;
     } = await response.json();
     const addKeyResponseJson = await addKeyResponse.json();
     if (addKeyResponseJson.success) {
-      const { success, publicKey, evmSignerAddress, evmUserContractAddress }:
-        { success: boolean,
-          publicKey: Secp256k1PublicKey,
-          evmSignerAddress: string,
-          evmUserContractAddress: string
+      const {
+        success,
+        publicKey,
+        evmSignerAddress,
+        evmUserContractAddress,
+      }: {
+        success: boolean;
+        publicKey: Secp256k1PublicKey;
+        evmSignerAddress: string;
+        evmUserContractAddress: string;
       } = addKeyResponseJson;
-
+      const _unused = { success, publicKey };
       console.log(
         "home account: " +
           homeAccountAddress +
@@ -76,6 +86,5 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
     } else {
       throw new Error("failed to save evm key");
     }
-
   }
 }

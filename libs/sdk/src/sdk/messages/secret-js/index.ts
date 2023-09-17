@@ -173,7 +173,11 @@ export class SecretJsMessages extends AbstractMessages {
   }
 
   // TODO fix types as they are forced here
-  public getCreateWalletMessage(owner: MultisigKey, ownerAddress: string, sender: string): Message {
+  public getCreateWalletMessage(
+    owner: MultisigKey,
+    ownerAddress: string,
+    sender: string,
+  ): Message {
     console.warn(
       "owner multisigkey address getting passed in is: " +
         JSON.stringify(owner),

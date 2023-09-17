@@ -1,9 +1,11 @@
-import { Messages, MultisigKey, Secp256k1KeyPair, SecretJsClient, generateSec256k1KeyPair, secretJsChains } from "@obi-wallet/sdk";
+import {
+  Secp256k1KeyPair,
+  SecretJsClient,
+  secretJsChains,
+} from "@obi-wallet/sdk";
 import { getFeeLender } from "apps/modal-web/src/fee-lender";
-import { generateEthereumAddresses } from "apps/modal-web/src/stackup";
 import { NextResponse } from "next/server";
-import { MsgExecuteContract, TxResponse } from "secretjs";
-import invariant from "tiny-invariant";
+import { MsgExecuteContract } from "secretjs";
 
 /// Saves the ethereum keypair to the simple signer.
 /// This is a stopover while the MPC share signer work is completed.
@@ -16,10 +18,10 @@ export async function POST(request: Request) {
   const chainId = "secret-4";
   try {
     const chain = secretJsChains[chainId];
-  
+
     const client = new SecretJsClient(chainId);
     const { wallet, signer } = getFeeLender(chainId);
-  
+
     console.log("resolving add_key transaction...");
     const signedTransaction = await client.createAndSignTransaction({
       signer,
@@ -53,11 +55,11 @@ export async function POST(request: Request) {
     console.log(broadcastTransactionResult);
 
     return NextResponse.json({
-        success: true,
+      success: true,
     });
   } catch (e) {
     return NextResponse.json({
-      success: false
+      success: false,
     });
   }
 }

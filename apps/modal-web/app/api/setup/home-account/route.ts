@@ -1,4 +1,4 @@
-import { Messages, MultisigKey, SecretJsClient, secretJsChains } from "@obi-wallet/sdk";
+import { Messages, MultisigKey, SecretJsClient } from "@obi-wallet/sdk";
 import { getFeeLender } from "apps/modal-web/src/fee-lender";
 import { NextResponse } from "next/server";
 import { TxResponse } from "secretjs";
@@ -14,12 +14,12 @@ export async function POST(request: Request) {
 
   const chainId = "secret-4";
 
-  console.log("setup/home-account setting up...")
+  console.log("setup/home-account setting up...");
   const messagesSdk = Messages.chainId(chainId);
   const client = new SecretJsClient(chainId);
   const { wallet, signer } = getFeeLender(chainId);
 
-  console.log("setup/home-account creating message...")
+  console.log("setup/home-account creating message...");
   invariant(wallet.address, "no fee lender wallet address");
   const message = messagesSdk.getCreateWalletMessage(
     body.owner,
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   console.log(
     "setup/home-account attempting message: " + JSON.stringify(message),
   );
-  console.log("setup/home-account creating transaction...")
+  console.log("setup/home-account creating transaction...");
   const signedTransaction = await client.createAndSignTransaction({
     signer,
     messages: [message],
@@ -38,7 +38,6 @@ export async function POST(request: Request) {
     signedTransaction,
   );
   console.log(broadcastTransactionResult);
-  
 
   if (!broadcastTransactionResult.success) {
     return {
