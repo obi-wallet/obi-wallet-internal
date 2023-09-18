@@ -52,7 +52,7 @@ export const TextInput = observer<CustomTextInputProps>(function TextInput({
   return (
     <View style={style}>
       {label ? (
-        <Text style={[styles.label, theme.textInput.labelStyle]}>{label}</Text>
+        <Text style={[styles.label, theme.textInput?.labelStyle]}>{label}</Text>
       ) : null}
       <CustomTextInput
         style={[

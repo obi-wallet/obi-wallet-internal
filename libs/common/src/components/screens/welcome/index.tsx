@@ -138,7 +138,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     return (
       <Welcome
         onCreate={onCreate}
-        //onZepeto={onZepeto}
+        // onZepeto={onZepeto}
         onRecover={onRecover}
         onEnterDemoMode={onEnterDemoMode}
       />
@@ -148,14 +148,14 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
 
 export interface WelcomeProps {
   onCreate(): void;
-  //onZepeto(): void;
+  // onZepeto(): void;
   onRecover(): void;
   onEnterDemoMode(): void;
 }
 
 export const Welcome = observer<WelcomeProps>(function Welcome({
   onCreate,
-  onZepeto,
+  // onZepeto,
   onRecover,
   onEnterDemoMode,
 }) {
@@ -175,24 +175,24 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
                 key={button}
                 label="Login"
                 flavor="primary"
-                onPress={onZepeto}
+                // onPress={onZepeto}
               />
             );
-          case WelcomeButton.Login:
-            if (walletsStore.wallets.length === 0) return null;
-            return (
-              <Button
-                key={button}
-                label={intl.formatMessage({
-                  id: "onboarding1.login",
-                  defaultMessage: "Login",
-                })}
-                flavor="primary"
-                onPress={() => {
-                  accountPickerModalProps.open();
-                }}
-              />
-            );
+          // case WelcomeButton.Login:
+          //   if (walletsStore.wallets.length === 0) return null;
+          //   return (
+          //     <Button
+          //       key={button}
+          //       label={intl.formatMessage({
+          //         id: "onboarding1.login",
+          //         defaultMessage: "Login",
+          //       })}
+          //       flavor="primary"
+          //       onPress={() => {
+          //         accountPickerModalProps.open();
+          //       }}
+          //     />
+          //   );
           case WelcomeButton.GetStarted:
             return (
               <Button

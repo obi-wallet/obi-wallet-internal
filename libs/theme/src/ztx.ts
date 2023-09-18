@@ -1,3 +1,4 @@
+import { TextStyle, ViewStyle } from "react-native";
 import {
   AccountSettingComponent,
   ButtonStyleType,
@@ -21,14 +22,17 @@ export const colors = {
   errorRed: "#E10E34",
 };
 const buttonsDefaultStyle = {
-  backgroundColor: "transparent",
-  borderRadius: 5,
-  borderWidth: 1,
-  height: 36,
-  marginVertical: 9,
+  container: {
+    backgroundColor: "transparent",
+    borderRadius: 5,
+    borderWidth: 1,
+    height: 36,
+    marginVertical: 9,
+  } as ViewStyle,
   text: {
     textTransform: "uppercase",
-  },
+    color: colors.grey8,
+  } as TextStyle,
 };
 export const ztxTheme: CustomTheme = {
   ...common,
@@ -55,9 +59,15 @@ export const ztxTheme: CustomTheme = {
   buttonsContainerStyle: {
     paddingHorizontal: 0,
     paddingBottom: 22,
-    // backgroundColor: "yellow",
     minHeight: 131,
     justifyContent: "space-between",
+  },
+  defaultDisabledButtonStyle: {
+    borderColor: colors.grey5,
+    opacity: 1,
+    text: {
+      color: colors.grey5,
+    },
   },
 
   header: {
@@ -90,29 +100,31 @@ export const ztxTheme: CustomTheme = {
   },
   buttonFlavors: {
     primary: {
-      ...(buttonsDefaultStyle as ButtonStyleType),
-      borderColor: colors.primaryGold,
+      container: {
+        ...(buttonsDefaultStyle.container as ButtonStyleType),
+        borderColor: colors.primaryGold,
+      },
+      text: buttonsDefaultStyle.text,
     },
     cancel: {
-      borderColor: colors.grey6,
-      ...(buttonsDefaultStyle as ButtonStyleType),
+      container: {
+        ...(buttonsDefaultStyle.container as ButtonStyleType),
+        borderColor: colors.grey6,
+      },
+      text: buttonsDefaultStyle.text,
     },
   },
-  iconButtonFlavors: {
-    primary: {
-      backgroundColor: "transparent",
-      borderRadius: 5,
-      borderWidth: 1,
-      borderColor: colors.primaryGold,
-    },
-    panel: {
-      backgroundColor: "transparent",
-      padding: 0,
-      width: 24,
-      height: 24,
-      alignSelf: "center",
-    },
-  },
+  // iconButtonFlavors: {
+  //   primary: {
+  //     backgroundColor: "transparent",
+  //     borderRadius: 5,
+  //     borderWidth: 1,
+  //     borderColor: colors.primaryGold,
+  //   },
+  //   panel: {
+  //     backgroundColor: "#243fea",
+  //   },
+  // },
   textStyles: {
     bold: {
       fontFamily: "TT Hoves Pro",
@@ -235,6 +247,8 @@ export const ztxTheme: CustomTheme = {
     ],
     subtitleStyles: {
       textAlign: "center",
+      width: 263,
+      marginHorizontal: "auto",
     },
     titleStyles: {
       textAlign: "center",

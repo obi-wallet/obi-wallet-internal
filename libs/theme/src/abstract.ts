@@ -48,7 +48,7 @@ export interface BackgroundStyle {
   size?: string;
   position?: string;
 }
-export type ButtonStyleType = ViewStyle & { text?: TextStyle };
+export type ButtonStyleType = { container: ViewStyle; text?: TextStyle };
 export interface CustomTheme extends CommonTheme {
   loginModal?: boolean;
   colors: {
@@ -58,6 +58,9 @@ export interface CustomTheme extends CommonTheme {
     label: string;
   };
   buttonsContainerStyle?: ViewStyle;
+  defaultDisabledButtonStyle?: ViewStyle & {
+    text: TextStyle;
+  };
   background: BackgroundStyle;
   modal: {
     borderRadius?: string;
@@ -71,11 +74,11 @@ export interface CustomTheme extends CommonTheme {
     closeIcon?: ImageStyle & { src: string };
     backIcon?: ImageStyle & { src: string };
   };
-  buttonFlavors: {
+  buttonFlavors?: {
     primary: ButtonStyleType;
     cancel: ButtonStyleType;
   };
-  iconButtonFlavors: {
+  iconButtonFlavors?: {
     primary: ButtonStyleType;
     panel: ButtonStyleType;
   };
@@ -84,7 +87,7 @@ export interface CustomTheme extends CommonTheme {
     regular: Pick<TextStyle, "fontFamily" | "fontWeight">;
     light: Pick<TextStyle, "fontFamily" | "fontWeight">;
   };
-  textInput: {
+  textInput?: {
     inputContainerStyle?: ViewStyle;
     inputStyle?: TextStyle;
     labelStyle?: TextStyle;
@@ -92,7 +95,7 @@ export interface CustomTheme extends CommonTheme {
     containerStyle?: ViewStyle;
     placeholderTextColor?: string;
   };
-  dropdown: {
+  dropdown?: {
     containerStyle?: ViewStyle;
     labelStyle?: TextStyle;
     errorStyle?: TextStyle;

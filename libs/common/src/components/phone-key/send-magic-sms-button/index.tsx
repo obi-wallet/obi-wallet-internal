@@ -53,7 +53,7 @@ export const SendMagicSmsButton = observer(function SendMagicSmsButton({
           id: "onboarding2.sendmagicsms",
           defaultMessage: "Get Magic SMS",
         })}
-        flavor="cancel"
+        flavor="primary"
         disabled={disabled}
         onPress={onPress}
       />
