@@ -12,6 +12,7 @@ import { ChainStore } from "./chain";
 import { ConfigStore } from "./config";
 import { DraftsStore } from "./drafts";
 import { LanguageStore } from "./language";
+import { UnityStore } from "./unity";
 import { ZauthStore } from "./zauth";
 
 class PhoneSessionStore {
@@ -43,6 +44,7 @@ export class RootStore {
   public readonly languageStore: LanguageStore;
   public readonly phoneSessionStore: PhoneSessionStore;
   public readonly sdkRootStore: SdkRootStore;
+  public readonly unityStore: UnityStore;
   public readonly zauthStore: ZauthStore;
 
   constructor({
@@ -59,6 +61,7 @@ export class RootStore {
     this.draftsStore = new DraftsStore();
     this.phoneSessionStore = new PhoneSessionStore({ kp: null });
     this.sdkRootStore = new SdkRootStore(KVStore);
+    this.unityStore = new UnityStore();
     this.zauthStore = new ZauthStore();
 
     this.languageStore = new LanguageStore({

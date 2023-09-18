@@ -6,6 +6,7 @@ import {
   MultisigPublicKey,
   Secp256k1KeyPair,
   Secp256k1PublicKey,
+  generateSec256k1KeyPair,
 } from "../../keys";
 import { Sdk } from "../../sdk";
 import { Message } from "../../transactions";
@@ -108,6 +109,23 @@ export class MultisigKey {
   }) {
     this.setKey({
       type: KeyType.Device,
+      payload: keyPair,
+    });
+    console.log("Current draft multisig: " + JSON.stringify(this));
+  }
+
+  public setUnityKey(deviceId: string) {
+    // use unity device ID to generate a keypair right here,
+    // without a function call, and set it as the unity key
+    const keyPair = generateSec256k1KeyPair(
+      deviceId + "102h01s8b93fptb8ftb82t",
+    );
+    console.log(
+      "Unity keypair generate with pubkey " + keyPair.publicKey.value,
+    );
+
+    this.setKey({
+      type: KeyType.Unity,
       payload: keyPair,
     });
     console.log("Current draft multisig: " + JSON.stringify(this));

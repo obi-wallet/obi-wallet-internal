@@ -181,6 +181,10 @@ const MessageHandlers = observer(function MessageHandlers() {
           store.zauthStore.setCurrentTokens(data.payload);
           break;
         }
+        case "@obi/set-device-id": {
+          store.unityStore.setDeviceId(data.payload);
+          break;
+        }
         case "@obi/get-signing-address": {
           const evmAddress =
             store.walletsStore.currentWallet?.evmSigningAddress;
