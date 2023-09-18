@@ -7,13 +7,14 @@ import { View } from "react-native";
 import { InlineButton } from "../../buttons";
 import { TextInput } from "../../text-input";
 import { Text } from "../../typography";
+import { ComunicationType } from "@obi-wallet/sdk";
 
 export interface PhoneOneTimeCodeInputProps {
   phoneNumber: string;
   value: string;
   phoneNumberMightBeIncorrect: boolean;
   setValue(value: string): void;
-  onResend(voice: boolean): Promise<void>;
+  onResend(type: ComunicationType): Promise<void>;
 }
 
 export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
@@ -79,9 +80,6 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
           {resendCounter === 0 ? (
             <View style={{ flexDirection: "row" }}>
               <InlineButton
-                // label={`${intl.formatMessage({
-                //   id: "onboarding3.sendagain",
-                // })} SMS`}
                 style={{
                   ...theme.phoneKey.inlineButton,
                 }}
@@ -92,11 +90,12 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
 
                   setValue("");
 
-                  await onResend(false);
+                  await onResend(ComunicationType.SMS);
                 }}
                 disabled={resendButtonDisabled}
               />
-              {/* <InlineButton
+              <InlineButton
+                style={{ ...theme.phoneKey.inlineButton }}
                 label="Get a voice call instead"
                 onPress={async () => {
                   setResendCounter(waitTime);
@@ -104,10 +103,10 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
 
                   setValue("");
 
-                  await onResend(true);
+                  await onResend(ComunicationType.VOICE);
                 }}
                 disabled={resendButtonDisabled}
-              /> */}
+              />
             </View>
           ) : (
             <Text style={{ color: "rgba(246, 245, 255, 0.6)", fontSize: 12 }}>

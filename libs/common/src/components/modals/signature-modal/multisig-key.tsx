@@ -3,7 +3,12 @@ import {
   useQuery,
   useSignAndBroadcastTransaction,
 } from "@obi-wallet/headless-ui";
-import { KeySubclassTypeMapping, KeyType, Signer } from "@obi-wallet/sdk";
+import {
+  ComunicationType,
+  KeySubclassTypeMapping,
+  KeyType,
+  Signer,
+} from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
@@ -110,7 +115,10 @@ export const SignatureModalMultisigKey =
           <PhoneNumberBottomSheetContent
             phoneNumber={phoneKeyPayload.key.payload.phoneNumber}
             securityQuestion={phoneKeyPayload.key.payload.securityQuestion}
-            onRequest={async (data) => {
+            onRequest={async (data: {
+              securityAnswer: string;
+              type: ComunicationType;
+            }) => {
               setBottomSheetOpen(true);
               await phoneKeyPayload.signer.requestSignature(data);
             }}

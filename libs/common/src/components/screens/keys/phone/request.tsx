@@ -26,6 +26,7 @@ import {
 } from "../../../phone-key";
 import { TextInput } from "../../../text-input";
 import { Text } from "../../../typography";
+import { ComunicationType } from "@obi-wallet/sdk";
 
 export type PhoneKeyRequestScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -268,7 +269,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                       const res = await twilioClient.requestPublicKeyMagicCode({
                         ...data,
                         chainId,
-                        voice: false,
+                        type: ComunicationType.SMS,
                       });
                       /*
                       const res = await twilioClient.requestPublicKeyMagicCode({

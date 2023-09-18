@@ -13,12 +13,16 @@ import {
 } from "../../phone-key";
 import { Text } from "../../typography";
 import { VerifyAndProceedButton } from "../../verify-and-proceed-button";
+import { ComunicationType } from "@obi-wallet/sdk";
 
 export interface PhoneNumberBottomSheetContentProps {
   phoneNumber: string;
   securityQuestion: string;
 
-  onRequest(data: { voice: boolean; securityAnswer: string }): Promise<void>;
+  onRequest(data: {
+    type: ComunicationType;
+    securityAnswer: string;
+  }): Promise<void>;
 
   onConfirm(key: string): Promise<void>;
 }
@@ -97,8 +101,8 @@ export const PhoneNumberBottomSheetContent =
                 phoneNumberMightBeIncorrect={false}
                 value={key}
                 setValue={setKey}
-                onResend={async (voice) => {
-                  await onRequest({ securityAnswer, voice });
+                onResend={async (type) => {
+                  await onRequest({ securityAnswer, type });
                 }}
               />
             </View>

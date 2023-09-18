@@ -70,7 +70,9 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
           invariant(phoneKp?.privateKey, "no phoneKp");
           const proxyAddress = "MISSING";
           const evmAddresses = await generateEthereumAddresses(phoneKp);
-          console.log("EVM addresses generated: " + JSON.stringify(evmAddresses));
+          console.log(
+            "EVM addresses generated: " + JSON.stringify(evmAddresses),
+          );
           const ethereumAccount = {
             chainId: "secret-4",
             zAuthKeyPair: phoneKp,
@@ -282,14 +284,14 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                   phoneNumberMightBeIncorrect
                   value={key}
                   setValue={setKey}
-                  onResend={async (voice) => {
+                  onResend={async (type) => {
                     const twilioClient = getTwilioClient({ demoMode, env });
                     // TODO: factor back out this workaround
                     await twilioClient.requestPublicKeyMagicCode({
                       phoneNumber,
                       securityAnswer,
                       chainId,
-                      voice,
+                      type,
                     });
                     /*
                     const res = await twilioClient.requestPublicKeyMagicCode({
@@ -309,18 +311,24 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                       const twilioClient = getTwilioClient({ demoMode, env });
                       let privkey = "";
                       if (/^081081\d{3,}/.test(key)) {
-                        console.log("dev key. Remember your entry to use again: " + key);
+                        console.log(
+                          "dev key. Remember your entry to use again: " + key,
+                        );
                         const encoder = new TextEncoder();
                         const data = encoder.encode(key);
-                        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                        const hashBuffer = await crypto.subtle.digest(
+                          "SHA-256",
+                          data,
+                        );
                         const hashUint8Array = new Uint8Array(hashBuffer);
-                        const base64String = btoa(String.fromCharCode(...hashUint8Array));
+                        const base64String = btoa(
+                          String.fromCharCode(...hashUint8Array),
+                        );
                         privkey = base64String;
                       } else {
-                        privkey =
-                          await twilioClient.parseKeyMagicCodeResponse({
-                            key,
-                          });
+                        privkey = await twilioClient.parseKeyMagicCodeResponse({
+                          key,
+                        });
                       }
                       type Kp = {
                         privateKey: string;
