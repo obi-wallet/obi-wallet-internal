@@ -1,7 +1,10 @@
 import { TxResponse } from "secretjs";
 
 import { MultisigKey } from "../../../data-structures";
-import { CombinedMultisigPublicKey, Secp256k1PublicKey } from "../../../keys/multisig";
+import {
+  CombinedMultisigPublicKey,
+  Secp256k1PublicKey,
+} from "../../../keys/multisig";
 import { AbstractWalletsSdk } from "../abstract";
 
 export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
@@ -43,7 +46,9 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
     const addKeyResponse = await fetch("/api/setup/add-key", {
       method: "POST",
       body: JSON.stringify({
-        ownerPublicKey: (new CombinedMultisigPublicKey(multisigKey.publicKey).getCombinedPublicKey()),
+        ownerPublicKey: new CombinedMultisigPublicKey(
+          multisigKey.publicKey,
+        ).getCombinedPublicKey(),
       }),
     });
 

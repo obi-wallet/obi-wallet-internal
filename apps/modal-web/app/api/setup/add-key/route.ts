@@ -1,4 +1,8 @@
-import { SecretJsClient, generateSec256k1KeyPair, secretJsChains } from "@obi-wallet/sdk";
+import {
+  SecretJsClient,
+  generateSec256k1KeyPair,
+  secretJsChains,
+} from "@obi-wallet/sdk";
 import { getFeeLender } from "apps/modal-web/src/fee-lender";
 import { generateEthereumAddresses } from "apps/modal-web/src/stackup";
 import { NextResponse } from "next/server";
@@ -26,9 +30,10 @@ export async function POST(request: Request) {
     const { wallet, signer } = getFeeLender(chainId);
 
     console.log("resolving add_key transaction...");
-    console.warn("The add_key pub key used is " + Buffer.from(body.ownerPublicKey, "base64").toString(
-      "hex",
-    ));
+    console.warn(
+      "The add_key pub key used is " +
+        Buffer.from(body.ownerPublicKey, "base64").toString("hex"),
+    );
     const signedTransaction = await client.createAndSignTransaction({
       signer,
       messages: [

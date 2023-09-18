@@ -62,7 +62,7 @@ export class FeatherJsMultisigSigner extends AbstractMultisigSigner<SignatureV2>
     ]);
     return {
       signed: [this.transaction.toBytes()],
-      broadcast: true
+      broadcast: true,
     };
   }
 }

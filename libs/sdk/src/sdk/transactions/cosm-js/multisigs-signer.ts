@@ -111,7 +111,7 @@ export class CosmJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
 
     return {
       signed: [TxRaw.encode(transaction).finish()],
-      broadcast: true
+      broadcast: true,
     };
   }
 }

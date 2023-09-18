@@ -8,18 +8,15 @@ import {
   BroadcastTransactionResult,
   SecretJsClient,
   secretJsChains,
-  MultisigPublicKey,
-  CombinedMultisigPublicKey,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
+import { sha256 } from "ethers";
 import * as R from "ramda";
 import { useEffectOnceWhen } from "rooks";
 import invariant from "tiny-invariant";
 
 import { useAwaitableState } from "./awaitable-state";
 import { useRootStore } from "../provider";
-import { type } from "os";
-import { hashMessage, sha256 } from "ethers";
 
 export enum SignAndBroadcastTransactionType {
   FlexAccount = "flex-account",
@@ -124,7 +121,8 @@ export function useSignAndBroadcastTransaction({
 
       invariant(multisigKey, "Expected multisigKey to exist.");
       const multisigSigner = await awaitableMultisigSigner.getAsync();
-      const { signed, broadcast } = multisigSigner.createSignedTransactionOrMessage();
+      const { signed, broadcast } =
+        multisigSigner.createSignedTransactionOrMessage();
       if (broadcast) {
         return await Sdk.chainId(
           multisigKey.chainId,
@@ -134,11 +132,14 @@ export function useSignAndBroadcastTransaction({
         });
       } else {
         const chain = secretJsChains["secret-4"];
-        
-        const signerSignature = await new SecretJsClient("secret-4").withSecretNetworkClient(async (client) => {
-          const user_entry_code_hash = await client.query.compute.codeHashByContractAddress({
-            contract_address: wallet?.proxyAddress
-          });
+
+        const signerSignature = await new SecretJsClient(
+          "secret-4",
+        ).withSecretNetworkClient(async (client) => {
+          const user_entry_code_hash =
+            await client.query.compute.codeHashByContractAddress({
+              contract_address: wallet?.proxyAddress,
+            });
           const sign_bytes_query_msg = {
             contract_address: chain.secretSigner.address,
             code_hash: chain.secretSigner.codeHash,
@@ -147,13 +148,17 @@ export function useSignAndBroadcastTransaction({
                 user_entry_address: wallet?.proxyAddress,
                 user_entry_code_hash: user_entry_code_hash.code_hash!,
                 bytes: sha256(Buffer.from((payload.messages[0] as any).raw)),
-                bytes_signed_by_signers: signed.map((s) => Buffer.from(s).toString("hex")),
+                bytes_signed_by_signers: signed.map((s) =>
+                  Buffer.from(s).toString("hex"),
+                ),
               },
-            }
+            },
           };
-          console.log("sign_bytes_query_msg: " + JSON.stringify(sign_bytes_query_msg));
+          console.log(
+            "sign_bytes_query_msg: " + JSON.stringify(sign_bytes_query_msg),
+          );
           const response = (await client.query.compute.queryContract(
-            sign_bytes_query_msg
+            sign_bytes_query_msg,
           )) as { signature: string };
           console.log("signer contract response: " + JSON.stringify(response));
           return response.signature;

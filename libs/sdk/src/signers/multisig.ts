@@ -2,7 +2,6 @@ import invariant from "tiny-invariant";
 
 import { Signer } from "./abstract";
 import { MultisigPublicKey, Secp256k1PublicKey } from "../keys";
-import { SignedTransaction } from "../transactions";
 
 export abstract class MultisigSigner<T = unknown> {
   protected signatures: Map<string, T> = new Map();
@@ -16,8 +15,8 @@ export abstract class MultisigSigner<T = unknown> {
   };
 
   public createSignedTransactionOrMessage(): {
-    signed: Array<Uint8Array>,
-    broadcast: boolean
+    signed: Array<Uint8Array>;
+    broadcast: boolean;
   } {
     invariant(
       this.enoughSignatures,

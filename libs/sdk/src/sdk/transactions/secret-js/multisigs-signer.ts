@@ -7,8 +7,6 @@ import {
   StdSignDoc,
 } from "@cosmjs/amino";
 import { wasmTypes } from "@cosmjs/cosmwasm-stargate/build/modules";
-import { MultiSignature } from "cosmjs-types/cosmos/crypto/multisig/v1beta1/multisig";
-
 import {
   EncodeObject,
   Registry,
@@ -26,7 +24,6 @@ import {
   Signer,
 } from "../../../signers";
 import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
-import { Secp256k1, Sha256 } from "@cosmjs/crypto";
 
 const registry = new Registry([...defaultRegistryTypes, ...wasmTypes]);
 
@@ -203,13 +200,16 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
 
       return {
         signed: [TxRaw.encode(transaction).finish()],
-        broadcast: true
+        broadcast: true,
       };
     } else {
       // otherwise we're signing a message
       const signaturesList = new Array<Uint8Array>();
       for (let i = 0; i < this.key.value.pubkeys.length; i++) {
-        const signerAddress = pubkeyToAddress(this.key.value.pubkeys[i], "secret");
+        const signerAddress = pubkeyToAddress(
+          this.key.value.pubkeys[i],
+          "secret",
+        );
         const signature = signatures.get(signerAddress);
         if (signature) {
           signaturesList.push(signature);
@@ -224,8 +224,8 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       }; */
       return {
         signed: signaturesList,
-        broadcast: false
-      }
+        broadcast: false,
+      };
     }
   }
 }
