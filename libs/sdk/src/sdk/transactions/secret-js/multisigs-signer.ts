@@ -72,7 +72,7 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       parseInt(multisigPublicKey.value.threshold, 10),
     );
     this.signMessage = undefined;
-    if (messages[0].type === "raw") {
+    if (messages[0].type === "raw" || messages[0].type === "eth") {
       this.signMessage = messages[0].value;
       this.signDoc = undefined;
     } else {
@@ -201,7 +201,10 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
         signatures,
       );
 
-      return TxRaw.encode(transaction).finish();
+      return {
+        signed: [TxRaw.encode(transaction).finish()],
+        broadcast: true
+      };
     } else {
       // otherwise we're signing a message
       const signaturesList = new Array<Uint8Array>();
@@ -213,9 +216,16 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
         }
       }
       console.log("Partial signatures: " + JSON.stringify(signaturesList));
-      const finalSig = MultiSignature.encode(MultiSignature.fromPartial({ signatures: signaturesList })).finish();
+      /* const finalSig = MultiSignature.encode(MultiSignature.fromPartial({ signatures: signaturesList })).finish();
       console.log("Final signature: " + JSON.stringify(finalSig));
-      return finalSig;
+      return {
+        signed: finalSig,
+        broadcast: false
+      }; */
+      return {
+        signed: signaturesList,
+        broadcast: false
+      }
     }
   }
 }

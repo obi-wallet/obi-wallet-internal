@@ -55,12 +55,12 @@ describe("MultisigSigner", () => {
     expect(multisigSigner.enoughSignatures).toEqual(false);
     expect(multisigSigner.alreadySigned(signer.publicKey)).toEqual(false);
     expect(() => {
-      multisigSigner.createSignedTransaction();
+      multisigSigner.createSignedTransactionOrMessage();
     }).toThrowErrorMatchingSnapshot();
     await multisigSigner.addSigner(signer);
     expect(multisigSigner.enoughSignatures).toEqual(true);
     expect(multisigSigner.alreadySigned(signer.publicKey)).toEqual(true);
-    const signedTransaction = multisigSigner.createSignedTransaction();
+    const signedTransaction = multisigSigner.createSignedTransactionOrMessage();
     expect(signedTransaction).toBeInstanceOf(Uint8Array);
   });
 
@@ -75,12 +75,12 @@ describe("MultisigSigner", () => {
     expect(multisigSigner.enoughSignatures).toEqual(false);
     expect(multisigSigner.alreadySigned(signer.publicKey)).toEqual(false);
     expect(() => {
-      multisigSigner.createSignedTransaction();
+      multisigSigner.createSignedTransactionOrMessage();
     }).toThrowErrorMatchingSnapshot();
     await multisigSigner.addSigner(signer);
     expect(multisigSigner.enoughSignatures).toEqual(true);
     expect(multisigSigner.alreadySigned(signer.publicKey)).toEqual(true);
-    const signedTransaction = multisigSigner.createSignedTransaction();
+    const signedTransaction = multisigSigner.createSignedTransactionOrMessage();
     expect(signedTransaction).toBeInstanceOf(Uint8Array);
   });
 });

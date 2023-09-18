@@ -10,9 +10,15 @@ export abstract class MultisigSigner<T = unknown> {
   protected constructor(protected publicKey: MultisigPublicKey) {}
 
   protected abstract createSignature(signer: Signer): Promise<T>;
-  protected abstract unsafeCreateSignedTransactionOrMessage(): SignedTransaction;
+  protected abstract unsafeCreateSignedTransactionOrMessage(): {
+    signed: Array<Uint8Array>;
+    broadcast: boolean;
+  };
 
-  public createSignedTransaction() {
+  public createSignedTransactionOrMessage(): {
+    signed: Array<Uint8Array>,
+    broadcast: boolean
+  } {
     invariant(
       this.enoughSignatures,
       "Not enough signatures to create signed transaction",

@@ -61,6 +61,9 @@ export class SecretJsMessages extends AbstractMessages {
       if (R.has("raw", msg)) {
         return;
       }
+      if (R.has("eth", msg)) {
+        return;
+      }
 
       return new MsgExecuteContract({
         sender,
@@ -317,6 +320,7 @@ export class SecretJsMessages extends AbstractMessages {
               key.payload.publicKey,
             ),
             ty: key.type,
+            pubkeyBase64: key.payload.publicKey.value,
           };
         },
       );

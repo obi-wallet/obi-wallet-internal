@@ -60,6 +60,9 @@ export class FeatherJsMultisigSigner extends AbstractMultisigSigner<SignatureV2>
         this.account.getSequenceNumber(),
       ),
     ]);
-    return this.transaction.toBytes();
+    return {
+      signed: [this.transaction.toBytes()],
+      broadcast: true
+    };
   }
 }
