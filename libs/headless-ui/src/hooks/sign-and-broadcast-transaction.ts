@@ -173,7 +173,11 @@ export function useSignAndBroadcastTransaction({
       }
     },
     onSuccess(payload) {
-      interaction.resolve({ approved: true, payload, signature: Buffer.from(payload.transactionHash,"hex") });
+      interaction.resolve({
+        approved: true,
+        payload,
+        signature: Buffer.from(payload.transactionHash, "hex"),
+      });
     },
     retry: 2,
   });

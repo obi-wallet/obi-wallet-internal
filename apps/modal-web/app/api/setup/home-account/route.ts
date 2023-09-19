@@ -57,9 +57,8 @@ export async function POST(request: Request) {
     signer,
     messages: [message],
   });
-  const broadcastTransactionResult = await client.broadcastSignedTransaction(
-    signedTransaction,
-  );
+  const broadcastTransactionResult =
+    await client.broadcastSignedTransaction(signedTransaction);
   console.log(broadcastTransactionResult);
 
   if (!broadcastTransactionResult.success) {

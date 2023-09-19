@@ -14,22 +14,26 @@ import {
 } from "@cosmjs/proto-signing";
 import { defaultRegistryTypes, makeMultisignedTx } from "@cosmjs/stargate";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { Interface, InterfaceAbi } from "ethers";
+import * as ethers5 from "ethers5";
 import { Account } from "secretjs";
 import invariant from "tiny-invariant";
-import { Client, Presets, IUserOperation, UserOperationMiddlewareCtx } from "userop";
+import {
+  Client,
+  Presets,
+  IUserOperation,
+  UserOperationMiddlewareCtx,
+} from "userop";
 
+import { ExtendedWallet } from "./extended-ethers-signer";
 import { Chain, SecretJsChainId } from "../../../chains";
+import { WalletMeta } from "../../../data-structures";
 import { MultisigPublicKey } from "../../../keys";
 import {
   MultisigSigner as AbstractMultisigSigner,
   Signer,
 } from "../../../signers";
 import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
-import { ExtendedWallet } from "./extended-ethers-signer";
-import { Interface, InterfaceAbi }from "ethers";
-import * as ethers from "ethers";
-import { useStore } from "libs/common/src/contexts";
-import * as ethers5 from 'ethers5';
 
 const registry = new Registry([...defaultRegistryTypes, ...wasmTypes]);
 
@@ -63,7 +67,6 @@ export class EthTransaction {
   }
 
   getEncodedCallData(): string {
-    
     const contractInterface = new Interface(this.abi);
 
     // Ensure the function exists in the ABI
@@ -141,8 +144,10 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     }
   }
 
-  public async initUserOperation() {
-    const { walletsStore } = useStore();
+  public async initUserOperation(
+    evmSigningAddress: string,
+    walletMeta: WalletMeta,
+  ) {
     const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(
       "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
       { type: "payg" },
@@ -150,14 +155,15 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     const client = await Client.init(
       "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
     );
-    invariant(walletsStore.currentWallet?.evmSigningAddress, "no signing address in wallet");
+    invariant(evmSigningAddress, "no signing address provided");
     // This likely won't actually be used for network calls
     const dummyProvider = new ethers5.providers.JsonRpcProvider(
-      'https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00'
+      "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
     );
-    const extendedSigner = new ExtendedWallet (
-      walletsStore.currentWallet?.evmSigningAddress,
-      dummyProvider
+    const extendedSigner = new ExtendedWallet(
+      evmSigningAddress,
+      walletMeta,
+      dummyProvider,
     );
     const simpleAccount = await Presets.Builder.SimpleAccount.init(
       extendedSigner,
@@ -180,7 +186,7 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       const ctx: UserOperationMiddlewareCtx = new UserOperationMiddlewareCtx(
         userOp,
         "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-        421613
+        421613,
       );
       this.signMessage = ctx.getUserOpHash();
       console.log("user op hash is: " + this.signMessage);
@@ -214,6 +220,7 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     };
 
     // todo: move this out to when button is clicked
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     async function handleUserOperation(userOperation: IUserOperation) {
       try {
         return await client.execUserOperation(userOperation);
