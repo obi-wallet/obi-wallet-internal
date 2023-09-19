@@ -11,7 +11,7 @@ export * from "./initial-background";
 export * from "./keyboard-avoiding-view";
 export * from "./keyboard-aware-scroll-view";
 export * from "./language-picker";
-export * from "./modals";
+export * from "./modal";
 export * from "./modals";
 export * from "./multisig-settings";
 export * from "./network-account-picker-layout";
