@@ -130,7 +130,8 @@ const MessageHandlers = observer(function MessageHandlers() {
             console.log("no current wallet");
             return;
           } else {
-            console.log("current wallet retrieved");
+            console.log("current wallet retrieved: " + JSON.stringify(store.walletsStore.currentWallet));
+            console.log("wallet signing address is: " + store.walletsStore.currentWallet.evmSigningAddress);
             console.log("payload", data.payload);
           }
 
@@ -139,15 +140,17 @@ const MessageHandlers = observer(function MessageHandlers() {
                 messages: data.payload,
               }
             : data.payload;
+          const interactionObj = {
+            messages: payload.messages,
+            targetChainId: payload.targetChainId,
+            cancelable: true,
+            walletMeta: store.walletsStore.currentWallet.meta,
+            demoMode: store.walletsStore.currentWallet.isDemo,
+            autoBroadcast: false,
+          };
+          console.log("interaction object is: " + JSON.stringify(interactionObj));
           const response =
-            await SignAndBroadcastTransactionUserInteraction.start({
-              messages: payload.messages,
-              targetChainId: payload.targetChainId,
-              cancelable: true,
-              walletMeta: store.walletsStore.currentWallet.meta,
-              demoMode: store.walletsStore.currentWallet.isDemo,
-              autoBroadcast,
-            });
+            await SignAndBroadcastTransactionUserInteraction.start(interactionObj);
 
           const message = {
             type: "@obi/sign-and-broadcast-transaction-response",
@@ -279,14 +282,6 @@ const MessageHandlers = observer(function MessageHandlers() {
           );
           let kp;
           let _;
-          if (!data.payload.accessToken) {
-            [kp, _] = await getOrCreateDeviceKeyPair(false, false);
-            wallet.setEvmSigningAddress(kp.privateKey);
-            wallet.setEvmUserContractAddress(evmUserContractAddress);
-          } else {
-            wallet.setEvmSigningAddress("Uncalculated", true);
-            wallet.setEvmUserContractAddress(evmUserContractAddress);
-          }
 
           store.walletsStore.upsertWallet(wallet);
 
