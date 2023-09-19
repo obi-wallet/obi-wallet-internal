@@ -139,13 +139,16 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     const aminoMessages = messages.map((message) => {
       return this.messages.toJSON(message);
     });
+    const checkMessages: any[] = aminoMessages;
     console.log("aminoMessages is: " + JSON.stringify(aminoMessages));
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    if ((aminoMessages[0] as any).raw || (aminoMessages[0] as any).eth) {
+    if (checkMessages[0].raw || checkMessages[0].eth) {
       invariant(
         aminoMessages.length === 1,
         "Only one message supported for raw signing",
       );
+      console.log("triggering raw/eth is yes");
+      console.log("checkMessages[0].eth is " + JSON.stringify(checkMessages[0].eth));
       const signer = new SecretJsMultisigSigner({
         chainId: this.chainId,
         account,
@@ -156,20 +159,24 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
         /* eslint-disable @typescript-eslint/no-explicit-any */
         messages: [
           {
-            type: (aminoMessages[0] as any).raw ? "raw" : "eth",
-            value: (aminoMessages[0] as any).raw
-              ? (aminoMessages[0] as any).raw
-              : (aminoMessages[0] as any).eth,
+            type: checkMessages[0].raw ? "raw" : "eth",
+            value: checkMessages[0].raw
+              ?  checkMessages[0].raw
+              :  checkMessages[0].eth,
           },
         ],
         multisigPublicKey,
       });
-      if ((aminoMessages[0] as any).eth) {
+      console.log("partly prepared signer is " + JSON.stringify(signer));
+      if (checkMessages[0].eth) {
         invariant(evmSigningAddress, "no evmSigningAddress provided");
         invariant(walletMeta, "no walletMeta provided");
-        if (!signer.getSignUserOpInput) {
+        console.log("getSignUserOpInput is " + signer.getSignUserOpInput());
+        if (!signer.getSignUserOpInput() && !signer.getSignMessage()) {
           console.log("calling initUserOperation...");
           await signer.initUserOperation(evmSigningAddress, walletMeta);
+        } else {
+          console.log("signMessage is " + signer.getSignMessage());
         }
       }
       return signer;

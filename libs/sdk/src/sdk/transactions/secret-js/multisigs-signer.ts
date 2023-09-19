@@ -124,10 +124,12 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     );
     this.signMessage = undefined;
     if (messages[0].type === "raw" || messages[0].type === "eth") {
+      console.log("messages[0] raw/eth passes with messages " + JSON.stringify(messages[0]));
       if (messages[0].type === "raw") {
         this.signMessage = messages[0].value;
       } else {
-        this.signUserOpInput = messages[0].value;
+        console.log("setting signUserOpInput to " + JSON.stringify(messages[0].value));
+        this.signUserOpInput = messages[0].value as EthTxInput;
         // also need to initUserOperation
       }
       this.signDoc = undefined;
@@ -142,6 +144,10 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       };
       this.signMessage = undefined;
     }
+  }
+
+  public getSignMessage() {
+    return this.signMessage
   }
 
   public getSignUserOpInput() {
@@ -159,7 +165,7 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     );
     console.log("setting up client...");
     const client = await Client.init(
-      "https://api.stackup.sh/v1/api/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+      "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
     );
     invariant(evmSigningAddress, "no signing address provided");
     // This likely won't actually be used for network calls
