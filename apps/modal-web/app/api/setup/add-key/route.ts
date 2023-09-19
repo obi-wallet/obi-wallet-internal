@@ -12,7 +12,8 @@ import { MsgExecuteContract } from "secretjs";
 /// This is a stopover while the MPC share signer work is completed.
 export async function POST(request: Request) {
   const body: {
-    ownerPublicKey: string;
+    userEntryAddress: string;
+    userEntryCodeHash: string;
   } = await request.json();
 
   try {
@@ -31,36 +32,30 @@ export async function POST(request: Request) {
 
     console.log("resolving add_key transaction...");
     console.warn(
-      "The add_key pub key used is " +
-        Buffer.from(body.ownerPublicKey, "base64").toString("hex"),
+      "The add_key user entry used is " +
+        body.userEntryAddress
     );
+    const addKeyMsg = 
+    new MsgExecuteContract({
+      sender: wallet.address,
+      contract_address: chain.secretSigner.address,
+      msg: {
+        add_key: {
+          user_entry_address: body.userEntryAddress,
+          user_entry_code_hash: body.userEntryCodeHash,
+          inject_privkey: Buffer.from(
+            evmKeyPair.privateKey,
+            "base64",
+          ).toString("hex"),
+        },
+      },
+      code_hash: chain.secretSigner.codeHash,
+    });
+    console.log("add key message: " + JSON.stringify(addKeyMsg));
     const signedTransaction = await client.createAndSignTransaction({
       signer,
-      messages: [
-        new MsgExecuteContract({
-          sender: wallet.address,
-          contract_address: chain.secretSigner.address,
-          msg: {
-            add_key: {
-              public_key: Buffer.from(body.ownerPublicKey, "base64").toString(
-                "hex",
-              ),
-              // simple signer currently allows null here, to be set later,
-              // so that account setup can happen quickly in parallel. A fire-and-forget
-              // transaction by setup/home-account should set this
-              user_entry_address: null,
-              user_entry_code_hash: null,
-              inject_privkey: Buffer.from(
-                evmKeyPair.privateKey,
-                "base64",
-              ).toString("hex"),
-            },
-          },
-          code_hash: chain.secretSigner.codeHash,
-        }),
-      ],
+      messages: [addKeyMsg],
     });
-    console.warn(JSON.stringify(signedTransaction));
     const broadcastTransactionResult = await client.broadcastSignedTransaction(
       signedTransaction,
     );

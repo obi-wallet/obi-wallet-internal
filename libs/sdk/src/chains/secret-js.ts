@@ -32,17 +32,21 @@ export const secretJsChains = {
     label: "Secret Network",
     prefix: "secret",
     accountCreator: {
-      address: "secret15n33l0gyyrdl787hdem6hxlz6wuknxd739r825",
+      address: "secret1xtwyzu99xe9q4mvjllmqqcp2vf57z0mlmarhfh",
       codeHash:
-        "66147ad6e8febf45f6678157e11e32fe0c3f2bd353988e91059f1888260fdde0",
+        "9e7ba4e89292a644d92933cad975007f22e608548713e6f15cd56d3d46ee210e",
     },
     secretSigner: {
-      address: "secret1j8r9v0j3fyafrshraxl537k6jl6azr3m9eyyhx",
+      address: "secret1d9f3ktwfntsfryasesxxwlxcgg4uxd3gxutd8j",
       codeHash:
-        "46b4b432a8707d239ab7345896140271a92c8542a5a20c6361ec8ce9caa47ad2",
+        "50e9640734c35d4bd15ab31d8795a6f5b3657fe685030105196eba337bfd48c2",
     },
     currentCodeIds: {
       userAccount: 135,
+    },
+    userEntry: {
+      codeHash:
+        "d49711cbfb111805d1f0953c6a824be9bb566b5607ac9800141deb68246cda8f",
     },
     urls: ["https://scrt-api.dalnim.finance", "https://lcd.secret.express/"],
     denom: "uscrt",

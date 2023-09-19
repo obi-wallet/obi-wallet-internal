@@ -2,10 +2,10 @@ import { TxResponse } from "secretjs";
 
 import { MultisigKey } from "../../../data-structures";
 import {
-  CombinedMultisigPublicKey,
   Secp256k1PublicKey,
 } from "../../../keys/multisig";
 import { AbstractWalletsSdk } from "../abstract";
+import { secretJsChains } from "libs/sdk/src/chains";
 
 export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
   /// The creation transaction doesn't actually need a user interaction
@@ -24,6 +24,7 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
     evmUserContractAddress: string;
   }> {
     const _demoMode = demoMode;
+    const chain = secretJsChains["secret-4"];
     console.warn(
       "Multisig info. address: " + multisigKey.address,
       "chainId: " + multisigKey.chainId,
@@ -42,16 +43,6 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
         ownerAddress: multisigKey.address,
       }),
     });
-    // add key will return an address quickly, before it's actually ready
-    const addKeyResponse = await fetch("/api/setup/add-key", {
-      method: "POST",
-      body: JSON.stringify({
-        ownerPublicKey: new CombinedMultisigPublicKey(
-          multisigKey.publicKey,
-        ).getCombinedPublicKey(),
-      }),
-    });
-
     const {
       ownerAddress,
       homeAccountAddress,
@@ -61,6 +52,16 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
       homeAccountAddress: string;
       txResult: TxResponse;
     } = await response.json();
+
+    // add key will return an address quickly, before it's actually ready
+    const addKeyResponse = await fetch("/api/setup/add-key", {
+      method: "POST",
+      body: JSON.stringify({
+        userEntryAddress: homeAccountAddress,
+        userEntryCodeHash: chain.userEntry.codeHash,
+      }),
+    });
+
     const addKeyResponseJson = await addKeyResponse.json();
     if (addKeyResponseJson.success) {
       const {

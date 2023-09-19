@@ -74,9 +74,14 @@ export async function POST(request: Request) {
   try {
     invariant(txResult.arrayLog, "No log found");
     // TODO: zod
-    const homeAccountAddress = txResult.arrayLog?.find((log) => {
+    const _accountLogicAddress = txResult.arrayLog?.find((log) => {
       return log.type === "instantiate" && log.key === "contract_address";
     })?.value;
+    const matchingLogs = txResult.arrayLog?.filter((log) => {
+      return log.type === "instantiate" && log.key === "contract_address";
+    });
+    const homeAccountAddress = matchingLogs && matchingLogs.length > 1 ? matchingLogs[1].value : undefined;
+    
     invariant(homeAccountAddress, "Contract address not found");
     return NextResponse.json({
       ownerAddress: body.ownerAddress,
