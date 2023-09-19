@@ -434,9 +434,12 @@ const SettingContainer = styled.View(
     ...styles.setting,
     ...styles.flex1,
   },
-  ({ theme }) => ({
-    backgroundColor: theme.colors.panelBackground,
-  }),
+  ({ theme }) => [
+    {
+      backgroundColor: theme.colors.panelBackground,
+    },
+    theme.settings?.panelContainer,
+  ],
 );
 
 const SettingButton = styled.TouchableOpacity(
@@ -444,9 +447,12 @@ const SettingButton = styled.TouchableOpacity(
     ...styles.setting,
     ...styles.flex1,
   },
-  ({ theme }) => ({
-    backgroundColor: theme.colors.panelBackground,
-  }),
+  ({ theme }) => [
+    {
+      backgroundColor: theme.colors.panelBackground,
+    },
+    theme.settings?.panelContainer,
+  ],
 );
 
 export const settingsScreens = () => {

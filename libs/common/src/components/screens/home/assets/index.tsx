@@ -35,9 +35,9 @@ import {
 import { IconButton } from "../../../buttons";
 import {
   CoinIcon,
-  NewSettingsIcon,
   ReceiveIcon,
   SendIcon,
+  SendSettingsIcon,
 } from "../../../icons";
 import { NetworkAccountPickerLayout } from "../../../network-account-picker-layout";
 import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
@@ -190,7 +190,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
             ]}
             onPress={() => navigation.navigate(HomeBottomTabRoute.Settings)}
           >
-            <NewSettingsIcon width={30} height={30} />
+            <SendSettingsIcon width={52} height={52} />
           </TouchableHighlight>
           <Text
             style={[

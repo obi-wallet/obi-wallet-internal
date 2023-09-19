@@ -42,7 +42,9 @@ export const ztxTheme: CustomTheme = {
     primary: colors.primaryGold,
     background: "hsla(240, 15%, 10%, 1)",
     panelBackground: "#363D4D",
-    label: "#D5DDE5",
+    label: colors.grey6,
+    text: colors.grey8,
+    cancel: colors.grey6,
   },
   background: {
     color: "#16151D",
@@ -102,10 +104,12 @@ export const ztxTheme: CustomTheme = {
   buttonFlavors: {
     primary: {
       ...(buttonsDefaultStyle.container as ButtonStyleType),
+      ...(buttonsDefaultStyle.text as ButtonStyleType),
       borderColor: colors.primaryGold,
     },
     cancel: {
       ...(buttonsDefaultStyle.container as ButtonStyleType),
+      ...(buttonsDefaultStyle.text as ButtonStyleType),
       borderColor: colors.grey6,
     },
   },

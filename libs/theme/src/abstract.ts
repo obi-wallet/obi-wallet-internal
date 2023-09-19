@@ -56,6 +56,8 @@ export interface CustomTheme extends CommonTheme {
     background: string;
     panelBackground: string;
     label?: string;
+    cancel?: string;
+    text?: string;
   };
   buttonsContainerStyle?: ViewStyle;
   defaultDisabledButtonStyle?: ViewStyle & {

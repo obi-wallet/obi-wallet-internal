@@ -1,85 +1,16 @@
 import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
-import Svg, { G, Path, SvgProps, Rect } from "react-native-svg";
+import Svg, { G, Path, SvgProps } from "react-native-svg";
 
 export const NewSettingsIcon = observer<SvgProps>(
   function NewSettingsIcon(props) {
     const theme = useTheme();
     return theme.style === "ztx" ? (
-      <Svg width="52" height="52" viewBox="0 0 52 52" fill="none" {...props}>
-        <G filter="url(#filter0_b_0_1)">
-          <Rect
-            y="52"
-            width="52"
-            height="52"
-            rx="26"
-            transform="rotate(-90 0 52)"
-            fill="url(#paint0_radial_0_1)"
-            fillOpacity="0.5"
-          />
-          <Rect
-            x="0.5"
-            y="51.5"
-            width="51"
-            height="51"
-            rx="25.5"
-            transform="rotate(-90 0.5 51.5)"
-            stroke="url(#paint1_linear_0_1)"
-          />
-        </G>
+      <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <Path
-          d="M23.2492 36L22.8492 32.8C22.6326 32.7167 22.4284 32.6167 22.2367 32.5C22.0451 32.3833 21.8576 32.2583 21.6742 32.125L18.6992 33.375L15.9492 28.625L18.5242 26.675C18.5076 26.5583 18.4992 26.4458 18.4992 26.3375V25.6625C18.4992 25.5542 18.5076 25.4417 18.5242 25.325L15.9492 23.375L18.6992 18.625L21.6742 19.875C21.8576 19.7417 22.0492 19.6167 22.2492 19.5C22.4492 19.3833 22.6492 19.2833 22.8492 19.2L23.2492 16H28.7492L29.1492 19.2C29.3659 19.2833 29.5701 19.3833 29.7617 19.5C29.9534 19.6167 30.1409 19.7417 30.3242 19.875L33.2992 18.625L36.0492 23.375L33.4742 25.325C33.4909 25.4417 33.4992 25.5542 33.4992 25.6625V26.3375C33.4992 26.4458 33.4826 26.5583 33.4492 26.675L36.0242 28.625L33.2742 33.375L30.3242 32.125C30.1409 32.2583 29.9492 32.3833 29.7492 32.5C29.5492 32.6167 29.3492 32.7167 29.1492 32.8L28.7492 36H23.2492ZM26.0492 29.5C27.0159 29.5 27.8409 29.1583 28.5242 28.475C29.2076 27.7917 29.5492 26.9667 29.5492 26C29.5492 25.0333 29.2076 24.2083 28.5242 23.525C27.8409 22.8417 27.0159 22.5 26.0492 22.5C25.0659 22.5 24.2367 22.8417 23.5617 23.525C22.8867 24.2083 22.5492 25.0333 22.5492 26C22.5492 26.9667 22.8867 27.7917 23.5617 28.475C24.2367 29.1583 25.0659 29.5 26.0492 29.5Z"
+          d="M9.24995 22L8.84995 18.8C8.63328 18.7167 8.42912 18.6167 8.23745 18.5C8.04578 18.3833 7.85828 18.2583 7.67495 18.125L4.69995 19.375L1.94995 14.625L4.52495 12.675C4.50828 12.5583 4.49995 12.4458 4.49995 12.3375V11.6625C4.49995 11.5542 4.50828 11.4417 4.52495 11.325L1.94995 9.375L4.69995 4.625L7.67495 5.875C7.85828 5.74167 8.04995 5.61667 8.24995 5.5C8.44995 5.38333 8.64995 5.28333 8.84995 5.2L9.24995 2H14.75L15.15 5.2C15.3666 5.28333 15.5708 5.38333 15.7625 5.5C15.9541 5.61667 16.1416 5.74167 16.325 5.875L19.3 4.625L22.05 9.375L19.475 11.325C19.4916 11.4417 19.5 11.5542 19.5 11.6625V12.3375C19.5 12.4458 19.4833 12.5583 19.45 12.675L22.025 14.625L19.275 19.375L16.325 18.125C16.1416 18.2583 15.95 18.3833 15.75 18.5C15.55 18.6167 15.35 18.7167 15.15 18.8L14.75 22H9.24995ZM12.05 15.5C13.0166 15.5 13.8416 15.1583 14.525 14.475C15.2083 13.7917 15.55 12.9667 15.55 12C15.55 11.0333 15.2083 10.2083 14.525 9.525C13.8416 8.84167 13.0166 8.5 12.05 8.5C11.0666 8.5 10.2375 8.84167 9.56245 9.525C8.88745 10.2083 8.54995 11.0333 8.54995 12C8.54995 12.9667 8.88745 13.7917 9.56245 14.475C10.2375 15.1583 11.0666 15.5 12.05 15.5Z"
           fill="#F6F8FC"
         />
-        <defs>
-          <filter
-            id="filter0_b_0_1"
-            x="-10"
-            y="-10"
-            width="72"
-            height="72"
-            filterUnits="userSpaceOnUse"
-            colorInterpolationFilters="sRGB"
-          >
-            <feFlood floodOpacity="0" result="BackgroundImageFix" />
-            <feGaussianBlur in="BackgroundImageFix" stdDeviation="5" />
-            <feComposite
-              in2="SourceAlpha"
-              operator="in"
-              result="effect1_backgroundBlur_0_1"
-            />
-            <feBlend
-              mode="normal"
-              in="SourceGraphic"
-              in2="effect1_backgroundBlur_0_1"
-              result="shape"
-            />
-          </filter>
-          <radialGradient
-            id="paint0_radial_0_1"
-            cx="0"
-            cy="0"
-            r="1"
-            gradientUnits="userSpaceOnUse"
-            gradientTransform="translate(29.3932 51.058) rotate(91.1986) scale(54.0764 165.061)"
-          >
-            <stop stopColor="white" />
-            <stop offset="0.267356" stopColor="white" stopOpacity="0.571178" />
-            <stop offset="0.539839" stopColor="white" stopOpacity="0.260455" />
-            <stop offset="1" stopColor="white" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient
-            id="paint1_linear_0_1"
-            x1="42.5"
-            y1="59"
-            x2="12.5"
-            y2="101"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop stopColor="#424242" />
-            <stop offset="0.999067" stopOpacity="0.09" />
-          </linearGradient>
-        </defs>
       </Svg>
     ) : (
       <Svg width="16" height="16" viewBox="0 0 48 48" {...props}>
