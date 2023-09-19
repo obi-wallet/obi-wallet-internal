@@ -98,7 +98,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
         <View style={{ alignItems: "center" }}>
           <TouchableHighlight
             style={[
-              theme.iconButtonFlavors.primary,
+              theme.iconButtonFlavors?.primary,
               {
                 width: 56,
                 height: 56,
@@ -136,7 +136,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
         <View style={{ alignItems: "center" }}>
           <TouchableHighlight
             style={[
-              theme.iconButtonFlavors.primary,
+              theme.iconButtonFlavors?.primary,
               {
                 width: 56,
                 height: 56,
@@ -178,7 +178,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
         <View style={{ alignItems: "center" }}>
           <TouchableHighlight
             style={[
-              theme.iconButtonFlavors.primary,
+              theme.iconButtonFlavors?.primary,
               {
                 width: 56,
                 height: 56,

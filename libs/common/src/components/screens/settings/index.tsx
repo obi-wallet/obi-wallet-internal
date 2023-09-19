@@ -330,14 +330,14 @@ export const Setting = observer(function Setting({
                 alignSelf: "flex-start",
                 borderRadius: 12,
               },
-              theme.iconButtonFlavors.panel,
+              theme.iconButtonFlavors?.panel,
             ]}
           >
             <Icon
               fill="white"
               style={{
-                width: theme.iconButtonFlavors.panel.width,
-                height: theme.iconButtonFlavors.panel.height,
+                width: theme.iconButtonFlavors?.panel.width,
+                height: theme.iconButtonFlavors?.panel.height,
               }}
             />
           </View>

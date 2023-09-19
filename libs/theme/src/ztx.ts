@@ -1,4 +1,5 @@
 import { TextStyle, ViewStyle } from "react-native";
+
 import {
   AccountSettingComponent,
   ButtonStyleType,
@@ -114,17 +115,21 @@ export const ztxTheme: CustomTheme = {
       text: buttonsDefaultStyle.text,
     },
   },
-  // iconButtonFlavors: {
-  //   primary: {
-  //     backgroundColor: "transparent",
-  //     borderRadius: 5,
-  //     borderWidth: 1,
-  //     borderColor: colors.primaryGold,
-  //   },
-  //   panel: {
-  //     backgroundColor: "#243fea",
-  //   },
-  // },
+  iconButtonFlavors: {
+    primary: {
+      backgroundColor: "transparent",
+      borderRadius: 5,
+      borderWidth: 1,
+      borderColor: colors.primaryGold,
+    },
+    panel: {
+      backgroundColor: "transparent",
+      padding: 0,
+      width: 24,
+      height: 24,
+      alignSelf: "center",
+    },
+  },
   textStyles: {
     bold: {
       fontFamily: "TT Hoves Pro",

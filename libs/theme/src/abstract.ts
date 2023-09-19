@@ -79,8 +79,8 @@ export interface CustomTheme extends CommonTheme {
     cancel: ButtonStyleType;
   };
   iconButtonFlavors?: {
-    primary: ButtonStyleType;
-    panel: ButtonStyleType;
+    primary: ViewStyle;
+    panel: ViewStyle;
   };
   textStyles: {
     bold: Pick<TextStyle, "fontFamily" | "fontWeight">;
