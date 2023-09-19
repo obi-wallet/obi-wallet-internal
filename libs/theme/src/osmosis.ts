@@ -33,11 +33,15 @@ export const osmosisTheme: CustomTheme = {
   },
   buttonFlavors: {
     primary: {
-      background: "linear-gradient(to right, #df05cb, #2c07e3)",
+      container: {
+        backgroundColor: "linear-gradient(to right, #df05cb, #2c07e3)",
+      },
     },
     cancel: {
-      borderWidth: 1,
-      borderColor: "#ffffff",
+      container: {
+        borderWidth: 1,
+        borderColor: "#ffffff",
+      },
     },
   },
   iconButtonFlavors: {

@@ -238,7 +238,7 @@ export class TwilioClient implements TwilioClientInterface {
     };
 
     return await fetch(twilioUrl, {
-      body: JSON.stringify(reqBody),
+      body: JSON.stringify({ ...reqBody, pk: true }),
       method: "post",
 
       headers: new Headers({ "content-type": "application/json" }),

@@ -48,7 +48,12 @@ export interface BackgroundStyle {
   size?: string;
   position?: string;
 }
-export type ButtonStyleType = ViewStyle & { text?: TextStyle };
+
+export type ButtonStyleType = {
+  container: ViewStyle;
+  containerHovered?: ViewStyle;
+  text?: TextStyle;
+};
 export interface CustomTheme extends CommonTheme {
   loginModal?: boolean;
   colors: {
@@ -77,8 +82,8 @@ export interface CustomTheme extends CommonTheme {
     backIcon?: ImageStyle & { src: string };
   };
   buttonFlavors: {
-    primary: ViewStyle & { background?: string };
-    cancel: ViewStyle & { background?: string };
+    primary: ButtonStyleType;
+    cancel: ButtonStyleType;
   };
   iconButtonFlavors: {
     primary: ViewStyle & { background?: string };

@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage } from "react-intl";
-import { Image, TouchableOpacity, View } from "react-native";
+import { Image, TouchableOpacity, View, ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useKeyMetaData } from "./key-meta-data";
@@ -50,7 +50,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
               alignItems: "center",
               width: 180,
             },
-            theme.buttonFlavors?.primary,
+            theme.buttonFlavors?.primary as ViewStyle,
           ]}
         >
           <Text

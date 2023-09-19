@@ -12,6 +12,7 @@ import {
   TouchableWithoutFeedbackProps,
   View,
   ViewStyle,
+  Pressable,
 } from "react-native";
 import type { SvgProps } from "react-native-svg";
 import { useEffectOnceWhen } from "rooks";
@@ -43,6 +44,7 @@ const getFlavorStyles = (
   flavor: "primary" | "cancel",
   theme: Theme,
   disabled: boolean,
+  hovered?: boolean,
 ) => {
   return {
     ...baseStyles,
@@ -51,12 +53,13 @@ const getFlavorStyles = (
       ...theme.textStyles.light,
       // TODO: recheck
       ...{ color: theme.colors?.text },
+      ...(theme.buttonFlavors?.[flavor].text || {}),
       ...(disabled ? theme.defaultDisabledButtonStyle?.text : {}),
     },
     button: {
       ...baseStyles.button,
-      // TODO: recheck
-      ...theme.buttonFlavors?.[flavor],
+      ...theme.buttonFlavors?.[flavor].container,
+      ...(hovered ? theme.buttonFlavors?.[flavor].containerHovered : {}),
       opacity: disabled ? 0.5 : 1,
       ...(disabled ? theme.defaultDisabledButtonStyle : {}),
     },
@@ -88,7 +91,9 @@ export const Button = observer(function Button({
   ...props
 }: ButtonProps) {
   const theme = useTheme();
-  const flavorStyles = getFlavorStyles(flavor, theme, disabled);
+  const [hovered, setHovered] = useState(false);
+  const flavorStyles = getFlavorStyles(flavor, theme, disabled, hovered);
+  console.log({ hovered });
   const children = (
     <View>
       {LeftIcon ? (
@@ -110,8 +115,19 @@ export const Button = observer(function Button({
       props.onPress(e);
     }
   };
-
-  if (Platform.OS === "android") {
+  //for web
+  if (Platform.OS === "web") {
+    return (
+      <Pressable
+        {...buttonProps}
+        onPress={onPress}
+        onHoverIn={() => setHovered(true)}
+        onHoverOut={() => setHovered(false)}
+      >
+        {/* <View {...buttonProps} /> */}
+      </Pressable>
+    );
+  } else if (Platform.OS === "android") {
     return (
       <TouchableNativeFeedback {...buttonProps} onPress={onPress}>
         <View {...buttonProps} />
