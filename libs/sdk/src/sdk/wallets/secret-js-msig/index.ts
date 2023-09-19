@@ -1,11 +1,9 @@
 import { TxResponse } from "secretjs";
 
+import { secretJsChains } from "../../../chains";
 import { MultisigKey } from "../../../data-structures";
-import {
-  Secp256k1PublicKey,
-} from "../../../keys/multisig";
+import { Secp256k1PublicKey } from "../../../keys/multisig";
 import { AbstractWalletsSdk } from "../abstract";
-import { secretJsChains } from "libs/sdk/src/chains";
 
 export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
   /// The creation transaction doesn't actually need a user interaction

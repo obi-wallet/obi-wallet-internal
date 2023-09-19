@@ -16,6 +16,7 @@ import { defaultRegistryTypes, makeMultisignedTx } from "@cosmjs/stargate";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { Account } from "secretjs";
 import invariant from "tiny-invariant";
+import { Client, Presets, IUserOperation, UserOperationMiddlewareCtx } from "userop";
 
 import { Chain, SecretJsChainId } from "../../../chains";
 import { MultisigPublicKey } from "../../../keys";
@@ -24,8 +25,57 @@ import {
   Signer,
 } from "../../../signers";
 import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
+import { ExtendedWallet } from "./extended-ethers-signer";
+import { Interface, InterfaceAbi }from "ethers";
+import * as ethers from "ethers";
+import { useStore } from "libs/common/src/contexts";
+import * as ethers5 from 'ethers5';
 
 const registry = new Registry([...defaultRegistryTypes, ...wasmTypes]);
+
+type EthTxInput = {
+  abi: InterfaceAbi;
+  contractAddress: string;
+  functionName: string;
+  params: unknown[];
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+  };
+};
+
+export class EthTransaction {
+  abi: InterfaceAbi;
+  contractAddress: string;
+  functionName: string;
+  params: unknown[];
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+  };
+
+  constructor(input: EthTxInput) {
+    this.abi = input.abi;
+    this.contractAddress = input.contractAddress;
+    this.functionName = input.functionName;
+    this.params = input.params;
+    this.tokens = input.tokens;
+  }
+
+  getEncodedCallData(): string {
+    
+    const contractInterface = new Interface(this.abi);
+
+    // Ensure the function exists in the ABI
+    if (!contractInterface.getFunction(this.functionName)) {
+      throw new Error(
+        `Function ${this.functionName} does not exist in the provided ABI.`,
+      );
+    }
+
+    return contractInterface.encodeFunctionData(this.functionName, this.params);
+  }
+}
 
 export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
   protected chainId: SecretJsChainId;
@@ -34,6 +84,7 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
   protected fee: StdFee;
   protected signDoc: StdSignDoc | undefined;
   protected signMessage: string | undefined;
+  protected signUserOpInput: EthTxInput | undefined;
   protected encodeObjects: EncodeObject[] | undefined;
   protected key: MultisigThresholdPubkey;
   protected multisigPublicKey: MultisigPublicKey;
@@ -70,7 +121,12 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     );
     this.signMessage = undefined;
     if (messages[0].type === "raw" || messages[0].type === "eth") {
-      this.signMessage = messages[0].value;
+      if (messages[0].type === "raw") {
+        this.signMessage = messages[0].value;
+      } else {
+        this.signUserOpInput = messages[0].value;
+        // also need to initUserOperation
+      }
       this.signDoc = undefined;
     } else {
       this.signDoc = {
@@ -82,6 +138,104 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
         sequence: sequence.toString(),
       };
       this.signMessage = undefined;
+    }
+  }
+
+  public async initUserOperation() {
+    const { walletsStore } = useStore();
+    const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(
+      "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+      { type: "payg" },
+    );
+    const client = await Client.init(
+      "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+    );
+    invariant(walletsStore.currentWallet?.evmSigningAddress, "no signing address in wallet");
+    // This likely won't actually be used for network calls
+    const dummyProvider = new ethers5.providers.JsonRpcProvider(
+      'https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00'
+    );
+    const extendedSigner = new ExtendedWallet (
+      walletsStore.currentWallet?.evmSigningAddress,
+      dummyProvider
+    );
+    const simpleAccount = await Presets.Builder.SimpleAccount.init(
+      extendedSigner,
+      "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+      { paymasterMiddleware },
+    );
+
+    const buildUserOperation = async () => {
+      invariant(this.signUserOpInput, "no user op inputted");
+      console.log("in buildUserOperation()");
+      const ethTx = new EthTransaction(this.signUserOpInput!);
+      const userOp: IUserOperation = await client.buildUserOperation(
+        simpleAccount.execute(
+          ethTx.contractAddress,
+          0,
+          ethTx.getEncodedCallData(),
+        ),
+      );
+      // signer contract should automatically prepend here
+      const ctx: UserOperationMiddlewareCtx = new UserOperationMiddlewareCtx(
+        userOp,
+        "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+        421613
+      );
+      this.signMessage = ctx.getUserOpHash();
+      console.log("user op hash is: " + this.signMessage);
+
+      /*
+      const erc20 = new Contract(
+        body.token.id,
+        [
+          // Read-Only Functions
+          "function balanceOf(address owner) view returns (uint256)",
+          "function decimals() view returns (uint8)",
+          "function symbol() view returns (string)",
+
+          // Authenticated Functions
+          "function transfer(address to, uint amount) returns (bool)",
+          "function approve(address spender, uint amount) returns (bool)",
+
+          // Events
+          "event Transfer(address indexed from, address indexed to, uint amount)",
+        ] as const,
+        provider,
+      );
+      return await client.buildUserOperation(
+        simpleAccount.execute(
+          await erc20.getAddress(),
+          0,
+          erc20.interface.encodeFunctionData("transfer", [body.to, amount]),
+        ),
+      );
+      */
+    };
+
+    // todo: move this out to when button is clicked
+    async function handleUserOperation(userOperation: IUserOperation) {
+      try {
+        return await client.execUserOperation(userOperation);
+      } catch (e) {
+        // recovery bit workaround, as simple signer can't calculate it
+        const signature = userOperation.signature as string;
+        userOperation.signature = `${signature.substring(
+          0,
+          userOperation.signature.length - 2,
+        )}1b`;
+        return await client.execUserOperation(userOperation);
+      }
+    }
+
+    try {
+      const builtUserOperation = await buildUserOperation();
+      // const userOperation = await handleUserOperation(builtUserOperation);
+      console.log("userOp", builtUserOperation);
+      // const event = await userOperation.wait();
+      // console.log("event", event);
+    } catch (e) {
+      console.log("error", e);
     }
   }
 
@@ -99,7 +253,7 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     } else {
       invariant(this.signMessage, "signMessage must be defined");
       return await offlineAminoSigner.signMessage(
-        Buffer.from(this.signMessage),
+        Buffer.from(this.signMessage!),
       );
     }
   }

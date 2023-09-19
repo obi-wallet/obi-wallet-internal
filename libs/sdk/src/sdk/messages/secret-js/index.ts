@@ -35,7 +35,7 @@ export class SecretJsMessages extends AbstractMessages {
 
   public toJSON(message: Message): MessageJson {
     if (R.has("eth", message)) {
-      return MessageJson.parse(message.eth);
+      return MessageJson.parse(message);
     }
     if (R.has("userop", message)) {
       return MessageJson.parse(message.userop);

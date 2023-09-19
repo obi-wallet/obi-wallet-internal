@@ -80,8 +80,11 @@ export async function POST(request: Request) {
     const matchingLogs = txResult.arrayLog?.filter((log) => {
       return log.type === "instantiate" && log.key === "contract_address";
     });
-    const homeAccountAddress = matchingLogs && matchingLogs.length > 1 ? matchingLogs[1].value : undefined;
-    
+    const homeAccountAddress =
+      matchingLogs && matchingLogs.length > 1
+        ? matchingLogs[1].value
+        : undefined;
+
     invariant(homeAccountAddress, "Contract address not found");
     return NextResponse.json({
       ownerAddress: body.ownerAddress,

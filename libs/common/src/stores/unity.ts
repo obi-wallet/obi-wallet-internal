@@ -9,7 +9,7 @@ export class UnityStore {
     if (UnityStore.instance) {
       return UnityStore.instance;
     }
-    makeObservable<UnityStore, "getDeviceId" | "setDeviceId">(this, {
+    makeObservable<UnityStore, "getDeviceId" | "setDeviceId">(this, { _deviceId: true, 
       getDeviceId: true,
       setDeviceId: true,
     });
