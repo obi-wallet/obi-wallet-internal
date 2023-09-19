@@ -86,7 +86,7 @@ export const SecurityQuestionInput = observer(function SecurityQuestionInput({
           textTransform: "uppercase",
           // marginTop: isSmallScreenNumber(20, 36),
           marginBottom: 5,
-          ...theme.dropdown.labelStyle,
+          ...theme.dropdown?.labelStyle,
         }}
       >
         <FormattedMessage

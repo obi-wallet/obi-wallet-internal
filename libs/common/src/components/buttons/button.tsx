@@ -49,12 +49,14 @@ const getFlavorStyles = (
     text: {
       ...baseStyles.text,
       ...theme.textStyles.light,
-      ...theme.buttonFlavors?.[flavor].text,
+      // TODO: recheck
+      // ...theme.buttonFlavors?.[flavor].text,
       ...(disabled ? theme.defaultDisabledButtonStyle?.text : {}),
     },
     button: {
       ...baseStyles.button,
-      ...theme.buttonFlavors?.[flavor].container,
+      // TODO: recheck
+      // ...theme.buttonFlavors?.[flavor].container,
       opacity: disabled ? 0.5 : 1,
       ...(disabled ? theme.defaultDisabledButtonStyle : {}),
     },

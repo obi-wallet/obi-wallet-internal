@@ -136,7 +136,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
           }}
         >
           <View>
-            {theme.deviceKey.isShowTouchImage && (
+            {theme.style !== "ztx" && (
               <View
                 style={{
                   justifyContent: "center",

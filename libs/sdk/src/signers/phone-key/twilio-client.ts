@@ -114,6 +114,7 @@ export class TwilioClient implements TwilioClientInterface {
   public async requestPublicKeyMagicCode({
     phoneNumber,
     securityAnswer,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     chainId,
     type,
   }: {

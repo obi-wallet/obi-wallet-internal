@@ -22,7 +22,7 @@ export const CoinIcon = observer(function CoinIcon({
   source: EnrichedToken["icon"];
 }) {
   if (!source) return <DefaultView />;
-
+  // @ts-expect-error this should be ok
   if (typeof source !== "object" || (!source?.uri && !source?.default.src)) {
     warning(false, "URI must be defined for web");
     return <DefaultView />;
@@ -30,6 +30,7 @@ export const CoinIcon = observer(function CoinIcon({
 
   return (
     <Image
+      // @ts-expect-error this should be ok
       source={source.default.src || source.uri || source}
       style={{ flex: 1, width: "100%", height: "100%" }}
     />

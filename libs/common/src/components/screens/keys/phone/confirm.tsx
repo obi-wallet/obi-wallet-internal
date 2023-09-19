@@ -218,9 +218,9 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                         marginTop: 36,
                       }}
                     >
-                      <Text style={theme.phoneKey.title1}>
+                      <Text style={theme.phoneKey?.title1}>
                         Create
-                        <Text style={theme.phoneKey.title2}>
+                        <Text style={theme.phoneKey?.title2}>
                           {" "}
                           a phone number key
                         </Text>
@@ -244,14 +244,14 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                     </Text>
                     <View
                       style={{
-                        ...theme.phoneKey.info,
+                        ...theme.phoneKey?.info,
                       }}
                     >
                       <Text
                         style={{
                           color: "white",
                           fontSize: isSmallScreenNumber(12, 14),
-                          ...theme.phoneKey.info.text,
+                          ...theme.phoneKey?.info.text,
                         }}
                       >
                         <FormattedMessage
@@ -261,7 +261,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                         <Text
                           style={{
                             fontWeight: "600",
-                            ...theme.phoneKey.info.text,
+                            ...theme.phoneKey?.info.text,
                           }}
                         >
                           {phoneNumber}.
@@ -270,7 +270,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                       <Text
                         style={{
                           marginTop: 8,
-                          ...theme.phoneKey.info.text,
+                          ...theme.phoneKey?.info.text,
                         }}
                       >
                         ZTX does not store any information.

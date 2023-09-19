@@ -85,17 +85,17 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
           <View>
             {theme.style === "ztx" ? (
               <View style={{ flexDirection: "row" }}>
-                <Text style={theme.titleFalvors.title}>
+                <Text style={theme.titleFalvors?.title}>
                   {title.split(" ")[0]}
                 </Text>
                 {title.replace(title.split(" ")[0], "") && (
-                  <Text style={theme.titleFalvors.subTitle}>
+                  <Text style={theme.titleFalvors?.subTitle}>
                     {` ${title.split(" ")[1].toLowerCase()}`}
                   </Text>
                 )}
               </View>
             ) : (
-              <Text style={theme.titleFalvors.title}>{title}</Text>
+              <Text style={theme.titleFalvors?.title}>{title}</Text>
             )}
             <View
               style={{

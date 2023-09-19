@@ -27,7 +27,7 @@ export const osmosisTheme: CustomTheme = {
     ],
   },
   header: {
-    image: "/osmosis-header@2x.png",
+    image: { src: "/osmosis-header@2x.png" },
     width: 208,
     height: 41,
   },

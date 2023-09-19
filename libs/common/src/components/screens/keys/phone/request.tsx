@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ComunicationType } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { Controller, useForm } from "react-hook-form";
@@ -26,7 +27,6 @@ import {
 } from "../../../phone-key";
 import { TextInput } from "../../../text-input";
 import { Text } from "../../../typography";
-import { ComunicationType } from "@obi-wallet/sdk";
 
 export type PhoneKeyRequestScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -141,9 +141,9 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                           defaultMessage="Create a Phone Number Key"
                         />
                       )} */}
-                      <Text style={theme.phoneKey.title1}>
+                      <Text style={theme.phoneKey?.title1}>
                         Create
-                        <Text style={theme.phoneKey.title2}>
+                        <Text style={theme.phoneKey?.title2}>
                           {" "}
                           a phone number key
                         </Text>
@@ -151,17 +151,17 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                     </Text>
                     <View
                       style={{
-                        ...theme.phoneKey.info,
+                        ...theme.phoneKey?.info,
                       }}
                     >
-                      <Text style={{ ...theme.phoneKey.info.text }}>
+                      <Text style={{ ...theme.phoneKey?.info.text }}>
                         ZTX creates a multi-key to login and keep your account
                         secure and recoverable without relying on seed phrases.
                       </Text>
                       <Text
                         style={{
                           marginTop: 8,
-                          ...theme.phoneKey.info.text,
+                          ...theme.phoneKey?.info.text,
                         }}
                       >
                         ZTX does not store any information.

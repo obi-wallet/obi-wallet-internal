@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+import { ComunicationType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -7,7 +8,6 @@ import { View } from "react-native";
 import { InlineButton } from "../../buttons";
 import { TextInput } from "../../text-input";
 import { Text } from "../../typography";
-import { ComunicationType } from "@obi-wallet/sdk";
 
 export interface PhoneOneTimeCodeInputProps {
   phoneNumber: string;
@@ -81,7 +81,7 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
             <View style={{ flexDirection: "row" }}>
               <InlineButton
                 style={{
-                  ...theme.phoneKey.inlineButton,
+                  ...theme.phoneKey?.inlineButton,
                 }}
                 label="Resend"
                 onPress={async () => {
@@ -95,7 +95,7 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
                 disabled={resendButtonDisabled}
               />
               <InlineButton
-                style={{ ...theme.phoneKey.inlineButton }}
+                style={{ ...theme.phoneKey?.inlineButton }}
                 label="Get a voice call instead"
                 onPress={async () => {
                   setResendCounter(waitTime);

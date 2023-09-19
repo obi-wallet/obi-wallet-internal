@@ -48,14 +48,14 @@ export interface BackgroundStyle {
   size?: string;
   position?: string;
 }
-export type ButtonStyleType = { container: ViewStyle; text?: TextStyle };
+export type ButtonStyleType = ViewStyle & { text?: TextStyle };
 export interface CustomTheme extends CommonTheme {
   loginModal?: boolean;
   colors: {
     primary: string;
     background: string;
     panelBackground: string;
-    label: string;
+    label?: string;
   };
   buttonsContainerStyle?: ViewStyle;
   defaultDisabledButtonStyle?: ViewStyle & {
@@ -74,13 +74,13 @@ export interface CustomTheme extends CommonTheme {
     closeIcon?: ImageStyle & { src: string };
     backIcon?: ImageStyle & { src: string };
   };
-  buttonFlavors?: {
-    primary: ButtonStyleType;
-    cancel: ButtonStyleType;
+  buttonFlavors: {
+    primary: ViewStyle & { background?: string };
+    cancel: ViewStyle & { background?: string };
   };
-  iconButtonFlavors?: {
-    primary: ViewStyle;
-    panel: ViewStyle;
+  iconButtonFlavors: {
+    primary: ViewStyle & { background?: string };
+    panel: ViewStyle & { background?: string };
   };
   textStyles: {
     bold: Pick<TextStyle, "fontFamily" | "fontWeight">;
@@ -109,11 +109,11 @@ export interface CustomTheme extends CommonTheme {
     };
     accountName: string;
   };
-  titleFalvors: {
+  titleFalvors?: {
     title: TextStyle;
     subTitle: TextStyle;
   };
-  phoneKey: {
+  phoneKey?: {
     title1: TextStyle;
     title2: TextStyle;
     info: ViewStyle & {

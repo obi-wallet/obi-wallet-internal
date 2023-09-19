@@ -15,7 +15,7 @@ export const DropDownPicker = observer<DropDownPickerProps<unknown | null>>(
           borderColor: "#fff",
           paddingRight: 20,
           borderWidth: 1,
-          ...theme.dropdown.containerStyle,
+          ...theme.dropdown?.containerStyle,
         }}
       >
         <Picker

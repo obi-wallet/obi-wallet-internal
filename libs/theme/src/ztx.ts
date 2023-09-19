@@ -101,18 +101,12 @@ export const ztxTheme: CustomTheme = {
   },
   buttonFlavors: {
     primary: {
-      container: {
-        ...(buttonsDefaultStyle.container as ButtonStyleType),
-        borderColor: colors.primaryGold,
-      },
-      text: buttonsDefaultStyle.text,
+      ...(buttonsDefaultStyle.container as ButtonStyleType),
+      borderColor: colors.primaryGold,
     },
     cancel: {
-      container: {
-        ...(buttonsDefaultStyle.container as ButtonStyleType),
-        borderColor: colors.grey6,
-      },
-      text: buttonsDefaultStyle.text,
+      ...(buttonsDefaultStyle.container as ButtonStyleType),
+      borderColor: colors.grey6,
     },
   },
   iconButtonFlavors: {

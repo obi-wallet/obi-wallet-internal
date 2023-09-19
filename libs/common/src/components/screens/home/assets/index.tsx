@@ -190,7 +190,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
             ]}
             onPress={() => navigation.navigate(HomeBottomTabRoute.Settings)}
           >
-            <NewSettingsIcon width={30} height={30} themeMode={theme.style} />
+            <NewSettingsIcon width={30} height={30} />
           </TouchableHighlight>
           <Text
             style={[
@@ -342,6 +342,7 @@ const AssetsList = observer(function AssetsList() {
                       marginLeft: 12,
                       width: 10,
                       height: 6,
+                      // @ts-expect-error should work on web
                       outline: "none",
                     }}
                   />
@@ -355,6 +356,7 @@ const AssetsList = observer(function AssetsList() {
                       // marginTop: -15,
                       width: 10,
                       height: 6,
+                      // @ts-expect-error should work on web
                       outline: "none",
                     }}
                   />

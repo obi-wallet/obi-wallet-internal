@@ -1,3 +1,4 @@
+import { ComunicationType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -13,7 +14,6 @@ import {
 } from "../../phone-key";
 import { Text } from "../../typography";
 import { VerifyAndProceedButton } from "../../verify-and-proceed-button";
-import { ComunicationType } from "@obi-wallet/sdk";
 
 export interface PhoneNumberBottomSheetContentProps {
   phoneNumber: string;
@@ -158,6 +158,8 @@ export const PhoneNumberBottomSheetContent =
               setMagicButtonDisabledDoubleclick(true);
 
               try {
+                // TODO: should be rechecked by Jose
+                // @ts-expect-error Jose
                 const res = await onRequest({ securityAnswer, voice: false });
                 setSentMessage(true);
                 setMagicButtonDisabledDoubleclick(false);

@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ViewStyle,
 } from "react-native";
 import { SvgProps } from "react-native-svg";
 
@@ -82,8 +83,8 @@ export const SettingsScreen = observer(function SettingsScreen() {
             <View style={{ flexDirection: "column" }}>
               {theme.style === "ztx" ? (
                 <View style={{ flexDirection: "row" }}>
-                  <Text style={theme.titleFalvors.title}>Obi</Text>
-                  <Text style={theme.titleFalvors.subTitle}>
+                  <Text style={theme.titleFalvors?.title}>Obi</Text>
+                  <Text style={theme.titleFalvors?.subTitle}>
                     {" "}
                     secure multisig account
                   </Text>
@@ -299,6 +300,7 @@ interface SettingProps {
   onPress?: () => void;
   children?: ReactNode;
   disableButton?: boolean;
+  style?: ViewStyle | undefined;
 }
 
 export const Setting = observer(function Setting({
@@ -308,7 +310,7 @@ export const Setting = observer(function Setting({
   onPress,
   children,
   disableButton,
-  ...props
+  style,
 }: SettingProps) {
   const theme = useTheme();
 
@@ -355,7 +357,7 @@ export const Setting = observer(function Setting({
   return disableButton ? (
     <SettingContainer>{renderContent()}</SettingContainer>
   ) : (
-    <SettingButton onPress={() => onPress && onPress()} {...props}>
+    <SettingButton onPress={() => onPress && onPress()} {...style}>
       {renderContent()}
     </SettingButton>
   );

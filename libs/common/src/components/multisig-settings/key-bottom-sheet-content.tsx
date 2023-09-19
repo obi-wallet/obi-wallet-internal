@@ -23,6 +23,7 @@ export interface KeyBottomSheetContentProps {
 }
 
 export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function KeyBottomSheetContent({ type, multisigKey, action, onClose }) {
     const keyMetaData = useKeyMetaData();
     const theme = useTheme();
@@ -49,7 +50,7 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
               alignItems: "center",
               width: 180,
             },
-            theme.buttonFlavors.primary,
+            theme.buttonFlavors?.primary,
           ]}
         >
           <Text
