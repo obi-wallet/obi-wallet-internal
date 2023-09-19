@@ -19,6 +19,7 @@ import {
 } from "../key";
 import { KeySchema } from "../key/schema";
 import { AbstractSerialized } from "../migratable";
+import { WalletMeta } from "../multisig-wallet";
 
 export class MultisigKey {
   public get schema() {
@@ -205,11 +206,17 @@ export class MultisigKey {
     this._keys = this._keys.filter((key) => key.type !== type);
   }
 
-  public async createSigner({ messages }: { messages: Message[] }) {
+  public async createSigner(
+    { messages }: { messages: Message[] },
+    evmSigningAddress?: string,
+    walletMeta?: WalletMeta,
+  ) {
     console.log("in createSigner(), messages are: " + JSON.stringify(messages));
     return await this.sdk.transactions.createMultisigSigner({
       multisigPublicKey: this.publicKey,
       messages,
+      evmSigningAddress,
+      walletMeta,
     });
   }
 

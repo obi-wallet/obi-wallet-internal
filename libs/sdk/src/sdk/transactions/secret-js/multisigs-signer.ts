@@ -144,27 +144,36 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     }
   }
 
+  public getSignUserOpInput() {
+    return this.signUserOpInput
+  }
+
   public async initUserOperation(
     evmSigningAddress: string,
     walletMeta: WalletMeta,
   ) {
+    console.log("setting up paymaster middleware...");
     const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(
       "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
       { type: "payg" },
     );
+    console.log("setting up client...");
     const client = await Client.init(
-      "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+      "https://api.stackup.sh/v1/api/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
     );
     invariant(evmSigningAddress, "no signing address provided");
     // This likely won't actually be used for network calls
+    console.log("setting up dummy provider...");
     const dummyProvider = new ethers5.providers.JsonRpcProvider(
       "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
     );
+    console.log("setting up extendedSigner...");
     const extendedSigner = new ExtendedWallet(
       evmSigningAddress,
       walletMeta,
       dummyProvider,
     );
+    console.log("building simpleAccount...");
     const simpleAccount = await Presets.Builder.SimpleAccount.init(
       extendedSigner,
       "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
@@ -236,9 +245,10 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     }
 
     try {
+      console.log("building userOperation...");
       const builtUserOperation = await buildUserOperation();
       // const userOperation = await handleUserOperation(builtUserOperation);
-      console.log("userOp", builtUserOperation);
+      console.log("built userOp:", builtUserOperation);
       // const event = await userOperation.wait();
       // console.log("event", event);
     } catch (e) {

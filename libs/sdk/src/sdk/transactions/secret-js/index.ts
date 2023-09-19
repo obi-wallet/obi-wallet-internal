@@ -4,11 +4,13 @@ import {
   SimplePublicKey,
 } from "@terra-money/feather.js";
 import { BaseAccount } from "cosmjs-types/cosmos/auth/v1beta1/auth";
+import { WalletMeta } from "libs/sdk/src/data-structures";
 import { Account } from "secretjs";
 import invariant from "tiny-invariant";
 import warning from "tiny-warning";
+import { string } from "zod";
 
-import { SecretJsMultisigSigner } from "./multisigs-signer";
+import { EthTransaction, SecretJsMultisigSigner } from "./multisigs-signer";
 import { SecretJsChainId, secretJsChains } from "../../../chains";
 import { SecretJsClient } from "../../../clients";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../../keys";
@@ -119,9 +121,13 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
   public async createMultisigSigner({
     multisigPublicKey,
     messages,
+    walletMeta,
+    evmSigningAddress,
   }: {
     multisigPublicKey: MultisigPublicKey;
     messages: Message[];
+    walletMeta?: WalletMeta;
+    evmSigningAddress?: string;
   }) {
     const address = this.getAddressOfPublicKey(multisigPublicKey);
     await this.prepareAccount(address);
@@ -140,7 +146,7 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
         aminoMessages.length === 1,
         "Only one message supported for raw signing",
       );
-      return new SecretJsMultisigSigner({
+      const signer = new SecretJsMultisigSigner({
         chainId: this.chainId,
         account,
         accountNumber: baseAccount.accountNumber,
@@ -151,11 +157,22 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
         messages: [
           {
             type: (aminoMessages[0] as any).raw ? "raw" : "eth",
-            value: (aminoMessages[0] as any).raw,
+            value: (aminoMessages[0] as any).raw
+              ? (aminoMessages[0] as any).raw
+              : (aminoMessages[0] as any).eth,
           },
         ],
         multisigPublicKey,
       });
+      if ((aminoMessages[0] as any).eth) {
+        invariant(evmSigningAddress, "no evmSigningAddress provided");
+        invariant(walletMeta, "no walletMeta provided");
+        if (!signer.getSignUserOpInput) {
+          console.log("calling initUserOperation...");
+          await signer.initUserOperation(evmSigningAddress, walletMeta);
+        }
+      }
+      return signer;
     } else {
       const encodeObjects = aminoMessages.map((aminoMessage) => {
         return this.client.aminoTypes.fromAmino(aminoMessage);

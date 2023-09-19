@@ -130,8 +130,14 @@ const MessageHandlers = observer(function MessageHandlers() {
             console.log("no current wallet");
             return;
           } else {
-            console.log("current wallet retrieved: " + JSON.stringify(store.walletsStore.currentWallet));
-            console.log("wallet signing address is: " + store.walletsStore.currentWallet.evmSigningAddress);
+            console.log(
+              "current wallet retrieved: " +
+                JSON.stringify(store.walletsStore.currentWallet),
+            );
+            console.log(
+              "wallet signing address is: " +
+                store.walletsStore.currentWallet.evmSigningAddress,
+            );
             console.log("payload", data.payload);
           }
 
@@ -148,9 +154,13 @@ const MessageHandlers = observer(function MessageHandlers() {
             demoMode: store.walletsStore.currentWallet.isDemo,
             autoBroadcast: false,
           };
-          console.log("interaction object is: " + JSON.stringify(interactionObj));
+          console.log(
+            "interaction object is: " + JSON.stringify(interactionObj),
+          );
           const response =
-            await SignAndBroadcastTransactionUserInteraction.start(interactionObj);
+            await SignAndBroadcastTransactionUserInteraction.start(
+              interactionObj,
+            );
 
           const message = {
             type: "@obi/sign-and-broadcast-transaction-response",

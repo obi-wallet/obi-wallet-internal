@@ -4,7 +4,7 @@ import { secretJsChains } from "../../../chains";
 import { MultisigKey } from "../../../data-structures";
 import { Secp256k1PublicKey } from "../../../keys/multisig";
 import { AbstractWalletsSdk } from "../abstract";
-import { add } from "ramda";
+//import { add } from "ramda";
 
 export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
   /// The creation transaction doesn't actually need a user interaction

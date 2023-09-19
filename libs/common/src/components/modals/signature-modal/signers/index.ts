@@ -75,9 +75,11 @@ async function createUsableSigner({
     case KeyType.ZAuth:
       return new ZAuthKeySigner(key);
     case KeyType.Device: {
+      console.log("switching on key type to KeyType.Device");
       if (!(await getDevicePrivateKey(key))) {
         return null;
       }
+      console.log("getDevicePrivateKey skipped/complete");
       return new DeviceKeySigner(key);
     }
     case KeyType.Unity: {

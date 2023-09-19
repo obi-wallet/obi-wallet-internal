@@ -2,6 +2,7 @@ import fetch from "isomorphic-unfetch";
 import invariant from "tiny-invariant";
 
 import { ChainId } from "../../chains";
+import { WalletMeta } from "../../data-structures";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../keys";
 import { queryClient, QueryClientNamespace } from "../../query-client";
 import { MultisigSigner } from "../../signers";
@@ -96,9 +97,13 @@ export abstract class AbstractTransactionsSdk {
   public abstract createMultisigSigner({
     multisigPublicKey,
     messages,
+    evmSigningAddress,
+    walletMeta,
   }: {
     multisigPublicKey: MultisigPublicKey;
     messages: Message[];
+    evmSigningAddress?: string;
+    walletMeta?: WalletMeta;
   }): Promise<MultisigSigner>;
 
   /**

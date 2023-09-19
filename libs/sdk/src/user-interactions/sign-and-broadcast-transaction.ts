@@ -24,7 +24,7 @@ export type SignAndBroadcastTransactionUserInteraction = UserInteraction<
   | {
       approved: true;
       payload: BroadcastTransactionResult;
-      signature: Uint8Array;
+      signature: Uint8Array | undefined;
     }
   | { approved: false; signature: undefined }
 >;

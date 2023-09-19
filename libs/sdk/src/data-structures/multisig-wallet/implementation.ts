@@ -287,7 +287,7 @@ export class MultisigWallet {
       });
       const wrappedMessages = this.messages.wrapMessages({
         messages,
-        contract: this.proxyAddress,
+        userEntryContract: this.proxyAddress,
         sender: flexAccount.address,
       });
       const signedTransaction =
