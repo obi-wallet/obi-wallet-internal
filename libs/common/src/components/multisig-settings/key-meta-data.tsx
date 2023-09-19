@@ -88,7 +88,7 @@ export function useKeyMetaData() {
       // TODO:
       label: "ZAuth Key",
       // TODO:
-      Icon: DeviceKeyIcon,
+      Icon: ZtxPlatformRecoveryIcon,
     },
     [ComingSoonKeyType.Telegram]: {
       label: "Telegram Key",
