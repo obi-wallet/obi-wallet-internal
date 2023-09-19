@@ -20,6 +20,7 @@ export const colors = {
   black: "#000000",
   primaryGold: "#CAA767",
   hoverGold: "#B0915A",
+  hoverGrey: "#7B8699",
   errorRed: "#E10E34",
 };
 const buttonsDefaultStyle = {
@@ -118,7 +119,7 @@ export const ztxTheme: CustomTheme = {
         borderColor: colors.grey6,
       },
       containerHovered: {
-        borderColor: colors.grey5,
+        borderColor: colors.hoverGrey,
       },
       text: {
         ...buttonsDefaultStyle.text,

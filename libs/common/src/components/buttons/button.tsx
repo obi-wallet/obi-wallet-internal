@@ -93,7 +93,6 @@ export const Button = observer(function Button({
   const theme = useTheme();
   const [hovered, setHovered] = useState(false);
   const flavorStyles = getFlavorStyles(flavor, theme, disabled, hovered);
-  console.log({ hovered });
   const children = (
     <View>
       {LeftIcon ? (
