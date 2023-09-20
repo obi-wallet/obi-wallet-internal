@@ -128,6 +128,7 @@ export const SignatureModalEthereumDemo =
           interaction.resolve({
             approved: true,
             payload,
+            signature: undefined,
           });
         },
         onError(error) {
@@ -138,6 +139,7 @@ export const SignatureModalEthereumDemo =
               transactionHash: "",
               rawResult: error,
             },
+            signature: undefined,
           });
         },
       });

@@ -45,6 +45,9 @@ export function keyTypeToKeyRoute(type: KeyType) {
       return KeyRoute.PhoneKeyRequest;
     case KeyType.Social:
       return KeyRoute.SocialKey;
+    /// TODO: for now Unity uses device key screen
+    case KeyType.Unity:
+      return KeyRoute.DeviceKey;
     case KeyType.Nfc:
       return KeyRoute.NfcKey;
     case KeyType.Cloud:
