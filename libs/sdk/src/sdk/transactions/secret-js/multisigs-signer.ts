@@ -83,7 +83,6 @@ export class EthTransaction {
 export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
   protected chainId: SecretJsChainId;
   protected account: Account;
-  protected sequence: number;
   protected fee: StdFee;
   protected signDoc: StdSignDoc | undefined;
   protected signMessage: string | undefined;
@@ -95,8 +94,6 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
   public constructor({
     chainId,
     account,
-    accountNumber,
-    sequence,
     fee,
     encodeObjects,
     messages,
@@ -104,8 +101,6 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
   }: {
     chainId: SecretJsChainId;
     account: Account;
-    accountNumber: number;
-    sequence: number;
     fee: StdFee;
     encodeObjects: EncodeObject[] | undefined;
     messages: AminoMsg[];
@@ -114,7 +109,6 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     super(multisigPublicKey);
     this.chainId = chainId;
     this.account = account;
-    this.sequence = sequence;
     this.fee = fee;
     this.encodeObjects = encodeObjects;
     this.multisigPublicKey = multisigPublicKey;
@@ -141,11 +135,11 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     } else {
       this.signDoc = {
         memo: "",
-        account_number: accountNumber.toString(),
+        account_number: "", // accountNumber.toString(),
         chain_id: chainId,
         fee: fee,
         msgs: messages,
-        sequence: sequence.toString(),
+        sequence: "" // sequence.toString(),
       };
       this.signMessage = undefined;
     }
@@ -374,7 +368,7 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
 
       const transaction = makeMultisignedTx(
         this.key,
-        this.sequence,
+        0, //this.sequence,
         this.fee,
         bodyBytes,
         signatures,

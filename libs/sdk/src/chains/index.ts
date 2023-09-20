@@ -64,7 +64,7 @@ function select<T>({
   } else if (isTerraChain(chainId)) {
     return onTerraChain(terraChains[chainId]);
   } else {
-    throw new Error(`Unknown chain ID: ${chainId}`);
+    return onSecretJsChain(secretJsChains["secret-4"]);
   }
 }
 
