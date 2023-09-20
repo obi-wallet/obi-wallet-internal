@@ -81,16 +81,21 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
     create: boolean,
   ): Promise<[boolean, boolean, Secp256k1KeyPair | undefined]> {
     try {
+      console.log("getting device key...");
       const [keyPair, newUser] = await getOrCreateDeviceKeyPair(
         create,
         demoMode,
       );
+      console.log("draft id is " + draftId);
+      console.log("setting device key...");
       draft.value.setDeviceKey(keyPair);
+      console.log("device key set..");
       void queryClient.prefetchQuery(
-        Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
-          keyPair,
-        ),
+        Sdk.chainId(
+          draft.value.chainId || "secret-4",
+        ).transactions.prepareKeyPairQuery(keyPair),
       );
+      console.log("returning...");
       setScannedBiometrics(true);
       return [true, newUser, keyPair];
     } catch (e) {
@@ -114,7 +119,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         <KeyboardAwareScrollView
           style={{
             flex: 1,
-            paddingHorizontal: 20,
+            paddingHorizontal: theme.modal.paddingHorizontal || 20,
           }}
           contentContainerStyle={{
             flex: 1,
@@ -123,54 +128,56 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
           }}
         >
           <View>
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
+            {theme.style !== "ztx" && (
               <View
                 style={{
-                  backgroundColor: "rgba(219, 222, 255, 0.07)",
                   justifyContent: "center",
                   alignItems: "center",
-                  width: isSmallScreenNumber(200, 296),
-                  height: isSmallScreenNumber(200, 296),
-                  borderRadius: isSmallScreenNumber(200, 296),
                 }}
               >
                 <View
                   style={{
-                    backgroundColor: "rgba(219, 222, 255, 0.17)",
+                    backgroundColor: "rgba(219, 222, 255, 0.07)",
                     justifyContent: "center",
                     alignItems: "center",
-                    width: isSmallScreenNumber(140, 224),
-                    height: isSmallScreenNumber(140, 224),
-                    borderRadius: isSmallScreenNumber(140, 224),
+                    width: isSmallScreenNumber(200, 296),
+                    height: isSmallScreenNumber(200, 296),
+                    borderRadius: isSmallScreenNumber(200, 296),
                   }}
                 >
                   <View
-                    style={
-                      isSmallScreen()
-                        ? {
-                            width: 70,
-                            height: 70,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }
-                        : {
-                            width: "50%",
-                            height: "50%",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }
-                    }
+                    style={{
+                      backgroundColor: "rgba(219, 222, 255, 0.17)",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: isSmallScreenNumber(140, 224),
+                      height: isSmallScreenNumber(140, 224),
+                      borderRadius: isSmallScreenNumber(140, 224),
+                    }}
                   >
-                    <ObiFaceScannerIcon />
+                    <View
+                      style={
+                        isSmallScreen()
+                          ? {
+                              width: 70,
+                              height: 70,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }
+                          : {
+                              width: "50%",
+                              height: "50%",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }
+                      }
+                    >
+                      <ObiFaceScannerIcon />
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
+            )}
 
             <Text
               style={{

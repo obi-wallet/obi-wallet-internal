@@ -15,12 +15,12 @@ export interface TwilioClientInterface {
     phoneNumber,
     securityAnswer,
     chainId,
-    voice,
+    type,
   }: {
     phoneNumber: string;
     securityAnswer: string;
     chainId: ChainId;
-    voice: boolean;
+    type: CommunicationType;
   }): Promise<void>;
 
   parsePublicKeyMagicCodeResponse({
@@ -36,11 +36,13 @@ export interface TwilioClientInterface {
     securityAnswer,
     message,
     chainId,
+    type,
   }: {
     phoneNumber: string;
     securityAnswer: string;
     message: Uint8Array;
     chainId: ChainId;
+    type: CommunicationType;
   }): Promise<void>;
 
   parseSignatureMagicCodeResponse({
@@ -101,28 +103,31 @@ export class DemoModeTwilioClient implements TwilioClientInterface {
     return signature;
   }
 }
-
+export enum CommunicationType {
+  SMS = "sms",
+  VOICE = "voice",
+  TELEGRAM = "telegram",
+}
 export class TwilioClient implements TwilioClientInterface {
   public constructor(protected twilioConfig: TwilioConfig) {}
 
   public async requestPublicKeyMagicCode({
     phoneNumber,
     securityAnswer,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     chainId,
-    voice,
+    type,
   }: {
     phoneNumber: string;
     securityAnswer: string;
     chainId: ChainId;
-    voice: boolean;
+    type: CommunicationType;
   }) {
-    const _voice = voice;
-    const _chainId = chainId;
     await this.encryptAndSendMessage({
       answer: securityAnswer,
       phoneNumber,
       chainId: "pulsar-3",
-      // voice,
+      type,
     });
   }
 
@@ -173,17 +178,20 @@ export class TwilioClient implements TwilioClientInterface {
     securityAnswer,
     message,
     chainId,
+    type,
   }: {
     phoneNumber: string;
     securityAnswer: string;
     message: Uint8Array;
     chainId: ChainId;
+    type: CommunicationType;
   }) {
     await this.encryptAndSendMessage({
       answer: securityAnswer,
       signature: Buffer.from(message.buffer).toString("base64"),
       phoneNumber,
       chainId,
+      type,
     });
   }
 
@@ -202,11 +210,13 @@ export class TwilioClient implements TwilioClientInterface {
     phoneNumber,
     chainId,
     signature,
+    type,
   }: {
     answer: string;
     signature?: string;
     phoneNumber: string;
     chainId: ChainId;
+    type: CommunicationType;
   }) {
     const key = await this.getMessageBody(
       JSON.stringify({
@@ -224,11 +234,11 @@ export class TwilioClient implements TwilioClientInterface {
       To: phoneNumber,
       From: twilioPhoneNumber,
       key,
-      pk: true,
+      type,
     };
 
     return await fetch(twilioUrl, {
-      body: JSON.stringify(reqBody),
+      body: JSON.stringify({ ...reqBody, pk: true }),
       method: "post",
 
       headers: new Headers({ "content-type": "application/json" }),

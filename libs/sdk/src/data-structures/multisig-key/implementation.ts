@@ -1,7 +1,8 @@
 import * as R from "ramda";
+import { TxResponse } from "secretjs";
 
 import { MultisigKeySchema } from "./schema";
-import { ChainId } from "../../chains";
+import { ChainId, secretJsChains } from "../../chains";
 import {
   MultisigPublicKey,
   Secp256k1KeyPair,
@@ -19,6 +20,7 @@ import {
 } from "../key";
 import { KeySchema } from "../key/schema";
 import { AbstractSerialized } from "../migratable";
+import { WalletMeta } from "../multisig-wallet";
 
 export class MultisigKey {
   public get schema() {
@@ -26,19 +28,45 @@ export class MultisigKey {
   }
 
   public constructor(
+    // async account creation returns some values;
+    // they're stored here so they can be ready for
+    // the actual "Create Wallet" button
+    protected _setupDetails:
+      | {
+          homeAccountAddress: string;
+          evmSignerAddress: string;
+          evmUserContractAddress: string;
+          ownerIndex: number;
+        }
+      | undefined,
     protected _chainId: ChainId,
     protected _keys: Key[],
     protected _threshold: number,
     protected _factories: {
       Key: AbstractDataStructure<Key, typeof KeySchema>;
       createMultisigKey: (
+        setupDetails:
+          | {
+              homeAccountAddress: string;
+              evmSignerAddress: string;
+              evmUserContractAddress: string;
+              ownerIndex: number;
+            }
+          | undefined,
         chain: ChainId,
-        serialized: AbstractSerialized<typeof MultisigKeySchema>,
+        serialized: AbstractSerialized<typeof MultisigKeySchema> | {},
       ) => MultisigKey;
     },
   ) {}
 
-  public toJSON(): AbstractSerialized<typeof MultisigKeySchema> {
+  public get setupDetails() {
+    return this._setupDetails;
+  }
+
+  public toJSON(): AbstractSerialized<typeof MultisigKeySchema> | {} {
+    if (!this._keys) {
+      return {};
+    }
     return {
       keys: this._keys.map((key) => key.toJSON()),
       threshold: this._threshold,
@@ -50,7 +78,11 @@ export class MultisigKey {
   }
 
   public clone() {
-    return this._factories.createMultisigKey(this.chainId, this.toJSON());
+    return this._factories.createMultisigKey(
+      this._setupDetails,
+      this.chainId,
+      this.toJSON(),
+    );
   }
 
   public get chainId() {
@@ -103,6 +135,69 @@ export class MultisigKey {
     });
   }
 
+  private async createMagicAccount() {
+    // TODO: retry logic
+    console.log("Calling setup/home-account with fee address as owner");
+    const response = await fetch("/api/setup/home-account", {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+    const {
+      ownerIndex,
+      homeAccountAddress,
+      txResult,
+    }: {
+      ownerIndex: number;
+      homeAccountAddress: string;
+      txResult: TxResponse;
+    } = await response.json();
+    console.log(
+      "home account: " +
+        homeAccountAddress +
+        ", tx hash " +
+        txResult.transactionHash,
+        ", owner index: " + 
+        ownerIndex
+    );
+
+    const chain = secretJsChains["secret-4"];
+
+    // now we can add a key. The ownerIndex fee wallet will be able
+    // to use it to sign for now (to setup account) if needed,
+    // until first_update_owner
+    const addKeyResponse = await fetch("/api/setup/add-key", {
+      method: "POST",
+      body: JSON.stringify({
+        userEntryAddress: homeAccountAddress,
+        userEntryCodeHash: chain.userEntry.codeHash,
+      }),
+    });
+
+    const addKeyResponseJson = await addKeyResponse.json();
+    console.log("add-key-response: " + JSON.stringify(addKeyResponseJson));
+    if (addKeyResponseJson.success) {
+      const {
+        success,
+        publicKey,
+        evmSignerAddress,
+        evmUserContractAddress,
+      }: {
+        success: boolean;
+        publicKey: Secp256k1PublicKey;
+        evmSignerAddress: string;
+        evmUserContractAddress: string;
+      } = addKeyResponseJson;
+      const _unused = { success, publicKey };
+
+      this._setupDetails = {
+        homeAccountAddress,
+        evmSignerAddress,
+        evmUserContractAddress,
+        ownerIndex,
+      };
+    }
+  }
+
   public setDeviceKey(keyPair: {
     publicKey: Secp256k1PublicKey;
     privateKey?: string;
@@ -111,6 +206,17 @@ export class MultisigKey {
       type: KeyType.Device,
       payload: keyPair,
     });
+    // TODO: confirm user is a new user here
+    // don't await here
+    if (!this._setupDetails) {
+      this._setupDetails = {
+        homeAccountAddress: "",
+        evmSignerAddress: "",
+        evmUserContractAddress: "",
+        ownerIndex: 0,
+      };
+      this.createMagicAccount();
+    }
     console.log("Current draft multisig: " + JSON.stringify(this));
   }
 
@@ -128,6 +234,17 @@ export class MultisigKey {
       type: KeyType.Unity,
       payload: keyPair,
     });
+    // TODO: confirm user is a new user here
+    // don't await here
+    if (!this._setupDetails) {
+      this._setupDetails = {
+        homeAccountAddress: "",
+        evmSignerAddress: "",
+        evmUserContractAddress: "",
+        ownerIndex: 0,
+      };
+      this.createMagicAccount();
+    }
     console.log("Current draft multisig: " + JSON.stringify(this));
   }
 
@@ -205,11 +322,17 @@ export class MultisigKey {
     this._keys = this._keys.filter((key) => key.type !== type);
   }
 
-  public async createSigner({ messages }: { messages: Message[] }) {
+  public async createSigner(
+    { messages }: { messages: Message[] },
+    evmSigningAddress?: string,
+    walletMeta?: WalletMeta,
+  ) {
     console.log("in createSigner(), messages are: " + JSON.stringify(messages));
     return await this.sdk.transactions.createMultisigSigner({
       multisigPublicKey: this.publicKey,
       messages,
+      evmSigningAddress,
+      walletMeta,
     });
   }
 

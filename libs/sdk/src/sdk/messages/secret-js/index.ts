@@ -35,7 +35,7 @@ export class SecretJsMessages extends AbstractMessages {
 
   public toJSON(message: Message): MessageJson {
     if (R.has("eth", message)) {
-      return MessageJson.parse(message.eth);
+      return MessageJson.parse(message);
     }
     if (R.has("userop", message)) {
       return MessageJson.parse(message.userop);
@@ -329,33 +329,56 @@ export class SecretJsMessages extends AbstractMessages {
 
   // TODO fix types as they are forced here
   public getCreateWalletMessage(
-    owner: MultisigKey,
     ownerAddress: string,
+    pubkeyBase64: string,
     sender: string,
   ): Message {
-    console.warn(
-      "owner multisigkey address getting passed in is: " +
-        JSON.stringify(owner),
-    );
     const message = new MsgExecuteContract({
-      sender: sender ?? owner.address,
+      sender: sender ?? ownerAddress,
       contract_address: this.chain.accountCreator.address,
       code_hash: this.chain.accountCreator.codeHash,
       msg: {
         new_account: {
           owner: ownerAddress,
           signers: {
-            signers: this.getSigners(
-              owner.keys as unknown as Array<{
-                type: string;
-                payload: {
-                  publicKey: PublicKey;
-                  privateKey?: string;
-                };
-              }>,
-            ),
+            signers: [
+              {
+                address: ownerAddress,
+                ty: "creator",
+                pubkeyBase64,
+              },
+            ],
           },
           update_delay: 0,
+        },
+      },
+    });
+    return message;
+  }
+
+  // TODO fix types as they are forced here
+  public getFirstUpdateWalletMessage(
+    newOwner: MultisigKey,
+    newOwnerAddress: string,
+    userAccountContractAddress: string,
+    sender: string,
+  ): Message {
+    const message = new MsgExecuteContract({
+      sender: sender,
+      contract_address: userAccountContractAddress,
+      code_hash: this.chain.userAccount.codeHash,
+      msg: {
+        first_update_owner: {
+          first_owner: newOwnerAddress,
+          signers: { signers: this.getSigners(
+            newOwner.keys as unknown as Array<{
+              type: string;
+              payload: {
+                publicKey: PublicKey;
+                privateKey?: string;
+              };
+            }>,
+          )},
         },
       },
     });

@@ -6,7 +6,7 @@ import { MultisigKey } from "../../data-structures";
  * @internal
  */
 export abstract class AbstractWalletsSdk {
-  public abstract createHomeAccountAndAddKey({
+  public abstract getAsyncDetailsAndFirstOwnerUpdate({
     multisigKey,
     demoMode,
   }: {

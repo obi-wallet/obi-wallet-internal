@@ -17,11 +17,15 @@ export const obiTheme: CustomTheme = {
   },
   buttonFlavors: {
     primary: {
-      backgroundColor: "#437DFF",
+      container: {
+        backgroundColor: "#437DFF",
+      },
     },
     cancel: {
-      borderWidth: 1,
-      borderColor: "#ffffff",
+      container: {
+        borderWidth: 1,
+        borderColor: "#ffffff",
+      },
     },
   },
   iconButtonFlavors: {

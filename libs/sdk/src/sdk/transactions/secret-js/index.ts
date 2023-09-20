@@ -11,6 +11,7 @@ import warning from "tiny-warning";
 import { SecretJsMultisigSigner } from "./multisigs-signer";
 import { SecretJsChainId, secretJsChains } from "../../../chains";
 import { SecretJsClient } from "../../../clients";
+import { WalletMeta } from "../../../data-structures";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../../keys";
 import { Message, SignedTransaction } from "../../../transactions";
 import {
@@ -119,9 +120,13 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
   public async createMultisigSigner({
     multisigPublicKey,
     messages,
+    walletMeta,
+    evmSigningAddress,
   }: {
     multisigPublicKey: MultisigPublicKey;
     messages: Message[];
+    walletMeta?: WalletMeta;
+    evmSigningAddress?: string;
   }) {
     const address = this.getAddressOfPublicKey(multisigPublicKey);
     await this.prepareAccount(address);
@@ -129,28 +134,51 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     invariant(account, "Account not found.");
     invariant(this.isBaseAccount(account), "account is not BaseAccount");
     const baseAccount = account as Account & BaseAccount;
-
     const aminoMessages = messages.map((message) => {
       return this.messages.toJSON(message);
     });
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const checkMessages: any[] = aminoMessages;
     console.log("aminoMessages is: " + JSON.stringify(aminoMessages));
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    if ((aminoMessages[0] as any).raw) {
+    if (checkMessages[0].raw || checkMessages[0].eth) {
       invariant(
         aminoMessages.length === 1,
         "Only one message supported for raw signing",
       );
-      return new SecretJsMultisigSigner({
+      console.log("triggering raw/eth is yes");
+      console.log(
+        "checkMessages[0].eth is " + JSON.stringify(checkMessages[0].eth),
+      );
+      const signer = new SecretJsMultisigSigner({
         chainId: this.chainId,
         account,
-        accountNumber: baseAccount.accountNumber,
-        sequence: baseAccount.sequence,
         fee: this.client.defaultFee,
         encodeObjects: undefined,
         /* eslint-disable @typescript-eslint/no-explicit-any */
-        messages: [{ type: "raw", value: (aminoMessages[0] as any).raw }],
+        messages: [
+          {
+            type: checkMessages[0].raw ? "raw" : "eth",
+            value: checkMessages[0].raw
+              ? checkMessages[0].raw
+              : checkMessages[0].eth,
+          },
+        ],
         multisigPublicKey,
       });
+      console.log("partly prepared signer is " + JSON.stringify(signer));
+      if (checkMessages[0].eth) {
+        invariant(evmSigningAddress, "no evmSigningAddress provided");
+        invariant(walletMeta, "no walletMeta provided");
+        console.log("getSignUserOpInput is " + signer.getSignUserOpInput());
+        if (!signer.getSignUserOpInput() && !signer.getSignMessage()) {
+          console.log("calling initUserOperation...");
+          await signer.initUserOperation(evmSigningAddress, walletMeta);
+        } else {
+          console.log("signMessage is " + signer.getSignMessage());
+        }
+      }
+      return signer;
     } else {
       const encodeObjects = aminoMessages.map((aminoMessage) => {
         return this.client.aminoTypes.fromAmino(aminoMessage);
@@ -158,8 +186,6 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
       return new SecretJsMultisigSigner({
         chainId: this.chainId,
         account,
-        accountNumber: baseAccount.accountNumber,
-        sequence: baseAccount.sequence,
         fee: this.client.defaultFee,
         encodeObjects,
         messages: aminoMessages,

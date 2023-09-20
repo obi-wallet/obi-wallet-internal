@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import { ComponentType, Dispatch, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -74,6 +75,7 @@ export const SecurityQuestionInput = observer(function SecurityQuestionInput({
   const [securityQuestions, setSecurityQuestions] = useState(
     useSecurityQuestions(),
   );
+  const theme = useTheme();
 
   return (
     <>
@@ -82,8 +84,9 @@ export const SecurityQuestionInput = observer(function SecurityQuestionInput({
           color: "white",
           fontSize: 10,
           textTransform: "uppercase",
-          marginTop: isSmallScreenNumber(20, 36),
+          // marginTop: isSmallScreenNumber(20, 36),
           marginBottom: 5,
+          ...theme.dropdown?.labelStyle,
         }}
       >
         <FormattedMessage

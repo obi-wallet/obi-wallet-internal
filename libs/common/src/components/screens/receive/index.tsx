@@ -1,4 +1,6 @@
 import { useTheme } from "@emotion/react";
+import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage } from "react-intl";
 import { Platform, Share, Text, TouchableOpacity, View } from "react-native";
@@ -48,28 +50,46 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
     }
   };
 
+  const addEllipsisInMiddle = (text: string, maxLength: number): string => {
+    if (text.length <= maxLength) {
+      return text;
+    }
+
+    const removeCount = Math.ceil((text.length - maxLength) / 2);
+    const midPoint = Math.ceil(text.length / 2);
+    const start = text.slice(0, midPoint - removeCount);
+    const end = text.slice(-midPoint + removeCount);
+
+    return `${start}...${end}`;
+  };
+
   return (
     <OsmosisScreenContainer>
       <SafeAreaView
         style={{
           flex: 1,
-          paddingHorizontal: 20,
-          paddingVertical: Platform.select({
-            ios: isSmallScreenNumber(20, 20),
-            android: isSmallScreenNumber(30, 30),
-          }),
-          justifyContent: "space-between",
+          paddingHorizontal: 22,
+          paddingVertical:
+            Platform.select({
+              ios: isSmallScreenNumber(20, 20),
+              android: isSmallScreenNumber(30, 30),
+            }) || 36,
+          justifyContent:
+            theme.style === "ztx" ? "flex-start" : "space-between",
         }}
       >
         <View style={{ zIndex: 2 }}>
           <View style={{ flexDirection: "row" }}>
             <Text
-              style={{
-                width: "100%",
-                textAlign: "center",
-                color: "#F6F5FF",
-                fontWeight: "600",
-              }}
+              style={[
+                {
+                  width: "100%",
+                  textAlign: "center",
+                  color: "#F6F5FF",
+                  fontWeight: "600",
+                },
+                theme.send?.title,
+              ]}
             >
               <FormattedMessage id="receive.receive" defaultMessage="Receive" />
             </Text>
@@ -77,41 +97,52 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
         </View>
 
         <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          style={[
+            { flex: 1, justifyContent: "center", alignItems: "center" },
+            theme.receive?.address?.container,
+          ]}
         >
           <View
-            style={{
-              borderRadius: 16,
-              backgroundColor: "white",
-              padding: 10,
-              marginBottom: "30%",
-            }}
+            style={[
+              {
+                borderRadius: 16,
+                backgroundColor: "white",
+                padding: 10,
+                marginBottom: "30%",
+              },
+              theme.receive?.address?.qrCode,
+            ]}
           >
-            <QrCode value={address} size={200} />
+            <QrCode value={address} size="100%" />
           </View>
           <TouchableOpacity
-            style={{
-              backgroundColor: theme.colors.panelBackground,
-              borderRadius: 12,
-              paddingVertical: 20,
-              paddingHorizontal: 30,
-            }}
+            style={[
+              {
+                backgroundColor: theme.colors.panelBackground,
+                borderRadius: 12,
+                paddingVertical: 20,
+                paddingHorizontal: 30,
+              },
+              theme.receive?.address?.textInput,
+            ]}
             onPress={() => {
               onShare(address);
             }}
           >
-            <Text
-              style={{
-                textAlign: "center",
-                color: "#F6F5FF",
-                fontSize: 16,
-                fontWeight: "500",
-              }}
-            >
-              {isWeb()
-                ? "Click to copy your address"
-                : "Tap to share your address"}
-            </Text>
+            {theme.style !== "ztx" && (
+              <Text
+                style={{
+                  textAlign: "center",
+                  color: "#F6F5FF",
+                  fontSize: 16,
+                  fontWeight: "500",
+                }}
+              >
+                {isWeb()
+                  ? "Click to copy your address"
+                  : "Tap to share your address"}
+              </Text>
+            )}
             <Text
               style={[
                 {
@@ -128,10 +159,24 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
                       overflowWrap: "anywhere",
                     }
                   : undefined,
+                theme.receive?.address?.text,
               ]}
             >
-              {address}
+              {addEllipsisInMiddle(address, 20)}
             </Text>
+            {theme.style === "ztx" && (
+              <View style={{ marginLeft: 16, width: 14, height: 14 }}>
+                <FontAwesomeIcon
+                  icon={faCopy}
+                  style={{
+                    color: "#fff",
+                    // @ts-expect-error web-only prop
+                    outline: 0,
+                  }}
+                  size={14}
+                />
+              </View>
+            )}
           </TouchableOpacity>
         </View>
       </SafeAreaView>

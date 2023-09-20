@@ -66,9 +66,8 @@ export async function generateEthereumAccount({
       }),
     ],
   });
-  const broadcastTransactionResult = await client.broadcastSignedTransaction(
-    signedTransaction,
-  );
+  const broadcastTransactionResult =
+    await client.broadcastSignedTransaction(signedTransaction);
   console.log(broadcastTransactionResult);
 
   return {

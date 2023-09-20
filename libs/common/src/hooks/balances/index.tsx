@@ -128,7 +128,7 @@ export function enrichToken({
       const digits = 18;
       return {
         ...token,
-        icon: null,
+        icon: require("./assets/ztx.png"),
         amount: parseInt(token.rawAmount, 10) / 10 ** digits,
         contract: token.id,
         denom: "ZTX",
@@ -141,7 +141,7 @@ export function enrichToken({
       const digits = 18;
       return {
         ...token,
-        icon: null,
+        icon: require("./assets/eth.png"),
         amount: parseInt(token.rawAmount, 10) / 10 ** digits,
         contract: token.id,
         denom: "ETH",
@@ -165,6 +165,10 @@ export function enrichToken({
       case "juno1qsrercqegvs4ye0yqg93knv73ye5dc3prqwd6jcdcuj8ggp6w0us66deup":
         // TODO: modal: handle SVGs
         return null;
+      case "0xf0F8FC7365C0c9F87189B6c8703e4719270A3318":
+        return require("./assets/ztx.png");
+      case "eth":
+        return require("./assets/eth.png");
       default:
         return null;
     }

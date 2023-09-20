@@ -33,12 +33,18 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     const { chainStore, configStore, draftsStore } = useStore();
 
     function onCreate() {
+      console.log(
+        "chain ID in onCreate(): " + JSON.stringify(chainStore.currentChain),
+      );
       const newMultisigKey = ObservableMultisigKey.create(
+        undefined,
         chainStore.currentChain,
       );
+      console.log("multisig created");
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });
+      console.log("draft created");
       navigation.navigate(KeyRoute.DeviceKey, {
         draftId,
         flow: KeyFlow.CreateWallet,
@@ -138,7 +144,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     return (
       <Welcome
         onCreate={onCreate}
-        //onZepeto={onZepeto}
+        // onZepeto={onZepeto}
         onRecover={onRecover}
         onEnterDemoMode={onEnterDemoMode}
       />
@@ -148,17 +154,18 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
 
 export interface WelcomeProps {
   onCreate(): void;
-  //onZepeto(): void;
+  // onZepeto(): void;
   onRecover(): void;
   onEnterDemoMode(): void;
 }
 
 export const Welcome = observer<WelcomeProps>(function Welcome({
   onCreate,
-  //onZepeto,
+  // onZepeto,
   onRecover,
   onEnterDemoMode,
 }) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { walletsStore } = useStore();
   const intl = useIntl();
   const theme = useTheme();
@@ -170,29 +177,35 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
       {theme.welcome.buttons.map((button) => {
         switch (button) {
           case WelcomeButton.Zepeto:
-            return null;
-          // <ZepetoButton key={button} onPress={onZepeto} />;
-          case WelcomeButton.Login:
-            if (walletsStore.wallets.length === 0) return null;
             return (
               <Button
                 key={button}
-                label={intl.formatMessage({
-                  id: "onboarding1.login",
-                  defaultMessage: "Login",
-                })}
+                label="Login"
                 flavor="primary"
-                onPress={() => {
-                  accountPickerModalProps.open();
-                }}
+                // onPress={onZepeto}
               />
             );
+          // case WelcomeButton.Login:
+          //   if (walletsStore.wallets.length === 0) return null;
+          //   return (
+          //     <Button
+          //       key={button}
+          //       label={intl.formatMessage({
+          //         id: "onboarding1.login",
+          //         defaultMessage: "Login",
+          //       })}
+          //       flavor="primary"
+          //       onPress={() => {
+          //         accountPickerModalProps.open();
+          //       }}
+          //     />
+          //   );
           case WelcomeButton.GetStarted:
             return (
               <Button
                 key={button}
-                label={intl.formatMessage({ id: "onboarding1.getstarted" })}
-                flavor="primary"
+                label="Sign Up"
+                flavor="cancel"
                 buttonStyle={{
                   marginTop: theme.spacing[4],
                 }}

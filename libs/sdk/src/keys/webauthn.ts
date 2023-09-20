@@ -271,6 +271,7 @@ export async function getDevicePrivateKey(
         },
       });
       invariant(privateKey, "no private key");
+      console.log("returning device private key");
       return privateKey;
     } catch (e) {
       return null;

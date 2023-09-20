@@ -10,6 +10,7 @@ import {
   ZAuthKeySigner,
   getDevicePrivateKey,
   getOrCreateDeviceKeyPair,
+  CommunicationType,
 } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
@@ -75,9 +76,11 @@ async function createUsableSigner({
     case KeyType.ZAuth:
       return new ZAuthKeySigner(key);
     case KeyType.Device: {
+      console.log("switching on key type to KeyType.Device");
       if (!(await getDevicePrivateKey(key))) {
         return null;
       }
+      console.log("getDevicePrivateKey skipped/complete");
       return new DeviceKeySigner(key);
     }
     case KeyType.Unity: {
@@ -175,16 +178,16 @@ export class PhoneKeySigner extends Signer {
 
   public async requestSignature({
     securityAnswer,
-    voice,
+    type,
   }: {
     securityAnswer: string;
-    voice: boolean;
+    type: CommunicationType;
   }) {
     await this.signer.requestSignature({
       chainId: this.chainId,
       securityAnswer,
       twilioClient: this.twilioClient,
-      voice,
+      type,
     });
   }
 

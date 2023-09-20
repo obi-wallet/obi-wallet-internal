@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ViewStyle,
 } from "react-native";
 import { SvgProps } from "react-native-svg";
 
@@ -39,7 +40,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
   const navigation = useRootNavigation();
 
   const isMultisigWallet = walletsStore.currentWallet !== null;
-
+  const theme = useTheme();
   return (
     <OsmosisScreenContainer
       onBack={() => {
@@ -49,11 +50,11 @@ export const SettingsScreen = observer(function SettingsScreen() {
       <Container>
         <View
           style={{
-            marginTop: isSmallScreenNumber(20, 61),
+            marginTop: isSmallScreenNumber(20, 36),
             flexDirection: "row",
             justifyContent: "space-between",
-            marginBottom: isSmallScreenNumber(10, 40),
-            paddingHorizontal: 20,
+            marginBottom: isSmallScreenNumber(10, 36),
+            paddingHorizontal: 22,
           }}
         >
           <View
@@ -80,9 +81,19 @@ export const SettingsScreen = observer(function SettingsScreen() {
             />
           </BrandToggle> */}
             <View style={{ flexDirection: "column" }}>
-              <Heading>
-                Osmosis {isMultisigWallet ? <>Secure Multisig </> : null}Account
-              </Heading>
+              {theme.style === "ztx" ? (
+                <View style={{ flexDirection: "row" }}>
+                  <Text style={theme.titleFalvors?.title}>Obi</Text>
+                  <Text style={theme.titleFalvors?.subTitle}>
+                    {" "}
+                    secure multisig account
+                  </Text>
+                </View>
+              ) : (
+                <Heading>
+                  Obi {isMultisigWallet ? <>Secure Multisig </> : null}Account
+                </Heading>
+              )}
               {/*<Text style={styles.subHeading}>
               Profile picture, name and mail
             </Text>*/}
@@ -127,6 +138,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
                 onPress={() =>
                   navigation.navigate(SettingsRoute.MultisigSettings)
                 }
+                style={theme.settings?.panelContainer}
               />
               <Setting
                 Icon={NewSettingsIcon}
@@ -135,6 +147,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
                 onPress={() =>
                   navigation.navigate(SettingsRoute.OsmosisSettings)
                 }
+                style={theme.settings?.panelContainer}
               />
               {configStore.isFeatureEnabled(Feature.HealthChecks) ? (
                 <Setting
@@ -151,6 +164,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
                   onPress={() =>
                     navigation.navigate(SettingsRoute.MultisigHealthChecks)
                   }
+                  style={theme.settings?.panelContainer}
                 />
               ) : null}
             </>
@@ -171,18 +185,21 @@ export const SettingsScreen = observer(function SettingsScreen() {
               <View style={[styles.separator]} />
             </View>
           )}
-          <Setting
-            Icon={HelpAndSupportIcon}
-            title={intl.formatMessage({
-              id: "settings.helpsupport",
-              defaultMessage: "Help & Support",
-            })}
-            subtitle={intl.formatMessage({
-              id: "settings.helpsupport.subtext.obi",
-              defaultMessage: "Contact Obi support.",
-            })}
-            onPress={() => Linking.openURL("https://obi.money/contact")}
-          />
+          {theme.style !== "ztx" && (
+            <Setting
+              Icon={HelpAndSupportIcon}
+              title={intl.formatMessage({
+                id: "settings.helpsupport",
+                defaultMessage: "Help & Support",
+              })}
+              subtitle={intl.formatMessage({
+                id: "settings.helpsupport.subtext.obi",
+                defaultMessage: "Contact Obi support.",
+              })}
+              onPress={() => Linking.openURL("https://obi.money/contact")}
+              style={theme.settings?.panelContainer}
+            />
+          )}
 
           <Setting
             Icon={() => <LogoutIcon fill="white" />}
@@ -197,15 +214,10 @@ export const SettingsScreen = observer(function SettingsScreen() {
             onPress={() => {
               walletsStore.logout();
             }}
+            style={theme.settings?.panelContainer || {}}
           />
 
-          <View
-            style={{
-              flex: 1,
-              flexDirection: "column",
-              justifyContent: "flex-end",
-            }}
-          >
+          {theme.style !== "ztx" && (
             <View
               style={{
                 flex: 1,
@@ -215,58 +227,66 @@ export const SettingsScreen = observer(function SettingsScreen() {
             >
               <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  paddingBottom: 15,
+                  flex: 1,
+                  flexDirection: "column",
+                  justifyContent: "flex-end",
                 }}
               >
-                {/*<Text*/}
-                {/*  onPress={() => {*/}
-                {/*    navigation.navigate("AddSubAccount");*/}
-                {/*  }}*/}
-                {/*  style={{*/}
-                {/*    color: "#F6F5FF",*/}
-                {/*    paddingRight: 10,*/}
-                {/*    fontSize: 10,*/}
-                {/*  }}*/}
-                {/*>*/}
-                {/*  <FormattedMessage*/}
-                {/*    id="settings.terms"*/}
-                {/*    defaultMessage="Terms of Service"*/}
-                {/*  />*/}
-                {/*</Text>*/}
-                <Text
-                  onPress={() => {
-                    const url = "https://www.obi.money/privacy-policy";
-                    void Linking.openURL(url);
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingBottom: 15,
                   }}
+                >
+                  {/*<Text*/}
+                  {/*  onPress={() => {*/}
+                  {/*    navigation.navigate("AddSubAccount");*/}
+                  {/*  }}*/}
+                  {/*  style={{*/}
+                  {/*    color: "#F6F5FF",*/}
+                  {/*    paddingRight: 10,*/}
+                  {/*    fontSize: 10,*/}
+                  {/*  }}*/}
+                  {/*>*/}
+                  {/*  <FormattedMessage*/}
+                  {/*    id="settings.terms"*/}
+                  {/*    defaultMessage="Terms of Service"*/}
+                  {/*  />*/}
+                  {/*</Text>*/}
+                  <Text
+                    onPress={() => {
+                      const url = "https://www.obi.money/privacy-policy";
+                      void Linking.openURL(url);
+                    }}
+                    style={{
+                      color: "#F6F5FF",
+                      marginLeft: 10,
+                      fontSize: 10,
+                    }}
+                  >
+                    <FormattedMessage
+                      id="settings.privacy"
+                      defaultMessage="Privacy Policy"
+                    />
+                  </Text>
+                </View>
+
+                <Text
                   style={{
                     color: "#F6F5FF",
                     marginLeft: 10,
+                    marginBottom: 20,
                     fontSize: 10,
+                    textAlign: "center",
                   }}
                 >
-                  <FormattedMessage
-                    id="settings.privacy"
-                    defaultMessage="Privacy Policy"
-                  />
+                  {/*Obi {appMetadata?.appVersion} {appMetadata?.label}*/}
                 </Text>
               </View>
-
-              <Text
-                style={{
-                  color: "#F6F5FF",
-                  marginLeft: 10,
-                  marginBottom: 20,
-                  fontSize: 10,
-                  textAlign: "center",
-                }}
-              >
-                {/*Obi {appMetadata?.appVersion} {appMetadata?.label}*/}
-              </Text>
             </View>
-          </View>
+          )}
         </ScrollView>
       </Container>
     </OsmosisScreenContainer>
@@ -280,6 +300,7 @@ interface SettingProps {
   onPress?: () => void;
   children?: ReactNode;
   disableButton?: boolean;
+  style?: ViewStyle | undefined;
 }
 
 export const Setting = observer(function Setting({
@@ -289,6 +310,7 @@ export const Setting = observer(function Setting({
   onPress,
   children,
   disableButton,
+  style,
 }: SettingProps) {
   const theme = useTheme();
 
@@ -298,24 +320,34 @@ export const Setting = observer(function Setting({
         style={{
           flex: 1,
           flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         {Icon && (
           <View
             style={[
-              theme.iconButtonFlavors.panel,
               {
                 padding: 10,
                 alignSelf: "flex-start",
                 borderRadius: 12,
               },
+              theme.iconButtonFlavors?.panel,
             ]}
           >
-            <Icon fill="white" />
+            <Icon
+              fill="white"
+              style={{
+                width: theme.iconButtonFlavors?.panel.width,
+                height: theme.iconButtonFlavors?.panel.height,
+              }}
+            />
           </View>
         )}
         <TilesContainer>
-          <Heading style={[{ fontSize: 14 }]}>{title}</Heading>
+          <Heading style={[{ fontSize: 14 }, theme.textStyles.bold]}>
+            {title}
+          </Heading>
           <SubHeading>{subtitle}</SubHeading>
         </TilesContainer>
       </View>
@@ -325,7 +357,7 @@ export const Setting = observer(function Setting({
   return disableButton ? (
     <SettingContainer>{renderContent()}</SettingContainer>
   ) : (
-    <SettingButton onPress={() => onPress && onPress()}>
+    <SettingButton onPress={() => onPress && onPress()} {...style}>
       {renderContent()}
     </SettingButton>
   );
@@ -350,12 +382,13 @@ const Heading = styled.Text(({ theme }) => {
   };
 });
 
-const SubHeading = styled.Text({
+const SubHeading = styled.Text(({ theme }) => ({
   color: "#F6F5FF",
   opacity: 0.6,
   fontSize: 12,
+  ...theme.textStyles.regular,
   ...(isWeb() ? { wordBreak: "break-word" } : {}),
-});
+}));
 
 const styles = StyleSheet.create({
   // @ts-expect-error `minHeight: "max-content"` is not in the react-native StyleSheet type
@@ -372,7 +405,7 @@ const styles = StyleSheet.create({
   },
   flex1: {
     flex: 0,
-    marginBottom: 20,
+    marginBottom: 18,
   },
   text: {
     color: "#fff",
@@ -401,9 +434,12 @@ const SettingContainer = styled.View(
     ...styles.setting,
     ...styles.flex1,
   },
-  ({ theme }) => ({
-    backgroundColor: theme.colors.panelBackground,
-  }),
+  ({ theme }) => [
+    {
+      backgroundColor: theme.colors.panelBackground,
+    },
+    theme.settings?.panelContainer,
+  ],
 );
 
 const SettingButton = styled.TouchableOpacity(
@@ -411,9 +447,12 @@ const SettingButton = styled.TouchableOpacity(
     ...styles.setting,
     ...styles.flex1,
   },
-  ({ theme }) => ({
-    backgroundColor: theme.colors.panelBackground,
-  }),
+  ({ theme }) => [
+    {
+      backgroundColor: theme.colors.panelBackground,
+    },
+    theme.settings?.panelContainer,
+  ],
 );
 
 export const settingsScreens = () => {

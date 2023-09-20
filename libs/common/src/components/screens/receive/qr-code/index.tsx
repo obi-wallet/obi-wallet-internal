@@ -3,7 +3,7 @@ import QRCode from "react-qr-code";
 
 export interface QrCodeProps {
   value: string;
-  size: number;
+  size: number | string;
 }
 
 export const QrCode = observer<QrCodeProps>(function QrCode({ value, size }) {

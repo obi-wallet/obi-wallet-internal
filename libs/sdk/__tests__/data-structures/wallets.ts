@@ -114,6 +114,7 @@ test("create wallet", async () => {
       rawResult: null,
       transactionHash: "foo",
     },
+    signature: undefined,
   });
 
   const response = await createWalletPromise;

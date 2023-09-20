@@ -127,8 +127,18 @@ export abstract class AbstractMessages {
    * Message to create a new wallet with the given owner.
    */
   public abstract getCreateWalletMessage(
-    owner: MultisigKey,
     ownerAddress: string,
+    pubkeyBase64: string,
     sender?: string,
+  ): Message;
+
+  /**
+   * Message to update a new wallet's owner for the first time.
+   */
+  public abstract getFirstUpdateWalletMessage(
+    newOwner: MultisigKey,
+    newOwnerAddress: string,
+    userAccountContractAddress: string,
+    sender: string,
   ): Message;
 }

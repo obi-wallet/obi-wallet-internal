@@ -4,10 +4,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage } from "react-intl";
-import { TouchableOpacity, View } from "react-native";
+import { Image, TouchableOpacity, View, ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useKeyMetaData } from "./key-meta-data";
+import { IconButton } from "../buttons";
 import { Text } from "../typography";
 
 export interface KeyBottomSheetContentProps {
@@ -22,12 +23,13 @@ export interface KeyBottomSheetContentProps {
 }
 
 export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function KeyBottomSheetContent({ type, multisigKey, action, onClose }) {
     const keyMetaData = useKeyMetaData();
     const theme = useTheme();
     const { label, Icon } = keyMetaData.metaData[type];
     const title = label;
-    const activated = multisigKey.hasKeyOfType(type);
+    // const activated = multisigKey.hasKeyOfType(type);
 
     const safeArea = useSafeAreaInsets();
 
@@ -40,13 +42,16 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
             action.onPress();
             onClose();
           }}
-          style={{
-            paddingVertical: 5,
-            width: "100%",
-            backgroundColor: theme.colors.primary,
-            borderRadius: 12,
-            alignItems: "center",
-          }}
+          style={[
+            {
+              paddingVertical: 5,
+              backgroundColor: theme.colors.primary,
+              borderRadius: 12,
+              alignItems: "center",
+              width: 180,
+            },
+            theme.buttonFlavors?.primary as ViewStyle,
+          ]}
         >
           <Text
             style={{
@@ -102,11 +107,54 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
           flex: 1,
           justifyContent: "space-between",
           paddingBottom: safeArea.bottom,
-          paddingHorizontal: 20,
-          marginTop: 20,
         }}
       >
         <View
+          style={{
+            marginVertical: 20,
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            borderBottomColor: "#ffffff",
+            ...theme.header,
+            position: "relative",
+            width: "100%",
+            height: 64,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "600",
+              color: "#f6f5ff",
+              marginBottom: 10,
+            }}
+          >
+            {title}
+          </Text>
+          <View style={{ width: 28, position: "absolute", top: 0, right: 0 }}>
+            {onClose ? (
+              <IconButton
+                onPress={onClose}
+                style={{ width: 28 }}
+                hitSlop={{ top: 28, bottom: 28, left: 28, right: 28 }}
+              >
+                <Image
+                  resizeMode="contain"
+                  source={{ uri: theme.header?.closeIcon?.src }}
+                  style={{
+                    width: 12,
+                    height: 12,
+                    marginLeft: "auto",
+                    ...theme.header?.closeIcon,
+                  }}
+                />
+              </IconButton>
+            ) : undefined}
+          </View>
+        </View>
+        {/* <View
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
@@ -148,9 +196,17 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
               )}
             </Text>
           </View>
-        </View>
-        <View>
-          <Text
+        </View> */}
+        <View
+          style={{
+            alignItems: "center",
+            // justifyContent: "space-between",
+            flex: 1,
+            flexGrow: 1,
+            paddingHorizontal: 12,
+          }}
+        >
+          {/* <Text
             style={{
               fontSize: 16,
               fontWeight: "600",
@@ -159,36 +215,41 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
             }}
           >
             {title}
-          </Text>
-          <Text style={{ color: "rgba(246, 245, 255, 0.6)" }}>
+          </Text> */}
+          <View style={{ marginTop: 52 }}>
+            <Icon fill="white" width={24} height={24} />
+          </View>
+          <Text style={{ color: "rgba(246, 245, 255, 0.6)", marginTop: 12 }}>
             {getModalText(type)}
           </Text>
-        </View>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          {type !== KeyType.Device ? (
-            <>
-              <FontAwesomeIcon
-                icon={faInfoCircle}
-                style={{ color: "rgba(246, 245, 255, 0.6)", marginRight: 10 }}
-              />
-              <Text
-                style={{
-                  flex: 1,
-                  fontSize: 12,
-                  color: "rgba(246, 245, 255, 0.6)",
-                }}
-              >
-                <FormattedMessage
-                  id="settings.multisig.modal.info"
-                  defaultMessage="In case this key is stolen/lost or for any other reason, you can replace it with a new one."
+
+          <View
+            style={{ flexDirection: "row", alignItems: "center", marginTop: 8 }}
+          >
+            {type !== KeyType.Device ? (
+              <>
+                <FontAwesomeIcon
+                  icon={faInfoCircle}
+                  style={{ color: "rgba(246, 245, 255, 0.6)", marginRight: 10 }}
                 />
-              </Text>
-            </>
-          ) : null}
-        </View>
-        <View style={{ alignItems: "center" }}>
-          {getRecoverButton()}
-          <TouchableOpacity
+                <Text
+                  style={{
+                    flex: 1,
+                    fontSize: 12,
+                    color: "rgba(246, 245, 255, 0.6)",
+                  }}
+                >
+                  <FormattedMessage
+                    id="settings.multisig.modal.info"
+                    defaultMessage="In case this key is stolen/lost or for any other reason, you can replace it with a new one."
+                  />
+                </Text>
+              </>
+            ) : null}
+          </View>
+          <View style={{ alignItems: "center", marginTop: 24 }}>
+            {getRecoverButton()}
+            {/* <TouchableOpacity
             onPress={() => onClose()}
             style={{ paddingVertical: 15, paddingHorizontal: 63 }}
           >
@@ -198,7 +259,8 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
                 defaultMessage="Close"
               />
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
+          </View>
         </View>
       </View>
     );

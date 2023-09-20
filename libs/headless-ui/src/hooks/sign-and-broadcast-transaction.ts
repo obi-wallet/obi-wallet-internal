@@ -68,10 +68,16 @@ export function useSignAndBroadcastTransaction({
     mutationFn: async () => {
       if (!multisigKey || (await awaitableCanExecute.getAsync())) return null;
       /* eslint-disable @typescript-eslint/no-explicit-any */
-      if ((payload.messages[0] as any).raw) {
-        return await multisigKey.createSigner({
-          messages: payload.messages,
-        });
+      if (
+        (payload.messages[0] as any).raw ||
+        (payload.messages[0] as any).eth
+      ) {
+        const signer = await multisigKey.createSigner(
+          { messages: payload.messages },
+          wallet?.evmSigningAddress,
+          walletMeta!, // unsure whether this passes thru
+        );
+        return signer;
       } else {
         return await multisigKey.createSigner({
           messages: wrapMessages({
@@ -173,7 +179,11 @@ export function useSignAndBroadcastTransaction({
       }
     },
     onSuccess(payload) {
-      interaction.resolve({ approved: true, payload });
+      interaction.resolve({
+        approved: true,
+        payload,
+        signature: Buffer.from(payload.transactionHash, "hex"),
+      });
     },
     retry: 2,
   });
@@ -182,7 +192,7 @@ export function useSignAndBroadcastTransaction({
     interaction,
     messages: payload.messages,
     cancel() {
-      interaction.resolve({ approved: false });
+      interaction.resolve({ approved: false, signature: undefined });
     },
     broadcast,
   };

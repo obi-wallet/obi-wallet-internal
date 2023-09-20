@@ -12,6 +12,8 @@ import { createGatekeeperConfig } from "../gatekeeper-config";
 import { AbstractMigratable, AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
 import { MultisigWallet } from "../multisig-wallet";
+import invariant from "tiny-invariant";
+import { MultisigKeySchema } from "../multisig-key/schema";
 
 export class Wallets {
   public get schema() {
@@ -97,17 +99,21 @@ export class Wallets {
     multisigKey: MultisigKey;
     demoMode: boolean;
   }) {
-    const response = await this.walletsSdk.createHomeAccountAndAddKey({
+    const ownerMultisig = multisigKey.toJSON();
+    console.log("ownerMultisig in createWallet() is " + JSON.stringify(ownerMultisig));
+    invariant(Object.keys(ownerMultisig).length !== 0, "empty ownerMultisig");
+    const definedOwnerMultisig: AbstractSerialized<typeof MultisigKeySchema> = ownerMultisig as AbstractSerialized<typeof MultisigKeySchema>;
+    console.log("definedOwnerMultisig is " + JSON.stringify(definedOwnerMultisig));
+    const response = await this.walletsSdk.getAsyncDetailsAndFirstOwnerUpdate({
       multisigKey,
       demoMode,
     });
-
     const wallet = this._factory.create({
       type: demoMode ? "multisig-demo" : "multisig",
       data: {
         chain: multisigKey.chainId,
         gatekeeperConfig: createGatekeeperConfig().toJSON(),
-        owner: multisigKey.toJSON(),
+        owner: definedOwnerMultisig,
         proxyAddress: {
           v: 1,
           address: response.homeAccountAddress,
@@ -119,6 +125,7 @@ export class Wallets {
     wallet.setEvmSigningAddress(response.evmSignerAddress, true);
     wallet.setEvmUserContractAddress(response.evmUserContractAddress);
     this.upsertWallet(wallet);
+    this.setCurrentWallet(wallet);
     return response;
   }
 

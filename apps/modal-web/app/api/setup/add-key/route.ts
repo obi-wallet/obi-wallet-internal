@@ -31,22 +31,17 @@ export async function POST(request: Request) {
     const { wallet, signer } = getFeeLender(chainId);
 
     console.log("resolving add_key transaction...");
-    console.warn(
-      "The add_key user entry used is " +
-        body.userEntryAddress
-    );
-    const addKeyMsg = 
-    new MsgExecuteContract({
+    console.warn("The add_key user entry used is " + body.userEntryAddress);
+    const addKeyMsg = new MsgExecuteContract({
       sender: wallet.address,
       contract_address: chain.secretSigner.address,
       msg: {
         add_key: {
           user_entry_address: body.userEntryAddress,
           user_entry_code_hash: body.userEntryCodeHash,
-          inject_privkey: Buffer.from(
-            evmKeyPair.privateKey,
-            "base64",
-          ).toString("hex"),
+          inject_privkey: Buffer.from(evmKeyPair.privateKey, "base64").toString(
+            "hex",
+          ),
         },
       },
       code_hash: chain.secretSigner.codeHash,
@@ -56,9 +51,8 @@ export async function POST(request: Request) {
       signer,
       messages: [addKeyMsg],
     });
-    const broadcastTransactionResult = await client.broadcastSignedTransaction(
-      signedTransaction,
-    );
+    const broadcastTransactionResult =
+      await client.broadcastSignedTransaction(signedTransaction);
     console.warn(JSON.stringify(broadcastTransactionResult));
 
     return NextResponse.json({
