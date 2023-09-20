@@ -142,17 +142,13 @@ export function useSignAndBroadcastTransaction({
         const signerSignature = await new SecretJsClient(
           "secret-4",
         ).withSecretNetworkClient(async (client) => {
-          const user_entry_code_hash =
-            await client.query.compute.codeHashByContractAddress({
-              contract_address: wallet?.proxyAddress,
-            });
           const sign_bytes_query_msg = {
             contract_address: chain.secretSigner.address,
             code_hash: chain.secretSigner.codeHash,
             query: {
               sign_bytes: {
-                user_entry_address: wallet?.proxyAddress,
-                user_entry_code_hash: user_entry_code_hash.code_hash!,
+                user_entry_address: wallet?.proxyAddress ?? payload.userEntryAddress,
+                user_entry_code_hash: chain.userEntry.codeHash,
                 bytes: sha256(Buffer.from((payload.messages[0] as any).raw)),
                 bytes_signed_by_signers: signed.map((s) =>
                   Buffer.from(s).toString("hex"),

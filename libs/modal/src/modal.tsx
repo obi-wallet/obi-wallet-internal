@@ -165,6 +165,7 @@ const MessageHandlers = observer(function MessageHandlers() {
             store.walletsStore.currentWallet.evmSigningAddress,
             dummyProvider,
             store.walletsStore.currentWallet.owner,
+            store.walletsStore.currentWallet.proxyAddress,
           );
           console.log("building simpleAccount...");
           const simpleAccount = await Presets.Builder.SimpleAccount.init(
@@ -173,7 +174,7 @@ const MessageHandlers = observer(function MessageHandlers() {
             { paymasterMiddleware },
           );
         
-          invariant(data.payload.eth, "no user op inputted");
+          invariant(data.payload[0].eth, "no user op inputted");
           console.log("in buildUserOperation()");
           const ethTx = new EthTransaction(data.payload.eth!);
           const userOp: IUserOperation = await client.buildUserOperation(
