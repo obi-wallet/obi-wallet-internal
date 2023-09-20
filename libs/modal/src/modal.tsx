@@ -6,7 +6,6 @@ import {
   SignAndBroadcastTransactionUserInteraction,
   createGatekeeperConfig,
   Secp256k1PublicKey,
-  getOrCreateDeviceKeyPair,
 } from "@obi-wallet/sdk";
 import { ethers } from "ethers";
 import { autorun } from "mobx";
@@ -290,8 +289,6 @@ const MessageHandlers = observer(function MessageHandlers() {
             proxyAddress,
             ethereumAccount,
           );
-          let kp;
-          let _;
 
           store.walletsStore.upsertWallet(wallet);
 

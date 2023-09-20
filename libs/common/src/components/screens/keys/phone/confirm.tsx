@@ -1,11 +1,5 @@
 import { useTheme } from "@emotion/react";
-import {
-  createGatekeeperConfig,
-  KeyType,
-  MultisigKey,
-  ObservableMultisigWallet,
-  Secp256k1KeyPair,
-} from "@obi-wallet/sdk";
+import { MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -85,7 +79,7 @@ export interface PhoneKeyConfirmProps {
 export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
   function PhoneKeyConfirm({
     draftId,
-    flow,
+    // flow,
     demoMode,
     phoneNumber,
     securityQuestion,

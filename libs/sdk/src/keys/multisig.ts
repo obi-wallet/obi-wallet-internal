@@ -33,3 +33,5 @@ export class CombinedMultisigPublicKey {
     ).toString("base64");
   }
 }
+
+export { Secp256k1PublicKey };

@@ -4,15 +4,14 @@ import {
   SimplePublicKey,
 } from "@terra-money/feather.js";
 import { BaseAccount } from "cosmjs-types/cosmos/auth/v1beta1/auth";
-import { WalletMeta } from "libs/sdk/src/data-structures";
 import { Account } from "secretjs";
 import invariant from "tiny-invariant";
 import warning from "tiny-warning";
-import { string } from "zod";
 
-import { EthTransaction, SecretJsMultisigSigner } from "./multisigs-signer";
+import { SecretJsMultisigSigner } from "./multisigs-signer";
 import { SecretJsChainId, secretJsChains } from "../../../chains";
 import { SecretJsClient } from "../../../clients";
+import { WalletMeta } from "../../../data-structures";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../../keys";
 import { Message, SignedTransaction } from "../../../transactions";
 import {
@@ -139,6 +138,7 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     const aminoMessages = messages.map((message) => {
       return this.messages.toJSON(message);
     });
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     const checkMessages: any[] = aminoMessages;
     console.log("aminoMessages is: " + JSON.stringify(aminoMessages));
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -148,7 +148,9 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
         "Only one message supported for raw signing",
       );
       console.log("triggering raw/eth is yes");
-      console.log("checkMessages[0].eth is " + JSON.stringify(checkMessages[0].eth));
+      console.log(
+        "checkMessages[0].eth is " + JSON.stringify(checkMessages[0].eth),
+      );
       const signer = new SecretJsMultisigSigner({
         chainId: this.chainId,
         account,
@@ -161,8 +163,8 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
           {
             type: checkMessages[0].raw ? "raw" : "eth",
             value: checkMessages[0].raw
-              ?  checkMessages[0].raw
-              :  checkMessages[0].eth,
+              ? checkMessages[0].raw
+              : checkMessages[0].eth,
           },
         ],
         multisigPublicKey,

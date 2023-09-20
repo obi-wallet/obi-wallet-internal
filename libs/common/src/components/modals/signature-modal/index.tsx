@@ -4,9 +4,7 @@ import {
 } from "@obi-wallet/headless-ui";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
-import * as R from "ramda";
 
-import { SignatureModalEthereumDemo } from "./ethereum-demo";
 import { SignatureModalFlexAccount } from "./flex-account";
 import { SignatureModalMultisigKey } from "./multisig-key";
 import { SignatureModalSinglesigWallet } from "./singlesig-wallet";
@@ -23,9 +21,9 @@ export interface SignatureModalProps {
 
 export const SignatureModal = observer<SignatureModalProps>(
   function SignatureModal({ interaction }) {
-    const ethereumDemo = interaction.payload.messages.every((message) => {
+    /* const ethereumDemo = interaction.payload.messages.every((message) => {
       return R.has("eth", message) || R.has("userop", message);
-    });
+    }); */
     return (
       /* ethereumDemo ? (
       <SignatureModalEthereumDemo interaction={interaction} />

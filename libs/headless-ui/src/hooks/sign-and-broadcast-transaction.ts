@@ -75,7 +75,7 @@ export function useSignAndBroadcastTransaction({
         const signer = await multisigKey.createSigner(
           { messages: payload.messages },
           wallet?.evmSigningAddress,
-          walletMeta! // unsure whether this passes thru
+          walletMeta!, // unsure whether this passes thru
         );
         return signer;
       } else {

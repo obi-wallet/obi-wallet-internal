@@ -124,11 +124,16 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     );
     this.signMessage = undefined;
     if (messages[0].type === "raw" || messages[0].type === "eth") {
-      console.log("messages[0] raw/eth passes with messages " + JSON.stringify(messages[0]));
+      console.log(
+        "messages[0] raw/eth passes with messages " +
+          JSON.stringify(messages[0]),
+      );
       if (messages[0].type === "raw") {
         this.signMessage = messages[0].value;
       } else {
-        console.log("setting signUserOpInput to " + JSON.stringify(messages[0].value));
+        console.log(
+          "setting signUserOpInput to " + JSON.stringify(messages[0].value),
+        );
         this.signUserOpInput = messages[0].value as EthTxInput;
         // also need to initUserOperation
       }
@@ -147,11 +152,11 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
   }
 
   public getSignMessage() {
-    return this.signMessage
+    return this.signMessage;
   }
 
   public getSignUserOpInput() {
-    return this.signUserOpInput
+    return this.signUserOpInput;
   }
 
   public async initUserOperation(
