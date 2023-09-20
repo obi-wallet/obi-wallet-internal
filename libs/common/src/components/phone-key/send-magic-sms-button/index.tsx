@@ -1,12 +1,8 @@
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
 
-import { isSmallScreenNumber } from "../../../helpers";
 import { AsyncButton } from "../../buttons";
-import { Text } from "../../typography";
 
 export interface SendMagicSmsButtonProps {
   description?: string;
@@ -20,10 +16,11 @@ export const SendMagicSmsButton = observer(function SendMagicSmsButton({
   onPress,
   disabled,
 }: SendMagicSmsButtonProps) {
+  const _description = description;
   const intl = useIntl();
   return (
     <View>
-      {description ? (
+      {/* {description ? (
         <View
           style={{
             flex: 1,
@@ -50,7 +47,7 @@ export const SendMagicSmsButton = observer(function SendMagicSmsButton({
             {description}
           </Text>
         </View>
-      ) : null}
+      ) : null} */}
       <AsyncButton
         label={intl.formatMessage({
           id: "onboarding2.sendmagicsms",

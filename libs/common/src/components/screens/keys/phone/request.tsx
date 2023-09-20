@@ -1,8 +1,10 @@
+import { useTheme } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ComunicationType } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { Controller, useForm } from "react-hook-form";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
@@ -72,11 +74,13 @@ export interface PhoneKeyRequestProps {
 
 export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
   function PhoneKeyRequest({ demoMode, flow, onSubmit, ...params }) {
+    const _flow = flow;
     const intl = useIntl();
     const { chainStore } = useStore();
     const chainId = chainStore.currentChain;
     const env = useEnv();
     const securityQuestions = useSecurityQuestions();
+    const theme = useTheme();
 
     const { control, formState, handleSubmit } = useForm({
       defaultValues: {
@@ -109,7 +113,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                 <View
                   style={{
                     marginTop: 10,
-                    paddingTop: isSmallScreenNumber(0, 32),
+                    paddingTop: isSmallScreenNumber(0, 36),
                   }}
                 >
                   <View>
@@ -121,7 +125,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                         marginBottom: 10,
                       }}
                     >
-                      {flow === KeyFlow.EditWallet ? (
+                      {/* {flow === KeyFlow.EditWallet ? (
                         <FormattedMessage
                           id="onboarding2.recovery.authyourkeys"
                           defaultMessage="Create a New Phone Number Key"
@@ -136,26 +140,53 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                           id="onboarding2.authyourkeys"
                           defaultMessage="Create a Phone Number Key"
                         />
-                      )}
+                      )} */}
+                      <Text style={theme.phoneKey?.title1}>
+                        Create
+                        <Text style={theme.phoneKey?.title2}>
+                          {" "}
+                          a phone number key
+                        </Text>
+                      </Text>
                     </Text>
-                    <Text
+                    <View
                       style={{
-                        color: "white",
-                        fontSize: isSmallScreenNumber(12, 14),
+                        ...theme.phoneKey?.info,
                       }}
                     >
-                      {flow === KeyFlow.EditWallet ? (
-                        <FormattedMessage
-                          id="onboarding2.recovery.authyourkeyssubtext"
-                          defaultMessage="Please answer a security question. It can be the same as your old answer, or different."
-                        />
-                      ) : (
-                        <FormattedMessage
-                          id="onboarding2.authyourkeyssubtext"
-                          defaultMessage="Please answer a security question."
-                        />
-                      )}
-                    </Text>
+                      <Text style={{ ...theme.phoneKey?.info.text }}>
+                        ZTX creates a multi-key to login and keep your account
+                        secure and recoverable without relying on seed phrases.
+                      </Text>
+                      <Text
+                        style={{
+                          marginTop: 8,
+                          ...theme.phoneKey?.info.text,
+                        }}
+                      >
+                        ZTX does not store any information.
+                      </Text>
+                      {/* <Text
+                        style={{
+                          color: "white",
+                          fontSize: isSmallScreenNumber(12, 14),
+                          ...theme.phoneKey.request.info.text,
+                        }}
+                      >
+                        {flow === KeyFlow.EditWallet ? (
+                          <FormattedMessage
+                            id="onboarding2.recovery.authyourkeyssubtext"
+                            defaultMessage="Please answer a security question. It can be the same as your old answer, or different."
+                          />
+                        ) : (
+                          <FormattedMessage
+                            id="onboarding2.authyourkeyssubtext"
+                            defaultMessage="Please answer a security question."
+                          />
+                        )} 
+                      </Text>
+                        */}
+                    </View>
                   </View>
                 </View>
                 <Controller
@@ -190,8 +221,8 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                   render={({ field, fieldState }) => {
                     return (
                       <TextInput
-                        label="Security Answer"
-                        placeholder="Type your answer here"
+                        label="Answer"
+                        placeholder="Type Answer Here"
                         style={{ flex: 1, marginVertical: 20 }}
                         invalidMessage={fieldState.error?.message}
                         value={field.value}
@@ -208,7 +239,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                     return (
                       <TextInput
                         label="Phone Number"
-                        placeholder="+1123456789"
+                        placeholder="Enter Phone Number"
                         style={{ flex: 1 }}
                         invalidMessage={fieldState.error?.message}
                         value={field.value}
@@ -238,7 +269,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                       const res = await twilioClient.requestPublicKeyMagicCode({
                         ...data,
                         chainId,
-                        voice: false,
+                        type: ComunicationType.SMS,
                       });
                       /*
                       const res = await twilioClient.requestPublicKeyMagicCode({

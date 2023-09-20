@@ -114,7 +114,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         <KeyboardAwareScrollView
           style={{
             flex: 1,
-            paddingHorizontal: 20,
+            paddingHorizontal: theme.modal.paddingHorizontal || 20,
           }}
           contentContainerStyle={{
             flex: 1,
@@ -123,54 +123,56 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
           }}
         >
           <View>
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
+            {theme.style !== "ztx" && (
               <View
                 style={{
-                  backgroundColor: "rgba(219, 222, 255, 0.07)",
                   justifyContent: "center",
                   alignItems: "center",
-                  width: isSmallScreenNumber(200, 296),
-                  height: isSmallScreenNumber(200, 296),
-                  borderRadius: isSmallScreenNumber(200, 296),
                 }}
               >
                 <View
                   style={{
-                    backgroundColor: "rgba(219, 222, 255, 0.17)",
+                    backgroundColor: "rgba(219, 222, 255, 0.07)",
                     justifyContent: "center",
                     alignItems: "center",
-                    width: isSmallScreenNumber(140, 224),
-                    height: isSmallScreenNumber(140, 224),
-                    borderRadius: isSmallScreenNumber(140, 224),
+                    width: isSmallScreenNumber(200, 296),
+                    height: isSmallScreenNumber(200, 296),
+                    borderRadius: isSmallScreenNumber(200, 296),
                   }}
                 >
                   <View
-                    style={
-                      isSmallScreen()
-                        ? {
-                            width: 70,
-                            height: 70,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }
-                        : {
-                            width: "50%",
-                            height: "50%",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }
-                    }
+                    style={{
+                      backgroundColor: "rgba(219, 222, 255, 0.17)",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: isSmallScreenNumber(140, 224),
+                      height: isSmallScreenNumber(140, 224),
+                      borderRadius: isSmallScreenNumber(140, 224),
+                    }}
                   >
-                    <ObiFaceScannerIcon />
+                    <View
+                      style={
+                        isSmallScreen()
+                          ? {
+                              width: 70,
+                              height: 70,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }
+                          : {
+                              width: "50%",
+                              height: "50%",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }
+                      }
+                    >
+                      <ObiFaceScannerIcon />
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
+            )}
 
             <Text
               style={{

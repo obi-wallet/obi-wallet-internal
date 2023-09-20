@@ -1,4 +1,11 @@
-import { MultisigKey } from "@obi-wallet/sdk";
+import { useTheme } from "@emotion/react";
+import {
+  createGatekeeperConfig,
+  KeyType,
+  MultisigKey,
+  ObservableMultisigWallet,
+  Secp256k1KeyPair,
+} from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -96,7 +103,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
       verifyButtonDisabledDoubleclick,
       setVerifyButtonDisabledDoubleclick,
     ] = useState(false); // Magic Button disable on button-click
-
+    const theme = useTheme();
     const minInputCharsSMSCode = 8;
 
     useEffect(() => {
@@ -119,7 +126,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
             <KeyboardAwareScrollView
               style={{
                 flex: 1,
-                paddingHorizontal: 20,
+                paddingHorizontal: 22,
               }}
               contentContainerStyle={{
                 flex: 1,
@@ -139,10 +146,17 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                         color: "#F6F5FF",
                         fontSize: isSmallScreenNumber(20, 24),
                         fontWeight: "600",
-                        marginTop: 32,
+                        marginTop: 36,
                       }}
                     >
-                      {flow === KeyFlow.EditWallet ? (
+                      <Text style={theme.phoneKey?.title1}>
+                        Create
+                        <Text style={theme.phoneKey?.title2}>
+                          {" "}
+                          a phone number key
+                        </Text>
+                      </Text>
+                      {/* {flow === KeyFlow.EditWallet ? (
                         <FormattedMessage
                           id="onboarding2.recovery.authyourkeys"
                           defaultMessage="Create a Replacement Phone Number Key"
@@ -157,21 +171,42 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                           id="onboarding3.authyourkeys"
                           defaultMessage="Authenticate Your Keys"
                         />
-                      )}
+                      )} */}
                     </Text>
-                    <Text
+                    <View
                       style={{
-                        color: "white",
-                        fontSize: isSmallScreenNumber(12, 14),
-                        marginTop: 10,
+                        ...theme.phoneKey?.info,
                       }}
                     >
-                      <FormattedMessage
-                        id="onboarding3.pastereponse"
-                        defaultMessage="Paste in the response you received to"
-                      />{" "}
-                      <Text style={{ fontWeight: "600" }}>{phoneNumber}.</Text>
-                    </Text>
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: isSmallScreenNumber(12, 14),
+                          ...theme.phoneKey?.info.text,
+                        }}
+                      >
+                        <FormattedMessage
+                          id="onboarding3.pastereponse"
+                          defaultMessage="Paste in the response you received to"
+                        />{" "}
+                        <Text
+                          style={{
+                            fontWeight: "600",
+                            ...theme.phoneKey?.info.text,
+                          }}
+                        >
+                          {phoneNumber}.
+                        </Text>
+                      </Text>
+                      <Text
+                        style={{
+                          marginTop: 8,
+                          ...theme.phoneKey?.info.text,
+                        }}
+                      >
+                        ZTX does not store any information.
+                      </Text>
+                    </View>
                   </View>
                 </View>
 
@@ -180,14 +215,14 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                   phoneNumberMightBeIncorrect
                   value={key}
                   setValue={setKey}
-                  onResend={async (voice) => {
+                  onResend={async (type) => {
                     const twilioClient = getTwilioClient({ demoMode, env });
                     // TODO: factor back out this workaround
                     await twilioClient.requestPublicKeyMagicCode({
                       phoneNumber,
                       securityAnswer,
                       chainId,
-                      voice,
+                      type,
                     });
                     /*
                     const res = await twilioClient.requestPublicKeyMagicCode({

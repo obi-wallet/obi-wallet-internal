@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import { ComponentType } from "react";
 import {
@@ -16,7 +17,7 @@ const styles = StyleSheet.create({
   label: {
     color: "white",
     fontSize: 10,
-    marginBottom: 5,
+    marginBottom: 6,
     textTransform: "uppercase",
   },
   input: {
@@ -36,6 +37,7 @@ export type CustomTextInputProps = TextInputProps & {
   label?: string;
   style?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
+  labelStyle?: StyleProp<TextStyle>;
   invalidMessage?: string;
 };
 export const TextInput = observer<CustomTextInputProps>(function TextInput({
@@ -46,14 +48,18 @@ export const TextInput = observer<CustomTextInputProps>(function TextInput({
   CustomTextInput = BaseTextInput,
   ...props
 }) {
+  const theme = useTheme();
   return (
     <View style={style}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? (
+        <Text style={[styles.label, theme.textInput?.labelStyle]}>{label}</Text>
+      ) : null}
       <CustomTextInput
         style={[
           styles.input,
           inputStyle,
           invalidMessage ? { borderColor: "#FF2222" } : undefined,
+          theme.textInput?.inputStyle,
         ]}
         placeholderTextColor="rgba(250,250,250,.5)"
         {...props}
@@ -69,7 +75,7 @@ export const TextInputInvalidMessage = observer<{ message?: string }>(
     return (
       <Text
         style={{
-          color: "#FF2222",
+          color: "#E10E34",
           fontSize: 12,
           marginTop: 5,
           marginLeft: 5,

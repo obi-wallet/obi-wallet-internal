@@ -31,10 +31,11 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
     };
 
     const getImageSize = () => {
+      return "100%";
       const buttons = theme.welcome?.buttons?.length;
       return buttons && buttons >= 3 ? "80%" : "60%";
     };
-
+    console.log(theme.welcome.subtitleStyles);
     return (
       <OsmosisScreenContainer
         hideLogo={theme.welcome?.hideHeaderLogo}
@@ -93,7 +94,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
 
           <View
             style={{
-              paddingHorizontal: theme.spacing["16"],
+              // paddingHorizontal: theme.spacing["16"],
               zIndex: -1,
               flex: 1,
 
@@ -130,7 +131,9 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
                   resizeMode="contain"
                   style={{
                     height: getImageSize(),
-                    aspectRatio: 1,
+                    width: getImageSize(),
+
+                    // aspectRatio: 1,
                   }}
                 />
               ) : null}
@@ -149,6 +152,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
                   ...theme.typography.largeTitle,
                   color: "#F6F5FF",
                   marginTop: theme.spacing["24"],
+                  ...theme.welcome?.titleStyles,
                 }}
               >
                 {title}
@@ -160,6 +164,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
                   fontWeight: "400",
                   marginTop: theme.spacing["12"],
                   textAlign: "left",
+                  ...theme.welcome?.subtitleStyles,
                 }}
               >
                 {subTitle}
@@ -172,6 +177,7 @@ export const WelcomeLayout = observer<WelcomeLayoutProps>(
               paddingHorizontal: theme.spacing["16"],
               marginTop: theme.spacing["12"],
               paddingBottom: theme.spacing["16"],
+              ...theme.buttonsContainerStyle,
             }}
           >
             {children}

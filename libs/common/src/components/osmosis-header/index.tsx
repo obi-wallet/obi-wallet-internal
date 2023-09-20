@@ -30,37 +30,74 @@ export const OsmosisHeader = observer<OsmosisHeaderProps>(
           flexDirection: "row",
           alignItems: "flex-start",
           justifyContent: "space-between",
+          borderBottomColor: "#ffffff",
+          ...theme.header,
         }}
       >
-        <View style={{ width: 29 }}>
-          {onBackPress ? (
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+
+            height: "100%",
+          }}
+        >
+          {
+            // onBackPress
             <IconButton
               onPress={onBackPress}
-              style={{ width: 29 }}
-              hitSlop={{ top: 29, bottom: 29, left: 29, right: 29 }}
+              style={{ ...theme.header?.backIcon }}
             >
-              <BackIcon width={29} height={29} />
+              {theme.header?.backIcon?.src ? (
+                <Image
+                  resizeMode="contain"
+                  source={{ uri: theme.header.backIcon.src }}
+                  style={{
+                    ...theme.header?.backIcon,
+                  }}
+                />
+              ) : (
+                <BackIcon width={8} height={16} />
+              )}
             </IconButton>
-          ) : undefined}
+          }
         </View>
         {theme.header && !hideLogo ? (
           <Image
             resizeMode="contain"
-            source={{ uri: theme.header.image }}
+            source={{ uri: theme.header.image.src }}
             style={{
-              width: theme.header.width,
-              height: theme.header.height,
+              // width: theme.header.width,
+              // height: theme.header.height,
+              ...theme.header.image,
             }}
           />
         ) : null}
-        <View style={{ width: 29 }}>
+        <View style={{ width: 28 }}>
           {onClose ? (
             <IconButton
               onPress={onClose}
-              style={{ width: 29 }}
-              hitSlop={{ top: 29, bottom: 29, left: 29, right: 29 }}
+              style={{ width: 28 }}
+              hitSlop={{ top: 28, bottom: 28, left: 28, right: 28 }}
             >
-              <FontAwesomeIcon icon={faTimesCircle} size={29} color="#ffffff" />
+              {theme.header?.closeIcon ? (
+                <Image
+                  resizeMode="contain"
+                  source={{ uri: theme.header.closeIcon.src }}
+                  style={{
+                    width: 12,
+                    height: 12,
+                    marginLeft: "auto",
+                    ...theme.header?.closeIcon,
+                  }}
+                />
+              ) : (
+                <FontAwesomeIcon
+                  icon={faTimesCircle}
+                  size={28}
+                  color="#ffffff"
+                />
+              )}
             </IconButton>
           ) : undefined}
         </View>

@@ -213,53 +213,60 @@ export const KeyListItem = observer(function KeyListItem({
     </TouchableOpacity>
   ) : (
     <TouchableOpacity
-      style={{
-        height: 59,
-        width: "100%",
-        backgroundColor: theme.colors.panelBackground,
-        marginBottom: 10,
-        flexDirection: "row",
-        borderRadius: 12,
-      }}
+      style={[
+        {
+          height: 59,
+          width: "100%",
+          backgroundColor: theme.colors.panelBackground,
+          marginBottom: 10,
+          flexDirection: "row",
+          borderRadius: 12,
+          justifyContent: "space-between",
+        },
+        theme.settings?.panelContainer,
+      ]}
       onPress={onPress}
     >
-      <View style={{ flex: 2, justifyContent: "center", alignItems: "center" }}>
-        <View
-          style={{
-            width: 36,
-            height: 36,
-            justifyContent: "center",
-            alignItems: "center",
-            borderRadius: 12,
-          }}
-        >
-          <Icon fill="#ffffff" width={24} height={24} />
-        </View>
-      </View>
-      <View style={{ flex: 6, justifyContent: "center" }}>
-        <Text
-          style={{
-            color: "#F6F5FF",
-            fontSize: 14,
-            fontWeight: "600",
-          }}
-        >
-          {label}
-        </Text>
-        {description ? (
-          <Text
+      <View style={{ flexDirection: "row" }}>
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <View
             style={{
-              color: "#F6F5FF",
-              fontSize: 12,
-              opacity: 0.6,
-              marginTop: 4,
+              width: 24,
+              height: 24,
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: 12,
             }}
           >
-            {description}
+            <Icon fill="#ffffff" width={24} height={24} />
+          </View>
+        </View>
+        <View style={{ justifyContent: "center" }}>
+          <Text
+            style={{
+              color: "#F6F8FC",
+              fontSize: 14,
+              fontWeight: "600",
+              marginLeft: 24,
+            }}
+          >
+            {label.toUpperCase()}
           </Text>
-        ) : null}
+          {description ? (
+            <Text
+              style={{
+                color: "#F6F5FF",
+                fontSize: 12,
+                opacity: 0.6,
+                marginTop: 4,
+              }}
+            >
+              {description}
+            </Text>
+          ) : null}
+        </View>
       </View>
-      <View style={{ flex: 2, justifyContent: "center", alignItems: "center" }}>
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
         {right}
       </View>
     </TouchableOpacity>

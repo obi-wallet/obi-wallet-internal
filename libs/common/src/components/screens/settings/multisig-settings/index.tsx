@@ -71,7 +71,7 @@ export const MultisigSettingsScreen = observer(
         })}
         actions={{
           [KeyType.Phone]: {
-            label: "Replace",
+            label: theme.style === "ztx" ? "Update" : "Replace",
             onPress: () => {
               navigation.navigate(KeyRoute.PhoneKeyRequest, {
                 draftId,

@@ -10,6 +10,7 @@ import {
   ZAuthKeySigner,
   getDevicePrivateKey,
   getOrCreateDeviceKeyPair,
+  ComunicationType,
 } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
@@ -177,16 +178,16 @@ export class PhoneKeySigner extends Signer {
 
   public async requestSignature({
     securityAnswer,
-    voice,
+    type,
   }: {
     securityAnswer: string;
-    voice: boolean;
+    type: ComunicationType;
   }) {
     await this.signer.requestSignature({
       chainId: this.chainId,
       securityAnswer,
       twilioClient: this.twilioClient,
-      voice,
+      type,
     });
   }
 
