@@ -1,4 +1,4 @@
-import { Env, Modals, OnCloseContext, useStore } from "@obi-wallet/common";
+import { Env, EthTransaction, Modals, OnCloseContext, useStore } from "@obi-wallet/common";
 import { Config } from "@obi-wallet/config";
 import {
   KeyType,
@@ -8,10 +8,13 @@ import {
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk";
 import { ethers } from "ethers";
+import { ExtendedWallet } from "libs/sdk/src/sdk/transactions/secret-js/extended-ethers-signer";
 import { autorun } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import invariant from "tiny-invariant";
+import * as ethers5 from "ethers5";
+import { Client, IUserOperation, Presets, UserOperationMiddlewareCtx } from "userop";
 
 import { Container } from "./container";
 import { Provider } from "./provider";
@@ -140,14 +143,57 @@ const MessageHandlers = observer(function MessageHandlers() {
             console.log("payload", data.payload);
           }
 
-          const payload = Array.isArray(data.payload)
-            ? {
-                messages: data.payload,
-              }
-            : data.payload;
+          // we need to make the user operation - which might ask for a signature
+          // tbd on handling this
+          console.log("setting up paymaster middleware...");
+          const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(
+            "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+            { type: "payg" },
+          );
+          console.log("setting up client...");
+          const client = await Client.init(
+            "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+          );
+          invariant(store.walletsStore.currentWallet.evmSigningAddress, "no signing address provided");
+          // This likely won't actually be used for network calls
+          console.log("setting up dummy provider...");
+          const dummyProvider = new ethers5.providers.JsonRpcProvider(
+            "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+          );
+          console.log("setting up extendedSigner...");
+          const extendedSigner = new ExtendedWallet(
+            store.walletsStore.currentWallet.evmSigningAddress,
+            dummyProvider,
+            store.walletsStore.currentWallet.owner,
+          );
+          console.log("building simpleAccount...");
+          const simpleAccount = await Presets.Builder.SimpleAccount.init(
+            extendedSigner,
+            "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+            { paymasterMiddleware },
+          );
+        
+          invariant(data.payload.eth, "no user op inputted");
+          console.log("in buildUserOperation()");
+          const ethTx = new EthTransaction(data.payload.eth!);
+          const userOp: IUserOperation = await client.buildUserOperation(
+            simpleAccount.execute(
+              ethTx.contractAddress,
+              0,
+              ethTx.getEncodedCallData(),
+            ),
+          );
+          // signer contract should automatically prepend here
+          const ctx: UserOperationMiddlewareCtx = new UserOperationMiddlewareCtx(
+            userOp,
+            "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+            421613,
+          );
+          console.log("user op hash is: " + ctx.getUserOpHash());
+
           const interactionObj = {
-            messages: payload.messages,
-            targetChainId: payload.targetChainId,
+            messages: [{ "raw": ctx.getUserOpHash()}],
+            targetChainId: data.payload.targetChainId,
             cancelable: true,
             walletMeta: store.walletsStore.currentWallet.meta,
             demoMode: store.walletsStore.currentWallet.isDemo,
@@ -156,9 +202,10 @@ const MessageHandlers = observer(function MessageHandlers() {
           console.log(
             "interaction object is: " + JSON.stringify(interactionObj),
           );
+
           const response =
             await SignAndBroadcastTransactionUserInteraction.start(
-              interactionObj,
+              { ...interactionObj, multisigKey: store.walletsStore.currentWallet.owner }
             );
 
           const message = {

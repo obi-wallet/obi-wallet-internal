@@ -14,6 +14,7 @@
     "buffer": "*",
     "elliptic": "*",
     "ethers": "*",
+    "ethers5": "*",
     "mobx": "*",
     "mobx-react-lite": "*",
     "react-native-web": "*",

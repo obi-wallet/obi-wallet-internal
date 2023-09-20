@@ -41,7 +41,7 @@ export function useSignAndBroadcastTransaction({
   const currentAccount = walletMeta?.currentAccount
     ? wallet?.getAccountByMeta(walletMeta.currentAccount)
     : null;
-  const multisigKey = R.has("walletMeta", payload)
+  const multisigKey = (R.has("walletMeta", payload) && payload.walletMeta.currentAccount)
     ? wallet?.owner
     : payload.multisigKey;
 
@@ -228,7 +228,7 @@ export function useSignAndBroadcastTransaction({
     }
   }
 
-  invariant(multisigKey, "Expected multisigKey to exist.");
+  invariant(multisigKey, "Expected multisigKey to exist here.");
   return {
     ...common,
     type: SignAndBroadcastTransactionType.MultisigKey as const,

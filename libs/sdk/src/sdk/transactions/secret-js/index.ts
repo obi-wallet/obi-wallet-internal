@@ -171,7 +171,7 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
         invariant(evmSigningAddress, "no evmSigningAddress provided");
         invariant(walletMeta, "no walletMeta provided");
         console.log("getSignUserOpInput is " + signer.getSignUserOpInput());
-        if (!signer.getSignUserOpInput() && !signer.getSignMessage()) {
+        if (signer.getSignUserOpInput() && !signer.getSignMessage()) {
           console.log("calling initUserOperation...");
           await signer.initUserOperation(evmSigningAddress, walletMeta);
         } else {
