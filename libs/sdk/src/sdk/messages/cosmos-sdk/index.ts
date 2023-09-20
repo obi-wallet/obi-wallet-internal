@@ -32,7 +32,12 @@ import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
 
 export class CosmosSdkMessages extends AbstractMessages {
-  public override getFirstUpdateWalletMessage(newOwner: MultisigKey, newOwnerAddress: string, walletAddress: string, sender: string): unknown {
+  public override getFirstUpdateWalletMessage(
+    newOwner: MultisigKey,
+    newOwnerAddress: string,
+    walletAddress: string,
+    sender: string,
+  ): unknown {
     throw new Error("Method not implemented.");
   }
   protected constructor(
@@ -748,8 +753,12 @@ export class CosmosSdkMessages extends AbstractMessages {
     return new MsgWithdrawDelegatorReward(wallet.address, validator);
   }
 
-  public getCreateWalletMessage(ownerAddress: string, pubkeyBase64: string, sender?: string): Message {
-    throw new Error ("not implemented");
+  public getCreateWalletMessage(
+    ownerAddress: string,
+    pubkeyBase64: string,
+    sender?: string,
+  ): Message {
+    throw new Error("not implemented");
     /* const _sender = sender;
     const rawMessage = {
       new_account: {
@@ -777,17 +786,13 @@ export class CosmosSdkMessages extends AbstractMessages {
 
   protected getSigners(multisigKey: MultisigKey) {
     const addressAndTypes: Array<{ address: string; ty: string }> =
-      multisigKey.keys.map(
-        (key: Key) => {
-          return {
-            address: this.sdk.transactions.getAddressOfPublicKey(
-              key.publicKey
-            ),
-            ty: key.type,
-            pubkeyBase64: key.publicKey.value
-          };
-        },
-      );
+      multisigKey.keys.map((key: Key) => {
+        return {
+          address: this.sdk.transactions.getAddressOfPublicKey(key.publicKey),
+          ty: key.type,
+          pubkeyBase64: key.publicKey.value,
+        };
+      });
     return addressAndTypes;
   }
 

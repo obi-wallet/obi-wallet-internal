@@ -91,9 +91,9 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       draft.value.setDeviceKey(keyPair);
       console.log("device key set..");
       void queryClient.prefetchQuery(
-        Sdk.chainId(draft.value.chainId || "secret-4").transactions.prepareKeyPairQuery(
-          keyPair,
-        ),
+        Sdk.chainId(
+          draft.value.chainId || "secret-4",
+        ).transactions.prepareKeyPairQuery(keyPair),
       );
       console.log("returning...");
       setScannedBiometrics(true);

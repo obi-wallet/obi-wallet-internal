@@ -20,6 +20,7 @@ import {
   TxResultCode,
 } from "secretjs";
 import { StdFee } from "secretjs/dist/wallet_amino";
+import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { SecretJsChainId, secretJsChains } from "../../chains";
@@ -31,7 +32,6 @@ import {
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { AbstractClient } from "../abstract";
-import invariant from "tiny-invariant";
 
 export async function withSecretNetworkClient<T>(
   chainId: SecretJsChainId,
@@ -167,7 +167,7 @@ export class SecretJsClient extends AbstractClient {
               rawLog: res.rawLog,
               rawResult: res,
             };
-          } catch(e) {
+          } catch (e) {
             await new Promise((resolve) => {
               setTimeout(resolve, 5_000);
             });

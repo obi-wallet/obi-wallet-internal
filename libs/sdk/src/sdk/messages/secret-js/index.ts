@@ -328,7 +328,11 @@ export class SecretJsMessages extends AbstractMessages {
   }
 
   // TODO fix types as they are forced here
-  public getCreateWalletMessage(ownerAddress: string, pubkeyBase64: string, sender: string): Message {
+  public getCreateWalletMessage(
+    ownerAddress: string,
+    pubkeyBase64: string,
+    sender: string,
+  ): Message {
     const message = new MsgExecuteContract({
       sender: sender ?? ownerAddress,
       contract_address: this.chain.accountCreator.address,
@@ -366,7 +370,7 @@ export class SecretJsMessages extends AbstractMessages {
       msg: {
         first_update_owner: {
           first_owner: newOwnerAddress,
-          signers: this.getSigners(
+          signers: { signers: this.getSigners(
             newOwner.keys as unknown as Array<{
               type: string;
               payload: {
@@ -374,7 +378,7 @@ export class SecretJsMessages extends AbstractMessages {
                 privateKey?: string;
               };
             }>,
-          ),
+          )},
         },
       },
     });

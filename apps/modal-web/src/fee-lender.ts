@@ -18,6 +18,7 @@ export function getFeeLender(
     }
     case "secret-4": {
       const feeLender = process.env.FEE_LENDER_SECRET_4 ?? "";
+      console.log("knownLenderIndex is " + knownLenderIndex);
       const lenderIndex = knownLenderIndex ?? Math.floor(Math.random() * 1000);
       const wallet = new Wallet(feeLender, {
         hdAccountIndex: lenderIndex,

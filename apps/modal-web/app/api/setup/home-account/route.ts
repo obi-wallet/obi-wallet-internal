@@ -64,14 +64,14 @@ export async function POST(request: Request) {
       ownerAddress: wallet.address,
       homeAccountAddress,
       txResult,
-      lenderIndex,
+      ownerIndex: lenderIndex,
     });
   } catch (e) {
     return NextResponse.json({
       ownerAddress: wallet.address,
       homeAccountAddress: "PARSE ERROR",
       txResult: broadcastTransactionResult,
-      lenderIndex: 0,
+      ownerIndex: 0,
     });
   }
 }

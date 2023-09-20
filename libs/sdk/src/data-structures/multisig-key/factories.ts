@@ -1,19 +1,21 @@
 import { action, makeObservable, observable } from "mobx";
+import invariant from "tiny-invariant";
 
 import { MultisigKey } from "./implementation";
 import { MultisigKeySchema } from "./schema";
 import { ChainId } from "../../chains";
 import { Key, ObservableKey } from "../key";
 import { AbstractMigratable } from "../migratable";
-import invariant from "tiny-invariant";
 
 export function createMultisigKey(
-  setupDetails: {
-    homeAccountAddress: string,
-    evmSignerAddress: string;
-    evmUserContractAddress: string;
-    ownerIndex: number;
-  } | undefined,
+  setupDetails:
+    | {
+        homeAccountAddress: string;
+        evmSignerAddress: string;
+        evmUserContractAddress: string;
+        ownerIndex: number;
+      }
+    | undefined,
   chain: ChainId,
   migratable: AbstractMigratable<typeof MultisigKeySchema> = {
     keys: [],
@@ -29,28 +31,24 @@ export function createMultisigKey(
   let keysMapped: Key[];
   try {
     keysMapped = keys.map((key) => factories.Key.create(key));
-  } catch(e) {
+  } catch (e) {
     keysMapped = [];
   }
-  return new MultisigKey(
-    setupDetails,
-    chain,
-    keysMapped,
-    threshold,
-    {
-      Key: factories.Key,
-      createMultisigKey: factories.createMultisigKey,
-    },
-  );
+  return new MultisigKey(setupDetails, chain, keysMapped, threshold, {
+    Key: factories.Key,
+    createMultisigKey: factories.createMultisigKey,
+  });
 }
 
 export function createObservableMultisigKey(
-  setupDetails: {
-    homeAccountAddress: string;
-    evmSignerAddress: string;
-    evmUserContractAddress: string;
-    ownerIndex: number;
-  } | undefined,
+  setupDetails:
+    | {
+        homeAccountAddress: string;
+        evmSignerAddress: string;
+        evmUserContractAddress: string;
+        ownerIndex: number;
+      }
+    | undefined,
   chain: ChainId,
   migratable?: AbstractMigratable<typeof MultisigKeySchema>,
 ) {
@@ -58,7 +56,10 @@ export function createObservableMultisigKey(
     Key: ObservableKey,
     createMultisigKey: createObservableMultisigKey,
   });
-  makeObservable<MultisigKey, "_setupDetails" | "_chainId" | "_keys" | "_threshold" | "setKey">(
+  makeObservable<
+    MultisigKey,
+    "_setupDetails" | "_chainId" | "_keys" | "_threshold" | "setKey"
+  >(
     key,
     {
       _setupDetails: observable,

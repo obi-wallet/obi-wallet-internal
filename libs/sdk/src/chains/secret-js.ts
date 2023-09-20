@@ -41,7 +41,7 @@ export const secretJsChains = {
     label: "Secret Network",
     prefix: "secret",
     accountCreator: {
-      address: "secret1pgf45pkm7puz427zvvlhz83ugjw8ceuu4twz6n",
+      address: "secret1fpep0l0su8t6rfsrc5avml4scgt452mycxmdka",
       codeHash:
         "d0872307f0959be7c7bd7933a039b24a2572da7b491dd9630fe198492345346e",
     },

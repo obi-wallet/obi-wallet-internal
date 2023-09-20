@@ -31,24 +31,28 @@ export class MultisigKey {
     // async account creation returns some values;
     // they're stored here so they can be ready for
     // the actual "Create Wallet" button
-    protected _setupDetails: {
-      homeAccountAddress: string;
-      evmSignerAddress: string;
-      evmUserContractAddress: string;
-      ownerIndex: number;
-    } | undefined,
+    protected _setupDetails:
+      | {
+          homeAccountAddress: string;
+          evmSignerAddress: string;
+          evmUserContractAddress: string;
+          ownerIndex: number;
+        }
+      | undefined,
     protected _chainId: ChainId,
     protected _keys: Key[],
     protected _threshold: number,
     protected _factories: {
       Key: AbstractDataStructure<Key, typeof KeySchema>;
       createMultisigKey: (
-        setupDetails: {
-          homeAccountAddress: string;
-          evmSignerAddress: string;
-          evmUserContractAddress: string;
-          ownerIndex: number;
-        } | undefined,
+        setupDetails:
+          | {
+              homeAccountAddress: string;
+              evmSignerAddress: string;
+              evmUserContractAddress: string;
+              ownerIndex: number;
+            }
+          | undefined,
         chain: ChainId,
         serialized: AbstractSerialized<typeof MultisigKeySchema> | {},
       ) => MultisigKey;
@@ -61,7 +65,7 @@ export class MultisigKey {
 
   public toJSON(): AbstractSerialized<typeof MultisigKeySchema> | {} {
     if (!this._keys) {
-      return {}
+      return {};
     }
     return {
       keys: this._keys.map((key) => key.toJSON()),
@@ -74,7 +78,11 @@ export class MultisigKey {
   }
 
   public clone() {
-    return this._factories.createMultisigKey(this._setupDetails, this.chainId, this.toJSON());
+    return this._factories.createMultisigKey(
+      this._setupDetails,
+      this.chainId,
+      this.toJSON(),
+    );
   }
 
   public get chainId() {
@@ -148,6 +156,8 @@ export class MultisigKey {
         homeAccountAddress +
         ", tx hash " +
         txResult.transactionHash,
+        ", owner index: " + 
+        ownerIndex
     );
 
     const chain = secretJsChains["secret-4"];
@@ -203,7 +213,7 @@ export class MultisigKey {
         homeAccountAddress: "",
         evmSignerAddress: "",
         evmUserContractAddress: "",
-        ownerIndex: 0
+        ownerIndex: 0,
       };
       this.createMagicAccount();
     }
@@ -231,7 +241,7 @@ export class MultisigKey {
         homeAccountAddress: "",
         evmSignerAddress: "",
         evmUserContractAddress: "",
-        ownerIndex: 0
+        ownerIndex: 0,
       };
       this.createMagicAccount();
     }
