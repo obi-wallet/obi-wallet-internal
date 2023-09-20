@@ -389,6 +389,13 @@ export const ztxTheme: CustomTheme = {
         textTransform: "uppercase",
       },
     },
+    transactionModal: {
+      borderRadius: 3,
+    },
+    button: {
+      width: 180,
+      height: 36,
+    },
   },
   receive: {
     title: {

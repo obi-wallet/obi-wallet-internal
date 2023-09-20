@@ -343,12 +343,15 @@ const SuccessModal = observer(function SuccessModal({
         }}
       >
         <View
-          style={{
-            backgroundColor: theme.colors.background,
-            borderRadius: 20,
-            alignItems: "center",
-            paddingVertical: 20,
-          }}
+          style={[
+            {
+              backgroundColor: theme.colors.background,
+              borderRadius: 20,
+              alignItems: "center",
+              paddingVertical: 20,
+            },
+            theme.send?.transactionModal,
+          ]}
         >
           <Text style={{ color: "#fff", fontSize: 19, marginBottom: 10 }}>
             Transaction successful
@@ -357,6 +360,7 @@ const SuccessModal = observer(function SuccessModal({
             <Button
               flavor="primary"
               label="Dismiss"
+              buttonStyle={theme.send?.button}
               onPress={() => {
                 onDismiss();
               }}
@@ -388,12 +392,15 @@ const FailureModal = observer(function FailureModal({
         }}
       >
         <View
-          style={{
-            backgroundColor: theme.colors.background,
-            borderRadius: 20,
-            alignItems: "center",
-            paddingVertical: 20,
-          }}
+          style={[
+            {
+              backgroundColor: theme.colors.background,
+              borderRadius: 20,
+              alignItems: "center",
+              paddingVertical: 20,
+            },
+            theme.send?.transactionModal,
+          ]}
         >
           <Text style={{ color: "#fff", fontSize: 19, marginBottom: 10 }}>
             Transaction failed
@@ -402,6 +409,7 @@ const FailureModal = observer(function FailureModal({
             <Button
               flavor="primary"
               label="Dismiss"
+              buttonStyle={theme.send?.button}
               onPress={() => {
                 onDismiss();
               }}

@@ -17,6 +17,7 @@ export const BaseModal = observer<ModalProps>(function Modal({
           inset: "0px",
           zIndex: 9999999,
           overflow: "hidden",
+          backgroundColor: "rgba(0, 0, 0, 0.3)",
         }}
       >
         <View style={{ height: "100%" }}>

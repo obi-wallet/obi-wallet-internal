@@ -174,6 +174,8 @@ export interface CustomTheme extends CommonTheme {
       button: ViewStyle & TextStyle;
       label: TextStyle;
     };
+    transactionModal: ViewStyle;
+    button: ViewStyle;
   };
   receive?: {
     title?: ViewStyle & TextStyle;
