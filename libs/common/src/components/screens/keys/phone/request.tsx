@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ComunicationType } from "@obi-wallet/sdk";
+import { CommunicationType } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { Controller, useForm } from "react-hook-form";
@@ -269,7 +269,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                       const res = await twilioClient.requestPublicKeyMagicCode({
                         ...data,
                         chainId,
-                        type: ComunicationType.SMS,
+                        type: CommunicationType.SMS,
                       });
                       /*
                       const res = await twilioClient.requestPublicKeyMagicCode({

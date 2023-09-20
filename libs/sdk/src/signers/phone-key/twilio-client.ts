@@ -20,7 +20,7 @@ export interface TwilioClientInterface {
     phoneNumber: string;
     securityAnswer: string;
     chainId: ChainId;
-    type: ComunicationType;
+    type: CommunicationType;
   }): Promise<void>;
 
   parsePublicKeyMagicCodeResponse({
@@ -42,7 +42,7 @@ export interface TwilioClientInterface {
     securityAnswer: string;
     message: Uint8Array;
     chainId: ChainId;
-    type: ComunicationType;
+    type: CommunicationType;
   }): Promise<void>;
 
   parseSignatureMagicCodeResponse({
@@ -103,7 +103,7 @@ export class DemoModeTwilioClient implements TwilioClientInterface {
     return signature;
   }
 }
-export enum ComunicationType {
+export enum CommunicationType {
   SMS = "sms",
   VOICE = "voice",
   TELEGRAM = "telegram",
@@ -121,7 +121,7 @@ export class TwilioClient implements TwilioClientInterface {
     phoneNumber: string;
     securityAnswer: string;
     chainId: ChainId;
-    type: ComunicationType;
+    type: CommunicationType;
   }) {
     await this.encryptAndSendMessage({
       answer: securityAnswer,
@@ -184,7 +184,7 @@ export class TwilioClient implements TwilioClientInterface {
     securityAnswer: string;
     message: Uint8Array;
     chainId: ChainId;
-    type: ComunicationType;
+    type: CommunicationType;
   }) {
     await this.encryptAndSendMessage({
       answer: securityAnswer,
@@ -216,7 +216,7 @@ export class TwilioClient implements TwilioClientInterface {
     signature?: string;
     phoneNumber: string;
     chainId: ChainId;
-    type: ComunicationType;
+    type: CommunicationType;
   }) {
     const key = await this.getMessageBody(
       JSON.stringify({

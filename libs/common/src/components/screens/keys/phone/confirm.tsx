@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { MultisigKey } from "@obi-wallet/sdk";
+import { CommunicationType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -209,7 +209,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                   phoneNumberMightBeIncorrect
                   value={key}
                   setValue={setKey}
-                  onResend={async (type) => {
+                  onResend={async (type: CommunicationType) => {
                     const twilioClient = getTwilioClient({ demoMode, env });
                     // TODO: factor back out this workaround
                     await twilioClient.requestPublicKeyMagicCode({
@@ -278,6 +278,8 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                       };
 
                       if (kp.privateKey) {
+                        console.log("setting draft value phone key...");
+                        console.log("Draft is: " + JSON.stringify(draft));
                         draft.value.setPhoneKey({
                           publicKey: kp.publicKey,
                           // TODO: remove
@@ -285,7 +287,9 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                           phoneNumber,
                           securityQuestion,
                         });
+                        console.log("draft set. Setting store...");
                         phoneSessionStore.setKp(kp);
+                        console.log("store set. Setting store...");
                         setVerifyButtonDisabledDoubleclick(false);
                         onSubmit();
                       } else {

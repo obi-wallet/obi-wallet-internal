@@ -5,8 +5,15 @@ import { MultisigKeySchema } from "./schema";
 import { ChainId } from "../../chains";
 import { Key, ObservableKey } from "../key";
 import { AbstractMigratable } from "../migratable";
+import invariant from "tiny-invariant";
 
 export function createMultisigKey(
+  setupDetails: {
+    homeAccountAddress: string,
+    evmSignerAddress: string;
+    evmUserContractAddress: string;
+    ownerIndex: number;
+  } | undefined,
   chain: ChainId,
   migratable: AbstractMigratable<typeof MultisigKeySchema> = {
     keys: [],
@@ -16,12 +23,19 @@ export function createMultisigKey(
     Key,
     createMultisigKey,
   },
-) {
+): MultisigKey {
   const { keys, threshold } =
     MultisigKeySchema.migratableSchema.parse(migratable);
+  let keysMapped: Key[];
+  try {
+    keysMapped = keys.map((key) => factories.Key.create(key));
+  } catch(e) {
+    keysMapped = [];
+  }
   return new MultisigKey(
+    setupDetails,
     chain,
-    keys.map((key) => factories.Key.create(key)),
+    keysMapped,
     threshold,
     {
       Key: factories.Key,
@@ -31,16 +45,23 @@ export function createMultisigKey(
 }
 
 export function createObservableMultisigKey(
+  setupDetails: {
+    homeAccountAddress: string;
+    evmSignerAddress: string;
+    evmUserContractAddress: string;
+    ownerIndex: number;
+  } | undefined,
   chain: ChainId,
   migratable?: AbstractMigratable<typeof MultisigKeySchema>,
 ) {
-  const key = createMultisigKey(chain, migratable, {
+  const key = createMultisigKey(setupDetails, chain, migratable, {
     Key: ObservableKey,
     createMultisigKey: createObservableMultisigKey,
   });
-  makeObservable<MultisigKey, "_chainId" | "_keys" | "_threshold" | "setKey">(
+  makeObservable<MultisigKey, "_setupDetails" | "_chainId" | "_keys" | "_threshold" | "setKey">(
     key,
     {
+      _setupDetails: observable,
       _chainId: observable,
       _keys: observable,
       _threshold: observable,

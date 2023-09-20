@@ -81,16 +81,21 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
     create: boolean,
   ): Promise<[boolean, boolean, Secp256k1KeyPair | undefined]> {
     try {
+      console.log("getting device key...");
       const [keyPair, newUser] = await getOrCreateDeviceKeyPair(
         create,
         demoMode,
       );
+      console.log("draft id is " + draftId);
+      console.log("setting device key...");
       draft.value.setDeviceKey(keyPair);
+      console.log("device key set..");
       void queryClient.prefetchQuery(
-        Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
+        Sdk.chainId(draft.value.chainId || "secret-4").transactions.prepareKeyPairQuery(
           keyPair,
         ),
       );
+      console.log("returning...");
       setScannedBiometrics(true);
       return [true, newUser, keyPair];
     } catch (e) {

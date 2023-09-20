@@ -2,7 +2,7 @@ import { MultisigKey } from "../../../data-structures";
 import { AbstractWalletsSdk } from "../abstract";
 
 export class CosmosSdkWalletsSdk extends AbstractWalletsSdk {
-  public async createHomeAccountAndAddKey({
+  public async getAsyncDetailsAndFirstOwnerUpdate({
     multisigKey,
     demoMode,
   }: {

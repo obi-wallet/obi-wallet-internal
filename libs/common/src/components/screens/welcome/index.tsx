@@ -33,12 +33,16 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     const { chainStore, configStore, draftsStore } = useStore();
 
     function onCreate() {
+      console.log("chain ID in onCreate(): " + JSON.stringify(chainStore.currentChain));
       const newMultisigKey = ObservableMultisigKey.create(
+        undefined,
         chainStore.currentChain,
       );
+      console.log("multisig created");
       const draftId = draftsStore.create({
         original: newMultisigKey,
       });
+      console.log("draft created");
       navigation.navigate(KeyRoute.DeviceKey, {
         draftId,
         flow: KeyFlow.CreateWallet,

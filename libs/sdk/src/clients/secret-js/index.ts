@@ -17,6 +17,7 @@ import {
   SecretNetworkClient,
   toBase64,
   TxOptions,
+  TxResultCode,
 } from "secretjs";
 import { StdFee } from "secretjs/dist/wallet_amino";
 import { z } from "zod";
@@ -30,6 +31,7 @@ import {
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { AbstractClient } from "../abstract";
+import invariant from "tiny-invariant";
 
 export async function withSecretNetworkClient<T>(
   chainId: SecretJsChainId,
@@ -125,38 +127,57 @@ export class SecretJsClient extends AbstractClient {
     signedTransaction: SignedTransaction,
   ): Promise<BroadcastTransactionResult> {
     return await this.withSecretNetworkClient(async (client) => {
+      // TODO: need to do Sync/Async here
+      const broadcastMode = BroadcastMode.Block;
       const txResponse = await client.tx.broadcastSignedTx(
         toBase64(signedTransaction),
         {
           ...this.defaultTxOptions,
-          // TODO: need to do Sync/Async here
-          broadcastMode: BroadcastMode.Block,
+          broadcastMode: broadcastMode,
           waitForCommit: true,
         },
       );
-      await new Promise((resolve) => {
-        setTimeout(resolve, 10_000);
-      });
-      console.warn("Async broadcast response: " + JSON.stringify(txResponse));
-      const rawResult = await client.query.getTx(txResponse.transactionHash);
-
-      if (!rawResult) {
-        const res = await client.tx.broadcastSignedTx(
-          toBase64(signedTransaction),
-          {
-            ...this.defaultTxOptions,
-            broadcastMode: BroadcastMode.Block,
-            waitForCommit: false,
-          },
-        );
-        return {
-          success: res.code === 0,
-          transactionHash: res.transactionHash,
-          rawLog: res.rawLog,
-          rawResult: res,
-        };
+      if (broadcastMode !== BroadcastMode.Block) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 10_000);
+        });
       }
+      console.warn("Broadcast response: " + JSON.stringify(txResponse));
+      let rawResult;
+      if (broadcastMode !== BroadcastMode.Block || !txResponse.rawLog) {
+        rawResult = await client.query.getTx(txResponse.transactionHash);
 
+        if (!rawResult) {
+          // tx might be in mempool, so try block
+          try {
+            const res = await client.tx.broadcastSignedTx(
+              toBase64(signedTransaction),
+              {
+                ...this.defaultTxOptions,
+                broadcastMode: BroadcastMode.Block,
+                waitForCommit: false,
+              },
+            );
+            if (!res.code) {
+              throw new Error("no res code");
+            }
+            return {
+              success: true,
+              transactionHash: res.transactionHash,
+              rawLog: res.rawLog,
+              rawResult: res,
+            };
+          } catch(e) {
+            await new Promise((resolve) => {
+              setTimeout(resolve, 5_000);
+            });
+            rawResult = await client.query.getTx(txResponse.transactionHash);
+          }
+        }
+      }
+      // TODO retry handling instead
+      rawResult = txResponse;
+      invariant(rawResult, "no tx response");
       return {
         success: rawResult.code === 0,
         transactionHash: rawResult.transactionHash,

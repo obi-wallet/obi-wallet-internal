@@ -8,7 +8,7 @@ import { MultisigKey } from "../../data-structures";
 export { AbstractWalletsSdk };
 
 export class WalletsSdk extends AbstractWalletsSdk {
-  public async createHomeAccountAndAddKey({
+  public async getAsyncDetailsAndFirstOwnerUpdate({
     multisigKey,
     demoMode,
   }: {
@@ -33,7 +33,7 @@ export class WalletsSdk extends AbstractWalletsSdk {
       onTerraChain() {
         throw new Error("non-secret home accounts disabled");
       },
-    }).createHomeAccountAndAddKey({
+    }).getAsyncDetailsAndFirstOwnerUpdate({
       multisigKey,
       demoMode,
     });

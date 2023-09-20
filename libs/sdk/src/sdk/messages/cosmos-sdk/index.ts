@@ -22,6 +22,7 @@ import invariant from "tiny-invariant";
 import { Chain, CosmosChainId, TerraChainId } from "../../../chains";
 import {
   GatekeeperConfig,
+  Key,
   MultisigKey,
   MultisigWallet,
 } from "../../../data-structures";
@@ -31,6 +32,9 @@ import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
 
 export class CosmosSdkMessages extends AbstractMessages {
+  public override getFirstUpdateWalletMessage(newOwner: MultisigKey, newOwnerAddress: string, walletAddress: string, sender: string): unknown {
+    throw new Error("Method not implemented.");
+  }
   protected constructor(
     protected override chainId: CosmosChainId | TerraChainId,
   ) {
@@ -744,7 +748,9 @@ export class CosmosSdkMessages extends AbstractMessages {
     return new MsgWithdrawDelegatorReward(wallet.address, validator);
   }
 
-  public getCreateWalletMessage(owner: MultisigKey): Message {
+  public getCreateWalletMessage(ownerAddress: string, pubkeyBase64: string, sender?: string): Message {
+    throw new Error ("not implemented");
+    /* const _sender = sender;
     const rawMessage = {
       new_account: {
         fee_debt: parseInt(this.chain.startingUsdDebt, 10),
@@ -754,7 +760,7 @@ export class CosmosSdkMessages extends AbstractMessages {
           session_keys: [],
           spendlimit_auths: [],
         },
-        owner: owner.address,
+        owner: ownerAddress,
         signers: {
           signers: this.getSigners(owner),
         },
@@ -766,20 +772,23 @@ export class CosmosSdkMessages extends AbstractMessages {
       owner.address,
       this.chain.accountCreatorAddress,
       rawMessage,
-    );
+    ); */
   }
 
   protected getSigners(multisigKey: MultisigKey) {
-    const addresses = multisigKey.keys.map((key) => {
-      return this.sdk.transactions.getAddressOfPublicKey(key.publicKey);
-    });
-    return R.zipWith(
-      (address, ty) => {
-        return { address, ty };
-      },
-      addresses,
-      multisigKey.signerTypes,
-    );
+    const addressAndTypes: Array<{ address: string; ty: string }> =
+      multisigKey.keys.map(
+        (key: Key) => {
+          return {
+            address: this.sdk.transactions.getAddressOfPublicKey(
+              key.publicKey
+            ),
+            ty: key.type,
+            pubkeyBase64: key.publicKey.value
+          };
+        },
+      );
+    return addressAndTypes;
   }
 
   protected get sdk() {

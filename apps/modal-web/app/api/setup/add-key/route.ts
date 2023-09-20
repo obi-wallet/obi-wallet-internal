@@ -52,7 +52,7 @@ export async function POST(request: Request) {
       messages: [addKeyMsg],
     });
     const broadcastTransactionResult =
-      await client.broadcastSignedTransaction(signedTransaction);
+    await client.broadcastSignedTransaction(signedTransaction);
     console.warn(JSON.stringify(broadcastTransactionResult));
 
     return NextResponse.json({
