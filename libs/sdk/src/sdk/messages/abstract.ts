@@ -19,11 +19,13 @@ export abstract class AbstractMessages {
   public abstract wrapMessages({
     messages,
     sender,
-    contract,
+    userEntryContract,
+    userEntryCodeHash,
   }: {
     messages: Message[];
     sender: string;
-    contract: string;
+    userEntryContract: string;
+    userEntryCodeHash?: string;
   }): Message[];
 
   public abstract getSendMessages({
@@ -124,5 +126,9 @@ export abstract class AbstractMessages {
   /**
    * Message to create a new wallet with the given owner.
    */
-  public abstract getCreateWalletMessage(owner: MultisigKey): Message;
+  public abstract getCreateWalletMessage(
+    owner: MultisigKey,
+    ownerAddress: string,
+    sender?: string,
+  ): Message;
 }

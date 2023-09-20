@@ -2,19 +2,17 @@ import { useTheme } from "@emotion/react";
 import {
   createGatekeeperConfig,
   KeyType,
+  MultisigKey,
   ObservableMultisigWallet,
   Secp256k1KeyPair,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Signer, SigningKey, Wallet } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as secp256k1 from "secp256k1";
-import invariant from "tiny-invariant";
-import { Presets } from "userop";
 
 import { useEnv, useStore } from "../../../../contexts";
 import { Alert, isSmallScreenNumber } from "../../../../helpers";
@@ -23,6 +21,10 @@ import {
   KeyFlow,
   KeyRoute,
   KeyStackParamList,
+  OnboardingRoute,
+  RecoverFrom,
+  SettingsRoute,
+  useRootNavigation,
   /* OnboardingRoute,
   RecoverFrom,
   SettingsRoute,
@@ -42,82 +44,13 @@ export type PhoneKeyConfirmScreenProps = NativeStackScreenProps<
 
 export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
   function PhoneKeyConfirmScreen({ route }) {
-    //const navigation = useRootNavigation();
-    const { phoneSessionStore, sdkRootStore, walletsStore } = useStore();
+    const navigation = useRootNavigation();
     const { params } = route;
-
-    async function generateEthereumAddresses(keyPair: Secp256k1KeyPair) {
-      const signingKey = new SigningKey(
-        Buffer.from(keyPair.privateKey, "base64"),
-      );
-      const signer: Signer = new Wallet(signingKey);
-      const simpleAccount = await Presets.Builder.SimpleAccount.init(
-        // @ts-expect-error this should be fine
-        signer,
-        "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
-      );
-      return {
-        evmSignerAddress: await signer.getAddress(),
-        evmUserContractAddress: simpleAccount.getSender(),
-      };
-    }
 
     return (
       <PhoneKeyConfirm
         {...params}
         onSubmit={async () => {
-          const phoneKp = phoneSessionStore.getKp;
-          invariant(phoneKp?.privateKey, "no phoneKp");
-          const proxyAddress = "MISSING";
-          const evmAddresses = await generateEthereumAddresses(phoneKp);
-          console.log(
-            "EVM addresses generated: " + JSON.stringify(evmAddresses),
-          );
-          const ethereumAccount = {
-            chainId: "secret-4",
-            zAuthKeyPair: phoneKp,
-            proxyAddress: "MISSING",
-            publicKey: phoneKp.publicKey,
-            evmSignerAddress: evmAddresses.evmSignerAddress,
-            evmUserContractAddress: evmAddresses.evmUserContractAddress,
-          };
-          const wallet = ObservableMultisigWallet.create({
-            type: "multisig",
-            data: {
-              chain: "secret-4",
-              owner: {
-                keys: [
-                  {
-                    type: KeyType.ZAuth,
-                    payload: {
-                      publicKey: phoneKp.publicKey,
-                      privateKey: phoneKp.privateKey,
-                    },
-                  },
-                ],
-                threshold: 1,
-              },
-              proxyAddress: {
-                v: 1,
-                address: proxyAddress,
-              },
-              gatekeeperConfig: createGatekeeperConfig().toJSON(),
-              singlesigWallets: [],
-              currentAccount: null,
-            },
-          });
-
-          sdkRootStore.ethereumDemoStore.setEthereumAccount(
-            proxyAddress,
-            ethereumAccount,
-          );
-          wallet.setEvmSigningAddress(evmAddresses.evmSignerAddress, true);
-          wallet.setEvmUserContractAddress(evmAddresses.evmUserContractAddress);
-          walletsStore.upsertWallet(wallet);
-          walletsStore.setCurrentWallet(wallet);
-
-          // old ZOD flow
-          /*
           switch (params.flow) {
             case KeyFlow.CreateWallet:
               navigation.navigate(OnboardingRoute.CreateWallet, params);
@@ -132,7 +65,6 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
               });
               break;
           }
-          */
         }}
       />
     );
@@ -143,7 +75,6 @@ export interface PhoneKeyConfirmProps {
   draftId: string;
   flow: KeyFlow;
   demoMode: boolean;
-
   phoneNumber: string;
   securityQuestion: string;
   securityAnswer: string;
@@ -153,16 +84,16 @@ export interface PhoneKeyConfirmProps {
 
 export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
   function PhoneKeyConfirm({
-    // draftId,
+    draftId,
     flow,
     demoMode,
     phoneNumber,
-    // securityQuestion,
+    securityQuestion,
     securityAnswer,
     onSubmit,
   }) {
-    const _flow = flow;
-    const { chainStore, phoneSessionStore } = useStore();
+    const { chainStore, draftsStore, phoneSessionStore } = useStore();
+    const draft = draftsStore.get<MultisigKey>({ id: draftId });
     const chainId = chainStore.currentChain;
     const env = useEnv();
     const [key, setKey] = useState("");
@@ -315,7 +246,10 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                           "dev key. Remember your entry to use again: " + key,
                         );
                         const encoder = new TextEncoder();
-                        const data = encoder.encode(key);
+                        const data = encoder.encode(
+                          key +
+                            "12081s1sw8vrast871-f-3pldht9qwfs;k;lsrtarbs8a7d821bnlp",
+                        );
                         const hashBuffer = await crypto.subtle.digest(
                           "SHA-256",
                           data,
@@ -348,28 +282,15 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                           ).toString("base64"),
                         },
                       };
-                      /*
-                      if (publicKey) {
-                        draft.value.setPhoneKey({
-                          publicKey,
-                          phoneNumber,
-                          securityQuestion,
-                        });
-                        setVerifyButtonDisabledDoubleclick(false);
-                        onSubmit();
-                      } else {
-                        setVerifyButtonDisabledDoubleclick(false);
-                      }
-                      */
 
                       if (kp.privateKey) {
-                        /*
                         draft.value.setPhoneKey({
                           publicKey: kp.publicKey,
+                          // TODO: remove
+                          privateKey: kp.privateKey,
                           phoneNumber,
                           securityQuestion,
                         });
-                        */
                         phoneSessionStore.setKp(kp);
                         setVerifyButtonDisabledDoubleclick(false);
                         onSubmit();

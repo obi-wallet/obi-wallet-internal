@@ -34,36 +34,25 @@ export type DeviceKeyScreenProps = NativeStackScreenProps<
 export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
   function DeviceKeyScreen({ route }) {
     const navigation = useRootNavigation();
-    const { configStore, draftsStore, walletsStore } = useStore();
+    const { configStore } = useStore();
     const { params } = route;
 
     return (
       <DeviceKey
         {...params}
-        onSubmit={async (done: boolean, deviceKeypair: Secp256k1KeyPair) => {
-          if (!done) {
-            if (params.flow !== KeyFlow.CreateWallet) {
-              navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
-              return;
-            }
-            const requiredKeys = configStore.config.keys.required;
-            const requiredRoutes = requiredKeys.map(keyTypeToKeyRoute);
-            const index = requiredRoutes.indexOf(KeyRoute.DeviceKey);
-            if (index === -1 || index + 1 === requiredRoutes.length) {
-              navigation.navigate(OnboardingRoute.CreateWallet, params);
-              return;
-            }
-            navigation.navigate(requiredRoutes[index + 1], params);
-          } else {
-            const draft = draftsStore.get<MultisigKey>({
-              id: params.draftId,
-            });
-            await walletsStore.recoverLocalWallet({
-              multisigKey: draft.value,
-              demoMode: params.demoMode,
-              evmKeypair: deviceKeypair,
-            });
+        onSubmit={async () => {
+          if (params.flow !== KeyFlow.CreateWallet) {
+            navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
+            return;
           }
+          const requiredKeys = configStore.config.keys.required;
+          const requiredRoutes = requiredKeys.map(keyTypeToKeyRoute);
+          const index = requiredRoutes.indexOf(KeyRoute.DeviceKey);
+          if (index === -1 || index + 1 === requiredRoutes.length) {
+            navigation.navigate(OnboardingRoute.CreateWallet, params);
+            return;
+          }
+          navigation.navigate(requiredRoutes[index + 1], params);
         }}
       />
     );
@@ -74,7 +63,7 @@ export interface DeviceKeyProps {
   draftId: string;
   demoMode: boolean;
 
-  onSubmit(done: boolean, devicePubkey: Secp256k1KeyPair | undefined): void;
+  onSubmit(devicePubkey: Secp256k1KeyPair | undefined): void;
 }
 export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   draftId,
@@ -92,9 +81,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
     create: boolean,
   ): Promise<[boolean, boolean, Secp256k1KeyPair | undefined]> {
     try {
-      // setting webauthn to true here for now
       const [keyPair, newUser] = await getOrCreateDeviceKeyPair(
-        // true,
         create,
         demoMode,
       );
@@ -224,14 +211,14 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
               flavor="primary"
               onPress={async () => {
                 if (scannedBiometrics) {
-                  onSubmit(false, undefined);
+                  onSubmit(undefined);
                 } else {
-                  const [success, newUser, deviceKeypair] =
+                  const [success, _newUser, deviceKeypair] =
                     await scanBiometrics(true);
                   invariant(deviceKeypair, "could not get device keypair");
                   console.log("Success is: ", success);
                   if (success && Platform.OS !== "ios") {
-                    onSubmit(!newUser, deviceKeypair);
+                    onSubmit(deviceKeypair);
                   }
                 }
               }}
@@ -244,14 +231,14 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
               flavor="primary"
               onPress={async () => {
                 if (scannedBiometrics) {
-                  onSubmit(false, undefined);
+                  onSubmit(undefined);
                 } else {
-                  const [success, newUser, deviceKeypair] =
+                  const [success, _newUser, deviceKeypair] =
                     await scanBiometrics(false);
                   invariant(deviceKeypair, "could not get device keypair");
                   console.log("Success is: ", success);
                   if (success && Platform.OS !== "ios") {
-                    onSubmit(!newUser, deviceKeypair);
+                    onSubmit(deviceKeypair);
                   }
                 }
               }}

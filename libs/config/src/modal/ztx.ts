@@ -23,7 +23,7 @@ export const ztxModalConfig: Config = {
       KeyType.Cloud,
       KeyType.Email,
     ],
-    required: [KeyType.Phone],
+    required: [KeyType.Device, KeyType.Phone],
     comingSoon: [],
   },
   ethereumBalances: true,

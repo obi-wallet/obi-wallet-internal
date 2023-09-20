@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { create, get } from "@github/webauthn-json";
 import type { CredentialDeviceType } from "@simplewebauthn/typescript-types";
 import { SecretNetworkClient, pubkeyToAddress } from "secretjs";
@@ -270,6 +271,7 @@ export async function getDevicePrivateKey(
         },
       });
       invariant(privateKey, "no private key");
+      console.log("returning device private key");
       return privateKey;
     } catch (e) {
       return null;

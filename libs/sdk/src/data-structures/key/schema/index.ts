@@ -7,6 +7,7 @@ import { EmailRecoveryKey } from "./email-recovery";
 import { NfcKey } from "./nfc";
 import { PhoneKey } from "./phone";
 import { SocialKey } from "./social";
+import { UnityKey } from "./unity";
 import { ZAuthKey } from "./z-auth";
 import { Secp256k1PublicKey } from "../../../keys";
 import { migratable } from "../../migratable";
@@ -20,6 +21,7 @@ export const UsableKeySchema = migratable(
     CloudKey,
     EmailKey,
     EmailRecoveryKey,
+    UnityKey,
     ZAuthKey,
   ]),
 );

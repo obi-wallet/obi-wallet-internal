@@ -83,7 +83,7 @@ export class CosmJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     return await offlineAminoSigner.signStdSignDoc(this.signDoc);
   }
 
-  protected unsafeCreateSignedTransaction() {
+  protected unsafeCreateSignedTransactionOrMessage() {
     const body: TxBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
       value: {
@@ -109,6 +109,9 @@ export class CosmJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       signatures,
     );
 
-    return TxRaw.encode(transaction).finish();
+    return {
+      signed: [TxRaw.encode(transaction).finish()],
+      broadcast: true,
+    };
   }
 }

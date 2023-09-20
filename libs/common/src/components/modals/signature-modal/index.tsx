@@ -15,6 +15,7 @@ import { Alert } from "../../../helpers";
 export * from "./confirm-messages";
 export * from "./pretty-message";
 export * from "./signers";
+export * from "./ethereum-demo";
 
 export interface SignatureModalProps {
   interaction: SignAndBroadcastTransactionUserInteraction;
@@ -25,9 +26,10 @@ export const SignatureModal = observer<SignatureModalProps>(
     const ethereumDemo = interaction.payload.messages.every((message) => {
       return R.has("eth", message) || R.has("userop", message);
     });
-    return ethereumDemo ? (
+    return (
+      /* ethereumDemo ? (
       <SignatureModalEthereumDemo interaction={interaction} />
-    ) : (
+    ) : ( */
       <SignatureModalSdk interaction={interaction} />
     );
   },
@@ -42,7 +44,7 @@ const SignatureModalSdk = observer<SignatureModalProps>(
           {
             text: "Cancel",
             onPress: () => {
-              interaction.resolve({ approved: false });
+              interaction.resolve({ approved: false, signature: undefined });
             },
           },
         ]);

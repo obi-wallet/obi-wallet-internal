@@ -1,9 +1,10 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Signer, SigningKey, Wallet } from "ethers";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Presets } from "userop";
 
 import { WalletsSchema } from "./schema";
 import { ChainId } from "../../chains";
-import { getOrCreateDeviceKeyPair } from "../../keys";
 import { Secp256k1KeyPair } from "../../keys/sec256k1";
 import { WalletsSdk } from "../../sdk/wallets";
 import { Serialized } from "../abstract";
@@ -87,6 +88,8 @@ export class Wallets {
     return this._wallets.find((w) => w.proxyAddress === proxyAddress);
   }
 
+  /// Creates a home chain account for the user owned by `multisigKey.`
+  /// Also adds a new simple signer key that is owned by the multisig.
   public async createWallet({
     multisigKey,
     demoMode,
@@ -94,13 +97,11 @@ export class Wallets {
     multisigKey: MultisigKey;
     demoMode: boolean;
   }) {
-    const response = await this.walletsSdk.createWallet({
+    const response = await this.walletsSdk.createHomeAccountAndAddKey({
       multisigKey,
       demoMode,
     });
 
-    if (!response.approved || !response.payload.success) return response;
-
     const wallet = this._factory.create({
       type: demoMode ? "multisig-demo" : "multisig",
       data: {
@@ -109,46 +110,16 @@ export class Wallets {
         owner: multisigKey.toJSON(),
         proxyAddress: {
           v: 1,
-          address: response.payload.proxyAddress,
+          address: response.homeAccountAddress,
         },
         singlesigWallets: [],
         currentAccount: null,
       },
     });
+    wallet.setEvmSigningAddress(response.evmSignerAddress, true);
+    wallet.setEvmUserContractAddress(response.evmUserContractAddress);
     this.upsertWallet(wallet);
     return response;
-  }
-
-  public async recoverLocalWallet({
-    multisigKey,
-    demoMode,
-    evmKeypair,
-  }: {
-    multisigKey: MultisigKey;
-    demoMode: boolean;
-    evmKeypair: Secp256k1KeyPair;
-  }) {
-    const wallet = this._factory.create({
-      type: demoMode ? "multisig-demo" : "multisig",
-      data: {
-        chain: multisigKey.chainId,
-        gatekeeperConfig: createGatekeeperConfig().toJSON(),
-        owner: multisigKey.toJSON(),
-        proxyAddress: {
-          v: 1,
-          address: "MISSING", // TODO dummy for now – need to look up
-        },
-        singlesigWallets: [],
-        currentAccount: null,
-      },
-    });
-    const [kp, _] = await getOrCreateDeviceKeyPair(false, false);
-    wallet.setEvmSigningAddress(kp.privateKey);
-    wallet.setEvmUserContractAddress(
-      await this.generate4337Address(evmKeypair),
-    );
-    this.upsertWallet(wallet);
-    this.setCurrentWallet(wallet);
   }
 
   async generate4337Address(keyPair: Secp256k1KeyPair) {

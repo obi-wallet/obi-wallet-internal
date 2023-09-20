@@ -5,8 +5,12 @@ import {
   Messages,
   ChainId,
   Message,
+  BroadcastTransactionResult,
+  SecretJsClient,
+  secretJsChains,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
+import { sha256 } from "ethers";
 import * as R from "ramda";
 import { useEffectOnceWhen } from "rooks";
 import invariant from "tiny-invariant";
@@ -63,14 +67,27 @@ export function useSignAndBroadcastTransaction({
   const multisigSignerMutation = useMutation({
     mutationFn: async () => {
       if (!multisigKey || (await awaitableCanExecute.getAsync())) return null;
-      return await multisigKey.createSigner({
-        messages: wrapMessages({
-          messages: payload.messages,
-          proxyAddress: wallet?.proxyAddress,
-          sender: multisigKey?.address,
-          chainId: multisigKey?.chainId,
-        }),
-      });
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      if (
+        (payload.messages[0] as any).raw ||
+        (payload.messages[0] as any).eth
+      ) {
+        const signer = await multisigKey.createSigner(
+          { messages: payload.messages },
+          wallet?.evmSigningAddress,
+          walletMeta! // unsure whether this passes thru
+        );
+        return signer;
+      } else {
+        return await multisigKey.createSigner({
+          messages: wrapMessages({
+            messages: payload.messages,
+            proxyAddress: wallet?.proxyAddress,
+            sender: multisigKey?.address,
+            chainId: multisigKey?.chainId,
+          }),
+        });
+      }
     },
     onSuccess(value) {
       if (value) {
@@ -110,16 +127,63 @@ export function useSignAndBroadcastTransaction({
 
       invariant(multisigKey, "Expected multisigKey to exist.");
       const multisigSigner = await awaitableMultisigSigner.getAsync();
-      const signedTransaction = multisigSigner.createSignedTransaction();
-      return await Sdk.chainId(
-        multisigKey.chainId,
-      ).transactions.broadcastSignedTransactionAndLendFees({
-        signedTransaction,
-        sender: multisigKey.address,
-      });
+      const { signed, broadcast } =
+        multisigSigner.createSignedTransactionOrMessage();
+      if (broadcast) {
+        return await Sdk.chainId(
+          multisigKey.chainId,
+        ).transactions.broadcastSignedTransactionAndLendFees({
+          signedTransaction: signed[0],
+          sender: multisigKey.address,
+        });
+      } else {
+        const chain = secretJsChains["secret-4"];
+
+        const signerSignature = await new SecretJsClient(
+          "secret-4",
+        ).withSecretNetworkClient(async (client) => {
+          const user_entry_code_hash =
+            await client.query.compute.codeHashByContractAddress({
+              contract_address: wallet?.proxyAddress,
+            });
+          const sign_bytes_query_msg = {
+            contract_address: chain.secretSigner.address,
+            code_hash: chain.secretSigner.codeHash,
+            query: {
+              sign_bytes: {
+                user_entry_address: wallet?.proxyAddress,
+                user_entry_code_hash: user_entry_code_hash.code_hash!,
+                bytes: sha256(Buffer.from((payload.messages[0] as any).raw)),
+                bytes_signed_by_signers: signed.map((s) =>
+                  Buffer.from(s).toString("hex"),
+                ),
+              },
+            },
+          };
+          console.log(
+            "sign_bytes_query_msg: " + JSON.stringify(sign_bytes_query_msg),
+          );
+          const response = (await client.query.compute.queryContract(
+            sign_bytes_query_msg,
+          )) as { signature: string };
+          console.log("signer contract response: " + JSON.stringify(response));
+          return response.signature;
+        });
+        console.log("signer contract signature: " + signerSignature);
+        return {
+          success: true,
+          transactionHash: signerSignature,
+          rawResult: undefined,
+          rawLog: undefined,
+        } as BroadcastTransactionResult;
+      }
     },
     onSuccess(payload) {
-      interaction.resolve({ approved: true, payload });
+      interaction.resolve({
+        approved: true,
+        payload,
+        signature: Buffer.from(payload.transactionHash, "hex"),
+      });
     },
     retry: 2,
   });
@@ -128,7 +192,7 @@ export function useSignAndBroadcastTransaction({
     interaction,
     messages: payload.messages,
     cancel() {
-      interaction.resolve({ approved: false });
+      interaction.resolve({ approved: false, signature: undefined });
     },
     broadcast,
   };
@@ -190,6 +254,6 @@ function wrapMessages({
   return Messages.chainId(chainId).wrapMessages({
     messages,
     sender,
-    contract: proxyAddress,
+    userEntryContract: proxyAddress,
   });
 }

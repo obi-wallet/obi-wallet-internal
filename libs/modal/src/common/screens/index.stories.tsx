@@ -39,7 +39,7 @@ const MultisigDraft = {
   Container: observer<{ children: ReactNode }>(function MultisigDraft({
     children,
   }) {
-    const { chainStore, draftsStore } = useStore();
+    const { chainStore, draftsStore, unityStore } = useStore();
     const draft = draftsStore.get({ id: multisigDraftId });
     const securityQuestions = useSecurityQuestions();
     const env = useEnv();
@@ -47,6 +47,11 @@ const MultisigDraft = {
     useAsyncEffect(async () => {
       if (!draft) {
         const original = ObservableMultisigKey.create(chainStore.currentChain);
+        // check if there's a unity device ID, to do unity
+        // otherwise still does webauthn
+        if (unityStore.getDeviceId) {
+          original.setUnityKey(unityStore.getDeviceId);
+        }
         const [key, _] = await getOrCreateDeviceKeyPair(false, false);
         original.setDeviceKey(key);
         original.setPhoneKey({

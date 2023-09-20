@@ -6,6 +6,7 @@ import {
   MultisigPublicKey,
   Secp256k1KeyPair,
   Secp256k1PublicKey,
+  generateSec256k1KeyPair,
 } from "../../keys";
 import { Sdk } from "../../sdk";
 import { Message } from "../../transactions";
@@ -18,6 +19,7 @@ import {
 } from "../key";
 import { KeySchema } from "../key/schema";
 import { AbstractSerialized } from "../migratable";
+import { WalletMeta } from "../multisig-wallet";
 
 export class MultisigKey {
   public get schema() {
@@ -110,6 +112,24 @@ export class MultisigKey {
       type: KeyType.Device,
       payload: keyPair,
     });
+    console.log("Current draft multisig: " + JSON.stringify(this));
+  }
+
+  public setUnityKey(deviceId: string) {
+    // use unity device ID to generate a keypair right here,
+    // without a function call, and set it as the unity key
+    const keyPair = generateSec256k1KeyPair(
+      deviceId + "102h01s8b93fptb8ftb82t",
+    );
+    console.log(
+      "Unity keypair generate with pubkey " + keyPair.publicKey.value,
+    );
+
+    this.setKey({
+      type: KeyType.Unity,
+      payload: keyPair,
+    });
+    console.log("Current draft multisig: " + JSON.stringify(this));
   }
 
   public setPhoneKey(payload: {
@@ -122,6 +142,7 @@ export class MultisigKey {
       type: KeyType.Phone,
       payload,
     });
+    console.log("Current multisig draft is: " + JSON.stringify(this));
   }
 
   public setSocialKey(publicKey: Secp256k1PublicKey) {
@@ -185,10 +206,17 @@ export class MultisigKey {
     this._keys = this._keys.filter((key) => key.type !== type);
   }
 
-  public async createSigner({ messages }: { messages: Message[] }) {
+  public async createSigner(
+    { messages }: { messages: Message[] },
+    evmSigningAddress?: string,
+    walletMeta?: WalletMeta,
+  ) {
+    console.log("in createSigner(), messages are: " + JSON.stringify(messages));
     return await this.sdk.transactions.createMultisigSigner({
       multisigPublicKey: this.publicKey,
       messages,
+      evmSigningAddress,
+      walletMeta,
     });
   }
 

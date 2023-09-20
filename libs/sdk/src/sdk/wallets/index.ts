@@ -1,45 +1,39 @@
 import { AbstractWalletsSdk } from "./abstract";
-import { CosmosSdkWalletsSdk } from "./cosmos-sdk";
-import { LegacyCosmosWalletsSdk } from "./legacy-cosmos";
-import { SecretJsWalletsSdk } from "./secret-js";
+// import { CosmosSdkWalletsSdk } from "./cosmos-sdk";
+// import { LegacyCosmosWalletsSdk } from "./legacy-cosmos";
+// import { SecretJsWalletsSdk } from "./secret-js";
+import { SecretJsMsigWalletSdk } from "./secret-js-msig";
 import { Chain } from "../../chains";
 import { MultisigKey } from "../../data-structures";
-import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
-import { BroadcastTransactionResult } from "../common";
-
 export { AbstractWalletsSdk };
 
 export class WalletsSdk extends AbstractWalletsSdk {
-  public async createWallet({
+  public async createHomeAccountAndAddKey({
     multisigKey,
     demoMode,
   }: {
     multisigKey: MultisigKey;
     demoMode: boolean;
-  }): Promise<
-    AbstractUserInteractionResponse<
-      { proxyAddress: string },
-      {
-        description: string;
-        originalPayload: BroadcastTransactionResult;
-      }
-    >
-  > {
+  }): Promise<{
+    homeAccountAddress: string;
+    evmSignerAddress: string;
+    evmUserContractAddress: string;
+  }> {
     return await Chain.select<AbstractWalletsSdk>({
       chainId: multisigKey.chainId,
       onCosmosChain(_) {
-        return new CosmosSdkWalletsSdk();
+        throw new Error("non-secret home accounts disabled");
       },
       onLegacyCosmosChain() {
-        return new LegacyCosmosWalletsSdk();
+        throw new Error("non-secret home accounts disabled");
       },
       onSecretJsChain() {
-        return new SecretJsWalletsSdk();
+        return new SecretJsMsigWalletSdk();
       },
       onTerraChain() {
-        return new CosmosSdkWalletsSdk();
+        throw new Error("non-secret home accounts disabled");
       },
-    }).createWallet({
+    }).createHomeAccountAndAddKey({
       multisigKey,
       demoMode,
     });

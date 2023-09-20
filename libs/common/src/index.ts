@@ -1,3 +1,5 @@
+import { EthTransaction } from "./components";
+export { EthTransaction };
 export * from "./components";
 export * from "./contexts";
 export * from "./forms";

@@ -3,9 +3,7 @@ import { Config } from "@obi-wallet/config";
 import {
   KeyType,
   ObservableMultisigWallet,
-  Secp256k1PrivateKeySigner,
   SignAndBroadcastTransactionUserInteraction,
-  ZAuthKeySigner,
   createGatekeeperConfig,
   Secp256k1PublicKey,
   getOrCreateDeviceKeyPair,
@@ -89,41 +87,28 @@ const MessageHandlers = observer(function MessageHandlers() {
         case "@obi/sign-message": {
           if (!store.walletsStore.currentWallet) return;
 
-          const zAuthKey =
-            store.walletsStore.currentWallet.owner.getUsableKeyOfType(
-              KeyType.ZAuth,
-            );
-          const deviceKey =
-            store.walletsStore.currentWallet.owner.getUsableKeyOfType(
-              KeyType.Device,
-            );
-          const phoneKey = store.phoneSessionStore.getKp;
-          invariant(
-            zAuthKey || deviceKey || phoneKey,
-            "Wallet has no ZAuth or device key",
-          );
-          let signer;
-          if (phoneKey) {
-            signer = new Secp256k1PrivateKeySigner(phoneKey.privateKey);
-          } else if (zAuthKey) {
-            signer = new ZAuthKeySigner(zAuthKey);
-          } else if (deviceKey?.payload.privateKey) {
-            signer = new Secp256k1PrivateKeySigner(
-              deviceKey.payload.privateKey,
-            );
-          } else {
-            throw new Error("Wallet has no ZAuth or device key");
-          }
+          const signatureResponse =
+            await SignAndBroadcastTransactionUserInteraction.start({
+              messages: [
+                {
+                  raw: data.ethereumPrepend
+                    ? ethers.hashMessage(data.payload)
+                    : data.payload,
+                },
+              ],
+              demoMode: store.walletsStore.currentWallet.isDemo,
+              cancelable: true,
+              walletMeta: store.walletsStore.currentWallet.meta,
+            });
 
-          const hash = ethers.hashMessage(data.payload);
-          const response = `0x${Buffer.from(
+          /* const response = `0x${Buffer.from(
             await signer.signHash(
               new Uint8Array(Buffer.from(hash.slice(2), "hex")),
             ),
-          ).toString("hex")}`;
+          ).toString("hex")}`; */
           const message = {
             type: "@obi/sign-message-response",
-            payload: response,
+            payload: signatureResponse,
           };
           if (event.source) {
             event.source?.postMessage(
@@ -145,7 +130,14 @@ const MessageHandlers = observer(function MessageHandlers() {
             console.log("no current wallet");
             return;
           } else {
-            console.log("current wallet retrieved");
+            console.log(
+              "current wallet retrieved: " +
+                JSON.stringify(store.walletsStore.currentWallet),
+            );
+            console.log(
+              "wallet signing address is: " +
+                store.walletsStore.currentWallet.evmSigningAddress,
+            );
             console.log("payload", data.payload);
           }
 
@@ -154,15 +146,21 @@ const MessageHandlers = observer(function MessageHandlers() {
                 messages: data.payload,
               }
             : data.payload;
+          const interactionObj = {
+            messages: payload.messages,
+            targetChainId: payload.targetChainId,
+            cancelable: true,
+            walletMeta: store.walletsStore.currentWallet.meta,
+            demoMode: store.walletsStore.currentWallet.isDemo,
+            autoBroadcast: false,
+          };
+          console.log(
+            "interaction object is: " + JSON.stringify(interactionObj),
+          );
           const response =
-            await SignAndBroadcastTransactionUserInteraction.start({
-              messages: payload.messages,
-              targetChainId: payload.targetChainId,
-              cancelable: true,
-              walletMeta: store.walletsStore.currentWallet.meta,
-              demoMode: store.walletsStore.currentWallet.isDemo,
-              autoBroadcast,
-            });
+            await SignAndBroadcastTransactionUserInteraction.start(
+              interactionObj,
+            );
 
           const message = {
             type: "@obi/sign-and-broadcast-transaction-response",
@@ -194,6 +192,10 @@ const MessageHandlers = observer(function MessageHandlers() {
         }
         case "@obi/set-zauth-tokens": {
           store.zauthStore.setCurrentTokens(data.payload);
+          break;
+        }
+        case "@obi/set-device-id": {
+          store.unityStore.setDeviceId(data.payload);
           break;
         }
         case "@obi/get-signing-address": {
@@ -290,14 +292,6 @@ const MessageHandlers = observer(function MessageHandlers() {
           );
           let kp;
           let _;
-          if (!data.payload.accessToken) {
-            [kp, _] = await getOrCreateDeviceKeyPair(false, false);
-            wallet.setEvmSigningAddress(kp.privateKey);
-            wallet.setEvmUserContractAddress(evmUserContractAddress);
-          } else {
-            wallet.setEvmSigningAddress("Uncalculated", true);
-            wallet.setEvmUserContractAddress(evmUserContractAddress);
-          }
 
           store.walletsStore.upsertWallet(wallet);
 

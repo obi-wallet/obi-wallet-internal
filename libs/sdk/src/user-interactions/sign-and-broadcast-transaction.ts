@@ -21,7 +21,12 @@ export type SignAndBroadcastTransactionUserInteraction = UserInteraction<
     readonly isLogin?: boolean;
     readonly targetChainId?: TargetChainId;
   } & (CommonPayloadMultisigKey | CommonPayloadWalletMeta),
-  { approved: true; payload: BroadcastTransactionResult } | { approved: false }
+  | {
+      approved: true;
+      payload: BroadcastTransactionResult;
+      signature: Uint8Array | undefined;
+    }
+  | { approved: false; signature: undefined }
 >;
 
 export const SignAndBroadcastTransactionUserInteractionSymbol = Symbol();

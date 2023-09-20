@@ -1,86 +1,96 @@
-import invariant from "tiny-invariant";
+import { TxResponse } from "secretjs";
 
+import { secretJsChains } from "../../../chains";
 import { MultisigKey } from "../../../data-structures";
-import { SignAndBroadcastTransactionUserInteraction } from "../../../user-interactions";
-import { AbstractUserInteractionResponse } from "../../../user-interactions/abstract";
-import { BroadcastTransactionResult } from "../../common";
-import { Messages } from "../../messages";
+import { Secp256k1PublicKey } from "../../../keys/multisig";
 import { AbstractWalletsSdk } from "../abstract";
+//import { add } from "ramda";
 
 export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
-  public async createWallet({
+  /// The creation transaction doesn't actually need a user interaction
+  /// since the API will create it for the user, allowing smoother UX
+  /// and better retry/interrupt handling.
+  public async createHomeAccountAndAddKey({
     multisigKey,
+    // Demo Mode not implemented here for now
     demoMode,
   }: {
     multisigKey: MultisigKey;
     demoMode: boolean;
-  }): Promise<
-    AbstractUserInteractionResponse<
-      { proxyAddress: string },
-      {
-        description: string;
-        originalPayload: BroadcastTransactionResult;
-      }
-    >
-  > {
-    const response = await SignAndBroadcastTransactionUserInteraction.start({
-      messages: [
-        Messages.chainId(multisigKey.chainId).getCreateWalletMessage(
-          multisigKey,
-        ),
-      ],
-      demoMode,
-      cancelable: true,
-      multisigKey,
+  }): Promise<{
+    homeAccountAddress: string;
+    evmSignerAddress: string;
+    evmUserContractAddress: string;
+  }> {
+    const _demoMode = demoMode;
+    const chain = secretJsChains["secret-4"];
+    console.warn(
+      "Multisig info. address: " + multisigKey.address,
+      "chainId: " + multisigKey.chainId,
+      "threshold: " + multisigKey.threshold,
+      "keys: " + JSON.stringify(multisigKey.keys),
+      "signerTypes: " + multisigKey.signerTypes,
+      "publicKey: " + JSON.stringify(multisigKey.publicKey),
+    );
+    console.log(
+      "Calling setup/home-account with owner address " + multisigKey.address,
+    );
+    const response = await fetch("/api/setup/home-account", {
+      method: "POST",
+      body: JSON.stringify({
+        owner: multisigKey,
+        ownerAddress: multisigKey.address,
+      }),
+    });
+    const {
+      ownerAddress,
+      homeAccountAddress,
+      txResult,
+    }: {
+      ownerAddress: string;
+      homeAccountAddress: string;
+      txResult: TxResponse;
+    } = await response.json();
+
+    // add key will return an address quickly, before it's actually ready
+    const addKeyResponse = await fetch("/api/setup/add-key", {
+      method: "POST",
+      body: JSON.stringify({
+        userEntryAddress: homeAccountAddress,
+        userEntryCodeHash: chain.userEntry.codeHash,
+      }),
     });
 
-    if (!response.approved) return response;
-    if (!response.payload.success)
-      return {
-        approved: true,
-        payload: {
-          success: false,
-          description: "Transaction failed",
-          originalPayload: response.payload,
-        },
-      };
-
-    const { rawLog } = response.payload;
-    try {
-      invariant(rawLog, "No log found");
-      // TODO: zod
-      const { events } = JSON.parse(rawLog)[0] as {
-        events: {
-          type: string;
-          attributes: { key: string; value: string }[];
-        }[];
-      };
-      const instantiateEvent = events.find((e) => {
-        return e.type === "instantiate";
-      });
-      const contractAddresses = instantiateEvent?.attributes.filter((a) => {
-        return a.key === "_contract_address";
-      });
-      invariant(
-        Array.isArray(contractAddresses) && contractAddresses.length > 0,
-        "No contract address found",
+    const addKeyResponseJson = await addKeyResponse.json();
+    console.log("add-key-response: " + JSON.stringify(addKeyResponse));
+    if (addKeyResponseJson.success) {
+      const {
+        success,
+        publicKey,
+        evmSignerAddress,
+        evmUserContractAddress,
+      }: {
+        success: boolean;
+        publicKey: Secp256k1PublicKey;
+        evmSignerAddress: string;
+        evmUserContractAddress: string;
+      } = addKeyResponseJson;
+      const _unused = { success, publicKey };
+      console.log(
+        "home account: " +
+          homeAccountAddress +
+          " with owner " +
+          ownerAddress +
+          ", tx hash " +
+          txResult.transactionHash,
       );
       return {
-        approved: true,
-        payload: {
-          success: true,
-          proxyAddress: contractAddresses[0].value,
-        },
+        homeAccountAddress,
+        evmSignerAddress,
+        evmUserContractAddress,
       };
-    } catch (e) {
-      return {
-        approved: true,
-        payload: {
-          success: false,
-          description: "Could not parse log",
-          originalPayload: response.payload,
-        },
-      };
+    } else {
+      throw new Error("failed to save evm key");
     }
   }
 }

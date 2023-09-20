@@ -8,6 +8,7 @@
     "@tanstack/react-query": "*",
     "@tanstack/react-query-persist-client": "*",
     "dexie": "*",
+    "ethers": "*",
     "mobx": "*",
     "mobx-react-lite": "*",
     "ramda": "*",

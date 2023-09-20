@@ -4,19 +4,24 @@ import {
   SimplePublicKey,
 } from "@terra-money/feather.js";
 import { BaseAccount } from "cosmjs-types/cosmos/auth/v1beta1/auth";
+import { WalletMeta } from "libs/sdk/src/data-structures";
 import { Account } from "secretjs";
+import invariant from "tiny-invariant";
 import warning from "tiny-warning";
+import { string } from "zod";
 
+import { EthTransaction, SecretJsMultisigSigner } from "./multisigs-signer";
 import { SecretJsChainId, secretJsChains } from "../../../chains";
 import { SecretJsClient } from "../../../clients";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../../keys";
-import { MultisigSigner } from "../../../signers";
 import { Message, SignedTransaction } from "../../../transactions";
 import {
   AccountValidationResult,
   BroadcastTransactionResult,
   RpcError,
 } from "../../common";
+import { Messages } from "../../messages";
+import { CosmosSdkMessages } from "../../messages/cosmos-sdk";
 import { AbstractTransactionsSdk } from "../abstract";
 
 function notImplemented(message: string) {
@@ -113,12 +118,83 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     });
   }
 
-  public async createMultisigSigner(_: {
+  public async createMultisigSigner({
+    multisigPublicKey,
+    messages,
+    walletMeta,
+    evmSigningAddress,
+  }: {
     multisigPublicKey: MultisigPublicKey;
     messages: Message[];
-  }): Promise<MultisigSigner> {
-    notImplemented("createMultisigSigner not implemented for SecretJS");
-    return null!;
+    walletMeta?: WalletMeta;
+    evmSigningAddress?: string;
+  }) {
+    const address = this.getAddressOfPublicKey(multisigPublicKey);
+    await this.prepareAccount(address);
+    const account = await this.fetchAccount(address);
+    invariant(account, "Account not found.");
+    invariant(this.isBaseAccount(account), "account is not BaseAccount");
+    const baseAccount = account as Account & BaseAccount;
+
+    const aminoMessages = messages.map((message) => {
+      return this.messages.toJSON(message);
+    });
+    const checkMessages: any[] = aminoMessages;
+    console.log("aminoMessages is: " + JSON.stringify(aminoMessages));
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    if (checkMessages[0].raw || checkMessages[0].eth) {
+      invariant(
+        aminoMessages.length === 1,
+        "Only one message supported for raw signing",
+      );
+      console.log("triggering raw/eth is yes");
+      console.log("checkMessages[0].eth is " + JSON.stringify(checkMessages[0].eth));
+      const signer = new SecretJsMultisigSigner({
+        chainId: this.chainId,
+        account,
+        accountNumber: baseAccount.accountNumber,
+        sequence: baseAccount.sequence,
+        fee: this.client.defaultFee,
+        encodeObjects: undefined,
+        /* eslint-disable @typescript-eslint/no-explicit-any */
+        messages: [
+          {
+            type: checkMessages[0].raw ? "raw" : "eth",
+            value: checkMessages[0].raw
+              ?  checkMessages[0].raw
+              :  checkMessages[0].eth,
+          },
+        ],
+        multisigPublicKey,
+      });
+      console.log("partly prepared signer is " + JSON.stringify(signer));
+      if (checkMessages[0].eth) {
+        invariant(evmSigningAddress, "no evmSigningAddress provided");
+        invariant(walletMeta, "no walletMeta provided");
+        console.log("getSignUserOpInput is " + signer.getSignUserOpInput());
+        if (!signer.getSignUserOpInput() && !signer.getSignMessage()) {
+          console.log("calling initUserOperation...");
+          await signer.initUserOperation(evmSigningAddress, walletMeta);
+        } else {
+          console.log("signMessage is " + signer.getSignMessage());
+        }
+      }
+      return signer;
+    } else {
+      const encodeObjects = aminoMessages.map((aminoMessage) => {
+        return this.client.aminoTypes.fromAmino(aminoMessage);
+      });
+      return new SecretJsMultisigSigner({
+        chainId: this.chainId,
+        account,
+        accountNumber: baseAccount.accountNumber,
+        sequence: baseAccount.sequence,
+        fee: this.client.defaultFee,
+        encodeObjects,
+        messages: aminoMessages,
+        multisigPublicKey,
+      });
+    }
   }
 
   public async broadcastSignedTransaction({
@@ -145,5 +221,9 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
 
   protected get chain() {
     return secretJsChains[this.chainId];
+  }
+
+  protected get messages() {
+    return Messages.chainId(this.chainId) as CosmosSdkMessages;
   }
 }

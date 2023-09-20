@@ -1,3 +1,15 @@
+import { createWasmAminoConverters } from "@cosmjs/cosmwasm-stargate";
+import {
+  AminoTypes,
+  createAuthzAminoConverters,
+  createBankAminoConverters,
+  createDistributionAminoConverters,
+  createFeegrantAminoConverters,
+  createGovAminoConverters,
+  createIbcAminoConverters,
+  createStakingAminoConverters,
+  createVestingAminoConverters,
+} from "@cosmjs/stargate";
 import {
   BroadcastMode,
   fromBase64,
@@ -6,6 +18,7 @@ import {
   toBase64,
   TxOptions,
 } from "secretjs";
+import { StdFee } from "secretjs/dist/wallet_amino";
 import { z } from "zod";
 
 import { SecretJsChainId, secretJsChains } from "../../chains";
@@ -112,18 +125,20 @@ export class SecretJsClient extends AbstractClient {
     signedTransaction: SignedTransaction,
   ): Promise<BroadcastTransactionResult> {
     return await this.withSecretNetworkClient(async (client) => {
-      const { transactionHash } = await client.tx.broadcastSignedTx(
+      const txResponse = await client.tx.broadcastSignedTx(
         toBase64(signedTransaction),
         {
           ...this.defaultTxOptions,
-          broadcastMode: BroadcastMode.Sync,
-          waitForCommit: false,
+          // TODO: need to do Sync/Async here
+          broadcastMode: BroadcastMode.Block,
+          waitForCommit: true,
         },
       );
       await new Promise((resolve) => {
         setTimeout(resolve, 10_000);
       });
-      const rawResult = await client.query.getTx(transactionHash);
+      console.warn("Async broadcast response: " + JSON.stringify(txResponse));
+      const rawResult = await client.query.getTx(txResponse.transactionHash);
 
       if (!rawResult) {
         const res = await client.tx.broadcastSignedTx(
@@ -151,8 +166,34 @@ export class SecretJsClient extends AbstractClient {
     });
   }
 
+  public get aminoTypes() {
+    return new AminoTypes({
+      ...createAuthzAminoConverters(),
+      ...createBankAminoConverters(),
+      ...createDistributionAminoConverters(),
+      ...createGovAminoConverters(),
+      ...createStakingAminoConverters(),
+      ...createIbcAminoConverters(),
+      ...createFeegrantAminoConverters(),
+      ...createVestingAminoConverters(),
+      ...createWasmAminoConverters(),
+    });
+  }
+
   protected get chain() {
     return secretJsChains[this.chainId];
+  }
+
+  public get defaultFee(): StdFee {
+    return {
+      amount: [
+        {
+          amount: "20000",
+          denom: "uscrt",
+        },
+      ],
+      gas: "2560000",
+    };
   }
 
   public get defaultTxOptions(): TxOptions {
