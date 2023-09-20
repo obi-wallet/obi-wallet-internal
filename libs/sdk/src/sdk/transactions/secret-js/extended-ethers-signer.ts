@@ -29,7 +29,7 @@ export class ExtendedWallet extends Wallet {
     return this.signingAddress;
   }
 
-  override async signMessage(message: BytesLike): Promise<string> {
+  override async signMessage(message: BytesLike, recovery1c?: boolean): Promise<string> {
     const toHexString = ((bytes: BytesLike): string | null => {
       if (bytes instanceof Uint8Array) {
           return Array.from(bytes).map(byte => byte.toString(16).padStart(2, '0')).join('');
@@ -53,9 +53,12 @@ export class ExtendedWallet extends Wallet {
       userEntryAddress: this.userEntryAddress,
     };
     console.log("interaction object inside ExtendedWallet is: " + JSON.stringify(interactionObj));
-    const { signature } =
+    const res =
       await SignAndBroadcastTransactionUserInteraction.start(interactionObj);
-    invariant(signature, "No signature obtained");
-    return utils.hexlify(signature);
+    console.log("obtained ExtendedWallet response: " + JSON.stringify(res));
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    invariant((res as any).payload?.transactionHash, "No signature obtained");
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    return (res as any).payload?.transactionHash + (recovery1c ? "1c" : "1b");
   }
 }

@@ -101,6 +101,7 @@ const MessageHandlers = observer(function MessageHandlers() {
               demoMode: store.walletsStore.currentWallet.isDemo,
               cancelable: true,
               walletMeta: store.walletsStore.currentWallet.meta,
+              multisigKey: store.walletsStore.currentWallet.owner,
             });
 
           /* const response = `0x${Buffer.from(
@@ -153,6 +154,10 @@ const MessageHandlers = observer(function MessageHandlers() {
           console.log("setting up client...");
           const client = await Client.init(
             "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+            {
+              entryPoint: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+              overrideBundlerRpc: "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00"
+            }
           );
           invariant(store.walletsStore.currentWallet.evmSigningAddress, "no signing address provided");
           // This likely won't actually be used for network calls
@@ -176,7 +181,9 @@ const MessageHandlers = observer(function MessageHandlers() {
         
           invariant(data.payload[0].eth, "no user op inputted");
           console.log("in buildUserOperation()");
-          const ethTx = new EthTransaction(data.payload.eth!);
+          console.log("data.payload.eth is: " + JSON.stringify(data.payload[0].eth));
+          const ethTx = new EthTransaction(data.payload[0].eth!);
+          
           const userOp: IUserOperation = await client.buildUserOperation(
             simpleAccount.execute(
               ethTx.contractAddress,
@@ -184,6 +191,7 @@ const MessageHandlers = observer(function MessageHandlers() {
               ethTx.getEncodedCallData(),
             ),
           );
+
           // signer contract should automatically prepend here
           const ctx: UserOperationMiddlewareCtx = new UserOperationMiddlewareCtx(
             userOp,
@@ -208,7 +216,7 @@ const MessageHandlers = observer(function MessageHandlers() {
             await SignAndBroadcastTransactionUserInteraction.start(
               { ...interactionObj, multisigKey: store.walletsStore.currentWallet.owner }
             );
-
+          console.log("full modal response: " + JSON.stringify(response));
           const message = {
             type: "@obi/sign-and-broadcast-transaction-response",
             payload: response,
