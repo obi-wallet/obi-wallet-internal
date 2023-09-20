@@ -1,4 +1,4 @@
-import { Messages, MultisigKey, SecretJsClient } from "@obi-wallet/sdk";
+import { Messages, MultisigKey, SecretJsClient, secretJsChains } from "@obi-wallet/sdk";
 import { getFeeLender } from "apps/modal-web/src/fee-lender";
 import { NextResponse } from "next/server";
 import { MsgSend, TxResponse } from "secretjs";
@@ -18,6 +18,7 @@ export async function POST(request: Request) {
 
   console.log("async funding multisig (for later)...");
   const client = new SecretJsClient(chainId);
+  const chain = secretJsChains["secret-4"];
   const messagesSdk = Messages.chainId(chainId);
   const lender1 = getFeeLender(chainId);
   const sendMessage = new MsgSend({
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
     lendSignedTransaction,
   );
 
-  console.log("setup/home-account setting up...");
+  console.log("setup/first-update-owner setting up...");
   // old lender from before, which is the only account capable of
   // updating owner, even with "magic" first_update_owner
   const { wallet, signer, lenderIndex } = getFeeLender(
@@ -47,18 +48,28 @@ export async function POST(request: Request) {
     body.ownerIndex,
   );
 
-  console.log("setup/home-account creating message...");
+  console.log("setup/first-update-owner creating message...");
   invariant(wallet.address, "no fee lender wallet address");
+  const userAccountAddress: {
+    user_account_address: string;
+    user_account_code_hash: string;
+  } = await client.withSecretNetworkClient(async (client) => {
+    return await client.query.compute.queryContract({
+        contract_address: body.homeAccountAddress,
+        code_hash: chain.userEntry.codeHash,
+        query: { user_account_address: {}},
+    })
+  });
   const message = messagesSdk.getFirstUpdateWalletMessage(
     body.owner,
     body.ownerAddress,
-    body.homeAccountAddress,
+    userAccountAddress.user_account_address,
     wallet.address,
   );
   console.log(
-    "setup/home-account attempting message: " + JSON.stringify(message),
+    "setup/first-update-owner attempting message: " + JSON.stringify(message),
   );
-  console.log("setup/home-account creating transaction...");
+  console.log("setup/first-update-owner creating transaction...");
   const signedTransaction = await client.createAndSignTransaction({
     signer,
     messages: [message],

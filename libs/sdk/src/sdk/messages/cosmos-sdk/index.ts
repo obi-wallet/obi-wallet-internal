@@ -35,7 +35,7 @@ export class CosmosSdkMessages extends AbstractMessages {
   public override getFirstUpdateWalletMessage(
     newOwner: MultisigKey,
     newOwnerAddress: string,
-    walletAddress: string,
+    userAccountContractAddress: string,
     sender: string,
   ): unknown {
     throw new Error("Method not implemented.");

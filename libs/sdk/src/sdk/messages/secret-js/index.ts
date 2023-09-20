@@ -360,7 +360,7 @@ export class SecretJsMessages extends AbstractMessages {
   public getFirstUpdateWalletMessage(
     newOwner: MultisigKey,
     newOwnerAddress: string,
-    walletAddress: string,
+    userAccountContractAddress: string,
     sender: string,
   ): Message {
     const message = new MsgExecuteContract({

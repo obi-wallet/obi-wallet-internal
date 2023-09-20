@@ -138,7 +138,7 @@ export abstract class AbstractMessages {
   public abstract getFirstUpdateWalletMessage(
     newOwner: MultisigKey,
     newOwnerAddress: string,
-    walletAddress: string,
+    userAccountContractAddress: string,
     sender: string,
   ): Message;
 }
