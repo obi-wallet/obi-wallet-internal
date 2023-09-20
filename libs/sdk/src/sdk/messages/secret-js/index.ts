@@ -43,6 +43,9 @@ export class SecretJsMessages extends AbstractMessages {
     if (R.has("raw", message)) {
       return MessageJson.parse(message);
     }
+    if (R.has("hash", message)) {
+      return MessageJson.parse(message);
+    }
     throw new Error("Unknown message");
   }
 

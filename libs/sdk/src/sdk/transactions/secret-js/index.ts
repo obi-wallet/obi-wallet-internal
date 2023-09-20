@@ -141,14 +141,14 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     const checkMessages: any[] = aminoMessages;
     console.log("aminoMessages is: " + JSON.stringify(aminoMessages));
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    if (checkMessages[0].raw || checkMessages[0].eth) {
+    if (checkMessages[0].raw || checkMessages[0].eth || checkMessages[0].hash) {
       invariant(
         aminoMessages.length === 1,
-        "Only one message supported for raw signing",
+        "Only one message supported for raw/eth/hash signing",
       );
-      console.log("triggering raw/eth is yes");
+      console.log("triggering raw/eth/hash is yes");
       console.log(
-        "checkMessages[0].eth is " + JSON.stringify(checkMessages[0].eth),
+        "checkMessages[0].hash is " + JSON.stringify(checkMessages[0].hash),
       );
       const signer = new SecretJsMultisigSigner({
         chainId: this.chainId,
@@ -158,10 +158,13 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
         /* eslint-disable @typescript-eslint/no-explicit-any */
         messages: [
           {
-            type: checkMessages[0].raw ? "raw" : "eth",
+            type: checkMessages[0].raw ? "raw" : (checkMessages[0].hash ? "hash" : "eth"),
             value: checkMessages[0].raw
               ? checkMessages[0].raw
-              : checkMessages[0].eth,
+              : ( checkMessages[0].hash
+                ? checkMessages[0].hash
+                : checkMessages[0].eth
+              )
           },
         ],
         multisigPublicKey,

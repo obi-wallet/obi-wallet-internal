@@ -70,7 +70,8 @@ export function useSignAndBroadcastTransaction({
       /* eslint-disable @typescript-eslint/no-explicit-any */
       if (
         (payload.messages[0] as any).raw ||
-        (payload.messages[0] as any).eth
+        (payload.messages[0] as any).eth ||
+        (payload.messages[0] as any).hash
       ) {
         const signer = await multisigKey.createSigner(
           { messages: payload.messages },
@@ -149,7 +150,9 @@ export function useSignAndBroadcastTransaction({
               sign_bytes: {
                 user_entry_address: wallet?.proxyAddress ?? payload.userEntryAddress,
                 user_entry_code_hash: chain.userEntry.codeHash,
-                bytes: sha256(Buffer.from((payload.messages[0] as any).raw)),
+                bytes: (payload.messages[0] as any).raw
+                  ? sha256(Buffer.from((payload.messages[0] as any).raw))
+                  : Buffer.from((payload.messages[0] as any).hash),
                 bytes_signed_by_signers: signed.map((s) =>
                   Buffer.from(s).toString("hex"),
                 ),

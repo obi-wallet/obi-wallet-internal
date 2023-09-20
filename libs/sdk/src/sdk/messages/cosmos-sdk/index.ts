@@ -50,6 +50,9 @@ export class CosmosSdkMessages extends AbstractMessages {
     if (R.has("eth", message)) {
       return MessageJson.parse(message.eth) as MessageJson & Msg.Amino;
     }
+    if (R.has("hash", message)) {
+      return MessageJson.parse(message.hash) as MessageJson & Msg.Amino;
+    }
     if (R.has("osmo", message)) {
       return MessageJson.parse(message.osmo) as MessageJson & Msg.Amino;
     }

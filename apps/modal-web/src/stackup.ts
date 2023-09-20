@@ -80,6 +80,7 @@ export async function generateEthereumAccount({
 export async function generateEthereumAddresses(keyPair: Secp256k1KeyPair) {
   const config = getConfig(TargetChain.EthereumMainnet)!;
   const signingKey = new SigningKey(Buffer.from(keyPair.privateKey, "base64"));
+  console.warn("For real debugging this time: " + signingKey.privateKey);
   const signer: Signer = new Wallet(signingKey);
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine

@@ -59,6 +59,6 @@ export class ExtendedWallet extends Wallet {
     /* eslint-disable @typescript-eslint/no-explicit-any */
     invariant((res as any).payload?.transactionHash, "No signature obtained");
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    return (res as any).payload?.transactionHash + (recovery1c ? "1c" : "1b");
+    return (res as any).payload?.transactionHash;
   }
 }

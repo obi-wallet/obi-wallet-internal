@@ -85,6 +85,7 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
   protected account: Account;
   protected fee: StdFee;
   protected signDoc: StdSignDoc | undefined;
+  protected signHash: string | undefined;
   protected signMessage: string | undefined;
   protected signUserOpInput: EthTxInput | undefined;
   protected encodeObjects: EncodeObject[] | undefined;
@@ -117,13 +118,16 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       parseInt(multisigPublicKey.value.threshold, 10),
     );
     this.signMessage = undefined;
-    if (messages[0].type === "raw" || messages[0].type === "eth") {
+    this.signHash = undefined;
+    if (messages[0].type === "raw" || messages[0].type === "eth" || messages[0].type === "hash") {
       console.log(
-        "messages[0] raw/eth passes with messages " +
+        "messages[0] raw/eth/hash passes with messages " +
           JSON.stringify(messages[0]),
       );
       if (messages[0].type === "raw") {
         this.signMessage = messages[0].value;
+      } else if (messages[0].type === "hash") {
+        this.signHash = messages[0].value;
       } else {
         console.log(
           "setting signUserOpInput to " + JSON.stringify(messages[0].value),
