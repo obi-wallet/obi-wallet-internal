@@ -365,7 +365,7 @@ export class SecretJsMessages extends AbstractMessages {
   ): Message {
     const message = new MsgExecuteContract({
       sender: sender,
-      contract_address: walletAddress,
+      contract_address: userAccountContractAddress,
       code_hash: this.chain.userAccount.codeHash,
       msg: {
         first_update_owner: {
