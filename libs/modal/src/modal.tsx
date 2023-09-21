@@ -1,6 +1,13 @@
-import { Env, EthTransaction, Modals, OnCloseContext, useStore } from "@obi-wallet/common";
+import {
+  Env,
+  EthTransaction,
+  Modals,
+  OnCloseContext,
+  useStore,
+} from "@obi-wallet/common";
 import { Config } from "@obi-wallet/config";
 import {
+  ExtendedWallet,
   KeyType,
   ObservableMultisigWallet,
   SignAndBroadcastTransactionUserInteraction,
@@ -8,13 +15,17 @@ import {
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk";
 import { ethers } from "ethers";
-import { ExtendedWallet } from "libs/sdk/src/sdk/transactions/secret-js/extended-ethers-signer";
+import * as ethers5 from "ethers5";
 import { autorun } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import invariant from "tiny-invariant";
-import * as ethers5 from "ethers5";
-import { Client, IUserOperation, Presets, UserOperationMiddlewareCtx } from "userop";
+import {
+  Client,
+  IUserOperation,
+  Presets,
+  UserOperationMiddlewareCtx,
+} from "userop";
 
 import { Container } from "./container";
 import { Provider } from "./provider";
@@ -156,10 +167,14 @@ const MessageHandlers = observer(function MessageHandlers() {
             "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
             {
               entryPoint: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-              overrideBundlerRpc: "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00"
-            }
+              overrideBundlerRpc:
+                "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+            },
           );
-          invariant(store.walletsStore.currentWallet.evmSigningAddress, "no signing address provided");
+          invariant(
+            store.walletsStore.currentWallet.evmSigningAddress,
+            "no signing address provided",
+          );
           // This likely won't actually be used for network calls
           console.log("setting up dummy provider...");
           const dummyProvider = new ethers5.providers.JsonRpcProvider(
@@ -178,12 +193,14 @@ const MessageHandlers = observer(function MessageHandlers() {
             "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
             { paymasterMiddleware },
           );
-          
+
           invariant(data.payload[0].eth, "no user op inputted");
           console.log("in buildUserOperation()");
-          console.log("data.payload.eth is: " + JSON.stringify(data.payload[0].eth));
+          console.log(
+            "data.payload.eth is: " + JSON.stringify(data.payload[0].eth),
+          );
           const ethTx = new EthTransaction(data.payload[0].eth!);
-          
+
           const userOp: IUserOperation = await client.buildUserOperation(
             simpleAccount.execute(
               ethTx.contractAddress,
@@ -193,15 +210,16 @@ const MessageHandlers = observer(function MessageHandlers() {
           );
 
           // signer contract should automatically prepend here
-          const ctx: UserOperationMiddlewareCtx = new UserOperationMiddlewareCtx(
-            userOp,
-            "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-            421613,
-          );
+          const ctx: UserOperationMiddlewareCtx =
+            new UserOperationMiddlewareCtx(
+              userOp,
+              "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+              421613,
+            );
           console.log("user op hash is: " + ctx.getUserOpHash());
 
           const interactionObj = {
-            messages: [{ "hash": ctx.getUserOpHash()}],
+            messages: [{ hash: ctx.getUserOpHash() }],
             targetChainId: data.payload.targetChainId,
             cancelable: true,
             walletMeta: store.walletsStore.currentWallet.meta,
@@ -213,23 +231,26 @@ const MessageHandlers = observer(function MessageHandlers() {
           );
 
           const signatureResponse =
-            await SignAndBroadcastTransactionUserInteraction.start(
-              { ...interactionObj, multisigKey: store.walletsStore.currentWallet.owner }
-            );
+            await SignAndBroadcastTransactionUserInteraction.start({
+              ...interactionObj,
+              multisigKey: store.walletsStore.currentWallet.owner,
+            });
 
           let response;
-          console.log("changing old sig " + userOp.signature + " to new " + (signatureResponse as any).payload?.transactionHash);
+          console.log(
+            "changing old sig " +
+              userOp.signature +
+              " to new " +
+              /* eslint-disable @typescript-eslint/no-explicit-any */
+              (signatureResponse as any).payload?.transactionHash,
+          );
           /* eslint-disable @typescript-eslint/no-explicit-any */
-          userOp.signature = (signatureResponse as any).payload?.transactionHash; 
+          userOp.signature = (signatureResponse as any).payload
+            ?.transactionHash;
           try {
             response = await client.execUserOperation(userOp);
           } catch (e) {
             console.error(e);
-            const ctx: UserOperationMiddlewareCtx = new UserOperationMiddlewareCtx(
-              userOp,
-              "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-              421613,
-            );
             // recovery bit workaround, as simple signer can't calculate it
             const signature = userOp.signature as string;
             userOp.signature = `${signature.substring(

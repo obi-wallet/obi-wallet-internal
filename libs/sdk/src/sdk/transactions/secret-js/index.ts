@@ -11,7 +11,6 @@ import warning from "tiny-warning";
 import { SecretJsMultisigSigner } from "./multisigs-signer";
 import { SecretJsChainId, secretJsChains } from "../../../chains";
 import { SecretJsClient } from "../../../clients";
-import { WalletMeta } from "../../../data-structures";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../../keys";
 import { Message, SignedTransaction } from "../../../transactions";
 import {
@@ -22,6 +21,8 @@ import {
 import { Messages } from "../../messages";
 import { CosmosSdkMessages } from "../../messages/cosmos-sdk";
 import { AbstractTransactionsSdk } from "../abstract";
+
+export * from "./extended-ethers-signer";
 
 function notImplemented(message: string) {
   warning(false, message);
@@ -120,13 +121,9 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
   public async createMultisigSigner({
     multisigPublicKey,
     messages,
-    walletMeta,
-    evmSigningAddress,
   }: {
     multisigPublicKey: MultisigPublicKey;
     messages: Message[];
-    walletMeta?: WalletMeta;
-    evmSigningAddress?: string;
   }) {
     const address = this.getAddressOfPublicKey(multisigPublicKey);
     await this.prepareAccount(address);
@@ -157,13 +154,16 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
         /* eslint-disable @typescript-eslint/no-explicit-any */
         messages: [
           {
-            type: checkMessages[0].raw ? "raw" : (checkMessages[0].hash ? "hash" : "eth"),
+            type: checkMessages[0].raw
+              ? "raw"
+              : checkMessages[0].hash
+              ? "hash"
+              : "eth",
             value: checkMessages[0].raw
               ? checkMessages[0].raw
-              : ( checkMessages[0].hash
-                ? checkMessages[0].hash
-                : checkMessages[0].eth
-              )
+              : checkMessages[0].hash
+              ? checkMessages[0].hash
+              : checkMessages[0].eth,
           },
         ],
         multisigPublicKey,

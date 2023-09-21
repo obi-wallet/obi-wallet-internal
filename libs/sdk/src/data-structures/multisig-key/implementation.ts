@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import * as R from "ramda";
 import { TxResponse } from "secretjs";
 
@@ -21,7 +22,6 @@ import {
 import { KeySchema } from "../key/schema";
 import { AbstractSerialized } from "../migratable";
 import { WalletMeta } from "../multisig-wallet";
-import { ethers } from "ethers";
 
 export class MultisigKey {
   public get schema() {
@@ -55,7 +55,9 @@ export class MultisigKey {
             }
           | undefined,
         chain: ChainId,
-        serialized: AbstractSerialized<typeof MultisigKeySchema> | {},
+        serialized:
+          | AbstractSerialized<typeof MultisigKeySchema>
+          | Record<string, never>,
       ) => MultisigKey;
     },
   ) {}
@@ -64,7 +66,9 @@ export class MultisigKey {
     return this._setupDetails;
   }
 
-  public toJSON(): AbstractSerialized<typeof MultisigKeySchema> | {} {
+  public toJSON():
+    | AbstractSerialized<typeof MultisigKeySchema>
+    | Record<string, never> {
     if (!this._keys) {
       return {};
     }
@@ -157,8 +161,7 @@ export class MultisigKey {
         homeAccountAddress +
         ", tx hash " +
         txResult.transactionHash,
-        ", owner index: " + 
-        ownerIndex
+      ", owner index: " + ownerIndex,
     );
 
     const chain = secretJsChains["secret-4"];
@@ -225,24 +228,22 @@ export class MultisigKey {
     // use unity device ID to generate a keypair right here,
     // without a function call, and set it as the unity key
 
-    const hexStringToUint8Array = ((hexString: string) => {
+    const hexStringToUint8Array = (hexString: string) => {
       if (hexString.startsWith("0x")) {
-          hexString = hexString.slice(2);
+        hexString = hexString.slice(2);
       }
-  
+
       const byteValues = [];
       for (let i = 0; i < hexString.length; i += 2) {
-          byteValues.push(parseInt(hexString.substr(i, 2), 16));
+        byteValues.push(parseInt(hexString.substr(i, 2), 16));
       }
-  
+
       return new Uint8Array(byteValues);
-  });
-  
+    };
+
     const toHash = ethers.toUtf8Bytes(deviceId + "102h01s8b93fptb8ftb82t");
     const hash = ethers.keccak256(toHash);
-    const keyPair = generateSec256k1KeyPair(
-      hexStringToUint8Array(hash),
-    );
+    const keyPair = generateSec256k1KeyPair(hexStringToUint8Array(hash));
     console.log(
       "Unity keypair generate with pubkey " + keyPair.publicKey.value,
     );

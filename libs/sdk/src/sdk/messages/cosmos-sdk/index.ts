@@ -33,10 +33,10 @@ import { AbstractMessages } from "../abstract";
 
 export class CosmosSdkMessages extends AbstractMessages {
   public override getFirstUpdateWalletMessage(
-    newOwner: MultisigKey,
-    newOwnerAddress: string,
-    userAccountContractAddress: string,
-    sender: string,
+    _newOwner: MultisigKey,
+    _newOwnerAddress: string,
+    _userAccountContractAddress: string,
+    _sender: string,
   ): unknown {
     throw new Error("Method not implemented.");
   }
@@ -757,9 +757,9 @@ export class CosmosSdkMessages extends AbstractMessages {
   }
 
   public getCreateWalletMessage(
-    ownerAddress: string,
-    pubkeyBase64: string,
-    sender?: string,
+    _ownerAddress: string,
+    _pubkeyBase64: string,
+    _sender?: string,
   ): Message {
     throw new Error("not implemented");
     /* const _sender = sender;

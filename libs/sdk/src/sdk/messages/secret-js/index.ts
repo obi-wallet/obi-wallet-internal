@@ -373,15 +373,17 @@ export class SecretJsMessages extends AbstractMessages {
       msg: {
         first_update_owner: {
           first_owner: newOwnerAddress,
-          signers: { signers: this.getSigners(
-            newOwner.keys as unknown as Array<{
-              type: string;
-              payload: {
-                publicKey: PublicKey;
-                privateKey?: string;
-              };
-            }>,
-          )},
+          signers: {
+            signers: this.getSigners(
+              newOwner.keys as unknown as Array<{
+                type: string;
+                payload: {
+                  publicKey: PublicKey;
+                  privateKey?: string;
+                };
+              }>,
+            ),
+          },
         },
       },
     });

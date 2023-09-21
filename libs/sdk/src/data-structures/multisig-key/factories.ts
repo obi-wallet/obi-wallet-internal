@@ -1,5 +1,4 @@
 import { action, makeObservable, observable } from "mobx";
-import invariant from "tiny-invariant";
 
 import { MultisigKey } from "./implementation";
 import { MultisigKeySchema } from "./schema";

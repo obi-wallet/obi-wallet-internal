@@ -3,7 +3,7 @@ import { makeObservable } from "mobx";
 export class UnityStore {
   private static instance?: UnityStore;
 
-  protected _deviceId: string | undefined;
+  private _deviceId: string | undefined;
 
   constructor() {
     if (UnityStore.instance) {
@@ -14,6 +14,7 @@ export class UnityStore {
       setDeviceId: true,
     });
     UnityStore.instance = this;
+    this._deviceId = undefined;
   }
 
   public get getDeviceId() {

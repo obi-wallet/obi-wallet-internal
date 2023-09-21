@@ -17,7 +17,6 @@ import {
   SecretNetworkClient,
   toBase64,
   TxOptions,
-  TxResultCode,
 } from "secretjs";
 import { StdFee } from "secretjs/dist/wallet_amino";
 import invariant from "tiny-invariant";

@@ -27,7 +27,7 @@ export function createMultisigWallet(
     factories.MultisigKey.create(
       undefined,
       serialized.data.chain,
-      serialized.data.owner
+      serialized.data.owner,
     ),
     serialized.data.proxyAddress.address,
     "", // evm addresses currently added manually
