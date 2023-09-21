@@ -30,6 +30,7 @@ export class ExtendedWallet extends Wallet {
   }
 
   override async signMessage(message: BytesLike, recovery1c?: boolean): Promise<string> {
+    
     const toHexString = ((bytes: BytesLike): string | null => {
       if (bytes instanceof Uint8Array) {
           return Array.from(bytes).map(byte => byte.toString(16).padStart(2, '0')).join('');
@@ -41,6 +42,7 @@ export class ExtendedWallet extends Wallet {
       return null;
     });
     const messageString = toHexString(message);
+    console.log("calling override signMessage() with message: " + (messageString ?? message));
     const interactionObj = {
       messages: [{ raw: messageString ?? message }],
       demoMode: false,

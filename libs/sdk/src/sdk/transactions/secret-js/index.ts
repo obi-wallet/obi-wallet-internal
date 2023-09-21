@@ -133,7 +133,6 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     const account = await this.fetchAccount(address);
     invariant(account, "Account not found.");
     invariant(this.isBaseAccount(account), "account is not BaseAccount");
-    const baseAccount = account as Account & BaseAccount;
     const aminoMessages = messages.map((message) => {
       return this.messages.toJSON(message);
     });
@@ -170,17 +169,6 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
         multisigPublicKey,
       });
       console.log("partly prepared signer is " + JSON.stringify(signer));
-      if (checkMessages[0].eth) {
-        invariant(evmSigningAddress, "no evmSigningAddress provided");
-        invariant(walletMeta, "no walletMeta provided");
-        console.log("getSignUserOpInput is " + signer.getSignUserOpInput());
-        if (signer.getSignUserOpInput() && !signer.getSignMessage()) {
-          console.log("calling initUserOperation...");
-          await signer.initUserOperation(evmSigningAddress, walletMeta);
-        } else {
-          console.log("signMessage is " + signer.getSignMessage());
-        }
-      }
       return signer;
     } else {
       const encodeObjects = aminoMessages.map((aminoMessage) => {

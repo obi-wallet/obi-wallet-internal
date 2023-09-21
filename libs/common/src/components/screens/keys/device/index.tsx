@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
+import { KeyType, MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { getOrCreateDeviceKeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -70,7 +70,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   demoMode,
   onSubmit,
 }) {
-  const { draftsStore } = useStore();
+  const { draftsStore, unityStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
   const queryClient = useQueryClient();
   const [scannedBiometrics, setScannedBiometrics] = useState(false);
@@ -86,7 +86,6 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         create,
         demoMode,
       );
-      console.log("draft id is " + draftId);
       console.log("setting device key...");
       draft.value.setDeviceKey(keyPair);
       console.log("device key set..");
@@ -215,7 +214,11 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
               })}
               flavor="primary"
               onPress={async () => {
-                if (scannedBiometrics) {
+                if (unityStore.getDeviceId) {
+                  console.log("unity device id obtained");
+                  draft.value.setUnityKey(unityStore.getDeviceId);
+                  // here check if new user or not?
+                } else if (scannedBiometrics) {
                   onSubmit(undefined);
                 } else {
                   const [success, _newUser, deviceKeypair] =
@@ -235,7 +238,11 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
               })}
               flavor="primary"
               onPress={async () => {
-                if (scannedBiometrics) {
+                if (unityStore.getDeviceId) {
+                  // this should check for recovery
+                  console.log("unity device id obtained");
+                  draft.value.setUnityKey(unityStore.getDeviceId);
+                } else if (scannedBiometrics) {
                   onSubmit(undefined);
                 } else {
                   const [success, _newUser, deviceKeypair] =

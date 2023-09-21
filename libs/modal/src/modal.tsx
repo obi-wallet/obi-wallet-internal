@@ -220,7 +220,7 @@ const MessageHandlers = observer(function MessageHandlers() {
           let response;
           console.log("changing old sig " + userOp.signature + " to new " + (signatureResponse as any).payload?.transactionHash);
           /* eslint-disable @typescript-eslint/no-explicit-any */
-          userOp.signature = (signatureResponse as any).payload?.transactionHash;
+          userOp.signature = (signatureResponse as any).payload?.transactionHash; 
           try {
             response = await client.execUserOperation(userOp);
           } catch (e) {
