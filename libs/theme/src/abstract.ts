@@ -90,9 +90,11 @@ export interface CustomTheme extends CommonTheme {
     panel: ViewStyle & { background?: string };
   };
   textStyles: {
-    bold: Pick<TextStyle, "fontFamily" | "fontWeight">;
-    regular: Pick<TextStyle, "fontFamily" | "fontWeight">;
-    light: Pick<TextStyle, "fontFamily" | "fontWeight">;
+    bold: Pick<TextStyle, "fontFamily" | "fontWeight"> & { outline?: string };
+    regular: Pick<TextStyle, "fontFamily" | "fontWeight"> & {
+      outline?: string;
+    };
+    light: Pick<TextStyle, "fontFamily" | "fontWeight"> & { outline?: string };
   };
   textInput?: {
     inputContainerStyle?: ViewStyle;

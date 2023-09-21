@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#F6F5FF",
     borderRadius: 30,
+    outline: 0,
   },
 });
 export type CustomTextInputProps = TextInputProps & {

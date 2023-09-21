@@ -145,14 +145,17 @@ export const ztxTheme: CustomTheme = {
     bold: {
       fontFamily: "TT Hoves Pro",
       fontWeight: "bold",
+      outline: "none",
     },
     regular: {
       fontFamily: "TT Hoves Pro",
       fontWeight: "normal",
+      outline: "none",
     },
     light: {
       fontFamily: "TT Hoves Pro",
       fontWeight: "300",
+      outline: "none",
     },
   },
   dropdown: {
