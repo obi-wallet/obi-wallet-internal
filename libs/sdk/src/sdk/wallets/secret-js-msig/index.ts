@@ -1,7 +1,8 @@
 import { TxResponse } from "secretjs";
-
+import { KeyType, SerializedProxyWallet } from "./types";
 import { MultisigKey } from "../../../data-structures";
 import { AbstractWalletsSdk } from "../abstract";
+import { secretJsChains } from "libs/sdk/src/chains";
 //import { add } from "ramda";
 
 export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
@@ -28,9 +29,46 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
       evmSigningAddress,
       evmUserContractAddress,
       ownerIndex,
-    } = multisigKey.setupDetails;
-
+    } = multisigKey.setupDetails!;
+    const chain = secretJsChains["secret-4"];
     console.log("Calling setup/first-update-owner to " + multisigKey.address);
+    const proxyWallet: SerializedProxyWallet = {
+      proxyAddress: {
+        address: homeAccountAddress,
+        codeId: chain.currentCodeIds.userAccount,
+      },
+      evmUserContractAddress: evmUserContractAddress,
+      evmSigningAddress: evmSigningAddress,
+      owner: {
+        threshold: String(multisigKey.threshold),
+        keys: multisigKey.keys.map(({ type, publicKey }) => {
+          if (!Object.values(KeyType).includes(type as KeyType)) {
+            throw new Error(`Invalid key type: ${type}`);
+          }
+          return {
+            type: type as KeyType,
+            publicKey
+          }
+        })
+      }
+    }
+    const cloudflareResponse = await fetch(
+      `https://proxy-wallets.obiwallet.workers.dev/add`,
+      // `http://127.0.0.1:8787/add`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          chainId: "secret-4",
+          proxyWallet,
+        }),
+        headers: {
+          "Api-Version": "v1",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "*"
+        },
+      },
+    );
     const response = await fetch("/api/setup/first-update-owner", {
       method: "POST",
       body: JSON.stringify({

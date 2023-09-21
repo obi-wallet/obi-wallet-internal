@@ -66,16 +66,18 @@ export const Lookup = observer(function Lookup({
       console.log("request body: " + body);
       const response = await fetch(
         `https://proxy-wallets.obiwallet.workers.dev`,
+        // `http://127.0.0.1:8787`,
         {
           method: "POST",
           body: JSON.stringify({
             chainId: "secret-4",
             publicKey,
-            currentCodeId,
           }),
           headers: {
             "Api-Version": "v1",
             "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*"
           },
         },
       );
@@ -85,24 +87,6 @@ export const Lookup = observer(function Lookup({
       } catch(e) {
         console.log("Proxy wallet worker error. Response: " + response.text());
         throw new Error("error in proxy wallet worker response");
-      }
-      for (let i = 0; i < proxyWallets.length; i++) {
-        // get matching signer address (user contract address is saved but
-        // can be recalculated if needed)...
-        console.log("querying for signer addresses...");
-        // TODO we can do this later; we don't need signers for ALL wallets
-        // if there are many
-        const chain = secretJsChains["secret-4"];
-        const outerClient = new SecretJsClient("secret-4");
-        const pubkey: string = (await outerClient.withSecretNetworkClient(async (client) => {
-          const res: { eth_pubkey: string } = await client.query.compute.queryContract({
-            contract_address: chain.secretSigner.address,
-            code_hash: chain.secretSigner.codeHash,
-            query: { eth_pub_key: {} }
-          });
-          return res.eth_pubkey;
-        }));
-        proxyWallets[i].evmSigningAddress = ethers.computeAddress(pubkey);
       }
       setWallets(proxyWallets);
     } catch (e) {
