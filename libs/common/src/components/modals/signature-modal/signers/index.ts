@@ -30,6 +30,7 @@ export async function createUsableSigners({
 }) {
   const possibleUsableKeys = [
     KeyType.Device,
+    KeyType.Unity,
     KeyType.Phone,
     KeyType.Nfc,
     KeyType.Cloud,

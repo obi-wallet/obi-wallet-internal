@@ -218,6 +218,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                   console.log("unity device id obtained");
                   draft.value.setUnityKey(unityStore.getDeviceId);
                   // here check if new user or not?
+                  onSubmit(undefined);
                 } else if (scannedBiometrics) {
                   onSubmit(undefined);
                 } else {
@@ -242,6 +243,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                   // this should check for recovery
                   console.log("unity device id obtained");
                   draft.value.setUnityKey(unityStore.getDeviceId);
+                  onSubmit(undefined);
                 } else if (scannedBiometrics) {
                   onSubmit(undefined);
                 } else {
