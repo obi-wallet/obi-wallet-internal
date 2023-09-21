@@ -25,7 +25,7 @@ export function createMultisigWallet(
   return new MultisigWallet(
     serialized.data.chain,
     factories.MultisigKey.create(
-      undefined,
+      {},
       serialized.data.chain,
       serialized.data.owner,
     ),

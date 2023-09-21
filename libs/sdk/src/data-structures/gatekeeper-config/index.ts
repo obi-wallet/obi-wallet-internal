@@ -42,7 +42,7 @@ export class GatekeeperConfig {
   }
 
   public clone() {
-    return this._factory(this.toJSON());
+    return this._factory!(this.toJSON());
   }
 
   public get beneficiaries() {

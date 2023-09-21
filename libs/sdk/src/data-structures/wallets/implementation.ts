@@ -95,16 +95,30 @@ export class Wallets {
   public async createWallet({
     multisigKey,
     demoMode,
+    skipInit,
+    evmSigningAddressOverride,
+    evmUserContractAddressOverride,
+    homeAccountAddressOverride,
   }: {
     multisigKey: MultisigKey;
     demoMode: boolean;
+    skipInit?: boolean | undefined;
+    evmSigningAddressOverride?: string | undefined;
+    evmUserContractAddressOverride?: string | undefined;
+    homeAccountAddressOverride?: string | undefined;
   }) {
-    const response = await this.walletsSdk.getAsyncDetailsAndFirstOwnerUpdate({
-      multisigKey,
-      demoMode,
-    });
-    multisigKey.evmSigningAddress = response.evmSigningAddress;
-    multisigKey.evmUserContractAddress = response.evmUserContractAddress;
+    let response;
+    if (!skipInit) {
+      response = await this.walletsSdk.getAsyncDetailsAndFirstOwnerUpdate({
+        multisigKey,
+        demoMode,
+      });
+      multisigKey.evmSigningAddress = response.evmSigningAddress;
+      multisigKey.evmUserContractAddress = response.evmUserContractAddress;
+    } else {
+      multisigKey.evmSigningAddress = evmSigningAddressOverride!;
+      multisigKey.evmUserContractAddress = evmUserContractAddressOverride!;
+    }
     const ownerMultisig = multisigKey.toJSON();
     console.log(
       "ownerMultisig in createWallet() is " + JSON.stringify(ownerMultisig),
@@ -123,16 +137,16 @@ export class Wallets {
         owner: definedOwnerMultisig,
         proxyAddress: {
           v: 1,
-          address: response.homeAccountAddress,
+          address: skipInit ? homeAccountAddressOverride! : response!.homeAccountAddress,
         },
         singlesigWallets: [],
         currentAccount: null,
-        evmSigningAddress: response.evmSigningAddress,
-        evmUserContractAddress: response.evmUserContractAddress
+        evmSigningAddress: skipInit ? evmSigningAddressOverride! : response!.evmSigningAddress,
+        evmUserContractAddress: skipInit? evmUserContractAddressOverride! : response!.evmUserContractAddress
       },
     });
-    wallet.setEvmSigningAddress(response.evmSigningAddress, true);
-    wallet.setEvmUserContractAddress(response.evmUserContractAddress);
+    wallet.setEvmSigningAddress(skipInit ? evmSigningAddressOverride! : response!.evmSigningAddress, true);
+    wallet.setEvmUserContractAddress(skipInit? evmUserContractAddressOverride! : response!.evmUserContractAddress);
     this.upsertWallet(wallet);
     this.setCurrentWallet(wallet);
     return response;

@@ -4,7 +4,9 @@ import {
   MultisigKey,
   MultisigWallet,
   ObservableMultisigKey,
+  ObservableMultisigWallet,
   Serialized,
+  createGatekeeperConfig,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -33,7 +35,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
     const navigation = useRootNavigation();
     const { params } = route;
 
-    const { draftsStore, unityStore } = useStore();
+    const { draftsStore, unityStore, walletsStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({
       id: params.draftId,
     });
@@ -52,6 +54,8 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
       <Lookup
         chainId={draft.value.chainId}
         publicKey={publicKey}
+        draftId={params.draftId}
+        recoverFrom={params.recoverFrom}
         onCancel={() => {
           navigation.goBack();
         }}
@@ -200,11 +204,19 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
               });
               return;
             }
+            const newWallet = await walletsStore.createWallet({
+              multisigKey: draft.value,
+              demoMode: params.demoMode,
+              skipInit: true,
+              evmSigningAddressOverride: serializedData.evmSigningAddress,
+              evmUserContractAddressOverride: serializedData.evmUserContractAddress,
+              homeAccountAddressOverride: serializedData.proxyAddress.address
+            });
 
-            navigation.navigate(OnboardingRoute.RecoverWallet, {
+            /*navigation.navigate(OnboardingRoute.RecoverWallet, {
               ...params,
               serializedData,
-            });
+            });*/
           } catch (e) {
             console.log(e);
           }
