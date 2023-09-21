@@ -16,6 +16,8 @@ export async function POST(request: Request) {
     owner: MultisigKey;
     ownerAddress: string;
     homeAccountAddress: string;
+    evmUserContractAddress: string;
+    evmSigningAddress: string;
     ownerIndex: number;
   } = await request.json();
 
@@ -69,6 +71,8 @@ export async function POST(request: Request) {
     body.owner,
     body.ownerAddress,
     userAccountAddress.user_account_address,
+    body.evmUserContractAddress,
+    body.evmSigningAddress,
     wallet.address,
   );
   console.log(

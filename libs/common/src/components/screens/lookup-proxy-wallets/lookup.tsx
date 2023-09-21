@@ -58,6 +58,12 @@ export const Lookup = observer(function Lookup({
           return chain.currentCodeIds.userAccount;
         },
       });
+      const body = JSON.stringify({
+        chainId: "secret-4",
+        publicKey,
+        currentCodeId,
+      });
+      console.log("request body: " + body);
       const response = await fetch(
         `https://proxy-wallets.obiwallet.workers.dev`,
         {

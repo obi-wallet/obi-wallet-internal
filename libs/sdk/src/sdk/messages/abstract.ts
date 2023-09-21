@@ -139,6 +139,8 @@ export abstract class AbstractMessages {
     newOwner: MultisigKey,
     newOwnerAddress: string,
     userAccountContractAddress: string,
+    evmUserContractAddress: string,
+    evmSigningAddress: string,
     sender: string,
   ): Message;
 }

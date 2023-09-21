@@ -37,6 +37,8 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
         owner: multisigKey,
         ownerAddress: multisigKey.address,
         ownerIndex,
+        evmUserContractAddress,
+        evmSigningAddress,
         homeAccountAddress,
       }),
     });

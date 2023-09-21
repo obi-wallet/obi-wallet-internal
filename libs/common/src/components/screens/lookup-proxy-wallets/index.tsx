@@ -158,6 +158,8 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
                   }
                 },
               ),
+              evmSigningAddress: serializedProxyWallet.evmSigningAddress,
+              evmUserContractAddress: serializedProxyWallet.evmUserContractAddress,
             },
             proxyAddress: {
               v: 1,
