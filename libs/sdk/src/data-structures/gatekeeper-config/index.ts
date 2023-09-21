@@ -25,7 +25,7 @@ export class GatekeeperConfig {
   public constructor(
     protected _beneficiaries: Beneficiary[],
     protected _flexAccounts: FlexAccount[],
-    protected _factory: (
+    protected _factory?: (
       serialized: AbstractSerialized<typeof GatekeeperConfigSchema>,
     ) => GatekeeperConfig,
   ) {}
