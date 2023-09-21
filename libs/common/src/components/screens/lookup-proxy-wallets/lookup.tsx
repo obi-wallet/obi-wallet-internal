@@ -394,6 +394,7 @@ export const Lookup = observer(function Lookup({
                 draft.commit({ original: currentOwner });
                 const newOwner = draft.value;
                 draft.value.setDeviceKey(activeDeviceKey.payload);
+                console.log("recovered draft: " + JSON.stringify(draft.value));
                 const newWallet = await walletsStore.createWallet({
                   multisigKey: draft.value,
                   demoMode: false,

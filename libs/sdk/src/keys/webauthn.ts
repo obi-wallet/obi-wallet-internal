@@ -148,50 +148,50 @@ export async function getOrCreateDeviceKeyPair(
     const webauthnAddress = pubkeyToAddress(compressedPubkey);
     console.log("webauthn Signer address: " + webauthnAddress);
 
-    // const stockClient = new SecretNetworkClient({
-    //   chainId: "secret-4",
-    //   url: secretJsChains["secret-4"].urls[0],
-    // });
-    // let balance = "";
-    // try {
-    //   balance =
-    //     (
-    //       await stockClient.query.bank.balance({
-    //         address: webauthnAddress,
-    //         denom: "uscrt",
-    //       })
-    //     ).balance?.amount || "0";
-    // } catch (e) {
-    //   balance = "0";
-    // }
-    // try {
-    //   if (balance === "0") {
-    //     const response = await fetch("/api/lend", {
-    //       method: "POST",
-    //       body: JSON.stringify({
-    //         homeChainId: "secret-4",
-    //         address: webauthnAddress,
-    //       }),
-    //     });
+    const stockClient = new SecretNetworkClient({
+      chainId: "secret-4",
+      url: secretJsChains["secret-4"].urls[0],
+    });
+    let balance = "";
+    try {
+      balance =
+        (
+          await stockClient.query.bank.balance({
+            address: webauthnAddress,
+            denom: "uscrt",
+          })
+        ).balance?.amount || "0";
+    } catch (e) {
+      balance = "0";
+    }
+    try {
+      if (balance === "0") {
+        const response = await fetch("/api/lend", {
+          method: "POST",
+          body: JSON.stringify({
+            homeChainId: "secret-4",
+            address: webauthnAddress,
+          }),
+        });
 
-    //     if (response.status !== 200) {
-    //       throw new Error("Failed to fund webauthn signer");
-    //     }
+        if (response.status !== 200) {
+          throw new Error("Failed to fund webauthn signer");
+        }
 
-    //     return [
-    //       {
-    //         publicKey: {
-    //           type: "tendermint/PubKeySecp256k1",
-    //           value: webauthnSigner.publicKey.value,
-    //         },
-    //         privateKey: combinedPrivateKey,
-    //       },
-    //       true,
-    //     ];
-    //   }
-    // } catch (e) {
-    //   console.error("Failed to fund webauthn signer", e);
-    // }
+        return [
+          {
+            publicKey: {
+              type: "tendermint/PubKeySecp256k1",
+              value: webauthnSigner.publicKey.value,
+            },
+            privateKey: combinedPrivateKey,
+          },
+          true,
+        ];
+      }
+    } catch (e) {
+      console.error("Failed to fund webauthn signer", e);
+    }
     return [
       {
         publicKey: {
@@ -253,7 +253,10 @@ const hexToBase64 = (hex: string) => {
 export async function getDevicePrivateKey(
   key: KeySubclassTypeMapping[KeyType.Device],
 ): Promise<string | null> {
-  if (key.payload.privateKey) return key.payload.privateKey;
+  if (key.payload.privateKey) {
+    console.log("device private key exists");
+    return key.payload.privateKey;
+  }
   let kp, _;
   try {
     [kp, _] = await getOrCreateDeviceKeyPair(false, false);
