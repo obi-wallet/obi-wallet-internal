@@ -16,7 +16,7 @@ export class WalletsSdk extends AbstractWalletsSdk {
     demoMode: boolean;
   }): Promise<{
     homeAccountAddress: string;
-    evmSignerAddress: string;
+    evmSigningAddress: string;
     evmUserContractAddress: string;
   }> {
     return await Chain.select<AbstractWalletsSdk>({

@@ -24,6 +24,9 @@ import { AbstractSerialized } from "../migratable";
 import { WalletMeta } from "../multisig-wallet";
 
 export class MultisigKey {
+  // TODO: private, getters
+  public evmSigningAddress: string;
+  public evmUserContractAddress: string;
   public get schema() {
     return MultisigKeySchema;
   }
@@ -35,7 +38,7 @@ export class MultisigKey {
     protected _setupDetails:
       | {
           homeAccountAddress: string;
-          evmSignerAddress: string;
+          evmSigningAddress: string;
           evmUserContractAddress: string;
           ownerIndex: number;
         }
@@ -49,7 +52,7 @@ export class MultisigKey {
         setupDetails:
           | {
               homeAccountAddress: string;
-              evmSignerAddress: string;
+              evmSigningAddress: string;
               evmUserContractAddress: string;
               ownerIndex: number;
             }
@@ -57,10 +60,14 @@ export class MultisigKey {
         chain: ChainId,
         serialized:
           | AbstractSerialized<typeof MultisigKeySchema>
-          | Record<string, never>,
+          // I know, I know... TODO
+          | object
       ) => MultisigKey;
     },
-  ) {}
+  ) {
+    this.evmSigningAddress = "";
+    this.evmUserContractAddress = "";
+  }
 
   public get setupDetails() {
     return this._setupDetails;
@@ -68,13 +75,16 @@ export class MultisigKey {
 
   public toJSON():
     | AbstractSerialized<typeof MultisigKeySchema>
-    | Record<string, never> {
+    // I know, I know... TODO
+    | object {
     if (!this._keys) {
       return {};
     }
     return {
       keys: this._keys.map((key) => key.toJSON()),
       threshold: this._threshold,
+      evmSigningAddress: this.evmSigningAddress,
+      evmUserContractAddress: this.evmUserContractAddress
     };
   }
 
@@ -183,19 +193,19 @@ export class MultisigKey {
       const {
         success,
         publicKey,
-        evmSignerAddress,
+        evmSigningAddress,
         evmUserContractAddress,
       }: {
         success: boolean;
         publicKey: Secp256k1PublicKey;
-        evmSignerAddress: string;
+        evmSigningAddress: string;
         evmUserContractAddress: string;
       } = addKeyResponseJson;
       const _unused = { success, publicKey };
 
       this._setupDetails = {
         homeAccountAddress,
-        evmSignerAddress,
+        evmSigningAddress,
         evmUserContractAddress,
         ownerIndex,
       };
@@ -215,7 +225,7 @@ export class MultisigKey {
     if (!this._setupDetails) {
       this._setupDetails = {
         homeAccountAddress: "",
-        evmSignerAddress: "",
+        evmSigningAddress: "",
         evmUserContractAddress: "",
         ownerIndex: 0,
       };
@@ -257,7 +267,7 @@ export class MultisigKey {
     if (!this._setupDetails) {
       this._setupDetails = {
         homeAccountAddress: "",
-        evmSignerAddress: "",
+        evmSigningAddress: "",
         evmUserContractAddress: "",
         ownerIndex: 0,
       };

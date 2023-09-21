@@ -33,7 +33,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
     const navigation = useRootNavigation();
     const { params } = route;
 
-    const { draftsStore } = useStore();
+    const { draftsStore, unityStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({
       id: params.draftId,
     });
@@ -56,7 +56,11 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
           navigation.goBack();
         }}
         onSelect={async (serializedProxyWallet) => {
-          const newDeviceKey = draft.value.getUsableKeyOfType(KeyType.Device);
+          let activeDeviceKey;
+          unityStore.getDeviceId
+          ? activeDeviceKey = draft.value.getUsableKeyOfType(KeyType.Unity)
+          : activeDeviceKey = draft.value.getUsableKeyOfType(KeyType.Device)
+
           const recoveredPhoneKey = draft.value.getUsableKeyOfType(
             KeyType.Phone,
           );
@@ -64,11 +68,11 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
             KeyType.EmailRecovery,
           );
 
-          invariant(newDeviceKey, "Device key is required");
-          invariant(
+          invariant(activeDeviceKey, "Device key is required");
+          /* invariant(
             recoveredPhoneKey || recoveredEmailKey,
             "Phone or email key is required",
-          );
+          ); */
 
           const serializedData: Serialized<MultisigWallet>["data"] = {
             chain: draft.value.chainId,
@@ -166,17 +170,25 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
             },
             singlesigWallets: [],
             currentAccount: null,
+            evmSigningAddress: serializedProxyWallet.evmSigningAddress,
+            evmUserContractAddress: serializedProxyWallet.evmUserContractAddress,
           };
 
           try {
             const currentOwner = ObservableMultisigKey.create(
+              {
+                homeAccountAddress: serializedData.proxyAddress.address,
+                evmSigningAddress: serializedData.evmSigningAddress,
+                evmUserContractAddress: serializedData.evmUserContractAddress,
+                ownerIndex: 0
+              },
               serializedData.chain,
               serializedData.owner,
             );
 
             draft.commit({ original: currentOwner });
             const newOwner = draft.value;
-            draft.value.setDeviceKey(newDeviceKey.payload);
+            draft.value.setDeviceKey(activeDeviceKey.payload);
             if (recoveredEmailKey) {
               newOwner.removeKeyOfType(KeyType.EmailRecovery);
 

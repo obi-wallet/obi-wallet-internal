@@ -99,6 +99,12 @@ export class Wallets {
     multisigKey: MultisigKey;
     demoMode: boolean;
   }) {
+    const response = await this.walletsSdk.getAsyncDetailsAndFirstOwnerUpdate({
+      multisigKey,
+      demoMode,
+    });
+    multisigKey.evmSigningAddress = response.evmSigningAddress;
+    multisigKey.evmUserContractAddress = response.evmUserContractAddress;
     const ownerMultisig = multisigKey.toJSON();
     console.log(
       "ownerMultisig in createWallet() is " + JSON.stringify(ownerMultisig),
@@ -109,10 +115,6 @@ export class Wallets {
     console.log(
       "definedOwnerMultisig is " + JSON.stringify(definedOwnerMultisig),
     );
-    const response = await this.walletsSdk.getAsyncDetailsAndFirstOwnerUpdate({
-      multisigKey,
-      demoMode,
-    });
     const wallet = this._factory.create({
       type: demoMode ? "multisig-demo" : "multisig",
       data: {
@@ -125,9 +127,11 @@ export class Wallets {
         },
         singlesigWallets: [],
         currentAccount: null,
+        evmSigningAddress: response.evmSigningAddress,
+        evmUserContractAddress: response.evmUserContractAddress
       },
     });
-    wallet.setEvmSigningAddress(response.evmSignerAddress, true);
+    wallet.setEvmSigningAddress(response.evmSigningAddress, true);
     wallet.setEvmUserContractAddress(response.evmUserContractAddress);
     this.upsertWallet(wallet);
     this.setCurrentWallet(wallet);

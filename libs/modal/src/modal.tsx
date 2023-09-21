@@ -35,7 +35,7 @@ import "./vuplex-polyfill.js";
 
 export interface EthereumAccount {
   publicKey: Secp256k1PublicKey;
-  evmSignerAddress: string;
+  evmSigningAddress: string;
   evmUserContractAddress: string;
 }
 

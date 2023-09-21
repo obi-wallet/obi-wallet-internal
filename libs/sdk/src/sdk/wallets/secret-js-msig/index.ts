@@ -17,7 +17,7 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
     demoMode: boolean;
   }): Promise<{
     homeAccountAddress: string;
-    evmSignerAddress: string;
+    evmSigningAddress: string;
     evmUserContractAddress: string;
   }> {
     const _demoMode = demoMode;
@@ -25,7 +25,7 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
 
     const {
       homeAccountAddress,
-      evmSignerAddress,
+      evmSigningAddress,
       evmUserContractAddress,
       ownerIndex,
     } = multisigKey.setupDetails;
@@ -49,7 +49,7 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
 
     return {
       homeAccountAddress,
-      evmSignerAddress,
+      evmSigningAddress,
       evmUserContractAddress,
     };
   }

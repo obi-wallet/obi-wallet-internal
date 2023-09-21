@@ -10,7 +10,7 @@ export class CosmosSdkWalletsSdk extends AbstractWalletsSdk {
     demoMode: boolean;
   }): Promise<{
     homeAccountAddress: string;
-    evmSignerAddress: string;
+    evmSigningAddress: string;
     evmUserContractAddress: string;
   }> {
     const _unused = { multisigKey, demoMode };

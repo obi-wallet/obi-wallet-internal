@@ -10,15 +10,17 @@ export function createMultisigKey(
   setupDetails:
     | {
         homeAccountAddress: string;
-        evmSignerAddress: string;
+        evmSigningAddress: string;
         evmUserContractAddress: string;
         ownerIndex: number;
       }
-    | undefined,
+    | object,
   chain: ChainId,
   migratable: AbstractMigratable<typeof MultisigKeySchema> = {
     keys: [],
     threshold: 1,
+    evmSigningAddress: "",
+    evmUserContractAddress: ""
   },
   factories = {
     Key,
@@ -43,11 +45,12 @@ export function createObservableMultisigKey(
   setupDetails:
     | {
         homeAccountAddress: string;
-        evmSignerAddress: string;
+        evmSigningAddress: string;
         evmUserContractAddress: string;
         ownerIndex: number;
       }
-    | undefined,
+      // I know, I know... TODO
+    | object,
   chain: ChainId,
   migratable?: AbstractMigratable<typeof MultisigKeySchema>,
 ) {

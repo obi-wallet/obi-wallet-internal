@@ -4,7 +4,7 @@ import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { Chain, ChainId } from "@obi-wallet/sdk";
+import { Chain, ChainId, SecretJsClient, secretJsChains } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -18,6 +18,7 @@ import { IconButton } from "../../buttons";
 import { OnboardingScreenContainer } from "../../onboarding-screen-container";
 import { Text } from "../../typography";
 import { VerifyAndProceedButton } from "../../verify-and-proceed-button";
+import { ethers } from "ethers";
 
 export interface LookupProps {
   chainId: ChainId;
@@ -51,7 +52,7 @@ export const Lookup = observer(function Lookup({
           return chain.currentCodeId;
         },
         onSecretJsChain(chain) {
-          return chain.currentCodeIds.userAccount;
+          return chain.currentCodeIds.userEntry;
         },
         onTerraChain(chain) {
           return chain.currentCodeIds.userAccount;
@@ -62,7 +63,7 @@ export const Lookup = observer(function Lookup({
         {
           method: "POST",
           body: JSON.stringify({
-            chainId,
+            chainId: "secret-4",
             publicKey,
             currentCodeId,
           }),
@@ -72,7 +73,31 @@ export const Lookup = observer(function Lookup({
           },
         },
       );
-      const proxyWallets = (await response.json()) as A.SerializedProxyWallet[];
+      let proxyWallets;
+      try {
+        proxyWallets = (await response.json()) as A.SerializedProxyWallet[];
+      } catch(e) {
+        console.log("Proxy wallet worker error. Response: " + response.text());
+        throw new Error("error in proxy wallet worker response");
+      }
+      for (let i = 0; i < proxyWallets.length; i++) {
+        // get matching signer address (user contract address is saved but
+        // can be recalculated if needed)...
+        console.log("querying for signer addresses...");
+        // TODO we can do this later; we don't need signers for ALL wallets
+        // if there are many
+        const chain = secretJsChains["secret-4"];
+        const outerClient = new SecretJsClient("secret-4");
+        const pubkey: string = (await outerClient.withSecretNetworkClient(async (client) => {
+          const res: { eth_pubkey: string } = await client.query.compute.queryContract({
+            contract_address: chain.secretSigner.address,
+            code_hash: chain.secretSigner.codeHash,
+            query: { eth_pub_key: {} }
+          });
+          return res.eth_pubkey;
+        }));
+        proxyWallets[i].evmSigningAddress = ethers.computeAddress(pubkey);
+      }
       setWallets(proxyWallets);
     } catch (e) {
       console.log(e);
@@ -181,7 +206,7 @@ export const Lookup = observer(function Lookup({
                     }}
                   >
                     {Bech32Address.shortenAddress(
-                      wallet.proxyAddress.address,
+                      wallet.evmUserContractAddress,
                       20,
                     )}
                   </Text>

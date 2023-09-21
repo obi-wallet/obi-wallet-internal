@@ -105,6 +105,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
 
     function onRecover() {
       const newMultisigKey = ObservableMultisigKey.create(
+        {},
         chainStore.currentChain,
       );
       const draftId = draftsStore.create({
@@ -182,7 +183,7 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
                 key={button}
                 label="Login"
                 flavor="primary"
-                // onPress={onZepeto}
+                onPress={onRecover}
               />
             );
           // case WelcomeButton.Login:
