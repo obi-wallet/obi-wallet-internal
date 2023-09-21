@@ -162,7 +162,7 @@
   "signature.smscodelabel": "8-Digit SMS-Code",
   "signature.noresponselabel": "Didn't receive a response?",
   "signature.sendagain": "Resend",
-  "signature.keysrequired": "Keys Required",
+  "signature.keysrequired": "Transaction requires {threshold}/{parties} signature",
   "signature.error.confirmingtx": "Error: Confirming Transaction",
 
   "settings.multigsigsettings": "Key Settings",

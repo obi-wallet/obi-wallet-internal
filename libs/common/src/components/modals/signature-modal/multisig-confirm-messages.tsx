@@ -90,9 +90,9 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
         >
           <FormattedMessage
             id="signature.keysrequired"
-            defaultMessage="Keys Required"
+            defaultMessage="Transaction requires {threshold}/{parties} signature"
+            values={{ threshold, parties: numberOfSignatures }}
           />
-          : {numberOfSignatures}/{threshold}
         </Text>
       );
     };
