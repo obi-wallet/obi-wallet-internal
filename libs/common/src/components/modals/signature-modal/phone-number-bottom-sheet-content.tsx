@@ -1,4 +1,4 @@
-import { ComunicationType } from "@obi-wallet/sdk";
+import { CommunicationType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -20,7 +20,7 @@ export interface PhoneNumberBottomSheetContentProps {
   securityQuestion: string;
 
   onRequest(data: {
-    type: ComunicationType;
+    type: CommunicationType;
     securityAnswer: string;
   }): Promise<void>;
 

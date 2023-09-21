@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { ComunicationType } from "@obi-wallet/sdk";
+import { CommunicationType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -14,7 +14,7 @@ export interface PhoneOneTimeCodeInputProps {
   value: string;
   phoneNumberMightBeIncorrect: boolean;
   setValue(value: string): void;
-  onResend(type: ComunicationType): Promise<void>;
+  onResend(type: CommunicationType): Promise<void>;
 }
 
 export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
@@ -90,7 +90,7 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
 
                   setValue("");
 
-                  await onResend(ComunicationType.SMS);
+                  await onResend(CommunicationType.SMS);
                 }}
                 disabled={resendButtonDisabled}
               />
@@ -103,7 +103,7 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
 
                   setValue("");
 
-                  await onResend(ComunicationType.VOICE);
+                  await onResend(CommunicationType.VOICE);
                 }}
                 disabled={resendButtonDisabled}
               />
