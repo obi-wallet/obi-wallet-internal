@@ -48,7 +48,7 @@ export const ztxTheme: CustomTheme = {
     cancel: colors.grey6,
   },
   background: {
-    color: "#16151D",
+    color: colors.grey2,
   },
   modal: {
     borderRadius: "3px",

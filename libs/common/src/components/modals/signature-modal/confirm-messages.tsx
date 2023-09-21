@@ -3,7 +3,7 @@ import { ChainId, Message, MessageJson, Messages } from "@obi-wallet/sdk";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { ModalProps, ScrollView, TouchableOpacity, View } from "react-native";
 
 import { PrettyMessage } from "./pretty-message";
@@ -13,6 +13,7 @@ import { BaseModal } from "../../base-modal";
 import { Button } from "../../buttons";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 import { ScreenContainer } from "../../screen-container";
+import { ScreenTitleText } from "../../screen-title";
 import { Text } from "../../typography";
 
 enum Tab {
@@ -99,14 +100,11 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
           </>
         );
       } else {
-        return (
-          <Text style={{ color: "white", fontSize: 16, fontWeight: "500" }}>
-            <FormattedMessage
-              id="signature.modal.confirmtx"
-              defaultMessage="Confirm Transaction"
-            />
-          </Text>
-        );
+        const title = intl.formatMessage({
+          id: "signature.modal.confirmtx",
+          defaultMessage: "Confirm Transaction",
+        });
+        return <ScreenTitleText title={title} />;
       }
     };
 
@@ -119,9 +117,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
             <ScreenContainer>
               <View
                 style={{
-                  height: 50,
-                  justifyContent: "center",
-                  alignItems: "center",
+                  marginBottom: 24,
                 }}
               >
                 {renderTitle()}
@@ -131,10 +127,9 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
                 <View
                   style={{
                     flexDirection: "row",
-                    height: 50,
+                    height: 36,
                     borderBottomColor: "rgba(250,250,250,.2)",
                     borderBottomWidth: 1,
-                    marginHorizontal: 10,
                   }}
                 >
                   {renderTabButton({
@@ -170,7 +165,6 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
                     <ScrollView
                       style={{
                         flex: 1,
-                        padding: 10,
                         marginBottom: 10,
                         borderRadius: 12,
                         borderTopRightRadius: Tab.Data === selectedTab ? 0 : 12,

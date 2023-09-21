@@ -3,6 +3,7 @@ import {
   AminoMsgInstantiateContract,
 } from "@cosmjs/cosmwasm-stargate/build/modules";
 import { AminoMsgSend } from "@cosmjs/stargate";
+import { useTheme } from "@emotion/react";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { useQuery, useValidators } from "@obi-wallet/headless-ui";
 import {
@@ -62,7 +63,6 @@ export const PrettyMessage = observer<PrettyMessageProps>(
 const PrettyMessageUnsafe = observer<Omit<PrettyMessageProps, "chainId">>(
   function PrettyMessageUnsafe({ message }) {
     const type = R.has("type", message) ? message.type : null;
-
     switch (type) {
       case "bank/MsgSend":
       case "cosmos-sdk/MsgSend": {
@@ -90,8 +90,9 @@ const PrettyMessageUnsafe = observer<Omit<PrettyMessageProps, "chainId">>(
         const msg = message as unknown as MsgWithdrawDelegatorReward.Amino;
         return <PrettyMessageWithdrawDelegatorReward {...msg} />;
       }
-      default:
+      default: {
         return <PrettyMessageUnknown />;
+      }
     }
   },
 );
@@ -460,25 +461,28 @@ const MessageElement = observer<MessageElementProps>(function MessageElement({
   children,
   coins,
 }) {
+  const theme = useTheme();
+  const isShowCoinIcon = theme.style !== "ztx";
+
   return (
     <View>
       <View
         style={{
           alignItems: "center",
-          paddingVertical: 20,
-          borderColor: "#2C2C2C",
+          paddingVertical: 12,
+          borderColor: "#3E4859",
           borderTopWidth: 1,
         }}
       >
-        <PrettyCoins tokens={coins} />
+        <PrettyCoins tokens={coins} showIcon={isShowCoinIcon} />
       </View>
       <View
         style={{
           alignItems: "center",
-          borderColor: "#2C2C2C",
+          borderColor: "#3E4859",
           borderTopWidth: 1,
           borderBottomWidth: 1,
-          paddingVertical: 20,
+          paddingVertical: 12,
         }}
       >
         <Text style={{ color: "white", opacity: 0.6 }}>
@@ -495,10 +499,12 @@ const MessageElement = observer<MessageElementProps>(function MessageElement({
 
 interface PrettyTokensProps {
   tokens?: readonly Token[];
+  showIcon?: boolean;
 }
 
 const PrettyCoins = observer<PrettyTokensProps>(function PrettyTokens({
   tokens,
+  showIcon = true,
 }) {
   const chainId = useChainId();
   const { chainStore, configStore } = useStore();
@@ -523,7 +529,7 @@ const PrettyCoins = observer<PrettyTokensProps>(function PrettyTokens({
               alignItems: "center",
             }}
           >
-            {icon && (
+            {icon && showIcon && (
               <View style={{ width: 36, height: 36, marginRight: 10 }}>
                 <CoinIcon source={icon} />
               </View>

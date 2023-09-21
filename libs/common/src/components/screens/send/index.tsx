@@ -115,6 +115,7 @@ export const SendScreenComponent = observer<
     <OsmosisScreenContainer>
       <KeyboardAvoidingView style={{ flex: 1 }}>
         <SafeAreaView
+          // TODO: should replace SafeAreaView with Screen container
           style={{
             flex: 1,
             justifyContent:
@@ -236,6 +237,8 @@ export const SendScreenComponent = observer<
                 function getMessages(): Message[] {
                   if (!wallet.address) return [];
 
+                  console.log({ configStore });
+                  console.log({ balacne: configStore.config.ethereumBalances });
                   if (configStore.config.ethereumBalances) {
                     console.log("sending as userop...");
                     console.log(

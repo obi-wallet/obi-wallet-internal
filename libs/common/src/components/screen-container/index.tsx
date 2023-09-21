@@ -1,7 +1,9 @@
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
-import { StyleProp, ViewStyle } from "react-native";
+import { Platform, StyleProp, ViewStyle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { isSmallScreenNumber } from "../../helpers";
 
 export interface ScreenContainerProps {
   children?: ReactNode;
@@ -15,8 +17,13 @@ export const ScreenContainer = observer<ScreenContainerProps>(
           {
             flex: 1,
             // backgroundColor: theme.colors.background,
-            paddingHorizontal: 20,
+            paddingHorizontal: 22,
             justifyContent: "space-between",
+            paddingVertical:
+              Platform.select({
+                ios: isSmallScreenNumber(20, 20),
+                android: isSmallScreenNumber(30, 30),
+              }) || 36,
           },
           style,
         ]}
