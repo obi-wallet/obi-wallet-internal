@@ -170,6 +170,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
 
           try {
             const currentOwner = ObservableMultisigKey.create(
+              undefined,
               serializedData.chain,
               serializedData.owner,
             );

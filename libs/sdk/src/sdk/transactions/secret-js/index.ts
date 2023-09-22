@@ -173,7 +173,7 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
         console.log("getSignUserOpInput is " + signer.getSignUserOpInput());
         if (signer.getSignUserOpInput() && !signer.getSignMessage()) {
           console.log("calling initUserOperation...");
-          await signer.initUserOperation(evmSigningAddress, walletMeta);
+          // await signer.initUserOperation(evmSigningAddress, walletMeta)
         } else {
           console.log("signMessage is " + signer.getSignMessage());
         }
@@ -224,3 +224,6 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     return Messages.chainId(this.chainId) as CosmosSdkMessages;
   }
 }
+
+export * from "./extended-ethers-signer";
+export * from "./multisigs-signer";

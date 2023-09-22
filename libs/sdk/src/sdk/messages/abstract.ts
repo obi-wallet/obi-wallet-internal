@@ -11,7 +11,7 @@ import { CodeIds, Token } from "../common";
  * Creates messages used by the rest of the SDK. We expect you to only need this
  * for generating message fixtures for testing.
  */
-export abstract class AbstractMessages {
+export abstract class AbstractMessages<T> {
   protected constructor(protected chainId: ChainId) {}
 
   public abstract toJSON(message: Message): MessageJson;
@@ -126,11 +126,8 @@ export abstract class AbstractMessages {
   /**
    * Message to create a new wallet with the given owner.
    */
-  public abstract getCreateWalletMessage(
-    ownerAddress: string,
-    pubkeyBase64: string,
-    sender?: string,
-  ): Message;
+  public abstract getCreateWalletMessage(...walletData: T[]): Message;
+  public abstract getCreateWalletMessage(key: T): Message;
 
   /**
    * Message to update a new wallet's owner for the first time.

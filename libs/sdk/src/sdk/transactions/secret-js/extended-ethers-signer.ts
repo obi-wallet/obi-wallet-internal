@@ -1,16 +1,16 @@
 import { Wallet, BytesLike, utils } from "ethers5";
 import { providers } from "ethers5";
-import { generateSec256k1KeyPair } from "libs/sdk/src/keys";
+// import { generateSec256k1KeyPair } from "libs/sdk/src/keys";
 import invariant from "tiny-invariant";
 
-import { MultisigKey, WalletMeta } from "../../../data-structures";
+import { MultisigKey /*WalletMeta*/ } from "../../../data-structures";
 import { SignAndBroadcastTransactionUserInteraction } from "../../../user-interactions";
 
 export class ExtendedWallet extends Wallet {
-  public override provider: providers.JsonRpcProvider;
-  private signingAddress: string;
-  private multisigKey: MultisigKey;
-  private userEntryAddress: string;
+  public override provider!: providers.JsonRpcProvider;
+  private readonly signingAddress: string;
+  private readonly multisigKey: MultisigKey;
+  private readonly userEntryAddress: string;
 
   constructor(
     address: string,
@@ -19,7 +19,10 @@ export class ExtendedWallet extends Wallet {
     userEntryAddress: string,
   ) {
     // private key shouldn't matter here!
-    super("0x24910d6d60b1e4f49dc979d4eb9963317cf2f11bfdc4c4f220fd4cf9ca6e6e9f", provider);
+    super(
+      "0x24910d6d60b1e4f49dc979d4eb9963317cf2f11bfdc4c4f220fd4cf9ca6e6e9f",
+      provider,
+    );
     this.signingAddress = address;
     this.multisigKey = multisigKey;
     this.userEntryAddress = userEntryAddress;
@@ -30,16 +33,18 @@ export class ExtendedWallet extends Wallet {
   }
 
   override async signMessage(message: BytesLike): Promise<string> {
-    const toHexString = ((bytes: BytesLike): string | null => {
+    const toHexString = (bytes: BytesLike): string | null => {
       if (bytes instanceof Uint8Array) {
-          return Array.from(bytes).map(byte => byte.toString(16).padStart(2, '0')).join('');
+        return Array.from(bytes)
+          .map((byte) => byte.toString(16).padStart(2, "0"))
+          .join("");
       } else if (bytes instanceof Buffer) {
-          return bytes.toString('hex');
+        return bytes.toString("hex");
       } else if (bytes instanceof ArrayBuffer) {
-          return toHexString(new Uint8Array(bytes));
+        return toHexString(new Uint8Array(bytes));
       }
       return null;
-    });
+    };
     const messageString = toHexString(message);
     const interactionObj = {
       messages: [{ raw: messageString ?? message }],
@@ -52,7 +57,10 @@ export class ExtendedWallet extends Wallet {
       multisigKey: this.multisigKey,
       userEntryAddress: this.userEntryAddress,
     };
-    console.log("interaction object inside ExtendedWallet is: " + JSON.stringify(interactionObj));
+    console.log(
+      "interaction object inside ExtendedWallet is: " +
+        JSON.stringify(interactionObj),
+    );
     const { signature } =
       await SignAndBroadcastTransactionUserInteraction.start(interactionObj);
     invariant(signature, "No signature obtained");

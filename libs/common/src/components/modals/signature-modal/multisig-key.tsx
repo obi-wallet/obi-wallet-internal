@@ -4,7 +4,7 @@ import {
   useSignAndBroadcastTransaction,
 } from "@obi-wallet/headless-ui";
 import {
-  ComunicationType,
+  CommunicationType,
   KeySubclassTypeMapping,
   KeyType,
   Signer,
@@ -117,7 +117,7 @@ export const SignatureModalMultisigKey =
             securityQuestion={phoneKeyPayload.key.payload.securityQuestion}
             onRequest={async (data: {
               securityAnswer: string;
-              type: ComunicationType;
+              type: CommunicationType;
             }) => {
               setBottomSheetOpen(true);
               await phoneKeyPayload.signer.requestSignature(data);

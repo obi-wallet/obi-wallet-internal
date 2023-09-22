@@ -15,19 +15,19 @@ import {
 import { defaultRegistryTypes, makeMultisignedTx } from "@cosmjs/stargate";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { Interface, InterfaceAbi } from "ethers";
-import * as ethers5 from "ethers5";
+// import * as ethers5 from "ethers5";
 import { Account } from "secretjs";
 import invariant from "tiny-invariant";
-import {
-  Client,
-  Presets,
-  IUserOperation,
-  UserOperationMiddlewareCtx,
-} from "userop";
+// import {
+//   Client,
+//   Presets,
+//   IUserOperation,
+//   UserOperationMiddlewareCtx,
+// } from "userop";
 
-import { ExtendedWallet } from "./extended-ethers-signer";
+// import { ExtendedWallet } from "./extended-ethers-signer";
 import { Chain, SecretJsChainId } from "../../../chains";
-import { WalletMeta } from "../../../data-structures";
+// import { WalletMeta } from "../../../data-structures";
 import { MultisigPublicKey } from "../../../keys";
 import {
   MultisigSigner as AbstractMultisigSigner,
@@ -139,7 +139,7 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
         chain_id: chainId,
         fee: fee,
         msgs: messages,
-        sequence: "" // sequence.toString(),
+        sequence: "", // sequence.toString(),
       };
       this.signMessage = undefined;
     }

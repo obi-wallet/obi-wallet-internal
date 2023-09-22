@@ -28,7 +28,7 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
       evmSignerAddress,
       evmUserContractAddress,
       ownerIndex,
-    } = multisigKey.setupDetails;
+    } = multisigKey.setupDetails!;
 
     console.log("Calling setup/first-update-owner to " + multisigKey.address);
     const response = await fetch("/api/setup/first-update-owner", {

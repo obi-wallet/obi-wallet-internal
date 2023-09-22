@@ -33,7 +33,6 @@ export function useSignAndBroadcastTransaction({
 }) {
   const { walletsStore } = useRootStore();
   const { payload } = interaction;
-
   const walletMeta = R.has("walletMeta", payload) ? payload.walletMeta : null;
   const wallet = walletMeta
     ? walletsStore.getWalletByProxyAddress(walletMeta.walletId)
@@ -41,9 +40,11 @@ export function useSignAndBroadcastTransaction({
   const currentAccount = walletMeta?.currentAccount
     ? wallet?.getAccountByMeta(walletMeta.currentAccount)
     : null;
-  const multisigKey = (R.has("walletMeta", payload) && payload.walletMeta.currentAccount)
+  const multisigKey = R.hasPath(["walletMeta", "currentAccount"], payload)
     ? wallet?.owner
-    : payload.multisigKey;
+    : R.has("multisigKey", payload)
+    ? payload.multisigKey
+    : null;
 
   const awaitableCanExecute = useAwaitableState<boolean>();
   const canExecuteMutation = useMutation({
@@ -147,7 +148,8 @@ export function useSignAndBroadcastTransaction({
             code_hash: chain.secretSigner.codeHash,
             query: {
               sign_bytes: {
-                user_entry_address: wallet?.proxyAddress ?? payload.userEntryAddress,
+                user_entry_address:
+                  wallet?.proxyAddress ?? R.has("userEntryAddress")(payload),
                 user_entry_code_hash: chain.userEntry.codeHash,
                 bytes: sha256(Buffer.from((payload.messages[0] as any).raw)),
                 bytes_signed_by_signers: signed.map((s) =>

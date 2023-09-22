@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Signer, SigningKey, Wallet } from "ethers";
 // eslint-disable-next-line import/no-extraneous-dependencies
+import invariant from "tiny-invariant";
 import { Presets } from "userop";
 
 import { WalletsSchema } from "./schema";
@@ -11,9 +12,8 @@ import { Serialized } from "../abstract";
 import { createGatekeeperConfig } from "../gatekeeper-config";
 import { AbstractMigratable, AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
-import { MultisigWallet } from "../multisig-wallet";
-import invariant from "tiny-invariant";
 import { MultisigKeySchema } from "../multisig-key/schema";
+import { MultisigWallet } from "../multisig-wallet";
 
 export class Wallets {
   public get schema() {
@@ -100,10 +100,15 @@ export class Wallets {
     demoMode: boolean;
   }) {
     const ownerMultisig = multisigKey.toJSON();
-    console.log("ownerMultisig in createWallet() is " + JSON.stringify(ownerMultisig));
-    invariant(Object.keys(ownerMultisig).length !== 0, "empty ownerMultisig");
-    const definedOwnerMultisig: AbstractSerialized<typeof MultisigKeySchema> = ownerMultisig as AbstractSerialized<typeof MultisigKeySchema>;
-    console.log("definedOwnerMultisig is " + JSON.stringify(definedOwnerMultisig));
+    console.log(
+      "ownerMultisig in createWallet() is " + JSON.stringify(ownerMultisig),
+    );
+    invariant(Object.keys(ownerMultisig!).length !== 0, "empty ownerMultisig");
+    const definedOwnerMultisig: AbstractSerialized<typeof MultisigKeySchema> =
+      ownerMultisig as AbstractSerialized<typeof MultisigKeySchema>;
+    console.log(
+      "definedOwnerMultisig is " + JSON.stringify(definedOwnerMultisig),
+    );
     const response = await this.walletsSdk.getAsyncDetailsAndFirstOwnerUpdate({
       multisigKey,
       demoMode,

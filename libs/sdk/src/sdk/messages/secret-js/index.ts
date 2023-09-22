@@ -28,7 +28,7 @@ function notImplemented(message: string) {
   warning(false, message);
 }
 
-export class SecretJsMessages extends AbstractMessages {
+export class SecretJsMessages extends AbstractMessages<string> {
   protected constructor(protected override chainId: SecretJsChainId) {
     super(chainId);
   }
@@ -328,11 +328,8 @@ export class SecretJsMessages extends AbstractMessages {
   }
 
   // TODO fix types as they are forced here
-  public getCreateWalletMessage(
-    ownerAddress: string,
-    pubkeyBase64: string,
-    sender: string,
-  ): Message {
+  public getCreateWalletMessage(...walletData: string[]): Message {
+    const [ownerAddress, pubkeyBase64, sender] = walletData;
     const message = new MsgExecuteContract({
       sender: sender ?? ownerAddress,
       contract_address: this.chain.accountCreator.address,
@@ -370,15 +367,17 @@ export class SecretJsMessages extends AbstractMessages {
       msg: {
         first_update_owner: {
           first_owner: newOwnerAddress,
-          signers: { signers: this.getSigners(
-            newOwner.keys as unknown as Array<{
-              type: string;
-              payload: {
-                publicKey: PublicKey;
-                privateKey?: string;
-              };
-            }>,
-          )},
+          signers: {
+            signers: this.getSigners(
+              newOwner.keys as unknown as Array<{
+                type: string;
+                payload: {
+                  publicKey: PublicKey;
+                  privateKey?: string;
+                };
+              }>,
+            ),
+          },
         },
       },
     });

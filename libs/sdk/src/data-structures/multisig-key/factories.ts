@@ -1,5 +1,4 @@
 import { action, makeObservable, observable } from "mobx";
-import invariant from "tiny-invariant";
 
 import { MultisigKey } from "./implementation";
 import { MultisigKeySchema } from "./schema";
@@ -7,17 +6,17 @@ import { ChainId } from "../../chains";
 import { Key, ObservableKey } from "../key";
 import { AbstractMigratable } from "../migratable";
 
+export type SetupMultisigKeyDetails = {
+  homeAccountAddress: string;
+  evmSignerAddress: string;
+  evmUserContractAddress: string;
+  ownerIndex: number;
+};
+
 export function createMultisigKey(
-  setupDetails:
-    | {
-        homeAccountAddress: string;
-        evmSignerAddress: string;
-        evmUserContractAddress: string;
-        ownerIndex: number;
-      }
-    | undefined,
+  setupDetails: SetupMultisigKeyDetails | undefined, // TODO: make it optional
   chain: ChainId,
-  migratable: AbstractMigratable<typeof MultisigKeySchema> = {
+  serialized: AbstractMigratable<typeof MultisigKeySchema> = {
     keys: [],
     threshold: 1,
   },
@@ -27,7 +26,7 @@ export function createMultisigKey(
   },
 ): MultisigKey {
   const { keys, threshold } =
-    MultisigKeySchema.migratableSchema.parse(migratable);
+    MultisigKeySchema.migratableSchema.parse(serialized);
   let keysMapped: Key[];
   try {
     keysMapped = keys.map((key) => factories.Key.create(key));
@@ -41,14 +40,7 @@ export function createMultisigKey(
 }
 
 export function createObservableMultisigKey(
-  setupDetails:
-    | {
-        homeAccountAddress: string;
-        evmSignerAddress: string;
-        evmUserContractAddress: string;
-        ownerIndex: number;
-      }
-    | undefined,
+  setupDetails: SetupMultisigKeyDetails | undefined,
   chain: ChainId,
   migratable?: AbstractMigratable<typeof MultisigKeySchema>,
 ) {

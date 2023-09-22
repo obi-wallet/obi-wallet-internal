@@ -31,7 +31,7 @@ import { CodeIds, Token } from "../../common";
 import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
 
-export class CosmosSdkMessages extends AbstractMessages {
+export class CosmosSdkMessages extends AbstractMessages<string> {
   public override getFirstUpdateWalletMessage(
     newOwner: MultisigKey,
     newOwnerAddress: string,
@@ -753,11 +753,14 @@ export class CosmosSdkMessages extends AbstractMessages {
     return new MsgWithdrawDelegatorReward(wallet.address, validator);
   }
 
-  public getCreateWalletMessage(
-    ownerAddress: string,
-    pubkeyBase64: string,
-    sender?: string,
-  ): Message {
+  public getCreateWalletMessage(...walletData: string[]): Message {
+    /**
+     * Replace with params if needed
+     * @param ownerAddress
+     * @param pubkeyBase64
+     * @param sender
+     */
+    const [_] = walletData;
     throw new Error("not implemented");
     /* const _sender = sender;
     const rawMessage = {
