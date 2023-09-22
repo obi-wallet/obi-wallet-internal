@@ -14,13 +14,13 @@ import { migratable } from "../../migratable";
 
 export const UsableKeySchema = migratable(
   z.union([
-    DeviceKey,
-    PhoneKey,
-    SocialKey,
-    NfcKey,
     CloudKey,
+    DeviceKey,
     EmailKey,
     EmailRecoveryKey,
+    NfcKey,
+    PhoneKey,
+    SocialKey,
     UnityKey,
     ZAuthKey,
   ]),

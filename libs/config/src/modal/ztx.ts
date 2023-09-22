@@ -16,13 +16,13 @@ export const ztxModalConfig: Config = {
   },
   keys: {
     enabled: [
-      KeyType.Unity,
       KeyType.Device,
+      KeyType.Email,
       KeyType.Phone,
       // KeyType.Nfc,
       // KeyType.ZAuth,
       // KeyType.Cloud,
-      KeyType.Email,
+      KeyType.Unity,
     ],
     required: [KeyType.Phone],
     comingSoon: [],
