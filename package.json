@@ -20,6 +20,7 @@
   "resolutions": {
     "@ledgerhq/hw-app-eth": "6.30.0",
     "@types/react": "^18.2.15",
+    "protobufjs": "^6.11.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-is": "18.2.0",
