@@ -333,6 +333,7 @@ const MessageView = observer(function MessageView({
   amount,
 }: MessageViewProps) {
   if (messages.length === 0) return null;
+  console.log("in messageview, amount is " + amount);
 
   return (
     <>

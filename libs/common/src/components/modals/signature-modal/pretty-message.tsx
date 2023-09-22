@@ -457,6 +457,12 @@ const PrettyMessageUnknown = observer<PrettyMessageUnknownProps>(
       defaultMessage: "Please check data tab",
     });
 
+    let rawAmount;
+    if (amount) {
+      rawAmount = (parseInt(amount!)*1000000).toString();
+    } else {
+      rawAmount = undefined;
+    }
     return (
       <MessageElement
         title={intl.formatMessage({
@@ -468,7 +474,8 @@ const PrettyMessageUnknown = observer<PrettyMessageUnknownProps>(
         subTitle={hint || defaultSubTitle}
         coins={[
           {
-            rawAmount: amount || "0",
+            // legacy due to cosmos coins having 6 decimals
+            rawAmount: rawAmount || "0",
             id: "ZTX",
           },
         ]}
@@ -535,8 +542,10 @@ const PrettyCoins = observer<PrettyTokensProps>(function PrettyTokens({
   const denom = configStore.config.ethereumBalances
     ? "0xf0F8FC7365C0c9F87189B6c8703e4719270A3318"
     : chainStore.currentChainInformation.denom;
+  console.log("tokens length is " + tokens?.length);
+  console.log("tokens is " + JSON.stringify(tokens));
   const coinsArray =
-    tokens && tokens.length > 0 ? tokens : [{ id: denom, rawAmount: "0" }];
+    tokens && tokens.length > 0 ? tokens : [{ id: denom, rawAmount: tokens![0].rawAmount }];
   return (
     <View>
       {coinsArray.map((token) => {

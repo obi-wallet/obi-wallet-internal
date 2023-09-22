@@ -28,6 +28,7 @@ export type SignatureModalMultisigKeyProps = ReturnType<
 > & {
   type: SignAndBroadcastTransactionType.MultisigKey;
   hint?: string;
+  amount?: string;
 };
 
 export const SignatureModalMultisigKey =
@@ -39,6 +40,7 @@ export const SignatureModalMultisigKey =
     multisigSigner,
     multisigKey,
     hint,
+    amount,
     safeSpendLimitExceeded,
   }) {
     const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
@@ -145,6 +147,7 @@ export const SignatureModalMultisigKey =
         innerMessages={messages}
         chainId={multisigKey.chainId}
         hint={hint}
+        amount={amount}
         data={keys}
         safeSpendLimitExceeded={safeSpendLimitExceeded}
         onCancel={cancel}

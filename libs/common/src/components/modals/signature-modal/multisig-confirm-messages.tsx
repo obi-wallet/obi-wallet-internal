@@ -25,6 +25,7 @@ export interface MultisigConfirmMessagesProps
   innerMessages: ConfirmMessagesProps["messages"];
   safeSpendLimitExceeded?: boolean;
   hint?: string;
+  amount?: string;
   data: KeysListProps["data"];
   onConfirm(): Promise<void>;
 }
@@ -99,7 +100,6 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
         </Text>
       );
     };
-
     return (
       <ConfirmMessages
         {...props}
