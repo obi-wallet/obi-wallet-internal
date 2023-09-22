@@ -20,7 +20,7 @@ export function createMultisigKey(
     keys: [],
     threshold: 1,
     evmSigningAddress: "",
-    evmUserContractAddress: ""
+    evmUserContractAddress: "",
   },
   factories = {
     Key,
@@ -49,7 +49,7 @@ export function createObservableMultisigKey(
         evmUserContractAddress: string;
         ownerIndex: number;
       }
-      // I know, I know... TODO
+    // I know, I know... TODO
     | object,
   chain: ChainId,
   migratable?: AbstractMigratable<typeof MultisigKeySchema>,

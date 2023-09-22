@@ -1,3 +1,6 @@
+import { useTheme } from "@emotion/react";
+import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppStateEffect } from "@obi-wallet/headless-ui";
 import {
@@ -13,7 +16,6 @@ import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage } from "react-intl";
 import { Linking, TouchableOpacity, View } from "react-native";
 import { z } from "zod";
-import { useTheme } from "@emotion/react";
 
 import { EmailContainer } from "./container";
 import { EmailTab, EmailTabs } from "./tabs";
@@ -31,8 +33,7 @@ import {
 import { TextInput } from "../../../text-input";
 import { Text } from "../../../typography";
 import { VerifyAndProceedButton } from "../../../verify-and-proceed-button";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faCopy } from "@fortawesome/free-solid-svg-icons";
+
 export { EmailRecoveryScreen } from "./recovery";
 export type { EmailRecoveryScreenProps } from "./recovery";
 
@@ -83,7 +84,6 @@ async function encryptWithPublicKey(
 
 export const EmailKeyScreen = observer<EmailKeyScreenProps>(
   function EmailKeyScreen({ route }) {
-    
     const navigation = useRootNavigation();
     const { params } = route;
 
@@ -132,8 +132,12 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   const [selectedTab, setSelectedTab] = useState(EmailTab.EmailKeyV1);
   const [emailKey, setEmailKey] = useState<Secp256k1PublicKey | undefined>();
   const [publicKey, setPublicKey] = useState<string | undefined>(undefined);
-  const [emailRecoveryLink, setEmailRecoveryLink] = useState<string | undefined>(undefined);
-  const [emailPublicKey, setEmailPublicKey] = useState<string | undefined>(undefined);
+  const [emailRecoveryLink, setEmailRecoveryLink] = useState<
+    string | undefined
+  >(undefined);
+  const [emailPublicKey, setEmailPublicKey] = useState<string | undefined>(
+    undefined,
+  );
   const [copied, setCopied] = useState<boolean>(false);
 
   useEffect(() => {
@@ -154,22 +158,20 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
         "UwIDAQAB\n" +
         "-----END PUBLIC KEY-----";
       // convert the base64 emailRecoveryLinkPubkey to a CryptoKey for window.crypto.subtle
-      encryptWithPublicKey(
-          emailRecoveryLinkPubkey,
-          privateKey,
-        ).then((buffer) => {
+      encryptWithPublicKey(emailRecoveryLinkPubkey, privateKey).then(
+        (buffer) => {
           // convert to base64 string
           const emailRecoveryLinkString: string = btoa(
             String.fromCharCode(...new Uint8Array(buffer)),
           );
           console.log(
-            "encrypted private key for email link: " +
-              emailRecoveryLinkString,
+            "encrypted private key for email link: " + emailRecoveryLinkString,
           );
           setEmailPublicKey(emailRecoveryLinkPubkey);
           setEmailRecoveryLink(emailRecoveryLinkString);
           setPublicKey(publicKey.value);
-        });
+        },
+      );
     }
     makeEmailRecoveryString();
   }, []);
@@ -195,27 +197,27 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
     Alert.alert(
       copied ? "Confirm Recovery Link Saved" : "Confirm Email Sent",
       copied
-      ? "Never enter your recovery link anywhere. Have you saved it?"
-      : "Never enter the one-time link you received anywhere unless you need it for recovery. Have you sent the email to yourself?",
+        ? "Never enter your recovery link anywhere. Have you saved it?"
+        : "Never enter the one-time link you received anywhere unless you need it for recovery. Have you sent the email to yourself?",
       [
         {
           text: "No",
           style: "cancel",
-          onPress: (() => {
+          onPress: () => {
             setCopied(false);
             setEmailKey(undefined);
-          })
+          },
         },
         {
           text: copied
-          ? "Yes, I've securely saved it"
-          : "Yes, I sent the email to myself",
+            ? "Yes, I've securely saved it"
+            : "Yes, I sent the email to myself",
           onPress: onPressRef.current,
         },
       ],
       { cancelable: false },
     );
-  };
+  }
 
   const isKeyboardVisible = useKeyboardVisible();
 
@@ -239,9 +241,9 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
     const end = text.slice(-midPoint + removeCount);
 
     return `${start}...${end}`;
-  };
+  }
 
-  function renderTabContent() {  
+  function renderTabContent() {
     switch (selectedTab) {
       case EmailTab.EmailKeyV1:
         return (
@@ -355,7 +357,9 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                   marginBottom: 10,
                 }}
               >
-                Or, save your recovery link<br />to a password manager:
+                Or, save your recovery link
+                <br />
+                to a password manager:
               </Text>
               <Text
                 style={[
@@ -370,7 +374,12 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                   theme.receive?.address?.text,
                 ]}
               >
-                {addEllipsisInMiddle(emailRecoveryLink ? ("wallet.obimoney.games/ztx/" + emailRecoveryLink) : "Generating...", 20)}
+                {addEllipsisInMiddle(
+                  emailRecoveryLink
+                    ? "wallet.obimoney.games/ztx/" + emailRecoveryLink
+                    : "Generating...",
+                  20,
+                )}
               </Text>
               {theme.style === "ztx" && (
                 <View style={{ marginLeft: 10, width: 14, height: 14 }}>
@@ -387,28 +396,28 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
               )}
             </TouchableOpacity>
             <VerifyAndProceedButton
-              labelOverride={ "Send Email to Myself" }
-              disabled={!formState.isValid }
+              labelOverride="Send Email to Myself"
+              disabled={!formState.isValid}
               onPress={handleSubmit(async (data) => {
-                  try {
-                    const URL = `mailto:${
-                      data.email
-                    }?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
-                      "This is an Obi email key recovery link. You are sending it to yourself; Obi can never access its contents. " +
-                        "This link is one-time use and can be used to help you recover if you lose multiple factors. " +
-                        "DO NOT DELETE this email, unless you are saving its contents to a password manager or physical location." +
-                        "\n\nTo initiate email key recovery, use this link:\n\nhttps://wallet.obimoney.games/ztx/" +
-                        emailRecoveryLink,
-                    )}`;
-                    setEmailKey({
-                      type: "tendermint/PubKeySecp256k1",
-                      value: publicKey!
-                    });
-                    await Linking.openURL(URL);
-                  } catch (e) {
-                    console.error(e);
-                    // noop
-                  }
+                try {
+                  const URL = `mailto:${
+                    data.email
+                  }?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
+                    "This is an Obi email key recovery link. You are sending it to yourself; Obi can never access its contents. " +
+                      "This link is one-time use and can be used to help you recover if you lose multiple factors. " +
+                      "DO NOT DELETE this email, unless you are saving its contents to a password manager or physical location." +
+                      "\n\nTo initiate email key recovery, use this link:\n\nhttps://wallet.obimoney.games/ztx/" +
+                      emailRecoveryLink,
+                  )}`;
+                  setEmailKey({
+                    type: "tendermint/PubKeySecp256k1",
+                    value: publicKey!,
+                  });
+                  await Linking.openURL(URL);
+                } catch (e) {
+                  console.error(e);
+                  // noop
+                }
               })}
             />
             <VerifyAndProceedButton

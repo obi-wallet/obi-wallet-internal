@@ -8,6 +8,6 @@ export const MultisigKeySchema = migratable(
     keys: z.array(Key.schema.migratableSchema),
     threshold: z.number().int().positive(),
     evmSigningAddress: z.string(),
-    evmUserContractAddress: z.string()
+    evmUserContractAddress: z.string(),
   }),
 );

@@ -64,20 +64,17 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
           // unityStore.getDeviceId
           // ? activeDeviceKey = draft.value.getUsableKeyOfType(KeyType.Unity)
           // : activeDeviceKey = draft.value.getUsableKeyOfType(KeyType.Device)
-
           // const recoveredPhoneKey = draft.value.getUsableKeyOfType(
           //   KeyType.Phone,
           // );
           // const recoveredEmailKey = draft.value.getUsableKeyOfType(
           //   KeyType.EmailRecovery,
           // );
-
           // invariant(activeDeviceKey, "Device key is required");
           // /* invariant(
           //   recoveredPhoneKey || recoveredEmailKey,
           //   "Phone or email key is required",
           // ); */
-
           // const serializedData: Serialized<MultisigWallet>["data"] = {
           //   chain: draft.value.chainId,
           //   owner: {
@@ -179,7 +176,6 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
           //   evmSigningAddress: serializedProxyWallet.evmSigningAddress,
           //   evmUserContractAddress: serializedProxyWallet.evmUserContractAddress,
           // };
-
           // try {
           //   const currentOwner = ObservableMultisigKey.create(
           //     {
@@ -191,13 +187,11 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
           //     serializedData.chain,
           //     serializedData.owner,
           //   );
-
           //   draft.commit({ original: currentOwner });
           //   const newOwner = draft.value;
           //   draft.value.setDeviceKey(activeDeviceKey.payload);
           //   if (recoveredEmailKey) {
           //     newOwner.removeKeyOfType(KeyType.EmailRecovery);
-
           //     navigation.navigate(KeyRoute.EmailKey, {
           //       ...params,
           //       serializedData,
@@ -212,8 +206,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
           //     evmUserContractAddressOverride: serializedData.evmUserContractAddress,
           //     homeAccountAddressOverride: serializedData.proxyAddress.address
           //   });
-
-            /*navigation.navigate(OnboardingRoute.RecoverWallet, {
+          /*navigation.navigate(OnboardingRoute.RecoverWallet, {
               ...params,
               serializedData,
             });*/

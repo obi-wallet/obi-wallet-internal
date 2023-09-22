@@ -1,8 +1,9 @@
 import { TxResponse } from "secretjs";
+
 import { KeyType, SerializedProxyWallet } from "./types";
+import { secretJsChains } from "../../../chains";
 import { MultisigKey } from "../../../data-structures";
 import { AbstractWalletsSdk } from "../abstract";
-import { secretJsChains } from "libs/sdk/src/chains";
 //import { add } from "ramda";
 
 export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
@@ -47,11 +48,11 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
           }
           return {
             type: type as KeyType,
-            publicKey
-          }
-        })
-      }
-    }
+            publicKey,
+          };
+        }),
+      },
+    };
     const cloudflareResponse = await fetch(
       `https://proxy-wallets.obiwallet.workers.dev/add`,
       // `http://127.0.0.1:8787/add`,
@@ -65,7 +66,7 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
           "Api-Version": "v1",
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "*"
+          "Access-Control-Allow-Headers": "*",
         },
       },
     );

@@ -21,6 +21,6 @@ export interface SerializedProxyWallet {
     codeId: number;
   };
   evmUserContractAddress: string;
-  evmSigningAddress: string | undefined; 
+  evmSigningAddress: string | undefined;
   owner: SerializedMultisigKey;
 }

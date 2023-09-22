@@ -1,16 +1,16 @@
 import { Secp256k1PublicKey } from "../../../../src/keys";
 
 export enum KeyType {
-    Device = "device",
-    Phone = "phone",
-    Social = "social",
-    Nfc = "nfc",
-    Cloud = "cloud",
-    Email = "email",
-    EmailRecovery = "email-recovery",
-    Unity = "unity",
-    ZAuth = "z-auth",
-  }
+  Device = "device",
+  Phone = "phone",
+  Social = "social",
+  Nfc = "nfc",
+  Cloud = "cloud",
+  Email = "email",
+  EmailRecovery = "email-recovery",
+  Unity = "unity",
+  ZAuth = "z-auth",
+}
 
 export interface SerializedPublicKey {
   type: string;
@@ -33,6 +33,6 @@ export interface SerializedProxyWallet {
     codeId: number;
   };
   evmUserContractAddress: string;
-  evmSigningAddress: string | undefined; 
+  evmSigningAddress: string | undefined;
   owner: SerializedMultisigKey;
 }

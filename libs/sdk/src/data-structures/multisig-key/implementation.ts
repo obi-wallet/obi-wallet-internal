@@ -61,7 +61,7 @@ export class MultisigKey {
         serialized:
           | AbstractSerialized<typeof MultisigKeySchema>
           // I know, I know... TODO
-          | object
+          | object,
       ) => MultisigKey;
     },
   ) {
@@ -84,7 +84,7 @@ export class MultisigKey {
       keys: this._keys.map((key) => key.toJSON()),
       threshold: this._threshold,
       evmSigningAddress: this.evmSigningAddress,
-      evmUserContractAddress: this.evmUserContractAddress
+      evmUserContractAddress: this.evmUserContractAddress,
     };
   }
 

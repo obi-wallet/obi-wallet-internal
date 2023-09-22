@@ -4,29 +4,43 @@ import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { Chain, ChainId, GatekeeperConfig, ObservableKey, SecretJsClient, createGatekeeperConfig, secretJsChains } from "@obi-wallet/sdk";
+import { KeyRoute, RecoverFrom } from "@obi-wallet/common";
+import {
+  Chain,
+  ChainId,
+  GatekeeperConfig,
+  ObservableKey,
+  SecretJsClient,
+  createGatekeeperConfig,
+  secretJsChains,
+} from "@obi-wallet/sdk";
+import { ethers } from "ethers";
+import {
+  Key,
+  KeyType,
+  MultisigKey as MultisigKeyFactory,
+  ObservableMultisigKey,
+  Serialized,
+} from "libs/sdk/src/data-structures";
+import { createObservableMultisigKey } from "libs/sdk/src/data-structures/multisig-key/factories";
+import { MultisigKey } from "libs/sdk/src/data-structures/multisig-key/implementation";
+import { MultisigWallet } from "libs/sdk/src/data-structures/multisig-wallet/implementation";
+import { SinglesigWallet } from "libs/sdk/src/data-structures/singlesig-wallet";
 import { observer } from "mobx-react-lite";
+import * as R from "ramda";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Linking, ScrollView, TouchableOpacity, View } from "react-native";
 import { useAsyncEffect } from "rooks";
-import { SinglesigWallet } from "libs/sdk/src/data-structures/singlesig-wallet";
+import invariant from "tiny-invariant";
 
 import * as A from "./api-types";
-import * as R from "ramda";
 import { useStore } from "../../../contexts";
 import { isSmallScreenNumber } from "../../../helpers";
 import { IconButton } from "../../buttons";
 import { OnboardingScreenContainer } from "../../onboarding-screen-container";
 import { Text } from "../../typography";
 import { VerifyAndProceedButton } from "../../verify-and-proceed-button";
-import { ethers } from "ethers";
-import { MultisigWallet } from "libs/sdk/src/data-structures/multisig-wallet/implementation";
-import { Key, KeyType, MultisigKey as MultisigKeyFactory, ObservableMultisigKey, Serialized } from "libs/sdk/src/data-structures";
-import { MultisigKey } from "libs/sdk/src/data-structures/multisig-key/implementation";
-import { createObservableMultisigKey } from "libs/sdk/src/data-structures/multisig-key/factories";
-import invariant from "tiny-invariant";
-import { KeyRoute, RecoverFrom } from "@obi-wallet/common";
 
 export interface LookupProps {
   chainId: ChainId;
@@ -92,14 +106,14 @@ export const Lookup = observer(function Lookup({
             "Api-Version": "v1",
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "*"
+            "Access-Control-Allow-Headers": "*",
           },
         },
       );
       let proxyWallets;
       try {
         proxyWallets = (await response.json()) as A.SerializedProxyWallet[];
-      } catch(e) {
+      } catch (e) {
         console.log("Proxy wallet worker error. Response: " + response.text());
         throw new Error("error in proxy wallet worker response");
       }
@@ -255,15 +269,19 @@ export const Lookup = observer(function Lookup({
             if (selectedWallet) {
               let activeDeviceKey;
               unityStore.getDeviceId
-              ? activeDeviceKey = draft.value.getUsableKeyOfType(KeyType.Unity)
-              : activeDeviceKey = draft.value.getUsableKeyOfType(KeyType.Device)
+                ? (activeDeviceKey = draft.value.getUsableKeyOfType(
+                    KeyType.Unity,
+                  ))
+                : (activeDeviceKey = draft.value.getUsableKeyOfType(
+                    KeyType.Device,
+                  ));
 
               const usableKey = draft.value.getUsableKeyOfType(
                 recoverFrom === RecoverFrom.Email
                   ? KeyType.EmailRecovery
                   : KeyType.Phone,
               );
-              
+
               const recoveredPhoneKey = draft.value.getUsableKeyOfType(
                 KeyType.Phone,
               );
@@ -384,8 +402,9 @@ export const Lookup = observer(function Lookup({
                   {
                     homeAccountAddress: serializedData.proxyAddress.address,
                     evmSigningAddress: serializedData.evmSigningAddress,
-                    evmUserContractAddress: serializedData.evmUserContractAddress,
-                    ownerIndex: 0
+                    evmUserContractAddress:
+                      serializedData.evmUserContractAddress,
+                    ownerIndex: 0,
                   },
                   serializedData.chain,
                   serializedData.owner,
@@ -400,8 +419,10 @@ export const Lookup = observer(function Lookup({
                   demoMode: false,
                   skipInit: true,
                   evmSigningAddressOverride: serializedData.evmSigningAddress,
-                  evmUserContractAddressOverride: serializedData.evmUserContractAddress,
-                  homeAccountAddressOverride: serializedData.proxyAddress.address
+                  evmUserContractAddressOverride:
+                    serializedData.evmUserContractAddress,
+                  homeAccountAddressOverride:
+                    serializedData.proxyAddress.address,
                 });
 
                 /*navigation.navigate(OnboardingRoute.RecoverWallet, {

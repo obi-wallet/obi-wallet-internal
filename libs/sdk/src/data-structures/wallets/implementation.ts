@@ -137,16 +137,29 @@ export class Wallets {
         owner: definedOwnerMultisig,
         proxyAddress: {
           v: 1,
-          address: skipInit ? homeAccountAddressOverride! : response!.homeAccountAddress,
+          address: skipInit
+            ? homeAccountAddressOverride!
+            : response!.homeAccountAddress,
         },
         singlesigWallets: [],
         currentAccount: null,
-        evmSigningAddress: skipInit ? evmSigningAddressOverride! : response!.evmSigningAddress,
-        evmUserContractAddress: skipInit? evmUserContractAddressOverride! : response!.evmUserContractAddress
+        evmSigningAddress: skipInit
+          ? evmSigningAddressOverride!
+          : response!.evmSigningAddress,
+        evmUserContractAddress: skipInit
+          ? evmUserContractAddressOverride!
+          : response!.evmUserContractAddress,
       },
     });
-    wallet.setEvmSigningAddress(skipInit ? evmSigningAddressOverride! : response!.evmSigningAddress, true);
-    wallet.setEvmUserContractAddress(skipInit? evmUserContractAddressOverride! : response!.evmUserContractAddress);
+    wallet.setEvmSigningAddress(
+      skipInit ? evmSigningAddressOverride! : response!.evmSigningAddress,
+      true,
+    );
+    wallet.setEvmUserContractAddress(
+      skipInit
+        ? evmUserContractAddressOverride!
+        : response!.evmUserContractAddress,
+    );
     this.upsertWallet(wallet);
     this.setCurrentWallet(wallet);
     return response;

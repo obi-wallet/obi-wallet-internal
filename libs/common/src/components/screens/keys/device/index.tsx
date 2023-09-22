@@ -186,15 +186,17 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 marginTop: 79,
               }}
             >
-              { unityStore.getDeviceId
-              ? <FormattedMessage
-                id = "onboarding4.authyourkeys.unity"
-                defaultMessage="Create a Gaming Device Key"
-              />
-              : <FormattedMessage
-              id = "onboarding4.authyourkeys"
-              defaultMessage="Create a Device Key"
-              /> }
+              {unityStore.getDeviceId ? (
+                <FormattedMessage
+                  id="onboarding4.authyourkeys.unity"
+                  defaultMessage="Create a Gaming Device Key"
+                />
+              ) : (
+                <FormattedMessage
+                  id="onboarding4.authyourkeys"
+                  defaultMessage="Create a Device Key"
+                />
+              )}
             </Text>
             <Text
               style={{
@@ -218,7 +220,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 label={intl.formatMessage({
                   id: unityStore.getDeviceId
                     ? "onboarding4.biometrics.unitybutton"
-                    : "onboarding4.biometrics.button"
+                    : "onboarding4.biometrics.button",
                 })}
                 flavor="primary"
                 onPress={async () => {

@@ -17,7 +17,7 @@ export const secretJsChains = {
     },
     currentCodeIds: {
       userAccount: 135,
-      userEntry: 1209
+      userEntry: 1209,
     },
     // TODO: should get these from account creator directly?
     userAccount: {
