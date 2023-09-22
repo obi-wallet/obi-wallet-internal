@@ -1,12 +1,11 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { create, get } from "@github/webauthn-json";
 import type { CredentialDeviceType } from "@simplewebauthn/typescript-types";
-import { SecretNetworkClient, pubkeyToAddress } from "secretjs";
+import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { getBiometricsPrivateKey } from "./legacy";
 import { Secp256k1KeyPair } from "./sec256k1";
-import { secretJsChains } from "../chains/secret-js";
 import { KeySubclassTypeMapping, KeyType } from "../data-structures/key";
 import { Secp256k1PrivateKeySigner } from "../signers/sec256k1-private-key";
 

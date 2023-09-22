@@ -1,5 +1,11 @@
 import { useTheme } from "@emotion/react";
-import { KeyType, MultisigKey, Sdk, Secp256k1KeyPair, secretJsChains } from "@obi-wallet/sdk";
+import {
+  KeyType,
+  MultisigKey,
+  Sdk,
+  Secp256k1KeyPair,
+  secretJsChains,
+} from "@obi-wallet/sdk";
 import { getOrCreateDeviceKeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -103,7 +109,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
           method: "POST",
           body: JSON.stringify({
             homeChainId: "secret-4",
-            address
+            address,
           }),
         });
       }
@@ -263,7 +269,10 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                     console.log("unity device id obtained");
                     draft.value.setUnityKey(unityStore.getDeviceId);
                     // here check if new user or not?
-                    fundKeyIfZero(draft.value.getUsableKeyOfType(KeyType.Unity)?.publicKey.value);
+                    fundKeyIfZero(
+                      draft.value.getUsableKeyOfType(KeyType.Unity)?.publicKey
+                        .value,
+                    );
                     onSubmit(undefined);
                   } else if (scannedBiometrics) {
                     onSubmit(undefined);

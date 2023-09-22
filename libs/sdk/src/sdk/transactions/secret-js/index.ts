@@ -148,7 +148,7 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
       );
       const { raw, hash, eth } = checkMessages[0];
 
-      const type = raw ? "raw" : (hash ? "hash" : "eth");
+      const type = raw ? "raw" : hash ? "hash" : "eth";
       const value = raw || hash || eth;
 
       const messages = [{ type, value }];

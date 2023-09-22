@@ -135,9 +135,6 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   const [emailRecoveryLink, setEmailRecoveryLink] = useState<
     string | undefined
   >(undefined);
-  const [emailPublicKey, setEmailPublicKey] = useState<string | undefined>(
-    undefined,
-  );
   const [copied, setCopied] = useState<boolean>(false);
 
   useEffect(() => {
@@ -167,7 +164,6 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
           console.log(
             "encrypted private key for email link: " + emailRecoveryLinkString,
           );
-          setEmailPublicKey(emailRecoveryLinkPubkey);
           setEmailRecoveryLink(emailRecoveryLinkString);
           setPublicKey(publicKey.value);
         },

@@ -1,31 +1,22 @@
+/* eslint-disable @nx/enforce-module-boundaries */
 import { useTheme } from "@emotion/react";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { KeyRoute, RecoverFrom } from "@obi-wallet/common";
-import {
-  Chain,
-  ChainId,
-  GatekeeperConfig,
-  ObservableKey,
-  SecretJsClient,
-  createGatekeeperConfig,
-  secretJsChains,
-} from "@obi-wallet/sdk";
-import { ethers } from "ethers";
+import { RecoverFrom } from "@obi-wallet/common";
+import { Chain, ChainId } from "@obi-wallet/sdk";
 import {
   Key,
   KeyType,
-  MultisigKey as MultisigKeyFactory,
   ObservableMultisigKey,
   Serialized,
 } from "libs/sdk/src/data-structures";
-import { createObservableMultisigKey } from "libs/sdk/src/data-structures/multisig-key/factories";
-import { MultisigKey } from "libs/sdk/src/data-structures/multisig-key/implementation";
+
+import { MultisigKey } from "/sdk/src/data-structures/multisig-key/implementation";
+
 import { MultisigWallet } from "libs/sdk/src/data-structures/multisig-wallet/implementation";
-import { SinglesigWallet } from "libs/sdk/src/data-structures/singlesig-wallet";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { useState } from "react";
@@ -59,6 +50,7 @@ export const Lookup = observer(function Lookup({
   onSelect,
   onCancel,
 }: LookupProps) {
+  const _onSelect = onSelect;
   const { chainStore, draftsStore, unityStore, walletsStore } = useStore();
   const [wallets, setWallets] = useState<A.SerializedProxyWallet[] | null>(
     null,
@@ -260,12 +252,6 @@ export const Lookup = observer(function Lookup({
         <VerifyAndProceedButton
           disabled={!selectedWallet}
           onPress={async () => {
-            const chain = secretJsChains["secret-4"];
-            const factories = {
-              MultisigKeyFactory,
-              SinglesigWallet,
-              createGatekeeperConfig,
-            };
             if (selectedWallet) {
               let activeDeviceKey;
               unityStore.getDeviceId
@@ -411,10 +397,9 @@ export const Lookup = observer(function Lookup({
                 );
 
                 draft.commit({ original: currentOwner });
-                const newOwner = draft.value;
                 draft.value.setDeviceKey(activeDeviceKey.payload);
                 console.log("recovered draft: " + JSON.stringify(draft.value));
-                const newWallet = await walletsStore.createWallet({
+                await walletsStore.createWallet({
                   multisigKey: draft.value,
                   demoMode: false,
                   skipInit: true,

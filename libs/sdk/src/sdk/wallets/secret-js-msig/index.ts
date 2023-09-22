@@ -33,17 +33,20 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
     } = multisigKey.setupDetails!;
     const chain = secretJsChains["secret-4"];
     console.log("Calling setup/first-update-owner to " + multisigKey.address);
-    console.log("At this point, keys are is: " + JSON.stringify(
-      multisigKey.keys.map(({ type, publicKey }) => {
-        if (!Object.values(KeyType).includes(type as KeyType)) {
-          throw new Error(`Invalid key type: ${type}`);
-        }
-        return {
-          type: type as KeyType,
-          publicKey,
-        }
-      }
-    )));
+    console.log(
+      "At this point, keys are is: " +
+        JSON.stringify(
+          multisigKey.keys.map(({ type, publicKey }) => {
+            if (!Object.values(KeyType).includes(type as KeyType)) {
+              throw new Error(`Invalid key type: ${type}`);
+            }
+            return {
+              type: type as KeyType,
+              publicKey,
+            };
+          }),
+        ),
+    );
     const proxyWallet: SerializedProxyWallet = {
       proxyAddress: {
         address: homeAccountAddress,
@@ -64,7 +67,7 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
         }),
       },
     };
-    const cloudflareResponse = await fetch(
+    const _cloudflareResponse = await fetch(
       `https://proxy-wallets.obiwallet.workers.dev/add`,
       // `http://127.0.0.1:8787/add`,
       {

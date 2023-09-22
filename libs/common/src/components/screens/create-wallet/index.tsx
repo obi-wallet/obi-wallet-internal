@@ -27,7 +27,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
     const { params } = route;
 
     const { draftsStore, walletsStore } = useStore();
-    
+
     const draft = draftsStore.get<MultisigKey>({
       id: params.draftId,
     });
@@ -47,7 +47,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
               multisigKey: draft.value,
               demoMode: params.demoMode,
             });
-          } catch(e) {
+          } catch (e) {
             console.log("Retrying after error: " + JSON.stringify(e));
             response = await walletsStore.createWallet({
               multisigKey: draft.value,

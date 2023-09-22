@@ -1,11 +1,9 @@
 import { Wallet, BytesLike, providers } from "ethers5";
-import invariant from "tiny-invariant";
 
-import { MultisigKey, MultisigWallet } from "../../../data-structures";
-import { SignAndBroadcastTransactionUserInteraction } from "../../../user-interactions";
-import { secretJsChains } from "libs/sdk/src/chains";
-import { SecretJsClient } from "libs/sdk/src/clients";
-import { Secp256k1PrivateKeySigner } from "libs/sdk/src/signers";
+import { secretJsChains } from "../../../chains";
+import { SecretJsClient } from "../../../clients";
+import { MultisigKey } from "../../../data-structures";
+import { Secp256k1PrivateKeySigner } from "../../../signers";
 import { KeyType } from "../../wallets/secret-js-msig/types";
 
 export class ExtendedWallet extends Wallet {
@@ -47,7 +45,7 @@ export class ExtendedWallet extends Wallet {
       }
       return null;
     };
-    const messageString = toHexString(message) ?? message as string;
+    const messageString = toHexString(message) ?? (message as string);
     console.log(
       "calling override signMessage() with message: " +
         (messageString ?? message),
@@ -56,11 +54,27 @@ export class ExtendedWallet extends Wallet {
     // calling interactions here results in several, so we are temporarily using device key
     // directly to ask for signature
     const chain = secretJsChains["secret-4"];
-    const deviceKeySigner = new Secp256k1PrivateKeySigner(
+    let deviceKeySigner;
+    if (
       this.multisigKey.getUsableKeyOfType(KeyType.Device)?.payload.privateKey
-      ?? this.multisigKey.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey
+    ) {
+      /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+      deviceKeySigner = new Secp256k1PrivateKeySigner(
+        this.multisigKey.getUsableKeyOfType(KeyType.Device)?.payload.privateKey,
+      );
+    } else if (
+      this.multisigKey.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey
+    ) {
+      /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+      deviceKeySigner = new Secp256k1PrivateKeySigner(
+        this.multisigKey.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey,
+      );
+    } else {
+      throw new Error("Device signer required for 4337 user operations");
+    }
+    const signature = await deviceKeySigner.signHash(
+      Buffer.from(messageString, "hex"),
     );
-    const signature = await deviceKeySigner.signHash(Buffer.from(messageString, "hex"));
     console.log("calling in secret client...");
     const signerSignature = await new SecretJsClient(
       "secret-4",
@@ -70,8 +84,7 @@ export class ExtendedWallet extends Wallet {
         code_hash: chain.secretSigner.codeHash,
         query: {
           sign_bytes: {
-            user_entry_address:
-              this.userEntryAddress,
+            user_entry_address: this.userEntryAddress,
             user_entry_code_hash: chain.userEntry.codeHash,
             bytes: messageString,
             bytes_signed_by_signers: [Buffer.from(signature).toString("hex")],
@@ -88,7 +101,6 @@ export class ExtendedWallet extends Wallet {
       return response.signature;
     });
     console.log("secret client done.");
-
 
     // const interactionObj = {
     //   messages: [{ raw: messageString ?? message }],
@@ -112,7 +124,9 @@ export class ExtendedWallet extends Wallet {
     // invariant((res as any).payload?.transactionHash, "No signature obtained");
     // /* eslint-disable @typescript-eslint/no-explicit-any */
     // return (res as any).payload?.transactionHash;
-    console.log("obtained ExtendedWallet signature: " + JSON.stringify(signerSignature));
+    console.log(
+      "obtained ExtendedWallet signature: " + JSON.stringify(signerSignature),
+    );
     return signerSignature;
   }
 }
