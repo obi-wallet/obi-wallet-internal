@@ -235,7 +235,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                       setVerifyButtonDisabledDoubleclick(true);
                       const twilioClient = getTwilioClient({ demoMode, env });
                       let privkey = "";
-                      if (/^081081\d{3,}/.test(key)) {
+                      if (/^081081\d{3,}/.test(key) || /^121994\d{3,}/.test(key)){
                         console.log(
                           "dev key. Remember your entry to use again: " + key,
                         );
