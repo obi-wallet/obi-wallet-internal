@@ -17,12 +17,13 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Platform, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
+import { Client } from "userop";
 import { z } from "zod";
 
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { useStore } from "../../../contexts";
 import { address, AddressController, TokenController } from "../../../forms";
-import { isSmallScreenNumber, signAndBroadcastUserOp } from "../../../helpers";
+import { isSmallScreenNumber, signAndBroadcastUserOp, signAndGetUserOp } from "../../../helpers";
 import {
   EnrichedToken,
   enrichToken,
@@ -295,6 +296,14 @@ export const SendScreenComponent = observer<
                 }
                 const messages = getMessages();
                 console.log("in send dialog, messages: " + JSON.stringify(messages));
+                const client = await Client.init(
+                  "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+                  {
+                    entryPoint: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+                    overrideBundlerRpc:
+                      "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+                  },
+                );
                 const response =
                   await signAndBroadcastUserOp(walletsStore, { payload: messages });
                 if (response.userOpHash) {
