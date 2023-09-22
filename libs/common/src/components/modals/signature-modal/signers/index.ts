@@ -35,7 +35,6 @@ export async function createUsableSigners({
     KeyType.Nfc,
     KeyType.Phone,
     KeyType.Unity,
-
   ];
   return (
     await Promise.all(
@@ -86,7 +85,7 @@ async function createUsableSigner({
       return new DeviceKeySigner(key);
     }
     case KeyType.EmailRecovery:
-      return new Secp256k1PrivateKeySigner(key.payload.privateKey);  
+      return new Secp256k1PrivateKeySigner(key.payload.privateKey);
     case KeyType.Nfc:
       return new NfcKeySigner({
         key,

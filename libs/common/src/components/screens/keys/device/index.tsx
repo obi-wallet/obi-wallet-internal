@@ -122,7 +122,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 
   async function scanBiometrics(
     create: boolean,
-    recoverFlow?: boolean
+    recoverFlow?: boolean,
   ): Promise<[boolean, boolean, Secp256k1KeyPair | undefined]> {
     if (!recoverFlow) {
       recoverFlow = false;
@@ -300,7 +300,8 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 }}
                 autoPress={Platform.OS === "ios"}
               />
-            ) : ( // not CreateWallet flow
+            ) : (
+              // not CreateWallet flow
               <AsyncButton
                 label={intl.formatMessage({
                   id: "onboarding4.ihaveadevicekey.button",
