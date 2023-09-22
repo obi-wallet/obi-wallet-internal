@@ -20802,6 +20802,7 @@ __metadata:
     prettier: ^3.0.1
     prettier-plugin-packagejson: ^2.4.5
     process: ^0.11.10
+    protobufjs: ^6.11.4
     ramda: ^0.29.0
     react: 18.2.0
     react-cosmos: ^5.7.2
@@ -22371,7 +22372,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:^6.11.2, protobufjs@npm:^6.11.3, protobufjs@npm:^6.8.8, protobufjs@npm:~6.11.2, protobufjs@npm:~6.11.3":
+"protobufjs@npm:^6.11.2, protobufjs@npm:^6.11.3, protobufjs@npm:^6.11.4, protobufjs@npm:^6.8.8, protobufjs@npm:~6.11.2, protobufjs@npm:~6.11.3":
   version: 6.11.4
   resolution: "protobufjs@npm:6.11.4"
   dependencies:

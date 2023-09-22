@@ -105,7 +105,7 @@
     "otplib": "^12.0.1",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
-    "protobuf": "^6.11.4",
+    "protobufjs": "^6.11.4",
     "ramda": "^0.29.0",
     "react": "18.2.0",
     "react-cosmos": "^5.7.2",
