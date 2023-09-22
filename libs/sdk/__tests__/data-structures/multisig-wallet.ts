@@ -16,6 +16,8 @@ describe("ObservableMultisigWallet", () => {
     data: {
       chain: "phoenix-1",
       gatekeeperConfig: createGatekeeperConfig().toJSON(),
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       owner: MultisigKey.create(undefined, "phoenix-1").toJSON(),
       proxyAddress: {
         v: 1,
