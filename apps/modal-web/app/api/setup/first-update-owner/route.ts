@@ -88,11 +88,12 @@ export async function POST(request: Request) {
   console.log(broadcastTransactionResult);
 
   if (!broadcastTransactionResult.success) {
-    return {
+    return NextResponse.json({
       ownerAddress: body.owner.address,
       homeAccountAddress: "TX FAILED",
       txResult: broadcastTransactionResult,
-    };
+      lenderIndex: 0,
+    });
   }
 
   const txResult = broadcastTransactionResult.rawResult as TxResponse;
