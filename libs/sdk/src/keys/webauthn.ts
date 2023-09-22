@@ -148,46 +148,6 @@ export async function getOrCreateDeviceKeyPair(
     const webauthnAddress = pubkeyToAddress(compressedPubkey);
     console.log("webauthn Signer address: " + webauthnAddress);
 
-    const stockClient = new SecretNetworkClient({
-      chainId: "secret-4",
-      url: secretJsChains["secret-4"].urls[0],
-    });
-    let balance = "";
-    try {
-      balance =
-        (
-          await stockClient.query.bank.balance({
-            address: webauthnAddress,
-            denom: "uscrt",
-          })
-        ).balance?.amount || "0";
-    } catch (e) {
-      balance = "0";
-    }
-    try {
-      if (balance === "0") {
-        const response = fetch("/api/lend", {
-          method: "POST",
-          body: JSON.stringify({
-            homeChainId: "secret-4",
-            address: webauthnAddress,
-          }),
-        });
-
-        return [
-          {
-            publicKey: {
-              type: "tendermint/PubKeySecp256k1",
-              value: webauthnSigner.publicKey.value,
-            },
-            privateKey: combinedPrivateKey,
-          },
-          true,
-        ];
-      }
-    } catch (e) {
-      console.error("Failed to fund webauthn signer", e);
-    }
     return [
       {
         publicKey: {
