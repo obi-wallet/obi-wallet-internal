@@ -53,6 +53,8 @@ export const PrettyMessage = observer<PrettyMessageProps>(
   function PrettyMessage({ message, chainId, hint, amount }) {
     return (
       <ChainIdContext.Provider value={chainId}>
+        { /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */ }
+        { /* @ts-ignore */ }
         <ErrorBoundary FallbackComponent={PrettyMessageUnknown}>
           <PrettyMessageUnsafe message={message} hint={hint} amount={amount} />
         </ErrorBoundary>
