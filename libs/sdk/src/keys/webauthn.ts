@@ -166,17 +166,13 @@ export async function getOrCreateDeviceKeyPair(
     }
     try {
       if (balance === "0") {
-        const response = await fetch("/api/lend", {
+        const response = fetch("/api/lend", {
           method: "POST",
           body: JSON.stringify({
             homeChainId: "secret-4",
             address: webauthnAddress,
           }),
         });
-
-        if (response.status !== 200) {
-          throw new Error("Failed to fund webauthn signer");
-        }
 
         return [
           {
