@@ -43,6 +43,9 @@ export class SecretJsMessages extends AbstractMessages<string> {
     if (R.has("raw", message)) {
       return MessageJson.parse(message);
     }
+    if (R.has("hash", message)) {
+      return MessageJson.parse(message);
+    }
     throw new Error("Unknown message");
   }
 
@@ -358,6 +361,8 @@ export class SecretJsMessages extends AbstractMessages<string> {
     newOwner: MultisigKey,
     newOwnerAddress: string,
     userAccountContractAddress: string,
+    evmUserContractAddress: string,
+    evmSigningAddress: string,
     sender: string,
   ): Message {
     const message = new MsgExecuteContract({
@@ -367,6 +372,8 @@ export class SecretJsMessages extends AbstractMessages<string> {
       msg: {
         first_update_owner: {
           first_owner: newOwnerAddress,
+          evm_contract_address: evmUserContractAddress,
+          evm_signing_address: evmSigningAddress,
           signers: {
             signers: this.getSigners(
               newOwner.keys as unknown as Array<{

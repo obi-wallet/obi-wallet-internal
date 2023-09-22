@@ -3,17 +3,21 @@ import { makeObservable } from "mobx";
 export class UnityStore {
   private static instance?: UnityStore;
 
-  protected _deviceId: string | undefined;
+  private _deviceId: string | undefined;
 
   constructor() {
     if (UnityStore.instance) {
       return UnityStore.instance;
     }
+    // prettier/lint likes to add _deviceID: true
+    // prettier-ignore
+    // eslint-disable-next-line mobx/exhaustive-make-observable
     makeObservable<UnityStore, "getDeviceId" | "setDeviceId">(this, {
       getDeviceId: true,
       setDeviceId: true,
     });
     UnityStore.instance = this;
+    this._deviceId = undefined;
   }
 
   public get getDeviceId() {

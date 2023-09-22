@@ -33,10 +33,12 @@ import { AbstractMessages } from "../abstract";
 
 export class CosmosSdkMessages extends AbstractMessages<string> {
   public override getFirstUpdateWalletMessage(
-    newOwner: MultisigKey,
-    newOwnerAddress: string,
-    userAccountContractAddress: string,
-    sender: string,
+    _newOwner: MultisigKey,
+    _newOwnerAddress: string,
+    _userAccountContractAddress: string,
+    _evmUserContractAddress: string,
+    _evmSigningAddress: string,
+    _sender: string,
   ): unknown {
     throw new Error("Method not implemented.");
   }
@@ -49,6 +51,9 @@ export class CosmosSdkMessages extends AbstractMessages<string> {
   public toJSON(message: Message): MessageJson & Msg.Amino {
     if (R.has("eth", message)) {
       return MessageJson.parse(message.eth) as MessageJson & Msg.Amino;
+    }
+    if (R.has("hash", message)) {
+      return MessageJson.parse(message.hash) as MessageJson & Msg.Amino;
     }
     if (R.has("osmo", message)) {
       return MessageJson.parse(message.osmo) as MessageJson & Msg.Amino;

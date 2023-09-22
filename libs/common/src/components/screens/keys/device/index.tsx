@@ -1,5 +1,11 @@
 import { useTheme } from "@emotion/react";
-import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
+import {
+  KeyType,
+  MultisigKey,
+  Sdk,
+  Secp256k1KeyPair,
+  secretJsChains,
+} from "@obi-wallet/sdk";
 import { getOrCreateDeviceKeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,6 +14,7 @@ import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Platform, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { pubkeyToAddress, SecretNetworkClient } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { useStore } from "../../../../contexts";
@@ -62,20 +69,54 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
 export interface DeviceKeyProps {
   draftId: string;
   demoMode: boolean;
-
   onSubmit(devicePubkey: Secp256k1KeyPair | undefined): void;
 }
 export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   draftId,
   demoMode,
   onSubmit,
+  flow,
 }) {
-  const { draftsStore } = useStore();
+  const { draftsStore, unityStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
   const queryClient = useQueryClient();
   const [scannedBiometrics, setScannedBiometrics] = useState(false);
   const intl = useIntl();
   const theme = useTheme();
+
+  async function fundKeyIfZero(pubkey: string): Promise<void> {
+    const address = pubkeyToAddress(Buffer.from(pubkey, "base64"), "secret");
+    console.log("fundKeyIfZero() for address: " + address);
+    const stockClient = new SecretNetworkClient({
+      chainId: "secret-4",
+      url: secretJsChains["secret-4"].urls[0],
+    });
+    let balance = "";
+    try {
+      balance =
+        (
+          await stockClient.query.bank.balance({
+            address,
+            denom: "uscrt",
+          })
+        ).balance?.amount || "0";
+    } catch (e) {
+      balance = "0";
+    }
+    try {
+      if (balance === "0") {
+        const _response = fetch("/api/lend", {
+          method: "POST",
+          body: JSON.stringify({
+            homeChainId: "secret-4",
+            address,
+          }),
+        });
+      }
+    } catch (e) {
+      console.error("Failed to fund webauthn signer", e);
+    }
+  }
 
   async function scanBiometrics(
     create: boolean,
@@ -86,7 +127,6 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         create,
         demoMode,
       );
-      console.log("draft id is " + draftId);
       console.log("setting device key...");
       draft.value.setDeviceKey(keyPair);
       console.log("device key set..");
@@ -187,10 +227,17 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 marginTop: 79,
               }}
             >
-              <FormattedMessage
-                id="onboarding4.authyourkeys"
-                defaultMessage="Authenticate Your Keys"
-              />
+              {unityStore.getDeviceId ? (
+                <FormattedMessage
+                  id="onboarding4.authyourkeys.unity"
+                  defaultMessage="Create a Gaming Device Key"
+                />
+              ) : (
+                <FormattedMessage
+                  id="onboarding4.authyourkeys"
+                  defaultMessage="Create a Device Key"
+                />
+              )}
             </Text>
             <Text
               style={{
@@ -202,53 +249,72 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
             >
               <FormattedMessage
                 id="onboarding4.authyourkeys.subtext"
-                defaultMessage="With Obi, your Device, iCloud, and phone number work as a multi-factor authenticator."
+                defaultMessage="With Obi, your Device, phone number, cloud, email, and more combine into a multi-factor authenticator."
               />
             </Text>
           </View>
           <View
             style={{ flex: 1, justifyContent: "flex-end", paddingBottom: 20 }}
           >
-            <AsyncButton
-              label={intl.formatMessage({
-                id: "onboarding4.biometrics.button",
-              })}
-              flavor="primary"
-              onPress={async () => {
-                if (scannedBiometrics) {
-                  onSubmit(undefined);
-                } else {
-                  const [success, _newUser, deviceKeypair] =
-                    await scanBiometrics(true);
-                  invariant(deviceKeypair, "could not get device keypair");
-                  console.log("Success is: ", success);
-                  if (success && Platform.OS !== "ios") {
-                    onSubmit(deviceKeypair);
+            {flow == KeyFlow.CreateWallet ? (
+              <AsyncButton
+                label={intl.formatMessage({
+                  id: unityStore.getDeviceId
+                    ? "onboarding4.biometrics.unitybutton"
+                    : "onboarding4.biometrics.button",
+                })}
+                flavor="primary"
+                onPress={async () => {
+                  if (unityStore.getDeviceId) {
+                    console.log("unity device id obtained");
+                    draft.value.setUnityKey(unityStore.getDeviceId);
+                    // here check if new user or not?
+                    fundKeyIfZero(
+                      draft.value.getUsableKeyOfType(KeyType.Unity)?.publicKey
+                        .value,
+                    );
+                    onSubmit(undefined);
+                  } else if (scannedBiometrics) {
+                    onSubmit(undefined);
+                  } else {
+                    const [success, _newUser, deviceKeypair] =
+                      await scanBiometrics(true);
+                    invariant(deviceKeypair, "could not get device keypair");
+                    fundKeyIfZero(deviceKeypair.publicKey.value);
+                    if (success && Platform.OS !== "ios") {
+                      onSubmit(deviceKeypair);
+                    }
                   }
-                }
-              }}
-              autoPress={Platform.OS === "ios"}
-            />
-            <AsyncButton
-              label={intl.formatMessage({
-                id: "onboarding4.ihaveadevicekey.button",
-              })}
-              flavor="primary"
-              onPress={async () => {
-                if (scannedBiometrics) {
-                  onSubmit(undefined);
-                } else {
-                  const [success, _newUser, deviceKeypair] =
-                    await scanBiometrics(false);
-                  invariant(deviceKeypair, "could not get device keypair");
-                  console.log("Success is: ", success);
-                  if (success && Platform.OS !== "ios") {
-                    onSubmit(deviceKeypair);
+                }}
+                autoPress={Platform.OS === "ios"}
+              />
+            ) : (
+              <AsyncButton
+                label={intl.formatMessage({
+                  id: "onboarding4.ihaveadevicekey.button",
+                })}
+                flavor="primary"
+                onPress={async () => {
+                  if (unityStore.getDeviceId) {
+                    // this should check for recovery
+                    console.log("unity device id obtained");
+                    draft.value.setUnityKey(unityStore.getDeviceId);
+                    onSubmit(undefined);
+                  } else if (scannedBiometrics) {
+                    onSubmit(undefined);
+                  } else {
+                    const [success, _newUser, deviceKeypair] =
+                      await scanBiometrics(false);
+                    invariant(deviceKeypair, "could not get device keypair");
+                    console.log("Success is: ", success);
+                    if (success && Platform.OS !== "ios") {
+                      onSubmit(deviceKeypair);
+                    }
                   }
-                }
-              }}
-              autoPress={Platform.OS === "ios"}
-            />
+                }}
+                autoPress={Platform.OS === "ios"}
+              />
+            )}
           </View>
         </KeyboardAwareScrollView>
       </SafeAreaView>

@@ -30,6 +30,7 @@ export async function createUsableSigners({
 }) {
   const possibleUsableKeys = [
     KeyType.Device,
+    KeyType.Unity,
     KeyType.Phone,
     KeyType.Nfc,
     KeyType.Cloud,
@@ -121,7 +122,9 @@ export class DeviceKeySigner extends Signer {
   }
 
   public async signHash(hash: Uint8Array) {
+    console.log("trying to signHash() in DeviceKeySigner");
     if (!this.key.payload.privateKey) {
+      // TODO: unity key check
       const isUVPAA =
         await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
       if (isUVPAA) {
@@ -130,7 +133,7 @@ export class DeviceKeySigner extends Signer {
         return new Secp256k1PrivateKeySigner(kp.privateKey).signHash(hash);
       } else {
         invariant(
-          this.key.type == KeyType.Device,
+          this.key.type === KeyType.Device,
           "trying to sign with unity key without private key",
         );
         const privateKey = await getDevicePrivateKey(this.key);

@@ -1,4 +1,9 @@
-import { Messages, MultisigKey, SecretJsClient, secretJsChains } from "@obi-wallet/sdk";
+import {
+  Messages,
+  MultisigKey,
+  SecretJsClient,
+  secretJsChains,
+} from "@obi-wallet/sdk";
 import { getFeeLender } from "apps/modal-web/src/fee-lender";
 import { NextResponse } from "next/server";
 import { MsgSend, TxResponse } from "secretjs";
@@ -11,6 +16,8 @@ export async function POST(request: Request) {
     owner: MultisigKey;
     ownerAddress: string;
     homeAccountAddress: string;
+    evmUserContractAddress: string;
+    evmSigningAddress: string;
     ownerIndex: number;
   } = await request.json();
 
@@ -55,15 +62,17 @@ export async function POST(request: Request) {
     user_account_code_hash: string;
   } = await client.withSecretNetworkClient(async (client) => {
     return await client.query.compute.queryContract({
-        contract_address: body.homeAccountAddress,
-        code_hash: chain.userEntry.codeHash,
-        query: { user_account_address: {}},
-    })
+      contract_address: body.homeAccountAddress,
+      code_hash: chain.userEntry.codeHash,
+      query: { user_account_address: {} },
+    });
   });
   const message = messagesSdk.getFirstUpdateWalletMessage(
     body.owner,
     body.ownerAddress,
     userAccountAddress.user_account_address,
+    body.evmUserContractAddress,
+    body.evmSigningAddress,
     wallet.address,
   );
   console.log(

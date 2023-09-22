@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     console.log(
       "EVM keypair with pubkey " + evmKeyPair.publicKey.value + " created",
     );
-    const { evmSignerAddress, evmUserContractAddress } =
+    const { evmSigningAddress, evmUserContractAddress } =
       await generateEthereumAddresses(evmKeyPair);
     console.log("EVM user contract address is " + evmUserContractAddress);
     const chainId = "secret-4";
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       publicKey: evmKeyPair.publicKey,
-      evmSignerAddress,
+      evmSigningAddress,
       evmUserContractAddress,
     });
   } catch (e) {

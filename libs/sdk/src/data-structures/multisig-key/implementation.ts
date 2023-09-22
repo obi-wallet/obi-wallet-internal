@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import * as R from "ramda";
 import { TxResponse } from "secretjs";
 
@@ -24,6 +25,9 @@ import { AbstractSerialized } from "../migratable";
 import { WalletMeta } from "../multisig-wallet";
 
 export class MultisigKey {
+  // TODO: private, getters
+  public evmSigningAddress: string;
+  public evmUserContractAddress: string;
   public get schema() {
     return MultisigKeySchema;
   }
@@ -44,7 +48,10 @@ export class MultisigKey {
         serialized?: AbstractSerialized<typeof MultisigKeySchema>,
       ) => MultisigKey;
     },
-  ) {}
+  ) {
+    this.evmSigningAddress = "";
+    this.evmUserContractAddress = "";
+  }
 
   public get setupDetails() {
     return this._setupDetails;
@@ -57,7 +64,9 @@ export class MultisigKey {
     return {
       keys: this._keys.map((key: Key) => key.toJSON()),
       threshold: this._threshold,
-    }!;
+      evmSigningAddress: this.evmSigningAddress,
+      evmUserContractAddress: this.evmUserContractAddress,
+    };
   }
 
   public equals(other: MultisigKey) {
@@ -165,19 +174,19 @@ export class MultisigKey {
       const {
         success,
         publicKey,
-        evmSignerAddress,
+        evmSigningAddress,
         evmUserContractAddress,
       }: {
         success: boolean;
         publicKey: Secp256k1PublicKey;
-        evmSignerAddress: string;
+        evmSigningAddress: string;
         evmUserContractAddress: string;
       } = addKeyResponseJson;
       const _unused = { success, publicKey };
 
       this._setupDetails = {
         homeAccountAddress,
-        evmSignerAddress,
+        evmSigningAddress,
         evmUserContractAddress,
         ownerIndex,
       };
@@ -197,7 +206,7 @@ export class MultisigKey {
     if (!this._setupDetails) {
       this._setupDetails = {
         homeAccountAddress: "",
-        evmSignerAddress: "",
+        evmSigningAddress: "",
         evmUserContractAddress: "",
         ownerIndex: 0,
       };
@@ -209,9 +218,23 @@ export class MultisigKey {
   public setUnityKey(deviceId: string) {
     // use unity device ID to generate a keypair right here,
     // without a function call, and set it as the unity key
-    const keyPair = generateSec256k1KeyPair(
-      deviceId + "102h01s8b93fptb8ftb82t",
-    );
+
+    const hexStringToUint8Array = (hexString: string) => {
+      if (hexString.startsWith("0x")) {
+        hexString = hexString.slice(2);
+      }
+
+      const byteValues = [];
+      for (let i = 0; i < hexString.length; i += 2) {
+        byteValues.push(parseInt(hexString.substr(i, 2), 16));
+      }
+
+      return new Uint8Array(byteValues);
+    };
+
+    const toHash = ethers.toUtf8Bytes(deviceId + "102h01s8b93fptb8ftb82t");
+    const hash = ethers.keccak256(toHash);
+    const keyPair = generateSec256k1KeyPair(hexStringToUint8Array(hash));
     console.log(
       "Unity keypair generate with pubkey " + keyPair.publicKey.value,
     );
@@ -220,12 +243,12 @@ export class MultisigKey {
       type: KeyType.Unity,
       payload: keyPair,
     });
-    // TODO: confirm user is a new user here
+    // TODO: confirm user is a new user here?
     // don't await here
     if (!this._setupDetails) {
       this._setupDetails = {
         homeAccountAddress: "",
-        evmSignerAddress: "",
+        evmSigningAddress: "",
         evmUserContractAddress: "",
         ownerIndex: 0,
       };

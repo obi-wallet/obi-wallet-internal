@@ -1,5 +1,4 @@
 import { randomBytes } from "crypto";
-import { keccak256 } from "ethers";
 import * as secp256k1 from "secp256k1";
 import { z } from "zod";
 
@@ -19,19 +18,15 @@ export interface Secp256k1KeyPair {
   privateKey: Sec256k1PrivateKey;
 }
 
-export function generateSec256k1KeyPair(base64Seed?: string): Secp256k1KeyPair {
+export function generateSec256k1KeyPair(
+  base64Seed?: Uint8Array,
+): Secp256k1KeyPair {
   // use base64Seed to create 32 random bytes
-  let privateKeyBuffer;
-  if (!base64Seed) {
-    privateKeyBuffer = randomBytes(32);
-  } else {
-    const seed = Buffer.from(base64Seed, "base64");
-    privateKeyBuffer = Buffer.from(keccak256(seed), "hex");
-  }
-  const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer);
+  const privateKeyU8 = base64Seed ?? randomBytes(32);
+  const publicKeyU8 = secp256k1.publicKeyCreate(privateKeyU8);
 
-  const privateKey = Buffer.from(privateKeyBuffer).toString("base64");
-  const publicKey = Buffer.from(publicKeyBuffer).toString("base64");
+  const privateKey = Buffer.from(privateKeyU8).toString("base64");
+  const publicKey = Buffer.from(publicKeyU8).toString("base64");
 
   return {
     privateKey,

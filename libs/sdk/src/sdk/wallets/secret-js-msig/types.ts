@@ -1,4 +1,16 @@
-import { KeyType, Secp256k1PublicKey } from "@obi-wallet/sdk";
+import { Secp256k1PublicKey } from "../../../../src/keys";
+
+export enum KeyType {
+  Device = "device",
+  Phone = "phone",
+  Social = "social",
+  Nfc = "nfc",
+  Cloud = "cloud",
+  Email = "email",
+  EmailRecovery = "email-recovery",
+  Unity = "unity",
+  ZAuth = "z-auth",
+}
 
 export interface SerializedPublicKey {
   type: string;

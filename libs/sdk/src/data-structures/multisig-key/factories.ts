@@ -19,6 +19,8 @@ export function createMultisigKey(
   serialized: AbstractMigratable<typeof MultisigKeySchema> = {
     keys: [],
     threshold: 1,
+    evmSigningAddress: "",
+    evmUserContractAddress: "",
   },
   factories = {
     Key,

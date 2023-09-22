@@ -7,6 +7,7 @@ import {
 } from "@obi-wallet/common";
 import { Config } from "@obi-wallet/config";
 import {
+  ExtendedWallet,
   KeyType,
   ObservableMultisigWallet,
   SignAndBroadcastTransactionUserInteraction,
@@ -35,7 +36,7 @@ import "./vuplex-polyfill.js";
 
 export interface EthereumAccount {
   publicKey: Secp256k1PublicKey;
-  evmSignerAddress: string;
+  evmSigningAddress: string;
   evmUserContractAddress: string;
 }
 
@@ -112,6 +113,7 @@ const MessageHandlers = observer(function MessageHandlers() {
               demoMode: store.walletsStore.currentWallet.isDemo,
               cancelable: true,
               walletMeta: store.walletsStore.currentWallet.meta,
+              multisigKey: store.walletsStore.currentWallet.owner,
             });
 
           /* const response = `0x${Buffer.from(
@@ -164,6 +166,15 @@ const MessageHandlers = observer(function MessageHandlers() {
           console.log("setting up client...");
           const client = await Client.init(
             "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+            {
+              entryPoint: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+              overrideBundlerRpc:
+                "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
+            },
+          );
+          invariant(
+            store.walletsStore.currentWallet.evmSigningAddress,
+            "no signing address provided",
           );
           invariant(
             store.walletsStore.currentWallet.evmSigningAddress,
@@ -190,7 +201,11 @@ const MessageHandlers = observer(function MessageHandlers() {
 
           invariant(data.payload[0].eth, "no user op inputted");
           console.log("in buildUserOperation()");
-          const ethTx = new EthTransaction(data.payload.eth!);
+          console.log(
+            "data.payload.eth is: " + JSON.stringify(data.payload[0].eth),
+          );
+          const ethTx = new EthTransaction(data.payload[0].eth!);
+
           const userOp: IUserOperation = await client.buildUserOperation(
             simpleAccount.execute(
               ethTx.contractAddress,
@@ -198,6 +213,7 @@ const MessageHandlers = observer(function MessageHandlers() {
               ethTx.getEncodedCallData(),
             ),
           );
+
           // signer contract should automatically prepend here
           const ctx: UserOperationMiddlewareCtx =
             new UserOperationMiddlewareCtx(
@@ -208,7 +224,7 @@ const MessageHandlers = observer(function MessageHandlers() {
           console.log("user op hash is: " + ctx.getUserOpHash());
 
           const interactionObj = {
-            messages: [{ raw: ctx.getUserOpHash() }],
+            messages: [{ hash: ctx.getUserOpHash() }],
             targetChainId: data.payload.targetChainId,
             cancelable: true,
             walletMeta: store.walletsStore.currentWallet.meta,
@@ -219,12 +235,37 @@ const MessageHandlers = observer(function MessageHandlers() {
             "interaction object is: " + JSON.stringify(interactionObj),
           );
 
-          const response =
+          const signatureResponse =
             await SignAndBroadcastTransactionUserInteraction.start({
               ...interactionObj,
               multisigKey: store.walletsStore.currentWallet.owner,
             });
 
+          let response;
+          console.log(
+            "changing old sig " +
+              userOp.signature +
+              " to new " +
+              /* eslint-disable @typescript-eslint/no-explicit-any */
+              (signatureResponse as any).payload?.transactionHash,
+          );
+          /* eslint-disable @typescript-eslint/no-explicit-any */
+          userOp.signature = (signatureResponse as any).payload
+            ?.transactionHash;
+          try {
+            response = await client.execUserOperation(userOp);
+          } catch (e) {
+            console.error(e);
+            // recovery bit workaround, as simple signer can't calculate it
+            const signature = userOp.signature as string;
+            userOp.signature = `${signature.substring(
+              0,
+              userOp.signature.length - 2,
+            )}1b`;
+            response = await client.execUserOperation(userOp);
+          }
+
+          console.log("full modal response: " + JSON.stringify(response));
           const message = {
             type: "@obi/sign-and-broadcast-transaction-response",
             payload: response,
