@@ -111,10 +111,10 @@ export class LegacyCosmosMessages extends AbstractMessages<
   }
 
   public getFirstUpdateWalletMessage(
-    newOwner: MultisigKey,
-    newOwnerAddress: string,
-    userAccountContractAddress: string,
-    sender: string,
+    _newOwner: MultisigKey,
+    _newOwnerAddress: string,
+    _userAccountContractAddress: string,
+    _sender: string,
   ): Message {
     notImplemented("getFirstUpdateWalletMessage not implemented for Cosmos");
     throw new Error("getFirstUpdateWalletMessage not implemented for Cosmos");

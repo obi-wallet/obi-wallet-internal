@@ -132,7 +132,7 @@ export const SignatureModalEthereumDemo =
             signature: undefined,
           });
         },
-        onError(error) {
+        onError(_error) {
           interaction.resolve({
             approved: false,
             // payload: {
