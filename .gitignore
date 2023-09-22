@@ -24,6 +24,7 @@ node_modules
 
 # IDE - VSCode
 .vscode/*
+*.vscode
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -109,14 +110,13 @@ GoogleService-Info.plist
 
 # Yarn
 .yarn/*
-!.yarn/cache
-!.yarn/patches
-!.yarn/plugins
+.yarn/cache
+.yarn/patches
+.yarn/plugins
 !.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+.yarn/sdks
+.yarn/versions
 
-.yarn
 
 apps/obi-mobile-e2e/artifacts
 

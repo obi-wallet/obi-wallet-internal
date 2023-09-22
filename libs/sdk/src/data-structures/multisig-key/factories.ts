@@ -6,17 +6,17 @@ import { ChainId } from "../../chains";
 import { Key, ObservableKey } from "../key";
 import { AbstractMigratable } from "../migratable";
 
+export type SetupMultisigKeyDetails = {
+  homeAccountAddress: string;
+  evmSignerAddress: string;
+  evmUserContractAddress: string;
+  ownerIndex: number;
+};
+
 export function createMultisigKey(
-  setupDetails:
-    | {
-        homeAccountAddress: string;
-        evmSigningAddress: string;
-        evmUserContractAddress: string;
-        ownerIndex: number;
-      }
-    | object,
+  setupDetails: SetupMultisigKeyDetails | undefined, // TODO: make it optional
   chain: ChainId,
-  migratable: AbstractMigratable<typeof MultisigKeySchema> = {
+  serialized: AbstractMigratable<typeof MultisigKeySchema> = {
     keys: [],
     threshold: 1,
     evmSigningAddress: "",
@@ -28,7 +28,7 @@ export function createMultisigKey(
   },
 ): MultisigKey {
   const { keys, threshold } =
-    MultisigKeySchema.migratableSchema.parse(migratable);
+    MultisigKeySchema.migratableSchema.parse(serialized);
   let keysMapped: Key[];
   try {
     keysMapped = keys.map((key) => factories.Key.create(key));
@@ -42,15 +42,7 @@ export function createMultisigKey(
 }
 
 export function createObservableMultisigKey(
-  setupDetails:
-    | {
-        homeAccountAddress: string;
-        evmSigningAddress: string;
-        evmUserContractAddress: string;
-        ownerIndex: number;
-      }
-    // I know, I know... TODO
-    | object,
+  setupDetails: SetupMultisigKeyDetails | undefined,
   chain: ChainId,
   migratable?: AbstractMigratable<typeof MultisigKeySchema>,
 ) {

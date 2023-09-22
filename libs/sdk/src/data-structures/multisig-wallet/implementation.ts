@@ -58,7 +58,7 @@ export class MultisigWallet {
       type: this._isDemo ? "multisig-demo" : "multisig",
       data: {
         chain: this._chainId,
-        owner: this._owner.toJSON(),
+        owner: this._owner.toJSON()!,
         proxyAddress: {
           v: 1,
           address: this._proxyAddress,

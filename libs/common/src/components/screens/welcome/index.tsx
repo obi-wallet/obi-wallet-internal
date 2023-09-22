@@ -105,7 +105,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
 
     function onRecover() {
       const newMultisigKey = ObservableMultisigKey.create(
-        {},
+        undefined,
         chainStore.currentChain,
       );
       const draftId = draftsStore.create({
@@ -120,6 +120,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
 
     function onEnterDemoMode() {
       const newMultisigKey = ObservableMultisigKey.create(
+        undefined,
         chainStore.currentChain,
       );
       const draftId = draftsStore.create({

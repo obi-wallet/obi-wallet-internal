@@ -123,7 +123,7 @@ export class Wallets {
     console.log(
       "ownerMultisig in createWallet() is " + JSON.stringify(ownerMultisig),
     );
-    invariant(Object.keys(ownerMultisig).length !== 0, "empty ownerMultisig");
+    invariant(Object.keys(ownerMultisig!).length !== 0, "empty ownerMultisig");
     const definedOwnerMultisig: AbstractSerialized<typeof MultisigKeySchema> =
       ownerMultisig as AbstractSerialized<typeof MultisigKeySchema>;
     console.log(

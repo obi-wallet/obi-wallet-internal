@@ -7,10 +7,10 @@ import { Secp256k1PrivateKeySigner } from "../../../signers";
 import { KeyType } from "../../wallets/secret-js-msig/types";
 
 export class ExtendedWallet extends Wallet {
-  public override provider: providers.JsonRpcProvider;
-  private signingAddress: string;
-  private multisigKey: MultisigKey;
-  private userEntryAddress: string;
+  public override provider!: providers.JsonRpcProvider;
+  private readonly signingAddress: string;
+  private readonly multisigKey: MultisigKey;
+  private readonly userEntryAddress: string;
 
   constructor(
     address: string,

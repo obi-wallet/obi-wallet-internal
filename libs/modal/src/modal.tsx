@@ -13,6 +13,7 @@ import {
   SignAndBroadcastTransactionUserInteraction,
   createGatekeeperConfig,
   Secp256k1PublicKey,
+  ExtendedWallet,
 } from "@obi-wallet/sdk";
 import { ethers } from "ethers";
 import * as ethers5 from "ethers5";
@@ -170,6 +171,10 @@ const MessageHandlers = observer(function MessageHandlers() {
               overrideBundlerRpc:
                 "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
             },
+          );
+          invariant(
+            store.walletsStore.currentWallet.evmSigningAddress,
+            "no signing address provided",
           );
           invariant(
             store.walletsStore.currentWallet.evmSigningAddress,

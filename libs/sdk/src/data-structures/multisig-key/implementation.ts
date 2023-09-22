@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import * as R from "ramda";
 import { TxResponse } from "secretjs";
 
+import { SetupMultisigKeyDetails } from "./factories";
 import { MultisigKeySchema } from "./schema";
 import { ChainId, secretJsChains } from "../../chains";
 import {
@@ -35,33 +36,16 @@ export class MultisigKey {
     // async account creation returns some values;
     // they're stored here so they can be ready for
     // the actual "Create Wallet" button
-    protected _setupDetails:
-      | {
-          homeAccountAddress: string;
-          evmSigningAddress: string;
-          evmUserContractAddress: string;
-          ownerIndex: number;
-        }
-      | undefined,
+    protected _setupDetails: SetupMultisigKeyDetails | undefined,
     protected _chainId: ChainId,
     protected _keys: Key[],
     protected _threshold: number,
     protected _factories: {
       Key: AbstractDataStructure<Key, typeof KeySchema>;
       createMultisigKey: (
-        setupDetails:
-          | {
-              homeAccountAddress: string;
-              evmSigningAddress: string;
-              evmUserContractAddress: string;
-              ownerIndex: number;
-            }
-          | undefined,
+        setupDetails: SetupMultisigKeyDetails | undefined,
         chain: ChainId,
-        serialized:
-          | AbstractSerialized<typeof MultisigKeySchema>
-          // I know, I know... TODO
-          | object,
+        serialized?: AbstractSerialized<typeof MultisigKeySchema>,
       ) => MultisigKey;
     },
   ) {
@@ -73,15 +57,12 @@ export class MultisigKey {
     return this._setupDetails;
   }
 
-  public toJSON():
-    | AbstractSerialized<typeof MultisigKeySchema>
-    // I know, I know... TODO
-    | object {
+  public toJSON(): AbstractSerialized<typeof MultisigKeySchema> | undefined {
     if (!this._keys) {
-      return {};
+      return;
     }
     return {
-      keys: this._keys.map((key) => key.toJSON()),
+      keys: this._keys.map((key: Key) => key.toJSON()),
       threshold: this._threshold,
       evmSigningAddress: this.evmSigningAddress,
       evmUserContractAddress: this.evmUserContractAddress,
