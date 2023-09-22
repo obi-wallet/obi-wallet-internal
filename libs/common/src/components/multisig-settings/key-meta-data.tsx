@@ -37,9 +37,12 @@ export function useKeyMetaData() {
       Icon: ComponentType<SvgProps>;
     }
   > = {
-    [KeyType.Cloud]: {
-      label: "Cloud Key",
-      Icon: CloudKeyIcon,
+    [KeyType.Unity]: {
+      label: intl.formatMessage({
+        id: "settings.multisig.option.unitykey",
+        defaultMessage: "Game Install Key",
+      }),
+      Icon: ZtxPlatformRecoveryIcon,
     },
     [KeyType.Device]: {
       label: intl.formatMessage({
@@ -47,6 +50,10 @@ export function useKeyMetaData() {
         defaultMessage: "Biometrics Key",
       }),
       Icon: DeviceKeyIcon,
+    },
+    [KeyType.Cloud]: {
+      label: "Cloud Key",
+      Icon: CloudKeyIcon,
     },
     [KeyType.Email]: {
       label: intl.formatMessage({
@@ -83,13 +90,6 @@ export function useKeyMetaData() {
       Icon: configStore.config.ethereumBalances
         ? ZtxPlatformRecoveryIcon
         : SocialKeyIcon,
-    },
-    [KeyType.Unity]: {
-      label: intl.formatMessage({
-        id: "settings.multisig.option.unitykey",
-        defaultMessage: "Game Install Key",
-      }),
-      Icon: ZtxPlatformRecoveryIcon,
     },
     [KeyType.ZAuth]: {
       // TODO:
