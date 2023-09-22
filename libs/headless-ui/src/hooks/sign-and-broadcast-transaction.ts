@@ -154,7 +154,7 @@ export function useSignAndBroadcastTransaction({
                 user_entry_code_hash: chain.userEntry.codeHash,
                 bytes: (payload.messages[0] as any).raw
                   ? sha256(Buffer.from((payload.messages[0] as any).raw))
-                  : Buffer.from((payload.messages[0] as any).hash),
+                  : (payload.messages[0] as any).hash,
                 bytes_signed_by_signers: signed.map((s) =>
                   Buffer.from(s).toString("hex"),
                 ),
