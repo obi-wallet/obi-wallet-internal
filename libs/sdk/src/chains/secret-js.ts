@@ -47,9 +47,9 @@ export const secretJsChains = {
         "68ef41840240bc3ec23e4557f1a26809c1abfeacacb4de51d2466a5f1b91e0be",
     },
     secretSigner: {
-      address: "secret1myqfwq6uf4pakgm79sf3mq0t6hk5v9m7zrglru",
+      address: "secret1zaqttmn53lxntdlnsxg3yrhpeuhykm79ku78qr",
       codeHash:
-        "88e477e4a54327737a6079d10b308074d4ed481e5a3d4f1364efda9e349c2ce2",
+        "835b571ff3c671d00f85b54c8340e42d77b4f8d3a4b71f38813922ff8af2db9e",
     },
     currentCodeIds: {
       userAccount: 1230,

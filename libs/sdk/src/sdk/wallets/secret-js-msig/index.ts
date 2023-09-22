@@ -33,6 +33,17 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
     } = multisigKey.setupDetails!;
     const chain = secretJsChains["secret-4"];
     console.log("Calling setup/first-update-owner to " + multisigKey.address);
+    console.log("At this point, keys are is: " + JSON.stringify(
+      multisigKey.keys.map(({ type, publicKey }) => {
+        if (!Object.values(KeyType).includes(type as KeyType)) {
+          throw new Error(`Invalid key type: ${type}`);
+        }
+        return {
+          type: type as KeyType,
+          publicKey,
+        }
+      }
+    )));
     const proxyWallet: SerializedProxyWallet = {
       proxyAddress: {
         address: homeAccountAddress,

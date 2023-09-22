@@ -124,6 +124,7 @@ export class DeviceKeySigner extends Signer {
   public async signHash(hash: Uint8Array) {
     console.log("trying to signHash() in DeviceKeySigner");
     if (!this.key.payload.privateKey) {
+      // TODO: unity key check
       const isUVPAA =
         await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
       if (isUVPAA) {

@@ -141,6 +141,10 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     }
   }
 
+  public getSignHash() {
+    return this.signHash;
+  }
+
   public getSignMessage() {
     return this.signMessage;
   }
@@ -148,114 +152,6 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
   public getSignUserOpInput() {
     return this.signUserOpInput;
   }
-
-  // public async initUserOperation(
-  //   evmSigningAddress: string,
-  //   walletMeta: WalletMeta,
-  // ) {
-  //   console.log("setting up paymaster middleware...");
-  //   const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(
-  //     "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
-  //     { type: "payg" },
-  //   );
-  //   console.log("setting up client...");
-  //   const client = await Client.init(
-  //     "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
-  //   );
-  //   invariant(evmSigningAddress, "no signing address provided");
-  //   // This likely won't actually be used for network calls
-  //   console.log("setting up dummy provider...");
-  //   const dummyProvider = new ethers5.providers.JsonRpcProvider(
-  //     "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
-  //   );
-  //   console.log("setting up extendedSigner...");
-  //   const extendedSigner = new ExtendedWallet(
-  //     evmSigningAddress,
-  //     walletMeta,
-  //     dummyProvider,
-  //   );
-  //   console.log("building simpleAccount...");
-  //   const simpleAccount = await Presets.Builder.SimpleAccount.init(
-  //     extendedSigner,
-  //     "https://api.stackup.sh/v1/paymaster/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
-  //     { paymasterMiddleware },
-  //   );
-
-  //   const buildUserOperation = async () => {
-  //     invariant(this.signUserOpInput, "no user op inputted");
-  //     console.log("in buildUserOperation()");
-  //     const ethTx = new EthTransaction(this.signUserOpInput!);
-  //     const userOp: IUserOperation = await client.buildUserOperation(
-  //       simpleAccount.execute(
-  //         ethTx.contractAddress,
-  //         0,
-  //         ethTx.getEncodedCallData(),
-  //       ),
-  //     );
-  //     // signer contract should automatically prepend here
-  //     const ctx: UserOperationMiddlewareCtx = new UserOperationMiddlewareCtx(
-  //       userOp,
-  //       "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-  //       421613,
-  //     );
-  //     this.signMessage = ctx.getUserOpHash();
-  //     console.log("user op hash is: " + this.signMessage);
-
-  //     /*
-  //     const erc20 = new Contract(
-  //       body.token.id,
-  //       [
-  //         // Read-Only Functions
-  //         "function balanceOf(address owner) view returns (uint256)",
-  //         "function decimals() view returns (uint8)",
-  //         "function symbol() view returns (string)",
-
-  //         // Authenticated Functions
-  //         "function transfer(address to, uint amount) returns (bool)",
-  //         "function approve(address spender, uint amount) returns (bool)",
-
-  //         // Events
-  //         "event Transfer(address indexed from, address indexed to, uint amount)",
-  //       ] as const,
-  //       provider,
-  //     );
-  //     return await client.buildUserOperation(
-  //       simpleAccount.execute(
-  //         await erc20.getAddress(),
-  //         0,
-  //         erc20.interface.encodeFunctionData("transfer", [body.to, amount]),
-  //       ),
-  //     );
-  //     */
-  //   };
-
-  //   // todo: move this out to when button is clicked
-  //   /* eslint-disable @typescript-eslint/no-unused-vars */
-  //   async function handleUserOperation(userOperation: IUserOperation) {
-  //     try {
-  //       return await client.execUserOperation(userOperation);
-  //     } catch (e) {
-  //       // recovery bit workaround, as simple signer can't calculate it
-  //       const signature = userOperation.signature as string;
-  //       userOperation.signature = `${signature.substring(
-  //         0,
-  //         userOperation.signature.length - 2,
-  //       )}1b`;
-  //       return await client.execUserOperation(userOperation);
-  //     }
-  //   }
-
-  //   try {
-  //     console.log("building userOperation...");
-  //     const builtUserOperation = await buildUserOperation();
-  //     // const userOperation = await handleUserOperation(builtUserOperation);
-  //     console.log("built userOp:", builtUserOperation);
-  //     // const event = await userOperation.wait();
-  //     // console.log("event", event);
-  //   } catch (e) {
-  //     console.log("error", e);
-  //   }
-  // }
 
   protected get prefix() {
     return Chain.information(this.chainId).prefix;

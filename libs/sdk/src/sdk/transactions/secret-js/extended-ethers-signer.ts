@@ -57,7 +57,8 @@ export class ExtendedWallet extends Wallet {
     // directly to ask for signature
     const chain = secretJsChains["secret-4"];
     const deviceKeySigner = new Secp256k1PrivateKeySigner(
-      this.multisigKey.getUsableKeyOfType(KeyType.Device)?.payload.privateKey!
+      this.multisigKey.getUsableKeyOfType(KeyType.Device)?.payload.privateKey
+      ?? this.multisigKey.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey
     );
     const signature = await deviceKeySigner.signHash(Buffer.from(messageString, "hex"));
     console.log("calling in secret client...");
