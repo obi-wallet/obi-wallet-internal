@@ -60,14 +60,14 @@ export class ExtendedWallet extends Wallet {
     ) {
       /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
       deviceKeySigner = new Secp256k1PrivateKeySigner(
-        this.multisigKey.getUsableKeyOfType(KeyType.Device)?.payload.privateKey,
+        this.multisigKey.getUsableKeyOfType(KeyType.Device)?.payload.privateKey!,
       );
     } else if (
       this.multisigKey.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey
     ) {
       /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
       deviceKeySigner = new Secp256k1PrivateKeySigner(
-        this.multisigKey.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey,
+        this.multisigKey.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey!,
       );
     } else {
       throw new Error("Device signer required for 4337 user operations");

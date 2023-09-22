@@ -50,6 +50,8 @@ beforeEach(() => {
       gatekeeperConfig: createGatekeeperConfig().toJSON(),
       singlesigWallets: [],
       currentAccount: null,
+      evmSigningAddress: "",
+      evmUserContractAddress: "",
     },
   });
 });

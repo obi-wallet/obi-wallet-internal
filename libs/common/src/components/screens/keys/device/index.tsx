@@ -70,6 +70,7 @@ export interface DeviceKeyProps {
   draftId: string;
   demoMode: boolean;
   onSubmit(devicePubkey: Secp256k1KeyPair | undefined): void;
+  flow: KeyFlow,
 }
 export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   draftId,
@@ -269,9 +270,12 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                     console.log("unity device id obtained");
                     draft.value.setUnityKey(unityStore.getDeviceId);
                     // here check if new user or not?
+                    invariant(draft.value.getUsableKeyOfType(KeyType.Unity)?.publicKey
+                    .value, "unity device id, but no pubkey... set too late?");
                     fundKeyIfZero(
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
                       draft.value.getUsableKeyOfType(KeyType.Unity)?.publicKey
-                        .value,
+                        .value!,
                     );
                     onSubmit(undefined);
                   } else if (scannedBiometrics) {

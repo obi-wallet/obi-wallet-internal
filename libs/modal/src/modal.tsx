@@ -13,7 +13,6 @@ import {
   SignAndBroadcastTransactionUserInteraction,
   createGatekeeperConfig,
   Secp256k1PublicKey,
-  ExtendedWallet,
 } from "@obi-wallet/sdk";
 import { ethers } from "ethers";
 import * as ethers5 from "ethers5";
@@ -314,109 +313,112 @@ const MessageHandlers = observer(function MessageHandlers() {
           console.log(JSON.stringify(message));
           break;
         }
-        case "@obi/create-account": {
-          console.log("Handling create-account message");
-          const homeChainId =
-            data.payload.homeChainId ?? store.chainStore.currentChain;
-          const response = await fetch("/api/zauth/create-account", {
-            method: "POST",
-            body: JSON.stringify({
-              homeChainId,
-              accessToken: data.payload.accessToken,
-              refreshToken: data.payload.refreshToken,
-            }),
-          });
+          // case "@obi/create-account": {
+          //   // currently unused/broken - use button in modal
+          //   console.log("Handling create-account message");
+          //   const homeChainId =
+          //     data.payload.homeChainId ?? store.chainStore.currentChain;
+          //   const response = await fetch("/api/zauth/create-account", {
+          //     method: "POST",
+          //     body: JSON.stringify({
+          //       homeChainId,
+          //       accessToken: data.payload.accessToken,
+          //       refreshToken: data.payload.refreshToken,
+          //     }),
+          //   });
 
-          if (response.status !== 200) {
-            const message = {
-              type: "@obi/create-account-response",
-              payload: {
-                error: "invalid token",
-              },
-            };
-            if (event.source) {
-              event.source?.postMessage(
-                message,
-                // @ts-expect-error this is fine
-                "*",
-              );
-              console.log(JSON.stringify(message));
-            } else {
-              postMessage(message);
-              console.log(JSON.stringify(message));
-            }
-            return;
-          }
+          //   if (response.status !== 200) {
+          //     const message = {
+          //       type: "@obi/create-account-response",
+          //       payload: {
+          //         error: "invalid token",
+          //       },
+          //     };
+          //     if (event.source) {
+          //       event.source?.postMessage(
+          //         message,
+          //         // @ts-expect-error this is fine
+          //         "*",
+          //       );
+          //       console.log(JSON.stringify(message));
+          //     } else {
+          //       postMessage(message);
+          //       console.log(JSON.stringify(message));
+          //     }
+          //     return;
+          //   }
 
-          const { publicKey, proxyAddress, ethereumAccount, newUser } =
-            await response.json();
-          console.log("ethereumAccount in modal.tsx is: " + ethereumAccount);
-          let evmUserContractAddress: string;
-          try {
-            evmUserContractAddress = ethereumAccount.address;
-            if (!evmUserContractAddress) {
-              evmUserContractAddress = ethereumAccount.targetChain.evmAddress;
-            }
-          } catch (e) {
-            evmUserContractAddress = ethereumAccount.targetChain.evmAddress;
-          }
-          console.log(
-            "evm account is: " + JSON.stringify(evmUserContractAddress),
-          );
+          //   const { publicKey, proxyAddress, ethereumAccount, newUser } =
+          //     await response.json();
+          //   console.log("ethereumAccount in modal.tsx is: " + ethereumAccount);
+          //   let evmUserContractAddress: string;
+          //   try {
+          //     evmUserContractAddress = ethereumAccount.address;
+          //     if (!evmUserContractAddress) {
+          //       evmUserContractAddress = ethereumAccount.targetChain.evmAddress;
+          //     }
+          //   } catch (e) {
+          //     evmUserContractAddress = ethereumAccount.targetChain.evmAddress;
+          //   }
+          //   console.log(
+          //     "evm account is: " + JSON.stringify(evmUserContractAddress),
+          //   );
 
-          const wallet = ObservableMultisigWallet.create({
-            type: "multisig",
-            data: {
-              chain: homeChainId,
-              owner: {
-                keys: [
-                  {
-                    type: KeyType.ZAuth,
-                    payload: {
-                      publicKey,
-                      privateKey: "",
-                    },
-                  },
-                ],
-                threshold: 1,
-              },
-              proxyAddress: {
-                v: 1,
-                address: proxyAddress,
-              },
-              gatekeeperConfig: createGatekeeperConfig().toJSON(),
-              singlesigWallets: [],
-              currentAccount: null,
-            },
-          });
+          //   const wallet = ObservableMultisigWallet.create({
+          //     type: "multisig",
+          //     data: {
+          //       chain: homeChainId,
+          //       owner: {
+          //         keys: [
+          //           {
+          //             type: KeyType.ZAuth,
+          //             payload: {
+          //               publicKey,
+          //               privateKey: "",
+          //             },
+          //           },
+          //         ],
+          //         threshold: 1,
+          //         evmSigningAddress: "",
+          //         evmUserContractAddress,
+          //       },
+          //       proxyAddress: {
+          //         v: 1,
+          //         address: proxyAddress,
+          //       },
+          //       gatekeeperConfig: createGatekeeperConfig().toJSON(),
+          //       singlesigWallets: [],
+          //       currentAccount: null,
+          //     },
+          //   });
 
-          store.sdkRootStore.ethereumDemoStore.setEthereumAccount(
-            proxyAddress,
-            ethereumAccount,
-          );
+          //   store.sdkRootStore.ethereumDemoStore.setEthereumAccount(
+          //     proxyAddress,
+          //     ethereumAccount,
+          //   );
 
-          store.walletsStore.upsertWallet(wallet);
+          //   store.walletsStore.upsertWallet(wallet);
 
-          const message = {
-            type: "@obi/create-account-response",
-            payload: {
-              address: ethereumAccount.address,
-              newUser,
-            },
-          };
-          if (event.source) {
-            event.source?.postMessage(
-              message,
-              // @ts-expect-error this is fine
-              "*",
-            );
-            console.log(JSON.stringify(message));
-          } else {
-            postMessage(message);
-            console.log(JSON.stringify(message));
-          }
-          break;
-        }
+          // const message = {
+          //   type: "@obi/create-account-response",
+          //   payload: {
+          //     address: ethereumAccount.address,
+          //     newUser,
+          //   },
+          // };
+          // if (event.source) {
+          //   event.source?.postMessage(
+          //     message,
+          //     // @ts-expect-error this is fine
+          //     "*",
+          //   );
+          //   console.log(JSON.stringify(message));
+          // } else {
+          //   postMessage(message);
+          //   console.log(JSON.stringify(message));
+          // }
+          // break;
+        // }
       }
     }
 

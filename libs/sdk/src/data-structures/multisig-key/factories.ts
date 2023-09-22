@@ -8,7 +8,7 @@ import { AbstractMigratable } from "../migratable";
 
 export type SetupMultisigKeyDetails = {
   homeAccountAddress: string;
-  evmSignerAddress: string;
+  evmSigningAddress: string;
   evmUserContractAddress: string;
   ownerIndex: number;
 };

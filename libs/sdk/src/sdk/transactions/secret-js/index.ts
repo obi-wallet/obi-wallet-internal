@@ -162,12 +162,6 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
         multisigPublicKey,
       });
       console.log("partly prepared signer is " + JSON.stringify(signer));
-      if (checkMessages[0].eth) {
-        invariant(evmSigningAddress, "no evmSigningAddress provided");
-        invariant(walletMeta, "no walletMeta provided");
-        console.log("getSignUserOpInput is " + signer.getSignUserOpInput());
-        console.log("signMessage is " + signer.getSignMessage());
-      }
       return signer;
     } else {
       const encodeObjects = aminoMessages.map((aminoMessage) => {

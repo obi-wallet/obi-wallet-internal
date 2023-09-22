@@ -66,6 +66,8 @@ export class MultisigWallet {
         gatekeeperConfig: this._gatekeeperConfig.toJSON(),
         singlesigWallets: this._singlesigWallets.map((s) => s.toJSON()),
         currentAccount: this._currentAccount,
+        evmSigningAddress: this._evmSigningAddress,
+        evmUserContractAddress: this._evmUserContractAddress
       },
     };
   }

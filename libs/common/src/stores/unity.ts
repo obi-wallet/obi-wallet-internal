@@ -9,7 +9,7 @@ export class UnityStore {
     if (UnityStore.instance) {
       return UnityStore.instance;
     }
-    // prettier/lint likes to add _deviceID: true
+    // lint likes to add _deviceID: true
     // prettier-ignore
     // eslint-disable-next-line mobx/exhaustive-make-observable
     makeObservable<UnityStore, "getDeviceId" | "setDeviceId">(this, {
