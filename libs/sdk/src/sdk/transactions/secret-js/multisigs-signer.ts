@@ -110,27 +110,24 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     );
     this.signMessage = undefined;
     this.signHash = undefined;
-    if (
-      messages[0].type === "raw" ||
-      messages[0].type === "eth" ||
-      messages[0].type === "hash"
-    ) {
-      console.log(
-        "messages[0] raw/eth/hash passes with messages " +
-          JSON.stringify(messages[0]),
-      );
-      if (messages[0].type === "raw") {
-        this.signMessage = messages[0].value;
-      } else if (messages[0].type === "hash") {
-        this.signHash = messages[0].value;
-      } else {
-        console.log(
-          "setting signUserOpInput to " + JSON.stringify(messages[0].value),
-        );
-        this.signUserOpInput = messages[0].value as EthTxInput;
-        // also need to initUserOperation
-      }
-      this.signDoc = undefined;
+    const { type, value } = messages[0];
+
+    if (["raw", "eth", "hash"].includes(type)) {
+        console.log(`messages[0] ${type} passes with messages ${JSON.stringify({ type, value })}`);
+    
+        switch (type) {
+            case "raw":
+                this.signMessage = value;
+                break;
+            case "hash":
+                this.signHash = value;
+                break;
+            case "eth":
+                console.log(`setting signUserOpInput to ${JSON.stringify(value)}`);
+                this.signUserOpInput = value as EthTxInput;
+                break;
+        }
+        this.signDoc = undefined;
     } else {
       this.signDoc = {
         memo: "",

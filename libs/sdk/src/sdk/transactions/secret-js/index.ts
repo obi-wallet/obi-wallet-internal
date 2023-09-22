@@ -146,26 +146,19 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
       console.log(
         "checkMessages[0].hash is " + JSON.stringify(checkMessages[0].hash),
       );
+      const { raw, hash, eth } = checkMessages[0];
+
+      const type = raw ? "raw" : (hash ? "hash" : "eth");
+      const value = raw || hash || eth;
+
+      const messages = [{ type, value }];
       const signer = new SecretJsMultisigSigner({
         chainId: this.chainId,
         account,
         fee: this.client.defaultFee,
         encodeObjects: undefined,
         /* eslint-disable @typescript-eslint/no-explicit-any */
-        messages: [
-          {
-            type: checkMessages[0].raw
-              ? "raw"
-              : checkMessages[0].hash
-              ? "hash"
-              : "eth",
-            value: checkMessages[0].raw
-              ? checkMessages[0].raw
-              : checkMessages[0].hash
-              ? checkMessages[0].hash
-              : checkMessages[0].eth,
-          },
-        ],
+        messages,
         multisigPublicKey,
       });
       console.log("partly prepared signer is " + JSON.stringify(signer));
