@@ -168,6 +168,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
           );
           setEmailPublicKey(emailRecoveryLinkPubkey);
           setEmailRecoveryLink(emailRecoveryLinkString);
+          setPublicKey(publicKey.value);
         });
     }
     makeEmailRecoveryString();
@@ -184,32 +185,37 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   useAppStateEffect(
     (appState) => {
       if (appState === "active" && emailKey) {
-        Alert.alert(
-          copied ? "Confirm Recovery Link Saved" : "Confirm Email Sent",
-          copied
-          ? "Never enter your recovery link anywhere. Have you saved it?"
-          : "Never enter the one-time link you received anywhere unless you need it for recovery. Have you sent the email to yourself?",
-          [
-            {
-              text: "No",
-              style: "cancel",
-              onPress: (() => {
-                setCopied(false);
-              })
-            },
-            {
-              text: copied
-              ? "Yes, I've securely saved it"
-              : "Yes, I sent the email to myself",
-              onPress: onPressRef.current,
-            },
-          ],
-          { cancelable: false },
-        );
+        triggerAlert(copied);
       }
     },
     [emailKey, copied],
   );
+
+  function triggerAlert(copied: boolean) {
+    Alert.alert(
+      copied ? "Confirm Recovery Link Saved" : "Confirm Email Sent",
+      copied
+      ? "Never enter your recovery link anywhere. Have you saved it?"
+      : "Never enter the one-time link you received anywhere unless you need it for recovery. Have you sent the email to yourself?",
+      [
+        {
+          text: "No",
+          style: "cancel",
+          onPress: (() => {
+            setCopied(false);
+            setEmailKey(undefined);
+          })
+        },
+        {
+          text: copied
+          ? "Yes, I've securely saved it"
+          : "Yes, I sent the email to myself",
+          onPress: onPressRef.current,
+        },
+      ],
+      { cancelable: false },
+    );
+  };
 
   const isKeyboardVisible = useKeyboardVisible();
 
@@ -338,10 +344,6 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
               onPress={() => {
                 navigator.clipboard.writeText(emailRecoveryLink!);
                 setCopied(true);
-                setEmailKey({
-                  type: "tendermint/PubKeySecp256k1",
-                  value: publicKey!
-                });
               }}
             >
               <Text
@@ -385,10 +387,9 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
               )}
             </TouchableOpacity>
             <VerifyAndProceedButton
-              labelOverride={ copied? "Proceed" : "Send Email to Myself" }
-              disabled={!formState.isValid && !copied}
+              labelOverride={ "Send Email to Myself" }
+              disabled={!formState.isValid }
               onPress={handleSubmit(async (data) => {
-                if (!copied) {
                   try {
                     const URL = `mailto:${
                       data.email
@@ -408,12 +409,6 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                     console.error(e);
                     // noop
                   }
-                } else {
-                  setEmailKey({
-                    type: "tendermint/PubKeySecp256k1",
-                    value: publicKey!
-                  });
-                }
               })}
             />
             <VerifyAndProceedButton
