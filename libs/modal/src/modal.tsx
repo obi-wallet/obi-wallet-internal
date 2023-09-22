@@ -65,6 +65,19 @@ export const ModalWithoutProvider = observer(function ModalWithoutProvider() {
   );
 });
 
+function addEllipsisInMiddle(text: string, maxLength: number): string {
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  const removeCount = Math.ceil((text.length - maxLength) / 2);
+  const midPoint = Math.ceil(text.length / 2);
+  const start = text.slice(0, midPoint - removeCount);
+  const end = text.slice(-midPoint + removeCount);
+
+  return `${start}...${end}`;
+}
+
 const MessageHandlers = observer(function MessageHandlers() {
   const store = useStore();
   // TODO: More robust auto-broadcast handling
@@ -218,20 +231,23 @@ const MessageHandlers = observer(function MessageHandlers() {
               421613,
             );
           console.log("user op hash is: " + ctx.getUserOpHash());
+          const amount = formatUnits(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (data.payload[0].eth as any).params[1]
+              ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (data.payload[0].eth as any).params[1]
+              : 0,
+            18,
+          );
           const hint =
             ethTx.functionName === "transfer"
               ? "Transferring " +
-                formatUnits(
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (data.payload[0].eth as any).params[1]
-                    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      (data.payload[0].eth as any).params[1]
-                    : 0,
-                  18,
-                ) +
+                amount +
                 " ZTX to " +
-                ethTx.params[0]
-              : ethTx.functionName + " on contract " + ethTx.contractAddress;
+                addEllipsisInMiddle(ethTx.params[0] as string, 10)
+              : ethTx.functionName +
+                " on contract " +
+                addEllipsisInMiddle(ethTx.contractAddress, 10);
           console.log("attempting to send in hint: " + hint);
           const interactionObj = {
             messages: [{ hash: ctx.getUserOpHash() }],
@@ -243,6 +259,7 @@ const MessageHandlers = observer(function MessageHandlers() {
             // TODO: the modal can verify that the hint corresponds to the actual user op
             // which produces the hash
             hint,
+            amount,
           };
           console.log(
             "interaction object is: " + JSON.stringify(interactionObj),

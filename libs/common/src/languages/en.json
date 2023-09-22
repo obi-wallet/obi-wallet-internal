@@ -151,6 +151,7 @@
   "signature.modal.createobiwallet": "Create Obi Wallet",
   "signature.modal.value": "Value",
   "signature.modal.signatures": "Signatures",
+  "signature.modal.arbitrumop.heading": "Arbitrum User Operation",
   "signature.modal.unknownmessage.heading": "Unknown message",
   "signature.modal.unknownmessage.subheading": "Please check data tab",
   "signature.modal.initcontract": "Init Contract",

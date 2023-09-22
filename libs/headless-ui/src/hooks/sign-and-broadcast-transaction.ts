@@ -196,6 +196,8 @@ export function useSignAndBroadcastTransaction({
       interaction.resolve({ approved: false, signature: undefined });
     },
     broadcast,
+    hint: payload.hint,
+    amount: payload.amount,
   };
 
   if (wallet) {

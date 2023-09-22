@@ -46,14 +46,15 @@ export interface PrettyMessageProps {
   message: MessageJson;
   chainId: ChainId;
   hint?: string;
+  amount?: string;
 }
 
 export const PrettyMessage = observer<PrettyMessageProps>(
-  function PrettyMessage({ message, chainId, hint }) {
+  function PrettyMessage({ message, chainId, hint, amount }) {
     return (
       <ChainIdContext.Provider value={chainId}>
         <ErrorBoundary FallbackComponent={PrettyMessageUnknown}>
-          <PrettyMessageUnsafe message={message} hint={hint} />
+          <PrettyMessageUnsafe message={message} hint={hint} amount={amount} />
         </ErrorBoundary>
       </ChainIdContext.Provider>
     );
@@ -62,10 +63,11 @@ export const PrettyMessage = observer<PrettyMessageProps>(
 
 type PrettyMessageUnsafeProps = Omit<PrettyMessageProps, "chainId"> & {
   hint?: string;
+  amount?: string;
 };
 
 const PrettyMessageUnsafe = observer<PrettyMessageUnsafeProps>(
-  function PrettyMessageUnsafe({ message, hint }) {
+  function PrettyMessageUnsafe({ message, hint, amount }) {
     const type = R.has("type", message) ? message.type : null;
 
     switch (type) {
@@ -97,7 +99,7 @@ const PrettyMessageUnsafe = observer<PrettyMessageUnsafeProps>(
       }
       default:
         return hint ? (
-          <PrettyMessageUnknown hint={hint} />
+          <PrettyMessageUnknown hint={hint} amount={amount} />
         ) : (
           <PrettyMessageUnknown />
         );
@@ -443,10 +445,11 @@ const PrettyMessageExecuteContract = observer<
 
 type PrettyMessageUnknownProps = {
   hint?: string;
+  amount?: string;
 };
 
 const PrettyMessageUnknown = observer<PrettyMessageUnknownProps>(
-  function PrettyMessageUnknown({ hint }) {
+  function PrettyMessageUnknown({ hint, amount }) {
     const intl = useIntl();
 
     const defaultSubTitle = intl.formatMessage({
@@ -457,10 +460,18 @@ const PrettyMessageUnknown = observer<PrettyMessageUnknownProps>(
     return (
       <MessageElement
         title={intl.formatMessage({
-          id: "signature.modal.unknownmessage.heading",
+          id: hint
+            ? "signature.modal.arbitrumop.heading"
+            : "signature.modal.unknownmessage.heading",
           defaultMessage: hint ? "Arbitrum User Operation" : "Unknown message",
         })}
         subTitle={hint || defaultSubTitle}
+        coins={[
+          {
+            rawAmount: amount || "0",
+            id: "ZTX",
+          },
+        ]}
       />
     );
   },

@@ -38,6 +38,7 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
     data,
     safeSpendLimitExceeded,
     hint,
+    amount,
     ...props
   }) {
     const theme = useTheme();
@@ -105,6 +106,7 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
         messages={props.innerMessages}
         loading={loading}
         hint={hint}
+        amount={amount}
         disabled={!enoughSignatures}
         onConfirm={async () => {
           try {

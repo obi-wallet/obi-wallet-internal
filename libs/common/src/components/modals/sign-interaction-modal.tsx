@@ -12,6 +12,11 @@ export const SignInteractionModal = observer(function SignInteractionModal() {
   )[0];
 
   if (!interaction) return null;
+  if (interaction.payload.hint) {
+    console.log(
+      "hint in SignInteractionModal interaction: " + interaction.payload.hint,
+    );
+  }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore TODO: fix this

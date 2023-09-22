@@ -29,6 +29,7 @@ export interface ConfirmMessagesProps extends ModalProps {
   footer?: ReactNode;
   children?: ReactNode;
   hint?: string;
+  amount?: string;
 
   onCancel(): void;
 
@@ -51,6 +52,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
       children,
       isOnboarding,
       hint,
+      amount,
 
       ...props
     } = confirmProps;
@@ -247,6 +249,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
               messages={messagesJson}
               chainId={chainId}
               hint={hint}
+              amount={amount}
             />
           );
         case Tab.Data: {
@@ -319,6 +322,7 @@ interface MessageViewProps {
   messages: MessageJson[];
   chainId: ChainId;
   hint?: string;
+  amount?: string;
   isObi?: boolean;
 }
 
@@ -326,6 +330,7 @@ const MessageView = observer(function MessageView({
   messages,
   chainId,
   hint,
+  amount,
 }: MessageViewProps) {
   if (messages.length === 0) return null;
 
@@ -338,6 +343,7 @@ const MessageView = observer(function MessageView({
             message={message}
             chainId={chainId}
             hint={hint}
+            amount={amount}
           />
         );
       })}

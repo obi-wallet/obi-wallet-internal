@@ -19,6 +19,8 @@ interface DefaultInteractionPayload {
   readonly autoBroadcast?: boolean;
   readonly isLogin?: boolean;
   readonly targetChainId?: TargetChainId;
+  readonly hint?: string;
+  readonly amount?: string;
 }
 
 type WalletMetaOrMultisigKey =
