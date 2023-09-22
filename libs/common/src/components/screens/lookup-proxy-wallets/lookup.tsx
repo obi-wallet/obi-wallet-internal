@@ -6,14 +6,15 @@ import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { RecoverFrom } from "@obi-wallet/common";
-import { Chain, ChainId } from "@obi-wallet/sdk";
 import {
+  Chain,
+  ChainId,
   Key,
   KeyType,
   MultisigKey,
   ObservableMultisigKey,
   Serialized,
-} from "libs/sdk/src/data-structures";
+} from "@obi-wallet/sdk";
 import { MultisigWallet } from "libs/sdk/src/data-structures/multisig-wallet/implementation";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
