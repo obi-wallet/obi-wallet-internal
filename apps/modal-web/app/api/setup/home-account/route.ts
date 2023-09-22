@@ -36,12 +36,12 @@ export async function POST(request: Request) {
   console.log(broadcastTransactionResult);
 
   if (!broadcastTransactionResult.success) {
-    return {
+    return NextResponse.json({
       ownerAddress: wallet.address,
       homeAccountAddress: "TX FAILED",
       txResult: broadcastTransactionResult,
-      ownerIndex: lenderIndex,
-    };
+      ownerIndex: lenderIndex!,
+    });
   }
 
   const txResult = broadcastTransactionResult.rawResult as TxResponse;
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
       ownerAddress: wallet.address,
       homeAccountAddress,
       txResult,
-      ownerIndex: lenderIndex,
+      ownerIndex: lenderIndex!,
     });
   } catch (e) {
     return NextResponse.json({
