@@ -170,9 +170,7 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     if (this.signDoc) {
       return await offlineAminoSigner.signStdSignDoc(this.signDoc);
     } else if (this.signHash) {
-      return await offlineAminoSigner.signMessage(
-        Buffer.from(this.signHash!),
-      );
+      return await offlineAminoSigner.signMessage(Buffer.from(this.signHash!));
     } else {
       invariant(this.signMessage, "signMessage must be defined");
       return await offlineAminoSigner.signMessage(
