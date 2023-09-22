@@ -5,11 +5,11 @@ import {
   EnrichedToken as OriginalEnrichedToken,
   Message,
   Messages,
-  SignAndBroadcastTransactionUserInteraction,
   Token,
   tokenGivenBalances,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -19,9 +19,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { useStore } from "../../../contexts";
 import { address, AddressController, TokenController } from "../../../forms";
-import { isSmallScreenNumber } from "../../../helpers";
+import { isSmallScreenNumber, signAndBroadcastUserOp } from "../../../helpers";
 import {
   EnrichedToken,
   enrichToken,
@@ -108,7 +109,7 @@ export const SendScreenComponent = observer<
     visible?: boolean;
     success?: boolean;
   }>({});
-  const { chainStore, zauthStore } = useStore();
+  const { chainStore, walletsStore, zauthStore } = useStore();
   const intl = useIntl();
 
   return (
@@ -276,18 +277,11 @@ export const SendScreenComponent = observer<
                           functionName: "transfer",
                           // eslint-disable-next-line @typescript-eslint/no-explicit-any
                           params: [data.address, (data.token as any).rawAmount],
-                          tokens: {
-                            accessToken: zauthStore.currentTokens?.accessToken,
-                            refreshToken:
-                              zauthStore.currentTokens?.refreshToken,
-                          },
+                          tokens: {},
                         },
                         targetChainId: 421613,
                         homeChainId: "secret-4",
-                        tokens: {
-                          accessToken: zauthStore.currentTokens?.accessToken,
-                          refreshToken: zauthStore.currentTokens?.refreshToken,
-                        },
+                        tokens: {},
                       },
                     ];
                   }
@@ -299,19 +293,14 @@ export const SendScreenComponent = observer<
                     tokens: [data.token as unknown as Token],
                   });
                 }
-
+                const messages = getMessages();
+                console.log("in send dialog, messages: " + JSON.stringify(messages));
                 const response =
-                  await SignAndBroadcastTransactionUserInteraction.start({
-                    messages: getMessages(),
-                    demoMode: wallet.isDemo,
-                    cancelable: true,
-                    walletMeta: wallet.meta,
-                  });
-
-                if (response.approved) {
+                  await signAndBroadcastUserOp(walletsStore, { payload: messages });
+                if (response.userOpHash) {
                   setConfirmModalStatus({
                     visible: true,
-                    success: response.payload.success,
+                    success: true,
                   });
                 }
               })}
