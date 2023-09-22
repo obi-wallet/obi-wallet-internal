@@ -10,6 +10,7 @@ import {
   ZAuthKeySigner,
   getDevicePrivateKey,
   getOrCreateDeviceKeyPair,
+  CommunicationType,
 } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
@@ -29,6 +30,7 @@ export async function createUsableSigners({
 }) {
   const possibleUsableKeys = [
     KeyType.Device,
+    KeyType.Unity,
     KeyType.Phone,
     KeyType.Nfc,
     KeyType.Cloud,
@@ -75,9 +77,14 @@ async function createUsableSigner({
     case KeyType.ZAuth:
       return new ZAuthKeySigner(key);
     case KeyType.Device: {
+      console.log("switching on key type to KeyType.Device");
       if (!(await getDevicePrivateKey(key))) {
         return null;
       }
+      console.log("getDevicePrivateKey skipped/complete");
+      return new DeviceKeySigner(key);
+    }
+    case KeyType.Unity: {
       return new DeviceKeySigner(key);
     }
     case KeyType.Phone:
@@ -102,7 +109,11 @@ async function createUsableSigner({
 }
 
 export class DeviceKeySigner extends Signer {
-  public constructor(protected key: KeySubclassTypeMapping[KeyType.Device]) {
+  public constructor(
+    protected key:
+      | KeySubclassTypeMapping[KeyType.Device]
+      | KeySubclassTypeMapping[KeyType.Unity],
+  ) {
     super();
   }
 
@@ -111,16 +122,29 @@ export class DeviceKeySigner extends Signer {
   }
 
   public async signHash(hash: Uint8Array) {
-    const isUVPAA =
-      await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-    if (isUVPAA) {
-      const [kp, _] = await getOrCreateDeviceKeyPair(false, false);
-      invariant(kp, "device keypair not obtained");
-      return new Secp256k1PrivateKeySigner(kp.privateKey).signHash(hash);
+    console.log("trying to signHash() in DeviceKeySigner");
+    if (!this.key.payload.privateKey) {
+      // TODO: unity key check if both
+      const isUVPAA =
+        await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      if (isUVPAA) {
+        const [kp, _] = await getOrCreateDeviceKeyPair(false, false);
+        invariant(kp, "device keypair not obtained");
+        return new Secp256k1PrivateKeySigner(kp.privateKey).signHash(hash);
+      } else {
+        invariant(
+          this.key.type === KeyType.Device,
+          "trying to sign with unity key without private key",
+        );
+        const privateKey = await getDevicePrivateKey(this.key);
+        invariant(privateKey, "Expected private key to exist.");
+        return new Secp256k1PrivateKeySigner(privateKey).signHash(hash);
+      }
     } else {
-      const privateKey = await getDevicePrivateKey(this.key);
-      invariant(privateKey, "Expected private key to exist.");
-      return new Secp256k1PrivateKeySigner(privateKey).signHash(hash);
+      // unity or otherwise session-stored keypair
+      return new Secp256k1PrivateKeySigner(
+        this.key.payload.privateKey,
+      ).signHash(hash);
     }
   }
 }
@@ -157,16 +181,16 @@ export class PhoneKeySigner extends Signer {
 
   public async requestSignature({
     securityAnswer,
-    voice,
+    type,
   }: {
     securityAnswer: string;
-    voice: boolean;
+    type: CommunicationType;
   }) {
     await this.signer.requestSignature({
       chainId: this.chainId,
       securityAnswer,
       twilioClient: this.twilioClient,
-      voice,
+      type,
     });
   }
 

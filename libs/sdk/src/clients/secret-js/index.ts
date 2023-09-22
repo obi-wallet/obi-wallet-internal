@@ -1,3 +1,15 @@
+import { createWasmAminoConverters } from "@cosmjs/cosmwasm-stargate";
+import {
+  AminoTypes,
+  createAuthzAminoConverters,
+  createBankAminoConverters,
+  createDistributionAminoConverters,
+  createFeegrantAminoConverters,
+  createGovAminoConverters,
+  createIbcAminoConverters,
+  createStakingAminoConverters,
+  createVestingAminoConverters,
+} from "@cosmjs/stargate";
 import {
   BroadcastMode,
   fromBase64,
@@ -6,6 +18,8 @@ import {
   toBase64,
   TxOptions,
 } from "secretjs";
+import { StdFee } from "secretjs/dist/wallet_amino";
+import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { SecretJsChainId, secretJsChains } from "../../chains";
@@ -112,36 +126,57 @@ export class SecretJsClient extends AbstractClient {
     signedTransaction: SignedTransaction,
   ): Promise<BroadcastTransactionResult> {
     return await this.withSecretNetworkClient(async (client) => {
-      const { transactionHash } = await client.tx.broadcastSignedTx(
+      // TODO: need to do Sync/Async here
+      const broadcastMode = BroadcastMode.Block;
+      const txResponse = await client.tx.broadcastSignedTx(
         toBase64(signedTransaction),
         {
           ...this.defaultTxOptions,
-          broadcastMode: BroadcastMode.Sync,
-          waitForCommit: false,
+          broadcastMode: broadcastMode,
+          waitForCommit: true,
         },
       );
-      await new Promise((resolve) => {
-        setTimeout(resolve, 10_000);
-      });
-      const rawResult = await client.query.getTx(transactionHash);
-
-      if (!rawResult) {
-        const res = await client.tx.broadcastSignedTx(
-          toBase64(signedTransaction),
-          {
-            ...this.defaultTxOptions,
-            broadcastMode: BroadcastMode.Block,
-            waitForCommit: false,
-          },
-        );
-        return {
-          success: res.code === 0,
-          transactionHash: res.transactionHash,
-          rawLog: res.rawLog,
-          rawResult: res,
-        };
+      if (broadcastMode !== BroadcastMode.Block) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 10_000);
+        });
       }
+      console.warn("Broadcast response: " + JSON.stringify(txResponse));
+      let rawResult;
+      if (broadcastMode !== BroadcastMode.Block || !txResponse.rawLog) {
+        rawResult = await client.query.getTx(txResponse.transactionHash);
 
+        if (!rawResult) {
+          // tx might be in mempool, so try block
+          try {
+            const res = await client.tx.broadcastSignedTx(
+              toBase64(signedTransaction),
+              {
+                ...this.defaultTxOptions,
+                broadcastMode: BroadcastMode.Block,
+                waitForCommit: false,
+              },
+            );
+            if (!res.code) {
+              throw new Error("no res code");
+            }
+            return {
+              success: true,
+              transactionHash: res.transactionHash,
+              rawLog: res.rawLog,
+              rawResult: res,
+            };
+          } catch (e) {
+            await new Promise((resolve) => {
+              setTimeout(resolve, 5_000);
+            });
+            rawResult = await client.query.getTx(txResponse.transactionHash);
+          }
+        }
+      }
+      // TODO retry handling instead
+      rawResult = txResponse;
+      invariant(rawResult, "no tx response");
       return {
         success: rawResult.code === 0,
         transactionHash: rawResult.transactionHash,
@@ -151,8 +186,34 @@ export class SecretJsClient extends AbstractClient {
     });
   }
 
+  public get aminoTypes() {
+    return new AminoTypes({
+      ...createAuthzAminoConverters(),
+      ...createBankAminoConverters(),
+      ...createDistributionAminoConverters(),
+      ...createGovAminoConverters(),
+      ...createStakingAminoConverters(),
+      ...createIbcAminoConverters(),
+      ...createFeegrantAminoConverters(),
+      ...createVestingAminoConverters(),
+      ...createWasmAminoConverters(),
+    });
+  }
+
   protected get chain() {
     return secretJsChains[this.chainId];
+  }
+
+  public get defaultFee(): StdFee {
+    return {
+      amount: [
+        {
+          amount: "20000",
+          denom: "uscrt",
+        },
+      ],
+      gas: "2560000",
+    };
   }
 
   public get defaultTxOptions(): TxOptions {

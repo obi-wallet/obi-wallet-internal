@@ -45,22 +45,31 @@ function useChainId() {
 export interface PrettyMessageProps {
   message: MessageJson;
   chainId: ChainId;
+  hint?: string;
+  amount?: string;
 }
 
 export const PrettyMessage = observer<PrettyMessageProps>(
-  function PrettyMessage({ message, chainId }) {
+  function PrettyMessage({ message, chainId, hint, amount }) {
     return (
       <ChainIdContext.Provider value={chainId}>
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-ignore */}
         <ErrorBoundary FallbackComponent={PrettyMessageUnknown}>
-          <PrettyMessageUnsafe message={message} />
+          <PrettyMessageUnsafe message={message} hint={hint} amount={amount} />
         </ErrorBoundary>
       </ChainIdContext.Provider>
     );
   },
 );
 
-const PrettyMessageUnsafe = observer<Omit<PrettyMessageProps, "chainId">>(
-  function PrettyMessageUnsafe({ message }) {
+type PrettyMessageUnsafeProps = Omit<PrettyMessageProps, "chainId"> & {
+  hint?: string;
+  amount?: string;
+};
+
+const PrettyMessageUnsafe = observer<PrettyMessageUnsafeProps>(
+  function PrettyMessageUnsafe({ message, hint, amount }) {
     const type = R.has("type", message) ? message.type : null;
 
     switch (type) {
@@ -91,10 +100,15 @@ const PrettyMessageUnsafe = observer<Omit<PrettyMessageProps, "chainId">>(
         return <PrettyMessageWithdrawDelegatorReward {...msg} />;
       }
       default:
-        return <PrettyMessageUnknown />;
+        return hint ? (
+          <PrettyMessageUnknown hint={hint} amount={amount} />
+        ) : (
+          <PrettyMessageUnknown />
+        );
     }
   },
 );
+
 const PrettyMessageStaking = observer<
   (MsgDelegate.Amino | MsgUndelegate.Amino) & { label: string }
 >(function PrettyMessageStaking({ value, label }) {
@@ -431,21 +445,46 @@ const PrettyMessageExecuteContract = observer<
   }
 });
 
-const PrettyMessageUnknown = observer(function PrettyMessageUnknown() {
-  const intl = useIntl();
-  return (
-    <MessageElement
-      title={intl.formatMessage({
-        id: "signature.modal.unknownmessage.heading",
-        defaultMessage: "Unknown message",
-      })}
-      subTitle={intl.formatMessage({
-        id: "signature.modal.unknownmessage.subheading",
-        defaultMessage: "Please check data tab",
-      })}
-    />
-  );
-});
+type PrettyMessageUnknownProps = {
+  hint?: string;
+  amount?: string;
+};
+
+const PrettyMessageUnknown = observer<PrettyMessageUnknownProps>(
+  function PrettyMessageUnknown({ hint, amount }) {
+    const intl = useIntl();
+
+    const defaultSubTitle = intl.formatMessage({
+      id: "signature.modal.unknownmessage.subheading",
+      defaultMessage: "Please check data tab",
+    });
+
+    let rawAmount;
+    if (amount) {
+      rawAmount = (parseInt(amount!) * 1000000).toString();
+    } else {
+      rawAmount = undefined;
+    }
+    return (
+      <MessageElement
+        title={intl.formatMessage({
+          id: hint
+            ? "signature.modal.arbitrumop.heading"
+            : "signature.modal.unknownmessage.heading",
+          defaultMessage: hint ? "Arbitrum User Operation" : "Unknown message",
+        })}
+        subTitle={hint || defaultSubTitle}
+        coins={[
+          {
+            // legacy due to cosmos coins having 6 decimals
+            rawAmount: rawAmount || "0",
+            id: "ZTX",
+          },
+        ]}
+      />
+    );
+  },
+);
 
 interface MessageElementProps {
   title?: string;
@@ -505,8 +544,12 @@ const PrettyCoins = observer<PrettyTokensProps>(function PrettyTokens({
   const denom = configStore.config.ethereumBalances
     ? "0xf0F8FC7365C0c9F87189B6c8703e4719270A3318"
     : chainStore.currentChainInformation.denom;
+  console.log("tokens length is " + tokens?.length);
+  console.log("tokens is " + JSON.stringify(tokens));
   const coinsArray =
-    tokens && tokens.length > 0 ? tokens : [{ id: denom, rawAmount: "0" }];
+    tokens && tokens.length > 0
+      ? tokens
+      : [{ id: denom, rawAmount: tokens![0].rawAmount }];
   return (
     <View>
       {coinsArray.map((token) => {

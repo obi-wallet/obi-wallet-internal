@@ -6,7 +6,7 @@ import {
 // import { Signer, SigningKey, Wallet } from "ethers";
 import { HomeChain } from "apps/modal-web/src/db/schema";
 import { Signer, Wallet } from "ethers";
-import { cookies } from "next/headers";
+//import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 import { Client, IUserOperation, Presets } from "userop";
@@ -29,18 +29,17 @@ export async function POST(request: Request) {
     deviceKeyPair?: Secp256k1KeyPair;
   } = await request.json();
 
-  const accessToken =
-    cookies().get("accessToken")?.value ?? body.tokens.accessToken;
-  const refreshToken =
-    cookies().get("refreshToken")?.value ?? body.tokens.refreshToken;
-
-  const userId = accessToken ? await fetchUserId(accessToken) : null;
-
+  const accessToken = body.tokens.accessToken;
+  const refreshToken = body.tokens.refreshToken;
   let homeChain: HomeChain | undefined;
-  if (accessToken && refreshToken && userId) {
+  if (!body.deviceKeyPair?.privateKey && accessToken && refreshToken) {
+    const userId = await fetchUserId(accessToken);
+    console.log("in send op, access token is:" + accessToken);
     const UserModel = await connect();
+    invariant(userId, "User ID not received");
+    console.log("User id is: " + userId);
     const user = await UserModel.findOne({ userId });
-    const homeChain = user?.homeChains.get(body.homeChainId);
+    const homeChain = user?.homeChains.get("secret-4");
     if (!homeChain) {
       return NextResponse.json(
         {
@@ -50,7 +49,9 @@ export async function POST(request: Request) {
       );
     }
   } else {
-    console.warn("incoming device key: " + JSON.stringify(body.deviceKeyPair));
+    /* console.warn(
+      "incoming device key: " + JSON.stringify(body.deviceKeyPair?.privateKey),
+    ); */
     invariant(body.deviceKeyPair?.privateKey, "pass in device key");
     homeChain = {
       zAuthKeyPair: body.deviceKeyPair,

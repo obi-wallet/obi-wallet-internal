@@ -24,7 +24,11 @@ export function createMultisigWallet(
   const serialized = MultisigWalletSchema.migratableSchema.parse(migratable);
   return new MultisigWallet(
     serialized.data.chain,
-    factories.MultisigKey.create(serialized.data.chain, serialized.data.owner),
+    factories.MultisigKey.create(
+      undefined,
+      serialized.data.chain,
+      serialized.data.owner,
+    ),
     serialized.data.proxyAddress.address,
     "", // evm addresses currently added manually
     "",

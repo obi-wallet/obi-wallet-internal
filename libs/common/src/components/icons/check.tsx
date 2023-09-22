@@ -1,8 +1,17 @@
+import { useTheme } from "@emotion/react";
 import { observer } from "mobx-react-lite";
 import Svg, { SvgProps, Path } from "react-native-svg";
 
 export const CheckIcon = observer(function CheckIcon(props: SvgProps) {
-  return (
+  const theme = useTheme();
+  return theme.style === "ztx" ? (
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M9.54998 18L3.84998 12.3L5.27498 10.875L9.54998 15.15L18.725 5.97498L20.15 7.39998L9.54998 18Z"
+        fill="#CAA767"
+      />
+    </Svg>
+  ) : (
     <Svg width={16} height={17} fill="none" {...props}>
       <Path
         fill="#89F5C2"

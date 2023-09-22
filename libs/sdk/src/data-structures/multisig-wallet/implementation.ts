@@ -1,4 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Wallet } from "ethers";
 import * as R from "ramda";
 
@@ -57,7 +58,7 @@ export class MultisigWallet {
       type: this._isDemo ? "multisig-demo" : "multisig",
       data: {
         chain: this._chainId,
-        owner: this._owner.toJSON(),
+        owner: this._owner.toJSON()!,
         proxyAddress: {
           v: 1,
           address: this._proxyAddress,
@@ -65,6 +66,8 @@ export class MultisigWallet {
         gatekeeperConfig: this._gatekeeperConfig.toJSON(),
         singlesigWallets: this._singlesigWallets.map((s) => s.toJSON()),
         currentAccount: this._currentAccount,
+        evmSigningAddress: this._evmSigningAddress,
+        evmUserContractAddress: this._evmUserContractAddress,
       },
     };
   }
@@ -175,12 +178,17 @@ export class MultisigWallet {
   }
 
   /// Also sets contract address, via paymaster
-  public setEvmSigningAddress(base64PrivKey: string) {
-    const wallet = new Wallet(
-      Buffer.from(base64PrivKey, "base64").toString("hex"),
-    );
-    // convert this base64 string pubKey to an ethereum address
-    this._evmSigningAddress = wallet.address;
+  public setEvmSigningAddress(base64PrivKey: string, isAddress?: boolean) {
+    if (isAddress) {
+      this._evmSigningAddress = base64PrivKey;
+      return;
+    } else {
+      const wallet = new Wallet(
+        Buffer.from(base64PrivKey, "base64").toString("hex"),
+      );
+      // convert this base64 string pubKey to an ethereum address
+      this._evmSigningAddress = wallet.address;
+    }
   }
 
   public get owner() {
@@ -281,7 +289,7 @@ export class MultisigWallet {
       });
       const wrappedMessages = this.messages.wrapMessages({
         messages,
-        contract: this.proxyAddress,
+        userEntryContract: this.proxyAddress,
         sender: flexAccount.address,
       });
       const signedTransaction =

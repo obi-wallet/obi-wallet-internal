@@ -24,6 +24,8 @@ export interface MultisigConfirmMessagesProps
   numberOfSignatures: number;
   innerMessages: ConfirmMessagesProps["messages"];
   safeSpendLimitExceeded?: boolean;
+  hint?: string;
+  amount?: string;
   data: KeysListProps["data"];
   onConfirm(): Promise<void>;
 }
@@ -36,6 +38,8 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
     threshold,
     data,
     safeSpendLimitExceeded,
+    hint,
+    amount,
     ...props
   }) {
     const theme = useTheme();
@@ -96,12 +100,13 @@ export const MultisigConfirmMessages = observer<MultisigConfirmMessagesProps>(
         </Text>
       );
     };
-
     return (
       <ConfirmMessages
         {...props}
         messages={props.innerMessages}
         loading={loading}
+        hint={hint}
+        amount={amount}
         disabled={!enoughSignatures}
         onConfirm={async () => {
           try {

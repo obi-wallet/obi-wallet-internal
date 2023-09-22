@@ -179,13 +179,13 @@ export function parseNFCData(tag: TagEvent): string {
         if (data.status === "REPLAYED_OTP") {
           throw Error("Yubikey OTP already used");
         }
-        if (data.nonce != nonce) {
+        if (data.nonce !== nonce) {
           throw Error("Mismatched nonce in response");
         }
-        if (data.otp != parsed) {
+        if (data.otp !== parsed) {
           throw Error("Mismatched OTP in response");
         }
-        if (data.status != "OK") {
+        if (data.status !== "OK") {
           throw Error(
             "Instead of OK response from Yubikey, received: " + data.status,
           );

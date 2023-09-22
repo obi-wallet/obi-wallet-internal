@@ -22,6 +22,7 @@ import invariant from "tiny-invariant";
 import { Chain, CosmosChainId, TerraChainId } from "../../../chains";
 import {
   GatekeeperConfig,
+  Key,
   MultisigKey,
   MultisigWallet,
 } from "../../../data-structures";
@@ -30,7 +31,17 @@ import { CodeIds, Token } from "../../common";
 import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
 
-export class CosmosSdkMessages extends AbstractMessages {
+export class CosmosSdkMessages extends AbstractMessages<string> {
+  public override getFirstUpdateWalletMessage(
+    _newOwner: MultisigKey,
+    _newOwnerAddress: string,
+    _userAccountContractAddress: string,
+    _evmUserContractAddress: string,
+    _evmSigningAddress: string,
+    _sender: string,
+  ): unknown {
+    throw new Error("Method not implemented.");
+  }
   protected constructor(
     protected override chainId: CosmosChainId | TerraChainId,
   ) {
@@ -40,6 +51,9 @@ export class CosmosSdkMessages extends AbstractMessages {
   public toJSON(message: Message): MessageJson & Msg.Amino {
     if (R.has("eth", message)) {
       return MessageJson.parse(message.eth) as MessageJson & Msg.Amino;
+    }
+    if (R.has("hash", message)) {
+      return MessageJson.parse(message.hash) as MessageJson & Msg.Amino;
     }
     if (R.has("osmo", message)) {
       return MessageJson.parse(message.osmo) as MessageJson & Msg.Amino;
@@ -54,15 +68,18 @@ export class CosmosSdkMessages extends AbstractMessages {
   public wrapMessages({
     messages,
     sender,
-    contract,
+    userEntryContract,
+    userEntryCodeHash,
   }: {
     messages: Message[];
     sender: string;
-    contract: string;
+    userEntryContract: string;
+    userEntryCodeHash?: string;
   }): Message[] {
+    const _userEntryCodeHash = userEntryCodeHash;
     return messages.map((msg) => {
       if (R.has("osmo", msg)) {
-        return new MsgExecuteContract(sender, contract, {
+        return new MsgExecuteContract(sender, userEntryContract, {
           execute: {
             msg: Buffer.from(
               JSON.stringify({ osmo: this.wrapOsmoMessage(msg) }),
@@ -71,7 +88,7 @@ export class CosmosSdkMessages extends AbstractMessages {
         });
       }
 
-      return new MsgExecuteContract(sender, contract, {
+      return new MsgExecuteContract(sender, userEntryContract, {
         execute: {
           msg: Buffer.from(
             JSON.stringify({ legacy: this.wrapMessage(msg as Msg) }),
@@ -741,7 +758,16 @@ export class CosmosSdkMessages extends AbstractMessages {
     return new MsgWithdrawDelegatorReward(wallet.address, validator);
   }
 
-  public getCreateWalletMessage(owner: MultisigKey): Message {
+  public getCreateWalletMessage(...walletData: string[]): Message {
+    /**
+     * Replace with params if needed
+     * @param ownerAddress
+     * @param pubkeyBase64
+     * @param sender
+     */
+    const [_] = walletData;
+    throw new Error("not implemented");
+    /* const _sender = sender;
     const rawMessage = {
       new_account: {
         fee_debt: parseInt(this.chain.startingUsdDebt, 10),
@@ -751,7 +777,7 @@ export class CosmosSdkMessages extends AbstractMessages {
           session_keys: [],
           spendlimit_auths: [],
         },
-        owner: owner.address,
+        owner: ownerAddress,
         signers: {
           signers: this.getSigners(owner),
         },
@@ -763,20 +789,19 @@ export class CosmosSdkMessages extends AbstractMessages {
       owner.address,
       this.chain.accountCreatorAddress,
       rawMessage,
-    );
+    ); */
   }
 
   protected getSigners(multisigKey: MultisigKey) {
-    const addresses = multisigKey.keys.map((key) => {
-      return this.sdk.transactions.getAddressOfPublicKey(key.publicKey);
-    });
-    return R.zipWith(
-      (address, ty) => {
-        return { address, ty };
-      },
-      addresses,
-      multisigKey.signerTypes,
-    );
+    const addressAndTypes: Array<{ address: string; ty: string }> =
+      multisigKey.keys.map((key: Key) => {
+        return {
+          address: this.sdk.transactions.getAddressOfPublicKey(key.publicKey),
+          ty: key.type,
+          pubkeyBase64: key.publicKey.value,
+        };
+      });
+    return addressAndTypes;
   }
 
   protected get sdk() {

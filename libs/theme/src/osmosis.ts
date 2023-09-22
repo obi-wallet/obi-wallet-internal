@@ -27,17 +27,21 @@ export const osmosisTheme: CustomTheme = {
     ],
   },
   header: {
-    image: "/osmosis-header@2x.png",
+    image: { src: "/osmosis-header@2x.png" },
     width: 208,
     height: 41,
   },
   buttonFlavors: {
     primary: {
-      background: "linear-gradient(to right, #df05cb, #2c07e3)",
+      container: {
+        backgroundColor: "linear-gradient(to right, #df05cb, #2c07e3)",
+      },
     },
     cancel: {
-      borderWidth: 1,
-      borderColor: "#ffffff",
+      container: {
+        borderWidth: 1,
+        borderColor: "#ffffff",
+      },
     },
   },
   iconButtonFlavors: {

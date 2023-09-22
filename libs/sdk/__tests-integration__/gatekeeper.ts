@@ -42,7 +42,7 @@ beforeEach(() => {
     type: "multisig",
     data: {
       chain: chainId,
-      owner: MultisigKey.create(chainId).toJSON(),
+      owner: MultisigKey.create(undefined, chainId).toJSON()!,
       proxyAddress: {
         v: 1,
         address: proxyAddress,
@@ -50,6 +50,8 @@ beforeEach(() => {
       gatekeeperConfig: createGatekeeperConfig().toJSON(),
       singlesigWallets: [],
       currentAccount: null,
+      evmSigningAddress: "",
+      evmUserContractAddress: "",
     },
   });
 });

@@ -5,11 +5,11 @@ import {
   EnrichedToken as OriginalEnrichedToken,
   Message,
   Messages,
-  SignAndBroadcastTransactionUserInteraction,
   Token,
   tokenGivenBalances,
 } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -19,9 +19,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { useStore } from "../../../contexts";
 import { address, AddressController, TokenController } from "../../../forms";
-import { isSmallScreenNumber } from "../../../helpers";
+import { isSmallScreenNumber, signAndBroadcastUserOp } from "../../../helpers";
 import {
   EnrichedToken,
   enrichToken,
@@ -55,6 +56,8 @@ export const SendScreenComponent = observer<
     address: wallet.address,
     chainId: wallet.chainId,
   });
+
+  const theme = useTheme();
 
   const { control, formState, handleSubmit, getValues, setValue } = useForm({
     defaultValues: {
@@ -106,7 +109,7 @@ export const SendScreenComponent = observer<
     visible?: boolean;
     success?: boolean;
   }>({});
-  const { chainStore, zauthStore } = useStore();
+  const { chainStore, walletsStore } = useStore();
   const intl = useIntl();
 
   return (
@@ -115,12 +118,14 @@ export const SendScreenComponent = observer<
         <SafeAreaView
           style={{
             flex: 1,
-            justifyContent: "space-between",
-            paddingHorizontal: 20,
-            paddingVertical: Platform.select({
-              ios: isSmallScreenNumber(20, 20),
-              android: isSmallScreenNumber(30, 30),
-            }),
+            justifyContent:
+              theme.style === "ztx" ? "flex-start" : "space-between",
+            paddingHorizontal: 22,
+            paddingVertical:
+              Platform.select({
+                ios: isSmallScreenNumber(20, 20),
+                android: isSmallScreenNumber(30, 30),
+              }) || 36,
           }}
         >
           {confirmModalVisible.visible && confirmModalVisible.success ? (
@@ -147,19 +152,22 @@ export const SendScreenComponent = observer<
           <View>
             <View style={{ flexDirection: "row" }}>
               <Text
-                style={{
-                  width: "100%",
-                  textAlign: "center",
-                  color: "#F6F5FF",
-                  fontWeight: "600",
-                }}
+                style={[
+                  {
+                    width: "100%",
+                    textAlign: "center",
+                    color: "#F6F5FF",
+                    fontWeight: "600",
+                  },
+                  theme.send?.title,
+                ]}
               >
                 <FormattedMessage id="send.send" defaultMessage="Send" />
               </Text>
             </View>
             <View
               style={{
-                marginTop: 55,
+                marginTop: 36,
               }}
             >
               <Controller
@@ -186,7 +194,7 @@ export const SendScreenComponent = observer<
             </View>
             <View
               style={{
-                marginTop: 35,
+                marginTop: 24,
               }}
             >
               <Controller
@@ -205,98 +213,102 @@ export const SendScreenComponent = observer<
               />
             </View>
           </View>
-          <Button
-            flavor="primary"
-            label={intl.formatMessage({
-              id: "send.next",
-              defaultMessage: "Next",
-            })}
-            disabled={!formState.isValid}
-            onPress={handleSubmit(async (data) => {
-              invariant(wallet, "Expected wallet to be defined.");
+          <View
+            style={[
+              {
+                width: "100%",
+                alignItems: "center",
+              },
+              { marginTop: theme.send?.next.marginTop },
+            ]}
+          >
+            <Button
+              flavor="primary"
+              label={intl.formatMessage({
+                id: "send.next",
+                defaultMessage: "Next",
+              })}
+              buttonStyle={theme.send?.next.button}
+              labelStyle={theme.send?.next.label}
+              disabled={!formState.isValid}
+              onPress={handleSubmit(async (data) => {
+                invariant(wallet, "Expected wallet to be defined.");
 
-              function getMessages(): Message[] {
-                if (!wallet.address) return [];
+                function getMessages(): Message[] {
+                  if (!wallet.address) return [];
 
-                if (configStore.config.ethereumBalances) {
-                  console.log("sending as userop...");
-                  console.log(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    `sending ${(data.token as any).rawAmount} ${
-                      data.token.id
-                    } to ${data.address}`,
-                  );
-                  return [
-                    {
-                      eth: {
-                        contractAddress: data.token.id,
-                        abi: [
-                          {
-                            constant: false,
-                            inputs: [
-                              {
-                                name: "_to",
-                                type: "address",
-                              },
-                              {
-                                name: "_value",
-                                type: "uint256",
-                              },
-                            ],
-                            name: "transfer",
-                            outputs: [
-                              {
-                                name: "",
-                                type: "bool",
-                              },
-                            ],
-                            payable: false,
-                            stateMutability: "nonpayable",
-                            type: "function",
-                          },
-                        ],
-                        functionName: "transfer",
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        params: [data.address, (data.token as any).rawAmount],
-                        tokens: {
-                          accessToken: zauthStore.currentTokens?.accessToken,
-                          refreshToken: zauthStore.currentTokens?.refreshToken,
+                  if (configStore.config.ethereumBalances) {
+                    console.log("sending as userop...");
+                    console.log(
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      `sending ${(data.token as any).rawAmount} ${
+                        data.token.id
+                      } to ${data.address}`,
+                    );
+                    return [
+                      {
+                        eth: {
+                          contractAddress: data.token.id,
+                          abi: [
+                            {
+                              constant: false,
+                              inputs: [
+                                {
+                                  name: "_to",
+                                  type: "address",
+                                },
+                                {
+                                  name: "_value",
+                                  type: "uint256",
+                                },
+                              ],
+                              name: "transfer",
+                              outputs: [
+                                {
+                                  name: "",
+                                  type: "bool",
+                                },
+                              ],
+                              payable: false,
+                              stateMutability: "nonpayable",
+                              type: "function",
+                            },
+                          ],
+                          functionName: "transfer",
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          params: [data.address, (data.token as any).rawAmount],
+                          tokens: {},
                         },
+                        targetChainId: 421613,
+                        homeChainId: "secret-4",
+                        tokens: {},
                       },
-                      targetChainId: 421613,
-                      homeChainId: "secret-4",
-                      tokens: {
-                        accessToken: zauthStore.currentTokens?.accessToken,
-                        refreshToken: zauthStore.currentTokens?.refreshToken,
-                      },
-                    },
-                  ];
+                    ];
+                  }
+
+                  return Messages.chainId(wallet.chainId).getSendMessages({
+                    fromAddress: wallet.address,
+                    toAddress: data.address,
+                    // TODO: TypeScript doesn't understand that we receive the processed data here
+                    tokens: [data.token as unknown as Token],
+                  });
                 }
-
-                return Messages.chainId(wallet.chainId).getSendMessages({
-                  fromAddress: wallet.address,
-                  toAddress: data.address,
-                  // TODO: TypeScript doesn't understand that we receive the processed data here
-                  tokens: [data.token as unknown as Token],
+                const messages = getMessages();
+                console.log(
+                  "in send dialog, messages: " + JSON.stringify(messages),
+                );
+                const response = await signAndBroadcastUserOp(walletsStore, {
+                  payload: messages,
                 });
-              }
-
-              const response =
-                await SignAndBroadcastTransactionUserInteraction.start({
-                  messages: getMessages(),
-                  demoMode: wallet.isDemo,
-                  cancelable: true,
-                  walletMeta: wallet.meta,
-                });
-
-              if (response.approved) {
-                setConfirmModalStatus({
-                  visible: true,
-                  success: response.payload.success,
-                });
-              }
-            })}
-          />
+                if (response.userOpHash) {
+                  setConfirmModalStatus({
+                    visible: true,
+                    success: true,
+                  });
+                }
+              })}
+            />
+          </View>
         </SafeAreaView>
       </KeyboardAvoidingView>
     </OsmosisScreenContainer>
@@ -336,7 +348,7 @@ const SuccessModal = observer(function SuccessModal({
           <View style={{ marginHorizontal: 20 }}>
             <Button
               flavor="primary"
-              label="Dismiss"
+              label=" Dismiss "
               onPress={() => {
                 onDismiss();
               }}

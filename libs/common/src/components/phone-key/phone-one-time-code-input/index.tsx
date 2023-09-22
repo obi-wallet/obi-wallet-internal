@@ -1,3 +1,5 @@
+import { useTheme } from "@emotion/react";
+import { CommunicationType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -12,7 +14,7 @@ export interface PhoneOneTimeCodeInputProps {
   value: string;
   phoneNumberMightBeIncorrect: boolean;
   setValue(value: string): void;
-  onResend(voice: boolean): Promise<void>;
+  onResend(type: CommunicationType): Promise<void>;
 }
 
 export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
@@ -24,8 +26,8 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
     onResend,
   }) {
     const intl = useIntl();
-    const waitTime = 45;
-
+    const waitTime = 10;
+    const theme = useTheme();
     const [resendButtonDisabled, setResendButtonDisabled] = useState(false);
     const [resendCounter, setResendCounter] = useState(waitTime);
     const [resendButtonHit, setResendButtonHit] = useState(false);
@@ -47,9 +49,10 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
           placeholder={intl.formatMessage({
             id: "onboarding3.smscodelabel",
           })}
+          label="Enter SMS Code"
           textContentType="oneTimeCode"
           keyboardType="number-pad"
-          style={{ marginTop: 25 }}
+          style={{}}
           value={value}
           onChangeText={(value) => {
             const reg = /^\d*$/;
@@ -60,35 +63,39 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
         />
         <View
           style={{
-            flexDirection: "column",
+            flexDirection: "row",
             alignItems: "flex-start",
-            marginTop: 24,
+            justifyContent: "flex-start",
+            marginTop: 16,
             width: "100%",
           }}
         >
           <Text style={{ color: "rgba(246, 245, 255, 0.6)", fontSize: 12 }}>
-            <FormattedMessage
+            {/* <FormattedMessage
               id="onboarding3.noresponselabel"
               defaultMessage="Didn't receive a response?"
-            />
+            /> */}
+            Didn’t get a code?
           </Text>
           {resendCounter === 0 ? (
-            <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <View style={{ flexDirection: "row" }}>
               <InlineButton
-                label={`${intl.formatMessage({
-                  id: "onboarding3.sendagain",
-                })} SMS`}
+                style={{
+                  ...theme.phoneKey?.inlineButton,
+                }}
+                label="Resend"
                 onPress={async () => {
                   setResendCounter(waitTime);
                   setResendButtonHit(true);
 
                   setValue("");
 
-                  await onResend(false);
+                  await onResend(CommunicationType.SMS);
                 }}
                 disabled={resendButtonDisabled}
               />
               <InlineButton
+                style={{ ...theme.phoneKey?.inlineButton }}
                 label="Get a voice call instead"
                 onPress={async () => {
                   setResendCounter(waitTime);
@@ -96,13 +103,14 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
 
                   setValue("");
 
-                  await onResend(true);
+                  await onResend(CommunicationType.VOICE);
                 }}
                 disabled={resendButtonDisabled}
               />
             </View>
           ) : (
             <Text style={{ color: "rgba(246, 245, 255, 0.6)", fontSize: 12 }}>
+              {" "}
               Wait {resendCounter} seconds to request a new code
             </Text>
           )}

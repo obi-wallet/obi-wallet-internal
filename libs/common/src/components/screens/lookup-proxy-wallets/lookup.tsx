@@ -1,19 +1,31 @@
+/* eslint-disable @nx/enforce-module-boundaries */
 import { useTheme } from "@emotion/react";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { Chain, ChainId } from "@obi-wallet/sdk";
+import { RecoverFrom } from "@obi-wallet/common";
+import {
+  Chain,
+  ChainId,
+  Key,
+  KeyType,
+  MultisigKey,
+  MultisigWallet,
+  ObservableMultisigKey,
+  Serialized,
+} from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
+import * as R from "ramda";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Linking, ScrollView, TouchableOpacity, View } from "react-native";
 import { useAsyncEffect } from "rooks";
+import invariant from "tiny-invariant";
 
 import * as A from "./api-types";
 import { useStore } from "../../../contexts";
-import { isSmallScreenNumber } from "../../../helpers";
+import { addEllipsisInMiddle, isSmallScreenNumber } from "../../../helpers";
 import { IconButton } from "../../buttons";
 import { OnboardingScreenContainer } from "../../onboarding-screen-container";
 import { Text } from "../../typography";
@@ -22,6 +34,8 @@ import { VerifyAndProceedButton } from "../../verify-and-proceed-button";
 export interface LookupProps {
   chainId: ChainId;
   publicKey: string;
+  draftId: string;
+  recoverFrom: RecoverFrom;
   onSelect(wallet: A.SerializedProxyWallet): Promise<void>;
   onCancel(): void;
 }
@@ -29,13 +43,19 @@ export interface LookupProps {
 export const Lookup = observer(function Lookup({
   chainId,
   publicKey,
+  draftId,
+  recoverFrom,
   onSelect,
   onCancel,
 }: LookupProps) {
-  const { chainStore } = useStore();
+  const _onSelect = onSelect;
+  const { chainStore, draftsStore, unityStore, walletsStore } = useStore();
   const [wallets, setWallets] = useState<A.SerializedProxyWallet[] | null>(
     null,
   );
+  const draft = draftsStore.get<MultisigKey>({
+    id: draftId,
+  });
   const [selectedWallet, setSelectedWallet] =
     useState<A.SerializedProxyWallet | null>(null);
   const theme = useTheme();
@@ -51,28 +71,42 @@ export const Lookup = observer(function Lookup({
           return chain.currentCodeId;
         },
         onSecretJsChain(chain) {
-          return chain.currentCodeIds.userAccount;
+          return chain.currentCodeIds.userEntry;
         },
         onTerraChain(chain) {
           return chain.currentCodeIds.userAccount;
         },
       });
+      const body = JSON.stringify({
+        chainId: "secret-4",
+        publicKey,
+        currentCodeId,
+      });
+      console.log("request body: " + body);
       const response = await fetch(
         `https://proxy-wallets.obiwallet.workers.dev`,
+        // `http://127.0.0.1:8787`,
         {
           method: "POST",
           body: JSON.stringify({
-            chainId,
+            chainId: "secret-4",
             publicKey,
-            currentCodeId,
           }),
           headers: {
             "Api-Version": "v1",
             "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*",
           },
         },
       );
-      const proxyWallets = (await response.json()) as A.SerializedProxyWallet[];
+      let proxyWallets;
+      try {
+        proxyWallets = (await response.json()) as A.SerializedProxyWallet[];
+      } catch (e) {
+        console.log("Proxy wallet worker error. Response: " + response.text());
+        throw new Error("error in proxy wallet worker response");
+      }
       setWallets(proxyWallets);
     } catch (e) {
       console.log(e);
@@ -180,10 +214,7 @@ export const Lookup = observer(function Lookup({
                       fontWeight: "600",
                     }}
                   >
-                    {Bech32Address.shortenAddress(
-                      wallet.proxyAddress.address,
-                      20,
-                    )}
+                    {addEllipsisInMiddle(wallet.evmUserContractAddress, 20)}
                   </Text>
                 </View>
                 <IconButton
@@ -195,7 +226,7 @@ export const Lookup = observer(function Lookup({
                   onPress={async () => {
                     await Linking.openURL(
                       chainStore.currentChainInformation.explorerUrl(
-                        wallet.proxyAddress.address,
+                        wallet.evmUserContractAddress,
                       ),
                     );
                   }}
@@ -217,7 +248,170 @@ export const Lookup = observer(function Lookup({
           disabled={!selectedWallet}
           onPress={async () => {
             if (selectedWallet) {
-              await onSelect(selectedWallet);
+              let activeDeviceKey;
+              unityStore.getDeviceId
+                ? (activeDeviceKey = draft.value.getUsableKeyOfType(
+                    KeyType.Unity,
+                  ))
+                : (activeDeviceKey = draft.value.getUsableKeyOfType(
+                    KeyType.Device,
+                  ));
+
+              const usableKey = draft.value.getUsableKeyOfType(
+                recoverFrom === RecoverFrom.Email
+                  ? KeyType.EmailRecovery
+                  : KeyType.Phone,
+              );
+
+              const recoveredPhoneKey = draft.value.getUsableKeyOfType(
+                KeyType.Phone,
+              );
+              const recoveredEmailKey = draft.value.getUsableKeyOfType(
+                KeyType.EmailRecovery,
+              );
+
+              invariant(activeDeviceKey, "Device key is required");
+              /* invariant(
+                recoveredPhoneKey || recoveredEmailKey,
+                "Phone or email key is required",
+              ); */
+
+              const serializedData: Serialized<MultisigWallet>["data"] = {
+                chain: draft.value.chainId,
+                owner: {
+                  threshold: parseInt(selectedWallet.owner.threshold, 10),
+                  keys: selectedWallet.owner.keys.map(
+                    (key): Serialized<typeof Key> => {
+                      switch (key.type) {
+                        case KeyType.Device: {
+                          return {
+                            type: KeyType.Device,
+                            payload: {
+                              publicKey: key.publicKey,
+                            },
+                          };
+                        }
+                        case KeyType.Phone:
+                          if (recoveredPhoneKey) {
+                            invariant(
+                              R.equals(
+                                recoveredPhoneKey.payload.publicKey,
+                                key.publicKey,
+                              ),
+                              "Recovered phone key must match the one in the proxy wallet",
+                            );
+                            return {
+                              type: KeyType.Phone,
+                              payload: {
+                                ...recoveredPhoneKey.payload,
+                                publicKey: key.publicKey,
+                              },
+                            };
+                          } else {
+                            return {
+                              payload: {
+                                type: key.type,
+                                publicKey: key.publicKey,
+                              },
+                            };
+                          }
+                        case KeyType.Social:
+                          return {
+                            type: KeyType.Social,
+                            payload: {
+                              publicKey: key.publicKey,
+                            },
+                          };
+                        case KeyType.Cloud:
+                        case KeyType.Nfc:
+                          return {
+                            payload: {
+                              type: key.type,
+                              publicKey: key.publicKey,
+                            },
+                          };
+                        case KeyType.Email:
+                          if (
+                            recoveredEmailKey &&
+                            usableKey?.type === KeyType.EmailRecovery
+                          ) {
+                            return {
+                              type: KeyType.EmailRecovery,
+                              payload: {
+                                publicKey: key.publicKey,
+                                privateKey: usableKey.payload.privateKey,
+                              },
+                            };
+                          } else {
+                            return {
+                              payload: {
+                                type: key.type,
+                                publicKey: key.publicKey,
+                              },
+                            };
+                          }
+                        default:
+                          return {
+                            payload: {
+                              type: key.type,
+                              publicKey: key.publicKey,
+                            },
+                          };
+                      }
+                    },
+                  ),
+                  evmSigningAddress: selectedWallet.evmSigningAddress!,
+                  evmUserContractAddress: selectedWallet.evmUserContractAddress,
+                },
+                proxyAddress: {
+                  v: 1,
+                  address: selectedWallet.proxyAddress.address,
+                },
+                // TODO: fetch from chain?
+                gatekeeperConfig: {
+                  beneficiaries: [],
+                  flexAccounts: [],
+                },
+                singlesigWallets: [],
+                currentAccount: null,
+                evmSigningAddress: selectedWallet.evmSigningAddress!,
+                evmUserContractAddress: selectedWallet.evmUserContractAddress,
+              };
+
+              try {
+                const currentOwner = ObservableMultisigKey.create(
+                  {
+                    homeAccountAddress: serializedData.proxyAddress.address,
+                    evmSigningAddress: serializedData.evmSigningAddress,
+                    evmUserContractAddress:
+                      serializedData.evmUserContractAddress,
+                    ownerIndex: 0,
+                  },
+                  serializedData.chain,
+                  serializedData.owner,
+                );
+
+                draft.commit({ original: currentOwner });
+                draft.value.setDeviceKey(activeDeviceKey.payload);
+                console.log("recovered draft: " + JSON.stringify(draft.value));
+                await walletsStore.createWallet({
+                  multisigKey: draft.value,
+                  demoMode: false,
+                  skipInit: true,
+                  evmSigningAddressOverride: serializedData.evmSigningAddress,
+                  evmUserContractAddressOverride:
+                    serializedData.evmUserContractAddress,
+                  homeAccountAddressOverride:
+                    serializedData.proxyAddress.address,
+                });
+
+                /*navigation.navigate(OnboardingRoute.RecoverWallet, {
+                  ...params,
+                  serializedData,
+                });*/
+              } catch (e) {
+                console.log(e);
+              }
             }
           }}
         />
@@ -232,11 +426,12 @@ export const Lookup = observer(function Lookup({
               style={{
                 color: "white",
                 textAlign: "center",
+                marginBottom: 15,
               }}
             >
               <FormattedMessage
                 id="recovery.choosewallet.tryagain"
-                defaultMessage="Try a different combination"
+                defaultMessage="Try a different key instead"
               />
             </Text>
           </TouchableOpacity>

@@ -1,4 +1,4 @@
-import { TwilioClientInterface } from "./twilio-client";
+import { CommunicationType, TwilioClientInterface } from "./twilio-client";
 import { ChainId } from "../../chains";
 import { KeyType } from "../../data-structures";
 import { AsyncKeySigner } from "../abstract";
@@ -10,20 +10,21 @@ export class PhoneKeySigner extends AsyncKeySigner<KeyType.Phone> {
     chainId,
     securityAnswer,
     twilioClient,
-    voice,
+    type,
   }: {
     chainId: ChainId;
     securityAnswer: string;
     twilioClient: TwilioClientInterface;
-    voice: boolean;
+    type: CommunicationType;
   }) {
     const { hash } = await this.waitForPendingSignature();
+    console.log({ type });
     await twilioClient.requestSignatureMagicCode({
       phoneNumber: this.key.payload.phoneNumber,
       securityAnswer,
       message: hash,
       chainId,
-      voice,
+      type,
     });
   }
 

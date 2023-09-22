@@ -7,8 +7,11 @@ import {
 } from "../../user-interactions/event-emitter";
 
 export class UserInteractions {
-  protected _userInteractions: (UserInteractionWithType & { id: string })[] =
-    [];
+  protected _userInteractions: (UserInteractionWithType & {
+    id: string;
+    hint?: string;
+    amount?: string;
+  })[] = [];
 
   public constructor() {
     eventEmitter.on(

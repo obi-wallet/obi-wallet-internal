@@ -12,6 +12,7 @@
     "crypto-js": "*",
     "elliptic": "*",
     "ethers": "*",
+    "ethers5": "*",
     "eventemitter3": "*",
     "isomorphic-unfetch": "*",
     "jscrypto": "*",

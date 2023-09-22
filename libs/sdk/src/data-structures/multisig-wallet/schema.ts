@@ -29,6 +29,8 @@ const MultisigWalletData = migratable(
   z.object({
     chain: ChainIdSchema,
     owner: MultisigKey.schema.migratableSchema,
+    evmSigningAddress: z.string(),
+    evmUserContractAddress: z.string(),
     proxyAddress: ProxyAddress.migratableSchema,
     gatekeeperConfig: GatekeeperConfig.schema.migratableSchema,
     singlesigWallets: z.array(SinglesigWallet.schema.migratableSchema),
@@ -46,6 +48,8 @@ const MultisigWalletData = migratable(
   nextSchema: z.object({
     chain: ChainIdSchema,
     owner: MultisigKey.schema.migratableSchema,
+    evmSigningAddress: z.string(),
+    evmUserContractAddress: z.string(),
     proxyAddress: ProxyAddress.migratableSchema,
     gatekeeperConfig: GatekeeperConfig.schema.migratableSchema,
     singlesigWallets: z.array(SinglesigWallet.schema.migratableSchema),

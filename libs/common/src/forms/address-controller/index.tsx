@@ -1,3 +1,4 @@
+import { useTheme } from "@emotion/react";
 import { ChainId, Sdk } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ControllerFieldState } from "react-hook-form";
@@ -43,6 +44,8 @@ export const AddressController = observer<AddressControllerProps>(
       }
     });
 
+    const theme = useTheme();
+
     if (isWeb()) {
       return (
         <TextInput
@@ -53,6 +56,8 @@ export const AddressController = observer<AddressControllerProps>(
           onChangeText={field.onChange}
           onBlur={field.onBlur}
           invalidMessage={fieldState.error?.message}
+          inputStyle={theme.send?.address}
+          labelStyle={{ color: theme.colors.label, fontSize: 12 }}
         />
       );
     }

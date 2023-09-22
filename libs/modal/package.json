@@ -14,12 +14,14 @@
     "buffer": "*",
     "elliptic": "*",
     "ethers": "*",
+    "ethers5": "*",
     "mobx": "*",
     "mobx-react-lite": "*",
     "react-native-web": "*",
     "react-shadow": "*",
     "rooks": "*",
-    "tiny-invariant": "*"
+    "tiny-invariant": "*",
+    "userop": "*"
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "*",

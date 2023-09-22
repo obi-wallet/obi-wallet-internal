@@ -3,7 +3,12 @@ import {
   useQuery,
   useSignAndBroadcastTransaction,
 } from "@obi-wallet/headless-ui";
-import { KeySubclassTypeMapping, KeyType, Signer } from "@obi-wallet/sdk";
+import {
+  CommunicationType,
+  KeySubclassTypeMapping,
+  KeyType,
+  Signer,
+} from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
@@ -22,6 +27,8 @@ export type SignatureModalMultisigKeyProps = ReturnType<
   typeof useSignAndBroadcastTransaction
 > & {
   type: SignAndBroadcastTransactionType.MultisigKey;
+  hint?: string;
+  amount?: string;
 };
 
 export const SignatureModalMultisigKey =
@@ -32,6 +39,8 @@ export const SignatureModalMultisigKey =
     broadcast,
     multisigSigner,
     multisigKey,
+    hint,
+    amount,
     safeSpendLimitExceeded,
   }) {
     const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
@@ -110,7 +119,10 @@ export const SignatureModalMultisigKey =
           <PhoneNumberBottomSheetContent
             phoneNumber={phoneKeyPayload.key.payload.phoneNumber}
             securityQuestion={phoneKeyPayload.key.payload.securityQuestion}
-            onRequest={async (data) => {
+            onRequest={async (data: {
+              securityAnswer: string;
+              type: CommunicationType;
+            }) => {
               setBottomSheetOpen(true);
               await phoneKeyPayload.signer.requestSignature(data);
             }}
@@ -134,6 +146,8 @@ export const SignatureModalMultisigKey =
         numberOfUsableKeys={usableSigners.data.length}
         innerMessages={messages}
         chainId={multisigKey.chainId}
+        hint={hint}
+        amount={amount}
         data={keys}
         safeSpendLimitExceeded={safeSpendLimitExceeded}
         onCancel={cancel}

@@ -51,6 +51,13 @@ export function useKeyMetaData() {
       }),
       Icon: isWeb() ? PhoneKeyOutlineIcon : PhoneKeyIcon,
     },
+    [KeyType.Unity]: {
+      label: intl.formatMessage({
+        id: "settings.multisig.option.unitykey",
+        defaultMessage: "Game Install Key",
+      }),
+      Icon: ZtxPlatformRecoveryIcon,
+    },
     [KeyType.Social]: {
       label: configStore.config.ethereumBalances
         ? "Platform Recovery"
@@ -88,7 +95,7 @@ export function useKeyMetaData() {
       // TODO:
       label: "ZAuth Key",
       // TODO:
-      Icon: DeviceKeyIcon,
+      Icon: ZtxPlatformRecoveryIcon,
     },
     [ComingSoonKeyType.Telegram]: {
       label: "Telegram Key",

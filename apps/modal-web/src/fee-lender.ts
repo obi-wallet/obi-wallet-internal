@@ -1,7 +1,10 @@
 import { Secp256k1PrivateKeySigner, SecretJsChainId } from "@obi-wallet/sdk";
 import { Wallet } from "secretjs";
 
-export function getFeeLender(chainId: SecretJsChainId) {
+export function getFeeLender(
+  chainId: SecretJsChainId,
+  knownLenderIndex?: number,
+) {
   switch (chainId) {
     case "pulsar-3": {
       const feeLenders = JSON.parse(process.env.FEE_LENDERS_PULSAR_3 ?? "[]");
@@ -15,14 +18,17 @@ export function getFeeLender(chainId: SecretJsChainId) {
     }
     case "secret-4": {
       const feeLender = process.env.FEE_LENDER_SECRET_4 ?? "";
-      const feeLenderIndex = Math.floor(Math.random() * 1000);
+      console.log("knownLenderIndex is " + knownLenderIndex);
+      const lenderIndex = knownLenderIndex ?? Math.floor(Math.random() * 1000);
       const wallet = new Wallet(feeLender, {
-        hdAccountIndex: feeLenderIndex,
+        hdAccountIndex: lenderIndex,
       });
       const signer = new Secp256k1PrivateKeySigner(
         Buffer.from(wallet.privateKey).toString("base64"),
       );
-      return { wallet, signer };
+      // we need to return the lender index since it owns the account
+      // before owner is known and first_update_owner is called on it
+      return { wallet, signer, lenderIndex };
     }
   }
 

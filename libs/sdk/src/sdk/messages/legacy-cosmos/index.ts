@@ -14,7 +14,9 @@ function notImplemented(message: string) {
   warning(false, message);
 }
 
-export class LegacyCosmosMessages extends AbstractMessages {
+export class LegacyCosmosMessages extends AbstractMessages<
+  string | MultisigKey
+> {
   protected constructor(protected override chainId: LegacyCosmosChainId) {
     super(chainId);
   }
@@ -27,7 +29,8 @@ export class LegacyCosmosMessages extends AbstractMessages {
   public wrapMessages(_: {
     messages: Message[];
     sender: string;
-    contract: string;
+    userEntryContract: string;
+    userEntryCodeHash?: string;
   }): Message[] {
     notImplemented("wrapMessages not implemented for Cosmos");
     return [];
@@ -105,6 +108,16 @@ export class LegacyCosmosMessages extends AbstractMessages {
   public getCreateWalletMessage(_: MultisigKey): Message {
     notImplemented("getCreateWalletMessage not implemented for Cosmos");
     throw new Error("getCreateWalletMessage not implemented for Cosmos");
+  }
+
+  public getFirstUpdateWalletMessage(
+    _newOwner: MultisigKey,
+    _newOwnerAddress: string,
+    _userAccountContractAddress: string,
+    _sender: string,
+  ): Message {
+    notImplemented("getFirstUpdateWalletMessage not implemented for Cosmos");
+    throw new Error("getFirstUpdateWalletMessage not implemented for Cosmos");
   }
 
   public static chainId(chainId: LegacyCosmosChainId) {

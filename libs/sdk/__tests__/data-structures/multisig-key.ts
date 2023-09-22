@@ -23,29 +23,35 @@ describe("ObservableMultisigKey", () => {
       },
     ],
     threshold: 1,
+    evmSigningAddress: "",
+    evmUserContractAddress: "",
   };
 
   test(".empty observable", () => {
-    expect(isObservable(ObservableMultisigKey.create(chain))).toEqual(true);
+    expect(
+      isObservable(ObservableMultisigKey.create(undefined, chain)),
+    ).toEqual(true);
   });
 
   test(".deserialize observable", () => {
-    expect(isObservable(ObservableMultisigKey.create(chain, fixture))).toEqual(
-      true,
-    );
+    expect(
+      isObservable(ObservableMultisigKey.create(undefined, chain, fixture)),
+    ).toEqual(true);
   });
 
   test(".toJSON pure", () => {
-    expectIsPureObject(ObservableMultisigKey.create(chain, fixture).toJSON());
+    expectIsPureObject(
+      ObservableMultisigKey.create(undefined, chain, fixture).toJSON(),
+    );
   });
 
   test("chain observable", () => {
-    const key = ObservableMultisigKey.create(chain);
+    const key = ObservableMultisigKey.create(undefined, chain);
     expect(isObservableProp(key, "_chainId")).toEqual(true);
   });
 
   test("keys observable", () => {
-    const key = ObservableMultisigKey.create(chain, fixture);
+    const key = ObservableMultisigKey.create(undefined, chain, fixture);
     expect(isObservable(key.keys)).toEqual(true);
     expect(isObservable(key.keys[0])).toEqual(true);
     key.setCloudKey({
@@ -62,7 +68,7 @@ describe("ObservableMultisigKey", () => {
   });
 
   test("threshold observable", () => {
-    const key = ObservableMultisigKey.create(chain);
+    const key = ObservableMultisigKey.create(undefined, chain);
     expect(isObservableProp(key, "_threshold")).toEqual(true);
   });
 });

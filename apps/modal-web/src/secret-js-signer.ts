@@ -77,9 +77,8 @@ export class SecretJsSigner {
         JSON.stringify(
           {
             sign_bytes: {
-              user_public_key: Buffer.from(bufferSource, "base64").toString(
-                "hex",
-              ),
+              user_entry_address: this.homeChain.proxyAddress,
+              user_entry_code_hash: this.chainData.userEntry.codeHash,
               bytes: messageToSign.toString("hex"),
               bytes_signed_by_upk: signed.toString("hex"),
             },
@@ -94,9 +93,8 @@ export class SecretJsSigner {
         code_hash: this.chainData.secretSigner.codeHash,
         query: {
           sign_bytes: {
-            user_public_key: Buffer.from(bufferSource, "base64").toString(
-              "hex",
-            ),
+            user_entry_address: this.homeChain.proxyAddress,
+            user_entry_code_hash: this.chainData.userEntry.codeHash,
             bytes: messageToSign.toString("hex"),
             bytes_signed_by_upk: signed.toString("hex"),
           },

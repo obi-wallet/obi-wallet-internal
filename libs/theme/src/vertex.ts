@@ -25,17 +25,21 @@ export const vertexTheme: CustomTheme = {
     ],
   },
   header: {
-    image: "/vertex-header@2x.png",
+    image: { src: "/vertex-header@2x.png" },
     width: 177,
     height: 48,
   },
   buttonFlavors: {
     primary: {
-      background: "linear-gradient(to right, #A47CD0, #523E68)",
+      container: {
+        backgroundColor: "linear-gradient(to right, #A47CD0, #523E68)",
+      },
     },
     cancel: {
-      borderWidth: 1,
-      borderColor: "#ffffff",
+      container: {
+        borderWidth: 1,
+        borderColor: "#ffffff",
+      },
     },
   },
   iconButtonFlavors: {

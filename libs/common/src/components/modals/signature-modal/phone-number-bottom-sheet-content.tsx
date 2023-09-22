@@ -1,3 +1,4 @@
+import { CommunicationType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -18,7 +19,10 @@ export interface PhoneNumberBottomSheetContentProps {
   phoneNumber: string;
   securityQuestion: string;
 
-  onRequest(data: { voice: boolean; securityAnswer: string }): Promise<void>;
+  onRequest(data: {
+    type: CommunicationType;
+    securityAnswer: string;
+  }): Promise<void>;
 
   onConfirm(key: string): Promise<void>;
 }
@@ -97,8 +101,8 @@ export const PhoneNumberBottomSheetContent =
                 phoneNumberMightBeIncorrect={false}
                 value={key}
                 setValue={setKey}
-                onResend={async (voice) => {
-                  await onRequest({ securityAnswer, voice });
+                onResend={async (type) => {
+                  await onRequest({ securityAnswer, type });
                 }}
               />
             </View>
@@ -154,6 +158,8 @@ export const PhoneNumberBottomSheetContent =
               setMagicButtonDisabledDoubleclick(true);
 
               try {
+                // TODO: should be rechecked by Jose
+                // @ts-expect-error Jose
                 const res = await onRequest({ securityAnswer, voice: false });
                 setSentMessage(true);
                 setMagicButtonDisabledDoubleclick(false);

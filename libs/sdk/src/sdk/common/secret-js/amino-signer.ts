@@ -65,6 +65,14 @@ export class SecretJsAminoSigner implements AminoSignerWithAddress {
     };
   }
 
+  /// Signs a message after hashing it. Note that this does not add
+  /// any "Ethereum signed message" prefix since the function is unaware
+  /// of whether the context is Ethereum or not.
+  public async signMessage(message: Uint8Array) {
+    const hash = new Sha256(message).digest();
+    return await this.signer.signHash(hash);
+  }
+
   public async signStdSignDoc(signDoc: StdSignDoc) {
     const hash = new Sha256(serializeSignDoc(signDoc)).digest();
     return await this.signer.signHash(hash);
