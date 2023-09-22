@@ -429,6 +429,10 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                       "DO NOT DELETE this email, unless you are saving its contents to a password manager or physical location." +
                       emailRecoveryLink,
                   )}`;
+                  setEmailKey({
+                    type: "tendermint/PubKeySecp256k1",
+                    value: publicKey!,
+                  });
                   await Linking.openURL(URL);
                 } catch (e) {
                   console.error(e);
