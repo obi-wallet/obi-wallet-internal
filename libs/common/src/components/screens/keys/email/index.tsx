@@ -180,6 +180,13 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
     }
   };
 
+  function sub() {
+    if (emailKey) {
+      draft.value.setEmailKey(emailKey);
+      onSubmit();
+    }
+  }
+
   useAppStateEffect(
     (appState) => {
       if (appState === "active" && emailKey) {
@@ -421,7 +428,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
               disabled={!formState.isValid}
               onPress={handleSubmit(async (data) => {
                 try {
-                  const URL = `mailto:${
+                  const _URL = `mailto:${
                     data.email
                   }?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
                     "This is an Obi email key recovery link. You are sending it to yourself; Obi can never access its contents. " +
@@ -433,7 +440,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                     type: "tendermint/PubKeySecp256k1",
                     value: publicKey!,
                   });
-                  await Linking.openURL(URL);
+                  sub();
                 } catch (e) {
                   console.error(e);
                   // noop
