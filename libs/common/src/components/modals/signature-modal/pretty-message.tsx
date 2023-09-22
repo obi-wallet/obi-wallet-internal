@@ -459,7 +459,7 @@ const PrettyMessageUnknown = observer<PrettyMessageUnknownProps>(
 
     let rawAmount;
     if (amount) {
-      rawAmount = (parseInt(amount!)*1000000).toString();
+      rawAmount = (parseInt(amount!) * 1000000).toString();
     } else {
       rawAmount = undefined;
     }
@@ -545,7 +545,9 @@ const PrettyCoins = observer<PrettyTokensProps>(function PrettyTokens({
   console.log("tokens length is " + tokens?.length);
   console.log("tokens is " + JSON.stringify(tokens));
   const coinsArray =
-    tokens && tokens.length > 0 ? tokens : [{ id: denom, rawAmount: tokens![0].rawAmount }];
+    tokens && tokens.length > 0
+      ? tokens
+      : [{ id: denom, rawAmount: tokens![0].rawAmount }];
   return (
     <View>
       {coinsArray.map((token) => {

@@ -64,6 +64,10 @@ export class CosmJsOfflineAminoSigner implements AbstractOfflineAminoSigner {
     return await this.signer.signHash(hash);
   }
 
+  public async signHash(hash: Uint8Array) {
+    return await this.signer.signHash(hash);
+  }
+
   public async signMessage(message: Uint8Array) {
     const hash = new Sha256(message).digest();
     return await this.signer.signHash(hash);
