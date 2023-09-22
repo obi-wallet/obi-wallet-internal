@@ -26,7 +26,7 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
     onResend,
   }) {
     const intl = useIntl();
-    const waitTime = 45;
+    const waitTime = 10;
     const theme = useTheme();
     const [resendButtonDisabled, setResendButtonDisabled] = useState(false);
     const [resendCounter, setResendCounter] = useState(waitTime);

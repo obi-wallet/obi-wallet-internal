@@ -348,7 +348,7 @@ const SuccessModal = observer(function SuccessModal({
           <View style={{ marginHorizontal: 20 }}>
             <Button
               flavor="primary"
-              label="Dismiss"
+              label=" Dismiss "
               onPress={() => {
                 onDismiss();
               }}
