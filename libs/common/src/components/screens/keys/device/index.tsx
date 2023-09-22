@@ -49,6 +49,7 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
         {...params}
         onSubmit={async () => {
           if (params.flow !== KeyFlow.CreateWallet) {
+            // TODO: check threshold
             navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
             return;
           }
@@ -121,7 +122,11 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 
   async function scanBiometrics(
     create: boolean,
+    recoverFlow?: boolean
   ): Promise<[boolean, boolean, Secp256k1KeyPair | undefined]> {
+    if (!recoverFlow) {
+      recoverFlow = false;
+    }
     try {
       console.log("getting device key...");
       const [keyPair, newUser] = await getOrCreateDeviceKeyPair(
@@ -129,7 +134,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         demoMode,
       );
       console.log("setting device key...");
-      draft.value.setDeviceKey(keyPair);
+      draft.value.setDeviceKey(keyPair, recoverFlow);
       console.log("device key set..");
       void queryClient.prefetchQuery(
         Sdk.chainId(
@@ -268,7 +273,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 onPress={async () => {
                   if (unityStore.getDeviceId) {
                     console.log("unity device id obtained");
-                    draft.value.setUnityKey(unityStore.getDeviceId);
+                    draft.value.setUnityKey(unityStore.getDeviceId, false);
                     // here check if new user or not?
                     invariant(
                       draft.value.getUsableKeyOfType(KeyType.Unity)?.publicKey
@@ -285,7 +290,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                     onSubmit(undefined);
                   } else {
                     const [success, _newUser, deviceKeypair] =
-                      await scanBiometrics(true);
+                      await scanBiometrics(true, false);
                     invariant(deviceKeypair, "could not get device keypair");
                     fundKeyIfZero(deviceKeypair.publicKey.value);
                     if (success && Platform.OS !== "ios") {
@@ -295,7 +300,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 }}
                 autoPress={Platform.OS === "ios"}
               />
-            ) : (
+            ) : ( // not CreateWallet flow
               <AsyncButton
                 label={intl.formatMessage({
                   id: "onboarding4.ihaveadevicekey.button",
@@ -305,13 +310,13 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                   if (unityStore.getDeviceId) {
                     // this should check for recovery
                     console.log("unity device id obtained");
-                    draft.value.setUnityKey(unityStore.getDeviceId);
+                    draft.value.setUnityKey(unityStore.getDeviceId, true);
                     onSubmit(undefined);
                   } else if (scannedBiometrics) {
                     onSubmit(undefined);
                   } else {
                     const [success, _newUser, deviceKeypair] =
-                      await scanBiometrics(false);
+                      await scanBiometrics(false, true);
                     invariant(deviceKeypair, "could not get device keypair");
                     console.log("Success is: ", success);
                     if (success && Platform.OS !== "ios") {

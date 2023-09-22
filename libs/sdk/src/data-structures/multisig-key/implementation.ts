@@ -23,6 +23,8 @@ import {
 import { KeySchema } from "../key/schema";
 import { AbstractSerialized } from "../migratable";
 import { WalletMeta } from "../multisig-wallet";
+import * as A from "libs/common/src/components/screens/lookup-proxy-wallets/api-types";
+import { boolean } from "zod";
 
 export class MultisigKey {
   // TODO: private, getters
@@ -193,10 +195,49 @@ export class MultisigKey {
     }
   }
 
+  private async setupMagicAccountIfDoesNotExist(publicKey: string, recoverFlow: boolean) {
+    let proxyWallets;
+    let response;
+    try {
+      response = await fetch(
+      `https://proxy-wallets.obiwallet.workers.dev`,
+      // `http://127.0.0.1:8787`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          chainId: "secret-4",
+          publicKey,
+        }),
+        headers: {
+          "Api-Version": "v1",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "*",
+        }
+      });
+      proxyWallets = (await response.json()) as A.SerializedProxyWallet[];
+      if (proxyWallets.length === 0) {
+        if (!recoverFlow) {
+          this.createMagicAccount();
+        }
+      }
+    } catch (e) {
+      console.log("Proxy wallet worker error. Response: " + response!.text());
+      if (!recoverFlow) {
+        this.createMagicAccount();
+      }
+    }
+  }
+
   public setDeviceKey(keyPair: {
     publicKey: Secp256k1PublicKey;
     privateKey?: string;
-  }) {
+  },
+  recoverFlow?: boolean
+  ) {
+    if (!recoverFlow) {
+      recoverFlow = false;
+    }
     this.setKey({
       type: KeyType.Device,
       payload: keyPair,
@@ -210,12 +251,16 @@ export class MultisigKey {
         evmUserContractAddress: "",
         ownerIndex: 0,
       };
-      this.createMagicAccount();
+
+      this.setupMagicAccountIfDoesNotExist(keyPair.publicKey.value, recoverFlow);
     }
     console.log("Current draft multisig: " + JSON.stringify(this));
   }
 
-  public setUnityKey(deviceId: string) {
+  public setUnityKey(deviceId: string, recoverFlow?: boolean) {
+    if (!recoverFlow) {
+      recoverFlow = false;
+    }
     // use unity device ID to generate a keypair right here,
     // without a function call, and set it as the unity key
 
@@ -252,7 +297,7 @@ export class MultisigKey {
         evmUserContractAddress: "",
         ownerIndex: 0,
       };
-      this.createMagicAccount();
+      this.setupMagicAccountIfDoesNotExist(keyPair.publicKey.value, recoverFlow);
     }
     console.log("Current draft multisig: " + JSON.stringify(this));
   }
