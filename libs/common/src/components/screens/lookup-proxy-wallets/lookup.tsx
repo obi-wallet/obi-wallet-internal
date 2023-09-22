@@ -270,7 +270,7 @@ export const Lookup = observer(function Lookup({
                 KeyType.EmailRecovery,
               );
 
-              invariant(activeDeviceKey, "Device key is required");
+              invariant(activeDeviceKey, "Device or unity key is required");
               /* invariant(
                 recoveredPhoneKey || recoveredEmailKey,
                 "Phone or email key is required",
@@ -392,7 +392,11 @@ export const Lookup = observer(function Lookup({
                 );
 
                 draft.commit({ original: currentOwner });
-                draft.value.setDeviceKey(activeDeviceKey.payload);
+                if (unityStore.getDeviceId) {
+                  draft.value.setUnityKey(unityStore.getDeviceId);
+                } else {
+                  draft.value.setDeviceKey(activeDeviceKey.payload);
+                }
                 console.log("recovered draft: " + JSON.stringify(draft.value));
                 await walletsStore.createWallet({
                   multisigKey: draft.value,
