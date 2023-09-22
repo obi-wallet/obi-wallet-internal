@@ -26,7 +26,7 @@ import invariant from "tiny-invariant";
 
 import * as A from "./api-types";
 import { useStore } from "../../../contexts";
-import { isSmallScreenNumber } from "../../../helpers";
+import { addEllipsisInMiddle, isSmallScreenNumber } from "../../../helpers";
 import { IconButton } from "../../buttons";
 import { OnboardingScreenContainer } from "../../onboarding-screen-container";
 import { Text } from "../../typography";
@@ -215,7 +215,7 @@ export const Lookup = observer(function Lookup({
                       fontWeight: "600",
                     }}
                   >
-                    {Bech32Address.shortenAddress(
+                    { addEllipsisInMiddle(
                       wallet.evmUserContractAddress,
                       20,
                     )}
@@ -430,6 +430,7 @@ export const Lookup = observer(function Lookup({
               style={{
                 color: "white",
                 textAlign: "center",
+                marginBottom: 15,
               }}
             >
               <FormattedMessage
