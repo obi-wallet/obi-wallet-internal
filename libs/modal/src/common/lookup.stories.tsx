@@ -25,8 +25,8 @@ export const Primary: Story = {
         onSelect={async () => {
           mockAction("onSelect");
         }}
-        draftId = ""
-        recoverFrom= { RecoverFrom.Phone }
+        draftId=""
+        recoverFrom={RecoverFrom.Phone}
         onCancel={mockAction("onCancel")}
       />
     );

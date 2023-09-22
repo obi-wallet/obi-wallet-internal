@@ -46,7 +46,10 @@ const MultisigDraft = {
 
     useAsyncEffect(async () => {
       if (!draft) {
-        const original = ObservableMultisigKey.create(undefined, chainStore.currentChain);
+        const original = ObservableMultisigKey.create(
+          undefined,
+          chainStore.currentChain,
+        );
         // check if there's a unity device ID, to do unity
         // otherwise still does webauthn
         if (unityStore.getDeviceId) {

@@ -28,17 +28,21 @@ describe("ObservableMultisigKey", () => {
   };
 
   test(".empty observable", () => {
-    expect(isObservable(ObservableMultisigKey.create(undefined, chain))).toEqual(true);
+    expect(
+      isObservable(ObservableMultisigKey.create(undefined, chain)),
+    ).toEqual(true);
   });
 
   test(".deserialize observable", () => {
-    expect(isObservable(ObservableMultisigKey.create(undefined, chain, fixture))).toEqual(
-      true,
-    );
+    expect(
+      isObservable(ObservableMultisigKey.create(undefined, chain, fixture)),
+    ).toEqual(true);
   });
 
   test(".toJSON pure", () => {
-    expectIsPureObject(ObservableMultisigKey.create(undefined, chain, fixture).toJSON());
+    expectIsPureObject(
+      ObservableMultisigKey.create(undefined, chain, fixture).toJSON(),
+    );
   });
 
   test("chain observable", () => {

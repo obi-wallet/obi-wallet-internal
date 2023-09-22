@@ -28,6 +28,7 @@ export interface ConfirmMessagesProps extends ModalProps {
   chainId: ChainId;
   footer?: ReactNode;
   children?: ReactNode;
+  hint?: string;
 
   onCancel(): void;
 
@@ -49,6 +50,7 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
       footer,
       children,
       isOnboarding,
+      hint,
 
       ...props
     } = confirmProps;
@@ -240,7 +242,13 @@ export const ConfirmMessages = observer<ConfirmMessagesProps>(
 
       switch (selectedTab) {
         case Tab.TransactionDetails:
-          return <MessageView messages={messagesJson} chainId={chainId} />;
+          return (
+            <MessageView
+              messages={messagesJson}
+              chainId={chainId}
+              hint={hint}
+            />
+          );
         case Tab.Data: {
           const data = JSON.stringify(messagesJson, null, 2);
           return (
@@ -310,12 +318,14 @@ export const ConfirmMessagesLogin = observer<ConfirmMessagesProps>(
 interface MessageViewProps {
   messages: MessageJson[];
   chainId: ChainId;
+  hint?: string;
   isObi?: boolean;
 }
 
 const MessageView = observer(function MessageView({
   messages,
   chainId,
+  hint,
 }: MessageViewProps) {
   if (messages.length === 0) return null;
 
@@ -323,7 +333,12 @@ const MessageView = observer(function MessageView({
     <>
       {messages.map((message, index) => {
         return (
-          <PrettyMessage key={index} message={message} chainId={chainId} />
+          <PrettyMessage
+            key={index}
+            message={message}
+            chainId={chainId}
+            hint={hint}
+          />
         );
       })}
     </>

@@ -8,13 +8,10 @@ import {
 import { Config } from "@obi-wallet/config";
 import {
   ExtendedWallet,
-  KeyType,
-  ObservableMultisigWallet,
   SignAndBroadcastTransactionUserInteraction,
-  createGatekeeperConfig,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk";
-import { ethers } from "ethers";
+import { ethers, formatUnits } from "ethers";
 import * as ethers5 from "ethers5";
 import { autorun } from "mobx";
 import { observer } from "mobx-react-lite";
@@ -221,7 +218,21 @@ const MessageHandlers = observer(function MessageHandlers() {
               421613,
             );
           console.log("user op hash is: " + ctx.getUserOpHash());
-
+          const hint =
+            ethTx.functionName === "transfer"
+              ? "Transferring " +
+                formatUnits(
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  (data.payload[0].eth as any).params[1]
+                    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      (data.payload[0].eth as any).params[1]
+                    : 0,
+                  18,
+                ) +
+                " ZTX to " +
+                ethTx.params[0]
+              : ethTx.functionName + " on contract " + ethTx.contractAddress;
+          console.log("attempting to send in hint: " + hint);
           const interactionObj = {
             messages: [{ hash: ctx.getUserOpHash() }],
             targetChainId: data.payload.targetChainId,
@@ -229,6 +240,9 @@ const MessageHandlers = observer(function MessageHandlers() {
             walletMeta: store.walletsStore.currentWallet.meta,
             demoMode: store.walletsStore.currentWallet.isDemo,
             autoBroadcast: false,
+            // TODO: the modal can verify that the hint corresponds to the actual user op
+            // which produces the hash
+            hint,
           };
           console.log(
             "interaction object is: " + JSON.stringify(interactionObj),
@@ -313,111 +327,111 @@ const MessageHandlers = observer(function MessageHandlers() {
           console.log(JSON.stringify(message));
           break;
         }
-          // case "@obi/create-account": {
-          //   // currently unused/broken - use button in modal
-          //   console.log("Handling create-account message");
-          //   const homeChainId =
-          //     data.payload.homeChainId ?? store.chainStore.currentChain;
-          //   const response = await fetch("/api/zauth/create-account", {
-          //     method: "POST",
-          //     body: JSON.stringify({
-          //       homeChainId,
-          //       accessToken: data.payload.accessToken,
-          //       refreshToken: data.payload.refreshToken,
-          //     }),
-          //   });
+        // case "@obi/create-account": {
+        //   // currently unused/broken - use button in modal
+        //   console.log("Handling create-account message");
+        //   const homeChainId =
+        //     data.payload.homeChainId ?? store.chainStore.currentChain;
+        //   const response = await fetch("/api/zauth/create-account", {
+        //     method: "POST",
+        //     body: JSON.stringify({
+        //       homeChainId,
+        //       accessToken: data.payload.accessToken,
+        //       refreshToken: data.payload.refreshToken,
+        //     }),
+        //   });
 
-          //   if (response.status !== 200) {
-          //     const message = {
-          //       type: "@obi/create-account-response",
-          //       payload: {
-          //         error: "invalid token",
-          //       },
-          //     };
-          //     if (event.source) {
-          //       event.source?.postMessage(
-          //         message,
-          //         // @ts-expect-error this is fine
-          //         "*",
-          //       );
-          //       console.log(JSON.stringify(message));
-          //     } else {
-          //       postMessage(message);
-          //       console.log(JSON.stringify(message));
-          //     }
-          //     return;
-          //   }
+        //   if (response.status !== 200) {
+        //     const message = {
+        //       type: "@obi/create-account-response",
+        //       payload: {
+        //         error: "invalid token",
+        //       },
+        //     };
+        //     if (event.source) {
+        //       event.source?.postMessage(
+        //         message,
+        //         // @ts-expect-error this is fine
+        //         "*",
+        //       );
+        //       console.log(JSON.stringify(message));
+        //     } else {
+        //       postMessage(message);
+        //       console.log(JSON.stringify(message));
+        //     }
+        //     return;
+        //   }
 
-          //   const { publicKey, proxyAddress, ethereumAccount, newUser } =
-          //     await response.json();
-          //   console.log("ethereumAccount in modal.tsx is: " + ethereumAccount);
-          //   let evmUserContractAddress: string;
-          //   try {
-          //     evmUserContractAddress = ethereumAccount.address;
-          //     if (!evmUserContractAddress) {
-          //       evmUserContractAddress = ethereumAccount.targetChain.evmAddress;
-          //     }
-          //   } catch (e) {
-          //     evmUserContractAddress = ethereumAccount.targetChain.evmAddress;
-          //   }
-          //   console.log(
-          //     "evm account is: " + JSON.stringify(evmUserContractAddress),
-          //   );
+        //   const { publicKey, proxyAddress, ethereumAccount, newUser } =
+        //     await response.json();
+        //   console.log("ethereumAccount in modal.tsx is: " + ethereumAccount);
+        //   let evmUserContractAddress: string;
+        //   try {
+        //     evmUserContractAddress = ethereumAccount.address;
+        //     if (!evmUserContractAddress) {
+        //       evmUserContractAddress = ethereumAccount.targetChain.evmAddress;
+        //     }
+        //   } catch (e) {
+        //     evmUserContractAddress = ethereumAccount.targetChain.evmAddress;
+        //   }
+        //   console.log(
+        //     "evm account is: " + JSON.stringify(evmUserContractAddress),
+        //   );
 
-          //   const wallet = ObservableMultisigWallet.create({
-          //     type: "multisig",
-          //     data: {
-          //       chain: homeChainId,
-          //       owner: {
-          //         keys: [
-          //           {
-          //             type: KeyType.ZAuth,
-          //             payload: {
-          //               publicKey,
-          //               privateKey: "",
-          //             },
-          //           },
-          //         ],
-          //         threshold: 1,
-          //         evmSigningAddress: "",
-          //         evmUserContractAddress,
-          //       },
-          //       proxyAddress: {
-          //         v: 1,
-          //         address: proxyAddress,
-          //       },
-          //       gatekeeperConfig: createGatekeeperConfig().toJSON(),
-          //       singlesigWallets: [],
-          //       currentAccount: null,
-          //     },
-          //   });
+        //   const wallet = ObservableMultisigWallet.create({
+        //     type: "multisig",
+        //     data: {
+        //       chain: homeChainId,
+        //       owner: {
+        //         keys: [
+        //           {
+        //             type: KeyType.ZAuth,
+        //             payload: {
+        //               publicKey,
+        //               privateKey: "",
+        //             },
+        //           },
+        //         ],
+        //         threshold: 1,
+        //         evmSigningAddress: "",
+        //         evmUserContractAddress,
+        //       },
+        //       proxyAddress: {
+        //         v: 1,
+        //         address: proxyAddress,
+        //       },
+        //       gatekeeperConfig: createGatekeeperConfig().toJSON(),
+        //       singlesigWallets: [],
+        //       currentAccount: null,
+        //     },
+        //   });
 
-          //   store.sdkRootStore.ethereumDemoStore.setEthereumAccount(
-          //     proxyAddress,
-          //     ethereumAccount,
-          //   );
+        //   store.sdkRootStore.ethereumDemoStore.setEthereumAccount(
+        //     proxyAddress,
+        //     ethereumAccount,
+        //   );
 
-          //   store.walletsStore.upsertWallet(wallet);
+        //   store.walletsStore.upsertWallet(wallet);
 
-          // const message = {
-          //   type: "@obi/create-account-response",
-          //   payload: {
-          //     address: ethereumAccount.address,
-          //     newUser,
-          //   },
-          // };
-          // if (event.source) {
-          //   event.source?.postMessage(
-          //     message,
-          //     // @ts-expect-error this is fine
-          //     "*",
-          //   );
-          //   console.log(JSON.stringify(message));
-          // } else {
-          //   postMessage(message);
-          //   console.log(JSON.stringify(message));
-          // }
-          // break;
+        // const message = {
+        //   type: "@obi/create-account-response",
+        //   payload: {
+        //     address: ethereumAccount.address,
+        //     newUser,
+        //   },
+        // };
+        // if (event.source) {
+        //   event.source?.postMessage(
+        //     message,
+        //     // @ts-expect-error this is fine
+        //     "*",
+        //   );
+        //   console.log(JSON.stringify(message));
+        // } else {
+        //   postMessage(message);
+        //   console.log(JSON.stringify(message));
+        // }
+        // break;
         // }
       }
     }

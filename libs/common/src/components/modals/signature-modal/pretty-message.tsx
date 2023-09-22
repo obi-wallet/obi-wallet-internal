@@ -45,22 +45,27 @@ function useChainId() {
 export interface PrettyMessageProps {
   message: MessageJson;
   chainId: ChainId;
+  hint?: string;
 }
 
 export const PrettyMessage = observer<PrettyMessageProps>(
-  function PrettyMessage({ message, chainId }) {
+  function PrettyMessage({ message, chainId, hint }) {
     return (
       <ChainIdContext.Provider value={chainId}>
         <ErrorBoundary FallbackComponent={PrettyMessageUnknown}>
-          <PrettyMessageUnsafe message={message} />
+          <PrettyMessageUnsafe message={message} hint={hint} />
         </ErrorBoundary>
       </ChainIdContext.Provider>
     );
   },
 );
 
-const PrettyMessageUnsafe = observer<Omit<PrettyMessageProps, "chainId">>(
-  function PrettyMessageUnsafe({ message }) {
+type PrettyMessageUnsafeProps = Omit<PrettyMessageProps, "chainId"> & {
+  hint?: string;
+};
+
+const PrettyMessageUnsafe = observer<PrettyMessageUnsafeProps>(
+  function PrettyMessageUnsafe({ message, hint }) {
     const type = R.has("type", message) ? message.type : null;
 
     switch (type) {
@@ -91,10 +96,15 @@ const PrettyMessageUnsafe = observer<Omit<PrettyMessageProps, "chainId">>(
         return <PrettyMessageWithdrawDelegatorReward {...msg} />;
       }
       default:
-        return <PrettyMessageUnknown />;
+        return hint ? (
+          <PrettyMessageUnknown hint={hint} />
+        ) : (
+          <PrettyMessageUnknown />
+        );
     }
   },
 );
+
 const PrettyMessageStaking = observer<
   (MsgDelegate.Amino | MsgUndelegate.Amino) & { label: string }
 >(function PrettyMessageStaking({ value, label }) {
@@ -431,21 +441,30 @@ const PrettyMessageExecuteContract = observer<
   }
 });
 
-const PrettyMessageUnknown = observer(function PrettyMessageUnknown() {
-  const intl = useIntl();
-  return (
-    <MessageElement
-      title={intl.formatMessage({
-        id: "signature.modal.unknownmessage.heading",
-        defaultMessage: "Unknown message",
-      })}
-      subTitle={intl.formatMessage({
-        id: "signature.modal.unknownmessage.subheading",
-        defaultMessage: "Please check data tab",
-      })}
-    />
-  );
-});
+type PrettyMessageUnknownProps = {
+  hint?: string;
+};
+
+const PrettyMessageUnknown = observer<PrettyMessageUnknownProps>(
+  function PrettyMessageUnknown({ hint }) {
+    const intl = useIntl();
+
+    const defaultSubTitle = intl.formatMessage({
+      id: "signature.modal.unknownmessage.subheading",
+      defaultMessage: "Please check data tab",
+    });
+
+    return (
+      <MessageElement
+        title={intl.formatMessage({
+          id: "signature.modal.unknownmessage.heading",
+          defaultMessage: hint ? "Arbitrum User Operation" : "Unknown message",
+        })}
+        subTitle={hint || defaultSubTitle}
+      />
+    );
+  },
+);
 
 interface MessageElementProps {
   title?: string;

@@ -67,7 +67,7 @@ export class MultisigWallet {
         singlesigWallets: this._singlesigWallets.map((s) => s.toJSON()),
         currentAccount: this._currentAccount,
         evmSigningAddress: this._evmSigningAddress,
-        evmUserContractAddress: this._evmUserContractAddress
+        evmUserContractAddress: this._evmUserContractAddress,
       },
     };
   }
