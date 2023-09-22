@@ -12,10 +12,10 @@ import {
   Key,
   KeyType,
   MultisigKey,
+  MultisigWallet,
   ObservableMultisigKey,
   Serialized,
 } from "@obi-wallet/sdk";
-import { MultisigWallet } from "libs/sdk/src/data-structures/multisig-wallet/implementation";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { useState } from "react";
