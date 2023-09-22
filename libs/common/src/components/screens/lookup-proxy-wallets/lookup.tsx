@@ -4,7 +4,6 @@ import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Bech32Address } from "@keplr-wallet/cosmos";
 import { RecoverFrom } from "@obi-wallet/common";
 import {
   Chain,
@@ -215,10 +214,7 @@ export const Lookup = observer(function Lookup({
                       fontWeight: "600",
                     }}
                   >
-                    { addEllipsisInMiddle(
-                      wallet.evmUserContractAddress,
-                      20,
-                    )}
+                    {addEllipsisInMiddle(wallet.evmUserContractAddress, 20)}
                   </Text>
                 </View>
                 <IconButton
