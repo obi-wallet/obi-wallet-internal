@@ -108,6 +108,9 @@ export class Wallets {
     homeAccountAddressOverride?: string | undefined;
   }) {
     let response;
+    // alphabetize the keys in MultisigKey by their KeyType name
+    multisigKey.keys.sort((a, b) => a.type.localeCompare(b.type));
+    console.log("alphabetized keys: " + JSON.stringify(multisigKey.keys));
     if (!skipInit) {
       response = await this.walletsSdk.getAsyncDetailsAndFirstOwnerUpdate({
         multisigKey,

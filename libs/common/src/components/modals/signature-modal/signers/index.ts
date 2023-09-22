@@ -29,12 +29,12 @@ export async function createUsableSigners({
   env: Env;
 }) {
   const possibleUsableKeys = [
-    KeyType.Device,
-    KeyType.Unity,
-    KeyType.Phone,
-    KeyType.Nfc,
     KeyType.Cloud,
+    KeyType.Device,
     KeyType.EmailRecovery,
+    KeyType.Nfc,
+    KeyType.Phone,
+    KeyType.Unity,
   ];
   return (
     await Promise.all(
@@ -74,8 +74,8 @@ async function createUsableSigner({
   env: Env;
 }): Promise<Signer | null> {
   switch (key.type) {
-    case KeyType.ZAuth:
-      return new ZAuthKeySigner(key);
+    case KeyType.Cloud:
+      return new Secp256k1PrivateKeySigner(key.payload.privateKey);
     case KeyType.Device: {
       console.log("switching on key type to KeyType.Device");
       if (!(await getDevicePrivateKey(key))) {
@@ -84,9 +84,13 @@ async function createUsableSigner({
       console.log("getDevicePrivateKey skipped/complete");
       return new DeviceKeySigner(key);
     }
-    case KeyType.Unity: {
-      return new DeviceKeySigner(key);
-    }
+    case KeyType.EmailRecovery:
+      return new Secp256k1PrivateKeySigner(key.payload.privateKey);
+    case KeyType.Nfc:
+      return new NfcKeySigner({
+        key,
+        demoMode,
+      });
     case KeyType.Phone:
       return new PhoneKeySigner({
         key: key,
@@ -94,15 +98,11 @@ async function createUsableSigner({
         demoMode,
         env,
       });
-    case KeyType.Nfc:
-      return new NfcKeySigner({
-        key,
-        demoMode,
-      });
-    case KeyType.Cloud:
-      return new Secp256k1PrivateKeySigner(key.payload.privateKey);
-    case KeyType.EmailRecovery:
-      return new Secp256k1PrivateKeySigner(key.payload.privateKey);
+    case KeyType.Unity: {
+      return new DeviceKeySigner(key);
+    }
+    case KeyType.ZAuth:
+      return new ZAuthKeySigner(key);
     default:
       return null;
   }

@@ -37,45 +37,16 @@ export function useKeyMetaData() {
       Icon: ComponentType<SvgProps>;
     }
   > = {
+    [KeyType.Cloud]: {
+      label: "Cloud Key",
+      Icon: CloudKeyIcon,
+    },
     [KeyType.Device]: {
       label: intl.formatMessage({
         id: "settings.multisig.option.biometricskey",
         defaultMessage: "Biometrics Key",
       }),
       Icon: DeviceKeyIcon,
-    },
-    [KeyType.Phone]: {
-      label: intl.formatMessage({
-        id: "settings.multisig.option.phonekey",
-        defaultMessage: "Phone Key",
-      }),
-      Icon: isWeb() ? PhoneKeyOutlineIcon : PhoneKeyIcon,
-    },
-    [KeyType.Unity]: {
-      label: intl.formatMessage({
-        id: "settings.multisig.option.unitykey",
-        defaultMessage: "Game Install Key",
-      }),
-      Icon: ZtxPlatformRecoveryIcon,
-    },
-    [KeyType.Social]: {
-      label: configStore.config.ethereumBalances
-        ? "Platform Recovery"
-        : intl.formatMessage({
-            id: "settings.multisig.option.socialkey",
-            defaultMessage: "Social Recovery Key",
-          }),
-      Icon: configStore.config.ethereumBalances
-        ? ZtxPlatformRecoveryIcon
-        : SocialKeyIcon,
-    },
-    [KeyType.Nfc]: {
-      label: "NFC Tap Key",
-      Icon: NfcKeyIcon,
-    },
-    [KeyType.Cloud]: {
-      label: "Cloud Key",
-      Icon: CloudKeyIcon,
     },
     [KeyType.Email]: {
       label: intl.formatMessage({
@@ -90,6 +61,35 @@ export function useKeyMetaData() {
         defaultMessage: "Email Recovery Key",
       }),
       Icon: EmailKeyIcon,
+    },
+    [KeyType.Nfc]: {
+      label: "NFC Tap Key",
+      Icon: NfcKeyIcon,
+    },
+    [KeyType.Phone]: {
+      label: intl.formatMessage({
+        id: "settings.multisig.option.phonekey",
+        defaultMessage: "Phone Key",
+      }),
+      Icon: isWeb() ? PhoneKeyOutlineIcon : PhoneKeyIcon,
+    },
+    [KeyType.Social]: {
+      label: configStore.config.ethereumBalances
+        ? "Platform Recovery"
+        : intl.formatMessage({
+            id: "settings.multisig.option.socialkey",
+            defaultMessage: "Social Recovery Key",
+          }),
+      Icon: configStore.config.ethereumBalances
+        ? ZtxPlatformRecoveryIcon
+        : SocialKeyIcon,
+    },
+    [KeyType.Unity]: {
+      label: intl.formatMessage({
+        id: "settings.multisig.option.unitykey",
+        defaultMessage: "Game Install Key",
+      }),
+      Icon: ZtxPlatformRecoveryIcon,
     },
     [KeyType.ZAuth]: {
       // TODO:
