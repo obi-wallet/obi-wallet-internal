@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { create, get } from "@github/webauthn-json";
+import { isInIframe } from "@obi-wallet/common";
 import type { CredentialDeviceType } from "@simplewebauthn/typescript-types";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
@@ -121,15 +122,35 @@ export async function getOrCreateDeviceKeyPair(
       },
     };
     let credential;
-    if (allowCreate) {
-      credential = await create({ publicKey });
-    } else {
-      try {
-        credential = await get({ publicKey });
-      } catch (e) {
+    if (!isInIframe()) {
+      console.log("not in iframe");
+      if (allowCreate) {
         credential = await create({ publicKey });
-        allowCreate = true;
+      } else {
+        try {
+          credential = await get({ publicKey });
+        } catch (e) {
+          credential = await create({ publicKey });
+          allowCreate = true;
+        }
       }
+    } else {
+      console.log("is in iframe");
+      const popup = window.open(
+        (allowCreate
+        ? '/webauthn-auth'
+        : '/webauthn-get'),
+        'webauthn-popup',
+        'width=400,height=800'
+      );
+      window.addEventListener('message', (event) => {
+        if (event.data.type && event.data.type === 'webauthn') {
+            credential = event.data.credential;
+        }
+      });
+    }
+    while (credential === undefined) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
     console.log("webauthn credential id: " + JSON.stringify(credential?.id));
 
