@@ -193,13 +193,41 @@ export class MultisigKey {
     }
   }
 
+  // duplicated for now due to circular dependency
+  private async getProxyWalletsCloudflare(publicKey: string) {
+    try {
+      const response = await fetch(
+        `https://proxy-wallets.obiwallet.workers.dev`,
+        // `http://127.0.0.1:8787`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            chainId: "secret-4",
+            publicKey,
+          }),
+          headers: {
+            "Api-Version": "v1",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*",
+          },
+        },
+      );
+      const proxyWallets = (await response.json()) as unknown[];
+      return proxyWallets;
+    } catch (e) {
+      //probably no wallets
+      console.log("cloudflare worker recover error: " + JSON.stringify(e));
+      return [];
+    }
+  }
+
   private async setupMagicAccountIfDoesNotExist(
     publicKey: string,
     recoverFlow: boolean,
   ) {
     try {
-      const getProxyWalletsCloudflare = (await import("@obi-wallet/common")).getProxyWalletsCloudflare;
-      const proxyWallets = await getProxyWalletsCloudflare(publicKey);
+      const proxyWallets = await this.getProxyWalletsCloudflare(publicKey);
       if (proxyWallets.length === 0) {
         if (!recoverFlow) {
           this.createMagicAccount();

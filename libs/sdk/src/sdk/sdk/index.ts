@@ -1,8 +1,5 @@
 import { AbstractSdk } from "./abstract";
-import { CosmosSdk } from "./cosmos";
-import { LegacyCosmosSdk } from "./legacy-cosmos";
 import { SecretJsSdk } from "./secret-js";
-import { TerraSdk } from "./terra";
 import { Chain, ChainId } from "../../chains";
 
 export class Sdk {

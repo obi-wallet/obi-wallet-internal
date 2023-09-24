@@ -5,14 +5,20 @@ import {
 } from "@cosmjs/amino";
 import { Sha256 } from "@cosmjs/crypto";
 import { pubkeyToAddress, toUtf8 } from "secretjs";
+import {
+  AccountData,
+  AminoSignResponse,
+  AminoSigner,
+  StdSignDoc,
+} from "secretjs/dist/wallet_amino";
 
 import { Signer } from "../../../signers";
-import { AccountData, AminoSignResponse, AminoSigner, StdSignDoc } from "secretjs/dist/wallet_amino";
 
 export interface AminoSignerWithAddress extends AminoSigner {
   readonly address: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function sortObject(obj: any): any {
   console.log("attempting to sortObject: " + JSON.stringify(obj));
   if (typeof obj !== "object" || obj === null || obj === undefined) {
@@ -22,11 +28,12 @@ export function sortObject(obj: any): any {
     return obj.map(sortObject);
   }
   const sortedKeys = Object.keys(obj).sort();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result: Record<string, any> = {};
   // NOTE: Use forEach instead of reduce for performance with large objects eg Wasm code
   sortedKeys.forEach((key) => {
     console.log("Sorting key:", key);
-    if (key === 'msgs') {
+    if (key === "msgs") {
       console.log("Processing msgs array of length:", obj[key].length);
     }
     result[key] = sortObject(obj[key]);
@@ -94,6 +101,7 @@ export class SecretJsAminoSigner implements AminoSignerWithAddress {
   }
 
   /** Returns a JSON string with objects sorted by key, used for Amino signing */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private jsonSortedStringify(obj: any): string {
     const sorted = sortObject(obj);
     return JSON.stringify(sorted);

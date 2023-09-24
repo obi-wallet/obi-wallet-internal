@@ -5,6 +5,8 @@ import {
 } from "@terra-money/feather.js";
 import { BaseAccount } from "cosmjs-types/cosmos/auth/v1beta1/auth";
 import { Account, AminoMsg } from "secretjs";
+import { Coin } from "secretjs/dist/grpc_gateway/cosmos/base/v1beta1/coin.pb";
+import { AuthInfo, TxRaw } from "secretjs/dist/protobuf/cosmos/tx/v1beta1/tx";
 import invariant from "tiny-invariant";
 import warning from "tiny-warning";
 
@@ -19,10 +21,8 @@ import {
   RpcError,
 } from "../../common";
 import { Messages } from "../../messages";
-import { AbstractTransactionsSdk } from "../abstract";
 import { SecretJsMessages } from "../../messages/secret-js";
-import { AuthInfo, TxRaw } from "secretjs/dist/protobuf/cosmos/tx/v1beta1/tx";
-import { Coin } from "secretjs/dist/grpc_gateway/cosmos/base/v1beta1/coin.pb";
+import { AbstractTransactionsSdk } from "../abstract";
 
 export * from "./extended-ethers-signer";
 
@@ -135,7 +135,9 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     const stockClient = await this.client.withSecretNetworkClient((client) => {
       return client;
     });
-    const aminoMessagesPromises = messages.map((message) => this.messages.toJSON(message, stockClient));
+    const aminoMessagesPromises = messages.map((message) =>
+      this.messages.toJSON(message, stockClient),
+    );
     const aminoMessages = await Promise.all(aminoMessagesPromises);
     /* eslint-disable @typescript-eslint/no-explicit-any */
     const checkMessages: any[] = aminoMessages;
@@ -175,7 +177,7 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
         }
         return {
           typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-          value: (aminoMessage as unknown as AminoMsg).value
+          value: (aminoMessage as unknown as AminoMsg).value,
         };
       });
       console.log("done in createMultisigSigner(), returning signer...");
@@ -208,7 +210,7 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     const res = await this.client.withSecretNetworkClient(async (client) => {
       const res = await client.query.bank.balance({
         address: address,
-        denom: "uscrt",
+        denom,
       });
       return res.balance;
     });
@@ -224,7 +226,8 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
   }): Promise<BroadcastTransactionResult> {
     const transaction = TxRaw.decode(signedTransaction);
     const { fee } = AuthInfo.decode(transaction.auth_info_bytes);
-
+    const _fee = fee;
+    const _sender = sender;
     /*
     const hasEnoughForFees = async () => {
       if (!fee) return true;
@@ -243,7 +246,9 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
       await this.lendFees(sender);
     }
     */
-    console.log("signed transaction is: " + Buffer.from(signedTransaction).toString());
+    console.log(
+      "signed transaction is: " + Buffer.from(signedTransaction).toString(),
+    );
     return await this.broadcastSignedTransaction({ signedTransaction });
   }
 

@@ -1,9 +1,6 @@
 import { AbstractMultisigWalletSdk } from "./abstract";
-import { CosmosSdkMultisigWalletSdk } from "./cosmos-sdk";
-import { LegacyCosmosMultisigWalletSdk } from "./legacy-cosmos";
 import { SecretJsMultisigWalletSdk } from "./secret-js";
 import { Chain } from "../../chains";
-import { CosmJsClient, FeatherJsClient } from "../../clients";
 import { MultisigWallet } from "../../data-structures";
 
 export { AbstractMultisigWalletSdk };

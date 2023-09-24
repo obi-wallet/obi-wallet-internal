@@ -1,3 +1,5 @@
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { SecretJsClient } from "libs/sdk/src/clients";
 import warning from "tiny-warning";
 
 import { SecretJsChainId, secretJsChains } from "../../../chains/secret-js";
@@ -9,15 +11,12 @@ import {
 import { Secp256k1PrivateKeySigner, Signer } from "../../../signers";
 import { Message, SignedTransaction } from "../../../transactions";
 import { BroadcastTransactionResult, CodeIds, Token } from "../../common";
+import { Messages } from "../../messages";
+import { SecretJsMessages } from "../../messages/secret-js";
 import {
   AbstractMultisigWalletSdk,
   UpdateGatekeeperConfigParams,
 } from "../abstract";
-import { SecretJsClient } from "libs/sdk/src/clients";
-import { SecretNetworkClient } from "secretjs";
-import { Messages } from "../../messages";
-import { SecretJsMessages } from "../../messages/secret-js";
-import { SignAndBroadcastTransactionUserInteraction } from "libs/sdk/src/user-interactions";
 
 function notImplemented(message: string) {
   warning(false, message);
@@ -66,7 +65,11 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
     return { approved: false };
   }
 
-  public async updateOwner(newOwner: MultisigKey, oldSigner: Secp256k1PrivateKeySigner, newSigner: Secp256k1PrivateKeySigner): Promise<
+  public async updateOwner(
+    newOwner: MultisigKey,
+    oldSigner: Secp256k1PrivateKeySigner,
+    newSigner: Secp256k1PrivateKeySigner,
+  ): Promise<
     | {
         approved: true;
         payload: BroadcastTransactionResult | { success: true };
@@ -95,7 +98,7 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
         return await client.query.compute.queryContract({
           contract_address: this.wallet.proxyAddress,
           code_hash: chain.userEntry.codeHash,
-          query: { user_account_address: {}}
+          query: { user_account_address: {} },
         });
       });
       return res;
@@ -103,7 +106,7 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
       return {
         user_account_address: this.userAccountAddress,
         user_account_code_hash: this.userAccountCodeHash,
-      }
+      };
     }
   }
 
@@ -112,7 +115,7 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
       const client = new SecretJsClient("secret-4");
       const response: {
         pending_owner: string;
-      } = await client.withSecretNetworkClient( async (client) => {
+      } = await client.withSecretNetworkClient(async (client) => {
         const userAccountAddress = await this.getUserAccountAddress();
         const res: {
           pending_owner: string;
@@ -120,7 +123,7 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
           contract_address: userAccountAddress.user_account_address,
           code_hash: userAccountAddress.user_account_code_hash,
           query: { pending_owner: {} },
-        })
+        });
         return res;
       });
       return response.pending_owner;
@@ -129,47 +132,60 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
     }
   }
 
-  protected async proposeUpdateOwner(newOwner: MultisigKey, signer: Secp256k1PrivateKeySigner): Promise<
+  protected async proposeUpdateOwner(
+    newOwner: MultisigKey,
+    signer: Secp256k1PrivateKeySigner,
+  ): Promise<
     | {
         approved: true;
         payload: BroadcastTransactionResult | { success: true };
       }
     | { approved: false }
   > {
-    // const codeIds = await 
+    // const codeIds = await
     // queryClient.ensureQueryData(this.codeIdsQuery());
     const userAccountAddress = await this.getUserAccountAddress();
     const message = this.messages.getProposeUpdateOwnerMessage({
       wallet: this.wallet,
       newOwner,
       userAccountAddress: userAccountAddress.user_account_address,
-      userAccountCodeHash: userAccountAddress.user_account_code_hash
+      userAccountCodeHash: userAccountAddress.user_account_code_hash,
       // codeIds,
     });
     const nextHashResponse: {
       next_hash: string;
-    } = await new SecretJsClient("secret-4").withSecretNetworkClient(async (client) => {
-      return await client.query.compute.queryContract({
-        contract_address: userAccountAddress.user_account_address,
-        code_hash: userAccountAddress.user_account_code_hash,
-        query: { next_hash: {} },
-      })
-    })
+    } = await new SecretJsClient("secret-4").withSecretNetworkClient(
+      async (client) => {
+        return await client.query.compute.queryContract({
+          contract_address: userAccountAddress.user_account_address,
+          code_hash: userAccountAddress.user_account_code_hash,
+          query: { next_hash: {} },
+        });
+      },
+    );
     const nextHash = nextHashResponse.next_hash;
     /// hack for now; sign single. Pass in some active pk signer
     const activeSignature = await signer.signHash(Buffer.from(nextHash, "hex"));
-    const proposeUpdateResponse = await fetch("/api/proxy/presigned-transaction", {
-      method: "POST",
-      body: JSON.stringify({
-        message,
-        userAccountAddress: userAccountAddress.user_account_address,
-        userAccountCodeHash: userAccountAddress.user_account_code_hash,
-        nexthashSignedBySigners: [Buffer.from(activeSignature).toString("hex")],
-      }),
-    });
+    const proposeUpdateResponse = await fetch(
+      "/api/proxy/presigned-transaction",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          message,
+          userAccountAddress: userAccountAddress.user_account_address,
+          userAccountCodeHash: userAccountAddress.user_account_code_hash,
+          nexthashSignedBySigners: [
+            Buffer.from(activeSignature).toString("hex"),
+          ],
+        }),
+      },
+    );
 
     const proposeUpdateResponseJson = await proposeUpdateResponse.json();
-    console.log("propose-update-owner response: " + JSON.stringify(proposeUpdateResponseJson));
+    console.log(
+      "propose-update-owner response: " +
+        JSON.stringify(proposeUpdateResponseJson),
+    );
 
     /*
     const response = await SignAndBroadcastTransactionUserInteraction.start({
@@ -192,7 +208,10 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
     return proposeUpdateResponseJson;
   }
 
-  protected async confirmUpdateOwner(newOwner: MultisigKey, signer: Secp256k1PrivateKeySigner): Promise<
+  protected async confirmUpdateOwner(
+    newOwner: MultisigKey,
+    signer: Secp256k1PrivateKeySigner,
+  ): Promise<
     | {
         approved: true;
         payload: BroadcastTransactionResult | { success: true };
@@ -204,33 +223,43 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
       wallet: this.wallet,
       newOwner,
       userAccountAddress: userAccountAddress.user_account_address,
-      userAccountCodeHash: userAccountAddress.user_account_code_hash
+      userAccountCodeHash: userAccountAddress.user_account_code_hash,
       // codeIds,
     });
     const nextHashResponse: {
       next_hash: string;
-    } = await new SecretJsClient("secret-4").withSecretNetworkClient(async (client) => {
-      return await client.query.compute.queryContract({
-        contract_address: userAccountAddress.user_account_address,
-        code_hash: userAccountAddress.user_account_code_hash,
-        query: { next_hash: {} },
-      })
-    })
+    } = await new SecretJsClient("secret-4").withSecretNetworkClient(
+      async (client) => {
+        return await client.query.compute.queryContract({
+          contract_address: userAccountAddress.user_account_address,
+          code_hash: userAccountAddress.user_account_code_hash,
+          query: { next_hash: {} },
+        });
+      },
+    );
     const nextHash = nextHashResponse.next_hash;
     /// hack for now; sign single. Pass in some active pk signer
     const activeSignature = await signer.signHash(Buffer.from(nextHash, "hex"));
-    const confirmUpdateResponse = await fetch("/api/proxy/presigned-transaction", {
-      method: "POST",
-      body: JSON.stringify({
-        message,
-        userAccountAddress: userAccountAddress.user_account_address,
-        userAccountCodeHash: userAccountAddress.user_account_code_hash,
-        nexthashSignedBySigners: [Buffer.from(activeSignature).toString("hex")],
-      }),
-    });
+    const confirmUpdateResponse = await fetch(
+      "/api/proxy/presigned-transaction",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          message,
+          userAccountAddress: userAccountAddress.user_account_address,
+          userAccountCodeHash: userAccountAddress.user_account_code_hash,
+          nexthashSignedBySigners: [
+            Buffer.from(activeSignature).toString("hex"),
+          ],
+        }),
+      },
+    );
 
     const confirmUpdateResponseJson = await confirmUpdateResponse.json();
-    console.log("confirm-update-owner response: " + JSON.stringify(confirmUpdateResponseJson));
+    console.log(
+      "confirm-update-owner response: " +
+        JSON.stringify(confirmUpdateResponseJson),
+    );
 
     /*
     const response = await SignAndBroadcastTransactionUserInteraction.start({

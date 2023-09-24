@@ -1,18 +1,12 @@
-import {
-  MsgExecuteContract,
-} from "secretjs";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import {
-  ChainId,
-  MessageJson,
-  Token,
-} from "@obi-wallet/sdk";
+import { ChainId, MessageJson, Token } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { createContext, ReactNode, useContext } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
+import { MsgExecuteContract } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { useStore } from "../../../contexts";
@@ -23,8 +17,9 @@ import { Text } from "../../typography";
 const ChainIdContext = createContext<ChainId | null>(null);
 type AminoMsgExecuteContract = {
   type: "wasm/MsgExecuteContract";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: MsgExecuteContract<any>;
-}
+};
 
 function useChainId() {
   const chainId = useContext(ChainIdContext);
@@ -209,158 +204,188 @@ const PrettyMessageUnsafe = observer<PrettyMessageUnsafeProps>(
 //   );
 // });
 
-const PrettyMessageExecuteContract = observer<
-  AminoMsgExecuteContract
->(function PrettyMessageExecuteContract({ value }) {
-  const intl = useIntl();
-  const message = getMessage();
-  const funds = getFunds();
-  if (typeof message === "object" && R.has("propose_update_owner", message)) {
-    return (
-      <MessageElement
-        title="Update Multikey (step 1 of 2)"
-        coins={[...funds]}
-      />
-    );
-  }
+const PrettyMessageExecuteContract = observer<AminoMsgExecuteContract>(
+  function PrettyMessageExecuteContract({ value }) {
+    const intl = useIntl();
+    const message = getMessage();
+    const funds = getFunds();
+    if (typeof message === "object" && R.has("propose_update_owner", message)) {
+      return (
+        <MessageElement
+          title="Update Multikey (step 1 of 2)"
+          coins={[...funds]}
+        />
+      );
+    }
 
-  if (typeof message === "object" && R.has("confirm_update_owner", message)) {
-    return (
-      <MessageElement title="Confirm Update (step 2 of 2)" coins={[...funds]} />
-    );
-  }
+    if (typeof message === "object" && R.has("confirm_update_owner", message)) {
+      return (
+        <MessageElement
+          title="Confirm Update (step 2 of 2)"
+          coins={[...funds]}
+        />
+      );
+    }
 
-  if (typeof message === "object" && R.has("propose_update_admin", message)) {
-    return (
-      <MessageElement
-        title={intl.formatMessage({
-          id: "signature.modal.proposeupdateadmin",
-          defaultMessage: "Update Multikey (step 1 of 2)",
-        })}
-        coins={[...funds]}
-      />
-    );
-  }
+    if (typeof message === "object" && R.has("propose_update_admin", message)) {
+      return (
+        <MessageElement
+          title={intl.formatMessage({
+            id: "signature.modal.proposeupdateadmin",
+            defaultMessage: "Update Multikey (step 1 of 2)",
+          })}
+          coins={[...funds]}
+        />
+      );
+    }
 
-  if (typeof message === "object" && R.has("confirm_update_admin", message)) {
-    return (
-      <MessageElement
-        title={intl.formatMessage({
-          id: "signature.modal.confirmupdateadmin",
-          defaultMessage: "Confirm Update (step 2 of 2)",
-        })}
-        coins={[...funds]}
-      />
-    );
-  }
+    if (typeof message === "object" && R.has("confirm_update_admin", message)) {
+      return (
+        <MessageElement
+          title={intl.formatMessage({
+            id: "signature.modal.confirmupdateadmin",
+            defaultMessage: "Confirm Update (step 2 of 2)",
+          })}
+          coins={[...funds]}
+        />
+      );
+    }
 
-  if (typeof message === "object" && R.has("new_account", message)) {
-    return <MessageElement coins={[...funds]} title="Create Obi Wallet" />;
-  }
+    if (typeof message === "object" && R.has("new_account", message)) {
+      return <MessageElement coins={[...funds]} title="Create Obi Wallet" />;
+    }
 
-  if (typeof message === "object" && R.has("wrapped_migrate", message)) {
-    return <MessageElement coins={[...funds]} title="Update Obi Wallet" />;
-  }
-  if (
-    typeof message === "object" &&
-    R.has("upsert_permissioned_address", message)
-  ) {
-    const msg = message as {
-      upsert_permissioned_address: {
-        new_permissioned_address: {
+    if (typeof message === "object" && R.has("wrapped_migrate", message)) {
+      return <MessageElement coins={[...funds]} title="Update Obi Wallet" />;
+    }
+    if (
+      typeof message === "object" &&
+      R.has("upsert_permissioned_address", message)
+    ) {
+      const msg = message as {
+        upsert_permissioned_address: {
+          new_permissioned_address: {
+            address: string;
+          };
+        };
+      };
+      return (
+        <MessageElement
+          coins={[...funds]}
+          title="Add/Update Permissioned Address"
+        >
+          <Text style={{ color: "white" }}>
+            {Bech32Address.shortenAddress(
+              msg.upsert_permissioned_address.new_permissioned_address.address,
+              35,
+            )}
+          </Text>
+        </MessageElement>
+      );
+    }
+    if (
+      typeof message === "object" &&
+      R.has("rm_permissioned_address", message)
+    ) {
+      const msg = message as {
+        rm_permissioned_address: {
+          doomed_permissioned_address: string;
+        };
+      };
+      return (
+        <MessageElement coins={[...funds]} title="Remove Permissioned Address">
+          <Text style={{ color: "white" }}>
+            {Bech32Address.shortenAddress(
+              msg.rm_permissioned_address?.doomed_permissioned_address,
+              35,
+            )}
+          </Text>
+        </MessageElement>
+      );
+    }
+    if (typeof message === "object" && R.has("create_session_key", message)) {
+      const msg = message as {
+        create_session_key: {
           address: string;
         };
       };
-    };
-    return (
-      <MessageElement
-        coins={[...funds]}
-        title="Add/Update Permissioned Address"
-      >
-        <Text style={{ color: "white" }}>
-          {Bech32Address.shortenAddress(
-            msg.upsert_permissioned_address.new_permissioned_address.address,
-            35,
-          )}
-        </Text>
-      </MessageElement>
-    );
-  }
-  if (
-    typeof message === "object" &&
-    R.has("rm_permissioned_address", message)
-  ) {
-    const msg = message as {
-      rm_permissioned_address: {
-        doomed_permissioned_address: string;
-      };
-    };
-    return (
-      <MessageElement coins={[...funds]} title="Remove Permissioned Address">
-        <Text style={{ color: "white" }}>
-          {Bech32Address.shortenAddress(
-            msg.rm_permissioned_address?.doomed_permissioned_address,
-            35,
-          )}
-        </Text>
-      </MessageElement>
-    );
-  }
-  if (typeof message === "object" && R.has("create_session_key", message)) {
-    const msg = message as {
-      create_session_key: {
-        address: string;
-      };
-    };
-    return (
-      <MessageElement coins={[...funds]} title="Create Session Key">
-        <Text style={{ color: "white" }}>
-          {Bech32Address.shortenAddress(msg.create_session_key.address, 35)}
-        </Text>
-      </MessageElement>
-    );
-  }
-  if (typeof message === "object" && R.has("destroy_session_key", message)) {
-    const msg = message as {
-      destroy_session_key: {
-        address: string;
-      };
-    };
-    return (
-      <MessageElement coins={[...funds]} title="Destroy Session Key">
-        <Text style={{ color: "white" }}>
-          {Bech32Address.shortenAddress(msg.destroy_session_key.address, 35)}
-        </Text>
-      </MessageElement>
-    );
-  }
-  if (typeof message === "object" && R.has("upsert_beneficiary", message)) {
-    const msg = message as {
-      upsert_beneficiary: {
-        new_beneficiary: {
+      return (
+        <MessageElement coins={[...funds]} title="Create Session Key">
+          <Text style={{ color: "white" }}>
+            {Bech32Address.shortenAddress(msg.create_session_key.address, 35)}
+          </Text>
+        </MessageElement>
+      );
+    }
+    if (typeof message === "object" && R.has("destroy_session_key", message)) {
+      const msg = message as {
+        destroy_session_key: {
           address: string;
-          cooldown: number;
-          period_multiple: number;
-          spend_limits: [
-            {
-              amount: string;
-            },
-          ];
         };
       };
-    };
-    // cooldown (days) to months
-    const cooldown = msg.upsert_beneficiary.new_beneficiary.cooldown / 30;
-    const percent =
-      msg.upsert_beneficiary.new_beneficiary.spend_limits[0].amount;
-    // if period_multiple is 1, then it's a monthly payment else it's an annual payment
-    const period =
-      msg.upsert_beneficiary.new_beneficiary.period_multiple === 1
-        ? "monthly"
-        : "annually";
+      return (
+        <MessageElement coins={[...funds]} title="Destroy Session Key">
+          <Text style={{ color: "white" }}>
+            {Bech32Address.shortenAddress(msg.destroy_session_key.address, 35)}
+          </Text>
+        </MessageElement>
+      );
+    }
+    if (typeof message === "object" && R.has("upsert_beneficiary", message)) {
+      const msg = message as {
+        upsert_beneficiary: {
+          new_beneficiary: {
+            address: string;
+            cooldown: number;
+            period_multiple: number;
+            spend_limits: [
+              {
+                amount: string;
+              },
+            ];
+          };
+        };
+      };
+      // cooldown (days) to months
+      const cooldown = msg.upsert_beneficiary.new_beneficiary.cooldown / 30;
+      const percent =
+        msg.upsert_beneficiary.new_beneficiary.spend_limits[0].amount;
+      // if period_multiple is 1, then it's a monthly payment else it's an annual payment
+      const period =
+        msg.upsert_beneficiary.new_beneficiary.period_multiple === 1
+          ? "monthly"
+          : "annually";
 
+      return (
+        <MessageElement coins={[...funds]} title="Add/Update Beneficiary">
+          <View
+            style={{
+              flex: 1,
+              width: "100%",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "white" }}>
+              {Bech32Address.shortenAddress(
+                msg.upsert_beneficiary.new_beneficiary.address,
+                35,
+              )}
+            </Text>
+            <Text style={{ color: "rgba(255,255,255,0.6)" }}>
+              will receive{" "}
+              <Text style={{ color: "white" }}>
+                {percent}% {period}
+              </Text>{" "}
+              after{" "}
+              <Text style={{ color: "white" }}>{Math.round(cooldown)}</Text>{" "}
+              months of inactivity
+            </Text>
+          </View>
+        </MessageElement>
+      );
+    }
     return (
-      <MessageElement coins={[...funds]} title="Add/Update Beneficiary">
+      <MessageElement title="Execute Wasm Contract" coins={funds}>
         <View
           style={{
             flex: 1,
@@ -368,56 +393,30 @@ const PrettyMessageExecuteContract = observer<
             alignItems: "center",
           }}
         >
-          <Text style={{ color: "white" }}>
-            {Bech32Address.shortenAddress(
-              msg.upsert_beneficiary.new_beneficiary.address,
-              35,
-            )}
+          <Text style={{ fontWeight: "700", color: "#fff" }}>
+            {Bech32Address.shortenAddress(value.contractAddress, 35)}
           </Text>
-          <Text style={{ color: "rgba(255,255,255,0.6)" }}>
-            will receive{" "}
-            <Text style={{ color: "white" }}>
-              {percent}% {period}
-            </Text>{" "}
-            after <Text style={{ color: "white" }}>{Math.round(cooldown)}</Text>{" "}
-            months of inactivity
+          <Text style={{ color: "white" }}>
+            Check the data tab for the full message
           </Text>
         </View>
       </MessageElement>
     );
-  }
-  return (
-    <MessageElement title="Execute Wasm Contract" coins={funds}>
-      <View
-        style={{
-          flex: 1,
-          width: "100%",
-          alignItems: "center",
-        }}
-      >
-        <Text style={{ fontWeight: "700", color: "#fff" }}>
-          {Bech32Address.shortenAddress(value.contractAddress, 35)}
-        </Text>
-        <Text style={{ color: "white" }}>
-          Check the data tab for the full message
-        </Text>
-      </View>
-    </MessageElement>
-  );
 
-  function getMessage(): unknown {
-    return value.msg;
-  }
+    function getMessage(): unknown {
+      return value.msg;
+    }
 
-  function getFunds(): readonly Token[] {
-    return value.sentFunds.map((coin) => {
-          return {
-            id: coin.denom,
-            rawAmount: coin.amount,
-          };
-        });
-  }
-});
+    function getFunds(): readonly Token[] {
+      return value.sentFunds.map((coin) => {
+        return {
+          id: coin.denom,
+          rawAmount: coin.amount,
+        };
+      });
+    }
+  },
+);
 
 type PrettyMessageUnknownProps = {
   hint?: string;

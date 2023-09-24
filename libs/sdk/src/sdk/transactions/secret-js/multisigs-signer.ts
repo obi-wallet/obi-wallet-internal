@@ -14,19 +14,19 @@ import {
 import { defaultRegistryTypes, makeMultisignedTx } from "@cosmjs/stargate";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { Interface, InterfaceAbi } from "ethers";
-import { Account, AminoMsg, MsgExecuteContract } from "secretjs";
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { SecretJsClient } from "libs/sdk/src/clients";
+import { Account, AminoMsg } from "secretjs";
+import { BaseAccount } from "secretjs/dist/protobuf/cosmos/auth/v1beta1/auth";
 import invariant from "tiny-invariant";
 
-import { Chain, SecretJsChainId, secretJsChains } from "../../../chains";
+import { Chain, SecretJsChainId } from "../../../chains";
 import { MultisigPublicKey } from "../../../keys";
 import {
   MultisigSigner as AbstractMultisigSigner,
   Signer,
 } from "../../../signers";
-import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
 import { SecretJsAminoSigner } from "../../common/secret-js/amino-signer";
-import { SecretJsClient } from "libs/sdk/src/clients";
-import { BaseAccount } from "secretjs/dist/protobuf/cosmos/auth/v1beta1/auth";
 
 const registry = new Registry([...defaultRegistryTypes, ...wasmTypes]);
 
@@ -136,14 +136,16 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       this.signDoc = undefined;
     } else {
       const client = new SecretJsClient("secret-4");
-      const account = client.withSecretNetworkClient(async (client) => {
+      const _account = client.withSecretNetworkClient(async (client) => {
         const account = await client.query.auth.account({
           address: messages[0].value.sender,
         });
-        console.log("account retrieved: " + JSON.stringify(account));          
+        console.log("account retrieved: " + JSON.stringify(account));
         this.signDoc = {
           memo: "",
-          account_number: (account.account as BaseAccount).account_number.toString(),
+          account_number: (
+            account.account as BaseAccount
+          ).account_number.toString(),
           chain_id: chainId,
           fee: fee,
           msgs: messages,
@@ -174,7 +176,7 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     const offlineAminoSigner = SecretJsAminoSigner.fromSigner({
       signer,
       prefix: this.prefix,
-    })
+    });
     if (this.signDoc) {
       return await offlineAminoSigner.signStdSignDoc(this.signDoc);
     } else if (this.signHash) {

@@ -56,7 +56,7 @@ export abstract class AbstractMessages<T> {
     wallet,
     newOwner,
     userAccountAddress,
-    userAccountCodeHash
+    userAccountCodeHash,
   }: {
     wallet: MultisigWallet;
     newOwner: MultisigKey;
@@ -71,7 +71,7 @@ export abstract class AbstractMessages<T> {
     wallet,
     newOwner,
     userAccountAddress,
-    userAccountCodeHash
+    userAccountCodeHash,
   }: {
     wallet: MultisigWallet;
     newOwner: MultisigKey;

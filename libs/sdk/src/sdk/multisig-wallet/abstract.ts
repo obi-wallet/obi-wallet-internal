@@ -74,7 +74,11 @@ export abstract class AbstractMultisigWalletSdk {
     | { approved: false }
   >;
 
-  public abstract updateOwner(newOwner: MultisigKey, oldSigner: Secp256k1PrivateKeySigner, newSigner: Secp256k1PrivateKeySigner): Promise<
+  public abstract updateOwner(
+    newOwner: MultisigKey,
+    oldSigner: Secp256k1PrivateKeySigner,
+    newSigner: Secp256k1PrivateKeySigner,
+  ): Promise<
     | {
         approved: true;
         payload: BroadcastTransactionResult | { success: true };

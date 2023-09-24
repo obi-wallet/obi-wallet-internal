@@ -1,8 +1,5 @@
-import { MsgSend } from "@terra-money/feather.js";
-
 import {
   MultisigPublicKey,
-  Sdk,
   Secp256k1KeyPair,
   Secp256k1PrivateKeySigner,
 } from "../src";
@@ -31,7 +28,7 @@ jest.setTimeout(60_000);
 
 describe("MultisigSigner", () => {
   let signer: Secp256k1PrivateKeySigner;
-  let multisigPublicKey: MultisigPublicKey;
+  let _multisigPublicKey: MultisigPublicKey;
 
   beforeEach(() => {
     signer = new Secp256k1PrivateKeySigner(keyPair.privateKey);

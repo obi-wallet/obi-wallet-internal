@@ -1,7 +1,4 @@
-import { CosmosChainId, cosmosChains } from "./cosmos";
-import { LegacyCosmosChainId, legacyCosmosChains } from "./legacy-cosmos";
 import { SecretJsChainId, secretJsChains } from "./secret-js";
-import { TerraChainId, terraChains } from "./terra";
 
 export * from "./cosmos";
 export * from "./legacy-cosmos";
@@ -11,8 +8,8 @@ export * from "./terra";
 export type ChainId =
   /* | CosmosChainId
   | LegacyCosmosChainId */
-  | SecretJsChainId
-  /* | TerraChainId; */
+  SecretJsChainId;
+/* | TerraChainId; */
 
 export const Chain = {
   select,
@@ -20,7 +17,7 @@ export const Chain = {
     return select<
       // | (typeof cosmosChains)[CosmosChainId]
       // | (typeof legacyCosmosChains)[LegacyCosmosChainId]
-      | (typeof secretJsChains)[SecretJsChainId]
+      (typeof secretJsChains)[SecretJsChainId]
       // | (typeof terraChains)[TerraChainId]
     >({
       chainId: chainId,
@@ -44,10 +41,8 @@ function select<T>({
   chainId,
   /*onCosmosChain,
   onLegacyCosmosChain,*/
-  onSecretJsChain,
-  /*onTerraChain,*/
+  onSecretJsChain /*onTerraChain,*/,
 }: {
-  chainId: ChainId;
   /*onCosmosChain(chain: (typeof cosmosChains)[CosmosChainId]): T;
   onLegacyCosmosChain(
     chain: (typeof legacyCosmosChains)[LegacyCosmosChainId],
@@ -55,6 +50,7 @@ function select<T>({
   onSecretJsChain(chain: (typeof secretJsChains)[SecretJsChainId]): T;
   /*onTerraChain(chain: (typeof terraChains)[TerraChainId]): T;*/
 }) {
+  const _chainId = chainId;
   return onSecretJsChain(secretJsChains["secret-4"]);
   /* if (isCosmosChain(chainId)) {
     return onCosmosChain(cosmosChains[chainId]);
