@@ -226,6 +226,7 @@ export class MultisigKey {
     publicKey: string,
     recoverFlow: boolean,
   ) {
+    console.log("In setupMagicAccountIfDoesNotExist(), recoverFlow is " + recoverFlow);
     try {
       const proxyWallets = await this.getProxyWalletsCloudflare(publicKey);
       if (proxyWallets.length === 0) {
@@ -247,7 +248,7 @@ export class MultisigKey {
     },
     recoverFlow?: boolean,
   ) {
-    if (!recoverFlow) {
+    if (recoverFlow === undefined) {
       recoverFlow = false;
     }
     this.setKey({
@@ -273,7 +274,7 @@ export class MultisigKey {
   }
 
   public setUnityKey(deviceId: string, recoverFlow?: boolean) {
-    if (!recoverFlow) {
+    if (recoverFlow === undefined) {
       recoverFlow = false;
     }
     // use unity device ID to generate a keypair right here,

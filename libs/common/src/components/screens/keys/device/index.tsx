@@ -56,12 +56,12 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
       <DeviceKey
         {...params}
         onSubmit={async (userSaysDeviceIsNew, devicePubKey) => {
-          if (params.flow !== KeyFlow.CreateWallet && userSaysDeviceIsNew) {
+          if (params.flow === KeyFlow.RecoverWallet && userSaysDeviceIsNew) {
             // User says device is new, we must recover with a different key type
             navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
             return;
           } else if (
-            params.flow !== KeyFlow.CreateWallet &&
+            params.flow === KeyFlow.RecoverWallet &&
             !userSaysDeviceIsNew
           ) {
             // User says device is not new; let's look up its pubkey and only
@@ -86,6 +86,8 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
                 parsedProxyWallets[0],
               );
             }
+          } else {
+            navigation.navigate(OnboardingRoute.CreateWallet, params);
           }
           const requiredKeys = configStore.config.keys.required;
           const requiredRoutes = requiredKeys.map(keyTypeToKeyRoute);
@@ -159,10 +161,10 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 
   async function scanBiometricsOrWebAuthN(
     create: boolean,
-    recoverFlow?: boolean,
+    userSaysDeviceIsNew?: boolean,
   ): Promise<[boolean, boolean, Secp256k1KeyPair | undefined]> {
-    if (!recoverFlow) {
-      recoverFlow = false;
+    if (userSaysDeviceIsNew === undefined) {
+      userSaysDeviceIsNew = true;
     }
     try {
       console.log("getting device key...");
@@ -171,7 +173,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         demoMode,
       );
       console.log("setting device key...");
-      draft.value.setDeviceKey(keyPair, recoverFlow);
+      draft.value.setDeviceKey(keyPair, !userSaysDeviceIsNew);
       console.log("device key set..");
       void queryClient.prefetchQuery(
         Sdk.chainId(
@@ -213,7 +215,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
     } else {
       const [success, _newUser, deviceKeypair] = await scanBiometricsOrWebAuthN(
         false,
-        true,
+        userSaysDeviceIsNew,
       );
       requiredPubkey = deviceKeypair?.publicKey.value;
       invariant(requiredPubkey, "could not get device pubkey");

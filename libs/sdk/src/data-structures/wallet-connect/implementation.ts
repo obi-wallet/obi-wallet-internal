@@ -8,7 +8,7 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 
 import { WalletConnectSchema } from "./schema";
-import { isTerraChain } from "../../chains";
+// import { isTerraChain } from "../../chains";
 import {
   InitiateWalletConnectSessionUserInteraction,
   SignAndBroadcastTransactionUserInteraction,
@@ -215,10 +215,10 @@ export class WalletConnect {
       switch (method) {
         case "post": {
           try {
-            invariant(
-              isTerraChain(wallet?.chainId),
-              "Expected wallet to be terra multisig.",
-            );
+            // invariant(
+            //   isTerraChain(wallet?.chainId),
+            //   "Expected wallet to be terra multisig.",
+            // );
 
             const { msgs } = params[0] as {
               msgs: string[];
