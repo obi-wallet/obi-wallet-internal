@@ -7,8 +7,8 @@ import { ComingSoonKeyType } from "./key";
 
 export const obiMobileConfig: Config = {
   chains: {
-    enabled: ["phoenix-1"],
-    default: "phoenix-1",
+    enabled: ["secret-4"],
+    default: "secret-4",
   },
   languages: {
     enabled: ["en"],

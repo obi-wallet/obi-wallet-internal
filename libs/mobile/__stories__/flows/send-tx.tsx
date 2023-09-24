@@ -15,7 +15,7 @@ function SendMultisigTxFixture() {
 
   const interaction: SignAndBroadcastTransactionUserInteraction = {
     payload: {
-      messages: [new MsgSend(wallet.address, wallet.address, { uluna: 1 })],
+      messages: [new MsgSend(wallet.address, wallet.address, { uscrt: 1 })],
       walletMeta: {
         walletId: wallet.id,
         currentAccount: null,
@@ -43,7 +43,7 @@ function SendFlexAccountTxFixture() {
 
   const interaction: SignAndBroadcastTransactionUserInteraction = {
     payload: {
-      messages: [new MsgSend(wallet.address, wallet.address, { uluna: 1 })],
+      messages: [new MsgSend(wallet.address, wallet.address, { uscrt: 1 })],
       walletMeta: {
         walletId: wallet.id,
         currentAccount: {
@@ -71,13 +71,13 @@ function SendSinglesigWalletTxFixture() {
 
   // TODO: add fallback
   invariant(singlesigWallet, "No singlesig wallet");
-  const address = Sdk.chainId("phoenix-1").transactions.getAddressOfPublicKey(
+  const address = Sdk.chainId("secret-4").transactions.getAddressOfPublicKey(
     singlesigWallet.publicKey,
   );
 
   const interaction: SignAndBroadcastTransactionUserInteraction = {
     payload: {
-      messages: [new MsgSend(address, address, { uluna: 1 })],
+      messages: [new MsgSend(address, address, { uscrt: 1 })],
       walletMeta: {
         walletId: wallet.id,
         currentAccount: {

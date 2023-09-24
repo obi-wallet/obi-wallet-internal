@@ -1,20 +1,38 @@
 import {
-  AminoSignResponse,
+  // AminoSignResponse,
   encodeSecp256k1Signature,
-  serializeSignDoc,
+  // serializeSignDoc,
 } from "@cosmjs/amino";
 import { Sha256 } from "@cosmjs/crypto";
-import { pubkeyToAddress } from "secretjs";
-import type {
-  AccountData,
-  AminoSigner,
-  StdSignDoc,
-} from "secretjs/dist/wallet_amino";
+import { pubkeyToAddress, toUtf8 } from "secretjs";
 
 import { Signer } from "../../../signers";
+import { AccountData, AminoSignResponse, AminoSigner, StdSignDoc } from "secretjs/dist/wallet_amino";
 
 export interface AminoSignerWithAddress extends AminoSigner {
   readonly address: string;
+}
+
+export function sortObject(obj: any): any {
+  console.log("attempting to sortObject: " + JSON.stringify(obj));
+  if (typeof obj !== "object" || obj === null || obj === undefined) {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(sortObject);
+  }
+  const sortedKeys = Object.keys(obj).sort();
+  const result: Record<string, any> = {};
+  // NOTE: Use forEach instead of reduce for performance with large objects eg Wasm code
+  sortedKeys.forEach((key) => {
+    console.log("Sorting key:", key);
+    if (key === 'msgs') {
+      console.log("Processing msgs array of length:", obj[key].length);
+    }
+    result[key] = sortObject(obj[key]);
+  });
+  console.log("sort result: " + JSON.stringify(result));
+  return result;
 }
 
 export class SecretJsAminoSigner implements AminoSignerWithAddress {
@@ -58,7 +76,9 @@ export class SecretJsAminoSigner implements AminoSignerWithAddress {
     if (signerAddress !== this.address) {
       throw new Error(`Address ${signerAddress} not found in wallet`);
     }
+
     const signature = await this.signStdSignDoc(signDoc);
+
     return {
       signed: signDoc,
       signature: encodeSecp256k1Signature(this.publicKey, signature),
@@ -73,8 +93,23 @@ export class SecretJsAminoSigner implements AminoSignerWithAddress {
     return await this.signer.signHash(hash);
   }
 
+  /** Returns a JSON string with objects sorted by key, used for Amino signing */
+  private jsonSortedStringify(obj: any): string {
+    const sorted = sortObject(obj);
+    return JSON.stringify(sorted);
+  }
+
+  public serializeSignDoc(signDoc: StdSignDoc): Uint8Array {
+    console.log("serializing sign doc: " + JSON.stringify(signDoc));
+    return toUtf8(this.jsonSortedStringify(signDoc));
+  }
+
   public async signStdSignDoc(signDoc: StdSignDoc) {
-    const hash = new Sha256(serializeSignDoc(signDoc)).digest();
+    const serialized = this.serializeSignDoc(signDoc);
+    console.log("serialized sign doc: " + Buffer.from(serialized).toString());
+    const hash = new Sha256().digest();
+    console.log("Serialized!");
+    console.log("this signer is: " + JSON.stringify(this.signer));
     return await this.signer.signHash(hash);
   }
 }

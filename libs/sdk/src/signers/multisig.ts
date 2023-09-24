@@ -26,10 +26,12 @@ export abstract class MultisigSigner<T = unknown> {
   }
 
   public async addSigner(signer: Signer) {
+    console.log("adding signer with pubkey: " + signer.publicKey.value);
     this.signatures.set(
       signer.publicKey.value,
       await this.createSignature(signer),
     );
+    console.log("signatures set!: " + JSON.stringify(this.signatures));
   }
 
   public alreadySigned(publicKey: Secp256k1PublicKey) {

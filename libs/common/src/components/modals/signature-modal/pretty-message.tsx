@@ -1,26 +1,12 @@
 import {
-  AminoMsgExecuteContract,
-  AminoMsgInstantiateContract,
-} from "@cosmjs/cosmwasm-stargate/build/modules";
-import { AminoMsgSend } from "@cosmjs/stargate";
+  MsgExecuteContract,
+} from "secretjs";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { useQuery, useValidators } from "@obi-wallet/headless-ui";
 import {
   ChainId,
-  isLegacyCosmosChain,
-  legacyCosmosChains,
   MessageJson,
-  Sdk,
   Token,
 } from "@obi-wallet/sdk";
-import {
-  MsgDelegate,
-  MsgExecuteContract,
-  MsgInstantiateContract,
-  MsgSend,
-  MsgUndelegate,
-  MsgWithdrawDelegatorReward,
-} from "@terra-money/feather.js";
 import { observer } from "mobx-react-lite";
 import * as R from "ramda";
 import { createContext, ReactNode, useContext } from "react";
@@ -35,6 +21,10 @@ import { CoinIcon } from "../../icons";
 import { Text } from "../../typography";
 
 const ChainIdContext = createContext<ChainId | null>(null);
+type AminoMsgExecuteContract = {
+  type: "wasm/MsgExecuteContract";
+  value: MsgExecuteContract<any>;
+}
 
 function useChainId() {
   const chainId = useContext(ChainIdContext);
@@ -73,32 +63,32 @@ const PrettyMessageUnsafe = observer<PrettyMessageUnsafeProps>(
     const type = R.has("type", message) ? message.type : null;
 
     switch (type) {
-      case "bank/MsgSend":
-      case "cosmos-sdk/MsgSend": {
-        const msg = message as unknown as MsgSend.Amino;
-        return <PrettyMessageSend {...msg} />;
-      }
-      case "wasm/MsgInstantiateContract": {
-        const msg = message as unknown as MsgInstantiateContract.Amino;
-        return <PrettyMessageInstantiateContract {...msg} />;
-      }
+      // case "bank/MsgSend":
+      // case "cosmos-sdk/MsgSend": {
+      //   const msg = message as unknown as MsgSend.Amino;
+      //   return <PrettyMessageSend {...msg} />;
+      // }
+      // case "wasm/MsgInstantiateContract": {
+      //   const msg = message as unknown as MsgInstantiateContract.Amino;
+      //   return <PrettyMessageInstantiateContract {...msg} />;
+      // }
       case "wasm/MsgExecuteContract": {
-        const msg = message as unknown as MsgExecuteContract.Amino;
+        const msg = message as unknown as AminoMsgExecuteContract;
         return <PrettyMessageExecuteContract {...msg} />;
       }
-      case "cosmos-sdk/MsgDelegate": {
-        const msg = message as unknown as MsgDelegate.Amino;
-        return <PrettyMessageStaking {...msg} label="Staking to:" />;
-      }
-      case "cosmos-sdk/MsgUndelegate": {
-        const msg = message as unknown as MsgUndelegate.Amino;
-        return <PrettyMessageStaking {...msg} label="Unstaking from:" />;
-      }
-      case "distribution/MsgWithdrawDelegationReward":
-      case "cosmos-sdk/MsgWithdrawDelegationReward": {
-        const msg = message as unknown as MsgWithdrawDelegatorReward.Amino;
-        return <PrettyMessageWithdrawDelegatorReward {...msg} />;
-      }
+      // case "cosmos-sdk/MsgDelegate": {
+      //   const msg = message as unknown as MsgDelegate.Amino;
+      //   return <PrettyMessageStaking {...msg} label="Staking to:" />;
+      // }
+      // case "cosmos-sdk/MsgUndelegate": {
+      //   const msg = message as unknown as MsgUndelegate.Amino;
+      //   return <PrettyMessageStaking {...msg} label="Unstaking from:" />;
+      // }
+      // case "distribution/MsgWithdrawDelegationReward":
+      // case "cosmos-sdk/MsgWithdrawDelegationReward": {
+      //   const msg = message as unknown as MsgWithdrawDelegatorReward.Amino;
+      //   return <PrettyMessageWithdrawDelegatorReward {...msg} />;
+      // }
       default:
         return hint ? (
           <PrettyMessageUnknown hint={hint} amount={amount} />
@@ -109,118 +99,118 @@ const PrettyMessageUnsafe = observer<PrettyMessageUnsafeProps>(
   },
 );
 
-const PrettyMessageStaking = observer<
-  (MsgDelegate.Amino | MsgUndelegate.Amino) & { label: string }
->(function PrettyMessageStaking({ value, label }) {
-  const chainId = useChainId();
-  const validators = useValidators(chainId);
-  const validator = validators.data?.find(
-    (val) => val.address === value.validator_address,
-  );
+// const PrettyMessageStaking = observer<
+//   (MsgDelegate.Amino | MsgUndelegate.Amino) & { label: string }
+// >(function PrettyMessageStaking({ value, label }) {
+//   const chainId = useChainId();
+//   const validators = useValidators(chainId);
+//   const validator = validators.data?.find(
+//     (val) => val.address === value.validator_address,
+//   );
 
-  return (
-    <MessageElement
-      coins={[
-        {
-          id: value.amount.denom,
-          rawAmount: value.amount.amount,
-        },
-      ]}
-      title={label}
-    >
-      <Text style={{ color: "white" }}>
-        {validator?.label ||
-          Bech32Address.shortenAddress(value.validator_address, 35)}
-      </Text>
-    </MessageElement>
-  );
-});
+//   return (
+//     <MessageElement
+//       coins={[
+//         {
+//           id: value.amount.denom,
+//           rawAmount: value.amount.amount,
+//         },
+//       ]}
+//       title={label}
+//     >
+//       <Text style={{ color: "white" }}>
+//         {validator?.label ||
+//           Bech32Address.shortenAddress(value.validator_address, 35)}
+//       </Text>
+//     </MessageElement>
+//   );
+// });
 
-const PrettyMessageWithdrawDelegatorReward =
-  observer<MsgWithdrawDelegatorReward.Amino>(
-    function PrettyMessageWithdrawDelegatorReward({ value }) {
-      const chainId = useChainId();
-      const validators = useValidators(chainId);
-      const { chainStore } = useStore();
+// const PrettyMessageWithdrawDelegatorReward =
+//   observer<MsgWithdrawDelegatorReward.Amino>(
+//     function PrettyMessageWithdrawDelegatorReward({ value }) {
+//       const chainId = useChainId();
+//       const validators = useValidators(chainId);
+//       const { chainStore } = useStore();
 
-      const rewards = useQuery(
-        Sdk.chainId(chainStore.currentChain).staking.rewardsQuery(
-          value.delegator_address,
-        ),
-      );
-      const validator = validators.data?.find(
-        (validator) => validator.address === value.validator_address,
-      );
-      const reward = rewards.data?.perDelegator.find(
-        (delegator) => delegator.address === value.validator_address,
-      );
+//       const rewards = useQuery(
+//         Sdk.chainId(chainStore.currentChain).staking.rewardsQuery(
+//           value.delegator_address,
+//         ),
+//       );
+//       const validator = validators.data?.find(
+//         (validator) => validator.address === value.validator_address,
+//       );
+//       const reward = rewards.data?.perDelegator.find(
+//         (delegator) => delegator.address === value.validator_address,
+//       );
 
-      return (
-        <MessageElement
-          title="Withdrawing staking rewards from:"
-          coins={reward?.rewards ? [reward.rewards] : undefined}
-        >
-          <Text style={{ color: "white" }}>
-            {validator?.label ||
-              Bech32Address.shortenAddress(value.validator_address, 35)}
-          </Text>
-        </MessageElement>
-      );
-    },
-  );
+//       return (
+//         <MessageElement
+//           title="Withdrawing staking rewards from:"
+//           coins={reward?.rewards ? [reward.rewards] : undefined}
+//         >
+//           <Text style={{ color: "white" }}>
+//             {validator?.label ||
+//               Bech32Address.shortenAddress(value.validator_address, 35)}
+//           </Text>
+//         </MessageElement>
+//       );
+//     },
+//   );
 
-const PrettyMessageSend = observer<AminoMsgSend | MsgSend.Amino>(
-  function PrettyMessageSend({ value }) {
-    const tokens = value.amount.map((coin) => {
-      return {
-        id: coin.denom,
-        rawAmount: coin.amount,
-      };
-    });
+// const PrettyMessageSend = observer<AminoMsgSend | MsgSend.Amino>(
+//   function PrettyMessageSend({ value }) {
+//     const tokens = value.amount.map((coin) => {
+//       return {
+//         id: coin.denom,
+//         rawAmount: coin.amount,
+//       };
+//     });
 
-    return (
-      <MessageElement title="To:" coins={tokens}>
-        <Text style={{ color: "white" }}>
-          {Bech32Address.shortenAddress(value.to_address, 35)}
-        </Text>
-      </MessageElement>
-    );
-  },
-);
+//     return (
+//       <MessageElement title="To:" coins={tokens}>
+//         <Text style={{ color: "white" }}>
+//           {Bech32Address.shortenAddress(value.to_address, 35)}
+//         </Text>
+//       </MessageElement>
+//     );
+//   },
+// );
 
-const PrettyMessageInstantiateContract = observer<
-  AminoMsgInstantiateContract | MsgInstantiateContract.Amino
->(function PrettyMessageInstantiateContract({ value }) {
-  const { chainStore } = useStore();
-  const intl = useIntl();
+// const PrettyMessageInstantiateContract = observer<
+//   AminoMsgInstantiateContract | MsgInstantiateContract.Amino
+// >(function PrettyMessageInstantiateContract({ value }) {
+//   const { chainStore } = useStore();
+//   const intl = useIntl();
 
-  if (
-    isLegacyCosmosChain(chainStore.currentChain) &&
-    value.code_id ===
-      legacyCosmosChains[chainStore.currentChain].currentCodeId.toString()
-  ) {
-    return (
-      <MessageElement
-        title={intl.formatMessage({
-          id: "signature.modal.createobiwallet",
-          defaultMessage: "Create Obi Wallet",
-        })}
-      />
-    );
-  }
+//   if (
+//     isLegacyCosmosChain(chainStore.currentChain) &&
+//     value.code_id ===
+//       legacyCosmosChains[chainStore.currentChain].currentCodeId.toString()
+//   ) {
+//     return (
+//       <MessageElement
+//         title={intl.formatMessage({
+//           id: "signature.modal.createobiwallet",
+//           defaultMessage: "Create Obi Wallet",
+//         })}
+//       />
+//     );
+//   }
 
-  return (
-    <MessageElement
-      title={intl.formatMessage({
-        id: "signature.modal.initcontract",
-        defaultMessage: "Init Contract",
-      })}
-    />
-  );
-});
+//   return (
+//     <MessageElement
+//       title={intl.formatMessage({
+//         id: "signature.modal.initcontract",
+//         defaultMessage: "Init Contract",
+//       })}
+//     />
+//   );
+// });
 
 const PrettyMessageExecuteContract = observer<
-  AminoMsgExecuteContract | MsgExecuteContract.Amino
+  AminoMsgExecuteContract
 >(function PrettyMessageExecuteContract({ value }) {
   const intl = useIntl();
   const message = getMessage();
@@ -406,7 +396,7 @@ const PrettyMessageExecuteContract = observer<
         }}
       >
         <Text style={{ fontWeight: "700", color: "#fff" }}>
-          {Bech32Address.shortenAddress(value.contract, 35)}
+          {Bech32Address.shortenAddress(value.contractAddress, 35)}
         </Text>
         <Text style={{ color: "white" }}>
           Check the data tab for the full message
@@ -416,32 +406,16 @@ const PrettyMessageExecuteContract = observer<
   );
 
   function getMessage(): unknown {
-    return isAminoV1Value(value) ? value.execute_msg : value.msg;
+    return value.msg;
   }
 
   function getFunds(): readonly Token[] {
-    return isAminoV1Value(value)
-      ? value.coins.map((coin) => {
-          return {
-            id: coin.denom,
-            rawAmount: coin.amount,
-          };
-        })
-      : value.funds.map((coin) => {
+    return value.sentFunds.map((coin) => {
           return {
             id: coin.denom,
             rawAmount: coin.amount,
           };
         });
-  }
-
-  function isAminoV1Value(
-    value: (AminoMsgExecuteContract | MsgExecuteContract.Amino)["value"],
-  ): value is MsgExecuteContract.AminoV1["value"] {
-    return (
-      typeof (value as MsgExecuteContract.AminoV1["value"]).execute_msg !==
-      "undefined"
-    );
   }
 });
 

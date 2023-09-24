@@ -27,7 +27,7 @@ export async function withFeatherJsClient<T>(
             lcd,
             chainID: chainId,
             gasAdjustment: 1.75,
-            gasPrices: { uluna: 0.015 },
+            gasPrices: { uscrt: 0.015 },
             prefix: "terra",
           },
         }),

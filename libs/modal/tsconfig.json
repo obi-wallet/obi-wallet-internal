@@ -4,6 +4,7 @@
     "allowJs": false,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
     "strict": true
   },
   "files": ["../theme/emotion.d.ts"],

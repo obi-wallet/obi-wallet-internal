@@ -6,7 +6,7 @@ import {
   MultisigWallet,
 } from "../../data-structures";
 import { queryClient, QueryClientNamespace } from "../../query-client";
-import { Signer } from "../../signers";
+import { Secp256k1PrivateKeySigner, Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 import { BroadcastTransactionResult, CodeIds, Token } from "../common";
 
@@ -74,7 +74,7 @@ export abstract class AbstractMultisigWalletSdk {
     | { approved: false }
   >;
 
-  public abstract updateOwner(newOwner: MultisigKey): Promise<
+  public abstract updateOwner(newOwner: MultisigKey, oldSigner: Secp256k1PrivateKeySigner, newSigner: Secp256k1PrivateKeySigner): Promise<
     | {
         approved: true;
         payload: BroadcastTransactionResult | { success: true };

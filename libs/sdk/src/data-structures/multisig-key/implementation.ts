@@ -198,6 +198,7 @@ export class MultisigKey {
     recoverFlow: boolean,
   ) {
     try {
+      const getProxyWalletsCloudflare = (await import("@obi-wallet/common")).getProxyWalletsCloudflare;
       const proxyWallets = await getProxyWalletsCloudflare(publicKey);
       if (proxyWallets.length === 0) {
         if (!recoverFlow) {

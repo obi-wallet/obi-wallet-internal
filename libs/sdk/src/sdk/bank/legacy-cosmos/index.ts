@@ -74,10 +74,10 @@ export class LegacyCosmosBankSdk extends AbstractBankSdk {
       const denoms = (() => {
         switch (this.chainId) {
           case "uni-3":
-            return ["ujuno"];
+            return ["uscrt"];
           case "juno-1":
             return [
-              "ujuno",
+              "uscrt",
               "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034",
               "juno1qsrercqegvs4ye0yqg93knv73ye5dc3prqwd6jcdcuj8ggp6w0us66deup",
             ];
@@ -92,7 +92,7 @@ export class LegacyCosmosBankSdk extends AbstractBankSdk {
             ];
           case "juno-1":
             switch (denom) {
-              case "ujuno":
+              case "uscrt":
                 return [
                   "juno1ctsmp54v79x7ea970zejlyws50cj9pkrmw49x46085fn80znjmpqz2n642",
                 ]; // needs to be juno type

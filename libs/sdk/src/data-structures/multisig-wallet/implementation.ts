@@ -21,6 +21,7 @@ import { GatekeeperConfig } from "../gatekeeper-config";
 import { AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
 import { SinglesigWallet } from "../singlesig-wallet";
+import { KeyType } from "../key/types";
 
 export type CurrentAccountMeta = {
   type: "flex-account" | "singlesig-wallet";
@@ -140,7 +141,19 @@ export class MultisigWallet {
   }
 
   public async updateOwner(newOwner: MultisigKey) {
-    const response = await this.multisigWalletSdk.updateOwner(newOwner);
+    const response = await this.multisigWalletSdk.updateOwner(
+      newOwner,
+      new Secp256k1PrivateKeySigner(
+        this._owner.getUsableKeyOfType(KeyType.Device)?.payload.privateKey
+        ?? this._owner.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey
+        ?? this._owner.getUsableKeyOfType(KeyType.Phone)?.payload.privateKey!
+      ),
+      new Secp256k1PrivateKeySigner(
+        newOwner.getUsableKeyOfType(KeyType.Device)?.payload.privateKey
+        ?? newOwner.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey
+        ?? newOwner.getUsableKeyOfType(KeyType.Phone)?.payload.privateKey!
+      ),
+    );
     if (response.approved && response.payload.success) {
       this.setOwner(newOwner);
     }

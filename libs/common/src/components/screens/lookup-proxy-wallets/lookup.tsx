@@ -59,18 +59,18 @@ export const Lookup = observer(function Lookup({
     try {
       const _currentCodeId = Chain.select({
         chainId,
-        onCosmosChain(chain) {
+        /* onCosmosChain(chain) {
           return chain.currentCodeIds.userAccount;
         },
         onLegacyCosmosChain(chain) {
           return chain.currentCodeId;
-        },
+        }, */
         onSecretJsChain(chain) {
           return chain.currentCodeIds.userEntry;
         },
-        onTerraChain(chain) {
+        /* onTerraChain(chain) {
           return chain.currentCodeIds.userAccount;
-        },
+        }, */
       });
       const proxyWallets = (await getProxyWalletsCloudflare(
         publicKey,

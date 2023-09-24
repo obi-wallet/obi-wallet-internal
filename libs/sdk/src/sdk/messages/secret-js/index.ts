@@ -1,5 +1,8 @@
 import * as R from "ramda";
 import {
+  AminoMsg,
+  EncryptionUtils,
+  EncryptionUtilsImpl,
   Msg,
   MsgBeginRedelegate,
   MsgDelegate,
@@ -9,6 +12,8 @@ import {
   MsgSetWithdrawAddress,
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
+  SecretNetworkClient,
+  toBase64,
 } from "secretjs";
 import warning from "tiny-warning";
 
@@ -23,6 +28,8 @@ import { Message, MessageJson } from "../../../transactions";
 import { CodeIds, Token } from "../../common";
 import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
+import { SecretJsClient } from "libs/sdk/src/clients";
+import { AminoTypes } from "@cosmjs/stargate";
 
 function notImplemented(message: string) {
   warning(false, message);
@@ -33,7 +40,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
     super(chainId);
   }
 
-  public toJSON(message: Message): MessageJson {
+  public async toJSON(message: Message, client?: SecretNetworkClient): Promise<MessageJson> {
     if (R.has("eth", message)) {
       return MessageJson.parse(message);
     }
@@ -45,8 +52,43 @@ export class SecretJsMessages extends AbstractMessages<string> {
     }
     if (R.has("hash", message)) {
       return MessageJson.parse(message);
+    } else {
+      /*
+      try {
+        const client = new SecretJsClient("secret-4");
+        const parsedMsg = client.withSecretNetworkClient(async (client) => {
+          return await(message as Msg).toAmino(client.encryptionUtils) as MessageJson & AminoMsg;
+        });
+        console.log("amino message json: " + JSON.stringify(parsedMsg));
+        return parsedMsg;
+      } catch(e) {
+        throw new Error("Unknown message: " + JSON.stringify(e));
+      }
+      */
+      console.log("message: " + JSON.stringify(message));
+      const messageAny = message as any;
+      if (!messageAny.msgEncrypted) {
+        // The encryption uses a random nonce
+        // toProto() & toAmino() are called multiple times during signing
+        // so to keep the msg consistant across calls we encrypt the msg only once
+        messageAny.msgEncrypted = await client?.encryptionUtils.encrypt(
+          messageAny.codeHash,
+          messageAny.msg
+        );
+      }
+
+      const aminoMsg = ({
+        type: "wasm/MsgExecuteContract",
+        value: {
+          sender: messageAny.sender,
+          contract: messageAny.contractAddress,
+          msg: toBase64(messageAny.msgEncrypted),
+          sent_funds: messageAny.sentFunds
+        }
+      } as any) as MessageJson & AminoMsg;
+      console.log("amino message json: " + JSON.stringify(aminoMsg));
+      return aminoMsg;
     }
-    throw new Error("Unknown message");
   }
 
   public wrapMessages({
@@ -218,9 +260,13 @@ export class SecretJsMessages extends AbstractMessages<string> {
 
   public getProposeUpdateOwnerMessage({
     wallet,
+    userAccountAddress,
+    userAccountCodeHash,
     newOwner,
   }: {
     wallet: MultisigWallet;
+    userAccountAddress: string;
+    userAccountCodeHash: string;
     newOwner: MultisigKey;
   }): Message {
     const rawMessage = {
@@ -241,17 +287,21 @@ export class SecretJsMessages extends AbstractMessages<string> {
     };
     return new MsgExecuteContract({
       sender: wallet.owner.address,
-      contract_address: wallet.proxyAddress,
-      // code hash not added yet
+      contract_address: userAccountAddress,
+      code_hash: userAccountCodeHash,
       msg: rawMessage,
     });
   }
 
   public getConfirmUpdateOwnerMessage({
     wallet,
+    userAccountAddress,
+    userAccountCodeHash,
     newOwner,
   }: {
     wallet: MultisigWallet;
+    userAccountAddress: string;
+    userAccountCodeHash: string;
     newOwner: MultisigKey;
   }): Message {
     const rawMessage = {
@@ -259,7 +309,8 @@ export class SecretJsMessages extends AbstractMessages<string> {
     };
     return new MsgExecuteContract({
       sender: newOwner.address,
-      contract_address: wallet.proxyAddress,
+      contract_address: userAccountAddress,
+      code_hash: userAccountCodeHash,
       msg: rawMessage,
     });
   }

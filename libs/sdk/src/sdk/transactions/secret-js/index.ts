@@ -4,7 +4,7 @@ import {
   SimplePublicKey,
 } from "@terra-money/feather.js";
 import { BaseAccount } from "cosmjs-types/cosmos/auth/v1beta1/auth";
-import { Account } from "secretjs";
+import { Account, AminoMsg } from "secretjs";
 import invariant from "tiny-invariant";
 import warning from "tiny-warning";
 
@@ -19,8 +19,10 @@ import {
   RpcError,
 } from "../../common";
 import { Messages } from "../../messages";
-import { CosmosSdkMessages } from "../../messages/cosmos-sdk";
 import { AbstractTransactionsSdk } from "../abstract";
+import { SecretJsMessages } from "../../messages/secret-js";
+import { AuthInfo, TxRaw } from "secretjs/dist/protobuf/cosmos/tx/v1beta1/tx";
+import { Coin } from "secretjs/dist/grpc_gateway/cosmos/base/v1beta1/coin.pb";
 
 export * from "./extended-ethers-signer";
 
@@ -130,9 +132,11 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     const account = await this.fetchAccount(address);
     invariant(account, "Account not found.");
     invariant(this.isBaseAccount(account), "account is not BaseAccount");
-    const aminoMessages = messages.map((message) => {
-      return this.messages.toJSON(message);
+    const stockClient = await this.client.withSecretNetworkClient((client) => {
+      return client;
     });
+    const aminoMessagesPromises = messages.map((message) => this.messages.toJSON(message, stockClient));
+    const aminoMessages = await Promise.all(aminoMessagesPromises);
     /* eslint-disable @typescript-eslint/no-explicit-any */
     const checkMessages: any[] = aminoMessages;
     console.log("aminoMessages is: " + JSON.stringify(aminoMessages));
@@ -164,15 +168,23 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
       console.log("partly prepared signer is " + JSON.stringify(signer));
       return signer;
     } else {
+      console.log("in createMultisigSigner(), encoding messages...");
       const encodeObjects = aminoMessages.map((aminoMessage) => {
-        return this.client.aminoTypes.fromAmino(aminoMessage);
+        if (!(aminoMessage as unknown as AminoMsg).type) {
+          throw new Error("aminoMessage is not of type AminoMsg");
+        }
+        return {
+          typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+          value: (aminoMessage as unknown as AminoMsg).value
+        };
       });
+      console.log("done in createMultisigSigner(), returning signer...");
       return new SecretJsMultisigSigner({
         chainId: this.chainId,
         account,
         fee: this.client.defaultFee,
         encodeObjects,
-        messages: aminoMessages,
+        messages: aminoMessages as unknown as AminoMsg[],
         multisigPublicKey,
       });
     }
@@ -186,18 +198,53 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     return await this.client.broadcastSignedTransaction(signedTransaction);
   }
 
+  protected async fetchBalance({
+    address,
+    denom,
+  }: {
+    address: string;
+    denom: string;
+  }): Promise<Coin | undefined> {
+    const res = await this.client.withSecretNetworkClient(async (client) => {
+      const res = await client.query.bank.balance({
+        address: address,
+        denom: "uscrt",
+      });
+      return res.balance;
+    });
+    return res;
+  }
+
   public async broadcastSignedTransactionAndLendFees({
     signedTransaction,
+    sender,
   }: {
     signedTransaction: SignedTransaction;
     sender: string;
   }): Promise<BroadcastTransactionResult> {
-    notImplemented(
-      "broadcastSignedTransactionAndLendFees not implemented for SecretJS",
-    );
-    return await this.broadcastSignedTransaction({
-      signedTransaction,
-    });
+    const transaction = TxRaw.decode(signedTransaction);
+    const { fee } = AuthInfo.decode(transaction.auth_info_bytes);
+
+    /*
+    const hasEnoughForFees = async () => {
+      if (!fee) return true;
+      invariant(fee.amount.length === 1, "fee.amount.length must be 1");
+      const balance = await this.fetchBalance({
+        address: sender,
+        denom: fee.amount[0].denom,
+      });
+      return (
+        balance &&
+        parseInt(balance.amount!, 10) >= parseInt(fee.amount[0].amount, 10)
+      );
+    };
+
+    while (!(await hasEnoughForFees())) {
+      await this.lendFees(sender);
+    }
+    */
+    console.log("signed transaction is: " + Buffer.from(signedTransaction).toString());
+    return await this.broadcastSignedTransaction({ signedTransaction });
   }
 
   protected get chain() {
@@ -205,7 +252,7 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
   }
 
   protected get messages() {
-    return Messages.chainId(this.chainId) as CosmosSdkMessages;
+    return Messages.chainId(this.chainId) as SecretJsMessages;
   }
 }
 

@@ -17,6 +17,7 @@ export class UnitySigner extends Signer {
   }
 
   public async signHash(hash: Uint8Array) {
+    console.log("unity signing hash: " + Buffer.from(hash).toString("base64"));
     return secp256k1.ecdsaSign(hash, Buffer.from(this.privateKey, "base64"))
       .signature;
   }

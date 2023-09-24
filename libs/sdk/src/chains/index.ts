@@ -9,53 +9,54 @@ export * from "./secret-js";
 export * from "./terra";
 
 export type ChainId =
-  | CosmosChainId
-  | LegacyCosmosChainId
+  /* | CosmosChainId
+  | LegacyCosmosChainId */
   | SecretJsChainId
-  | TerraChainId;
+  /* | TerraChainId; */
 
 export const Chain = {
   select,
   information(chainId: ChainId) {
     return select<
-      | (typeof cosmosChains)[CosmosChainId]
-      | (typeof legacyCosmosChains)[LegacyCosmosChainId]
+      // | (typeof cosmosChains)[CosmosChainId]
+      // | (typeof legacyCosmosChains)[LegacyCosmosChainId]
       | (typeof secretJsChains)[SecretJsChainId]
-      | (typeof terraChains)[TerraChainId]
+      // | (typeof terraChains)[TerraChainId]
     >({
       chainId: chainId,
-      onCosmosChain(chain) {
+      /*onCosmosChain(chain) {
         return chain;
       },
       onLegacyCosmosChain(chain) {
         return chain;
-      },
+      },*/
       onSecretJsChain(chain) {
         return chain;
       },
-      onTerraChain(chain) {
+      /*onTerraChain(chain) {
         return chain;
-      },
+      },*/
     });
   },
 };
 
 function select<T>({
   chainId,
-  onCosmosChain,
-  onLegacyCosmosChain,
+  /*onCosmosChain,
+  onLegacyCosmosChain,*/
   onSecretJsChain,
-  onTerraChain,
+  /*onTerraChain,*/
 }: {
   chainId: ChainId;
-  onCosmosChain(chain: (typeof cosmosChains)[CosmosChainId]): T;
+  /*onCosmosChain(chain: (typeof cosmosChains)[CosmosChainId]): T;
   onLegacyCosmosChain(
     chain: (typeof legacyCosmosChains)[LegacyCosmosChainId],
-  ): T;
+  ): T;*/
   onSecretJsChain(chain: (typeof secretJsChains)[SecretJsChainId]): T;
-  onTerraChain(chain: (typeof terraChains)[TerraChainId]): T;
+  /*onTerraChain(chain: (typeof terraChains)[TerraChainId]): T;*/
 }) {
-  if (isCosmosChain(chainId)) {
+  return onSecretJsChain(secretJsChains["secret-4"]);
+  /* if (isCosmosChain(chainId)) {
     return onCosmosChain(cosmosChains[chainId]);
   } else if (isLegacyCosmosChain(chainId)) {
     return onLegacyCosmosChain(legacyCosmosChains[chainId]);
@@ -65,10 +66,10 @@ function select<T>({
     return onTerraChain(terraChains[chainId]);
   } else {
     return onSecretJsChain(secretJsChains["secret-4"]);
-  }
+  }*/
 }
 
-export function isCosmosChain(chainId: ChainId): chainId is CosmosChainId {
+/* export function isCosmosChain(chainId: ChainId): chainId is CosmosChainId {
   return Object.keys(cosmosChains).includes(chainId);
 }
 
@@ -76,12 +77,12 @@ export function isLegacyCosmosChain(
   chainId: ChainId,
 ): chainId is LegacyCosmosChainId {
   return Object.keys(legacyCosmosChains).includes(chainId);
-}
+} */
 
 export function isSecretJsChain(chainId: ChainId): chainId is SecretJsChainId {
   return Object.keys(secretJsChains).includes(chainId);
 }
 
-export function isTerraChain(chainId: ChainId): chainId is TerraChainId {
+/* export function isTerraChain(chainId: ChainId): chainId is TerraChainId {
   return Object.keys(terraChains).includes(chainId);
-}
+} */

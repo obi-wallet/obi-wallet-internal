@@ -1,7 +1,7 @@
 // https://github.com/HermesProtocol-io/assets/blob/main/static/blockchains/terra/tokens/tokens.json
 export const tokens = {
-  uluna: {
-    denom: "uluna",
+  uscrt: {
+    denom: "uscrt",
     symbol: "LUNA",
     name: "Luna",
     icon: "https://raw.githubusercontent.com/terra-money/assets/master/icon/svg/LUNA.png",
@@ -186,7 +186,7 @@ export const tokens = {
     denom:
       "ibc/4CD525F166D32B0132C095F353F4C6F033B0FF5C49141470D1EFDA1D63303D04",
     path: "transfer/channel-2",
-    base_denom: "ujuno",
+    base_denom: "uscrt",
     symbol: "JUNO",
     name: "Juno",
     icon: "https://assets.terra.money/icon/svg/ibc/JUNO.svg",

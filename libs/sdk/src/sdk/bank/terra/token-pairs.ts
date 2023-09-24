@@ -40,7 +40,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -59,7 +59,7 @@ export const tokenPairs = {
     asset_infos: [
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
       {
@@ -90,7 +90,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -111,7 +111,7 @@ export const tokenPairs = {
     asset_infos: [
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
       {
@@ -168,7 +168,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -193,7 +193,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -244,7 +244,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -269,7 +269,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -370,7 +370,7 @@ export const tokenPairs = {
     asset_infos: [
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
       {
@@ -401,7 +401,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -452,7 +452,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -529,7 +529,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -574,7 +574,7 @@ export const tokenPairs = {
     asset_infos: [
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
       {
@@ -605,7 +605,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -676,7 +676,7 @@ export const tokenPairs = {
     asset_infos: [
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
       {
@@ -755,7 +755,7 @@ export const tokenPairs = {
     asset_infos: [
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
       {
@@ -786,7 +786,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -811,7 +811,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -836,7 +836,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -863,7 +863,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -902,7 +902,7 @@ export const tokenPairs = {
     asset_infos: [
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
       {
@@ -956,7 +956,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -1004,7 +1004,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -1121,7 +1121,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -1166,7 +1166,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -1211,7 +1211,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -1238,7 +1238,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],
@@ -1263,7 +1263,7 @@ export const tokenPairs = {
       },
       {
         native_token: {
-          denom: "uluna",
+          denom: "uscrt",
         },
       },
     ],

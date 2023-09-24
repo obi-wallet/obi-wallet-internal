@@ -1,5 +1,4 @@
 import {
-  AminoMsg,
   createMultisigThresholdPubkey,
   MultisigThresholdPubkey,
   pubkeyToAddress,
@@ -15,16 +14,19 @@ import {
 import { defaultRegistryTypes, makeMultisignedTx } from "@cosmjs/stargate";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { Interface, InterfaceAbi } from "ethers";
-import { Account } from "secretjs";
+import { Account, AminoMsg, MsgExecuteContract } from "secretjs";
 import invariant from "tiny-invariant";
 
-import { Chain, SecretJsChainId } from "../../../chains";
+import { Chain, SecretJsChainId, secretJsChains } from "../../../chains";
 import { MultisigPublicKey } from "../../../keys";
 import {
   MultisigSigner as AbstractMultisigSigner,
   Signer,
 } from "../../../signers";
 import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
+import { SecretJsAminoSigner } from "../../common/secret-js/amino-signer";
+import { SecretJsClient } from "libs/sdk/src/clients";
+import { BaseAccount } from "secretjs/dist/protobuf/cosmos/auth/v1beta1/auth";
 
 const registry = new Registry([...defaultRegistryTypes, ...wasmTypes]);
 
@@ -111,7 +113,6 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     this.signMessage = undefined;
     this.signHash = undefined;
     const { type, value } = messages[0];
-
     if (["raw", "eth", "hash"].includes(type)) {
       console.log(
         `messages[0] ${type} passes with messages ${JSON.stringify({
@@ -134,14 +135,21 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       }
       this.signDoc = undefined;
     } else {
-      this.signDoc = {
-        memo: "",
-        account_number: "", // accountNumber.toString(),
-        chain_id: chainId,
-        fee: fee,
-        msgs: messages,
-        sequence: "", // sequence.toString(),
-      };
+      const client = new SecretJsClient("secret-4");
+      const account = client.withSecretNetworkClient(async (client) => {
+        const account = await client.query.auth.account({
+          address: messages[0].value.sender,
+        });
+        console.log("account retrieved: " + JSON.stringify(account));          
+        this.signDoc = {
+          memo: "",
+          account_number: (account.account as BaseAccount).account_number.toString(),
+          chain_id: chainId,
+          fee: fee,
+          msgs: messages,
+          sequence: (account.account as BaseAccount).sequence.toString(),
+        };
+      });
       this.signMessage = undefined;
     }
   }
@@ -162,11 +170,11 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     return Chain.information(this.chainId).prefix;
   }
 
-  protected async createSignature(signer: Signer) {
-    const offlineAminoSigner = CosmJsOfflineAminoSigner.fromSigner({
+  protected async createSignature(signer: Signer): Promise<Uint8Array> {
+    const offlineAminoSigner = SecretJsAminoSigner.fromSigner({
       signer,
       prefix: this.prefix,
-    });
+    })
     if (this.signDoc) {
       return await offlineAminoSigner.signStdSignDoc(this.signDoc);
     } else if (this.signHash) {

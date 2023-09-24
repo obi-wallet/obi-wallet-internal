@@ -14,18 +14,18 @@ export class Sdk {
 
     const sdk = Chain.select<AbstractSdk>({
       chainId,
-      onCosmosChain({ chainId }) {
+      /*onCosmosChain({ chainId }) {
         return CosmosSdk.chainId(chainId);
       },
       onLegacyCosmosChain({ chainId }) {
         return LegacyCosmosSdk.chainId(chainId);
-      },
+      },*/
       onSecretJsChain({ chainId }) {
         return SecretJsSdk.chainId(chainId);
       },
-      onTerraChain({ chainId }) {
+      /*onTerraChain({ chainId }) {
         return TerraSdk.chainId(chainId);
-      },
+      },*/
     });
     this.instances[chainId] = sdk;
     return sdk;
