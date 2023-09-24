@@ -20,7 +20,11 @@ import { z } from "zod";
 import { EmailContainer } from "./container";
 import { EmailTab, EmailTabs } from "./tabs";
 import { useStore } from "../../../../contexts";
-import { Alert, isSmallScreenNumber } from "../../../../helpers";
+import {
+  addEllipsisInMiddle,
+  Alert,
+  isSmallScreenNumber,
+} from "../../../../helpers";
 import { useKeyboardVisible } from "../../../../hooks";
 import {
   KeyFlow,
@@ -224,19 +228,6 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
 
   function encodeForMailto(text: string): string {
     return encodeURIComponent(text).replace(/%20/g, "%20");
-  }
-
-  function addEllipsisInMiddle(text: string, maxLength: number): string {
-    if (text.length <= maxLength) {
-      return text;
-    }
-
-    const removeCount = Math.ceil((text.length - maxLength) / 2);
-    const midPoint = Math.ceil(text.length / 2);
-    const start = text.slice(0, midPoint - removeCount);
-    const end = text.slice(-midPoint + removeCount);
-
-    return `${start}...${end}`;
   }
 
   function renderTabContent() {

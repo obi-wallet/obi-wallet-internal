@@ -1,6 +1,15 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 "use client";
 
+import { create, get } from "@github/webauthn-json";
+import {
+  obiModalConfig,
+  osmosisModalConfig,
+  vertexModalConfig,
+  ztxModalConfig,
+} from "@obi-wallet/config";
+import * as M from "@obi-wallet/modal";
+import { CredentialDeviceType } from "@simplewebauthn/typescript-types";
+import { useEffect } from "react";
 type AttestationFormat =
   | "fido-u2f"
   | "packed"
@@ -56,17 +65,6 @@ interface CustomPublicKeyCredentialCreationOptions {
   };
 }
 
-import { create, get } from "@github/webauthn-json";
-import {
-  obiModalConfig,
-  osmosisModalConfig,
-  vertexModalConfig,
-  ztxModalConfig,
-} from "@obi-wallet/config";
-import * as M from "@obi-wallet/modal";
-import { CredentialDeviceType } from "@simplewebauthn/typescript-types";
-import { useEffect } from "react";
-
 // eslint-disable-next-line mobx/missing-observer,import/no-default-export
 export default function Modal(props: { config: string }) {
   const config = getConfig();
@@ -116,14 +114,16 @@ export default function Modal(props: { config: string }) {
       default:
         break;
     }
-    window.opener.postMessage({ type: 'webauthn', credential }, '*');
+    window.opener.postMessage({ type: "webauthn", credential }, "*");
     window.close();
   }
-  
+
   useEffect(() => {
-    if (typeof window !== "undefined" &&
-          (window.location.pathname === "/webauthn-auth" 
-          ||window.location.pathname === "/webauthn-get" )) {
+    if (
+      typeof window !== "undefined" &&
+      (window.location.pathname === "/webauthn-auth" ||
+        window.location.pathname === "/webauthn-get")
+    ) {
       // Your logic for /webauthn-auth route
       handleWebAuthnRoute();
     }

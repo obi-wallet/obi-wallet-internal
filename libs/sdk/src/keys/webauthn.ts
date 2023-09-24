@@ -1,6 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { create, get } from "@github/webauthn-json";
-import { isInIframe } from "@obi-wallet/common";
 import type { CredentialDeviceType } from "@simplewebauthn/typescript-types";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
@@ -72,6 +71,10 @@ interface CustomPublicKeyCredentialCreationOptions {
   };
 }
 
+export function isInIframe(): boolean {
+  return window !== window.top;
+}
+
 export async function getOrCreateDeviceKeyPair(
   allowCreate: boolean,
   demoMode: boolean,
@@ -136,16 +139,14 @@ export async function getOrCreateDeviceKeyPair(
       }
     } else {
       console.log("is in iframe");
-      const popup = window.open(
-        (allowCreate
-        ? '/webauthn-auth'
-        : '/webauthn-get'),
-        'webauthn-popup',
-        'width=400,height=800'
+      const _popup = window.open(
+        allowCreate ? "/webauthn-auth" : "/webauthn-get",
+        "webauthn-popup",
+        "width=400,height=800",
       );
-      window.addEventListener('message', (event) => {
-        if (event.data.type && event.data.type === 'webauthn') {
-            credential = event.data.credential;
+      window.addEventListener("message", (event) => {
+        if (event.data.type && event.data.type === "webauthn") {
+          credential = event.data.credential;
         }
       });
     }

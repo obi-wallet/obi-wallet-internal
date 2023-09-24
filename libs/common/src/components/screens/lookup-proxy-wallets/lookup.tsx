@@ -5,27 +5,21 @@ import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { RecoverFrom } from "@obi-wallet/common";
-import {
-  Chain,
-  ChainId,
-  Key,
-  KeyType,
-  MultisigKey,
-  MultisigWallet,
-  ObservableMultisigKey,
-  Serialized,
-} from "@obi-wallet/sdk";
+import { Chain, ChainId, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
-import * as R from "ramda";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Linking, ScrollView, TouchableOpacity, View } from "react-native";
 import { useAsyncEffect } from "rooks";
-import invariant from "tiny-invariant";
 
 import * as A from "./api-types";
 import { useStore } from "../../../contexts";
-import { addEllipsisInMiddle, isSmallScreenNumber } from "../../../helpers";
+import {
+  activatedRecoveredWallet,
+  addEllipsisInMiddle,
+  getProxyWalletsCloudflare,
+  isSmallScreenNumber,
+} from "../../../helpers";
 import { IconButton } from "../../buttons";
 import { OnboardingScreenContainer } from "../../onboarding-screen-container";
 import { Text } from "../../typography";
@@ -49,7 +43,8 @@ export const Lookup = observer(function Lookup({
   onCancel,
 }: LookupProps) {
   const _onSelect = onSelect;
-  const { chainStore, draftsStore, unityStore, walletsStore } = useStore();
+  const store = useStore();
+  const { chainStore, draftsStore } = store;
   const [wallets, setWallets] = useState<A.SerializedProxyWallet[] | null>(
     null,
   );
@@ -62,7 +57,7 @@ export const Lookup = observer(function Lookup({
 
   useAsyncEffect(async () => {
     try {
-      const currentCodeId = Chain.select({
+      const _currentCodeId = Chain.select({
         chainId,
         onCosmosChain(chain) {
           return chain.currentCodeIds.userAccount;
@@ -77,36 +72,9 @@ export const Lookup = observer(function Lookup({
           return chain.currentCodeIds.userAccount;
         },
       });
-      const body = JSON.stringify({
-        chainId: "secret-4",
+      const proxyWallets = (await getProxyWalletsCloudflare(
         publicKey,
-        currentCodeId,
-      });
-      console.log("request body: " + body);
-      const response = await fetch(
-        `https://proxy-wallets.obiwallet.workers.dev`,
-        // `http://127.0.0.1:8787`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            chainId: "secret-4",
-            publicKey,
-          }),
-          headers: {
-            "Api-Version": "v1",
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "*",
-          },
-        },
-      );
-      let proxyWallets;
-      try {
-        proxyWallets = (await response.json()) as A.SerializedProxyWallet[];
-      } catch (e) {
-        console.log("Proxy wallet worker error. Response: " + response.text());
-        throw new Error("error in proxy wallet worker response");
-      }
+      )) as A.SerializedProxyWallet[];
       setWallets(proxyWallets);
     } catch (e) {
       console.log(e);
@@ -248,167 +216,13 @@ export const Lookup = observer(function Lookup({
           disabled={!selectedWallet}
           onPress={async () => {
             if (selectedWallet) {
-              let activeDeviceKey;
-              unityStore.getDeviceId
-                ? (activeDeviceKey = draft.value.getUsableKeyOfType(
-                    KeyType.Unity,
-                  ))
-                : (activeDeviceKey = draft.value.getUsableKeyOfType(
-                    KeyType.Device,
-                  ));
-
-              const usableKey = draft.value.getUsableKeyOfType(
-                recoverFrom === RecoverFrom.Email
-                  ? KeyType.EmailRecovery
-                  : KeyType.Phone,
-              );
-
-              const recoveredPhoneKey = draft.value.getUsableKeyOfType(
-                KeyType.Phone,
-              );
-              const recoveredEmailKey = draft.value.getUsableKeyOfType(
-                KeyType.EmailRecovery,
-              );
-
-              invariant(activeDeviceKey, "Device or unity key is required");
-              /* invariant(
-                recoveredPhoneKey || recoveredEmailKey,
-                "Phone or email key is required",
-              ); */
-
-              const serializedData: Serialized<MultisigWallet>["data"] = {
-                chain: draft.value.chainId,
-                owner: {
-                  threshold: parseInt(selectedWallet.owner.threshold, 10),
-                  keys: selectedWallet.owner.keys.map(
-                    (key): Serialized<typeof Key> => {
-                      switch (key.type) {
-                        case KeyType.Device: {
-                          return {
-                            type: KeyType.Device,
-                            payload: {
-                              publicKey: key.publicKey,
-                            },
-                          };
-                        }
-                        case KeyType.Phone:
-                          if (recoveredPhoneKey) {
-                            invariant(
-                              R.equals(
-                                recoveredPhoneKey.payload.publicKey,
-                                key.publicKey,
-                              ),
-                              "Recovered phone key must match the one in the proxy wallet",
-                            );
-                            return {
-                              type: KeyType.Phone,
-                              payload: {
-                                ...recoveredPhoneKey.payload,
-                                publicKey: key.publicKey,
-                              },
-                            };
-                          } else {
-                            return {
-                              payload: {
-                                type: key.type,
-                                publicKey: key.publicKey,
-                              },
-                            };
-                          }
-                        case KeyType.Social:
-                          return {
-                            type: KeyType.Social,
-                            payload: {
-                              publicKey: key.publicKey,
-                            },
-                          };
-                        case KeyType.Cloud:
-                        case KeyType.Nfc:
-                          return {
-                            payload: {
-                              type: key.type,
-                              publicKey: key.publicKey,
-                            },
-                          };
-                        case KeyType.Email:
-                          if (
-                            recoveredEmailKey &&
-                            usableKey?.type === KeyType.EmailRecovery
-                          ) {
-                            return {
-                              type: KeyType.EmailRecovery,
-                              payload: {
-                                publicKey: key.publicKey,
-                                privateKey: usableKey.payload.privateKey,
-                              },
-                            };
-                          } else {
-                            return {
-                              payload: {
-                                type: key.type,
-                                publicKey: key.publicKey,
-                              },
-                            };
-                          }
-                        default:
-                          return {
-                            payload: {
-                              type: key.type,
-                              publicKey: key.publicKey,
-                            },
-                          };
-                      }
-                    },
-                  ),
-                  evmSigningAddress: selectedWallet.evmSigningAddress!,
-                  evmUserContractAddress: selectedWallet.evmUserContractAddress,
-                },
-                proxyAddress: {
-                  v: 1,
-                  address: selectedWallet.proxyAddress.address,
-                },
-                // TODO: fetch from chain?
-                gatekeeperConfig: {
-                  beneficiaries: [],
-                  flexAccounts: [],
-                },
-                singlesigWallets: [],
-                currentAccount: null,
-                evmSigningAddress: selectedWallet.evmSigningAddress!,
-                evmUserContractAddress: selectedWallet.evmUserContractAddress,
-              };
-
               try {
-                const currentOwner = ObservableMultisigKey.create(
-                  {
-                    homeAccountAddress: serializedData.proxyAddress.address,
-                    evmSigningAddress: serializedData.evmSigningAddress,
-                    evmUserContractAddress:
-                      serializedData.evmUserContractAddress,
-                    ownerIndex: 0,
-                  },
-                  serializedData.chain,
-                  serializedData.owner,
+                activatedRecoveredWallet(
+                  draft,
+                  recoverFrom,
+                  store,
+                  selectedWallet,
                 );
-
-                draft.commit({ original: currentOwner });
-                if (unityStore.getDeviceId) {
-                  draft.value.setUnityKey(unityStore.getDeviceId);
-                } else {
-                  draft.value.setDeviceKey(activeDeviceKey.payload);
-                }
-                console.log("recovered draft: " + JSON.stringify(draft.value));
-                await walletsStore.createWallet({
-                  multisigKey: draft.value,
-                  demoMode: false,
-                  skipInit: true,
-                  evmSigningAddressOverride: serializedData.evmSigningAddress,
-                  evmUserContractAddressOverride:
-                    serializedData.evmUserContractAddress,
-                  homeAccountAddressOverride:
-                    serializedData.proxyAddress.address,
-                });
-
                 /*navigation.navigate(OnboardingRoute.RecoverWallet, {
                   ...params,
                   serializedData,

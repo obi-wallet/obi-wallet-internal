@@ -8,7 +8,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { QrCode } from "./qr-code";
 import { useStore } from "../../../contexts";
-import { isSmallScreenNumber, isWeb } from "../../../helpers";
+import {
+  addEllipsisInMiddle,
+  isSmallScreenNumber,
+  isWeb,
+} from "../../../helpers";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 
 export const ReceiveScreen = observer(function ReceiveScreen() {
@@ -48,19 +52,6 @@ export const ReceiveScreen = observer(function ReceiveScreen() {
         alert(error.message);
       }
     }
-  };
-
-  const addEllipsisInMiddle = (text: string, maxLength: number): string => {
-    if (text.length <= maxLength) {
-      return text;
-    }
-
-    const removeCount = Math.ceil((text.length - maxLength) / 2);
-    const midPoint = Math.ceil(text.length / 2);
-    const start = text.slice(0, midPoint - removeCount);
-    const end = text.slice(-midPoint + removeCount);
-
-    return `${start}...${end}`;
   };
 
   return (

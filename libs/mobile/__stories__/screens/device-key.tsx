@@ -1,4 +1,4 @@
-import { DeviceKey } from "@obi-wallet/common";
+import { DeviceKey, KeyFlow } from "@obi-wallet/common";
 
 import { mockAction, MultisigDraft } from "../../src/fixture-helpers";
 
@@ -8,6 +8,7 @@ export default (
       draftId={MultisigDraft.draftId}
       demoMode
       onSubmit={mockAction("onSubmit")}
+      flow={KeyFlow.CreateWallet}
     />
   </MultisigDraft.Container>
 );

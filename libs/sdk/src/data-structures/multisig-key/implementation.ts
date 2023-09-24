@@ -197,34 +197,14 @@ export class MultisigKey {
     publicKey: string,
     recoverFlow: boolean,
   ) {
-    let proxyWallets;
-    let response;
     try {
-      response = await fetch(
-        `https://proxy-wallets.obiwallet.workers.dev`,
-        // `http://127.0.0.1:8787`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            chainId: "secret-4",
-            publicKey,
-          }),
-          headers: {
-            "Api-Version": "v1",
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "*",
-          },
-        },
-      );
-      proxyWallets = (await response.json()) as unknown[];
+      const proxyWallets = await getProxyWalletsCloudflare(publicKey);
       if (proxyWallets.length === 0) {
         if (!recoverFlow) {
           this.createMagicAccount();
         }
       }
     } catch (e) {
-      console.log("Proxy wallet worker error. Response: " + response!.text());
       if (!recoverFlow) {
         this.createMagicAccount();
       }
