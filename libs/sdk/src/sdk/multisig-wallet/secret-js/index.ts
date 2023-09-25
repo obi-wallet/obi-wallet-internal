@@ -144,7 +144,9 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
   > {
     // const codeIds = await
     // queryClient.ensureQueryData(this.codeIdsQuery());
+    console.log("querying for user account address...");
     const userAccountAddress = await this.getUserAccountAddress();
+    console.log("assembling propose update owner message...");
     const message = this.messages.getProposeUpdateOwnerMessage({
       wallet: this.wallet,
       newOwner,
@@ -152,6 +154,7 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
       userAccountCodeHash: userAccountAddress.user_account_code_hash,
       // codeIds,
     });
+    console.log("propose update owner message: " + JSON.stringify(message));
     const nextHashResponse: {
       next_hash: string;
     } = await new SecretJsClient("secret-4").withSecretNetworkClient(
@@ -163,6 +166,7 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
         });
       },
     );
+    console.log("next hash response:" + JSON.stringify(nextHashResponse));
     const nextHash = nextHashResponse.next_hash;
     /// hack for now; sign single. Pass in some active pk signer
     const activeSignature = await signer.signHash(Buffer.from(nextHash, "hex"));

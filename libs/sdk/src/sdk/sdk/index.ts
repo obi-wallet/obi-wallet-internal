@@ -10,7 +10,7 @@ export class Sdk {
     if (cache) return cache;
 
     const sdk = Chain.select<AbstractSdk>({
-      chainId,
+      // chainId,
       /*onCosmosChain({ chainId }) {
         return CosmosSdk.chainId(chainId);
       },

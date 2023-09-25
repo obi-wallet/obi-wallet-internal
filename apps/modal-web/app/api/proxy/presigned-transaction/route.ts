@@ -10,8 +10,8 @@ export async function POST(request: Request) {
   const body: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     message: MsgExecuteContract<any>;
-    userEntryAddress: string;
-    userEntryCodeHash: string;
+    userAccountAddress: string;
+    userAccountCodeHash: string;
     nexthashSignedBySigners: string[]; //hex
   } = await request.json();
 
@@ -25,18 +25,22 @@ export async function POST(request: Request) {
 
   console.log("sending MsgExecuteContract...");
   invariant(wallet.address, "no fee lender wallet address");
-  const msgWithSignatures = {
-    ...body.message.msg,
-    signatures: body.messageSignedBySigners,
-  };
-  const messageToSign = {
-    ...body.message,
-    msg: msgWithSignatures,
-  };
+  const messageToSign = new MsgExecuteContract({
+    sender: wallet.address,
+    code_hash: body.userAccountCodeHash,
+    contract_address: body.userAccountAddress,
+    msg: {
+      ...body.message.msg,
+      signatures: body.nexthashSignedBySigners
+    },
+    sent_funds: []
+  });
+  console.log("messageToSign is " + JSON.stringify(messageToSign));
   const signedTransaction = await client.createAndSignTransaction({
     signer,
     messages: [messageToSign],
   });
+  console.log("transaction signed!");
   // fire and forget
   const txResult = await client.broadcastSignedTransaction(signedTransaction);
   return NextResponse.json({

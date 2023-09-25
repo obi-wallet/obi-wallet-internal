@@ -224,20 +224,14 @@ export class MultisigKey {
 
   private async setupMagicAccountIfDoesNotExist(
     publicKey: string,
-    recoverFlow: boolean,
   ) {
-    console.log("In setupMagicAccountIfDoesNotExist(), recoverFlow is " + recoverFlow);
     try {
       const proxyWallets = await this.getProxyWalletsCloudflare(publicKey);
       if (proxyWallets.length === 0) {
-        if (!recoverFlow) {
-          this.createMagicAccount();
-        }
-      }
-    } catch (e) {
-      if (!recoverFlow) {
         this.createMagicAccount();
       }
+    } catch (e) {
+      this.createMagicAccount();
     }
   }
 
@@ -246,10 +240,10 @@ export class MultisigKey {
       publicKey: Secp256k1PublicKey;
       privateKey?: string;
     },
-    recoverFlow?: boolean,
+    newDevice?: boolean,
   ) {
-    if (recoverFlow === undefined) {
-      recoverFlow = false;
+    if (newDevice === undefined) {
+      newDevice = false;
     }
     this.setKey({
       type: KeyType.Device,
@@ -267,15 +261,14 @@ export class MultisigKey {
 
       this.setupMagicAccountIfDoesNotExist(
         keyPair.publicKey.value,
-        recoverFlow,
       );
     }
     console.log("Current draft multisig: " + JSON.stringify(this));
   }
 
-  public setUnityKey(deviceId: string, recoverFlow?: boolean) {
-    if (recoverFlow === undefined) {
-      recoverFlow = false;
+  public setUnityKey(deviceId: string, newDevice?: boolean) {
+    if (newDevice === undefined) {
+      newDevice = true;
     }
     // use unity device ID to generate a keypair right here,
     // without a function call, and set it as the unity key
@@ -315,7 +308,6 @@ export class MultisigKey {
       };
       this.setupMagicAccountIfDoesNotExist(
         keyPair.publicKey.value,
-        recoverFlow,
       );
     }
     console.log("Current draft multisig: " + JSON.stringify(this));
@@ -389,6 +381,22 @@ export class MultisigKey {
   protected setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
     this._keys = this._keys.filter((k) => key.type !== k.type);
     this._keys.push(this._factories.Key.create(key));
+    // sort the keys by type, and then by public key
+    this._keys = this._keys.sort((a, b) => {
+      if (a.type < b.type) {
+        return -1;
+      } else if (a.type > b.type) {
+        return 1;
+      } else {
+        if (a.publicKey.value < b.publicKey.value) {
+          return -1;
+        } else if (a.publicKey.value > b.publicKey.value) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    });
   }
 
   public removeKeyOfType<T extends KeyType>(type: T) {

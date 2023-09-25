@@ -14,7 +14,7 @@ import { CodeIds, Token } from "../common";
 export abstract class AbstractMessages<T> {
   protected constructor(protected chainId: ChainId) {}
 
-  public abstract toJSON(message: Message): Promise<MessageJson>;
+  public abstract toJSON(message: Message): MessageJson;
 
   public abstract wrapMessages({
     messages,

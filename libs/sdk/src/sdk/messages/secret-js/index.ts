@@ -1,6 +1,5 @@
 import * as R from "ramda";
 import {
-  AminoMsg,
   Msg,
   MsgBeginRedelegate,
   MsgDelegate,
@@ -10,8 +9,6 @@ import {
   MsgSetWithdrawAddress,
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
-  SecretNetworkClient,
-  toBase64,
 } from "secretjs";
 import warning from "tiny-warning";
 
@@ -36,10 +33,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
     super(chainId);
   }
 
-  public async toJSON(
-    message: Message,
-    client?: SecretNetworkClient,
-  ): Promise<MessageJson> {
+  public toJSON(message: Message): MessageJson {
     if (R.has("eth", message)) {
       return MessageJson.parse(message);
     }
@@ -51,45 +45,8 @@ export class SecretJsMessages extends AbstractMessages<string> {
     }
     if (R.has("hash", message)) {
       return MessageJson.parse(message);
-    } else {
-      /*
-      try {
-        const client = new SecretJsClient("secret-4");
-        const parsedMsg = client.withSecretNetworkClient(async (client) => {
-          return await(message as Msg).toAmino(client.encryptionUtils) as MessageJson & AminoMsg;
-        });
-        console.log("amino message json: " + JSON.stringify(parsedMsg));
-        return parsedMsg;
-      } catch(e) {
-        throw new Error("Unknown message: " + JSON.stringify(e));
-      }
-      */
-      console.log("message: " + JSON.stringify(message));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const messageAny = message as any;
-      if (!messageAny.msgEncrypted) {
-        // The encryption uses a random nonce
-        // toProto() & toAmino() are called multiple times during signing
-        // so to keep the msg consistant across calls we encrypt the msg only once
-        messageAny.msgEncrypted = await client?.encryptionUtils.encrypt(
-          messageAny.codeHash,
-          messageAny.msg,
-        );
-      }
-
-      const aminoMsg = {
-        type: "wasm/MsgExecuteContract",
-        value: {
-          sender: messageAny.sender,
-          contract: messageAny.contractAddress,
-          msg: toBase64(messageAny.msgEncrypted),
-          sent_funds: messageAny.sentFunds,
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any as MessageJson & AminoMsg;
-      console.log("amino message json: " + JSON.stringify(aminoMsg));
-      return aminoMsg;
     }
+    throw new Error("Unknown message");
   }
 
   public wrapMessages({
@@ -261,13 +218,9 @@ export class SecretJsMessages extends AbstractMessages<string> {
 
   public getProposeUpdateOwnerMessage({
     wallet,
-    userAccountAddress,
-    userAccountCodeHash,
     newOwner,
   }: {
     wallet: MultisigWallet;
-    userAccountAddress: string;
-    userAccountCodeHash: string;
     newOwner: MultisigKey;
   }): Message {
     const rawMessage = {
@@ -288,31 +241,25 @@ export class SecretJsMessages extends AbstractMessages<string> {
     };
     return new MsgExecuteContract({
       sender: wallet.owner.address,
-      contract_address: userAccountAddress,
-      code_hash: userAccountCodeHash,
+      contract_address: wallet.proxyAddress,
+      // code hash not added yet
       msg: rawMessage,
     });
   }
 
   public getConfirmUpdateOwnerMessage({
     wallet,
-    userAccountAddress,
-    userAccountCodeHash,
     newOwner,
   }: {
     wallet: MultisigWallet;
-    userAccountAddress: string;
-    userAccountCodeHash: string;
     newOwner: MultisigKey;
   }): Message {
-    const _wallet = wallet;
     const rawMessage = {
       confirm_update_owner: {},
     };
     return new MsgExecuteContract({
       sender: newOwner.address,
-      contract_address: userAccountAddress,
-      code_hash: userAccountCodeHash,
+      contract_address: wallet.proxyAddress,
       msg: rawMessage,
     });
   }

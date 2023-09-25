@@ -9,7 +9,8 @@ import {
 } from "@obi-wallet/config";
 import * as M from "@obi-wallet/modal";
 import { CredentialDeviceType } from "@simplewebauthn/typescript-types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
 type AttestationFormat =
   | "fido-u2f"
   | "packed"
@@ -68,54 +69,60 @@ interface CustomPublicKeyCredentialCreationOptions {
 // eslint-disable-next-line mobx/missing-observer,import/no-default-export
 export default function Modal(props: { config: string }) {
   const config = getConfig();
+  const [error, setError] = useState(false);
 
   async function handleWebAuthnRoute() {
-    // Your custom logic for when the app is accessed at /webauthn-auth
-    let challenge = new Uint8Array(32); // Normally, this challenge is provided by the server.
-    if (typeof window !== "undefined") {
-      window.crypto.getRandomValues(challenge);
-    } else {
-      challenge = new Uint8Array(32).fill(0);
-    }
+    try {
+      // Your custom logic for when the app is accessed at /webauthn-auth
+      let challenge = new Uint8Array(32); // Normally, this challenge is provided by the server.
+      if (typeof window !== "undefined") {
+        window.crypto.getRandomValues(challenge);
+      } else {
+        challenge = new Uint8Array(32).fill(0);
+      }
 
-    const publicKey: CustomPublicKeyCredentialCreationOptions = {
-      challenge: btoa(String.fromCharCode(...challenge)),
-      rp: {
-        name: "Obi",
-        // id: new URL(window.location.origin).hostname,
-      },
-      user: {
-        id: btoa(String.fromCharCode(...new Uint8Array(16))),
-        name: "My Obi Device Key",
-        displayName: "My Obi Device Key",
-      },
-      pubKeyCredParams: [
-        {
-          type: "public-key",
-          alg: -7, // This indicates the algorithm type (e.g., ES256 for elliptic curve)
+      const publicKey: CustomPublicKeyCredentialCreationOptions = {
+        challenge: btoa(String.fromCharCode(...challenge)),
+        rp: {
+          name: "Obi",
+          // id: new URL(window.location.origin).hostname,
         },
-        {
-          type: "public-key",
-          alg: -257, // Value registered by this specification for "RS256"
+        user: {
+          id: btoa(String.fromCharCode(...new Uint8Array(16))),
+          name: "My Obi Device Key",
+          displayName: "My Obi Device Key",
         },
-      ],
-      authenticatorSelection: {
-        authenticatorAttachment: "platform",
-      },
-    };
-    let credential;
-    switch (window.location.pathname) {
-      case "/webauthn-auth":
-        credential = await create({ publicKey });
-        break;
-      case "/webauthn-get":
-        credential = await get({ publicKey });
-        break;
-      default:
-        break;
+        pubKeyCredParams: [
+          {
+            type: "public-key",
+            alg: -7, // This indicates the algorithm type (e.g., ES256 for elliptic curve)
+          },
+          {
+            type: "public-key",
+            alg: -257, // Value registered by this specification for "RS256"
+          },
+        ],
+        authenticatorSelection: {
+          authenticatorAttachment: "platform",
+        },
+      };
+      let credential;
+      switch (window.location.pathname) {
+        case "/webauthn-auth":
+          credential = await create({ publicKey });
+          break;
+        case "/webauthn-get":
+          credential = await get({ publicKey });
+          break;
+        default:
+          break;
+      }
+      await window.opener.postMessage({ type: "webauthn", credential }, "*");
+      window.close();
+    } catch (err) {
+      console.error("WebAuthn operation failed:", err);
+      setError(true);
     }
-    window.opener.postMessage({ type: "webauthn", credential }, "*");
-    window.close();
   }
 
   useEffect(() => {
@@ -129,19 +136,37 @@ export default function Modal(props: { config: string }) {
     }
   }, []);
 
-  return (
-    <M.Modal
-      config={config}
-      env={{
-        PHONE_NUMBER_KEY_SECRET:
-          process.env.NEXT_PUBLIC_PHONE_NUMBER_KEY_SECRET!,
-        PHONE_NUMBER_TWILIO_BASIC_AUTH_USER:
-          process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_USER!,
-        PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD:
-          process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD!,
-      }}
-    />
-  );
+  function renderMain() {
+    if (error) {
+      return (
+        <>
+          Your Obi device key request failed or was rejected. Please close this
+          window and try again.
+        </>
+      );
+    } else if (
+      window.location.pathname === "/webauthn-auth" ||
+      window.location.pathname === "/webauthn-get"
+    ) {
+      return <>Please complete your Obi device key request...</>;
+    } else {
+      return (
+        <M.Modal
+          config={config}
+          env={{
+            PHONE_NUMBER_KEY_SECRET:
+              process.env.NEXT_PUBLIC_PHONE_NUMBER_KEY_SECRET!,
+            PHONE_NUMBER_TWILIO_BASIC_AUTH_USER:
+              process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_USER!,
+            PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD:
+              process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD!,
+          }}
+        />
+      );
+    }
+  }
+
+  return renderMain();
 
   function getConfig() {
     switch (props.config) {

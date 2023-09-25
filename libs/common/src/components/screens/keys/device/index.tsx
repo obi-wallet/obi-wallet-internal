@@ -88,6 +88,7 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
             }
           } else {
             navigation.navigate(OnboardingRoute.CreateWallet, params);
+            return;
           }
           const requiredKeys = configStore.config.keys.required;
           const requiredRoutes = requiredKeys.map(keyTypeToKeyRoute);
@@ -162,6 +163,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   async function scanBiometricsOrWebAuthN(
     create: boolean,
     userSaysDeviceIsNew?: boolean,
+    recoverFlow?: boolean,
   ): Promise<[boolean, boolean, Secp256k1KeyPair | undefined]> {
     if (userSaysDeviceIsNew === undefined) {
       userSaysDeviceIsNew = true;
@@ -173,7 +175,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         demoMode,
       );
       console.log("setting device key...");
-      draft.value.setDeviceKey(keyPair, !userSaysDeviceIsNew);
+      draft.value.setDeviceKey(keyPair, !recoverFlow);
       console.log("device key set..");
       void queryClient.prefetchQuery(
         Sdk.chainId(
