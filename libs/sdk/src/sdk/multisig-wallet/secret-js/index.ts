@@ -208,7 +208,10 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
       return await this.proposeUpdateOwner(newOwner, signer);
     }
 
-    return proposeUpdateResponseJson;
+    return {
+      approved: true,
+      payload: { success: true }
+    }
   }
 
   protected async confirmUpdateOwner(
@@ -278,12 +281,15 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
       return { approved: false };
     } */
 
-    if (!confirmUpdateResponseJson.payload.success) {
+    if (!confirmUpdateResponseJson.success) {
       console.error(confirmUpdateResponseJson);
-      return await this.proposeUpdateOwner(newOwner, signer);
+      return await this.confirmUpdateOwner(newOwner, signer);
     }
 
-    return confirmUpdateResponseJson;
+    return {
+      approved: true,
+      payload: { success: true }
+    }
   }
 
   public async updateGatekeeperConfig(_: UpdateGatekeeperConfigParams): Promise<
