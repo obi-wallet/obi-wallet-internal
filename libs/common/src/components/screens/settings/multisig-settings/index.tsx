@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
+import invariant from "tiny-invariant";
 
 import { useStore } from "../../../../contexts";
 import { Alert } from "../../../../helpers";
@@ -158,7 +159,15 @@ export const MultisigSettingsScreen = observer(
               onPress={async () => {
                 setLoading(true);
                 try {
-                  const response = await wallet.updateOwner(draft.value);
+                  invariant(
+                    draft.value.evmSigningAddress,
+                    "no evm signing address in draft",
+                  );
+                  const response = await wallet.updateOwner(
+                    draft.value,
+                    draft.value.evmSigningAddress,
+                    draft.value.evmUserContractAddress,
+                  );
                   if (response.approved && !response.payload.success) {
                     Alert.alert(
                       "Updating owner failed",

@@ -18,13 +18,7 @@ import { pubkeyToAddress, SecretNetworkClient } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { useStore } from "../../../../contexts";
-import {
-  Alert,
-  activateRecoveredWalletAndIsUpdateRequired,
-  getProxyWalletsCloudflare,
-  isSmallScreen,
-  isSmallScreenNumber,
-} from "../../../../helpers";
+import { Alert, isSmallScreen, isSmallScreenNumber } from "../../../../helpers";
 import {
   KeyFlow,
   KeyRoute,
@@ -38,7 +32,6 @@ import { ObiFaceScannerIcon } from "../../../icons";
 import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
 import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { Text } from "../../../typography";
-import * as A from "../../lookup-proxy-wallets/api-types";
 import { SerializedProxyWallet } from "../../lookup-proxy-wallets/api-types";
 
 export type DeviceKeyScreenProps = NativeStackScreenProps<
@@ -48,15 +41,13 @@ export type DeviceKeyScreenProps = NativeStackScreenProps<
 
 export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
   function DeviceKeyScreen({ route }) {
-    const navigation = useRootNavigation();
-    const store = useStore();
-    const { draftsStore } = store;
     const { params } = route;
 
     return (
       <DeviceKey
         {...params}
-        onSubmit={async (userSaysDeviceIsNew, devicePubKey) => {
+        onSubmit={async (_userSaysDeviceIsNew, _devicePubKey) => {
+          /*
           // no matter what, we try to recover if match is found
           console.log("In device key screen, flow is " + params.flow);
           const proxyWallets = await getProxyWalletsCloudflare(devicePubKey);
@@ -86,6 +77,7 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
             navigation.navigate(OnboardingRoute.CreateWallet, params);
             return;
           }
+          */
         }}
       />
     );
@@ -174,6 +166,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       if (proxyWallets !== undefined) {
         return {
           wallets: proxyWallets,
+          deviceKeypair: keyPair,
         };
       }
       console.log("device key set..");
@@ -247,6 +240,15 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       const { success, newUser, deviceKeypair, wallets } = res;
       const _newUser = newUser;
       if (wallets) {
+        invariant(deviceKeypair, "could not get device keypair");
+        await draft.value.setDeviceKey(
+          {
+            publicKey: deviceKeypair?.publicKey,
+            privateKey: deviceKeypair?.privateKey,
+          },
+          false,
+          true,
+        );
         navigation.navigate(OnboardingRoute.LookupProxyWallets, {
           flow: KeyFlow.RecoverWallet,
           draftId,

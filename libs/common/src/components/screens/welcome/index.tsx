@@ -1,5 +1,12 @@
 import { useTheme } from "@emotion/react";
-import { MultisigKey, ObservableMultisigKey } from "@obi-wallet/sdk";
+import {
+  Key,
+  KeyType,
+  MultisigKey,
+  MultisigWallet,
+  ObservableMultisigKey,
+  Serialized,
+} from "@obi-wallet/sdk";
 import { WelcomeButton } from "@obi-wallet/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -21,6 +28,7 @@ import {
   useAccountPickerModalProps,
 } from "../../account-picker-modal";
 import { Button } from "../../buttons";
+import { SerializedProxyWallet } from "../lookup-proxy-wallets/api-types";
 
 export type WelcomeScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -30,9 +38,10 @@ export type WelcomeScreenProps = NativeStackScreenProps<
 export const WelcomeScreen = observer<WelcomeScreenProps>(
   function WelcomeScreen() {
     const navigation = useRootNavigation();
-    const { chainStore, configStore, draftsStore } = useStore();
+    const { chainStore, configStore, draftsStore, unityStore, walletsStore } =
+      useStore();
 
-    function onCreate() {
+    async function onCreate() {
       console.log(
         "chain ID in onCreate(): " + JSON.stringify(chainStore.currentChain),
       );
@@ -41,15 +50,51 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
         chainStore.currentChain,
       );
       console.log("multisig created");
-      const draftId = draftsStore.create({
-        original: newMultisigKey,
-      });
-      console.log("draft created");
-      navigation.navigate(KeyRoute.DeviceKey, {
-        draftId,
-        flow: KeyFlow.CreateWallet,
-        demoMode: false,
-      });
+      if (unityStore.getDeviceId) {
+        // even tho user clicked Sign Up,
+        // let's check for wallets with this unity key immediately
+        const proxyWallets = await newMultisigKey.setUnityKey(
+          unityStore.getDeviceId,
+        );
+        const draftId = draftsStore.create({
+          original: newMultisigKey,
+        });
+        if (proxyWallets?.length) {
+          if (
+            proxyWallets.length > 1 ||
+            proxyWallets[0].owner.threshold != "1"
+          ) {
+            navigation.navigate(OnboardingRoute.SelectRecoveryMethod, {
+              draftId,
+              flow: KeyFlow.RecoverWallet,
+              demoMode: false,
+            });
+          } else {
+            await loginFromSerializedDataAndUsableKey(
+              proxyWallets[0],
+              newMultisigKey,
+            );
+          }
+        } else {
+          const draft = draftsStore.get<MultisigKey>({ id: draftId });
+          draft.value.createMagicAccount();
+          navigation.navigate(OnboardingRoute.CreateWallet, {
+            draftId,
+            flow: KeyFlow.CreateWallet,
+            demoMode: false,
+          });
+        }
+      } else {
+        const draftId = draftsStore.create({
+          original: newMultisigKey,
+        });
+        console.log("draft created");
+        navigation.navigate(KeyRoute.DeviceKey, {
+          draftId,
+          flow: KeyFlow.CreateWallet,
+          demoMode: false,
+        });
+      }
     }
 
     /*
@@ -103,19 +148,164 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
     }
     */
 
-    function onRecover() {
+    async function loginFromSerializedDataAndUsableKey(
+      serializedWallet: SerializedProxyWallet,
+      usableMultisig: MultisigKey,
+    ) {
+      const serializedData: Serialized<MultisigWallet>["data"] = {
+        chain: "secret-4",
+        owner: {
+          threshold: parseInt(serializedWallet.owner.threshold, 10),
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          keys: serializedWallet.owner.keys.map(
+            (key): Serialized<typeof Key> => {
+              switch (key.type) {
+                case KeyType.Device: {
+                  return {
+                    type: KeyType.Device,
+                    payload: {
+                      publicKey: key.publicKey,
+                    },
+                  };
+                }
+                case KeyType.Email:
+                  return {
+                    payload: {
+                      type: key.type,
+                      publicKey: key.publicKey,
+                    },
+                  };
+                case KeyType.Phone:
+                  return {
+                    payload: {
+                      type: key.type,
+                      publicKey: key.publicKey,
+                    },
+                  };
+                case KeyType.Social:
+                  return {
+                    type: KeyType.Social,
+                    payload: {
+                      publicKey: key.publicKey,
+                    },
+                  };
+                case KeyType.Unity: {
+                  return {
+                    type: KeyType.Unity,
+                    payload: {
+                      publicKey: key.publicKey,
+                      privateKey:
+                        usableMultisig.getUsableKeyOfType(KeyType.Unity)
+                          ?.payload.privateKey ?? "",
+                    },
+                  };
+                }
+                case KeyType.Cloud:
+                case KeyType.Nfc:
+                  return {
+                    payload: {
+                      type: key.type,
+                      publicKey: key.publicKey,
+                    },
+                  };
+                default:
+                  return {
+                    payload: {
+                      type: key.type,
+                      publicKey: key.publicKey,
+                    },
+                  };
+              }
+            },
+          ),
+          evmSigningAddress: serializedWallet.evmSigningAddress!,
+          evmUserContractAddress: serializedWallet.evmUserContractAddress,
+        },
+        proxyAddress: {
+          v: 1,
+          address: serializedWallet.proxyAddress.address,
+        },
+        // TODO: fetch from chain?
+        gatekeeperConfig: {
+          beneficiaries: [],
+          flexAccounts: [],
+        },
+        singlesigWallets: [],
+        currentAccount: null,
+        evmSigningAddress: serializedWallet.evmSigningAddress!,
+        evmUserContractAddress: serializedWallet.evmUserContractAddress,
+      };
+
+      const currentOwner = ObservableMultisigKey.create(
+        {
+          homeAccountAddress: serializedData.proxyAddress.address,
+          evmSigningAddress: serializedData.evmSigningAddress,
+          evmUserContractAddress: serializedData.evmUserContractAddress,
+          ownerIndex: 0,
+        },
+        serializedData.chain,
+        serializedData.owner,
+      );
+      const draftId = draftsStore.create({
+        original: currentOwner,
+      });
+      const draft = draftsStore.get<MultisigKey>({ id: draftId });
+
+      console.log("recovered draft: " + JSON.stringify(draft.value));
+      await walletsStore.createWallet({
+        multisigKey: draft.value,
+        demoMode: false,
+        skipInit: true,
+        evmSigningAddressOverride: serializedData.evmSigningAddress,
+        evmUserContractAddressOverride: serializedData.evmUserContractAddress,
+        homeAccountAddressOverride: serializedData.proxyAddress.address,
+      });
+    }
+
+    async function onRecover() {
       const newMultisigKey = ObservableMultisigKey.create(
         undefined,
         chainStore.currentChain,
       );
-      const draftId = draftsStore.create({
-        original: newMultisigKey,
-      });
-      navigation.navigate(KeyRoute.DeviceKey, {
-        draftId,
-        flow: KeyFlow.RecoverWallet,
-        demoMode: false,
-      });
+      if (unityStore.getDeviceId) {
+        // check if this device key is already associated with wallets
+        const proxyWallets = await newMultisigKey.setUnityKey(
+          unityStore.getDeviceId,
+          false,
+          true,
+        );
+        console.log("Proxy wallet found: " + JSON.stringify(proxyWallets![0]));
+        if (
+          proxyWallets?.length === 1 &&
+          proxyWallets[0].owner.threshold === "1"
+        ) {
+          loginFromSerializedDataAndUsableKey(proxyWallets[0], newMultisigKey);
+        } else {
+          // multiple proxy wallets, or none found for just
+          // this device key
+          const draftId = draftsStore.create({
+            original: newMultisigKey,
+          });
+          navigation.navigate(OnboardingRoute.SelectRecoveryMethod, {
+            draftId,
+            flow: KeyFlow.RecoverWallet,
+            demoMode: false,
+          });
+          return;
+        }
+      } else {
+        // else if not unity...
+        const draftId = draftsStore.create({
+          original: newMultisigKey,
+        });
+        navigation.navigate(KeyRoute.DeviceKey, {
+          draftId,
+          flow: KeyFlow.RecoverWallet,
+          demoMode: false,
+        });
+      }
     }
 
     function onEnterDemoMode() {

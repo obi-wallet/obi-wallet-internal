@@ -107,6 +107,7 @@ export class Wallets {
     evmUserContractAddressOverride?: string | undefined;
     homeAccountAddressOverride?: string | undefined;
   }) {
+    console.log("in createWallet()");
     let response;
     // alphabetize the keys in MultisigKey by their KeyType name
     // and then by their publicKey.value
@@ -125,7 +126,7 @@ export class Wallets {
         }
       }
     });
-    console.log("alphabetized keys: " + JSON.stringify(multisigKey.keys));
+    //console.log("alphabetized keys: " + JSON.stringify(multisigKey.keys));
     if (!skipInit) {
       response = await this.walletsSdk.getAsyncDetailsAndFirstOwnerUpdate({
         multisigKey,
@@ -169,9 +170,19 @@ export class Wallets {
           : response!.evmUserContractAddress,
       },
     });
+    console.log(
+      "setting evmSigningAddress to " + skipInit
+        ? evmSigningAddressOverride!
+        : response!.evmSigningAddress,
+    );
     wallet.setEvmSigningAddress(
       skipInit ? evmSigningAddressOverride! : response!.evmSigningAddress,
       true,
+    );
+    console.log(
+      "setting evmUserContractAddress to " + skipInit
+        ? evmUserContractAddressOverride!
+        : response!.evmUserContractAddress,
     );
     wallet.setEvmUserContractAddress(
       skipInit
@@ -209,7 +220,17 @@ export class Wallets {
       data: serializedData,
     });
     console.log("calling wallet.updateOwner...");
-    const response = await wallet.updateOwner(newOwner);
+    invariant(
+      serializedData.evmSigningAddress.length > 0,
+      "no serializedData evmSigningAddress",
+    );
+    const response = await wallet.updateOwner(
+      newOwner,
+      serializedData.evmSigningAddress,
+      serializedData.evmUserContractAddress,
+    );
+    wallet.setEvmSigningAddress(serializedData.evmSigningAddress, true);
+    wallet.setEvmUserContractAddress(serializedData.evmUserContractAddress);
     if (response.approved && response.payload.success) {
       this.upsertWallet(wallet);
     }
