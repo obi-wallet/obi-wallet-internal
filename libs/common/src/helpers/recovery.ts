@@ -68,7 +68,7 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
   );
 
   invariant(activeDeviceKey, "Device or unity key is required");
-  if (recoverFrom === RecoverFrom.Email || RecoverFrom.Phone) {
+  if (recoverFrom === RecoverFrom.Email || recoverFrom === RecoverFrom.Phone) {
     invariant(
       recoveredPhoneKey || recoveredEmailKey,
       "Phone or email key is required",
@@ -187,7 +187,7 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
     "serialized recovered wallet data: " + JSON.stringify(serializedData),
   );
 
-  if (recoverFrom === RecoverFrom.Email || RecoverFrom.Phone) {
+  if (recoverFrom === RecoverFrom.Email || recoverFrom === RecoverFrom.Phone) {
     return {
       isUpdateRequired: true,
       serializedData,

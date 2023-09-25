@@ -57,6 +57,7 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
       <DeviceKey
         {...params}
         onSubmit={async (userSaysDeviceIsNew, devicePubKey) => {
+          /*
           // no matter what, we try to recover if match is found
           console.log("In device key screen, flow is " + params.flow);
           const proxyWallets = await getProxyWalletsCloudflare(devicePubKey);
@@ -86,6 +87,7 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
             navigation.navigate(OnboardingRoute.CreateWallet, params);
             return;
           }
+          */
         }}
       />
     );
@@ -174,6 +176,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       if (proxyWallets !== undefined) {
         return {
           wallets: proxyWallets,
+          deviceKeypair: keyPair,
         };
       }
       console.log("device key set..");
@@ -247,6 +250,15 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       const { success, newUser, deviceKeypair, wallets } = res;
       const _newUser = newUser;
       if (wallets) {
+        invariant(deviceKeypair, "could not get device keypair");
+        await draft.value.setDeviceKey(
+          { 
+            publicKey: deviceKeypair?.publicKey,
+            privateKey: deviceKeypair?.privateKey 
+          },
+          false,
+          true,
+        );
         navigation.navigate(OnboardingRoute.LookupProxyWallets, {
           flow: KeyFlow.RecoverWallet,
           draftId,
@@ -256,7 +268,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         });
       }
       requiredPubkey = deviceKeypair?.publicKey.value;
-      invariant(requiredPubkey, "could not get device pubkey");
+      invariant(requiredPubkey, "could not get device pubkey");  
       console.log("Success is: ", success);
       if (success && Platform.OS !== "ios") {
         onSubmit(deviceIsNew, requiredPubkey);
