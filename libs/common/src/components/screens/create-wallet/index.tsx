@@ -41,6 +41,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
         {...params}
         loading={loading}
         onSubmit={async () => {
+          // console.log("draft value is " + JSON.stringify(draft.value));
           setLoading(true);
           console.log(
             !draft.value.setupDetails?.evmUserContractAddress,

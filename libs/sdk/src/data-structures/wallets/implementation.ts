@@ -107,6 +107,7 @@ export class Wallets {
     evmUserContractAddressOverride?: string | undefined;
     homeAccountAddressOverride?: string | undefined;
   }) {
+    console.log("in createWallet()");
     let response;
     // alphabetize the keys in MultisigKey by their KeyType name
     // and then by their publicKey.value

@@ -132,7 +132,7 @@ export class MultisigKey {
     });
   }
 
-  private async createMagicAccount() {
+  public async createMagicAccount() {
     // TODO: retry logic
     console.log("Calling setup/home-account with fee address as owner");
     const response = await fetch("/api/setup/home-account", {
@@ -224,7 +224,7 @@ export class MultisigKey {
   }
 
   /// Returns true if we should proceed to recovery
-  private async setupMagicAccountIfDoesNotExist(
+  public async setupMagicAccountIfDoesNotExist(
     publicKey: string,
     existingUserSaysDeviceIsNew?: boolean,
     recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
@@ -318,8 +318,6 @@ export class MultisigKey {
       type: KeyType.Unity,
       payload: keyPair,
     });
-    // TODO: confirm user is a new user here?
-    // don't await here
     if (!this._setupDetails) {
       this._setupDetails = {
         homeAccountAddress: "",
