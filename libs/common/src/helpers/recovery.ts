@@ -116,13 +116,13 @@ export async function activateRecoveredWallet(
               },
             };
           case KeyType.Unity: {
-              return {
-                type: KeyType.Unity,
-                payload: {
-                  publicKey: key.publicKey,
-                },
-              };
-            }
+            return {
+              type: KeyType.Unity,
+              payload: {
+                publicKey: key.publicKey,
+              },
+            };
+          }
           case KeyType.Cloud:
           case KeyType.Nfc:
             return {

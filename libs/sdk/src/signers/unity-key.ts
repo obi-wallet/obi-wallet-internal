@@ -1,4 +1,5 @@
 import * as secp256k1 from "secp256k1";
+import invariant from "tiny-invariant";
 
 import { Signer } from "./abstract";
 import { KeySubclassTypeMapping, KeyType } from "../data-structures";
@@ -9,6 +10,10 @@ export class UnitySigner extends Signer {
 
   public constructor(protected key: KeySubclassTypeMapping[KeyType.Unity]) {
     super();
+    invariant(
+      key.payload.privateKey,
+      "private key is required for unity signer type",
+    );
     this.privateKey = key.payload.privateKey;
   }
 

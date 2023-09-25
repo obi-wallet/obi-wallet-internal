@@ -1,6 +1,7 @@
 import warning from "tiny-warning";
 
 import { SecretJsChainId, secretJsChains } from "../../../chains/secret-js";
+import { SecretJsClient } from "../../../clients/secret-js";
 import {
   FlexAccount,
   MultisigKey,
@@ -19,7 +20,6 @@ import {
   AbstractMultisigWalletSdk,
   UpdateGatekeeperConfigParams,
 } from "../abstract";
-import { SecretJsClient } from "../../../clients/secret-js";
 
 function notImplemented(message: string) {
   warning(false, message);

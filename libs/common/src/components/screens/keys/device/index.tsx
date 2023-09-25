@@ -20,7 +20,7 @@ import invariant from "tiny-invariant";
 import { useStore } from "../../../../contexts";
 import {
   Alert,
-  activateRecoveredWallet as activateRecoveredWallet,
+  activateRecoveredWallet,
   getProxyWalletsCloudflare,
   isSmallScreen,
   isSmallScreenNumber,
@@ -29,7 +29,6 @@ import {
   KeyFlow,
   KeyRoute,
   KeyStackParamList,
-  keyTypeToKeyRoute,
   OnboardingRoute,
   RecoverFrom,
   useRootNavigation,
@@ -51,7 +50,7 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
   function DeviceKeyScreen({ route }) {
     const navigation = useRootNavigation();
     const store = useStore();
-    const { configStore, draftsStore } = store;
+    const { draftsStore } = store;
     const { params } = route;
 
     return (
@@ -60,8 +59,7 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
         onSubmit={async (userSaysDeviceIsNew, devicePubKey) => {
           // no matter what, we try to recover if match is found
           const proxyWallets = await getProxyWalletsCloudflare(devicePubKey);
-          const parsedProxyWallets =
-            proxyWallets as A.SerializedProxyWallet[];
+          const parsedProxyWallets = proxyWallets as A.SerializedProxyWallet[];
           if (
             parsedProxyWallets.length !== 1 ||
             parseInt(parsedProxyWallets[0].owner.threshold) > 1
@@ -244,6 +242,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
     } else {
       const res = await scanBiometricsOrWebAuthN(false, userSaysDeviceIsNew);
       const { success, newUser, deviceKeypair, wallets } = res;
+      const _newUser = newUser;
       if (wallets) {
         navigation.navigate(OnboardingRoute.LookupProxyWallets, {
           flow: KeyFlow.RecoverWallet,
