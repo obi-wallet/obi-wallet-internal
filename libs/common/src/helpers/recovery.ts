@@ -212,7 +212,7 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
     } else {
       draft.value.setDeviceKey(activeDeviceKey.payload);
     }
-    console.log("recovered draft: " + JSON.stringify(draft.value));
+    // console.log("recovered draft: " + JSON.stringify(draft.value));
     await walletsStore.createWallet({
       multisigKey: draft.value,
       demoMode: false,

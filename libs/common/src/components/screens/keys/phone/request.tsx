@@ -266,7 +266,7 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                     try {
                       const twilioClient = getTwilioClient({ demoMode, env });
                       // TODO: factor back out this workaround
-                      const res = await twilioClient.requestPublicKeyMagicCode({
+                      const _res = twilioClient.requestPublicKeyMagicCode({
                         ...data,
                         chainId,
                         type: CommunicationType.SMS,
@@ -278,7 +278,6 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                         voice: false,
                       });
                       */
-                      console.log({ res });
                       onSubmit(data);
                     } catch (e) {
                       const error = e as Error;
