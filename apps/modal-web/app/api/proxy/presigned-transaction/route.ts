@@ -12,7 +12,6 @@ export async function POST(request: Request) {
     message: MsgExecuteContract<any>;
     userAccountAddress: string;
     userAccountCodeHash: string;
-    nexthashSignedBySigners: string[]; //hex
   } = await request.json();
 
   const chainId = "secret-4";
@@ -29,10 +28,7 @@ export async function POST(request: Request) {
     sender: wallet.address,
     code_hash: body.userAccountCodeHash,
     contract_address: body.userAccountAddress,
-    msg: {
-      ...body.message.msg,
-      signatures: body.nexthashSignedBySigners
-    },
+    msg: body.message.msg,
     sent_funds: []
   });
   console.log("messageToSign is " + JSON.stringify(messageToSign));
@@ -45,6 +41,6 @@ export async function POST(request: Request) {
   const txResult = await client.broadcastSignedTransaction(signedTransaction);
   return NextResponse.json({
     success: txResult.success,
-    error: txResult.transactionHash,
+    hash: txResult.transactionHash,
   });
 }

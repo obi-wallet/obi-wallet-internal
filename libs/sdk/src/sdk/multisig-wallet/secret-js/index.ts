@@ -146,15 +146,6 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
     // queryClient.ensureQueryData(this.codeIdsQuery());
     console.log("querying for user account address...");
     const userAccountAddress = await this.getUserAccountAddress();
-    console.log("assembling propose update owner message...");
-    const message = this.messages.getProposeUpdateOwnerMessage({
-      wallet: this.wallet,
-      newOwner,
-      userAccountAddress: userAccountAddress.user_account_address,
-      userAccountCodeHash: userAccountAddress.user_account_code_hash,
-      // codeIds,
-    });
-    console.log("propose update owner message: " + JSON.stringify(message));
     const nextHashResponse: {
       next_hash: string;
     } = await new SecretJsClient("secret-4").withSecretNetworkClient(
@@ -170,6 +161,17 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
     const nextHash = nextHashResponse.next_hash;
     /// hack for now; sign single. Pass in some active pk signer
     const activeSignature = await signer.signHash(Buffer.from(nextHash, "hex"));
+    console.log("assembling propose update owner message...");
+    const message = this.messages.getProposeUpdateOwnerMessage({
+      wallet: this.wallet,
+      newOwner,
+      userAccountAddress: userAccountAddress.user_account_address,
+      userAccountCodeHash: userAccountAddress.user_account_code_hash,
+      nexthashSignedBySigners: [Buffer.from(activeSignature).toString("hex")],
+      // codeIds,
+    });
+    console.log("propose update owner message: " + JSON.stringify(message));
+
     const proposeUpdateResponse = await fetch(
       "/api/proxy/presigned-transaction",
       {
@@ -178,9 +180,6 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
           message,
           userAccountAddress: userAccountAddress.user_account_address,
           userAccountCodeHash: userAccountAddress.user_account_code_hash,
-          nexthashSignedBySigners: [
-            Buffer.from(activeSignature).toString("hex"),
-          ],
         }),
       },
     );
@@ -204,7 +203,7 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
       return { approved: false };
     } */
 
-    if (!proposeUpdateResponseJson.payload.success) {
+    if (!proposeUpdateResponseJson.success) {
       console.error(proposeUpdateResponseJson);
       return await this.proposeUpdateOwner(newOwner, signer);
     }
@@ -223,13 +222,6 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
     | { approved: false }
   > {
     const userAccountAddress = await this.getUserAccountAddress();
-    const message = this.messages.getConfirmUpdateOwnerMessage({
-      wallet: this.wallet,
-      newOwner,
-      userAccountAddress: userAccountAddress.user_account_address,
-      userAccountCodeHash: userAccountAddress.user_account_code_hash,
-      // codeIds,
-    });
     const nextHashResponse: {
       next_hash: string;
     } = await new SecretJsClient("secret-4").withSecretNetworkClient(
@@ -244,6 +236,14 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
     const nextHash = nextHashResponse.next_hash;
     /// hack for now; sign single. Pass in some active pk signer
     const activeSignature = await signer.signHash(Buffer.from(nextHash, "hex"));
+
+    const message = this.messages.getConfirmUpdateOwnerMessage({
+      wallet: this.wallet,
+      newOwner,
+      userAccountAddress: userAccountAddress.user_account_address,
+      userAccountCodeHash: userAccountAddress.user_account_code_hash,
+      nexthashSignedBySigners: [Buffer.from(activeSignature).toString("hex")],
+    });
     const confirmUpdateResponse = await fetch(
       "/api/proxy/presigned-transaction",
       {
