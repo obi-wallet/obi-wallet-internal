@@ -12,6 +12,7 @@ import {
   generateSec256k1KeyPair,
 } from "../../keys";
 import { Sdk } from "../../sdk";
+import { SerializedProxyWallet } from "../../sdk/wallets/secret-js-msig/types";
 import { Message } from "../../transactions";
 import { AbstractDataStructure } from "../abstract";
 import {
@@ -222,24 +223,33 @@ export class MultisigKey {
     }
   }
 
-  private async setupMagicAccountIfDoesNotExist(publicKey: string) {
+  /// Returns true if we should proceed to recovery
+  private async setupMagicAccountIfDoesNotExist(
+    publicKey: string,
+  ): Promise<SerializedProxyWallet[] | undefined> {
     try {
-      const proxyWallets = await this.getProxyWalletsCloudflare(publicKey);
+      const proxyWallets = (await this.getProxyWalletsCloudflare(
+        publicKey,
+      )) as SerializedProxyWallet[];
       if (proxyWallets.length === 0) {
         this.createMagicAccount();
+        return undefined;
+      } else {
+        return proxyWallets;
       }
     } catch (e) {
       this.createMagicAccount();
+      return undefined;
     }
   }
 
-  public setDeviceKey(
+  public async setDeviceKey(
     keyPair: {
       publicKey: Secp256k1PublicKey;
       privateKey?: string;
     },
     newDevice?: boolean,
-  ) {
+  ): Promise<SerializedProxyWallet[] | undefined> {
     if (newDevice === undefined) {
       newDevice = false;
     }
@@ -257,12 +267,23 @@ export class MultisigKey {
         ownerIndex: 0,
       };
 
-      this.setupMagicAccountIfDoesNotExist(keyPair.publicKey.value);
+      const proxyWallets = this.setupMagicAccountIfDoesNotExist(
+        keyPair.publicKey.value,
+      );
+      if (proxyWallets) {
+        return proxyWallets;
+      } else {
+        return undefined;
+      }
     }
     console.log("Current draft multisig: " + JSON.stringify(this));
+    return undefined;
   }
 
-  public setUnityKey(deviceId: string, newDevice?: boolean) {
+  public async setUnityKey(
+    deviceId: string,
+    newDevice?: boolean,
+  ): Promise<SerializedProxyWallet[] | undefined> {
     if (newDevice === undefined) {
       newDevice = true;
     }
@@ -302,9 +323,17 @@ export class MultisigKey {
         evmUserContractAddress: "",
         ownerIndex: 0,
       };
-      this.setupMagicAccountIfDoesNotExist(keyPair.publicKey.value);
+      const proxyWallets = this.setupMagicAccountIfDoesNotExist(
+        keyPair.publicKey.value,
+      );
+      if (proxyWallets) {
+        return proxyWallets;
+      } else {
+        return undefined;
+      }
     }
     console.log("Current draft multisig: " + JSON.stringify(this));
+    return undefined;
   }
 
   public setPhoneKey(payload: {

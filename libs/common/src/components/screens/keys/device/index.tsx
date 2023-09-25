@@ -31,6 +31,7 @@ import {
   KeyStackParamList,
   keyTypeToKeyRoute,
   OnboardingRoute,
+  RecoverFrom,
   useRootNavigation,
 } from "../../../../router";
 import { AsyncButton } from "../../../buttons";
@@ -39,6 +40,7 @@ import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
 import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { Text } from "../../../typography";
 import * as A from "../../lookup-proxy-wallets/api-types";
+import { SerializedProxyWallet } from "../../lookup-proxy-wallets/api-types";
 
 export type DeviceKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -125,6 +127,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   const [scannedBiometrics, setScannedBiometrics] = useState(false);
   const intl = useIntl();
   const theme = useTheme();
+  const navigation = useRootNavigation();
 
   async function fundKeyIfZero(pubkey: string): Promise<void> {
     const address = pubkeyToAddress(Buffer.from(pubkey, "base64"), "secret");
@@ -164,7 +167,12 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
     create: boolean,
     userSaysDeviceIsNew?: boolean,
     recoverFlow?: boolean,
-  ): Promise<[boolean, boolean, Secp256k1KeyPair | undefined]> {
+  ): Promise<{
+    wallets?: SerializedProxyWallet[] | undefined;
+    deviceKeypair?: Secp256k1KeyPair | undefined;
+    success?: boolean | undefined;
+    newUser?: boolean | undefined;
+  }> {
     if (userSaysDeviceIsNew === undefined) {
       userSaysDeviceIsNew = true;
     }
@@ -175,7 +183,15 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         demoMode,
       );
       console.log("setting device key...");
-      draft.value.setDeviceKey(keyPair, !recoverFlow);
+      const proxyWallets = await draft.value.setDeviceKey(
+        keyPair,
+        !recoverFlow,
+      );
+      if (proxyWallets !== undefined) {
+        return {
+          wallets: proxyWallets,
+        };
+      }
       console.log("device key set..");
       void queryClient.prefetchQuery(
         Sdk.chainId(
@@ -184,19 +200,31 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       );
       console.log("returning...");
       setScannedBiometrics(true);
-      return [true, newUser, keyPair];
+      return {
+        success: true,
+        newUser,
+        deviceKeypair: keyPair,
+      };
     } catch (e) {
       setScannedBiometrics(false);
       const error = e as Error;
 
       if (error.message === "code: 13, msg: Cancel")
-        return [false, false, undefined];
+        return {
+          success: false,
+          newUser: false,
+          deviceKeypair: undefined,
+        };
       console.error(error);
       Alert.alert(
         intl.formatMessage({ id: "general.error" }) + " ScanMyBiometrics",
         error.message,
       );
-      return [false, false, undefined];
+      return {
+        success: false,
+        newUser: false,
+        deviceKeypair: undefined,
+      };
     }
   }
 
@@ -215,10 +243,17 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       invariant(requiredPubkey, "could not get device pubkey");
       onSubmit(userSaysDeviceIsNew, requiredPubkey);
     } else {
-      const [success, _newUser, deviceKeypair] = await scanBiometricsOrWebAuthN(
-        false,
-        userSaysDeviceIsNew,
-      );
+      const res = await scanBiometricsOrWebAuthN(false, userSaysDeviceIsNew);
+      const { success, newUser, deviceKeypair, wallets } = res;
+      if (wallets) {
+        navigation.navigate(OnboardingRoute.LookupProxyWallets, {
+          flow: KeyFlow.RecoverWallet,
+          draftId,
+          walletsFound: wallets,
+          demoMode: false,
+          recoverFrom: RecoverFrom.Device,
+        });
+      }
       requiredPubkey = deviceKeypair?.publicKey.value;
       invariant(requiredPubkey, "could not get device pubkey");
       console.log("Success is: ", success);

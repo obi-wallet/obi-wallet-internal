@@ -51,6 +51,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
         onSelect={async () => {
           // noop
         }}
+        walletsFound={params.walletsFound}
       />
     );
   },

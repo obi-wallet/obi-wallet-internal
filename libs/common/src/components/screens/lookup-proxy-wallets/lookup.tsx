@@ -32,6 +32,7 @@ export interface LookupProps {
   recoverFrom: RecoverFrom;
   onSelect(wallet: A.SerializedProxyWallet): Promise<void>;
   onCancel(): void;
+  walletsFound?: A.SerializedProxyWallet[];
 }
 
 export const Lookup = observer(function Lookup({
@@ -41,6 +42,7 @@ export const Lookup = observer(function Lookup({
   recoverFrom,
   onSelect,
   onCancel,
+  walletsFound,
 }: LookupProps) {
   const _onSelect = onSelect;
   const store = useStore();
@@ -54,6 +56,9 @@ export const Lookup = observer(function Lookup({
   const [selectedWallet, setSelectedWallet] =
     useState<A.SerializedProxyWallet | null>(null);
   const theme = useTheme();
+  if (walletsFound) {
+    setWallets(walletsFound);
+  }
 
   useAsyncEffect(async () => {
     try {

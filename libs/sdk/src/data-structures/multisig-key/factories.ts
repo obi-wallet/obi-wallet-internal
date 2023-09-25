@@ -46,6 +46,7 @@ export function createObservableMultisigKey(
   chain: ChainId,
   migratable?: AbstractMigratable<typeof MultisigKeySchema>,
 ) {
+  console.log("running createObservableMultisigKey()");
   const key = createMultisigKey(setupDetails, chain, migratable, {
     Key: ObservableKey,
     createMultisigKey: createObservableMultisigKey,

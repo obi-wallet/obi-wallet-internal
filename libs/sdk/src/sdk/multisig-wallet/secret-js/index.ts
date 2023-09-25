@@ -1,5 +1,5 @@
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { SecretJsClient } from "libs/sdk/src/clients";
+import { SecretJsClient } from "@obi-wallet/sdk";
 import warning from "tiny-warning";
 
 import { SecretJsChainId, secretJsChains } from "../../../chains/secret-js";
