@@ -27,10 +27,10 @@ async function fetchBalances(address: string) {
       id: ztxToken,
       rawAmount: ztxResult.toString(),
     },
-    {
+    /*{
       id: "eth",
       rawAmount: ethResult.toString(),
-    },
+    },*/
   ];
 }
 
