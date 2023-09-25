@@ -51,8 +51,8 @@
   "recovery.singlesig.generateseed": "Generate seed",
 
   "recovery.choosewallet.title": "Choose an existing wallet",
-  "recovery.choosewallet.subtext": "We found the following Obi Wallets associated with your phone number and security answer. Select the one you want to recover.",
-  "recovery.choosewallet.subtextnone": "We found no Obi Wallets associated with your phone number and security answer. Please try a different combination.",
+  "recovery.choosewallet.subtext": "We found the following Obi Wallets associated with the keys you've entered. Select the one you want to recover.",
+  "recovery.choosewallet.subtextnone": "We found no Obi Wallets associated with any of the keys you've entered. Please check your security answer and other details or try a different combination.",
   "recovery.choosewallet.tryagain": "Try a different combination",
   "onboarding1.disclaimer": "Disclaimer:",
   "onboarding1.disclaimerMsg": "Obi is in alpha. Security audits are pending. Current implementations are only intended for trial purposes.",

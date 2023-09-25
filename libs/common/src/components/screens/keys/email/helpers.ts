@@ -10,6 +10,6 @@ export function isPrivateKey(text: string): boolean {
   }
 }
 
-export function findPrivateKeys(text: string): string[] {
-  return text.split(" ").filter(isPrivateKey);
+export function findRecoveryLink(text: string): string {
+  return text.trim();
 }

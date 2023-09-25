@@ -11,7 +11,7 @@ import secp256k1 from "secp256k1";
 import { z } from "zod";
 
 import { EmailContainer } from "./container";
-import { findPrivateKeys, isPrivateKey } from "./helpers";
+import { findRecoveryLink, isPrivateKey } from "./helpers";
 import { EmailTab, EmailTabs } from "./tabs";
 import { useStore } from "../../../../contexts";
 import { isSmallScreenNumber } from "../../../../helpers";
@@ -25,6 +25,7 @@ import {
 import { TextInput } from "../../../text-input";
 import { Text } from "../../../typography";
 import { VerifyAndProceedButton } from "../../../verify-and-proceed-button";
+import invariant from "tiny-invariant";
 
 export type EmailRecoveryScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -59,7 +60,7 @@ export interface EmailRecoveryProps {
 }
 
 const schema = z.object({
-  privateKey: z.string().refine(isPrivateKey, "Invalid private key"),
+  recoveryLink: z.string(),
 });
 
 export const EmailRecovery = observer<EmailRecoveryProps>(
@@ -68,9 +69,6 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
     const draft = draftsStore.get<MultisigKey>({ id: draftId });
     const [selectedTab, setSelectedTab] = useState(EmailTab.EmailKeyV1);
 
-    const getPrivateKeyFromText = (text: string) => {
-      return findPrivateKeys(text)[0];
-    };
     const isKeyboardVisible = useKeyboardVisible();
 
     const { control, handleSubmit, formState } = useForm({
@@ -90,11 +88,11 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
           >
             <FormattedMessage
               id="onboarding5.recovery.emailsubtext.cosmos"
-              defaultMessage="Enter your recovery key from your email. (This is one-time use and will be replaced with a new recovery key.)"
+              defaultMessage="Paste in your recovery link from your email. (This is one-time use and will be replaced with a new recovery key.)"
             />
           </Text>
           <Controller
-            name="privateKey"
+            name="recoveryLink"
             control={control}
             rules={{
               required: true,
@@ -114,8 +112,7 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
                   value={value}
                   onBlur={onBlur}
                   onChangeText={(text) => {
-                    const privateKey = getPrivateKeyFromText(text);
-                    onChange(privateKey ?? text);
+                    onChange(text);
                   }}
                 />
               );
@@ -153,11 +150,23 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
         <View style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}>
           {!isKeyboardVisible && (
             <VerifyAndProceedButton
-              disabled={!formState.isValid}
+              disabled={false}
               onPress={handleSubmit(async (data) => {
+                console.log("calling /api/recover/email...");
+                const response = await fetch("/api/recover/email", {
+                  method: "POST",
+                  body: JSON.stringify({
+                    recoveryLink: data.recoveryLink,
+                  }),
+                });
+                const res = await response.json();
+                console.log("response:" + JSON.stringify(res));
+
+                invariant(res.decrypted, "unable to recover key");
+
                 const publicKey = Buffer.from(
                   secp256k1.publicKeyCreate(
-                    new Uint8Array(Buffer.from(data.privateKey, "base64")),
+                    new Uint8Array(Buffer.from(res.decrypted, "base64")),
                   ),
                 ).toString("base64");
 
@@ -166,7 +175,7 @@ export const EmailRecovery = observer<EmailRecoveryProps>(
                     type: "tendermint/PubKeySecp256k1",
                     value: publicKey,
                   },
-                  privateKey: data.privateKey,
+                  privateKey: res.decrypted,
                 });
 
                 onSubmit();

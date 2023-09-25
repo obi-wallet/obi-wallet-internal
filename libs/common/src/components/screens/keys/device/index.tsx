@@ -373,7 +373,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
             >
               {unityStore.getDeviceId ? (
                 <FormattedMessage
-                  id="onboarding4.authyourkeys.subtext"
+                  id="onboarding4.authyourkeys.subtext.unity"
                   defaultMessage="With Obi, your Device, phone number, cloud, email, and more combine into a multi-factor authenticator."
                 />
               ) : (
@@ -393,12 +393,12 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
             >
               {unityStore.getDeviceId ? (
                 <FormattedMessage
-                  id="onboarding4.authyourkeys.explain"
+                  id="onboarding4.authyourkeys.explain.unity"
                   defaultMessage="Unity games on this device can provide a secure key, even if you reinstall a game. The games cannot use the key on their own."
                 />
               ) : (
                 <FormattedMessage
-                  id="onboarding4.authyourkeys.subtext"
+                  id="onboarding4.authyourkeys.explain"
                   defaultMessage="Your browser will display a WebAuthN request to use your Windows Hello, Touch ID, or other authentication method. Keys cannot leave your device."
                 />
               )}

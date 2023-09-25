@@ -32,7 +32,7 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
     let recoverType: KeyType;
     switch (params.recoverFrom) {
       case RecoverFrom.Email:
-        recoverType = KeyType.Email;
+        recoverType = KeyType.EmailRecovery;
         break;
       case RecoverFrom.Phone:
         recoverType = KeyType.Phone;
