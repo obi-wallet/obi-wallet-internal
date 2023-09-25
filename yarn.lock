@@ -20405,6 +20405,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nodemailer@npm:^6.9.5":
+  version: 6.9.5
+  resolution: "nodemailer@npm:6.9.5"
+  checksum: e39282795e09f0685691b1511f74e2dc4703ba6ecd55d964c2f8a1b54591e5b284228c90cd6a203b498a5a1ea2610415306e8d7eda0b3cd9ebdcb210f05b2846
+  languageName: node
+  linkType: hard
+
 "nopt@npm:^6.0.0":
   version: 6.0.0
   resolution: "nopt@npm:6.0.0"
@@ -20801,6 +20808,7 @@ __metadata:
     nanoid: ^4.0.2
     next: ^13.5.2
     node-html-parser: ^5.4.2
+    nodemailer: ^6.9.5
     nx: 16.6.0
     os-browserify: ^0.3.0
     otplib: ^12.0.1

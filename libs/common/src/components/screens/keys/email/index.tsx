@@ -198,7 +198,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
       copied ? "Confirm Recovery Link Saved" : "Confirm Email Sent",
       copied
         ? "Never enter your recovery link anywhere. Have you saved it?"
-        : "Never enter the one-time link you received anywhere unless you need it for recovery. Have you sent the email to yourself?",
+        : "Never enter the one-time link you received anywhere unless you need it for recovery. Have you saved the email?",
       [
         {
           text: "No",
@@ -401,6 +401,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                     value: publicKey!,
                   });
                   await Linking.openURL(URL);
+                  onPressRef.current!();
                 } catch (e) {
                   console.error(e);
                   // noop
@@ -412,19 +413,25 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
               disabled={!formState.isValid}
               onPress={handleSubmit(async (data) => {
                 try {
-                  const URL = `mailto:${
-                    data.email
-                  }?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
+                  const to = data.email;
+                  const subject = "DO NOT DELETE: Obi recovery link";
+                  const text =
                     "This is an Obi email key recovery link. You are sending it to yourself; Obi can never access its contents. " +
-                      "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
-                      "DO NOT DELETE this email, unless you are saving its contents to a password manager or physical location." +
-                      emailRecoveryLink,
-                  )}`;
+                    "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
+                    "DO NOT DELETE this email, unless you are saving its contents to a password manager or physical location." +
+                    emailRecoveryLink;
                   setEmailKey({
                     type: "tendermint/PubKeySecp256k1",
                     value: publicKey!,
                   });
-                  await Linking.openURL(URL);
+                  const _response = await fetch("/api/send-email", {
+                    method: "POST",
+                    body: JSON.stringify({
+                      to,
+                      subject,
+                      text,
+                    }),
+                  });
                 } catch (e) {
                   console.error(e);
                   // noop
