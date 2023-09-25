@@ -270,6 +270,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
           demoMode: false,
         });
       } else {
+        draft.value.createMagicAccount();
         navigation.navigate(OnboardingRoute.CreateWallet, {
           flow: KeyFlow.CreateWallet,
           draftId,

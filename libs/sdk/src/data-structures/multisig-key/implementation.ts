@@ -349,7 +349,7 @@ export class MultisigKey {
       type: KeyType.Phone,
       payload,
     });
-    console.log("Current multisig draft is: " + JSON.stringify(this));
+    // console.log("Current multisig draft is: " + JSON.stringify(this));
   }
 
   public setSocialKey(publicKey: Secp256k1PublicKey) {
