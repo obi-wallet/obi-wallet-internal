@@ -4,7 +4,12 @@ import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { KeyFlow, OnboardingRoute, RecoverFrom, useRootNavigation } from "@obi-wallet/common";
+import {
+  KeyFlow,
+  OnboardingRoute,
+  RecoverFrom,
+  useRootNavigation,
+} from "@obi-wallet/common";
 import { Chain, ChainId, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -222,25 +227,20 @@ export const Lookup = observer(function Lookup({
           onPress={async () => {
             if (selectedWallet) {
               try {
-                const {
-                  isUpdateRequired,
-                  serializedData
-                } = await activateRecoveredWalletAndIsUpdateRequired(
-                  draft,
-                  recoverFrom,
-                  store,
-                  selectedWallet,
-                );
-                if (isUpdateRequired) {
-                  navigation.navigate(
-                    OnboardingRoute.RecoverWallet,
-                    { 
-                      flow: KeyFlow.RecoverWallet,
-                      demoMode: false,
-                      draftId,
-                      serializedData,
-                    }
+                const { isUpdateRequired, serializedData } =
+                  await activateRecoveredWalletAndIsUpdateRequired(
+                    draft,
+                    recoverFrom,
+                    store,
+                    selectedWallet,
                   );
+                if (isUpdateRequired) {
+                  navigation.navigate(OnboardingRoute.RecoverWallet, {
+                    flow: KeyFlow.RecoverWallet,
+                    demoMode: false,
+                    draftId,
+                    serializedData,
+                  });
                 }
               } catch (e) {
                 console.log(e);

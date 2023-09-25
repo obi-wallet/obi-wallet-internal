@@ -227,7 +227,7 @@ export class MultisigKey {
   private async setupMagicAccountIfDoesNotExist(
     publicKey: string,
     existingUserSaysDeviceIsNew?: boolean,
-    recoverFlow?: boolean //avoids creating a new account even if no proxy wallets found
+    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
   ): Promise<SerializedProxyWallet[] | undefined> {
     try {
       const proxyWallets = (await this.getProxyWalletsCloudflare(
@@ -255,7 +255,7 @@ export class MultisigKey {
       privateKey?: string;
     },
     deviceIsNew?: boolean,
-    recoverFlow?: boolean //avoids creating a new account even if no proxy wallets found
+    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
   ): Promise<SerializedProxyWallet[] | undefined> {
     this.setKey({
       type: KeyType.Device,
@@ -274,7 +274,7 @@ export class MultisigKey {
       const proxyWallets = this.setupMagicAccountIfDoesNotExist(
         keyPair.publicKey.value,
         deviceIsNew,
-        recoverFlow // avoids creating a new account even if proxy wallets not found
+        recoverFlow, // avoids creating a new account even if proxy wallets not found
       );
       if (proxyWallets) {
         return proxyWallets;
@@ -289,7 +289,7 @@ export class MultisigKey {
   public async setUnityKey(
     deviceId: string,
     deviceIsNew?: boolean,
-    recoverFlow?: boolean //avoids creating a new account even if no proxy wallets found
+    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
   ): Promise<SerializedProxyWallet[] | undefined> {
     // use unity device ID to generate a keypair right here,
     // without a function call, and set it as the unity key
@@ -330,7 +330,7 @@ export class MultisigKey {
       const proxyWallets = this.setupMagicAccountIfDoesNotExist(
         keyPair.publicKey.value,
         deviceIsNew,
-        recoverFlow // avoids creating a new account even if proxy wallets not found
+        recoverFlow, // avoids creating a new account even if proxy wallets not found
       );
       if (proxyWallets) {
         return proxyWallets;

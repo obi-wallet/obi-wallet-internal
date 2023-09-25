@@ -48,8 +48,8 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
   store: RootStore,
   selectedWallet: A.SerializedProxyWallet,
 ): Promise<{
-  isUpdateRequired: boolean,
-  serializedData: Serialized<MultisigWallet>["data"] | undefined
+  isUpdateRequired: boolean;
+  serializedData: Serialized<MultisigWallet>["data"] | undefined;
 }> {
   console.log("activateRecoveredWalletAndIsUpdateRequired()");
   const { unityStore, walletsStore } = store;
@@ -191,11 +191,10 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
     return {
       isUpdateRequired: true,
       serializedData,
-    }
+    };
   }
 
   try {
-
     const currentOwner = ObservableMultisigKey.create(
       {
         homeAccountAddress: serializedData.proxyAddress.address,
@@ -224,8 +223,8 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
     });
     return {
       isUpdateRequired: false,
-      serializedData: undefined
-    }
+      serializedData: undefined,
+    };
   } catch (e) {
     console.log("createWallet error: " + JSON.stringify(e));
     return {

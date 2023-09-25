@@ -1,3 +1,4 @@
+import invariant from "tiny-invariant";
 import warning from "tiny-warning";
 
 import { SecretJsChainId, secretJsChains } from "../../../chains/secret-js";
@@ -20,7 +21,6 @@ import {
   AbstractMultisigWalletSdk,
   UpdateGatekeeperConfigParams,
 } from "../abstract";
-import invariant from "tiny-invariant";
 
 function notImplemented(message: string) {
   warning(false, message);
@@ -149,7 +149,7 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
         let res: {
           user_account_address: string;
           user_account_code_hash: string;
-        }
+        };
         try {
           res = await client.query.compute.queryContract({
             contract_address: this.wallet.proxyAddress,

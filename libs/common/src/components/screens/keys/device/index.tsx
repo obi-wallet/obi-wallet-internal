@@ -152,7 +152,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   async function scanBiometricsOrWebAuthN(
     create: boolean,
     existingUserSaysDeviceIsNew?: boolean,
-    recoverFlow?: boolean //avoids creating a new account even if no proxy wallets found
+    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
   ): Promise<{
     wallets?: SerializedProxyWallet[] | undefined;
     deviceKeypair?: Secp256k1KeyPair | undefined;
@@ -169,7 +169,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       const proxyWallets = await draft.value.setDeviceKey(
         keyPair,
         existingUserSaysDeviceIsNew,
-        recoverFlow //avoids creating a new account even if no proxy wallets found
+        recoverFlow, //avoids creating a new account even if no proxy wallets found
       );
       if (proxyWallets !== undefined) {
         return {
@@ -214,7 +214,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 
   async function submitWithRequiredKey(
     deviceIsNew: boolean,
-    recoverFlow?: boolean //avoids creating a new account even if no proxy wallets found
+    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
   ) {
     let requiredPubkey;
     if (unityStore.getDeviceId) {
@@ -222,7 +222,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       const proxyWallets = await draft.value.setUnityKey(
         unityStore.getDeviceId,
         deviceIsNew,
-        recoverFlow
+        recoverFlow,
       );
       if (proxyWallets !== undefined) {
         navigation.navigate(OnboardingRoute.LookupProxyWallets, {
