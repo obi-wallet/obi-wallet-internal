@@ -14,6 +14,10 @@ import { BroadcastTransactionResult, CodeIds, Token } from "../../common";
 import { Messages } from "../../messages";
 import { SecretJsMessages } from "../../messages/secret-js";
 import {
+  KeyType,
+  SerializedProxyWallet,
+} from "../../wallets/secret-js-msig/types";
+import {
   AbstractMultisigWalletSdk,
   UpdateGatekeeperConfigParams,
 } from "../abstract";
@@ -83,8 +87,55 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
         return response;
       }
     }
-
-    return await this.confirmUpdateOwner(newOwner, newSigner);
+    const chain = secretJsChains["secret-4"];
+    const proxyWallet: SerializedProxyWallet = {
+      proxyAddress: {
+        address: this.wallet.proxyAddress,
+        codeId: chain.currentCodeIds.userAccount,
+      },
+      evmUserContractAddress: this.wallet.evmUserContractAddress,
+      evmSigningAddress: this.wallet.evmSigningAddress,
+      owner: {
+        threshold: String(newOwner.threshold),
+        keys: newOwner.keys.map(({ type, publicKey }) => {
+          if (!Object.values(KeyType).includes(type as KeyType)) {
+            throw new Error(`Invalid key type: ${type}`);
+          }
+          return {
+            type: type as KeyType,
+            publicKey,
+          };
+        }),
+      },
+    };
+    const response = await this.confirmUpdateOwner(newOwner, newSigner);
+    if (response.approved && response.payload.success) {
+      const _cloudflareResponse = await fetch(
+        `https://proxy-wallets.obiwallet.workers.dev/add`,
+        // `http://127.0.0.1:8787/add`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            chainId: "secret-4",
+            proxyWallet,
+          }),
+          headers: {
+            "Api-Version": "v1",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*",
+          },
+        },
+      );
+      return {
+        approved: true,
+        payload: { success: true },
+      };
+    } else {
+      return {
+        approved: false,
+      };
+    }
   }
 
   public async getUserAccountAddress() {
