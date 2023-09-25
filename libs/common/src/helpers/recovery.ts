@@ -1,3 +1,4 @@
+// eslint-disable @typescript-eslint/no-explicit-any
 import {
   Key,
   KeyType,
@@ -9,7 +10,7 @@ import {
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
-import * as A from "../components/screens/lookup-proxy-wallets";
+import * as A from "../components/screens/lookup-proxy-wallets/api-types";
 import { RecoverFrom } from "../router";
 import { Draft, RootStore } from "../stores";
 
@@ -73,6 +74,9 @@ export async function activatedRecoveredWallet(
     chain: draft.value.chainId,
     owner: {
       threshold: parseInt(selectedWallet.owner.threshold, 10),
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       keys: selectedWallet.owner.keys.map((key): Serialized<typeof Key> => {
         switch (key.type) {
           case KeyType.Device: {

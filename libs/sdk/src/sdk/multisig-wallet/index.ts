@@ -8,7 +8,6 @@ export { AbstractMultisigWalletSdk };
 export class MultisigWalletSdk {
   public static wallet(wallet: MultisigWallet) {
     return Chain.select<AbstractMultisigWalletSdk>({
-      chainId: wallet.chainId,
       /*({ chainId }) {
         return new CosmosSdkMultisigWalletSdk({
           chainId,

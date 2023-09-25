@@ -13,7 +13,6 @@ export class Messages {
     if (cache) return cache;
 
     const messages = Chain.select<AbstractMessages<string | MultisigKey>>({
-      chainId,
       /*onCosmosChain({ chainId }) {
         return CosmosSdkMessages.chainId(chainId);
       },

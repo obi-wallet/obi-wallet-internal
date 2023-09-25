@@ -20,7 +20,6 @@ export class WalletsSdk extends AbstractWalletsSdk {
     evmUserContractAddress: string;
   }> {
     return await Chain.select<AbstractWalletsSdk>({
-      chainId: multisigKey.chainId,
       /*(_) {
         throw new Error("non-secret home accounts disabled");
       },

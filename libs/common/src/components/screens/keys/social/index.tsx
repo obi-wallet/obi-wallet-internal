@@ -72,7 +72,6 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
   const [verifyButtonDisabled, setVerifyButtonDisabled] = useState(true); // Verify&Proceed Button disabled by default
   const [fetchingPubKey, setFetchingPubKey] = useState(false);
   const obiAddress = Chain.select({
-    chainId: draft.value.chainId,
     // onCosmosChain: () => {
     //   // TODO:
     //   return "noria1299v8cn9udgt7k05jmf25lzf3sy953qemukgtn";
@@ -89,7 +88,6 @@ export const SocialKey = observer<SocialKeyProps>(function SocialKey({
     // },
   });
   const networkLabel = Chain.select({
-    chainId: draft.value.chainId,
     /* onCosmosChain: () => {
       return "Noria";
     },

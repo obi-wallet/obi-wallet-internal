@@ -13,14 +13,13 @@ export type ChainId =
 
 export const Chain = {
   select,
-  information(chainId: ChainId) {
+  information(_chainId: ChainId) {
     return select<
       // | (typeof cosmosChains)[CosmosChainId]
       // | (typeof legacyCosmosChains)[LegacyCosmosChainId]
       (typeof secretJsChains)[SecretJsChainId]
       // | (typeof terraChains)[TerraChainId]
     >({
-      chainId: chainId,
       /*onCosmosChain(chain) {
         return chain;
       },
@@ -38,7 +37,6 @@ export const Chain = {
 };
 
 function select<T>({
-  chainId,
   /*onCosmosChain,
   onLegacyCosmosChain,*/
   onSecretJsChain /*onTerraChain,*/,
@@ -50,7 +48,6 @@ function select<T>({
   onSecretJsChain(chain: (typeof secretJsChains)[SecretJsChainId]): T;
   /*onTerraChain(chain: (typeof terraChains)[TerraChainId]): T;*/
 }) {
-  const _chainId = chainId;
   return onSecretJsChain(secretJsChains["secret-4"]);
   /* if (isCosmosChain(chainId)) {
     return onCosmosChain(cosmosChains[chainId]);

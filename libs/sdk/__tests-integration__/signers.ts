@@ -32,7 +32,7 @@ describe("MultisigSigner", () => {
 
   beforeEach(() => {
     signer = new Secp256k1PrivateKeySigner(keyPair.privateKey);
-    multisigPublicKey = {
+    _multisigPublicKey = {
       type: "tendermint/PubKeyMultisigThreshold",
       value: {
         pubkeys: [signer.publicKey],

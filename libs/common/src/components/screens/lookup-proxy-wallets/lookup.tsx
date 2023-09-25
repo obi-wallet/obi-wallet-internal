@@ -58,7 +58,6 @@ export const Lookup = observer(function Lookup({
   useAsyncEffect(async () => {
     try {
       const _currentCodeId = Chain.select({
-        chainId,
         /* onCosmosChain(chain) {
           return chain.currentCodeIds.userAccount;
         },

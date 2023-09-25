@@ -56,7 +56,7 @@ test("create wallet", async () => {
 
   const wallets = Wallets.create();
   const userInteractions = UserInteractions.create();
-  const multisigKey = MultisigKey.create(undefined, "phoenix-1");
+  const multisigKey = MultisigKey.create(undefined, "secret-4");
 
   const deviceKeyPair = generateSec256k1KeyPair();
   multisigKey.setDeviceKey(deviceKeyPair);
