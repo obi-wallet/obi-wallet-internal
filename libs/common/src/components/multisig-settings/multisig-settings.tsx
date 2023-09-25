@@ -45,7 +45,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function getKeyDescription(key: any, unityStore: UnityStore) {
       if (!key?.isUsable) {
-        return { description: "Setup required" };
+        return { description: "Recovery Key" };
       }
 
       if (key?.type === KeyType.Device && unityStore.getDeviceId) {

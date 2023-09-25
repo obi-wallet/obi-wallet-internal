@@ -140,7 +140,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
                 }
                 style={theme.settings?.panelContainer}
               />
-              <Setting
+              {/* <Setting
                 Icon={NewSettingsIcon}
                 title="Account Settings"
                 subtitle="Manage your account settings."
@@ -148,7 +148,7 @@ export const SettingsScreen = observer(function SettingsScreen() {
                   navigation.navigate(SettingsRoute.OsmosisSettings)
                 }
                 style={theme.settings?.panelContainer}
-              />
+              />  */}
               {configStore.isFeatureEnabled(Feature.HealthChecks) ? (
                 <Setting
                   Icon={MultisigIcon}
