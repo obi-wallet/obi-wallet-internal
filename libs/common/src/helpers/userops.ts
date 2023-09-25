@@ -46,7 +46,7 @@ export async function signAndBroadcastUserOp(
     console.log("starting exec of userop...");
     response = await client.execUserOperation(userOp);
   } catch (e) {
-    console.error(e);
+    // console.error(e);
     // recovery bit workaround, as simple signer can't calculate it
     const signature = userOp.signature as string;
     userOp.signature = `${signature.substring(
