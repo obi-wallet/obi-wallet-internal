@@ -42,13 +42,13 @@ export async function getProxyWalletsCloudflare(publicKey: string) {
   }
 }
 
-export async function activatedRecoveredWallet(
+export async function activateRecoveredWallet(
   draft: Draft<MultisigKey>,
   recoverFrom: RecoverFrom | undefined,
   store: RootStore,
   selectedWallet: A.SerializedProxyWallet,
 ) {
-  console.log("activatedRecoveredWallet()");
+  console.log("activateRecoveredWallet()");
   const { unityStore, walletsStore } = store;
   let activeDeviceKey;
   unityStore.getDeviceId
@@ -115,6 +115,14 @@ export async function activatedRecoveredWallet(
                 publicKey: key.publicKey,
               },
             };
+          case KeyType.Unity: {
+              return {
+                type: KeyType.Unity,
+                payload: {
+                  publicKey: key.publicKey,
+                },
+              };
+            }
           case KeyType.Cloud:
           case KeyType.Nfc:
             return {

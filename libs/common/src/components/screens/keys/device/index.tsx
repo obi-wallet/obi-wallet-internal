@@ -20,7 +20,7 @@ import invariant from "tiny-invariant";
 import { useStore } from "../../../../contexts";
 import {
   Alert,
-  activatedRecoveredWallet,
+  activateRecoveredWallet as activateRecoveredWallet,
   getProxyWalletsCloudflare,
   isSmallScreen,
   isSmallScreenNumber,
@@ -58,48 +58,35 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
       <DeviceKey
         {...params}
         onSubmit={async (userSaysDeviceIsNew, devicePubKey) => {
+          // no matter what, we try to recover if match is found
+          const proxyWallets = await getProxyWalletsCloudflare(devicePubKey);
+          const parsedProxyWallets =
+            proxyWallets as A.SerializedProxyWallet[];
+          if (
+            parsedProxyWallets.length !== 1 ||
+            parseInt(parsedProxyWallets[0].owner.threshold) > 1
+          ) {
+            navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
+          } else {
+            const draft = draftsStore.get<MultisigKey>({
+              id: params.draftId,
+            });
+            activateRecoveredWallet(
+              draft,
+              undefined,
+              store,
+              parsedProxyWallets[0],
+            );
+          }
+          // if no hits, but user says device is new, we must recover
+          // with a different key type
           if (params.flow === KeyFlow.RecoverWallet && userSaysDeviceIsNew) {
-            // User says device is new, we must recover with a different key type
             navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
             return;
-          } else if (
-            params.flow === KeyFlow.RecoverWallet &&
-            !userSaysDeviceIsNew
-          ) {
-            // User says device is not new; let's look up its pubkey and only
-            // recover if threshold > 1 (currently meaning 1 key needed, not 2 keys)
-            // or if there is no match (or there are multiple matches)
-            const proxyWallets = await getProxyWalletsCloudflare(devicePubKey);
-            const parsedProxyWallets =
-              proxyWallets as A.SerializedProxyWallet[];
-            if (
-              parsedProxyWallets.length !== 1 ||
-              parseInt(parsedProxyWallets[0].owner.threshold) > 1
-            ) {
-              navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
-            } else {
-              const draft = draftsStore.get<MultisigKey>({
-                id: params.draftId,
-              });
-              activatedRecoveredWallet(
-                draft,
-                undefined,
-                store,
-                parsedProxyWallets[0],
-              );
-            }
           } else {
             navigation.navigate(OnboardingRoute.CreateWallet, params);
             return;
           }
-          const requiredKeys = configStore.config.keys.required;
-          const requiredRoutes = requiredKeys.map(keyTypeToKeyRoute);
-          const index = requiredRoutes.indexOf(KeyRoute.DeviceKey);
-          if (index === -1 || index + 1 === requiredRoutes.length) {
-            navigation.navigate(OnboardingRoute.RecoverWallet, params);
-            return;
-          }
-          navigation.navigate(requiredRoutes[index + 1], params);
         }}
       />
     );
@@ -232,7 +219,10 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
     let requiredPubkey;
     if (unityStore.getDeviceId) {
       console.log("unity device id obtained");
-      const proxyWallets = await draft.value.setUnityKey(unityStore.getDeviceId, true);
+      const proxyWallets = await draft.value.setUnityKey(
+        unityStore.getDeviceId,
+        true,
+      );
       if (proxyWallets !== undefined) {
         navigation.navigate(OnboardingRoute.LookupProxyWallets, {
           flow: KeyFlow.RecoverWallet,

@@ -44,9 +44,8 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
         recoverType = KeyType.Unity;
         break;
     }
-    const usableKey = draft.value.getUsableKeyOfType(
-      recoverType
-    );
+    console.log("Looking for key type " + recoverType);
+    const usableKey = draft.value.getUsableKeyOfType(recoverType);
     invariant(usableKey, "No usable key found");
     const publicKey = usableKey.payload.publicKey.value;
 

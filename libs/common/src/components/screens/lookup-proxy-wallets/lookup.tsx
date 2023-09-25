@@ -15,7 +15,7 @@ import { useAsyncEffect } from "rooks";
 import * as A from "./api-types";
 import { useStore } from "../../../contexts";
 import {
-  activatedRecoveredWallet,
+  activateRecoveredWallet,
   addEllipsisInMiddle,
   getProxyWalletsCloudflare,
   isSmallScreenNumber,
@@ -221,7 +221,7 @@ export const Lookup = observer(function Lookup({
           onPress={async () => {
             if (selectedWallet) {
               try {
-                activatedRecoveredWallet(
+                activateRecoveredWallet(
                   draft,
                   recoverFrom,
                   store,

@@ -7,6 +7,6 @@ export const UnityKey = z.object({
   type: z.literal(KeyType.Unity),
   payload: z.object({
     publicKey: Secp256k1PublicKey,
-    privateKey: z.string(),
+    privateKey: z.string().optional(),
   }),
 });
