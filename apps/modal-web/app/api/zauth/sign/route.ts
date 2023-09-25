@@ -5,14 +5,16 @@ import { NextResponse } from "next/server";
 import { connect } from "../../../../src/db";
 import { fetchUserId } from "../../../../src/zauth";
 
+export interface ZAuthSignRequestBody {
+  accessToken?: string;
+  refreshToken?: string;
+  homeChainId: SecretJsChainId;
+  hash?: string;
+  message?: string;
+}
+
 export async function POST(request: Request) {
-  const body: {
-    accessToken?: string;
-    refreshToken?: string;
-    homeChainId: SecretJsChainId;
-    hash?: string;
-    message?: string;
-  } = await request.json();
+  const body: ZAuthSignRequestBody = await request.json();
 
   const accessToken = body.accessToken ?? cookies().get("accessToken")?.value;
   const refreshToken =

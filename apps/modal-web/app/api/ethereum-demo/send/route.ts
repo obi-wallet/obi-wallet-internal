@@ -16,17 +16,20 @@ import { SecretJsSigner } from "../../../../src/secret-js-signer";
 import { getConfig } from "../../../../src/stackup";
 import { fetchUserId } from "../../../../src/zauth";
 
+export interface SendToken {
+  id: string;
+  rawAmount: string;
+}
+export interface SendRequestBody {
+  homeChainId: SecretJsChainId;
+  targetChainId: TargetChainId;
+  publicKey: Secp256k1PublicKey;
+  to: string;
+  token: SendToken;
+}
+
 export async function POST(request: Request) {
-  const body: {
-    homeChainId: SecretJsChainId;
-    targetChainId: TargetChainId;
-    publicKey: Secp256k1PublicKey;
-    to: string;
-    token: {
-      id: string;
-      rawAmount: string;
-    };
-  } = await request.json();
+  const body: SendRequestBody = await request.json();
 
   const accessToken = cookies().get("accessToken")?.value;
   const refreshToken = cookies().get("refreshToken")?.value;

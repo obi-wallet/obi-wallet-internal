@@ -2,10 +2,11 @@ import crypto from "crypto";
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 
+export interface EmailRecoveryRequestBody {
+  recoveryLink: string;
+}
 export async function POST(request: Request) {
-  const body: {
-    recoveryLink: string;
-  } = await request.json();
+  const body: EmailRecoveryRequestBody = await request.json();
 
   try {
     const { recoveryLink } = body;

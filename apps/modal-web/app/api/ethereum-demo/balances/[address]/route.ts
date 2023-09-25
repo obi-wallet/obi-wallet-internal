@@ -8,9 +8,13 @@ const web3 = new Web3(
 
 const ztxToken = "0xf0F8FC7365C0c9F87189B6c8703e4719270A3318";
 
+export type GetRequestAddressParams<P extends string, T> = {
+  params: Record<P, T>;
+};
+
 export async function GET(
   request: Request,
-  { params }: { params: { address: string } },
+  { params }: GetRequestAddressParams<"address", string>,
 ) {
   const balances = await fetchBalances(params.address);
   return NextResponse.json(balances);

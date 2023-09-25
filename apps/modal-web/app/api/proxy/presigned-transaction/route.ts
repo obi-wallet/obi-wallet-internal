@@ -1,20 +1,20 @@
-import { SecretJsClient } from "@obi-wallet/sdk";
+import { SecretJsChainId, SecretJsClient } from "@obi-wallet/sdk";
 import { getFeeLender } from "apps/modal-web/src/fee-lender";
 import { NextResponse } from "next/server";
 import { MsgExecuteContract } from "secretjs";
 import invariant from "tiny-invariant";
 
+export interface PresignedTransactionRequestBody<M extends object> {
+  message: MsgExecuteContract<M>;
+  userAccountAddress: string;
+  userAccountCodeHash: string;
+}
 /// Calls first_update_owner to update the pre-created account's owner to
 /// the user's multisig key
 export async function POST(request: Request) {
-  const body: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    message: MsgExecuteContract<any>;
-    userAccountAddress: string;
-    userAccountCodeHash: string;
-  } = await request.json();
+  const body: PresignedTransactionRequestBody<object> = await request.json();
 
-  const chainId = "secret-4";
+  const chainId: SecretJsChainId = "secret-4";
   const client = new SecretJsClient(chainId);
 
   const { wallet, signer, lenderIndex } = getFeeLender(chainId);

@@ -3,25 +3,32 @@ import {
   MultisigKey,
   SecretJsClient,
   secretJsChains,
+  SecretJsChainId,
 } from "@obi-wallet/sdk";
 import { getFeeLender } from "apps/modal-web/src/fee-lender";
 import { NextResponse } from "next/server";
 import { MsgSend, TxResponse } from "secretjs";
 import invariant from "tiny-invariant";
 
+export interface FirstUpdateOwnerRequestBody {
+  owner: MultisigKey;
+  ownerAddress: string;
+  homeAccountAddress: string;
+  evmUserContractAddress: string;
+  evmSigningAddress: string;
+  ownerIndex: number;
+}
+
+export interface UserAccountAddress {
+  user_account_address: string;
+  user_account_code_hash: string;
+}
+
 /// Calls first_update_owner to update the pre-created account's owner to
 /// the user's multisig key
 export async function POST(request: Request) {
-  const body: {
-    owner: MultisigKey;
-    ownerAddress: string;
-    homeAccountAddress: string;
-    evmUserContractAddress: string;
-    evmSigningAddress: string;
-    ownerIndex: number;
-  } = await request.json();
-
-  const chainId = "secret-4";
+  const body: FirstUpdateOwnerRequestBody = await request.json();
+  const chainId: SecretJsChainId = "secret-4";
 
   console.log("async funding multisig (for later)...");
   const client = new SecretJsClient(chainId);
@@ -57,16 +64,14 @@ export async function POST(request: Request) {
 
   console.log("setup/first-update-owner creating message...");
   invariant(wallet.address, "no fee lender wallet address");
-  const userAccountAddress: {
-    user_account_address: string;
-    user_account_code_hash: string;
-  } = await client.withSecretNetworkClient(async (client) => {
-    return await client.query.compute.queryContract({
-      contract_address: body.homeAccountAddress,
-      code_hash: chain.userEntry.codeHash,
-      query: { user_account_address: {} },
+  const userAccountAddress: UserAccountAddress =
+    await client.withSecretNetworkClient(async (client) => {
+      return await client.query.compute.queryContract({
+        contract_address: body.homeAccountAddress,
+        code_hash: chain.userEntry.codeHash,
+        query: { user_account_address: {} },
+      });
     });
-  });
   const message = messagesSdk.getFirstUpdateWalletMessage(
     body.owner,
     body.ownerAddress,

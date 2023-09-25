@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-export async function POST(request: Request) {
-  const body: {
-    subject: string;
-    text: string;
-    to: string;
-  } = await request.json();
+export interface SendEmailRequestBody {
+  subject: string;
+  text: string;
+  to: string;
+}
 
-  if (!body.subject || !body.text || !body.to) {
+export async function POST(request: Request) {
+  const { subject, text, to }: SendEmailRequestBody = await request.json();
+
+  if (!subject || !text || !to) {
     return NextResponse.json(
       {
         error: "Missing email parameters",
@@ -29,9 +31,9 @@ export async function POST(request: Request) {
   // Define email options
   const mailOptions = {
     from: process.env.GMAIL_USER, // sender address
-    to: body.to, // list of receivers
-    subject: body.subject, // Subject line
-    text: body.text, // plain text body
+    to, // list of receivers
+    subject, // Subject line
+    text, // plain text body
   };
 
   // Send the email

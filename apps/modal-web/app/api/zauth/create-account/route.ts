@@ -5,8 +5,8 @@ import {
   generateSec256k1KeyPair,
 } from "@obi-wallet/sdk";
 import { NextResponse } from "next/server";
+import invariant from "tiny-invariant";
 
-// import { cookies } from "next/headers";
 import { connect } from "../../../../src/db";
 import { HomeChain } from "../../../../src/db/schema";
 import {
@@ -16,19 +16,19 @@ import {
 } from "../../../../src/stackup";
 import { fetchUserId } from "../../../../src/zauth";
 
+export interface ZAuthCreateAccountRequestBody {
+  accessToken: string;
+  refreshToken: string;
+  homeChainId: SecretJsChainId;
+  deviceKeypair: Secp256k1KeyPair;
+}
+
 export async function POST(request: Request) {
-  const body: {
-    accessToken?: string;
-    refreshToken?: string;
-    homeChainId: SecretJsChainId;
-    deviceKeypair: Secp256k1KeyPair;
-  } = await request.json();
+  const body: ZAuthCreateAccountRequestBody = await request.json();
+  const { accessToken, refreshToken } = body;
 
-  const accessToken = body.accessToken;
-  // ?? cookies().get("accessToken")?.value;
-
-  const refreshToken = body.accessToken;
-  // ?? cookies().get("refreshToken")?.value;
+  invariant(accessToken, "Access token is missing");
+  invariant(refreshToken, "Refresh token is missing");
 
   if (accessToken && refreshToken) {
     const userId = accessToken ? await fetchUserId(accessToken) : null;

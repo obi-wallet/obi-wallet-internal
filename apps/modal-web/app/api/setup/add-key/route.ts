@@ -8,13 +8,15 @@ import { generateEthereumAddresses } from "apps/modal-web/src/stackup";
 import { NextResponse } from "next/server";
 import { MsgExecuteContract } from "secretjs";
 
+export interface SetupEvmKeyPairRequestBody {
+  userEntryAddress: string;
+  userEntryCodeHash: string;
+}
+
 /// Creates an ethereum key for the user and saves it to the simple signer.
 /// This is a stopover while the MPC share signer work is completed.
 export async function POST(request: Request) {
-  const body: {
-    userEntryAddress: string;
-    userEntryCodeHash: string;
-  } = await request.json();
+  const body: SetupEvmKeyPairRequestBody = await request.json();
 
   try {
     const evmKeyPair = generateSec256k1KeyPair();

@@ -1,4 +1,4 @@
-import { Messages, SecretJsClient } from "@obi-wallet/sdk";
+import { Messages, SecretJsChainId, SecretJsClient } from "@obi-wallet/sdk";
 import { getFeeLender } from "apps/modal-web/src/fee-lender";
 import { NextResponse } from "next/server";
 import { TxResponse } from "secretjs";
@@ -8,7 +8,7 @@ import invariant from "tiny-invariant";
 /// Returns the resulting address.
 export async function POST(request: Request) {
   const _request = request;
-  const chainId = "secret-4";
+  const chainId: SecretJsChainId = "secret-4";
   console.log("setup/home-account setting up...");
   // new lender so we don't run into sequence errors
   // need to update this so it doesn't happen to pick same as before

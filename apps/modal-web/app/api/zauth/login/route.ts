@@ -3,14 +3,14 @@ import { NextResponse } from "next/server";
 
 import { fetchUserId } from "../../../../src/zauth";
 
+export interface ZAuthLoginRequestBody {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export async function POST(request: Request) {
-  const {
-    accessToken,
-    refreshToken,
-  }: {
-    accessToken: string;
-    refreshToken: string;
-  } = await request.json();
+  const { accessToken, refreshToken }: ZAuthLoginRequestBody =
+    await request.json();
 
   const userId = await fetchUserId(accessToken);
 

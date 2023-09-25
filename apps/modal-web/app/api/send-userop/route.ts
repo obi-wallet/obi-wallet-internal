@@ -3,10 +3,8 @@ import {
   SecretJsChainId,
   TargetChainId,
 } from "@obi-wallet/sdk";
-// import { Signer, SigningKey, Wallet } from "ethers";
 import { HomeChain } from "apps/modal-web/src/db/schema";
 import { Signer, Wallet } from "ethers";
-//import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 import { Client, IUserOperation, Presets } from "userop";
@@ -15,23 +13,27 @@ import { connect } from "../../../src/db";
 import { generateEthereumAddresses, getConfig } from "../../../src/stackup";
 import { fetchUserId } from "../../../src/zauth";
 
-export async function POST(request: Request) {
-  const body: {
-    homeChainId: SecretJsChainId;
-    targetChainId: TargetChainId;
-    contractAddress: string;
-    data: string;
-    tokens: {
-      accessToken?: string;
-      refreshToken?: string;
-    };
-    // need to handle outside instead, and split this into two routes
-    deviceKeyPair?: Secp256k1KeyPair;
-  } = await request.json();
+interface RequestTokens {
+  accessToken?: string;
+  refreshToken?: string;
+}
 
+export interface SendUserOpRequestBody {
+  homeChainId: SecretJsChainId;
+  targetChainId: TargetChainId;
+  contractAddress: string;
+  data: string;
+  tokens: RequestTokens;
+  // need to handle outside instead, and split this into two routes
+  deviceKeyPair?: Secp256k1KeyPair;
+}
+
+export async function POST(request: Request) {
+  const body: SendUserOpRequestBody = await request.json();
   const accessToken = body.tokens.accessToken;
   const refreshToken = body.tokens.refreshToken;
   let homeChain: HomeChain | undefined;
+
   if (!body.deviceKeyPair?.privateKey && accessToken && refreshToken) {
     const userId = await fetchUserId(accessToken);
     console.log("in send op, access token is:" + accessToken);
@@ -40,6 +42,7 @@ export async function POST(request: Request) {
     console.log("User id is: " + userId);
     const user = await UserModel.findOne({ userId });
     const homeChain = user?.homeChains.get("secret-4");
+
     if (!homeChain) {
       return NextResponse.json(
         {
@@ -63,6 +66,7 @@ export async function POST(request: Request) {
       proxyAddress: "MISSING",
     };
   }
+
   if (!homeChain) {
     return NextResponse.json(
       {
@@ -73,6 +77,7 @@ export async function POST(request: Request) {
   }
 
   const config = getConfig(body.targetChainId);
+
   if (!config) {
     return NextResponse.json(
       {

@@ -1,14 +1,19 @@
-import { Secp256k1PrivateKeySigner, SecretJsClient } from "@obi-wallet/sdk";
+import {
+  Secp256k1PrivateKeySigner,
+  SecretJsChainId,
+  SecretJsClient,
+} from "@obi-wallet/sdk";
 import { NextResponse } from "next/server";
 import { MsgSend, Wallet } from "secretjs";
 import invariant from "tiny-invariant";
 
+export interface LendRequestBody {
+  homeChainId: Extract<SecretJsChainId, "secret-4">;
+  address: string;
+}
 export async function POST(request: Request) {
   try {
-    const body: {
-      homeChainId: "secret-4";
-      address: string;
-    } = await request.json();
+    const body: LendRequestBody = await request.json();
     console.log("lend request received");
     const feeLender = process.env.FEE_LENDER_SECRET_4 ?? "";
     invariant(feeLender, "fee lender not set");
