@@ -20,7 +20,7 @@ import invariant from "tiny-invariant";
 import { useStore } from "../../../../contexts";
 import {
   Alert,
-  activateRecoveredWallet,
+  activateRecoveredWalletAndIsUpdateRequired,
   getProxyWalletsCloudflare,
   isSmallScreen,
   isSmallScreenNumber,
@@ -58,6 +58,7 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
         {...params}
         onSubmit={async (userSaysDeviceIsNew, devicePubKey) => {
           // no matter what, we try to recover if match is found
+          console.log("In device key screen, flow is " + params.flow);
           const proxyWallets = await getProxyWalletsCloudflare(devicePubKey);
           const parsedProxyWallets = proxyWallets as A.SerializedProxyWallet[];
           if (
@@ -69,16 +70,16 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
             const draft = draftsStore.get<MultisigKey>({
               id: params.draftId,
             });
-            activateRecoveredWallet(
+            activateRecoveredWalletAndIsUpdateRequired(
               draft,
               undefined,
               store,
               parsedProxyWallets[0],
             );
           }
-          // if no hits, but user says device is new, we must recover
+          // if no hits, but user is trying to log in, we must recover
           // with a different key type
-          if (params.flow === KeyFlow.RecoverWallet && userSaysDeviceIsNew) {
+          if (params.flow === KeyFlow.RecoverWallet) {
             navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
             return;
           } else {
@@ -150,17 +151,14 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 
   async function scanBiometricsOrWebAuthN(
     create: boolean,
-    userSaysDeviceIsNew?: boolean,
-    recoverFlow?: boolean,
+    existingUserSaysDeviceIsNew?: boolean,
+    recoverFlow?: boolean //avoids creating a new account even if no proxy wallets found
   ): Promise<{
     wallets?: SerializedProxyWallet[] | undefined;
     deviceKeypair?: Secp256k1KeyPair | undefined;
     success?: boolean | undefined;
     newUser?: boolean | undefined;
   }> {
-    if (userSaysDeviceIsNew === undefined) {
-      userSaysDeviceIsNew = true;
-    }
     try {
       console.log("getting device key...");
       const [keyPair, newUser] = await getOrCreateDeviceKeyPair(
@@ -170,7 +168,8 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       console.log("setting device key...");
       const proxyWallets = await draft.value.setDeviceKey(
         keyPair,
-        !recoverFlow,
+        existingUserSaysDeviceIsNew,
+        recoverFlow //avoids creating a new account even if no proxy wallets found
       );
       if (proxyWallets !== undefined) {
         return {
@@ -213,13 +212,17 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
     }
   }
 
-  async function submitWithRequiredKey(userSaysDeviceIsNew: boolean) {
+  async function submitWithRequiredKey(
+    deviceIsNew: boolean,
+    recoverFlow?: boolean //avoids creating a new account even if no proxy wallets found
+  ) {
     let requiredPubkey;
     if (unityStore.getDeviceId) {
       console.log("unity device id obtained");
       const proxyWallets = await draft.value.setUnityKey(
         unityStore.getDeviceId,
-        true,
+        deviceIsNew,
+        recoverFlow
       );
       if (proxyWallets !== undefined) {
         navigation.navigate(OnboardingRoute.LookupProxyWallets, {
@@ -233,14 +236,14 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       requiredPubkey = draft.value.getUsableKeyOfType(KeyType.Unity)?.publicKey
         .value;
       invariant(requiredPubkey, "could not get unity pubkey");
-      onSubmit(userSaysDeviceIsNew, requiredPubkey);
+      onSubmit(deviceIsNew, requiredPubkey);
     } else if (scannedBiometrics) {
       requiredPubkey = draft.value.getUsableKeyOfType(KeyType.Device)?.publicKey
         .value;
       invariant(requiredPubkey, "could not get device pubkey");
-      onSubmit(userSaysDeviceIsNew, requiredPubkey);
+      onSubmit(deviceIsNew, requiredPubkey);
     } else {
-      const res = await scanBiometricsOrWebAuthN(false, userSaysDeviceIsNew);
+      const res = await scanBiometricsOrWebAuthN(false, deviceIsNew);
       const { success, newUser, deviceKeypair, wallets } = res;
       const _newUser = newUser;
       if (wallets) {
@@ -256,7 +259,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       invariant(requiredPubkey, "could not get device pubkey");
       console.log("Success is: ", success);
       if (success && Platform.OS !== "ios") {
-        onSubmit(userSaysDeviceIsNew, requiredPubkey);
+        onSubmit(deviceIsNew, requiredPubkey);
       }
     }
     fundKeyIfZero(requiredPubkey);
@@ -413,7 +416,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 })}
                 flavor="primary"
                 onPress={async () => {
-                  submitWithRequiredKey(true);
+                  submitWithRequiredKey(true, false);
                 }}
                 autoPress={Platform.OS === "ios"}
               />
@@ -428,7 +431,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                   })}
                   flavor="primary"
                   onPress={async () => {
-                    submitWithRequiredKey(false);
+                    submitWithRequiredKey(false, true);
                   }}
                   autoPress={Platform.OS === "ios"}
                 />
@@ -438,7 +441,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                   })}
                   flavor="primary"
                   onPress={async () => {
-                    submitWithRequiredKey(true);
+                    submitWithRequiredKey(true, true);
                   }}
                   autoPress={Platform.OS === "ios"}
                 />

@@ -4,7 +4,7 @@ import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { RecoverFrom } from "@obi-wallet/common";
+import { KeyFlow, OnboardingRoute, RecoverFrom, useRootNavigation } from "@obi-wallet/common";
 import { Chain, ChainId, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -15,7 +15,7 @@ import { useAsyncEffect } from "rooks";
 import * as A from "./api-types";
 import { useStore } from "../../../contexts";
 import {
-  activateRecoveredWallet,
+  activateRecoveredWalletAndIsUpdateRequired,
   addEllipsisInMiddle,
   getProxyWalletsCloudflare,
   isSmallScreenNumber,
@@ -50,6 +50,7 @@ export const Lookup = observer(function Lookup({
   const [wallets, setWallets] = useState<A.SerializedProxyWallet[] | null>(
     null,
   );
+  const navigation = useRootNavigation();
   const draft = draftsStore.get<MultisigKey>({
     id: draftId,
   });
@@ -221,16 +222,26 @@ export const Lookup = observer(function Lookup({
           onPress={async () => {
             if (selectedWallet) {
               try {
-                activateRecoveredWallet(
+                const {
+                  isUpdateRequired,
+                  serializedData
+                } = await activateRecoveredWalletAndIsUpdateRequired(
                   draft,
                   recoverFrom,
                   store,
                   selectedWallet,
                 );
-                /*navigation.navigate(OnboardingRoute.RecoverWallet, {
-                  ...params,
-                  serializedData,
-                });*/
+                if (isUpdateRequired) {
+                  navigation.navigate(
+                    OnboardingRoute.RecoverWallet,
+                    { 
+                      flow: KeyFlow.RecoverWallet,
+                      demoMode: false,
+                      draftId,
+                      serializedData,
+                    }
+                  );
+                }
               } catch (e) {
                 console.log(e);
               }

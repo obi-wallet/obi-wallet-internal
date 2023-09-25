@@ -203,10 +203,12 @@ export class Wallets {
     serializedData: Serialized<MultisigWallet>["data"];
     newOwner: MultisigKey;
   }) {
+    console.log("creating wallet...");
     const wallet = this._factory.create({
       type: "multisig",
       data: serializedData,
     });
+    console.log("calling wallet.updateOwner...");
     const response = await wallet.updateOwner(newOwner);
     if (response.approved && response.payload.success) {
       this.upsertWallet(wallet);

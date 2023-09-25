@@ -53,6 +53,7 @@ export const RecoverWalletScreen = observer<RecoverWalletScreenProps>(
           invariant(params.serializedData, "Missing serializedData param.");
 
           try {
+            console.log("trying in RecoverWalletScreen");
             const response = await walletsStore.recoverWallet({
               serializedData: params.serializedData,
               newOwner: draft.value,
