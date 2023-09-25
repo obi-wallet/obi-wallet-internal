@@ -8,10 +8,10 @@ import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage } from "react-intl";
 import { View } from "react-native";
 import secp256k1 from "secp256k1";
+import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { EmailContainer } from "./container";
-import { findRecoveryLink, isPrivateKey } from "./helpers";
 import { EmailTab, EmailTabs } from "./tabs";
 import { useStore } from "../../../../contexts";
 import { isSmallScreenNumber } from "../../../../helpers";
@@ -25,7 +25,6 @@ import {
 import { TextInput } from "../../../text-input";
 import { Text } from "../../../typography";
 import { VerifyAndProceedButton } from "../../../verify-and-proceed-button";
-import invariant from "tiny-invariant";
 
 export type EmailRecoveryScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,
