@@ -318,6 +318,7 @@ export class MultisigKey {
       type: KeyType.Unity,
       payload: keyPair,
     });
+
     if (!this._setupDetails) {
       this._setupDetails = {
         homeAccountAddress: "",
@@ -325,11 +326,9 @@ export class MultisigKey {
         evmUserContractAddress: "",
         ownerIndex: 0,
       };
-      const proxyWallets = this.setupMagicAccountIfDoesNotExist(
+      const proxyWallets = await this.getProxyWalletsCloudflare(
         keyPair.publicKey.value,
-        deviceIsNew,
-        recoverFlow, // avoids creating a new account even if proxy wallets not found
-      );
+      ) as SerializedProxyWallet[];
       if (proxyWallets) {
         return proxyWallets;
       } else {
