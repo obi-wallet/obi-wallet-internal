@@ -17,7 +17,7 @@ export async function GET(
 }
 
 async function fetchBalances(address: string) {
-  const [ztxResult, ethResult] = await Promise.all([
+  const [ztxResult, _ethResult] = await Promise.all([
     fetchTokenBalance({ id: ztxToken, address }),
     web3.eth.getBalance(address),
   ]);

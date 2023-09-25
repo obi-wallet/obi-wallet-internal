@@ -42,13 +42,16 @@ export async function getProxyWalletsCloudflare(publicKey: string) {
   }
 }
 
-export async function activateRecoveredWallet(
+export async function activateRecoveredWalletAndIsUpdateRequired(
   draft: Draft<MultisigKey>,
   recoverFrom: RecoverFrom | undefined,
   store: RootStore,
   selectedWallet: A.SerializedProxyWallet,
-) {
-  console.log("activateRecoveredWallet()");
+): Promise<{
+  isUpdateRequired: boolean;
+  serializedData: Serialized<MultisigWallet>["data"] | undefined;
+}> {
+  console.log("activateRecoveredWalletAndIsUpdateRequired()");
   const { unityStore, walletsStore } = store;
   let activeDeviceKey;
   unityStore.getDeviceId
@@ -65,10 +68,12 @@ export async function activateRecoveredWallet(
   );
 
   invariant(activeDeviceKey, "Device or unity key is required");
-  /* invariant(
-    recoveredPhoneKey || recoveredEmailKey,
-    "Phone or email key is required",
-    ); */
+  if (recoverFrom === RecoverFrom.Email || RecoverFrom.Phone) {
+    invariant(
+      recoveredPhoneKey || recoveredEmailKey,
+      "Phone or email key is required",
+    );
+  }
 
   const serializedData: Serialized<MultisigWallet>["data"] = {
     chain: draft.value.chainId,
@@ -178,10 +183,18 @@ export async function activateRecoveredWallet(
     evmUserContractAddress: selectedWallet.evmUserContractAddress,
   };
 
+  console.log(
+    "serialized recovered wallet data: " + JSON.stringify(serializedData),
+  );
+
+  if (recoverFrom === RecoverFrom.Email || RecoverFrom.Phone) {
+    return {
+      isUpdateRequired: true,
+      serializedData,
+    };
+  }
+
   try {
-    console.log(
-      "serialized recovered wallet data: " + JSON.stringify(serializedData),
-    );
     const currentOwner = ObservableMultisigKey.create(
       {
         homeAccountAddress: serializedData.proxyAddress.address,
@@ -208,7 +221,15 @@ export async function activateRecoveredWallet(
       evmUserContractAddressOverride: serializedData.evmUserContractAddress,
       homeAccountAddressOverride: serializedData.proxyAddress.address,
     });
+    return {
+      isUpdateRequired: false,
+      serializedData: undefined,
+    };
   } catch (e) {
     console.log("createWallet error: " + JSON.stringify(e));
+    return {
+      isUpdateRequired: true,
+      serializedData,
+    };
   }
 }

@@ -435,6 +435,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                     "This is an Obi email key recovery link. You are sending it to yourself; Obi can never access its contents. " +
                     "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
                     "DO NOT DELETE this email, unless you are saving its contents to a password manager or physical location." +
+                    "\n\nTo initiate email key recovery, use this link:\n\nhttps://wallet.obimoney.games/ztx/" +
                     emailRecoveryLink;
                   setEmailKey({
                     type: "tendermint/PubKeySecp256k1",

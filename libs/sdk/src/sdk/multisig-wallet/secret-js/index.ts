@@ -1,3 +1,4 @@
+import invariant from "tiny-invariant";
 import warning from "tiny-warning";
 
 import { SecretJsChainId, secretJsChains } from "../../../chains/secret-js";
@@ -145,11 +146,24 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
         user_account_address: string;
         user_account_code_hash: string;
       } = await client.withSecretNetworkClient(async (client) => {
-        return await client.query.compute.queryContract({
-          contract_address: this.wallet.proxyAddress,
-          code_hash: chain.userEntry.codeHash,
-          query: { user_account_address: {} },
-        });
+        let res: {
+          user_account_address: string;
+          user_account_code_hash: string;
+        };
+        try {
+          res = await client.query.compute.queryContract({
+            contract_address: this.wallet.proxyAddress,
+            code_hash: chain.userEntry.codeHash,
+            query: { user_account_address: {} },
+          });
+          invariant(res.user_account_address, "no user account address");
+        } catch (e) {
+          res = await client.query.compute.queryContract({
+            contract_address: this.wallet.proxyAddress,
+            query: { user_account_address: {} },
+          });
+        }
+        return res;
       });
       return res;
     } else {

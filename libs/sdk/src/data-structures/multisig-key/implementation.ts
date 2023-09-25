@@ -226,19 +226,25 @@ export class MultisigKey {
   /// Returns true if we should proceed to recovery
   private async setupMagicAccountIfDoesNotExist(
     publicKey: string,
+    existingUserSaysDeviceIsNew?: boolean,
+    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
   ): Promise<SerializedProxyWallet[] | undefined> {
     try {
       const proxyWallets = (await this.getProxyWalletsCloudflare(
         publicKey,
       )) as SerializedProxyWallet[];
       if (proxyWallets.length === 0) {
-        this.createMagicAccount();
+        if (!existingUserSaysDeviceIsNew && !recoverFlow) {
+          this.createMagicAccount();
+        }
         return undefined;
       } else {
         return proxyWallets;
       }
     } catch (e) {
-      this.createMagicAccount();
+      if (!existingUserSaysDeviceIsNew && !recoverFlow) {
+        this.createMagicAccount();
+      }
       return undefined;
     }
   }
@@ -248,11 +254,9 @@ export class MultisigKey {
       publicKey: Secp256k1PublicKey;
       privateKey?: string;
     },
-    newDevice?: boolean,
+    deviceIsNew?: boolean,
+    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
   ): Promise<SerializedProxyWallet[] | undefined> {
-    if (newDevice === undefined) {
-      newDevice = false;
-    }
     this.setKey({
       type: KeyType.Device,
       payload: keyPair,
@@ -269,6 +273,8 @@ export class MultisigKey {
 
       const proxyWallets = this.setupMagicAccountIfDoesNotExist(
         keyPair.publicKey.value,
+        deviceIsNew,
+        recoverFlow, // avoids creating a new account even if proxy wallets not found
       );
       if (proxyWallets) {
         return proxyWallets;
@@ -282,11 +288,9 @@ export class MultisigKey {
 
   public async setUnityKey(
     deviceId: string,
-    newDevice?: boolean,
+    deviceIsNew?: boolean,
+    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
   ): Promise<SerializedProxyWallet[] | undefined> {
-    if (newDevice === undefined) {
-      newDevice = true;
-    }
     // use unity device ID to generate a keypair right here,
     // without a function call, and set it as the unity key
 
@@ -325,6 +329,8 @@ export class MultisigKey {
       };
       const proxyWallets = this.setupMagicAccountIfDoesNotExist(
         keyPair.publicKey.value,
+        deviceIsNew,
+        recoverFlow, // avoids creating a new account even if proxy wallets not found
       );
       if (proxyWallets) {
         return proxyWallets;
