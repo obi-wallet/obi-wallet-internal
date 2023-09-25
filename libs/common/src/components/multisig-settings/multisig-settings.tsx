@@ -17,6 +17,7 @@ import { useKeyMetaData } from "./key-meta-data";
 import { Key, KeysList } from "./keys-list";
 import { useStore } from "../../contexts";
 import { isSmallScreenNumber, isWeb } from "../../helpers";
+import { UnityStore } from "../../stores/unity";
 import { BottomSheetNew } from "../bottom-sheet";
 import { CheckIcon, MultisigKeysIcon, WarningIcon } from "../icons";
 import { OsmosisScreenContainer } from "../osmosis-screen-container";
@@ -32,7 +33,7 @@ export interface MultisigSettingsProps {
 
 export const MultisigSettings = observer<MultisigSettingsProps>(
   function MultisigSettings({ children, draftId, title, subTitle, actions }) {
-    const { draftsStore } = useStore();
+    const { draftsStore, unityStore } = useStore();
     const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
     const multisigKey = draft.value;
@@ -40,6 +41,23 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
     const theme = useTheme();
 
     const keyMetaData = useKeyMetaData();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function getKeyDescription(key: any, unityStore: UnityStore) {
+      if (!key?.isUsable) {
+        return { description: "Setup required" };
+      }
+
+      if (key?.type === KeyType.Device && unityStore.getDeviceId) {
+        return { description: "Browser only" };
+      }
+
+      if (key?.type === KeyType.Unity && !unityStore.getDeviceId) {
+        return { description: "Unity only" };
+      }
+
+      return {};
+    }
 
     function getKey(type: KeyType): Key {
       const activated = multisigKey.hasKeyOfType(type);
@@ -63,10 +81,7 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
         onPress: () => {
           setSelectedType(type);
         },
-        ...(activated &&
-          !key?.isUsable && {
-            description: "Setup required",
-          }),
+        ...(activated && !key?.isUsable && getKeyDescription(key, unityStore)),
       };
     }
 
