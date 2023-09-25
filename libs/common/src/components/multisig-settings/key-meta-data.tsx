@@ -40,7 +40,7 @@ export function useKeyMetaData() {
     [KeyType.Unity]: {
       label: intl.formatMessage({
         id: "settings.multisig.option.unitykey",
-        defaultMessage: "Game Install Key",
+        defaultMessage: "Gaming Device Key",
       }),
       Icon: ZtxPlatformRecoveryIcon,
     },
