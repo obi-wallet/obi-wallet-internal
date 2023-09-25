@@ -243,7 +243,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
             }>,
           ),
         },
-        signatures: nexthashSignedBySigners
+        signatures: nexthashSignedBySigners,
       },
     };
     return new MsgExecuteContract({
@@ -267,6 +267,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
     userAccountCodeHash: string;
     nexthashSignedBySigners: string[];
   }): Message {
+    const _wallet = wallet;
     const rawMessage = {
       confirm_update_owner: {
         signatures: nexthashSignedBySigners,

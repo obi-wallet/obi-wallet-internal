@@ -5,7 +5,6 @@ import {
   IWalletConnectSession,
 } from "@walletconnect/types";
 import * as R from "ramda";
-import invariant from "tiny-invariant";
 
 import { WalletConnectSchema } from "./schema";
 // import { isTerraChain } from "../../chains";

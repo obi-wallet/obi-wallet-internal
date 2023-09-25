@@ -210,8 +210,8 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
 
     return {
       approved: true,
-      payload: { success: true }
-    }
+      payload: { success: true },
+    };
   }
 
   protected async confirmUpdateOwner(
@@ -288,8 +288,8 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
 
     return {
       approved: true,
-      payload: { success: true }
-    }
+      payload: { success: true },
+    };
   }
 
   public async updateGatekeeperConfig(_: UpdateGatekeeperConfigParams): Promise<

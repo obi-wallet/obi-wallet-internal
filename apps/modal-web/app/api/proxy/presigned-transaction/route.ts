@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     code_hash: body.userAccountCodeHash,
     contract_address: body.userAccountAddress,
     msg: body.message.msg,
-    sent_funds: []
+    sent_funds: [],
   });
   console.log("messageToSign is " + JSON.stringify(messageToSign));
   const signedTransaction = await client.createAndSignTransaction({

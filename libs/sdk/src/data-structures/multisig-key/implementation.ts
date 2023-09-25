@@ -222,9 +222,7 @@ export class MultisigKey {
     }
   }
 
-  private async setupMagicAccountIfDoesNotExist(
-    publicKey: string,
-  ) {
+  private async setupMagicAccountIfDoesNotExist(publicKey: string) {
     try {
       const proxyWallets = await this.getProxyWalletsCloudflare(publicKey);
       if (proxyWallets.length === 0) {
@@ -259,9 +257,7 @@ export class MultisigKey {
         ownerIndex: 0,
       };
 
-      this.setupMagicAccountIfDoesNotExist(
-        keyPair.publicKey.value,
-      );
+      this.setupMagicAccountIfDoesNotExist(keyPair.publicKey.value);
     }
     console.log("Current draft multisig: " + JSON.stringify(this));
   }
@@ -306,9 +302,7 @@ export class MultisigKey {
         evmUserContractAddress: "",
         ownerIndex: 0,
       };
-      this.setupMagicAccountIfDoesNotExist(
-        keyPair.publicKey.value,
-      );
+      this.setupMagicAccountIfDoesNotExist(keyPair.publicKey.value);
     }
     console.log("Current draft multisig: " + JSON.stringify(this));
   }
