@@ -140,7 +140,11 @@ export class MultisigWallet {
     return await this.multisigWalletSdk.updateWallet();
   }
 
-  public async updateOwner(newOwner: MultisigKey) {
+  public async updateOwner(
+    newOwner: MultisigKey,
+    evmSigningAddress: string,
+    evmUserContractAddress: string,
+  ) {
     // remove email recovery keys from new owner: they are 1 time
     const indexToRemove = newOwner.keys.findIndex(
       (key) => key.type === KeyType.EmailRecovery,
@@ -165,6 +169,8 @@ export class MultisigWallet {
           // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
           newOwner.getUsableKeyOfType(KeyType.Phone)?.payload.privateKey!,
       ),
+      evmSigningAddress,
+      evmUserContractAddress
     );
     if (response.approved && response.payload.success) {
       this.setOwner(newOwner);

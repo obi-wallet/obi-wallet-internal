@@ -78,6 +78,8 @@ export abstract class AbstractMultisigWalletSdk {
     newOwner: MultisigKey,
     oldSigner: Secp256k1PrivateKeySigner,
     newSigner: Secp256k1PrivateKeySigner,
+    evmSigningAddress: string,
+    evmUserContractAddress: string,
   ): Promise<
     | {
         approved: true;

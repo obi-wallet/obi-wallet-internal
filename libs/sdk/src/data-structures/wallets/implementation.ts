@@ -126,7 +126,7 @@ export class Wallets {
         }
       }
     });
-    console.log("alphabetized keys: " + JSON.stringify(multisigKey.keys));
+    //console.log("alphabetized keys: " + JSON.stringify(multisigKey.keys));
     if (!skipInit) {
       response = await this.walletsSdk.getAsyncDetailsAndFirstOwnerUpdate({
         multisigKey,
@@ -170,9 +170,19 @@ export class Wallets {
           : response!.evmUserContractAddress,
       },
     });
+    console.log(
+      "setting evmSigningAddress to " + skipInit
+        ? evmSigningAddressOverride!
+        : response!.evmSigningAddress,
+    );
     wallet.setEvmSigningAddress(
       skipInit ? evmSigningAddressOverride! : response!.evmSigningAddress,
       true,
+    );
+    console.log(
+      "setting evmUserContractAddress to " + skipInit
+        ? evmUserContractAddressOverride!
+        : response!.evmUserContractAddress,
     );
     wallet.setEvmUserContractAddress(
       skipInit
@@ -210,7 +220,11 @@ export class Wallets {
       data: serializedData,
     });
     console.log("calling wallet.updateOwner...");
-    const response = await wallet.updateOwner(newOwner);
+    const response = await wallet.updateOwner(
+      newOwner,
+      serializedData.evmSigningAddress,
+      serializedData.evmUserContractAddress
+    );
     if (response.approved && response.payload.success) {
       this.upsertWallet(wallet);
     }
