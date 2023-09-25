@@ -142,7 +142,9 @@ export class MultisigWallet {
 
   public async updateOwner(newOwner: MultisigKey) {
     // remove email recovery keys from new owner: they are 1 time
-    const indexToRemove = newOwner.keys.findIndex(key => key.type === KeyType.EmailRecovery);
+    const indexToRemove = newOwner.keys.findIndex(
+      (key) => key.type === KeyType.EmailRecovery,
+    );
     if (indexToRemove !== -1) {
       newOwner.keys.splice(indexToRemove, 1);
     }
@@ -152,15 +154,16 @@ export class MultisigWallet {
       new Secp256k1PrivateKeySigner(
         this._owner.getUsableKeyOfType(KeyType.Device)?.payload.privateKey ??
           this._owner.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey ??
-            this._owner.getUsableKeyOfType(KeyType.EmailRecovery)?.payload.privateKey ??
-              // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-              this._owner.getUsableKeyOfType(KeyType.Phone)?.payload.privateKey!,
+          this._owner.getUsableKeyOfType(KeyType.EmailRecovery)?.payload
+            .privateKey ??
+          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+          this._owner.getUsableKeyOfType(KeyType.Phone)?.payload.privateKey!,
       ),
       new Secp256k1PrivateKeySigner(
         newOwner.getUsableKeyOfType(KeyType.Device)?.payload.privateKey ??
           newOwner.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey ??
-            // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-            newOwner.getUsableKeyOfType(KeyType.Phone)?.payload.privateKey!,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+          newOwner.getUsableKeyOfType(KeyType.Phone)?.payload.privateKey!,
       ),
     );
     if (response.approved && response.payload.success) {

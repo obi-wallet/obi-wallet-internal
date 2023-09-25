@@ -18,13 +18,7 @@ import { pubkeyToAddress, SecretNetworkClient } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { useStore } from "../../../../contexts";
-import {
-  Alert,
-  activateRecoveredWalletAndIsUpdateRequired,
-  getProxyWalletsCloudflare,
-  isSmallScreen,
-  isSmallScreenNumber,
-} from "../../../../helpers";
+import { Alert, isSmallScreen, isSmallScreenNumber } from "../../../../helpers";
 import {
   KeyFlow,
   KeyRoute,
@@ -38,7 +32,6 @@ import { ObiFaceScannerIcon } from "../../../icons";
 import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
 import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { Text } from "../../../typography";
-import * as A from "../../lookup-proxy-wallets/api-types";
 import { SerializedProxyWallet } from "../../lookup-proxy-wallets/api-types";
 
 export type DeviceKeyScreenProps = NativeStackScreenProps<
@@ -48,15 +41,12 @@ export type DeviceKeyScreenProps = NativeStackScreenProps<
 
 export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
   function DeviceKeyScreen({ route }) {
-    const navigation = useRootNavigation();
-    const store = useStore();
-    const { draftsStore } = store;
     const { params } = route;
 
     return (
       <DeviceKey
         {...params}
-        onSubmit={async (userSaysDeviceIsNew, devicePubKey) => {
+        onSubmit={async (_userSaysDeviceIsNew, _devicePubKey) => {
           /*
           // no matter what, we try to recover if match is found
           console.log("In device key screen, flow is " + params.flow);
@@ -252,9 +242,9 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       if (wallets) {
         invariant(deviceKeypair, "could not get device keypair");
         await draft.value.setDeviceKey(
-          { 
+          {
             publicKey: deviceKeypair?.publicKey,
-            privateKey: deviceKeypair?.privateKey 
+            privateKey: deviceKeypair?.privateKey,
           },
           false,
           true,
@@ -268,7 +258,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         });
       }
       requiredPubkey = deviceKeypair?.publicKey.value;
-      invariant(requiredPubkey, "could not get device pubkey");  
+      invariant(requiredPubkey, "could not get device pubkey");
       console.log("Success is: ", success);
       if (success && Platform.OS !== "ios") {
         onSubmit(deviceIsNew, requiredPubkey);

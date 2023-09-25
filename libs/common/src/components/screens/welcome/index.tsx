@@ -28,7 +28,6 @@ import {
 } from "../../account-picker-modal";
 import { Button } from "../../buttons";
 import { SerializedProxyWallet } from "../lookup-proxy-wallets/api-types";
-import { UsableKey } from "libs/sdk/src/data-structures/key/implementation";
 
 export type WelcomeScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -53,12 +52,17 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       if (unityStore.getDeviceId) {
         // even tho user clicked Sign Up,
         // let's check for wallets with this unity key immediately
-        const proxyWallets = await newMultisigKey.setUnityKey(unityStore.getDeviceId);
+        const proxyWallets = await newMultisigKey.setUnityKey(
+          unityStore.getDeviceId,
+        );
         const draftId = draftsStore.create({
           original: newMultisigKey,
         });
         if (proxyWallets?.length) {
-          if (proxyWallets.length > 1 || proxyWallets[0].owner.threshold != "1") {
+          if (
+            proxyWallets.length > 1 ||
+            proxyWallets[0].owner.threshold != "1"
+          ) {
             navigation.navigate(OnboardingRoute.SelectRecoveryMethod, {
               draftId,
               flow: KeyFlow.RecoverWallet,
@@ -67,7 +71,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
           } else {
             await loginFromSerializedDataAndUsableKey(
               proxyWallets[0],
-              newMultisigKey
+              newMultisigKey,
             );
           }
         } else {
@@ -254,8 +258,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
         demoMode: false,
         skipInit: true,
         evmSigningAddressOverride: serializedData.evmSigningAddress,
-        evmUserContractAddressOverride:
-          serializedData.evmUserContractAddress,
+        evmUserContractAddressOverride: serializedData.evmUserContractAddress,
         homeAccountAddressOverride: serializedData.proxyAddress.address,
       });
     }
@@ -277,23 +280,20 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
           proxyWallets?.length === 1 &&
           proxyWallets[0].owner.threshold === "1"
         ) {
-          loginFromSerializedDataAndUsableKey(
-            proxyWallets[0],
-            newMultisigKey,
-          );
+          loginFromSerializedDataAndUsableKey(proxyWallets[0], newMultisigKey);
         } else {
-            // multiple proxy wallets, or none found for just
-            // this device key
-            const draftId = draftsStore.create({
-              original: newMultisigKey,
-            });
-            navigation.navigate(OnboardingRoute.SelectRecoveryMethod, {
-              draftId,
-              flow: KeyFlow.RecoverWallet,
-              demoMode: false,
-            });
-            return;
-          }
+          // multiple proxy wallets, or none found for just
+          // this device key
+          const draftId = draftsStore.create({
+            original: newMultisigKey,
+          });
+          navigation.navigate(OnboardingRoute.SelectRecoveryMethod, {
+            draftId,
+            flow: KeyFlow.RecoverWallet,
+            demoMode: false,
+          });
+          return;
+        }
       } else {
         // else if not unity...
         const draftId = draftsStore.create({

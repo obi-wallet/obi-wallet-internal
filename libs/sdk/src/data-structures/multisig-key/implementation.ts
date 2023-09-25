@@ -288,8 +288,8 @@ export class MultisigKey {
 
   public async setUnityKey(
     deviceId: string,
-    deviceIsNew?: boolean,
-    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
+    _deviceIsNew?: boolean,
+    _recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
   ): Promise<SerializedProxyWallet[] | undefined> {
     // use unity device ID to generate a keypair right here,
     // without a function call, and set it as the unity key
@@ -326,9 +326,9 @@ export class MultisigKey {
         evmUserContractAddress: "",
         ownerIndex: 0,
       };
-      const proxyWallets = await this.getProxyWalletsCloudflare(
+      const proxyWallets = (await this.getProxyWalletsCloudflare(
         keyPair.publicKey.value,
-      ) as SerializedProxyWallet[];
+      )) as SerializedProxyWallet[];
       if (proxyWallets) {
         return proxyWallets;
       } else {
