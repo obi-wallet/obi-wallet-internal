@@ -160,10 +160,9 @@ export const PhoneNumberBottomSheetContent =
               try {
                 // TODO: should be rechecked by Jose
                 // @ts-expect-error Jose
-                const res = await onRequest({ securityAnswer, voice: false });
+                const _res = onRequest({ securityAnswer, voice: false });
                 setSentMessage(true);
                 setMagicButtonDisabledDoubleclick(false);
-                console.log({ res });
               } catch (e) {
                 const error = e as Error;
                 setMagicButtonDisabledDoubleclick(false);
