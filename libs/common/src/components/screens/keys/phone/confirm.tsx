@@ -283,7 +283,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
 
                       if (kp.privateKey) {
                         console.log("setting draft value phone key...");
-                        console.log("Draft is: " + JSON.stringify(draft));
+                        //console.log("Draft is: " + JSON.stringify(draft));
                         draft.value.setPhoneKey({
                           publicKey: kp.publicKey,
                           // TODO: remove
