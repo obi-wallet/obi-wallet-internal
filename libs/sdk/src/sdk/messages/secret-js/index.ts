@@ -219,9 +219,15 @@ export class SecretJsMessages extends AbstractMessages<string> {
   public getProposeUpdateOwnerMessage({
     wallet,
     newOwner,
+    userAccountAddress,
+    userAccountCodeHash,
+    nexthashSignedBySigners,
   }: {
     wallet: MultisigWallet;
     newOwner: MultisigKey;
+    userAccountAddress: string;
+    userAccountCodeHash: string;
+    nexthashSignedBySigners: string[];
   }): Message {
     const rawMessage = {
       propose_update_owner: {
@@ -237,12 +243,13 @@ export class SecretJsMessages extends AbstractMessages<string> {
             }>,
           ),
         },
+        signatures: nexthashSignedBySigners,
       },
     };
     return new MsgExecuteContract({
       sender: wallet.owner.address,
-      contract_address: wallet.proxyAddress,
-      // code hash not added yet
+      contract_address: userAccountAddress,
+      code_hash: userAccountCodeHash,
       msg: rawMessage,
     });
   }
@@ -250,16 +257,26 @@ export class SecretJsMessages extends AbstractMessages<string> {
   public getConfirmUpdateOwnerMessage({
     wallet,
     newOwner,
+    userAccountAddress,
+    userAccountCodeHash,
+    nexthashSignedBySigners,
   }: {
     wallet: MultisigWallet;
     newOwner: MultisigKey;
+    userAccountAddress: string;
+    userAccountCodeHash: string;
+    nexthashSignedBySigners: string[];
   }): Message {
+    const _wallet = wallet;
     const rawMessage = {
-      confirm_update_owner: {},
+      confirm_update_owner: {
+        signatures: nexthashSignedBySigners,
+      },
     };
     return new MsgExecuteContract({
       sender: newOwner.address,
-      contract_address: wallet.proxyAddress,
+      contract_address: userAccountAddress,
+      code_hash: userAccountCodeHash,
       msg: rawMessage,
     });
   }

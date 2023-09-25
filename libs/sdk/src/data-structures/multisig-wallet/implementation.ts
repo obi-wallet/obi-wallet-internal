@@ -18,6 +18,7 @@ import { Secp256k1PrivateKeySigner } from "../../signers";
 import { Message } from "../../transactions";
 import { FlexAccount } from "../flex-account";
 import { GatekeeperConfig } from "../gatekeeper-config";
+import { KeyType } from "../key/types";
 import { AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
 import { SinglesigWallet } from "../singlesig-wallet";
@@ -140,7 +141,21 @@ export class MultisigWallet {
   }
 
   public async updateOwner(newOwner: MultisigKey) {
-    const response = await this.multisigWalletSdk.updateOwner(newOwner);
+    const response = await this.multisigWalletSdk.updateOwner(
+      newOwner,
+      new Secp256k1PrivateKeySigner(
+        this._owner.getUsableKeyOfType(KeyType.Device)?.payload.privateKey ??
+          this._owner.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey ??
+          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+          this._owner.getUsableKeyOfType(KeyType.Phone)?.payload.privateKey!,
+      ),
+      new Secp256k1PrivateKeySigner(
+        newOwner.getUsableKeyOfType(KeyType.Device)?.payload.privateKey ??
+          newOwner.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey ??
+          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+          newOwner.getUsableKeyOfType(KeyType.Phone)?.payload.privateKey!,
+      ),
+    );
     if (response.approved && response.payload.success) {
       this.setOwner(newOwner);
     }

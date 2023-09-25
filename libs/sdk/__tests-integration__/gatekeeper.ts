@@ -13,7 +13,7 @@ import {
   Sdk,
 } from "../src";
 
-const chainId = "phoenix-1";
+const chainId = "secret-4";
 const messagesSdk = Messages.chainId(chainId);
 const sdk = Sdk.chainId(chainId);
 

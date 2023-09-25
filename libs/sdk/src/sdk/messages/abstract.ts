@@ -55,11 +55,13 @@ export abstract class AbstractMessages<T> {
   public abstract getProposeUpdateOwnerMessage({
     wallet,
     newOwner,
-    codeIds,
+    userAccountAddress,
+    userAccountCodeHash,
   }: {
     wallet: MultisigWallet;
     newOwner: MultisigKey;
-    codeIds: CodeIds;
+    userAccountAddress: string;
+    userAccountCodeHash: string;
   }): Message;
 
   /**
@@ -68,9 +70,13 @@ export abstract class AbstractMessages<T> {
   public abstract getConfirmUpdateOwnerMessage({
     wallet,
     newOwner,
+    userAccountAddress,
+    userAccountCodeHash,
   }: {
     wallet: MultisigWallet;
     newOwner: MultisigKey;
+    userAccountAddress: string;
+    userAccountCodeHash: string;
   }): Message;
 
   /**

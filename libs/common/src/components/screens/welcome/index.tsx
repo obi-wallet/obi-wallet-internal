@@ -168,7 +168,6 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
   onEnterDemoMode,
 }) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { walletsStore } = useStore();
   const intl = useIntl();
   const theme = useTheme();
 

@@ -12,6 +12,7 @@ import {
   generateSec256k1KeyPair,
 } from "../../keys";
 import { Sdk } from "../../sdk";
+import { SerializedProxyWallet } from "../../sdk/wallets/secret-js-msig/types";
 import { Message } from "../../transactions";
 import { AbstractDataStructure } from "../abstract";
 import {
@@ -193,14 +194,10 @@ export class MultisigKey {
     }
   }
 
-  private async setupMagicAccountIfDoesNotExist(
-    publicKey: string,
-    recoverFlow: boolean,
-  ) {
-    let proxyWallets;
-    let response;
+  // duplicated for now due to circular dependency
+  private async getProxyWalletsCloudflare(publicKey: string) {
     try {
-      response = await fetch(
+      const response = await fetch(
         `https://proxy-wallets.obiwallet.workers.dev`,
         // `http://127.0.0.1:8787`,
         {
@@ -217,29 +214,44 @@ export class MultisigKey {
           },
         },
       );
-      proxyWallets = (await response.json()) as unknown[];
-      if (proxyWallets.length === 0) {
-        if (!recoverFlow) {
-          this.createMagicAccount();
-        }
-      }
+      const proxyWallets = (await response.json()) as unknown[];
+      return proxyWallets;
     } catch (e) {
-      console.log("Proxy wallet worker error. Response: " + response!.text());
-      if (!recoverFlow) {
-        this.createMagicAccount();
-      }
+      //probably no wallets
+      console.log("cloudflare worker recover error: " + JSON.stringify(e));
+      return [];
     }
   }
 
-  public setDeviceKey(
+  /// Returns true if we should proceed to recovery
+  private async setupMagicAccountIfDoesNotExist(
+    publicKey: string,
+  ): Promise<SerializedProxyWallet[] | undefined> {
+    try {
+      const proxyWallets = (await this.getProxyWalletsCloudflare(
+        publicKey,
+      )) as SerializedProxyWallet[];
+      if (proxyWallets.length === 0) {
+        this.createMagicAccount();
+        return undefined;
+      } else {
+        return proxyWallets;
+      }
+    } catch (e) {
+      this.createMagicAccount();
+      return undefined;
+    }
+  }
+
+  public async setDeviceKey(
     keyPair: {
       publicKey: Secp256k1PublicKey;
       privateKey?: string;
     },
-    recoverFlow?: boolean,
-  ) {
-    if (!recoverFlow) {
-      recoverFlow = false;
+    newDevice?: boolean,
+  ): Promise<SerializedProxyWallet[] | undefined> {
+    if (newDevice === undefined) {
+      newDevice = false;
     }
     this.setKey({
       type: KeyType.Device,
@@ -255,17 +267,25 @@ export class MultisigKey {
         ownerIndex: 0,
       };
 
-      this.setupMagicAccountIfDoesNotExist(
+      const proxyWallets = this.setupMagicAccountIfDoesNotExist(
         keyPair.publicKey.value,
-        recoverFlow,
       );
+      if (proxyWallets) {
+        return proxyWallets;
+      } else {
+        return undefined;
+      }
     }
     console.log("Current draft multisig: " + JSON.stringify(this));
+    return undefined;
   }
 
-  public setUnityKey(deviceId: string, recoverFlow?: boolean) {
-    if (!recoverFlow) {
-      recoverFlow = false;
+  public async setUnityKey(
+    deviceId: string,
+    newDevice?: boolean,
+  ): Promise<SerializedProxyWallet[] | undefined> {
+    if (newDevice === undefined) {
+      newDevice = true;
     }
     // use unity device ID to generate a keypair right here,
     // without a function call, and set it as the unity key
@@ -303,12 +323,17 @@ export class MultisigKey {
         evmUserContractAddress: "",
         ownerIndex: 0,
       };
-      this.setupMagicAccountIfDoesNotExist(
+      const proxyWallets = this.setupMagicAccountIfDoesNotExist(
         keyPair.publicKey.value,
-        recoverFlow,
       );
+      if (proxyWallets) {
+        return proxyWallets;
+      } else {
+        return undefined;
+      }
     }
     console.log("Current draft multisig: " + JSON.stringify(this));
+    return undefined;
   }
 
   public setPhoneKey(payload: {
@@ -379,6 +404,22 @@ export class MultisigKey {
   protected setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
     this._keys = this._keys.filter((k) => key.type !== k.type);
     this._keys.push(this._factories.Key.create(key));
+    // sort the keys by type, and then by public key
+    this._keys = this._keys.sort((a, b) => {
+      if (a.type < b.type) {
+        return -1;
+      } else if (a.type > b.type) {
+        return 1;
+      } else {
+        if (a.publicKey.value < b.publicKey.value) {
+          return -1;
+        } else if (a.publicKey.value > b.publicKey.value) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    });
   }
 
   public removeKeyOfType<T extends KeyType>(type: T) {

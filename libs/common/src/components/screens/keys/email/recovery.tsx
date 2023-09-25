@@ -44,6 +44,7 @@ export const EmailRecoveryScreen = observer<EmailRecoveryScreenProps>(
           navigation.navigate(OnboardingRoute.LookupProxyWallets, {
             ...params,
             recoverFrom: RecoverFrom.Email,
+            walletsFound: [],
           });
         }}
       />

@@ -56,6 +56,7 @@ export const PhoneKeyConfirmScreen = observer<PhoneKeyConfirmScreenProps>(
               navigation.navigate(OnboardingRoute.LookupProxyWallets, {
                 ...params,
                 recoverFrom: RecoverFrom.Phone,
+                walletsFound: [],
               });
               break;
           }

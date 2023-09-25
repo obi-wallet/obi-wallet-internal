@@ -18,6 +18,7 @@ import {
 import { SvgProps } from "react-native-svg";
 
 import { ComingSoonKeyType, useKeyMetaData } from "./key-meta-data";
+import { useStore } from "../../contexts/stores";
 import { triggerImpactLight, triggerNotificationSuccess } from "../../helpers";
 import {
   ConfirmAnimation,
@@ -57,6 +58,7 @@ export const KeysList = observer(function KeysList({
   animate,
   hideOtherKeys,
 }: KeysListProps) {
+  const { unityStore } = useStore();
   const { metaData, comingSoonKeys } = useKeyMetaData();
   const hydratedData = data.map((key) => {
     return {
@@ -65,11 +67,28 @@ export const KeysList = observer(function KeysList({
     };
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function getKeyDescription(key: any) {
+    if (key?.type === KeyType.Device && unityStore.getDeviceId) {
+      return "Browser only";
+    }
+
+    if (key?.type === KeyType.Unity && !unityStore.getDeviceId) {
+      return "Unity only";
+    }
+
+    return key.description;
+  }
+
   return (
     <View style={[{ flex: 1 }, style]}>
       <FlatList
         data={[
-          ...hydratedData,
+          ...hydratedData.map((key) => ({
+            ...key,
+            description: getKeyDescription(key),
+            right: getKeyDescription(key) ? null : key.right,
+          })),
           ...comingSoonKeys.map((type) => {
             return {
               ...metaData[type],
@@ -259,6 +278,7 @@ export const KeyListItem = observer(function KeyListItem({
                 fontSize: 12,
                 opacity: 0.6,
                 marginTop: 4,
+                marginLeft: 24,
               }}
             >
               {description}

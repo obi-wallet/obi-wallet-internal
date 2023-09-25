@@ -109,7 +109,22 @@ export class Wallets {
   }) {
     let response;
     // alphabetize the keys in MultisigKey by their KeyType name
-    multisigKey.keys.sort((a, b) => a.type.localeCompare(b.type));
+    // and then by their publicKey.value
+    multisigKey.keys.sort((a, b) => {
+      if (a.type < b.type) {
+        return -1;
+      } else if (a.type > b.type) {
+        return 1;
+      } else {
+        if (a.publicKey.value < b.publicKey.value) {
+          return -1;
+        } else if (a.publicKey.value > b.publicKey.value) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    });
     console.log("alphabetized keys: " + JSON.stringify(multisigKey.keys));
     if (!skipInit) {
       response = await this.walletsSdk.getAsyncDetailsAndFirstOwnerUpdate({

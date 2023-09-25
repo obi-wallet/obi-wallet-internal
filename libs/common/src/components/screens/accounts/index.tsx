@@ -22,6 +22,7 @@ export const AccountsScreen = observer(function AccountsScreen() {
   const wallet = useCurrentWallet();
 
   const draftId = getGatekeeperConfigDraftId(wallet);
+  // deferred to avoid circular dep
   const draft = draftsStore.get<GatekeeperConfig>({
     id: draftId,
   });

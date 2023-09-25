@@ -20,19 +20,18 @@ export class WalletsSdk extends AbstractWalletsSdk {
     evmUserContractAddress: string;
   }> {
     return await Chain.select<AbstractWalletsSdk>({
-      chainId: multisigKey.chainId,
-      onCosmosChain(_) {
+      /*(_) {
         throw new Error("non-secret home accounts disabled");
       },
       onLegacyCosmosChain() {
         throw new Error("non-secret home accounts disabled");
-      },
+      },*/
       onSecretJsChain() {
         return new SecretJsMsigWalletSdk();
       },
-      onTerraChain() {
+      /*onTerraChain() {
         throw new Error("non-secret home accounts disabled");
-      },
+      },*/
     }).getAsyncDetailsAndFirstOwnerUpdate({
       multisigKey,
       demoMode,

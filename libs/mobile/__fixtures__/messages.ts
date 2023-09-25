@@ -10,20 +10,20 @@ import {
 } from "@terra-money/feather.js";
 
 export const address = "terra18aw4eedj4v3253dvj9h5ucx9uedl9ggaayktq4";
-export const messageSend = new MsgSend(address, address, { uluna: 1000000 });
+export const messageSend = new MsgSend(address, address, { uscrt: 1000000 });
 export const messageDelegate = new MsgDelegate(
   address,
   "terravaloper1src9wvawtfl6ztxss8zu45zuxnwj4ytpnr30jn",
-  new Coin("uluna", 100000000000000),
+  new Coin("uscrt", 100000000000000),
 );
 export const messageUndelegate = new MsgUndelegate(
   address,
   "terravaloper1src9wvawtfl6ztxss8zu45zuxnwj4ytpnr30jn",
-  new Coin("uluna", 100000000000000),
+  new Coin("uscrt", 100000000000000),
 );
 export const messageNewAccount = Messages.chainId(
-  "phoenix-1",
-).getCreateWalletMessage(MultisigKey.create("phoenix-1"));
+  "secret-4",
+).getCreateWalletMessage(MultisigKey.create(undefined, "secret-4"));
 
 export const instantiateMessage = new MsgInstantiateContract(
   address,
@@ -115,6 +115,6 @@ export const unknownMessage = new MsgBeginRedelegate(
   address,
   address,
   address,
-  Coin.fromAmino({ amount: "1", denom: "uluna" }),
+  Coin.fromAmino({ amount: "1", denom: "uscrt" }),
 );
 export const initMessage = new MsgInstantiateContract(address, address, 1, {});

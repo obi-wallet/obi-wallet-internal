@@ -20,7 +20,11 @@ import { z } from "zod";
 import { EmailContainer } from "./container";
 import { EmailTab, EmailTabs } from "./tabs";
 import { useStore } from "../../../../contexts";
-import { Alert, isSmallScreenNumber } from "../../../../helpers";
+import {
+  addEllipsisInMiddle,
+  Alert,
+  isSmallScreenNumber,
+} from "../../../../helpers";
 import { useKeyboardVisible } from "../../../../hooks";
 import {
   KeyFlow,
@@ -127,11 +131,13 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   onSubmit,
 }) {
   const theme = useTheme();
-  const { draftsStore } = useStore();
+  const { draftsStore, unityStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
   const [selectedTab, setSelectedTab] = useState(EmailTab.EmailKeyV1);
   const [emailKey, setEmailKey] = useState<Secp256k1PublicKey | undefined>();
-  const [publicKey, setPublicKey] = useState<string | undefined>(undefined);
+  const [emailPublicKey, setEmailPublicKey] = useState<string | undefined>(
+    undefined,
+  );
   const [emailRecoveryLink, setEmailRecoveryLink] = useState<
     string | undefined
   >(undefined);
@@ -165,7 +171,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
             "encrypted private key for email link: " + emailRecoveryLinkString,
           );
           setEmailRecoveryLink(emailRecoveryLinkString);
-          setPublicKey(publicKey.value);
+          setEmailPublicKey(publicKey.value);
         },
       );
     }
@@ -177,6 +183,8 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
     if (emailKey) {
       draft.value.setEmailKey(emailKey);
       onSubmit();
+    } else {
+      console.log("no email key");
     }
   };
 
@@ -190,29 +198,31 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   );
 
   function triggerAlert(copied: boolean) {
-    Alert.alert(
-      copied ? "Confirm Recovery Link Saved" : "Confirm Email Sent",
-      copied
-        ? "Never enter your recovery link anywhere. Have you saved it?"
-        : "Never enter the one-time link you received anywhere unless you need it for recovery. Have you sent the email to yourself?",
-      [
-        {
-          text: "No",
-          style: "cancel",
-          onPress: () => {
-            setCopied(false);
-            setEmailKey(undefined);
+    if (!unityStore.getDeviceId) {
+      Alert.alert(
+        copied ? "Confirm Recovery Link Saved" : "Confirm Email Sent",
+        copied
+          ? "Never enter your recovery link anywhere. Have you saved it?"
+          : "Never enter the one-time link you received anywhere unless you need it for recovery. Have you saved the email?",
+        [
+          {
+            text: "No",
+            style: "cancel",
+            onPress: () => {
+              setCopied(false);
+              setEmailKey(undefined);
+            },
           },
-        },
-        {
-          text: copied
-            ? "Yes, I've securely saved it"
-            : "Yes, I sent the email to myself",
-          onPress: onPressRef.current,
-        },
-      ],
-      { cancelable: false },
-    );
+          {
+            text: copied
+              ? "Yes, I've securely saved it"
+              : "Yes, I sent the email to myself",
+            onPress: onPressRef.current,
+          },
+        ],
+        { cancelable: false },
+      );
+    }
   }
 
   const isKeyboardVisible = useKeyboardVisible();
@@ -224,19 +234,6 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
 
   function encodeForMailto(text: string): string {
     return encodeURIComponent(text).replace(/%20/g, "%20");
-  }
-
-  function addEllipsisInMiddle(text: string, maxLength: number): string {
-    if (text.length <= maxLength) {
-      return text;
-    }
-
-    const removeCount = Math.ceil((text.length - maxLength) / 2);
-    const midPoint = Math.ceil(text.length / 2);
-    const start = text.slice(0, midPoint - removeCount);
-    const end = text.slice(-midPoint + removeCount);
-
-    return `${start}...${end}`;
   }
 
   function renderTabContent() {
@@ -341,6 +338,14 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
               ]}
               onPress={() => {
                 navigator.clipboard.writeText(emailRecoveryLink!);
+                setEmailKey({
+                  type: "tendermint/PubKeySecp256k1",
+                  value: emailPublicKey!,
+                });
+                if (unityStore.getDeviceId) {
+                  console.log("triggering onref");
+                  onPressRef.current!();
+                }
                 setCopied(true);
               }}
             >
@@ -407,9 +412,12 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                   )}`;
                   setEmailKey({
                     type: "tendermint/PubKeySecp256k1",
-                    value: publicKey!,
+                    value: emailPublicKey!,
                   });
                   await Linking.openURL(URL);
+                  if (unityStore.getDeviceId) {
+                    onPressRef.current!();
+                  }
                 } catch (e) {
                   console.error(e);
                   // noop
@@ -421,19 +429,26 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
               disabled={!formState.isValid}
               onPress={handleSubmit(async (data) => {
                 try {
-                  const URL = `mailto:${
-                    data.email
-                  }?subject=Obi%20DO%20NOT%20DELETE:%20Recovery%20Assistant&body=${encodeForMailto(
+                  const to = data.email;
+                  const subject = "DO NOT DELETE: Obi recovery link";
+                  const text =
                     "This is an Obi email key recovery link. You are sending it to yourself; Obi can never access its contents. " +
-                      "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
-                      "DO NOT DELETE this email, unless you are saving its contents to a password manager or physical location." +
-                      emailRecoveryLink,
-                  )}`;
+                    "This key is one-time use and can be used to help you recover if you lose multiple factors. " +
+                    "DO NOT DELETE this email, unless you are saving its contents to a password manager or physical location." +
+                    emailRecoveryLink;
                   setEmailKey({
                     type: "tendermint/PubKeySecp256k1",
-                    value: publicKey!,
+                    value: emailPublicKey!,
                   });
-                  await Linking.openURL(URL);
+                  const _response = await fetch("/api/send-email", {
+                    method: "POST",
+                    body: JSON.stringify({
+                      to,
+                      subject,
+                      text,
+                    }),
+                  });
+                  onPressRef.current!();
                 } catch (e) {
                   console.error(e);
                   // noop
