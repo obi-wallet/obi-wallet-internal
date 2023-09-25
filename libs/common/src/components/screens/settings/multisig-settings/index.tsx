@@ -160,13 +160,13 @@ export const MultisigSettingsScreen = observer(
                 setLoading(true);
                 try {
                   invariant(
-                    draft.value.evmSigningAddress,
-                    "no evm signing address in draft",
+                    wallet.evmSigningAddress,
+                    "no evm signing address in wallet",
                   );
                   const response = await wallet.updateOwner(
                     draft.value,
-                    draft.value.evmSigningAddress,
-                    draft.value.evmUserContractAddress,
+                    wallet.evmSigningAddress,
+                    wallet.evmUserContractAddress,
                   );
                   if (response.approved && !response.payload.success) {
                     Alert.alert(
