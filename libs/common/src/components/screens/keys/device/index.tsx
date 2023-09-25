@@ -263,6 +263,11 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       if (success && Platform.OS !== "ios") {
         onSubmit(deviceIsNew, requiredPubkey);
       }
+      navigation.navigate(OnboardingRoute.CreateWallet, {
+        flow: KeyFlow.CreateWallet,
+        draftId,
+        demoMode: false,
+      });
     }
     fundKeyIfZero(requiredPubkey);
   }
