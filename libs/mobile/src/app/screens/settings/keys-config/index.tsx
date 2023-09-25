@@ -162,13 +162,16 @@ export const KeysConfigScreen = observer(function KeysConfigScreen() {
             onPress={async () => {
               setLoading(true);
               try {
-                invariant(draft.value.evmSigningAddress, "no evm signing address in draft");
+                invariant(
+                  draft.value.evmSigningAddress,
+                  "no evm signing address in draft",
+                );
                 const response = await wallet.updateOwner(
                   draft.value,
                   draft.value.evmSigningAddress,
-                  draft.value.evmUserContractAddress
+                  draft.value.evmUserContractAddress,
                 );
-              if (response.approved && !response.payload.success) {
+                if (response.approved && !response.payload.success) {
                   Alert.alert("Updating owner failed", response.payload.rawLog);
                 }
               } finally {

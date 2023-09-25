@@ -170,7 +170,7 @@ export class MultisigWallet {
           newOwner.getUsableKeyOfType(KeyType.Phone)?.payload.privateKey!,
       ),
       evmSigningAddress,
-      evmUserContractAddress
+      evmUserContractAddress,
     );
     if (response.approved && response.payload.success) {
       this.setOwner(newOwner);

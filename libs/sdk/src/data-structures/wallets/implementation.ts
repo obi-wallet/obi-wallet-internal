@@ -220,11 +220,17 @@ export class Wallets {
       data: serializedData,
     });
     console.log("calling wallet.updateOwner...");
+    invariant(
+      serializedData.evmSigningAddress.length > 0,
+      "no serializedData evmSigningAddress",
+    );
     const response = await wallet.updateOwner(
       newOwner,
       serializedData.evmSigningAddress,
-      serializedData.evmUserContractAddress
+      serializedData.evmUserContractAddress,
     );
+    wallet.setEvmSigningAddress(serializedData.evmSigningAddress, true);
+    wallet.setEvmUserContractAddress(serializedData.evmUserContractAddress);
     if (response.approved && response.payload.success) {
       this.upsertWallet(wallet);
     }
