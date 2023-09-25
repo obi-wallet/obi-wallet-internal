@@ -232,7 +232,16 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
     let requiredPubkey;
     if (unityStore.getDeviceId) {
       console.log("unity device id obtained");
-      draft.value.setUnityKey(unityStore.getDeviceId, true);
+      const proxyWallets = await draft.value.setUnityKey(unityStore.getDeviceId, true);
+      if (proxyWallets !== undefined) {
+        navigation.navigate(OnboardingRoute.LookupProxyWallets, {
+          flow: KeyFlow.RecoverWallet,
+          draftId,
+          walletsFound: proxyWallets,
+          demoMode: false,
+          recoverFrom: RecoverFrom.Unity,
+        });
+      }
       requiredPubkey = draft.value.getUsableKeyOfType(KeyType.Unity)?.publicKey
         .value;
       invariant(requiredPubkey, "could not get unity pubkey");

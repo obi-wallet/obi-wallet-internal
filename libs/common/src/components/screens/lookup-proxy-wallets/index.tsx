@@ -29,10 +29,23 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
       id: params.draftId,
     });
 
+    let recoverType: KeyType;
+    switch (params.recoverFrom) {
+      case RecoverFrom.Email:
+        recoverType = KeyType.Email;
+        break;
+      case RecoverFrom.Phone:
+        recoverType = KeyType.Phone;
+        break;
+      case RecoverFrom.Device:
+        recoverType = KeyType.Device;
+        break;
+      case RecoverFrom.Unity:
+        recoverType = KeyType.Unity;
+        break;
+    }
     const usableKey = draft.value.getUsableKeyOfType(
-      params.recoverFrom === RecoverFrom.Email
-        ? KeyType.EmailRecovery
-        : KeyType.Phone,
+      recoverType
     );
     invariant(usableKey, "No usable key found");
     const publicKey = usableKey.payload.publicKey.value;
@@ -51,7 +64,6 @@ export const LookupProxyWalletsScreen = observer<LookupProxyWalletsScreen>(
         onSelect={async () => {
           // noop
         }}
-        walletsFound={params.walletsFound}
       />
     );
   },
