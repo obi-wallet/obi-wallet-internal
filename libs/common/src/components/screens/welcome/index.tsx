@@ -253,7 +253,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
       });
       const draft = draftsStore.get<MultisigKey>({ id: draftId });
 
-      console.log("recovered draft: " + JSON.stringify(draft.value));
+      // console.log("recovered draft: " + JSON.stringify(draft.value));
       await walletsStore.createWallet({
         multisigKey: draft.value,
         demoMode: false,
