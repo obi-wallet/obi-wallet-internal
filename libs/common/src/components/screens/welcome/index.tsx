@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import {
+  Key,
   KeyType,
   MultisigKey,
   MultisigWallet,
