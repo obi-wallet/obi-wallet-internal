@@ -263,13 +263,13 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       if (success && Platform.OS !== "ios") {
         onSubmit(deviceIsNew, requiredPubkey);
       }
-      if (recoverFlow) {
+      if (!wallets && recoverFlow) {
         navigation.navigate(OnboardingRoute.SelectRecoveryMethod, {
           flow: KeyFlow.RecoverWallet,
           draftId,
           demoMode: false,
         });
-      } else {
+      } else if (!wallets) {
         draft.value.createMagicAccount();
         navigation.navigate(OnboardingRoute.CreateWallet, {
           flow: KeyFlow.CreateWallet,
