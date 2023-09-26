@@ -10,11 +10,3 @@ export async function connect() {
   });
   return UserModel;
 }
-
-// export async function connectWorkaround() {
-//   invariant(process.env.MONGODB_URI, "MONGODB_URI is not set");
-//   await mongoose.connect(process.env.MONGODB_URI, {
-//     dbName: "production",
-//   });
-//   return UserModelWorkaround;
-// }

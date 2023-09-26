@@ -7,7 +7,8 @@ import {
   Message,
   BroadcastTransactionResult,
   SecretJsClient,
-  secretJsChains,
+  SecretJsChains,
+  SecretJsChainIds,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { sha256 } from "ethers";
@@ -139,10 +140,10 @@ export function useSignAndBroadcastTransaction({
           sender: multisigKey.address,
         });
       } else {
-        const chain = secretJsChains["secret-4"];
+        const chain = SecretJsChains[SecretJsChainIds.MAINNET];
 
         const signerSignature = await new SecretJsClient(
-          "secret-4",
+          SecretJsChainIds.MAINNET,
         ).withSecretNetworkClient(async (client) => {
           const sign_bytes_query_msg = {
             contract_address: chain.secretSigner.address,

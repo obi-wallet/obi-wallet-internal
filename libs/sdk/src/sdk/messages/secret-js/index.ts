@@ -12,7 +12,7 @@ import {
 } from "secretjs";
 import warning from "tiny-warning";
 
-import { SecretJsChainId, secretJsChains } from "../../../chains";
+import { SecretJsChainId, SecretJsChains } from "../../../chains";
 import {
   GatekeeperConfig,
   MultisigKey,
@@ -409,7 +409,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
   }
 
   protected get chain() {
-    return secretJsChains[this.chainId];
+    return SecretJsChains[this.chainId];
   }
 
   protected get sdk() {

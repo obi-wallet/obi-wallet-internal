@@ -1,7 +1,7 @@
 import { TxResponse } from "secretjs";
 
 import { KeyType, SerializedProxyWallet } from "./types";
-import { secretJsChains } from "../../../chains";
+import { SecretJsChainIds, SecretJsChains } from "../../../chains";
 import { MultisigKey } from "../../../data-structures";
 import { AbstractWalletsSdk } from "../abstract";
 //import { add } from "ramda";
@@ -31,7 +31,7 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
       evmUserContractAddress,
       ownerIndex,
     } = multisigKey.setupDetails!;
-    const chain = secretJsChains["secret-4"];
+    const chain = SecretJsChains[SecretJsChainIds.MAINNET];
     console.log("Calling setup/first-update-owner to " + multisigKey.address);
     console.log(
       "At this point, keys are is: " +
@@ -73,7 +73,7 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
       {
         method: "POST",
         body: JSON.stringify({
-          chainId: "secret-4",
+          chainId: SecretJsChainIds.MAINNET,
           proxyWallet,
         }),
         headers: {

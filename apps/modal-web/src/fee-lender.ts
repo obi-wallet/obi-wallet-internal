@@ -1,10 +1,12 @@
 import { Secp256k1PrivateKeySigner, SecretJsChainId } from "@obi-wallet/sdk";
 import { Wallet } from "secretjs";
+import invariant from "tiny-invariant";
 
 export function getFeeLender(
   chainId: SecretJsChainId,
   knownLenderIndex?: number,
 ) {
+  invariant(chainId, "Unknown chain ID");
   switch (chainId) {
     case "pulsar-3": {
       const feeLenders = JSON.parse(process.env.FEE_LENDERS_PULSAR_3 ?? "[]");
@@ -31,6 +33,4 @@ export function getFeeLender(
       return { wallet, signer, lenderIndex };
     }
   }
-
-  throw new Error("Unknown chain ID");
 }

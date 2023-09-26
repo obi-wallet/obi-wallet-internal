@@ -4,7 +4,7 @@ import { TxResponse } from "secretjs";
 
 import { SetupMultisigKeyDetails } from "./factories";
 import { MultisigKeySchema } from "./schema";
-import { ChainId, secretJsChains } from "../../chains";
+import { ChainId, SecretJsChainIds, SecretJsChains } from "../../chains";
 import {
   MultisigPublicKey,
   Secp256k1KeyPair,
@@ -156,7 +156,7 @@ export class MultisigKey {
       ", owner index: " + ownerIndex,
     );
 
-    const chain = secretJsChains["secret-4"];
+    const chain = SecretJsChains[SecretJsChainIds.MAINNET];
 
     // now we can add a key. The ownerIndex fee wallet will be able
     // to use it to sign for now (to setup account) if needed,
@@ -203,7 +203,7 @@ export class MultisigKey {
         {
           method: "POST",
           body: JSON.stringify({
-            chainId: "secret-4",
+            chainId: SecretJsChainIds.MAINNET,
             publicKey,
           }),
           headers: {

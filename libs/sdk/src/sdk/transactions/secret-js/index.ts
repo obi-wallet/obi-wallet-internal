@@ -9,7 +9,7 @@ import invariant from "tiny-invariant";
 import warning from "tiny-warning";
 
 import { SecretJsMultisigSigner } from "./multisigs-signer";
-import { SecretJsChainId, secretJsChains } from "../../../chains";
+import { SecretJsChainId, SecretJsChains } from "../../../chains";
 import { SecretJsClient } from "../../../clients";
 import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../../keys";
 import { Message, SignedTransaction } from "../../../transactions";
@@ -201,7 +201,7 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
   }
 
   protected get chain() {
-    return secretJsChains[this.chainId];
+    return SecretJsChains[this.chainId];
   }
 
   protected get messages() {

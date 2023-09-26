@@ -6,7 +6,7 @@ import {
   Messages,
   MultisigKey,
   MultisigWallet,
-  secretJsChains,
+  SecretJsChains,
   terraChains,
 } from "@obi-wallet/sdk";
 import { QueryClientProvider } from "@tanstack/react-query";

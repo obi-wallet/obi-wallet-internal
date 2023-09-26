@@ -4,7 +4,8 @@ import {
   MultisigKey,
   Sdk,
   Secp256k1KeyPair,
-  secretJsChains,
+  SecretJsChainIds,
+  SecretJsChains,
 } from "@obi-wallet/sdk";
 import { getOrCreateDeviceKeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -111,8 +112,8 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
     const address = pubkeyToAddress(Buffer.from(pubkey, "base64"), "secret");
     console.log("fundKeyIfZero() for address: " + address);
     const stockClient = new SecretNetworkClient({
-      chainId: "secret-4",
-      url: secretJsChains["secret-4"].urls[0],
+      chainId: SecretJsChainIds.MAINNET,
+      url: SecretJsChains[SecretJsChainIds.MAINNET].urls[0],
     });
     let balance = "";
     try {
@@ -131,7 +132,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         const _response = fetch("/api/lend", {
           method: "POST",
           body: JSON.stringify({
-            homeChainId: "secret-4",
+            homeChainId: SecretJsChainIds.MAINNET,
             address,
           }),
         });
@@ -172,7 +173,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       console.log("device key set..");
       void queryClient.prefetchQuery(
         Sdk.chainId(
-          draft.value.chainId || "secret-4",
+          draft.value.chainId || SecretJsChainIds.MAINNET,
         ).transactions.prepareKeyPairQuery(keyPair),
       );
       console.log("returning...");

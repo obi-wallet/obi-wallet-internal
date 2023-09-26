@@ -1,7 +1,11 @@
 import invariant from "tiny-invariant";
 import warning from "tiny-warning";
 
-import { SecretJsChainId, secretJsChains } from "../../../chains/secret-js";
+import {
+  SecretJsChainId,
+  SecretJsChainIds,
+  SecretJsChains,
+} from "../../../chains/secret-js";
 import { SecretJsClient } from "../../../clients/secret-js";
 import {
   FlexAccount,
@@ -89,7 +93,7 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
         return response;
       }
     }
-    const chain = secretJsChains["secret-4"];
+    const chain = SecretJsChains[SecretJsChainIds.MAINNET];
     const proxyWallet: SerializedProxyWallet = {
       proxyAddress: {
         address: this.wallet.proxyAddress,
@@ -118,7 +122,7 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
         {
           method: "POST",
           body: JSON.stringify({
-            chainId: "secret-4",
+            chainId: SecretJsChainIds.MAINNET,
             proxyWallet,
           }),
           headers: {
@@ -141,9 +145,9 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
   }
 
   public async getUserAccountAddress() {
-    const client = new SecretJsClient("secret-4");
+    const client = new SecretJsClient(SecretJsChainIds.MAINNET);
     if (!this.userAccountAddress || !this.userAccountCodeHash) {
-      const chain = secretJsChains["secret-4"];
+      const chain = SecretJsChains[SecretJsChainIds.MAINNET];
       const res: {
         user_account_address: string;
         user_account_code_hash: string;
@@ -178,7 +182,7 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
 
   public async proposedOwner() {
     try {
-      const client = new SecretJsClient("secret-4");
+      const client = new SecretJsClient(SecretJsChainIds.MAINNET);
       const response: {
         pending_owner: string;
       } = await client.withSecretNetworkClient(async (client) => {
@@ -214,15 +218,15 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
     const userAccountAddress = await this.getUserAccountAddress();
     const nextHashResponse: {
       next_hash: string;
-    } = await new SecretJsClient("secret-4").withSecretNetworkClient(
-      async (client) => {
-        return await client.query.compute.queryContract({
-          contract_address: userAccountAddress.user_account_address,
-          code_hash: userAccountAddress.user_account_code_hash,
-          query: { next_hash: {} },
-        });
-      },
-    );
+    } = await new SecretJsClient(
+      SecretJsChainIds.MAINNET,
+    ).withSecretNetworkClient(async (client) => {
+      return await client.query.compute.queryContract({
+        contract_address: userAccountAddress.user_account_address,
+        code_hash: userAccountAddress.user_account_code_hash,
+        query: { next_hash: {} },
+      });
+    });
     console.log("next hash response:" + JSON.stringify(nextHashResponse));
     const nextHash = nextHashResponse.next_hash;
     /// hack for now; sign single. Pass in some active pk signer
@@ -293,15 +297,15 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
     const userAccountAddress = await this.getUserAccountAddress();
     const nextHashResponse: {
       next_hash: string;
-    } = await new SecretJsClient("secret-4").withSecretNetworkClient(
-      async (client) => {
-        return await client.query.compute.queryContract({
-          contract_address: userAccountAddress.user_account_address,
-          code_hash: userAccountAddress.user_account_code_hash,
-          query: { next_hash: {} },
-        });
-      },
-    );
+    } = await new SecretJsClient(
+      SecretJsChainIds.MAINNET,
+    ).withSecretNetworkClient(async (client) => {
+      return await client.query.compute.queryContract({
+        contract_address: userAccountAddress.user_account_address,
+        code_hash: userAccountAddress.user_account_code_hash,
+        query: { next_hash: {} },
+      });
+    });
     const nextHash = nextHashResponse.next_hash;
     /// hack for now; sign single. Pass in some active pk signer
     const activeSignature = await signer.signHash(Buffer.from(nextHash, "hex"));
@@ -427,6 +431,6 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
   }
 
   protected get messages() {
-    return Messages.chainId("secret-4") as SecretJsMessages;
+    return Messages.chainId(SecretJsChainIds.MAINNET) as SecretJsMessages;
   }
 }

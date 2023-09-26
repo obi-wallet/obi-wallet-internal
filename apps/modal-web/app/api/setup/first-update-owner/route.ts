@@ -2,7 +2,8 @@ import {
   Messages,
   MultisigKey,
   SecretJsClient,
-  secretJsChains,
+  SecretJsChains,
+  SecretJsChainIds,
   SecretJsChainId,
 } from "@obi-wallet/sdk";
 import { getFeeLender } from "apps/modal-web/src/fee-lender";
@@ -28,11 +29,11 @@ export interface UserAccountAddress {
 /// the user's multisig key
 export async function POST(request: Request) {
   const body: FirstUpdateOwnerRequestBody = await request.json();
-  const chainId: SecretJsChainId = "secret-4";
+  const chainId: SecretJsChainId = SecretJsChainIds.MAINNET;
 
   console.log("async funding multisig (for later)...");
   const client = new SecretJsClient(chainId);
-  const chain = secretJsChains["secret-4"];
+  const chain = SecretJsChains[SecretJsChainIds.MAINNET];
   const messagesSdk = Messages.chainId(chainId);
   const lender1 = getFeeLender(chainId);
   const sendMessage = new MsgSend({

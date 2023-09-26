@@ -22,7 +22,7 @@ import { StdFee } from "secretjs/dist/wallet_amino";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import { SecretJsChainId, secretJsChains } from "../../chains";
+import { SecretJsChainId, SecretJsChains } from "../../chains";
 import { BroadcastTransactionResult } from "../../sdk";
 import {
   AminoSignerWithAddress,
@@ -36,7 +36,7 @@ export async function withSecretNetworkClient<T>(
   chainId: SecretJsChainId,
   f: (client: SecretNetworkClient) => T,
 ) {
-  const chain = secretJsChains[chainId];
+  const chain = SecretJsChains[chainId];
   const client = new SecretNetworkClient({
     url: chain.urls[0],
     chainId,
@@ -54,7 +54,7 @@ export async function withSigningSecretNetworkClient<T>(
   },
   f: (client: SecretNetworkClient) => T,
 ) {
-  const chain = secretJsChains[chainId];
+  const chain = SecretJsChains[chainId];
   const client = new SecretNetworkClient({
     url: chain.urls[0],
     chainId,
@@ -201,7 +201,7 @@ export class SecretJsClient extends AbstractClient {
   }
 
   protected get chain() {
-    return secretJsChains[this.chainId];
+    return SecretJsChains[this.chainId];
   }
 
   public get defaultFee(): StdFee {

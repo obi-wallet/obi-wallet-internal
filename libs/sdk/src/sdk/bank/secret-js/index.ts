@@ -1,6 +1,6 @@
 import warning from "tiny-warning";
 
-import { SecretJsChainId, secretJsChains } from "../../../chains";
+import { SecretJsChainId, SecretJsChains } from "../../../chains";
 import { EnrichedToken, Token } from "../../common";
 import { AbstractBankSdk } from "../abstract";
 
@@ -33,6 +33,6 @@ export class SecretJsBankSdk extends AbstractBankSdk {
   }
 
   protected get chain() {
-    return secretJsChains[this.chainId];
+    return SecretJsChains[this.chainId];
   }
 }

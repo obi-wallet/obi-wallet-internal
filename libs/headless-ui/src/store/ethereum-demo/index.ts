@@ -3,7 +3,7 @@ import {
   KeyType,
   Sdk,
   Secp256k1PublicKey,
-  secretJsChains,
+  SecretJsChains,
   SecretJsClient,
 } from "@obi-wallet/sdk";
 import {
@@ -117,7 +117,7 @@ export class EthereumDemoStore {
     const chainId = this.wallet.chainId;
     invariant(isSecretJsChain(chainId), "Not a SecretJS chain");
 
-    return secretJsChains[chainId];
+    return SecretJsChains[chainId];
   }
 
   protected get zAuthKey() {

@@ -1,6 +1,7 @@
 import {
   Secp256k1KeyPair,
   SecretJsChainId,
+  SecretJsChainIds,
   TargetChainId,
 } from "@obi-wallet/sdk";
 import { HomeChain } from "apps/modal-web/src/db/schema";
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
     invariant(userId, "User ID not received");
     console.log("User id is: " + userId);
     const user = await UserModel.findOne({ userId });
-    const homeChain = user?.homeChains.get("secret-4");
+    const homeChain = user?.homeChains.get(SecretJsChainIds.MAINNET);
 
     if (!homeChain) {
       return NextResponse.json(

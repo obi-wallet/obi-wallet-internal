@@ -8,7 +8,7 @@ import { MsgSend, Wallet } from "secretjs";
 import invariant from "tiny-invariant";
 
 export interface LendRequestBody {
-  homeChainId: Extract<SecretJsChainId, "secret-4">;
+  homeChainId: SecretJsChainId;
   address: string;
 }
 export async function POST(request: Request) {

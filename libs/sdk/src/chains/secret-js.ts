@@ -1,8 +1,13 @@
 import { commonTwilioConfig } from "./common";
 
-export const secretJsChains = {
-  "pulsar-3": {
-    chainId: "pulsar-3" as const,
+export const SecretJsChainIds = {
+  PULSAR_TESTNET: "pulsar-3",
+  MAINNET: "secret-4",
+} as const;
+
+export const SecretJsChains = {
+  [SecretJsChainIds.PULSAR_TESTNET]: {
+    chainId: SecretJsChainIds.PULSAR_TESTNET,
     label: "Secret Network Testnet",
     prefix: "secret",
     accountCreator: {
@@ -37,8 +42,8 @@ export const secretJsChains = {
       return `https://testnet.ping.pub/secret/account/${address}`;
     },
   },
-  "secret-4": {
-    chainId: "secret-4" as const,
+  [SecretJsChainIds.MAINNET]: {
+    chainId: SecretJsChainIds.MAINNET,
     label: "Secret Network",
     prefix: "secret",
     accountCreator: {
@@ -75,4 +80,5 @@ export const secretJsChains = {
   },
 };
 
-export type SecretJsChainId = keyof typeof secretJsChains;
+export type SecretJsChainId =
+  (typeof SecretJsChainIds)[keyof typeof SecretJsChainIds];

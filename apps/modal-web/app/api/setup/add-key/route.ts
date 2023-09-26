@@ -1,7 +1,8 @@
 import {
   SecretJsClient,
   generateSec256k1KeyPair,
-  secretJsChains,
+  SecretJsChains,
+  SecretJsChainIds,
 } from "@obi-wallet/sdk";
 import { getFeeLender } from "apps/modal-web/src/fee-lender";
 import { generateEthereumAddresses } from "apps/modal-web/src/stackup";
@@ -26,8 +27,8 @@ export async function POST(request: Request) {
     const { evmSigningAddress, evmUserContractAddress } =
       await generateEthereumAddresses(evmKeyPair);
     console.log("EVM user contract address is " + evmUserContractAddress);
-    const chainId = "secret-4";
-    const chain = secretJsChains[chainId];
+    const chainId = SecretJsChainIds.MAINNET;
+    const chain = SecretJsChains[chainId];
 
     const client = new SecretJsClient(chainId);
     const { wallet, signer } = getFeeLender(chainId);

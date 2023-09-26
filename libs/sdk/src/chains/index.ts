@@ -1,4 +1,4 @@
-import { SecretJsChainId, secretJsChains } from "./secret-js";
+import { SecretJsChainId, SecretJsChainIds, SecretJsChains } from "./secret-js";
 
 export * from "./cosmos";
 export * from "./legacy-cosmos";
@@ -17,7 +17,7 @@ export const Chain = {
     return select<
       // | (typeof cosmosChains)[CosmosChainId]
       // | (typeof legacyCosmosChains)[LegacyCosmosChainId]
-      (typeof secretJsChains)[SecretJsChainId]
+      (typeof SecretJsChains)[SecretJsChainId]
       // | (typeof terraChains)[TerraChainId]
     >({
       /*onCosmosChain(chain) {
@@ -45,10 +45,10 @@ function select<T>({
   onLegacyCosmosChain(
     chain: (typeof legacyCosmosChains)[LegacyCosmosChainId],
   ): T;*/
-  onSecretJsChain(chain: (typeof secretJsChains)[SecretJsChainId]): T;
+  onSecretJsChain(chain: (typeof SecretJsChains)[SecretJsChainId]): T;
   /*onTerraChain(chain: (typeof terraChains)[TerraChainId]): T;*/
 }) {
-  return onSecretJsChain(secretJsChains["secret-4"]);
+  return onSecretJsChain(SecretJsChains[SecretJsChainIds.MAINNET]);
   /* if (isCosmosChain(chainId)) {
     return onCosmosChain(cosmosChains[chainId]);
   } else if (isLegacyCosmosChain(chainId)) {
@@ -73,7 +73,7 @@ export function isLegacyCosmosChain(
 } */
 
 export function isSecretJsChain(chainId: ChainId): chainId is SecretJsChainId {
-  return Object.keys(secretJsChains).includes(chainId);
+  return Object.keys(SecretJsChains).includes(chainId);
 }
 
 /* export function isTerraChain(chainId: ChainId): chainId is TerraChainId {

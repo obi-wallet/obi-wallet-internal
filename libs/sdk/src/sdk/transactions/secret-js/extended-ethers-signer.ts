@@ -1,6 +1,6 @@
 import { Wallet, BytesLike, providers } from "ethers5";
 
-import { secretJsChains } from "../../../chains";
+import { SecretJsChainIds, SecretJsChains } from "../../../chains";
 import { SecretJsClient } from "../../../clients";
 import { MultisigKey } from "../../../data-structures";
 import { Secp256k1PrivateKeySigner } from "../../../signers";
@@ -53,7 +53,7 @@ export class ExtendedWallet extends Wallet {
 
     // calling interactions here results in several, so we are temporarily using device key
     // directly to ask for signature
-    const chain = secretJsChains["secret-4"];
+    const chain = SecretJsChains[SecretJsChainIds.MAINNET];
     let deviceKeySigner;
     if (
       this.multisigKey.getUsableKeyOfType(KeyType.Device)?.payload.privateKey
@@ -78,7 +78,7 @@ export class ExtendedWallet extends Wallet {
     );
     console.log("calling in secret client...");
     const signerSignature = await new SecretJsClient(
-      "secret-4",
+      SecretJsChainIds.MAINNET,
     ).withSecretNetworkClient(async (client) => {
       const sign_bytes_query_msg = {
         contract_address: chain.secretSigner.address,

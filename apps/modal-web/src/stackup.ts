@@ -4,7 +4,7 @@ import {
   Secp256k1KeyPair,
   Secp256k1PublicKey,
   SecretJsChainId,
-  secretJsChains,
+  SecretJsChains,
   SecretJsClient,
   TargetChain,
   TargetChainId,
@@ -35,7 +35,7 @@ export async function generateEthereumAccount({
   chainId: SecretJsChainId;
   keyPair: Secp256k1KeyPair;
 }): Promise<EthereumAccount> {
-  const chain = secretJsChains[chainId];
+  const chain = SecretJsChains[chainId];
   const ethKeyPair = generateSec256k1KeyPair();
   const { evmSigningAddress, evmUserContractAddress } =
     await generateEthereumAddresses(ethKeyPair);

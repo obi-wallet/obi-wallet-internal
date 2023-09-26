@@ -1,5 +1,5 @@
 import {
-  secretJsChains,
+  SecretJsChains,
   SecretJsClient,
   Signer as SdkSigner,
   Secp256k1PrivateKeySigner,
@@ -31,7 +31,7 @@ export class SecretJsSigner {
   }
 
   protected get chainData() {
-    return secretJsChains[this.homeChain.chainId];
+    return SecretJsChains[this.homeChain.chainId];
   }
 
   public async getAddress(): Promise<string> {
