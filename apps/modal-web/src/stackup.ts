@@ -37,7 +37,7 @@ export async function generateEthereumAccount({
 }): Promise<EthereumAccount> {
   const chain = secretJsChains[chainId];
   const ethKeyPair = generateSec256k1KeyPair();
-  const { evmSignerAddress, evmUserContractAddress } =
+  const { evmSigningAddress, evmUserContractAddress } =
     await generateEthereumAddresses(ethKeyPair);
 
   const client = new SecretJsClient(chainId);
@@ -66,14 +66,13 @@ export async function generateEthereumAccount({
       }),
     ],
   });
-  const broadcastTransactionResult = await client.broadcastSignedTransaction(
-    signedTransaction,
-  );
+  const broadcastTransactionResult =
+    await client.broadcastSignedTransaction(signedTransaction);
   console.log(broadcastTransactionResult);
 
   return {
     publicKey: ethKeyPair.publicKey,
-    evmSignerAddress,
+    evmSigningAddress,
     evmUserContractAddress,
   };
 }
@@ -81,6 +80,7 @@ export async function generateEthereumAccount({
 export async function generateEthereumAddresses(keyPair: Secp256k1KeyPair) {
   const config = getConfig(TargetChain.EthereumMainnet)!;
   const signingKey = new SigningKey(Buffer.from(keyPair.privateKey, "base64"));
+  console.warn("For real debugging this time: " + signingKey.privateKey);
   const signer: Signer = new Wallet(signingKey);
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     // @ts-expect-error this should be fine
@@ -88,7 +88,7 @@ export async function generateEthereumAddresses(keyPair: Secp256k1KeyPair) {
     config.rpcUrl,
   );
   return {
-    evmSignerAddress: await signer.getAddress(),
+    evmSigningAddress: await signer.getAddress(),
     evmUserContractAddress: simpleAccount.getSender(),
   };
 }

@@ -1,15 +1,24 @@
 import * as R from "ramda";
-import { MsgExecuteContract } from "secretjs";
-import invariant from "tiny-invariant";
+import {
+  Msg,
+  MsgBeginRedelegate,
+  MsgDelegate,
+  MsgExecuteContract,
+  MsgInstantiateContract,
+  MsgSend,
+  MsgSetWithdrawAddress,
+  MsgUndelegate,
+  MsgWithdrawDelegatorReward,
+} from "secretjs";
 import warning from "tiny-warning";
 
 import { SecretJsChainId, secretJsChains } from "../../../chains";
 import {
   GatekeeperConfig,
-  KeyType,
   MultisigKey,
   MultisigWallet,
 } from "../../../data-structures";
+import { PublicKey } from "../../../keys";
 import { Message, MessageJson } from "../../../transactions";
 import { CodeIds, Token } from "../../common";
 import { Sdk } from "../../sdk";
@@ -19,28 +28,175 @@ function notImplemented(message: string) {
   warning(false, message);
 }
 
-export class SecretJsMessages extends AbstractMessages {
+export class SecretJsMessages extends AbstractMessages<string> {
   protected constructor(protected override chainId: SecretJsChainId) {
     super(chainId);
   }
 
   public toJSON(message: Message): MessageJson {
     if (R.has("eth", message)) {
-      return MessageJson.parse(message.eth);
+      return MessageJson.parse(message);
     }
     if (R.has("userop", message)) {
       return MessageJson.parse(message.userop);
     }
+    if (R.has("raw", message)) {
+      return MessageJson.parse(message);
+    }
+    if (R.has("hash", message)) {
+      return MessageJson.parse(message);
+    }
     throw new Error("Unknown message");
   }
 
-  public wrapMessages(_: {
+  public wrapMessages({
+    messages,
+    sender,
+    userEntryContract,
+    userEntryCodeHash,
+  }: {
     messages: Message[];
     sender: string;
-    contract: string;
+    userEntryContract: string;
+    userEntryCodeHash?: string;
   }): Message[] {
-    notImplemented("wrapMessages not implemented for SecretJS");
-    return [];
+    return messages.map((msg) => {
+      if (R.has("raw", msg)) {
+        return;
+      }
+      if (R.has("eth", msg)) {
+        return;
+      }
+
+      return new MsgExecuteContract({
+        sender,
+        contract_address: userEntryContract,
+        code_hash: userEntryCodeHash!,
+        msg: {
+          execute: {
+            msg: Buffer.from(
+              JSON.stringify({ legacy: this.wrapMessage(msg as Msg) }),
+            ).toString("base64"),
+          },
+        },
+        sent_funds: [],
+      });
+    });
+  }
+
+  public wrapMessage(message: Message) {
+    if (message instanceof MsgSend) {
+      return {
+        bank: {
+          send: {
+            amount: message.amount.map((coin) => {
+              return {
+                denom: coin.denom,
+                amount: coin.amount.toString(),
+              };
+            }),
+            from_address: message.from_address,
+            to_address: message.to_address,
+          },
+        },
+      };
+    }
+
+    if (message instanceof MsgDelegate) {
+      return {
+        staking: {
+          delegate: {
+            amount: this.wrapCoin(message.params.amount),
+            validator: message.params.validator_address,
+          },
+        },
+      };
+    }
+
+    if (message instanceof MsgBeginRedelegate) {
+      return {
+        staking: {
+          redelegate: {
+            amount: this.wrapCoin(message.params.amount),
+            src_validator: message.params.validator_src_address,
+            dst_validator: message.params.validator_dst_address,
+          },
+        },
+      };
+    }
+
+    if (message instanceof MsgUndelegate) {
+      return {
+        staking: {
+          undelegate: {
+            amount: this.wrapCoin(message.params.amount),
+            validator: message.params.validator_address,
+          },
+        },
+      };
+    }
+
+    if (message instanceof MsgWithdrawDelegatorReward) {
+      return {
+        distribution: {
+          withdraw_delegator_reward: {
+            validator: message.params.validator_address,
+          },
+        },
+      };
+    }
+
+    if (message instanceof MsgSetWithdrawAddress) {
+      return {
+        distribution: {
+          set_withdraw_address: {
+            address: message.params.withdraw_address,
+          },
+        },
+      };
+    }
+
+    if (message instanceof MsgExecuteContract) {
+      return {
+        wasm: {
+          execute: {
+            contract_addr: message.contractAddress,
+            code_hash: message.codeHash,
+            funds: this.wrapCoins(message.sentFunds),
+            msg: Buffer.from(JSON.stringify(message.msg)).toString("base64"),
+          },
+        },
+      };
+    }
+
+    if (message instanceof MsgInstantiateContract) {
+      return {
+        wasm: {
+          instantiate: {
+            code_id: message.codeId,
+            code_hash: message.codeHash,
+            funds: this.wrapCoins(message.initFunds),
+            label: message.label,
+            msg: message.initMsg,
+          },
+        },
+      };
+    }
+
+    throw new Error(
+      `Unknown encode object: ` + JSON.stringify(message, null, 2),
+    );
+  }
+
+  protected wrapCoins(coins: { amount: string; denom: string }[]) {
+    return coins.map(this.wrapCoin.bind(this));
+  }
+
+  protected wrapCoin(coin: { amount: string; denom: string }) {
+    return {
+      denom: coin.denom,
+      amount: coin.amount.toString(),
+    };
   }
 
   public getSendMessages(_: {
@@ -60,25 +216,69 @@ export class SecretJsMessages extends AbstractMessages {
     throw new Error("getUpdateWalletMessage not implemented for SecretJS");
   }
 
-  public getProposeUpdateOwnerMessage(_: {
+  public getProposeUpdateOwnerMessage({
+    wallet,
+    newOwner,
+    userAccountAddress,
+    userAccountCodeHash,
+    nexthashSignedBySigners,
+  }: {
     wallet: MultisigWallet;
     newOwner: MultisigKey;
-    codeIds: CodeIds;
+    userAccountAddress: string;
+    userAccountCodeHash: string;
+    nexthashSignedBySigners: string[];
   }): Message {
-    notImplemented("getProposeUpdateOwnerMessage not implemented for SecretJS");
-    throw new Error(
-      "getProposeUpdateOwnerMessage not implemented for SecretJS",
-    );
+    const rawMessage = {
+      propose_update_owner: {
+        new_owner: newOwner.address,
+        signers: {
+          signers: this.getSigners(
+            newOwner.keys as unknown as Array<{
+              type: string;
+              payload: {
+                publicKey: PublicKey;
+                privateKey?: string;
+              };
+            }>,
+          ),
+        },
+        signatures: nexthashSignedBySigners,
+      },
+    };
+    return new MsgExecuteContract({
+      sender: wallet.owner.address,
+      contract_address: userAccountAddress,
+      code_hash: userAccountCodeHash,
+      msg: rawMessage,
+    });
   }
 
-  public getConfirmUpdateOwnerMessage(_: {
+  public getConfirmUpdateOwnerMessage({
+    wallet,
+    newOwner,
+    userAccountAddress,
+    userAccountCodeHash,
+    nexthashSignedBySigners,
+  }: {
     wallet: MultisigWallet;
     newOwner: MultisigKey;
+    userAccountAddress: string;
+    userAccountCodeHash: string;
+    nexthashSignedBySigners: string[];
   }): Message {
-    notImplemented("getConfirmUpdateOwnerMessage not implemented for SecretJS");
-    throw new Error(
-      "getConfirmUpdateOwnerMessage not implemented for SecretJS",
-    );
+    const _wallet = wallet;
+    const rawMessage = {
+      confirm_update_owner: {
+        signatures: nexthashSignedBySigners,
+      },
+    };
+    return new MsgExecuteContract({
+      sender: newOwner.address,
+      contract_address: userAccountAddress,
+      code_hash: userAccountCodeHash,
+      msg: rawMessage,
+    });
   }
 
   public getUpdateGatekeeperMessages(_: {
@@ -116,53 +316,96 @@ export class SecretJsMessages extends AbstractMessages {
     throw new Error("getWithdrawRewardsMessage not implemented for SecretJS");
   }
 
-  public getCreateWalletMessage(owner: MultisigKey): Message {
-    const zAuthKey = owner.getKeyOfType(KeyType.ZAuth);
-    const deviceKey = owner.getKeyOfType(KeyType.Device);
-    const phoneKey = owner.getUsableKeyOfType(KeyType.Phone);
-    invariant(
-      zAuthKey || deviceKey || phoneKey,
-      "Expected ZAuth or device key to be present",
-    );
+  protected getSigners(
+    multisigKey: Array<{
+      type: string;
+      payload: {
+        publicKey: PublicKey;
+        // TODO: remove
+        privateKey?: string;
+      };
+    }>,
+  ) {
+    console.warn("getting signers...");
+    const addressAndTypes: Array<{ address: string; ty: string }> =
+      multisigKey.map(
+        (key: {
+          type: string;
+          payload: {
+            publicKey: PublicKey;
+          };
+        }) => {
+          return {
+            address: this.sdk.transactions.getAddressOfPublicKey(
+              key.payload.publicKey,
+            ),
+            ty: key.type,
+            pubkeyBase64: key.payload.publicKey.value,
+          };
+        },
+      );
+    return addressAndTypes;
+  }
 
-    let address;
-    if (zAuthKey) {
-      address = this.sdk.transactions.getAddressOfPublicKey(zAuthKey.publicKey);
-    } else if (deviceKey) {
-      address = this.sdk.transactions.getAddressOfPublicKey(
-        deviceKey.publicKey,
-      );
-    } else if (phoneKey) {
-      invariant(
-        phoneKey.payload.privateKey,
-        "phone key does not have private key",
-      );
-      address = this.sdk.transactions.getAddressOfPublicKey(
-        phoneKey.payload.publicKey,
-      );
-    } else {
-      throw new Error("Expected ZAuth, phone, or device key to be present");
-    }
-
-    return new MsgExecuteContract({
-      sender: address,
+  // TODO fix types as they are forced here
+  public getCreateWalletMessage(...walletData: string[]): Message {
+    const [ownerAddress, pubkeyBase64, sender] = walletData;
+    const message = new MsgExecuteContract({
+      sender: sender ?? ownerAddress,
       contract_address: this.chain.accountCreator.address,
+      code_hash: this.chain.accountCreator.codeHash,
       msg: {
         new_account: {
-          owner: address,
+          owner: ownerAddress,
           signers: {
             signers: [
               {
-                address: address,
-                ty: zAuthKey ? "zauth" : "device",
+                address: ownerAddress,
+                ty: "creator",
+                pubkeyBase64,
               },
             ],
           },
           update_delay: 0,
         },
       },
-      code_hash: this.chain.accountCreator.codeHash,
     });
+    return message;
+  }
+
+  // TODO fix types as they are forced here
+  public getFirstUpdateWalletMessage(
+    newOwner: MultisigKey,
+    newOwnerAddress: string,
+    userAccountContractAddress: string,
+    evmUserContractAddress: string,
+    evmSigningAddress: string,
+    sender: string,
+  ): Message {
+    const message = new MsgExecuteContract({
+      sender: sender,
+      contract_address: userAccountContractAddress,
+      code_hash: this.chain.userAccount.codeHash,
+      msg: {
+        first_update_owner: {
+          first_owner: newOwnerAddress,
+          evm_contract_address: evmUserContractAddress,
+          evm_signing_address: evmSigningAddress,
+          signers: {
+            signers: this.getSigners(
+              newOwner.keys as unknown as Array<{
+                type: string;
+                payload: {
+                  publicKey: PublicKey;
+                  privateKey?: string;
+                };
+              }>,
+            ),
+          },
+        },
+      },
+    });
+    return message;
   }
 
   protected get chain() {

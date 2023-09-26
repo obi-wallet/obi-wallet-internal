@@ -2,7 +2,6 @@ import invariant from "tiny-invariant";
 
 import { Signer } from "./abstract";
 import { MultisigPublicKey, Secp256k1PublicKey } from "../keys";
-import { SignedTransaction } from "../transactions";
 
 export abstract class MultisigSigner<T = unknown> {
   protected signatures: Map<string, T> = new Map();
@@ -10,21 +9,29 @@ export abstract class MultisigSigner<T = unknown> {
   protected constructor(protected publicKey: MultisigPublicKey) {}
 
   protected abstract createSignature(signer: Signer): Promise<T>;
-  protected abstract unsafeCreateSignedTransaction(): SignedTransaction;
+  protected abstract unsafeCreateSignedTransactionOrMessage(): {
+    signed: Array<Uint8Array>;
+    broadcast: boolean;
+  };
 
-  public createSignedTransaction() {
+  public createSignedTransactionOrMessage(): {
+    signed: Array<Uint8Array>;
+    broadcast: boolean;
+  } {
     invariant(
       this.enoughSignatures,
       "Not enough signatures to create signed transaction",
     );
-    return this.unsafeCreateSignedTransaction();
+    return this.unsafeCreateSignedTransactionOrMessage();
   }
 
   public async addSigner(signer: Signer) {
+    console.log("adding signer with pubkey: " + signer.publicKey.value);
     this.signatures.set(
       signer.publicKey.value,
       await this.createSignature(signer),
     );
+    console.log("signatures set!: " + JSON.stringify(this.signatures));
   }
 
   public alreadySigned(publicKey: Secp256k1PublicKey) {

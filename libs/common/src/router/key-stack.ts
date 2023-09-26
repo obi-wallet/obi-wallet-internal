@@ -37,20 +37,23 @@ export function keyRouteToKeyType(route: KeyRoute) {
 
 export function keyTypeToKeyRoute(type: KeyType) {
   switch (type) {
+    case KeyType.Cloud:
+      return KeyRoute.CloudKey;
     case KeyType.Device:
       return KeyRoute.DeviceKey;
     case KeyType.Email:
       return KeyRoute.EmailKey;
+    case KeyType.EmailRecovery:
+      return OnboardingRoute.EmailRecovery;
+    case KeyType.Nfc:
+      return KeyRoute.NfcKey;
     case KeyType.Phone:
       return KeyRoute.PhoneKeyRequest;
     case KeyType.Social:
       return KeyRoute.SocialKey;
-    case KeyType.Nfc:
-      return KeyRoute.NfcKey;
-    case KeyType.Cloud:
-      return KeyRoute.CloudKey;
-    case KeyType.EmailRecovery:
-      return OnboardingRoute.EmailRecovery;
+    /// TODO: for now Unity uses device key screen
+    case KeyType.Unity:
+      return KeyRoute.DeviceKey;
     case KeyType.ZAuth:
       return KeyRoute.ZAuthKey;
   }

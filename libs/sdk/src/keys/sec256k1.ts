@@ -18,12 +18,15 @@ export interface Secp256k1KeyPair {
   privateKey: Sec256k1PrivateKey;
 }
 
-export function generateSec256k1KeyPair(): Secp256k1KeyPair {
-  const privateKeyBuffer = randomBytes(32);
-  const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer);
+export function generateSec256k1KeyPair(
+  base64Seed?: Uint8Array,
+): Secp256k1KeyPair {
+  // use base64Seed to create 32 random bytes
+  const privateKeyU8 = base64Seed ?? randomBytes(32);
+  const publicKeyU8 = secp256k1.publicKeyCreate(privateKeyU8);
 
-  const privateKey = Buffer.from(privateKeyBuffer).toString("base64");
-  const publicKey = Buffer.from(publicKeyBuffer).toString("base64");
+  const privateKey = Buffer.from(privateKeyU8).toString("base64");
+  const publicKey = Buffer.from(publicKeyU8).toString("base64");
 
   return {
     privateKey,

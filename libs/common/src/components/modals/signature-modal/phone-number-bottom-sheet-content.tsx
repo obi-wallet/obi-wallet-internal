@@ -1,4 +1,4 @@
-import { ComunicationType } from "@obi-wallet/sdk";
+import { CommunicationType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -20,7 +20,7 @@ export interface PhoneNumberBottomSheetContentProps {
   securityQuestion: string;
 
   onRequest(data: {
-    type: ComunicationType;
+    type: CommunicationType;
     securityAnswer: string;
   }): Promise<void>;
 
@@ -160,10 +160,9 @@ export const PhoneNumberBottomSheetContent =
               try {
                 // TODO: should be rechecked by Jose
                 // @ts-expect-error Jose
-                const res = await onRequest({ securityAnswer, voice: false });
+                const _res = onRequest({ securityAnswer, voice: false });
                 setSentMessage(true);
                 setMagicButtonDisabledDoubleclick(false);
-                console.log({ res });
               } catch (e) {
                 const error = e as Error;
                 setMagicButtonDisabledDoubleclick(false);

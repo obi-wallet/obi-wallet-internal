@@ -17,6 +17,16 @@ export const secretJsChains = {
     },
     currentCodeIds: {
       userAccount: 135,
+      userEntry: 1209,
+    },
+    // TODO: should get these from account creator directly?
+    userAccount: {
+      codeHash:
+        "c86782c2a7d9611ff428a05bed206c6b0f2aafcbc121cbe5a8648457b36d2da1",
+    },
+    userEntry: {
+      codeHash:
+        "143cca05044f43c8d4112b22eef6786809a3c9e69c28131179166f52df11c2f6",
     },
     urls: ["https://api.pulsar3.scrttestnet.com:443"],
     denom: "uscrt",
@@ -32,17 +42,27 @@ export const secretJsChains = {
     label: "Secret Network",
     prefix: "secret",
     accountCreator: {
-      address: "secret15n33l0gyyrdl787hdem6hxlz6wuknxd739r825",
+      address: "secret1q9y3lkp7tf5lp58ay8rx0uq0cjdcszh7jwcrfq",
       codeHash:
-        "66147ad6e8febf45f6678157e11e32fe0c3f2bd353988e91059f1888260fdde0",
+        "41090bebea0925e73222a6b762d09307c5b3d3102454f2234fc5d4ea501119d2",
     },
     secretSigner: {
-      address: "secret1j8r9v0j3fyafrshraxl537k6jl6azr3m9eyyhx",
+      address: "secret1nc35zkv02ktsas3cw4slg39ulleurr2feum06g",
       codeHash:
-        "46b4b432a8707d239ab7345896140271a92c8542a5a20c6361ec8ce9caa47ad2",
+        "e26b01b8b1b4b2f6ae6058c9ca8321b63ec92b40c3c63b8e685b52eaf6a4cef2",
     },
     currentCodeIds: {
-      userAccount: 135,
+      userAccount: 1267,
+      userEntry: 1268,
+    },
+    // TODO: should get these from account creator directly?
+    userAccount: {
+      codeHash:
+        "84500d2a82ac68b7f346b5b6bbf86876be247130882e15b12b1a2689072ed1e1",
+    },
+    userEntry: {
+      codeHash:
+        "2d1c2b0395289f21b4f00bfd83d9e9cea77277e578ad2591b89064998424122d",
     },
     urls: ["https://scrt-api.dalnim.finance", "https://lcd.secret.express/"],
     denom: "uscrt",

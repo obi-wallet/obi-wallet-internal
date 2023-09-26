@@ -1,11 +1,11 @@
 import { token, tokenGivenBalances } from "../src";
 
 describe("token", () => {
-  const schema = token("phoenix-1");
+  const schema = token("secret-4");
 
   test("Fail on non-positive input", () => {
     expect(() => {
-      schema.parse({ id: "uluna", amount: "0" });
+      schema.parse({ id: "uscrt", amount: "0" });
     }).toThrowErrorMatchingInlineSnapshot(`
       "[
         {
@@ -18,26 +18,26 @@ describe("token", () => {
   });
 
   test("Decimal separators", () => {
-    expect(schema.parse({ id: "uluna", amount: "1.0" })).toEqual({
-      id: "uluna",
+    expect(schema.parse({ id: "uscrt", amount: "1.0" })).toEqual({
+      id: "uscrt",
       rawAmount: "1000000",
     });
-    expect(schema.parse({ id: "uluna", amount: "1,0" })).toEqual({
-      id: "uluna",
+    expect(schema.parse({ id: "uscrt", amount: "1,0" })).toEqual({
+      id: "uscrt",
       rawAmount: "1000000",
     });
   });
 
   test("Handle whole precision", () => {
-    expect(schema.parse({ id: "uluna", amount: "1.000001" })).toEqual({
-      id: "uluna",
+    expect(schema.parse({ id: "uscrt", amount: "1.000001" })).toEqual({
+      id: "uscrt",
       rawAmount: "1000001",
     });
   });
 
   test("Fail on precision overflow", () => {
     expect(() => {
-      schema.parse({ id: "uluna", amount: "1.0000001" });
+      schema.parse({ id: "uscrt", amount: "1.0000001" });
     }).toThrowErrorMatchingInlineSnapshot(`
       "[
         {
@@ -51,7 +51,7 @@ describe("token", () => {
 
   test("Invalid input", () => {
     expect(() => {
-      schema.parse({ id: "uluna", amount: "1.0000001" });
+      schema.parse({ id: "uscrt", amount: "1.0000001" });
     }).toThrowErrorMatchingInlineSnapshot(`
       "[
         {
@@ -66,25 +66,25 @@ describe("token", () => {
 
 describe("tokenGivenBalances", () => {
   const schema = tokenGivenBalances({
-    chainId: "phoenix-1",
+    chainId: "secret-4",
     balances: [
       {
-        id: "uluna",
+        id: "uscrt",
         rawAmount: "1",
       },
     ],
   });
 
   test("Sufficient balance", () => {
-    expect(schema.parse({ id: "uluna", amount: "0.000001" })).toEqual({
-      id: "uluna",
+    expect(schema.parse({ id: "uscrt", amount: "0.000001" })).toEqual({
+      id: "uscrt",
       rawAmount: "1",
     });
   });
 
   test("Insufficient balance", () => {
     expect(() => {
-      schema.parse({ id: "uluna", amount: "0.000002" });
+      schema.parse({ id: "uscrt", amount: "0.000002" });
     }).toThrowErrorMatchingInlineSnapshot(`
       "[
         {
@@ -98,7 +98,7 @@ describe("tokenGivenBalances", () => {
 
   test("Insufficient balance", () => {
     expect(() => {
-      schema.parse({ id: "ujuno", amount: "0.000002" });
+      schema.parse({ id: "uscrt", amount: "0.000002" });
     }).toThrowErrorMatchingInlineSnapshot(`
       "[
         {

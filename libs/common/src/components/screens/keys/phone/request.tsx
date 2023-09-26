@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ComunicationType } from "@obi-wallet/sdk";
+import { CommunicationType } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { Controller, useForm } from "react-hook-form";
@@ -266,10 +266,10 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                     try {
                       const twilioClient = getTwilioClient({ demoMode, env });
                       // TODO: factor back out this workaround
-                      const res = await twilioClient.requestPublicKeyMagicCode({
+                      const _res = twilioClient.requestPublicKeyMagicCode({
                         ...data,
                         chainId,
-                        type: ComunicationType.SMS,
+                        type: CommunicationType.SMS,
                       });
                       /*
                       const res = await twilioClient.requestPublicKeyMagicCode({
@@ -278,7 +278,6 @@ export const PhoneKeyRequest = observer<PhoneKeyRequestProps>(
                         voice: false,
                       });
                       */
-                      console.log({ res });
                       onSubmit(data);
                     } catch (e) {
                       const error = e as Error;

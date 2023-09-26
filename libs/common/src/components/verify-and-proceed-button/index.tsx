@@ -7,18 +7,20 @@ import { AsyncButton } from "../buttons";
 export interface VerifyAndProceedButtonProps {
   onPress: () => Promise<void>;
   disabled?: boolean;
+  labelOverride?: string;
 }
 
 export const VerifyAndProceedButton = observer(function VerifyAndProceedButton({
   onPress,
   disabled,
+  labelOverride,
 }: VerifyAndProceedButtonProps) {
   const intl = useIntl();
   return (
     <AsyncButton
       label={intl.formatMessage({
-        id: "onboarding3.verifyandproceed",
-        defaultMessage: "Verify & Proceed",
+        id: labelOverride ? labelOverride : "onboarding3.verifyandproceed",
+        defaultMessage: labelOverride ? labelOverride : "Verify & Proceed",
       })}
       flavor="primary"
       onPress={async () => {

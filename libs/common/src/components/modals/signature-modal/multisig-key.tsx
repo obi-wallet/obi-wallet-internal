@@ -4,7 +4,7 @@ import {
   useSignAndBroadcastTransaction,
 } from "@obi-wallet/headless-ui";
 import {
-  ComunicationType,
+  CommunicationType,
   KeySubclassTypeMapping,
   KeyType,
   Signer,
@@ -27,6 +27,8 @@ export type SignatureModalMultisigKeyProps = ReturnType<
   typeof useSignAndBroadcastTransaction
 > & {
   type: SignAndBroadcastTransactionType.MultisigKey;
+  hint?: string;
+  amount?: string;
 };
 
 export const SignatureModalMultisigKey =
@@ -37,6 +39,8 @@ export const SignatureModalMultisigKey =
     broadcast,
     multisigSigner,
     multisigKey,
+    hint,
+    amount,
     safeSpendLimitExceeded,
   }) {
     const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
@@ -117,7 +121,7 @@ export const SignatureModalMultisigKey =
             securityQuestion={phoneKeyPayload.key.payload.securityQuestion}
             onRequest={async (data: {
               securityAnswer: string;
-              type: ComunicationType;
+              type: CommunicationType;
             }) => {
               setBottomSheetOpen(true);
               await phoneKeyPayload.signer.requestSignature(data);
@@ -142,6 +146,8 @@ export const SignatureModalMultisigKey =
         numberOfUsableKeys={usableSigners.data.length}
         innerMessages={messages}
         chainId={multisigKey.chainId}
+        hint={hint}
+        amount={amount}
         data={keys}
         safeSpendLimitExceeded={safeSpendLimitExceeded}
         onCancel={cancel}

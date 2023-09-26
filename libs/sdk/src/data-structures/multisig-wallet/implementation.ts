@@ -1,4 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Wallet } from "ethers";
 import * as R from "ramda";
 
@@ -17,6 +18,7 @@ import { Secp256k1PrivateKeySigner } from "../../signers";
 import { Message } from "../../transactions";
 import { FlexAccount } from "../flex-account";
 import { GatekeeperConfig } from "../gatekeeper-config";
+import { KeyType } from "../key/types";
 import { AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
 import { SinglesigWallet } from "../singlesig-wallet";
@@ -57,7 +59,7 @@ export class MultisigWallet {
       type: this._isDemo ? "multisig-demo" : "multisig",
       data: {
         chain: this._chainId,
-        owner: this._owner.toJSON(),
+        owner: this._owner.toJSON()!,
         proxyAddress: {
           v: 1,
           address: this._proxyAddress,
@@ -65,6 +67,8 @@ export class MultisigWallet {
         gatekeeperConfig: this._gatekeeperConfig.toJSON(),
         singlesigWallets: this._singlesigWallets.map((s) => s.toJSON()),
         currentAccount: this._currentAccount,
+        evmSigningAddress: this._evmSigningAddress,
+        evmUserContractAddress: this._evmUserContractAddress,
       },
     };
   }
@@ -136,8 +140,38 @@ export class MultisigWallet {
     return await this.multisigWalletSdk.updateWallet();
   }
 
-  public async updateOwner(newOwner: MultisigKey) {
-    const response = await this.multisigWalletSdk.updateOwner(newOwner);
+  public async updateOwner(
+    newOwner: MultisigKey,
+    evmSigningAddress: string,
+    evmUserContractAddress: string,
+  ) {
+    // remove email recovery keys from new owner: they are 1 time
+    const indexToRemove = newOwner.keys.findIndex(
+      (key) => key.type === KeyType.EmailRecovery,
+    );
+    if (indexToRemove !== -1) {
+      newOwner.keys.splice(indexToRemove, 1);
+    }
+    // TODO: enforce a replacement
+    const response = await this.multisigWalletSdk.updateOwner(
+      newOwner,
+      new Secp256k1PrivateKeySigner(
+        this._owner.getUsableKeyOfType(KeyType.Device)?.payload.privateKey ??
+          this._owner.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey ??
+          this._owner.getUsableKeyOfType(KeyType.EmailRecovery)?.payload
+            .privateKey ??
+          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+          this._owner.getUsableKeyOfType(KeyType.Phone)?.payload.privateKey!,
+      ),
+      new Secp256k1PrivateKeySigner(
+        newOwner.getUsableKeyOfType(KeyType.Device)?.payload.privateKey ??
+          newOwner.getUsableKeyOfType(KeyType.Unity)?.payload.privateKey ??
+          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+          newOwner.getUsableKeyOfType(KeyType.Phone)?.payload.privateKey!,
+      ),
+      evmSigningAddress,
+      evmUserContractAddress,
+    );
     if (response.approved && response.payload.success) {
       this.setOwner(newOwner);
     }
@@ -286,7 +320,7 @@ export class MultisigWallet {
       });
       const wrappedMessages = this.messages.wrapMessages({
         messages,
-        contract: this.proxyAddress,
+        userEntryContract: this.proxyAddress,
         sender: flexAccount.address,
       });
       const signedTransaction =

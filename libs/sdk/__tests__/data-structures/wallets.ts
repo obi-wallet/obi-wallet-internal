@@ -56,7 +56,7 @@ test("create wallet", async () => {
 
   const wallets = Wallets.create();
   const userInteractions = UserInteractions.create();
-  const multisigKey = MultisigKey.create("phoenix-1");
+  const multisigKey = MultisigKey.create(undefined, "secret-4");
 
   const deviceKeyPair = generateSec256k1KeyPair();
   multisigKey.setDeviceKey(deviceKeyPair);
@@ -114,10 +114,11 @@ test("create wallet", async () => {
       rawResult: null,
       transactionHash: "foo",
     },
+    signature: undefined,
   });
 
   const response = await createWalletPromise;
-  expect(response.approved && response.payload.success).toEqual(true);
+  expect(response!.homeAccountAddress).toBeTruthy;
   expect(wallets.currentWallet).toBeDefined();
   expect(wallets.currentWallet?.address).toEqual("proxy");
 });

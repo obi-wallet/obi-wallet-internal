@@ -1,4 +1,4 @@
-import { Alert, Lookup } from "@obi-wallet/common";
+import { Alert, Lookup, RecoverFrom } from "@obi-wallet/common";
 import type { Meta, StoryObj } from "@storybook/react";
 
 function mockAction(message: string) {
@@ -20,11 +20,13 @@ export const Primary: Story = {
   render: () => {
     return (
       <Lookup
-        chainId="phoenix-1"
+        chainId="secret-4"
         publicKey="AlLObpH8f6ea7ogc32Jpc2aLcZi3/O0K8zXw7OkZCA98"
         onSelect={async () => {
           mockAction("onSelect");
         }}
+        draftId=""
+        recoverFrom={RecoverFrom.Phone}
         onCancel={mockAction("onCancel")}
       />
     );

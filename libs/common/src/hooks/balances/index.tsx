@@ -158,7 +158,7 @@ export function enrichToken({
     }
 
     switch (enrichedToken.id) {
-      case "ujuno":
+      case "uscrt":
         return require("./assets/juno.png");
       case "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034":
         return require("./assets/usdc.png");

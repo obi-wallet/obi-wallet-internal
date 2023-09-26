@@ -21,7 +21,7 @@ import { WalletsStore } from "../wallets";
 
 export interface EthereumAccount {
   publicKey: Secp256k1PublicKey;
-  evmSignerAddress: string;
+  evmSigningAddress: string;
   evmUserContractAddress: string;
 }
 

@@ -1,5 +1,11 @@
 import { useTheme } from "@emotion/react";
-import { MultisigKey, Sdk, Secp256k1KeyPair } from "@obi-wallet/sdk";
+import {
+  KeyType,
+  MultisigKey,
+  Sdk,
+  Secp256k1KeyPair,
+  secretJsChains,
+} from "@obi-wallet/sdk";
 import { getOrCreateDeviceKeyPair } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,6 +14,7 @@ import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Platform, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { pubkeyToAddress, SecretNetworkClient } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { useStore } from "../../../../contexts";
@@ -16,8 +23,8 @@ import {
   KeyFlow,
   KeyRoute,
   KeyStackParamList,
-  keyTypeToKeyRoute,
   OnboardingRoute,
+  RecoverFrom,
   useRootNavigation,
 } from "../../../../router";
 import { AsyncButton } from "../../../buttons";
@@ -25,6 +32,7 @@ import { ObiFaceScannerIcon } from "../../../icons";
 import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
 import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { Text } from "../../../typography";
+import { SerializedProxyWallet } from "../../lookup-proxy-wallets/api-types";
 
 export type DeviceKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
@@ -33,37 +41,43 @@ export type DeviceKeyScreenProps = NativeStackScreenProps<
 
 export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
   function DeviceKeyScreen({ route }) {
-    const navigation = useRootNavigation();
-    const { configStore, draftsStore, walletsStore } = useStore();
     const { params } = route;
 
     return (
       <DeviceKey
         {...params}
-        onSubmit={async (done: boolean, deviceKeypair: Secp256k1KeyPair) => {
-          if (!done) {
-            if (params.flow !== KeyFlow.CreateWallet) {
-              navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
-              return;
-            }
-            const requiredKeys = configStore.config.keys.required;
-            const requiredRoutes = requiredKeys.map(keyTypeToKeyRoute);
-            const index = requiredRoutes.indexOf(KeyRoute.DeviceKey);
-            if (index === -1 || index + 1 === requiredRoutes.length) {
-              navigation.navigate(OnboardingRoute.CreateWallet, params);
-              return;
-            }
-            navigation.navigate(requiredRoutes[index + 1], params);
+        onSubmit={async (_userSaysDeviceIsNew, _devicePubKey) => {
+          /*
+          // no matter what, we try to recover if match is found
+          console.log("In device key screen, flow is " + params.flow);
+          const proxyWallets = await getProxyWalletsCloudflare(devicePubKey);
+          const parsedProxyWallets = proxyWallets as A.SerializedProxyWallet[];
+          if (
+            parsedProxyWallets.length !== 1 ||
+            parseInt(parsedProxyWallets[0].owner.threshold) > 1
+          ) {
+            navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
           } else {
             const draft = draftsStore.get<MultisigKey>({
               id: params.draftId,
             });
-            await walletsStore.recoverLocalWallet({
-              multisigKey: draft.value,
-              demoMode: params.demoMode,
-              evmKeypair: deviceKeypair,
-            });
+            activateRecoveredWalletAndIsUpdateRequired(
+              draft,
+              undefined,
+              store,
+              parsedProxyWallets[0],
+            );
           }
+          // if no hits, but user is trying to log in, we must recover
+          // with a different key type
+          if (params.flow === KeyFlow.RecoverWallet) {
+            navigation.navigate(OnboardingRoute.SelectRecoveryMethod, params);
+            return;
+          } else {
+            navigation.navigate(OnboardingRoute.CreateWallet, params);
+            return;
+          }
+          */
         }}
       />
     );
@@ -73,52 +87,198 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
 export interface DeviceKeyProps {
   draftId: string;
   demoMode: boolean;
-
-  onSubmit(done: boolean, devicePubkey: Secp256k1KeyPair | undefined): void;
+  onSubmit(
+    userSaysDeviceIsNew: boolean,
+    deviceOrUnityPubkeyBase64: string,
+  ): void;
+  flow: KeyFlow;
 }
 export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   draftId,
   demoMode,
   onSubmit,
+  flow,
 }) {
-  const { draftsStore } = useStore();
+  const { draftsStore, unityStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
   const queryClient = useQueryClient();
   const [scannedBiometrics, setScannedBiometrics] = useState(false);
   const intl = useIntl();
   const theme = useTheme();
+  const navigation = useRootNavigation();
 
-  async function scanBiometrics(
-    create: boolean,
-  ): Promise<[boolean, boolean, Secp256k1KeyPair | undefined]> {
+  async function fundKeyIfZero(pubkey: string): Promise<void> {
+    const address = pubkeyToAddress(Buffer.from(pubkey, "base64"), "secret");
+    console.log("fundKeyIfZero() for address: " + address);
+    const stockClient = new SecretNetworkClient({
+      chainId: "secret-4",
+      url: secretJsChains["secret-4"].urls[0],
+    });
+    let balance = "";
     try {
-      // setting webauthn to true here for now
+      balance =
+        (
+          await stockClient.query.bank.balance({
+            address,
+            denom: "uscrt",
+          })
+        ).balance?.amount || "0";
+    } catch (e) {
+      balance = "0";
+    }
+    try {
+      if (balance === "0") {
+        const _response = fetch("/api/lend", {
+          method: "POST",
+          body: JSON.stringify({
+            homeChainId: "secret-4",
+            address,
+          }),
+        });
+      }
+    } catch (e) {
+      console.error("Failed to fund webauthn signer", e);
+    }
+  }
+
+  async function scanBiometricsOrWebAuthN(
+    create: boolean,
+    existingUserSaysDeviceIsNew?: boolean,
+    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
+  ): Promise<{
+    wallets?: SerializedProxyWallet[] | undefined;
+    deviceKeypair?: Secp256k1KeyPair | undefined;
+    success?: boolean | undefined;
+    newUser?: boolean | undefined;
+  }> {
+    try {
+      console.log("getting device key...");
       const [keyPair, newUser] = await getOrCreateDeviceKeyPair(
-        // true,
         create,
         demoMode,
       );
-      draft.value.setDeviceKey(keyPair);
-      void queryClient.prefetchQuery(
-        Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
-          keyPair,
-        ),
+      console.log("setting device key...");
+      const proxyWallets = await draft.value.setDeviceKey(
+        keyPair,
+        existingUserSaysDeviceIsNew,
+        recoverFlow, //avoids creating a new account even if no proxy wallets found
       );
+      if (proxyWallets !== undefined) {
+        return {
+          wallets: proxyWallets,
+          deviceKeypair: keyPair,
+        };
+      }
+      console.log("device key set..");
+      void queryClient.prefetchQuery(
+        Sdk.chainId(
+          draft.value.chainId || "secret-4",
+        ).transactions.prepareKeyPairQuery(keyPair),
+      );
+      console.log("returning...");
       setScannedBiometrics(true);
-      return [true, newUser, keyPair];
+      return {
+        success: true,
+        newUser,
+        deviceKeypair: keyPair,
+      };
     } catch (e) {
       setScannedBiometrics(false);
       const error = e as Error;
 
       if (error.message === "code: 13, msg: Cancel")
-        return [false, false, undefined];
+        return {
+          success: false,
+          newUser: false,
+          deviceKeypair: undefined,
+        };
       console.error(error);
       Alert.alert(
         intl.formatMessage({ id: "general.error" }) + " ScanMyBiometrics",
         error.message,
       );
-      return [false, false, undefined];
+      return {
+        success: false,
+        newUser: false,
+        deviceKeypair: undefined,
+      };
     }
+  }
+
+  async function submitWithRequiredKey(
+    deviceIsNew: boolean,
+    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
+  ) {
+    let requiredPubkey;
+    if (unityStore.getDeviceId) {
+      console.log("unity device id obtained");
+      const proxyWallets = await draft.value.setUnityKey(
+        unityStore.getDeviceId,
+        deviceIsNew,
+        recoverFlow,
+      );
+      if (proxyWallets !== undefined) {
+        navigation.navigate(OnboardingRoute.LookupProxyWallets, {
+          flow: KeyFlow.RecoverWallet,
+          draftId,
+          walletsFound: proxyWallets,
+          demoMode: false,
+          recoverFrom: RecoverFrom.Unity,
+        });
+      }
+      requiredPubkey = draft.value.getUsableKeyOfType(KeyType.Unity)?.publicKey
+        .value;
+      invariant(requiredPubkey, "could not get unity pubkey");
+      onSubmit(deviceIsNew, requiredPubkey);
+    } else if (scannedBiometrics) {
+      requiredPubkey = draft.value.getUsableKeyOfType(KeyType.Device)?.publicKey
+        .value;
+      invariant(requiredPubkey, "could not get device pubkey");
+      onSubmit(deviceIsNew, requiredPubkey);
+    } else {
+      const res = await scanBiometricsOrWebAuthN(false, deviceIsNew);
+      const { success, newUser, deviceKeypair, wallets } = res;
+      const _newUser = newUser;
+      if (wallets) {
+        invariant(deviceKeypair, "could not get device keypair");
+        await draft.value.setDeviceKey(
+          {
+            publicKey: deviceKeypair?.publicKey,
+            privateKey: deviceKeypair?.privateKey,
+          },
+          false,
+          true,
+        );
+        navigation.navigate(OnboardingRoute.LookupProxyWallets, {
+          flow: KeyFlow.RecoverWallet,
+          draftId,
+          walletsFound: wallets,
+          demoMode: false,
+          recoverFrom: RecoverFrom.Device,
+        });
+      }
+      requiredPubkey = deviceKeypair?.publicKey.value;
+      invariant(requiredPubkey, "could not get device pubkey");
+      console.log("Success is: ", success);
+      if (success && Platform.OS !== "ios") {
+        onSubmit(deviceIsNew, requiredPubkey);
+      }
+      if (!wallets && recoverFlow) {
+        navigation.navigate(OnboardingRoute.SelectRecoveryMethod, {
+          flow: KeyFlow.RecoverWallet,
+          draftId,
+          demoMode: false,
+        });
+      } else if (!wallets) {
+        draft.value.createMagicAccount();
+        navigation.navigate(OnboardingRoute.CreateWallet, {
+          flow: KeyFlow.CreateWallet,
+          draftId,
+          demoMode: false,
+        });
+      }
+    }
+    fundKeyIfZero(requiredPubkey);
   }
 
   return (
@@ -195,10 +355,29 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 marginTop: 79,
               }}
             >
-              <FormattedMessage
-                id="onboarding4.authyourkeys"
-                defaultMessage="Authenticate Your Keys"
-              />
+              {unityStore.getDeviceId ? (
+                flow == KeyFlow.CreateWallet ? (
+                  <FormattedMessage
+                    id="onboarding4.authyourkeys.unity"
+                    defaultMessage="Create a Gaming Device Key"
+                  />
+                ) : (
+                  <FormattedMessage
+                    id="onboarding4.authyourkeys.login.unity"
+                    defaultMessage="Use This Game Device Key"
+                  />
+                )
+              ) : flow == KeyFlow.CreateWallet ? (
+                <FormattedMessage
+                  id="onboarding4.authyourkeys"
+                  defaultMessage="Create a Device Key"
+                />
+              ) : (
+                <FormattedMessage
+                  id="onboarding4.authyourkeys.login"
+                  defaultMessage="Use this Device Key"
+                />
+              )}
             </Text>
             <Text
               style={{
@@ -208,55 +387,82 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 ...theme.textStyles.light,
               }}
             >
-              <FormattedMessage
-                id="onboarding4.authyourkeys.subtext"
-                defaultMessage="With Obi, your Device, iCloud, and phone number work as a multi-factor authenticator."
-              />
+              {unityStore.getDeviceId ? (
+                <FormattedMessage
+                  id="onboarding4.authyourkeys.subtext.unity"
+                  defaultMessage="With Obi, your Device, phone number, cloud, email, and more combine into a multi-factor authenticator."
+                />
+              ) : (
+                <FormattedMessage
+                  id="onboarding4.authyourkeys.subtext"
+                  defaultMessage="With Obi, your Device, phone number, cloud, email, and more combine into a multi-factor authenticator."
+                />
+              )}
+            </Text>
+            <Text
+              style={{
+                color: "white",
+                fontSize: isSmallScreenNumber(12, 14),
+                marginTop: 10,
+                ...theme.textStyles.light,
+              }}
+            >
+              {unityStore.getDeviceId ? (
+                <FormattedMessage
+                  id="onboarding4.authyourkeys.explain.unity"
+                  defaultMessage="Unity games on this device can provide a secure key, even if you reinstall a game. The games cannot use the key on their own."
+                />
+              ) : (
+                <FormattedMessage
+                  id="onboarding4.authyourkeys.explain"
+                  defaultMessage="Your browser will display a WebAuthN request to use your Windows Hello, Touch ID, or other authentication method. Keys cannot leave your device."
+                />
+              )}
             </Text>
           </View>
           <View
             style={{ flex: 1, justifyContent: "flex-end", paddingBottom: 20 }}
           >
-            <AsyncButton
-              label={intl.formatMessage({
-                id: "onboarding4.biometrics.button",
-              })}
-              flavor="primary"
-              onPress={async () => {
-                if (scannedBiometrics) {
-                  onSubmit(false, undefined);
-                } else {
-                  const [success, newUser, deviceKeypair] =
-                    await scanBiometrics(true);
-                  invariant(deviceKeypair, "could not get device keypair");
-                  console.log("Success is: ", success);
-                  if (success && Platform.OS !== "ios") {
-                    onSubmit(!newUser, deviceKeypair);
-                  }
-                }
-              }}
-              autoPress={Platform.OS === "ios"}
-            />
-            <AsyncButton
-              label={intl.formatMessage({
-                id: "onboarding4.ihaveadevicekey.button",
-              })}
-              flavor="primary"
-              onPress={async () => {
-                if (scannedBiometrics) {
-                  onSubmit(false, undefined);
-                } else {
-                  const [success, newUser, deviceKeypair] =
-                    await scanBiometrics(false);
-                  invariant(deviceKeypair, "could not get device keypair");
-                  console.log("Success is: ", success);
-                  if (success && Platform.OS !== "ios") {
-                    onSubmit(!newUser, deviceKeypair);
-                  }
-                }
-              }}
-              autoPress={Platform.OS === "ios"}
-            />
+            {flow == KeyFlow.CreateWallet ? (
+              <AsyncButton
+                label={intl.formatMessage({
+                  id: unityStore.getDeviceId
+                    ? "onboarding4.biometrics.unitybutton"
+                    : "onboarding4.biometrics.button",
+                })}
+                flavor="primary"
+                onPress={async () => {
+                  submitWithRequiredKey(true, false);
+                }}
+                autoPress={Platform.OS === "ios"}
+              />
+            ) : (
+              // not CreateWallet flow
+              <>
+                <AsyncButton
+                  label={intl.formatMessage({
+                    id: unityStore.getDeviceId
+                      ? "onboarding4.ihaveadevicekey.button.unity"
+                      : "onboarding4.ihaveadevicekey.button",
+                  })}
+                  flavor="primary"
+                  onPress={async () => {
+                    submitWithRequiredKey(false, true);
+                  }}
+                  autoPress={Platform.OS === "ios"}
+                />
+                <AsyncButton
+                  label={intl.formatMessage({
+                    id: "onboarding4.newdevice.button",
+                  })}
+                  flavor="primary"
+                  onPress={async () => {
+                    submitWithRequiredKey(true, true);
+                  }}
+                  autoPress={Platform.OS === "ios"}
+                />
+              </>
+            )}
           </View>
         </KeyboardAwareScrollView>
       </SafeAreaView>

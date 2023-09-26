@@ -1,4 +1,5 @@
 import {
+  BroadcastTransactionResult,
   SignAndBroadcastTransactionUserInteraction,
   TargetChain,
   // Token,
@@ -121,23 +122,25 @@ export const SignatureModalEthereumDemo =
             rawResult: JSON.stringify(event),
           };
         },
-        onSuccess(payload) {
+        onSuccess(payload: BroadcastTransactionResult) {
           if (!payload.success) {
             console.log(payload);
           }
           interaction.resolve({
             approved: true,
-            payload,
+            payload: payload,
+            signature: undefined,
           });
         },
-        onError(error) {
+        onError(_error) {
           interaction.resolve({
-            approved: true,
-            payload: {
-              success: false,
-              transactionHash: "",
-              rawResult: error,
-            },
+            approved: false,
+            // payload: {
+            //   success: false,
+            //   transactionHash: "",
+            //   rawResult: error,
+            // },
+            signature: undefined,
           });
         },
       });

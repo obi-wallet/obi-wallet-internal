@@ -14,12 +14,14 @@ describe("ObservableMultisigWallet", () => {
   const fixture: Serialized<typeof MultisigWallet> = {
     type: "multisig",
     data: {
-      chain: "phoenix-1",
+      chain: "secret-4",
       gatekeeperConfig: createGatekeeperConfig().toJSON(),
-      owner: MultisigKey.create("phoenix-1").toJSON(),
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      owner: MultisigKey.create(undefined, "secret-4").toJSON(),
       proxyAddress: {
         v: 1,
-        address: "cosmos1",
+        address: "secret1",
       },
       singlesigWallets: [],
       currentAccount: null,

@@ -1,6 +1,7 @@
 import { MultisigWallet, Serialized } from "@obi-wallet/sdk";
 
 import { KeyFlow } from "./key-stack";
+import { SerializedProxyWallet } from "../components/screens/lookup-proxy-wallets/api-types";
 
 export enum OnboardingRoute {
   Welcome = "Welcome",
@@ -12,8 +13,10 @@ export enum OnboardingRoute {
 }
 
 export enum RecoverFrom {
+  Device = "Device",
   Email = "Email",
   Phone = "Phone",
+  Unity = "Unity",
 }
 
 interface CommonOnboardingParams {
@@ -32,6 +35,7 @@ export interface OnboardingStackParamList
   };
   [OnboardingRoute.LookupProxyWallets]: CommonOnboardingParams & {
     recoverFrom: RecoverFrom;
+    walletsFound: SerializedProxyWallet[];
   };
   [OnboardingRoute.EmailRecovery]: CommonOnboardingParams;
 }

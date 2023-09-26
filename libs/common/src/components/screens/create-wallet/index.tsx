@@ -1,16 +1,12 @@
 import { useTheme } from "@emotion/react";
-import {
-  KeyType,
-  MultisigKey,
-  getOrCreateDeviceKeyPair,
-} from "@obi-wallet/sdk";
+import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
 import { View } from "react-native";
-import invariant from "tiny-invariant";
+import { Modal } from "react-native";
 
 import { useStore } from "../../../contexts";
-import { Alert } from "../../../helpers";
 import {
   KeyFlow,
   KeyRoute,
@@ -19,7 +15,9 @@ import {
   useRootNavigation,
 } from "../../../router";
 import { Button } from "../../buttons";
+import { SpinnerIcon } from "../../icons/spinner-icon";
 import { MultisigSettings } from "../../multisig-settings";
+import { Text } from "../../typography";
 
 export type CreateWalletScreenProps = NativeStackScreenProps<
   OnboardingStackParamList,
@@ -31,8 +29,9 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
     const navigation = useRootNavigation();
     const theme = useTheme();
     const { params } = route;
-
+    const [loading, setLoading] = useState(false);
     const { draftsStore, walletsStore } = useStore();
+
     const draft = draftsStore.get<MultisigKey>({
       id: params.draftId,
     });
@@ -40,23 +39,34 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
     return (
       <CreateWallet
         {...params}
+        loading={loading}
         onSubmit={async () => {
-          const response = await walletsStore.createWallet({
-            multisigKey: draft.value,
-            demoMode: params.demoMode,
-          });
-          if (!response.approved) return;
-          if (!response.payload.success) {
-            console.log(response.payload.originalPayload);
-            Alert.alert("Something went wrong", response.payload.description);
-            return;
-          }
-          // TODO: migrate to key management; currently derived from device key
-          const [deviceKey, _] = await getOrCreateDeviceKeyPair(true, false);
-          invariant(
-            deviceKey?.privateKey,
-            "Wallet must have a device public key",
+          // console.log("draft value is " + JSON.stringify(draft.value));
+          setLoading(true);
+          console.log(
+            !draft.value.setupDetails?.evmUserContractAddress,
+            "while?",
           );
+          while (!draft.value.setupDetails?.evmUserContractAddress) {
+            await new Promise((resolve) => {
+              setTimeout(resolve, 1_000);
+            });
+          }
+          console.log("go ahead");
+          let response;
+          try {
+            response = await walletsStore.createWallet({
+              multisigKey: draft.value,
+              demoMode: params.demoMode,
+            });
+          } catch (e) {
+            console.log("Retrying after error: " + JSON.stringify(e));
+            response = await walletsStore.createWallet({
+              multisigKey: draft.value,
+              demoMode: params.demoMode,
+            });
+          }
+          console.log("wallet received: " + JSON.stringify(response));
 
           let wallet;
           if (theme.loginModal) {
@@ -65,9 +75,10 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
               console.log("no wallet");
               return;
             } else {
-              wallet.setEvmSigningAddress(deviceKey?.privateKey);
+              //wallet.setEvmSigningAddress(deviceKey?.privateKey);
             }
           }
+          setLoading(false);
         }}
         onAddZAuth={() => {
           navigation.navigate(KeyRoute.ZAuthKey, {
@@ -112,7 +123,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
 
 export interface CreateWalletProps {
   draftId: string;
-
+  loading: boolean;
   onSubmit(): void;
   onAddZAuth(): void;
   onAddPhone(): void;
@@ -131,6 +142,7 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   onAddSocial,
   onAddCloud,
   onAddEmail,
+  loading,
 }) {
   const { draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
@@ -141,7 +153,8 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
   const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
   const hasEmailKey = draft.value.hasKeyOfType(KeyType.Email);
-
+  const theme = useTheme();
+  console.log(draft.value);
   return (
     <MultisigSettings
       draftId={draftId}
@@ -216,6 +229,35 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
             },
       }}
     >
+      <Modal
+        transparent
+        visible={loading && !draft.value.evmUserContractAddress}
+      >
+        <View
+          style={{
+            width: 375,
+            height: 750,
+
+            justifyContent: "center",
+            alignItems: "center",
+            position: "relative",
+          }}
+        >
+          <View
+            style={{
+              position: "absolute",
+              backgroundColor: theme.background.color,
+              opacity: 0.8,
+              width: "100%",
+              height: "100%",
+            }}
+          />
+          <SpinnerIcon />
+          <View>
+            <Text style={{ color: "white", marginTop: 20 }}>Loading</Text>
+          </View>
+        </View>
+      </Modal>
       <View style={{ paddingTop: 10 }}>
         <Button flavor="primary" label="Create Wallet" onPress={onSubmit} />
       </View>

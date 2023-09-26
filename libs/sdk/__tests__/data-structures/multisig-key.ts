@@ -9,7 +9,7 @@ import {
 import { expectIsPureObject } from "../__helpers__";
 
 describe("ObservableMultisigKey", () => {
-  const chain = "phoenix-1";
+  const _chain = "secret-4";
   const fixture: Serialized<typeof MultisigKey> = {
     keys: [
       {
@@ -23,29 +23,37 @@ describe("ObservableMultisigKey", () => {
       },
     ],
     threshold: 1,
+    evmSigningAddress: "",
+    evmUserContractAddress: "",
   };
 
   test(".empty observable", () => {
-    expect(isObservable(ObservableMultisigKey.create(chain))).toEqual(true);
+    expect(
+      isObservable(ObservableMultisigKey.create(undefined, "secret-4")),
+    ).toEqual(true);
   });
 
   test(".deserialize observable", () => {
-    expect(isObservable(ObservableMultisigKey.create(chain, fixture))).toEqual(
-      true,
-    );
+    expect(
+      isObservable(
+        ObservableMultisigKey.create(undefined, "secret-4", fixture),
+      ),
+    ).toEqual(true);
   });
 
   test(".toJSON pure", () => {
-    expectIsPureObject(ObservableMultisigKey.create(chain, fixture).toJSON());
+    expectIsPureObject(
+      ObservableMultisigKey.create(undefined, "secret-4", fixture).toJSON(),
+    );
   });
 
   test("chain observable", () => {
-    const key = ObservableMultisigKey.create(chain);
+    const key = ObservableMultisigKey.create(undefined, "secret-4");
     expect(isObservableProp(key, "_chainId")).toEqual(true);
   });
 
   test("keys observable", () => {
-    const key = ObservableMultisigKey.create(chain, fixture);
+    const key = ObservableMultisigKey.create(undefined, "secret-4", fixture);
     expect(isObservable(key.keys)).toEqual(true);
     expect(isObservable(key.keys[0])).toEqual(true);
     key.setCloudKey({
@@ -62,7 +70,7 @@ describe("ObservableMultisigKey", () => {
   });
 
   test("threshold observable", () => {
-    const key = ObservableMultisigKey.create(chain);
+    const key = ObservableMultisigKey.create(undefined, "secret-4");
     expect(isObservableProp(key, "_threshold")).toEqual(true);
   });
 });

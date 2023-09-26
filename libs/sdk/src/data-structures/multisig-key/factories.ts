@@ -6,41 +6,58 @@ import { ChainId } from "../../chains";
 import { Key, ObservableKey } from "../key";
 import { AbstractMigratable } from "../migratable";
 
+export type SetupMultisigKeyDetails = {
+  homeAccountAddress: string;
+  evmSigningAddress: string;
+  evmUserContractAddress: string;
+  ownerIndex: number;
+};
+
 export function createMultisigKey(
+  setupDetails: SetupMultisigKeyDetails | undefined, // TODO: make it optional
   chain: ChainId,
-  migratable: AbstractMigratable<typeof MultisigKeySchema> = {
+  serialized: AbstractMigratable<typeof MultisigKeySchema> = {
     keys: [],
     threshold: 1,
+    evmSigningAddress: "",
+    evmUserContractAddress: "",
   },
   factories = {
     Key,
     createMultisigKey,
   },
-) {
+): MultisigKey {
   const { keys, threshold } =
-    MultisigKeySchema.migratableSchema.parse(migratable);
-  return new MultisigKey(
-    chain,
-    keys.map((key) => factories.Key.create(key)),
-    threshold,
-    {
-      Key: factories.Key,
-      createMultisigKey: factories.createMultisigKey,
-    },
-  );
+    MultisigKeySchema.migratableSchema.parse(serialized);
+  let keysMapped: Key[];
+  try {
+    keysMapped = keys.map((key) => factories.Key.create(key));
+  } catch (e) {
+    keysMapped = [];
+  }
+  return new MultisigKey(setupDetails, chain, keysMapped, threshold, {
+    Key: factories.Key,
+    createMultisigKey: factories.createMultisigKey,
+  });
 }
 
 export function createObservableMultisigKey(
+  setupDetails: SetupMultisigKeyDetails | undefined,
   chain: ChainId,
   migratable?: AbstractMigratable<typeof MultisigKeySchema>,
 ) {
-  const key = createMultisigKey(chain, migratable, {
+  console.log("running createObservableMultisigKey()");
+  const key = createMultisigKey(setupDetails, chain, migratable, {
     Key: ObservableKey,
     createMultisigKey: createObservableMultisigKey,
   });
-  makeObservable<MultisigKey, "_chainId" | "_keys" | "_threshold" | "setKey">(
+  makeObservable<
+    MultisigKey,
+    "_setupDetails" | "_chainId" | "_keys" | "_threshold" | "setKey"
+  >(
     key,
     {
+      _setupDetails: observable,
       _chainId: observable,
       _keys: observable,
       _threshold: observable,

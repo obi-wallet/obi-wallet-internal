@@ -63,6 +63,7 @@
     "react-qr-code": "*",
     "rooks": "*",
     "secp256k1": "*",
+    "secretjs": "*",
     "tiny-invariant": "*",
     "tiny-warning": "*",
     "userop": "*",

@@ -37,34 +37,19 @@ export function useKeyMetaData() {
       Icon: ComponentType<SvgProps>;
     }
   > = {
+    [KeyType.Unity]: {
+      label: intl.formatMessage({
+        id: "settings.multisig.option.unitykey",
+        defaultMessage: "Gaming Device Key",
+      }),
+      Icon: ZtxPlatformRecoveryIcon,
+    },
     [KeyType.Device]: {
       label: intl.formatMessage({
         id: "settings.multisig.option.biometricskey",
         defaultMessage: "Biometrics Key",
       }),
       Icon: DeviceKeyIcon,
-    },
-    [KeyType.Phone]: {
-      label: intl.formatMessage({
-        id: "settings.multisig.option.phonekey",
-        defaultMessage: "Phone Key",
-      }),
-      Icon: isWeb() ? PhoneKeyOutlineIcon : PhoneKeyIcon,
-    },
-    [KeyType.Social]: {
-      label: configStore.config.ethereumBalances
-        ? "Platform Recovery"
-        : intl.formatMessage({
-            id: "settings.multisig.option.socialkey",
-            defaultMessage: "Social Recovery Key",
-          }),
-      Icon: configStore.config.ethereumBalances
-        ? ZtxPlatformRecoveryIcon
-        : SocialKeyIcon,
-    },
-    [KeyType.Nfc]: {
-      label: "NFC Tap Key",
-      Icon: NfcKeyIcon,
     },
     [KeyType.Cloud]: {
       label: "Cloud Key",
@@ -83,6 +68,28 @@ export function useKeyMetaData() {
         defaultMessage: "Email Recovery Key",
       }),
       Icon: EmailKeyIcon,
+    },
+    [KeyType.Nfc]: {
+      label: "NFC Tap Key",
+      Icon: NfcKeyIcon,
+    },
+    [KeyType.Phone]: {
+      label: intl.formatMessage({
+        id: "settings.multisig.option.phonekey",
+        defaultMessage: "Phone Key",
+      }),
+      Icon: isWeb() ? PhoneKeyOutlineIcon : PhoneKeyIcon,
+    },
+    [KeyType.Social]: {
+      label: configStore.config.ethereumBalances
+        ? "Platform Recovery"
+        : intl.formatMessage({
+            id: "settings.multisig.option.socialkey",
+            defaultMessage: "Social Recovery Key",
+          }),
+      Icon: configStore.config.ethereumBalances
+        ? ZtxPlatformRecoveryIcon
+        : SocialKeyIcon,
     },
     [KeyType.ZAuth]: {
       // TODO:

@@ -1,10 +1,16 @@
+/* eslint-disable @nx/enforce-module-boundaries */
 import { useTheme } from "@emotion/react";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { Chain, ChainId } from "@obi-wallet/sdk";
+import {
+  KeyFlow,
+  OnboardingRoute,
+  RecoverFrom,
+  useRootNavigation,
+} from "@obi-wallet/common";
+import { Chain, ChainId, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -13,7 +19,12 @@ import { useAsyncEffect } from "rooks";
 
 import * as A from "./api-types";
 import { useStore } from "../../../contexts";
-import { isSmallScreenNumber } from "../../../helpers";
+import {
+  activateRecoveredWalletAndIsUpdateRequired,
+  addEllipsisInMiddle,
+  getProxyWalletsCloudflare,
+  isSmallScreenNumber,
+} from "../../../helpers";
 import { IconButton } from "../../buttons";
 import { OnboardingScreenContainer } from "../../onboarding-screen-container";
 import { Text } from "../../typography";
@@ -22,57 +33,58 @@ import { VerifyAndProceedButton } from "../../verify-and-proceed-button";
 export interface LookupProps {
   chainId: ChainId;
   publicKey: string;
+  draftId: string;
+  recoverFrom: RecoverFrom;
   onSelect(wallet: A.SerializedProxyWallet): Promise<void>;
   onCancel(): void;
+  walletsFound?: A.SerializedProxyWallet[];
 }
 
 export const Lookup = observer(function Lookup({
   chainId,
   publicKey,
+  draftId,
+  recoverFrom,
   onSelect,
   onCancel,
+  walletsFound,
 }: LookupProps) {
-  const { chainStore } = useStore();
+  const _onSelect = onSelect;
+  const store = useStore();
+  const { chainStore, draftsStore } = store;
   const [wallets, setWallets] = useState<A.SerializedProxyWallet[] | null>(
     null,
   );
+  const navigation = useRootNavigation();
+  const draft = draftsStore.get<MultisigKey>({
+    id: draftId,
+  });
   const [selectedWallet, setSelectedWallet] =
     useState<A.SerializedProxyWallet | null>(null);
   const theme = useTheme();
+  if (walletsFound) {
+    setWallets(walletsFound);
+  }
 
   useAsyncEffect(async () => {
     try {
-      const currentCodeId = Chain.select({
-        chainId,
-        onCosmosChain(chain) {
+      const _currentCodeId = Chain.select({
+        /* onCosmosChain(chain) {
           return chain.currentCodeIds.userAccount;
         },
         onLegacyCosmosChain(chain) {
           return chain.currentCodeId;
-        },
+        }, */
         onSecretJsChain(chain) {
-          return chain.currentCodeIds.userAccount;
+          return chain.currentCodeIds.userEntry;
         },
-        onTerraChain(chain) {
+        /* onTerraChain(chain) {
           return chain.currentCodeIds.userAccount;
-        },
+        }, */
       });
-      const response = await fetch(
-        `https://proxy-wallets.obiwallet.workers.dev`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            chainId,
-            publicKey,
-            currentCodeId,
-          }),
-          headers: {
-            "Api-Version": "v1",
-            "Content-Type": "application/json",
-          },
-        },
-      );
-      const proxyWallets = (await response.json()) as A.SerializedProxyWallet[];
+      const proxyWallets = (await getProxyWalletsCloudflare(
+        publicKey,
+      )) as A.SerializedProxyWallet[];
       setWallets(proxyWallets);
     } catch (e) {
       console.log(e);
@@ -180,10 +192,7 @@ export const Lookup = observer(function Lookup({
                       fontWeight: "600",
                     }}
                   >
-                    {Bech32Address.shortenAddress(
-                      wallet.proxyAddress.address,
-                      20,
-                    )}
+                    {addEllipsisInMiddle(wallet.evmUserContractAddress, 20)}
                   </Text>
                 </View>
                 <IconButton
@@ -195,7 +204,7 @@ export const Lookup = observer(function Lookup({
                   onPress={async () => {
                     await Linking.openURL(
                       chainStore.currentChainInformation.explorerUrl(
-                        wallet.proxyAddress.address,
+                        wallet.evmUserContractAddress,
                       ),
                     );
                   }}
@@ -217,7 +226,25 @@ export const Lookup = observer(function Lookup({
           disabled={!selectedWallet}
           onPress={async () => {
             if (selectedWallet) {
-              await onSelect(selectedWallet);
+              try {
+                const { isUpdateRequired, serializedData } =
+                  await activateRecoveredWalletAndIsUpdateRequired(
+                    draft,
+                    recoverFrom,
+                    store,
+                    selectedWallet,
+                  );
+                if (isUpdateRequired) {
+                  navigation.navigate(OnboardingRoute.RecoverWallet, {
+                    flow: KeyFlow.RecoverWallet,
+                    demoMode: false,
+                    draftId,
+                    serializedData,
+                  });
+                }
+              } catch (e) {
+                console.log(e);
+              }
             }
           }}
         />
@@ -232,11 +259,12 @@ export const Lookup = observer(function Lookup({
               style={{
                 color: "white",
                 textAlign: "center",
+                marginBottom: 15,
               }}
             >
               <FormattedMessage
                 id="recovery.choosewallet.tryagain"
-                defaultMessage="Try a different combination"
+                defaultMessage="Try a different key instead"
               />
             </Text>
           </TouchableOpacity>

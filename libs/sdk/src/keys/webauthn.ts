@@ -1,11 +1,11 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { create, get } from "@github/webauthn-json";
 import type { CredentialDeviceType } from "@simplewebauthn/typescript-types";
-import { SecretNetworkClient, pubkeyToAddress } from "secretjs";
+import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { getBiometricsPrivateKey } from "./legacy";
 import { Secp256k1KeyPair } from "./sec256k1";
-import { secretJsChains } from "../chains/secret-js";
 import { KeySubclassTypeMapping, KeyType } from "../data-structures/key";
 import { Secp256k1PrivateKeySigner } from "../signers/sec256k1-private-key";
 
@@ -71,6 +71,10 @@ interface CustomPublicKeyCredentialCreationOptions {
   };
 }
 
+export function isInIframe(): boolean {
+  return window !== window.top;
+}
+
 export async function getOrCreateDeviceKeyPair(
   allowCreate: boolean,
   demoMode: boolean,
@@ -121,15 +125,33 @@ export async function getOrCreateDeviceKeyPair(
       },
     };
     let credential;
-    if (allowCreate) {
-      credential = await create({ publicKey });
-    } else {
-      try {
-        credential = await get({ publicKey });
-      } catch (e) {
+    if (!isInIframe()) {
+      console.log("not in iframe");
+      if (allowCreate) {
         credential = await create({ publicKey });
-        allowCreate = true;
+      } else {
+        try {
+          credential = await get({ publicKey });
+        } catch (e) {
+          credential = await create({ publicKey });
+          allowCreate = true;
+        }
       }
+    } else {
+      console.log("is in iframe");
+      const _popup = window.open(
+        allowCreate ? "/webauthn-auth" : "/webauthn-get",
+        "webauthn-popup",
+        "width=400,height=800",
+      );
+      window.addEventListener("message", (event) => {
+        if (event.data.type && event.data.type === "webauthn") {
+          credential = event.data.credential;
+        }
+      });
+    }
+    while (credential === undefined) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
     console.log("webauthn credential id: " + JSON.stringify(credential?.id));
 
@@ -147,50 +169,6 @@ export async function getOrCreateDeviceKeyPair(
     const webauthnAddress = pubkeyToAddress(compressedPubkey);
     console.log("webauthn Signer address: " + webauthnAddress);
 
-    const stockClient = new SecretNetworkClient({
-      chainId: "secret-4",
-      url: secretJsChains["secret-4"].urls[0],
-    });
-    let balance = "";
-    try {
-      balance =
-        (
-          await stockClient.query.bank.balance({
-            address: webauthnAddress,
-            denom: "uscrt",
-          })
-        ).balance?.amount || "0";
-    } catch (e) {
-      balance = "0";
-    }
-    try {
-      if (balance === "0") {
-        const response = await fetch("/api/lend", {
-          method: "POST",
-          body: JSON.stringify({
-            homeChainId: "secret-4",
-            address: webauthnAddress,
-          }),
-        });
-
-        if (response.status !== 200) {
-          throw new Error("Failed to fund webauthn signer");
-        }
-
-        return [
-          {
-            publicKey: {
-              type: "tendermint/PubKeySecp256k1",
-              value: webauthnSigner.publicKey.value,
-            },
-            privateKey: combinedPrivateKey,
-          },
-          true,
-        ];
-      }
-    } catch (e) {
-      console.error("Failed to fund webauthn signer", e);
-    }
     return [
       {
         publicKey: {
@@ -252,7 +230,10 @@ const hexToBase64 = (hex: string) => {
 export async function getDevicePrivateKey(
   key: KeySubclassTypeMapping[KeyType.Device],
 ): Promise<string | null> {
-  if (key.payload.privateKey) return key.payload.privateKey;
+  if (key.payload.privateKey) {
+    console.log("device private key exists");
+    return key.payload.privateKey;
+  }
   let kp, _;
   try {
     [kp, _] = await getOrCreateDeviceKeyPair(false, false);
@@ -270,6 +251,7 @@ export async function getDevicePrivateKey(
         },
       });
       invariant(privateKey, "no private key");
+      console.log("returning device private key");
       return privateKey;
     } catch (e) {
       return null;

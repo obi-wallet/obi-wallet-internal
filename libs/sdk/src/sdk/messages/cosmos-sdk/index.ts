@@ -19,9 +19,10 @@ import { DateTime, Duration } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
-import { Chain, CosmosChainId, TerraChainId } from "../../../chains";
+import { Chain, SecretJsChainId } from "../../../chains";
 import {
   GatekeeperConfig,
+  Key,
   MultisigKey,
   MultisigWallet,
 } from "../../../data-structures";
@@ -30,16 +31,27 @@ import { CodeIds, Token } from "../../common";
 import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
 
-export class CosmosSdkMessages extends AbstractMessages {
-  protected constructor(
-    protected override chainId: CosmosChainId | TerraChainId,
-  ) {
-    super(chainId);
+export class CosmosSdkMessages extends AbstractMessages<string> {
+  public override getFirstUpdateWalletMessage(
+    _newOwner: MultisigKey,
+    _newOwnerAddress: string,
+    _userAccountContractAddress: string,
+    _evmUserContractAddress: string,
+    _evmSigningAddress: string,
+    _sender: string,
+  ): unknown {
+    throw new Error("Method not implemented.");
+  }
+  protected constructor(protected override chainId: SecretJsChainId) {
+    super("secret-4");
   }
 
   public toJSON(message: Message): MessageJson & Msg.Amino {
     if (R.has("eth", message)) {
       return MessageJson.parse(message.eth) as MessageJson & Msg.Amino;
+    }
+    if (R.has("hash", message)) {
+      return MessageJson.parse(message.hash) as MessageJson & Msg.Amino;
     }
     if (R.has("osmo", message)) {
       return MessageJson.parse(message.osmo) as MessageJson & Msg.Amino;
@@ -54,15 +66,18 @@ export class CosmosSdkMessages extends AbstractMessages {
   public wrapMessages({
     messages,
     sender,
-    contract,
+    userEntryContract,
+    userEntryCodeHash,
   }: {
     messages: Message[];
     sender: string;
-    contract: string;
+    userEntryContract: string;
+    userEntryCodeHash?: string;
   }): Message[] {
+    const _userEntryCodeHash = userEntryCodeHash;
     return messages.map((msg) => {
       if (R.has("osmo", msg)) {
-        return new MsgExecuteContract(sender, contract, {
+        return new MsgExecuteContract(sender, userEntryContract, {
           execute: {
             msg: Buffer.from(
               JSON.stringify({ osmo: this.wrapOsmoMessage(msg) }),
@@ -71,7 +86,7 @@ export class CosmosSdkMessages extends AbstractMessages {
         });
       }
 
-      return new MsgExecuteContract(sender, contract, {
+      return new MsgExecuteContract(sender, userEntryContract, {
         execute: {
           msg: Buffer.from(
             JSON.stringify({ legacy: this.wrapMessage(msg as Msg) }),
@@ -291,7 +306,7 @@ export class CosmosSdkMessages extends AbstractMessages {
         ...(codeIds.userAccount < this.chain.currentCodeIds.userAccount
           ? {
               code_id: this.getNextCodeId(codeIds),
-              ...(this.attachSigners(codeIds)
+              ...(this.attachSigners()
                 ? {
                     signers: {
                       signers: this.getSigners(wallet.owner),
@@ -325,27 +340,32 @@ export class CosmosSdkMessages extends AbstractMessages {
     });
   }
 
-  protected attachGatekeeperCodeIds(codeIds: CodeIds) {
-    if (this.chainId === "phoenix-1") {
-      if (codeIds.userAccount < 1261) return false;
-    }
-
+  protected attachGatekeeperCodeIds(_codeIds: CodeIds) {
     return true;
   }
 
   public getProposeUpdateOwnerMessage({
     wallet,
     newOwner,
-    codeIds,
+    userAccountAddress,
+    userAccountCodeHash,
+    nexthashSignedBySigners,
   }: {
     wallet: MultisigWallet;
     newOwner: MultisigKey;
-    codeIds: CodeIds;
+    userAccountAddress: string;
+    userAccountCodeHash: string;
+    nexthashSignedBySigners: string[];
   }): Message {
+    const _ = {
+      userAccountAddress,
+      userAccountCodeHash,
+      nexthashSignedBySigners,
+    };
     const rawMessage = {
       propose_update_owner: {
         new_owner: newOwner.address,
-        ...(this.attachSigners(codeIds)
+        ...(this.attachSigners()
           ? {
               signers: {
                 signers: this.getSigners(newOwner),
@@ -741,7 +761,16 @@ export class CosmosSdkMessages extends AbstractMessages {
     return new MsgWithdrawDelegatorReward(wallet.address, validator);
   }
 
-  public getCreateWalletMessage(owner: MultisigKey): Message {
+  public getCreateWalletMessage(...walletData: string[]): Message {
+    /**
+     * Replace with params if needed
+     * @param ownerAddress
+     * @param pubkeyBase64
+     * @param sender
+     */
+    const [_] = walletData;
+    throw new Error("not implemented");
+    /* const _sender = sender;
     const rawMessage = {
       new_account: {
         fee_debt: parseInt(this.chain.startingUsdDebt, 10),
@@ -751,7 +780,7 @@ export class CosmosSdkMessages extends AbstractMessages {
           session_keys: [],
           spendlimit_auths: [],
         },
-        owner: owner.address,
+        owner: ownerAddress,
         signers: {
           signers: this.getSigners(owner),
         },
@@ -763,24 +792,23 @@ export class CosmosSdkMessages extends AbstractMessages {
       owner.address,
       this.chain.accountCreatorAddress,
       rawMessage,
-    );
+    ); */
   }
 
   protected getSigners(multisigKey: MultisigKey) {
-    const addresses = multisigKey.keys.map((key) => {
-      return this.sdk.transactions.getAddressOfPublicKey(key.publicKey);
-    });
-    return R.zipWith(
-      (address, ty) => {
-        return { address, ty };
-      },
-      addresses,
-      multisigKey.signerTypes,
-    );
+    const addressAndTypes: Array<{ address: string; ty: string }> =
+      multisigKey.keys.map((key: Key) => {
+        return {
+          address: this.sdk.transactions.getAddressOfPublicKey(key.publicKey),
+          ty: key.type,
+          pubkeyBase64: key.publicKey.value,
+        };
+      });
+    return addressAndTypes;
   }
 
   protected get sdk() {
-    return Sdk.chainId(this.chainId);
+    return Sdk.chainId("secret-4");
   }
 
   protected get chain() {
@@ -793,39 +821,30 @@ export class CosmosSdkMessages extends AbstractMessages {
       };
       startingUsdDebt: string;
     }>({
-      chainId: this.chainId,
-      onCosmosChain(chain) {
+      /*onCosmosChain(chain) {
         return chain;
       },
       onLegacyCosmosChain() {
         throw new Error("Not a Cosmos SDK chain");
-      },
+      },*/
       onSecretJsChain() {
         throw new Error("Not a Cosmos SDK chain");
       },
-      onTerraChain(chain) {
+      /*onTerraChain(chain) {
         return chain;
-      },
+      },*/
     });
   }
 
-  protected getNextCodeId(codeIds: CodeIds) {
-    if (this.chainId === "phoenix-1") {
-      if (codeIds.userAccount <= 1014) return 1081;
-    }
-
+  protected getNextCodeId(_codeIds: CodeIds) {
     return this.chain.currentCodeIds.userAccount;
   }
 
-  protected attachSigners(codeIds: CodeIds) {
-    if (this.chainId === "phoenix-1") {
-      if (codeIds.userAccount < 1081) return false;
-    }
-
+  protected attachSigners() {
     return true;
   }
 
-  public static chainId(chainId: CosmosChainId | TerraChainId) {
-    return new CosmosSdkMessages(chainId);
+  public static chainId(_chainId: SecretJsChainId) {
+    return new CosmosSdkMessages("secret-4");
   }
 }

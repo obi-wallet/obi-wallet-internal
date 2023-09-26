@@ -1,6 +1,4 @@
 import { MultisigKey } from "../../data-structures";
-import { AbstractUserInteractionResponse } from "../../user-interactions/abstract";
-import { BroadcastTransactionResult } from "../common";
 
 /**
  * Methods are proxied by {@link WalletsSdk}.
@@ -8,19 +6,15 @@ import { BroadcastTransactionResult } from "../common";
  * @internal
  */
 export abstract class AbstractWalletsSdk {
-  public abstract createWallet({
+  public abstract getAsyncDetailsAndFirstOwnerUpdate({
     multisigKey,
     demoMode,
   }: {
     multisigKey: MultisigKey;
     demoMode: boolean;
-  }): Promise<
-    AbstractUserInteractionResponse<
-      { proxyAddress: string },
-      {
-        description: string;
-        originalPayload: BroadcastTransactionResult;
-      }
-    >
-  >;
+  }): Promise<{
+    homeAccountAddress: string;
+    evmSigningAddress: string;
+    evmUserContractAddress: string;
+  }>;
 }

@@ -13,7 +13,7 @@ import {
   Sdk,
 } from "../src";
 
-const chainId = "phoenix-1";
+const chainId = "secret-4";
 const messagesSdk = Messages.chainId(chainId);
 const sdk = Sdk.chainId(chainId);
 
@@ -42,7 +42,7 @@ beforeEach(() => {
     type: "multisig",
     data: {
       chain: chainId,
-      owner: MultisigKey.create(chainId).toJSON(),
+      owner: MultisigKey.create(undefined, chainId).toJSON()!,
       proxyAddress: {
         v: 1,
         address: proxyAddress,
@@ -50,6 +50,8 @@ beforeEach(() => {
       gatekeeperConfig: createGatekeeperConfig().toJSON(),
       singlesigWallets: [],
       currentAccount: null,
+      evmSigningAddress: "",
+      evmUserContractAddress: "",
     },
   });
 });
