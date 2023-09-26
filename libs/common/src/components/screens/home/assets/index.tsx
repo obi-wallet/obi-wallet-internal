@@ -56,6 +56,7 @@ export const Assets = observer(function Assets() {
   );
 });
 
+// TODO: segregate into separate file
 const BalanceAndActions = observer(function BalanceAndActions() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const wallet = useCurrentWallet();
@@ -243,6 +244,7 @@ const BalanceAndActions = observer(function BalanceAndActions() {
   );
 });
 
+// TODO: segregate into separate file
 const AssetsList = observer(function AssetsList() {
   const [sortAscending, setSortAscending] = useState(true);
   const wallet = useCurrentWallet();
@@ -402,6 +404,7 @@ const AssetsList = observer(function AssetsList() {
   );
 });
 
+// TODO: segregate into separate file
 const AssetsListItem = observer(function AssetsListItem({
   item,
 }: ListRenderItemInfo<EnrichedToken>) {
