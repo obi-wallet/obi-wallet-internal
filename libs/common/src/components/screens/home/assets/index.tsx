@@ -17,6 +17,7 @@ import {
   View,
 } from "react-native";
 
+import { AssetNameColumn } from "./asset-name-column";
 import {
   isSmallScreenNumber,
   isSmallScreenSubstr,
@@ -294,17 +295,7 @@ const AssetsList = observer(function AssetsList() {
               balances.refetch();
             }}
           >
-            <Text
-              style={{
-                color: "white",
-                fontSize: theme.balance?.assetsHeader?.fontSize || 11,
-                letterSpacing: 0.7,
-                textTransform:
-                  theme.balance?.assetsHeader?.textTransform || "uppercase",
-              }}
-            >
-              <FormattedMessage id="assets.name" defaultMessage="Name" />
-            </Text>
+            <AssetNameColumn />
           </TouchableWithoutFeedback>
           <View
             style={{
