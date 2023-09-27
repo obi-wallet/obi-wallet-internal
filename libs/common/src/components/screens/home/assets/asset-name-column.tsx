@@ -4,7 +4,8 @@ import { FormattedMessage } from "react-intl";
 
 import { Text } from "../../../typography";
 
-const AssetNameColumn = forwardRef(() => {
+// eslint-disable-next-line mobx/missing-observer
+export const AssetNameColumn = forwardRef(function AssetNameColumn() {
   const theme = useTheme();
   return (
     <Text
@@ -20,6 +21,3 @@ const AssetNameColumn = forwardRef(() => {
     </Text>
   );
 });
-
-AssetNameColumn.displayName = "AssetNameColumn";
-export { AssetNameColumn };

@@ -3,14 +3,13 @@ import {
   KeyType,
   MultisigKey,
   Sdk,
-  Secp256k1KeyPair,
   SecretJsChainIds,
   SecretJsChains,
+  getOrCreateDeviceKeyPair,
 } from "@obi-wallet/sdk";
-import { getOrCreateDeviceKeyPair } from "@obi-wallet/sdk";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
+import { andThen, compose, otherwise, pathOr } from "ramda";
 import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Platform, View } from "react-native";
@@ -18,12 +17,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { pubkeyToAddress, SecretNetworkClient } from "secretjs";
 import invariant from "tiny-invariant";
 
+import type { DeviceKeyProps, DeviceKeyScreenProps } from "./types";
+import { BiometricsData } from "./types";
 import { useStore } from "../../../../contexts";
 import { Alert, isSmallScreen, isSmallScreenNumber } from "../../../../helpers";
 import {
   KeyFlow,
-  KeyRoute,
-  KeyStackParamList,
   OnboardingRoute,
   RecoverFrom,
   useRootNavigation,
@@ -33,12 +32,6 @@ import { ObiFaceScannerIcon } from "../../../icons";
 import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
 import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { Text } from "../../../typography";
-import { SerializedProxyWallet } from "../../lookup-proxy-wallets/api-types";
-
-export type DeviceKeyScreenProps = NativeStackScreenProps<
-  KeyStackParamList,
-  KeyRoute.DeviceKey
->;
 
 export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
   function DeviceKeyScreen({ route }) {
@@ -85,15 +78,6 @@ export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
   },
 );
 
-export interface DeviceKeyProps {
-  draftId: string;
-  demoMode: boolean;
-  onSubmit(
-    userSaysDeviceIsNew: boolean,
-    deviceOrUnityPubkeyBase64: string,
-  ): void;
-  flow: KeyFlow;
-}
 export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   draftId,
   demoMode,
@@ -111,22 +95,27 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   async function fundKeyIfZero(pubkey: string): Promise<void> {
     const address = pubkeyToAddress(Buffer.from(pubkey, "base64"), "secret");
     console.log("fundKeyIfZero() for address: " + address);
+    const [url] = SecretJsChains[SecretJsChainIds.MAINNET].urls;
     const stockClient = new SecretNetworkClient({
       chainId: SecretJsChainIds.MAINNET,
-      url: SecretJsChains[SecretJsChainIds.MAINNET].urls[0],
+      url,
     });
-    let balance = "";
-    try {
-      balance =
-        (
-          await stockClient.query.bank.balance({
-            address,
-            denom: "uscrt",
-          })
-        ).balance?.amount || "0";
-    } catch (e) {
-      balance = "0";
-    }
+
+    const fetchCoin = async () =>
+      stockClient.query.bank.balance({
+        address,
+        denom: "uscrt",
+      });
+
+    const getBalance = compose(
+      otherwise(() => "0"),
+      andThen((coinData) => pathOr("0", ["balance", "amount"])(coinData)),
+      fetchCoin,
+    );
+
+    const balance = await getBalance();
+
+    // TODO: refactor flow funding address if 0
     try {
       if (balance === "0") {
         const _response = fetch("/api/lend", {
@@ -146,12 +135,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
     create: boolean,
     existingUserSaysDeviceIsNew?: boolean,
     recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
-  ): Promise<{
-    wallets?: SerializedProxyWallet[] | undefined;
-    deviceKeypair?: Secp256k1KeyPair | undefined;
-    success?: boolean | undefined;
-    newUser?: boolean | undefined;
-  }> {
+  ): BiometricsData {
     try {
       console.log("getting device key...");
       const [keyPair, newUser] = await getOrCreateDeviceKeyPair(
@@ -279,7 +263,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         });
       }
     }
-    fundKeyIfZero(requiredPubkey);
+    await fundKeyIfZero(requiredPubkey);
   }
 
   return (
@@ -356,8 +340,10 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 marginTop: 79,
               }}
             >
+              {/*TODO: refactor logic here*/}
+
               {unityStore.getDeviceId ? (
-                flow == KeyFlow.CreateWallet ? (
+                flow === KeyFlow.CreateWallet ? (
                   <FormattedMessage
                     id="onboarding4.authyourkeys.unity"
                     defaultMessage="Create a Gaming Device Key"
@@ -368,7 +354,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                     defaultMessage="Use This Game Device Key"
                   />
                 )
-              ) : flow == KeyFlow.CreateWallet ? (
+              ) : flow === KeyFlow.CreateWallet ? (
                 <FormattedMessage
                   id="onboarding4.authyourkeys"
                   defaultMessage="Create a Device Key"
@@ -424,7 +410,8 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
           <View
             style={{ flex: 1, justifyContent: "flex-end", paddingBottom: 20 }}
           >
-            {flow == KeyFlow.CreateWallet ? (
+            {/*TODO: refactor here*/}
+            {flow === KeyFlow.CreateWallet ? (
               <AsyncButton
                 label={intl.formatMessage({
                   id: unityStore.getDeviceId
@@ -432,14 +419,13 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                     : "onboarding4.biometrics.button",
                 })}
                 flavor="primary"
-                onPress={async () => {
-                  submitWithRequiredKey(true, false);
-                }}
+                onPress={async () => submitWithRequiredKey(true, false)}
                 autoPress={Platform.OS === "ios"}
               />
             ) : (
               // not CreateWallet flow
               <>
+                {/*TODO: refactor submitWithRequiredKey method*/}
                 <AsyncButton
                   label={intl.formatMessage({
                     id: unityStore.getDeviceId
@@ -447,19 +433,16 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                       : "onboarding4.ihaveadevicekey.button",
                   })}
                   flavor="primary"
-                  onPress={async () => {
-                    submitWithRequiredKey(false, true);
-                  }}
+                  onPress={async () => submitWithRequiredKey(false, true)}
                   autoPress={Platform.OS === "ios"}
                 />
+                {/*TODO: refactor submitWithRequiredKey method*/}
                 <AsyncButton
                   label={intl.formatMessage({
                     id: "onboarding4.newdevice.button",
                   })}
                   flavor="primary"
-                  onPress={async () => {
-                    submitWithRequiredKey(true, true);
-                  }}
+                  onPress={async () => submitWithRequiredKey(true, true)}
                   autoPress={Platform.OS === "ios"}
                 />
               </>

@@ -4,3 +4,4 @@ export * from "./recovery";
 export * from "./screen-size";
 export * from "./session-key";
 export * from "./userops";
+export * from "./matcher";

@@ -75,23 +75,9 @@ export function isInIframe(): boolean {
   return window !== window.top;
 }
 
-export async function getOrCreateDeviceKeyPair(
-  allowCreate: boolean,
-  demoMode: boolean,
-): Promise<[Secp256k1KeyPair, boolean]> {
-  if (demoMode) {
-    return [
-      {
-        publicKey: {
-          type: "tendermint/PubKeySecp256k1",
-          value: DEMO_PUBLIC_KEY,
-        },
-        privateKey: DEMO_PRIVATE_KEY,
-      },
-      true,
-    ];
-  }
+const generateWebAuthnPubKey = () => {
   try {
+    // TODO: refactor here
     let challenge = new Uint8Array(32); // Normally, this challenge is provided by the server.
     if (typeof window !== "undefined") {
       window.crypto.getRandomValues(challenge);
@@ -124,6 +110,42 @@ export async function getOrCreateDeviceKeyPair(
         authenticatorAttachment: "platform",
       },
     };
+
+    return publicKey;
+  } catch (e) {
+    console.error("WebAuthn Public Key creation error:", JSON.stringify(e));
+    throw new Error("Failed to generate WebAuthn Credential");
+  }
+};
+
+const generateWebAuthnSec256k1KeyPair = async (
+  [publicKey, privateKey]: [string, string],
+  newUser: boolean,
+): Promise<[Secp256k1KeyPair, boolean]> => {
+  return [
+    {
+      publicKey: {
+        type: "tendermint/PubKeySecp256k1",
+        value: publicKey,
+      },
+      privateKey,
+    },
+    newUser,
+  ];
+};
+
+export async function getOrCreateDeviceKeyPair(
+  allowCreate: boolean,
+  demoMode: boolean,
+): Promise<[Secp256k1KeyPair, boolean]> {
+  if (demoMode) {
+    return generateWebAuthnSec256k1KeyPair(
+      [DEMO_PUBLIC_KEY, DEMO_PRIVATE_KEY],
+      true,
+    );
+  }
+  try {
+    const publicKey = generateWebAuthnPubKey();
     let credential;
     if (!isInIframe()) {
       console.log("not in iframe");
@@ -169,16 +191,10 @@ export async function getOrCreateDeviceKeyPair(
     const webauthnAddress = pubkeyToAddress(compressedPubkey);
     console.log("webauthn Signer address: " + webauthnAddress);
 
-    return [
-      {
-        publicKey: {
-          type: "tendermint/PubKeySecp256k1",
-          value: webauthnSigner.publicKey.value,
-        },
-        privateKey: combinedPrivateKey,
-      },
+    return generateWebAuthnSec256k1KeyPair(
+      [webauthnSigner.publicKey.value, combinedPrivateKey],
       false,
-    ];
+    );
   } catch (err) {
     console.error("WebAuthn error:", JSON.stringify(err));
     throw new Error("WebAuthn request rejected");
@@ -206,7 +222,7 @@ const combineKeys = async (
   let privateKeyBigInt = BigInt(`0x${hashHex}`);
   while (privateKeyBigInt >= SECP256K1_MAX) {
     privateKeyBigInt = BigInt(
-      `0x${crypto.subtle.digest(
+      `0x${await crypto.subtle.digest(
         "SHA-256",
         new TextEncoder().encode(privateKeyBigInt.toString(16)),
       )}`,
@@ -214,9 +230,7 @@ const combineKeys = async (
   }
 
   // Convert the hex to base64
-  const privateKeyBase64 = hexToBase64(privateKeyBigInt.toString(16));
-
-  return privateKeyBase64;
+  return hexToBase64(privateKeyBigInt.toString(16));
 };
 
 // Helper function to convert hex to base64
@@ -234,15 +248,15 @@ export async function getDevicePrivateKey(
     console.log("device private key exists");
     return key.payload.privateKey;
   }
-  let kp, _;
   try {
-    [kp, _] = await getOrCreateDeviceKeyPair(false, false);
+    const [kp, _] = await getOrCreateDeviceKeyPair(false, false);
     return kp.privateKey;
   } catch (e) {
     try {
       const privateKey = await getBiometricsPrivateKey({
         publicKey: key.publicKey.value,
       });
+
       key.setSerialized({
         type: KeyType.Device,
         payload: {
