@@ -7,6 +7,7 @@ import { EmailRecoveryKey } from "./email-recovery";
 import { NfcKey } from "./nfc";
 import { PhoneKey } from "./phone";
 import { SocialKey } from "./social";
+import { TelegramKey } from "./telegram";
 import { UnityKey } from "./unity";
 import { ZAuthKey } from "./z-auth";
 import { Secp256k1PublicKey } from "../../../keys";
@@ -23,6 +24,7 @@ export const UsableKeySchema = migratable(
     SocialKey,
     UnityKey,
     ZAuthKey,
+    TelegramKey,
   ]),
 );
 

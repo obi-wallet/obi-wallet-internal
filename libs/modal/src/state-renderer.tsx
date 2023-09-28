@@ -21,6 +21,8 @@ import {
   settingsScreens,
   SocialKeyScreen,
   StakeScreen,
+  TelegramKeyConfirmScreen,
+  TelegramKeyRequestScreen,
   useStore,
   WelcomeScreen,
   ZAuthKeyScreen,
@@ -125,9 +127,21 @@ export const keyScreens = (navigationKey: string) => {
         options={{ headerShown: false }}
       />
       <RootStack.Screen
+        name={KeyRoute.TelegramKeyRequest}
+        key={KeyRoute.TelegramKeyRequest}
+        component={TelegramKeyRequestScreen}
+        options={{ headerShown: false }}
+      />
+      <RootStack.Screen
         name={KeyRoute.PhoneKeyConfirm}
         key={KeyRoute.PhoneKeyConfirm}
         component={PhoneKeyConfirmScreen}
+        options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name={KeyRoute.TelegramKeyConfirm}
+        key={KeyRoute.TelegramKeyConfirm}
+        component={TelegramKeyConfirmScreen}
         options={{ headerShown: false }}
       />
       <RootStack.Screen

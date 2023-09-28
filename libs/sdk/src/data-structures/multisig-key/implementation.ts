@@ -351,6 +351,18 @@ export class MultisigKey {
     });
     // console.log("Current multisig draft is: " + JSON.stringify(this));
   }
+  public setTelegramKey(payload: {
+    publicKey: Secp256k1PublicKey;
+    privateKey: string;
+    chatID: string;
+    securityQuestion: string;
+  }) {
+    this.setKey({
+      type: KeyType.Telegram,
+      payload,
+    });
+    // console.log("Current multisig draft is: " + JSON.stringify(this));
+  }
 
   public setSocialKey(publicKey: Secp256k1PublicKey) {
     this.setKey({
