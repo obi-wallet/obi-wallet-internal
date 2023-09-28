@@ -12,6 +12,7 @@ export enum KeyType {
   EmailRecovery = "email-recovery",
   Unity = "unity",
   ZAuth = "z-auth",
+  Telegram = "telegram",
 }
 
 export type KeyAbstractSerializedMapping = {

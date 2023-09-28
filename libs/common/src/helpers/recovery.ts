@@ -77,7 +77,7 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
 
   // if user has tried to recover with phone key and got no match, then tries
   // email... or vice versa... they can end up in a bad state. For this reason...
-  let foundMismatch: boolean = false;
+  // const foundMismatch: boolean = false;
 
   const serializedData: Serialized<MultisigWallet>["data"] = {
     chain: draft.value.chainId,

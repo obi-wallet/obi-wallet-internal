@@ -6,13 +6,14 @@ import { AsyncButton } from "../../buttons";
 
 export interface SendMagicSmsButtonProps {
   description?: string;
+  label?: string;
   disabled?: boolean;
   onPress: () => Promise<void>;
 }
 
 export const SendMagicSmsButton = observer(function SendMagicSmsButton({
   description,
-
+  label,
   onPress,
   disabled,
 }: SendMagicSmsButtonProps) {
@@ -49,10 +50,13 @@ export const SendMagicSmsButton = observer(function SendMagicSmsButton({
         </View>
       ) : null} */}
       <AsyncButton
-        label={intl.formatMessage({
-          id: "onboarding2.sendmagicsms",
-          defaultMessage: "Get Magic SMS",
-        })}
+        label={
+          label ||
+          intl.formatMessage({
+            id: "onboarding2.sendmagicsms",
+            defaultMessage: "Get Magic SMS",
+          })
+        }
         flavor="primary"
         disabled={disabled}
         onPress={onPress}

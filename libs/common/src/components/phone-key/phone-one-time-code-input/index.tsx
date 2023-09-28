@@ -2,7 +2,7 @@ import { useTheme } from "@emotion/react";
 import { CommunicationType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage } from "react-intl";
 import { View } from "react-native";
 
 import { InlineButton } from "../../buttons";
@@ -13,6 +13,7 @@ export interface PhoneOneTimeCodeInputProps {
   phoneNumber: string;
   value: string;
   phoneNumberMightBeIncorrect: boolean;
+  label?: string;
   setValue(value: string): void;
   onResend(type: CommunicationType): Promise<void>;
 }
@@ -22,10 +23,10 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
     phoneNumber,
     phoneNumberMightBeIncorrect,
     value,
+    label,
     setValue,
     onResend,
   }) {
-    const intl = useIntl();
     const waitTime = 10;
     const theme = useTheme();
     const [resendButtonDisabled, setResendButtonDisabled] = useState(false);
@@ -46,10 +47,8 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
     return (
       <>
         <TextInput
-          placeholder={intl.formatMessage({
-            id: "onboarding3.smscodelabel",
-          })}
-          label="Enter SMS Code"
+          placeholder="8-Digit Code"
+          label={label || "Enter SMS Code"}
           textContentType="oneTimeCode"
           keyboardType="number-pad"
           style={{}}

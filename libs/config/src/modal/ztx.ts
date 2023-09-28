@@ -20,6 +20,7 @@ export const ztxModalConfig: Config = {
       KeyType.Device,
       KeyType.Email,
       KeyType.Phone,
+      KeyType.Telegram,
       // KeyType.Nfc,
       // KeyType.ZAuth,
       // KeyType.Cloud,

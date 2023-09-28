@@ -11,6 +11,7 @@ export default (
       onAddNfc={mockAction("onAddNfc")}
       onAddCloud={mockAction("onAddCloud")}
       onAddEmail={mockAction("onAddEmail")}
+      onAddTelegram={mockAction("onAddTelegram")}
     />
   </MultisigDraft.Container>
 );

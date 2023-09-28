@@ -12,6 +12,8 @@ export enum KeyRoute {
   NfcKey = "NfcKey",
   CloudKey = "CloudKey",
   ZAuthKey = "ZAuthKey",
+  TelegramKeyRequest = "TelegramKeyRequest",
+  TelegramKeyConfirm = "TelegramKeyConfirm",
 }
 
 export function keyRouteToKeyType(route: KeyRoute) {
@@ -32,6 +34,10 @@ export function keyRouteToKeyType(route: KeyRoute) {
       return KeyType.Cloud;
     case KeyRoute.ZAuthKey:
       return KeyType.ZAuth;
+    case KeyRoute.TelegramKeyConfirm:
+      return KeyType.Telegram;
+    case KeyRoute.TelegramKeyRequest:
+      return KeyType.Telegram;
   }
 }
 
@@ -56,6 +62,8 @@ export function keyTypeToKeyRoute(type: KeyType) {
       return KeyRoute.DeviceKey;
     case KeyType.ZAuth:
       return KeyRoute.ZAuthKey;
+    case KeyType.Telegram:
+      return KeyRoute.TelegramKeyRequest;
   }
 }
 
@@ -78,8 +86,16 @@ export interface KeyStackParamList extends ParamListBase {
   [KeyRoute.PhoneKeyRequest]: CommonKeyParams & {
     phoneNumber?: string;
   };
+  [KeyRoute.TelegramKeyRequest]: CommonKeyParams & {
+    chatID?: string;
+  };
   [KeyRoute.PhoneKeyConfirm]: CommonKeyParams & {
     phoneNumber: string;
+    securityQuestion: string;
+    securityAnswer: string;
+  };
+  [KeyRoute.TelegramKeyConfirm]: CommonKeyParams & {
+    chatID: string;
     securityQuestion: string;
     securityAnswer: string;
   };
