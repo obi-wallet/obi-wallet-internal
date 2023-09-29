@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { CommunicationType, MultisigKey } from "@obi-wallet/sdk";
+import { CommunicationType, KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -211,6 +211,7 @@ export const TelegramKeyConfirm = observer<TelegramKeyConfirmProps>(
                   value={key}
                   label="Enter Magic Code"
                   setValue={setKey}
+                  type={KeyType.Telegram}
                   onResend={async (type: CommunicationType) => {
                     const twilioClient = getTwilioClient({ demoMode, env });
                     // TODO: factor back out this workaround

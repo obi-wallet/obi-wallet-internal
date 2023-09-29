@@ -246,7 +246,7 @@ export const TelegramKeyRequest = observer<TelegramKeyRequestProps>(
                     return (
                       <TextInput
                         label="Chat ID"
-                        placeholder="Type Chat ID Here"
+                        placeholder="Paste or Type Chat ID Here"
                         style={{ flex: 1 }}
                         invalidMessage={fieldState.error?.message}
                         value={field.value}

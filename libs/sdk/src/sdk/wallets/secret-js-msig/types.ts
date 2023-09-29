@@ -10,6 +10,7 @@ export enum KeyType {
   Social = "social",
   Unity = "unity",
   ZAuth = "z-auth",
+  Telegram = "telegram",
 }
 
 export interface SerializedPublicKey {
