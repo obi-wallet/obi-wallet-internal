@@ -1,11 +1,11 @@
 import { useTheme } from "@emotion/react";
 import {
+  getOrCreateDeviceKeyPair,
   KeyType,
   MultisigKey,
   Sdk,
   SecretJsChainIds,
   SecretJsChains,
-  getOrCreateDeviceKeyPair,
 } from "@obi-wallet/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -21,17 +21,25 @@ import type { DeviceKeyProps, DeviceKeyScreenProps } from "./types";
 import { BiometricsData } from "./types";
 import { useStore } from "../../../../contexts";
 import { Alert, isSmallScreen, isSmallScreenNumber } from "../../../../helpers";
+import { useBalances } from "../../../../hooks";
 import {
   KeyFlow,
   OnboardingRoute,
   RecoverFrom,
   useRootNavigation,
 } from "../../../../router";
+import { Draft } from "../../../../stores";
 import { AsyncButton } from "../../../buttons";
 import { ObiFaceScannerIcon } from "../../../icons";
 import { KeyboardAwareScrollView } from "../../../keyboard-aware-scroll-view";
 import { OsmosisScreenContainer } from "../../../osmosis-screen-container";
 import { Text } from "../../../typography";
+
+const getUsablePublicKeyByType =
+  (draft: Draft<MultisigKey>) => async (keyType: KeyType) =>
+    pathOr(undefined, ["publicKey", "value"])(
+      draft.value.getUsableKeyOfType(keyType),
+    );
 
 export const DeviceKeyScreen = observer<DeviceKeyScreenProps>(
   function DeviceKeyScreen({ route }) {
@@ -86,6 +94,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 }) {
   const { draftsStore, unityStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
+  const unityDeviceKey = unityStore.currentDeviceId;
   const queryClient = useQueryClient();
   const [scannedBiometrics, setScannedBiometrics] = useState(false);
   const intl = useIntl();
@@ -155,7 +164,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
         };
       }
       console.log("device key set..");
-      void queryClient.prefetchQuery(
+      await queryClient.prefetchQuery(
         Sdk.chainId(
           draft.value.chainId || SecretJsChainIds.MAINNET,
         ).transactions.prepareKeyPairQuery(keyPair),
@@ -190,15 +199,16 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
     }
   }
 
+  // TODO: split into multiple fns that read keys otherwise create it
   async function submitWithRequiredKey(
-    deviceIsNew: boolean,
+    deviceIsNew: boolean, // would not be needed anymore
     recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
   ) {
     let requiredPubkey;
-    if (unityStore.getDeviceId) {
+    if (unityDeviceKey) {
       console.log("unity device id obtained");
       const proxyWallets = await draft.value.setUnityKey(
-        unityStore.getDeviceId,
+        unityDeviceKey,
         deviceIsNew,
         recoverFlow,
       );
@@ -211,13 +221,11 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
           recoverFrom: RecoverFrom.Unity,
         });
       }
-      requiredPubkey = draft.value.getUsableKeyOfType(KeyType.Unity)?.publicKey
-        .value;
+      requiredPubkey = await getUsablePublicKeyByType(draft)(KeyType.Unity);
       invariant(requiredPubkey, "could not get unity pubkey");
       onSubmit(deviceIsNew, requiredPubkey);
     } else if (scannedBiometrics) {
-      requiredPubkey = draft.value.getUsableKeyOfType(KeyType.Device)?.publicKey
-        .value;
+      requiredPubkey = await getUsablePublicKeyByType(draft)(KeyType.Device);
       invariant(requiredPubkey, "could not get device pubkey");
       onSubmit(deviceIsNew, requiredPubkey);
     } else {
@@ -255,7 +263,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
           demoMode: false,
         });
       } else if (!wallets) {
-        draft.value.createMagicAccount();
+        await draft.value.createMagicAccount();
         navigation.navigate(OnboardingRoute.CreateWallet, {
           flow: KeyFlow.CreateWallet,
           draftId,
@@ -342,7 +350,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
             >
               {/*TODO: refactor logic here*/}
 
-              {unityStore.getDeviceId ? (
+              {unityStore.currentDeviceId ? (
                 flow === KeyFlow.CreateWallet ? (
                   <FormattedMessage
                     id="onboarding4.authyourkeys.unity"
@@ -374,7 +382,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 ...theme.textStyles.light,
               }}
             >
-              {unityStore.getDeviceId ? (
+              {unityStore.currentDeviceId ? (
                 <FormattedMessage
                   id="onboarding4.authyourkeys.subtext.unity"
                   defaultMessage="With Obi, your Device, phone number, cloud, email, and more combine into a multi-factor authenticator."
@@ -394,7 +402,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 ...theme.textStyles.light,
               }}
             >
-              {unityStore.getDeviceId ? (
+              {unityStore.currentDeviceId ? (
                 <FormattedMessage
                   id="onboarding4.authyourkeys.explain.unity"
                   defaultMessage="Unity games on this device can provide a secure key, even if you reinstall a game. The games cannot use the key on their own."
@@ -414,7 +422,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
             {flow === KeyFlow.CreateWallet ? (
               <AsyncButton
                 label={intl.formatMessage({
-                  id: unityStore.getDeviceId
+                  id: unityStore.currentDeviceId
                     ? "onboarding4.biometrics.unitybutton"
                     : "onboarding4.biometrics.button",
                 })}
@@ -428,7 +436,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 {/*TODO: refactor submitWithRequiredKey method*/}
                 <AsyncButton
                   label={intl.formatMessage({
-                    id: unityStore.getDeviceId
+                    id: unityStore.currentDeviceId
                       ? "onboarding4.ihaveadevicekey.button.unity"
                       : "onboarding4.ihaveadevicekey.button",
                   })}

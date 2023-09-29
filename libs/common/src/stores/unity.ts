@@ -1,30 +1,30 @@
 import { makeObservable } from "mobx";
 
 export class UnityStore {
-  private static instance?: UnityStore;
+  static #instance?: UnityStore;
 
-  private _deviceId: string | undefined;
+  #deviceId: string | undefined;
 
   constructor() {
-    if (UnityStore.instance) {
-      return UnityStore.instance;
+    if (UnityStore.#instance) {
+      return UnityStore.#instance;
     }
     // lint likes to add _deviceID: true
     // prettier-ignore
     // eslint-disable-next-line mobx/exhaustive-make-observable
-    makeObservable<UnityStore, "getDeviceId" | "setDeviceId">(this, {
-      getDeviceId: true,
-      setDeviceId: true,
+    makeObservable<UnityStore, "currentDeviceId" | "deviceId">(this, {
+      currentDeviceId: true,
+      deviceId: true,
     });
-    UnityStore.instance = this;
-    this._deviceId = undefined;
+    UnityStore.#instance = this;
+    this.#deviceId = undefined;
   }
 
-  public get getDeviceId() {
-    return this._deviceId;
+  public get currentDeviceId(): string | undefined {
+    return this.#deviceId;
   }
 
-  public setDeviceId(deviceId: string) {
-    this._deviceId = deviceId;
+  public set deviceId(deviceId: string) {
+    this.#deviceId = deviceId;
   }
 }

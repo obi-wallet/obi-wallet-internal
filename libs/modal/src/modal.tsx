@@ -170,7 +170,7 @@ const MessageHandlers = observer(function MessageHandlers() {
           break;
         }
         case "@obi/set-device-id": {
-          store.unityStore.setDeviceId(data.payload);
+          store.unityStore.deviceId = data.payload;
           break;
         }
         case "@obi/get-signing-address": {
