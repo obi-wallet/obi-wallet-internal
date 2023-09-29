@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { CommunicationType } from "@obi-wallet/sdk";
+import { CommunicationType, KeyType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -16,6 +16,7 @@ export interface PhoneOneTimeCodeInputProps {
   label?: string;
   setValue(value: string): void;
   onResend(type: CommunicationType): Promise<void>;
+  type: KeyType;
 }
 
 export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
@@ -26,8 +27,9 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
     label,
     setValue,
     onResend,
+    type,
   }) {
-    const waitTime = 10;
+    const waitTime = 20;
     const theme = useTheme();
     const [resendButtonDisabled, setResendButtonDisabled] = useState(false);
     const [resendCounter, setResendCounter] = useState(waitTime);
@@ -88,24 +90,30 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
                   setResendButtonHit(true);
 
                   setValue("");
-
-                  await onResend(CommunicationType.SMS);
+                  if (type === KeyType.Telegram) {
+                    await onResend(CommunicationType.TELEGRAM);
+                    return;
+                  } else {
+                    await onResend(CommunicationType.SMS);
+                  }
                 }}
                 disabled={resendButtonDisabled}
               />
-              <InlineButton
-                style={{ ...theme.phoneKey?.inlineButton }}
-                label="Get a voice call instead"
-                onPress={async () => {
-                  setResendCounter(waitTime);
-                  setResendButtonHit(true);
+              {type === KeyType.Phone && (
+                <InlineButton
+                  style={{ ...theme.phoneKey?.inlineButton }}
+                  label="Get a voice call instead"
+                  onPress={async () => {
+                    setResendCounter(waitTime);
+                    setResendButtonHit(true);
 
-                  setValue("");
+                    setValue("");
 
-                  await onResend(CommunicationType.VOICE);
-                }}
-                disabled={resendButtonDisabled}
-              />
+                    await onResend(CommunicationType.VOICE);
+                  }}
+                  disabled={resendButtonDisabled}
+                />
+              )}
             </View>
           ) : (
             <Text style={{ color: "rgba(246, 245, 255, 0.6)", fontSize: 12 }}>
@@ -123,10 +131,14 @@ export const PhoneOneTimeCodeInput = observer<PhoneOneTimeCodeInputProps>(
               marginVertical: 10,
             }}
           >
-            <FormattedMessage
-              id="onboarding3.sendagain.info.checknumber"
-              defaultMessage="If you haven't received the Obi magic code please check if your phone number is correct:"
-            />{" "}
+            {type === KeyType.Telegram ? (
+              "If you haven't received the Obi magic code please check if your Chat ID is correct:"
+            ) : (
+              <FormattedMessage
+                id="onboarding3.sendagain.info.checknumber"
+                defaultMessage="If you haven't received the Obi magic code please check if your number is correct:"
+              />
+            )}{" "}
             <Text style={{ fontWeight: "bold" }}>{phoneNumber}.</Text>
           </Text>
         ) : null}
