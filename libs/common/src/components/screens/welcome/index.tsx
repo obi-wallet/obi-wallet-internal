@@ -50,11 +50,11 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
         chainStore.currentChain,
       );
       console.log("multisig created");
-      if (unityStore.getDeviceId) {
+      if (unityStore.currentDeviceId) {
         // even tho user clicked Sign Up,
         // let's check for wallets with this unity key immediately
         const proxyWallets = await newMultisigKey.setUnityKey(
-          unityStore.getDeviceId,
+          unityStore.currentDeviceId,
         );
         const draftId = draftsStore.create({
           original: newMultisigKey,
@@ -269,10 +269,10 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
         undefined,
         chainStore.currentChain,
       );
-      if (unityStore.getDeviceId) {
+      if (unityStore.currentDeviceId) {
         // check if this device key is already associated with wallets
         const proxyWallets = await newMultisigKey.setUnityKey(
-          unityStore.getDeviceId,
+          unityStore.currentDeviceId,
           false,
           true,
         );

@@ -52,11 +52,11 @@ const MultisigDraft = {
         );
         // check if there's a unity device ID, to do unity
         // otherwise still does webauthn
-        if (unityStore.getDeviceId) {
-          original.setUnityKey(unityStore.getDeviceId);
+        if (unityStore.currentDeviceId) {
+          await original.setUnityKey(unityStore.currentDeviceId);
         }
         const [key, _] = await getOrCreateDeviceKeyPair(false, false);
-        original.setDeviceKey(key);
+        await original.setDeviceKey(key);
         original.setPhoneKey({
           publicKey: await getTwilioClient({
             demoMode: true,

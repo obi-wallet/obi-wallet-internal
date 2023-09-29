@@ -69,11 +69,11 @@ export const KeysList = observer(function KeysList({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function getKeyDescription(key: any) {
-    if (key?.type === KeyType.Device && unityStore.getDeviceId) {
+    if (key?.type === KeyType.Device && unityStore.currentDeviceId) {
       return "Browser only";
     }
 
-    if (key?.type === KeyType.Unity && !unityStore.getDeviceId) {
+    if (key?.type === KeyType.Unity && !unityStore.currentDeviceId) {
       return "Unity only";
     }
 

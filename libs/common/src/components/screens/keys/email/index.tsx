@@ -198,7 +198,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   );
 
   function triggerAlert(copied: boolean) {
-    if (!unityStore.getDeviceId) {
+    if (!unityStore.currentDeviceId) {
       Alert.alert(
         copied ? "Confirm Recovery Link Saved" : "Confirm Email Sent",
         copied
@@ -342,7 +342,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                   type: "tendermint/PubKeySecp256k1",
                   value: emailPublicKey!,
                 });
-                if (unityStore.getDeviceId) {
+                if (unityStore.currentDeviceId) {
                   console.log("triggering onref");
                   onPressRef.current!();
                 }
@@ -415,7 +415,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                     value: emailPublicKey!,
                   });
                   await Linking.openURL(URL);
-                  if (unityStore.getDeviceId) {
+                  if (unityStore.currentDeviceId) {
                     onPressRef.current!();
                   }
                 } catch (e) {

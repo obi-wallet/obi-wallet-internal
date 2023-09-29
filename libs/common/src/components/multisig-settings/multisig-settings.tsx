@@ -48,11 +48,11 @@ export const MultisigSettings = observer<MultisigSettingsProps>(
         return { description: "Recovery Key" };
       }
 
-      if (key?.type === KeyType.Device && unityStore.getDeviceId) {
+      if (key?.type === KeyType.Device && unityStore.currentDeviceId) {
         return { description: "Browser only" };
       }
 
-      if (key?.type === KeyType.Unity && !unityStore.getDeviceId) {
+      if (key?.type === KeyType.Unity && !unityStore.currentDeviceId) {
         return { description: "Unity only" };
       }
 
