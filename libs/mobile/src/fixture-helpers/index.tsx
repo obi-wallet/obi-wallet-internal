@@ -41,7 +41,10 @@ export const MultisigDraft = {
 
     useAsyncEffect(async () => {
       if (!draft) {
-        const original = ObservableMultisigKey.create(chainStore.currentChain);
+        const original = ObservableMultisigKey.create(
+          undefined,
+          chainStore.currentChain,
+        );
         try {
           const [key, _] = await getOrCreateDeviceKeyPair(false, false);
           original.setDeviceKey(key);
@@ -57,6 +60,7 @@ export const MultisigDraft = {
           }),
           phoneNumber: "+1234567890",
           securityQuestion: securityQuestions[0].value,
+          privateKey: "",
         });
         draftsStore.create({
           original,

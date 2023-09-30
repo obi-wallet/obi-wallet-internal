@@ -11,7 +11,6 @@ import { WelcomeButton } from "@obi-wallet/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
-//import { Image, Text, TouchableOpacity, View } from "react-native";
 
 import { WelcomeLayout } from "./layout";
 import { useStore } from "../../../contexts";
@@ -62,7 +61,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
         if (proxyWallets?.length) {
           if (
             proxyWallets.length > 1 ||
-            proxyWallets[0].owner.threshold != "1"
+            proxyWallets[0].owner.threshold !== "1"
           ) {
             navigation.navigate(OnboardingRoute.SelectRecoveryMethod, {
               draftId,
@@ -77,7 +76,7 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
           }
         } else {
           const draft = draftsStore.get<MultisigKey>({ id: draftId });
-          draft.value.createMagicAccount();
+          await draft.value.createMagicAccount();
           navigation.navigate(OnboardingRoute.CreateWallet, {
             draftId,
             flow: KeyFlow.CreateWallet,
@@ -96,57 +95,6 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
         });
       }
     }
-
-    /*
-    async function onZepeto() {
-      const body = JSON.stringify({
-        homeChainId: "secret-4",
-        accessToken: zauthStore.currentTokens?.accessToken,
-        refreshToken: zauthStore.currentTokens?.refreshToken,
-      });
-      console.log("on zepeto create account msg: " + body);
-      const response = await fetch("/api/zauth/create-account", {
-        method: "POST",
-        body,
-      });
-
-      const { publicKey, proxyAddress, ethereumAccount } =
-        await response.json();
-
-      const wallet = ObservableMultisigWallet.create({
-        type: "multisig",
-        data: {
-          chain: "secret-4",
-          owner: {
-            keys: [
-              {
-                type: KeyType.ZAuth,
-                payload: {
-                  publicKey,
-                  privateKey: "",
-                },
-              },
-            ],
-            threshold: 1,
-          },
-          proxyAddress: {
-            v: 1,
-            address: proxyAddress,
-          },
-          gatekeeperConfig: createGatekeeperConfig().toJSON(),
-          singlesigWallets: [],
-          currentAccount: null,
-        },
-      });
-
-      sdkRootStore.ethereumDemoStore.setEthereumAccount(
-        proxyAddress,
-        ethereumAccount,
-      );
-      walletsStore.upsertWallet(wallet);
-      walletsStore.setCurrentWallet(wallet);
-    }
-    */
 
     async function loginFromSerializedDataAndUsableKey(
       serializedWallet: SerializedProxyWallet,
@@ -281,7 +229,10 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
           proxyWallets?.length === 1 &&
           proxyWallets[0].owner.threshold === "1"
         ) {
-          loginFromSerializedDataAndUsableKey(proxyWallets[0], newMultisigKey);
+          await loginFromSerializedDataAndUsableKey(
+            proxyWallets[0],
+            newMultisigKey,
+          );
         } else {
           // multiple proxy wallets, or none found for just
           // this device key
@@ -346,18 +297,15 @@ export const WelcomeScreen = observer<WelcomeScreenProps>(
 
 export interface WelcomeProps {
   onCreate(): void;
-  // onZepeto(): void;
   onRecover(): void;
   onEnterDemoMode(): void;
 }
 
 export const Welcome = observer<WelcomeProps>(function Welcome({
   onCreate,
-  // onZepeto,
   onRecover,
   onEnterDemoMode,
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const intl = useIntl();
   const theme = useTheme();
 
@@ -376,21 +324,6 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
                 onPress={onRecover}
               />
             );
-          // case WelcomeButton.Login:
-          //   if (walletsStore.wallets.length === 0) return null;
-          //   return (
-          //     <Button
-          //       key={button}
-          //       label={intl.formatMessage({
-          //         id: "onboarding1.login",
-          //         defaultMessage: "Login",
-          //       })}
-          //       flavor="primary"
-          //       onPress={() => {
-          //         accountPickerModalProps.open();
-          //       }}
-          //     />
-          //   );
           case WelcomeButton.GetStarted:
             return (
               <Button
@@ -463,50 +396,3 @@ export const Welcome = observer<WelcomeProps>(function Welcome({
     return theme.i18n.welcome.subTitle;
   }
 });
-
-/* const ZepetoButton = observer(function ZepetoButton({
-  onPress,
-}: {
-  onPress?: () => void;
-}) {
-  const theme = useTheme();
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={{
-        backgroundColor: "white",
-        padding: 10,
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "row",
-        marginBottom: theme.welcome.buttonSpacing ?? theme.spacing[16],
-        borderWidth: 3,
-        borderColor: theme.colors.primary,
-        borderRadius: theme.buttonFlavors.primary.borderRadius,
-      }}
-    >
-      <Image
-        source={{
-          uri: "/zepeto-logo.png",
-        }}
-        style={{ width: 38, height: 38 }}
-      />
-      <View
-        style={{
-          marginLeft: 10,
-          alignItems: "center",
-        }}
-      >
-        <Text
-          style={{
-            fontWeight: "bold",
-            fontSize: 15,
-            color: theme.colors.primary,
-          }}
-        >
-          USE MY ZEPETO APP
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
-}); */

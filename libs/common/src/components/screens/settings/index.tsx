@@ -26,12 +26,7 @@ import {
   SettingsRoute,
   useRootNavigation,
 } from "../../../router";
-import {
-  HelpAndSupportIcon,
-  LogoutIcon,
-  MultisigIcon,
-  NewSettingsIcon,
-} from "../../icons";
+import { HelpAndSupportIcon, LogoutIcon, MultisigIcon } from "../../icons";
 import { OsmosisScreenContainer } from "../../osmosis-screen-container";
 
 export const SettingsScreen = observer(function SettingsScreen() {

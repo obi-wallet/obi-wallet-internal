@@ -7,8 +7,5 @@ export default (
     onCreate={mockAction("onCreate")}
     onRecover={mockAction("onRecover")}
     onEnterDemoMode={mockAction("onEnterDemoMode")}
-    onZepeto={function (): void {
-      throw new Error("Function not implemented.");
-    }}
   />
 );

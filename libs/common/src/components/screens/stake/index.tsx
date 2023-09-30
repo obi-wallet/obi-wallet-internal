@@ -56,6 +56,7 @@ import { KeyboardAvoidingView } from "../../keyboard-avoiding-view";
 import { RefreshableFlatList } from "../../refreshable-flat-list";
 import { BaseTextInput, Text } from "../../typography";
 
+// TODO: This is the duplicate, this enum should have single source of truth
 enum StakeTab {
   Validators = "Validators",
   Delegations = "Delegations",
