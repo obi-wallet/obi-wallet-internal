@@ -93,7 +93,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 }) {
   const { draftsStore, unityStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
-  const unityDeviceKey = unityStore.getDeviceId;
+  const unityDeviceKey = unityStore.currentDeviceId;
   const queryClient = useQueryClient();
   const [scannedBiometrics, setScannedBiometrics] = useState(false);
   const intl = useIntl();
@@ -349,7 +349,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
             >
               {/*TODO: refactor logic here*/}
 
-              {unityStore.getDeviceId ? (
+              {unityStore.currentDeviceId ? (
                 flow === KeyFlow.CreateWallet ? (
                   <FormattedMessage
                     id="onboarding4.authyourkeys.unity"
@@ -381,7 +381,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 ...theme.textStyles.light,
               }}
             >
-              {unityStore.getDeviceId ? (
+              {unityStore.currentDeviceId ? (
                 <FormattedMessage
                   id="onboarding4.authyourkeys.subtext.unity"
                   defaultMessage="With Obi, your Device, phone number, cloud, email, and more combine into a multi-factor authenticator."
@@ -401,7 +401,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 ...theme.textStyles.light,
               }}
             >
-              {unityStore.getDeviceId ? (
+              {unityStore.currentDeviceId ? (
                 <FormattedMessage
                   id="onboarding4.authyourkeys.explain.unity"
                   defaultMessage="Unity games on this device can provide a secure key, even if you reinstall a game. The games cannot use the key on their own."
@@ -421,7 +421,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
             {flow === KeyFlow.CreateWallet ? (
               <AsyncButton
                 label={intl.formatMessage({
-                  id: unityStore.getDeviceId
+                  id: unityStore.currentDeviceId
                     ? "onboarding4.biometrics.unitybutton"
                     : "onboarding4.biometrics.button",
                 })}
@@ -435,7 +435,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 {/*TODO: refactor submitWithRequiredKey method*/}
                 <AsyncButton
                   label={intl.formatMessage({
-                    id: unityStore.getDeviceId
+                    id: unityStore.currentDeviceId
                       ? "onboarding4.ihaveadevicekey.button.unity"
                       : "onboarding4.ihaveadevicekey.button",
                   })}

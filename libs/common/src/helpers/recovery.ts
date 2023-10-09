@@ -54,7 +54,7 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
   console.log("activateRecoveredWalletAndIsUpdateRequired()");
   const { unityStore, walletsStore } = store;
   let activeDeviceKey;
-  unityStore.getDeviceId
+  unityStore.currentDeviceId
     ? (activeDeviceKey = draft.value.getUsableKeyOfType(KeyType.Unity))
     : (activeDeviceKey = draft.value.getUsableKeyOfType(KeyType.Device));
 
@@ -207,8 +207,8 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
     );
 
     draft.commit({ original: currentOwner });
-    if (unityStore.getDeviceId) {
-      await draft.value.setUnityKey(unityStore.getDeviceId);
+    if (unityStore.currentDeviceId) {
+      await draft.value.setUnityKey(unityStore.currentDeviceId);
     } else {
       await draft.value.setDeviceKey(activeDeviceKey.payload);
     }
