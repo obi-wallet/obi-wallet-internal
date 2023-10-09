@@ -1,3 +1,4 @@
+import { randomBytes } from "ethers";
 import * as R from "ramda";
 import {
   Msg,
@@ -23,8 +24,6 @@ import { Message, MessageJson } from "../../../transactions";
 import { CodeIds, Token } from "../../common";
 import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
-import { random } from "jscrypto/lib/random";
-import { randomBytes } from "ethers";
 
 function notImplemented(message: string) {
   warning(false, message);

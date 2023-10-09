@@ -1,4 +1,4 @@
-import { CommunicationType } from "@obi-wallet/sdk";
+import { CommunicationType, KeyType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -104,6 +104,7 @@ export const PhoneNumberBottomSheetContent =
                 onResend={async (type) => {
                   await onRequest({ securityAnswer, type });
                 }}
+                type={KeyType.Phone}
               />
             </View>
 

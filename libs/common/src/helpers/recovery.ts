@@ -54,7 +54,7 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
   console.log("activateRecoveredWalletAndIsUpdateRequired()");
   const { unityStore, walletsStore } = store;
   let activeDeviceKey;
-  unityStore.currentDeviceId
+  unityStore.getDeviceId
     ? (activeDeviceKey = draft.value.getUsableKeyOfType(KeyType.Unity))
     : (activeDeviceKey = draft.value.getUsableKeyOfType(KeyType.Device));
 
@@ -74,10 +74,6 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
       "Phone or email key is required",
     );
   }
-
-  // if user has tried to recover with phone key and got no match, then tries
-  // email... or vice versa... they can end up in a bad state. For this reason...
-  const foundMismatch: boolean = false;
 
   const serializedData: Serialized<MultisigWallet>["data"] = {
     chain: draft.value.chainId,
@@ -211,8 +207,8 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
     );
 
     draft.commit({ original: currentOwner });
-    if (unityStore.currentDeviceId) {
-      await draft.value.setUnityKey(unityStore.currentDeviceId);
+    if (unityStore.getDeviceId) {
+      await draft.value.setUnityKey(unityStore.getDeviceId);
     } else {
       await draft.value.setDeviceKey(activeDeviceKey.payload);
     }
