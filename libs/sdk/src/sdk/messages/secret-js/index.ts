@@ -23,6 +23,8 @@ import { Message, MessageJson } from "../../../transactions";
 import { CodeIds, Token } from "../../common";
 import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
+import { random } from "jscrypto/lib/random";
+import { randomBytes } from "ethers";
 
 function notImplemented(message: string) {
   warning(false, message);
@@ -367,6 +369,8 @@ export class SecretJsMessages extends AbstractMessages<string> {
             ],
           },
           update_delay: 0,
+          // next_hash_seed is some randomness and doesn't need to be stored at all
+          next_hash_seed: randomBytes(32).toString(),
         },
       },
     });
