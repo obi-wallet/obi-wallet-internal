@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { CommunicationType, MultisigKey } from "@obi-wallet/sdk";
+import { CommunicationType, KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -227,6 +227,7 @@ export const PhoneKeyConfirm = observer<PhoneKeyConfirmProps>(
                     });
                     */
                   }}
+                  type={KeyType.Phone}
                 />
               </View>
               <View style={{ marginVertical: 20 }}>
