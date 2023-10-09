@@ -49,6 +49,7 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
           );
           while (!draft.value.setupDetails?.evmUserContractAddress) {
             await new Promise((resolve) => {
+              console.log("waiting");
               setTimeout(resolve, 1_000);
             });
           }
@@ -116,6 +117,13 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             flow: KeyFlow.CreateWallet,
           });
         }}
+        onAddTelegram={() => {
+          console.log("onAddTelegram");
+          navigation.navigate(KeyRoute.TelegramKeyRequest, {
+            ...params,
+            flow: KeyFlow.CreateWallet,
+          });
+        }}
       />
     );
   },
@@ -131,6 +139,7 @@ export interface CreateWalletProps {
   onAddNfc(): void;
   onAddCloud(): void;
   onAddEmail(): void;
+  onAddTelegram(): void;
 }
 
 export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
@@ -142,6 +151,7 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   onAddSocial,
   onAddCloud,
   onAddEmail,
+  onAddTelegram,
   loading,
 }) {
   const { draftsStore } = useStore();
@@ -149,6 +159,7 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
 
   const hasZAuthKey = draft.value.hasKeyOfType(KeyType.ZAuth);
   const hasPhoneKey = draft.value.hasKeyOfType(KeyType.Phone);
+  const hasTelegramKey = draft.value.hasKeyOfType(KeyType.Telegram);
   const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
   const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
   const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
@@ -193,6 +204,17 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
           : {
               label: "Add",
               onPress: onAddPhone,
+            },
+        [KeyType.Telegram]: hasTelegramKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeKeyOfType(KeyType.Telegram);
+              },
+            }
+          : {
+              label: "Add",
+              onPress: onAddTelegram,
             },
         [KeyType.Nfc]: hasNfcKey
           ? {
