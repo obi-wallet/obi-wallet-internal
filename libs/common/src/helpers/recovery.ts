@@ -165,6 +165,7 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
             };
         }
       }),
+      signingPublicKey: selectedWallet.signingPublicKey,
       evmSigningAddress: selectedWallet.evmSigningAddress!,
       evmUserContractAddress: selectedWallet.evmUserContractAddress,
     },
@@ -179,6 +180,7 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
     },
     singlesigWallets: [],
     currentAccount: null,
+    signingPublicKey: selectedWallet.signingPublicKey,
     evmSigningAddress: selectedWallet.evmSigningAddress!,
     evmUserContractAddress: selectedWallet.evmUserContractAddress,
   };
@@ -198,6 +200,7 @@ export async function activateRecoveredWalletAndIsUpdateRequired(
     const currentOwner = ObservableMultisigKey.create(
       {
         homeAccountAddress: serializedData.proxyAddress.address,
+        signingPublicKey: serializedData.signingPublicKey,
         evmSigningAddress: serializedData.evmSigningAddress,
         evmUserContractAddress: serializedData.evmUserContractAddress,
         ownerIndex: 0,

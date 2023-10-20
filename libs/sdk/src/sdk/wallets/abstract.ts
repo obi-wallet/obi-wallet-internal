@@ -14,6 +14,7 @@ export abstract class AbstractWalletsSdk {
     demoMode: boolean;
   }): Promise<{
     homeAccountAddress: string;
+    signingPublicKey: string;
     evmSigningAddress: string;
     evmUserContractAddress: string;
   }>;

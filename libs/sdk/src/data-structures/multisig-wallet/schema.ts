@@ -29,6 +29,7 @@ const MultisigWalletData = migratable(
   z.object({
     chain: ChainIdSchema,
     owner: MultisigKey.schema.migratableSchema,
+    signingPublicKey: z.string(),
     evmSigningAddress: z.string(),
     evmUserContractAddress: z.string(),
     proxyAddress: ProxyAddress.migratableSchema,

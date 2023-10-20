@@ -36,6 +36,7 @@ export class CosmosSdkMessages extends AbstractMessages<string> {
     _newOwner: MultisigKey,
     _newOwnerAddress: string,
     _userAccountContractAddress: string,
+    _signingPublicKey: string,
     _evmUserContractAddress: string,
     _evmSigningAddress: string,
     _sender: string,

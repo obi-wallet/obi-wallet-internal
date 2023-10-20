@@ -71,7 +71,7 @@ export async function generateEthereumAccount({
   console.log(broadcastTransactionResult);
 
   return {
-    publicKey: ethKeyPair.publicKey,
+    signingPublicKey: ethKeyPair.publicKey,
     evmSigningAddress,
     evmUserContractAddress,
   };

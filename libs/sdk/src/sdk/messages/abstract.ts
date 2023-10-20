@@ -142,6 +142,7 @@ export abstract class AbstractMessages<T> {
     newOwner: MultisigKey,
     newOwnerAddress: string,
     userAccountContractAddress: string,
+    signingPublicKey: string,
     evmUserContractAddress: string,
     evmSigningAddress: string,
     sender: string,

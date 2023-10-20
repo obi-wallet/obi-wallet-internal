@@ -8,6 +8,7 @@ import { AbstractMigratable } from "../migratable";
 
 export type SetupMultisigKeyDetails = {
   homeAccountAddress: string;
+  signingPublicKey: string;
   evmSigningAddress: string;
   evmUserContractAddress: string;
   ownerIndex: number;
@@ -19,6 +20,7 @@ export function createMultisigKey(
   serialized: AbstractMigratable<typeof MultisigKeySchema> = {
     keys: [],
     threshold: 1,
+    signingPublicKey: "",
     evmSigningAddress: "",
     evmUserContractAddress: "",
   },

@@ -144,7 +144,7 @@ async function fetchOrCreateZauthUser(
   const homeChain: HomeChain = {
     zAuthKeyPair: keyPair,
     targetChain: {
-      publicKey: ethereumAccount.publicKey,
+      publicKey: ethereumAccount.signingPublicKey,
       evmAddress: ethereumAccount.evmUserContractAddress,
     },
     proxyAddress,

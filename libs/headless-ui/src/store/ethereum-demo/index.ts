@@ -20,7 +20,7 @@ import { AbstractKVStore } from "../../kv-store";
 import { WalletsStore } from "../wallets";
 
 export interface EthereumAccount {
-  publicKey: Secp256k1PublicKey;
+  signingPublicKey: Secp256k1PublicKey;
   evmSigningAddress: string;
   evmUserContractAddress: string;
 }

@@ -44,6 +44,7 @@ export class MultisigWallet {
     protected _chainId: ChainId,
     protected _owner: MultisigKey,
     protected _proxyAddress: string,
+    protected _signingPublicKey: string,
     protected _evmSigningAddress: string,
     protected _evmUserContractAddress: string,
     protected _gatekeeperConfig: GatekeeperConfig,
@@ -67,6 +68,7 @@ export class MultisigWallet {
         gatekeeperConfig: this._gatekeeperConfig.toJSON(),
         singlesigWallets: this._singlesigWallets.map((s) => s.toJSON()),
         currentAccount: this._currentAccount,
+        signingPublicKey: this._signingPublicKey,
         evmSigningAddress: this._evmSigningAddress,
         evmUserContractAddress: this._evmUserContractAddress,
       },
@@ -142,6 +144,7 @@ export class MultisigWallet {
 
   public async updateOwner(
     newOwner: MultisigKey,
+    signingPublicKey: string,
     evmSigningAddress: string,
     evmUserContractAddress: string,
   ) {
@@ -169,6 +172,7 @@ export class MultisigWallet {
           // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
           newOwner.getUsableKeyOfType(KeyType.Phone)?.payload.privateKey!,
       ),
+      signingPublicKey,
       evmSigningAddress,
       evmUserContractAddress,
     );

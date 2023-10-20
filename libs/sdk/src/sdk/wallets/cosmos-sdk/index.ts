@@ -10,6 +10,7 @@ export class CosmosSdkWalletsSdk extends AbstractWalletsSdk {
     demoMode: boolean;
   }): Promise<{
     homeAccountAddress: string;
+    signingPublicKey: string;
     evmSigningAddress: string;
     evmUserContractAddress: string;
   }> {

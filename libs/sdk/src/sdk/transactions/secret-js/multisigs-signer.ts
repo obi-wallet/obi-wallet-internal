@@ -8,6 +8,7 @@ import {
   StdSignDoc,
 } from "@cosmjs/amino";
 import { wasmTypes } from "@cosmjs/cosmwasm-stargate/build/modules";
+import { Sha256 } from "@cosmjs/crypto";
 import {
   EncodeObject,
   Registry,
@@ -26,7 +27,6 @@ import {
   Signer,
 } from "../../../signers";
 import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
-import { Sha256 } from "@cosmjs/crypto";
 
 const registry = new Registry([...defaultRegistryTypes, ...wasmTypes]);
 
@@ -186,9 +186,7 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     } else if (this.signCosmosMsgInput) {
       const serialized = serializeSignDoc(this.signCosmosMsgInput);
       const message = new Sha256(serialized).digest();
-      return await offlineAminoSigner.signMessage(
-        message
-      );
+      return await offlineAminoSigner.signMessage(message);
     } else {
       invariant(this.signMessage, "signMessage must be defined");
       return await offlineAminoSigner.signMessage(

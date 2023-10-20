@@ -381,6 +381,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
     newOwner: MultisigKey,
     newOwnerAddress: string,
     userAccountContractAddress: string,
+    signingPublicKey: string,
     evmUserContractAddress: string,
     evmSigningAddress: string,
     sender: string,

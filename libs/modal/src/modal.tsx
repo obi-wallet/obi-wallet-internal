@@ -23,7 +23,7 @@ import { StateRenderer } from "./state-renderer";
 import "./vuplex-polyfill.js";
 
 export interface EthereumAccount {
-  publicKey: Secp256k1PublicKey;
+  signingPublicKey: Secp256k1PublicKey;
   evmSigningAddress: string;
   evmUserContractAddress: string;
 }

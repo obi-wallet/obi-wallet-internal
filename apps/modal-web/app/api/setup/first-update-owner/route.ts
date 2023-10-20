@@ -15,6 +15,7 @@ export interface FirstUpdateOwnerRequestBody {
   owner: MultisigKey;
   ownerAddress: string;
   homeAccountAddress: string;
+  signingPublicKey: string;
   evmUserContractAddress: string;
   evmSigningAddress: string;
   ownerIndex: number;
@@ -77,6 +78,7 @@ export async function POST(request: Request) {
     body.owner,
     body.ownerAddress,
     userAccountAddress.user_account_address,
+    body.signingPublicKey,
     body.evmUserContractAddress,
     body.evmSigningAddress,
     wallet.address,

@@ -27,6 +27,7 @@ import { WalletMeta } from "../multisig-wallet";
 
 export class MultisigKey {
   // TODO: private, getters
+  public signingPublicKey: string;
   public evmSigningAddress: string;
   public evmUserContractAddress: string;
   public get schema() {
@@ -50,6 +51,7 @@ export class MultisigKey {
       ) => MultisigKey;
     },
   ) {
+    this.signingPublicKey = "";
     this.evmSigningAddress = "";
     this.evmUserContractAddress = "";
   }
@@ -65,6 +67,7 @@ export class MultisigKey {
     return {
       keys: this._keys.map((key: Key) => key.toJSON()),
       threshold: this._threshold,
+      signingPublicKey: this.signingPublicKey,
       evmSigningAddress: this.evmSigningAddress,
       evmUserContractAddress: this.evmUserContractAddress,
     };
@@ -183,10 +186,11 @@ export class MultisigKey {
         evmSigningAddress: string;
         evmUserContractAddress: string;
       } = addKeyResponseJson;
-      const _unused = { success, publicKey };
+      const _unused = { success };
 
       this._setupDetails = {
         homeAccountAddress,
+        signingPublicKey: publicKey.value,
         evmSigningAddress,
         evmUserContractAddress,
         ownerIndex,
@@ -266,6 +270,7 @@ export class MultisigKey {
     if (!this._setupDetails) {
       this._setupDetails = {
         homeAccountAddress: "",
+        signingPublicKey: "",
         evmSigningAddress: "",
         evmUserContractAddress: "",
         ownerIndex: 0,
@@ -322,6 +327,7 @@ export class MultisigKey {
     if (!this._setupDetails) {
       this._setupDetails = {
         homeAccountAddress: "",
+        signingPublicKey: "",
         evmSigningAddress: "",
         evmUserContractAddress: "",
         ownerIndex: 0,

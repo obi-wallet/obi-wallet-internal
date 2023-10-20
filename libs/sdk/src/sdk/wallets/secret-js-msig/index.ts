@@ -19,6 +19,7 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
     demoMode: boolean;
   }): Promise<{
     homeAccountAddress: string;
+    signingPublicKey: string;
     evmSigningAddress: string;
     evmUserContractAddress: string;
   }> {
@@ -27,6 +28,7 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
 
     const {
       homeAccountAddress,
+      signingPublicKey,
       evmSigningAddress,
       evmUserContractAddress,
       ownerIndex,
@@ -52,6 +54,7 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
         address: homeAccountAddress,
         codeId: chain.currentCodeIds.userAccount,
       },
+      signingPublicKey: signingPublicKey,
       evmUserContractAddress: evmUserContractAddress,
       evmSigningAddress: evmSigningAddress,
       owner: {
@@ -104,6 +107,7 @@ export class SecretJsMsigWalletSdk extends AbstractWalletsSdk {
 
     return {
       homeAccountAddress,
+      signingPublicKey,
       evmSigningAddress,
       evmUserContractAddress,
     };
