@@ -3,6 +3,7 @@ import {
   createMultisigThresholdPubkey,
   MultisigThresholdPubkey,
   pubkeyToAddress,
+  serializeSignDoc,
   StdFee,
   StdSignDoc,
 } from "@cosmjs/amino";
@@ -25,6 +26,7 @@ import {
   Signer,
 } from "../../../signers";
 import { CosmJsOfflineAminoSigner } from "../../common/cosm-js";
+import { Sha256 } from "@cosmjs/crypto";
 
 const registry = new Registry([...defaultRegistryTypes, ...wasmTypes]);
 
@@ -75,6 +77,9 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
   protected chainId: SecretJsChainId;
   protected account: Account;
   protected fee: StdFee;
+  // when signing for a target cosmosSDK chain
+  protected signCosmosMsgInput: StdSignDoc | undefined;
+  // when signing on home chain
   protected signDoc: StdSignDoc | undefined;
   protected signHash: string | undefined;
   protected signMessage: string | undefined;
@@ -108,11 +113,12 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       multisigPublicKey.value.pubkeys,
       parseInt(multisigPublicKey.value.threshold, 10),
     );
+    this.signCosmosMsgInput = undefined;
     this.signMessage = undefined;
     this.signHash = undefined;
     const { type, value } = messages[0];
 
-    if (["raw", "eth", "hash"].includes(type)) {
+    if (["raw", "eth", "hash", "cosmos"].includes(type)) {
       console.log(
         `messages[0] ${type} passes with messages ${JSON.stringify({
           type,
@@ -131,6 +137,8 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
           console.log(`setting signUserOpInput to ${JSON.stringify(value)}`);
           this.signUserOpInput = value as EthTxInput;
           break;
+        case "cosmos":
+          this.signCosmosMsgInput = value as StdSignDoc;
       }
       this.signDoc = undefined;
     } else {
@@ -144,6 +152,10 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       };
       this.signMessage = undefined;
     }
+  }
+
+  public getSignCosmosMsgInput() {
+    return this.signCosmosMsgInput;
   }
 
   public getSignHash() {
@@ -171,6 +183,12 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
       return await offlineAminoSigner.signStdSignDoc(this.signDoc);
     } else if (this.signHash) {
       return await offlineAminoSigner.signMessage(Buffer.from(this.signHash!));
+    } else if (this.signCosmosMsgInput) {
+      const serialized = serializeSignDoc(this.signCosmosMsgInput);
+      const message = new Sha256(serialized).digest();
+      return await offlineAminoSigner.signMessage(
+        message
+      );
     } else {
       invariant(this.signMessage, "signMessage must be defined");
       return await offlineAminoSigner.signMessage(
