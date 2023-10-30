@@ -143,15 +143,15 @@ export const ztxTheme: CustomTheme = {
   },
   textStyles: {
     bold: {
-      fontFamily: "TT Hoves Pro",
+      // fontFamily: "",
       fontWeight: "bold",
     },
     regular: {
-      fontFamily: "TT Hoves Pro",
+      // fontFamily: "",
       fontWeight: "normal",
     },
     light: {
-      fontFamily: "TT Hoves Pro",
+      // fontFamily: "",
       fontWeight: "300",
     },
   },
@@ -160,7 +160,7 @@ export const ztxTheme: CustomTheme = {
       color: colors.grey7,
       textTransform: "none",
       fontSize: 12,
-      fontFamily: "TT Hoves Pro",
+      // fontFamily: "",
     },
     containerStyle: {
       borderWidth: 0,
@@ -172,7 +172,7 @@ export const ztxTheme: CustomTheme = {
   textInput: {
     labelStyle: {
       fontSize: 12,
-      fontFamily: "TT Hoves Pro",
+      // fontFamily: "",
       fontStyle: "normal",
       fontWeight: "300",
       color: colors.grey7,
@@ -180,7 +180,7 @@ export const ztxTheme: CustomTheme = {
     },
     inputStyle: {
       fontSize: 14,
-      fontFamily: "TT Hoves Pro",
+      // fontFamily: "",
       fontStyle: "normal",
       fontWeight: "400",
       color: colors.grey8,
@@ -202,14 +202,14 @@ export const ztxTheme: CustomTheme = {
   },
   titleFalvors: {
     title: {
-      fontFamily: "TT Hoves Pro",
+      // fontFamily: "",
       fontWeight: "500",
       fontSize: 22,
       lineHeight: 22,
       color: colors.grey8,
     },
     subTitle: {
-      fontFamily: "TT Hoves Pro",
+      // fontFamily: "",
       fontWeight: "500",
       fontSize: 22,
       lineHeight: 22,
@@ -218,14 +218,14 @@ export const ztxTheme: CustomTheme = {
   },
   phoneKey: {
     title1: {
-      fontFamily: "TT Hoves Pro",
+      // fontFamily: "",
       fontWeight: "500",
       fontSize: 22,
       lineHeight: 22,
       color: colors.grey8,
     },
     title2: {
-      fontFamily: "TT Hoves Pro",
+      // fontFamily: "",
       fontWeight: "500",
       fontSize: 22,
       lineHeight: 22,
@@ -236,7 +236,7 @@ export const ztxTheme: CustomTheme = {
       padding: 16,
       marginVertical: 36,
       text: {
-        fontFamily: "TT Hoves Pro",
+        // fontFamily: "",
         fontWeight: "400",
         fontSize: 14,
         lineHeight: 18,
@@ -268,7 +268,7 @@ export const ztxTheme: CustomTheme = {
     },
     titleStyles: {
       textAlign: "center",
-      fontFamily: "Sci Fi Bronze",
+      // fontFamily: "",
       fontSize: 22,
       fontStyle: "normal",
       fontWeight: "400",
@@ -331,7 +331,7 @@ export const ztxTheme: CustomTheme = {
   },
   send: {
     title: {
-      fontFamily: "TT Hoves Pro",
+      // fontFamily: "",
       fontWeight: "normal",
       fontSize: 22,
       textAlign: "left",
@@ -392,7 +392,7 @@ export const ztxTheme: CustomTheme = {
   },
   receive: {
     title: {
-      fontFamily: "TT Hoves Pro",
+      // fontFamily: "",
       fontWeight: "normal",
       fontSize: 22,
       textAlign: "left",
