@@ -57,6 +57,7 @@ export const MultisigSettingsScreen = observer(
     const hasSocialKey = draft.value.hasKeyOfType(KeyType.Social);
     const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
     const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
+    const hasLedgerKey = draft.value.hasKeyOfType(KeyType.Ledger);
 
     return (
       <MultisigSettings
@@ -143,6 +144,24 @@ export const MultisigSettingsScreen = observer(
                 label: "Add",
                 onPress: () => {
                   navigation.navigate(KeyRoute.EmailKey, {
+                    draftId,
+                    flow: KeyFlow.EditWallet,
+                    demoMode: wallet.isDemo,
+                  });
+                },
+              },
+
+          [KeyType.Ledger]: hasLedgerKey
+            ? {
+                label: "Remove",
+                onPress: () => {
+                  draft.value.removeKeyOfType(KeyType.Ledger);
+                },
+              }
+            : {
+                label: "Add",
+                onPress: () => {
+                  navigation.navigate(KeyRoute.LedgerKey, {
                     draftId,
                     flow: KeyFlow.EditWallet,
                     demoMode: wallet.isDemo,

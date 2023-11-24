@@ -14,6 +14,7 @@ export enum KeyRoute {
   ZAuthKey = "ZAuthKey",
   TelegramKeyRequest = "TelegramKeyRequest",
   TelegramKeyConfirm = "TelegramKeyConfirm",
+  LedgerKey = "LedgerKey",
 }
 
 export function keyRouteToKeyType(route: KeyRoute) {
@@ -38,6 +39,8 @@ export function keyRouteToKeyType(route: KeyRoute) {
       return KeyType.Telegram;
     case KeyRoute.TelegramKeyRequest:
       return KeyType.Telegram;
+    case KeyRoute.LedgerKey:
+      return KeyType.Ledger;
   }
 }
 
@@ -64,6 +67,8 @@ export function keyTypeToKeyRoute(type: KeyType) {
       return KeyRoute.ZAuthKey;
     case KeyType.Telegram:
       return KeyRoute.TelegramKeyRequest;
+    case KeyType.Ledger:
+      return KeyRoute.LedgerKey;
   }
 }
 
@@ -107,4 +112,5 @@ export interface KeyStackParamList extends ParamListBase {
     targetPublicKey?: string;
   };
   [KeyRoute.ZAuthKey]: CommonKeyParams;
+  [KeyRoute.LedgerKey]: CommonKeyParams;
 }

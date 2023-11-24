@@ -416,6 +416,13 @@ export class MultisigKey {
     });
   }
 
+  public async setLedgerKey(publicKey: Secp256k1PublicKey) {
+    this.setKey({
+      type: KeyType.Ledger,
+      payload: { publicKey },
+    });
+  }
+
   protected setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
     this._keys = this._keys.filter((k) => key.type !== k.type);
     this._keys.push(this._factories.Key.create(key));

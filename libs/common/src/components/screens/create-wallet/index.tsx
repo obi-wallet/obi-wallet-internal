@@ -3,8 +3,7 @@ import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { View } from "react-native";
-import { Modal } from "react-native";
+import { Modal, View } from "react-native";
 
 import { useStore } from "../../../contexts";
 import {
@@ -124,6 +123,12 @@ export const CreateWalletScreen = observer<CreateWalletScreenProps>(
             flow: KeyFlow.CreateWallet,
           });
         }}
+        onAddLedger={() => {
+          navigation.navigate(KeyRoute.LedgerKey, {
+            ...params,
+            flow: KeyFlow.CreateWallet,
+          });
+        }}
       />
     );
   },
@@ -140,6 +145,7 @@ export interface CreateWalletProps {
   onAddCloud(): void;
   onAddEmail(): void;
   onAddTelegram(): void;
+  onAddLedger(): void;
 }
 
 export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
@@ -152,6 +158,7 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   onAddCloud,
   onAddEmail,
   onAddTelegram,
+  onAddLedger,
   loading,
 }) {
   const { draftsStore } = useStore();
@@ -164,6 +171,7 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
   const hasNfcKey = draft.value.hasKeyOfType(KeyType.Nfc);
   const hasCloudKey = draft.value.hasKeyOfType(KeyType.Cloud);
   const hasEmailKey = draft.value.hasKeyOfType(KeyType.Email);
+  const hasLedgerKey = draft.value.hasKeyOfType(KeyType.Ledger);
   const theme = useTheme();
   console.log(draft.value);
   return (
@@ -249,6 +257,14 @@ export const CreateWallet = observer<CreateWalletProps>(function CreateWallet({
               label: "Add",
               onPress: onAddEmail,
             },
+        [KeyType.Ledger]: hasLedgerKey
+          ? {
+              label: "Remove",
+              onPress: () => {
+                draft.value.removeKeyOfType(KeyType.Ledger);
+              },
+            }
+          : { label: "Add", onPress: onAddLedger },
       }}
     >
       <Modal
