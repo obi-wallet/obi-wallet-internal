@@ -97,17 +97,17 @@ export function useKeyMetaData() {
       // TODO:
       Icon: ZtxPlatformRecoveryIcon,
     },
-    [ComingSoonKeyType.Telegram]: {
+    [KeyType.Telegram]: {
       label: "Telegram Key",
       Icon: TelegramKeyIcon as ComponentType<SvgProps>,
+    },
+    [KeyType.Ledger]: {
+      label: "Ledger Key",
+      Icon: LedgerKeyIcon,
     },
     [ComingSoonKeyType.Map]: {
       label: "Map Point Key",
       Icon: MapKeyIcon,
-    },
-    [ComingSoonKeyType.Ledger]: {
-      label: "Ledger Key",
-      Icon: LedgerKeyIcon,
     },
   };
 

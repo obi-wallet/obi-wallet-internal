@@ -4,6 +4,7 @@ import { CloudKey } from "./cloud";
 import { DeviceKey } from "./device";
 import { EmailKey } from "./email";
 import { EmailRecoveryKey } from "./email-recovery";
+import { LedgerKey } from "./ledger";
 import { NfcKey } from "./nfc";
 import { PhoneKey } from "./phone";
 import { SocialKey } from "./social";
@@ -25,6 +26,7 @@ export const UsableKeySchema = migratable(
     UnityKey,
     ZAuthKey,
     TelegramKey,
+    LedgerKey,
   ]),
 );
 
