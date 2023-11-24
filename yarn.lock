@@ -1812,6 +1812,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.11.2":
+  version: 7.23.2
+  resolution: "@babel/runtime@npm:7.23.2"
+  dependencies:
+    regenerator-runtime: ^0.14.0
+  checksum: 6c4df4839ec75ca10175f636d6362f91df8a3137f86b38f6cd3a4c90668a0fe8e9281d320958f4fbd43b394988958585a17c3aab2a4ea6bf7316b22916a371fb
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.0.0, @babel/template@npm:^7.22.15, @babel/template@npm:^7.22.5, @babel/template@npm:^7.3.3":
   version: 7.22.15
   resolution: "@babel/template@npm:7.22.15"
@@ -1908,6 +1917,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cosmjs/amino@npm:^0.31.3":
+  version: 0.31.3
+  resolution: "@cosmjs/amino@npm:0.31.3"
+  dependencies:
+    "@cosmjs/crypto": ^0.31.3
+    "@cosmjs/encoding": ^0.31.3
+    "@cosmjs/math": ^0.31.3
+    "@cosmjs/utils": ^0.31.3
+  checksum: 30e55ed256e1ba8a84b8a92062fd48aed43b1d638b8917af8b28ae007a1eff3ffc9ffb743400db23c583dc2fefae12c3dd8b315451a09f6da9c10a07ce714dfa
+  languageName: node
+  linkType: hard
+
 "@cosmjs/cosmwasm-stargate@npm:^0.31.0":
   version: 0.31.1
   resolution: "@cosmjs/cosmwasm-stargate@npm:0.31.1"
@@ -1942,6 +1963,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cosmjs/crypto@npm:^0.31.3":
+  version: 0.31.3
+  resolution: "@cosmjs/crypto@npm:0.31.3"
+  dependencies:
+    "@cosmjs/encoding": ^0.31.3
+    "@cosmjs/math": ^0.31.3
+    "@cosmjs/utils": ^0.31.3
+    "@noble/hashes": ^1
+    bn.js: ^5.2.0
+    elliptic: ^6.5.4
+    libsodium-wrappers-sumo: ^0.7.11
+  checksum: e562bbcb7cce2c2992aa7fc808fb2b9bcc6d6a27b2567323f41349e7e1aca1b8a4e5b6e0442512cdd7e2bbe54f4b6a0b7ccf71eb574522d0bc405e609dcece8c
+  languageName: node
+  linkType: hard
+
 "@cosmjs/encoding@npm:0.27.1":
   version: 0.27.1
   resolution: "@cosmjs/encoding@npm:0.27.1"
@@ -1964,6 +2000,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cosmjs/encoding@npm:^0.31.3":
+  version: 0.31.3
+  resolution: "@cosmjs/encoding@npm:0.31.3"
+  dependencies:
+    base64-js: ^1.3.0
+    bech32: ^1.1.4
+    readonly-date: ^1.0.0
+  checksum: dadef0579828299be20a64edf820ac8770c0cc47a842594bc9b494f160a347b745941d795360755ccbe385b9d0912aa54753479d1a70ff762d2d334693952ff9
+  languageName: node
+  linkType: hard
+
 "@cosmjs/json-rpc@npm:^0.31.1":
   version: 0.31.1
   resolution: "@cosmjs/json-rpc@npm:0.31.1"
@@ -1971,6 +2018,21 @@ __metadata:
     "@cosmjs/stream": ^0.31.1
     xstream: ^11.14.0
   checksum: cb0a32037f66f405c1f8fc158d9765fdae86623125737e5e47b110fcd7bc909dfae57190b05d7eb06802896c219bd19d181c12ce0b76ad98243270bdf1afad2a
+  languageName: node
+  linkType: hard
+
+"@cosmjs/ledger-amino@npm:^0.31.3":
+  version: 0.31.3
+  resolution: "@cosmjs/ledger-amino@npm:0.31.3"
+  dependencies:
+    "@cosmjs/amino": ^0.31.3
+    "@cosmjs/crypto": ^0.31.3
+    "@cosmjs/encoding": ^0.31.3
+    "@cosmjs/math": ^0.31.3
+    "@cosmjs/utils": ^0.31.3
+    ledger-cosmos-js: ^2.1.8
+    semver: ^7.5.2
+  checksum: bc0e70807d198fe7462ac6810a844c0296d2ef9af9914f03c7df9ddac16ee5c480ee0aaa683953e350ab6c7c577bc778cf74e07989c558c83e130d151b2aad38
   languageName: node
   linkType: hard
 
@@ -1989,6 +2051,15 @@ __metadata:
   dependencies:
     bn.js: ^5.2.0
   checksum: f0254092b67d6349cf5c83670e414f629b49fb8f91131baa9bccc5584b6d270ab3a4b35575d9988b4098de2bc3e814e137dd9f80ad795a1be6a037e053b35346
+  languageName: node
+  linkType: hard
+
+"@cosmjs/math@npm:^0.31.3":
+  version: 0.31.3
+  resolution: "@cosmjs/math@npm:0.31.3"
+  dependencies:
+    bn.js: ^5.2.0
+  checksum: 1685ad41ed78e78854649ca933817c56d39f4b36bba59b5dbdb1728048f431da5531265f4d77bfc9280cdea6c368817109b9f4540d5cfc2093f6ea6ff9e9a8d2
   languageName: node
   linkType: hard
 
@@ -2070,6 +2141,13 @@ __metadata:
   version: 0.31.1
   resolution: "@cosmjs/utils@npm:0.31.1"
   checksum: 55e1bca211b73f2b72fc1e742f69f53e780824717f81914cc313bb5a997e47da11249c3dc944a08c5a210440eaefa9a4818977a44f8af6e7d3b5e2bda55c0304
+  languageName: node
+  linkType: hard
+
+"@cosmjs/utils@npm:^0.31.3":
+  version: 0.31.3
+  resolution: "@cosmjs/utils@npm:0.31.3"
+  checksum: 2ff2b270954ab00cc5ae8f23625b562676d0a061c8076905509a5f0701e302e46d24a51a0c3283072e0ce01fbd860baceb25e62303ff17826672fe5f8674b00d
   languageName: node
   linkType: hard
 
@@ -3742,6 +3820,118 @@ __metadata:
     big-integer: ^1.6.48
     utility-types: ^3.10.0
   checksum: a9ebfcb8656741cd5b931457b7698c5067531916a1573cb1170c34ecc348444657997c67edded92dd3a84344a37ece5b657cc4dae605360ec0982fd53cf0fc72
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/devices@npm:^5.51.1":
+  version: 5.51.1
+  resolution: "@ledgerhq/devices@npm:5.51.1"
+  dependencies:
+    "@ledgerhq/errors": ^5.50.0
+    "@ledgerhq/logs": ^5.50.0
+    rxjs: 6
+    semver: ^7.3.5
+  checksum: bb63548b4b143d3669fab33f219aa705d9114be9fbb42f1b26064fbf89a047186972518cd608ad90329a760a6ff0e91b32aaf9d2e543ae384fe381fbf29fea64
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/devices@npm:^8.0.8":
+  version: 8.0.8
+  resolution: "@ledgerhq/devices@npm:8.0.8"
+  dependencies:
+    "@ledgerhq/errors": ^6.15.0
+    "@ledgerhq/logs": ^6.11.0
+    rxjs: ^7.8.1
+    semver: ^7.3.5
+  checksum: aa026428d45b8d2025601487fcc7009e0b4b6e67d2e054aace0d381c43de7ba1665be886be2260354925bb35b936bb92b788100f64c0c6b0c38b925da3c98164
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/errors@npm:^5.50.0":
+  version: 5.50.0
+  resolution: "@ledgerhq/errors@npm:5.50.0"
+  checksum: 2933e85f5a3768bfb303ba08b759e01f3de9bfc6d1a18b4b0f9353bb16cfbac302a5e6f683867056d3a4d9897ec8c2656c268662338e881df27315936809084d
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/errors@npm:^6.15.0":
+  version: 6.15.0
+  resolution: "@ledgerhq/errors@npm:6.15.0"
+  checksum: 4d2b46b464b4573bc6e17b84f64e4a9e0b56fe62b64504d692f772c848d88cf12dc2dd71c4d09820244387941cfcb79429d279e7c606ba6b16e86cd45097b455
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/hw-transport-web-ble@npm:^6.27.20":
+  version: 6.27.20
+  resolution: "@ledgerhq/hw-transport-web-ble@npm:6.27.20"
+  dependencies:
+    "@ledgerhq/devices": ^8.0.8
+    "@ledgerhq/errors": ^6.15.0
+    "@ledgerhq/hw-transport": ^6.29.0
+    "@ledgerhq/logs": ^6.11.0
+    rxjs: ^7.8.1
+  checksum: 3732d6244990927715a19c9b8c4fe1146f8924c88f534d74c3b53dcad7e82ae8b7211744282d15f570df7a6caa931ebb00ded62d476a232ee6abd9345eb00861
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/hw-transport-webhid@npm:^6.27.20":
+  version: 6.27.20
+  resolution: "@ledgerhq/hw-transport-webhid@npm:6.27.20"
+  dependencies:
+    "@ledgerhq/devices": ^8.0.8
+    "@ledgerhq/errors": ^6.15.0
+    "@ledgerhq/hw-transport": ^6.29.0
+    "@ledgerhq/logs": ^6.11.0
+  checksum: 0cbcfee88022b4b57e7183b0d3862f8c8c6003d07991dbdcc0adc5a4e955704edf25e09a8c25e64ecd60c9b792bce738d9523279ac6782067cf183b610a81d10
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/hw-transport-webusb@npm:^6.27.20":
+  version: 6.27.20
+  resolution: "@ledgerhq/hw-transport-webusb@npm:6.27.20"
+  dependencies:
+    "@ledgerhq/devices": ^8.0.8
+    "@ledgerhq/errors": ^6.15.0
+    "@ledgerhq/hw-transport": ^6.29.0
+    "@ledgerhq/logs": ^6.11.0
+  checksum: ad893ad35d4f4c7d61ee1b95cbeb3122f2c922377c5a122d51e90e78fa04da6d45f077a8879dd9673d7c196b94c66d4786c12cb08070b3788a84360e7c98ca45
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/hw-transport@npm:^5.25.0":
+  version: 5.51.1
+  resolution: "@ledgerhq/hw-transport@npm:5.51.1"
+  dependencies:
+    "@ledgerhq/devices": ^5.51.1
+    "@ledgerhq/errors": ^5.50.0
+    events: ^3.3.0
+  checksum: 55c8c1a05cd71e24fdbe8c9a95a327bf3416199f85be53169d57aec3f53fcedd8ec57ab048c8869031809fb947128157c260d8afe169b3271308a6c6abbbb13e
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/hw-transport@npm:^6.29.0":
+  version: 6.29.0
+  resolution: "@ledgerhq/hw-transport@npm:6.29.0"
+  dependencies:
+    "@ledgerhq/devices": ^8.0.8
+    "@ledgerhq/errors": ^6.15.0
+    "@ledgerhq/logs": ^6.11.0
+    events: ^3.3.0
+  checksum: 0ea37160e2dc03f12bcfab854874fd560db07d22a38828a66b3ccde061ae9cc81591bc4610a345cb359e9788e433a0778e1607de655d1475381c368679fd51ad
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/logs@npm:^5.50.0":
+  version: 5.50.0
+  resolution: "@ledgerhq/logs@npm:5.50.0"
+  checksum: ad2e2f0f52ef2c921ccd19e4e65911d661fe625880f9358dc7cde5375d2a3fbc30bc0af6f1d219887878366e814e05b5008e924bfcabf35880c927909dd20b83
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/logs@npm:^6.11.0":
+  version: 6.11.0
+  resolution: "@ledgerhq/logs@npm:6.11.0"
+  checksum: 326b15be3fa21a8b6e5578409c4b3187639a534e5cf028c490b6c60000ab119cb3981a4f3c5c3fda107e0ec685dc9cfb52f01bb19cf1eca4a20f2371bb167b48
   languageName: node
   linkType: hard
 
@@ -14151,7 +14341,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"events@npm:^3.0.0, events@npm:^3.2.0":
+"events@npm:^3.0.0, events@npm:^3.2.0, events@npm:^3.3.0":
   version: 3.3.0
   resolution: "events@npm:3.3.0"
   checksum: f6f487ad2198aa41d878fa31452f1a3c00958f46e9019286ff4787c84aac329332ab45c9cdc8c445928fc6d7ded294b9e005a7fce9426488518017831b272780
@@ -18128,6 +18318,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ledger-cosmos-js@npm:^2.1.8":
+  version: 2.1.8
+  resolution: "ledger-cosmos-js@npm:2.1.8"
+  dependencies:
+    "@babel/runtime": ^7.11.2
+    "@ledgerhq/hw-transport": ^5.25.0
+    bech32: ^1.1.4
+    ripemd160: ^2.0.2
+  checksum: cba4f5e29d97a1fa6b34b6458a26c8fec72fc58ce34f7dce3a5b1b56aca8382221a0e98e93f50efb3e9df49e934722ea7870c8cac952fe447949c7f34c4cfae2
+  languageName: node
+  linkType: hard
+
 "legacy-swc-helpers@npm:@swc/helpers@=0.4.14":
   version: 0.4.14
   resolution: "@swc/helpers@npm:0.4.14"
@@ -20676,6 +20878,7 @@ __metadata:
     "@cosmjs/amino": ^0.31.0
     "@cosmjs/cosmwasm-stargate": ^0.31.0
     "@cosmjs/crypto": ^0.31.0
+    "@cosmjs/ledger-amino": ^0.31.3
     "@cosmjs/math": ^0.31.0
     "@cosmjs/proto-signing": ^0.31.0
     "@cosmjs/stargate": ^0.31.0
@@ -20695,6 +20898,11 @@ __metadata:
     "@gorhom/portal": ^1.0.14
     "@hookform/resolvers": ^3.1.1
     "@keplr-wallet/cosmos": 0.12.16
+    "@ledgerhq/hw-transport": ^6.29.0
+    "@ledgerhq/hw-transport-web-ble": ^6.27.20
+    "@ledgerhq/hw-transport-webhid": ^6.27.20
+    "@ledgerhq/hw-transport-webusb": ^6.27.20
+    "@ledgerhq/logs": ^6.11.0
     "@nx/detox": 16.6.0
     "@nx/eslint-plugin": 16.6.0
     "@nx/jest": 16.6.0
@@ -24123,7 +24331,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ripemd160@npm:^2.0.0, ripemd160@npm:^2.0.1":
+"ripemd160@npm:^2.0.0, ripemd160@npm:^2.0.1, ripemd160@npm:^2.0.2":
   version: 2.0.2
   resolution: "ripemd160@npm:2.0.2"
   dependencies:
@@ -24290,7 +24498,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:6.6.7":
+"rxjs@npm:6, rxjs@npm:6.6.7":
   version: 6.6.7
   resolution: "rxjs@npm:6.6.7"
   dependencies:
@@ -24299,7 +24507,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:^7.2.0, rxjs@npm:^7.5.5, rxjs@npm:^7.8.0":
+"rxjs@npm:^7.2.0, rxjs@npm:^7.5.5, rxjs@npm:^7.8.0, rxjs@npm:^7.8.1":
   version: 7.8.1
   resolution: "rxjs@npm:7.8.1"
   dependencies:
@@ -24575,7 +24783,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.0.0, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.3, semver@npm:^7.5.4":
+"semver@npm:^7.0.0, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.2, semver@npm:^7.5.3, semver@npm:^7.5.4":
   version: 7.5.4
   resolution: "semver@npm:7.5.4"
   dependencies:

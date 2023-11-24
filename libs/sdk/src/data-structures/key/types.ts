@@ -13,6 +13,7 @@ export enum KeyType {
   Unity = "unity",
   ZAuth = "z-auth",
   Telegram = "telegram",
+  Ledger = "ledger",
 }
 
 export type KeyAbstractSerializedMapping = {
