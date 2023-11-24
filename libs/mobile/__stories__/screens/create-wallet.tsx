@@ -12,6 +12,9 @@ export default (
       onAddCloud={mockAction("onAddCloud")}
       onAddEmail={mockAction("onAddEmail")}
       onAddTelegram={mockAction("onAddTelegram")}
+      onAddLedger={mockAction("onAddLedger")}
+      onAddPhone={mockAction("onAddPhone")}
+      onAddZAuth={mockAction("onAddZAuth")}
     />
   </MultisigDraft.Container>
 );
