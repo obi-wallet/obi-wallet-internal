@@ -201,6 +201,7 @@
   "settings.multisig.option.socialkey": "Social Recovery Key",
   "settings.multisig.option.emailkey": "E-Mail Key",
   "settings.multisig.option.cloudkey": "Cloud Key (coming soon)",
+  "settings.multisig.option.ledgerkey": "Ledger Key",
 
   "apps.kado": "Buy with Card",
   "apps.gettickets": "Get Tickets",
