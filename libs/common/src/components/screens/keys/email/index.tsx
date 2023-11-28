@@ -122,7 +122,7 @@ export interface EmailKeyProps {
 }
 
 const schema = z.object({
-  email: z.string().email(),
+  email: z.string().email("Please enter a valid email address"),
 });
 
 export const EmailKey = observer<EmailKeyProps>(function EmailKey({
@@ -230,6 +230,9 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   const { control, handleSubmit, formState } = useForm({
     resolver: zodResolver(schema),
     mode: "onChange",
+    defaultValues: {
+      email: "",
+    },
   });
 
   function encodeForMailto(text: string): string {
@@ -267,9 +270,7 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
                     inputMode="email"
                     style={{ marginTop: 25 }}
                     inputStyle={{
-                      ...(formState.errors.privateKey
-                        ? { borderColor: "red" }
-                        : {}),
+                      ...(formState.errors.email ? { borderColor: "red" } : {}),
                     }}
                     value={value}
                     onBlur={onBlur}

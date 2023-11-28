@@ -41,7 +41,7 @@ export async function withSecretNetworkClient<T>(
     url: chain.urls[0],
     chainId,
   });
-  return await f(client);
+  return f(client);
 }
 
 export async function withSigningSecretNetworkClient<T>(
@@ -61,7 +61,7 @@ export async function withSigningSecretNetworkClient<T>(
     wallet: signer,
     walletAddress: signer.address,
   });
-  return await f(client);
+  return f(client);
 }
 
 export class SecretJsClient extends AbstractClient {

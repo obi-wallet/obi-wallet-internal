@@ -48,7 +48,9 @@ interface CustomPublicKeyCredentialCreationOptions {
   challenge: string;
   rp: {
     name: string;
+    id?: string;
   };
+  timeout?: number;
   user: {
     id: string;
     name: string;
@@ -60,6 +62,8 @@ interface CustomPublicKeyCredentialCreationOptions {
   }>;
   authenticatorSelection: {
     authenticatorAttachment: "platform" | "cross-platform";
+    requireResidentKey?: boolean;
+    userVerification?: "required" | "preferred" | "discouraged";
     browser?: string;
     os?: string;
     platform?: string;
@@ -106,7 +110,7 @@ export async function getOrCreateDeviceKeyPair(
         // id: new URL(window.location.origin).hostname,
       },
       user: {
-        id: btoa(String.fromCharCode(...new Uint8Array(16))),
+        id: generateBufferByLength(),
         name: "My Obi Device Key",
         displayName: "My Obi Device Key",
       },
@@ -214,9 +218,7 @@ const combineKeys = async (
   }
 
   // Convert the hex to base64
-  const privateKeyBase64 = hexToBase64(privateKeyBigInt.toString(16));
-
-  return privateKeyBase64;
+  return hexToBase64(privateKeyBigInt.toString(16));
 };
 
 // Helper function to convert hex to base64
@@ -272,3 +274,9 @@ function base64ToCompressedPubKey(base64PubKey: string): Uint8Array | null {
   }
   return decodedBytes;
 }
+
+const generateBufferByLength = (length: number = 16): string => {
+  const randomBuffer = new Uint8Array(length);
+  window.crypto.getRandomValues(randomBuffer);
+  return btoa(String.fromCharCode(...randomBuffer));
+};
