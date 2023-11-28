@@ -7,6 +7,7 @@ import {
   EmailRecoveryScreen,
   HomeScreen,
   KeyRoute,
+  LedgerKeyScreen,
   LookupProxyWalletsScreen,
   NfcKeyScreen,
   OnboardingRoute,
@@ -172,6 +173,12 @@ export const keyScreens = (navigationKey: string) => {
         name={KeyRoute.ZAuthKey}
         key={KeyRoute.ZAuthKey}
         component={ZAuthKeyScreen}
+        options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name={KeyRoute.LedgerKey}
+        key={KeyRoute.LedgerKey}
+        component={LedgerKeyScreen}
         options={{ headerShown: false }}
       />
     </RootStack.Group>

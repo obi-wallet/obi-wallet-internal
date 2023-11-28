@@ -1,5 +1,12 @@
+import { stringToPath } from "@cosmjs/crypto";
+import { LedgerSigner } from "@cosmjs/ledger-amino";
+import BluetoothTransport from "@ledgerhq/hw-transport-web-ble";
+import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import {
   ChainId,
+  CommunicationType,
+  getDevicePrivateKey,
+  getOrCreateDeviceKeyPair,
   KeySubclassTypeMapping,
   KeyType,
   MultisigKey,
@@ -8,9 +15,6 @@ import {
   Signer,
   TwilioClientInterface,
   ZAuthKeySigner,
-  getDevicePrivateKey,
-  getOrCreateDeviceKeyPair,
-  CommunicationType,
 } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
@@ -35,6 +39,7 @@ export async function createUsableSigners({
     KeyType.Nfc,
     KeyType.Phone,
     KeyType.Unity,
+    KeyType.Ledger,
   ];
   return (
     await Promise.all(
@@ -103,6 +108,8 @@ async function createUsableSigner({
     }
     case KeyType.ZAuth:
       return new ZAuthKeySigner(key);
+    case KeyType.Ledger:
+      return new LedgerKeySigner(key);
     default:
       return null;
   }
@@ -146,6 +153,26 @@ export class DeviceKeySigner extends Signer {
         this.key.payload.privateKey,
       ).signHash(hash);
     }
+  }
+}
+
+// TODO: Finish this key signer to use it as other keys
+
+export class LedgerKeySigner extends Signer {
+  public constructor(protected key: KeySubclassTypeMapping[KeyType.Ledger]) {
+    super();
+  }
+
+  public get publicKey() {
+    return this.key.publicKey;
+  }
+
+  public async getTransport() {}
+
+  public async getSigner() {}
+
+  public async signHash(hash: Uint8Array) {
+    console.log("LEDGER HASH", hash);
   }
 }
 
@@ -215,4 +242,53 @@ export async function createDeviceKeySigner({
   const deviceKey = multisigKey.getUsableKeyOfType(KeyType.Device);
   invariant(deviceKey, "Expected device key to exist.");
   return new DeviceKeySigner(deviceKey);
+}
+
+// export async function isWebUsbTransportSupported() {
+//   try {
+//     return TransportWebUSB.isSupported();
+//   } catch {
+//     return false;
+//   }
+// }
+
+export async function isBleTransportSupported() {
+  try {
+    return navigator?.bluetooth.getAvailability();
+  } catch {
+    return false;
+  }
+}
+
+enum CoinTypes {
+  SECRET = 529,
+  COSMOS = 118,
+  TERRA = 330,
+}
+
+export function getHdPath(
+  accountNumber: number = 0,
+  coinType: CoinTypes = CoinTypes.COSMOS,
+) {
+  return `m/44'/${coinType}/0'/0/${accountNumber}`;
+}
+
+export async function getLedgerSinger(accountNumber: number = 0) {
+  const transport = (await isBleTransportSupported())
+    ? await BluetoothTransport.create()
+    : await TransportWebUSB.create();
+
+  const hdPath = stringToPath(getHdPath(accountNumber, CoinTypes.SECRET));
+  const ledgerAppName = "Secret";
+  const ledgerSigner = new LedgerSigner(transport, {
+    ledgerAppName,
+    hdPaths: [hdPath],
+    prefix: "secret",
+  });
+  const accounts = await ledgerSigner.getAccounts();
+
+  return {
+    ledgerSigner,
+    accounts,
+  };
 }

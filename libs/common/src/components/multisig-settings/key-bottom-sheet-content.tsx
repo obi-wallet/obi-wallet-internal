@@ -82,6 +82,13 @@ export const KeyBottomSheetContent = observer<KeyBottomSheetContentProps>(
               defaultMessage="This key is held on your device, in a secure element or secure keychain."
             />
           );
+        case KeyType.Ledger:
+          return (
+            <FormattedMessage
+              id="settings.multisig.modal.biometrics.text"
+              defaultMessage="This key is held on your Ledger"
+            />
+          );
         case KeyType.Social:
           return (
             <FormattedMessage
