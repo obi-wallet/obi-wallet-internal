@@ -7,6 +7,7 @@
     "@cosmjs/crypto": "*",
     "@cosmjs/stargate": "*",
     "@cosmjs/ledger-amino": "*",
+    "@cosmjs/amino": "*",
     "@emotion/native": "*",
     "@emotion/react": "*",
     "@fortawesome/free-regular-svg-icons": "*",

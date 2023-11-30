@@ -1,14 +1,12 @@
 import { AccountData, makeSignDoc } from "@cosmjs/amino";
-import { useTheme } from "@emotion/react";
 import { MultisigKey } from "@obi-wallet/sdk";
 import { useIsFocused } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import { useRef, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { ReactNode, useRef, useState } from "react";
+import { FormattedMessage } from "react-intl";
 import { View } from "react-native";
 import { pubkeyToAddress } from "secretjs";
-import invariant from "tiny-invariant";
 
 import { LedgerContainer } from "./container";
 import { LedgerKeyForm } from "./form";
@@ -41,7 +39,6 @@ export const LedgerKeyScreen = observer<LedgerKeyScreenProps>(
     if (!isFocused) return null;
 
     const onSubmit = () => {
-      console.log("KEYFLOW", params.flow);
       switch (params.flow) {
         case KeyFlow.CreateWallet:
           navigate(OnboardingRoute.CreateWallet, params);
@@ -69,10 +66,10 @@ type SubmitLedgerKeyData = {
   accountNumber: number;
 };
 
-enum LedgerViews {
+export enum LedgerViews {
   Form = "form",
   ConnectionRequest = "connection_request",
-  OpenSecret = "open_secret",
+  OpenSecretRequest = "open_secret_request",
   ConnectionComplete = "connection_complete",
 }
 
@@ -89,16 +86,21 @@ export const LedgerKey = observer<LedgerKeyProps>(function LedgerKey({
 
   const handleConnectSecret = async (data: SubmitLedgerKeyData) => {
     try {
-      setView(LedgerViews.ConnectionRequest);
-
+      // setView(LedgerViews.ConnectionRequest);
       const {
         accounts: [acc],
       } = await getLedgerSinger(data.accountNumber);
       setAccount(acc);
-      setView(LedgerViews.OpenSecret);
+      setView(LedgerViews.ConnectionComplete);
     } catch (e) {
-      console.error("Failed to get Ledger signer", e);
-      // invariant("Failed to get Ledger singer", signer);
+      const { message } = e as Error;
+      if (message.includes("0x5515")) {
+        setView(LedgerViews.ConnectionRequest);
+        return;
+      } else if (message.includes("BOLOS")) {
+        setView(LedgerViews.OpenSecretRequest);
+        return;
+      }
       setView(LedgerViews.Form);
     }
   };
@@ -126,91 +128,102 @@ export const LedgerKey = observer<LedgerKeyProps>(function LedgerKey({
         },
       };
       const signDoc = makeSignDoc([msg], defaultFee, "secret-4", "", 0, 0);
-      const { signature } = await ledgerSigner.signAmino(
-        account.address,
-        signDoc,
-      );
-      console.log("Ledger signature", signature);
+      await ledgerSigner.signAmino(account.address, signDoc);
+
       onPressRef.current!();
     } catch (e) {
-      if (e.message.includes("0x5515")) {
-        invariant(
-          e.message,
-          "Make sure your Ledger is plugged in and unlocked",
-        );
-        return;
-      } else if (e.message.includes("BOLOS")) {
-        invariant(e.message, "Please open Secret App on your Ledger");
-        return;
-      }
+      const { message } = e as Error;
+      console.error(message);
     }
   };
   const isKeyboardVisible = useKeyboardVisible();
 
-  const renderView = (v: LedgerViews) =>
-    ({
-      [LedgerViews.Form]: (
-        <LedgerKeyForm flow={flow} submitter={handleConnectSecret} />
-      ),
-      [LedgerViews.ConnectionRequest]: (
-        <Text
-          style={{
-            color: "#fff",
-            fontSize: isSmallScreenNumber(12, 14),
-            marginTop: 10,
-          }}
-        >
-          <FormattedMessage
-            id="connect-ledger"
-            defaultMessage="Connect and unlock your Ledger"
-          />
-        </Text>
-      ),
-      [LedgerViews.OpenSecret]: (
-        <>
-          {account ? (
-            <View
-              style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
-            >
-              {!isKeyboardVisible ? (
+  const renderView = (v: LedgerViews): ReactNode =>
+    (
+      ({
+        [LedgerViews.ConnectionRequest]: (
+          <Text
+            style={{
+              color: "#fff",
+              fontSize: isSmallScreenNumber(12, 14),
+              marginTop: 10,
+            }}
+          >
+            <FormattedMessage
+              id="connect-ledger"
+              defaultMessage="Connect and unlock your Ledger"
+            />
+          </Text>
+        ),
+        [LedgerViews.OpenSecretRequest]: (
+          <Text
+            style={{
+              color: "#fff",
+              fontSize: isSmallScreenNumber(12, 14),
+              marginTop: 10,
+            }}
+          >
+            <FormattedMessage
+              id="connect-ledger"
+              defaultMessage="Open Secret App on your ledger"
+            />
+          </Text>
+        ),
+        [LedgerViews.ConnectionComplete]: (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "space-between",
+              marginBottom: 20,
+            }}
+          >
+            {!isKeyboardVisible ? (
+              <>
+                <Text
+                  style={{
+                    color: "#F6F5FF",
+                    fontSize: isSmallScreenNumber(20, 24),
+                    fontWeight: "600",
+                    marginTop: isSmallScreenNumber(20, 32),
+                    textAlign: "center",
+                  }}
+                >
+                  {flow === KeyFlow.RecoverWallet ? (
+                    <FormattedMessage
+                      id="recovery.ledgerkey.signature"
+                      defaultMessage="Check your Secret Ledger App"
+                    />
+                  ) : (
+                    <FormattedMessage
+                      id="ledgerkey.signature"
+                      defaultMessage="Set a Ledger Key"
+                    />
+                  )}
+                </Text>
+
+                <Text
+                  style={{
+                    color: "#fff",
+                    fontSize: isSmallScreenNumber(12, 14),
+                    marginTop: 10,
+                  }}
+                >
+                  <FormattedMessage
+                    id="onboarding5.setbip32accountindex"
+                    defaultMessage="During key submission, follow the steps on your ledger"
+                  />
+                </Text>
                 <VerifyAndProceedButton
-                  labelOverride="Create Key"
+                  labelOverride="Submit Ledger Key"
                   // disabled={!}
                   onPress={handleSignTx}
                 />
-              ) : null}
-            </View>
-          ) : (
-            <Text
-              style={{
-                color: "#fff",
-                fontSize: isSmallScreenNumber(12, 14),
-                marginTop: 10,
-              }}
-            >
-              <FormattedMessage
-                id="connect-ledger"
-                defaultMessage="Open Secret App on your ledger"
-              />
-            </Text>
-          )}
-        </>
-      ),
-      [LedgerViews.ConnectionComplete]: (
-        <Text
-          style={{
-            color: "#fff",
-            fontSize: isSmallScreenNumber(12, 14),
-            marginTop: 10,
-          }}
-        >
-          <FormattedMessage
-            id="adding-complete"
-            defaultMessage="The LedgerKey was successfully added"
-          />
-        </Text>
-      ),
-    })[v];
+              </>
+            ) : null}
+          </View>
+        ),
+      }) as unknown as { [keys in LedgerViews]?: ReactNode }
+    )[v];
 
   const onPressRef = useRef<() => void>();
   onPressRef.current = async () => {
@@ -224,5 +237,15 @@ export const LedgerKey = observer<LedgerKeyProps>(function LedgerKey({
     onSubmit();
   };
 
-  return <LedgerContainer>{renderView(view)}</LedgerContainer>;
+  return (
+    <LedgerContainer>
+      {view !== LedgerViews.ConnectionComplete ? (
+        <LedgerKeyForm flow={flow} submitter={handleConnectSecret}>
+          {renderView(view)}
+        </LedgerKeyForm>
+      ) : (
+        renderView(view)
+      )}
+    </LedgerContainer>
+  );
 });

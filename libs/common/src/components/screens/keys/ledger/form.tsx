@@ -1,5 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { LedgerViews } from "@obi-wallet/common";
 import { observer } from "mobx-react-lite";
+import { ReactNode } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage } from "react-intl";
 import { View } from "react-native";
@@ -17,6 +19,7 @@ export type LedgerKeySubmitData = z.infer<typeof schema>;
 export type LedgerKeyFormProps = {
   flow: KeyFlow;
   submitter: (data: LedgerKeySubmitData) => Promise<void>;
+  children: ReactNode;
 };
 
 const schema = z.object({
@@ -24,7 +27,7 @@ const schema = z.object({
 });
 
 export const LedgerKeyForm = observer<LedgerKeyFormProps>(
-  function LedgerKeyForm({ flow, submitter }) {
+  function LedgerKeyForm({ flow, submitter, children }) {
     const { control, handleSubmit, formState } = useForm({
       resolver: zodResolver(schema),
       mode: "onChange",
@@ -46,17 +49,17 @@ export const LedgerKeyForm = observer<LedgerKeyFormProps>(
             textAlign: "center",
           }}
         >
-          {flow === KeyFlow.EditWallet || flow === KeyFlow.RecoverWallet ? (
-            <FormattedMessage
-              id="onboarding5.recovery.setledgerkey"
-              defaultMessage="Set a Ledger Recovery Key"
-            />
-          ) : (
-            <FormattedMessage
-              id="onboarding5.setledgerkey"
-              defaultMessage="Set a Ledger Key"
-            />
-          )}
+          {/*{flow === KeyFlow.EditWallet || flow === KeyFlow.RecoverWallet ? (*/}
+          {/*  <FormattedMessage*/}
+          {/*    id="onboarding5.recovery.setledgerkey"*/}
+          {/*    defaultMessage="Set a New Ledger Key"*/}
+          {/*  />*/}
+          {/*) : (*/}
+          <FormattedMessage
+            id="onboarding5.setledgerkey"
+            defaultMessage="Set a Ledger Key"
+          />
+          {/*)}*/}
         </Text>
 
         <Text
@@ -98,6 +101,8 @@ export const LedgerKeyForm = observer<LedgerKeyFormProps>(
             );
           }}
         />
+
+        {children}
 
         <View style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}>
           {!isKeyboardVisible ? (

@@ -1,4 +1,4 @@
-import { stringToPath } from "@cosmjs/crypto";
+import { HdPath, stringToPath } from "@cosmjs/crypto";
 import { LedgerSigner } from "@cosmjs/ledger-amino";
 import BluetoothTransport from "@ledgerhq/hw-transport-web-ble";
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
@@ -108,8 +108,8 @@ async function createUsableSigner({
     }
     case KeyType.ZAuth:
       return new ZAuthKeySigner(key);
-    case KeyType.Ledger:
-      return new LedgerKeySigner(key);
+    // case KeyType.Ledger:
+    //   return new LedgerKeySigner(key);
     default:
       return null;
   }
@@ -160,6 +160,7 @@ export class DeviceKeySigner extends Signer {
 
 export class LedgerKeySigner extends Signer {
   public constructor(protected key: KeySubclassTypeMapping[KeyType.Ledger]) {
+    console.log("Hello from LedgerKeySigner class", key);
     super();
   }
 
@@ -254,7 +255,7 @@ export async function createDeviceKeySigner({
 
 export async function isBleTransportSupported() {
   try {
-    return navigator?.bluetooth.getAvailability();
+    return navigator.bluetooth.getAvailability();
   } catch {
     return false;
   }
@@ -278,11 +279,13 @@ export async function getLedgerSinger(accountNumber: number = 0) {
     ? await BluetoothTransport.create()
     : await TransportWebUSB.create();
 
-  const hdPath = stringToPath(getHdPath(accountNumber, CoinTypes.SECRET));
+  const hdPath: HdPath = stringToPath(
+    getHdPath(accountNumber, CoinTypes.SECRET),
+  );
   const ledgerAppName = "Secret";
   const ledgerSigner = new LedgerSigner(transport, {
     ledgerAppName,
-    hdPaths: [hdPath],
+    hdPaths: hdPath,
     prefix: "secret",
   });
   const accounts = await ledgerSigner.getAccounts();

@@ -67,6 +67,12 @@ export const SelectRecoveryMethodScreen =
                     navigation.navigate(OnboardingRoute.EmailRecovery, params);
                   },
                 },
+                // {
+                //   type: KeyType.Ledger,
+                //   onPress() {
+                //     navigation.navigate(KeyRoute.LedgerKey, params);
+                //   },
+                // },
               ]}
               hideOtherKeys
             />
