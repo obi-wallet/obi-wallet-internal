@@ -513,9 +513,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@obi-wallet/modal@workspace:apps/modal":
+"@obi-wallet/web@workspace:apps/web":
   version: 0.0.0-use.local
-  resolution: "@obi-wallet/modal@workspace:apps/modal"
+  resolution: "@obi-wallet/web@workspace:apps/web"
   dependencies:
     "@next/eslint-plugin-next": "npm:^14.0.4"
     "@repo/eslint-config": "npm:*"
