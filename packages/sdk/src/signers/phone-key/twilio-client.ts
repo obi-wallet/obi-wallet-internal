@@ -150,10 +150,9 @@ export class TwilioClient implements TwilioClientInterface {
 
     // Convert the Uint8Array into a base64 string
     let binary = "";
-    const len = byteArray.byteLength;
-    for (let i = 0; i < len; i++) {
-      binary += String.fromCharCode(byteArray[i]);
-    }
+    byteArray.forEach((byte) => {
+      binary += String.fromCharCode(byte);
+    });
     const base64 = btoa(binary);
 
     return base64;

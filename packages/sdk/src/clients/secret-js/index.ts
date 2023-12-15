@@ -37,8 +37,10 @@ export async function withSecretNetworkClient<T>(
   f: (client: SecretNetworkClient) => T,
 ) {
   const chain = SecretJsChains[chainId];
+  const url = chain.urls[0];
+  invariant(url, "chain has no urls");
   const client = new SecretNetworkClient({
-    url: chain.urls[0],
+    url,
     chainId,
   });
   return await f(client);
@@ -55,8 +57,10 @@ export async function withSigningSecretNetworkClient<T>(
   f: (client: SecretNetworkClient) => T,
 ) {
   const chain = SecretJsChains[chainId];
+  const url = chain.urls[0];
+  invariant(url, "chain has no urls");
   const client = new SecretNetworkClient({
-    url: chain.urls[0],
+    url,
     chainId,
     wallet: signer,
     walletAddress: signer.address,

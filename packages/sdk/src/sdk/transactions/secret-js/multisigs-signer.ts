@@ -110,7 +110,9 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     );
     this.signMessage = undefined;
     this.signHash = undefined;
-    const { type, value } = messages[0];
+    const message = messages[0];
+    invariant(message, "Expected at least one message");
+    const { type, value } = message;
 
     if (["raw", "eth", "hash"].includes(type)) {
       console.log(
@@ -280,16 +282,13 @@ export class SecretJsMultisigSigner extends AbstractMultisigSigner<Uint8Array> {
     } else {
       // otherwise we're signing a message
       const signaturesList = new Array<Uint8Array>();
-      for (let i = 0; i < this.key.value.pubkeys.length; i++) {
-        const signerAddress = pubkeyToAddress(
-          this.key.value.pubkeys[i],
-          "secret",
-        );
+      this.key.value.pubkeys.forEach((pubkey) => {
+        const signerAddress = pubkeyToAddress(pubkey, this.prefix);
         const signature = signatures.get(signerAddress);
         if (signature) {
           signaturesList.push(signature);
         }
-      }
+      });
       console.log("Partial signatures: " + JSON.stringify(signaturesList));
       /* const finalSig = MultiSignature.encode(MultiSignature.fromPartial({ signatures: signaturesList })).finish();
       console.log("Final signature: " + JSON.stringify(finalSig));

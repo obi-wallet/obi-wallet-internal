@@ -1,5 +1,3 @@
-import * as R from "ramda";
-
 import { ChainId } from "../../chains";
 import { queryClient, QueryClientNamespace } from "../../query-client";
 import { EnrichedToken, Token } from "../common";
@@ -56,11 +54,10 @@ export abstract class AbstractBankSdk {
     prices?: Record<string, number>,
   ): EnrichedToken {
     const enrichedToken = this.enrichTokenWithoutUsdValue(token);
+    const price = prices?.[token.id];
     return {
       ...enrichedToken,
-      usdValue: R.has(token.id, prices)
-        ? prices[token.id] * enrichedToken.amount
-        : null,
+      usdValue: price ? price * enrichedToken.amount : null,
     };
   }
 

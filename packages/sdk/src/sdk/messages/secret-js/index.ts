@@ -24,6 +24,7 @@ import { Message, MessageJson } from "../../../transactions";
 import { CodeIds, Token } from "../../common";
 import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
+import invariant from "tiny-invariant";
 
 function notImplemented(message: string) {
   warning(false, message);
@@ -351,6 +352,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
   // TODO fix types as they are forced here
   public getCreateWalletMessage(...walletData: string[]): Message {
     const [ownerAddress, pubkeyBase64, sender] = walletData;
+    invariant(ownerAddress, "ownerAddress is required");
     const message = new MsgExecuteContract({
       sender: sender ?? ownerAddress,
       contract_address: this.chain.accountCreator.address,

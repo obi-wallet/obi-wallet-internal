@@ -1,4 +1,4 @@
-import { Secp256k1PublicKey } from "../../../../src/keys";
+import { Secp256k1PublicKey } from "../../../keys";
 
 export enum KeyType {
   Cloud = "cloud",

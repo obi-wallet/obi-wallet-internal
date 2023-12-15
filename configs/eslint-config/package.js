@@ -137,6 +137,7 @@ module.exports = {
       typescript: {
         project,
       },
+      node: true,
     },
   },
   ignorePatterns: [
@@ -151,7 +152,11 @@ module.exports = {
     },
     {
       files: ["*.ts", "*.tsx"],
-      extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+      extends: [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:import/typescript",
+      ],
       plugins: ["@typescript-eslint"],
     },
   ],
