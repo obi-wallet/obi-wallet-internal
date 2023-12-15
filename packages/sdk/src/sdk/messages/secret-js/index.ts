@@ -11,6 +11,7 @@ import {
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
 } from "secretjs";
+import invariant from "tiny-invariant";
 import warning from "tiny-warning";
 
 import { SecretJsChainId, SecretJsChains } from "../../../chains";
@@ -24,7 +25,6 @@ import { Message, MessageJson } from "../../../transactions";
 import { CodeIds, Token } from "../../common";
 import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
-import invariant from "tiny-invariant";
 
 function notImplemented(message: string) {
   warning(false, message);

@@ -4,7 +4,7 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "format": "prettier --write .",
+    "format": "prettier --write . && yarn lint -- --fix",
     "lint": "turbo lint",
     "tsc": "turbo tsc"
   },
