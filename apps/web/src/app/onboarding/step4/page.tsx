@@ -1,7 +1,6 @@
 "use client";
 import Typography from "@/components/Typography";
 import Stepper from "@/components/Stepper";
-import Button from "@/components/buttons/Button";
 
 import {
   FaCheck,
@@ -10,11 +9,9 @@ import {
   FaPlusCircle,
   FaGoogle,
   FaWindows,
-  FaApple,
   FaTelegram,
 } from "react-icons/fa";
 
-import NextImage from "@/components/NextImage";
 import ButtonLink from "@/components/links/ButtonLink";
 import List from "@/components/List";
 import { cn } from "@/lib/utils";
