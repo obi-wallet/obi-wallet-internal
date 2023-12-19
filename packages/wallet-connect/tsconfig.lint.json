@@ -1,0 +1,14 @@
+{
+  "extends": "@repo/typescript-config/react-library.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "include": [
+    "__tests-integration__",
+    "src",
+    "turbo",
+    "jest.config.js",
+    "jest-integration.config.js"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
