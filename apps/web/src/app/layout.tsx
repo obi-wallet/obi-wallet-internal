@@ -18,7 +18,12 @@ export default function RootLayout({
 }): JSX.Element {
   return (
     <html lang="en" className="bg-black">
-      <body className={cn(inter.className, "flex flex-col")}>
+      <body
+        className={cn(
+          inter.className,
+          "flex min-h-screen flex-col bg-gradient-to-br from-black to-slate-900",
+        )}
+      >
         <Header />
         <main id="main" className="relative flex w-full grow">
           {children}
