@@ -1,26 +1,23 @@
 "use client";
-import Typography from "@/components/Typography";
-import Stepper from "@/components/Stepper";
-import Button from "@/components/buttons/Button";
 
-import ButtonLink from "@/components/links/ButtonLink";
+import { Button, ButtonLink, Stepper, Text } from "@/components";
 import Image from "next/image";
 
 export default function Step3() {
   return (
     <section className="flex flex-col items-center space-y-7">
       <Stepper currentStep={5} />
-      <Typography fontWeight="bold" size="3xl">
+      <Text fontWeight="bold" size="3xl">
         Congratulations 🎉
-      </Typography>
-      <Typography
+      </Text>
+      <Text
         className="w-96 text-center"
         fontWeight="medium"
         leading="tight"
         color="zinc"
       >
         As one of our first 10,000 users, you’ve been awarded a special Obi NFT.
-      </Typography>
+      </Text>
       <Image
         width="310"
         height="310"

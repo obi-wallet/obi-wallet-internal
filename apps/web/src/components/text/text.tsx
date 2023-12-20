@@ -16,7 +16,7 @@ export type TypographyProps = {
   children?: React.ReactNode;
 };
 
-export default function Typography({
+export const Text = ({
   mono = false,
   size = "md",
   color = "white",
@@ -26,7 +26,7 @@ export default function Typography({
   uppercase = false,
   className,
   children,
-}: TypographyProps) {
+}: TypographyProps) => {
   return (
     <span
       className={cn(
@@ -62,10 +62,10 @@ export default function Typography({
         leading === "loose" && "leading-loose",
         tracking && "tracking-widest",
         uppercase && "uppercase",
-        className
+        className,
       )}
     >
       {children}
     </span>
   );
-}
+};

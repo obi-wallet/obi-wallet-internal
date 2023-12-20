@@ -2,9 +2,10 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-import UnstyledLink, {
+import {
+  UnstyledLink,
   UnstyledLinkProps,
-} from "@/components/links/UnstyledLink";
+} from "@/components/links/unstyled-link";
 import { IconType } from "react-icons";
 
 const ButtonLinkVariant = [
@@ -28,7 +29,7 @@ type ButtonLinkProps = {
   };
 } & UnstyledLinkProps;
 
-const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
+export const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
   (
     {
       children,
@@ -119,5 +120,3 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
     );
   },
 );
-
-export default ButtonLink;

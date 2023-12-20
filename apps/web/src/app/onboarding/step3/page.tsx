@@ -1,30 +1,25 @@
 "use client";
 
-import Typography from "@/components/Typography";
-import Stepper from "@/components/Stepper";
-import Button from "@/components/buttons/Button";
-
-import ButtonLink from "@/components/links/ButtonLink";
-
 import { FaGoogle, FaWindows, FaApple } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { Button, ButtonLink, Stepper, Text } from "@/components";
 
 export default function Step3() {
   const router = useRouter();
   return (
     <section className="flex flex-col items-center space-y-7">
       <Stepper currentStep={3} />
-      <Typography fontWeight="bold" size="3xl">
+      <Text fontWeight="bold" size="3xl">
         Create Your First Key
-      </Typography>
-      <Typography
+      </Text>
+      <Text
         className="w-96 text-center"
         fontWeight="medium"
         leading="tight"
         color="zinc"
       >
         Sign in with one of the services below to create your first key.
-      </Typography>
+      </Text>
 
       <Button className="block w-full" variant="primary">
         <div>Passkey</div>
@@ -33,9 +28,9 @@ export default function Step3() {
 
       <div className="flex w-full items-center">
         <div className="h-0.5 w-full rounded-lg bg-gray-600" />
-        <Typography className="grow-0 px-3" color="gray">
+        <Text className="grow-0 px-3" color="gray">
           OR
-        </Typography>
+        </Text>
         <div className="h-0.5 w-full rounded-lg bg-gray-600" />
       </div>
 

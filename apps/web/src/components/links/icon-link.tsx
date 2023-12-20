@@ -1,9 +1,14 @@
 import * as React from "react";
-import { FaArrowsRotate } from "react-icons/fa6";
+
 import { cn } from "@/lib/utils";
+
+import {
+  UnstyledLink,
+  UnstyledLinkProps,
+} from "@/components/links/unstyled-link";
 import { IconType } from "react-icons";
 
-const IconButtonVariant = [
+const IconLinkVariant = [
   "primary",
   "outline",
   "ghost",
@@ -11,37 +16,31 @@ const IconButtonVariant = [
   "dark",
 ] as const;
 
-type IconButtonProps = {
-  isLoading?: boolean;
+type IconLinkProps = {
   isDarkBg?: boolean;
-  variant?: (typeof IconButtonVariant)[number];
+  variant?: (typeof IconLinkVariant)[number];
   icon?: IconType;
   classNames?: {
     icon?: string;
   };
-} & React.ComponentPropsWithRef<"button">;
+} & Omit<UnstyledLinkProps, "children">;
 
-const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
+export const IconLink = React.forwardRef<HTMLAnchorElement, IconLinkProps>(
   (
     {
       className,
-      disabled: buttonDisabled,
-      isLoading,
-      variant = "primary",
-      isDarkBg = false,
       icon: Icon,
+      variant = "outline",
+      isDarkBg = false,
       classNames,
       ...rest
     },
     ref,
   ) => {
-    const disabled = isLoading || buttonDisabled;
-
     return (
-      <button
+      <UnstyledLink
         ref={ref}
         type="button"
-        disabled={disabled}
         className={cn(
           "inline-flex items-center justify-center rounded font-medium",
           "focus-visible:ring-primary-500 focus:outline-none focus-visible:ring",
@@ -85,32 +84,14 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
           ],
           //#endregion  //*======== Variants ===========
           "disabled:cursor-not-allowed",
-          isLoading &&
-            "relative text-transparent transition-none hover:text-transparent disabled:cursor-wait",
           className,
         )}
         {...rest}
       >
-        {isLoading && (
-          <div
-            className={cn(
-              "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
-              {
-                "text-white": ["primary", "dark"].includes(variant),
-                "text-black": ["light"].includes(variant),
-                "text-primary-500": ["outline", "ghost"].includes(variant),
-              },
-            )}
-          >
-            <FaArrowsRotate className="animate-spin" />
-          </div>
-        )}
         {Icon && (
           <Icon width={16} height={16} className={cn(classNames?.icon)} />
         )}
-      </button>
+      </UnstyledLink>
     );
   },
 );
-
-export default IconButton;

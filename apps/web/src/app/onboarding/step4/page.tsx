@@ -1,6 +1,4 @@
 "use client";
-import Typography from "@/components/Typography";
-import Stepper from "@/components/Stepper";
 
 import {
   FaCheck,
@@ -12,9 +10,8 @@ import {
   FaTelegram,
 } from "react-icons/fa";
 
-import ButtonLink from "@/components/links/ButtonLink";
-import List from "@/components/List";
 import { cn } from "@/lib/utils";
+import { ButtonLink, List, Stepper, Text } from "@/components";
 
 const keyOptions = [
   {
@@ -53,10 +50,10 @@ export default function Step3() {
   return (
     <section className="flex flex-col items-center space-y-7">
       <Stepper currentStep={4} />
-      <Typography fontWeight="bold" size="3xl">
+      <Text fontWeight="bold" size="3xl">
         Add More Keys?
-      </Typography>
-      <Typography
+      </Text>
+      <Text
         className="w-96 text-center"
         fontWeight="medium"
         leading="tight"
@@ -64,7 +61,7 @@ export default function Step3() {
       >
         You can add more keys for enhanced security or begin using your wallet
         now.
-      </Typography>
+      </Text>
 
       <List
         items={keyOptions}
@@ -77,7 +74,7 @@ export default function Step3() {
           >
             <div className="flex items-center">
               {key.icon}
-              <Typography className="ml-4">{key.title}</Typography>
+              <Text className="ml-4">{key.title}</Text>
             </div>
             {key.checked ? (
               <FaCheck className="h-5 w-5 font-bold text-white" />

@@ -7,12 +7,12 @@ type BoxProps = {
   currentStep?: number;
 } & React.ComponentPropsWithoutRef<"div">;
 
-export default function Stepper({
+export const Stepper = ({
   totalSteps = 5,
   currentStep = 1,
   className,
   ...rest
-}: BoxProps) {
+}: BoxProps) => {
   return (
     <div
       className={cn("flex flex-row justify-center space-x-1", className)}
@@ -29,4 +29,4 @@ export default function Stepper({
       ))}
     </div>
   );
-}
+};

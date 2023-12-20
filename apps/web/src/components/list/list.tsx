@@ -6,7 +6,7 @@ export type ListProps<T> = {
   renderItem: (item: T) => React.ReactElement;
 };
 
-export default function List<T>({
+export function List<T>({
   items,
   name,
   keyProp,

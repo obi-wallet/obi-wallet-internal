@@ -1,7 +1,7 @@
-import Image, { ImageProps } from 'next/image';
-import * as React from 'react';
+import Image, { ImageProps } from "next/image";
+import * as React from "react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 type NextImageProps = {
   useSkeleton?: boolean;
@@ -12,7 +12,7 @@ type NextImageProps = {
   alt: string;
 } & (
   | { width: string | number; height: string | number }
-  | { layout: 'fill'; width?: string | number; height?: string | number }
+  | { layout: "fill"; width?: string | number; height?: string | number }
 ) &
   ImageProps;
 
@@ -21,7 +21,7 @@ type NextImageProps = {
  * @description Must set width using `w-` className
  * @param useSkeleton add background with pulse animation, don't use it if image is transparent
  */
-export default function NextImage({
+export const NextImage = ({
   useSkeleton = false,
   src,
   width,
@@ -30,11 +30,11 @@ export default function NextImage({
   className,
   classNames,
   ...rest
-}: NextImageProps) {
+}: NextImageProps) => {
   const [status, setStatus] = React.useState(
-    useSkeleton ? 'loading' : 'complete'
+    useSkeleton ? "loading" : "complete",
   );
-  const widthIsSet = className?.includes('w-') ?? false;
+  const widthIsSet = className?.includes("w-") ?? false;
 
   return (
     <figure
@@ -44,15 +44,15 @@ export default function NextImage({
       <Image
         className={cn(
           classNames?.image,
-          status === 'loading' && cn('animate-pulse', classNames?.blur)
+          status === "loading" && cn("animate-pulse", classNames?.blur),
         )}
         src={src}
         width={width}
         height={height}
         alt={alt}
-        onLoadingComplete={() => setStatus('complete')}
+        onLoadingComplete={() => setStatus("complete")}
         {...rest}
       />
     </figure>
   );
-}
+};

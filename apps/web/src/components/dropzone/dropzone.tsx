@@ -1,8 +1,9 @@
 import { useDropzone } from "react-dropzone";
 
 import "react-dropzone/examples/theme.css";
+type DropzoneProps = React.ComponentPropsWithoutRef<"div">;
 
-export default function Dropzone() {
+export const Dropzone = ({ className }: DropzoneProps) => {
   const { getRootProps, getInputProps } = useDropzone();
 
   return (
@@ -13,10 +14,11 @@ export default function Dropzone() {
         backgroundColor: "transparent",
         width: "100%",
         borderColor: "#2A2B32",
+        flex: 0,
       }}
     >
       <input {...getInputProps()} />
       <p>Upload an Image</p>
     </div>
   );
-}
+};
