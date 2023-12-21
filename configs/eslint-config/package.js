@@ -28,11 +28,9 @@ module.exports = {
       "error",
       {
         devDependencies: [
-          "{apps,libs}/*/{.storybook,__fixtures__,__stories__,__tests__,__tests-integration__,scripts}/**/*",
-          "{apps,libs}/*/test-setup.ts",
-          "apps/*-e2e/**/*",
-          "apps/*/metro.config.js",
-          "apps/*/next.config.js",
+          "{.storybook,__fixtures__,__stories__,__tests__,__tests-integration__,scripts}/**/*",
+          "test-setup.ts",
+          "next.config.js",
           "jest*.[jt]s",
           "*.stories.*",
         ],
