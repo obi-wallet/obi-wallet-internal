@@ -1,15 +1,15 @@
-import * as React from "react";
-
 import { cn } from "@/lib/utils";
+import { ComponentPropsWithRef, forwardRef } from "react";
 
 const TextButtonVariant = ["primary", "basic"] as const;
 
 type TextButtonProps = {
   variant?: (typeof TextButtonVariant)[number];
-} & React.ComponentPropsWithRef<"button">;
+} & ComponentPropsWithRef<"button">;
 
-export const TextButton = React.forwardRef<HTMLButtonElement, TextButtonProps>(
-  (
+export const TextButton = forwardRef<HTMLButtonElement, TextButtonProps>(
+  // eslint-disable-next-line mobx/missing-observer
+  function TextButton(
     {
       children,
       className,
@@ -18,7 +18,7 @@ export const TextButton = React.forwardRef<HTMLButtonElement, TextButtonProps>(
       ...rest
     },
     ref,
-  ) => {
+  ) {
     return (
       <button
         ref={ref}

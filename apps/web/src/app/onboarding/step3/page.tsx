@@ -1,8 +1,8 @@
 "use client";
 
-import { FaGoogle, FaWindows, FaApple } from "react-icons/fa";
-import { useRouter } from "next/navigation";
 import { Button, ButtonLink, Stepper, Text } from "@/components";
+import { useRouter } from "next/navigation";
+import { FaGoogle, FaWindows, FaApple } from "react-icons/fa";
 
 export default function Step3() {
   const router = useRouter();

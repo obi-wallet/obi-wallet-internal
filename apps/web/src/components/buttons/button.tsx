@@ -1,9 +1,7 @@
-import * as React from "react";
-
-import { FaArrowsRotate } from "react-icons/fa6";
-
 import { cn } from "@/lib/utils";
+import { ComponentPropsWithRef, forwardRef } from "react";
 import { IconType } from "react-icons";
+import { FaArrowsRotate } from "react-icons/fa6";
 
 const ButtonVariant = ["primary", "outline", "ghost", "light", "dark"] as const;
 const ButtonSize = ["sm", "base"] as const;
@@ -19,10 +17,11 @@ type ButtonProps = {
     leftIcon?: string;
     rightIcon?: string;
   };
-} & React.ComponentPropsWithRef<"button">;
+} & ComponentPropsWithRef<"button">;
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  // eslint-disable-next-line mobx/missing-observer
+  function Button(
     {
       children,
       className,
@@ -36,7 +35,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       ...rest
     },
     ref,
-  ) => {
+  ) {
     const disabled = isLoading || buttonDisabled;
 
     return (

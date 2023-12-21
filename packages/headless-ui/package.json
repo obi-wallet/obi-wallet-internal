@@ -2,10 +2,10 @@
   "name": "@obi-wallet/headless-ui",
   "version": "0.0.0",
   "private": true,
-  "main": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts"
   },
+  "main": "./src/index.ts",
   "scripts": {
     "lint": "eslint .",
     "tsc": "tsc --noEmit"

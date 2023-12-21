@@ -58,7 +58,7 @@ module.exports = {
       },
     ],
 
-    "mobx/missing-observer": "error",
+    "mobx/missing-observer": "off",
     "mobx/no-anonymous-observer": "error",
 
     "react/function-component-definition": [
@@ -158,6 +158,14 @@ module.exports = {
         "plugin:import/typescript",
       ],
       plugins: ["@typescript-eslint"],
+    },
+    {
+      files: ["src/app/**/*.{ts,tsx,js,jsx}"],
+      rules: {
+        "import/no-default-export": "off",
+
+        "mobx/missing-observer": "off",
+      },
     },
   ],
 };

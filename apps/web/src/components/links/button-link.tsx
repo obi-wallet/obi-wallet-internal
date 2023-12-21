@@ -1,11 +1,9 @@
-import * as React from "react";
-
-import { cn } from "@/lib/utils";
-
 import {
   UnstyledLink,
   UnstyledLinkProps,
 } from "@/components/links/unstyled-link";
+import { cn } from "@/lib/utils";
+import { forwardRef } from "react";
 import { IconType } from "react-icons";
 
 const ButtonLinkVariant = [
@@ -29,8 +27,9 @@ type ButtonLinkProps = {
   };
 } & UnstyledLinkProps;
 
-export const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
-  (
+export const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(
+  // eslint-disable-next-line mobx/missing-observer
+  function ButtonLink(
     {
       children,
       className,
@@ -42,7 +41,7 @@ export const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
       ...rest
     },
     ref,
-  ) => {
+  ) {
     return (
       <UnstyledLink
         ref={ref}

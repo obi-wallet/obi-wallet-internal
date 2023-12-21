@@ -1,6 +1,7 @@
 "use client";
 
 import { ButtonLink, Dropzone, Input, Stepper, Text } from "@/components";
+import { ChangeEvent } from "react";
 
 export default function Step1() {
   return (
@@ -19,7 +20,7 @@ export default function Step1() {
         with it.
       </Text>
       <Input
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
           console.log(e.target.value);
         }}
         placeholder="Name"
