@@ -1,6 +1,8 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { cn } from "@/lib/utils";
+import { Header } from "@/components";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +18,17 @@ export default function RootLayout({
 }): JSX.Element {
   return (
     <html lang="en" className="bg-black">
-      <body className={inter.className}>{children}</body>
+      <body
+        className={cn(
+          inter.className,
+          "flex min-h-screen flex-col bg-gradient-to-br from-black to-slate-900",
+        )}
+      >
+        <Header />
+        <main id="main" className="relative flex w-full grow">
+          {children}
+        </main>
+      </body>
     </html>
   );
 }
