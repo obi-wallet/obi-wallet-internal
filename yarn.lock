@@ -1381,12 +1381,10 @@ __metadata:
     eslint: "npm:^8.55.0"
     next: "npm:^14.0.4"
     postcss: "npm:^8.4.32"
-    prettier-plugin-tailwindcss: "npm:^0.5.9"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-dropzone: "npm:^14.2.3"
     react-icons: "npm:^4.12.0"
-    swr: "npm:^2.2.4"
     tailwind-merge: "npm:^2.1.0"
     tailwindcss: "npm:^3.3.6"
     typescript: "npm:^5.3.3"
@@ -3117,7 +3115,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"client-only@npm:0.0.1, client-only@npm:^0.0.1":
+"client-only@npm:0.0.1":
   version: 0.0.1
   resolution: "client-only@npm:0.0.1"
   checksum: 9d6cfd0c19e1c96a434605added99dff48482152af791ec4172fb912a71cff9027ff174efd8cdb2160cc7f377543e0537ffc462d4f279bc4701de3f2a3c4b358
@@ -6326,6 +6324,7 @@ __metadata:
   dependencies:
     prettier: "npm:^3.1.1"
     prettier-plugin-packagejson: "npm:^2.4.7"
+    prettier-plugin-tailwindcss: "npm:^0.5.9"
     turbo: "npm:^1.11.2"
   languageName: unknown
   linkType: soft
@@ -7901,18 +7900,6 @@ __metadata:
   version: 1.0.0
   resolution: "supports-preserve-symlinks-flag@npm:1.0.0"
   checksum: 6c4032340701a9950865f7ae8ef38578d8d7053f5e10518076e6554a9381fa91bd9c6850193695c141f32b21f979c985db07265a758867bac95de05f7d8aeb39
-  languageName: node
-  linkType: hard
-
-"swr@npm:^2.2.4":
-  version: 2.2.4
-  resolution: "swr@npm:2.2.4"
-  dependencies:
-    client-only: "npm:^0.0.1"
-    use-sync-external-store: "npm:^1.2.0"
-  peerDependencies:
-    react: ^16.11.0 || ^17.0.0 || ^18.0.0
-  checksum: ad7d3205f2b4969f6727b25819f2f999af792083b63a25c54fae10bc841c94827fb06652764ef94fa7a46cf9dda25a41f088809919d070dd0fec5b0005a3e839
   languageName: node
   linkType: hard
 
