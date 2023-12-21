@@ -1,7 +1,6 @@
 import { ButtonLink, Text } from "@/components";
 import Image from "next/image";
 
-// import wizardImage from "~/assets/images/Obi Wizard.png";
 export default function Introduction() {
   return (
     <section className="flex w-full flex-col items-center justify-center space-y-9">

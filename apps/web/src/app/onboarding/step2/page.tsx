@@ -2,6 +2,7 @@
 
 import { ButtonLink, Stepper, Text } from "@/components";
 import Image from "next/image";
+
 export default function Step2() {
   return (
     <section className="flex flex-col items-center space-y-7">
