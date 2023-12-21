@@ -3431,6 +3431,7 @@ __metadata:
     "@types/jest": "npm:^29.5.11"
     "@walletconnect/core": "npm:^2.10.6"
     "@walletconnect/sign-client": "npm:^2.11.0"
+    "@walletconnect/types": "npm:^2.11.0"
     "@walletconnect/utils": "npm:^2.11.0"
     "@walletconnect/web3wallet": "npm:^1.9.5"
     eslint: "npm:^8.55.0"
@@ -7214,7 +7215,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/types@npm:2.11.0":
+"@walletconnect/types@npm:2.11.0, @walletconnect/types@npm:^2.11.0":
   version: 2.11.0
   resolution: "@walletconnect/types@npm:2.11.0"
   dependencies:

@@ -1,4 +1,5 @@
 import { SignClient } from "@walletconnect/sign-client";
+import { ISignClient } from "@walletconnect/types";
 import { getSdkError } from "@walletconnect/utils";
 import Web3Wallet from "@walletconnect/web3wallet";
 
@@ -9,7 +10,15 @@ const TEST_NAMESPACES = {
   cosmos: {
     chains: ["cosmos:cosmoshub-4"],
     methods: ["cosmos_signDirect"],
-    accounts: ["cosmos:cosmoshub-4:foobar"],
+    accounts: ["cosmos:cosmoshub-4:foo"],
+    events: [],
+  },
+};
+const TEST_UPDATED_NAMESPACES = {
+  cosmos: {
+    chains: ["cosmos:cosmoshub-4"],
+    methods: ["cosmos_signDirect"],
+    accounts: ["cosmos:cosmoshub-4:foo", "cosmos:cosmoshub-4:bar"],
     events: [],
   },
 };
@@ -22,6 +31,7 @@ const TEST_REQUIRED_NAMESPACES = {
 };
 
 let wallet: Web3Wallet;
+let dApp: ISignClient;
 let sessionApproval: () => Promise<unknown>;
 let uriString: string;
 
@@ -32,8 +42,8 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  const dapp = await SignClient.init({ projectId: PROJECT_ID, name: "Dapp" });
-  const { uri, approval } = await dapp.connect({
+  dApp = await SignClient.init({ projectId: PROJECT_ID, name: "Dapp" });
+  const { uri, approval } = await dApp.connect({
     requiredNamespaces: TEST_REQUIRED_NAMESPACES,
   });
   uriString = uri || "";
@@ -49,26 +59,26 @@ beforeEach(async () => {
   });
 });
 
-test("Approve session proposal", async () => {
+async function pairAndApprove() {
   await Promise.all([
-    new Promise((resolve) => {
+    new Promise<void>((resolve) => {
       wallet.on("session_proposal", async (sessionProposal) => {
-        const { id, params, verifyContext } = sessionProposal;
+        const { params, verifyContext } = sessionProposal;
         expect(verifyContext.verified.validation).toEqual("UNKNOWN");
         expect(verifyContext.verified.isScam).toEqual(undefined);
-        const session = await wallet.approveSession({
-          id,
-          namespaces: TEST_NAMESPACES,
-        });
         expect(params.requiredNamespaces).toMatchObject(
           TEST_REQUIRED_NAMESPACES,
         );
-        resolve(session);
+        resolve();
       });
     }),
     sessionApproval(),
     wallet.pair({ uri: uriString }),
   ]);
+}
+
+test("Approve session proposal", async () => {
+  await pairAndApprove();
 });
 
 test("Reject session proposal", async () => {
@@ -99,5 +109,28 @@ test("Reject session proposal", async () => {
       resolve();
     }),
     wallet.pair({ uri: uriString }),
+  ]);
+});
+
+test("Update session", async () => {
+  await pairAndApprove();
+  expect(TEST_NAMESPACES).not.toMatchObject(TEST_UPDATED_NAMESPACES);
+
+  const activeSessions = wallet.getActiveSessions();
+  const sessionId = Object.keys(activeSessions)[0]!;
+  const session = activeSessions[sessionId]!;
+
+  await Promise.all([
+    new Promise((resolve) => {
+      dApp.events.on("session_update", (session) => {
+        const { params } = session;
+        expect(params.namespaces).toMatchObject(TEST_UPDATED_NAMESPACES);
+        resolve(session);
+      });
+    }),
+    wallet.updateSession({
+      topic: session.topic!,
+      namespaces: TEST_UPDATED_NAMESPACES,
+    }),
   ]);
 });
