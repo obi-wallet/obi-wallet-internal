@@ -7,8 +7,8 @@
   },
   "main": "./src/index.ts",
   "scripts": {
+    "integration": "jest --config jest-integration.config.js --forceExit",
     "lint": "eslint .",
-    "test": "jest --forceExit",
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
