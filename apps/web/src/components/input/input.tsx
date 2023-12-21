@@ -1,22 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import { cn } from "@/lib/utils";
-type InputProps = React.ComponentPropsWithoutRef<"input">;
+import {
+  ChangeEvent,
+  ComponentPropsWithoutRef,
+  useEffect,
+  useState,
+} from "react";
 
-export const Input = ({
+type InputProps = ComponentPropsWithoutRef<"input">;
+
+export function Input({
   onChange,
   className,
   defaultValue,
   ...rest
-}: InputProps) => {
+}: InputProps) {
   const [text, setText] = useState("");
 
   useEffect(() => {
     setText(defaultValue as string);
   }, [defaultValue]);
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
 
     onChange && onChange(e);
@@ -37,4 +42,4 @@ export const Input = ({
       {...rest}
     />
   );
-};
+}

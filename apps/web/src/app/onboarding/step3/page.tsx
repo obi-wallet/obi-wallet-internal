@@ -1,11 +1,9 @@
 "use client";
 
-import { FaGoogle, FaWindows, FaApple } from "react-icons/fa";
-import { useRouter } from "next/navigation";
 import { Button, ButtonLink, Stepper, Text } from "@/components";
+import { FaGoogle, FaWindows, FaApple } from "react-icons/fa";
 
 export default function Step3() {
-  const router = useRouter();
   return (
     <section className="flex flex-col items-center space-y-7">
       <Stepper currentStep={3} />
@@ -54,13 +52,13 @@ export default function Step3() {
         >
           Back
         </ButtonLink>
-        <Button
+        <ButtonLink
+          href="/onboarding/step4"
           className="block w-full"
           variant="primary"
-          onClick={() => router.push("/onboarding/step4")}
         >
           Confirm
-        </Button>
+        </ButtonLink>
       </div>
     </section>
   );

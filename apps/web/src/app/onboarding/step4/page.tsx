@@ -1,5 +1,7 @@
 "use client";
 
+import { ButtonLink, List, Stepper, Text } from "@/components";
+import { cn } from "@/lib/utils";
 import {
   FaCheck,
   FaKey,
@@ -9,9 +11,6 @@ import {
   FaWindows,
   FaTelegram,
 } from "react-icons/fa";
-
-import { cn } from "@/lib/utils";
-import { ButtonLink, List, Stepper, Text } from "@/components";
 
 const keyOptions = [
   {

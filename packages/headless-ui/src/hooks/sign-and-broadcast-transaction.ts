@@ -44,8 +44,8 @@ export function useSignAndBroadcastTransaction({
   const multisigKey = R.hasPath(["walletMeta", "currentAccount"], payload)
     ? wallet?.owner
     : R.has("multisigKey", payload)
-    ? payload.multisigKey
-    : null;
+      ? payload.multisigKey
+      : null;
 
   const awaitableCanExecute = useAwaitableState<boolean>();
   const canExecuteMutation = useMutation({
@@ -133,10 +133,12 @@ export function useSignAndBroadcastTransaction({
       const { signed, broadcast } =
         multisigSigner.createSignedTransactionOrMessage();
       if (broadcast) {
+        const firstSigned = signed[0];
+        invariant(firstSigned, "Expected firstSigned to exist.");
         return await Sdk.chainId(
           multisigKey.chainId,
         ).transactions.broadcastSignedTransactionAndLendFees({
-          signedTransaction: signed[0],
+          signedTransaction: firstSigned,
           sender: multisigKey.address,
         });
       } else {

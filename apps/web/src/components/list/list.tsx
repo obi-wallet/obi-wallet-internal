@@ -1,9 +1,11 @@
+import { ReactElement } from "react";
+
 export type ListProps<T> = {
   items: T[];
   name: string;
   keyProp?: keyof T;
   className?: string;
-  renderItem: (item: T) => React.ReactElement;
+  renderItem: (item: T) => ReactElement;
 };
 
 export function List<T>({

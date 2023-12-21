@@ -1,49 +1,51 @@
-import Link, { LinkProps } from "next/link";
-import * as React from "react";
-
 import { cn } from "@/lib/utils";
+import Link, { LinkProps } from "next/link";
+import { ComponentPropsWithRef, forwardRef, ReactNode } from "react";
 
 export type UnstyledLinkProps = {
   href: string;
-  children: React.ReactNode;
+  children: ReactNode;
   openNewTab?: boolean;
   className?: string;
   nextLinkProps?: Omit<LinkProps, "href">;
-} & React.ComponentPropsWithRef<"a">;
+} & ComponentPropsWithRef<"a">;
 
-export const UnstyledLink = React.forwardRef<
-  HTMLAnchorElement,
-  UnstyledLinkProps
->(({ children, href, openNewTab, className, nextLinkProps, ...rest }, ref) => {
-  const isNewTab =
-    openNewTab !== undefined
-      ? openNewTab
-      : href && !href.startsWith("/") && !href.startsWith("#");
+export const UnstyledLink = forwardRef<HTMLAnchorElement, UnstyledLinkProps>(
+  // eslint-disable-next-line mobx/missing-observer
+  function UnstyledLink(
+    { children, href, openNewTab, className, nextLinkProps, ...rest },
+    ref,
+  ) {
+    const isNewTab =
+      openNewTab !== undefined
+        ? openNewTab
+        : href && !href.startsWith("/") && !href.startsWith("#");
 
-  if (!isNewTab) {
+    if (!isNewTab) {
+      return (
+        <Link
+          href={href}
+          ref={ref}
+          className={className}
+          {...rest}
+          {...nextLinkProps}
+        >
+          {children}
+        </Link>
+      );
+    }
+
     return (
-      <Link
-        href={href}
+      <a
         ref={ref}
-        className={className}
+        target="_blank"
+        rel="noopener noreferrer"
+        href={href}
         {...rest}
-        {...nextLinkProps}
+        className={cn("cursor-newtab", className)}
       >
         {children}
-      </Link>
+      </a>
     );
-  }
-
-  return (
-    <a
-      ref={ref}
-      target="_blank"
-      rel="noopener noreferrer"
-      href={href}
-      {...rest}
-      className={cn("cursor-newtab", className)}
-    >
-      {children}
-    </a>
-  );
-});
+  },
+);
