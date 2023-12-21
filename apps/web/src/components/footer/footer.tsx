@@ -1,13 +1,15 @@
 "use client";
-import * as React from "react";
+
+import { cn } from "@/lib/utils";
+import { observer } from "mobx-react-lite";
+import { ComponentPropsWithoutRef } from "react";
+import { FaXTwitter, FaTelegram, FaFileLines } from "react-icons/fa6";
+
 import { Text } from "../text/text";
 
-import { FaXTwitter, FaTelegram, FaFileLines } from "react-icons/fa6";
-import { cn } from "@/lib/utils";
+type FooterProps = ComponentPropsWithoutRef<"footer">;
 
-type FooterProps = React.ComponentPropsWithoutRef<"footer">;
-
-export const Footer = ({ className }: FooterProps) => {
+export const Footer = observer(function Footer({ className }: FooterProps) {
   return (
     <footer className={cn("flex w-full items-center px-10 py-9", className)}>
       <div className="h-5 w-5 rounded-full bg-blue-600" />
@@ -19,4 +21,4 @@ export const Footer = ({ className }: FooterProps) => {
       </div>
     </footer>
   );
-};
+});

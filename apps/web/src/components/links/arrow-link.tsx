@@ -1,17 +1,16 @@
-import * as React from "react";
-
-import { cn } from "@/lib/utils";
-
 import { UnderlineLink } from "@/components/links/underline-link";
 import { UnstyledLinkProps } from "@/components/links/unstyled-link";
+import { cn } from "@/lib/utils";
+import { observer } from "mobx-react-lite";
+import { ComponentProps, ElementType } from "react";
 
-type ArrowLinkProps<C extends React.ElementType> = {
+type ArrowLinkProps<C extends ElementType> = {
   as?: C;
   direction?: "left" | "right";
 } & UnstyledLinkProps &
-  React.ComponentProps<C>;
+  ComponentProps<C>;
 
-export default function ArrowLink<C extends React.ElementType>({
+export const ArrowLink = observer(function ArrowLink<C extends ElementType>({
   children,
   className,
   direction = "right",
@@ -61,4 +60,4 @@ export default function ArrowLink<C extends React.ElementType>({
       </svg>
     </Component>
   );
-}
+});

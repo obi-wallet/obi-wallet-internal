@@ -1,7 +1,7 @@
-import Image, { ImageProps } from "next/image";
-import * as React from "react";
-
 import { cn } from "@/lib/utils";
+import { observer } from "mobx-react-lite";
+import Image, { ImageProps } from "next/image";
+import { useState } from "react";
 
 type NextImageProps = {
   useSkeleton?: boolean;
@@ -21,7 +21,7 @@ type NextImageProps = {
  * @description Must set width using `w-` className
  * @param useSkeleton add background with pulse animation, don't use it if image is transparent
  */
-export const NextImage = ({
+export const NextImage = observer(function NextImage({
   useSkeleton = false,
   src,
   width,
@@ -30,10 +30,8 @@ export const NextImage = ({
   className,
   classNames,
   ...rest
-}: NextImageProps) => {
-  const [status, setStatus] = React.useState(
-    useSkeleton ? "loading" : "complete",
-  );
+}: NextImageProps) {
+  const [status, setStatus] = useState(useSkeleton ? "loading" : "complete");
   const widthIsSet = className?.includes("w-") ?? false;
 
   return (
@@ -55,4 +53,4 @@ export const NextImage = ({
       />
     </figure>
   );
-};
+});

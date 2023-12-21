@@ -1,12 +1,15 @@
+import { observer } from "mobx-react-lite";
+import { ReactElement } from "react";
+
 export type ListProps<T> = {
   items: T[];
   name: string;
   keyProp?: keyof T;
   className?: string;
-  renderItem: (item: T) => React.ReactElement;
+  renderItem: (item: T) => ReactElement;
 };
 
-export function List<T>({
+export const List = observer(function List<T>({
   items,
   name,
   keyProp,
@@ -22,4 +25,4 @@ export function List<T>({
       ))}
     </ul>
   );
-}
+});

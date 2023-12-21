@@ -1,15 +1,21 @@
-import * as React from "react";
-
 import { cn } from "@/lib/utils";
+import { observer } from "mobx-react-lite";
+import { ComponentPropsWithoutRef } from "react";
 import { IconType } from "react-icons";
+
 import { Text } from "../text/text";
 
 type BoxProps = {
   title?: string;
   RightIcon?: IconType;
-} & React.ComponentPropsWithoutRef<"div">;
+} & ComponentPropsWithoutRef<"div">;
 
-export const Box = ({ title, RightIcon, className, ...rest }: BoxProps) => {
+export const Box = observer(function Box({
+  title,
+  RightIcon,
+  className,
+  ...rest
+}: BoxProps) {
   return (
     <div
       className={cn("rounded-md bg-slate-900 p-4 shadow", className)}
@@ -19,4 +25,4 @@ export const Box = ({ title, RightIcon, className, ...rest }: BoxProps) => {
       {RightIcon && <RightIcon />}
     </div>
   );
-};
+});

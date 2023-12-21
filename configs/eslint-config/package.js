@@ -159,5 +159,13 @@ module.exports = {
       ],
       plugins: ["@typescript-eslint"],
     },
+    {
+      files: ["src/app/**/*.{ts,tsx,js,jsx}"],
+      rules: {
+        "import/no-default-export": "off",
+
+        "mobx/missing-observer": "off",
+      },
+    },
   ],
 };

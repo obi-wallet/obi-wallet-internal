@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils";
-
-import { IColors, ISizes } from "@/types/Styles";
-import { IFontWeights } from "@/types/Styles";
-import { ILeadings } from "@/types/Styles";
+import { IColors, ISizes } from "@/types/styles";
+import { IFontWeights } from "@/types/styles";
+import { ILeadings } from "@/types/styles";
+import { observer } from "mobx-react-lite";
+import { ReactNode } from "react";
 
 export type TypographyProps = {
   mono?: boolean;
@@ -13,10 +14,10 @@ export type TypographyProps = {
   tracking?: boolean;
   uppercase?: boolean;
   className?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
-export const Text = ({
+export const Text = observer(function Text({
   mono = false,
   size = "md",
   color = "white",
@@ -26,7 +27,7 @@ export const Text = ({
   uppercase = false,
   className,
   children,
-}: TypographyProps) => {
+}: TypographyProps) {
   return (
     <span
       className={cn(
@@ -68,4 +69,4 @@ export const Text = ({
       {children}
     </span>
   );
-};
+});

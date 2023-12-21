@@ -1,9 +1,12 @@
+import { observer } from "mobx-react-lite";
+import { ComponentPropsWithoutRef } from "react";
 import { useDropzone } from "react-dropzone";
 
 import "react-dropzone/examples/theme.css";
-type DropzoneProps = React.ComponentPropsWithoutRef<"div">;
 
-export const Dropzone = ({ className }: DropzoneProps) => {
+type DropzoneProps = ComponentPropsWithoutRef<"div">;
+
+export const Dropzone = observer(function Dropzone(_props: DropzoneProps) {
   const { getRootProps, getInputProps } = useDropzone();
 
   return (
@@ -21,4 +24,4 @@ export const Dropzone = ({ className }: DropzoneProps) => {
       <p>Upload an Image</p>
     </div>
   );
-};
+});

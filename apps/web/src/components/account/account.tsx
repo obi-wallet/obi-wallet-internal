@@ -1,9 +1,9 @@
+import { Text } from "@/components/text/text";
+import { observer } from "mobx-react-lite";
 import { FaQrcode, FaCopy, FaLink } from "react-icons/fa";
 import { FaArrowUpRightFromSquare, FaCircleUser } from "react-icons/fa6";
 
-import { Text } from "@/components/text/text";
-
-export default function Account() {
+export const Account = observer(function Account() {
   return (
     <div className="flex  space-x-7">
       {/* <div className="h-28 w-28 rounded-full bg-sky-500"></div> */}
@@ -24,4 +24,4 @@ export default function Account() {
       </div>
     </div>
   );
-}
+});

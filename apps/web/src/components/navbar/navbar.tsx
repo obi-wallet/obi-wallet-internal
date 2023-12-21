@@ -1,13 +1,15 @@
 "use client";
-import * as React from "react";
-import { Text } from "../text/text";
-import Account from "../account/account";
-import { Footer } from "../footer/footer";
-import { PrimaryLink } from "../links";
-import { usePathname } from "next/navigation";
 
+import { observer } from "mobx-react-lite";
+import { usePathname } from "next/navigation";
 import { FaHome } from "react-icons/fa";
 import { FaGear, FaCreditCard } from "react-icons/fa6";
+
+import { Account } from "../account/account";
+import { Footer } from "../footer/footer";
+import { PrimaryLink } from "../links";
+import { Text } from "../text/text";
+
 const navMenu = [
   {
     href: "/home",
@@ -29,7 +31,7 @@ const navMenu = [
   },
 ];
 
-export const Navbar = () => {
+export const Navbar = observer(function Navbar() {
   const pathname = usePathname();
   const mainURISegment = pathname.split("/")[1];
   return (
@@ -66,4 +68,4 @@ export const Navbar = () => {
       <Footer className="!px-0" />
     </nav>
   );
-};
+});
