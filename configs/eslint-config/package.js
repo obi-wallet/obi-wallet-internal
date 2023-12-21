@@ -58,7 +58,7 @@ module.exports = {
       },
     ],
 
-    "mobx/missing-observer": "error",
+    "mobx/missing-observer": "off",
     "mobx/no-anonymous-observer": "error",
 
     "react/function-component-definition": [

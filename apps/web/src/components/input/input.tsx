@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { observer } from "mobx-react-lite";
 import {
   ChangeEvent,
   ComponentPropsWithoutRef,
@@ -11,7 +10,7 @@ import {
 
 type InputProps = ComponentPropsWithoutRef<"input">;
 
-export const Input = observer(function Input({
+export function Input({
   onChange,
   className,
   defaultValue,
@@ -43,4 +42,4 @@ export const Input = observer(function Input({
       {...rest}
     />
   );
-});
+}

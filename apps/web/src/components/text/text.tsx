@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils";
 import { IColors, ISizes } from "@/types/styles";
 import { IFontWeights } from "@/types/styles";
 import { ILeadings } from "@/types/styles";
-import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 
 export type TypographyProps = {
@@ -17,7 +16,7 @@ export type TypographyProps = {
   children?: ReactNode;
 };
 
-export const Text = observer(function Text({
+export function Text({
   mono = false,
   size = "md",
   color = "white",
@@ -69,4 +68,4 @@ export const Text = observer(function Text({
       {children}
     </span>
   );
-});
+}

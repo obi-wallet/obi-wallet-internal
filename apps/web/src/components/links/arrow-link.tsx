@@ -1,7 +1,6 @@
 import { UnderlineLink } from "@/components/links/underline-link";
 import { UnstyledLinkProps } from "@/components/links/unstyled-link";
 import { cn } from "@/lib/utils";
-import { observer } from "mobx-react-lite";
 import { ComponentProps, ElementType } from "react";
 
 type ArrowLinkProps<C extends ElementType> = {
@@ -10,7 +9,7 @@ type ArrowLinkProps<C extends ElementType> = {
 } & UnstyledLinkProps &
   ComponentProps<C>;
 
-export const ArrowLink = observer(function ArrowLink<C extends ElementType>({
+export function ArrowLink<C extends ElementType>({
   children,
   className,
   direction = "right",
@@ -60,4 +59,4 @@ export const ArrowLink = observer(function ArrowLink<C extends ElementType>({
       </svg>
     </Component>
   );
-});
+}

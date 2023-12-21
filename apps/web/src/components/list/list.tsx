@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import { ReactElement } from "react";
 
 export type ListProps<T> = {
@@ -9,7 +8,7 @@ export type ListProps<T> = {
   renderItem: (item: T) => ReactElement;
 };
 
-export const List = observer(function List<T>({
+export function List<T>({
   items,
   name,
   keyProp,
@@ -25,4 +24,4 @@ export const List = observer(function List<T>({
       ))}
     </ul>
   );
-});
+}

@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { observer } from "mobx-react-lite";
 import { ComponentPropsWithoutRef } from "react";
 
 type BoxProps = {
@@ -7,7 +6,7 @@ type BoxProps = {
   currentStep?: number;
 } & ComponentPropsWithoutRef<"div">;
 
-export const Stepper = observer(function Stepper({
+export function Stepper({
   totalSteps = 5,
   currentStep = 1,
   className,
@@ -29,4 +28,4 @@ export const Stepper = observer(function Stepper({
       ))}
     </div>
   );
-});
+}

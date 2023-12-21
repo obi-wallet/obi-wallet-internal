@@ -1,6 +1,5 @@
 "use client";
 
-import { observer } from "mobx-react-lite";
 import { usePathname } from "next/navigation";
 import { FaHome } from "react-icons/fa";
 import { FaGear, FaCreditCard } from "react-icons/fa6";
@@ -31,7 +30,7 @@ const navMenu = [
   },
 ];
 
-export const Navbar = observer(function Navbar() {
+export function Navbar() {
   const pathname = usePathname();
   const mainURISegment = pathname.split("/")[1];
   return (
@@ -68,4 +67,4 @@ export const Navbar = observer(function Navbar() {
       <Footer className="!px-0" />
     </nav>
   );
-});
+}

@@ -1,5 +1,6 @@
+"use client";
+
 import { cn } from "@/lib/utils";
-import { observer } from "mobx-react-lite";
 import Image, { ImageProps } from "next/image";
 import { useState } from "react";
 
@@ -21,7 +22,7 @@ type NextImageProps = {
  * @description Must set width using `w-` className
  * @param useSkeleton add background with pulse animation, don't use it if image is transparent
  */
-export const NextImage = observer(function NextImage({
+export function NextImage({
   useSkeleton = false,
   src,
   width,
@@ -53,4 +54,4 @@ export const NextImage = observer(function NextImage({
       />
     </figure>
   );
-});
+}
