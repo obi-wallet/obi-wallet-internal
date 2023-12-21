@@ -11,6 +11,7 @@
     "dev": "turbo dev",
     "format": "prettier --write . && yarn lint -- --fix",
     "lint": "turbo lint",
+    "prettier": "prettier --check .",
     "tsc": "turbo tsc"
   },
   "devDependencies": {
