@@ -1,4 +1,5 @@
-import crypto from "crypto";
+import { decryptWithPrivateKey, EncryptionService } from "@obi-wallet/sdk";
+// import crypto from "crypto";
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 
@@ -15,14 +16,17 @@ export async function POST(request: Request) {
       "",
     );
 
-    const privateKeyPem = process.env.EMAIL_SHIELD;
-    invariant(privateKeyPem, "no key shield decryptor");
+    // TODO: work in progress, this is a master key that decrypt user encrypted keys
+
+    const obiEncryptionKey: string = process.env.OBI_EMAIL_ENCRYPTION_KEY;
+    // const obiEncryptionKeyBuf = Buffer.from(obiEncryptionKey!, "base64");
+    invariant(obiEncryptionKey, "no key shield decryptor");
 
     // Convert base64 encoded data back to Buffer
     const encryptedBuffer = Buffer.from(encryptedDataString, "base64");
 
     const decryptedString = decryptWithPrivateKey(
-      privateKeyPem,
+      obiEncryptionKey,
       encryptedBuffer,
     );
 
@@ -38,19 +42,4 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-}
-
-function decryptWithPrivateKey(
-  privateKeyPem: string,
-  encryptedData: Buffer,
-): string {
-  const decryptedBuffer = crypto.privateDecrypt(
-    {
-      key: privateKeyPem,
-      padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-      oaepHash: "sha256",
-    },
-    encryptedData,
-  );
-  return decryptedBuffer.toString("utf8");
 }

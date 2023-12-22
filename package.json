@@ -27,6 +27,7 @@
     "react-native-permissions": "^3.8.4"
   },
   "dependencies": {
+    "@1password/connect": "^1.4.1",
     "@cosmjs/amino": "^0.31.0",
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
     "@cosmjs/crypto": "^0.31.0",

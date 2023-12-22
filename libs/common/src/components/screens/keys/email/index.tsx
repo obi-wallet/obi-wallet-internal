@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppStateEffect } from "@obi-wallet/headless-ui";
 import {
+  BrowserKeyEncryptor,
   generateSec256k1KeyPair,
   MultisigKey,
   Secp256k1PublicKey,
@@ -45,46 +46,6 @@ export type EmailKeyScreenProps = NativeStackScreenProps<
   KeyStackParamList,
   KeyRoute.EmailKey
 >;
-
-async function encryptWithPublicKey(
-  publicKeyPem: string,
-  data: string,
-): Promise<ArrayBuffer> {
-  const encoder = new TextEncoder();
-  const encodedData = encoder.encode(data);
-  console.log("importing key...");
-  const base64 = publicKeyPem
-    .split("\n")
-    .filter((row) => row.trim().length > 0 && !row.includes("---"))
-    .join("");
-
-  const binaryDerString = atob(base64);
-  const binaryDer = new Uint8Array(binaryDerString.length);
-
-  for (let i = 0; i < binaryDerString.length; i++) {
-    binaryDer[i] = binaryDerString.charCodeAt(i);
-  }
-
-  const importedKey = await window.crypto.subtle.importKey(
-    "spki",
-    binaryDer.buffer,
-    {
-      name: "RSA-OAEP",
-      hash: "SHA-256",
-    },
-    true,
-    ["encrypt"],
-  );
-  console.log("key imported");
-  const encryptedData = await window.crypto.subtle.encrypt(
-    {
-      name: "RSA-OAEP",
-    },
-    importedKey,
-    encodedData,
-  );
-  return encryptedData;
-}
 
 export const EmailKeyScreen = observer<EmailKeyScreenProps>(
   function EmailKeyScreen({ route }) {
@@ -146,34 +107,20 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
   useEffect(() => {
     async function makeEmailRecoveryString() {
       const { publicKey, privateKey } = generateSec256k1KeyPair();
-      // TODO: more secure path here. Right now this is a public key
-      // whose private key is known by next.js app. Of course, the app
-      // doesn't know this encrypted value, and so cannot know the private
-      // key until recovery is used.
-      const emailRecoveryLinkPubkey =
-        "-----BEGIN PUBLIC KEY-----" +
-        "\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp0FKcmzdpuUdgLlD3gCD" +
-        "iVsN+KLIbRX/P2LG/luAXmL5A+Fo+5uQF/kb2Yd80WMY6LxUi8KuZBYXoMRyB6r1" +
-        "xcDxl2/qiKghfrwM8F3+jaPqHOnYHF6Ge34CS9yVl0ufyEh24VRe8c2FetGFdyv/" +
-        "zAUjd89D9ZWoRX6G4e1U3zEw3wsOSPIl3HCFNoEFPDF5lsyzC2tFDOcieutaeTBX" +
-        "Hnf9cDZ+Zi4uha5TKIRzWg4+meTCdcWncJiM3mk4+4WzVAymoV9aMrqJRGk6BfD7" +
-        "SHmHQgKww8o9yEd//r/ycXfrZTPX7ojynSFnvCnaO61LkH1tifsOBXPo3QQHJxLm" +
-        "UwIDAQAB\n" +
-        "-----END PUBLIC KEY-----";
-      // convert the base64 emailRecoveryLinkPubkey to a CryptoKey for window.crypto.subtle
-      encryptWithPublicKey(emailRecoveryLinkPubkey, privateKey).then(
-        (buffer) => {
-          // convert to base64 string
-          const emailRecoveryLinkString: string = btoa(
-            String.fromCharCode(...new Uint8Array(buffer)),
-          );
-          console.log(
-            "encrypted private key for email link: " + emailRecoveryLinkString,
-          );
-          setEmailRecoveryLink(emailRecoveryLinkString);
-          setEmailPublicKey(publicKey.value);
-        },
-      );
+      const keyEncryptor = new BrowserKeyEncryptor();
+      const key = await keyEncryptor.generateAes256GcmKey(true);
+
+      keyEncryptor.encrypt(key, privateKey).then((buffer) => {
+        // convert to base64 string
+        const emailRecoveryLinkString: string = btoa(
+          String.fromCharCode(...new Uint8Array(buffer)),
+        );
+        console.log(
+          "encrypted private key for email link: " + emailRecoveryLinkString,
+        );
+        setEmailRecoveryLink(emailRecoveryLinkString);
+        setEmailPublicKey(publicKey.value);
+      });
     }
     makeEmailRecoveryString();
   }, []);

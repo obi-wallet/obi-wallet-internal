@@ -337,10 +337,10 @@ export class SecretJsMessages extends AbstractMessages<string> {
         }) => {
           return {
             address: this.sdk.transactions.getAddressOfPublicKey(
-              key.serialized.payload.publicKey,
+              key.payload.publicKey,
             ),
             ty: key.type,
-            pubkeyBase64: key.serialized.payload.publicKey.value,
+            pubkeyBase64: key.payload.publicKey.value,
           };
         },
       );

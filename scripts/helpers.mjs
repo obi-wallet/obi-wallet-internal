@@ -15,6 +15,19 @@ export async function get1PasswordItem(id) {
   );
 }
 
+// export async function create1PasswordItem(category, vault, title, note) {
+//   const stdout = await execCommand(
+//     `op item create \
+//                --category='${category}' \
+//                --vault='${vault}' \
+//                --title='${title}' \
+//                '${note.fieldName}=${note.fieldValue}' \
+//                --account AURDFTDQCVHDRIBVN3MRH5PSFA \
+//                --format json`,
+//   );
+//   return JSON.parse(stdout);
+// }
+
 export async function download1PasswordFile(id, outFile) {
   try {
     await unlink(outFile);
