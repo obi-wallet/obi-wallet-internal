@@ -3,7 +3,14 @@ import { ComponentPropsWithRef, forwardRef } from "react";
 import { IconType } from "react-icons";
 import { FaArrowsRotate } from "react-icons/fa6";
 
-const ButtonVariant = ["primary", "outline", "ghost", "light", "dark"] as const;
+const ButtonVariant = [
+  "primary",
+  "outline",
+  "ghost",
+  "light",
+  "dark",
+  "confirmed",
+] as const;
 const ButtonSize = ["sm", "base"] as const;
 
 type ButtonProps = {
@@ -17,6 +24,7 @@ type ButtonProps = {
     leftIcon?: string;
     rightIcon?: string;
   };
+  block?: boolean;
 } & ComponentPropsWithRef<"button">;
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -32,6 +40,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       leftIcon: LeftIcon,
       rightIcon: RightIcon,
       classNames,
+      block,
       ...rest
     },
     ref,
@@ -44,26 +53,33 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         type="button"
         disabled={disabled}
         className={cn(
-          "inline-flex items-center rounded-lg font-medium",
+          "inline-flex items-center rounded font-medium",
           "focus-visible:ring-primary-500 focus:outline-none focus-visible:ring",
           "shadow-sm",
           "transition-colors duration-75",
+          "disabled:shadow-inner",
+          [block && "w-full justify-center"],
           //#region  //*=========== Size ===========
-          [size === "base" && ["px-3 py-4", "text-sm md:text-base"]],
+          [size === "base" && ["px-3 py-3.5", "text-sm md:text-base"]],
           //#endregion  //*======== Size ===========
           //#region  //*=========== Variants ===========
           [
             variant === "primary" && [
-              "border border-blue-600 bg-blue-600 text-white",
+              "border border-blue-600 bg-blue-600 text-white shadow",
               "hover:bg-blue-700 hover:text-white",
               "active:bg-blue-800",
-              "disabled:bg-blue-800 disabled:shadow-inner",
+              "disabled:opacity-30",
+              "disabled:border-blue-600 disabled:bg-blue-600",
             ],
             variant === "outline" && [
               "border border-gray-600 bg-transparent text-zinc-400",
               "hover:bg-gray-700 hover:text-white",
               "active:bg-gray-800",
-              "disabled:bg-gray-900",
+              "disabled:opacity-30",
+              "disabled:border-gray-900 disabled:bg-gray-900",
+            ],
+            variant === "confirmed" && [
+              "cursor-default border border-emerald-500 bg-emerald-500 text-white",
             ],
           ],
           //#endregion  //*======== Variants ===========
