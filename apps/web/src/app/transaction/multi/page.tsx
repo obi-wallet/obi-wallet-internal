@@ -22,9 +22,9 @@ export default function MultiKeyTransaction() {
       const keys = [...prevKeys];
       const confirmKey = prevKeys.findIndex((key) => key.type === keyType);
 
-      if (keys[confirmKey]) {
-        //@ts-expect-error It will exist
-        keys[confirmKey].confirmed = true;
+      const key = keys[confirmKey];
+      if (key) {
+        key.confirmed = true;
         return keys;
       }
       return prevKeys;
