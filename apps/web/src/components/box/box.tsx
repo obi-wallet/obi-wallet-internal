@@ -9,7 +9,13 @@ type BoxProps = {
   RightIcon?: IconType;
 } & ComponentPropsWithoutRef<"div">;
 
-export function Box({ title, RightIcon, className, ...rest }: BoxProps) {
+export function Box({
+  title,
+  RightIcon,
+  className,
+  children,
+  ...rest
+}: BoxProps) {
   return (
     <div
       className={cn("rounded-md bg-slate-900 p-4 shadow", className)}
@@ -17,6 +23,7 @@ export function Box({ title, RightIcon, className, ...rest }: BoxProps) {
     >
       {title && <Text>{title}</Text>}
       {RightIcon && <RightIcon />}
+      {children}
     </div>
   );
 }

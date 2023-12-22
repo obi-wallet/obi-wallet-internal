@@ -11,3 +11,4 @@ export * from "./navbar";
 export * from "./next-image";
 export * from "./stepper";
 export * from "./text";
+export * from "./transaction";
