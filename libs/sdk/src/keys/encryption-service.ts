@@ -2,12 +2,9 @@ import * as crypto from "crypto";
 import { createCipheriv, pbkdf2Sync, randomBytes } from "crypto";
 
 export class BrowserKeyEncryptor {
-  readonly #iv: Uint8Array;
   algorithm: "aes-256-gcm";
   constructor() {
     this.algorithm = "aes-256-gcm";
-    this.#iv = window.crypto.getRandomValues(new Uint8Array(16));
-    // this.#salt = window.crypto.getRandomValues(new Uint8Array(64));
   }
 
   async getKeyMaterial(data: string) {
@@ -35,22 +32,22 @@ export class BrowserKeyEncryptor {
       ["encrypt", "decrypt"],
     );
   }
-  async encrypt(key: CryptoKey, data: string) {
+  async encrypt(key: CryptoKey, data: string, iv: Uint8Array) {
     const encodedData = BrowserKeyEncryptor.#encodeData(data);
     return window.crypto.subtle.encrypt(
       {
         name: "AES-GCM",
-        iv: this.#iv!,
+        iv,
       },
       key, // getKey(keyMaterial, salt)
       encodedData,
     );
   }
-  async decrypt(key: CryptoKey, cipherText: ArrayBuffer) {
+  async decrypt(key: CryptoKey, cipherText: ArrayBuffer, iv: Uint8Array) {
     const decrypted = await window.crypto.subtle.decrypt(
       {
         name: "AES-GCM",
-        iv: this.#iv,
+        iv,
       },
       key,
       cipherText,
@@ -87,7 +84,7 @@ export class ServerKeyEncryptor {
   encrypt(data: string, masterKey: Uint8Array) {
     const iv = randomBytes(16);
     const salt = randomBytes(64);
-    const key = pbkdf2Sync(masterKey, salt, 2256, 32, "sha512");
+    const key = pbkdf2Sync(masterKey, salt, 9999, 32, "sha512");
     // AES 256 GCM Mode
     const cipher = createCipheriv("aes-256-gcm", key, iv);
     const encrypted = Buffer.concat([
@@ -104,7 +101,7 @@ export class ServerKeyEncryptor {
     const tag = encryptedBuf.subarray(80, 96);
     const data = encryptedBuf.subarray(96);
 
-    const key = crypto.pbkdf2Sync(masterKey, salt, 2256, 32, "sha512");
+    const key = crypto.pbkdf2Sync(masterKey, salt, 9999, 32, "sha512");
     // AES 256 GCM Mode
     const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
     decipher.setAuthTag(tag);
@@ -114,10 +111,10 @@ export class ServerKeyEncryptor {
 
     return decrypted;
   }
-  convertKeyToBase64(buffer: Uint8Array) {
+  convertBufferKeyToBase64(buffer: Uint8Array) {
     return Buffer.from(buffer).toString("base64");
   }
-  convertKeyToBuffer(base64Seed: string) {
+  convertBase64KeyToBuffer(base64Seed: string) {
     const base64SeedBuf = Buffer.from(base64Seed, "base64");
     return new Uint8Array(
       base64SeedBuf.buffer.slice(

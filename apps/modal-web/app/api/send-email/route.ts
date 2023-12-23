@@ -1,5 +1,7 @@
+import { ServerKeyEncryptor } from "@obi-wallet/sdk";
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import * as process from "process";
 
 export async function POST(request: Request) {
   const body: {
@@ -17,6 +19,27 @@ export async function POST(request: Request) {
     );
   }
 
+  const bodyText = body.text.split("\n");
+  const recoveryLink = bodyText.at(-1)!;
+  const encryptedUserData = recoveryLink.replace(
+    "https://wallet.obimoney.games/ztx/",
+    "",
+  );
+
+  const keyEncryptor = new ServerKeyEncryptor();
+  const encodedObiKey = keyEncryptor.convertBase64KeyToBuffer(
+    process.env.OBI_EMAIL_ENCRYPTION_KEY!,
+  );
+  const encryptedRecoveryLinkHash = keyEncryptor.encrypt(
+    encryptedUserData,
+    encodedObiKey,
+  );
+  const encryptedRecoveryLink = `https://wallet.obimoney.games/ztx/${encryptedRecoveryLinkHash}`;
+  const newText = bodyText
+    .slice(0, -1)
+    .concat(encryptedRecoveryLink)
+    .join("\n");
+
   // Create a transporter
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -31,7 +54,7 @@ export async function POST(request: Request) {
     from: process.env.GMAIL_USER, // sender address
     to: body.to, // list of receivers
     subject: body.subject, // Subject line
-    text: body.text, // plain text body
+    text: newText, // plain text body
   };
 
   // Send the email

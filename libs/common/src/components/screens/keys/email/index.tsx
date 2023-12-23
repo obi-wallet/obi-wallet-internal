@@ -108,9 +108,12 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
     async function makeEmailRecoveryString() {
       const { publicKey, privateKey } = generateSec256k1KeyPair();
       const keyEncryptor = new BrowserKeyEncryptor();
-      const key = await keyEncryptor.generateAes256GcmKey(true);
+      const salt = window.crypto.getRandomValues(new Uint8Array(64));
+      const iv = window.crypto.getRandomValues(new Uint8Array(16));
+      const zkKeyMaterial = await keyEncryptor.getKeyMaterial(publicKey.value);
+      const zkKey = await keyEncryptor.getKey(zkKeyMaterial, salt);
 
-      keyEncryptor.encrypt(key, privateKey).then((buffer) => {
+      keyEncryptor.encrypt(zkKey, privateKey, iv).then((buffer) => {
         // convert to base64 string
         const emailRecoveryLinkString: string = btoa(
           String.fromCharCode(...new Uint8Array(buffer)),
@@ -274,76 +277,76 @@ export const EmailKey = observer<EmailKeyProps>(function EmailKey({
       <View style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}>
         {!isKeyboardVisible && (
           <>
-            <TouchableOpacity
-              style={[
-                {
-                  backgroundColor: theme.colors.panelBackground,
-                  borderRadius: 12,
-                  paddingVertical: 15,
-                  paddingHorizontal: 10,
-                  marginBottom: 20,
-                },
-              ]}
-              onPress={() => {
-                navigator.clipboard.writeText(emailRecoveryLink!);
-                setEmailKey({
-                  type: "tendermint/PubKeySecp256k1",
-                  value: emailPublicKey!,
-                });
-                if (unityStore.getDeviceId) {
-                  console.log("triggering onref");
-                  onPressRef.current!();
-                }
-                setCopied(true);
-              }}
-            >
-              <Text
-                style={{
-                  textAlign: "center",
-                  color: "#F6F5FF",
-                  fontSize: 14,
-                  fontWeight: "500",
-                  marginBottom: 10,
-                }}
-              >
-                Or, save your recovery link
-                <br />
-                to a password manager:
-              </Text>
-              <Text
-                style={[
-                  {
-                    textAlign: "center",
-                    color: "#F6F5FF",
-                    fontSize: 12,
-                    fontWeight: "500",
-                    opacity: 0.6,
-                    marginTop: 10,
-                  },
-                  theme.receive?.address?.text,
-                ]}
-              >
-                {addEllipsisInMiddle(
-                  emailRecoveryLink
-                    ? "wallet.obimoney.games/ztx/" + emailRecoveryLink
-                    : "Generating...",
-                  20,
-                )}
-              </Text>
-              {theme.style === "ztx" && (
-                <View style={{ marginLeft: 10, width: 14, height: 14 }}>
-                  <FontAwesomeIcon
-                    icon={faCopy}
-                    style={{
-                      color: "#fff",
-                      // @ts-expect-error web-only prop
-                      outline: 0,
-                    }}
-                    size={14}
-                  />
-                </View>
-              )}
-            </TouchableOpacity>
+            {/*<TouchableOpacity*/}
+            {/*  style={[*/}
+            {/*    {*/}
+            {/*      backgroundColor: theme.colors.panelBackground,*/}
+            {/*      borderRadius: 12,*/}
+            {/*      paddingVertical: 15,*/}
+            {/*      paddingHorizontal: 10,*/}
+            {/*      marginBottom: 20,*/}
+            {/*    },*/}
+            {/*  ]}*/}
+            {/*  onPress={() => {*/}
+            {/*    navigator.clipboard.writeText(emailRecoveryLink!);*/}
+            {/*    setEmailKey({*/}
+            {/*      type: "tendermint/PubKeySecp256k1",*/}
+            {/*      value: emailPublicKey!,*/}
+            {/*    });*/}
+            {/*    if (unityStore.getDeviceId) {*/}
+            {/*      console.log("triggering onref");*/}
+            {/*      onPressRef.current!();*/}
+            {/*    }*/}
+            {/*    setCopied(true);*/}
+            {/*  }}*/}
+            {/*>*/}
+            {/*  <Text*/}
+            {/*    style={{*/}
+            {/*      textAlign: "center",*/}
+            {/*      color: "#F6F5FF",*/}
+            {/*      fontSize: 14,*/}
+            {/*      fontWeight: "500",*/}
+            {/*      marginBottom: 10,*/}
+            {/*    }}*/}
+            {/*  >*/}
+            {/*    Or, save your recovery link*/}
+            {/*    <br />*/}
+            {/*    to a password manager:*/}
+            {/*  </Text>*/}
+            {/*  <Text*/}
+            {/*    style={[*/}
+            {/*      {*/}
+            {/*        textAlign: "center",*/}
+            {/*        color: "#F6F5FF",*/}
+            {/*        fontSize: 12,*/}
+            {/*        fontWeight: "500",*/}
+            {/*        opacity: 0.6,*/}
+            {/*        marginTop: 10,*/}
+            {/*      },*/}
+            {/*      theme.receive?.address?.text,*/}
+            {/*    ]}*/}
+            {/*  >*/}
+            {/*    {addEllipsisInMiddle(*/}
+            {/*      emailRecoveryLink*/}
+            {/*        ? "wallet.obimoney.games/ztx/" + emailRecoveryLink*/}
+            {/*        : "Generating...",*/}
+            {/*      20,*/}
+            {/*    )}*/}
+            {/*  </Text>*/}
+            {/*  {theme.style === "ztx" && (*/}
+            {/*    <View style={{ marginLeft: 10, width: 14, height: 14 }}>*/}
+            {/*      <FontAwesomeIcon*/}
+            {/*        icon={faCopy}*/}
+            {/*        style={{*/}
+            {/*          color: "#fff",*/}
+            {/*          // @ts-expect-error web-only prop*/}
+            {/*          outline: 0,*/}
+            {/*        }}*/}
+            {/*        size={14}*/}
+            {/*      />*/}
+            {/*    </View>*/}
+            {/*  )}*/}
+            {/*</TouchableOpacity>*/}
             <VerifyAndProceedButton
               labelOverride="Send Email to Myself"
               disabled={!formState.isValid}
