@@ -1,8 +1,6 @@
-import {
-  eventEmitter,
-  userInteractionEvent,
-} from "@obi-wallet/sdk-user-interactions";
 import warning from "tiny-warning";
+
+import { eventEmitter, userInteractionEvent } from "./event-emitter";
 
 export interface CanceledUserInteractionResponse {
   approved: false;

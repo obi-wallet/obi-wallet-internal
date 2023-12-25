@@ -1,4 +1,4 @@
-import { UserInteractionWithType } from "../../user-interactions/abstract";
+import { UserInteractionWithType } from "@obi-wallet/sdk-abstract-user-interaction";
 
 export interface UserInteractionsInterface {
   getPendingUserInteractionsOfType<

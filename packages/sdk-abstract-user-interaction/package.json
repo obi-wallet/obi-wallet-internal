@@ -1,5 +1,5 @@
 {
-  "name": "@obi-wallet/sdk-user-interactions",
+  "name": "@obi-wallet/sdk-abstract-user-interaction",
   "version": "0.0.0",
   "private": true,
   "exports": {
@@ -11,7 +11,8 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "eventemitter3": "^5.0.1"
+    "eventemitter3": "^5.0.1",
+    "tiny-warning": "^1.0.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
