@@ -1,10 +1,10 @@
-import { nanoid } from "nanoid/non-secure";
-
-import { UserInteractionWithType } from "../../user-interactions/abstract";
 import {
   eventEmitter,
   userInteractionEvent,
-} from "../../user-interactions/event-emitter";
+} from "@obi-wallet/sdk-user-interactions";
+import { nanoid } from "nanoid/non-secure";
+
+import { UserInteractionWithType } from "../../user-interactions/abstract";
 
 export class UserInteractions {
   protected _userInteractions: (UserInteractionWithType & {

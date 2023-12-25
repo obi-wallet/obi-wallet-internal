@@ -1320,6 +1320,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@obi-wallet/sdk-user-interactions@npm:*, @obi-wallet/sdk-user-interactions@workspace:packages/sdk-user-interactions":
+  version: 0.0.0-use.local
+  resolution: "@obi-wallet/sdk-user-interactions@workspace:packages/sdk-user-interactions"
+  dependencies:
+    "@repo/eslint-config": "npm:*"
+    "@repo/typescript-config": "npm:*"
+    "@types/jest": "npm:^29.5.11"
+    eslint: "npm:^8.55.0"
+    eventemitter3: "npm:^5.0.1"
+    jest: "npm:^29.7.0"
+    ts-jest: "npm:^29.1.1"
+    typescript: "npm:^5.3.3"
+  languageName: unknown
+  linkType: soft
+
 "@obi-wallet/sdk@npm:*, @obi-wallet/sdk@workspace:packages/sdk":
   version: 0.0.0-use.local
   resolution: "@obi-wallet/sdk@workspace:packages/sdk"
@@ -1332,6 +1347,7 @@ __metadata:
     "@cosmjs/stargate": "npm:^0.31.3"
     "@github/webauthn-json": "npm:^2.1.1"
     "@keplr-wallet/cosmos": "npm:0.12.16"
+    "@obi-wallet/sdk-user-interactions": "npm:*"
     "@repo/eslint-config": "npm:*"
     "@repo/typescript-config": "npm:*"
     "@simplewebauthn/typescript-types": "npm:^8.0.0"
@@ -1347,7 +1363,6 @@ __metadata:
     eslint: "npm:^8.55.0"
     ethers: "npm:^6.7.1"
     ethers5: "npm:ethers@^5.7.2"
-    eventemitter3: "npm:^5.0.1"
     isomorphic-unfetch: "npm:^4.0.2"
     jscrypto: "npm:^1.0.3"
     luxon: "npm:^3.4.4"
