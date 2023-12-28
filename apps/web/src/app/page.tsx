@@ -1,4 +1,4 @@
-import { PrimaryLink, Text } from "@/components";
+import { PrimaryLink, Text, Switcher } from "@/components";
 
 export default function Homepage() {
   return (
@@ -8,6 +8,10 @@ export default function Homepage() {
           Welcome to OBI
         </Text>
       </PrimaryLink>
+      <div className="flex space-x-2">
+        <Text>Toggle:</Text>
+        <Switcher switched />
+      </div>
     </section>
   );
 }
