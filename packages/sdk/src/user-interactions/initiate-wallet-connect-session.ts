@@ -1,4 +1,8 @@
-import { createUserInteractionType, UserInteraction } from "./abstract";
+import {
+  createUserInteractionType,
+  UserInteraction,
+} from "@obi-wallet/sdk-abstract-user-interaction";
+
 import { WalletMeta } from "../data-structures";
 
 export type InitiateWalletConnectSessionUserInteraction = UserInteraction<

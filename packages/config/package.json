@@ -1,0 +1,23 @@
+{
+  "name": "@obi-wallet/config",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint .",
+    "tsc": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@obi-wallet/sdk": "*"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "@types/ramda": "^0.29.3",
+    "eslint": "^8.55.0",
+    "typescript": "^5.3.3"
+  }
+}

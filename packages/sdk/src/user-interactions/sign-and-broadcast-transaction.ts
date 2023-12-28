@@ -1,4 +1,8 @@
-import { createUserInteractionType, UserInteraction } from "./abstract";
+import {
+  createUserInteractionType,
+  UserInteraction,
+} from "@obi-wallet/sdk-abstract-user-interaction";
+
 import { MultisigKey, WalletMeta } from "../data-structures";
 import { BroadcastTransactionResult } from "../sdk";
 import { TargetChainId } from "../target-chains";
