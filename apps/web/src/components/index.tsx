@@ -13,3 +13,4 @@ export * from "./stepper";
 export * from "./text";
 export * from "./transaction";
 export * from "./switcher";
+export * from "./tables";
