@@ -3,9 +3,9 @@ import { useDropzone } from "react-dropzone";
 
 import "react-dropzone/examples/theme.css";
 
-type DropzoneProps = ComponentPropsWithoutRef<"div">;
+type DropzoneProps = { placeholder: string } & ComponentPropsWithoutRef<"div">;
 
-export function Dropzone(_props: DropzoneProps) {
+export function Dropzone({ placeholder }: DropzoneProps) {
   const { getRootProps, getInputProps } = useDropzone();
 
   return (
@@ -20,7 +20,7 @@ export function Dropzone(_props: DropzoneProps) {
       }}
     >
       <input {...getInputProps()} />
-      <p>Upload an Image</p>
+      <p>{placeholder}</p>
     </div>
   );
 }
