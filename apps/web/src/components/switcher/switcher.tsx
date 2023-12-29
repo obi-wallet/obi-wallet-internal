@@ -1,13 +1,13 @@
 "use client";
 import { useState } from "react";
 
-export const Switcher = ({
+export function Switcher({
   switched,
   onSwitch,
 }: {
   switched: boolean;
   onSwitch?: (value: boolean) => void;
-}) => {
+}) {
   const [enabled, setEnabled] = useState<boolean>(switched);
 
   return (
@@ -37,4 +37,4 @@ export const Switcher = ({
       </label>
     </div>
   );
-};
+}

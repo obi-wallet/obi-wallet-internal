@@ -1,21 +1,22 @@
 import { cn } from "@/lib/utils";
+
 import { Text } from "..";
 
 export type IColumn = {
   label: string;
   value: string;
-  render?: (value: any) => React.ReactNode;
+  render?: (value: unknown) => React.ReactNode;
   style?: string;
 };
 
-export function Table({
+export function Table<T>({
   columns,
   includeIndex = true,
   rows,
 }: {
   columns: IColumn[];
   includeIndex?: boolean;
-  rows: any;
+  rows: T[];
 }) {
   return (
     <table className="w-full bg-transparent">
@@ -34,7 +35,7 @@ export function Table({
         </tr>
       </thead>
       <tbody>
-        {rows?.map((row: any, index: number) => (
+        {rows?.map((row: T, index: number) => (
           <tr key={`row-${index}`} className="h-16 border-b">
             {includeIndex && (
               <td>
@@ -42,17 +43,20 @@ export function Table({
               </td>
             )}
 
-            {columns.map((column) => (
-              <td key={`row-${index}-${column.value}`}>
-                {column.render ? (
-                  column.render(row[column.value])
-                ) : (
-                  <Text className={cn("justify-center", column.style)}>
-                    {row[column.value]}
-                  </Text>
-                )}
-              </td>
-            ))}
+            {columns.map((column) => {
+              const colIndex = column.value as keyof T;
+              return (
+                <td key={`row-${index}-${column.value}`}>
+                  {column.render ? (
+                    column.render(row[colIndex] as unknown)
+                  ) : (
+                    <Text className={cn("justify-center", column.style)}>
+                      {row[colIndex] as string}
+                    </Text>
+                  )}
+                </td>
+              );
+            })}
           </tr>
         ))}
       </tbody>

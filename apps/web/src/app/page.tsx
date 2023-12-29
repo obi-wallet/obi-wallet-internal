@@ -13,8 +13,14 @@ const POSITION_COLUMNS = [
   },
 ];
 
+interface IRow {
+  asset: string;
+  meta: string;
+  price: string;
+}
+
 export default function Homepage() {
-  const rows = [
+  const rows: IRow[] = [
     { asset: "ETH", meta: "Up", price: "$99.98" },
     {
       asset: "Sommelier Finance: Real Yield ETH - 14.42% ",
