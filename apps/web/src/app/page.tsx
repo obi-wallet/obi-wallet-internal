@@ -1,5 +1,16 @@
-import { PrimaryLink, Text, Switcher, Table } from "@/components";
-import { Chart } from "@/components/chart";
+"use client";
+import {
+  PrimaryLink,
+  Text,
+  Switcher,
+  Table,
+  Notification,
+  Chart,
+  Button,
+  IconButton,
+  Input,
+} from "@/components";
+import { FaGoogle } from "react-icons/fa";
 
 const POSITION_COLUMNS = [
   { value: "asset", label: "Asset", style: "justify-start" },
@@ -30,29 +41,86 @@ export default function Homepage() {
   ];
 
   return (
-    <section className="flex w-full flex-col items-center justify-center space-y-9">
+    <section className="flex w-full flex-col items-center justify-center space-y-9 p-5">
       <PrimaryLink href="/onboarding/introduction">
         <Text size="3xl" fontWeight="bold">
           Welcome to OBI
         </Text>
       </PrimaryLink>
-      <div className="w-full space-y-5">
-        <Switcher switched />
-        <Chart
-          series={[
-            {
-              name: "BTC",
-              data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45],
-            },
+      <div className="grid w-full grid-cols-12 gap-4 ">
+        <div>
+          <Switcher switched />
+        </div>
+        <div className="col-span-3 space-y-2">
+          <div className="flex space-x-3">
+            <Button>Button</Button>
+            <Button disabled>Button</Button>
+          </div>
+          <div className="flex space-x-3">
+            <Button variant="outline">Button</Button>
+            <Button variant="outline" disabled>
+              Button
+            </Button>
+          </div>
+          <div className="flex space-x-3">
+            <IconButton icon={FaGoogle}>IconButton</IconButton>
+            <IconButton icon={FaGoogle} disabled>
+              IconButton
+            </IconButton>
+          </div>
+        </div>
+        <div className="col-span-6 space-y-3">
+          <Notification
+            type="warning"
+            description="Sample warning description"
+            title="Warning title"
+          />
+          <Notification
+            type="error"
+            description="Sample error description"
+            title="Error title"
+          />
+          <Notification
+            type="success"
+            description="Sample success description"
+            title="Success title"
+          />
+        </div>
+        <div className="col-span-2 space-y-3">
+          <Input placeholder="Sample input" />
+          <Input placeholder="Sample input" startIcon={FaGoogle} />
+          <Input placeholder="Sample input" endIcon={FaGoogle} />
+          <Input
+            placeholder="Sample input"
+            startIcon={FaGoogle}
+            endIcon={FaGoogle}
+          />
+          <Input
+            placeholder="Disabled input"
+            startIcon={FaGoogle}
+            endIcon={FaGoogle}
+            disabled
+          />
+        </div>
+        <div className="col-span-6">
+          <Chart
+            series={[
+              {
+                name: "BTC",
+                data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45],
+              },
 
-            {
-              name: "ETH",
-              data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51],
-            },
-          ]}
-        />
+              {
+                name: "ETH",
+                data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51],
+              },
+            ]}
+          />
+        </div>
 
-        <Table columns={POSITION_COLUMNS} includeIndex rows={rows} />
+        <div className="col-span-6">
+          <Table columns={POSITION_COLUMNS} includeIndex rows={rows} />
+        </div>
       </div>
     </section>
   );

@@ -14,3 +14,5 @@ export * from "./text";
 export * from "./transaction";
 export * from "./switcher";
 export * from "./tables";
+export * from "./notification";
+export * from "./chart";
