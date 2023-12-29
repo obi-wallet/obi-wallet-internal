@@ -3,14 +3,7 @@ import { ComponentPropsWithRef, forwardRef } from "react";
 import { IconType } from "react-icons";
 import { FaArrowsRotate } from "react-icons/fa6";
 
-const ButtonVariant = [
-  "primary",
-  "outline",
-  "ghost",
-  "light",
-  "dark",
-  "confirmed",
-] as const;
+const ButtonVariant = ["primary", "outline", "confirmed"] as const;
 const ButtonSize = ["sm", "base"] as const;
 
 type ButtonProps = {
@@ -68,15 +61,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               "border border-blue-600 bg-blue-600 text-white shadow",
               "hover:bg-blue-700 hover:text-white",
               "active:bg-blue-800",
-              "disabled:opacity-30",
-              "disabled:border-blue-600 disabled:bg-blue-600",
+              "disabled:border-blue-600 disabled:bg-blue-600 disabled:opacity-30",
             ],
             variant === "outline" && [
               "border border-gray-600 bg-transparent text-zinc-400",
               "hover:bg-gray-700 hover:text-white",
               "active:bg-gray-800",
-              "disabled:opacity-30",
-              "disabled:border-gray-900 disabled:bg-gray-900",
+              "disabled:border-gray-500 disabled:opacity-30",
             ],
             variant === "confirmed" && [
               "cursor-default border border-emerald-500 bg-emerald-500 text-white",

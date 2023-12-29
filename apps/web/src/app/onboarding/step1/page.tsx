@@ -25,7 +25,7 @@ export default function Step1() {
         }}
         placeholder="Name"
       />
-      <Dropzone className="mt-8" />
+      <Dropzone className="mt-8" placeholder="Upload an Image" />
       <ButtonLink
         href="/onboarding/step2"
         className="block w-full"
