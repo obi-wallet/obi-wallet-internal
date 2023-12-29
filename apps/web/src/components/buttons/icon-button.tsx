@@ -3,13 +3,7 @@ import { ComponentPropsWithRef, forwardRef } from "react";
 import { IconType } from "react-icons";
 import { FaArrowsRotate } from "react-icons/fa6";
 
-const IconButtonVariant = [
-  "primary",
-  "outline",
-  "ghost",
-  "light",
-  "dark",
-] as const;
+const IconButtonVariant = ["primary", "outline", "confirmed"] as const;
 
 type IconButtonProps = {
   isLoading?: boolean;
@@ -32,6 +26,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       isDarkBg = false,
       icon: Icon,
       classNames,
+      children,
       ...rest
     },
     ref,
@@ -52,36 +47,21 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
           //#region  //*=========== Variants ===========
           [
             variant === "primary" && [
-              "bg-primary-500 text-white",
-              "border-primary-600 border",
-              "hover:bg-primary-600 hover:text-white",
-              "active:bg-primary-700",
-              "disabled:bg-primary-700",
+              "border border-blue-600 bg-blue-600 text-white shadow",
+              "hover:bg-blue-700 hover:text-white",
+              "active:bg-blue-800",
+              "disabled:opacity-30",
+              "disabled:border-blue-600 disabled:bg-blue-600",
             ],
             variant === "outline" && [
-              "text-primary-500",
-              "border-primary-500 border",
-              "hover:bg-primary-50 active:bg-primary-100 disabled:bg-primary-100",
-              isDarkBg &&
-                "hover:bg-gray-900 active:bg-gray-800 disabled:bg-gray-800",
+              "border border-gray-600 bg-transparent text-zinc-400",
+              "hover:bg-gray-700 hover:text-white",
+              "active:bg-gray-800",
+              "disabled:opacity-30",
+              "disabled:border-gray-900 disabled:bg-gray-900",
             ],
-            variant === "ghost" && [
-              "text-primary-500",
-              "shadow-none",
-              "hover:bg-primary-50 active:bg-primary-100 disabled:bg-primary-100",
-              isDarkBg &&
-                "hover:bg-gray-900 active:bg-gray-800 disabled:bg-gray-800",
-            ],
-            variant === "light" && [
-              "bg-white text-gray-700",
-              "border border-gray-300",
-              "hover:text-dark hover:bg-gray-100",
-              "active:bg-white/80 disabled:bg-gray-200",
-            ],
-            variant === "dark" && [
-              "bg-gray-900 text-white",
-              "border border-gray-600",
-              "hover:bg-gray-800 active:bg-gray-700 disabled:bg-gray-700",
+            variant === "confirmed" && [
+              "cursor-default border border-emerald-500 bg-emerald-500 text-white",
             ],
           ],
           //#endregion  //*======== Variants ===========
@@ -107,8 +87,13 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
           </div>
         )}
         {Icon && (
-          <Icon width={16} height={16} className={cn(classNames?.icon)} />
+          <Icon
+            width={16}
+            height={16}
+            className={cn(classNames?.icon, "mr-2")}
+          />
         )}
+        {children}
       </button>
     );
   },
