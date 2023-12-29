@@ -1,9 +1,16 @@
 "use client";
+import { Button, Dropzone, Input, Stepper, Text } from "@/components";
+import { useStore } from "@/contexts";
+import { observer } from "mobx-react-lite";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, useState } from "react";
 
-import { ButtonLink, Dropzone, Input, Stepper, Text } from "@/components";
-import { ChangeEvent } from "react";
+const Step1 = observer(function Step1() {
+  const [name, setName] = useState<string>("");
+  const [image, setImage] = useState<string | null>(null);
+  const router = useRouter();
+  const { userDataStore } = useStore();
 
-export default function Step1() {
   return (
     <section className="flex flex-col items-center space-y-7">
       <Stepper />
@@ -20,19 +27,46 @@ export default function Step1() {
         with it.
       </Text>
       <Input
+        className="w-96"
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          console.log(e.target.value);
+          setName(e.target.value);
         }}
+        value={name}
         placeholder="Name"
       />
-      <Dropzone className="mt-8" placeholder="Upload an Image" />
-      <ButtonLink
-        href="/onboarding/step2"
+
+      <Dropzone
+        className="mt-8"
+        placeholder="Upload Picture"
+        onChange={(file) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64String = reader.result;
+            setImage(base64String as string);
+          };
+          reader.readAsDataURL(file[0] as unknown as Blob);
+        }}
+      />
+
+      {image && <img src={image} className="w-96 rounded-full" />}
+
+      <Button
+        onClick={() => {
+          const userData = {
+            userName: name,
+            userAvatar: image,
+          };
+          userDataStore.setUserData(userData);
+          // go to next step
+          router.push("/onboarding/step2");
+        }}
         className="block w-full"
         variant="primary"
+        disabled={!name || !image}
       >
         Continue
-      </ButtonLink>
+      </Button>
     </section>
   );
-}
+});
+export default Step1;

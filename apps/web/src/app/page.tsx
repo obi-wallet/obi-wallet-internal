@@ -12,6 +12,7 @@ import {
   DropDown,
   IDropDownOption,
 } from "@/components";
+import { observer } from "mobx-react-lite";
 import { FaGoogle } from "react-icons/fa";
 
 const POSITION_COLUMNS = [
@@ -32,27 +33,27 @@ interface IRow {
   price: string;
 }
 
-export default function Homepage() {
-  const rows: IRow[] = [
-    { asset: "ETH", meta: "Up", price: "$99.98" },
-    {
-      asset: "Sommelier Finance: Real Yield ETH - 14.42% ",
-      meta: "Down",
-      price: "$20.02",
-    },
-  ];
+const rows: IRow[] = [
+  { asset: "ETH", meta: "Up", price: "$99.98" },
+  {
+    asset: "Sommelier Finance: Real Yield ETH - 14.42% ",
+    meta: "Down",
+    price: "$20.02",
+  },
+];
 
-  const options: IDropDownOption[] = [
-    {
-      value: "a",
-      label: "Option A",
-    },
-    {
-      value: "b",
-      label: "Option B",
-    },
-  ];
+const options: IDropDownOption[] = [
+  {
+    value: "a",
+    label: "Option A",
+  },
+  {
+    value: "b",
+    label: "Option B",
+  },
+];
 
+const Homepage = observer(function Homepage() {
   return (
     <section className="flex w-full flex-col items-center justify-center space-y-9 p-5">
       <PrimaryLink href="/onboarding/introduction">
@@ -150,4 +151,5 @@ export default function Homepage() {
       </div>
     </section>
   );
-}
+});
+export default Homepage;

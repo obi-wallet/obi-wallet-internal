@@ -5,6 +5,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ReactNode } from "react";
 
+import { Provider } from "../components/provider";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -18,18 +20,20 @@ export default function RootLayout({
   children: ReactNode;
 }): JSX.Element {
   return (
-    <html lang="en" className="bg-black">
-      <body
-        className={cn(
-          inter.className,
-          "flex min-h-screen flex-col bg-gradient-to-br from-black to-slate-900",
-        )}
-      >
-        <Header />
-        <main id="main" className="relative flex w-full grow">
-          {children}
-        </main>
-      </body>
-    </html>
+    <Provider>
+      <html lang="en" className="bg-black">
+        <body
+          className={cn(
+            inter.className,
+            "flex min-h-screen flex-col bg-gradient-to-br from-black to-slate-900",
+          )}
+        >
+          <Header />
+          <main id="main" className="relative flex w-full grow">
+            {children}
+          </main>
+        </body>
+      </html>
+    </Provider>
   );
 }

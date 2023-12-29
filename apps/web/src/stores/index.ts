@@ -5,3 +5,4 @@ export * from "./drafts";
 export * from "./entities";
 export * from "./language";
 export * from "./root";
+export * from "./user-data";

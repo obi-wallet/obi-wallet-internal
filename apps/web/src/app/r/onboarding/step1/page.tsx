@@ -32,7 +32,11 @@ export default observer(function Step1() {
         placeholder="Name"
         value={draft.value.name}
       />
-      <Dropzone className="mt-8" placeholder="Upload an Image" />
+      <Dropzone
+        className="mt-8"
+        placeholder="Upload an Image"
+        onChange={() => {}}
+      />
       <ButtonLink
         href="/r/onboarding/step2"
         className="block w-full"
