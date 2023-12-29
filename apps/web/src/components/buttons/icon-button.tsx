@@ -23,7 +23,6 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       disabled: buttonDisabled,
       isLoading,
       variant = "primary",
-      isDarkBg = false,
       icon: Icon,
       classNames,
       children,
