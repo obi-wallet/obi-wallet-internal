@@ -16,3 +16,4 @@ export * from "./switcher";
 export * from "./tables";
 export * from "./notification";
 export * from "./chart";
+export * from "./dropdown";

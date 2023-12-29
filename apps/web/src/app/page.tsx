@@ -9,6 +9,8 @@ import {
   Button,
   IconButton,
   Input,
+  DropDown,
+  IDropDownOption,
 } from "@/components";
 import { FaGoogle } from "react-icons/fa";
 
@@ -40,6 +42,17 @@ export default function Homepage() {
     },
   ];
 
+  const options: IDropDownOption[] = [
+    {
+      value: "a",
+      label: "Option A",
+    },
+    {
+      value: "b",
+      label: "Option B",
+    },
+  ];
+
   return (
     <section className="flex w-full flex-col items-center justify-center space-y-9 p-5">
       <PrimaryLink href="/onboarding/introduction">
@@ -67,6 +80,9 @@ export default function Homepage() {
             <IconButton icon={FaGoogle} disabled>
               IconButton
             </IconButton>
+          </div>
+          <div>
+            <DropDown options={options} description="Select option"></DropDown>
           </div>
         </div>
         <div className="col-span-6 space-y-3">
