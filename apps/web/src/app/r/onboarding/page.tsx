@@ -1,11 +1,12 @@
 "use client";
 
 import { ButtonLink, Text } from "@/components";
-import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { useOnboardingDraft } from "@/onboarding/use-onboarding-draft";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 
-export default function Onboarding() {
-  useCurrentWallet({ redirectTo: "/r/", redirectIfFound: true });
+export default observer(function Onboarding() {
+  useOnboardingDraft();
 
   return (
     <section className="flex w-full flex-col items-center justify-center space-y-9">
@@ -30,7 +31,7 @@ export default function Onboarding() {
           keys.
         </Text>
         <ButtonLink
-          href="/onboarding/step1"
+          href="/r/onboarding/step1"
           className="block w-full"
           variant="primary"
           isDarkBg
@@ -40,4 +41,4 @@ export default function Onboarding() {
       </div>
     </section>
   );
-}
+});
