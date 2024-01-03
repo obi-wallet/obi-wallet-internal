@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, ButtonLink, Stepper, Text } from "@/components";
+import { ButtonLink, Stepper, Text } from "@/components";
 import { FaGoogle, FaWindows, FaApple } from "react-icons/fa";
 
 export default function Step3() {
@@ -19,10 +19,14 @@ export default function Step3() {
         Sign in with one of the services below to create your first key.
       </Text>
 
-      <Button className="block w-full" variant="primary">
+      <ButtonLink
+        href="/r/onboarding/passkey"
+        className="block w-full"
+        variant="primary"
+      >
         <div>Passkey</div>
         <div>(Recommended)</div>
-      </Button>
+      </ButtonLink>
 
       <div className="flex w-full items-center">
         <div className="h-0.5 w-full rounded-lg bg-gray-600" />
