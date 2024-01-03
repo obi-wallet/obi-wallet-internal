@@ -28,7 +28,6 @@ export default function Introduction() {
           href="/onboarding/step1"
           className="block w-full"
           variant="primary"
-          isDarkBg
         >
           Get Started
         </ButtonLink>

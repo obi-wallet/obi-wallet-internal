@@ -34,7 +34,6 @@ export default observer(function Onboarding() {
           href="/r/onboarding/step1"
           className="block w-full"
           variant="primary"
-          isDarkBg
         >
           Get Started
         </ButtonLink>
