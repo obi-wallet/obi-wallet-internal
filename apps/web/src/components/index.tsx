@@ -17,3 +17,5 @@ export * from "./tables";
 export * from "./notification";
 export * from "./chart";
 export * from "./dropdown";
+export * from "./divider";
+export * from "./tabs";
