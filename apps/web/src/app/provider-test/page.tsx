@@ -3,19 +3,10 @@
 import { PrimaryLink, Text } from "@/components";
 import { Provider } from "@/components/provider";
 import { useStore } from "@/contexts";
-import { obiModalConfig } from "@obi-wallet/config";
 
 export default function Homepage() {
   return (
-    <Provider
-      // TODO: Add env variables
-      env={{
-        PHONE_NUMBER_KEY_SECRET: "TODO",
-        PHONE_NUMBER_TWILIO_BASIC_AUTH_USER: "TODO",
-        PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD: "TODO",
-      }}
-      config={obiModalConfig}
-    >
+    <Provider>
       <section className="flex w-full flex-col items-center justify-center space-y-9">
         <PrimaryLink href="/onboarding/introduction">
           <Text size="3xl" fontWeight="bold">
