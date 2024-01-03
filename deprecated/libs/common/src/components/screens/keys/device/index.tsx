@@ -194,8 +194,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 
   // TODO: split into multiple fns that read keys otherwise create it
   async function submitWithRequiredKey(
-    deviceIsNew: boolean, // would not be needed anymore
-    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
+    deviceIsNew: boolean, //avoids creating a new account even if no proxy wallets found
   ) {
     let requiredPubkey;
     if (scannedBiometrics) {
@@ -230,7 +229,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       if (success && Platform.OS !== "ios") {
         onSubmit(deviceIsNew, requiredPubkey);
       }
-      if (!wallets && recoverFlow) {
+      if (!wallets && !deviceIsNew) {
         navigation.navigate(OnboardingRoute.SelectRecoveryMethod, {
           flow: KeyFlow.RecoverWallet,
           draftId,
@@ -373,7 +372,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                   id: "onboarding4.biometrics.button",
                 })}
                 flavor="primary"
-                onPress={async () => submitWithRequiredKey(true, false)}
+                onPress={async () => submitWithRequiredKey(true)}
                 autoPress={Platform.OS === "ios"}
               />
             ) : (
@@ -385,7 +384,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                     id: "onboarding4.ihaveadevicekey.button",
                   })}
                   flavor="primary"
-                  onPress={async () => submitWithRequiredKey(false, true)}
+                  onPress={async () => submitWithRequiredKey(false)}
                   autoPress={Platform.OS === "ios"}
                 />
                 {/*TODO: refactor submitWithRequiredKey method*/}
@@ -394,7 +393,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                     id: "onboarding4.newdevice.button",
                   })}
                   flavor="primary"
-                  onPress={async () => submitWithRequiredKey(true, true)}
+                  onPress={async () => submitWithRequiredKey(true)}
                   autoPress={Platform.OS === "ios"}
                 />
               </>
