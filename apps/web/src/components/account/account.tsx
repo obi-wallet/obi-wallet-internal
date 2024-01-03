@@ -12,7 +12,7 @@ export function Account() {
           My Account
         </Text>
         <Text size="3xl" color="white" fontWeight="bold">
-          6,178.04 USD
+          $6,178.04
         </Text>
         <div className="flex space-x-4">
           <FaQrcode className="h-6 w-6 text-white" />

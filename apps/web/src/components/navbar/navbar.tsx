@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FaHome } from "react-icons/fa";
 import { FaGear, FaCreditCard } from "react-icons/fa6";
 
@@ -8,6 +8,7 @@ import { Account } from "../account/account";
 import { Footer } from "../footer/footer";
 import { PrimaryLink } from "../links";
 import { Text } from "../text/text";
+import { Button, Divider, DividerDirection } from "..";
 
 const navMenu = [
   {
@@ -31,13 +32,22 @@ const navMenu = [
 ];
 
 export function Navbar() {
+  const router = useRouter();
   const pathname = usePathname();
   const mainURISegment = pathname.split("/")[1];
   return (
     <nav className="flex flex-col bg-slate-900 px-7 pt-16">
       <Account />
-      <div className="grow">
-        <ul role="list" className="mt-9 flex flex-col space-y-7">
+      <Button
+        className="my-7 text-3xl font-bold"
+        block
+        onClick={() => router.push("/dashboard/transaction")}
+      >
+        New Transaction
+      </Button>
+      <Divider />
+      <div className="mt-7 grow">
+        <ul role="list" className="flex flex-col space-y-3">
           {navMenu.map((navItem, index) => (
             <li key={`navmenu-${index}`}>
               <PrimaryLink

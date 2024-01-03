@@ -19,6 +19,7 @@ type InputProps = {
 } & ComponentPropsWithoutRef<"input">;
 
 export function Input({
+  id,
   onChange,
   className,
   defaultValue,
@@ -26,6 +27,7 @@ export function Input({
   endIcon: EndIcon,
   classNames,
   disabled,
+  placeholder,
   ...rest
 }: InputProps) {
   const [text, setText] = useState("");
@@ -40,7 +42,7 @@ export function Input({
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       {StartIcon && (
         <span className="absolute left-3 top-1/2 -translate-y-1/2">
           <StartIcon
@@ -54,12 +56,15 @@ export function Input({
           />
         </span>
       )}
+
       <input
+        id={id}
         type="text"
-        name="title"
-        id="title"
+        // name="title"
+        // id="title"
         className={cn(
-          "block w-full rounded-md border border-zinc-800 bg-slate-950 px-8 py-2 font-normal text-white focus:border-blue-600 focus-visible:outline-none",
+          "peer w-full rounded-xl border border-zinc-800 bg-slate-950 px-7 py-6 text-2xl font-normal text-white focus:border-blue-600 focus-visible:outline-none",
+          StartIcon && "px-9",
           className,
         )}
         required
@@ -67,7 +72,22 @@ export function Input({
         onChange={handleChange}
         {...rest}
         disabled={disabled}
+        placeholder=""
       />
+
+      {/* <input
+        id="floating_outlined"
+        type="text"
+        // className="peer w-full border-b placeholder:text-transparent"
+        placeholder=" "
+      /> */}
+      <label
+        htmlFor={id}
+        className="absolute left-0 top-0 ml-5 -translate-y-1/2 bg-slate-950 px-2 py-1 text-xs text-white"
+      >
+        {placeholder}
+      </label>
+
       {EndIcon && (
         <span className="absolute right-3 top-1/2 -translate-y-1/2">
           <EndIcon
