@@ -1,9 +1,15 @@
 "use client";
 
 import { ButtonLink, Stepper, Text } from "@/components";
-import { FaGoogle, FaWindows, FaApple } from "react-icons/fa";
+import { useOnboardingDraft } from "@/onboarding/use-onboarding-draft";
+import { observer } from "mobx-react-lite";
+import { FaApple, FaGoogle, FaWindows } from "react-icons/fa";
 
-export default function Step3() {
+export default observer(function Step3() {
+  const draft = useOnboardingDraft();
+
+  if (!draft) return null;
+
   return (
     <section className="flex flex-col items-center space-y-7">
       <Stepper currentStep={3} />
@@ -66,4 +72,4 @@ export default function Step3() {
       </div>
     </section>
   );
-}
+});

@@ -1,9 +1,15 @@
 "use client";
 
 import { ButtonLink, Stepper, Text } from "@/components";
+import { useOnboardingDraft } from "@/onboarding/use-onboarding-draft";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 
-export default function Step2() {
+export default observer(function Step2() {
+  const draft = useOnboardingDraft();
+
+  if (!draft) return null;
+
   return (
     <section className="flex flex-col items-center space-y-7">
       <Stepper currentStep={2} />
@@ -45,4 +51,4 @@ export default function Step2() {
       </ButtonLink>
     </section>
   );
-}
+});

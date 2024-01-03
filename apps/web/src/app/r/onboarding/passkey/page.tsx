@@ -1,8 +1,14 @@
 "use client";
 
 import { Button, ButtonLink, Stepper, Text } from "@/components";
+import { useOnboardingDraft } from "@/onboarding/use-onboarding-draft";
+import { observer } from "mobx-react-lite";
 
-export default function Passkey() {
+export default observer(function Passkey() {
+  const draft = useOnboardingDraft();
+
+  if (!draft) return null;
+
   // TODO: these depend on whether the user already has keys or not
   // If no keys = step 3
   // If at least one key = step 4
@@ -30,4 +36,4 @@ export default function Passkey() {
       </ButtonLink>
     </section>
   );
-}
+});

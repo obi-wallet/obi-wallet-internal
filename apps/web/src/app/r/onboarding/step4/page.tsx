@@ -2,6 +2,8 @@
 
 import { ButtonLink, List, Stepper, Text } from "@/components";
 import { cn } from "@/lib/utils";
+import { useOnboardingDraft } from "@/onboarding/use-onboarding-draft";
+import { observer } from "mobx-react-lite";
 import {
   FaCheck,
   FaKey,
@@ -45,7 +47,11 @@ const keyOptions = [
   },
 ];
 
-export default function Step4() {
+export default observer(function Step4() {
+  const draft = useOnboardingDraft();
+
+  if (!draft) return null;
+
   return (
     <section className="flex flex-col items-center space-y-7">
       <Stepper currentStep={4} />
@@ -105,4 +111,4 @@ export default function Step4() {
       </div>
     </section>
   );
-}
+});
