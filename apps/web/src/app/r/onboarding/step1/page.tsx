@@ -34,7 +34,7 @@ export default observer(function Step1() {
       />
       <Dropzone className="mt-8" placeholder="Upload an Image" />
       <ButtonLink
-        href="/onboarding/step2"
+        href="/r/onboarding/step2"
         className="block w-full"
         variant="primary"
       >
