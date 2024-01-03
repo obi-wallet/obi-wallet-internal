@@ -141,20 +141,14 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   async function scanBiometricsOrWebAuthN(
     existingUserSaysDeviceIsNew?: boolean,
   ): BiometricsData {
-    const create = false;
-    const recoverFlow = false;
-
     try {
       console.log("getting device key...");
-      const [keyPair, newUser] = await getOrCreateDeviceKeyPair(
-        create,
-        demoMode,
-      );
+      const [keyPair, newUser] = await getOrCreateDeviceKeyPair(demoMode);
       console.log("setting device key...");
       const proxyWallets = await draft.value.setDeviceKey(
         keyPair,
         existingUserSaysDeviceIsNew,
-        recoverFlow, //avoids creating a new account even if no proxy wallets found
+        false, //avoids creating a new account even if no proxy wallets found
       );
       if (proxyWallets !== undefined) {
         return {

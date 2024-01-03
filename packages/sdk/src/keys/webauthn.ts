@@ -135,7 +135,6 @@ const generateWebAuthnSec256k1KeyPair = async (
 };
 
 export async function getOrCreateDeviceKeyPair(
-  allowCreate: boolean,
   demoMode: boolean,
 ): Promise<[Secp256k1KeyPair, boolean]> {
   if (demoMode) {
@@ -149,20 +148,15 @@ export async function getOrCreateDeviceKeyPair(
     let credential;
     if (!isInIframe()) {
       console.log("not in iframe");
-      if (allowCreate) {
+      try {
+        credential = await get({ publicKey });
+      } catch (e) {
         credential = await create({ publicKey });
-      } else {
-        try {
-          credential = await get({ publicKey });
-        } catch (e) {
-          credential = await create({ publicKey });
-          allowCreate = true;
-        }
       }
     } else {
       console.log("is in iframe");
       const _popup = window.open(
-        allowCreate ? "/webauthn-auth" : "/webauthn-get",
+        "/webauthn-get",
         "webauthn-popup",
         "width=400,height=800",
       );
@@ -249,7 +243,7 @@ export async function getDevicePrivateKey(
     return key.payload.privateKey;
   }
   try {
-    const [kp, _] = await getOrCreateDeviceKeyPair(false, false);
+    const [kp, _] = await getOrCreateDeviceKeyPair(false);
     return kp.privateKey;
   } catch (e) {
     try {
