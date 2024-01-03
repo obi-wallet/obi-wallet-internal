@@ -1,4 +1,4 @@
-import { KeyType } from "@obi-wallet/sdk";
+import { KeyType, SecretJsChainIds } from "@obi-wallet/sdk";
 
 import { Config } from "../config";
 import { Feature } from "../feature";
@@ -6,8 +6,8 @@ import { ComingSoonKeyType } from "../key";
 
 export const obiModalConfig: Config = {
   chains: {
-    enabled: ["secret-4"],
-    default: "secret-4",
+    enabled: [SecretJsChainIds.PULSAR_TESTNET],
+    default: SecretJsChainIds.PULSAR_TESTNET,
   },
   languages: {
     enabled: ["en"],

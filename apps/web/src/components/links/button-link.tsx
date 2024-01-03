@@ -16,7 +16,6 @@ const ButtonLinkVariant = [
 const ButtonLinkSize = ["sm", "base"] as const;
 
 type ButtonLinkProps = {
-  isDarkBg?: boolean;
   variant?: (typeof ButtonLinkVariant)[number];
   size?: (typeof ButtonLinkSize)[number];
   leftIcon?: IconType;
