@@ -103,19 +103,29 @@ export default function Homepage() {
           />
         </div>
         <div className="col-span-2 space-y-3">
-          <Input placeholder="Sample input" />
-          <Input placeholder="Sample input" startIcon={FaGoogle} />
-          <Input placeholder="Sample input" endIcon={FaGoogle} />
+          <Input placeholder="Sample input" id="input-no-icons" />
+          <Input
+            placeholder="Sample input"
+            startIcon={FaGoogle}
+            id="input-with-start-icon"
+          />
+          <Input
+            placeholder="Sample input"
+            endIcon={FaGoogle}
+            id="input-with-end-icon"
+          />
           <Input
             placeholder="Sample input"
             startIcon={FaGoogle}
             endIcon={FaGoogle}
+            id="input-with-both-icons"
           />
           <Input
             placeholder="Disabled input"
             startIcon={FaGoogle}
             endIcon={FaGoogle}
             disabled
+            id="input-disabled"
           />
         </div>
         <div className="col-span-6">
