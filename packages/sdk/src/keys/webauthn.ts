@@ -118,30 +118,30 @@ const generateWebAuthnPubKey = () => {
   }
 };
 
-const generateWebAuthnSec256k1KeyPair = async (
-  [publicKey, privateKey]: [string, string],
-  newUser: boolean,
-): Promise<[Secp256k1KeyPair, boolean]> => {
-  return [
-    {
-      publicKey: {
-        type: "tendermint/PubKeySecp256k1",
-        value: publicKey,
-      },
-      privateKey,
+function generateWebAuthnSec256k1KeyPair({
+  publicKey,
+  privateKey,
+}: {
+  publicKey: string;
+  privateKey: string;
+}): Secp256k1KeyPair {
+  return {
+    publicKey: {
+      type: "tendermint/PubKeySecp256k1",
+      value: publicKey,
     },
-    newUser,
-  ];
-};
+    privateKey,
+  };
+}
 
 export async function getOrCreateDeviceKeyPair(
   demoMode: boolean,
-): Promise<[Secp256k1KeyPair, boolean]> {
+): Promise<Secp256k1KeyPair> {
   if (demoMode) {
-    return generateWebAuthnSec256k1KeyPair(
-      [DEMO_PUBLIC_KEY, DEMO_PRIVATE_KEY],
-      true,
-    );
+    return generateWebAuthnSec256k1KeyPair({
+      publicKey: DEMO_PUBLIC_KEY,
+      privateKey: DEMO_PRIVATE_KEY,
+    });
   }
   try {
     const publicKey = generateWebAuthnPubKey();
@@ -185,10 +185,10 @@ export async function getOrCreateDeviceKeyPair(
     const webauthnAddress = pubkeyToAddress(compressedPubkey);
     console.log("webauthn Signer address: " + webauthnAddress);
 
-    return generateWebAuthnSec256k1KeyPair(
-      [webauthnSigner.publicKey.value, combinedPrivateKey],
-      false,
-    );
+    return generateWebAuthnSec256k1KeyPair({
+      publicKey: webauthnSigner.publicKey.value,
+      privateKey: combinedPrivateKey,
+    });
   } catch (err) {
     console.error("WebAuthn error:", JSON.stringify(err));
     throw new Error("WebAuthn request rejected");
@@ -243,7 +243,7 @@ export async function getDevicePrivateKey(
     return key.payload.privateKey;
   }
   try {
-    const [kp, _] = await getOrCreateDeviceKeyPair(false);
+    const kp = await getOrCreateDeviceKeyPair(false);
     return kp.privateKey;
   } catch (e) {
     try {

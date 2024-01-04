@@ -143,7 +143,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   ): BiometricsData {
     try {
       console.log("getting device key...");
-      const [keyPair, newUser] = await getOrCreateDeviceKeyPair(demoMode);
+      const keyPair = await getOrCreateDeviceKeyPair(demoMode);
       console.log("setting device key...");
       const proxyWallets = await draft.value.setDeviceKey(
         keyPair,
@@ -166,7 +166,6 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       setScannedBiometrics(true);
       return {
         success: true,
-        newUser,
         deviceKeypair: keyPair,
       };
     } catch (e) {
@@ -176,7 +175,6 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       if (error.message === "code: 13, msg: Cancel")
         return {
           success: false,
-          newUser: false,
           deviceKeypair: undefined,
         };
       console.error(error);
@@ -186,7 +184,6 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       );
       return {
         success: false,
-        newUser: false,
         deviceKeypair: undefined,
       };
     }
@@ -203,8 +200,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       onSubmit(deviceIsNew, requiredPubkey);
     } else {
       const res = await scanBiometricsOrWebAuthN(deviceIsNew);
-      const { success, newUser, deviceKeypair, wallets } = res;
-      const _newUser = newUser;
+      const { success, deviceKeypair, wallets } = res;
       if (wallets) {
         invariant(deviceKeypair, "could not get device keypair");
         await draft.value.setDeviceKey(
