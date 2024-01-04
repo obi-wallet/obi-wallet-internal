@@ -19,7 +19,7 @@ const Tabs: React.FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   return (
-    <div className="mx-auto max-w-md">
+    <div className="">
       <div className="flex border-gray-300">
         {React.Children.map(children, (child) => (
           <button
