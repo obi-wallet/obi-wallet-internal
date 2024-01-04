@@ -7,7 +7,7 @@ import { BalanceDropDown, IBalanceOption } from "../dropdown";
 
 type InputProps = {
   balances: IBalanceOption[];
-  onChange: (value: number) => void;
+  onChange?: (value: number) => void;
 } & ComponentPropsWithoutRef<"input">;
 
 export function BalanceInput({
