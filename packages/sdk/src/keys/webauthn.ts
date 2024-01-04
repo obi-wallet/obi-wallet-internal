@@ -71,10 +71,6 @@ interface CustomPublicKeyCredentialCreationOptions {
   };
 }
 
-export function isInIframe(): boolean {
-  return window !== window.top;
-}
-
 const generateWebAuthnPubKey = () => {
   try {
     // TODO: refactor here
@@ -146,25 +142,10 @@ export async function getOrCreateDeviceKeyPair(
   try {
     const publicKey = generateWebAuthnPubKey();
     let credential;
-    if (!isInIframe()) {
-      console.log("not in iframe");
-      try {
-        credential = await get({ publicKey });
-      } catch (e) {
-        credential = await create({ publicKey });
-      }
-    } else {
-      console.log("is in iframe");
-      const _popup = window.open(
-        "/webauthn-get",
-        "webauthn-popup",
-        "width=400,height=800",
-      );
-      window.addEventListener("message", (event) => {
-        if (event.data.type && event.data.type === "webauthn") {
-          credential = event.data.credential;
-        }
-      });
+    try {
+      credential = await get({ publicKey });
+    } catch (e) {
+      credential = await create({ publicKey });
     }
     while (credential === undefined) {
       await new Promise((resolve) => setTimeout(resolve, 100));
@@ -190,7 +171,7 @@ export async function getOrCreateDeviceKeyPair(
       privateKey: combinedPrivateKey,
     });
   } catch (err) {
-    console.error("WebAuthn error:", JSON.stringify(err));
+    console.error("WebAuthn error:", err);
     throw new Error("WebAuthn request rejected");
   }
 }
