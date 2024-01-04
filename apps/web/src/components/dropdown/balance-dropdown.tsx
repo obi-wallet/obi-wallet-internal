@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { IconType } from "react-icons";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
+
 import { Text } from "../text";
 
 export interface IBalanceOption {
@@ -22,9 +23,9 @@ export function BalanceDropDown({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<IBalanceOption>(
-    options?.[0]!,
-  );
+  const [selectedOption, setSelectedOption] = useState<
+    IBalanceOption | undefined
+  >(options?.[0]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -57,10 +58,12 @@ export function BalanceDropDown({
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center space-x-3">
-          {<selectedOption.icon style={{ width: 24, height: 24 }} />}
+          {selectedOption && (
+            <selectedOption.icon style={{ width: 24, height: 24 }} />
+          )}
           <div className="flex flex-col space-y-2">
-            <Text>{selectedOption.network}</Text>
-            <Text>{`${selectedOption.balance} ${selectedOption.assetUnit}`}</Text>
+            <Text>{selectedOption?.network}</Text>
+            <Text>{`${selectedOption?.balance} ${selectedOption?.assetUnit}`}</Text>
           </div>
           <div className="ml-3">{isOpen ? <FaAngleUp /> : <FaAngleDown />}</div>
         </div>
@@ -87,7 +90,7 @@ export function BalanceDropDown({
               )}
             >
               <div className="flex items-center space-x-3">
-                {<option.icon style={{ width: 24, height: 24 }} />}
+                <option.icon style={{ width: 24, height: 24 }} />
                 <div className="flex flex-col space-y-2">
                   <Text>{option.network}</Text>
                   <Text>{`${option.balance} ${option.assetUnit}`}</Text>

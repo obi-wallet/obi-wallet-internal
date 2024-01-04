@@ -1,18 +1,13 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import {
-  ChangeEvent,
-  ComponentPropsWithoutRef,
-  useEffect,
-  useState,
-} from "react";
-import { IconType } from "react-icons";
+import { ComponentPropsWithoutRef, useEffect, useState } from "react";
+
 import { Input } from "./input";
 import { BalanceDropDown, IBalanceOption } from "../dropdown";
 
 type InputProps = {
   balances: IBalanceOption[];
+  onChange: (value: number) => void;
 } & ComponentPropsWithoutRef<"input">;
 
 export function BalanceInput({
@@ -23,15 +18,17 @@ export function BalanceInput({
 }: InputProps) {
   const [amount, setAmount] = useState(0);
   const [text, setText] = useState("");
-  const [selectedBalance, setSelectedBalance] = useState(balances?.[0]!);
+  const [selectedBalance, setSelectedBalance] = useState(balances?.[0]);
 
   useEffect(() => {
     setAmount(parseFloat(text) || 0);
   }, [text]);
+  useEffect(() => {
+    onChange && onChange(amount);
+  }, [amount, onChange]);
 
   const handleClickMax = () => {
-    setAmount(selectedBalance?.balance || 0);
-    setText(selectedBalance?.balance.toString());
+    setText(selectedBalance?.balance.toString() || "");
   };
 
   return (

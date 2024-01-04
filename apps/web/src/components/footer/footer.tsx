@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { ComponentPropsWithoutRef } from "react";
 import { FaXTwitter, FaTelegram, FaFileLines } from "react-icons/fa6";
+
 import { Text } from "..";
 
 type FooterProps = ComponentPropsWithoutRef<"footer">;

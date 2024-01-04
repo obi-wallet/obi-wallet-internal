@@ -1,13 +1,14 @@
 "use client";
-import React, { ReactNode, useState } from "react";
+import React, { ReactElement, ReactNode, useState } from "react";
 interface TabProps {
   label?: string;
   children: ReactNode;
 }
 
-const Tabs: React.FC<{ children: ReactNode }> = ({ children }) => {
+function Tabs({ children }: { children: ReactNode }) {
   const [activeTab, setActiveTab] = useState<string>(
-    (children as any)[0].props.label,
+    (React.Children.toArray(children)[0] as ReactElement<TabProps>).props
+      .label || "",
   );
 
   const handleClick = (
@@ -21,39 +22,37 @@ const Tabs: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <div className="">
       <div className="flex border-gray-300">
-        {React.Children.map(children, (child) => (
-          <button
-            key={(child as any).props.label}
-            className={`${
-              activeTab === (child as any).props.label
-                ? "rounded-xl bg-slate-950"
-                : ""
-            } flex-1 py-2 text-base font-normal
+        {React.Children.map(children, (child) => {
+          const tab = child as ReactElement<TabProps>;
+          return (
+            <button
+              key={tab.props.label}
+              className={`${
+                activeTab === tab.props.label ? "rounded-xl bg-slate-950" : ""
+              } flex-1 py-2 text-base font-normal
             text-white`}
-            onClick={(e) => handleClick(e, (child as any).props.label)}
-          >
-            {(child as any).props.label}
-          </button>
-        ))}
+              onClick={(e) => handleClick(e, tab.props.label || "")}
+            >
+              {tab.props.label}
+            </button>
+          );
+        })}
       </div>
       <div className="py-4">
         {React.Children.map(children, (child) => {
-          if ((child as any).props.label === activeTab) {
-            return (
-              <div key={(child as any).props.label}>
-                {(child as any).props.children}
-              </div>
-            );
+          const tab = child as ReactElement<TabProps>;
+          if (tab.props.label === activeTab) {
+            return <div key={tab.props.label}>{tab.props.children}</div>;
           }
           return null;
         })}
       </div>
     </div>
   );
-};
+}
 
-const Tab: React.FC<TabProps> = ({ label, children }) => {
+function Tab({ children }: TabProps) {
   return <div className="hidden">{children}</div>;
-};
+}
 
 export { Tabs, Tab };

@@ -8,11 +8,11 @@ import {
   Tab,
   Tabs,
 } from "@/components";
-import { FaSearch } from "react-icons/fa";
-import { useQRCode } from "next-qrcode";
 import copy from "copy-to-clipboard";
-import { FaSketch } from "react-icons/fa6";
+import { useQRCode } from "next-qrcode";
 import { useState } from "react";
+import { FaSearch } from "react-icons/fa";
+import { FaSketch } from "react-icons/fa6";
 
 export default function Transaction() {
   const { Canvas } = useQRCode();

@@ -4,11 +4,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { FaHome } from "react-icons/fa";
 import { FaGear, FaCreditCard } from "react-icons/fa6";
 
+import { Button, Divider } from "..";
 import { Account } from "../account/account";
 import { Footer } from "../footer/footer";
 import { PrimaryLink } from "../links";
 import { Text } from "../text/text";
-import { Button, Divider, DividerDirection } from "..";
 
 const navMenu = [
   {

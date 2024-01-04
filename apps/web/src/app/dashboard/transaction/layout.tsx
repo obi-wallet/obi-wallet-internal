@@ -1,4 +1,3 @@
-import { Footer } from "@/components";
 import { ReactNode } from "react";
 
 export default function TransactionLayout({
