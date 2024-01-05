@@ -20,7 +20,9 @@ export function DropDown({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<IDropDownOption>();
+  const [selectedOption, setSelectedOption] = useState<
+    IDropDownOption | undefined
+  >(options?.[0]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
