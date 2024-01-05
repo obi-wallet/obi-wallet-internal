@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { create, get } from "@github/webauthn-json";
 import type { CredentialDeviceType } from "@simplewebauthn/typescript-types";
-import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { getBiometricsPrivateKey } from "./legacy";
@@ -71,10 +70,6 @@ interface CustomPublicKeyCredentialCreationOptions {
   };
 }
 
-export function isInIframe(): boolean {
-  return window !== window.top;
-}
-
 const generateWebAuthnPubKey = () => {
   try {
     // TODO: refactor here
@@ -118,85 +113,72 @@ const generateWebAuthnPubKey = () => {
   }
 };
 
-const generateWebAuthnSec256k1KeyPair = async (
-  [publicKey, privateKey]: [string, string],
-  newUser: boolean,
-): Promise<[Secp256k1KeyPair, boolean]> => {
-  return [
-    {
-      publicKey: {
-        type: "tendermint/PubKeySecp256k1",
-        value: publicKey,
-      },
-      privateKey,
+function generateWebAuthnSec256k1KeyPair({
+  publicKey,
+  privateKey,
+}: {
+  publicKey: string;
+  privateKey: string;
+}): Secp256k1KeyPair {
+  return {
+    publicKey: {
+      type: "tendermint/PubKeySecp256k1",
+      value: publicKey,
     },
-    newUser,
-  ];
-};
+    privateKey,
+  };
+}
 
-export async function getOrCreateDeviceKeyPair(
-  allowCreate: boolean,
-  demoMode: boolean,
-): Promise<[Secp256k1KeyPair, boolean]> {
-  if (demoMode) {
-    return generateWebAuthnSec256k1KeyPair(
-      [DEMO_PUBLIC_KEY, DEMO_PRIVATE_KEY],
-      true,
-    );
-  }
+export async function getOrCreatePasskey(): Promise<
+  { success: true; keyPair: Secp256k1KeyPair } | { success: false }
+> {
   try {
     const publicKey = generateWebAuthnPubKey();
     let credential;
-    if (!isInIframe()) {
-      console.log("not in iframe");
-      if (allowCreate) {
-        credential = await create({ publicKey });
-      } else {
-        try {
-          credential = await get({ publicKey });
-        } catch (e) {
-          credential = await create({ publicKey });
-          allowCreate = true;
-        }
-      }
-    } else {
-      console.log("is in iframe");
-      const _popup = window.open(
-        allowCreate ? "/webauthn-auth" : "/webauthn-get",
-        "webauthn-popup",
-        "width=400,height=800",
-      );
-      window.addEventListener("message", (event) => {
-        if (event.data.type && event.data.type === "webauthn") {
-          credential = event.data.credential;
-        }
-      });
+    try {
+      credential = await get({ publicKey });
+    } catch (e) {
+      credential = await create({ publicKey });
     }
-    while (credential === undefined) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
-    console.log("webauthn credential id: " + JSON.stringify(credential?.id));
 
-    invariant(credential?.id, "Expected credential to have an id");
+    console.log("webauthn credential id: ", credential.id);
     const combinedPrivateKey = await combineKeys(
       DEMO_PRIVATE_KEY,
-      Buffer.from(credential?.id).toString("hex"),
+      Buffer.from(credential.id).toString("hex"),
     );
     const webauthnSigner = new Secp256k1PrivateKeySigner(combinedPrivateKey);
-    console.log("Resulting public key: " + webauthnSigner.publicKey.value);
-    const compressedPubkey = base64ToCompressedPubKey(
-      webauthnSigner.publicKey.value,
-    );
-    invariant(compressedPubkey, "Unable to correctly compress public key");
-    const webauthnAddress = pubkeyToAddress(compressedPubkey);
-    console.log("webauthn Signer address: " + webauthnAddress);
-
-    return generateWebAuthnSec256k1KeyPair(
-      [webauthnSigner.publicKey.value, combinedPrivateKey],
-      false,
-    );
+    return {
+      success: true,
+      keyPair: {
+        publicKey: webauthnSigner.publicKey,
+        privateKey: combinedPrivateKey,
+      },
+    };
   } catch (err) {
-    console.error("WebAuthn error:", JSON.stringify(err));
+    console.error("WebAuthn error:", err);
+    return {
+      success: false,
+    };
+  }
+}
+
+/**
+ * @deprecated
+ */
+export async function getOrCreateDeviceKeyPair(
+  demoMode: boolean,
+): Promise<Secp256k1KeyPair> {
+  if (demoMode) {
+    return generateWebAuthnSec256k1KeyPair({
+      publicKey: DEMO_PUBLIC_KEY,
+      privateKey: DEMO_PRIVATE_KEY,
+    });
+  }
+
+  const res = await getOrCreatePasskey();
+  if (res.success) {
+    return res.keyPair;
+  } else {
     throw new Error("WebAuthn request rejected");
   }
 }
@@ -249,7 +231,7 @@ export async function getDevicePrivateKey(
     return key.payload.privateKey;
   }
   try {
-    const [kp, _] = await getOrCreateDeviceKeyPair(false, false);
+    const kp = await getOrCreateDeviceKeyPair(false);
     return kp.privateKey;
   } catch (e) {
     try {
@@ -271,18 +253,4 @@ export async function getDevicePrivateKey(
       return null;
     }
   }
-}
-
-function base64ToCompressedPubKey(base64PubKey: string): Uint8Array | null {
-  const decodedBytes = Uint8Array.from(atob(base64PubKey), (c) =>
-    c.charCodeAt(0),
-  );
-  if (
-    decodedBytes.length !== 33 ||
-    (decodedBytes[0] !== 0x02 && decodedBytes[0] !== 0x03)
-  ) {
-    console.error("Not a valid compressed secp256k1 public key");
-    return null;
-  }
-  return decodedBytes;
 }

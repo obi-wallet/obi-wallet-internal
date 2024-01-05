@@ -128,7 +128,7 @@ export class DeviceKeySigner extends Signer {
       const isUVPAA =
         await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
       if (isUVPAA) {
-        const [kp, _] = await getOrCreateDeviceKeyPair(false, false);
+        const kp = await getOrCreateDeviceKeyPair(false);
         invariant(kp, "device keypair not obtained");
         return new Secp256k1PrivateKeySigner(kp.privateKey).signHash(hash);
       } else {

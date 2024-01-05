@@ -55,7 +55,7 @@ const MultisigDraft = {
         if (unityStore.currentDeviceId) {
           await original.setUnityKey(unityStore.currentDeviceId);
         }
-        const [key, _] = await getOrCreateDeviceKeyPair(false, false);
+        const key = await getOrCreateDeviceKeyPair(false);
         await original.setDeviceKey(key);
         original.setPhoneKey({
           publicKey: await getTwilioClient({

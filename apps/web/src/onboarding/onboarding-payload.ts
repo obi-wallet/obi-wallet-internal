@@ -25,6 +25,7 @@ export class OnboardingPayload implements Draftable {
         equals: false,
         name: false,
         setName: action,
+        multisigKey: false,
       },
     );
   }
@@ -35,6 +36,10 @@ export class OnboardingPayload implements Draftable {
 
   public setName(name: string) {
     this._name = name;
+  }
+
+  public get multisigKey() {
+    return this._multisigKey;
   }
 
   public clone() {

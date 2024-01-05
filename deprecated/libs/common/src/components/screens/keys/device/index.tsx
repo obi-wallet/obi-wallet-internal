@@ -91,9 +91,8 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   onSubmit,
   flow,
 }) {
-  const { draftsStore, unityStore } = useStore();
+  const { draftsStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
-  const unityDeviceKey = unityStore.currentDeviceId;
   const queryClient = useQueryClient();
   const [scannedBiometrics, setScannedBiometrics] = useState(false);
   const intl = useIntl();
@@ -140,21 +139,16 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
   }
 
   async function scanBiometricsOrWebAuthN(
-    create: boolean,
     existingUserSaysDeviceIsNew?: boolean,
-    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
   ): BiometricsData {
     try {
       console.log("getting device key...");
-      const [keyPair, newUser] = await getOrCreateDeviceKeyPair(
-        create,
-        demoMode,
-      );
+      const keyPair = await getOrCreateDeviceKeyPair(demoMode);
       console.log("setting device key...");
       const proxyWallets = await draft.value.setDeviceKey(
         keyPair,
         existingUserSaysDeviceIsNew,
-        recoverFlow, //avoids creating a new account even if no proxy wallets found
+        false, //avoids creating a new account even if no proxy wallets found
       );
       if (proxyWallets !== undefined) {
         return {
@@ -172,7 +166,6 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       setScannedBiometrics(true);
       return {
         success: true,
-        newUser,
         deviceKeypair: keyPair,
       };
     } catch (e) {
@@ -182,7 +175,6 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       if (error.message === "code: 13, msg: Cancel")
         return {
           success: false,
-          newUser: false,
           deviceKeypair: undefined,
         };
       console.error(error);
@@ -192,7 +184,6 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       );
       return {
         success: false,
-        newUser: false,
         deviceKeypair: undefined,
       };
     }
@@ -200,37 +191,16 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
 
   // TODO: split into multiple fns that read keys otherwise create it
   async function submitWithRequiredKey(
-    deviceIsNew: boolean, // would not be needed anymore
-    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
+    deviceIsNew: boolean, //avoids creating a new account even if no proxy wallets found
   ) {
     let requiredPubkey;
-    if (unityDeviceKey) {
-      console.log("unity device id obtained");
-      const proxyWallets = await draft.value.setUnityKey(
-        unityDeviceKey,
-        deviceIsNew,
-        recoverFlow,
-      );
-      if (proxyWallets !== undefined) {
-        navigation.navigate(OnboardingRoute.LookupProxyWallets, {
-          flow: KeyFlow.RecoverWallet,
-          draftId,
-          walletsFound: proxyWallets,
-          demoMode: false,
-          recoverFrom: RecoverFrom.Unity,
-        });
-      }
-      requiredPubkey = await getUsablePublicKeyByType(draft)(KeyType.Unity);
-      invariant(requiredPubkey, "could not get unity pubkey");
-      onSubmit(deviceIsNew, requiredPubkey);
-    } else if (scannedBiometrics) {
+    if (scannedBiometrics) {
       requiredPubkey = await getUsablePublicKeyByType(draft)(KeyType.Device);
       invariant(requiredPubkey, "could not get device pubkey");
       onSubmit(deviceIsNew, requiredPubkey);
     } else {
-      const res = await scanBiometricsOrWebAuthN(false, deviceIsNew);
-      const { success, newUser, deviceKeypair, wallets } = res;
-      const _newUser = newUser;
+      const res = await scanBiometricsOrWebAuthN(deviceIsNew);
+      const { success, deviceKeypair, wallets } = res;
       if (wallets) {
         invariant(deviceKeypair, "could not get device keypair");
         await draft.value.setDeviceKey(
@@ -255,7 +225,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
       if (success && Platform.OS !== "ios") {
         onSubmit(deviceIsNew, requiredPubkey);
       }
-      if (!wallets && recoverFlow) {
+      if (!wallets && !deviceIsNew) {
         navigation.navigate(OnboardingRoute.SelectRecoveryMethod, {
           flow: KeyFlow.RecoverWallet,
           draftId,
@@ -349,19 +319,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
             >
               {/*TODO: refactor logic here*/}
 
-              {unityStore.currentDeviceId ? (
-                flow === KeyFlow.CreateWallet ? (
-                  <FormattedMessage
-                    id="onboarding4.authyourkeys.unity"
-                    defaultMessage="Create a Gaming Device Key"
-                  />
-                ) : (
-                  <FormattedMessage
-                    id="onboarding4.authyourkeys.login.unity"
-                    defaultMessage="Use This Game Device Key"
-                  />
-                )
-              ) : flow === KeyFlow.CreateWallet ? (
+              {flow === KeyFlow.CreateWallet ? (
                 <FormattedMessage
                   id="onboarding4.authyourkeys"
                   defaultMessage="Create a Device Key"
@@ -381,17 +339,10 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 ...theme.textStyles.light,
               }}
             >
-              {unityStore.currentDeviceId ? (
-                <FormattedMessage
-                  id="onboarding4.authyourkeys.subtext.unity"
-                  defaultMessage="With Obi, your Device, phone number, cloud, email, and more combine into a multi-factor authenticator."
-                />
-              ) : (
-                <FormattedMessage
-                  id="onboarding4.authyourkeys.subtext"
-                  defaultMessage="With Obi, your Device, phone number, cloud, email, and more combine into a multi-factor authenticator."
-                />
-              )}
+              <FormattedMessage
+                id="onboarding4.authyourkeys.subtext"
+                defaultMessage="With Obi, your Device, phone number, cloud, email, and more combine into a multi-factor authenticator."
+              />
             </Text>
             <Text
               style={{
@@ -401,17 +352,10 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 ...theme.textStyles.light,
               }}
             >
-              {unityStore.currentDeviceId ? (
-                <FormattedMessage
-                  id="onboarding4.authyourkeys.explain.unity"
-                  defaultMessage="Unity games on this device can provide a secure key, even if you reinstall a game. The games cannot use the key on their own."
-                />
-              ) : (
-                <FormattedMessage
-                  id="onboarding4.authyourkeys.explain"
-                  defaultMessage="Your browser will display a WebAuthN request to use your Windows Hello, Touch ID, or other authentication method. Keys cannot leave your device."
-                />
-              )}
+              <FormattedMessage
+                id="onboarding4.authyourkeys.explain"
+                defaultMessage="Your browser will display a WebAuthN request to use your Windows Hello, Touch ID, or other authentication method. Keys cannot leave your device."
+              />
             </Text>
           </View>
           <View
@@ -421,12 +365,10 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
             {flow === KeyFlow.CreateWallet ? (
               <AsyncButton
                 label={intl.formatMessage({
-                  id: unityStore.currentDeviceId
-                    ? "onboarding4.biometrics.unitybutton"
-                    : "onboarding4.biometrics.button",
+                  id: "onboarding4.biometrics.button",
                 })}
                 flavor="primary"
-                onPress={async () => submitWithRequiredKey(true, false)}
+                onPress={async () => submitWithRequiredKey(true)}
                 autoPress={Platform.OS === "ios"}
               />
             ) : (
@@ -435,12 +377,10 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                 {/*TODO: refactor submitWithRequiredKey method*/}
                 <AsyncButton
                   label={intl.formatMessage({
-                    id: unityStore.currentDeviceId
-                      ? "onboarding4.ihaveadevicekey.button.unity"
-                      : "onboarding4.ihaveadevicekey.button",
+                    id: "onboarding4.ihaveadevicekey.button",
                   })}
                   flavor="primary"
-                  onPress={async () => submitWithRequiredKey(false, true)}
+                  onPress={async () => submitWithRequiredKey(false)}
                   autoPress={Platform.OS === "ios"}
                 />
                 {/*TODO: refactor submitWithRequiredKey method*/}
@@ -449,7 +389,7 @@ export const DeviceKey = observer<DeviceKeyProps>(function DeviceKey({
                     id: "onboarding4.newdevice.button",
                   })}
                   flavor="primary"
-                  onPress={async () => submitWithRequiredKey(true, true)}
+                  onPress={async () => submitWithRequiredKey(true)}
                   autoPress={Platform.OS === "ios"}
                 />
               </>
