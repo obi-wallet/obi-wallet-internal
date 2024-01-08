@@ -3,38 +3,42 @@
 import { usePathname, useRouter } from "next/navigation";
 import { FaHome } from "react-icons/fa";
 import { FaGear, FaCreditCard } from "react-icons/fa6";
+import { MdCardTravel } from "react-icons/md";
 
-import { Button, Divider } from "..";
-import { Account } from "../account/account";
-import { Footer } from "../footer/footer";
-import { PrimaryLink } from "../links";
-import { Text } from "../text/text";
+import { Button, Divider, Account, Footer, PrimaryLink, Text } from "..";
 
 const navMenu = [
   {
-    href: "/home",
+    href: "/dashboard/dashboard",
     text: "Home",
     module: "dashboard",
     icon: <FaHome className="h-8 w-8 text-white" />,
   },
   {
-    href: "/settings",
+    href: "/dashboard/settings",
     text: "Settings",
     module: "settings",
     icon: <FaGear className="h-8 w-8 text-white" />,
   },
   {
-    href: "/buy-crypto",
+    href: "/dashboard/buy-crypto",
     text: "Buy Crypto",
     module: "buy-crypto",
     icon: <FaCreditCard className="h-8 w-8 text-white" />,
+  },
+  {
+    href: "/dashboard/fast-travel",
+    text: "Fast Travel",
+    module: "fast-travel",
+    icon: <MdCardTravel className="h-8 w-8 text-white" />,
   },
 ];
 
 export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  const mainURISegment = pathname.split("/")[1];
+  const mainURISegment = pathname.split("/")[2];
+
   return (
     <nav className="flex flex-col bg-slate-900 px-7 pt-16">
       <Account />
@@ -46,6 +50,7 @@ export function Navbar() {
         New Transaction
       </Button>
       <Divider />
+
       <div className="mt-7 grow">
         <ul role="list" className="flex flex-col space-y-3">
           {navMenu.map((navItem, index) => (

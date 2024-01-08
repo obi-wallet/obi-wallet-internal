@@ -6,8 +6,9 @@ import { Input } from "./input";
 import { BalanceDropDown, IBalanceOption } from "../dropdown";
 
 type InputProps = {
-  balances: IBalanceOption[];
+  balances?: IBalanceOption[];
   onChange?: (value: number) => void;
+  showMaxButton?: boolean;
 } & ComponentPropsWithoutRef<"input">;
 
 export function BalanceInput({
@@ -15,6 +16,7 @@ export function BalanceInput({
   disabled,
   placeholder,
   balances,
+  showMaxButton = true,
 }: InputProps) {
   const [amount, setAmount] = useState(0);
   const [text, setText] = useState("");
@@ -44,13 +46,15 @@ export function BalanceInput({
       />
 
       <div className="absolute right-2 top-1/2 z-10 flex -translate-y-1/2 space-x-2">
-        <button
-          className="h-16 w-20 rounded-xl bg-slate-950 text-white hover:bg-blue-700 focus:outline-none"
-          disabled={disabled}
-          onClick={handleClickMax}
-        >
-          MAX
-        </button>
+        {showMaxButton && (
+          <button
+            className="h-16 w-20 rounded-xl bg-slate-950 text-white hover:bg-blue-700 focus:outline-none"
+            disabled={disabled}
+            onClick={handleClickMax}
+          >
+            MAX
+          </button>
+        )}
         {balances && (
           <BalanceDropDown
             options={balances}
