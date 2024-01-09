@@ -1,9 +1,11 @@
 "use client";
 
 import { Stepper } from "@/components";
-import { OnboardingStep } from "@/onboarding/onboarding-step";
-import { useOnboardingDraft } from "@/onboarding/use-onboarding-draft";
 import { observer } from "mobx-react-lite";
+
+import { OnboardingStep } from "./onboarding-step";
+import { Step } from "./step";
+import { useOnboardingDraft } from "./use-onboarding-draft";
 
 export * from "./onboarding-step";
 
@@ -20,9 +22,17 @@ export const Onboarding = observer(function Onboarding({
 
   if (!draft) return null;
 
+  const currentStep = steps[draft.value.currentStep];
+
+  if (!currentStep) return null;
+
   return (
     <section className="flex flex-col items-center space-y-7">
-      <Stepper currentStep={1} totalSteps={steps.length} />
+      <Stepper
+        currentStep={draft.value.currentStep}
+        totalSteps={steps.length}
+      />
+      <Step draft={draft} step={currentStep} />
     </section>
   );
 });
