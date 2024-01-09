@@ -25,7 +25,7 @@ export default function Introduction() {
           keys.
         </Text>
         <ButtonLink
-          href="/r/onboarding/internal"
+          href="/onboarding/internal"
           className="block w-full"
           variant="primary"
         >
