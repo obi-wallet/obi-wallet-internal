@@ -5,7 +5,7 @@ import { UserDataOnboardingStep } from "@/onboarding";
 import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
 import { StepProps } from "@/onboarding/step";
 import { observer } from "mobx-react-lite";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent } from "react";
 import invariant from "tiny-invariant";
 
 export const UserDataStep = observer(function UserDataStep({
@@ -13,9 +13,6 @@ export const UserDataStep = observer(function UserDataStep({
   back,
   next,
 }: StepProps<UserDataOnboardingStep>) {
-  const [name, setName] = useState("");
-  const [image, setImage] = useState("");
-
   return (
     <>
       <Text fontWeight="bold" size="3xl">
@@ -33,9 +30,9 @@ export const UserDataStep = observer(function UserDataStep({
       <Input
         className="w-96"
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          setName(e.target.value);
+          draft.value.setName(e.target.value);
         }}
-        value={name}
+        value={draft.value.name}
         placeholder="Name"
       />
 
@@ -49,7 +46,7 @@ export const UserDataStep = observer(function UserDataStep({
               typeof reader.result === "string",
               "Expected reader result to be base64 string",
             );
-            setImage(reader.result);
+            draft.value.setImage(reader.result);
           });
 
           const file = files[0];
@@ -59,19 +56,15 @@ export const UserDataStep = observer(function UserDataStep({
         }}
       />
 
-      {image && <img src={image} className="w-96 rounded-full" />}
+      {draft.value.image ? (
+        <img src={draft.value.image} className="w-96 rounded-full" />
+      ) : null}
 
       <OnboardingButtons
         back={back}
-        next={() => {
-          draft.value.setUserData({
-            name,
-            image,
-          });
-          if (next) next();
-        }}
+        next={next}
         nextLabel="Continue"
-        nextDisabled={!name || !image}
+        nextDisabled={!draft.value.name || !draft.value.image}
       />
     </>
   );

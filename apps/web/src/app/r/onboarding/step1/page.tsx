@@ -30,7 +30,6 @@ export default observer(function Step1() {
           // draft.value.setName(e.target.value);
         }}
         placeholder="Name"
-        value={draft.value.userData?.name ?? ""}
       />
       <Dropzone
         className="mt-8"

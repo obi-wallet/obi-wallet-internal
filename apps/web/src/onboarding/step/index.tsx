@@ -1,5 +1,6 @@
 import { OnboardingStep, OnboardingStepType } from "@/onboarding";
 import { OnboardingPayload } from "@/onboarding/onboarding-payload";
+import { ExplanationStep } from "@/onboarding/step/explanation";
 import { UserDataStep } from "@/onboarding/step/user-data";
 import { Draft } from "@/stores";
 import { observer } from "mobx-react-lite";
@@ -16,7 +17,7 @@ export const Step = observer(function Step(props: StepProps) {
     case OnboardingStepType.UserData:
       return <UserDataStep {...props} step={props.step} />;
     case OnboardingStepType.Explanation:
-      break;
+      return <ExplanationStep {...props} step={props.step} />;
     case OnboardingStepType.PrimaryKey:
       break;
     case OnboardingStepType.MultisigSettings:

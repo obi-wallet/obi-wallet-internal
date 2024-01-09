@@ -2,7 +2,7 @@ import { Button } from "@/components";
 
 export interface OnboardingButtonsProps {
   back?: () => void;
-  next: () => void;
+  next?: () => void;
   nextLabel: string;
   nextDisabled?: boolean;
 }
