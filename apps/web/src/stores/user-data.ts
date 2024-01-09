@@ -64,6 +64,6 @@ export class UserDataStore {
   }
 
   public async getFromKVStore() {
-    return await this.kvStore.get<UserData | undefined>("userData");
+    return await this.kvStore.get<UserData>("userData");
   }
 }
