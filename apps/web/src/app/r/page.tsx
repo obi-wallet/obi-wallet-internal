@@ -2,9 +2,12 @@
 
 import { Text } from "@/components";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { observer } from "mobx-react-lite";
 
-export default function Dashboard() {
-  const currentWallet = useCurrentWallet({ redirectTo: "/r/onboarding" });
+export default observer(function Dashboard() {
+  const currentWallet = useCurrentWallet({
+    redirectTo: "/r/onboarding/internal",
+  });
 
   // TODO: show loading spinner or something
   if (!currentWallet) return;
@@ -16,4 +19,4 @@ export default function Dashboard() {
       </Text>
     </section>
   );
-}
+});

@@ -1,13 +1,7 @@
-"use client";
-
 import { ButtonLink, Text } from "@/components";
-import { useOnboardingDraft } from "@/onboarding/use-onboarding-draft";
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 
-export default observer(function Onboarding() {
-  useOnboardingDraft({ draftId: "onboarding" });
-
+export default function Introduction() {
   return (
     <section className="flex w-full flex-col items-center justify-center space-y-9">
       <Text className="text-2xl" leading="normal" fontWeight="bold">
@@ -31,7 +25,7 @@ export default observer(function Onboarding() {
           keys.
         </Text>
         <ButtonLink
-          href="/r/onboarding/step1"
+          href="/r/onboarding/internal"
           className="block w-full"
           variant="primary"
         >
@@ -40,4 +34,4 @@ export default observer(function Onboarding() {
       </div>
     </section>
   );
-});
+}
