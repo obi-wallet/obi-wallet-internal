@@ -1,6 +1,7 @@
 import { OnboardingStep, OnboardingStepType } from "@/onboarding";
 import { OnboardingPayload } from "@/onboarding/onboarding-payload";
 import { ExplanationStep } from "@/onboarding/step/explanation";
+import { MultisigSettingsStep } from "multisig-settings";
 import { PrimaryKeyStep } from "@/onboarding/step/primary-key";
 import { UserDataStep } from "@/onboarding/step/user-data";
 import { Draft } from "@/stores";
@@ -22,7 +23,7 @@ export const Step = observer(function Step(props: StepProps) {
     case OnboardingStepType.PrimaryKey:
       return <PrimaryKeyStep {...props} step={props.step} />;
     case OnboardingStepType.MultisigSettings:
-      break;
+      return <MultisigSettingsStep {...props} step={props.step} />;
     case OnboardingStepType.Congratulations:
       break;
     case OnboardingStepType.FastTravel:
