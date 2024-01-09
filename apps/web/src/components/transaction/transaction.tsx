@@ -37,7 +37,7 @@ export function Transaction({
       <Image
         width="70"
         height="70"
-        src="/assets/images/NTRN Logo.png"
+        src="/assets/images/ntrn-logo.png"
         alt="NTRN Logo"
         className="absolute -top-8"
       />

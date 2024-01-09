@@ -10,7 +10,7 @@ export default function Introduction() {
       <Image
         width="151"
         height="268"
-        src="/assets/images/Obi Wizard.png"
+        src="/assets/images/obi-wizard.png"
         alt="Icon"
       />
       <div className=" w-[440px] space-y-9">

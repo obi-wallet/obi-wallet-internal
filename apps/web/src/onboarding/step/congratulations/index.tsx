@@ -27,7 +27,7 @@ export const CongratulationsStep = observer(function CongratulationsStep({
       <Image
         width="310"
         height="310"
-        src="/assets/images/NFT.png"
+        src="/assets/images/nft.png"
         alt="NFT"
         className="rounded-2xl"
       />

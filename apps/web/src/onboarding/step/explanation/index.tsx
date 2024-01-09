@@ -28,7 +28,7 @@ export const ExplanationStep = observer(function ExplanationStep({
       <Image
         width="262"
         height="262"
-        src="/assets/images/Dall.png"
+        src="/assets/images/dall.png"
         alt="Icon"
       />
       <Text
