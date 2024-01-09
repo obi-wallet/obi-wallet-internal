@@ -82,7 +82,7 @@
     "react-hook-form": "*",
     "react-intl": "*",
     "react-modal-sheet": "*",
-    "react-native": "0.72.3",
+    "react-native": "0.73.1",
     "react-native-animatable": "*",
     "react-native-asset": "*",
     "react-native-camera": "*",
