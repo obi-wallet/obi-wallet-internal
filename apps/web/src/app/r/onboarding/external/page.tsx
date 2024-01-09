@@ -13,5 +13,5 @@ export default observer(function ExternalOnboarding() {
     },
   ];
 
-  return <Onboarding steps={steps} />;
+  return <Onboarding draftId="external-onboarding" steps={steps} />;
 });

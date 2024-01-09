@@ -22,5 +22,5 @@ export default observer(function InternalOnboarding() {
     },
   ];
 
-  return <Onboarding steps={steps} />;
+  return <Onboarding draftId="internal-onboarding" steps={steps} />;
 });
