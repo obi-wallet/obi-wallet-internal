@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 
 export default observer(function Step5() {
-  const draft = useOnboardingDraft();
+  const draft = useOnboardingDraft({ draftId: "onboarding" }));
 
   if (!draft) return null;
 

@@ -48,7 +48,7 @@ const keyOptions = [
 ];
 
 export default observer(function Step4() {
-  const draft = useOnboardingDraft();
+  const draft = useOnboardingDraft({ draftId: "onboarding" });
 
   if (!draft) return null;
 

@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite";
 import { FaApple, FaGoogle, FaWindows } from "react-icons/fa";
 
 export default observer(function Step3() {
-  const draft = useOnboardingDraft();
+  const draft = useOnboardingDraft({ draftId: "onboarding" });
 
   if (!draft) return null;
 

@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import invariant from "tiny-invariant";
 
 export default observer(function Passkey() {
-  const draft = useOnboardingDraft();
+  const draft = useOnboardingDraft({ draftId: "onboarding" });
   const queryClient = useQueryClient();
   const router = useRouter();
 

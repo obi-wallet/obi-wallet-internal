@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 
 export default observer(function Onboarding() {
-  useOnboardingDraft();
+  useOnboardingDraft({ draftId: "onboarding" });
 
   return (
     <section className="flex w-full flex-col items-center justify-center space-y-9">

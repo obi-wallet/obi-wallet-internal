@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const draftId = "onboarding";
 
-export function useOnboardingDraft() {
+export function useOnboardingDraft({ draftId }: { draftId: string }) {
   useCurrentWallet({ redirectTo: "/r/", redirectIfFound: true });
   const { chainStore, draftsStore } = useStore();
   const draft = draftsStore.get<OnboardingPayload>({ id: draftId });

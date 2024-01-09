@@ -12,7 +12,7 @@ export interface OnboardingProps {
 }
 
 export const Onboarding = observer(function Onboarding(props: OnboardingProps) {
-  const draft = useOnboardingDraft();
+  const draft = useOnboardingDraft({ draftId: "onboarding" });
 
   if (!draft) return null;
 
