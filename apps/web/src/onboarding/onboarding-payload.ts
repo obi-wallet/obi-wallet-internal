@@ -1,60 +1,52 @@
 import { Draftable } from "@/stores/drafts/draft";
-import {
-  MultisigKey,
-  ObservableMultisigKey,
-  SecretJsChainId,
-} from "@obi-wallet/sdk";
+import { ChainId, MultisigKey, ObservableMultisigKey } from "@obi-wallet/sdk";
 import { action, makeObservable, observable } from "mobx";
+import { equals } from "ramda";
 
 export class OnboardingPayload implements Draftable {
-  protected _multisigKey: MultisigKey;
-  protected _name: string;
-  protected _image: string;
+  public multisigKey: MultisigKey;
+  public userData: {
+    name: string;
+    image: string;
+  } | null;
+  public currentStep: number;
 
-  constructor(chainId: SecretJsChainId) {
-    this._multisigKey = ObservableMultisigKey.create(undefined, chainId);
-    this._name = "";
-    this._image = "";
-    makeObservable<OnboardingPayload, "_multisigKey" | "_name" | "_image">(
-      this,
-      {
-        _multisigKey: observable,
-        _name: observable,
-        _image: observable,
-        clone: false,
-        equals: false,
-        name: false,
-        setName: action,
-        multisigKey: false,
-      },
-    );
+  constructor(chainId: ChainId) {
+    this.multisigKey = ObservableMultisigKey.create(undefined, chainId);
+    this.userData = null;
+    this.currentStep = 1;
+    makeObservable(this, {
+      multisigKey: observable,
+      userData: observable,
+      currentStep: observable,
+      clone: false,
+      equals: false,
+      setUserData: action,
+      setCurrentStep: action,
+    });
   }
 
-  public get name() {
-    return this._name;
+  public setUserData(userData: { name: string; image: string }) {
+    this.userData = userData;
   }
 
-  public setName(name: string) {
-    this._name = name;
-  }
-
-  public get multisigKey() {
-    return this._multisigKey;
+  public setCurrentStep(step: number) {
+    this.currentStep = step;
   }
 
   public clone() {
-    const clone = new OnboardingPayload(this._multisigKey.chainId);
-    clone._multisigKey = this._multisigKey.clone();
-    clone._name = this._name;
-    clone._image = this._image;
+    const clone = new OnboardingPayload(this.multisigKey.chainId);
+    clone.multisigKey = this.multisigKey.clone();
+    clone.userData = this.userData ? { ...this.userData } : null;
+    clone.currentStep = this.currentStep;
     return clone as this;
   }
 
   public equals(other: OnboardingPayload) {
     return (
-      this._multisigKey.equals(other._multisigKey) &&
-      this._name === other._name &&
-      this._image === other._image
+      this.multisigKey.equals(other.multisigKey) &&
+      equals(this.userData, other.userData) &&
+      this.currentStep === other.currentStep
     );
   }
 }

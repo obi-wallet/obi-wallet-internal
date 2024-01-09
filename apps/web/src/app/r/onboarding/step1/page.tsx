@@ -26,11 +26,11 @@ export default observer(function Step1() {
         with it.
       </Text>
       <Input
-        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          draft.value.setName(e.target.value);
+        onChange={(_e: ChangeEvent<HTMLInputElement>) => {
+          // draft.value.setName(e.target.value);
         }}
         placeholder="Name"
-        value={draft.value.name}
+        value={draft.value.userData?.name ?? ""}
       />
       <Dropzone
         className="mt-8"
