@@ -14,7 +14,7 @@ export interface ProviderProps {
   buster?: string;
 }
 
-export const Provider = observer<ProviderProps>(function Provider({
+const Provider = observer<ProviderProps>(function Provider({
   children,
   QueryClientProvider,
   buster,
@@ -42,3 +42,7 @@ export const Provider = observer<ProviderProps>(function Provider({
     </SdkProvider>
   );
 });
+
+// For some reason, dynamic imports don't work correctly with named exports.
+// eslint-disable-next-line import/no-default-export
+export default Provider;
