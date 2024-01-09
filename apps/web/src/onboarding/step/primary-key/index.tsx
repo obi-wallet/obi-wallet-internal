@@ -17,6 +17,7 @@ enum Choice {
 
 export const PrimaryKeyStep = observer(function PrimaryKeyStep({
   draft,
+  back,
   next,
   step,
 }: StepProps<PrimaryKeyOnboardingStep>) {
@@ -79,6 +80,12 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
               <FaWindows className="h-7 w-7 text-white" />
             </div>
           </div>
+
+          {back ? (
+            <Button onClick={back} className="block w-full" variant="outline">
+              Back
+            </Button>
+          ) : null}
         </>
       );
   }
