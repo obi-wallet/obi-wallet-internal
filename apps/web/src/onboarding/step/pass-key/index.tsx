@@ -1,26 +1,18 @@
 "use client";
 
-import { Button, ButtonLink, Stepper, Text } from "@/components";
-import { useOnboardingDraft } from "@/onboarding/use-onboarding-draft";
+import { Button, Text } from "@/components";
+import { StepProps } from "@/onboarding/step";
 import { getOrCreatePasskey, Sdk } from "@obi-wallet/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
-import { useRouter } from "next/navigation";
 import invariant from "tiny-invariant";
 
-export default observer(function Passkey() {
-  const draft = useOnboardingDraft();
+export const PasskeyStep = observer(function PasskeyStep({
+  draft,
+  back,
+  next,
+}: StepProps) {
   const queryClient = useQueryClient();
-  const router = useRouter();
-
-  if (!draft) return null;
-
-  // TODO: these depend on whether the user already has keys or not
-  // If no keys = step 3
-  // If at least one key = step 4
-  const currentStep = 3;
-  const previous = "/r/onboarding/step3";
-  const next = "/r/onboarding/step4";
 
   async function flow({
     userSaysDeviceIsNew,
@@ -42,12 +34,11 @@ export default observer(function Passkey() {
         draft.value.multisigKey.chainId,
       ).transactions.prepareKeyPairQuery(keyPair),
     );
-    router.push(next);
+    if (next) next();
   }
 
   return (
-    <section className="flex flex-col items-center space-y-7">
-      <Stepper currentStep={currentStep} />
+    <>
       <Text fontWeight="bold" size="3xl">
         Create a Passkey
       </Text>
@@ -76,9 +67,9 @@ export default observer(function Passkey() {
         I've Used This Device
       </Button>
 
-      <ButtonLink href={previous} className="block w-full" variant="outline">
+      <Button onClick={back} className="block w-full" variant="outline">
         Back
-      </ButtonLink>
-    </section>
+      </Button>
+    </>
   );
 });

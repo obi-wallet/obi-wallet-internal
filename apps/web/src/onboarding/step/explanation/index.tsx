@@ -1,18 +1,18 @@
 "use client";
 
-import { ButtonLink, Stepper, Text } from "@/components";
-import { useOnboardingDraft } from "@/onboarding/use-onboarding-draft";
+import { Text } from "@/components";
+import { ExplanationOnboardingStep } from "@/onboarding";
+import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
+import { StepProps } from "@/onboarding/step";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 
-export default observer(function Step2() {
-  const draft = useOnboardingDraft();
-
-  if (!draft) return null;
-
+export const ExplanationStep = observer(function ExplanationStep({
+  back,
+  next,
+}: StepProps<ExplanationOnboardingStep>) {
   return (
-    <section className="flex flex-col items-center space-y-7">
-      <Stepper currentStep={2} />
+    <>
       <Text fontWeight="bold" size="3xl">
         Secure Your Account
       </Text>
@@ -28,7 +28,7 @@ export default observer(function Step2() {
       <Image
         width="262"
         height="262"
-        src="/assets/images/Dall.png"
+        src="/assets/images/dall.png"
         alt="Icon"
       />
       <Text
@@ -42,13 +42,13 @@ export default observer(function Step2() {
         keys.
       </Text>
 
-      <ButtonLink
-        href="/r/onboarding/step3"
-        className="block w-full"
-        variant="primary"
-      >
-        Create My First Key
-      </ButtonLink>
-    </section>
+      <OnboardingButtons
+        back={back}
+        next={() => {
+          if (next) next();
+        }}
+        nextLabel="Create My First Key"
+      />
+    </>
   );
 });

@@ -1,13 +1,7 @@
-"use client";
-
 import { ButtonLink, Text } from "@/components";
-import { useOnboardingDraft } from "@/onboarding/use-onboarding-draft";
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 
-export default observer(function Onboarding() {
-  useOnboardingDraft();
-
+export default function Introduction() {
   return (
     <section className="flex w-full flex-col items-center justify-center space-y-9">
       <Text className="text-2xl" leading="normal" fontWeight="bold">
@@ -16,7 +10,7 @@ export default observer(function Onboarding() {
       <Image
         width="151"
         height="268"
-        src="/assets/images/Obi Wizard.png"
+        src="/assets/images/obi-wizard.png"
         alt="Icon"
       />
       <div className=" w-[440px] space-y-9">
@@ -31,7 +25,7 @@ export default observer(function Onboarding() {
           keys.
         </Text>
         <ButtonLink
-          href="/r/onboarding/step1"
+          href="/onboarding/internal"
           className="block w-full"
           variant="primary"
         >
@@ -40,4 +34,4 @@ export default observer(function Onboarding() {
       </div>
     </section>
   );
-});
+}

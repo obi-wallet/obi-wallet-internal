@@ -1,33 +1,40 @@
 import { Draftable } from "@/stores/drafts/draft";
-import {
-  MultisigKey,
-  ObservableMultisigKey,
-  SecretJsChainId,
-} from "@obi-wallet/sdk";
+import { ChainId, MultisigKey, ObservableMultisigKey } from "@obi-wallet/sdk";
 import { action, makeObservable, observable } from "mobx";
 
 export class OnboardingPayload implements Draftable {
   protected _multisigKey: MultisigKey;
   protected _name: string;
   protected _image: string;
+  protected _currentStep: number;
 
-  constructor(chainId: SecretJsChainId) {
+  constructor(chainId: ChainId) {
     this._multisigKey = ObservableMultisigKey.create(undefined, chainId);
     this._name = "";
     this._image = "";
-    makeObservable<OnboardingPayload, "_multisigKey" | "_name" | "_image">(
-      this,
-      {
-        _multisigKey: observable,
-        _name: observable,
-        _image: observable,
-        clone: false,
-        equals: false,
-        name: false,
-        setName: action,
-        multisigKey: false,
-      },
-    );
+    this._currentStep = 1;
+    makeObservable<
+      OnboardingPayload,
+      "_multisigKey" | "_name" | "_image" | "_currentStep"
+    >(this, {
+      multisigKey: false,
+      name: false,
+      image: false,
+      currentStep: false,
+      _multisigKey: observable,
+      _name: observable,
+      _image: observable,
+      _currentStep: observable,
+      clone: false,
+      equals: false,
+      setName: action,
+      setImage: action,
+      setCurrentStep: action,
+    });
+  }
+
+  public get multisigKey() {
+    return this._multisigKey;
   }
 
   public get name() {
@@ -38,23 +45,37 @@ export class OnboardingPayload implements Draftable {
     this._name = name;
   }
 
-  public get multisigKey() {
-    return this._multisigKey;
+  public get image() {
+    return this._image;
+  }
+
+  public setImage(image: string) {
+    this._image = image;
+  }
+
+  public get currentStep() {
+    return this._currentStep;
+  }
+
+  public setCurrentStep(step: number) {
+    this._currentStep = step;
   }
 
   public clone() {
-    const clone = new OnboardingPayload(this._multisigKey.chainId);
-    clone._multisigKey = this._multisigKey.clone();
-    clone._name = this._name;
-    clone._image = this._image;
+    const clone = new OnboardingPayload(this.multisigKey.chainId);
+    clone._multisigKey = this.multisigKey.clone();
+    clone._name = this.name;
+    clone._image = this.image;
+    clone._currentStep = this.currentStep;
     return clone as this;
   }
 
   public equals(other: OnboardingPayload) {
     return (
-      this._multisigKey.equals(other._multisigKey) &&
-      this._name === other._name &&
-      this._image === other._image
+      this.multisigKey.equals(other.multisigKey) &&
+      this.name === other.name &&
+      this.image === other.image &&
+      this.currentStep === other.currentStep
     );
   }
 }

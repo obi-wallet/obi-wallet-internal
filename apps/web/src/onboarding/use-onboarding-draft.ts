@@ -3,10 +3,8 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { OnboardingPayload } from "@/onboarding/onboarding-payload";
 import { useEffect } from "react";
 
-const draftId = "onboarding";
-
-export function useOnboardingDraft() {
-  useCurrentWallet({ redirectTo: "/r/", redirectIfFound: true });
+export function useOnboardingDraft({ draftId }: { draftId: string }) {
+  useCurrentWallet({ redirectTo: "/", redirectIfFound: true });
   const { chainStore, draftsStore } = useStore();
   const draft = draftsStore.get<OnboardingPayload>({ id: draftId });
 
@@ -17,7 +15,7 @@ export function useOnboardingDraft() {
         original: new OnboardingPayload(chainStore.currentChain),
       });
     }
-  }, [chainStore.currentChain, draft, draftsStore]);
+  }, [chainStore.currentChain, draft, draftId, draftsStore]);
 
   return draft;
 }
