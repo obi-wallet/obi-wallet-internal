@@ -19,3 +19,4 @@ export * from "./chart";
 export * from "./dropdown";
 export * from "./divider";
 export * from "./tabs";
+export * from "./modals";
