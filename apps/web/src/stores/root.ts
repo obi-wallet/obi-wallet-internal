@@ -7,6 +7,7 @@ import {
 import { Secp256k1KeyPair } from "@obi-wallet/sdk";
 import { action, makeObservable } from "mobx";
 
+import { UserDataStore } from ".";
 import { AppsStore } from "./apps";
 import { ChainStore } from "./chain";
 import { ConfigStore } from "./config";
@@ -46,6 +47,7 @@ export class RootStore {
   public readonly sdkRootStore: SdkRootStore;
   public readonly unityStore: UnityStore;
   public readonly zauthStore: ZauthStore;
+  public readonly userDataStore: UserDataStore;
 
   constructor({
     deviceLanguage,
@@ -63,6 +65,7 @@ export class RootStore {
     this.sdkRootStore = new SdkRootStore(KVStore);
     this.unityStore = new UnityStore();
     this.zauthStore = new ZauthStore();
+    this.userDataStore = new UserDataStore(new KVStore("user-data-store"));
 
     this.languageStore = new LanguageStore({
       deviceLanguage,

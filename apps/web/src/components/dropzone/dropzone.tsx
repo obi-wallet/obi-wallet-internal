@@ -3,10 +3,19 @@ import { useDropzone } from "react-dropzone";
 
 import "react-dropzone/examples/theme.css";
 
-type DropzoneProps = { placeholder: string } & ComponentPropsWithoutRef<"div">;
+export interface DropzoneProps
+  extends Omit<ComponentPropsWithoutRef<"div">, "onChange"> {
+  placeholder: string;
+  onChange(files: File[]): void;
+}
 
-export function Dropzone({ placeholder }: DropzoneProps) {
-  const { getRootProps, getInputProps } = useDropzone();
+export function Dropzone(props: DropzoneProps) {
+  const { placeholder } = props;
+  const { getRootProps, getInputProps } = useDropzone({
+    onDropAccepted: (files) => {
+      props.onChange(files);
+    },
+  });
 
   return (
     <div

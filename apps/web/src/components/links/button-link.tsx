@@ -37,6 +37,7 @@ export const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(
       leftIcon: LeftIcon,
       rightIcon: RightIcon,
       classNames,
+
       ...rest
     },
     ref,

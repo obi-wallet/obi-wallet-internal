@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Dexie, { Table } from "dexie";
-// import * as R from "ramda";
+import * as R from "ramda";
 
 import { KVStore as LegacyKvStore } from "./async-storage";
 import { AbstractKVStore } from "../abstract";
@@ -16,8 +16,6 @@ interface EncryptedEntry {
 }
 
 type Entry = LegacyEntry | EncryptedEntry;
-
-const values: Record<string, unknown> = {};
 
 class KVDexie extends Dexie {
   public entries!: Table<Entry>;
@@ -40,35 +38,39 @@ export class KVStore implements AbstractKVStore {
   }
 
   public async get<T = unknown>(key: string): Promise<T | undefined> {
-    return values[key] as T | undefined;
-    // const entry = await this.db.entries.get(key);
-    // if (!entry) {
-    //   try {
-    //     const legacyData = await this.legacy.get<T>(key);
-    //     if (legacyData) {
-    //       await this.set(key, legacyData);
-    //       await this.legacy.set(key, null);
-    //       return legacyData;
-    //     }
-    //   } catch (_e) {
-    //     // Ignore errors
-    //   }
-    //   return undefined;
-    // }
+    const entry = await this.db.entries.get(key);
+    if (!entry) {
+      try {
+        const legacyData = await this.legacy.get<T>(key);
+        if (legacyData) {
+          await this.set(key, legacyData);
+          await this.legacy.set(key, null);
+          return legacyData;
+        }
+      } catch (_e) {
+        // Ignore errors
+      }
+      return undefined;
+    }
 
-    // if (R.has("encrypted", entry)) {
-    //   return JSON.parse(await decrypt(entry.encrypted));
-    // }
+    if (R.has("encrypted", entry)) {
+      return JSON.parse(await decrypt(entry.encrypted));
+    }
 
-    // return JSON.parse(entry.value);
+    return JSON.parse(entry.value);
   }
 
   public async set<T = unknown>(key: string, data: T | null) {
     // Passing `null` or `undefined` means we want to delete the existing data item.
     if (data === null || data === undefined) {
-      delete values[key];
+      await this.db.entries.delete(key);
+      return;
     } else {
-      values[key] = data;
+      const encrypted = await encrypt(JSON.stringify(data));
+      await this.db.entries.put({
+        key,
+        encrypted,
+      });
     }
   }
 
@@ -91,46 +93,46 @@ class EncryptionKeyDexie extends Dexie {
   }
 }
 
-// async function getEncryptionKey() {
-//   const db = new EncryptionKeyDexie();
-//   const entry = await db.entries.get("key");
-//   if (entry) return entry.value;
+async function getEncryptionKey() {
+  const db = new EncryptionKeyDexie();
+  const entry = await db.entries.get("key");
+  if (entry) return entry.value;
 
-//   const key = await window.crypto.subtle.generateKey(
-//     {
-//       name: "AES-GCM",
-//       length: 256,
-//     },
-//     false,
-//     ["encrypt", "decrypt"],
-//   );
-//   await db.entries.put({
-//     key: "key",
-//     value: key,
-//   });
-//   return key;
-// }
+  const key = await window.crypto.subtle.generateKey(
+    {
+      name: "AES-GCM",
+      length: 256,
+    },
+    false,
+    ["encrypt", "decrypt"],
+  );
+  await db.entries.put({
+    key: "key",
+    value: key,
+  });
+  return key;
+}
 
-// async function encrypt(data: string) {
-//   const enc = new TextEncoder();
-//   const encoded = enc.encode(data);
-//   const iv = window.crypto.getRandomValues(new Uint8Array(12));
-//   const encrypted = await window.crypto.subtle.encrypt(
-//     { name: "AES-GCM", iv: iv },
-//     await getEncryptionKey(),
-//     encoded,
-//   );
-//   return new Uint8Array([...iv, ...new Uint8Array(encrypted)]);
-// }
+async function encrypt(data: string) {
+  const enc = new TextEncoder();
+  const encoded = enc.encode(data);
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+  const encrypted = await window.crypto.subtle.encrypt(
+    { name: "AES-GCM", iv: iv },
+    await getEncryptionKey(),
+    encoded,
+  );
+  return new Uint8Array([...iv, ...new Uint8Array(encrypted)]);
+}
 
-// async function decrypt(data: Uint8Array) {
-//   const iv = data.slice(0, 12);
-//   const encrypted = data.slice(12);
-//   const decrypted = await window.crypto.subtle.decrypt(
-//     { name: "AES-GCM", iv: iv },
-//     await getEncryptionKey(),
-//     encrypted,
-//   );
-//   const dec = new TextDecoder();
-//   return dec.decode(decrypted);
-// }
+async function decrypt(data: Uint8Array) {
+  const iv = data.slice(0, 12);
+  const encrypted = data.slice(12);
+  const decrypted = await window.crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: iv },
+    await getEncryptionKey(),
+    encrypted,
+  );
+  const dec = new TextDecoder();
+  return dec.decode(decrypted);
+}
