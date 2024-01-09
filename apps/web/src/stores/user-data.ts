@@ -17,12 +17,22 @@ export class UserDataStore {
     this.userName = null;
     this.userAvatar = null;
 
-    makeObservable(this, {
+    makeObservable<
+      UserDataStore,
+      "userName" | "userAvatar" | "kvStore" | "init" | "save"
+    >(this, {
+      userName: true,
+      userAvatar: true,
+      kvStore: true,
+      init: true,
+      save: true,
+      getFromKVStore: true,
       userData: computed,
       setUserData: action,
     });
-    this.init();
+    void this.init();
   }
+
   public get userData(): UserData {
     return {
       userName: this.userName ?? "",
@@ -42,8 +52,9 @@ export class UserDataStore {
   public setUserData(userData: UserData) {
     this.userName = userData.userName;
     this.userAvatar = userData.userAvatar;
-    this.save();
+    void this.save();
   }
+
   protected async save() {
     const userData = {
       userName: this.userName,
@@ -51,6 +62,7 @@ export class UserDataStore {
     };
     await this.kvStore.set("userData", userData);
   }
+
   public async getFromKVStore() {
     return await this.kvStore.get<UserData | undefined>("userData");
   }
