@@ -4,6 +4,7 @@ import { useStore } from "@/contexts";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
+import invariant from "tiny-invariant";
 
 const Step1 = observer(function Step1() {
   const [name, setName] = useState<string>("");
@@ -38,13 +39,20 @@ const Step1 = observer(function Step1() {
       <Dropzone
         className="mt-8"
         placeholder="Upload Picture"
-        onChange={(file) => {
+        onChange={(files) => {
           const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64String = reader.result;
-            setImage(base64String as string);
-          };
-          reader.readAsDataURL(file[0] as unknown as Blob);
+          reader.addEventListener("load", () => {
+            invariant(
+              typeof reader.result === "string",
+              "Expected reader result to be base64 string",
+            );
+            setImage(reader.result);
+          });
+
+          const file = files[0];
+          if (file) {
+            reader.readAsDataURL(file);
+          }
         }}
       />
 
