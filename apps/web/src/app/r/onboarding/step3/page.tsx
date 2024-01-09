@@ -12,7 +12,7 @@ export default observer(function Step3() {
 
   return (
     <section className="flex flex-col items-center space-y-7">
-      <Stepper currentStep={3} />
+      <Stepper currentStep={3} totalSteps={5} />
       <Text fontWeight="bold" size="3xl">
         Create Your First Key
       </Text>

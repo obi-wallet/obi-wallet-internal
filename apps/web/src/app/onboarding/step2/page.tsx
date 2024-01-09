@@ -6,7 +6,7 @@ import Image from "next/image";
 export default function Step2() {
   return (
     <section className="flex flex-col items-center space-y-7">
-      <Stepper currentStep={2} />
+      <Stepper currentStep={2} totalSteps={5} />
       <Text fontWeight="bold" size="3xl">
         Secure Your Account
       </Text>

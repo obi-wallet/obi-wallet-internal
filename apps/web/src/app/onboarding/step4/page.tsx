@@ -48,7 +48,7 @@ const keyOptions = [
 export default function Step3() {
   return (
     <section className="flex flex-col items-center space-y-7">
-      <Stepper currentStep={4} />
+      <Stepper currentStep={4} totalSteps={5} />
       <Text fontWeight="bold" size="3xl">
         Add More Keys?
       </Text>

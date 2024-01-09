@@ -1,17 +1,17 @@
 import { cn } from "@/lib/utils";
 import { ComponentPropsWithoutRef } from "react";
 
-type BoxProps = {
-  totalSteps?: number;
-  currentStep?: number;
-} & ComponentPropsWithoutRef<"div">;
+export interface StepperProps extends ComponentPropsWithoutRef<"div"> {
+  totalSteps: number;
+  currentStep: number;
+}
 
 export function Stepper({
-  totalSteps = 5,
-  currentStep = 1,
+  totalSteps,
+  currentStep,
   className,
   ...rest
-}: BoxProps) {
+}: StepperProps) {
   return (
     <div
       className={cn("flex flex-row justify-center space-x-1", className)}

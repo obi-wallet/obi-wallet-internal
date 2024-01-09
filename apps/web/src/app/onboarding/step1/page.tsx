@@ -14,7 +14,7 @@ const Step1 = observer(function Step1() {
 
   return (
     <section className="flex flex-col items-center space-y-7">
-      <Stepper />
+      <Stepper currentStep={1} totalSteps={5} />
       <Text fontWeight="bold" size="3xl">
         Name Your Account
       </Text>

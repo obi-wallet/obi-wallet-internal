@@ -47,7 +47,7 @@ export default observer(function Passkey() {
 
   return (
     <section className="flex flex-col items-center space-y-7">
-      <Stepper currentStep={currentStep} />
+      <Stepper currentStep={currentStep} totalSteps={5} />
       <Text fontWeight="bold" size="3xl">
         Create a Passkey
       </Text>

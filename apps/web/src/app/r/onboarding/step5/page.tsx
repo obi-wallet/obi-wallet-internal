@@ -12,7 +12,7 @@ export default observer(function Step5() {
 
   return (
     <section className="flex flex-col items-center space-y-7">
-      <Stepper currentStep={5} />
+      <Stepper currentStep={5} totalSteps={5} />
       <Text fontWeight="bold" size="3xl">
         Congratulations 🎉
       </Text>
