@@ -22,9 +22,23 @@ export const Onboarding = observer(function Onboarding({
 
   if (!draft) return null;
 
-  const currentStep = steps[draft.value.currentStep];
+  // Minus 1 because currentStep is 1-based, but the array is 0-based.
+  const currentStep = steps[draft.value.currentStep - 1];
 
   if (!currentStep) return null;
+
+  const back =
+    draft.value.currentStep > 1
+      ? () => {
+          draft.value.setCurrentStep(draft.value.currentStep - 1);
+        }
+      : undefined;
+  const next =
+    draft.value.currentStep < steps.length
+      ? () => {
+          draft.value.setCurrentStep(draft.value.currentStep + 1);
+        }
+      : undefined;
 
   return (
     <section className="flex flex-col items-center space-y-7">
@@ -32,7 +46,7 @@ export const Onboarding = observer(function Onboarding({
         currentStep={draft.value.currentStep}
         totalSteps={steps.length}
       />
-      <Step draft={draft} step={currentStep} />
+      <Step draft={draft} step={currentStep} back={back} next={next} />
     </section>
   );
 });
