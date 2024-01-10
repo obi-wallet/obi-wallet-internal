@@ -37,7 +37,6 @@ export const UserDataStep = observer(function UserDataStep({
       />
 
       <Dropzone
-        className="mt-8"
         placeholder="Upload Picture"
         onChange={(files) => {
           const reader = new FileReader();
@@ -54,11 +53,12 @@ export const UserDataStep = observer(function UserDataStep({
             reader.readAsDataURL(file);
           }
         }}
+        accept={{
+          "image/png": [".png", ".jpg"],
+        }}
+        maxFiles={1}
+        multiple={false}
       />
-
-      {draft.value.image ? (
-        <img src={draft.value.image} className="w-96 rounded-full" />
-      ) : null}
 
       <OnboardingButtons
         back={back}
