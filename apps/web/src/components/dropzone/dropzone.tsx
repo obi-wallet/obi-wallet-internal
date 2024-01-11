@@ -1,5 +1,5 @@
 "use client";
-import { ComponentPropsWithoutRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDropzone, DropzoneOptions } from "react-dropzone";
 
 import "react-dropzone/examples/theme.css";
