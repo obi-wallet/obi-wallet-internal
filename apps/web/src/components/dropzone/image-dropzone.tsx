@@ -1,7 +1,8 @@
 "use client";
+import { useObjectUrl } from "@reactuses/core";
+import Image from "next/image";
 import { ComponentPropsWithoutRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { useObjectUrl } from "@reactuses/core";
 import "react-dropzone/examples/theme.css";
 import invariant from "tiny-invariant";
 
@@ -47,7 +48,7 @@ export function ImageDropzone({ placeholder, onChange }: ImageDropzoneProps) {
     >
       <input {...getInputProps()} />
       {fileObjectUrl ? (
-        <img src={fileObjectUrl} className="w-96 rounded-full" />
+        <Image src={fileObjectUrl} className="w-96 rounded-full" alt="image" />
       ) : (
         <p>{placeholder}</p>
       )}

@@ -1,12 +1,11 @@
 "use client";
 
-import { Dropzone, ImageDropzone, Input, Text } from "@/components";
+import { ImageDropzone, Input, Text } from "@/components";
 import { UserDataOnboardingStep } from "@/onboarding";
 import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
 import { StepProps } from "@/onboarding/step";
 import { observer } from "mobx-react-lite";
 import { ChangeEvent } from "react";
-import invariant from "tiny-invariant";
 
 export const UserDataStep = observer(function UserDataStep({
   draft,
