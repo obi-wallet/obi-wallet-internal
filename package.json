@@ -12,6 +12,7 @@
     "format": "prettier --write . && yarn lint -- --fix",
     "lint": "turbo lint",
     "prettier": "prettier --check .",
+    "setup": "node scripts/setup.mjs",
     "tsc": "turbo tsc"
   },
   "devDependencies": {
