@@ -1,6 +1,6 @@
 "use client";
 
-import { Dropzone, Input, Text } from "@/components";
+import { Dropzone, ImageDropzone, Input, Text } from "@/components";
 import { UserDataOnboardingStep } from "@/onboarding";
 import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
 import { StepProps } from "@/onboarding/step";
@@ -36,28 +36,12 @@ export const UserDataStep = observer(function UserDataStep({
         placeholder="Name"
       />
 
-      <Dropzone
+      <ImageDropzone
         placeholder="Upload Picture"
-        onChange={(files) => {
-          const reader = new FileReader();
-          reader.addEventListener("load", () => {
-            invariant(
-              typeof reader.result === "string",
-              "Expected reader result to be base64 string",
-            );
-            draft.value.setImage(reader.result);
-          });
-
-          const file = files[0];
-          if (file) {
-            reader.readAsDataURL(file);
-          }
+        onChange={(_, fileBody) => {
+          console.log({ fileBody });
+          draft.value.setImage(fileBody);
         }}
-        accept={{
-          "image/png": [".png", ".jpg"],
-        }}
-        maxFiles={1}
-        multiple={false}
       />
 
       <OnboardingButtons
