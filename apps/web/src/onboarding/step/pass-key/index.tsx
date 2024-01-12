@@ -2,7 +2,7 @@
 
 import { Button, Text } from "@/components";
 import { StepProps } from "@/onboarding/step";
-import { getOrCreatePasskey, Sdk } from "@obi-wallet/sdk";
+import { getOrCreatePasskey, KeyType, Sdk } from "@obi-wallet/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import invariant from "tiny-invariant";
@@ -19,20 +19,23 @@ export const PasskeyStep = observer(function PasskeyStep({
   }: {
     userSaysDeviceIsNew: boolean;
   }) {
-    // TODO: not sure if we even need that differentation
-    const _userSaysDeviceIsNew = userSaysDeviceIsNew;
-
     invariant(draft, "Draft must exist");
 
     const result = await getOrCreatePasskey();
     if (!result.success) return result;
 
     const { keyPair } = result;
-    await draft.value.multisigKey.setDeviceKey(keyPair);
+    await draft.value.setPrimaryKey({
+      key: {
+        type: KeyType.Device,
+        payload: keyPair,
+      },
+      userSaysDeviceIsNew,
+    });
     await queryClient.prefetchQuery(
-      Sdk.chainId(
-        draft.value.multisigKey.chainId,
-      ).transactions.prepareKeyPairQuery(keyPair),
+      Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
+        keyPair,
+      ),
     );
     if (next) next();
   }
