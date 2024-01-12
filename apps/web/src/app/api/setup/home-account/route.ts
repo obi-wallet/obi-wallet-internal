@@ -1,5 +1,7 @@
 import { getFeeLender } from "@/lib/fee-lender";
-import { ChainIdSchema } from "@obi-wallet/sdk";
+import { ChainIdSchema, Messages, SecretJsClient } from "@obi-wallet/sdk";
+import { TxResponse } from "secretjs";
+import invariant from "tiny-invariant";
 import { z } from "zod";
 
 const schema = z.object({
@@ -11,14 +13,50 @@ export async function POST(request: Request) {
   if (!result.success) {
     return new Response("Invalid request", {
       status: 400,
-      statusText: "Bad Request",
     });
   }
 
   const { chainId } = result.data;
   const { wallet, signer, lenderIndex } = getFeeLender(chainId);
 
-  console.log(wallet, signer, lenderIndex);
+  const client = new SecretJsClient(chainId);
+  const messagesSdk = Messages.chainId(chainId);
+  const message = messagesSdk.getCreateWalletMessage(
+    wallet.address,
+    Buffer.from(wallet.publicKey).toString("base64"),
+    wallet.address,
+  );
+  const signedTransaction = await client.createAndSignTransaction({
+    signer,
+    messages: [message],
+  });
+  const broadcastTransactionResult =
+    await client.broadcastSignedTransaction(signedTransaction);
 
-  return Response.json({});
+  if (!broadcastTransactionResult.success) {
+    return new Response("TX failed", {
+      status: 500,
+    });
+  }
+
+  try {
+    const txResult = broadcastTransactionResult.rawResult as TxResponse;
+    invariant(txResult.arrayLog, "No log found");
+    const matchingLogs = txResult.arrayLog.filter((log) => {
+      return log.type === "instantiate" && log.key === "contract_address";
+    });
+    const homeAccountAddress = matchingLogs?.[1]?.value;
+    invariant(homeAccountAddress, "Contract address not found");
+    return Response.json({
+      ownerAddress: wallet.address,
+      homeAccountAddress,
+      txResult,
+      ownerIndex: lenderIndex,
+    });
+  } catch (e) {
+    console.error(e);
+    return new Response("Parse error", {
+      status: 500,
+    });
+  }
 }
