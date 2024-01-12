@@ -28,11 +28,13 @@ const Provider = observer<ProviderProps>(function Provider({
       buster={buster}
     >
       <EnvContext.Provider
-        // TODO: Add env variables
         value={{
-          PHONE_NUMBER_KEY_SECRET: "TODO",
-          PHONE_NUMBER_TWILIO_BASIC_AUTH_USER: "TODO",
-          PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD: "TODO",
+          PHONE_NUMBER_KEY_SECRET:
+            process.env.NEXT_PUBLIC_PHONE_NUMBER_KEY_SECRET!,
+          PHONE_NUMBER_TWILIO_BASIC_AUTH_USER:
+            process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_USER!,
+          PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD:
+            process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD!,
         }}
       >
         <StoreContext.Provider value={rootStore}>
