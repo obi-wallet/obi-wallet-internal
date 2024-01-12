@@ -8,7 +8,7 @@ import {
   Secp256k1KeyPair,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk";
-import { action, makeObservable, observable } from "mobx";
+import { action, observable } from "mobx";
 import { z } from "zod";
 
 const UnclaimedAccountsKvStorePrefix = "unclaimed-accounts";
@@ -22,10 +22,10 @@ const UnclaimedAccount = z.object({
 type UnclaimedAccount = z.TypeOf<typeof UnclaimedAccount>;
 
 export class OnboardingPayload implements Draftable {
-  protected _multisigKey: MultisigKey;
-  protected _name: string;
-  protected _image: string;
-  protected _currentStep: number;
+  @observable protected accessor _multisigKey: MultisigKey;
+  @observable protected accessor _name: string;
+  @observable protected accessor _image: string;
+  @observable protected accessor _currentStep: number;
   protected _unclaimedAccountsKVStore: KVStore;
 
   constructor(chainId: ChainId) {
@@ -36,40 +36,6 @@ export class OnboardingPayload implements Draftable {
     this._unclaimedAccountsKVStore = new KVStore(
       UnclaimedAccountsKvStorePrefix,
     );
-    makeObservable<
-      OnboardingPayload,
-      | "_multisigKey"
-      | "_name"
-      | "_image"
-      | "_currentStep"
-      | "_unclaimedAccountsKVStore"
-      | "createMagicAccountIfDoesNotExist"
-      | "createMagicAccount"
-      | "lookupProxyWallets"
-      | "getUnclaimedAccount"
-      | "setUnclaimedAccount"
-    >(this, {
-      getUnclaimedAccount: false,
-      setUnclaimedAccount: action,
-      chainId: true,
-      setPrimaryKey: action,
-      createMagicAccountIfDoesNotExist: action,
-      createMagicAccount: action,
-      lookupProxyWallets: action,
-      name: false,
-      image: false,
-      currentStep: false,
-      _multisigKey: observable,
-      _name: observable,
-      _image: observable,
-      _currentStep: observable,
-      _unclaimedAccountsKVStore: false,
-      clone: false,
-      equals: false,
-      setName: action,
-      setImage: action,
-      setCurrentStep: action,
-    });
   }
 
   public get chainId() {
@@ -80,6 +46,7 @@ export class OnboardingPayload implements Draftable {
     return this._name;
   }
 
+  @action
   public setName(name: string) {
     this._name = name;
   }
@@ -88,6 +55,7 @@ export class OnboardingPayload implements Draftable {
     return this._image;
   }
 
+  @action
   public setImage(image: string) {
     this._image = image;
   }
@@ -96,6 +64,7 @@ export class OnboardingPayload implements Draftable {
     return this._currentStep;
   }
 
+  @action
   public setCurrentStep(step: number) {
     this._currentStep = step;
   }
