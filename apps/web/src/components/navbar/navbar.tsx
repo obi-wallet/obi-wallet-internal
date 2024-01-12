@@ -43,7 +43,7 @@ export function Navbar() {
     <nav className="flex flex-col bg-slate-900 px-7 pt-16">
       <Account />
       <Button
-        className="my-7 text-3xl font-bold"
+        className="my-7 text-xl font-bold"
         block
         onClick={() => router.push("/dashboard/transaction")}
       >

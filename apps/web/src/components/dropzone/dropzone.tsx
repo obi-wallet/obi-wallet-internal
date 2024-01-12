@@ -1,6 +1,6 @@
+"use client";
 import { ComponentPropsWithoutRef } from "react";
 import { useDropzone } from "react-dropzone";
-
 import "react-dropzone/examples/theme.css";
 
 export interface DropzoneProps
@@ -20,13 +20,7 @@ export function Dropzone(props: DropzoneProps) {
   return (
     <div
       {...getRootProps({ className: "dropzone" })}
-      style={{
-        borderRadius: "4px",
-        backgroundColor: "transparent",
-        width: "100%",
-        borderColor: "#2A2B32",
-        flex: 0,
-      }}
+      className="flex w-full cursor-pointer justify-center rounded border border-dashed border-gray-500 bg-transparent py-5 text-gray-300"
     >
       <input {...getInputProps()} />
       <p>{placeholder}</p>

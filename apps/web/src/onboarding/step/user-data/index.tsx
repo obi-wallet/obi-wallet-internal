@@ -1,12 +1,11 @@
 "use client";
 
-import { Dropzone, Input, Text } from "@/components";
+import { ImageDropzone, Input, Text } from "@/components";
 import { UserDataOnboardingStep } from "@/onboarding";
 import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
 import { StepProps } from "@/onboarding/step";
 import { observer } from "mobx-react-lite";
 import { ChangeEvent } from "react";
-import invariant from "tiny-invariant";
 
 export const UserDataStep = observer(function UserDataStep({
   draft,
@@ -36,29 +35,13 @@ export const UserDataStep = observer(function UserDataStep({
         placeholder="Name"
       />
 
-      <Dropzone
-        className="mt-8"
+      <ImageDropzone
         placeholder="Upload Picture"
-        onChange={(files) => {
-          const reader = new FileReader();
-          reader.addEventListener("load", () => {
-            invariant(
-              typeof reader.result === "string",
-              "Expected reader result to be base64 string",
-            );
-            draft.value.setImage(reader.result);
-          });
-
-          const file = files[0];
-          if (file) {
-            reader.readAsDataURL(file);
-          }
+        onChange={(_, fileBody) => {
+          console.log({ fileBody });
+          draft.value.setImage(fileBody);
         }}
       />
-
-      {draft.value.image ? (
-        <img src={draft.value.image} className="w-96 rounded-full" />
-      ) : null}
 
       <OnboardingButtons
         back={back}

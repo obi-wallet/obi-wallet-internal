@@ -34,7 +34,7 @@ const keyOptions = [
     id: "key-sms",
     icon: <FaLock className="h-5 w-5" color="white" />,
     title: "Sms Key",
-    checked: true,
+    checked: false,
   },
   {
     id: "key-telegram",

@@ -13,6 +13,7 @@
     "@obi-wallet/config": "*",
     "@obi-wallet/headless-ui": "*",
     "@obi-wallet/sdk": "*",
+    "@reactuses/core": "^4.0.13",
     "@tanstack/react-query": "^4.29.25",
     "apexcharts": "^3.45.1",
     "clsx": "^2.0.0",

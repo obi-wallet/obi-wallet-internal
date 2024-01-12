@@ -53,7 +53,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           "disabled:shadow-inner",
           [block && "w-full justify-center"],
           //#region  //*=========== Size ===========
-          [size === "base" && ["px-3 py-3.5", "text-sm md:text-base"]],
+          [size === "base" && ["px-3 py-3.5", "text-sm "]],
           //#endregion  //*======== Size ===========
           //#region  //*=========== Variants ===========
           [
