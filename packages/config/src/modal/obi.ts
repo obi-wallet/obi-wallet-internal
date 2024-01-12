@@ -6,8 +6,9 @@ import { ComingSoonKeyType } from "../key";
 
 export const obiModalConfig: Config = {
   chains: {
-    enabled: [SecretJsChainIds.PULSAR_TESTNET],
-    default: SecretJsChainIds.PULSAR_TESTNET,
+    // TODO: pulsar-3 doesn't seem to work, maybe addresses out-of-date
+    enabled: [SecretJsChainIds.MAINNET],
+    default: SecretJsChainIds.MAINNET,
   },
   languages: {
     enabled: ["en"],

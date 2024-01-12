@@ -6,21 +6,23 @@ export function getFeeLender(
   chainId: SecretJsChainId,
   knownLenderIndex?: number,
 ) {
-  // TODO: add env vars for fee lenders
   invariant(chainId, "Unknown chain ID");
   switch (chainId) {
     case "pulsar-3": {
-      const feeLenders = JSON.parse(process.env.FEE_LENDERS_PULSAR_3 ?? "[]");
-      const feeLender =
-        feeLenders[Math.floor(Math.random() * feeLenders.length)];
+      invariant(process.env.FEE_LENDERS_PULSAR_3, "No fee lenders");
+      const feeLenders = JSON.parse(process.env.FEE_LENDERS_PULSAR_3);
+      const lenderIndex =
+        knownLenderIndex ?? Math.floor(Math.random() * feeLenders.length);
+      const feeLender = feeLenders[lenderIndex];
       const wallet = new Wallet(feeLender);
       const signer = new Secp256k1PrivateKeySigner(
         Buffer.from(wallet.privateKey).toString("base64"),
       );
-      return { wallet, signer };
+      return { wallet, signer, lenderIndex };
     }
     case "secret-4": {
-      const feeLender = process.env.FEE_LENDER_SECRET_4 ?? "";
+      invariant(process.env.FEE_LENDER_SECRET_4, "No fee lenders");
+      const feeLender = process.env.FEE_LENDER_SECRET_4;
       console.log("knownLenderIndex is " + knownLenderIndex);
       const lenderIndex = knownLenderIndex ?? Math.floor(Math.random() * 1000);
       const wallet = new Wallet(feeLender, {

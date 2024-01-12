@@ -1,4 +1,5 @@
 import { Draftable } from "@/stores/drafts/draft";
+import { KVStore } from "@obi-wallet/headless-ui";
 import {
   ChainId,
   KeyType,
@@ -8,28 +9,48 @@ import {
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk";
 import { action, makeObservable, observable } from "mobx";
+import { z } from "zod";
+
+const UnclaimedAccountsKvStorePrefix = "unclaimed-accounts";
+
+const UnclaimedAccount = z.object({
+  homeAccountAddress: z.string(),
+  ownerAddress: z.string(),
+  ownerIndex: z.number(),
+});
+
+type UnclaimedAccount = z.TypeOf<typeof UnclaimedAccount>;
 
 export class OnboardingPayload implements Draftable {
   protected _multisigKey: MultisigKey;
   protected _name: string;
   protected _image: string;
   protected _currentStep: number;
+  protected _unclaimedAccountsKVStore: KVStore;
 
   constructor(chainId: ChainId) {
     this._multisigKey = ObservableMultisigKey.create(undefined, chainId);
     this._name = "";
     this._image = "";
     this._currentStep = 1;
+    this._unclaimedAccountsKVStore = new KVStore(
+      UnclaimedAccountsKvStorePrefix,
+    );
     makeObservable<
       OnboardingPayload,
       | "_multisigKey"
       | "_name"
       | "_image"
       | "_currentStep"
+      | "_unclaimedAccountsKVStore"
       | "createMagicAccountIfDoesNotExist"
       | "createMagicAccount"
       | "lookupProxyWallets"
+      | "getUnclaimedAccount"
+      | "setUnclaimedAccount"
     >(this, {
+      getUnclaimedAccount: false,
+      setUnclaimedAccount: action,
       chainId: true,
       setPrimaryKey: action,
       createMagicAccountIfDoesNotExist: action,
@@ -42,6 +63,7 @@ export class OnboardingPayload implements Draftable {
       _name: observable,
       _image: observable,
       _currentStep: observable,
+      _unclaimedAccountsKVStore: false,
       clone: false,
       equals: false,
       setName: action,
@@ -159,7 +181,11 @@ export class OnboardingPayload implements Draftable {
     }
   }
 
-  protected async createMagicAccount() {
+  protected async createMagicAccount(): Promise<UnclaimedAccount> {
+    const account = await this.getUnclaimedAccount();
+
+    if (account) return account;
+
     const response = await fetch("/api/setup/home-account", {
       method: "POST",
       body: JSON.stringify({
@@ -171,13 +197,13 @@ export class OnboardingPayload implements Draftable {
       throw new Error(`Failed to create magic account: ${response.status}`);
     }
 
-    // TODO: persist that locally, so we can reuse
-    const body = (await response.json()) as {
-      ownerIndex: number;
-      homeAccountAddress: string;
-      // txResult: TxResponse;
-    };
-    console.log(body);
+    const result = UnclaimedAccount.safeParse(await response.json());
+    if (!result.success) {
+      throw new Error(`Failed to parse magic account: ${result.error}`);
+    }
+
+    await this.setUnclaimedAccount(result.data);
+    return result.data;
   }
 
   protected async lookupProxyWallets(
@@ -200,7 +226,18 @@ export class OnboardingPayload implements Draftable {
 
     // TODO:
     const body = await response.json();
+
     console.log("Wallets found!", body);
     return [];
+  }
+
+  protected async getUnclaimedAccount(): Promise<UnclaimedAccount | undefined> {
+    return await this._unclaimedAccountsKVStore.get<UnclaimedAccount>(
+      this.chainId,
+    );
+  }
+
+  protected async setUnclaimedAccount(account: UnclaimedAccount) {
+    await this._unclaimedAccountsKVStore.set(this.chainId, account);
   }
 }
