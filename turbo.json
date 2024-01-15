@@ -1,6 +1,13 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
+  "globalDependencies": ["**/.env", "**/.env.*local"],
+  "globalEnv": [
+    "FEE_LENDERS_PULSAR_3",
+    "FEE_LENDER_SECRET_4",
+    "NEXT_PUBLIC_PHONE_NUMBER_KEY_SECRET",
+    "NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_USER",
+    "NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD"
+  ],
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
