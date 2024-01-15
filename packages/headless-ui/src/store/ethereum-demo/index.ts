@@ -6,14 +6,7 @@ import {
   SecretJsChains,
   SecretJsClient,
 } from "@obi-wallet/sdk";
-import {
-  action,
-  autorun,
-  makeObservable,
-  observable,
-  runInAction,
-  toJS,
-} from "mobx";
+import { action, autorun, observable, runInAction, toJS } from "mobx";
 import invariant from "tiny-invariant";
 
 import { AbstractKVStore } from "../../kv-store";
@@ -31,7 +24,7 @@ export class EthereumDemoStore {
   protected readonly kvStore: AbstractKVStore;
   protected readonly walletsStore: WalletsStore;
 
-  protected accounts: Accounts = {};
+  @observable protected accessor accounts: Accounts = {};
 
   public initPromise: Promise<void>;
 
@@ -44,32 +37,6 @@ export class EthereumDemoStore {
   }) {
     this.kvStore = kvStore;
     this.walletsStore = walletsStore;
-    makeObservable<
-      EthereumDemoStore,
-      | "init"
-      | "kvStore"
-      | "walletsStore"
-      | "accounts"
-      | "sdk"
-      | "client"
-      | "chain"
-      | "zAuthKey"
-      | "wallet"
-    >(this, {
-      sdk: false,
-      client: false,
-      chain: false,
-      zAuthKey: false,
-      wallet: false,
-      kvStore: false,
-      walletsStore: false,
-      accounts: observable,
-      initPromise: false,
-      init: false,
-      ethereumAccount: false,
-      getEthereumAccount: false,
-      setEthereumAccount: action,
-    });
     this.initPromise = this.init();
   }
 
@@ -101,6 +68,7 @@ export class EthereumDemoStore {
     return this.ethereumAccount;
   }
 
+  @action
   public setEthereumAccount(address: string, account: EthereumAccount) {
     this.accounts[address] = account;
   }

@@ -1,4 +1,4 @@
-import { action, computed, makeObservable, observable } from "mobx";
+import { action, computed, observable } from "mobx";
 import { nanoid } from "nanoid/non-secure";
 import * as R from "ramda";
 
@@ -7,31 +7,14 @@ import { Draftable } from "./drafts/draft";
 export type EntityId = string;
 
 export class Entities<T> implements Draftable {
-  protected _ids: EntityId[] = [];
-
-  protected _entities: Record<EntityId, T> = {};
-
-  constructor() {
-    makeObservable<Entities<T>, "_ids" | "_entities">(this, {
-      ids: false,
-      get: false,
-      clone: false,
-      equals: false,
-      serialize: false,
-      _ids: observable,
-      _entities: observable,
-      entities: computed,
-      add: action,
-      update: action,
-      removeBy: action,
-      remove: action,
-    });
-  }
+  @observable protected accessor _ids: EntityId[] = [];
+  @observable protected accessor _entities: Record<EntityId, T> = {};
 
   public get ids(): readonly EntityId[] {
     return this._ids;
   }
 
+  @computed
   public get entities(): readonly T[] {
     return this.ids.map((id) => this._entities[id]!);
   }
@@ -40,6 +23,7 @@ export class Entities<T> implements Draftable {
     return this._entities[id];
   }
 
+  @action
   public add({ entity, id }: { entity: T; id?: EntityId }) {
     const idToUse = id ?? Entities.generateId();
     this._ids.push(idToUse);
@@ -47,10 +31,12 @@ export class Entities<T> implements Draftable {
     return idToUse;
   }
 
+  @action
   public update({ entity, id }: { entity: T; id: EntityId }) {
     this._entities[id] = entity;
   }
 
+  @action
   public removeBy({ predicate }: { predicate: (entity: T) => boolean }) {
     const idsToRemove = this._ids.filter((id) =>
       predicate(this._entities[id]!),
@@ -60,6 +46,7 @@ export class Entities<T> implements Draftable {
     });
   }
 
+  @action
   public remove({ id }: { id: EntityId }) {
     this._ids = this._ids.filter((idToKeep) => idToKeep !== id);
     this._entities = R.omit([id], this._entities);
