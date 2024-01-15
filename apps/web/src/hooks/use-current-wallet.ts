@@ -14,6 +14,7 @@ export function useCurrentWallet({
   const router = useRouter();
   const currentWallet = walletsStore.currentWallet;
 
+  console.log({ walletsStore, currentWallet });
   useEffect(() => {
     // if no redirect needed, just return
     // if user data not yet there (fetch in progress, logged in or not) then don't do anything yet

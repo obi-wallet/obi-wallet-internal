@@ -1,0 +1,12 @@
+{
+  "name": "@mpc-sdk/mpc-bindings",
+  "description": "Webassembly bindings to drive multi-party computation protocols",
+  "version": "0.5.0",
+  "files": [
+    "mpc_bindings_bg.wasm",
+    "mpc_bindings.js",
+    "mpc_bindings.d.ts"
+  ],
+  "main": "mpc_bindings.js",
+  "types": "mpc_bindings.d.ts"
+}

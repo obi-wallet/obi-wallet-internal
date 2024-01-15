@@ -48,7 +48,13 @@ export function ImageDropzone({ placeholder, onChange }: ImageDropzoneProps) {
     >
       <input {...getInputProps()} />
       {fileObjectUrl ? (
-        <Image src={fileObjectUrl} className="w-96 rounded-full" alt="image" />
+        <Image
+          src={fileObjectUrl}
+          className="w-96 rounded-full"
+          alt="image"
+          width={384}
+          height={384}
+        />
       ) : (
         <p>{placeholder}</p>
       )}

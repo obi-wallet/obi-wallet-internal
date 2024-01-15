@@ -1824,6 +1824,7 @@ __metadata:
     "@repo/eslint-config": "npm:*"
     "@repo/typescript-config": "npm:*"
     "@tanstack/react-query": "npm:^4.29.25"
+    "@types/elliptic": "npm:^6"
     "@types/eslint": "npm:^8.44.9"
     "@types/node": "npm:^20.10.4"
     "@types/ramda": "npm:^0.29.3"
@@ -1833,6 +1834,7 @@ __metadata:
     autoprefixer: "npm:^10.4.16"
     clsx: "npm:^2.0.0"
     copy-to-clipboard: "npm:^3.3.3"
+    elliptic: "npm:^6.5.4"
     eslint: "npm:^8.55.0"
     mobx: "npm:^6.12.0"
     mobx-react-lite: "npm:^4.0.5"
@@ -2248,6 +2250,24 @@ __metadata:
   dependencies:
     "@babel/types": "npm:^7.20.7"
   checksum: e76cb4974c7740fd61311152dc497e7b05c1c46ba554aab875544ab0a7457f343cafcad34ba8fb2ff543ab0e012ef2d3fa0c13f1a4e9a4cd9c4c703c7a2a8d62
+  languageName: node
+  linkType: hard
+
+"@types/bn.js@npm:*":
+  version: 5.1.5
+  resolution: "@types/bn.js@npm:5.1.5"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: e9f375b43d8119ed82aed2090f83d4cda8afbb63ba13223afb02fa7550258ff90acd76d65cd7186838644048f085241cd98a3a512d8d187aa497c6039c746ac8
+  languageName: node
+  linkType: hard
+
+"@types/elliptic@npm:^6":
+  version: 6.4.18
+  resolution: "@types/elliptic@npm:6.4.18"
+  dependencies:
+    "@types/bn.js": "npm:*"
+  checksum: 0c438130b9a16b6ff566f47319dbac39979172ead7748cfbe8a782232506c2e64b03c8c3cfcc221f727ecc7036f5749623567cf66946b0478f217d5b5930c22b
   languageName: node
   linkType: hard
 
