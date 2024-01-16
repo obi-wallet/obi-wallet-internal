@@ -15,6 +15,7 @@ import { z } from "zod";
 
 const UnclaimedAccountsKvStorePrefix = "unclaimed-accounts";
 
+// TODO: here we probably also want to persist codeId
 const HomeAccount = z.object({
   homeAccountAddress: z.string(),
   ownerAddress: z.string(),
@@ -29,6 +30,22 @@ const UnclaimedAccount = HomeAccount.extend({
 });
 
 type UnclaimedAccount = z.TypeOf<typeof UnclaimedAccount>;
+
+const ProxyWallet = z.object({
+  proxyAddress: z.object({
+    address: z.string(),
+    codeId: z.number(),
+  }),
+  evmUserContractAddress: z.string(),
+  evmSigningAddress: z.string(),
+  owner: z.object({
+    threshold: z.string(),
+    // TODO: here we should probably be more specific regarding the structure of `keys`, review /add logic and make sure the schema usage is consistent here.
+    keys: z.array(z.unknown()),
+  }),
+});
+
+type ProxyWallet = z.TypeOf<typeof ProxyWallet>;
 
 export class OnboardingPayload implements Draftable {
   @observable protected accessor _multisigKey: MultisigKey;
@@ -138,6 +155,7 @@ export class OnboardingPayload implements Draftable {
     userSaysDeviceIsNew: boolean;
   }) {
     const proxyWallets = await this.lookupProxyWallets(publicKey);
+    console.log(proxyWallets.length);
     if (proxyWallets.length === 0) {
       if (userSaysDeviceIsNew) {
         // TODO:
@@ -146,15 +164,15 @@ export class OnboardingPayload implements Draftable {
         );
         this._magicAccountPromise = this.createMagicAccount();
       } else {
-        // TODO:
+        // TODO: ask for user confirmation to create a new
         console.log("WARN! user says device is not new but there aren't any");
       }
     } else {
       if (userSaysDeviceIsNew) {
-        // TODO:
+        // TODO: ask for user confirmation if they really want to create a new wallet instead of recovering
         console.log("WARN! user says device is new but there are already some");
       } else {
-        // TODO:
+        // TODO: if only a single wallet > recover that one. If multliple, ask user which one to recover
         console.log(
           "CHECK! user says device is not new and there are already some. Recover",
         );
@@ -245,11 +263,12 @@ export class OnboardingPayload implements Draftable {
       return [];
     }
 
-    // TODO:
-    const body = await response.json();
-
-    console.log("Wallets found!", body);
-    return [];
+    const schema = z.array(ProxyWallet);
+    const result = schema.safeParse(await response.json());
+    if (!result.success) {
+      throw new Error(`Failed to parse proxy wallets: ${result.error}`);
+    }
+    return result.data;
   }
 
   protected async getUnclaimedAccount(): Promise<UnclaimedAccount | undefined> {
