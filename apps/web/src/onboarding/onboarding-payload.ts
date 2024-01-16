@@ -74,6 +74,10 @@ export class OnboardingPayload implements Draftable {
     return this._multisigKey.chainId;
   }
 
+  public get multisigKey() {
+    return this._multisigKey;
+  }
+
   public get name() {
     return this._name;
   }
