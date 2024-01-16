@@ -10,6 +10,11 @@ import {
 } from "@obi-wallet/sdk";
 import { action, observable } from "mobx";
 import { z } from "zod";
+import { createSignersAndPresign, keygen } from "@/lib/mpc";
+import { Signer } from "@/mpc-ecdsa-wasm/mpc_bindings";
+
+import { Parameters as KeygenParam } from "@/types/mpc-ecdsa-wasm-types";
+import { TxResponse } from "secretjs";
 
 const UnclaimedAccountsKvStorePrefix = "unclaimed-accounts";
 
@@ -208,5 +213,82 @@ export class OnboardingPayload implements Draftable {
 
   protected async setUnclaimedAccount(account: UnclaimedAccount) {
     await this._unclaimedAccountsKVStore.set(this.chainId, account);
+  }
+
+  // assume parties=3 and threshold=1
+  public async distributeShares(
+    keygenParam: KeygenParam = { parties: 3, threshold: 1 },
+    contractCombo: number[] = [1, 3],
+    backupCombo: number[] = [2, 3],
+  ) {
+    try {
+      const account = await this.getUnclaimedAccount();
+      if (!account) {
+        throw new Error(`Account is not created`);
+      }
+
+      const shares = keygen(keygenParam);
+
+      const signersForContract: Signer[] = createSignersAndPresign(
+        shares,
+        contractCombo,
+      );
+      const contractSignersCompletedOfflineStage =
+        signersForContract[0]?.completedOfflineStage();
+
+      // user share that is used to sign transaction with contract share
+      const completedOfflineStageForContrtact =
+        signersForContract[1]?.completedOfflineStage();
+      const userShareForContract = {
+        k_i: completedOfflineStageForContrtact.sign_keys.k_i,
+        R: completedOfflineStageForContrtact.R,
+        sigma_i: completedOfflineStageForContrtact.sigma_i,
+        pubkey: completedOfflineStageForContrtact.local_key.y_sum_s,
+      };
+
+      const signersForBackup = createSignersAndPresign(shares, backupCombo);
+      const backupSignersCompletedOfflineStage =
+        signersForBackup[0]?.completedOfflineStage();
+
+      // user share that is used to sign transaction with backup share
+      const completedOfflineStageForBackup =
+        signersForBackup[1]?.completedOfflineStage();
+      const userShareForBackup = {
+        k_i: completedOfflineStageForBackup.sign_keys.k_i,
+        R: completedOfflineStageForBackup.R,
+        sigma_i: completedOfflineStageForBackup.sigma_i,
+        pubkey: completedOfflineStageForBackup.local_key.y_sum_s,
+      };
+
+      // distribute shares to contract and db
+      const response = await fetch("/api/setup/distribute-shares", {
+        method: "POST",
+        body: JSON.stringify({
+          contractParticipants: contractCombo,
+          chainId: this.chainId,
+          contractSignersCompletedOfflineStage,
+          backupSignersCompletedOfflineStage,
+          accountAddress: account?.homeAccountAddress,
+        }),
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`Failed to distribute shares: ${response.status}`);
+      }
+
+      const result: { success: boolean; tx: TxResponse } =
+        await response.json();
+      if (!result.success) {
+        throw new Error(`Failed to distribute contract share`);
+      }
+
+      // we should save these to store for persist?
+      return {
+        shareForContract: userShareForContract,
+        shareForBackup: userShareForBackup,
+      };
+    } catch (error) {
+      throw console.log(`Error on distribute share:`, error);
+    }
   }
 }
