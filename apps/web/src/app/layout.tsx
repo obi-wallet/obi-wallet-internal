@@ -32,6 +32,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <main id="main" className="relative flex w-full grow">
             {children}
           </main>
+          <div id="modal-root" />
         </Provider>
       </body>
     </html>
