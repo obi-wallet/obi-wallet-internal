@@ -6,27 +6,27 @@ import { IconType } from "react-icons";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
 import { Text } from "../text";
+import Image from "next/image";
 
-export interface IBalanceOption {
-  icon: IconType;
-  network: string;
-  assetUnit: string;
-  balance: number;
+export interface IAssetOption {
+  image: string;
+  label: string;
+  value: string;
 }
 
-export function BalanceDropDown({
+export function AssetsDropDown({
   options,
   onSelectOption,
 }: {
-  options: IBalanceOption[];
-  onSelectOption?: (option: IBalanceOption) => void;
+  options: IAssetOption[];
+  onSelectOption?: (option: IAssetOption) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<
-    IBalanceOption | undefined
+    IAssetOption | undefined
   >(options?.[0]);
-
+  console.log({ options });
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -41,12 +41,14 @@ export function BalanceDropDown({
     };
   }, []);
 
-  const handleClickOption = (option: IBalanceOption) => {
+  const handleClickOption = (option: IAssetOption) => {
     setSelectedOption(option);
     setIsOpen(false);
 
     onSelectOption && onSelectOption(option);
   };
+
+  console.log({ selectedOption });
 
   return (
     <div ref={ref} className="relative z-50">
@@ -59,10 +61,14 @@ export function BalanceDropDown({
       >
         <div className="flex items-center space-x-3">
           {selectedOption && (
-            <selectedOption.icon style={{ width: 24, height: 24 }} />
+            <Image
+              alt={selectedOption.label}
+              src={selectedOption.image}
+              style={{ width: 24, height: 24 }}
+            />
           )}
           <div className="flex flex-col space-y-2">
-            <Text>{selectedOption?.network}</Text>
+            <Text>{selectedOption?.label}</Text>
             {/* <Text>{`${selectedOption?.balance} ${selectedOption?.assetUnit}`}</Text> */}
           </div>
           <div className="ml-3">{isOpen ? <FaAngleUp /> : <FaAngleDown />}</div>
@@ -82,17 +88,21 @@ export function BalanceDropDown({
         >
           {options.map((option) => (
             <li
-              key={`dropdown-${option.network}`}
+              key={`dropdown-${option.label}`}
               onClick={() => handleClickOption(option)}
               className={cn(
                 " px-4 py-2 hover:bg-gray-600 ",
-                option.network === selectedOption?.network && "bg-gray-600 ",
+                option.label === selectedOption?.label && "bg-gray-600 ",
               )}
             >
               <div className="flex items-center space-x-3">
-                <option.icon style={{ width: 24, height: 24 }} />
+                <Image
+                  alt={option.label}
+                  src={option.image}
+                  style={{ width: 24, height: 24 }}
+                />
                 <div className="flex flex-col space-y-2">
-                  <Text>{option.network}</Text>
+                  <Text>{option.label}</Text>
                   {/* <Text>{`${option.balance} ${option.assetUnit}`}</Text> */}
                 </div>
               </div>

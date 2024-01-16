@@ -13,6 +13,7 @@ type InputProps = {
   startIcon?: IconType;
   endIcon?: IconType;
   labelBgColor?: string;
+  labelText?: string;
   classNames?: {
     startIcon?: string;
     endIcon?: string;
@@ -21,6 +22,7 @@ type InputProps = {
 
 export function Input({
   id,
+  labelText,
   onChange,
   className,
   defaultValue = "",
@@ -71,20 +73,22 @@ export function Input({
         required
         value={text}
         onChange={handleChange}
-        {...rest}
         disabled={disabled}
-        placeholder=""
+        placeholder={placeholder}
+        {...rest}
       />
 
-      <label
-        htmlFor={id}
-        className={cn(
-          "absolute left-0 top-0 ml-5 -translate-y-1/2 bg-slate-900 px-2 py-1 text-xs text-white",
-          labelBgColor,
-        )}
-      >
-        {placeholder}
-      </label>
+      {labelText && (
+        <label
+          htmlFor={id}
+          className={cn(
+            "absolute left-0 top-0 ml-5 -translate-y-1/2 bg-slate-900 px-2 py-1 text-xs text-white",
+            labelBgColor,
+          )}
+        >
+          {placeholder}
+        </label>
+      )}
 
       {EndIcon && (
         <span className="absolute right-3 top-1/2 -translate-y-1/2">

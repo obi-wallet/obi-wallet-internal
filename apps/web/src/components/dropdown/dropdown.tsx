@@ -1,5 +1,4 @@
 "use client";
-
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { FaAngleDown } from "react-icons/fa6";
@@ -47,16 +46,18 @@ export function DropDown({
 
   return (
     <div ref={ref}>
-      <button
-        id="dropdownDefaultButton"
-        data-dropdown-toggle="dropdown"
-        className="flex w-full items-center justify-between rounded bg-blue-600 px-5 py-2.5 text-center font-medium text-white hover:bg-blue-700 focus:outline-none "
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {selectedOption?.label || description}
-        <FaAngleDown />
-      </button>
+      {!isOpen && (
+        <button
+          id="dropdownDefaultButton"
+          data-dropdown-toggle="dropdown"
+          className="flex w-full items-center justify-between rounded bg-blue-600 px-5 py-2.5 text-center font-medium text-white hover:bg-blue-700 focus:outline-none "
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {selectedOption?.label || description}
+          <FaAngleDown />
+        </button>
+      )}
 
       <div
         id="dropdown"

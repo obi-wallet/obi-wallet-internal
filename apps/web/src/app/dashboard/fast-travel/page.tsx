@@ -7,64 +7,22 @@ import Image from "next/image";
 import { useState } from "react";
 import { FaHome } from "react-icons/fa";
 import { FaSketch } from "react-icons/fa6";
+import { FromAsset, ToAsset, fromAssets, toAssets } from "./assets";
 
 export default observer(function FastTravel() {
   console.log(useCosmosAddress("cosmos"));
   console.log(useEvmAddress());
 
-  const assets = [
-    {
-      label: "NTRN",
-      icon: <FaHome className="h-8 w-8 text-white" />,
-    },
-    {
-      label: "NEWT",
-      icon: <FaHome className="h-8 w-8 text-white" />,
-    },
-    {
-      label: "AUTISM",
-      icon: <FaHome className="h-8 w-8 text-white" />,
-    },
-    {
-      label: "SEI",
-      icon: <FaHome className="h-8 w-8 text-white" />,
-    },
-  ];
-  const nfts = [
-    {
-      label: "MONKE",
-      icon: <FaHome className="h-8 w-8 text-white" />,
-    },
-  ];
-  const vaults = [
-    {
-      label: "Sommelier Finance: Real Yield ETH - 14.42% ",
-      icon: <FaHome className="h-8 w-8 text-white" />,
-    },
-  ];
-  const farms = [
-    {
-      label: "Celestia Staking (Stakes 1 TIA for 100 Accounts)",
-      icon: <FaHome className="h-8 w-8 text-white" />,
-    },
-  ];
+  type FormData = {
+    fromChain?: string;
+    toChain?: string;
+    fromAmount?: number;
+    toAddress?: string;
+    maxSlippage?: number;
+  };
 
-  const balances: IBalanceOption[] = [
-    {
-      network: "Ethereum",
-      assetUnit: "ETH",
-      balance: 12,
-      icon: FaSketch,
-    },
-    {
-      network: "Neutron1",
-      assetUnit: "NTRN1",
-      balance: 120.55,
-      icon: FaSketch,
-    },
-  ];
-
-  const [isOpenTravelModal, setIsOpenTravelModal] = useState(false);
+  const [isOpenTravelModal, setIsOpenTravelModal] = useState(true);
+  const [targetAsset, setTargetAsset] = useState<string | null>(null);
 
   return (
     <div className="h-full w-full px-7 py-5">
@@ -80,22 +38,25 @@ export default observer(function FastTravel() {
               width: "100%",
               height: "auto",
               borderRadius: 6,
-              cursor: "pointer",
             }} // optional
-            onClick={() => setIsOpenTravelModal(true)}
+            // onClick={() => setIsOpenTravelModal(true)}
           />
           <div className="mt-4 space-y-5 px-3">
             <div className="space-y-4">
               <Text size="xl">Assets</Text>
               <Divider />
               <div className="flex flex-row space-x-3">
-                {assets.map((asset) => (
+                {Object.keys(toAssets)?.map((assetKey) => (
                   <Box
-                    key={`asset-${asset.label}`}
-                    className="flex flex-row space-x-3 bg-gray-700"
+                    key={`asset-${assetKey}`}
+                    className=" flex cursor-pointer flex-row space-x-3 bg-gray-700 hover:bg-blue-600"
+                    onClick={() => {
+                      setTargetAsset(assetKey);
+                      setIsOpenTravelModal(true);
+                    }}
                   >
-                    {asset.icon}
-                    <Text>{asset.label}</Text>
+                    {toAssets[assetKey]?.image}
+                    <Text>{toAssets[assetKey]?.label}</Text>
                   </Box>
                 ))}
               </div>
@@ -110,7 +71,7 @@ export default observer(function FastTravel() {
                     className="flex flex-row space-x-3 bg-gray-700"
                   >
                     {asset.icon}
-                    <Text>{asset.label}</Text>
+                    <Text>{asset.label} (soon)</Text>
                   </Box>
                 ))}
               </div>
@@ -125,7 +86,7 @@ export default observer(function FastTravel() {
                     className="flex flex-row space-x-3 bg-gray-700"
                   >
                     {asset.icon}
-                    <Text>{asset.label}</Text>
+                    <Text>{asset.label} (soon)</Text>
                   </Box>
                 ))}
               </div>
@@ -140,14 +101,24 @@ export default observer(function FastTravel() {
                     className="flex flex-row space-x-3 bg-gray-700"
                   >
                     {asset.icon}
-                    <Text>{asset.label}</Text>
+                    <Text>{asset.label} (soon)</Text>
                   </Box>
                 ))}
               </div>
             </div>
           </div>
         </Box>
-        {isOpenTravelModal && <TravelModal balances={balances} />}
+        {isOpenTravelModal && (
+          <TravelModal
+            fromAssets={fromAssets}
+            toAssets={toAssets}
+            targetAsset={targetAsset}
+            onDismiss={() => {
+              setTargetAsset(null);
+              setIsOpenTravelModal(false);
+            }}
+          />
+        )}
       </div>
     </div>
   );
