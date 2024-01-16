@@ -115,6 +115,7 @@ export interface SignatureRecid {
 
 export type ExistingKeyRefreshItem = {
   Existing: {
+    // @ts-ignore this should be fine
     key: any;
     updated_party_index?: number;
   };

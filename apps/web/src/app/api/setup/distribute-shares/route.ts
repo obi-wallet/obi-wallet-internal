@@ -1,18 +1,10 @@
 import { connect } from "@/db";
 import { getFeeLender } from "@/lib/fee-lender";
 import { decompressPoint } from "@/lib/utils";
-import {
-  ChainIdSchema,
-  Messages,
-  SecretJsClient,
-  SecretJsChains,
-} from "@obi-wallet/sdk";
-import { SecretNetworkClient } from "secretjs";
-
-import { TxResponse } from "secretjs";
-import invariant from "tiny-invariant";
-import { z } from "zod";
+import { ChainIdSchema, SecretJsChains } from "@obi-wallet/sdk";
 import CryptoJS from "crypto-js";
+import { SecretNetworkClient } from "secretjs";
+import { z } from "zod";
 
 const schema = z.object({
   chainId: ChainIdSchema,
@@ -53,7 +45,7 @@ export async function POST(request: Request) {
       walletAddress: wallet.address,
     });
 
-    let setShareMsg = {
+    const setShareMsg = {
       set_shares: {
         participants_to_completed_offline_stages: [
           {
@@ -74,7 +66,7 @@ export async function POST(request: Request) {
       },
     };
 
-    let tx = await secretjs.tx.compute.executeContract(
+    const tx = await secretjs.tx.compute.executeContract(
       {
         sender: secretjs.address,
         contract_address: signerContractAddress,

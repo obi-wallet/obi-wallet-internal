@@ -1,17 +1,19 @@
-import { Parameters, PartySignup } from "../types/mpc-ecdsa-wasm-types.js";
 import { KeyGenerator, Signer } from "../mpc-ecdsa-wasm/mpc_bindings";
+import { Parameters, PartySignup } from "../types/mpc-ecdsa-wasm-types.js";
 
+// @ts-ignore this is from MPC wasm
 export function keygen(params: Parameters): any[] {
-  let keygens: KeyGenerator[] = [];
+  const keygens: KeyGenerator[] = [];
   for (let p = 1; p <= params.parties; p++) {
     const party: PartySignup = {
       number: p,
       uuid: "some-uuid",
     };
-    let keygen = new KeyGenerator(params, party);
+    const keygen = new KeyGenerator(params, party);
     keygens.push(keygen);
   }
-  let partyToOutgoingRoundMsgs: { [key: number]: any[] } = {};
+  // @ts-ignore this is from MPC wasm
+  const partyToOutgoingRoundMsgs: { [key: number]: any[] } = {};
 
   function handleRound() {
     if (Object.keys(partyToOutgoingRoundMsgs).length !== 0) {
@@ -24,31 +26,31 @@ export function keygen(params: Parameters): any[] {
           for (
             let party_round_msg_idx = 0;
             party_round_msg_idx <
-            // @ts-ignore
+            // @ts-expect-error this should be fine
             partyToOutgoingRoundMsgs[party_signer_idx].length;
             party_round_msg_idx++
           ) {
             if (
-              // @ts-ignore
+              // @ts-expect-error this should be fine
               partyToOutgoingRoundMsgs[party_signer_idx][party_round_msg_idx]
                 .receiver != null
             ) {
-              // @ts-ignore
-              let outgoingRoundMsgWithRecipient = partyToOutgoingRoundMsgs[
+              // @ts-expect-error this should be fine
+              const outgoingRoundMsgWithRecipient = partyToOutgoingRoundMsgs[
                 party_signer_idx
               ][party_round_msg_idx] as any;
-              let keygenIndex =
+              const keygenIndex =
                 Number(outgoingRoundMsgWithRecipient.receiver) - 1;
               console.log(
                 `keygen ${keygenIndex} handleIncoming round:${outgoingRoundMsgWithRecipient.round} msg sender:${outgoingRoundMsgWithRecipient.sender} receiver:${outgoingRoundMsgWithRecipient.receiver})`,
               );
-              // @ts-ignore
+              // @ts-expect-error this should be fine
               keygens[keygenIndex].handleIncoming(
                 outgoingRoundMsgWithRecipient,
               );
             } else {
-              // @ts-ignore
-              let roundMsgWithoutRecipient = partyToOutgoingRoundMsgs[
+              // @ts-expect-error this should be fine
+              const roundMsgWithoutRecipient = partyToOutgoingRoundMsgs[
                 party_signer_idx
               ][0] as any;
               for (
@@ -69,7 +71,7 @@ export function keygen(params: Parameters): any[] {
                       roundMsgWithoutRecipient.receiver
                     })`,
                   );
-                  // @ts-ignore
+                  // @ts-expect-error this should be fine
                   keygens[receiving_party_keygen_idx].handleIncoming(
                     roundMsgWithoutRecipient,
                   );
@@ -82,10 +84,10 @@ export function keygen(params: Parameters): any[] {
     }
 
     for (let p = 0; p < params.parties; p++) {
-      // @ts-ignore
-      let result = keygens[p].proceed();
+      // @ts-expect-error this should be fine
+      const result = keygens[p].proceed();
       // index 1 of result is an array of outgoing round messages from the party that should be sent to other parties
-      let roundOutgoingMessages = result[1];
+      const roundOutgoingMessages = result[1];
       if (p === 0 && roundOutgoingMessages.length > 0) {
         // index 0 contains the round number
         console.log(`start round ${result[0]}`);
@@ -106,9 +108,9 @@ export function keygen(params: Parameters): any[] {
 
   handleRound();
 
-  let keys: any[] = [];
+  const keys: any[] = [];
   for (let p = 0; p < params.parties; p++) {
-    // @ts-ignore
+    // @ts-expect-error this should be fine
     keys.push(keygens[p].create());
   }
   return keys;
@@ -118,54 +120,54 @@ export function createSignersAndPresign(
   local_keys: any[],
   selectedPartyIds: number[],
 ): Signer[] {
-  let signers: Signer[] = [];
+  const signers: Signer[] = [];
   for (
     let selectedPartyIdx = 0;
     selectedPartyIdx < selectedPartyIds.length;
     selectedPartyIdx++
   ) {
-    let signer = new Signer(
+    const signer = new Signer(
       selectedPartyIdx + 1,
       selectedPartyIds,
-      // @ts-ignore
+      // @ts-expect-error this should be fine
 
       local_keys[selectedPartyIds[selectedPartyIdx] - 1],
     );
     signers.push(signer);
   }
-  let partyToOutgoingRoundMsgs: { [key: number]: any[] } = {};
+  const partyToOutgoingRoundMsgs: { [key: number]: any[] } = {};
 
   function handleRound() {
     if (Object.keys(partyToOutgoingRoundMsgs).length !== 0) {
-      for (let selectedPartyId of selectedPartyIds) {
+      for (const selectedPartyId of selectedPartyIds) {
         for (
           let party_round_msg_idx = 0;
           party_round_msg_idx <
-          // @ts-ignore
+          // @ts-expect-error this should be fine
 
           partyToOutgoingRoundMsgs[selectedPartyId].length;
           party_round_msg_idx++
         ) {
           if (
-            // @ts-ignore
+            // @ts-expect-error this should be fine
             partyToOutgoingRoundMsgs[selectedPartyId][party_round_msg_idx]
               .receiver != null
           ) {
-            // @ts-ignore
-            let outgoingRoundMsgWithRecipient = partyToOutgoingRoundMsgs[
+            // @ts-expect-error this should be fine
+            const outgoingRoundMsgWithRecipient = partyToOutgoingRoundMsgs[
               selectedPartyId
             ][party_round_msg_idx] as any;
-            let keygenIndex =
+            const keygenIndex =
               Number(outgoingRoundMsgWithRecipient.receiver) - 1;
             console.log(
               `presign ${keygenIndex} handleIncoming round:${outgoingRoundMsgWithRecipient.round} msg sender:${outgoingRoundMsgWithRecipient.sender} receiver:${outgoingRoundMsgWithRecipient.receiver})`,
             );
-            // @ts-ignore
+            // @ts-expect-error this should be fine
 
             signers[keygenIndex].handleIncoming(outgoingRoundMsgWithRecipient);
           } else {
-            // @ts-ignore
-            let roundMsgWithoutRecipient = partyToOutgoingRoundMsgs[
+            // @ts-expect-error this should be fine
+            const roundMsgWithoutRecipient = partyToOutgoingRoundMsgs[
               selectedPartyId
             ][0] as any;
             for (
@@ -187,7 +189,7 @@ export function createSignersAndPresign(
                   })`,
                 );
 
-                // @ts-ignore
+                // @ts-expect-error this should be fine
                 signers[receiving_party_keygen_idx].handleIncoming(
                   roundMsgWithoutRecipient,
                 );
@@ -203,12 +205,12 @@ export function createSignersAndPresign(
       selectedPartyIdx < selectedPartyIds.length;
       selectedPartyIdx++
     ) {
-      let signer = signers[selectedPartyIdx];
+      const signer = signers[selectedPartyIdx];
 
-      // @ts-ignore
-      let result = signer.proceed();
+      // @ts-expect-error this should be fine
+      const result = signer.proceed();
       // index 1 of result is an array of outgoing round messages from the party that should be sent to other parties
-      let roundOutgoingMessages = result[1];
+      const roundOutgoingMessages = result[1];
       console.log(
         `proceed result${result} signerIdx${selectedPartyIdx} round ${result[0]} outgoing messages ${roundOutgoingMessages.length}`,
       );
@@ -217,7 +219,7 @@ export function createSignersAndPresign(
         console.log(`start round ${result[0]}`);
       }
 
-      // @ts-ignore
+      // @ts-expect-error this should be fine
       partyToOutgoingRoundMsgs[selectedPartyIds[selectedPartyIdx]] = result[1];
     }
 
