@@ -15,9 +15,6 @@ export default observer(function InternalOnboarding() {
       type: OnboardingStepType.PrimaryKey,
     },
     {
-      type: OnboardingStepType.MultisigSettings,
-    },
-    {
       type: OnboardingStepType.Congratulations,
     },
   ];
