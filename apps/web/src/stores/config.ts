@@ -1,18 +1,14 @@
 import { Config, Feature } from "@obi-wallet/config";
-import { action, makeObservable, observable } from "mobx";
+import { action, observable } from "mobx";
 
 export class ConfigStore {
-  public config: Config;
+  @observable public accessor config: Config;
 
   constructor({ initialConfig }: { initialConfig: Config }) {
     this.config = initialConfig;
-    makeObservable(this, {
-      isFeatureEnabled: false,
-      config: observable,
-      setConfig: action,
-    });
   }
 
+  @action
   public setConfig(config: Config) {
     this.config = config;
   }

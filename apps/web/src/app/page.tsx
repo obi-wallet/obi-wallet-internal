@@ -1,9 +1,13 @@
 "use client";
+
 import { ButtonLink, Text } from "@/components";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 
-const Homepage = observer(function Homepage() {
+export default observer(function Introduction() {
+  useCurrentWallet({ redirectTo: "/dashboard", redirectIfFound: true });
+
   return (
     <section className="flex w-full flex-col items-center justify-center space-y-9 p-5">
       <Text className="text-2xl" leading="normal" fontWeight="bold">
@@ -37,4 +41,3 @@ const Homepage = observer(function Homepage() {
     </section>
   );
 });
-export default Homepage;

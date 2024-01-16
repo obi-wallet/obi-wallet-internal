@@ -3,7 +3,7 @@ import {
   ObservableWalletConnect,
   WalletConnect,
 } from "@obi-wallet/sdk";
-import { autorun, makeObservable, observable, toJS } from "mobx";
+import { autorun, observable, toJS } from "mobx";
 
 import { WalletsStore } from "./wallets";
 import { AbstractKVStore } from "../kv-store";
@@ -12,7 +12,7 @@ export class WalletConnectStore {
   protected readonly kvStore: AbstractKVStore;
   protected readonly walletsStore: WalletsStore;
 
-  public walletConnect: WalletConnect;
+  @observable public accessor walletConnect: WalletConnect;
 
   constructor({
     kvStore,
@@ -24,16 +24,7 @@ export class WalletConnectStore {
     this.kvStore = kvStore;
     this.walletsStore = walletsStore;
     this.walletConnect = ObservableWalletConnect.create(walletsStore.wallets);
-    makeObservable<WalletConnectStore, "kvStore" | "walletsStore" | "init">(
-      this,
-      {
-        walletConnect: observable,
-        init: false,
-        kvStore: false,
-        walletsStore: false,
-        recoverConnectors: false,
-      },
-    );
+
     void this.init();
   }
 

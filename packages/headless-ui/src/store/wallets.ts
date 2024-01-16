@@ -1,5 +1,5 @@
 import { Migratable, ObservableWallets, Wallets } from "@obi-wallet/sdk";
-import { autorun, makeObservable, observable, runInAction, toJS } from "mobx";
+import { autorun, observable, runInAction, toJS } from "mobx";
 
 import { AbstractKVStore } from "../kv-store";
 
@@ -15,20 +15,13 @@ export enum WalletState {
 export class WalletsStore {
   protected readonly kvStore: AbstractKVStore;
 
-  public state: WalletState = WalletState.LOADING;
+  @observable public accessor state: WalletState = WalletState.LOADING;
   public initPromise: Promise<void>;
-  public wallets: Wallets;
+  @observable public accessor wallets: Wallets;
 
   constructor({ kvStore }: { kvStore: AbstractKVStore }) {
     this.kvStore = kvStore;
     this.wallets = ObservableWallets.create();
-    makeObservable<WalletsStore, "init" | "kvStore">(this, {
-      kvStore: false,
-      initPromise: false,
-      wallets: observable,
-      state: observable,
-      init: false,
-    });
     this.initPromise = this.init();
   }
 

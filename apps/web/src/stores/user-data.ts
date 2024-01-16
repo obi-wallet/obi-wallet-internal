@@ -1,5 +1,5 @@
 import { AbstractKVStore } from "@obi-wallet/headless-ui";
-import { action, computed, makeObservable, runInAction } from "mobx";
+import { action, computed, observable, runInAction } from "mobx";
 
 interface UserData {
   userName: string;
@@ -7,8 +7,8 @@ interface UserData {
 }
 
 export class UserDataStore {
-  protected userName: string | null;
-  protected userAvatar: string | null;
+  @observable protected accessor userName: string | null;
+  @observable protected accessor userAvatar: string | null;
   protected readonly kvStore: AbstractKVStore;
 
   constructor(KVStore: AbstractKVStore) {
@@ -17,22 +17,10 @@ export class UserDataStore {
     this.userName = null;
     this.userAvatar = null;
 
-    makeObservable<
-      UserDataStore,
-      "userName" | "userAvatar" | "kvStore" | "init" | "save"
-    >(this, {
-      userName: true,
-      userAvatar: true,
-      kvStore: true,
-      init: true,
-      save: true,
-      getFromKVStore: true,
-      userData: computed,
-      setUserData: action,
-    });
     void this.init();
   }
 
+  @computed
   public get userData(): UserData {
     return {
       userName: this.userName ?? "",
@@ -49,6 +37,7 @@ export class UserDataStore {
     });
   }
 
+  @action
   public setUserData(userData: UserData) {
     this.userName = userData.userName;
     this.userAvatar = userData.userAvatar;

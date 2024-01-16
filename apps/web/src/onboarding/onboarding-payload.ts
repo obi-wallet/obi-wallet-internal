@@ -10,20 +10,47 @@ import {
   ObservableMultisigKey,
   Secp256k1KeyPair,
   Secp256k1PublicKey,
+  SecretJsChains,
 } from "@obi-wallet/sdk";
 import { action, observable } from "mobx";
 import { TxResponse } from "secretjs";
+
+import invariant from "tiny-invariant";
 import { z } from "zod";
 
 const UnclaimedAccountsKvStorePrefix = "unclaimed-accounts";
 
-const UnclaimedAccount = z.object({
+// TODO: here we probably also want to persist codeId
+const HomeAccount = z.object({
   homeAccountAddress: z.string(),
   ownerAddress: z.string(),
   ownerIndex: z.number(),
 });
 
+type HomeAccount = z.TypeOf<typeof HomeAccount>;
+
+const UnclaimedAccount = HomeAccount.extend({
+  evmSigningAddress: z.string(),
+  evmUserContractAddress: z.string(),
+});
+
 type UnclaimedAccount = z.TypeOf<typeof UnclaimedAccount>;
+
+const ProxyWallet = z.object({
+  proxyAddress: z.object({
+    address: z.string(),
+    codeId: z.number(),
+  }),
+  evmUserContractAddress: z.string(),
+  evmSigningAddress: z.string(),
+  owner: z.object({
+    threshold: z.string(),
+    // TODO: here we should probably be more specific regarding the structure of `keys`, review /add logic and make sure the schema usage is consistent here.
+    keys: z.array(z.unknown()),
+  }),
+});
+
+type ProxyWallet = z.TypeOf<typeof ProxyWallet>;
 
 export class OnboardingPayload implements Draftable {
   @observable protected accessor _multisigKey: MultisigKey;
@@ -31,6 +58,7 @@ export class OnboardingPayload implements Draftable {
   @observable protected accessor _image: string;
   @observable protected accessor _currentStep: number;
   protected _unclaimedAccountsKVStore: KVStore;
+  protected _magicAccountPromise: Promise<UnclaimedAccount> | undefined;
 
   constructor(chainId: ChainId) {
     this._multisigKey = ObservableMultisigKey.create(undefined, chainId);
@@ -115,12 +143,10 @@ export class OnboardingPayload implements Draftable {
     }
   }
 
-  // public async setPasskey(keyPair: Secp256k1KeyPair) {
-  //   await this._multisigKey.setDeviceKey(keyPair);
-  //   // TODO: here we create stuff in the background
-  //   // void this.createMagicAccount();
-  //   void this.createMagicAccountIfDoesNotExist(keyPair.publicKey);
-  // }
+  public async finishWalletCreation() {
+    invariant(this._magicAccountPromise, "magic account promise not set, yet");
+    return await this._magicAccountPromise;
+  }
 
   protected async createMagicAccountIfDoesNotExist({
     publicKey,
@@ -130,23 +156,24 @@ export class OnboardingPayload implements Draftable {
     userSaysDeviceIsNew: boolean;
   }) {
     const proxyWallets = await this.lookupProxyWallets(publicKey);
+    console.log(proxyWallets.length);
     if (proxyWallets.length === 0) {
       if (userSaysDeviceIsNew) {
         // TODO:
         console.log(
           "CHECK! user says device is new and there aren't any, so create magic account",
         );
-        await this.createMagicAccount();
+        this._magicAccountPromise = this.createMagicAccount();
       } else {
-        // TODO:
+        // TODO: ask for user confirmation to create a new
         console.log("WARN! user says device is not new but there aren't any");
       }
     } else {
       if (userSaysDeviceIsNew) {
-        // TODO:
+        // TODO: ask for user confirmation if they really want to create a new wallet instead of recovering
         console.log("WARN! user says device is new but there are already some");
       } else {
-        // TODO:
+        // TODO: if only a single wallet > recover that one. If multliple, ask user which one to recover
         console.log(
           "CHECK! user says device is not new and there are already some. Recover",
         );
@@ -159,6 +186,14 @@ export class OnboardingPayload implements Draftable {
 
     if (account) return account;
 
+    const homeAccount = await this.createHomeAccount();
+    const unclaimedAccount = await this.addKey(homeAccount);
+
+    await this.setUnclaimedAccount(unclaimedAccount);
+    return unclaimedAccount;
+  }
+
+  protected async createHomeAccount(): Promise<HomeAccount> {
     const response = await fetch("/api/setup/home-account", {
       method: "POST",
       body: JSON.stringify({
@@ -170,13 +205,45 @@ export class OnboardingPayload implements Draftable {
       throw new Error(`Failed to create magic account: ${response.status}`);
     }
 
-    const result = UnclaimedAccount.safeParse(await response.json());
+    const result = HomeAccount.safeParse(await response.json());
     if (!result.success) {
       throw new Error(`Failed to parse magic account: ${result.error}`);
     }
 
-    await this.setUnclaimedAccount(result.data);
     return result.data;
+  }
+
+  protected async addKey(account: HomeAccount): Promise<UnclaimedAccount> {
+    const chain = SecretJsChains[this.chainId];
+    const response = await fetch("/api/setup/add-key", {
+      method: "POST",
+      body: JSON.stringify({
+        chainId: this.chainId,
+        userEntryAddress: account.homeAccountAddress,
+        userEntryCodeHash: chain.userEntry.codeHash,
+      }),
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`Failed to add key: ${response.status}`);
+    }
+
+    const schema = z.object({
+      success: z.literal(true),
+      evmSigningAddress: z.string(),
+      evmUserContractAddress: z.string(),
+    });
+
+    const result = schema.safeParse(await response.json());
+    if (!result.success) {
+      throw new Error(`Failed to parse add key response: ${result.error}`);
+    }
+
+    return {
+      ...account,
+      evmSigningAddress: result.data.evmSigningAddress,
+      evmUserContractAddress: result.data.evmUserContractAddress,
+    };
   }
 
   protected async lookupProxyWallets(
@@ -197,17 +264,20 @@ export class OnboardingPayload implements Draftable {
       return [];
     }
 
-    // TODO:
-    const body = await response.json();
-
-    console.log("Wallets found!", body);
-    return [];
+    const schema = z.array(ProxyWallet);
+    const result = schema.safeParse(await response.json());
+    if (!result.success) {
+      throw new Error(`Failed to parse proxy wallets: ${result.error}`);
+    }
+    return result.data;
   }
 
   protected async getUnclaimedAccount(): Promise<UnclaimedAccount | undefined> {
-    return await this._unclaimedAccountsKVStore.get<UnclaimedAccount>(
+    const data = await this._unclaimedAccountsKVStore.get<unknown>(
       this.chainId,
     );
+    const result = UnclaimedAccount.safeParse(data);
+    return result.success ? result.data : undefined;
   }
 
   protected async setUnclaimedAccount(account: UnclaimedAccount) {

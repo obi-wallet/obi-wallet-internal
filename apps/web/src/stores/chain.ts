@@ -1,5 +1,5 @@
 import { Chain, ChainId, Wallets } from "@obi-wallet/sdk";
-import { action, autorun, computed, makeObservable } from "mobx";
+import { action, autorun, computed } from "mobx";
 
 import { ConfigStore } from "./config";
 
@@ -16,16 +16,6 @@ export class ChainStore {
   }) {
     this.configStore = configStore;
     this.walletsStore = walletsStore;
-    makeObservable<ChainStore, "configStore" | "walletsStore" | "currentChain">(
-      this,
-      {
-        configStore: false,
-        walletsStore: false,
-        currentChain: false,
-        setCurrentChain: action,
-        currentChainInformation: computed,
-      },
-    );
 
     autorun(() => {
       this.setCurrentChain(configStore.config.chains.default);
@@ -45,10 +35,12 @@ export class ChainStore {
     );
   }
 
+  @action
   public setCurrentChain(chain: ChainId) {
     this.walletsStore.setCurrentChain(chain);
   }
 
+  @computed
   public get currentChainInformation() {
     return Chain.information(this.currentChain);
   }

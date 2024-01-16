@@ -58,6 +58,10 @@ export class MultisigKey {
     return this._setupDetails;
   }
 
+  public setSetupDetails(setupDetails: SetupMultisigKeyDetails) {
+    this._setupDetails = setupDetails;
+  }
+
   public toJSON(): AbstractSerialized<typeof MultisigKeySchema> | undefined {
     if (!this._keys) {
       return;

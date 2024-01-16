@@ -1848,6 +1848,7 @@ __metadata:
     crypto-js: "npm:^4.2.0"
     elliptic: "npm:^6.5.4"
     eslint: "npm:^8.55.0"
+    ethers: "npm:^6.7.1"
     mobx: "npm:^6.12.0"
     mobx-react-lite: "npm:^4.0.5"
     mongoose: "npm:^8.1.0"
@@ -1861,11 +1862,13 @@ __metadata:
     react-dom: "npm:^18.2.0"
     react-dropzone: "npm:^14.2.3"
     react-icons: "npm:^4.12.0"
+    rooks: "npm:^7.14.1"
     secretjs: "npm:1.9.3"
     tailwind-merge: "npm:^2.1.0"
     tailwindcss: "npm:^3.3.6"
     tiny-invariant: "npm:^1.3.1"
     typescript: "npm:^5.3.3"
+    userop: "npm:^0.3.3"
     zod: "npm:^3.22.4"
   languageName: unknown
   linkType: soft
@@ -10685,7 +10688,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"userop@npm:^0.3.7":
+"userop@npm:^0.3.3, userop@npm:^0.3.7":
   version: 0.3.7
   resolution: "userop@npm:0.3.7"
   dependencies:
