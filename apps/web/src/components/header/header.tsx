@@ -11,6 +11,8 @@ export const Header = observer(function Header() {
   const { walletsStore } = useStore();
   const router = useRouter();
 
+  const primaryLinkHref = walletsStore.currentWallet ? "/dashboard" : "/";
+
   function renderChildren() {
     // TODO: styling, Button looks different than ButtonLink
     if (walletsStore.currentWallet) {
@@ -43,7 +45,7 @@ export const Header = observer(function Header() {
 
   return (
     <header className="flex h-20 items-center justify-between bg-blue-600 px-8 shadow">
-      <PrimaryLink href="/">
+      <PrimaryLink href={primaryLinkHref}>
         <Text color="white" size="2xl" fontWeight="bold" className="leading-3">
           Obi
         </Text>
