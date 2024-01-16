@@ -1,9 +1,9 @@
-import { makeObservable } from "mobx";
+import { action, observable } from "mobx";
 
 export class ZauthStore {
   private static instance?: ZauthStore;
 
-  protected tokens:
+  @observable protected accessor tokens:
     | {
         accessToken: string;
         refreshToken: string;
@@ -14,11 +14,6 @@ export class ZauthStore {
     if (ZauthStore.instance) {
       return ZauthStore.instance;
     }
-    makeObservable<ZauthStore, "tokens">(this, {
-      currentTokens: true,
-      setCurrentTokens: true,
-      tokens: false,
-    });
     ZauthStore.instance = this;
   }
 
@@ -26,6 +21,7 @@ export class ZauthStore {
     return this.tokens;
   }
 
+  @action
   public setCurrentTokens(tokens: {
     accessToken: string;
     refreshToken: string;

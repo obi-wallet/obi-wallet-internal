@@ -1,6 +1,6 @@
 import { Language } from "@obi-wallet/config";
 import { AbstractKVStore } from "@obi-wallet/headless-ui";
-import { action, flow, makeObservable, observable, runInAction } from "mobx";
+import { action, flow, observable, runInAction } from "mobx";
 
 import { ConfigStore } from "./config";
 import { toGenerator } from "./helpers/to-generator";
@@ -9,7 +9,7 @@ export class LanguageStore {
   protected readonly configStore: ConfigStore;
   protected readonly kvStore: AbstractKVStore;
 
-  public currentLanguage: Language;
+  @observable public accessor currentLanguage: Language;
 
   constructor({
     deviceLanguage,
@@ -27,18 +27,7 @@ export class LanguageStore {
       languages.enabled.find((lang) => lang === deviceLanguage) ??
       languages.default;
     this.kvStore = kvStore;
-    makeObservable<LanguageStore, "configStore" | "kvStore" | "init" | "save">(
-      this,
-      {
-        configStore: false,
-        kvStore: false,
-        enabledLanguages: false,
-        save: false,
-        currentLanguage: observable,
-        setCurrentLanguage: action,
-        init: flow,
-      },
-    );
+
     this.init();
   }
 
@@ -46,6 +35,7 @@ export class LanguageStore {
     return this.configStore.config.languages.enabled;
   }
 
+  @flow
   protected async *init() {
     const currentLanguage = yield* toGenerator(
       this.kvStore.get<Language | undefined>("currentLanguage"),
@@ -58,6 +48,7 @@ export class LanguageStore {
     }
   }
 
+  @action
   public setCurrentLanguage(selectedLanguage: Language) {
     this.currentLanguage = selectedLanguage;
     void this.save();

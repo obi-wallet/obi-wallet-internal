@@ -5,7 +5,7 @@ import {
   RootStore as SdkRootStore,
 } from "@obi-wallet/headless-ui";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk";
-import { action, makeObservable } from "mobx";
+import { action } from "mobx";
 
 import { UserDataStore } from ".";
 import { AppsStore } from "./apps";
@@ -21,13 +21,9 @@ class PhoneSessionStore {
 
   constructor({ kp }: { kp: Secp256k1KeyPair | null }) {
     this.kp = kp;
-    makeObservable<PhoneSessionStore, "kp" | "getKp" | "setKp">(this, {
-      kp: false,
-      getKp: false,
-      setKp: action,
-    });
   }
 
+  @action
   public setKp(kp: Secp256k1KeyPair) {
     this.kp = kp;
   }

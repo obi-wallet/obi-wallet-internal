@@ -66,6 +66,7 @@ export function createObservableMultisigKey(
       setThreshold: action,
       setKey: action,
       removeKeyOfType: action,
+      setSetupDetails: action,
     },
     {
       name: "MultisigKey",

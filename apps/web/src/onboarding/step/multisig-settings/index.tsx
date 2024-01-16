@@ -5,56 +5,53 @@ import { cn } from "@/lib/utils";
 import { MultisigSettingsOnboardingStep } from "@/onboarding";
 import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
 import { StepProps } from "@/onboarding/step";
+import { KeyType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import {
   FaCheck,
   FaGoogle,
-  FaKey,
   FaLock,
   FaPlusCircle,
   FaTelegram,
   FaWindows,
 } from "react-icons/fa";
 
-const keyOptions = [
-  {
-    id: "key-desktop",
-    icon: <FaWindows className="h-5 w-5" color="white" />,
-    title: "Desktop Key",
-    checked: true,
-  },
-  {
-    id: "key-cloud",
-    icon: <FaGoogle className="h-5 w-5" color="white" />,
-    title: "Cloud Key",
-    checked: false,
-  },
-  {
-    id: "key-sms",
-    icon: <FaLock className="h-5 w-5" color="white" />,
-    title: "Sms Key",
-    checked: false,
-  },
-  {
-    id: "key-telegram",
-    icon: <FaTelegram className="h-5 w-5" color="white" />,
-    title: "Telegram Key",
-    checked: false,
-  },
-  {
-    id: "key-etc",
-    icon: <FaKey className="h-5 w-5" color="white" />,
-    title: "Key Option #5",
-    checked: false,
-  },
-];
-
 export const MultisigSettingsStep = observer(function MultisigSettingsStep({
+  draft,
   back,
   next,
 }: StepProps<MultisigSettingsOnboardingStep>) {
   const [choice, _setChoice] = useState(null);
+  const multisigKey = draft.value.multisigKey;
+
+  const keyOptions = [
+    // TODO: this should be Passkey, see also icon on Figma
+    {
+      id: "key-desktop",
+      icon: <FaWindows className="h-5 w-5" color="white" />,
+      title: "Passkey",
+      checked: multisigKey.hasKeyOfType(KeyType.Device),
+    },
+    {
+      id: "key-cloud",
+      icon: <FaGoogle className="h-5 w-5" color="white" />,
+      title: "Cloud Key",
+      checked: multisigKey.hasKeyOfType(KeyType.Cloud),
+    },
+    {
+      id: "key-sms",
+      icon: <FaLock className="h-5 w-5" color="white" />,
+      title: "SMS Key",
+      checked: multisigKey.hasKeyOfType(KeyType.Phone),
+    },
+    {
+      id: "key-telegram",
+      icon: <FaTelegram className="h-5 w-5" color="white" />,
+      title: "Telegram Key",
+      checked: multisigKey.hasKeyOfType(KeyType.Telegram),
+    },
+  ];
 
   switch (choice) {
     default:
