@@ -141,6 +141,8 @@ export class OnboardingPayload implements Draftable {
           publicKey: key.payload.publicKey,
           userSaysDeviceIsNew,
         });
+
+        this.distributeShares();
         break;
       default:
         throw new Error(`Unsupported primary key type: ${key.type}`);

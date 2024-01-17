@@ -33,9 +33,6 @@ export const PasskeyStep = observer(function PasskeyStep({
       userSaysDeviceIsNew,
     });
 
-    // TODO: ask Jonas. remove `await` for background running?
-    await draft.value.distributeShares();
-
     await queryClient.prefetchQuery(
       Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
         keyPair,
