@@ -45,7 +45,7 @@ const ProxyWallet = z.object({
   }),
 });
 
-type ProxyWallet = z.TypeOf<typeof ProxyWallet>;
+export type ProxyWallet = z.TypeOf<typeof ProxyWallet>;
 
 export class OnboardingPayload implements Draftable {
   @observable protected accessor _multisigKey: MultisigKey;
@@ -120,22 +120,16 @@ export class OnboardingPayload implements Draftable {
 
   public async setPrimaryKey({
     key,
-    userSaysDeviceIsNew,
   }: {
     // TODO: here we also need to allow other key types
     key: {
       type: KeyType.Device;
       payload: Secp256k1KeyPair;
     };
-    userSaysDeviceIsNew: boolean;
   }) {
     switch (key.type) {
       case KeyType.Device:
         await this._multisigKey.setDeviceKey(key.payload);
-        void this.createMagicAccountIfDoesNotExist({
-          publicKey: key.payload.publicKey,
-          userSaysDeviceIsNew,
-        });
         break;
       default:
         throw new Error(`Unsupported primary key type: ${key.type}`);
@@ -144,43 +138,12 @@ export class OnboardingPayload implements Draftable {
 
   public async finishWalletCreation() {
     invariant(this._magicAccountPromise, "magic account promise not set, yet");
-    return await this._magicAccountPromise;
+    const account = await this._magicAccountPromise;
+    await this.clearUnclaimedAccount();
+    return account;
   }
 
-  protected async createMagicAccountIfDoesNotExist({
-    publicKey,
-    userSaysDeviceIsNew,
-  }: {
-    publicKey: Secp256k1PublicKey;
-    userSaysDeviceIsNew: boolean;
-  }) {
-    const proxyWallets = await this.lookupProxyWallets(publicKey);
-    console.log(proxyWallets.length);
-    if (proxyWallets.length === 0) {
-      if (userSaysDeviceIsNew) {
-        // TODO:
-        console.log(
-          "CHECK! user says device is new and there aren't any, so create magic account",
-        );
-        this._magicAccountPromise = this.createMagicAccount();
-      } else {
-        // TODO: ask for user confirmation to create a new
-        console.log("WARN! user says device is not new but there aren't any");
-      }
-    } else {
-      if (userSaysDeviceIsNew) {
-        // TODO: ask for user confirmation if they really want to create a new wallet instead of recovering
-        console.log("WARN! user says device is new but there are already some");
-      } else {
-        // TODO: if only a single wallet > recover that one. If multliple, ask user which one to recover
-        console.log(
-          "CHECK! user says device is not new and there are already some. Recover",
-        );
-      }
-    }
-  }
-
-  protected async createMagicAccount(): Promise<UnclaimedAccount> {
+  public async createMagicAccount(): Promise<UnclaimedAccount> {
     const account = await this.getUnclaimedAccount();
 
     if (account) return account;
@@ -245,9 +208,7 @@ export class OnboardingPayload implements Draftable {
     };
   }
 
-  protected async lookupProxyWallets(
-    publicKey: Secp256k1PublicKey,
-  ): Promise<unknown[]> {
+  public async lookupProxyWallets(publicKey: Secp256k1PublicKey) {
     const response = await fetch(
       "https://proxy-wallets.obiwallet.workers.dev",
       {
@@ -281,5 +242,9 @@ export class OnboardingPayload implements Draftable {
 
   protected async setUnclaimedAccount(account: UnclaimedAccount) {
     await this._unclaimedAccountsKVStore.set(this.chainId, account);
+  }
+
+  protected async clearUnclaimedAccount() {
+    await this._unclaimedAccountsKVStore.set(this.chainId, null);
   }
 }
