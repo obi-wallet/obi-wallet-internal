@@ -51,7 +51,6 @@ export class OnboardingPayload implements Draftable {
   @observable protected accessor _multisigKey: MultisigKey;
   @observable protected accessor _name: string;
   @observable protected accessor _image: string;
-  @observable protected accessor _currentStep: number;
   protected _unclaimedAccountsKVStore: KVStore;
   protected _magicAccountPromise: Promise<UnclaimedAccount> | undefined;
 
@@ -59,7 +58,6 @@ export class OnboardingPayload implements Draftable {
     this._multisigKey = ObservableMultisigKey.create(undefined, chainId);
     this._name = "";
     this._image = "";
-    this._currentStep = 1;
     this._unclaimedAccountsKVStore = new KVStore(
       UnclaimedAccountsKvStorePrefix,
     );
@@ -91,21 +89,11 @@ export class OnboardingPayload implements Draftable {
     this._image = image;
   }
 
-  public get currentStep() {
-    return this._currentStep;
-  }
-
-  @action
-  public setCurrentStep(step: number) {
-    this._currentStep = step;
-  }
-
   public clone() {
     const clone = new OnboardingPayload(this._multisigKey.chainId);
     clone._multisigKey = this._multisigKey.clone();
     clone._name = this.name;
     clone._image = this.image;
-    clone._currentStep = this.currentStep;
     return clone as this;
   }
 
@@ -113,8 +101,7 @@ export class OnboardingPayload implements Draftable {
     return (
       this._multisigKey.equals(other._multisigKey) &&
       this._name === other._name &&
-      this._image === other._image &&
-      this._currentStep === other._currentStep
+      this._image === other._image
     );
   }
 
