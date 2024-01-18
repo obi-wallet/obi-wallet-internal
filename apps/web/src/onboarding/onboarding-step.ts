@@ -2,9 +2,8 @@ export enum OnboardingStepType {
   UserData,
   Explanation,
   PrimaryKey,
-  MultisigSettings,
-  Congratulations,
   FastTravel,
+  CreateWallet,
 }
 
 export interface UserDataOnboardingStep {
@@ -17,14 +16,14 @@ export interface ExplanationOnboardingStep {
 
 export interface PrimaryKeyOnboardingStep {
   type: OnboardingStepType.PrimaryKey;
+  demoMode?: boolean;
 }
 
-export interface MultisigSettingsOnboardingStep {
-  type: OnboardingStepType.MultisigSettings;
-}
-
-export interface CongratulationsOnboardingStep {
-  type: OnboardingStepType.Congratulations;
+export interface CreateWalletOnboardingStep {
+  type: OnboardingStepType.CreateWallet;
+  demoMode?: boolean;
+  waitUntilDone: boolean;
+  redirectTo: string;
 }
 
 export interface FastTravelOnboardingStep {
@@ -35,6 +34,5 @@ export type OnboardingStep =
   | UserDataOnboardingStep
   | ExplanationOnboardingStep
   | PrimaryKeyOnboardingStep
-  | MultisigSettingsOnboardingStep
-  | CongratulationsOnboardingStep
+  | CreateWalletOnboardingStep
   | FastTravelOnboardingStep;

@@ -1,8 +1,8 @@
 "use client";
 
 import { Text } from "@/components";
-import { ExplanationOnboardingStep } from "@/onboarding";
 import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
+import { ExplanationOnboardingStep } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";

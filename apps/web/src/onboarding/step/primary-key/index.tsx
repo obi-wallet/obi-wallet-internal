@@ -1,11 +1,11 @@
 "use client";
 
 import { Button, Modal, renderModal, Text } from "@/components";
-import { PrimaryKeyOnboardingStep } from "@/onboarding";
 import { ProxyWallet } from "@/onboarding/onboarding-payload";
+import { PrimaryKeyOnboardingStep } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
 import { getOrCreatePasskey, KeyType, Sdk } from "@obi-wallet/sdk";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
@@ -17,35 +17,33 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
   const queryClient = useQueryClient();
   const [proxyWallets, setProxyWallets] = useState<ProxyWallet[] | null>(null);
 
-  async function passkeyFlow() {
-    const result = await getOrCreatePasskey();
-    if (!result.success) return result;
+  const passkeyFlow = useMutation({
+    mutationFn: async () => {
+      const result = await getOrCreatePasskey();
+      if (!result.success) return result;
 
-    const { keyPair } = result;
-    await draft.value.setPrimaryKey({
-      key: {
-        type: KeyType.Device,
-        payload: keyPair,
-      },
-    });
+      const { keyPair } = result;
+      await draft.value.setPrimaryKey({
+        key: {
+          type: KeyType.Device,
+          payload: keyPair,
+        },
+      });
 
-    const proxyWallets = await draft.value.lookupProxyWallets(
-      keyPair.publicKey,
-    );
-    await queryClient.prefetchQuery(
-      Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
-        keyPair,
-      ),
-    );
-    setProxyWallets(proxyWallets);
-
-    // TODO:
-    // if (next) next();
-  }
+      const proxyWallets = await draft.value.lookupProxyWallets(
+        keyPair.publicKey,
+      );
+      await queryClient.prefetchQuery(
+        Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
+          keyPair,
+        ),
+      );
+      setProxyWallets(proxyWallets);
+    },
+  });
 
   function renderProxyWalletsModal() {
     if (!proxyWallets) return null;
-
     if (proxyWallets.length === 0) {
       return renderModal(
         <Modal title="Existing Wallets">
@@ -55,7 +53,6 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
           </Text>
           <Button
             onClick={() => {
-              void draft.value.createMagicAccount();
               if (next) next();
             }}
             variant="primary"
@@ -77,10 +74,13 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
       );
     }
 
+    const count = proxyWallets.length;
+
     return renderModal(
       <Modal title="Existing Wallets">
         <Text color="zinc" size="xs">
-          We found {proxyWallets.length} wallets associated with this key.
+          We found {count} {count > 1 ? "wallets" : "wallet"} associated with
+          this key.
         </Text>
         {proxyWallets.map((wallet, i) => {
           return (
@@ -98,7 +98,6 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
         })}
         <Button
           onClick={() => {
-            void draft.value.createMagicAccount();
             if (next) next();
           }}
           variant="outline"
@@ -126,7 +125,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
 
       <Button
         onClick={() => {
-          void passkeyFlow();
+          passkeyFlow.mutate();
         }}
         className="block w-full"
         variant="primary"

@@ -139,11 +139,16 @@ export class OnboardingPayload implements Draftable {
   public async finishWalletCreation() {
     invariant(this._magicAccountPromise, "magic account promise not set, yet");
     const account = await this._magicAccountPromise;
+    this.multisigKey.setSetupDetails(account);
     await this.clearUnclaimedAccount();
     return account;
   }
 
-  public async createMagicAccount(): Promise<UnclaimedAccount> {
+  public createMagicAccountInBackground() {
+    this._magicAccountPromise = this.createMagicAccount();
+  }
+
+  protected async createMagicAccount(): Promise<UnclaimedAccount> {
     const account = await this.getUnclaimedAccount();
 
     if (account) return account;
