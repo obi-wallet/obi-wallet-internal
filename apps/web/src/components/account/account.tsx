@@ -1,6 +1,5 @@
 import { Text } from "@/components/text/text";
-import { FaQrcode, FaCopy, FaLink } from "react-icons/fa";
-import { FaArrowUpRightFromSquare, FaCircleUser } from "react-icons/fa6";
+import { FaCircleUser } from "react-icons/fa6";
 
 export function Account() {
   return (
@@ -14,12 +13,6 @@ export function Account() {
         <Text size="3xl" color="white" fontWeight="bold">
           $6,178.04
         </Text>
-        <div className="flex space-x-4">
-          <FaQrcode className="h-6 w-6 text-white" />
-          <FaCopy className="h-6 w-6 text-white" />
-          <FaArrowUpRightFromSquare className="h-6 w-6 text-white" />
-          <FaLink className="h-6 w-6 text-white" />
-        </div>
       </div>
     </div>
   );

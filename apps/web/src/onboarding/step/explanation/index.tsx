@@ -8,7 +8,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 
 export const ExplanationStep = observer(function ExplanationStep({
-  back,
+  // back,
   next,
 }: StepProps<ExplanationOnboardingStep>) {
   return (
@@ -22,8 +22,8 @@ export const ExplanationStep = observer(function ExplanationStep({
         leading="tight"
         color="zinc"
       >
-        Keys give access to your account. Like multi-factor authentication,
-        creating multiple keys enhances the security of your account.
+        Create the first key to secure your account. You can add more keys later
+        to increase security and recoverability.
       </Text>
       <Image
         width="262"
@@ -31,19 +31,9 @@ export const ExplanationStep = observer(function ExplanationStep({
         src="/assets/images/dall.png"
         alt="Icon"
       />
-      <Text
-        className="w-96 text-center"
-        fontWeight="medium"
-        leading="tight"
-        color="zinc"
-      >
-        Additional key types also serve as a safety measure to recover your
-        assets in the circumstance that you lose access to one or more of your
-        keys.
-      </Text>
 
       <OnboardingButtons
-        back={back}
+        // back={back}
         next={() => {
           if (next) next();
         }}
