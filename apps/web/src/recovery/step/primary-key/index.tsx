@@ -2,20 +2,19 @@
 
 import { Button, ButtonLink, Modal, renderModal, Text } from "@/components";
 import { ProxyWallet } from "@/onboarding/onboarding-payload";
-import { PrimaryKeyOnboardingStep } from "@/onboarding/onboarding-step";
-import { StepProps } from "@/onboarding/step";
+import { RecoveryPayload } from "@/recovery/recovery-payload";
 import { useRecover } from "@/recovery/use-recover";
-import { getOrCreatePasskey, KeyType, Sdk } from "@obi-wallet/sdk";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Draft } from "@/stores";
+import { getOrCreatePasskey, KeyType } from "@obi-wallet/sdk";
+import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
 export const PrimaryKeyStep = observer(function PrimaryKeyStep({
   draft,
-  back,
-  next,
-}: StepProps<PrimaryKeyOnboardingStep>) {
-  const queryClient = useQueryClient();
+}: {
+  draft: Draft<RecoveryPayload>;
+}) {
   const [proxyWallets, setProxyWallets] = useState<ProxyWallet[] | null>(null);
   const recover = useRecover();
 
@@ -35,11 +34,6 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
       const proxyWallets = await draft.value.lookupProxyWallets(
         keyPair.publicKey,
       );
-      await queryClient.prefetchQuery(
-        Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
-          keyPair,
-        ),
-      );
       setProxyWallets(proxyWallets);
     },
   });
@@ -55,15 +49,19 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
           </Text>
           <Button
             onClick={() => {
-              if (next) next();
+              setProxyWallets(null);
             }}
             variant="primary"
             className="w-full"
           >
-            Create a new wallet
-          </Button>
-          <ButtonLink href="/recovery" variant="outline" className="w-full">
             Recover another wallet
+          </Button>
+          <ButtonLink
+            href="/onboarding/internal"
+            variant="outline"
+            className="w-full"
+          >
+            Create a new wallet
           </ButtonLink>
         </Modal>,
       );
@@ -93,15 +91,13 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
             </Button>
           );
         })}
-        <Button
-          onClick={() => {
-            if (next) next();
-          }}
+        <ButtonLink
+          href="/onboarding/internal"
           variant="outline"
           className="w-full"
         >
           Create a new wallet
-        </Button>
+        </ButtonLink>
       </Modal>,
     );
   }
@@ -109,7 +105,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
   return (
     <>
       <Text fontWeight="bold" size="3xl">
-        Create Your First Key
+        Choose Your Recovery Key
       </Text>
       <Text
         className="w-96 text-center"
@@ -117,7 +113,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
         leading="tight"
         color="zinc"
       >
-        Sign in with one of the services below to create your first key.
+        Sign in with one of the services below to recover your wallet.
       </Text>
 
       <Button
@@ -132,35 +128,8 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
         {/*<div>(Recommended)</div>*/}
       </Button>
       <Button disabled className="block w-full" variant="primary">
-        More Services Coming Soon
+        More Recovery Options Coming Soon
       </Button>
-
-      {/* TODO: cloud keys aren't integrated yet */}
-      {/*<div className="flex w-full items-center">*/}
-      {/*  <div className="h-0.5 w-full rounded-lg bg-gray-600" />*/}
-      {/*  <Text className="grow-0 px-3" color="gray">*/}
-      {/*    OR*/}
-      {/*  </Text>*/}
-      {/*  <div className="h-0.5 w-full rounded-lg bg-gray-600" />*/}
-      {/*</div>*/}
-
-      {/*<div className="flex w-full flex-row justify-around">*/}
-      {/*  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800">*/}
-      {/*    <FaApple className="h-9 w-9 text-white" />*/}
-      {/*  </div>*/}
-      {/*  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800">*/}
-      {/*    <FaGoogle className="h-7 w-7 text-white" />*/}
-      {/*  </div>*/}
-      {/*  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800">*/}
-      {/*    <FaWindows className="h-7 w-7 text-white" />*/}
-      {/*  </div>*/}
-      {/*</div>*/}
-
-      {back ? (
-        <Button onClick={back} className="block w-full" variant="outline">
-          Back
-        </Button>
-      ) : null}
 
       {renderProxyWalletsModal()}
     </>

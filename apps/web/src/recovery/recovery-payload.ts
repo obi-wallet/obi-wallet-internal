@@ -47,7 +47,7 @@ const ProxyWallet = z.object({
 
 export type ProxyWallet = z.TypeOf<typeof ProxyWallet>;
 
-export class OnboardingPayload implements Draftable {
+export class RecoveryPayload implements Draftable {
   @observable protected accessor _multisigKey: MultisigKey;
   @observable protected accessor _name: string;
   @observable protected accessor _image: string;
@@ -90,14 +90,14 @@ export class OnboardingPayload implements Draftable {
   }
 
   public clone() {
-    const clone = new OnboardingPayload(this._multisigKey.chainId);
+    const clone = new RecoveryPayload(this._multisigKey.chainId);
     clone._multisigKey = this._multisigKey.clone();
     clone._name = this.name;
     clone._image = this.image;
     return clone as this;
   }
 
-  public equals(other: OnboardingPayload) {
+  public equals(other: RecoveryPayload) {
     return (
       this._multisigKey.equals(other._multisigKey) &&
       this._name === other._name &&

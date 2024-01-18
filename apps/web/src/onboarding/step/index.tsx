@@ -1,8 +1,10 @@
-import { OnboardingStep, OnboardingStepType } from "@/onboarding";
 import { OnboardingPayload } from "@/onboarding/onboarding-payload";
-import { CongratulationsStep } from "@/onboarding/step/congratulations";
+import {
+  OnboardingStep,
+  OnboardingStepType,
+} from "@/onboarding/onboarding-step";
+import { CreateWalletStep } from "@/onboarding/step/create-wallet";
 import { ExplanationStep } from "@/onboarding/step/explanation";
-import { MultisigSettingsStep } from "@/onboarding/step/multisig-settings";
 import { PrimaryKeyStep } from "@/onboarding/step/primary-key";
 import { UserDataStep } from "@/onboarding/step/user-data";
 import { Draft } from "@/stores";
@@ -23,12 +25,8 @@ export const Step = observer(function Step(props: StepProps) {
       return <ExplanationStep {...props} step={props.step} />;
     case OnboardingStepType.PrimaryKey:
       return <PrimaryKeyStep {...props} step={props.step} />;
-    case OnboardingStepType.MultisigSettings:
-      return <MultisigSettingsStep {...props} step={props.step} />;
-    case OnboardingStepType.Congratulations:
-      return <CongratulationsStep {...props} step={props.step} />;
-    case OnboardingStepType.FastTravel:
-      break;
+    case OnboardingStepType.CreateWallet:
+      return <CreateWalletStep {...props} step={props.step} />;
   }
 
   return null;

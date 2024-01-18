@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, ButtonLink, Modal, renderModal } from "@/components";
+import { Button, Modal, renderModal } from "@/components";
 import { PrimaryLink } from "@/components/links";
 import { Text } from "@/components/text/text";
 import { useStore } from "@/contexts";
@@ -82,9 +82,16 @@ const LogIn = observer(function LogIn() {
                   </Button>
                 );
               })}
-              <ButtonLink href="/recovery" variant="outline" className="w-full">
+              <Button
+                onClick={() => {
+                  setModalOpen(false);
+                  router.push("/recovery");
+                }}
+                variant="outline"
+                className="w-full"
+              >
                 Recover other wallet
-              </ButtonLink>
+              </Button>
             </Modal>,
           )
         : null}

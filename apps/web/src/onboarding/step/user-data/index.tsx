@@ -1,8 +1,8 @@
 "use client";
 
 import { ImageDropzone, Input, Text } from "@/components";
-import { UserDataOnboardingStep } from "@/onboarding";
 import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
+import { UserDataOnboardingStep } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
 import { observer } from "mobx-react-lite";
 import { ChangeEvent } from "react";
