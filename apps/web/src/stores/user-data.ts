@@ -1,58 +1,54 @@
 import { AbstractKVStore } from "@obi-wallet/headless-ui";
-import { action, computed, observable, runInAction } from "mobx";
+import { action, autorun, observable, runInAction, toJS } from "mobx";
+import { z } from "zod";
 
-interface UserData {
-  userName: string;
-  userAvatar: string | null;
-}
+const userDataSchema = z.object({
+  name: z.string().optional(),
+  avatar: z.string().optional(),
+});
+
+type UserData = z.TypeOf<typeof userDataSchema>;
+
+const userDataPerWalletSchema = z.record(userDataSchema);
+
+type UserDataPerWallet = z.infer<typeof userDataPerWalletSchema>;
 
 export class UserDataStore {
-  @observable protected accessor userName: string | null;
-  @observable protected accessor userAvatar: string | null;
+  @observable protected accessor userDataPerWallet: UserDataPerWallet = {};
   protected readonly kvStore: AbstractKVStore;
 
   constructor(KVStore: AbstractKVStore) {
     this.kvStore = KVStore;
-
-    this.userName = null;
-    this.userAvatar = null;
-
     void this.init();
-  }
-
-  @computed
-  public get userData(): UserData {
-    return {
-      userName: this.userName ?? "",
-      userAvatar: this.userAvatar,
-    };
   }
 
   protected async init() {
     const currentUserData = await this.getFromKVStore();
 
     runInAction(() => {
-      this.userName = currentUserData?.userName ?? null;
-      this.userAvatar = currentUserData?.userAvatar ?? null;
+      this.userDataPerWallet = currentUserData;
+    });
+
+    autorun(async () => {
+      const data = userDataPerWalletSchema.parse(toJS(this.userDataPerWallet));
+      await this.kvStore.set("user-data", data);
     });
   }
 
   @action
-  public setUserData(userData: UserData) {
-    this.userName = userData.userName;
-    this.userAvatar = userData.userAvatar;
-    void this.save();
+  public getUserData(address: string): UserData {
+    return this.userDataPerWallet[address] ?? {};
   }
 
-  protected async save() {
-    const userData = {
-      userName: this.userName,
-      userAvatar: this.userAvatar,
-    };
-    await this.kvStore.set("userData", userData);
+  @action
+  public setUserData(address: string, userData: UserData) {
+    this.userDataPerWallet[address] = userData;
   }
 
-  public async getFromKVStore() {
-    return await this.kvStore.get<UserData>("userData");
+  public async getFromKVStore(): Promise<UserDataPerWallet> {
+    const data = await this.kvStore.get("user-data");
+    const result = userDataPerWalletSchema.safeParse(data);
+    if (!result.success) return {};
+    return result.data;
   }
 }

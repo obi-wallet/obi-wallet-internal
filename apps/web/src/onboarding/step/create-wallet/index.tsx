@@ -13,7 +13,7 @@ export const CreateWalletStep = observer(function CreateWalletStep({
   draft,
   step,
 }: StepProps<CreateWalletOnboardingStep>) {
-  const { walletsStore } = useStore();
+  const { walletsStore, userDataStore } = useStore();
   const router = useRouter();
 
   const onDone = () => {
@@ -33,14 +33,19 @@ export const CreateWalletStep = observer(function CreateWalletStep({
 
       draft.value.createMagicAccountInBackground();
       await draft.value.finishWalletCreation();
-      await walletsStore.createWallet({
+      const response = await walletsStore.createWallet({
         multisigKey: draft.value.multisigKey,
         demoMode: false,
       });
+      if (response) {
+        userDataStore.setUserData(response.homeAccountAddress, {
+          name: draft.value.name,
+          avatar: draft.value.image,
+        });
+      }
       return true;
     },
-    onSuccess(value) {
-      console.log("success", value);
+    onSuccess() {
       if (step.waitUntilDone) onDone();
     },
   });
