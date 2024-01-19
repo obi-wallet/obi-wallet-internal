@@ -1,21 +1,43 @@
 "use client";
-
-import { ComponentPropsWithoutRef, useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import React from "react";
+import { ComponentPropsWithoutRef, useEffect } from "react";
+import { ControllerFieldState } from "react-hook-form";
 
 import { Input } from "./input";
-import { BalanceDropDown, DropDown, IBalanceOption } from "../dropdown";
+import { AssetAmmount } from "..";
+import { DropDown } from "../dropdown";
 
 type AssetOption = {
   image: string;
   label: string;
   value: string;
+  disabled?: boolean;
 };
 
-type InputProps = {
-  assets?: AssetOption[];
-  onChange?: (value: number) => void;
+interface InputProps
+  extends Omit<
+    ComponentPropsWithoutRef<"input">,
+    "onChange" | "onClick" | "onFocus"
+  > {
+  assets: AssetOption[];
   labelText?: string;
-} & ComponentPropsWithoutRef<"input">;
+  onChange?: () => void;
+  disableTextInput?: boolean;
+
+  field: {
+    onChange: (value: AssetAmmount) => void;
+    onBlur: () => void;
+    value: AssetAmmount;
+  };
+  fieldState: ControllerFieldState;
+  direction?: "from" | "to";
+  onClick?: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
+}
+
+type errors = { [key: string]: { message: string; type: string } };
 
 export function AssetInput({
   onChange,
@@ -23,37 +45,121 @@ export function AssetInput({
   placeholder,
   assets,
   labelText,
+  className,
+  disableTextInput,
+  field,
+  fieldState,
+  onClick,
+  onFocus,
+  onBlur,
 }: InputProps) {
-  const [amount, setAmount] = useState(0);
-  const [text, setText] = useState("");
-  // const [selectedAsset, setSelectedAsset] = useState(assets?.[0]);
-  console.log({ assets });
+  const errors = fieldState.error as errors | undefined;
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
   useEffect(() => {
-    setAmount(parseFloat(text) || 0);
-  }, [text]);
-  useEffect(() => {
-    onChange && onChange(amount);
-  }, [amount, onChange]);
+    if (!disableTextInput) {
+      inputRef.current?.focus();
+    }
+  }, [disableTextInput]);
+
+  const renderErrorMessage = (errors: errors | undefined) => {
+    if (!errors) return;
+    if (errors?.amount?.message) {
+      if (errors?.amount?.message === "Required") return "Amount is required";
+      return errors?.amount?.message;
+    }
+    if (errors?.asset?.message) {
+      return `Asset ${errors?.asset?.message}`;
+    }
+  };
 
   return (
-    <div className="relative z-10 w-full" aria-disabled>
+    <div className={"relative z-10 w-full  " + className} aria-disabled>
       <Input
-        placeholder={placeholder}
+        ref={inputRef}
+        placeholder={placeholder || "0"}
         labelText={labelText}
-        className="pr-72 "
-        disabled={disabled}
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        type="number"
-        step={0.001}
-      />
+        className=" z-20 "
+        disabled={disabled || disableTextInput}
+        onBlur={() => {
+          onBlur && onBlur();
+          field.onBlur();
+        }}
+        value={field.value.amount}
+        errorMessage={renderErrorMessage(errors)}
+        onFocus={() => onFocus && onFocus()}
+        onChange={(amount: string) => {
+          if (disableTextInput) return;
 
-      <div className="index  absolute right-2 top-1/2 z-10 flex -translate-y-1/2 space-x-2">
+          field.onChange({
+            asset: field.value.asset,
+            amount: Number(amount),
+          });
+          field.onBlur();
+          onChange && onChange();
+        }}
+      />
+      {disableTextInput && (
+        <div
+          onClick={() => {
+            onClick && onClick();
+            // focuses the input
+          }}
+          className=" absolute left-0 top-0 z-0 h-full w-full bg-black  opacity-0"
+        ></div>
+      )}
+
+      <div className="absolute right-2  top-1/2 flex -translate-y-1/2 space-x-2">
         {assets && (
           <DropDown
+            className=" w-52 "
             description="something"
             options={assets}
-            onSelectOption={(option) => console.log({ option })}
+            onSelectOption={(option) => {
+              field.onChange({
+                asset: option.value as string,
+                amount: Number(field.value.amount),
+              });
+              onChange && onChange();
+            }}
+            value={field.value.asset}
+            customSelectedItemComponent={(option) => {
+              return (
+                <div className="flex flex-row items-center space-x-3">
+                  {!option ? (
+                    <span>Select</span>
+                  ) : (
+                    <>
+                      <img
+                        className="h-6 w-6"
+                        src={(option as AssetOption).image}
+                        alt={option?.label}
+                      />
+                      <span>{option?.label}</span>
+                    </>
+                  )}
+                </div>
+              );
+            }}
+            customItemComponent={(option, selectedOption, handleOption) => (
+              <li
+                className={cn(
+                  " flex cursor-pointer flex-row space-x-3 p-3 hover:bg-blue-600",
+                  option.value === selectedOption?.value && "bg-gray-600 ",
+                  option.disabled &&
+                    "cursor-not-allowed opacity-50 hover:bg-gray-600",
+                )}
+                onClick={handleOption}
+                key={option.value}
+              >
+                <img
+                  src={(option as AssetOption).image}
+                  alt="asset"
+                  className="h-6 w-6 "
+                />
+                <span>{option.label}</span>
+              </li>
+            )}
           />
         )}
       </div>

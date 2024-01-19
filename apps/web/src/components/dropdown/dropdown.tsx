@@ -1,27 +1,48 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
-import { FaAngleDown } from "react-icons/fa6";
+import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
 export interface IDropDownOption {
   value: string | number;
   label: string;
+  disabled?: boolean;
 }
 
 export function DropDown({
   description,
   options,
   onSelectOption,
+  customItemComponent,
+  customSelectedItemComponent,
+  value,
+  className,
 }: {
   description: string;
   options: IDropDownOption[];
   onSelectOption?: (option: IDropDownOption) => void;
+  value?: string | number;
+  customSelectedItemComponent?: (option?: IDropDownOption) => JSX.Element;
+  customItemComponent?: (
+    option: IDropDownOption,
+    selectedOption: IDropDownOption | undefined,
+    handleOptionClick: () => void,
+  ) => JSX.Element;
+  className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<
     IDropDownOption | undefined
   >(options?.[0]);
+
+  useEffect(() => {
+    setSelectedOption(getOptionFromValue(value));
+  }, [value]);
+  const getOptionFromValue = (value: string | number | undefined) => {
+    if (!value) return undefined;
+    return options.find((option) => option.value === value);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -38,6 +59,7 @@ export function DropDown({
   }, []);
 
   const handleClickOption = (option: IDropDownOption) => {
+    if (option.disabled) return;
     setSelectedOption(option);
     setIsOpen(false);
 
@@ -45,45 +67,54 @@ export function DropDown({
   };
 
   return (
-    <div ref={ref}>
-      {!isOpen && (
-        <button
-          id="dropdownDefaultButton"
-          data-dropdown-toggle="dropdown"
-          className="flex w-full items-center justify-between rounded bg-blue-600 px-5 py-2.5 text-center font-medium text-white hover:bg-blue-700 focus:outline-none "
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {selectedOption?.label || description}
-          <FaAngleDown />
-        </button>
-      )}
-
-      <div
-        id="dropdown"
-        className={cn(
-          "z-10 divide-y divide-gray-100 rounded-lg  bg-gray-700 shadow",
-          !isOpen && "hidden",
-        )}
+    <div ref={ref} className={className}>
+      <button
+        id="dropdownDefaultButton"
+        data-dropdown-toggle="dropdown"
+        className="  relative z-10 flex w-full items-center justify-between rounded bg-blue-600 px-5 py-2.5 text-center font-medium text-white hover:bg-blue-700 focus:outline-none "
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
       >
-        <ul
-          className="cursor-pointer py-2 text-sm text-gray-700 dark:text-gray-200"
-          aria-labelledby="dropdownDefaultButton"
+        {(customSelectedItemComponent &&
+          customSelectedItemComponent(selectedOption)) ||
+          selectedOption?.label ||
+          description}
+        {isOpen ? <FaAngleUp /> : <FaAngleDown />}
+      </button>
+
+      {isOpen && (
+        <div
+          id="dropdown"
+          className={cn(
+            "z-1000 absolute right-0 w-full rounded-lg bg-gray-700 shadow",
+          )}
         >
-          {options.map((option) => (
-            <li
-              key={`dropdown-${option.value}`}
-              onClick={() => handleClickOption(option)}
-              className={cn(
-                "block px-4 py-2 hover:bg-gray-600 ",
-                option.value === selectedOption?.value && "bg-gray-600 ",
-              )}
-            >
-              {option.label}
-            </li>
-          ))}
-        </ul>
-      </div>
+          <ul
+            className="  py-2 text-sm text-gray-700 dark:text-gray-200"
+            aria-labelledby="dropdownDefaultButton"
+          >
+            {options.map((option) =>
+              customItemComponent ? (
+                customItemComponent(option, selectedOption, () =>
+                  handleClickOption(option),
+                )
+              ) : (
+                <li
+                  key={`dropdown-${option.value}`}
+                  onClick={() => handleClickOption(option)}
+                  className={cn(
+                    "block cursor-pointer px-4 py-2 hover:bg-gray-600",
+                    option.value === selectedOption?.value && "bg-gray-600 ",
+                    option.disabled && "cursor-not-allowed opacity-50",
+                  )}
+                >
+                  {option.label}
+                </li>
+              ),
+            )}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

@@ -3,7 +3,6 @@
 import { Box, Input, TabUi } from "@/components";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { TargetChain, TargetChainId } from "@/target-chain";
-
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
 import { useQRCode } from "next-qrcode";

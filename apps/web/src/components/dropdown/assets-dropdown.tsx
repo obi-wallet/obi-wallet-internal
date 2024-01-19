@@ -1,17 +1,17 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { IconType } from "react-icons";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
 import { Text } from "../text";
-import Image from "next/image";
 
 export interface IAssetOption {
   image: string;
   label: string;
   value: string;
+  disabled?: boolean;
 }
 
 export function AssetsDropDown({
@@ -26,7 +26,7 @@ export function AssetsDropDown({
   const [selectedOption, setSelectedOption] = useState<
     IAssetOption | undefined
   >(options?.[0]);
-  console.log({ options });
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -48,8 +48,6 @@ export function AssetsDropDown({
     onSelectOption && onSelectOption(option);
   };
 
-  console.log({ selectedOption });
-
   return (
     <div ref={ref} className="relative z-50">
       <button
@@ -64,7 +62,8 @@ export function AssetsDropDown({
             <Image
               alt={selectedOption.label}
               src={selectedOption.image}
-              style={{ width: 24, height: 24 }}
+              width={24}
+              height={24}
             />
           )}
           <div className="flex flex-col space-y-2">
@@ -78,7 +77,7 @@ export function AssetsDropDown({
       <div
         id="dropdown"
         className={cn(
-          "absolute z-50 w-full  rounded-lg bg-gray-700",
+          "absolute  z-50  w-full rounded-lg bg-gray-700",
           !isOpen && "hidden",
         )}
       >
@@ -99,11 +98,11 @@ export function AssetsDropDown({
                 <Image
                   alt={option.label}
                   src={option.image}
-                  style={{ width: 24, height: 24 }}
+                  width={24}
+                  height={24}
                 />
                 <div className="flex flex-col space-y-2">
                   <Text>{option.label}</Text>
-                  {/* <Text>{`${option.balance} ${option.assetUnit}`}</Text> */}
                 </div>
               </div>
             </li>

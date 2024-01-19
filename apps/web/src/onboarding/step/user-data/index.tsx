@@ -5,7 +5,7 @@ import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
 import { UserDataOnboardingStep } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
 import { observer } from "mobx-react-lite";
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
 
 export const UserDataStep = observer(function UserDataStep({
@@ -46,8 +46,8 @@ export const UserDataStep = observer(function UserDataStep({
       </Text>
       <Input
         className="w-96"
-        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          draft.value.setName(e.target.value);
+        onChange={(inputValue) => {
+          draft.value.setName(inputValue);
         }}
         value={draft.value.name}
         placeholder="Name"
