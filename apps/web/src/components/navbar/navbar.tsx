@@ -9,7 +9,7 @@ import { Button, Divider, Account, Footer, PrimaryLink, Text } from "..";
 
 const navMenu = [
   {
-    href: "/dashboard/dashboard",
+    href: "/dashboard",
     text: "Home",
     module: "dashboard",
     icon: <FaHome className="h-8 w-8 text-white" />,
