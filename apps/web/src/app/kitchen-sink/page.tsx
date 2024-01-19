@@ -91,17 +91,11 @@ const Homepage = observer(function Homepage() {
           <Notification
             type="warning"
             description="Sample warning description"
-            title="Warning title"
           />
-          <Notification
-            type="error"
-            description="Sample error description"
-            title="Error title"
-          />
+          <Notification type="error" description="Sample error description" />
           <Notification
             type="success"
             description="Sample success description"
-            title="Success title"
           />
         </div>
         <div className="col-span-2 space-y-3">
