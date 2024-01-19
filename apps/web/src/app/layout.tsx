@@ -1,4 +1,4 @@
-import { Header, Notification } from "@/components";
+import { Header, PasskeyNotification } from "@/components";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
@@ -19,8 +19,6 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  // TODO: get this value from Jonas's implementation
-  const isOnlyPassKey = true;
   return (
     <html lang="en" className="bg-black">
       <body
@@ -31,12 +29,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       >
         <Provider>
           <Header />
-          {isOnlyPassKey && (
-            <Notification
-              description="CAUTION: Your account is currently only secured by your device passkey. Please add a <b>mobile key</b> to enable recovery on other devices."
-              type="warning"
-            />
-          )}
+          <PasskeyNotification />
           <main id="main" className="relative flex w-full grow">
             {children}
           </main>
