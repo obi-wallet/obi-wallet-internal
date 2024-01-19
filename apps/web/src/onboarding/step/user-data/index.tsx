@@ -5,13 +5,34 @@ import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
 import { UserDataOnboardingStep } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
 import { observer } from "mobx-react-lite";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 export const UserDataStep = observer(function UserDataStep({
   draft,
   back,
   next,
 }: StepProps<UserDataOnboardingStep>) {
+  const [defaultImageFile, setDefaultImageFile] = useState<File>();
+
+  useEffect(() => {
+    const loadDefaults = async () => {
+      try {
+        const response = await fetch("/assets/images/default-avatar.png");
+        const blob = await response.blob();
+        const file = new File([blob], "defaultImage.png", {
+          type: "image/png",
+        });
+        setDefaultImageFile(file);
+
+        draft.value.setName("My OBI Wallet");
+      } catch (error) {
+        console.error("Error loading image:", error);
+      }
+    };
+
+    loadDefaults();
+  }, []);
+
   return (
     <>
       <Text fontWeight="bold" size="3xl">
@@ -33,14 +54,15 @@ export const UserDataStep = observer(function UserDataStep({
         }}
         value={draft.value.name}
         placeholder="Name"
+        labelBgColor="bg-slate-950"
       />
 
       <ImageDropzone
         placeholder="Upload Picture"
         onChange={(_, fileBody) => {
-          console.log({ fileBody });
           draft.value.setImage(fileBody);
         }}
+        defaultImageFile={defaultImageFile}
       />
 
       <OnboardingButtons

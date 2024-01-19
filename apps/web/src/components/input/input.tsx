@@ -12,6 +12,7 @@ import { IconType } from "react-icons";
 type InputProps = {
   startIcon?: IconType;
   endIcon?: IconType;
+  labelBgColor?: string;
   classNames?: {
     startIcon?: string;
     endIcon?: string;
@@ -28,6 +29,7 @@ export function Input({
   classNames,
   disabled,
   placeholder,
+  labelBgColor,
   ...rest
 }: InputProps) {
   const [text, setText] = useState("");
@@ -76,7 +78,10 @@ export function Input({
 
       <label
         htmlFor={id}
-        className="absolute left-0 top-0 ml-5 -translate-y-1/2 bg-slate-950 px-2 py-1 text-xs text-white"
+        className={cn(
+          "absolute left-0 top-0 ml-5 -translate-y-1/2 bg-slate-900 px-2 py-1 text-xs text-white",
+          labelBgColor,
+        )}
       >
         {placeholder}
       </label>
