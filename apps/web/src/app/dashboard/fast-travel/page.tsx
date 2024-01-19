@@ -1,11 +1,17 @@
 "use client";
+
 import { Box, Divider, IBalanceOption, Text, TravelModal } from "@/components";
+import { useCosmosAddress, useEvmAddress } from "@/hooks/use-address";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useState } from "react";
 import { FaHome } from "react-icons/fa";
 import { FaSketch } from "react-icons/fa6";
 
-export default function FastTravel() {
+export default observer(function FastTravel() {
+  console.log(useCosmosAddress("cosmos"));
+  console.log(useEvmAddress());
+
   const assets = [
     {
       label: "NTRN",
@@ -145,4 +151,4 @@ export default function FastTravel() {
       </div>
     </div>
   );
-}
+});
