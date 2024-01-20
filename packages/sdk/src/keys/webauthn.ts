@@ -138,12 +138,13 @@ export async function getOrCreatePasskey(): Promise<
 > {
   try {
     const publicKey = generateWebAuthnPubKey();
-    let credential;
-    try {
-      credential = await get({ publicKey });
-    } catch (e) {
-      credential = await create({ publicKey });
-    }
+    const credential = await create({ publicKey });
+    // let credential;
+    // try {
+    //   credential = await get({ publicKey });
+    // } catch (e) {
+    //   credential = await create({ publicKey });
+    // }
 
     console.log("webauthn credential id: ", credential.id);
     const combinedPrivateKey = await combineKeys(
