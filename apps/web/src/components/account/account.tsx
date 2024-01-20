@@ -16,10 +16,10 @@ export const Account = observer(function Account() {
 
   return (
     <div className="flex  space-x-7">
-      {/* <div className="h-28 w-28 rounded-full bg-sky-500"></div> */}
-      {/* TODO: actually show avatar */}
       {userData.avatar ? (
-        <div>TODO</div>
+        <div className="h-28 w-28 rounded-full bg-sky-500">
+          <img className="h-28 w-28 rounded-full" src={userData.avatar} />
+        </div>
       ) : (
         <FaCircleUser className="h-28 w-28 text-white" />
       )}
