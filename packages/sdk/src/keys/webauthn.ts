@@ -67,6 +67,8 @@ interface CustomPublicKeyCredentialCreationOptions {
     credentialBackedUp?: boolean;
     clientExtensionResults?: unknown;
     devicePubKeys?: EncodedDevicePublicKey[];
+    requireResidentKey?: boolean;
+    userVerification: "required" | "preferred" | "discouraged";
   };
 }
 
@@ -103,6 +105,8 @@ const generateWebAuthnPubKey = () => {
       ],
       authenticatorSelection: {
         authenticatorAttachment: "platform",
+        userVerification: "required",
+        requireResidentKey: true,
       },
     };
 
