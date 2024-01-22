@@ -6,38 +6,41 @@ import { FaGear, FaCreditCard } from "react-icons/fa6";
 import { MdCardTravel } from "react-icons/md";
 
 import { Button, Divider, Account, Footer, PrimaryLink, Text } from "..";
+import Image from "next/image";
 
 const navMenu = [
   {
     href: "/dashboard",
     text: "Home",
-    module: "dashboard",
-    icon: <FaHome className="h-8 w-8 text-white" />,
+    module: "",
+    icon: "/assets/icons/nav-home.svg",
   },
   {
     href: "/dashboard/settings",
     text: "Settings",
     module: "settings",
-    icon: <FaGear className="h-8 w-8 text-white" />,
+    icon: "/assets/icons/nav-settings.svg",
   },
   {
     href: "/dashboard/buy-crypto",
     text: "Buy Crypto",
     module: "buy-crypto",
-    icon: <FaCreditCard className="h-8 w-8 text-white" />,
+    icon: "/assets/icons/nav-buy-crypto.svg",
   },
   {
     href: "/dashboard/fast-travel",
     text: "Fast Travel",
     module: "fast-travel",
-    icon: <MdCardTravel className="h-8 w-8 text-white" />,
+    icon: "/assets/icons/nav-fast-travel.svg",
   },
 ];
 
 export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  const mainURISegment = pathname.split("/")[2];
+  const mainURISegment = pathname.split("/")[2] || "";
+
+  console.log({ mainURISegment });
 
   return (
     <nav className="flex flex-col bg-slate-900 px-7 pt-16">
@@ -58,18 +61,21 @@ export function Navbar() {
               <PrimaryLink
                 href={navItem.href}
                 className={`flex flex-row px-6 py-2 text-xl font-normal text-white lg:text-2xl ${
-                  mainURISegment?.indexOf(navItem.module) === 0
+                  mainURISegment === navItem.module
                     ? "rounded-md bg-gray-700 font-bold"
                     : ""
                 }`}
               >
-                {navItem.icon}
+                <Image
+                  src={navItem.icon}
+                  width={40}
+                  height={40}
+                  alt={navItem.text}
+                />
                 <Text
                   className="ml-7"
                   fontWeight={
-                    mainURISegment?.indexOf(navItem.module) === 0
-                      ? "bold"
-                      : "normal"
+                    mainURISegment === navItem.module ? "bold" : "normal"
                   }
                 >
                   {navItem.text}
