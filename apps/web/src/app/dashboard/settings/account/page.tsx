@@ -1,6 +1,5 @@
 "use client";
 import { Box, Button, Divider, ImageDropzone, Input, Text } from "@/components";
-import { ChangeEvent } from "react";
 
 export default function Settings() {
   return (
@@ -10,15 +9,11 @@ export default function Settings() {
       <div className="mt-3 space-y-3">
         <Input
           className="w-96"
-          onChange={(e: ChangeEvent<HTMLInputElement>) => {}}
           placeholder="Name"
           labelBgColor="bg-slate-900"
         />
 
-        <ImageDropzone
-          placeholder="Upload Picture"
-          onChange={(_, fileBody) => {}}
-        />
+        <ImageDropzone placeholder="Upload Picture" />
       </div>
       <div className="mt-10 grid grid-cols-2 gap-8">
         <Button variant="secondary" block href="/dashboard/settings">

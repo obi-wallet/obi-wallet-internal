@@ -85,8 +85,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       className,
     );
 
-    const ChildrenContent = () => (
-      <>
+    function ChildrenContent() {
+  return <>
         {isLoading && (
           <div
             className={cn(
@@ -143,7 +143,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           </div>
         )}
       </>
-    );
+}
 
     return href ? (
       <Link href={href} className={style} {...rest}>

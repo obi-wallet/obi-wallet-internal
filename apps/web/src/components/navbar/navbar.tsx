@@ -1,12 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { FaHome } from "react-icons/fa";
-import { FaGear, FaCreditCard } from "react-icons/fa6";
-import { MdCardTravel } from "react-icons/md";
 
 import { Button, Divider, Account, Footer, PrimaryLink, Text } from "..";
-import Image from "next/image";
 
 const navMenu = [
   {
