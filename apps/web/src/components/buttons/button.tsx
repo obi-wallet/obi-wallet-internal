@@ -86,64 +86,66 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     );
 
     function ChildrenContent() {
-  return <>
-        {isLoading && (
-          <div
-            className={cn(
-              "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
-              {
-                "text-white": ["primary", "dark"].includes(variant),
-                "text-black": ["light"].includes(variant),
-                "text-primary-500": ["outline", "ghost"].includes(variant),
-              },
-            )}
-          >
-            <FaArrowsRotate className="animate-spin" />
-          </div>
-        )}
-        {LeftIcon && (
-          <div
-            className={cn([
-              size === "base" && "mr-1",
-              size === "sm" && "mr-1.5",
-            ])}
-          >
-            <LeftIcon
-              width={16}
-              height={16}
+      return (
+        <>
+          {isLoading && (
+            <div
               className={cn(
-                [
-                  size === "base" && "md:text-md text-md",
-                  size === "sm" && "md:text-md text-sm",
-                ],
-                classNames?.leftIcon,
+                "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
+                {
+                  "text-white": ["primary", "dark"].includes(variant),
+                  "text-black": ["light"].includes(variant),
+                  "text-primary-500": ["outline", "ghost"].includes(variant),
+                },
               )}
-            />
-          </div>
-        )}
-        {children}
-        {RightIcon && (
-          <div
-            className={cn([
-              size === "base" && "ml-1",
-              size === "sm" && "ml-1.5",
-            ])}
-          >
-            <RightIcon
-              width={16}
-              height={16}
-              className={cn(
-                [
-                  size === "base" && "text-md md:text-md",
-                  size === "sm" && "md:text-md text-sm",
-                ],
-                classNames?.rightIcon,
-              )}
-            />
-          </div>
-        )}
-      </>
-}
+            >
+              <FaArrowsRotate className="animate-spin" />
+            </div>
+          )}
+          {LeftIcon && (
+            <div
+              className={cn([
+                size === "base" && "mr-1",
+                size === "sm" && "mr-1.5",
+              ])}
+            >
+              <LeftIcon
+                width={16}
+                height={16}
+                className={cn(
+                  [
+                    size === "base" && "md:text-md text-md",
+                    size === "sm" && "md:text-md text-sm",
+                  ],
+                  classNames?.leftIcon,
+                )}
+              />
+            </div>
+          )}
+          {children}
+          {RightIcon && (
+            <div
+              className={cn([
+                size === "base" && "ml-1",
+                size === "sm" && "ml-1.5",
+              ])}
+            >
+              <RightIcon
+                width={16}
+                height={16}
+                className={cn(
+                  [
+                    size === "base" && "text-md md:text-md",
+                    size === "sm" && "md:text-md text-sm",
+                  ],
+                  classNames?.rightIcon,
+                )}
+              />
+            </div>
+          )}
+        </>
+      );
+    }
 
     return href ? (
       <Link href={href} className={style} {...rest}>

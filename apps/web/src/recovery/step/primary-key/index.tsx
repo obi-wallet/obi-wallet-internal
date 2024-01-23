@@ -5,7 +5,7 @@ import { ProxyWallet } from "@/onboarding/onboarding-payload";
 import { RecoveryPayload } from "@/recovery/recovery-payload";
 import { useRecover } from "@/recovery/use-recover";
 import { Draft } from "@/stores";
-import { getOrCreatePasskey, KeyType } from "@obi-wallet/sdk";
+import { getPasskey, KeyType } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -20,10 +20,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
 
   const passkeyFlow = useMutation({
     mutationFn: async () => {
-      const result = await getOrCreatePasskey();
-      if (!result.success) return result;
-
-      const { keyPair } = result;
+      const keyPair = await getPasskey();
       await draft.value.setPrimaryKey({
         key: {
           type: KeyType.Device,
@@ -34,6 +31,16 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
       const proxyWallets = await draft.value.lookupProxyWallets(
         keyPair.publicKey,
       );
+
+      const wallet = proxyWallets[0];
+
+      if (wallet) {
+        await recover({
+          multisigKey: draft.value.multisigKey,
+          account: wallet,
+        });
+      }
+
       setProxyWallets(proxyWallets);
     },
   });

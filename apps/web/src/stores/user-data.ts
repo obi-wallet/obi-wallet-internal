@@ -7,7 +7,7 @@ const userDataSchema = z.object({
   avatar: z.string().optional(),
 });
 
-type UserData = z.TypeOf<typeof userDataSchema>;
+export type UserData = z.TypeOf<typeof userDataSchema>;
 
 const userDataPerWalletSchema = z.record(userDataSchema);
 
@@ -35,7 +35,6 @@ export class UserDataStore {
     });
   }
 
-  @action
   public getUserData(address: string): UserData {
     return this.userDataPerWallet[address] ?? {};
   }
