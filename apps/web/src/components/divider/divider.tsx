@@ -7,9 +7,11 @@ export enum DividerDirection {
 export function Divider({
   direction = DividerDirection.Horizontal,
   text = "",
+  className,
 }: {
   direction?: DividerDirection;
   text?: string;
+  className?: string;
 }) {
   switch (direction) {
     case DividerDirection.Horizontal:
@@ -18,6 +20,7 @@ export function Divider({
           className={cn(
             "flex items-center text-xs uppercase text-gray-700 before:flex-[1_1_0%] before:border-t-2 before:border-gray-700 after:flex-[1_1_0%] after:border-t-2 after:border-gray-700",
             text !== "" && "before:me-6 after:ms-6 ",
+            className,
           )}
         >
           {text}
@@ -25,7 +28,9 @@ export function Divider({
       );
     case DividerDirection.Vertical:
       return (
-        <div className="flex w-full items-center justify-center">
+        <div
+          className={cn("flex w-full items-center justify-center", className)}
+        >
           <div className="h-full min-h-[1em] w-0.5 self-stretch bg-neutral-100 opacity-100 dark:opacity-50"></div>
         </div>
       );

@@ -1,0 +1,63 @@
+"use client";
+import { Box, Button, Divider, Text } from "@/components";
+
+export default function Settings() {
+  const keyList = [
+    {
+      label: "Passkey",
+      active: true,
+    },
+    {
+      label: "Phone Number",
+      active: false,
+    },
+    {
+      label: "Telegram Key",
+      active: false,
+    },
+    {
+      label: "Ledger Key",
+      comingSoon: true,
+    },
+  ];
+  return (
+    <Box className="w-2/1 m-6 h-fit w-1/3  px-4 py-6">
+      <Text size="xl">Security Settings</Text>
+      <Text size="sm" fontWeight="medium" className="mt-1">
+        Add keys to your account. Click any of the options below to update or
+        add keys to your account.
+      </Text>
+      <Box className="mt-3 flex justify-between bg-orange-400">
+        <Text size="sm" fontWeight="medium" color="black">
+          Keys Required For Transactions
+        </Text>
+        <Text size="sm" fontWeight="medium" color="black">
+          1/1
+        </Text>
+      </Box>
+      <Divider className="my-2" />
+      <div className="space-y-2">
+        {keyList.map((sigKey) => (
+          <Button
+            key={sigKey.label}
+            variant={sigKey.active ? "confirmed" : "secondary"}
+            disabled={sigKey.comingSoon}
+            block
+          >
+            {!sigKey.active ? "Add " : ""}
+            {sigKey.label}
+            {sigKey.active ? " Active" : sigKey.comingSoon ? " (soon)" : ""}
+          </Button>
+        ))}
+      </div>
+      <div className="mt-40 grid grid-cols-2 gap-8">
+        <Button variant="secondary" block href="/dashboard/settings">
+          Back
+        </Button>
+        <Button variant="primary" block>
+          Save
+        </Button>
+      </div>
+    </Box>
+  );
+}
