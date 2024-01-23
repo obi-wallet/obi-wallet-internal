@@ -56,12 +56,14 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
           : "Sign in with one of the services below to create your first key."}
       </Text>
 
-      <Image
-        width="192"
-        height="192"
-        src="/assets/images/external-passkey.png"
-        alt="passkey"
-      />
+      {step.from === OnboardingFromType.External && (
+        <Image
+          width="192"
+          height="192"
+          src="/assets/images/external-passkey.png"
+          alt="passkey"
+        />
+      )}
 
       <Button
         onClick={() => {
