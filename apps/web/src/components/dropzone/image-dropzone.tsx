@@ -11,12 +11,16 @@ export interface ImageDropzoneProps
   placeholder: string;
   onChange?: (file: File, fileBody: string) => void;
   defaultImageFile?: File;
+  width?: number;
+  height?: number;
 }
 
 export function ImageDropzone({
   placeholder,
   onChange,
   defaultImageFile,
+  width = 100,
+  height = 100,
 }: ImageDropzoneProps) {
   const [file, setFile] = useState<File>();
   const fileObjectUrl = useObjectUrl(file);
@@ -58,16 +62,16 @@ export function ImageDropzone({
   return (
     <div
       {...getRootProps({ className: "dropzone" })}
-      className="flex w-full cursor-pointer justify-center rounded border border-dashed border-gray-500 bg-transparent py-5 text-gray-300"
+      className="flex w-full cursor-pointer justify-center rounded  border-gray-500 bg-transparent py-5 text-gray-300"
     >
       <input {...getInputProps()} />
       {fileObjectUrl ? (
         <Image
           src={fileObjectUrl}
-          className="w-96 rounded-full"
+          className="rounded-full"
           alt="image"
-          width={384}
-          height={384}
+          width={width}
+          height={height}
         />
       ) : (
         <p>{placeholder}</p>
