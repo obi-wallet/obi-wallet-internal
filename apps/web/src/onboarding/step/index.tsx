@@ -1,5 +1,6 @@
 import { OnboardingPayload } from "@/onboarding/onboarding-payload";
 import {
+  OnboardingFromType,
   OnboardingStep,
   OnboardingStepType,
 } from "@/onboarding/onboarding-step";
@@ -15,6 +16,7 @@ export interface StepProps<Step = OnboardingStep> {
   step: Step;
   back?: () => void;
   next?: () => void;
+  from?: OnboardingFromType;
 }
 
 export const Step = observer(function Step(props: StepProps) {

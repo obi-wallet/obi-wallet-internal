@@ -1,5 +1,6 @@
 import { Onboarding } from "@/onboarding";
 import {
+  OnboardingFromType,
   OnboardingStep,
   OnboardingStepType,
 } from "@/onboarding/onboarding-step";
@@ -10,7 +11,7 @@ const flows: Record<string, OnboardingStep[]> = {
   internal: [
     { type: OnboardingStepType.UserData },
     { type: OnboardingStepType.Explanation },
-    { type: OnboardingStepType.PrimaryKey },
+    { type: OnboardingStepType.PrimaryKey, from: OnboardingFromType.Internal },
     {
       type: OnboardingStepType.CreateWallet,
       waitUntilDone: true,
@@ -18,7 +19,7 @@ const flows: Record<string, OnboardingStep[]> = {
     },
   ],
   external: [
-    { type: OnboardingStepType.PrimaryKey },
+    { type: OnboardingStepType.PrimaryKey, from: OnboardingFromType.External },
     {
       type: OnboardingStepType.CreateWallet,
       waitUntilDone: false,

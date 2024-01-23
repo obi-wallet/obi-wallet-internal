@@ -1,16 +1,21 @@
 "use client";
 
 import { Button, Text } from "@/components";
-import { PrimaryKeyOnboardingStep } from "@/onboarding/onboarding-step";
+import {
+  OnboardingFromType,
+  PrimaryKeyOnboardingStep,
+} from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
 import { createPasskey, KeyType, Sdk } from "@obi-wallet/sdk";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
 
 export const PrimaryKeyStep = observer(function PrimaryKeyStep({
   draft,
   back,
   next,
+  step,
 }: StepProps<PrimaryKeyOnboardingStep>) {
   const queryClient = useQueryClient();
 
@@ -36,7 +41,9 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
   return (
     <>
       <Text fontWeight="bold" size="3xl">
-        Create Your First Key
+        {step.from === OnboardingFromType.External
+          ? "Secure Your Asset"
+          : "Create Your First Key"}
       </Text>
       <Text
         className="w-96 text-center"
@@ -44,8 +51,17 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
         leading="tight"
         color="zinc"
       >
-        Sign in with one of the services below to create your first key.
+        {step.from === OnboardingFromType.External
+          ? "Create a passkey to secure access to your SEI tokens and other assets."
+          : "Sign in with one of the services below to create your first key."}
       </Text>
+
+      <Image
+        width="192"
+        height="192"
+        src="/assets/images/external-passkey.png"
+        alt="passkey"
+      />
 
       <Button
         onClick={() => {

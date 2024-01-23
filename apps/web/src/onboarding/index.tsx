@@ -27,6 +27,7 @@ export const Onboarding = observer(function Onboarding({
   const currentStep = steps[step];
   if (!currentStep) return null;
 
+  console.log({ currentStep });
   const back = step > 0 ? () => router.push(`${step - 1}`) : undefined;
   const next =
     step + 1 < steps.length ? () => router.push(`${step + 1}`) : undefined;
