@@ -1,14 +1,11 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { create, get } from "@github/webauthn-json";
 import type { CredentialDeviceType } from "@simplewebauthn/typescript-types";
-import invariant from "tiny-invariant";
 
-import { getBiometricsPrivateKey } from "./legacy";
 import { Secp256k1KeyPair } from "./sec256k1";
 import { KeySubclassTypeMapping, KeyType } from "../data-structures/key";
 import { Secp256k1PrivateKeySigner } from "../signers/sec256k1-private-key";
 
-const DEMO_PUBLIC_KEY = "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI";
 const DEMO_PRIVATE_KEY = "jrfHogEDo91xaC0Kym/BMheAhlm5z93fVwMT8mKTGy4=";
 // Max valid secp256k1 private key value
 const SECP256K1_MAX = BigInt(
@@ -67,10 +64,12 @@ interface CustomPublicKeyCredentialCreationOptions {
     credentialBackedUp?: boolean;
     clientExtensionResults?: unknown;
     devicePubKeys?: EncodedDevicePublicKey[];
+    requireResidentKey?: boolean;
+    userVerification: "required" | "preferred" | "discouraged";
   };
 }
 
-const generateWebAuthnPubKey = () => {
+function generateWebAuthnPubKey() {
   try {
     // TODO: refactor here
     let challenge = new Uint8Array(32); // Normally, this challenge is provided by the server.
@@ -80,6 +79,8 @@ const generateWebAuthnPubKey = () => {
       challenge = new Uint8Array(32).fill(0);
     }
 
+    const name = `My Obi Passkey created at ${new Date().toISOString()}`;
+
     const publicKey: CustomPublicKeyCredentialCreationOptions = {
       challenge: btoa(String.fromCharCode(...challenge)),
       rp: {
@@ -87,9 +88,9 @@ const generateWebAuthnPubKey = () => {
         // id: new URL(window.location.origin).hostname,
       },
       user: {
-        id: btoa(String.fromCharCode(...new Uint8Array(16))),
-        name: "My Obi Device Key",
-        displayName: "My Obi Device Key",
+        id: btoa(`${Date.now()}`),
+        name,
+        displayName: name,
       },
       pubKeyCredParams: [
         {
@@ -103,6 +104,8 @@ const generateWebAuthnPubKey = () => {
       ],
       authenticatorSelection: {
         authenticatorAttachment: "platform",
+        userVerification: "required",
+        requireResidentKey: true,
       },
     };
 
@@ -111,83 +114,37 @@ const generateWebAuthnPubKey = () => {
     console.error("WebAuthn Public Key creation error:", JSON.stringify(e));
     throw new Error("Failed to generate WebAuthn Credential");
   }
-};
+}
 
-function generateWebAuthnSec256k1KeyPair({
-  publicKey,
-  privateKey,
-}: {
-  publicKey: string;
-  privateKey: string;
-}): Secp256k1KeyPair {
+export async function createPasskey(): Promise<Secp256k1KeyPair> {
+  const credential = await create({ publicKey: generateWebAuthnPubKey() });
+  return await credentialToKeyPair(credential);
+}
+
+export async function getPasskey(): Promise<Secp256k1KeyPair> {
+  const credential = await get({ publicKey: generateWebAuthnPubKey() });
+  return await credentialToKeyPair(credential);
+}
+
+async function credentialToKeyPair(credential: {
+  id: string;
+}): Promise<Secp256k1KeyPair> {
+  const privateKey = await combineKeys(
+    DEMO_PRIVATE_KEY,
+    Buffer.from(credential.id).toString("hex"),
+  );
+  const webauthnSigner = new Secp256k1PrivateKeySigner(privateKey);
   return {
-    publicKey: {
-      type: "tendermint/PubKeySecp256k1",
-      value: publicKey,
-    },
-    privateKey,
+    publicKey: webauthnSigner.publicKey,
+    privateKey: privateKey,
   };
 }
 
-export async function getOrCreatePasskey(): Promise<
-  { success: true; keyPair: Secp256k1KeyPair } | { success: false }
-> {
-  try {
-    const publicKey = generateWebAuthnPubKey();
-    let credential;
-    try {
-      credential = await get({ publicKey });
-    } catch (e) {
-      credential = await create({ publicKey });
-    }
-
-    console.log("webauthn credential id: ", credential.id);
-    const combinedPrivateKey = await combineKeys(
-      DEMO_PRIVATE_KEY,
-      Buffer.from(credential.id).toString("hex"),
-    );
-    const webauthnSigner = new Secp256k1PrivateKeySigner(combinedPrivateKey);
-    return {
-      success: true,
-      keyPair: {
-        publicKey: webauthnSigner.publicKey,
-        privateKey: combinedPrivateKey,
-      },
-    };
-  } catch (err) {
-    console.error("WebAuthn error:", err);
-    return {
-      success: false,
-    };
-  }
-}
-
-/**
- * @deprecated
- */
-export async function getOrCreateDeviceKeyPair(
-  demoMode: boolean,
-): Promise<Secp256k1KeyPair> {
-  if (demoMode) {
-    return generateWebAuthnSec256k1KeyPair({
-      publicKey: DEMO_PUBLIC_KEY,
-      privateKey: DEMO_PRIVATE_KEY,
-    });
-  }
-
-  const res = await getOrCreatePasskey();
-  if (res.success) {
-    return res.keyPair;
-  } else {
-    throw new Error("WebAuthn request rejected");
-  }
-}
-
 // Function to combine the DEMO_PRIVATE_KEY with the credential.id
-const combineKeys = async (
+async function combineKeys(
   demoKey: string,
   credentialKey: string,
-): Promise<string> => {
+): Promise<string> {
   const combinedString = demoKey + credentialKey;
   const combinedUint8Array = new Uint8Array(
     combinedString.split("").map((char) => char.charCodeAt(0)),
@@ -213,15 +170,15 @@ const combineKeys = async (
 
   // Convert the hex to base64
   return hexToBase64(privateKeyBigInt.toString(16));
-};
+}
 
 // Helper function to convert hex to base64
-const hexToBase64 = (hex: string) => {
+function hexToBase64(hex: string) {
   const byteArray = new Uint8Array(
     hex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)),
   );
   return btoa(String.fromCharCode(...byteArray));
-};
+}
 
 export async function getDevicePrivateKey(
   key: KeySubclassTypeMapping[KeyType.Device],
@@ -230,27 +187,5 @@ export async function getDevicePrivateKey(
     console.log("device private key exists");
     return key.payload.privateKey;
   }
-  try {
-    const kp = await getOrCreateDeviceKeyPair(false);
-    return kp.privateKey;
-  } catch (e) {
-    try {
-      const privateKey = await getBiometricsPrivateKey({
-        publicKey: key.publicKey.value,
-      });
-
-      key.setSerialized({
-        type: KeyType.Device,
-        payload: {
-          publicKey: key.publicKey,
-          privateKey,
-        },
-      });
-      invariant(privateKey, "no private key");
-      console.log("returning device private key");
-      return privateKey;
-    } catch (e) {
-      return null;
-    }
-  }
+  return (await getPasskey()).privateKey;
 }
