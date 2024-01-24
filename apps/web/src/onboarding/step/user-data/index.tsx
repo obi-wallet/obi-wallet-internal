@@ -63,6 +63,8 @@ export const UserDataStep = observer(function UserDataStep({
           draft.value.setImage(fileBody);
         }}
         defaultImageFile={defaultImageFile}
+        width={120}
+        height={120}
       />
 
       <OnboardingButtons
