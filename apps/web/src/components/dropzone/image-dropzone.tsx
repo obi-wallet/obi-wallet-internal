@@ -29,6 +29,8 @@ export function ImageDropzone({
     if (defaultImageFile) {
       readFile(defaultImageFile);
     }
+    // TODO: refactor, we shouldn't need readFile for the default image at all.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultImageFile]);
 
   const readFile = (file: File) => {

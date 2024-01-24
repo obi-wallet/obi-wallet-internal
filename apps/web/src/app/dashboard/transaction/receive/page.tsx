@@ -1,40 +1,30 @@
 "use client";
-import {
-  BalanceInput,
-  Box,
-  Button,
-  IBalanceOption,
-  Input,
-  Tab,
-  Tabs,
-} from "@/components";
+
+import { Box, Input, TabUi } from "@/components";
+import { usePublicKey } from "@/hooks/use-public-key";
+import { TargetChain, TargetChainId } from "@/target-chain";
 import copy from "copy-to-clipboard";
+import { observer } from "mobx-react-lite";
 import { useQRCode } from "next-qrcode";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { FaSketch } from "react-icons/fa6";
 
-export default function Transaction() {
+export default observer(function Receive() {
   const { Canvas } = useQRCode();
+  const [chainId, _setChainId] = useState<TargetChainId | null>(
+    TargetChainId.Sei,
+  );
   const [isCopied, setIsCopied] = useState(false);
 
-  const balances: IBalanceOption[] = [
-    {
-      network: "Neutron",
-      assetUnit: "NTRN",
-      balance: 140.44,
-      icon: FaSketch,
-    },
-    {
-      network: "Neutron1",
-      assetUnit: "NTRN1",
-      balance: 120.55,
-      icon: FaSketch,
-    },
-  ];
+  const sdk = chainId ? TargetChain.chainId(chainId) : null;
+  const publicKey = usePublicKey();
+  const chainLabel = sdk?.label ?? "";
+  const address = publicKey && sdk ? sdk.computeAddress(publicKey) : null;
 
   const handleClickQRCode = () => {
-    copy("User's address");
+    if (!address) return;
+
+    copy(address);
     setIsCopied(true);
 
     setTimeout(() => {
@@ -45,24 +35,28 @@ export default function Transaction() {
   return (
     <div className="h-full w-full p-6">
       <Box className="w-2/3">
-        <Tabs>
-          <Tab label="Send Tokens">
-            <div className="space-y-7 py-4">
-              <BalanceInput placeholder="Amount" balances={balances} />
-              <Input placeholder="Recipient Address" />
-              <div className="flex justify-end">
-                <Button className="block w-44">Next</Button>
-              </div>
-            </div>
-          </Tab>
-          <Tab label="Receive Tokens">
-            <div className="flex w-full flex-col items-center justify-center space-y-7 py-4">
-              <Input placeholder="Search for a chain" startIcon={FaSearch} />
-              <Input placeholder="Your Address" />
+        <TabUi.Links>
+          <TabUi.Link href="/dashboard/transaction/send">
+            Send Tokens
+          </TabUi.Link>
+          <TabUi.Link href="/dashboard/transaction/receive" active>
+            Receive Tokens
+          </TabUi.Link>
+        </TabUi.Links>
+
+        <TabUi.Main>
+          <div className="flex w-full flex-col items-center justify-center space-y-7 py-4">
+            <Input
+              placeholder="Search for a chain"
+              startIcon={FaSearch}
+              value={chainLabel}
+            />
+            <Input placeholder="Your Address" value={address ?? ""} />
+            {address ? (
               <div className="relative cursor-pointer rounded-xl border border-zinc-800 p-6">
                 <div onClick={handleClickQRCode}>
                   <Canvas
-                    text={"User's address"}
+                    text={address}
                     options={{
                       errorCorrectionLevel: "M",
                       margin: 3,
@@ -80,10 +74,10 @@ export default function Transaction() {
                   Click to Copy
                 </label>
               </div>
-            </div>
-          </Tab>
-        </Tabs>
+            ) : null}
+          </div>
+        </TabUi.Main>
       </Box>
     </div>
   );
-}
+});

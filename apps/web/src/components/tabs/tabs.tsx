@@ -1,29 +1,58 @@
 "use client";
-import React, { ReactElement, ReactNode, useState } from "react";
-interface TabProps {
+
+import { UnstyledLink } from "@/components";
+import { Children, ReactElement, ReactNode, useState } from "react";
+
+function TabUiLinks({ children }: { children: ReactNode }) {
+  return <div className="flex border-gray-300">{children}</div>;
+}
+
+function TabUiLink({
+  active,
+  href,
+  children,
+}: {
+  active?: boolean;
+  href: string;
+  children: ReactNode;
+}) {
+  return (
+    <UnstyledLink
+      className={`${
+        active ? "rounded-xl bg-slate-950" : ""
+      } flex-1 py-2 text-center text-base
+            font-normal text-white`}
+      href={href}
+    >
+      {children}
+    </UnstyledLink>
+  );
+}
+
+function TabUiMain({ children }: { children: ReactNode }) {
+  return <div className="py-4">{children}</div>;
+}
+
+export const TabUi = {
+  Links: TabUiLinks,
+  Link: TabUiLink,
+  Main: TabUiMain,
+};
+
+export interface TabProps {
   label?: string;
   children: ReactNode;
 }
 
-function Tabs({ children }: { children: ReactNode }) {
+export function Tabs({ children }: { children: ReactElement<TabProps>[] }) {
   const [activeTab, setActiveTab] = useState<string>(
-    (React.Children.toArray(children)[0] as ReactElement<TabProps>).props
-      .label || "",
+    (Children.toArray(children)[0] as ReactElement<TabProps>).props.label || "",
   );
 
-  const handleClick = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    newActiveTab: string,
-  ) => {
-    e.preventDefault();
-    setActiveTab(newActiveTab);
-  };
-
   return (
-    <div className="">
-      <div className="flex border-gray-300">
-        {React.Children.map(children, (child) => {
-          const tab = child as ReactElement<TabProps>;
+    <>
+      <TabUi.Links>
+        {Children.map(children, (tab) => {
           return (
             <button
               key={tab.props.label}
@@ -31,28 +60,28 @@ function Tabs({ children }: { children: ReactNode }) {
                 activeTab === tab.props.label ? "rounded-xl bg-slate-950" : ""
               } flex-1 py-2 text-base font-normal
             text-white`}
-              onClick={(e) => handleClick(e, tab.props.label || "")}
+              onClick={() => {
+                setActiveTab(tab.props.label || "");
+              }}
             >
               {tab.props.label}
             </button>
           );
         })}
-      </div>
-      <div className="py-4">
-        {React.Children.map(children, (child) => {
+      </TabUi.Links>
+      <TabUi.Main>
+        {Children.map(children, (child) => {
           const tab = child as ReactElement<TabProps>;
           if (tab.props.label === activeTab) {
             return <div key={tab.props.label}>{tab.props.children}</div>;
           }
           return null;
         })}
-      </div>
-    </div>
+      </TabUi.Main>
+    </>
   );
 }
 
-function Tab({ children }: TabProps) {
+export function Tab({ children }: TabProps) {
   return <div className="hidden">{children}</div>;
 }
-
-export { Tabs, Tab };

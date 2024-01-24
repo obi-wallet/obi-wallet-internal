@@ -5,7 +5,8 @@ import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
 import { UserDataOnboardingStep } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
 import { observer } from "mobx-react-lite";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
+import { useEffectOnceWhen } from "rooks";
 
 export const UserDataStep = observer(function UserDataStep({
   draft,
@@ -14,24 +15,20 @@ export const UserDataStep = observer(function UserDataStep({
 }: StepProps<UserDataOnboardingStep>) {
   const [defaultImageFile, setDefaultImageFile] = useState<File>();
 
-  useEffect(() => {
-    const loadDefaults = async () => {
-      try {
-        const response = await fetch("/assets/images/default-avatar.png");
-        const blob = await response.blob();
-        const file = new File([blob], "defaultImage.png", {
-          type: "image/png",
-        });
-        setDefaultImageFile(file);
+  useEffectOnceWhen(async () => {
+    try {
+      const response = await fetch("/assets/images/default-avatar.png");
+      const blob = await response.blob();
+      const file = new File([blob], "defaultImage.png", {
+        type: "image/png",
+      });
+      setDefaultImageFile(file);
 
-        draft.value.setName("My OBI Wallet");
-      } catch (error) {
-        console.error("Error loading image:", error);
-      }
-    };
-
-    loadDefaults();
-  }, []);
+      draft.value.setName("My OBI Wallet");
+    } catch (error) {
+      console.error("Error loading image:", error);
+    }
+  });
 
   return (
     <>
