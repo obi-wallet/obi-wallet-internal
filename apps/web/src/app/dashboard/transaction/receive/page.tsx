@@ -47,11 +47,11 @@ export default observer(function Receive() {
         <TabUi.Main>
           <div className="flex w-full flex-col items-center justify-center space-y-7 py-4">
             <Input
-              placeholder="Search for a chain"
+              labelText="Search for a chain"
               startIcon={FaSearch}
               value={chainLabel}
             />
-            <Input placeholder="Your Address" value={address ?? ""} />
+            <Input labelText="Your Address" value={address ?? ""} />
             {address ? (
               <div className="relative cursor-pointer rounded-xl border border-zinc-800 p-6">
                 <div onClick={handleClickQRCode}>

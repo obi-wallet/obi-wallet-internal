@@ -88,7 +88,7 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
 
   return (
     <div className="flex w-full flex-col ">
-      <div className=" w-full ">
+      <div className=" relative w-full ">
         {StartIcon && (
           <span className="absolute left-3 top-1/2 -translate-y-1/2">
             <StartIcon
