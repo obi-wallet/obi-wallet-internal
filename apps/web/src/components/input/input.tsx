@@ -44,15 +44,18 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
     placeholder,
     labelBgColor,
     value,
-
+    type = "text",
     errorMessage,
-
+    defaultValue,
     ...rest
   }: InputProps,
   parentRef: React.Ref<ParentRef>,
 ) {
   const [text, setText] = useState<string>("");
   const ref = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    setText(defaultValue as string);
+  }, [defaultValue]);
 
   useImperativeHandle(parentRef, () => ({
     // This function exposes the localRef's current value to the parent
@@ -64,9 +67,8 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
 
   useEffect(() => {
     if (value !== text) {
-      if (!isNaN(Number(value))) {
-        setText(value as string);
-      }
+      if (type === "number" && isNaN(Number(value))) return;
+      setText(value as string);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
