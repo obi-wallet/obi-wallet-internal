@@ -1,3 +1,7 @@
+export enum OnboardingFromType {
+  Internal,
+  External,
+}
 export enum OnboardingStepType {
   UserData,
   Explanation,
@@ -17,6 +21,7 @@ export interface ExplanationOnboardingStep {
 export interface PrimaryKeyOnboardingStep {
   type: OnboardingStepType.PrimaryKey;
   demoMode?: boolean;
+  from?: OnboardingFromType;
 }
 
 export interface CreateWalletOnboardingStep {
