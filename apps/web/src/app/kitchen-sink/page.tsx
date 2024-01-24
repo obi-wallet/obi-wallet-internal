@@ -99,25 +99,25 @@ const Homepage = observer(function Homepage() {
           />
         </div>
         <div className="col-span-2 space-y-3">
-          <Input placeholder="Sample input" id="input-no-icons" />
+          <Input labelText="Sample input" id="input-no-icons" />
           <Input
-            placeholder="Sample input"
+            labelText="Sample input"
             startIcon={FaGoogle}
             id="input-with-start-icon"
           />
           <Input
-            placeholder="Sample input"
+            labelText="Sample input"
             endIcon={FaGoogle}
             id="input-with-end-icon"
           />
           <Input
-            placeholder="Sample input"
+            labelText="Sample input"
             startIcon={FaGoogle}
             endIcon={FaGoogle}
             id="input-with-both-icons"
           />
           <Input
-            placeholder="Disabled input"
+            labelText="Disabled input"
             startIcon={FaGoogle}
             endIcon={FaGoogle}
             disabled

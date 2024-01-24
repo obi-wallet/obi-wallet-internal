@@ -7,7 +7,8 @@ import {
   Input,
   TabUi,
 } from "@/components";
-import { FaSketch } from "react-icons/fa6";
+
+import { toAssets } from "../../fast-travel/assets";
 
 export default function Send() {
   const balances: IBalanceOption[] = [
@@ -15,13 +16,13 @@ export default function Send() {
       network: "Neutron",
       assetUnit: "NTRN",
       balance: 140.44,
-      icon: FaSketch,
+      image: toAssets["neutron"]?.image,
     },
     {
-      network: "Neutron1",
-      assetUnit: "NTRN1",
+      network: "Osmosis",
+      assetUnit: "osmo",
       balance: 120.55,
-      icon: FaSketch,
+      image: toAssets["osmosis"]?.image,
     },
   ];
 
@@ -39,8 +40,8 @@ export default function Send() {
 
         <TabUi.Main>
           <div className="space-y-7 py-4">
-            <BalanceInput placeholder="Amount" balances={balances} />
-            <Input placeholder="Recipient Address" />
+            <BalanceInput label="Amount" balances={balances} />
+            <Input labelText="Recipient Address" />
             <div className="flex justify-end">
               <Button className="block w-44">Next</Button>
             </div>

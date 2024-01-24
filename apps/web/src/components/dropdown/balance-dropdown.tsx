@@ -1,14 +1,14 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { IconType } from "react-icons";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
 import { Text } from "../text";
 
 export interface IBalanceOption {
-  icon: IconType;
+  image: string | undefined;
   network: string;
   assetUnit: string;
   balance: number;
@@ -47,7 +47,7 @@ export function BalanceDropDown({
 
     onSelectOption && onSelectOption(option);
   };
-
+  console.log(options);
   return (
     <div ref={ref} className="relative z-50">
       <button
@@ -59,11 +59,16 @@ export function BalanceDropDown({
       >
         <div className="flex items-center space-x-3">
           {selectedOption && (
-            <selectedOption.icon style={{ width: 24, height: 24 }} />
+            <Image
+              src={selectedOption.image ?? "  "}
+              alt={selectedOption.network}
+              width={24}
+              height={24}
+            />
           )}
           <div className="flex flex-col space-y-2">
             <Text>{selectedOption?.network}</Text>
-            {/* <Text>{`${selectedOption?.balance} ${selectedOption?.assetUnit}`}</Text> */}
+            <Text>{`${selectedOption?.balance} ${selectedOption?.assetUnit}`}</Text>
           </div>
           <div className="ml-3">{isOpen ? <FaAngleUp /> : <FaAngleDown />}</div>
         </div>
@@ -90,10 +95,15 @@ export function BalanceDropDown({
               )}
             >
               <div className="flex items-center space-x-3">
-                <option.icon style={{ width: 24, height: 24 }} />
+                <Image
+                  src={option.image ?? "  "}
+                  alt={option.network}
+                  width={24}
+                  height={24}
+                />
                 <div className="flex flex-col space-y-2">
                   <Text>{option.network}</Text>
-                  {/* <Text>{`${option.balance} ${option.assetUnit}`}</Text> */}
+                  <Text>{`${option.balance} ${option.assetUnit}`}</Text>
                 </div>
               </div>
             </li>
