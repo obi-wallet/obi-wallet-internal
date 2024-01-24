@@ -36,7 +36,7 @@ export const CreateBeneficiaryAccountScreen =
         name: nonEmptyString("Name"),
         address: address(wallet.chainId),
       });
-      const { control, handleSubmit, formState } = useForm({
+      const { control, handleSubmit, formState, watch } = useForm({
         defaultValues: {
           name: "",
           address: "",
@@ -44,7 +44,7 @@ export const CreateBeneficiaryAccountScreen =
         mode: "onTouched",
         resolver: zodResolver(schema),
       });
-
+ 
       const keyboardVisible = useKeyboardVisible();
       const isAndroid = Platform.OS === "android";
       const gatekeeperConfig = draftsStore.get<GatekeeperConfig>({

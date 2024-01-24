@@ -5,4 +5,12 @@ module.exports = {
     "@obi-wallet/headless-ui",
     "@obi-wallet/sdk",
   ],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
+  },
 };

@@ -1,101 +1,79 @@
 "use client";
 
-import { Box, Divider, IBalanceOption, Text, TravelModal } from "@/components";
-import { useCosmosAddress, useEvmAddress } from "@/hooks/use-address";
+import { Box, Divider, Text, TravelModal } from "@/components";
+import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useState } from "react";
 import { FaHome } from "react-icons/fa";
-import { FaSketch } from "react-icons/fa6";
+
+import { toAssets } from "./assets";
 
 export default observer(function FastTravel() {
-  console.log(useCosmosAddress("cosmos"));
-  console.log(useEvmAddress());
-
-  const assets = [
-    {
-      label: "NTRN",
-      icon: <FaHome className="h-8 w-8 text-white" />,
-    },
-    {
-      label: "NEWT",
-      icon: <FaHome className="h-8 w-8 text-white" />,
-    },
-    {
-      label: "AUTISM",
-      icon: <FaHome className="h-8 w-8 text-white" />,
-    },
-    {
-      label: "SEI",
-      icon: <FaHome className="h-8 w-8 text-white" />,
-    },
-  ];
-  const nfts = [
-    {
-      label: "MONKE",
-      icon: <FaHome className="h-8 w-8 text-white" />,
-    },
-  ];
-  const vaults = [
-    {
-      label: "Sommelier Finance: Real Yield ETH - 14.42% ",
-      icon: <FaHome className="h-8 w-8 text-white" />,
-    },
-  ];
-  const farms = [
-    {
-      label: "Celestia Staking (Stakes 1 TIA for 100 Accounts)",
-      icon: <FaHome className="h-8 w-8 text-white" />,
-    },
-  ];
-
-  const balances: IBalanceOption[] = [
-    {
-      network: "Ethereum",
-      assetUnit: "ETH",
-      balance: 12,
-      icon: FaSketch,
-    },
-    {
-      network: "Neutron1",
-      assetUnit: "NTRN1",
-      balance: 120.55,
-      icon: FaSketch,
-    },
-  ];
-
   const [isOpenTravelModal, setIsOpenTravelModal] = useState(false);
+  const [targetAsset, setTargetAsset] = useState<string | undefined>(undefined);
 
   return (
     <div className="h-full w-full px-7 py-5">
       <div className="relative h-full w-full text-white">
-        <Box className="h-full px-0 pt-0">
-          <Image
-            src="/travel.png"
-            alt="fast-travel"
-            width={0}
-            height={0}
-            sizes="100vw"
-            style={{
-              width: "100%",
-              height: "auto",
-              borderRadius: 6,
-              cursor: "pointer",
-            }} // optional
-            onClick={() => setIsOpenTravelModal(true)}
-          />
+        <Box className="h-10 px-0 pt-0">
+          <div className="relative">
+            <Image
+              src="/travel.png"
+              alt="fast-travel"
+              width={0}
+              height={0}
+              sizes="100vw"
+              style={{
+                width: "100%",
+                height: "auto",
+                borderRadius: 6,
+              }}
+              className="opacity-40"
+            />
+            <div className=" absolute top-0 flex flex h-full w-full flex-col justify-center p-10">
+              <h1 className="mb-4 text-4xl font-bold text-white">
+                Obi Fast Travel
+              </h1>
+              <h2 className="text-xl font-bold text-white">
+                Skip the research and hassle of migrating to new ecosystems.
+                Select an asset below to receive it in your Obi account.
+              </h2>
+            </div>
+          </div>
           <div className="mt-4 space-y-5 px-3">
             <div className="space-y-4">
               <Text size="xl">Assets</Text>
               <Divider />
-              <div className="flex flex-row space-x-3">
-                {assets.map((asset) => (
+              <div className="space-evenly flex flex-row flex-wrap gap-4">
+                {Object.keys(toAssets)?.map((assetKey) => (
                   <Box
-                    key={`asset-${asset.label}`}
-                    className="flex flex-row space-x-3 bg-gray-700"
+                    key={`asset-${assetKey}`}
+                    className={cn(
+                      " flex cursor-pointer flex-row bg-gray-700 hover:bg-blue-600 sm:min-w-[170px]",
+                      toAssets[assetKey]?.disabled &&
+                        "cursor-not-allowed opacity-50 hover:bg-gray-700",
+                    )}
+                    onClick={() => {
+                      if (toAssets[assetKey]?.disabled) return;
+                      setTargetAsset(assetKey);
+                      setIsOpenTravelModal(true);
+                    }}
                   >
-                    {asset.icon}
-                    <Text>{asset.label}</Text>
+                    {toAssets[assetKey]?.image && (
+                      <Image
+                        alt={toAssets[assetKey]?.label ?? ""}
+                        src={toAssets[assetKey]?.image ?? ""}
+                        width={24}
+                        height={24}
+                        className="mr-2"
+                      />
+                    )}
+
+                    <Text>
+                      {toAssets[assetKey]?.label}{" "}
+                      {toAssets[assetKey]?.disabled && "(soon)"}
+                    </Text>
                   </Box>
                 ))}
               </div>
@@ -107,10 +85,9 @@ export default observer(function FastTravel() {
                 {nfts.map((asset) => (
                   <Box
                     key={`nft-${asset.label}`}
-                    className="flex flex-row space-x-3 bg-gray-700"
+                    className="flex cursor-not-allowed flex-row space-x-3 bg-gray-700 opacity-50"
                   >
-                    {asset.icon}
-                    <Text>{asset.label}</Text>
+                    <Text>{asset.label} (soon)</Text>
                   </Box>
                 ))}
               </div>
@@ -122,10 +99,10 @@ export default observer(function FastTravel() {
                 {vaults.map((asset) => (
                   <Box
                     key={`vault-${asset.label}`}
-                    className="flex flex-row space-x-3 bg-gray-700"
+                    className="flex cursor-not-allowed flex-row space-x-3 bg-gray-700 opacity-50"
                   >
-                    {asset.icon}
-                    <Text>{asset.label}</Text>
+                    {/* {asset.icon} */}
+                    <Text>{asset.label} (soon)</Text>
                   </Box>
                 ))}
               </div>
@@ -137,18 +114,47 @@ export default observer(function FastTravel() {
                 {farms.map((asset) => (
                   <Box
                     key={`farm-${asset.label}`}
-                    className="flex flex-row space-x-3 bg-gray-700"
+                    className={cn(
+                      "flex flex-row space-x-3 bg-gray-700",
+                      "cursor-not-allowed opacity-50 ",
+                    )}
                   >
-                    {asset.icon}
-                    <Text>{asset.label}</Text>
+                    <Text>{asset.label} (soon)</Text>
                   </Box>
                 ))}
               </div>
             </div>
           </div>
         </Box>
-        {isOpenTravelModal && <TravelModal balances={balances} />}
+        {isOpenTravelModal && (
+          <TravelModal
+            targetAsset={targetAsset || ""}
+            onDismiss={() => {
+              setTargetAsset(undefined);
+              setIsOpenTravelModal(false);
+            }}
+          />
+        )}
       </div>
     </div>
   );
 });
+const nfts = [
+  {
+    label: "Bad Kids",
+    icon: <FaHome className="h-8 w-8 text-white" />,
+  },
+];
+const vaults = [
+  {
+    label: "Sommelier Finance: Real Yield ETH - 14.42% ",
+    icon: <FaHome className="h-8 w-8 text-white" />,
+  },
+];
+const farms = [
+  {
+    label: "Staking assets",
+
+    icon: <FaHome className="h-8 w-8 text-white" />,
+  },
+];

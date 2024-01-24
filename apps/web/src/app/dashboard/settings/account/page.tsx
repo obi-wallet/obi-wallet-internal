@@ -45,8 +45,8 @@ function Form({
           placeholder="Name"
           labelBgColor="bg-slate-900"
           value={name}
-          onChange={(e) => {
-            setName(e.target.value);
+          onChange={(val) => {
+            setName(val);
           }}
         />
 

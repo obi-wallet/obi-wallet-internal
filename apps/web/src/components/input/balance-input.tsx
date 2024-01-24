@@ -5,11 +5,13 @@ import { ComponentPropsWithoutRef, useEffect, useState } from "react";
 import { Input } from "./input";
 import { BalanceDropDown, IBalanceOption } from "../dropdown";
 
-type InputProps = {
+interface InputProps
+  extends Omit<ComponentPropsWithoutRef<"input">, "onChange"> {
   balances?: IBalanceOption[];
   onChange?: (value: number) => void;
   showMaxButton?: boolean;
-} & ComponentPropsWithoutRef<"input">;
+  label?: string;
+}
 
 export function BalanceInput({
   onChange,
@@ -17,6 +19,7 @@ export function BalanceInput({
   placeholder,
   balances,
   showMaxButton = true,
+  label,
 }: InputProps) {
   const [amount, setAmount] = useState(0);
   const [text, setText] = useState("");
@@ -40,9 +43,10 @@ export function BalanceInput({
         className="pr-72 "
         disabled={disabled}
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(value) => setText(value)}
         type="number"
         step={0.001}
+        labelText={label}
       />
 
       <div className="absolute right-2 top-1/2 z-10 flex -translate-y-1/2 space-x-2">
