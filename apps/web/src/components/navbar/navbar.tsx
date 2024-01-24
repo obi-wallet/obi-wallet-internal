@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
-import { Button, Divider, Account, Footer, PrimaryLink, Text } from "..";
+import { Account, Button, Divider, Footer, PrimaryLink, Text } from "..";
 
 const navMenu = [
   {
@@ -33,11 +33,8 @@ const navMenu = [
 ];
 
 export function Navbar() {
-  const router = useRouter();
   const pathname = usePathname();
   const mainURISegment = pathname.split("/")[2] || "";
-
-  console.log({ mainURISegment });
 
   return (
     <nav className="flex flex-col bg-slate-900 px-7 pt-16">
@@ -45,7 +42,7 @@ export function Navbar() {
       <Button
         className="my-7 text-xl font-bold"
         block
-        onClick={() => router.push("/dashboard/transaction")}
+        href="/dashboard/transaction/send"
       >
         New Transaction
       </Button>
