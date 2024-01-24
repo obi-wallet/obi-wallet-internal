@@ -50,7 +50,7 @@ export const UserDataStep = observer(function UserDataStep({
           draft.value.setName(inputValue);
         }}
         value={draft.value.name}
-        placeholder="Name"
+        labelText="Name"
         labelBgColor="bg-slate-950"
       />
 

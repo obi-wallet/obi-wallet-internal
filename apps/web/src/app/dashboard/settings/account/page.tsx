@@ -42,7 +42,7 @@ function Form({
       <div className="mt-3 space-y-3">
         <Input
           className="w-96"
-          placeholder="Name"
+          labelText="Name"
           labelBgColor="bg-slate-900"
           value={name}
           onChange={(val) => {
