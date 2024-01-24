@@ -73,6 +73,16 @@ export const fromAssets: {
 };
 
 export const toAssets = {
+  sei: {
+    chainId: "pacific-1",
+    decimals: 6,
+    label: "SEI",
+    denom: "usei",
+    image:
+      "https://assets.coingecko.com/coins/images/28205/standard/Sei_Logo_-_Transparent.png?1696527207",
+    disabled: false,
+    addressPrefix: "sei",
+  },
   osmosis: {
     chainId: "osmosis-1",
     decimals: 6,
@@ -91,16 +101,7 @@ export const toAssets = {
       "https://assets.coingecko.com/coins/images/30813/large/ntrn.png?1696529669",
     addressPrefix: "neutron",
   },
-  sei: {
-    chainId: "pacific-1",
-    decimals: 6,
-    label: "SEI",
-    denom: "usei",
-    image:
-      "https://assets.coingecko.com/coins/images/28205/standard/Sei_Logo_-_Transparent.png?1696527207",
-    disabled: false,
-    addressPrefix: "sei",
-  },
+
   celestia: {
     chainId: "tia-4", // TODO: change to  tia chain
     decimals: 6,

@@ -5,6 +5,7 @@ import {
   fromAssets,
   toAssets,
 } from "@/app/dashboard/fast-travel/assets";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,6 +40,8 @@ interface IToleranceProps {
 interface ITravelModalProps {
   targetAsset: string;
   onDismiss?: () => void;
+  modal?: boolean;
+  cancelLabel?: string;
 }
 interface FormData {
   fromAsset: {
@@ -54,13 +57,13 @@ interface FormData {
 export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   targetAsset,
   onDismiss,
-}: {
-  targetAsset: string;
-  onDismiss?: () => void;
+  modal = true,
+  cancelLabel = "Cancel",
 }) {
   const [focused, setFocused] = useState<boolean>(false);
   const [direction, setDirection] = useState<"from" | "to">();
   const publicKey = usePublicKey();
+  const currentWallet = useCurrentWallet({ redirectIfFound: false });
 
   const schema = z.object({
     fromAsset: z.object({
@@ -175,7 +178,6 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
         const transaction = await signer.sendTransaction(tx);
         console.log("Transaction hash:", transaction.hash);
         // setTxHash(transaction.hash);
-        // go to /dashboard/ after acepting the alert
         alert("Transaction sent!");
         router.push("/dashboard");
         return;
@@ -232,7 +234,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
       mainCoin: fromAssets[fromData.asset] as FromAsset,
       vsCoin: toAssets[toData.asset] as ToAsset,
     });
-    // console.log("heeeeeere", { price, fromData });
+
     const toAssetAmount = price * (Number(fromData?.amount) ?? 0);
 
     setValue("toAsset", {
@@ -262,7 +264,6 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
       vsCoin: fromAssets[fromAssetAsset] as FromAsset,
     });
 
-    // console.log("heeeeeere", { price, toData });
     const fromAssetAmount = price * (Number(toData?.amount) ?? 0);
     setValue("fromAsset", {
       ...getValues("fromAsset"),
@@ -275,7 +276,12 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   };
 
   return (
-    <div className="absolute top-0 flex h-full w-full items-center justify-center rounded-md bg-black/30 backdrop-blur-sm">
+    <div
+      className={cn(
+        "top-0 flex h-full w-full items-center justify-center rounded-md bg-black/30 backdrop-blur-sm",
+        modal ? "absolute" : "relative",
+      )}
+    >
       <Box className="w-[560px] space-y-4 pt-6 shadow-lg shadow-neutral-600">
         <Text size="xl">Obi Fast Travel</Text>
         <Text size="sm" className=" leading-5">
@@ -373,7 +379,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
           p-2
           "
             >
-              <FaExclamation className="yellow m-auto " />
+              <FaExclamation className="m-auto text-white " />
             </div>
             <Text size="sm" className=" leading-5">
               Execute with Metamask or deposit to the address shown below. You
@@ -392,7 +398,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
 
         <div className="mt-8 flex justify-between">
           <Button className="block w-44" variant="outline" onClick={onDismiss}>
-            Cancel
+            {cancelLabel}
           </Button>
 
           {isDataValid() && depositAddress && window.ethereum && (
@@ -403,12 +409,13 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
         </div>
       </Box>
       {/* add a loader spinner */}
-      {loading && (
-        <div className=" absolute top-0 z-30 flex h-full w-full flex-col items-center justify-center rounded-md bg-black/30 backdrop-blur-sm">
-          <FaSpinner className=" animate-spin text-2xl" />
-          Loading
-        </div>
-      )}
+      {loading ||
+        (!currentWallet && (
+          <div className="absolute top-0 z-30 flex h-full w-full flex-col items-center justify-center rounded-md bg-black/30 text-white backdrop-blur-sm">
+            <FaSpinner className=" animate-spin text-2xl" />
+            Loading
+          </div>
+        ))}
     </div>
   );
 });
@@ -466,6 +473,7 @@ function ToleranceSetting({ field, fieldState }: IToleranceProps) {
             " focus-within:ring-1 focus-within:ring-blue-800 ",
             // if toleranceNumber is not 1 or 2 then we are in custom mode and we need to show the border
             !tolerances.includes(Number(text) || 0) && "ring-2 ring-blue-800 ",
+            "text-white",
           )}
         >
           <input
@@ -518,9 +526,8 @@ function GetAddressComponent({
     if (validProps()) {
       setInvalid(true);
     }
-    // console.log("ADDR COMPONENT");
+
     const timer = setTimeout(() => {
-      // console.log("ADDR COMPONENT DEBOUNCE");
       getDepositAddress();
     }, 1000); // 500ms debounce
 
@@ -540,7 +547,6 @@ function GetAddressComponent({
 
   const validProps = () => {
     if (slippageError) return false;
-    // console.log("Passed!!!!! ");
     if (!fromAsset || !toAsset) return false;
     if (
       !fromAsset?.asset ||
@@ -611,7 +617,7 @@ function GetAddressComponent({
   const renderContent = () => {
     if (slippageError) {
       return (
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center text-white">
           <FaExclamation className="text-yellow" />
           <Text className="text-yellow ml-2">Make sure slippage is valid</Text>
         </div>
@@ -619,7 +625,7 @@ function GetAddressComponent({
     }
     if (invalid) {
       return (
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center text-white">
           <FaExclamation className="text-yellow" />
           <Text className="text-yellow ml-2">Assets changed</Text>
         </div>
@@ -627,7 +633,7 @@ function GetAddressComponent({
     }
     if (loading) {
       return (
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center text-white">
           <FaSpinner className="animate-spin" />
         </div>
       );
@@ -645,10 +651,8 @@ function GetAddressComponent({
       );
     }
     return (
-      <div className="flex items-center justify-center">
-        <Text className="text-yellow ml-2">
-          Fill in the assets to get an address
-        </Text>
+      <div className="flex items-center justify-center text-white">
+        <Text className="ml-2">Fill in the assets to get an address</Text>
       </div>
     );
   };
