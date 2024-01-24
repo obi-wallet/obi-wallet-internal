@@ -9,7 +9,7 @@ import {
 } from "@/components";
 import { FaSketch } from "react-icons/fa6";
 
-export default function Transaction() {
+export default function Send() {
   const balances: IBalanceOption[] = [
     {
       network: "Neutron",
