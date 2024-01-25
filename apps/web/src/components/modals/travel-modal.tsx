@@ -593,6 +593,7 @@ function GetAddressComponent({
           stepType: "Squid",
         },
       ],
+      pubkey: publicKey?.value,
     };
     // fetch the deposit address
     const requestURL = `https://fast-travel-playground.vercel.app/api/swap/simulate.rs`;

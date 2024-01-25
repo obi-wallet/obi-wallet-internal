@@ -7,6 +7,7 @@ import { Text } from "../text/text";
 type BoxProps = {
   title?: string;
   RightIcon?: IconType;
+  titleClassName?: string;
 } & ComponentPropsWithoutRef<"div">;
 
 export function Box({
@@ -14,6 +15,7 @@ export function Box({
   RightIcon,
   className,
   children,
+  titleClassName,
   ...rest
 }: BoxProps) {
   return (
@@ -21,7 +23,7 @@ export function Box({
       className={cn("rounded-md bg-slate-900 p-4 shadow", className)}
       {...rest}
     >
-      {title && <Text>{title}</Text>}
+      {title && <Text className={titleClassName}>{title}</Text>}
       {RightIcon && <RightIcon />}
       {children}
     </div>
