@@ -26,7 +26,7 @@ export const fromAssets: {
     chainId: "1",
     address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     decimals: 18,
-    label: "Eth (ethereum)",
+    label: "ETH (Ethereum)",
     image:
       "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
   },
@@ -36,13 +36,13 @@ export const fromAssets: {
     chainId: "1",
     address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     decimals: 6,
-    label: "USDC (ethereum)",
+    label: "USDC (Ethereum)",
   },
   "Eth-arbitrum": {
     chainId: "42161",
     address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     decimals: 18,
-    label: "Eth (arbitrum)",
+    label: "ETH (Arbitrum)",
     image:
       "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
   },
@@ -50,7 +50,7 @@ export const fromAssets: {
     chainId: "42161",
     address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
     decimals: 6,
-    label: "USDC (arbitrum)",
+    label: "USDC (Arbitrum)",
     image:
       "https://assets.coingecko.com/coins/images/6319/large/usdc.png?1696506694",
   },
@@ -58,7 +58,7 @@ export const fromAssets: {
     chainId: "8453",
     address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     decimals: 18,
-    label: "ETH (base)",
+    label: "ETH (Base)",
     image:
       "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
   },
@@ -68,7 +68,7 @@ export const fromAssets: {
     chainId: "8453",
     address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     decimals: 6,
-    label: "USDC (base)",
+    label: "USDC (Base)",
   },
 };
 
