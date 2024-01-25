@@ -161,6 +161,7 @@ const PendingAssets = observer(function PendingAssets({
     console.log("FETCH", data);
     setTxData(data);
   };
+
   // get the wallet using the public key and prefixes
   if (!txData) return null;
   return txData.map((tx: TX) => {
