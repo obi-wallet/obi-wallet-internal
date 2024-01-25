@@ -1,4 +1,5 @@
 import { Header, PasskeyNotification } from "@/components";
+import { MultiThemeProvider } from "@/components/provider/multi-theme-provider";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
@@ -6,7 +7,6 @@ import { Inter } from "next/font/google";
 import { ReactNode } from "react";
 
 import "./globals.css";
-import { MultiThemeProvider } from "@/components/provider/multi-theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 

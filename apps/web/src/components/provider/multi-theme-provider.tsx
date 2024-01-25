@@ -1,8 +1,8 @@
 "use client";
 
-import { ReactNode } from "react";
 import { CURRENT_THEME } from "@/configs";
 import { useTheme } from "next-themes";
+import { ReactNode } from "react";
 import { useEffect } from "react";
 
 export function MultiThemeProvider({ children }: { children: ReactNode }) {
