@@ -98,6 +98,7 @@ export function AssetInput({
           field.onBlur();
           onChange && onChange();
         }}
+        type="number"
       />
       {disableTextInput && (
         <div
