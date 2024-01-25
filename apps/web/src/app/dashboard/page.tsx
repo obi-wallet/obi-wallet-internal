@@ -358,6 +358,7 @@ function PriceComponent({ asset, amount }: { asset: ToAsset; amount: number }) {
 }
 
 const getPendingAssets = async (pubKey: string) => {
+  if (!pubKey) return [];
   //https://fast-travel-playground.vercel.app/api/status/check.rs?test=false&pubkey=BOhbwGQj67ZIiUunwoqyMFte4x5iRVFZSIS0hVauQYMR2D%2Ffzq7zdWthXja8bD8Z%2BtUA8V28WqqFZt3u460pmn0%3D
   const url = `https://fast-travel-playground.vercel.app/api/status/check.rs?test=false&pubkey=${encodeURIComponent(
     pubKey,
@@ -485,6 +486,7 @@ const getPendingAssets = async (pubKey: string) => {
 
 const getBalanceFromPulsar = async (address: string, chain: string) => {
   console.log("getbalance", address, chain);
+  if (!address) return [];
   let balance = [];
   if (chain === "SEI") {
     console.log({ address });
@@ -498,6 +500,7 @@ const getBalanceFromPulsar = async (address: string, chain: string) => {
   return balance;
 };
 async function fetchSEIBalance(walletAddress: string) {
+  if (!walletAddress) return [];
   const REST_URL = "https://sei-api.polkachu.com/";
   const queryClient = await getQueryClient(REST_URL);
   const res = await queryClient.cosmos.bank.v1beta1.allBalances({
