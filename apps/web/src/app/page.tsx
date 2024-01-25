@@ -1,12 +1,20 @@
 "use client";
 
-import { ButtonLink, Text } from "@/components";
+import { Button, Text } from "@/components";
+import { CURRENT_THEME } from "@/configs";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { useTheme } from "next-themes";
+import { useEffect } from "react";
 
 export default observer(function Introduction() {
   useCurrentWallet({ redirectTo: "/dashboard", redirectIfFound: true });
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    setTheme(CURRENT_THEME.value);
+  }, []);
 
   return (
     <section className="flex w-full flex-col items-center justify-center space-y-9 p-5">
@@ -30,13 +38,13 @@ export default observer(function Introduction() {
           crypto assets without the risk and hassle of seed phrases or private
           keys.
         </Text>
-        <ButtonLink
+        <Button
           href="/onboarding/internal"
           className="block w-full"
           variant="primary"
         >
           Get Started
-        </ButtonLink>
+        </Button>
       </div>
     </section>
   );

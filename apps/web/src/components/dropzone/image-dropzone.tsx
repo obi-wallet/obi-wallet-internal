@@ -1,4 +1,5 @@
 "use client";
+import { cn } from "@/lib/utils";
 import { useObjectUrl } from "@reactuses/core";
 import Image from "next/image";
 import { ComponentPropsWithoutRef, useEffect, useState } from "react";
@@ -64,7 +65,11 @@ export function ImageDropzone({
   return (
     <div
       {...getRootProps({ className: "dropzone" })}
-      className="flex w-full cursor-pointer justify-center rounded  border-gray-500 bg-transparent py-5 text-gray-300"
+      className={cn(
+        "flex w-full cursor-pointer justify-center rounded  bg-transparent py-5 text-gray-300",
+        !fileObjectUrl &&
+          "border-foreground-primary-border border border-dashed",
+      )}
     >
       <input {...getInputProps()} />
       {fileObjectUrl ? (

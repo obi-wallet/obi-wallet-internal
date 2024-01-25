@@ -6,6 +6,7 @@ import { obiModalConfig } from "@obi-wallet/config";
 import { Provider as SdkProvider } from "@obi-wallet/headless-ui";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
+import { ThemeProvider } from "next-themes";
 import { ReactNode } from "react";
 
 export interface ProviderProps {
@@ -38,7 +39,7 @@ const Provider = observer<ProviderProps>(function Provider({
         }}
       >
         <StoreContext.Provider value={rootStore}>
-          {children}
+          <ThemeProvider>{children}</ThemeProvider>
         </StoreContext.Provider>
       </EnvContext.Provider>
     </SdkProvider>

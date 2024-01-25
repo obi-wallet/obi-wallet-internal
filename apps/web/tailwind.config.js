@@ -2,7 +2,27 @@
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "background-primary": "var(--background-primary)",
+        "background-primary-hover": "var(--background-primary-hover)",
+        "background-primary-active": "var(--background-primary-active)",
+        "background-primary-disabled": "var(--background-primary-disabled)",
+        "background-secondary": "var(--background-secondary)",
+        "background-select": "var(--background-select)",
+        "background-select-hover": "var(--background-select-hover)",
+        "background-select-active": "var(--background-select-active)",
+        "background-select-disabled": "var(--background-select-disabled)",
+
+        "--foreground-primary": "var(--foreground-primary)",
+        "--foreground-primary-border": "var(--foreground-primary-border)",
+      },
+      backgroundGradient: (theme) => ({
+        "gradient-background": `linear-gradient(to bottom right, ${theme(
+          "colors.black",
+        )}, var(--background-main))`,
+      }),
+    },
   },
   plugins: [],
 };

@@ -1853,6 +1853,7 @@ __metadata:
     nanoid: "npm:^5.0.4"
     next: "npm:^14.0.4"
     next-qrcode: "npm:^2.5.1"
+    next-themes: "npm:^0.2.1"
     postcss: "npm:^8.4.32"
     ramda: "npm:^0.29.1"
     react: "npm:^18.2.0"
@@ -7762,6 +7763,17 @@ __metadata:
   peerDependencies:
     react: ">=17.0.0"
   checksum: bc3ac39465deb69c2fa846da2b213bf1bdde1ad9270c2faa224d032c8846548716ea23e22579ef9c804ac4abb53affa6a4bc7164ea69df1da145d3b31c438fce
+  languageName: node
+  linkType: hard
+
+"next-themes@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "next-themes@npm:0.2.1"
+  peerDependencies:
+    next: "*"
+    react: "*"
+    react-dom: "*"
+  checksum: 979dec0a2de049ce7d1b5da835e7f7dc3b7ec83ba9e464348f497a52a6a6e5b5c395c97f071f66a63f50f22cce89fb6d19061ec7e75643b0eab215b21794bde7
   languageName: node
   linkType: hard
 
