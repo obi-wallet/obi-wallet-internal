@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import { ReactNode } from "react";
 
 import "./globals.css";
+import { MultiThemeProvider } from "@/components/provider/multi-theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,12 +29,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         )}
       >
         <Provider>
-          <Header />
-          <PasskeyNotification />
-          <main id="main" className="relative flex w-full grow">
-            {children}
-          </main>
-          <div id="modal-root" />
+          <MultiThemeProvider>
+            <Header />
+            <PasskeyNotification />
+            <main id="main" className="relative flex w-full grow">
+              {children}
+            </main>
+            <div id="modal-root" />
+          </MultiThemeProvider>
         </Provider>
       </body>
     </html>

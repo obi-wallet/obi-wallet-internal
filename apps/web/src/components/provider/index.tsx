@@ -36,6 +36,7 @@ const Provider = observer<ProviderProps>(function Provider({
             process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_USER!,
           PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD:
             process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD!,
+          THEME: process.env.NEXT_PUBLIC_THEME!,
         }}
       >
         <StoreContext.Provider value={rootStore}>
