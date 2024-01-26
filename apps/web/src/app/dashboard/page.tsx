@@ -133,30 +133,30 @@ export default observer(function Dashboard() {
 });
 
 const Assets = observer(function Assets() {
-  const publicKey = usePublicKey();
-
   return (
     <Box title="Assets" titleClassName="ml-2 text-xl" className=" rounded-md">
       <Divider className="mt-5" />
 
-      <PendingAssets publicKey={publicKey?.value ?? ""} />
+      <PendingAssets />
       <AssetBalance />
     </Box>
   );
 });
 
-const PendingAssets = observer(function PendingAssets({
-  publicKey,
-}: {
-  publicKey: string;
-}) {
+const PendingAssets = observer(function PendingAssets() {
   const [txData, setTxData] = useState<TX[] | null>(null);
-
+  const publicKey = usePublicKey();
   useEffect(() => {
+    if (!publicKey?.value) return;
     fetchPendingAssets();
-  }, []);
+    // simulateSquidSwap({
+    //   asset: fromAssets["Eth-arbitrum"] as FromAsset,
+    //   vsAsset: toAssets["sei"] as ToAsset,
+    //   amount: "10000000000000000",
+    // });
+  }, [publicKey?.value]);
   const fetchPendingAssets = async () => {
-    const data = await getPendingAssets(publicKey);
+    const data = await getPendingAssets(publicKey?.value ?? "");
     // grab relevant data from data and set it to txData
     console.log("FETCH", data);
     setTxData(data);
@@ -171,7 +171,10 @@ const PendingAssets = observer(function PendingAssets({
           (key) => toAssets[key]?.denom === tx.steps[1]?.toToken,
         ) ?? ""
       ];
-    console.log("AASSSEEETTT", asset, tx);
+
+    if (["AwaitingDeposit", "AwaitingWithdrawal"].includes(tx.status)) {
+      return null;
+    }
     return (
       <div
         className="mb-3 mt-3 flex flex-row items-center justify-between rounded-lg bg-gray-700 p-5 hover:bg-gray-600"
@@ -234,7 +237,7 @@ function StatusLink({ address }: { address: string }) {
           href={status?.squid_status.axelarTransactionUrl}
           rel="noreferrer"
           className={cn(
-            "hover:underline",
+            " uppercase hover:underline",
             getStatusColor(status?.squid_status.squidTransactionStatus),
           )}
         >
@@ -265,8 +268,9 @@ const AssetBalance = observer(function AssetBalance() {
   ];
   const pubkey = usePublicKey();
   useEffect(() => {
+    if (!pubkey?.value) return;
     getIt();
-  }, []);
+  }, [pubkey?.value]);
   const getBalance = async () => {
     setLoading(true);
     // get address from public key
@@ -509,3 +513,19 @@ async function fetchSEIBalance(walletAddress: string) {
   console.log("SEI BALANCE", res.balances);
   return res.balances;
 }
+
+// const simulateSquidSwap = async ({
+//   asset,
+//   vsAsset,
+//   amount,
+// }: {
+//   asset: FromAsset;
+//   vsAsset: ToAsset;
+//   amount: string;
+// }) => {
+//   const url = `https://fast-travel-playground.vercel.app/api/swap/simulate.rs?test=false&fromChain=${asset.chainId}&toChain=${vsAsset.chainId}&fromToken=${asset.address}&toToken=${vsAsset.denom}&amount=${amount}`;
+//   const res = await fetch(url);
+//   const json = await res.json();
+//   console.log("SIM", json);
+//   return json;
+// };
