@@ -1,21 +1,111 @@
 "use client";
 
-import { Box, Divider } from "@/components";
+import { Box, Divider, getPrice } from "@/components";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
 import { getQueryClient } from "@sei-js/core";
+import { formatEther, parseUnits } from "ethers";
 import { observer } from "mobx-react-lite";
 // import { PulsarSDK } from "pulsar_sdk_js";
 import { useEffect, useState } from "react";
 import { pubkeyToAddress } from "secretjs";
 
-import { ToAsset, toAssets } from "./fast-travel/assets";
+import { FromAsset, ToAsset, fromAssets, toAssets } from "./fast-travel/assets";
 
 // const API_KEY =
 // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZWFtX2lkIjoiNjU5NDBmY2U1NGU2M2ViZDcwZWIyNDBlIiwia2V5X2dlbmVyYXRlZF9hdCI6MTcwNDIwMjIwMi40NzY0MzczfQ.lcCCpTEZaRL47qrpvekjVNwAopgiYmIUvooD2MZlDks";
 // const pulsar = new PulsarSDK(API_KEY);
-type TxData = {
+// type TxData = {
+//   squid_status: {
+//     axelarTransactionUrl: string;
+//     error: Record<string, unknown>;
+//     fromChain: {
+//       blockNumber: number;
+
+//       callEventStatus: string;
+//       chainData: {
+//         axelarContracts: {
+//           forecallable: string;
+//           gateway: string;
+//         };
+//         blockExplorerUrls: string[];
+//         chainIconURI: string;
+//         chainId: number;
+//         chainName: string;
+//         chainNativeContracts: {
+//           ensRegistry: string;
+//           multicall: string;
+//           usdcToken: string;
+//           wrappedNativeToken: string;
+//         };
+//         chainType: string;
+//         compliance: {
+//           trmIdentifier: string;
+//         };
+//         estimatedExpressRouteDuration: number;
+//         estimatedRouteDuration: number;
+//         nativeCurrency: {
+//           decimals: number;
+//           icon: string;
+//           name: string;
+//           symbol: string;
+//         };
+//         networkName: string;
+//         rpc: string;
+//         squidContracts: {
+//           defaultCrosschainToken: string;
+//           squidFeeCollector: string;
+//           squidMulticall: string;
+//           squidRouter: string;
+//         };
+//         swapAmountForGas: string;
+//       };
+//       transactionId: string;
+//       transactionUrl: string;
+//     };
+//     gasStatus: string;
+//     id: string;
+//     isGMPTransaction: boolean;
+//     routeStatus: {
+//       action: string;
+//       chainId: number;
+//       status: string;
+//       txHash: string;
+//     }[];
+//     squidTransactionStatus: string;
+//     status: string;
+//     timeSpent: {
+//       total: number;
+//     };
+//     toChain: {
+//       blockNumber: string;
+
+//       callEventStatus: string;
+//       transactionId: string;
+//       transactionUrl: string;
+//     };
+//   };
+//   transaction: {
+//     deposit_address: string;
+//     id: number;
+//     status: string;
+//     steps: {
+//       enableForecall: boolean | null;
+//       fromAddress: string | null;
+//       fromAmount: string | null;
+//       fromChain: string;
+//       fromToken: string;
+//       slippage: string | null;
+//       stepType: string;
+//       toAddress: string | null;
+//       toChain: string | null;
+//       toToken: string | null;
+//     }[];
+//     tx_hashes: string[];
+//   }[];
+// };
+type TX = {
   squid_status: {
     axelarTransactionUrl: string;
     error: Record<string, unknown>;
@@ -85,26 +175,6 @@ type TxData = {
       transactionUrl: string;
     };
   };
-  transaction: {
-    deposit_address: string;
-    id: number;
-    status: string;
-    steps: {
-      enableForecall: boolean | null;
-      fromAddress: string | null;
-      fromAmount: string | null;
-      fromChain: string;
-      fromToken: string;
-      slippage: string | null;
-      stepType: string;
-      toAddress: string | null;
-      toChain: string | null;
-      toToken: string | null;
-    }[];
-    tx_hashes: string[];
-  }[];
-};
-type TX = {
   deposit_address: string;
   steps: {
     enableForecall: boolean | null;
@@ -146,6 +216,7 @@ const Assets = observer(function Assets() {
 const PendingAssets = observer(function PendingAssets() {
   const [txData, setTxData] = useState<TX[] | null>(null);
   const publicKey = usePublicKey();
+
   useEffect(() => {
     if (!publicKey?.value) return;
     fetchPendingAssets();
@@ -158,65 +229,116 @@ const PendingAssets = observer(function PendingAssets() {
   const fetchPendingAssets = async () => {
     const data = await getPendingAssets(publicKey?.value ?? "");
     // grab relevant data from data and set it to txData
-    console.log("FETCH", data);
-    setTxData(data);
+    const actualTX = data.filter((d) => d.status !== "AwaitingDeposit");
+    // fetch squid status from actualTX hashes
+    const squidStatus = await Promise.all(
+      actualTX.map(async (tx) => {
+        const res = await fetch(
+          `https://fast-travel-playground.vercel.app/api/status/check.rs?test=false&depositAddress=${encodeURIComponent(
+            tx.deposit_address,
+          )}`,
+        );
+        const json = await res.json();
+        return { ...tx, squid_status: json.squid_status };
+      }),
+    );
+
+    console.log("SQUID", squidStatus);
+    setTxData(
+      squidStatus.filter(
+        (s) => s.squid_status.squidTransactionStatus === "ongoing",
+      ),
+    );
   };
 
   // get the wallet using the public key and prefixes
   if (!txData) return null;
   return txData.map((tx: TX) => {
-    const asset =
-      toAssets[
-        Object.keys(toAssets).find(
-          (key) => toAssets[key]?.denom === tx.steps[1]?.toToken,
-        ) ?? ""
-      ];
-
-    if (["AwaitingDeposit", "AwaitingWithdrawal"].includes(tx.status)) {
-      return null;
-    }
-    return (
-      <div
-        className="mb-3 mt-3 flex flex-row items-center justify-between rounded-lg bg-gray-700 p-5 hover:bg-gray-600"
-        key={tx.deposit_address}
-      >
-        <div className="flex flex-row items-center">
-          <div className="mr-3">
-            <img src={asset?.image ?? ""} alt="asset" className="h-8 w-8" />
-          </div>
-          <div className="flex flex-row">
-            <div className="mr-5 text-lg">{asset?.label}</div>
-
-            <div className="text-xl font-bold">0.00</div>
-          </div>
-        </div>
-        <StatusLink address={tx.deposit_address} />
-        <div>
-          <div className="text-xl">${(0 * 0).toFixed(2)}</div>
-        </div>
-      </div>
-    );
+    // if (["AwaitingDeposit"].includes(tx.status)) {
+    //   return null;
+    // }
+    return <PendingAsset key={tx.deposit_address} tx={tx} />;
   });
 });
 
-function StatusLink({ address }: { address: string }) {
+const PendingAsset = observer(function PendingAsset({ tx }: { tx: TX }) {
+  const [amount, setAmount] = useState<number | undefined>();
+  const asset =
+    toAssets[
+      Object.keys(toAssets).find(
+        (key) => toAssets[key]?.denom === tx.steps[1]?.toToken,
+      ) ?? ""
+    ];
+
+  return (
+    <div
+      className="mb-3 mt-3 flex flex-row items-center justify-between rounded-lg bg-gray-700 p-5 hover:bg-gray-600"
+      key={tx.deposit_address}
+    >
+      <div className="flex flex-row items-center">
+        <div className="mr-3">
+          <img src={asset?.image ?? ""} alt="asset" className="h-8 w-8" />
+        </div>
+        <div className="flex flex-row">
+          <div className="mr-5 text-lg">{asset?.label}</div>
+          <EstimateAmount tx={tx} toAsset={asset} onAmountChange={setAmount} />
+        </div>
+      </div>
+      <StatusLink tx={tx} />
+      <PriceComponent asset={asset} amount={amount} />
+    </div>
+  );
+});
+
+const EstimateAmount = observer(function EstimateAmount({
+  tx,
+  toAsset,
+  onAmountChange,
+}: {
+  tx: TX;
+  toAsset: ToAsset | undefined;
+  onAmountChange?: (amount: number) => void;
+}) {
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<TxData | null>(null);
+  const [amount, setAmount] = useState<number | undefined>();
   useEffect(() => {
-    getStatus();
+    getAmount();
   }, []);
-  const getStatus = async () => {
+  useEffect(() => {
+    if (!amount) return;
+    onAmountChange && onAmountChange(amount);
+  }, [amount]);
+  if (toAsset === undefined) return null;
+  const getAmount = async () => {
     setLoading(true);
-    const url = `https://fast-travel-playground.vercel.app/api/status/check.rs?test=false&depositAddress=${encodeURIComponent(
-      address,
-    )}`;
-    const res = await fetch(url);
-    const json = await res.json();
-    setStatus(json);
+    const fromAssetAmount = tx.steps[1]?.fromAmount;
+    //find from asset based on the chainId
+    const fromAsset =
+      fromAssets[
+        Object.keys(fromAssets).find(
+          (key) => fromAssets[key]?.chainId === tx.steps[1]?.fromChain,
+        ) ?? ""
+      ];
+
+    const price = await getPrice({
+      mainCoin: fromAsset as FromAsset,
+      vsCoin: toAsset,
+    });
+    console.log("PRICE", price, fromAssetAmount);
+    const amount = formatEther(parseUnits(fromAssetAmount ?? "0", "wei"));
+    console.log("AMOUNT", amount);
+    setAmount(Number(amount) * price);
     setLoading(false);
   };
-  console.log("STAT", { status });
-  if (loading) return <div>loading</div>;
+  if (!amount || loading) return null;
+  return (
+    <div className="text-xl font-bold">
+      {amount?.toFixed(2)} <span className="text-sm">(estimate)</span>
+    </div>
+  );
+});
+
+function StatusLink({ tx }: { tx: TX }) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "success":
@@ -231,21 +353,17 @@ function StatusLink({ address }: { address: string }) {
   };
   return (
     <div>
-      {status?.squid_status.status ? (
-        <a
-          target="_blank"
-          href={status?.squid_status.axelarTransactionUrl}
-          rel="noreferrer"
-          className={cn(
-            " uppercase hover:underline",
-            getStatusColor(status?.squid_status.squidTransactionStatus),
-          )}
-        >
-          {status?.squid_status.squidTransactionStatus}
-        </a>
-      ) : (
-        "FAILED"
-      )}
+      <a
+        target="_blank"
+        href={tx.squid_status.axelarTransactionUrl}
+        rel="noreferrer"
+        className={cn(
+          " uppercase hover:underline",
+          getStatusColor(tx.squid_status.squidTransactionStatus),
+        )}
+      >
+        {tx.squid_status.squidTransactionStatus}
+      </a>
     </div>
   );
 }
@@ -337,13 +455,23 @@ function AssetItem({ asset }: { asset: { amount: number; denom: string } }) {
   );
 }
 
-function PriceComponent({ asset, amount }: { asset: ToAsset; amount: number }) {
+function PriceComponent({
+  asset,
+  amount,
+}: {
+  asset: ToAsset | undefined;
+  amount: number | undefined;
+}) {
   const [loading, setLoading] = useState(false);
   const [price, setPrice] = useState(0);
   useEffect(() => {
-    getPrice();
-  }, []);
-  const getPrice = async () => {
+    getTokenPrice();
+  }, [amount]);
+  const getTokenPrice = async () => {
+    if (!asset || !amount) {
+      setPrice(0);
+      return;
+    }
     setLoading(true);
     // use squidRouter to get price
     const url = `https://api.0xsquid.com/v1/token-price?chainId=${asset?.chainId}&tokenAddress=${asset.denom}`;
@@ -356,7 +484,7 @@ function PriceComponent({ asset, amount }: { asset: ToAsset; amount: number }) {
   if (loading) return <div>loading</div>;
   return (
     <div>
-      <div className="text-xl">${(price * amount).toFixed(2)}</div>
+      <div className="text-xl">${(price * (amount || 0)).toFixed(2)}</div>
     </div>
   );
 }
@@ -370,7 +498,7 @@ const getPendingAssets = async (pubKey: string) => {
   console.log({ url });
   const res = await fetch(url);
   const data = await res.json();
-  return data.transactions;
+  return data.transactions as TX[];
 };
 
 // const txData = {

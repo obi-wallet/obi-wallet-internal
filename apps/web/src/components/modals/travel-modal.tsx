@@ -115,24 +115,6 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     undefined,
   );
 
-  const getPrice = async ({
-    mainCoin,
-    vsCoin,
-  }: {
-    mainCoin: FromAsset | ToAsset;
-    vsCoin: FromAsset | ToAsset;
-  }): Promise<number> => {
-    // get Dollar prices from squid
-    const main = await fetchPrice(mainCoin);
-    const vs = await fetchPrice(vsCoin);
-    // we have the dollar price of both coins, now we need the price of the main coin in vs coin
-    // we need to divide the main coin price by the vs coin price
-    if (main && vs) {
-      return Number(main) / Number(vs);
-    }
-    return 0;
-  };
-
   const executeTx = async () => {
     if (!isDataValid()) return;
     // get the deposit data
@@ -572,6 +554,11 @@ function GetAddressComponent({
       Buffer.from(publicKey?.value ?? "", "base64"),
       to?.addressPrefix,
     );
+    const fromAmount = parseUnits(
+      fromAsset?.amount?.toString() ?? "0",
+      from?.decimals,
+    ).toString();
+
     const requestData = {
       slippage: slippageValue,
       steps: [
@@ -581,7 +568,7 @@ function GetAddressComponent({
           stepType: "EthDeposit",
         },
         {
-          fromAmount: "10000000000000000",
+          fromAmount,
           fromAddress: "0xeCbFB380e9020FF4f7fFfE05a78D2153A7071153",
           toChain: to?.chainId,
           slippage: slippageValue,
@@ -697,4 +684,21 @@ const fetchPrice = async (assetData: FromAsset | ToAsset | undefined) => {
   const data = await res.json();
 
   return data.price;
+};
+export const getPrice = async ({
+  mainCoin,
+  vsCoin,
+}: {
+  mainCoin: FromAsset | ToAsset;
+  vsCoin: FromAsset | ToAsset;
+}): Promise<number> => {
+  // get Dollar prices from squid
+  const main = await fetchPrice(mainCoin);
+  const vs = await fetchPrice(vsCoin);
+  // we have the dollar price of both coins, now we need the price of the main coin in vs coin
+  // we need to divide the main coin price by the vs coin price
+  if (main && vs) {
+    return Number(main) / Number(vs);
+  }
+  return 0;
 };
