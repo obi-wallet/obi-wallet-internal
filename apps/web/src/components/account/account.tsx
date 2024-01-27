@@ -27,9 +27,9 @@ export const Account = observer(function Account() {
         <Text size="2xl" color="white">
           {userData.name ?? "My Account"}
         </Text>
-        <Text size="3xl" color="white" fontWeight="bold">
+        {/* <Text size="3xl" color="white" fontWeight="bold">
           $6,178.04
-        </Text>
+        </Text> */}
       </div>
     </div>
   );
