@@ -1,3 +1,39 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --background-primary: theme("colors.blue.600");
+}
+
+[data-theme="obi"] {
+  --background-main: theme("colors.slate.900");
+  --background-primary: theme("colors.blue.600");
+  --background-primary-hover: theme("colors.blue.700");
+  --background-primary-active: theme("colors.blue.500");
+  --background-primary-disabled: theme("colors.blue.600");
+  --background-secondary: theme("colors.slate.900");
+  --background-select: theme("colors.gray.700");
+  --background-select-hover: theme("colors.gray.800");
+  --background-select-active: theme("colors.gray.950");
+  --background-select-disabled: theme("colors.gray.700");
+
+  --foreground-primary: theme("colors.white");
+  --foreground-primary-border: theme("colors.zinc.800");
+}
+
+[data-theme="noble"] {
+  --background-main: theme("colors.zinc.950");
+  --background-primary: theme("colors.green.600");
+  --background-primary-hover: theme("colors.green.700");
+  --background-primary-active: theme("colors.green.500");
+  --background-primary-disabled: theme("colors.green.600");
+  --background-secondary: theme("colors.emerald.950");
+  --background-select: theme("colors.teal.900");
+  --background-select-hover: theme("colors.teal.800");
+  --background-select-active: theme("colors.teal.950");
+  --background-select-disabled: theme("colors.teal.700");
+
+  --foreground-primary: theme("colors.white");
+  --foreground-primary-border: theme("colors.gray.700");
+}

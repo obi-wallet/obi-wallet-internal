@@ -45,27 +45,27 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const disabled = isLoading || buttonDisabled;
 
     const style = cn(
-      "inline-flex items-center rounded font-medium",
+      "inline-flex items-center rounded font-medium text-center",
       "focus-visible:ring-primary-500 focus:outline-none focus-visible:ring",
       "shadow-sm",
       "transition-colors duration-75",
       "disabled:shadow-inner",
       [block && "w-full justify-center"],
       //#region  //*=========== Size ===========
-      [size === "base" && ["px-3 py-3.5", "text-sm "]],
+      [size === "base" && ["px-3 py-3.5", "text-sm md:text-base"]],
       //#endregion  //*======== Size ===========
       //#region  //*=========== Variants ===========
       [
         variant === "primary" && [
-          "border border-blue-600 bg-blue-600 text-white shadow",
-          "hover:border-blue-700 hover:bg-blue-700",
-          "active:bg-blue-800 active:hover:border-blue-800",
-          "disabled:border-blue-600 disabled:bg-blue-600 disabled:opacity-30",
+          "border border-background-primary bg-background-primary text-white shadow",
+          "hover:border-background-primary-hover hover:bg-background-primary-hover",
+          "active:border-background-primary-active active:hover:border-background-primary-active active:bg-background-primary-active",
+          "disabled:border-background-primary-disabled disabled:bg-background-primary-disabled disabled:opacity-30",
         ],
         variant === "secondary" && [
-          "border border-gray-700 bg-gray-700 text-white shadow",
-          "hover:border-gray-800 hover:bg-gray-800 ",
-          "active:bg-gray-950 active:hover:border-gray-950",
+          "border border-background-select bg-background-select text-white shadow",
+          "hover:border-background-select-hover hover:bg-background-select-hover",
+          "active:bg-background-select-active active:hover:border-background-select-active",
           "disabled:border-gray-700 disabled:bg-gray-700 disabled:opacity-50",
         ],
         variant === "outline" && [

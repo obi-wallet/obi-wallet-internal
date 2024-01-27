@@ -11,7 +11,7 @@ type FooterProps = ComponentPropsWithoutRef<"footer">;
 export function Footer({ className }: FooterProps) {
   return (
     <footer className={cn("flex w-full items-center px-10 py-9", className)}>
-      <div className="h-5 w-5 rounded-full bg-blue-600" />
+      <div className="bg-background-primary h-5 w-5 rounded-full" />
       <Text className="ml-3">Obi v2.0.0</Text>
       <div className="ml-4 flex flex-row space-x-4">
         <FaXTwitter width={28} height={28} color="white" />
