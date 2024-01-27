@@ -37,7 +37,7 @@ export function Navbar() {
   const mainURISegment = pathname.split("/")[2] || "";
 
   return (
-    <nav className="flex flex-col bg-slate-900 px-7 pt-16">
+    <nav className="bg-background-secondary flex flex-col px-7 pt-16">
       <Account />
       <Button
         className="my-7 text-xl font-bold"
@@ -56,7 +56,7 @@ export function Navbar() {
                 href={navItem.href}
                 className={`flex flex-row px-6 py-2 text-xl font-normal text-white lg:text-2xl ${
                   mainURISegment === navItem.module
-                    ? "rounded-md bg-gray-700 font-bold"
+                    ? "bg-background-select rounded-md font-bold"
                     : ""
                 }`}
               >

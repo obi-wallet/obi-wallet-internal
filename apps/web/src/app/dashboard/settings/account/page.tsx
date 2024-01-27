@@ -42,8 +42,8 @@ function Form({
       <div className="mt-3 space-y-3">
         <Input
           className="w-96"
-          labelText="Name"
-          labelBgColor="bg-slate-900"
+          placeholder="Name"
+          labelBgColor="bg-background-secondary"
           value={name}
           onChange={(val) => {
             setName(val);

@@ -95,7 +95,7 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
 
   return (
     <div className="flex w-full flex-col ">
-      <div className=" relative w-full ">
+      <div className="relative w-full ">
         {StartIcon && (
           <span className="absolute left-3 top-1/2 -translate-y-1/2">
             <StartIcon
@@ -109,14 +109,13 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
             />
           </span>
         )}
+
         <input
-          ref={ref}
           id={id}
           className={cn(
-            "peer w-full rounded-xl border border-zinc-800 bg-transparent px-7 py-6 text-2xl font-normal text-white focus-visible:outline-none",
-            "box-border [-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none",
+            "border-foreground-primary-border peer w-full rounded-xl border bg-transparent px-7 py-6 text-2xl font-normal text-white focus:border-blue-600 focus-visible:outline-none",
+            "[-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none",
             StartIcon && "px-9",
-
             errorMessage
               ? ":focus:border-red-500 border-red-500"
               : "  focus:border-blue-600 ",
@@ -136,7 +135,7 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
           <label
             htmlFor={id}
             className={cn(
-              "absolute left-0 top-0 ml-5 -translate-y-1/2 bg-slate-900 px-2 py-1 text-xs text-white",
+              "bg-background-secondary absolute left-0 top-0 ml-5 -translate-y-1/2 px-2 py-1 text-xs text-white",
               labelBgColor,
             )}
           >
@@ -156,13 +155,13 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
             />
           </span>
         )}
-      </div>
 
-      {errorMessage && (
-        <div className=" absolute bottom-6 ml-7 h-1 w-full  text-sm  text-red-800">
-          {renderErrorMessage(errorMessage)}
-        </div>
-      )}
+        {errorMessage && (
+          <div className=" absolute bottom-6 ml-7 h-1 w-full  text-sm  text-red-800">
+            {renderErrorMessage(errorMessage)}
+          </div>
+        )}
+      </div>
     </div>
   );
 });

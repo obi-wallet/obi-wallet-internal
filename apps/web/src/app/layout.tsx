@@ -1,4 +1,5 @@
 import { Header, PasskeyNotification } from "@/components";
+import { MultiThemeProvider } from "@/components/provider/multi-theme-provider";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
@@ -24,16 +25,18 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body
         className={cn(
           inter.className,
-          "flex min-h-screen flex-col bg-gradient-to-br from-black to-slate-900",
+          "bg-gradient-background flex min-h-screen flex-col",
         )}
       >
         <Provider>
-          <Header />
-          <PasskeyNotification />
-          <main id="main" className="relative flex w-full grow">
-            {children}
-          </main>
-          <div id="modal-root" />
+          <MultiThemeProvider>
+            <Header />
+            <PasskeyNotification />
+            <main id="main" className="relative flex w-full grow">
+              {children}
+            </main>
+            <div id="modal-root" />
+          </MultiThemeProvider>
         </Provider>
       </body>
     </html>

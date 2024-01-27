@@ -20,7 +20,7 @@ export function Box({
 }: BoxProps) {
   return (
     <div
-      className={cn("rounded-md bg-slate-900 p-4 shadow", className)}
+      className={cn("bg-background-secondary rounded-md p-4 shadow", className)}
       {...rest}
     >
       {title && <Text className={titleClassName}>{title}</Text>}

@@ -23,7 +23,7 @@ export default function Settings() {
   return (
     <Box className="w-2/1 m-6 h-fit w-1/3  px-4 py-6">
       <Text size="xl">Security Settings</Text>
-      <Text size="sm" fontWeight="medium" className="mt-1">
+      <Text size="sm" fontWeight="medium" className="mt-3">
         Add keys to your account. Click any of the options below to update or
         add keys to your account.
       </Text>

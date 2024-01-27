@@ -2,9 +2,10 @@
 
 import { Button, Modal, renderModal } from "@/components";
 import { PrimaryLink } from "@/components/links";
-import { Text } from "@/components/text/text";
+import { CURRENT_THEME } from "@/configs";
 import { useStore } from "@/contexts";
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -16,9 +17,9 @@ export const Header = observer(function Header() {
 
   return (
     <>
-      <header className="flex h-20 items-center justify-between bg-blue-600 px-8 shadow">
+      <header className="bg-background-primary flex h-20 items-center justify-between px-8 shadow">
         <PrimaryLink href={primaryLinkHref}>
-          <Text
+          {/* <Text
             color="white"
             size="2xl"
             fontWeight="bold"
@@ -26,6 +27,8 @@ export const Header = observer(function Header() {
           >
             Obi
           </Text>
+           */}
+          <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
         </PrimaryLink>
         {children}
       </header>
