@@ -34,6 +34,7 @@ module.exports = {
           "apps/*/metro.config.js",
           "apps/*/next.config.js",
           "jest*.[jt]s",
+          "*.stories.*",
         ],
         optionalDependencies: false,
       },
@@ -161,11 +162,9 @@ module.exports = {
       plugins: ["@typescript-eslint"],
     },
     {
-      files: ["src/app/**/*.{ts,tsx,js,jsx}"],
+      files: ["src/app/**/*.{ts,tsx,js,jsx}", "*.stories.*"],
       rules: {
         "import/no-default-export": "off",
-
-        "mobx/missing-observer": "off",
       },
     },
   ],

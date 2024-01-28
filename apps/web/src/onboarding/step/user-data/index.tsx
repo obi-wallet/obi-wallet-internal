@@ -1,9 +1,10 @@
 "use client";
 
-import { ImageDropzone, Input, Text } from "@/components";
+import { ImageDropzone, Text } from "@/components";
 import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
 import { UserDataOnboardingStep } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
+import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
@@ -45,13 +46,13 @@ export const UserDataStep = observer(function UserDataStep({
         with it.
       </Text>
       <Input
+        label="Name"
         className="w-96"
-        onChange={(inputValue) => {
-          draft.value.setName(inputValue);
+        labelClassname="bg-slate-950"
+        onChange={(value) => {
+          draft.value.setName(value);
         }}
         value={draft.value.name}
-        labelText="Name"
-        labelBgColor="bg-slate-950"
       />
 
       <ImageDropzone

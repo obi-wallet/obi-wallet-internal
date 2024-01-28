@@ -1,9 +1,10 @@
 "use client";
 
-import { Box, Button, Divider, ImageDropzone, Input, Text } from "@/components";
+import { Box, Button, Divider, ImageDropzone, Text } from "@/components";
 import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { UserData } from "@/stores";
+import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
@@ -41,12 +42,13 @@ function Form({
       <Divider className="my-4" />
       <div className="mt-3 space-y-3">
         <Input
+          label="Name"
           className="w-96"
+          labelClassname="bg-background-secondary"
           placeholder="Name"
-          labelBgColor="bg-background-secondary"
           value={name}
-          onChange={(val) => {
-            setName(val);
+          onChange={(value) => {
+            setName(value);
           }}
         />
 
