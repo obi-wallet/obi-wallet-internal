@@ -1,10 +1,6 @@
 import { getFeeLender } from "@/lib/fee-lender";
-import {
-  ChainId,
-  generateSec256k1KeyPair,
-  SecretJsChains,
-  SecretJsClient,
-} from "@obi-wallet/sdk";
+import { ChainId, SecretJsChains, SecretJsClient } from "@obi-wallet/sdk";
+import { generateSec256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { NextResponse } from "next/server";
 import { MsgExecuteContract } from "secretjs";
 

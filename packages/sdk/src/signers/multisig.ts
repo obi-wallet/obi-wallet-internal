@@ -1,7 +1,8 @@
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import invariant from "tiny-invariant";
 
 import { Signer } from "./abstract";
-import { MultisigPublicKey, Secp256k1PublicKey } from "../keys";
+import { MultisigPublicKey } from "../keys";
 
 export abstract class MultisigSigner<T = unknown> {
   protected signatures: Map<string, T> = new Map();

@@ -1,7 +1,7 @@
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { SHA256, Word32Array } from "jscrypto";
 
 import { KeySubclassTypeMapping, KeyType } from "../data-structures";
-import { Secp256k1PublicKey } from "../keys";
 
 export abstract class Signer {
   public abstract get publicKey(): Secp256k1PublicKey;

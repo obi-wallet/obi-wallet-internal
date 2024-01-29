@@ -3566,27 +3566,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@obi-wallet/config@npm:*, @obi-wallet/config@workspace:packages/config":
+"@obi-wallet/config@workspace:*, @obi-wallet/config@workspace:packages/config":
   version: 0.0.0-use.local
   resolution: "@obi-wallet/config@workspace:packages/config"
   dependencies:
-    "@obi-wallet/sdk": "npm:*"
-    "@repo/eslint-config": "npm:*"
-    "@repo/typescript-config": "npm:*"
+    "@obi-wallet/sdk": "workspace:*"
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
     "@types/ramda": "npm:^0.29.3"
     eslint: "npm:^8.55.0"
     typescript: "npm:^5.3.3"
   languageName: unknown
   linkType: soft
 
-"@obi-wallet/headless-ui@npm:*, @obi-wallet/headless-ui@workspace:packages/headless-ui":
+"@obi-wallet/headless-ui@workspace:*, @obi-wallet/headless-ui@workspace:packages/headless-ui":
   version: 0.0.0-use.local
   resolution: "@obi-wallet/headless-ui@workspace:packages/headless-ui"
   dependencies:
-    "@obi-wallet/sdk": "npm:*"
+    "@obi-wallet/sdk": "workspace:*"
+    "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@react-native-async-storage/async-storage": "npm:^1.21.0"
-    "@repo/eslint-config": "npm:*"
-    "@repo/typescript-config": "npm:*"
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
     "@tanstack/query-async-storage-persister": "npm:^4.36.1"
     "@tanstack/react-query": "npm:^4.36.1"
     "@tanstack/react-query-persist-client": "npm:^4.36.1"
@@ -3605,12 +3606,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@obi-wallet/sdk-abstract-user-interaction@npm:*, @obi-wallet/sdk-abstract-user-interaction@workspace:packages/sdk-abstract-user-interaction":
+"@obi-wallet/sdk-abstract-target-chain@workspace:*, @obi-wallet/sdk-abstract-target-chain@workspace:packages/sdk-abstract-target-chain":
+  version: 0.0.0-use.local
+  resolution: "@obi-wallet/sdk-abstract-target-chain@workspace:packages/sdk-abstract-target-chain"
+  dependencies:
+    "@obi-wallet/sdk-secp256k1": "workspace:*"
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
+    "@types/jest": "npm:^29.5.11"
+    eslint: "npm:^8.55.0"
+    jest: "npm:^29.7.0"
+    ts-jest: "npm:^29.1.1"
+    typescript: "npm:^5.3.3"
+  languageName: unknown
+  linkType: soft
+
+"@obi-wallet/sdk-abstract-user-interaction@workspace:*, @obi-wallet/sdk-abstract-user-interaction@workspace:packages/sdk-abstract-user-interaction":
   version: 0.0.0-use.local
   resolution: "@obi-wallet/sdk-abstract-user-interaction@workspace:packages/sdk-abstract-user-interaction"
   dependencies:
-    "@repo/eslint-config": "npm:*"
-    "@repo/typescript-config": "npm:*"
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
     "@types/jest": "npm:^29.5.11"
     eslint: "npm:^8.55.0"
     eventemitter3: "npm:^5.0.1"
@@ -3621,7 +3637,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@obi-wallet/sdk@npm:*, @obi-wallet/sdk@workspace:packages/sdk":
+"@obi-wallet/sdk-secp256k1@workspace:*, @obi-wallet/sdk-secp256k1@workspace:packages/sdk-secp256k1":
+  version: 0.0.0-use.local
+  resolution: "@obi-wallet/sdk-secp256k1@workspace:packages/sdk-secp256k1"
+  dependencies:
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
+    "@types/jest": "npm:^29.5.11"
+    eslint: "npm:^8.55.0"
+    jest: "npm:^29.7.0"
+    secp256k1: "npm:^5.0.0"
+    ts-jest: "npm:^29.1.1"
+    typescript: "npm:^5.3.3"
+    zod: "npm:^3.22.4"
+  languageName: unknown
+  linkType: soft
+
+"@obi-wallet/sdk@workspace:*, @obi-wallet/sdk@workspace:packages/sdk":
   version: 0.0.0-use.local
   resolution: "@obi-wallet/sdk@workspace:packages/sdk"
   dependencies:
@@ -3633,9 +3665,10 @@ __metadata:
     "@cosmjs/stargate": "npm:^0.31.3"
     "@github/webauthn-json": "npm:^2.1.1"
     "@keplr-wallet/cosmos": "npm:0.12.16"
-    "@obi-wallet/sdk-abstract-user-interaction": "npm:*"
-    "@repo/eslint-config": "npm:*"
-    "@repo/typescript-config": "npm:*"
+    "@obi-wallet/sdk-abstract-user-interaction": "workspace:*"
+    "@obi-wallet/sdk-secp256k1": "workspace:*"
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
     "@simplewebauthn/typescript-types": "npm:^8.0.0"
     "@tanstack/query-core": "npm:^4.29.25"
     "@terra-money/feather.js": "npm:^1.0.8"
@@ -3676,12 +3709,14 @@ __metadata:
     "@cosmjs/proto-signing": "npm:^0.31.3"
     "@hookform/resolvers": "npm:^3.3.4"
     "@next/eslint-plugin-next": "npm:^14.0.4"
-    "@obi-wallet/config": "npm:*"
-    "@obi-wallet/headless-ui": "npm:*"
-    "@obi-wallet/sdk": "npm:*"
+    "@obi-wallet/config": "workspace:*"
+    "@obi-wallet/headless-ui": "workspace:*"
+    "@obi-wallet/sdk": "workspace:*"
+    "@obi-wallet/sdk-abstract-target-chain": "workspace:*"
+    "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@reactuses/core": "npm:^4.0.13"
-    "@repo/eslint-config": "npm:*"
-    "@repo/typescript-config": "npm:*"
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
     "@sei-js/core": "npm:^3.1.3"
     "@storybook/addon-essentials": "npm:^7.6.10"
     "@storybook/addon-interactions": "npm:^7.6.10"
@@ -4505,7 +4540,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@repo/eslint-config@npm:*, @repo/eslint-config@workspace:configs/eslint-config":
+"@repo/eslint-config@workspace:*, @repo/eslint-config@workspace:configs/eslint-config":
   version: 0.0.0-use.local
   resolution: "@repo/eslint-config@workspace:configs/eslint-config"
   dependencies:
@@ -4524,7 +4559,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@repo/typescript-config@npm:*, @repo/typescript-config@workspace:configs/typescript-config":
+"@repo/typescript-config@workspace:*, @repo/typescript-config@workspace:configs/typescript-config":
   version: 0.0.0-use.local
   resolution: "@repo/typescript-config@workspace:configs/typescript-config"
   languageName: unknown

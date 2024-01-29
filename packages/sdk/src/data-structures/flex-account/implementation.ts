@@ -1,10 +1,10 @@
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { DateTime } from "luxon";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { AutoSign, FlexAccountSchema, SpendLimit } from "./schema";
-import { Secp256k1PublicKey } from "../../keys";
 import { AccountMetaData } from "../gatekeeper-config/account-meta-data";
 import { AbstractSerialized } from "../migratable";
 

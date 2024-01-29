@@ -9,13 +9,13 @@ import {
   OfflineDirectSigner,
 } from "@cosmjs/proto-signing";
 import {
-  getSec256k1CompressedPublicKey,
   KeyType,
   MultisigWallet,
   Secp256k1PrivateKeySigner,
-  Secp256k1PublicKey,
   SecretJsClient,
 } from "@obi-wallet/sdk";
+import { getSec256k1CompressedPublicKey } from "@obi-wallet/sdk-secp256k1";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { SignDoc } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import invariant from "tiny-invariant";
 import { z } from "zod";

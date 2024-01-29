@@ -1,14 +1,16 @@
 import { EthereumAccount } from "@obi-wallet/headless-ui";
 import {
-  generateSec256k1KeyPair,
-  Secp256k1KeyPair,
-  Secp256k1PublicKey,
   SecretJsChainId,
   SecretJsChains,
   SecretJsClient,
   TargetChain,
   TargetChainId,
 } from "@obi-wallet/sdk";
+import { generateSec256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
+import {
+  Secp256k1KeyPair,
+  Secp256k1PublicKey,
+} from "@obi-wallet/sdk-secp256k1";
 import { Signer, SigningKey, Wallet } from "ethers";
 import { MsgExecuteContract } from "secretjs";
 import { Presets } from "userop";

@@ -1,5 +1,5 @@
-import { AbstractTargetChain } from "@/target-chain/abstract";
 import { SeiTargetChain } from "@/target-chain/sei";
+import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 
 export enum TargetChainId {
   Sei = 'pacific-1"',

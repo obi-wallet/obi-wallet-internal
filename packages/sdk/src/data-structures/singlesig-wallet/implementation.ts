@@ -1,7 +1,7 @@
+import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import * as R from "ramda";
 
 import { SinglesigWalletSchema } from "./schema";
-import { Secp256k1KeyPair } from "../../keys";
 import { AbstractSerialized } from "../migratable";
 
 export class SinglesigWallet {

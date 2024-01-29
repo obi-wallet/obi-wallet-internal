@@ -1,4 +1,4 @@
-import { Secp256k1PublicKey } from "../../../keys";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 
 export enum KeyType {
   Cloud = "cloud",

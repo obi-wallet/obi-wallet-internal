@@ -1,3 +1,8 @@
+import {
+  Secp256k1KeyPair,
+  Secp256k1PublicKey,
+  generateSec256k1KeyPair,
+} from "@obi-wallet/sdk-secp256k1";
 import { ethers } from "ethers";
 import * as R from "ramda";
 import { TxResponse } from "secretjs";
@@ -5,12 +10,7 @@ import { TxResponse } from "secretjs";
 import { SetupMultisigKeyDetails } from "./factories";
 import { MultisigKeySchema } from "./schema";
 import { ChainId, SecretJsChainIds, SecretJsChains } from "../../chains";
-import {
-  MultisigPublicKey,
-  Secp256k1KeyPair,
-  Secp256k1PublicKey,
-  generateSec256k1KeyPair,
-} from "../../keys";
+import { MultisigPublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
 import { SerializedProxyWallet } from "../../sdk/wallets/secret-js-msig/types";
 import { Message } from "../../transactions";

@@ -1,10 +1,5 @@
-import {
-  KeyType,
-  Sdk,
-  Secp256k1PublicKey,
-  SecretJsChains,
-  SecretJsClient,
-} from "@obi-wallet/sdk";
+import { KeyType, Sdk, SecretJsChains, SecretJsClient } from "@obi-wallet/sdk";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { action, autorun, observable, runInAction, toJS } from "mobx";
 import invariant from "tiny-invariant";
 

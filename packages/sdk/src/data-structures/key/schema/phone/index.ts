@@ -1,6 +1,6 @@
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { z } from "zod";
 
-import { Secp256k1PublicKey } from "../../../../keys";
 import { KeyType } from "../../types";
 
 export const PhoneKey = z.object({

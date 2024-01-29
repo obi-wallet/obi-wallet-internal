@@ -1,9 +1,8 @@
 import { Uint53 } from "@cosmjs/math";
 import { encodePubkey } from "@cosmjs/proto-signing/build/pubkey";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { LegacyAminoPubKey } from "cosmjs-types/cosmos/crypto/multisig/keys";
 import { z } from "zod";
-
-import { Secp256k1PublicKey } from "./sec256k1";
 
 export const MultisigPublicKey = z.object({
   type: z.literal("tendermint/PubKeyMultisigThreshold"),

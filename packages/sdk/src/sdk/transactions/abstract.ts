@@ -1,9 +1,10 @@
+import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import fetch from "isomorphic-unfetch";
 import invariant from "tiny-invariant";
 
 import { ChainId } from "../../chains";
 import { WalletMeta } from "../../data-structures";
-import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../keys";
+import { MultisigPublicKey, PublicKey } from "../../keys";
 import { queryClient, QueryClientNamespace } from "../../query-client";
 import { MultisigSigner } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
