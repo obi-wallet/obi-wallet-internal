@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto";
-import * as secp256k1 from "secp256k1";
+import { publicKeyConvert, publicKeyCreate } from "secp256k1";
 import { z } from "zod";
 
 export const Secp256k1PublicKey = z.object({
@@ -23,7 +23,7 @@ export function generateSec256k1KeyPair(
 ): Secp256k1KeyPair {
   // use base64Seed to create 32 random bytes
   const privateKeyU8 = base64Seed ?? randomBytes(32);
-  const publicKeyU8 = secp256k1.publicKeyCreate(privateKeyU8);
+  const publicKeyU8 = publicKeyCreate(privateKeyU8);
 
   const privateKey = Buffer.from(privateKeyU8).toString("base64");
   const publicKey = Buffer.from(publicKeyU8).toString("base64");
@@ -39,5 +39,5 @@ export function generateSec256k1KeyPair(
 
 export function getSec256k1CompressedPublicKey(publicKey: Secp256k1PublicKey) {
   const u8 = Buffer.from(publicKey.value, "base64");
-  return secp256k1.publicKeyConvert(u8, true);
+  return publicKeyConvert(u8, true);
 }

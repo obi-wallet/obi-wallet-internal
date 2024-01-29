@@ -8,12 +8,12 @@ import {
   credentialToKeyPair,
   KeyType,
   MultisigWallet,
-  Sec256k1PrivateKey,
   Secp256k1PrivateKeySigner,
   SecretJsChainIds,
   SecretJsChains,
   SecretJsClient,
 } from "@obi-wallet/sdk";
+import { Sec256k1PrivateKey } from "@obi-wallet/sdk-secp256k1";
 import { SignDoc } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { z } from "zod";
 

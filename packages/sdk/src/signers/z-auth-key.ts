@@ -1,6 +1,7 @@
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
+
 import { Signer } from "./abstract";
 import { KeySubclassTypeMapping, KeyType } from "../data-structures";
-import { Secp256k1PublicKey } from "../keys";
 
 export class ZAuthKeySigner extends Signer {
   public constructor(protected key: KeySubclassTypeMapping[KeyType.ZAuth]) {

@@ -1,8 +1,8 @@
-import { AbstractTargetChain } from "@/target-chain/abstract";
+import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
-} from "@obi-wallet/sdk";
+} from "@obi-wallet/sdk-secp256k1";
 import { pubkeyToAddress } from "secretjs";
 
 export abstract class AbstractCosmosSdkTargetChain extends AbstractTargetChain {

@@ -19,7 +19,8 @@
     "@cosmjs/stargate": "^0.31.3",
     "@github/webauthn-json": "^2.1.1",
     "@keplr-wallet/cosmos": "0.12.16",
-    "@obi-wallet/sdk-abstract-user-interaction": "*",
+    "@obi-wallet/sdk-abstract-user-interaction": "workspace:*",
+    "@obi-wallet/sdk-secp256k1": "workspace:*",
     "@simplewebauthn/typescript-types": "^8.0.0",
     "@tanstack/query-core": "^4.29.25",
     "@terra-money/feather.js": "^1.0.8",
@@ -44,8 +45,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@repo/eslint-config": "*",
-    "@repo/typescript-config": "*",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "@types/luxon": "^3.3.7",
     "@types/ramda": "^0.29.3",
     "@types/secp256k1": "^4.0.6",

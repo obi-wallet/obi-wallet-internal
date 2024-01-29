@@ -1,7 +1,10 @@
+import {
+  Sec256k1PrivateKey,
+  Secp256k1PublicKey,
+} from "@obi-wallet/sdk-secp256k1";
 import * as secp256k1 from "secp256k1";
 
 import { Signer } from "./abstract";
-import { Sec256k1PrivateKey, Secp256k1PublicKey } from "../keys";
 
 export class Secp256k1PrivateKeySigner extends Signer {
   protected readonly privateKey: Uint8Array;

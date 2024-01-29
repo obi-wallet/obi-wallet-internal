@@ -1,4 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import {
   LegacyAminoMultisigPublicKey,
   SimplePublicKey,
@@ -11,7 +12,7 @@ import warning from "tiny-warning";
 import { SecretJsMultisigSigner } from "./multisigs-signer";
 import { SecretJsChainId, SecretJsChains } from "../../../chains";
 import { SecretJsClient } from "../../../clients";
-import { MultisigPublicKey, PublicKey, Secp256k1KeyPair } from "../../../keys";
+import { MultisigPublicKey, PublicKey } from "../../../keys";
 import { Message, SignedTransaction } from "../../../transactions";
 import {
   AccountValidationResult,

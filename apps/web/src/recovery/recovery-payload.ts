@@ -5,10 +5,12 @@ import {
   KeyType,
   MultisigKey,
   ObservableMultisigKey,
-  Secp256k1KeyPair,
-  Secp256k1PublicKey,
   SecretJsChains,
 } from "@obi-wallet/sdk";
+import {
+  Secp256k1KeyPair,
+  Secp256k1PublicKey,
+} from "@obi-wallet/sdk-secp256k1";
 import { action, observable } from "mobx";
 import invariant from "tiny-invariant";
 import { z } from "zod";

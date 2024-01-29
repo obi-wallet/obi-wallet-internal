@@ -3,6 +3,6 @@
   "compilerOptions": {
     "outDir": "dist"
   },
-  "include": ["__tests__", "__tests-integration__", "src", "turbo"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }

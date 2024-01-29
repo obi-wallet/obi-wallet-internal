@@ -1,12 +1,8 @@
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { staleTime } from "@/lib/stale-time";
 import { useQuery } from "@obi-wallet/headless-ui";
-import {
-  ChainId,
-  Secp256k1PublicKey,
-  SecretJsChains,
-  SecretJsClient,
-} from "@obi-wallet/sdk";
+import { ChainId, SecretJsChains, SecretJsClient } from "@obi-wallet/sdk";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 

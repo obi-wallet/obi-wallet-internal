@@ -1,4 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { Signer, SigningKey, Wallet } from "ethers";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import invariant from "tiny-invariant";
@@ -6,7 +7,6 @@ import { Presets } from "userop";
 
 import { WalletsSchema } from "./schema";
 import { ChainId } from "../../chains";
-import { Secp256k1KeyPair } from "../../keys/sec256k1";
 import { WalletsSdk } from "../../sdk/wallets";
 import { Serialized } from "../abstract";
 import { createGatekeeperConfig } from "../gatekeeper-config";

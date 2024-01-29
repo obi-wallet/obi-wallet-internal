@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { create, get } from "@github/webauthn-json";
+import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import type { CredentialDeviceType } from "@simplewebauthn/typescript-types";
 
-import { Secp256k1KeyPair } from "./sec256k1";
 import { KeySubclassTypeMapping, KeyType } from "../data-structures/key";
 import { Secp256k1PrivateKeySigner } from "../signers/sec256k1-private-key";
 

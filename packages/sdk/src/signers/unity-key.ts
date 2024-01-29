@@ -1,9 +1,9 @@
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import * as secp256k1 from "secp256k1";
 import invariant from "tiny-invariant";
 
 import { Signer } from "./abstract";
 import { KeySubclassTypeMapping, KeyType } from "../data-structures";
-import { Secp256k1PublicKey } from "../keys";
 
 export class UnitySigner extends Signer {
   private privateKey: string;

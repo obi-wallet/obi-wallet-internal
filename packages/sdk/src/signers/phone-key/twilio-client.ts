@@ -1,7 +1,10 @@
+import {
+  Secp256k1KeyPair,
+  Secp256k1PublicKey,
+} from "@obi-wallet/sdk-secp256k1";
 import invariant from "tiny-invariant";
 
 import { Chain, ChainId } from "../../chains";
-import { Secp256k1KeyPair, Secp256k1PublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
 import { Secp256k1PrivateKeySigner } from "../sec256k1-private-key";
 
