@@ -13,7 +13,10 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "@cosmjs/cosmwasm-stargate": "^0.32.2",
+    "@cosmjs/amino": "^0.31.3",
+    "@cosmjs/cosmwasm-stargate": "^0.31.3",
+    "@cosmjs/crypto": "^0.31.3",
+    "@cosmjs/proto-signing": "^0.31.3",
     "@hookform/resolvers": "^3.3.4",
     "@obi-wallet/config": "*",
     "@obi-wallet/headless-ui": "*",
@@ -25,6 +28,7 @@
     "axios": "^1.6.6",
     "clsx": "^2.0.0",
     "copy-to-clipboard": "^3.3.3",
+    "cosmjs-types": "^0.8.0",
     "ethers": "^6.7.1",
     "luxon": "^3.4.4",
     "mobx": "^6.12.0",
