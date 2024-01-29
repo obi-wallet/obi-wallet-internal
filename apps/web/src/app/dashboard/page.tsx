@@ -409,7 +409,7 @@ const AssetBalance = observer(function AssetBalance() {
     await getBalance();
   };
   if (loading) return <div>loading</div>;
-  if (!balance.length) return <div>no balance</div>;
+  if (!balance.length) return <div></div>;
 
   return balance.map((b) => {
     return (
