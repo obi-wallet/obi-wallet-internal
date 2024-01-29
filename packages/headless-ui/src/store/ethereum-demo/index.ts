@@ -1,5 +1,4 @@
 import {
-  isSecretJsChain,
   KeyType,
   Sdk,
   Secp256k1PublicKey,
@@ -83,8 +82,6 @@ export class EthereumDemoStore {
 
   protected get chain() {
     const chainId = this.wallet.chainId;
-    invariant(isSecretJsChain(chainId), "Not a SecretJS chain");
-
     return SecretJsChains[chainId];
   }
 
