@@ -1,13 +1,8 @@
-import { Secp256k1PublicKey } from "@obi-wallet/sdk";
-import { pubkeyToAddress } from "secretjs";
+import { AbstractTargetChain } from "@/target-chain/abstract";
+import { SeiTargetChain } from "@/target-chain/sei";
 
 export enum TargetChainId {
   Sei = 'pacific-1"',
-}
-
-export abstract class AbstractTargetChain {
-  public abstract get label(): string;
-  public abstract computeAddress(publicKey: Secp256k1PublicKey): string;
 }
 
 export class TargetChain {
@@ -20,15 +15,5 @@ export class TargetChain {
       default:
         throw new Error(`Unknown chainId: ${chainId}`);
     }
-  }
-}
-
-export class SeiTargetChain extends AbstractTargetChain {
-  public get label() {
-    return "Sei";
-  }
-
-  public computeAddress(publicKey: Secp256k1PublicKey) {
-    return pubkeyToAddress(Buffer.from(publicKey.value, "base64"), "sei");
   }
 }
