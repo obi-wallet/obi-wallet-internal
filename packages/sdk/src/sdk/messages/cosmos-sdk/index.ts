@@ -26,6 +26,7 @@ import {
   MultisigKey,
   MultisigWallet,
 } from "../../../data-structures";
+import { SecretJsHomeChainId } from "../../../home-chains/secret-js";
 import { Message, MessageJson } from "../../../transactions";
 import { CodeIds, Token } from "../../common";
 import { Sdk } from "../../sdk";
@@ -43,7 +44,7 @@ export class CosmosSdkMessages extends AbstractMessages<string> {
     throw new Error("Method not implemented.");
   }
   protected constructor(protected override chainId: SecretJsChainId) {
-    super("secret-4");
+    super(SecretJsHomeChainId.MAINNET);
   }
 
   public toJSON(message: Message): MessageJson & Msg.Amino {
@@ -808,7 +809,7 @@ export class CosmosSdkMessages extends AbstractMessages<string> {
   }
 
   protected get sdk() {
-    return Sdk.chainId("secret-4");
+    return Sdk.chainId(SecretJsHomeChainId.MAINNET);
   }
 
   protected get chain() {
@@ -845,6 +846,6 @@ export class CosmosSdkMessages extends AbstractMessages<string> {
   }
 
   public static chainId(_chainId: SecretJsChainId) {
-    return new CosmosSdkMessages("secret-4");
+    return new CosmosSdkMessages(SecretJsHomeChainId.MAINNET);
   }
 }

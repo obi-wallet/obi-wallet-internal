@@ -1,6 +1,7 @@
 export * from "./chains";
 export * from "./clients";
 export * from "./data-structures";
+export * from "./home-chains";
 export * from "./keys";
 export * from "./query-client";
 export * from "./schemas";

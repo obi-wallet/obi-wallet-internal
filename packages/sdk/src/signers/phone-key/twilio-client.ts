@@ -126,7 +126,7 @@ export class TwilioClient implements TwilioClientInterface {
     await this.encryptAndSendMessage({
       answer: securityAnswer,
       phoneNumber,
-      chainId: "pulsar-3",
+      chainId,
       type,
     });
   }
