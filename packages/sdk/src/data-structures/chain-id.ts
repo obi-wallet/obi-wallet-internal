@@ -1,8 +1,9 @@
 import { z } from "zod";
 
 import { ChainId } from "../chains";
+import { SecretJsHomeChainId } from "../home-chains/secret-js";
 
 export const ChainIdSchema: z.ZodType<ChainId> = z.union([
-  z.literal("pulsar-3"),
-  z.literal("secret-4"),
+  z.literal(SecretJsHomeChainId.PULSAR_TESTNET),
+  z.literal(SecretJsHomeChainId.MAINNET),
 ]);
