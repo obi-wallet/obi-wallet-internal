@@ -126,7 +126,7 @@ export async function getPasskey(): Promise<Secp256k1KeyPair> {
   return await credentialToKeyPair(credential);
 }
 
-async function credentialToKeyPair(credential: {
+export async function credentialToKeyPair(credential: {
   id: string;
 }): Promise<Secp256k1KeyPair> {
   const privateKey = await combineKeys(

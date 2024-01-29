@@ -36,3 +36,8 @@ export function generateSec256k1KeyPair(
     },
   };
 }
+
+export function getSec256k1CompressedPublicKey(publicKey: Secp256k1PublicKey) {
+  const u8 = Buffer.from(publicKey.value, "base64");
+  return secp256k1.publicKeyConvert(u8, true);
+}
