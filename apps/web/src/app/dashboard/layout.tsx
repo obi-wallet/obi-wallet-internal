@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <section className="flex w-full">
       <Navbar />
-      <div className="flex w-full grow ">{children}</div>
+      <div className="flex grow ">{children}</div>
     </section>
   );
 }

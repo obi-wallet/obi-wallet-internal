@@ -31,7 +31,6 @@ export function Text({
     <span
       className={cn(
         "flex items-center",
-        mono && "font-GTAmerica-Mono",
         color === "white" && "text-white",
         color === "black" && "text-black",
         color === "gray" && "text-neutral-500",
