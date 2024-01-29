@@ -38,11 +38,13 @@ export const Header = observer(function Header() {
 
 const LogOut = observer(function LogOut() {
   const { walletsStore } = useStore();
+  const router = useRouter();
 
   return (
     <Button
       onClick={() => {
         walletsStore.logout();
+        router.push("/");
       }}
     >
       Log out
