@@ -30,7 +30,6 @@ import {
 } from "../../sdk/common/secret-js/amino-signer";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
-import { AbstractClient } from "../abstract";
 
 export async function withSecretNetworkClient<T>(
   chainId: SecretJsChainId,
@@ -68,10 +67,8 @@ export async function withSigningSecretNetworkClient<T>(
   return await f(client);
 }
 
-export class SecretJsClient extends AbstractClient {
-  public constructor(protected chainId: SecretJsChainId) {
-    super();
-  }
+export class SecretJsClient {
+  public constructor(protected chainId: SecretJsChainId) {}
 
   public withSecretNetworkClient<T>(f: (client: SecretNetworkClient) => T) {
     return withSecretNetworkClient(this.chainId, f);
@@ -82,6 +79,19 @@ export class SecretJsClient extends AbstractClient {
     f: (client: SecretNetworkClient) => T,
   ) {
     return withSigningSecretNetworkClient({ chainId: this.chainId, signer }, f);
+  }
+
+  public async queryContract<T extends z.ZodTypeAny>({
+    contract,
+    query,
+    schema,
+  }: {
+    contract: string;
+    query: object;
+    schema: T;
+  }): Promise<z.infer<T>> {
+    const [response] = await this.queryContracts([{ contract, query, schema }]);
+    return response;
   }
 
   public async queryContracts<T extends z.ZodTypeAny>(
