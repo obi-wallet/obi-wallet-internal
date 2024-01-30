@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    ".": "./src/mpc_bindings.js"
+    ".": "./src/mpc_bindings.js",
+    "./bindings.wasm": "./src/mpc_bindings_bg.wasm"
   },
   "main": "./src/mpc_bindings.js",
   "scripts": {

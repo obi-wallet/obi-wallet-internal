@@ -1,3 +1,4 @@
+import { WasmStore } from "@/stores/wasm";
 import { Config } from "@obi-wallet/config";
 import {
   AbstractKVStore,
@@ -16,6 +17,7 @@ export class RootStore {
   public readonly draftsStore: DraftsStore;
   public readonly sdkRootStore: SdkRootStore;
   public readonly userDataStore: UserDataStore;
+  public readonly wasmStore: WasmStore;
 
   constructor({
     initialConfig,
@@ -33,6 +35,7 @@ export class RootStore {
       configStore: this.configStore,
       walletsStore: this.walletsStore,
     });
+    this.wasmStore = new WasmStore();
   }
 
   public get walletConnectStore() {

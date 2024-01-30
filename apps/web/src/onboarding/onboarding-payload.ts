@@ -16,8 +16,10 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 import { Parameters as KeygenParam } from "@obi-wallet/mpc-ecdsa-wasm-types";
 import { TxResponse } from "secretjs";
-import { Signer } from "@obi-wallet/mpc-ecdsa-wasm";
-import { createSignersAndPresign, keygen } from "@/lib/mpc";
+// import { Signer } from "@obi-wallet/mpc-ecdsa-wasm";
+import { initMpcLib } from "@/lib/mpc";
+import { MpcEcdsaWasm } from "@/stores/wasm";
+import type { Signer } from "@obi-wallet/mpc-ecdsa-wasm";
 
 const UnclaimedAccountsKvStorePrefix = "unclaimed-accounts";
 
@@ -209,19 +211,23 @@ export class OnboardingPayload implements Draftable {
   }
 
   protected async distributeShares(
+    mpcPackage: MpcEcdsaWasm,
     keygenParam: KeygenParam = { parties: 3, threshold: 1 },
     contractCombo: number[] = [1, 3],
     backupCombo: number[] = [2, 3],
   ) {
+    const lib = initMpcLib(mpcPackage);
+    console.log("distributing shares");
+
     try {
-      const account = await this.getUnclaimedAccount();
-      if (!account) {
-        throw new Error(`Account is not created`);
-      }
-
-      const shares = keygen(keygenParam);
-
-      const signersForContract: Signer[] = createSignersAndPresign(
+      // const account = await this.getUnclaimedAccount();
+      // if (!account) {
+      //   throw new Error(`Account is not created`);
+      // }
+      //
+      const shares = lib.keygen(keygenParam);
+      //
+      const signersForContract = lib.createSignersAndPresign(
         shares,
         contractCombo,
       );
@@ -238,7 +244,7 @@ export class OnboardingPayload implements Draftable {
         pubkey: completedOfflineStageForContrtact.local_key.y_sum_s,
       };
 
-      const signersForBackup = createSignersAndPresign(shares, backupCombo);
+      const signersForBackup = lib.createSignersAndPresign(shares, backupCombo);
       const backupSignersCompletedOfflineStage =
         signersForBackup[0]?.completedOfflineStage();
 
@@ -252,33 +258,43 @@ export class OnboardingPayload implements Draftable {
         pubkey: completedOfflineStageForBackup.local_key.y_sum_s,
       };
 
-      // distribute shares to contract and db
-      const response = await fetch("/api/setup/distribute-shares", {
-        method: "POST",
-        body: JSON.stringify({
+      console.log(
+        JSON.stringify({
           contractParticipants: contractCombo,
           chainId: this.chainId,
           contractSignersCompletedOfflineStage,
           backupSignersCompletedOfflineStage,
-          accountAddress: account?.homeAccountAddress,
+          // accountAddress: account?.homeAccountAddress,
         }),
-      });
+      );
 
-      if (response.status !== 200) {
-        throw new Error(`Failed to distribute shares: ${response.status}`);
-      }
-
-      const result: { success: boolean; tx: TxResponse } =
-        await response.json();
-      if (!result.success) {
-        throw new Error(`Failed to distribute contract share`);
-      }
-
-      // we should save these to store for persist?
-      return {
-        shareForContract: userShareForContract,
-        shareForBackup: userShareForBackup,
-      };
+      // // distribute shares to contract and db
+      // const response = await fetch("/api/setup/distribute-shares", {
+      //   method: "POST",
+      //   body: JSON.stringify({
+      //     contractParticipants: contractCombo,
+      //     chainId: this.chainId,
+      //     contractSignersCompletedOfflineStage,
+      //     backupSignersCompletedOfflineStage,
+      //     accountAddress: account?.homeAccountAddress,
+      //   }),
+      // });
+      //
+      // if (response.status !== 200) {
+      //   throw new Error(`Failed to distribute shares: ${response.status}`);
+      // }
+      //
+      // const result: { success: boolean; tx: TxResponse } =
+      //   await response.json();
+      // if (!result.success) {
+      //   throw new Error(`Failed to distribute contract share`);
+      // }
+      //
+      // // we should save these to store for persist?
+      // return {
+      //   shareForContract: userShareForContract,
+      //   shareForBackup: userShareForBackup,
+      // };
     } catch (error) {
       throw console.log(`Error on distribute share:`, error);
     }
