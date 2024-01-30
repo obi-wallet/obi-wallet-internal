@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/mpc_bindings.js"
   },
-  "main": "./src/index.js",
+  "main": "./src/mpc_bindings.js",
   "scripts": {
     "lint": "eslint .",
     "tsc": "tsc --noEmit"
