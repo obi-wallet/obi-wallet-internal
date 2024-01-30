@@ -75,17 +75,21 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
-  useEffect(() => {
-    console.log("TEXT", text);
-    if (text !== value) {
-      onChange && onChange(text as string);
-    }
-  }, [text]);
+  // useEffect(() => {
+  //   console.log("TEXT", text);
+  //   if (text !== value) {
+  //     onChange && onChange(text as string);
+  //   }
+  // }, [text]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
+    console.log({ value, number: isNaN(parseFloat(value)) });
+    if (type === "number" && isNaN(Number(value))) return;
     setText(value.trim());
+    onChange && onChange(value.trim());
   };
+
   const renderErrorMessage = (message: string) => {
     if (message.includes("Expected number")) {
       return "Invalid number";
@@ -113,12 +117,12 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
         <input
           id={id}
           className={cn(
-            "border-foreground-primary-border peer w-full rounded-xl border bg-transparent px-7 py-6 text-2xl font-normal text-white focus:border-blue-600 focus-visible:outline-none",
+            "border-foreground-primary-border focus:border-background-primary-active peer w-full rounded-xl border bg-transparent px-7 py-6 text-2xl font-normal text-white focus-visible:outline-none",
             "[-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none",
             StartIcon && "px-9",
             errorMessage
               ? ":focus:border-red-500 border-red-500"
-              : "  focus:border-blue-600 ",
+              : "  focus:border-background-primary-active ",
             className,
           )}
           required
