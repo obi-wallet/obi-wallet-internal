@@ -71,7 +71,7 @@ export function DropDown({
       <button
         id="dropdownDefaultButton"
         data-dropdown-toggle="dropdown"
-        className="  relative z-10 flex w-full items-center justify-between rounded bg-blue-600 px-5 py-2.5 text-center font-medium text-white hover:bg-blue-700 focus:outline-none "
+        className="  bg-background-primary hover:bg-background-primary-hoverfocus:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white "
         type="button"
         onClick={() => setIsOpen(!isOpen)}
       >

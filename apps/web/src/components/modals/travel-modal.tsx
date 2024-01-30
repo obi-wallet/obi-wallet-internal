@@ -264,7 +264,11 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
         modal ? "absolute" : "relative",
       )}
     >
-      <Box className="w-[560px] space-y-4 pt-6 shadow-lg shadow-neutral-600">
+      <Box
+        className={cn(
+          "w-[560px] space-y-4 pt-6 sm:shadow-lg sm:shadow-neutral-600",
+        )}
+      >
         <Text size="xl">Obi Fast Travel</Text>
         <Text size="sm" className=" leading-5">
           Deposit assets below from an external account to receive them in your
@@ -438,7 +442,9 @@ function ToleranceSetting({ field, fieldState }: IToleranceProps) {
             className={cn(
               "w-17 flex h-9 flex-row items-center space-x-3 text-center",
               "cursor-pointer",
-              field.value === tolerance ? "bg-blue-800" : "bg-gray-700",
+              field.value === tolerance
+                ? "bg-background-primary"
+                : "bg-gray-700",
             )}
             onClick={() => setText(tolerance.toString())}
           >
@@ -452,9 +458,10 @@ function ToleranceSetting({ field, fieldState }: IToleranceProps) {
 
             "bg-black/30",
             // border styles on focus (its an input container)
-            " focus-within:ring-1 focus-within:ring-blue-800 ",
+            " focus-within:ring-background-primary-active focus-within:ring-1",
             // if toleranceNumber is not 1 or 2 then we are in custom mode and we need to show the border
-            !tolerances.includes(Number(text) || 0) && "ring-2 ring-blue-800 ",
+            !tolerances.includes(Number(text) || 0) &&
+              "ring-background-primary-active ring-2",
             "text-white",
           )}
         >

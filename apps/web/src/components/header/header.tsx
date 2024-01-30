@@ -4,6 +4,7 @@ import { Button, Modal, renderModal } from "@/components";
 import { PrimaryLink } from "@/components/links";
 import { CURRENT_THEME } from "@/configs";
 import { useStore } from "@/contexts";
+import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -13,13 +14,19 @@ export const Header = observer(function Header() {
   const { walletsStore } = useStore();
 
   const primaryLinkHref = walletsStore.currentWallet ? "/dashboard" : "/";
-  const children = walletsStore.currentWallet ? <LogOut /> : <LogIn />;
+  const authChildren = walletsStore.currentWallet ? <LogOut /> : <LogIn />;
 
   return (
     <>
-      <header className="bg-background-primary flex h-20 items-center justify-between px-8 shadow">
-        <PrimaryLink href={primaryLinkHref}>
-          {/* <Text
+      <header className="h-20 w-full">
+        <div
+          className={cn(
+            "bg-background-primary flex h-full w-full items-center justify-between px-8 shadow",
+            "max-sm:hidden",
+          )}
+        >
+          <PrimaryLink href={primaryLinkHref}>
+            {/* <Text
             color="white"
             size="2xl"
             fontWeight="bold"
@@ -28,9 +35,10 @@ export const Header = observer(function Header() {
             Obi
           </Text>
            */}
-          <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
-        </PrimaryLink>
-        {children}
+            <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
+          </PrimaryLink>
+          {authChildren}
+        </div>
       </header>
     </>
   );
