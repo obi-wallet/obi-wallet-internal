@@ -23,7 +23,11 @@ import { AssetInput, Box, Button, Text } from "..";
 import { nonEmptyString } from "../../../lib/form/validation-helpers";
 import { Divider } from "../divider";
 import { IAssetOption } from "../dropdown";
-
+export type PriceData = {
+  mainVsPrice: number;
+  mainUsd: number;
+  vsUsd: number;
+};
 export type AssetAmmount = {
   amount: number | undefined;
   asset: string | undefined;
@@ -212,10 +216,10 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     if (!fromData) return;
     if (!fromData.asset || fromData.asset === "") return;
     if (!toData.asset) return;
-    const price = await getPrice({
+    const price = (await getPrice({
       mainCoin: fromAssets[fromData.asset] as FromAsset,
       vsCoin: toAssets[toData.asset] as ToAsset,
-    });
+    })) as number;
 
     const toAssetAmount = price * (Number(fromData?.amount) ?? 0);
 
@@ -241,10 +245,10 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     if (!toData.asset || toData.asset === "") return;
     const fromAssetAsset = getValues("fromAsset").asset;
     if (!fromAssetAsset) return;
-    const price = await getPrice({
+    const price = (await getPrice({
       mainCoin: toAssets[toData.asset] as ToAsset,
       vsCoin: fromAssets[fromAssetAsset] as FromAsset,
-    });
+    })) as number;
 
     const fromAssetAmount = price * (Number(toData?.amount) ?? 0);
     setValue("fromAsset", {
@@ -688,17 +692,26 @@ const fetchPrice = async (assetData: FromAsset | ToAsset | undefined) => {
 export const getPrice = async ({
   mainCoin,
   vsCoin,
+  usdPrices,
 }: {
   mainCoin: FromAsset | ToAsset;
   vsCoin: FromAsset | ToAsset;
-}): Promise<number> => {
+  usdPrices?: boolean;
+}): Promise<number | PriceData> => {
   // get Dollar prices from squid
   const main = await fetchPrice(mainCoin);
   const vs = await fetchPrice(vsCoin);
   // we have the dollar price of both coins, now we need the price of the main coin in vs coin
   // we need to divide the main coin price by the vs coin price
   if (main && vs) {
-    return Number(main) / Number(vs);
+    const mainVsPrice = Number(main) / Number(vs);
+    return usdPrices
+      ? {
+          mainVsPrice,
+          mainUsd: Number(main),
+          vsUsd: Number(vs),
+        }
+      : mainVsPrice;
   }
   return 0;
 };

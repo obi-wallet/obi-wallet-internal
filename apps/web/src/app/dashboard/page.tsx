@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Divider, getPrice } from "@/components";
+import { Box, Divider, PriceData, getPrice } from "@/components";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
@@ -232,14 +232,19 @@ const EstimateAmount = observer(function EstimateAmount({
         ) ?? ""
       ];
 
-    const price = await getPrice({
+    const priceData = (await getPrice({
       mainCoin: fromAsset as FromAsset,
       vsCoin: toAsset,
-    });
+      usdPrices: true,
+    })) as PriceData;
+    const price = priceData.mainVsPrice;
     // console.log("PRICE", price, fromAssetAmount);
     const amount = formatEther(parseUnits(fromAssetAmount ?? "0", "wei"));
     // console.log("AMOUNT", amount);
-    setAmount(Number(amount) * price);
+    const amountNumber = Number(amount) * price;
+    // discount 2$ for fees
+    setAmount(amountNumber - 2.5 / priceData.vsUsd);
+
     setLoading(false);
   };
   if (!amount || loading) return null;
