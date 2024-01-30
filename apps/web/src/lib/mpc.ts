@@ -1,4 +1,4 @@
-import { KeyGenerator, Signer } from "../mpc-ecdsa-wasm/mpc_bindings";
+import { KeyGenerator, Signer } from "@mpc-sdk/mpc-bindings";
 import { Parameters, PartySignup } from "../types/mpc-ecdsa-wasm-types.js";
 
 // @ts-ignore this is from MPC wasm

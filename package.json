@@ -26,5 +26,8 @@
   "packageManager": "yarn@4.0.2",
   "engines": {
     "node": "^20.0.0"
+  },
+  "dependencies": {
+    "@mpc-sdk/mpc-bindings": "file:packages/framework/bindings/pkg"
   }
 }

@@ -1,5 +1,5 @@
 import { createSignersAndPresign, keygen } from "@/lib/mpc";
-import { Signer } from "@/mpc-ecdsa-wasm/mpc_bindings";
+import { Signer } from "@mpc-sdk/mpc-bindings";
 import { Draftable } from "@/stores/drafts/draft";
 import { Parameters as KeygenParam } from "@/types/mpc-ecdsa-wasm-types";
 import { KVStore } from "@obi-wallet/headless-ui";
