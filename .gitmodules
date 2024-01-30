@@ -1,4 +1,4 @@
 [submodule "packages/framework"]
 	path = packages/framework
-	url = git@ntropian.github.com:obi-wallet/framework.git
+	url = git@github.com:obi-wallet/framework.git
 	branch = obi-unsecure
