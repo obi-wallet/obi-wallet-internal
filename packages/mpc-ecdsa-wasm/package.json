@@ -7,7 +7,6 @@
   },
   "main": "./src/mpc_bindings.js",
   "scripts": {
-    "lint": "eslint .",
     "tsc": "tsc --noEmit"
   },
   "devDependencies": {

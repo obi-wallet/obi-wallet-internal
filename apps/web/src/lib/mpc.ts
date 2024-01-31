@@ -1,6 +1,59 @@
+import { rootStore } from "@/hooks/use-create-root-store";
 import { MpcEcdsaWasm } from "@/stores/wasm";
 import type { KeyGenerator, Signer } from "@obi-wallet/mpc-ecdsa-wasm";
-import { Parameters, PartySignup } from "@obi-wallet/mpc-ecdsa-wasm-types";
+import {
+  Parameters as KeygenParam,
+  Parameters,
+  PartySignup,
+} from "@obi-wallet/mpc-ecdsa-wasm-types";
+import invariant from "tiny-invariant";
+
+export async function distributeShares() {
+  const stores = rootStore.current;
+  invariant(stores, "RootStore not initialized");
+  const mpcPackage = await stores.wasmStore.getMpcEcdsaWasm();
+  const lib = initMpcLib(mpcPackage);
+
+  const keygenParam: KeygenParam = { parties: 3, threshold: 1 };
+  const contractCombo: number[] = [1, 3];
+  const backupCombo: number[] = [2, 3];
+
+  const shares = lib.keygen(keygenParam);
+
+  const signersForContract = lib.createSignersAndPresign(shares, contractCombo);
+  const contractSignersCompletedOfflineStage =
+    signersForContract[0]?.completedOfflineStage();
+
+  // user share that is used to sign transaction with contract share
+  const completedOfflineStageForContrtact =
+    signersForContract[1]?.completedOfflineStage();
+  const userShareForContract = {
+    k_i: completedOfflineStageForContrtact.sign_keys.k_i,
+    R: completedOfflineStageForContrtact.R,
+    sigma_i: completedOfflineStageForContrtact.sigma_i,
+    pubkey: completedOfflineStageForContrtact.local_key.y_sum_s,
+  };
+
+  const signersForBackup = lib.createSignersAndPresign(shares, backupCombo);
+  const backupSignersCompletedOfflineStage =
+    signersForBackup[0]?.completedOfflineStage();
+
+  // user share that is used to sign transaction with backup share
+  const completedOfflineStageForBackup =
+    signersForBackup[1]?.completedOfflineStage();
+  const userShareForBackup = {
+    k_i: completedOfflineStageForBackup.sign_keys.k_i,
+    R: completedOfflineStageForBackup.R,
+    sigma_i: completedOfflineStageForBackup.sigma_i,
+    pubkey: completedOfflineStageForBackup.local_key.y_sum_s,
+  };
+
+  return {
+    contractParticipants: contractCombo,
+    contractSignersCompletedOfflineStage,
+    backupSignersCompletedOfflineStage,
+  };
+}
 
 export function initMpcLib({ KeyGenerator, Signer }: MpcEcdsaWasm) {
   // This is from MPC wasm

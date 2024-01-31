@@ -1,24 +1,28 @@
 "use client";
 
-import { Button } from "@/components";
-import { useStore } from "@/contexts";
-import { OnboardingPayload } from "@/onboarding/onboarding-payload";
-import { SecretJsHomeChainId } from "@obi-wallet/sdk";
+import { distributeShares } from "@/lib/mpc";
+import { useEffectOnceWhen } from "rooks";
 
+// @refresh reset
 export default function DebugPage() {
-  const { wasmStore } = useStore();
+  useEffectOnceWhen(async () => {
+    const [_chai, mocha] = await Promise.all([
+      import("chai"),
+      import("mocha/mocha.js"),
+      import("mocha/mocha.css"),
+    ]);
+    mocha.setup("tdd");
+    mocha.checkLeaks();
 
-  return (
-    <Button
-      onClick={async () => {
-        const wasm = await wasmStore.getMpcEcdsaWasm();
+    suite("distributeShares", function () {
+      test("should succeed", async function () {
+        this.timeout(0);
+        await distributeShares();
+      });
+    });
 
-        const onboardingPayload = new OnboardingPayload(
-          SecretJsHomeChainId.MAINNET,
-        );
-        const foo = await onboardingPayload.distributeShares(wasm);
-        console.log(foo);
-      }}
-    ></Button>
-  );
+    mocha.run();
+  });
+
+  return <div id="mocha" className="text-white" />;
 }
