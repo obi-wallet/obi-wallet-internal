@@ -22,7 +22,7 @@ export const Header = observer(function Header() {
         <div
           className={cn(
             "bg-background-primary flex h-full w-full items-center justify-between px-8 shadow",
-            "max-sm:hidden",
+            // "max-sm:hidden",
           )}
         >
           <PrimaryLink href={primaryLinkHref}>
@@ -65,6 +65,16 @@ const LogIn = observer(function LogIn() {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
 
+  function ellipsisString(str: string) {
+    if (str.length > 40) {
+      return (
+        str.substring(0, 20) +
+        "..." +
+        str.substring(str.length - 20, str.length)
+      );
+    }
+    return str;
+  }
   return (
     <>
       <Button
@@ -91,7 +101,9 @@ const LogIn = observer(function LogIn() {
                     }}
                     className="w-full"
                   >
-                    {wallet.address}
+                    <div className="w-full overflow-hidden text-ellipsis text-left">
+                      {wallet.address}
+                    </div>
                   </Button>
                 );
               })}
