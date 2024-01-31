@@ -54,7 +54,7 @@ export const Header = observer(function Header() {
             "sm:hidden",
           )}
         >
-          <div className="h-11 w-11 rounded-full bg-sky-500">
+          <div className="bg-background-primary h-11 w-11 rounded-full opacity-80">
             {userData.avatar ? (
               <Image
                 width={44}
