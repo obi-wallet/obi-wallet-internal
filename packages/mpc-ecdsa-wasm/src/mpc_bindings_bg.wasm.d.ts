@@ -42,8 +42,8 @@ export function rustsecp256k1_v0_4_1_default_error_callback_fn(a: number, b: num
 export function __wbindgen_malloc(a: number, b: number): number;
 export function __wbindgen_realloc(a: number, b: number, c: number, d: number): number;
 export const __wbindgen_export_2: WebAssembly.Table;
-export function wasm_bindgen__convert__closures__invoke0_mut__hf5e2908412a37ea5(a: number, b: number): void;
-export function wasm_bindgen__convert__closures__invoke1_mut__h11287ea14f1bef07(a: number, b: number, c: number): void;
+export function wasm_bindgen__convert__closures__invoke0_mut__he6ba9d45428c4847(a: number, b: number): void;
+export function wasm_bindgen__convert__closures__invoke1_mut__h82ff6324a435aa73(a: number, b: number, c: number): void;
 export function wasm_bindgen__convert__closures__invoke1_mut__hc072ccd0c523f415(a: number, b: number, c: number): void;
 export function __wbindgen_add_to_stack_pointer(a: number): number;
 export function __wbindgen_free(a: number, b: number, c: number): void;

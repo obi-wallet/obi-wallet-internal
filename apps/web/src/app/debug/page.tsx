@@ -11,7 +11,6 @@ export default function DebugPage() {
   return (
     <Button
       onClick={async () => {
-        console.log("fetching wasm");
         const wasm = await wasmStore.getMpcEcdsaWasm();
 
         const onboardingPayload = new OnboardingPayload(
