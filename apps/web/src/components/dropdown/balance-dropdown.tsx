@@ -53,7 +53,7 @@ export function BalanceDropDown({
       <button
         id="dropdownDefaultButton"
         data-dropdown-toggle="dropdown"
-        className="flex h-16 w-full items-center justify-between rounded-xl bg-slate-950 p-3 text-center font-medium text-white hover:bg-blue-700 focus:outline-none "
+        className="bg-background-primary hover:bg-background-primary-hover flex h-16 w-full items-center justify-between rounded-xl p-3 text-center font-medium text-white focus:outline-none "
         type="button"
         onClick={() => setIsOpen(!isOpen)}
       >
@@ -77,7 +77,7 @@ export function BalanceDropDown({
       <div
         id="dropdown"
         className={cn(
-          "absolute z-50 w-full  rounded-lg bg-gray-700",
+          "absolute z-50 w-full rounded-lg bg-gray-700",
           !isOpen && "hidden",
         )}
       >

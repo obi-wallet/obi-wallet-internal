@@ -46,7 +46,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
           : "Create Your First Key"}
       </Text>
       <Text
-        className="w-96 text-center"
+        className="w-96 text-center max-sm:w-full"
         fontWeight="medium"
         leading="tight"
         color="zinc"

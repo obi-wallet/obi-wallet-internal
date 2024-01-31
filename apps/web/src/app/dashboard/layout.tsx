@@ -13,9 +13,11 @@ export default function RootLayout({
   children: ReactNode;
 }): JSX.Element {
   return (
-    <section className="flex w-full">
+    <section className="relative flex w-full ">
       <Navbar />
-      <div className="flex grow ">{children}</div>
+      <div className="flex grow overflow-auto max-sm:h-[calc(100vh-96px)]">
+        {children}
+      </div>
     </section>
   );
 }
