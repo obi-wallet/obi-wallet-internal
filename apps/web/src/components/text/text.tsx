@@ -17,7 +17,6 @@ export type TypographyProps = {
 };
 
 export function Text({
-  mono = false,
   size = "md",
   color = "white",
   fontWeight = "normal",

@@ -18,7 +18,7 @@ module.exports = {
         "--foreground-primary": "var(--foreground-primary)",
         "--foreground-primary-border": "var(--foreground-primary-border)",
       },
-      backgroundGradient: (theme) => ({
+      backgroundGradient: () => ({
         "gradient-background": `linear-gradient(to right bottom, rgba(0, 0, 0, 1), var(--background-main))`,
       }),
     },

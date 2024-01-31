@@ -32,7 +32,7 @@ export const Account = observer(function Account() {
       </div>
       <div className="flex flex-col justify-around">
         <Text size="xl" color="white">
-          {"My Account"}
+          My Account
         </Text>
         {/* <Text size="3xl" color="white" fontWeight="bold">
           $6,178.04
