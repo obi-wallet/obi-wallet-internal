@@ -150,8 +150,6 @@ export class OnboardingPayload implements Draftable {
 
     const homeAccount = await this.createHomeAccount();
     const unclaimedAccount = await this.addKey(homeAccount);
-    const response = await this.distributeShares();
-    console.log(response);
 
     await this.setUnclaimedAccount(unclaimedAccount);
     return unclaimedAccount;

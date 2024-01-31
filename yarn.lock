@@ -3772,7 +3772,7 @@ __metadata:
     "@types/elliptic": "npm:^6.4.18"
     "@types/eslint": "npm:^8.44.9"
     "@types/luxon": "npm:^3.3.7"
-    "@types/mocha": "npm:^10"
+    "@types/mocha": "npm:^10.0.6"
     "@types/mongoose": "npm:^5.11.97"
     "@types/node": "npm:^20.10.4"
     "@types/ramda": "npm:^0.29.3"
@@ -6379,7 +6379,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha@npm:^10":
+"@types/mocha@npm:^10.0.6":
   version: 10.0.6
   resolution: "@types/mocha@npm:10.0.6"
   checksum: 4526c9e88388f9e1004c6d3937c5488a39908810f26b927173c58d52b43057f3895627dc06538e96706e08b88158885f869ec6311f6b58fd72bdef715f26d6c3
