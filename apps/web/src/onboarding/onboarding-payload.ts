@@ -1,9 +1,5 @@
-import { initMpcLib } from "@/lib/mpc";
 import { Draftable } from "@/stores/drafts/draft";
-import { MpcEcdsaWasm } from "@/stores/wasm";
 import { KVStore } from "@obi-wallet/headless-ui";
-import type { Signer } from "@obi-wallet/mpc-ecdsa-wasm";
-import { Parameters as KeygenParam } from "@obi-wallet/mpc-ecdsa-wasm-types";
 import {
   ChainId,
   KeyType,
@@ -16,7 +12,6 @@ import {
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import { action, observable } from "mobx";
-import { TxResponse } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 // import { Signer } from "@obi-wallet/mpc-ecdsa-wasm";
@@ -208,95 +203,95 @@ export class OnboardingPayload implements Draftable {
     };
   }
 
-  protected async distributeShares(
-    mpcPackage: MpcEcdsaWasm,
-    keygenParam: KeygenParam = { parties: 3, threshold: 1 },
-    contractCombo: number[] = [1, 3],
-    backupCombo: number[] = [2, 3],
-  ) {
-    const lib = initMpcLib(mpcPackage);
-    console.log("distributing shares");
-
-    try {
-      // const account = await this.getUnclaimedAccount();
-      // if (!account) {
-      //   throw new Error(`Account is not created`);
-      // }
-      //
-      const shares = lib.keygen(keygenParam);
-      //
-      const signersForContract = lib.createSignersAndPresign(
-        shares,
-        contractCombo,
-      );
-      const contractSignersCompletedOfflineStage =
-        signersForContract[0]?.completedOfflineStage();
-
-      // user share that is used to sign transaction with contract share
-      const completedOfflineStageForContrtact =
-        signersForContract[1]?.completedOfflineStage();
-      const userShareForContract = {
-        k_i: completedOfflineStageForContrtact.sign_keys.k_i,
-        R: completedOfflineStageForContrtact.R,
-        sigma_i: completedOfflineStageForContrtact.sigma_i,
-        pubkey: completedOfflineStageForContrtact.local_key.y_sum_s,
-      };
-
-      const signersForBackup = lib.createSignersAndPresign(shares, backupCombo);
-      const backupSignersCompletedOfflineStage =
-        signersForBackup[0]?.completedOfflineStage();
-
-      // user share that is used to sign transaction with backup share
-      const completedOfflineStageForBackup =
-        signersForBackup[1]?.completedOfflineStage();
-      const userShareForBackup = {
-        k_i: completedOfflineStageForBackup.sign_keys.k_i,
-        R: completedOfflineStageForBackup.R,
-        sigma_i: completedOfflineStageForBackup.sigma_i,
-        pubkey: completedOfflineStageForBackup.local_key.y_sum_s,
-      };
-
-      console.log(
-        JSON.stringify({
-          contractParticipants: contractCombo,
-          chainId: this.chainId,
-          contractSignersCompletedOfflineStage,
-          backupSignersCompletedOfflineStage,
-          // accountAddress: account?.homeAccountAddress,
-        }),
-      );
-
-      // // distribute shares to contract and db
-      // const response = await fetch("/api/setup/distribute-shares", {
-      //   method: "POST",
-      //   body: JSON.stringify({
-      //     contractParticipants: contractCombo,
-      //     chainId: this.chainId,
-      //     contractSignersCompletedOfflineStage,
-      //     backupSignersCompletedOfflineStage,
-      //     accountAddress: account?.homeAccountAddress,
-      //   }),
-      // });
-      //
-      // if (response.status !== 200) {
-      //   throw new Error(`Failed to distribute shares: ${response.status}`);
-      // }
-      //
-      // const result: { success: boolean; tx: TxResponse } =
-      //   await response.json();
-      // if (!result.success) {
-      //   throw new Error(`Failed to distribute contract share`);
-      // }
-      //
-      // // we should save these to store for persist?
-      // return {
-      //   shareForContract: userShareForContract,
-      //   shareForBackup: userShareForBackup,
-      // };
-    } catch (error) {
-      throw console.log(`Error on distribute share:`, error);
-    }
-  }
+  // protected async distributeShares(
+  //   mpcPackage: MpcEcdsaWasm,
+  //   keygenParam: KeygenParam = { parties: 3, threshold: 1 },
+  //   contractCombo: number[] = [1, 3],
+  //   backupCombo: number[] = [2, 3],
+  // ) {
+  //   const lib = initMpcLib(mpcPackage);
+  //   console.log("distributing shares");
+  //
+  //   try {
+  //     // const account = await this.getUnclaimedAccount();
+  //     // if (!account) {
+  //     //   throw new Error(`Account is not created`);
+  //     // }
+  //     //
+  //     const shares = lib.keygen(keygenParam);
+  //     //
+  //     const signersForContract = lib.createSignersAndPresign(
+  //       shares,
+  //       contractCombo,
+  //     );
+  //     const contractSignersCompletedOfflineStage =
+  //       signersForContract[0]?.completedOfflineStage();
+  //
+  //     // user share that is used to sign transaction with contract share
+  //     const completedOfflineStageForContrtact =
+  //       signersForContract[1]?.completedOfflineStage();
+  //     const userShareForContract = {
+  //       k_i: completedOfflineStageForContrtact.sign_keys.k_i,
+  //       R: completedOfflineStageForContrtact.R,
+  //       sigma_i: completedOfflineStageForContrtact.sigma_i,
+  //       pubkey: completedOfflineStageForContrtact.local_key.y_sum_s,
+  //     };
+  //
+  //     const signersForBackup = lib.createSignersAndPresign(shares, backupCombo);
+  //     const backupSignersCompletedOfflineStage =
+  //       signersForBackup[0]?.completedOfflineStage();
+  //
+  //     // user share that is used to sign transaction with backup share
+  //     const completedOfflineStageForBackup =
+  //       signersForBackup[1]?.completedOfflineStage();
+  //     const userShareForBackup = {
+  //       k_i: completedOfflineStageForBackup.sign_keys.k_i,
+  //       R: completedOfflineStageForBackup.R,
+  //       sigma_i: completedOfflineStageForBackup.sigma_i,
+  //       pubkey: completedOfflineStageForBackup.local_key.y_sum_s,
+  //     };
+  //
+  //     console.log(
+  //       JSON.stringify({
+  //         contractParticipants: contractCombo,
+  //         chainId: this.chainId,
+  //         contractSignersCompletedOfflineStage,
+  //         backupSignersCompletedOfflineStage,
+  //         // accountAddress: account?.homeAccountAddress,
+  //       }),
+  //     );
+  //
+  //     // // distribute shares to contract and db
+  //     // const response = await fetch("/api/setup/distribute-shares", {
+  //     //   method: "POST",
+  //     //   body: JSON.stringify({
+  //     //     contractParticipants: contractCombo,
+  //     //     chainId: this.chainId,
+  //     //     contractSignersCompletedOfflineStage,
+  //     //     backupSignersCompletedOfflineStage,
+  //     //     accountAddress: account?.homeAccountAddress,
+  //     //   }),
+  //     // });
+  //     //
+  //     // if (response.status !== 200) {
+  //     //   throw new Error(`Failed to distribute shares: ${response.status}`);
+  //     // }
+  //     //
+  //     // const result: { success: boolean; tx: TxResponse } =
+  //     //   await response.json();
+  //     // if (!result.success) {
+  //     //   throw new Error(`Failed to distribute contract share`);
+  //     // }
+  //     //
+  //     // // we should save these to store for persist?
+  //     // return {
+  //     //   shareForContract: userShareForContract,
+  //     //   shareForBackup: userShareForBackup,
+  //     // };
+  //   } catch (error) {
+  //     throw console.log(`Error on distribute share:`, error);
+  //   }
+  // }
 
   public async lookupProxyWallets(publicKey: Secp256k1PublicKey) {
     const response = await fetch(
