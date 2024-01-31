@@ -25,13 +25,13 @@ export async function distributeShares() {
     signersForContract[0]?.completedOfflineStage();
 
   // user share that is used to sign transaction with contract share
-  const completedOfflineStageForContrtact =
+  const completedOfflineStageForContract =
     signersForContract[1]?.completedOfflineStage();
   const userShareForContract = {
-    k_i: completedOfflineStageForContrtact.sign_keys.k_i,
-    R: completedOfflineStageForContrtact.R,
-    sigma_i: completedOfflineStageForContrtact.sigma_i,
-    pubkey: completedOfflineStageForContrtact.local_key.y_sum_s,
+    k_i: completedOfflineStageForContract.sign_keys.k_i,
+    R: completedOfflineStageForContract.R,
+    sigma_i: completedOfflineStageForContract.sigma_i,
+    pubkey: completedOfflineStageForContract.local_key.y_sum_s,
   };
 
   const signersForBackup = lib.createSignersAndPresign(shares, backupCombo);
@@ -52,6 +52,8 @@ export async function distributeShares() {
     contractParticipants: contractCombo,
     contractSignersCompletedOfflineStage,
     backupSignersCompletedOfflineStage,
+    userShareForContract,
+    userShareForBackup,
   };
 }
 
