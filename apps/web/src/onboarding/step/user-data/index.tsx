@@ -45,7 +45,7 @@ export const UserDataStep = observer(function UserDataStep({
         with it.
       </Text>
       <Input
-        className="w-96"
+        className="w-96 max-sm:w-full"
         onChange={(inputValue) => {
           draft.value.setName(inputValue);
         }}

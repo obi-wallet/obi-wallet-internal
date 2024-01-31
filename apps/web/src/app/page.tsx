@@ -10,7 +10,7 @@ export default observer(function Introduction() {
   useCurrentWallet({ redirectTo: "/dashboard", redirectIfFound: true });
 
   return (
-    <section className="flex w-full flex-col items-center justify-center space-y-9 p-5">
+    <section className="flex w-full flex-col items-center justify-center space-y-9 p-5 max-sm:px-10">
       <Text className="text-2xl" leading="normal" fontWeight="bold">
         {CURRENT_THEME.explaination.title || "What is an Obi Account?"}
       </Text>
@@ -20,7 +20,7 @@ export default observer(function Introduction() {
         src="/assets/images/obi-wizard.png"
         alt="Icon"
       />
-      <div className=" w-[440px] space-y-9">
+      <div className="w-[440px] space-y-9 max-sm:w-full">
         <Text
           className="text-center text-base "
           color="zinc"

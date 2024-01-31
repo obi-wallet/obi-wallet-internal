@@ -16,8 +16,8 @@ export default observer(function FastTravel() {
   return (
     <div className="h-full w-full px-7 py-5">
       <div className="relative h-full w-full text-white">
-        <Box className="h-10 px-0 pt-0">
-          <div className="relative">
+        <Box className="pt-0 max-sm:bg-transparent">
+          <div className="relative h-fit">
             <Image
               src="/travel.png"
               alt="fast-travel"
@@ -29,9 +29,9 @@ export default observer(function FastTravel() {
                 height: "auto",
                 borderRadius: 6,
               }}
-              className="opacity-40"
+              className="opacity-40 max-sm:!h-56"
             />
-            <div className=" absolute top-0 flex flex h-full w-full flex-col justify-center p-10">
+            <div className="absolute top-0 flex h-full w-full flex-col justify-center p-10 ">
               <h1 className="mb-4 text-4xl font-bold text-white">
                 Obi Fast Travel
               </h1>
@@ -41,7 +41,7 @@ export default observer(function FastTravel() {
               </h2>
             </div>
           </div>
-          <div className="mt-4 space-y-5 px-3">
+          <div className="mt-4 space-y-5 px-3 max-sm:px-0">
             <div className="space-y-4">
               <Text size="xl">Assets</Text>
               <Divider />
@@ -50,7 +50,7 @@ export default observer(function FastTravel() {
                   <Box
                     key={`asset-${assetKey}`}
                     className={cn(
-                      " flex cursor-pointer flex-row bg-gray-700 hover:bg-blue-600 sm:min-w-[170px]",
+                      " hover:bg-background-primary-hover flex cursor-pointer flex-row bg-gray-700 sm:min-w-[170px]",
                       toAssets[assetKey]?.disabled &&
                         "cursor-not-allowed opacity-50 hover:bg-gray-700",
                     )}
