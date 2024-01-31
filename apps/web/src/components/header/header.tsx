@@ -96,16 +96,6 @@ const LogIn = observer(function LogIn() {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
 
-  function ellipsisString(str: string) {
-    if (str.length > 40) {
-      return (
-        str.substring(0, 20) +
-        "..." +
-        str.substring(str.length - 20, str.length)
-      );
-    }
-    return str;
-  }
   return (
     <>
       <Button
