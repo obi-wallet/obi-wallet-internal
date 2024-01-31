@@ -4,6 +4,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        "background-main": "var(--background-main)",
         "background-primary": "var(--background-primary)",
         "background-primary-hover": "var(--background-primary-hover)",
         "background-primary-active": "var(--background-primary-active)",
@@ -18,9 +19,7 @@ module.exports = {
         "--foreground-primary-border": "var(--foreground-primary-border)",
       },
       backgroundGradient: (theme) => ({
-        "gradient-background": `linear-gradient(to bottom right, ${theme(
-          "colors.black",
-        )}, var(--background-main))`,
+        "gradient-background": `linear-gradient(to right bottom, rgba(0, 0, 0, 1), var(--background-main))`,
       }),
     },
   },
