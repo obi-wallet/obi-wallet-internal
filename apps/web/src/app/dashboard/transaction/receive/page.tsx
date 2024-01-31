@@ -21,6 +21,7 @@ export default observer(function Receive() {
   const chainLabel = sdk?.label ?? "";
   const address = publicKey && sdk ? sdk.computeAddress(publicKey) : null;
 
+  console.log({ address });
   const handleClickQRCode = () => {
     if (!address) return;
 

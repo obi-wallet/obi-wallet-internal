@@ -4,11 +4,13 @@ import { Button, Modal, renderModal } from "@/components";
 import { PrimaryLink } from "@/components/links";
 import { CURRENT_THEME } from "@/configs";
 import { useStore } from "@/contexts";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FaCircleUser, FaQrcode } from "react-icons/fa6";
 
 export const Header = observer(function Header() {
   const { walletsStore } = useStore();
@@ -16,13 +18,20 @@ export const Header = observer(function Header() {
   const primaryLinkHref = walletsStore.currentWallet ? "/dashboard" : "/";
   const authChildren = walletsStore.currentWallet ? <LogOut /> : <LogIn />;
 
+  const { userDataStore } = useStore();
+  const currentWallet = useCurrentWallet({});
+
+  if (!currentWallet) return null;
+
+  const userData = userDataStore.getUserData(currentWallet.address);
+
   return (
     <>
       <header className="h-20 w-full">
         <div
           className={cn(
             "bg-background-primary flex h-full w-full items-center justify-between px-8 shadow",
-            // "max-sm:hidden",
+            "max-sm:hidden",
           )}
         >
           <PrimaryLink href={primaryLinkHref}>
@@ -38,6 +47,28 @@ export const Header = observer(function Header() {
             <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
           </PrimaryLink>
           {authChildren}
+        </div>
+        <div
+          className={cn(
+            "bg-background-primary flex h-full w-full items-center justify-between p-6 shadow",
+            "sm:hidden",
+          )}
+        >
+          <div className="h-11 w-11 rounded-full bg-sky-500">
+            {userData.avatar ? (
+              <Image
+                width={44}
+                height={44}
+                className="rounded-full"
+                src={userData.avatar}
+                alt={userData.name as string}
+              />
+            ) : (
+              <FaCircleUser className="h-11 w-11 text-white" />
+            )}
+          </div>
+
+          <FaQrcode className="h-11 w-11 rounded text-white" />
         </div>
       </header>
     </>
