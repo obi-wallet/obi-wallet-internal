@@ -1,6 +1,6 @@
 "use client";
 
-import { ButtonLink, Stepper, Text } from "@/components";
+import { Button, Stepper, Text } from "@/components";
 import Image from "next/image";
 
 export default function Congratulations() {
@@ -26,9 +26,9 @@ export default function Congratulations() {
         className="rounded-2xl"
       />
 
-      <ButtonLink href="/dashboard" className="block w-full" variant="primary">
+      <Button href="/dashboard" className="block w-full" variant="primary">
         Go To Wallet
-      </ButtonLink>
+      </Button>
     </section>
   );
 }
