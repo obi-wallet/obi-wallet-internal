@@ -15,7 +15,10 @@ export default function RootLayout({
   return (
     <section className="relative flex w-full ">
       <Navbar />
-      <div className="flex grow overflow-auto max-sm:h-[calc(100vh-96px)]">
+      {
+        // 96px for bottom-navbar and 80px for header
+      }
+      <div className="flex grow overflow-auto max-sm:h-[calc(100vh-96px-80px)]">
         {children}
       </div>
     </section>
