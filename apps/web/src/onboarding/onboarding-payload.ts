@@ -16,7 +16,7 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 // import { Signer } from "@obi-wallet/mpc-ecdsa-wasm";
 
-const UnclaimedAccountsKvStorePrefix = "unclaimed-accounts";
+const unclaimedAccountsKvStorePrefix = "unclaimed-accounts";
 
 // TODO: here we probably also want to persist codeId
 const HomeAccount = z.object({
@@ -62,7 +62,7 @@ export class OnboardingPayload implements Draftable {
     this._name = "";
     this._image = "";
     this._unclaimedAccountsKVStore = new KVStore(
-      UnclaimedAccountsKvStorePrefix,
+      unclaimedAccountsKvStorePrefix,
     );
   }
 

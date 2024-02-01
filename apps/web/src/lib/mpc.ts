@@ -49,6 +49,8 @@ export async function distributeShares() {
   };
 
   return {
+    keygenParam,
+    backupParticipants: backupCombo,
     contractParticipants: contractCombo,
     contractSignersCompletedOfflineStage,
     backupSignersCompletedOfflineStage,
