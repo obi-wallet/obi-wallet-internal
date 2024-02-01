@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { pubkeyToAddress } from "secretjs";
 
 import { FromAsset, ToAsset, fromAssets, toAssets } from "./fast-travel/assets";
+import { useRouter } from "next/navigation";
 
 // const API_KEY =
 // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZWFtX2lkIjoiNjU5NDBmY2U1NGU2M2ViZDcwZWIyNDBlIiwia2V5X2dlbmVyYXRlZF9hdCI6MTcwNDIwMjIwMi40NzY0MzczfQ.lcCCpTEZaRL47qrpvekjVNwAopgiYmIUvooD2MZlDks";
@@ -340,6 +341,7 @@ const AssetBalance = observer(function AssetBalance() {
   });
 });
 function AssetItem({ asset }: { asset: { amount: number; denom: string } }) {
+  const router = useRouter();
   const assetData =
     toAssets[
       Object.keys(toAssets).find(
@@ -353,7 +355,11 @@ function AssetItem({ asset }: { asset: { amount: number; denom: string } }) {
   return (
     <div
       key={asset.denom}
-      className="mb-3 mt-3 flex flex-row items-center justify-between rounded-lg bg-gray-700 p-5 hover:bg-gray-600"
+      className="mb-3 mt-3 flex cursor-pointer flex-row items-center justify-between rounded-lg bg-gray-700 p-5 hover:bg-gray-600"
+      onClick={() => {
+        console.log("clicked");
+        router.push(`/dashboard/transaction/send/${assetData?.label}`);
+      }}
     >
       <div className="flex flex-row items-center">
         <div className="mr-3">

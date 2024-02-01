@@ -49,7 +49,11 @@ export default observer(function Receive() {
           <ChainDropdown onChange={setChainId} chainId={chainId} />
         </InputContainer>
         {address ? (
-          <InputContainer label="Address" onClick={handleClickQRCode}>
+          <InputContainer
+            label="Address"
+            onClick={handleClickQRCode}
+            className="relative z-0  w-80"
+          >
             <div className="flex flex-1 items-center justify-center transition duration-300  group-hover:scale-105 group-active:scale-100">
               <Canvas
                 text={address}
