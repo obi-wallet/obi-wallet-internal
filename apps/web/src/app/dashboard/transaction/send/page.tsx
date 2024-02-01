@@ -1,7 +1,6 @@
 "use client";
 import {
   BalanceInput,
-  Box,
   Button,
   IBalanceOption,
   Input,
@@ -27,27 +26,14 @@ export default function Send() {
   ];
 
   return (
-    <div className="h-full w-full p-6">
-      <Box className="w-full sm:w-2/3">
-        <TabUi.Links>
-          <TabUi.Link href="/dashboard/transaction/send" active>
-            Send Tokens
-          </TabUi.Link>
-          <TabUi.Link href="/dashboard/transaction/receive">
-            Receive Tokens
-          </TabUi.Link>
-        </TabUi.Links>
-
-        <TabUi.Main>
-          <div className="space-y-7 py-4">
-            <BalanceInput label="Amount" balances={balances} />
-            <Input labelText="Recipient Address" />
-            <div className="flex justify-end">
-              <Button className="block w-44">Next</Button>
-            </div>
-          </div>
-        </TabUi.Main>
-      </Box>
-    </div>
+    <TabUi.Main>
+      <div className="space-y-7 py-4">
+        <BalanceInput label="Amount" balances={balances} />
+        <Input labelText="Recipient Address" />
+        <div className="flex justify-end">
+          <Button className="block w-44">Next</Button>
+        </div>
+      </div>
+    </TabUi.Main>
   );
 }
