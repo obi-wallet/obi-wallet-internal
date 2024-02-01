@@ -13,6 +13,8 @@ import { pubkeyToAddress } from "secretjs";
 
 import { FromAsset, ToAsset, fromAssets, toAssets } from "./fast-travel/assets";
 import { useRouter } from "next/navigation";
+import { useBalances } from "@/hooks/balances";
+import { TargetChainId } from "@/target-chain";
 
 // const API_KEY =
 // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZWFtX2lkIjoiNjU5NDBmY2U1NGU2M2ViZDcwZWIyNDBlIiwia2V5X2dlbmVyYXRlZF9hdCI6MTcwNDIwMjIwMi40NzY0MzczfQ.lcCCpTEZaRL47qrpvekjVNwAopgiYmIUvooD2MZlDks";
@@ -305,6 +307,11 @@ const AssetBalance = observer(function AssetBalance() {
     // "osmo", "neutron"
   ];
   const pubkey = usePublicKey();
+  const balances = useBalances({
+    address: pubkeyToAddress(Buffer.from(pubkey?.value ?? "", "base64"), "sei"),
+    chainId: TargetChainId.Sei,
+  });
+  console.log({ balances });
   useEffect(() => {
     if (!pubkey?.value) return;
     getIt();

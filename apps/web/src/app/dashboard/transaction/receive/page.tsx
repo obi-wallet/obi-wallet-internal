@@ -11,6 +11,12 @@ import { FaCheck } from "react-icons/fa6";
 import { pubkeyToAddress } from "secretjs";
 
 import { ChainData, chains } from "../../fast-travel/assets";
+import { TargetChain, TargetChainId } from "@/target-chain";
+import { PublicKey } from "@obi-wallet/sdk";
+import {
+  Secp256k1KeyPair,
+  Secp256k1PublicKey,
+} from "@obi-wallet/sdk-secp256k1";
 export interface IChainOption {
   label: string;
   value: string;
@@ -20,15 +26,12 @@ export interface IChainOption {
 
 export default observer(function Receive() {
   const { Canvas } = useQRCode();
-  const [chainId, setChainId] = useState<string>(chains[0]?.id || "");
+  const [chainId, setChainId] = useState<string>(TargetChainId.Sei);
   const [isCopied, setIsCopied] = useState(false);
   const publicKey = usePublicKey();
 
-  if (!publicKey) return null;
-  const address = pubkeyToAddress(
-    Buffer.from(publicKey?.value ?? "", "base64"),
-    chains.find((c) => c.id === chainId)?.prefix ?? "",
-  );
+  if (publicKey === undefined) return null;
+  const address = TargetChain.chainId(chainId).computeAddress(publicKey);
 
   console.log({ address, chainId });
   const handleClickQRCode = () => {

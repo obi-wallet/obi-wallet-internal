@@ -15,9 +15,7 @@ export default function Send({
 }: {
   params: { asset: string | undefined };
 }) {
-  //get the asset from the path
   const asset = params.asset;
-  console.log("asset", asset);
 
   return (
     <TabUi.Main>
