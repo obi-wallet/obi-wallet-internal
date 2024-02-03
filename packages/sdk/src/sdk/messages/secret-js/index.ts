@@ -365,7 +365,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
               {
                 address: ownerAddress,
                 ty: "creator",
-                pubkeyBase64,
+                pubkey_base_64: pubkeyBase64,
               },
             ],
           },

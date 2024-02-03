@@ -3787,6 +3787,7 @@ __metadata:
     copy-to-clipboard: "npm:^3.3.3"
     cosmjs-types: "npm:^0.8.0"
     crypto-js: "npm:^4.2.0"
+    ecies-wasm: "npm:^0.2.0"
     elliptic: "npm:^6.5.4"
     eslint: "npm:^8.55.0"
     eslint-plugin-storybook: "npm:^0.6.15"
@@ -3814,6 +3815,7 @@ __metadata:
     rooks: "npm:^7.14.1"
     secp256k1: "npm:^5.0.0"
     secretjs: "npm:1.9.3"
+    sss-wasm: "npm:^0.4.0"
     storybook: "npm:^7.6.10"
     tailwind-merge: "npm:^2.1.0"
     tailwindcss: "npm:^3.3.6"
@@ -10142,6 +10144,13 @@ __metadata:
   version: 0.2.0
   resolution: "eastasianwidth@npm:0.2.0"
   checksum: 26f364ebcdb6395f95124fda411f63137a4bfb5d3a06453f7f23dfe52502905bd84e0488172e0f9ec295fdc45f05c23d5d91baf16bd26f0fe9acd777a188dc39
+  languageName: node
+  linkType: hard
+
+"ecies-wasm@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "ecies-wasm@npm:0.2.0"
+  checksum: 46f0cccc43e4f5117f3d7033bcd999c5f53e8f8e71c03603f68ae184771008625a4ffbf3cf0d7d1767862d2eb20321ac63d3dee70d460b58fbc96f7a3bcaade4
   languageName: node
   linkType: hard
 
@@ -18105,6 +18114,13 @@ __metadata:
   dependencies:
     minipass: "npm:^7.0.3"
   checksum: b091f2ae92474183c7ac5ed3f9811457e1df23df7a7e70c9476eaa9a0c4a0c8fc190fb45acefbf023ca9ee864dd6754237a697dc52a0fb182afe65d8e77443d8
+  languageName: node
+  linkType: hard
+
+"sss-wasm@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "sss-wasm@npm:0.4.0"
+  checksum: 85b2c2cac25f8c95e917adc2030ab6674d3b484674a83552ecef441dd607c0fb6b39ce96df8d86660b1b83724d7fdcecd62278ead6d29ae1a74a4e524924f5ce
   languageName: node
   linkType: hard
 

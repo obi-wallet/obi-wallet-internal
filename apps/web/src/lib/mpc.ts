@@ -6,9 +6,19 @@ import {
   Parameters,
   PartySignup,
 } from "@obi-wallet/mpc-ecdsa-wasm-types";
+import { BackupShare, EasyShare, NetworkShare } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
-export async function distributeShares() {
+export interface DistributeSharesResponse {
+  keygenParam: KeygenParam;
+  backupParticipants: number[];
+  contractParticipants: number[];
+  easyShare: EasyShare;
+  backupShare: BackupShare;
+  networkShare: NetworkShare;
+}
+
+export async function distributeShares(): Promise<DistributeSharesResponse> {
   const stores = rootStore.current;
   invariant(stores, "RootStore not initialized");
   const mpcPackage = await stores.wasmStore.getMpcEcdsaWasm();
@@ -48,14 +58,21 @@ export async function distributeShares() {
     pubkey: completedOfflineStageForBackup.local_key.y_sum_s,
   };
 
+  const easyShare = EasyShare.parse({
+    preSignForNetworkShare: userShareForContract,
+    preSignForBackupShare: userShareForBackup,
+  });
+
+  const networkShare = NetworkShare.parse(contractSignersCompletedOfflineStage);
+  const backupShare = BackupShare.parse(backupSignersCompletedOfflineStage);
+
   return {
     keygenParam,
     backupParticipants: backupCombo,
     contractParticipants: contractCombo,
-    contractSignersCompletedOfflineStage,
-    backupSignersCompletedOfflineStage,
-    userShareForContract,
-    userShareForBackup,
+    easyShare,
+    backupShare,
+    networkShare,
   };
 }
 

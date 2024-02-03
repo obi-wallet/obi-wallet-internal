@@ -29,8 +29,7 @@ export class MpcStore {
 
     autorun(() => {
       if (!this.walletsStore.currentWallet) {
-        this.createSharesSingleton();
-        this.createSharesSingleton();
+        void this.createSharesSingleton();
       }
     });
   }
