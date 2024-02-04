@@ -1,10 +1,19 @@
-import { distributeShares } from "@/lib/mpc";
 import { WasmStore } from "@/stores/wasm";
 import { AbstractKVStore } from "@obi-wallet/headless-ui";
-import { Wallets } from "@obi-wallet/sdk";
+import { Parameters as KeygenParam } from "@obi-wallet/mpc-ecdsa-wasm-types";
+import { BackupShare, EasyShare, NetworkShare, Wallets } from "@obi-wallet/sdk";
 import { autorun } from "mobx";
 
-export type UnclaimedShares = Awaited<ReturnType<typeof distributeShares>>;
+export interface DistributeSharesResponse {
+  keygenParam: KeygenParam;
+  backupParticipants: number[];
+  contractParticipants: number[];
+  easyShare: EasyShare;
+  backupShare: BackupShare;
+  networkShare: NetworkShare;
+}
+
+export type UnclaimedShares = DistributeSharesResponse;
 
 const unclaimedSharesKvStoreEntry = "shares";
 
@@ -13,6 +22,7 @@ export class MpcStore {
   protected readonly wasmStore: WasmStore;
   protected readonly unclaimedSharesKVStore: AbstractKVStore;
   protected _sharesPromise: Promise<UnclaimedShares> | undefined;
+  protected webWorker;
 
   constructor({
     kvStore,
@@ -27,9 +37,13 @@ export class MpcStore {
     this.walletsStore = walletsStore;
     this.wasmStore = wasmStore;
 
+    this.webWorker = new Worker(new URL("../workers/mpc", import.meta.url));
+
     autorun(() => {
       if (!this.walletsStore.currentWallet) {
-        void this.createSharesSingleton();
+        void new Promise(() => {
+          void this.createSharesSingleton();
+        });
       }
     });
   }
@@ -52,7 +66,12 @@ export class MpcStore {
 
     if (shares) return shares;
 
-    const unclaimedShares = await distributeShares();
+    const unclaimedShares = await new Promise<UnclaimedShares>((resolve) => {
+      this.webWorker.onmessage = (event: MessageEvent<UnclaimedShares>) => {
+        resolve(event.data);
+      };
+      this.webWorker.postMessage(null);
+    });
     await this.setUnclaimedShares(unclaimedShares);
     return unclaimedShares;
   }
