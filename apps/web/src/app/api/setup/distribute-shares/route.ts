@@ -1,23 +1,30 @@
 import { connect } from "@/db";
 import { getFeeLender } from "@/lib/fee-lender";
 import { decompressPoint } from "@/lib/utils";
-import { ChainIdSchema, SecretJsChains } from "@obi-wallet/sdk";
+import {
+  HomeChainIdSchema,
+  NetworkShare,
+  SecretJsChains,
+  SecretJsClient,
+} from "@obi-wallet/sdk";
 import CryptoJS from "crypto-js";
-import { SecretNetworkClient } from "secretjs";
+import { MsgExecuteContract, SecretNetworkClient } from "secretjs";
 import { z } from "zod";
 
 const schema = z.object({
-  chainId: ChainIdSchema,
-  contractSignersCompletedOfflineStage: z.any(),
-  backupSignersCompletedOfflineStage: z.any(),
-  accountAddress: z.string(),
-  contractParticipants: z.array(z.number()),
-  multiPublicKeys: z.array(z.string()),
+  chainId: HomeChainIdSchema,
+  backupShare: z.string(),
+  networkParticipants: z.array(z.number()),
+  networkShare: NetworkShare,
+  homeAccountAddress: z.string(),
+  ownerIndex: z.number(),
 });
 
 export async function POST(request: Request) {
+  console.log("hey");
   const result = schema.safeParse(await request.json());
   if (!result.success) {
+    console.error(result.error.errors);
     return new Response("Invalid request", {
       status: 400,
     });
@@ -25,90 +32,70 @@ export async function POST(request: Request) {
 
   const {
     chainId,
-    contractSignersCompletedOfflineStage,
-    backupSignersCompletedOfflineStage,
-    accountAddress,
-    contractParticipants,
-    multiPublicKeys,
+    backupShare,
+    networkParticipants,
+    networkShare,
+    homeAccountAddress,
+    ownerIndex,
   } = result.data;
-  const { wallet } = getFeeLender(chainId);
 
-  try {
-    const url = SecretJsChains[chainId].urls[0] as string,
-      signerContractAddress = SecretJsChains[chainId].secretSigner.address,
-      signerContractAddressHash = SecretJsChains[chainId].secretSigner.codeHash;
+  const chain = SecretJsChains[chainId];
 
-    const secretjs = new SecretNetworkClient({
-      url,
-      chainId: chainId,
-      wallet: wallet,
-      walletAddress: wallet.address,
-    });
+  const client = new SecretJsClient(chainId);
+  const { wallet, signer } = getFeeLender(chainId, ownerIndex);
 
-    const setShareMsg = {
+  const userEntryCodeHash = await client.withSecretNetworkClient(
+    async (secretNetworkClient) => {
+      const info = await secretNetworkClient.query.compute.contractInfo({
+        contract_address: homeAccountAddress,
+      });
+      const response = await secretNetworkClient.query.compute.codeHashByCodeId(
+        {
+          // @ts-expect-error Secret Network SDK types are wrong
+          code_id: info.contract_info.code_id,
+        },
+      );
+      return response.code_hash;
+    },
+  );
+
+  const setSharesMessage = new MsgExecuteContract({
+    sender: wallet.address,
+    contract_address: chain.secretSigner.address,
+    msg: {
       set_shares: {
         participants_to_completed_offline_stages: [
           {
-            participants: contractParticipants,
+            participants: networkParticipants,
             completed_offline_stage: {
-              k_i: contractSignersCompletedOfflineStage.sign_keys.k_i.scalar,
-              R: decompressPoint(contractSignersCompletedOfflineStage.R.point),
-              sigma_i: contractSignersCompletedOfflineStage.sigma_i.scalar,
-              pubkey: decompressPoint(
-                contractSignersCompletedOfflineStage.local_key.y_sum_s.point,
-              ),
-              // TODO: replace with userEntryHash
-              user_entry_code_hash: accountAddress,
+              k_i: networkShare.sign_keys.k_i.scalar,
+              R: decompressPoint(networkShare.R.point),
+              sigma_i: networkShare.sigma_i.scalar,
+              pubkey: decompressPoint(networkShare.local_key.y_sum_s.point),
+              user_entry_code_hash: userEntryCodeHash,
             },
           },
         ],
-        user_entry_address: accountAddress,
+        user_entry_address: homeAccountAddress,
       },
-    };
+    },
+    code_hash: chain.secretSigner.codeHash,
+  });
+  const signedTransaction = await client.createAndSignTransaction({
+    signer,
+    messages: [setSharesMessage],
+  });
+  const broadcastTransactionResult =
+    await client.broadcastSignedTransaction(signedTransaction);
+  console.warn(JSON.stringify(broadcastTransactionResult));
 
-    const tx = await secretjs.tx.compute.executeContract(
-      {
-        sender: secretjs.address,
-        contract_address: signerContractAddress,
-        code_hash: signerContractAddressHash,
-        msg: setShareMsg,
-      },
-      { gasLimit: 1_000_000 },
-    );
-
-    if (tx.code === 0) {
-      // if success on distribute contract share, then store backup share to db
-      let backupShare = JSON.stringify({
-        k_i: backupSignersCompletedOfflineStage.sign_keys.k_i,
-        R: backupSignersCompletedOfflineStage.R,
-        sigma_i: backupSignersCompletedOfflineStage.sigma_i,
-        pubkey: backupSignersCompletedOfflineStage.local_key.y_sum_s,
-      });
-
-      for (const pubkey of multiPublicKeys) {
-        backupShare = CryptoJS.AES.encrypt(backupShare, pubkey).toString();
-      }
-
-      const BackupShareModel = await connect();
-      await BackupShareModel.findOneAndUpdate(
-        { accountAddress },
-        {
-          encryptionType: "1",
-          backupShare,
-        },
-        { upsert: true },
-      );
-
-      return Response.json({
-        success: true,
-        tx,
-      });
-    } else
-      throw new Error(`Error on executing contract to share: ${tx.rawLog}`);
-  } catch (e) {
-    console.error(e);
-    return new Response("Parse error", {
+  if (!broadcastTransactionResult.success) {
+    return new Response("TX failed", {
       status: 500,
     });
   }
+
+  return Response.json({
+    success: true,
+  });
 }

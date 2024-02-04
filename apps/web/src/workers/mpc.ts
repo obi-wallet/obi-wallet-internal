@@ -20,12 +20,12 @@ async function distributeShares(): Promise<DistributeSharesResponse> {
   }
 
   const keygenParam: KeygenParam = { parties: 3, threshold: 1 };
-  const contractCombo: number[] = [1, 3];
+  const networkCombo: number[] = [1, 3];
   const backupCombo: number[] = [2, 3];
 
   const shares = keygen(keygenParam);
 
-  const signersForContract = createSignersAndPresign(shares, contractCombo);
+  const signersForContract = createSignersAndPresign(shares, networkCombo);
   const contractSignersCompletedOfflineStage =
     signersForContract[0]?.completedOfflineStage();
 
@@ -64,7 +64,7 @@ async function distributeShares(): Promise<DistributeSharesResponse> {
   return {
     keygenParam,
     backupParticipants: backupCombo,
-    contractParticipants: contractCombo,
+    networkParticipants: networkCombo,
     easyShare,
     backupShare,
     networkShare,

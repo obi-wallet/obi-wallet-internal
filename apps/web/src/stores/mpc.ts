@@ -7,7 +7,7 @@ import { autorun } from "mobx";
 export interface DistributeSharesResponse {
   keygenParam: KeygenParam;
   backupParticipants: number[];
-  contractParticipants: number[];
+  networkParticipants: number[];
   easyShare: EasyShare;
   backupShare: BackupShare;
   networkShare: NetworkShare;

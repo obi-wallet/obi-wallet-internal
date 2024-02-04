@@ -15,8 +15,6 @@ export interface FirstUpdateOwnerRequestBody {
   owner: MultisigKey;
   ownerAddress: string;
   homeAccountAddress: string;
-  evmUserContractAddress: string;
-  evmSigningAddress: string;
   ownerIndex: number;
 }
 
@@ -62,23 +60,56 @@ export async function POST(request: Request) {
     chainId,
     body.ownerIndex,
   );
-
-  console.log("setup/first-update-owner creating message...");
   invariant(wallet.address, "no fee lender wallet address");
+
+  const userEntryCodeHash = await client.withSecretNetworkClient(
+    async (secretNetworkClient) => {
+      const info = await secretNetworkClient.query.compute.contractInfo({
+        contract_address: body.homeAccountAddress,
+      });
+      const response = await secretNetworkClient.query.compute.codeHashByCodeId(
+        {
+          // @ts-expect-error Secret Network SDK types are wrong
+          code_id: info.contract_info.code_id,
+        },
+      );
+      return response.code_hash;
+    },
+  );
+
   const userAccountAddress: UserAccountAddress =
     await client.withSecretNetworkClient(async (client) => {
       return await client.query.compute.queryContract({
         contract_address: body.homeAccountAddress,
-        code_hash: chain.userEntry.codeHash,
+        code_hash: userEntryCodeHash,
         query: { user_account_address: {} },
       });
     });
+
+  const owner: { legacy_owner: string } = await client.withSecretNetworkClient(
+    async (client) => {
+      return await client.query.compute.queryContract({
+        contract_address: userAccountAddress.user_account_address,
+        code_hash: userAccountAddress.user_account_code_hash,
+        query: { legacy_owner: {} },
+      });
+    },
+  );
+
+  // Make this request idempotent by checking if the owner has already been set
+  if (owner.legacy_owner === body.ownerAddress) {
+    return NextResponse.json({
+      success: true,
+    });
+  }
+
   const message = messagesSdk.getFirstUpdateWalletMessage(
     body.owner,
     body.ownerAddress,
     userAccountAddress.user_account_address,
-    body.evmUserContractAddress,
-    body.evmSigningAddress,
+    userAccountAddress.user_account_code_hash,
+    "",
+    "",
     wallet.address,
   );
   console.log(
@@ -95,6 +126,7 @@ export async function POST(request: Request) {
 
   if (!broadcastTransactionResult.success) {
     return NextResponse.json({
+      success: false,
       ownerAddress: body.owner.address,
       homeAccountAddress: "TX FAILED",
       txResult: broadcastTransactionResult,
@@ -115,6 +147,7 @@ export async function POST(request: Request) {
     const homeAccountAddress = matchingLogs?.[1]?.value;
     invariant(homeAccountAddress, "Contract address not found");
     return NextResponse.json({
+      success: true,
       ownerAddress: body.ownerAddress,
       homeAccountAddress,
       txResult,
@@ -122,6 +155,7 @@ export async function POST(request: Request) {
     });
   } catch (e) {
     return NextResponse.json({
+      success: false,
       ownerAddress: body.ownerAddress,
       homeAccountAddress: "PARSE ERROR",
       txResult: broadcastTransactionResult,

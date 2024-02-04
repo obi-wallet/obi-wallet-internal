@@ -342,7 +342,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
               key.payload.publicKey,
             ),
             ty: key.type,
-            pubkeyBase64: key.payload.publicKey.value,
+            pubkey_base_64: key.payload.publicKey.value,
           };
         },
       );
@@ -369,12 +369,14 @@ export class SecretJsMessages extends AbstractMessages<string> {
               },
             ],
           },
+          fee_debt: 0,
           update_delay: 0,
           // next_hash_seed is some randomness and doesn't need to be stored at all
           next_hash_seed: randomBytes(32).toString(),
         },
       },
     });
+    console.log(JSON.stringify(message.msg));
     return message;
   }
 
@@ -383,6 +385,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
     newOwner: MultisigKey,
     newOwnerAddress: string,
     userAccountContractAddress: string,
+    userAccountCodeHash: string,
     evmUserContractAddress: string,
     evmSigningAddress: string,
     sender: string,
@@ -390,7 +393,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
     const message = new MsgExecuteContract({
       sender: sender,
       contract_address: userAccountContractAddress,
-      code_hash: this.chain.userAccount.codeHash,
+      code_hash: userAccountCodeHash,
       msg: {
         first_update_owner: {
           first_owner: newOwnerAddress,
