@@ -28,7 +28,7 @@ export const TargetChains: Record<TargetChainId, ChainData> = {
   [TargetChainId.Osmosis]: {
     id: "osmosis-1",
     name: "Osmosis",
-    rpc: "https://rpc.osmosis.zone",
+    rpc: "https://lcd.osmosis.zone",
     prefix: "osmo",
     image:
       "https://assets.coingecko.com/coins/images/16724/large/osmo.png?1696516298",
@@ -36,7 +36,7 @@ export const TargetChains: Record<TargetChainId, ChainData> = {
   [TargetChainId.Neutron]: {
     id: "neutron-1",
     name: "Neutron",
-    rpc: "https://rpc.neutron.devcorp.cloud",
+    rpc: "https://neutron-api.polkachu.com/",
     prefix: "neutron",
     image:
       "https://assets.coingecko.com/coins/images/30813/large/ntrn.png?1696529669",
@@ -44,7 +44,7 @@ export const TargetChains: Record<TargetChainId, ChainData> = {
   [TargetChainId.Stargaze]: {
     id: "stargaze-1",
     name: "Stargaze",
-    rpc: "https://rpc.stargaze.oceanprotocol.com",
+    rpc: "https://rest.stargaze-apis.com",
     prefix: "stars",
     image:
       "https://assets.coingecko.com/coins/images/22363/large/stargaze_star_pink.png?1702801402",
@@ -52,7 +52,7 @@ export const TargetChains: Record<TargetChainId, ChainData> = {
   [TargetChainId.Tia]: {
     id: "tia-4",
     name: "Tia",
-    rpc: "https://rpc.tia.oceanprotocol.com",
+    rpc: "https://celestia-api.lavenderfive.com:443",
     prefix: "tia",
     disabled: true,
     image:
@@ -61,7 +61,7 @@ export const TargetChains: Record<TargetChainId, ChainData> = {
   [TargetChainId.Inj]: {
     id: "inj-4",
     name: "Injective",
-    rpc: "https://rpc.injective.devcorp.cloud",
+    rpc: "https://sentry.lcd.injective.network:443",
     prefix: "inj",
     disabled: true,
     image:

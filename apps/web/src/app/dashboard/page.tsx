@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Divider, PriceData, getPrice } from "@/components";
+import { Box, Divider, PriceData, Text, getPrice } from "@/components";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
@@ -8,13 +8,15 @@ import { getQueryClient } from "@sei-js/core";
 import { formatEther, parseUnits } from "ethers";
 import { observer } from "mobx-react-lite";
 // import { PulsarSDK } from "pulsar_sdk_js";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { pubkeyToAddress } from "secretjs";
 
 import { FromAsset, ToAsset, fromAssets, toAssets } from "./fast-travel/assets";
 import { useRouter } from "next/navigation";
-import { useBalances } from "@/hooks/balances";
-import { TargetChainId } from "@/target-chain";
+import { Coin, useBalances, useUSDTotalPrice } from "@/hooks/balances";
+import { TargetChainId, TargetChains } from "@/target-chain";
+
+import { number } from "zod";
 
 // const API_KEY =
 // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZWFtX2lkIjoiNjU5NDBmY2U1NGU2M2ViZDcwZWIyNDBlIiwia2V5X2dlbmVyYXRlZF9hdCI6MTcwNDIwMjIwMi40NzY0MzczfQ.lcCCpTEZaRL47qrpvekjVNwAopgiYmIUvooD2MZlDks";
@@ -142,7 +144,12 @@ export default observer(function Dashboard() {
 
 const Assets = observer(function Assets() {
   return (
-    <Box title="Assets" titleClassName="ml-2 text-xl" className=" rounded-md">
+    <Box className="ml-2 rounded-md text-xl">
+      <div className="flex flex-row justify-between">
+        <Text>Assets</Text>
+        <Total />
+      </div>
+
       <Divider className="mt-5" />
 
       <PendingAssets />
@@ -150,7 +157,15 @@ const Assets = observer(function Assets() {
     </Box>
   );
 });
+const Total = observer(function Total() {
+  const totalPrice = useUSDTotalPrice();
 
+  if (totalPrice.loading) {
+    return <Text>loading</Text>;
+  }
+
+  return <Text>$ {totalPrice.total}</Text>;
+});
 const PendingAssets = observer(function PendingAssets() {
   const [txData, setTxData] = useState<TX[] | null>(null);
   const publicKey = usePublicKey();
@@ -162,7 +177,6 @@ const PendingAssets = observer(function PendingAssets() {
 
   const fetchPendingAssets = async () => {
     const data = await getPendingAssets(publicKey?.value ?? "");
-    // console.log("DATA", data, publicKey?.value);
 
     setTxData(
       data.filter((t) => t.status.squidTransactionStatus === "ongoing"),
@@ -241,9 +255,9 @@ const EstimateAmount = observer(function EstimateAmount({
       usdPrices: true,
     })) as PriceData;
     const price = priceData.mainVsPrice;
-    // console.log("PRICE", price, fromAssetAmount);
+
     const amount = formatEther(parseUnits(fromAssetAmount ?? "0", "wei"));
-    // console.log("AMOUNT", amount);
+
     const amountNumber = Number(amount) * price;
     // discount 2$ for fees
     setAmount(amountNumber - 2.5 / priceData.vsUsd);
@@ -289,65 +303,38 @@ function StatusLink({ tx }: { tx: TX }) {
 }
 
 const AssetBalance = observer(function AssetBalance() {
-  const [balance, setBalance] = useState<
-    {
-      amount: number;
-      denom: string;
-    }[]
-  >([]);
-  const [loading, setLoading] = useState(false);
-  const chains = [
-    "SEI",
-    "NEUTRON",
-    // ChainKeys.OSMOSIS, ChainKeys.NEUTRON
-  ];
-  const prefixes = [
-    "sei",
-    "neutron",
-    // "osmo", "neutron"
-  ];
   const pubkey = usePublicKey();
   const balances = useBalances({
-    address: pubkeyToAddress(Buffer.from(pubkey?.value ?? "", "base64"), "sei"),
-    chainId: TargetChainId.Sei,
+    pubkey: pubkey?.value as string,
   });
-  console.log({ balances });
-  useEffect(() => {
-    if (!pubkey?.value) return;
-    getIt();
-  }, [pubkey?.value]);
-  const getBalance = async () => {
-    setLoading(true);
-    // get address from public key
+  if (balances.every((b) => b.isLoading)) {
+    return <span className="font-extrabold  text-white"> loading </span>;
+  }
+  const balance = balances.filter((b) => b.data && b.data.balances?.length > 0);
 
-    const addresses = prefixes.map((p) =>
-      pubkeyToAddress(Buffer.from(pubkey?.value ?? "", "base64"), p),
-    );
-
-    const balances = addresses.map((address, index) => {
-      return getBalances(address, chains[index] as string);
-    });
-    const result = await Promise.all(balances);
-
-    setBalance(result.flat());
-    setLoading(false);
-  };
-  const getIt = async () => {
-    await getBalance();
-  };
-  if (loading) return <div>loading</div>;
-  if (!balance.length) return <div></div>;
+  if (balance.length === 0) return null;
 
   return balance.map((b) => {
-    return (
-      <AssetItem
-        asset={{ amount: b.amount as number, denom: b.denom as string }}
-        key={"balance" + b.denom}
-      />
-    );
+    return b.data?.balances.map((chainBalance: Coin) => {
+      return (
+        <AssetItem
+          asset={{
+            amount: Number(chainBalance.amount),
+            denom: chainBalance.denom,
+            price: chainBalance.price,
+            chainId: b.data.chainId,
+          }}
+          key={chainBalance.denom + b.data.chainId}
+        />
+      );
+    });
   });
 });
-function AssetItem({ asset }: { asset: { amount: number; denom: string } }) {
+function AssetItem({
+  asset,
+}: {
+  asset: { amount: number; denom: string; price: number; chainId: string };
+}) {
   const router = useRouter();
   const assetData =
     toAssets[
@@ -364,7 +351,6 @@ function AssetItem({ asset }: { asset: { amount: number; denom: string } }) {
       key={asset.denom}
       className="mb-3 mt-3 flex cursor-pointer flex-row items-center justify-between rounded-lg bg-gray-700 p-5 hover:bg-gray-600"
       onClick={() => {
-        console.log("clicked");
         router.push(`/dashboard/transaction/send/${assetData?.label}`);
       }}
     >
@@ -373,43 +359,21 @@ function AssetItem({ asset }: { asset: { amount: number; denom: string } }) {
           <img src={assetData?.image ?? ""} alt="asset" className="h-8 w-8" />
         </div>
         <div className="flex flex-row">
-          <div className="mr-5 text-lg">{assetData?.label}</div>
-          {/* <div className="text-sm">0.00</div> */}
-          <div className="text-xl font-bold">{amount}</div>
+          <div className="mr-5 text-lg">
+            <div>{assetData?.label}</div>
+            <div className=" text-xs opacity-60">
+              (on {TargetChains[asset.chainId as TargetChainId].name})
+            </div>
+          </div>
+          <div className="flex items-center text-xl font-bold">{amount}</div>
         </div>
       </div>
-      <PriceComponent asset={assetData as ToAsset} amount={amount} />
+      <PriceComponent amount={amount} price={asset.price} />
     </div>
   );
 }
 
-function PriceComponent({
-  asset,
-  amount,
-}: {
-  asset: ToAsset | undefined;
-  amount: number | undefined;
-}) {
-  const [loading, setLoading] = useState(false);
-  const [price, setPrice] = useState(0);
-  useEffect(() => {
-    getTokenPrice();
-  }, [amount]);
-  const getTokenPrice = async () => {
-    if (!asset || !amount) {
-      setPrice(0);
-      return;
-    }
-    setLoading(true);
-    // use squidRouter to get price
-    const url = `https://api.0xsquid.com/v1/token-price?chainId=${asset?.chainId}&tokenAddress=${asset.denom}`;
-    const res = await fetch(url);
-    const json = await res.json();
-
-    setPrice(json.price);
-    setLoading(false);
-  };
-  if (loading) return <div>loading</div>;
+function PriceComponent({ amount, price }: { price: number; amount?: number }) {
   return (
     <div>
       <div className="text-xl">${(price * (amount || 0)).toFixed(2)}</div>
@@ -423,45 +387,9 @@ const getPendingAssets = async (pubKey: string) => {
   const url = `https://fast-travel-playground.vercel.app/api/status/check.rs?test=false&pubkey=${encodeURIComponent(
     pubKey,
   )}`;
-  // console.log({ url });
+
   const res = await fetch(url);
   const data = await res.json();
-  // console.log("DATAT", data);
+
   return data as TX[];
 };
-
-const getBalances = async (address: string, chain: string) => {
-  // console.log("getbalance", address, chain);
-  if (!address) return [];
-  let balance = [];
-  if (chain === "SEI") {
-    // console.log({ address });
-    balance = await fetchSEIBalance(address);
-  }
-  if (chain === "NEUTRON") {
-    balance = await fetchNeutronBalance(address);
-  }
-
-  return balance;
-};
-async function fetchSEIBalance(walletAddress: string) {
-  if (!walletAddress) return [];
-  const REST_URL = "https://sei-api.polkachu.com/";
-  const queryClient = await getQueryClient(REST_URL);
-  const res = await queryClient.cosmos.bank.v1beta1.allBalances({
-    address: walletAddress,
-  });
-  // console.log("SEI BALANCE", res.balances);
-  return res.balances;
-}
-
-async function fetchNeutronBalance(walletAddress: string) {
-  if (!walletAddress) return [];
-  const REST_URL = "https://neutron-api.polkachu.com/";
-  const queryClient = await getQueryClient(REST_URL);
-  const res = await queryClient.cosmos.bank.v1beta1.allBalances({
-    address: walletAddress,
-  });
-  // console.log("NEUTRON BALANCE", res.balances);
-  return res.balances;
-}

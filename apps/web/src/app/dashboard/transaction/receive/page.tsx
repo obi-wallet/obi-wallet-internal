@@ -33,7 +33,6 @@ export default observer(function Receive() {
   if (publicKey === undefined) return null;
   const address = TargetChain.chainId(chainId).computeAddress(publicKey);
 
-  console.log({ address, chainId });
   const handleClickQRCode = () => {
     if (!address) return;
 
@@ -104,7 +103,6 @@ const ChainDropdown = observer(function ChainDropdown({
   chainId: string;
   onChange: (chainId: string) => void;
 }) {
-  console.log("chain dropdown");
   const chainOptions = chains.map(
     ({ name, id, image, disabled }: ChainData) => {
       return {
