@@ -1,3 +1,4 @@
+import { SecretJsHomeChain } from "@/home-chain/secret-js";
 import { rootStore } from "@/hooks/use-create-root-store";
 import { MultisigKeyEncryption, Secp256k1Encryption } from "@/lib/encryption";
 import { DistributeSharesResponse } from "@/stores/mpc";
@@ -186,12 +187,13 @@ export class NewOnboardingPayload {
     const response = await fetch("/api/setup/distribute-shares", {
       method: "POST",
       body: JSON.stringify({
-        chainId: this._multisigKey.chainId,
-        backupShare: this._encryptedShares.backupShare,
+        homeChainId: this._multisigKey.chainId,
         networkParticipants: this._shares.networkParticipants,
         networkShare: this._shares.networkShare,
-        homeAccountAddress: this._unclaimedHomeAccount.homeAccountAddress,
-        ownerAddress: this._unclaimedHomeAccount.ownerAddress,
+        userEntryAddress: this._unclaimedHomeAccount.homeAccountAddress,
+        userEntryCodeHash: await new SecretJsHomeChain(
+          this._multisigKey.chainId,
+        ).userEntryCodeHash(this._unclaimedHomeAccount.homeAccountAddress),
         ownerIndex: this._unclaimedHomeAccount.ownerIndex,
       }),
     });
@@ -214,13 +216,24 @@ export class NewOnboardingPayload {
     if (this._homeAccountClaimed) return;
     invariant(this._unclaimedHomeAccount, "Home account is not available");
 
+    const homeChain = new SecretJsHomeChain(this._multisigKey.chainId);
+    const userEntryCodeHash = await homeChain.userEntryCodeHash(
+      this._unclaimedHomeAccount.homeAccountAddress,
+    );
+    const userAccount = await homeChain.userAccount({
+      userEntryAddress: this._unclaimedHomeAccount.homeAccountAddress,
+      userEntryCodeHash,
+    });
+
     const response = await fetch("/api/setup/first-update-owner", {
       method: "POST",
       body: JSON.stringify({
-        owner: this._multisigKey,
+        homeChainId: this._multisigKey.chainId,
+        owner: this._multisigKey.toJSON(),
         ownerAddress: this._multisigKey.address,
+        userAccountAddress: userAccount.userAccountAddress,
+        userAccountCodeHash: userAccount.userAccountCodeHash,
         ownerIndex: this._unclaimedHomeAccount.ownerIndex,
-        homeAccountAddress: this._unclaimedHomeAccount.homeAccountAddress,
       }),
     });
 

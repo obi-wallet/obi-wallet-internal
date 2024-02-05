@@ -1,27 +1,24 @@
-import { connect } from "@/db";
 import { getFeeLender } from "@/lib/fee-lender";
 import { decompressPoint } from "@/lib/utils";
 import {
   HomeChainIdSchema,
   NetworkShare,
-  SecretJsChains,
   SecretJsClient,
+  SecretJsHomeChains,
 } from "@obi-wallet/sdk";
-import CryptoJS from "crypto-js";
-import { MsgExecuteContract, SecretNetworkClient } from "secretjs";
+import { MsgExecuteContract } from "secretjs";
 import { z } from "zod";
 
 const schema = z.object({
-  chainId: HomeChainIdSchema,
-  backupShare: z.string(),
+  homeChainId: HomeChainIdSchema,
   networkParticipants: z.array(z.number()),
   networkShare: NetworkShare,
-  homeAccountAddress: z.string(),
+  userEntryAddress: z.string(),
+  userEntryCodeHash: z.string(),
   ownerIndex: z.number(),
 });
 
 export async function POST(request: Request) {
-  console.log("hey");
   const result = schema.safeParse(await request.json());
   if (!result.success) {
     console.error(result.error.errors);
@@ -31,33 +28,18 @@ export async function POST(request: Request) {
   }
 
   const {
-    chainId,
-    backupShare,
+    homeChainId,
     networkParticipants,
     networkShare,
-    homeAccountAddress,
+    userEntryAddress,
+    userEntryCodeHash,
     ownerIndex,
   } = result.data;
 
-  const chain = SecretJsChains[chainId];
+  const chain = SecretJsHomeChains[homeChainId];
 
-  const client = new SecretJsClient(chainId);
-  const { wallet, signer } = getFeeLender(chainId, ownerIndex);
-
-  const userEntryCodeHash = await client.withSecretNetworkClient(
-    async (secretNetworkClient) => {
-      const info = await secretNetworkClient.query.compute.contractInfo({
-        contract_address: homeAccountAddress,
-      });
-      const response = await secretNetworkClient.query.compute.codeHashByCodeId(
-        {
-          // @ts-expect-error Secret Network SDK types are wrong
-          code_id: info.contract_info.code_id,
-        },
-      );
-      return response.code_hash;
-    },
-  );
+  const client = new SecretJsClient(homeChainId);
+  const { wallet, signer } = getFeeLender(homeChainId, ownerIndex);
 
   const setSharesMessage = new MsgExecuteContract({
     sender: wallet.address,
@@ -76,7 +58,7 @@ export async function POST(request: Request) {
             },
           },
         ],
-        user_entry_address: homeAccountAddress,
+        user_entry_address: userEntryAddress,
       },
     },
     code_hash: chain.secretSigner.codeHash,
