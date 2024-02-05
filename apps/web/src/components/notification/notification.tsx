@@ -16,7 +16,7 @@ export function Notification({
   return (
     <div
       className={cn(
-        "flex h-[72px] w-full items-center space-x-2 bg-blue-600 px-11 shadow-md",
+        "flex min-h-[40px] w-full items-center space-x-2 bg-blue-600 px-11 pb-3 pt-3 shadow-md",
         "max-sm:hidden",
         type === "warning" && "bg-[#ffa70b]",
         type === "success" && "bg-[#34D399]",
