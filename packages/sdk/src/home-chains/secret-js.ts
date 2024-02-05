@@ -22,15 +22,6 @@ export const SecretJsHomeChains = {
       userAccount: 135,
       userEntry: 1209,
     },
-    // TODO: should get these from account creator directly?
-    userAccount: {
-      codeHash:
-        "c86782c2a7d9611ff428a05bed206c6b0f2aafcbc121cbe5a8648457b36d2da1",
-    },
-    userEntry: {
-      codeHash:
-        "143cca05044f43c8d4112b22eef6786809a3c9e69c28131179166f52df11c2f6",
-    },
     urls: ["https://api.pulsar3.scrttestnet.com:443"],
     denom: "uscrt",
     startingUsdDebt: "0",
@@ -56,15 +47,6 @@ export const SecretJsHomeChains = {
     currentCodeIds: {
       userAccount: 1267,
       userEntry: 1268,
-    },
-    // TODO: should get these from account creator directly?
-    userAccount: {
-      codeHash:
-        "84500d2a82ac68b7f346b5b6bbf86876be247130882e15b12b1a2689072ed1e1",
-    },
-    userEntry: {
-      codeHash:
-        "2d1c2b0395289f21b4f00bfd83d9e9cea77277e578ad2591b89064998424122d",
     },
     urls: ["https://scrt-api.dalnim.finance", "https://lcd.secret.express/"],
     denom: "uscrt",
