@@ -7,6 +7,7 @@ import {
   HomeChainId,
   HomeChainIdSchema,
   KeyType,
+  MpcWallet,
   MultisigKey,
   NetworkShare,
   ObservableMultisigKey,
@@ -78,7 +79,7 @@ export class NewOnboardingPayload {
   public toJSON(): z.infer<typeof OnboardingPayloadSchema> {
     return OnboardingPayloadSchema.parse({
       homeChain: this._multisigKey.chainId,
-      multisigKey: this._multisigKey.toJSON(),
+      multisigKey: this._multisigKey.toJSON()!,
       ownerConfirmed: this._ownerConfirmed,
       userData: {
         name: this._name,
@@ -89,6 +90,23 @@ export class NewOnboardingPayload {
       distributedShares: this._distributedShares,
       unclaimedHomeAccount: this._unclaimedHomeAccount,
       homeAccountClaimed: this._homeAccountClaimed,
+    });
+  }
+
+  public toMpcWalletData(): z.infer<typeof MpcWallet.schema.migratableSchema> {
+    invariant(this._encryptedShares, "Shares are not encrypted");
+    invariant(this._unclaimedHomeAccount, "Home account is not available");
+    invariant(this._homeAccountClaimed, "Home account is not claimed");
+    invariant(this._distributedShares, "Shares have not been distributed");
+
+    return MpcWallet.schema.migratableSchema.parse({
+      homeChain: this._multisigKey.chainId,
+      owner: this._multisigKey.toJSON()!,
+      encryptedShares: {
+        easy: this._encryptedShares.easyShare,
+        backup: this._encryptedShares.backupShare,
+      },
+      userEntryAddress: this._unclaimedHomeAccount.homeAccountAddress,
     });
   }
 
