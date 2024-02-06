@@ -1,26 +1,18 @@
 "use client";
 
 import { Box, Divider, PriceData, Text, getPrice } from "@/components";
+import { Coin, useBalances, useUSDTotalPrice } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
-import { getQueryClient } from "@sei-js/core";
+import { TargetChainId, TargetChains } from "@/target-chain";
 import { formatEther, parseUnits } from "ethers";
 import { observer } from "mobx-react-lite";
-// import { PulsarSDK } from "pulsar_sdk_js";
-import { use, useEffect, useState } from "react";
-import { pubkeyToAddress } from "secretjs";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { FromAsset, ToAsset, fromAssets, toAssets } from "./fast-travel/assets";
-import { useRouter } from "next/navigation";
-import { Coin, useBalances, useUSDTotalPrice } from "@/hooks/balances";
-import { TargetChainId, TargetChains } from "@/target-chain";
 
-import { number } from "zod";
-
-// const API_KEY =
-// "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZWFtX2lkIjoiNjU5NDBmY2U1NGU2M2ViZDcwZWIyNDBlIiwia2V5X2dlbmVyYXRlZF9hdCI6MTcwNDIwMjIwMi40NzY0MzczfQ.lcCCpTEZaRL47qrpvekjVNwAopgiYmIUvooD2MZlDks";
-// const pulsar = new PulsarSDK(API_KEY);
 export interface TransactionStatus {
   axelarTransactionUrl: string;
   error: object;
@@ -184,6 +176,7 @@ const PendingAssets = observer(function PendingAssets() {
   };
 
   if (!txData) return null;
+
   return txData.map((tx: TX) => {
     return <PendingAsset key={tx.transaction.deposit_address} tx={tx} />;
   });
@@ -213,7 +206,7 @@ const PendingAsset = observer(function PendingAsset({ tx }: { tx: TX }) {
         </div>
       </div>
       <StatusLink tx={tx} />
-      <PriceComponent asset={asset} amount={amount} />
+      <PriceComponent amount={amount} price={0} />
     </div>
   );
 });

@@ -1,10 +1,9 @@
 import { ToAsset, toAssets } from "@/app/dashboard/fast-travel/assets";
-import { useStore } from "@/contexts";
 import { TargetChainId, TargetChains } from "@/target-chain";
-import { targetChains } from "@obi-wallet/sdk";
 import { getQueryClient } from "@sei-js/core";
-import { UseQueryResult, useQueries, useQuery } from "@tanstack/react-query";
+import { UseQueryResult, useQueries } from "@tanstack/react-query";
 import { pubkeyToAddress } from "secretjs";
+
 import { usePublicKey } from "../use-public-key";
 export type Coin = {
   denom: string;
@@ -59,27 +58,6 @@ async function fetchBalances({
   }
 }
 
-// export function useChainBalances({
-//   address,
-//   chainId,
-// }: {
-//   address?: string;
-//   chainId: TargetChainId;
-// }) {
-//   console.log("USE BALANCES", { address, chainId });
-//   return useQuery(
-//     ["balances", address, chainId], // Unique key for the query + dependencies
-//     () => fetchBalances({ address, chainId }), // Query function
-//     {
-//       enabled: !!address, // Only run query if address is provided
-//       onError: (error) => {
-//         // Handle errors
-//         console.error("Error fetching balances:", error);
-//       },
-//     },
-//   );
-// }
-
 export function useBalances({
   pubkey,
 }: {
@@ -132,7 +110,6 @@ export function useUSDTotalPrice(): {
       loading: true,
     };
   }
-  console.log("NOT ZERO");
 
   const filteredSuccessBalances = balances.filter(
     (bal) => bal.status === "success",
@@ -140,7 +117,7 @@ export function useUSDTotalPrice(): {
   const flatBalances = filteredSuccessBalances
     .map((balance) => balance.data?.balances)
     .flat();
-  console.log("FILTERED", flatBalances);
+
   const total = flatBalances
     .reduce((acc, balance) => {
       const price = balance?.price as number;

@@ -3,20 +3,14 @@
 import { DropDown, TabUi } from "@/components";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
+import { TargetChain, TargetChainId } from "@/target-chain";
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
 import { useQRCode } from "next-qrcode";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
-import { pubkeyToAddress } from "secretjs";
 
 import { ChainData, chains } from "../../fast-travel/assets";
-import { TargetChain, TargetChainId } from "@/target-chain";
-import { PublicKey } from "@obi-wallet/sdk";
-import {
-  Secp256k1KeyPair,
-  Secp256k1PublicKey,
-} from "@obi-wallet/sdk-secp256k1";
 export interface IChainOption {
   label: string;
   value: string;
@@ -164,7 +158,7 @@ const ChainDropdown = observer(function ChainDropdown({
     </div>
   );
 });
-const InputContainer = function InputContainer({
+function InputContainer({
   children,
   label,
   className,
@@ -191,4 +185,4 @@ const InputContainer = function InputContainer({
       )}
     </div>
   );
-};
+}
