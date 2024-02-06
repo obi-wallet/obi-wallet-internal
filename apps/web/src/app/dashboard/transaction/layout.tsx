@@ -11,8 +11,13 @@ export default function TransactionLayout({
   // we need to know which tab is active using the pathname
   const pathName = usePathname();
 
-  const activeTab = pathName.split("/").pop();
+  const getActive = (path: string) => {
+    if (path.includes("/send")) return "send";
+    if (path.includes("/receive")) return "receive";
+    return undefined;
+  };
 
+  const activeTab = getActive(pathName);
   return (
     <div className="w-full ">
       <Box className="m-5 w-full sm:w-2/3">
