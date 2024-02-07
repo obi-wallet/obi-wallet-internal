@@ -1,19 +1,18 @@
-import { SeiTargetChain } from "@/target-chain/sei";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 
-export enum TargetChainId {
-  Sei = 'pacific-1"',
-}
+import { TargetChains } from ".";
+import { TargetChainId } from ".";
+import { TargetChainData } from "./target-chain";
 
 export class TargetChain {
   public constructor(protected chainId: TargetChainId) {}
 
   public static chainId(chainId: string): AbstractTargetChain {
-    switch (chainId) {
-      case TargetChainId.Sei:
-        return new SeiTargetChain();
-      default:
-        throw new Error(`Unknown chainId: ${chainId}`);
+    if (TargetChains[chainId as TargetChainId] === undefined) {
+      throw new Error(`ChainId ${chainId} not found`);
     }
+    return new TargetChainData(chainId);
   }
 }
+export * from "./target-chain";
+export * from "./chains";

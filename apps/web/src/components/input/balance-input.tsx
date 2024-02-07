@@ -1,5 +1,4 @@
 "use client";
-
 import { ComponentPropsWithoutRef, useEffect, useState } from "react";
 
 import { Input } from "./input";
@@ -11,6 +10,7 @@ interface InputProps
   onChange?: (value: number) => void;
   showMaxButton?: boolean;
   label?: string;
+  selectedAsset?: IBalanceOption;
 }
 
 export function BalanceInput({
@@ -20,10 +20,13 @@ export function BalanceInput({
   balances,
   showMaxButton = true,
   label,
+  selectedAsset,
 }: InputProps) {
   const [amount, setAmount] = useState(0);
   const [text, setText] = useState("");
-  const [selectedBalance, setSelectedBalance] = useState(balances?.[0]);
+  const [selectedBalance, setSelectedBalance] = useState<
+    IBalanceOption | undefined
+  >();
 
   useEffect(() => {
     setAmount(parseFloat(text) || 0);
@@ -31,7 +34,9 @@ export function BalanceInput({
   useEffect(() => {
     onChange && onChange(amount);
   }, [amount, onChange]);
-
+  useEffect(() => {
+    setSelectedBalance(selectedAsset);
+  }, [selectedAsset]);
   const handleClickMax = () => {
     setText(selectedBalance?.balance.toString() || "");
   };
@@ -50,7 +55,7 @@ export function BalanceInput({
       />
 
       <div className="absolute right-2 top-1/2 z-10 flex -translate-y-1/2 space-x-2">
-        {showMaxButton && (
+        {showMaxButton && selectedBalance && (
           <button
             className="h-16 w-20 rounded-xl bg-slate-950 text-white hover:bg-blue-700 focus:outline-none"
             disabled={disabled}
@@ -63,6 +68,7 @@ export function BalanceInput({
           <BalanceDropDown
             options={balances}
             onSelectOption={setSelectedBalance}
+            selectedOptionProp={selectedBalance}
           />
         )}
       </div>

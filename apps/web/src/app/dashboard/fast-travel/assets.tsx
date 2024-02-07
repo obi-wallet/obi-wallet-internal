@@ -1,3 +1,12 @@
+export type ChainData = {
+  id: string;
+  name: string;
+  prefix: string;
+  rpc: string;
+  image: string;
+  disabled?: boolean;
+};
+
 export type ToAsset = {
   chainId: string;
   decimals: number;
@@ -73,6 +82,15 @@ export const fromAssets: {
 };
 
 export const toAssets = {
+  "stars-stargaze": {
+    chainId: "stargaze-1",
+    decimals: 6,
+    label: "STARS",
+    denom: "ustars",
+    image:
+      "https://assets.coingecko.com/coins/images/22363/large/stargaze_star_pink.png?1702801402",
+    disabled: false,
+  },
   sei: {
     chainId: "pacific-1",
     decimals: 6,
@@ -139,3 +157,56 @@ export const toAssets = {
     disabled: true,
   },
 } as ToAssets;
+// recheck rpcs
+export const chains: ChainData[] = [
+  {
+    id: "pacific-1",
+    name: "Sei",
+    rpc: "https://rpc.pacific.oceanprotocol.com",
+    prefix: "sei",
+    image:
+      "https://assets.coingecko.com/coins/images/28205/standard/Sei_Logo_-_Transparent.png?1696527207",
+  },
+  {
+    id: "osmosis-1",
+    name: "Osmosis",
+    rpc: "https://rpc.osmosis.zone",
+    prefix: "osmo",
+    image:
+      "https://assets.coingecko.com/coins/images/16724/large/osmo.png?1696516298",
+  },
+  {
+    id: "neutron-1",
+    name: "Neutron",
+    rpc: "https://rpc.neutron.devcorp.cloud",
+    prefix: "neutron",
+    image:
+      "https://assets.coingecko.com/coins/images/30813/large/ntrn.png?1696529669",
+  },
+  {
+    name: "Stargaze",
+    id: "stargaze-1",
+    rpc: "https://rpc.stargaze.oceanprotocol.com",
+    prefix: "stars",
+    image:
+      "https://assets.coingecko.com/coins/images/22363/large/stargaze_star_pink.png?1702801402",
+  },
+  {
+    id: "tia-4",
+    name: "Tia",
+    rpc: "https://rpc.tia.oceanprotocol.com",
+    prefix: "tia",
+    disabled: true,
+    image:
+      "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+  },
+  {
+    id: "inj-4",
+    name: "Injective",
+    rpc: "https://rpc.injective.devcorp.cloud",
+    prefix: "inj",
+    disabled: true,
+    image:
+      "https://assets.coingecko.com/coins/images/33976/large/autism-logo.png?1703578236",
+  },
+];

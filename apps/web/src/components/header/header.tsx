@@ -13,17 +13,15 @@ import { useState } from "react";
 import { FaCircleUser, FaQrcode } from "react-icons/fa6";
 
 export const Header = observer(function Header() {
-  const { walletsStore } = useStore();
-
-  const primaryLinkHref = walletsStore.currentWallet ? "/dashboard" : "/";
-  const authChildren = walletsStore.currentWallet ? <LogOut /> : <LogIn />;
-
-  const { userDataStore } = useStore();
   const currentWallet = useCurrentWallet({});
 
-  if (!currentWallet) return null;
+  const primaryLinkHref = currentWallet ? "/dashboard" : "/";
 
-  const userData = userDataStore.getUserData(currentWallet.address);
+  const { userDataStore } = useStore();
+
+  const userData = currentWallet
+    ? userDataStore.getUserData(currentWallet.address)
+    : undefined;
 
   return (
     <>
@@ -35,18 +33,9 @@ export const Header = observer(function Header() {
           )}
         >
           <PrimaryLink href={primaryLinkHref}>
-            {/* <Text
-            color="white"
-            size="2xl"
-            fontWeight="bold"
-            className="leading-3"
-          >
-            Obi
-          </Text>
-           */}
             <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
           </PrimaryLink>
-          {authChildren}
+          {currentWallet ? <LogOut /> : <LogIn />}
         </div>
         <div
           className={cn(
@@ -55,7 +44,7 @@ export const Header = observer(function Header() {
           )}
         >
           <div className="bg-background-primary h-11 w-11 rounded-full opacity-80">
-            {userData.avatar ? (
+            {userData?.avatar ? (
               <Image
                 width={44}
                 height={44}
