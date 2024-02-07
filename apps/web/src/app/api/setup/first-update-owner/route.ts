@@ -6,7 +6,7 @@ import {
   SecretJsClient,
 } from "@obi-wallet/sdk";
 import { NextResponse } from "next/server";
-import { MsgSend, TxResponse } from "secretjs";
+import { MsgSend } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -105,30 +105,7 @@ export async function POST(request: Request) {
     await client.broadcastSignedTransaction(signedTransaction);
   console.log(broadcastTransactionResult);
 
-  if (!broadcastTransactionResult.success) {
-    return NextResponse.json({
-      success: false,
-    });
-  }
-
-  const txResult = broadcastTransactionResult.rawResult as TxResponse;
-  try {
-    invariant(txResult.arrayLog, "No log found");
-    // TODO: zod
-    const _accountLogicAddress = txResult.arrayLog?.find((log) => {
-      return log.type === "instantiate" && log.key === "contract_address";
-    })?.value;
-    const matchingLogs = txResult.arrayLog?.filter((log) => {
-      return log.type === "instantiate" && log.key === "contract_address";
-    });
-    const homeAccountAddress = matchingLogs?.[1]?.value;
-    invariant(homeAccountAddress, "Contract address not found");
-    return NextResponse.json({
-      success: true,
-    });
-  } catch (e) {
-    return NextResponse.json({
-      success: false,
-    });
-  }
+  return NextResponse.json({
+    success: broadcastTransactionResult.success,
+  });
 }
