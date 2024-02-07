@@ -1,3 +1,5 @@
+import { uniqBy } from "ramda";
+
 import { MpcWalletsSchema } from "./schema";
 import { AbstractMigratable, AbstractSerialized } from "../migratable";
 import { MpcWallet } from "../mpc-wallet";
@@ -23,7 +25,10 @@ export class MpcWallets {
 
   public deserialize(migratable: AbstractMigratable<typeof MpcWalletsSchema>) {
     const serialized = MpcWalletsSchema.migratableSchema.parse(migratable);
-    this._wallets = serialized.wallets.map((w) => this._factory.create(w));
+    const serializedWallets = uniqBy((wallet) => {
+      return wallet.userEntryAddress;
+    }, serialized.wallets);
+    this._wallets = serializedWallets.map((w) => this._factory.create(w));
     this._currentWalletIndex = serialized.currentWalletIndex;
   }
 
@@ -58,6 +63,12 @@ export class MpcWallets {
   }
 
   public upsertWallet(wallet: MpcWallet) {
+    const existingWallet = this.getWalletByUserEntryAddress(
+      wallet.userEntryAddress,
+    );
+    if (existingWallet) {
+      this.removeWallet(existingWallet);
+    }
     this._wallets.push(wallet);
     this.setCurrentWallet(wallet);
   }
