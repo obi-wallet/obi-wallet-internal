@@ -111,13 +111,13 @@ export class RecoveryPayload implements Draftable {
   }: {
     // TODO: here we also need to allow other key types
     key: {
-      type: KeyType.Device;
+      type: KeyType.Passkey;
       payload: Secp256k1KeyPair;
     };
   }) {
     switch (key.type) {
-      case KeyType.Device:
-        await this._multisigKey.setDeviceKey(key.payload);
+      case KeyType.Passkey:
+        await this._multisigKey.setPasskeyKey(key.payload);
         break;
       default:
         throw new Error(`Unsupported primary key type: ${key.type}`);

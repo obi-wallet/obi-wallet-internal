@@ -25,6 +25,7 @@ export const obiModalConfig: Config = {
   },
   keys: {
     enabled: [
+      KeyType.Passkey,
       KeyType.Device,
       KeyType.Phone,
       KeyType.Social,
@@ -32,7 +33,7 @@ export const obiModalConfig: Config = {
       KeyType.Cloud,
       KeyType.Email,
     ],
-    required: [KeyType.Device, KeyType.Phone],
+    required: [KeyType.Passkey, KeyType.Phone],
     comingSoon: [
       ComingSoonKeyType.Telegram,
       ComingSoonKeyType.Map,

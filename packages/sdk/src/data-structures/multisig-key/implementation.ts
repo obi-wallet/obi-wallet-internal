@@ -262,29 +262,13 @@ export class MultisigKey {
       type: KeyType.Device,
       payload: keyPair,
     });
-    // // TODO: confirm user is a new user here
-    // // don't await here
-    // if (!this._setupDetails) {
-    //   this._setupDetails = {
-    //     homeAccountAddress: "",
-    //     evmSigningAddress: "",
-    //     evmUserContractAddress: "",
-    //     ownerIndex: 0,
-    //   };
-    //
-    //   const proxyWallets = this.setupMagicAccountIfDoesNotExist(
-    //     keyPair.publicKey.value,
-    //     deviceIsNew,
-    //     recoverFlow, // avoids creating a new account even if proxy wallets not found
-    //   );
-    //   if (proxyWallets) {
-    //     return proxyWallets;
-    //   } else {
-    //     return undefined;
-    //   }
-    // }
-    // console.log("Current draft multisig: " + JSON.stringify(this));
-    // return undefined;
+  }
+
+  public setPasskeyKey(keyPair: Secp256k1KeyPair) {
+    this.setKey({
+      type: KeyType.Passkey,
+      payload: keyPair,
+    });
   }
 
   public async setUnityKey(

@@ -14,13 +14,13 @@ export default observer(function AccountSettings() {
 
   if (!wallet) return null;
 
-  const userData = userDataStore.getUserData(wallet.proxyAddress);
+  const userData = userDataStore.getUserData(wallet.userEntryAddress);
 
   return (
     <Form
       userData={userData}
       onSave={(userData) => {
-        userDataStore.setUserData(wallet.proxyAddress, userData);
+        userDataStore.setUserData(wallet.userEntryAddress, userData);
       }}
     />
   );

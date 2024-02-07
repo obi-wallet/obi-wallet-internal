@@ -67,7 +67,7 @@ export class CosmosSdkMpcSigner implements OfflineDirectSigner {
     invariant(rootStore.current, "Root store is not initialized");
     const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
 
-    const passkey = this.wallet.owner.getUsableKeyOfType(KeyType.Device);
+    const passkey = this.wallet.owner.getUsableKeyOfType(KeyType.Passkey);
     invariant(passkey, "No usable passkey found");
 
     const easyShare = EasyShare.parse(

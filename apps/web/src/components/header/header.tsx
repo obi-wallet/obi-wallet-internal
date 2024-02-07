@@ -10,10 +10,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export const Header = observer(function Header() {
-  const { walletsStore } = useStore();
+  const { mpcWalletsStore } = useStore();
 
-  const primaryLinkHref = walletsStore.currentWallet ? "/dashboard" : "/";
-  const children = walletsStore.currentWallet ? <LogOut /> : <LogIn />;
+  const primaryLinkHref = mpcWalletsStore.currentWallet ? "/dashboard" : "/";
+  const children = mpcWalletsStore.currentWallet ? <LogOut /> : <LogIn />;
 
   return (
     <>
@@ -37,12 +37,12 @@ export const Header = observer(function Header() {
 });
 
 const LogOut = observer(function LogOut() {
-  const { walletsStore } = useStore();
+  const { mpcWalletsStore } = useStore();
 
   return (
     <Button
       onClick={() => {
-        walletsStore.logout();
+        mpcWalletsStore.logout();
       }}
     >
       Log out
@@ -51,7 +51,7 @@ const LogOut = observer(function LogOut() {
 });
 
 const LogIn = observer(function LogIn() {
-  const { walletsStore } = useStore();
+  const { mpcWalletsStore } = useStore();
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -59,7 +59,7 @@ const LogIn = observer(function LogIn() {
     <>
       <Button
         onClick={() => {
-          if (walletsStore.wallets.length > 0) {
+          if (mpcWalletsStore.wallets.length > 0) {
             setModalOpen(true);
           } else {
             router.push("/recovery");
@@ -71,17 +71,17 @@ const LogIn = observer(function LogIn() {
       {modalOpen
         ? renderModal(
             <Modal title="Log in">
-              {walletsStore.wallets.map((wallet, i) => {
+              {mpcWalletsStore.wallets.map((wallet) => {
                 return (
                   <Button
-                    key={i}
+                    key={wallet.userEntryAddress}
                     onClick={() => {
-                      walletsStore.setCurrentWallet(wallet);
+                      mpcWalletsStore.setCurrentWallet(wallet);
                       setModalOpen(false);
                     }}
                     className="w-full"
                   >
-                    {wallet.address}
+                    {wallet.userEntryAddress}
                   </Button>
                 );
               })}

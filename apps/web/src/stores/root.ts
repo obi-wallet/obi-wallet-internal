@@ -35,13 +35,14 @@ export class RootStore {
     this.userDataStore = new UserDataStore(new KVStore("user-data-store"));
     this.wasmStore = new WasmStore();
 
+    // TODO: do we still need the chain store, and if so, the reference to walletsStore?
     this.chainStore = new ChainStore({
       configStore: this.configStore,
       walletsStore: this.walletsStore,
     });
     this.mpcStore = new MpcStore({
       kvStore: new KVStore("mpc-store"),
-      walletsStore: this.walletsStore,
+      walletsStore: this.mpcWalletsStore,
       wasmStore: this.wasmStore,
     });
   }

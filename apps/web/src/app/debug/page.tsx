@@ -51,7 +51,7 @@ export default function DebugPage() {
           undefined,
           SecretJsHomeChainId.MAINNET,
         );
-        await owner.setDeviceKey(await credentialToKeyPair(credential));
+        owner.setPasskeyKey(await credentialToKeyPair(credential));
 
         const payload = NewOnboardingPayload.deserialize({
           homeChain: SecretJsHomeChainId.MAINNET,
@@ -186,7 +186,7 @@ export default function DebugPage() {
           multisigKey: {
             keys: [
               {
-                type: KeyType.Device,
+                type: KeyType.Passkey,
                 payload: {
                   publicKey: {
                     type: "tendermint/PubKeySecp256k1",

@@ -150,17 +150,17 @@ export class NewOnboardingPayload implements Draftable {
   }
 
   @action
-  public async setPrimaryKey({
+  public setPrimaryKey({
     key,
   }: {
     key: {
-      type: KeyType.Device;
+      type: KeyType.Passkey;
       payload: Secp256k1KeyPair;
     };
   }) {
     switch (key.type) {
-      case KeyType.Device:
-        await this._multisigKey.setDeviceKey(key.payload);
+      case KeyType.Passkey:
+        this._multisigKey.setPasskeyKey(key.payload);
         break;
       default:
         throw new Error(`Unsupported primary key type: ${key.type}`);
@@ -203,7 +203,7 @@ export class NewOnboardingPayload implements Draftable {
     if (this._encryptedShares) return;
     invariant(this._shares, "Shares are not available");
 
-    const primaryKey = this._multisigKey.getUsableKeyOfType(KeyType.Device);
+    const primaryKey = this._multisigKey.getUsableKeyOfType(KeyType.Passkey);
     invariant(primaryKey, "Primary key is not available");
 
     const primaryKeyEncryption = new Secp256k1Encryption(primaryKey.publicKey);

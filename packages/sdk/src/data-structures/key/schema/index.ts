@@ -6,6 +6,7 @@ import { DeviceKey } from "./device";
 import { EmailKey } from "./email";
 import { EmailRecoveryKey } from "./email-recovery";
 import { NfcKey } from "./nfc";
+import { PasskeyKey } from "./passkey";
 import { PhoneKey } from "./phone";
 import { SocialKey } from "./social";
 import { TelegramKey } from "./telegram";
@@ -17,6 +18,7 @@ export const UsableKeySchema = migratable(
   z.union([
     CloudKey,
     DeviceKey,
+    PasskeyKey,
     EmailKey,
     EmailRecoveryKey,
     NfcKey,

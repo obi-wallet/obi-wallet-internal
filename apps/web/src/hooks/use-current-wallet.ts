@@ -10,9 +10,9 @@ export function useCurrentWallet({
   redirectTo?: string;
   redirectIfFound?: boolean;
 }) {
-  const { walletsStore, walletsStoreState } = useStore();
+  const { mpcWalletsStore, walletsStoreState } = useStore();
   const router = useRouter();
-  const currentWallet = walletsStore.currentWallet;
+  const currentWallet = mpcWalletsStore.currentWallet;
 
   useEffect(() => {
     // if no redirect needed, just return

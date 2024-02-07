@@ -1,7 +1,12 @@
 import { WasmStore } from "@/stores/wasm";
 import { AbstractKVStore } from "@obi-wallet/headless-ui";
 import { Parameters as KeygenParam } from "@obi-wallet/mpc-ecdsa-wasm-types";
-import { BackupShare, EasyShare, NetworkShare, Wallets } from "@obi-wallet/sdk";
+import {
+  BackupShare,
+  EasyShare,
+  NetworkShare,
+  MpcWallets,
+} from "@obi-wallet/sdk";
 import { autorun } from "mobx";
 
 export interface DistributeSharesResponse {
@@ -18,7 +23,7 @@ export type UnclaimedShares = DistributeSharesResponse;
 const unclaimedSharesKvStoreEntry = "shares";
 
 export class MpcStore {
-  protected readonly walletsStore: Wallets;
+  protected readonly walletsStore: MpcWallets;
   protected readonly wasmStore: WasmStore;
   protected readonly unclaimedSharesKVStore: AbstractKVStore;
   protected _sharesPromise: Promise<UnclaimedShares> | undefined;
@@ -30,7 +35,7 @@ export class MpcStore {
     wasmStore,
   }: {
     kvStore: AbstractKVStore;
-    walletsStore: Wallets;
+    walletsStore: MpcWallets;
     wasmStore: WasmStore;
   }) {
     this.unclaimedSharesKVStore = kvStore;

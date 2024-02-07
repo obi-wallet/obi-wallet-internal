@@ -17,29 +17,29 @@ const ProxyWallet = z.object({
 export type ProxyWallet = z.TypeOf<typeof ProxyWallet>;
 
 export function useRecover() {
-  const { walletsStore } = useStore();
+  const { mpcWalletsStore } = useStore();
 
   async function recover({
-    multisigKey,
     account,
   }: {
     multisigKey: MultisigKey;
     account: ProxyWallet;
   }) {
-    const wallet = walletsStore.getWalletByProxyAddress(
+    const wallet = mpcWalletsStore.getWalletByUserEntryAddress(
       account.proxyAddress.address,
     );
     if (wallet) {
-      walletsStore.setCurrentWallet(wallet);
+      mpcWalletsStore.setCurrentWallet(wallet);
     } else {
-      await walletsStore.createWallet({
-        multisigKey,
-        demoMode: false,
-        skipInit: true,
-        homeAccountAddressOverride: account.proxyAddress.address,
-        evmSigningAddressOverride: "",
-        evmUserContractAddressOverride: "",
-      });
+      // TODO:
+      // await mpcWalletsStore.createWallet({
+      //   multisigKey,
+      //   demoMode: false,
+      //   skipInit: true,
+      //   homeAccountAddressOverride: account.proxyAddress.address,
+      //   evmSigningAddressOverride: "",
+      //   evmUserContractAddressOverride: "",
+      // });
     }
   }
 

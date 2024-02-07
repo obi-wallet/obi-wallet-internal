@@ -22,7 +22,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
       const keyPair = await getPasskey();
       await draft.value.setPrimaryKey({
         key: {
-          type: KeyType.Device,
+          type: KeyType.Passkey,
           payload: keyPair,
         },
       });
