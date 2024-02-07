@@ -21,6 +21,7 @@ export default observer(function Receive() {
   const chainLabel = sdk?.label ?? "";
   const address = publicKey && sdk ? sdk.computeAddress(publicKey) : null;
 
+  console.log({ address });
   const handleClickQRCode = () => {
     if (!address) return;
 
@@ -34,7 +35,7 @@ export default observer(function Receive() {
 
   return (
     <div className="h-full w-full p-6">
-      <Box className="w-2/3">
+      <Box className="w-full sm:w-2/3">
         <TabUi.Links>
           <TabUi.Link href="/dashboard/transaction/send">
             Send Tokens

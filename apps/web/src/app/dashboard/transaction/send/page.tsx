@@ -28,7 +28,7 @@ export default function Send() {
 
   return (
     <div className="h-full w-full p-6">
-      <Box className="w-2/3">
+      <Box className="w-full sm:w-2/3">
         <TabUi.Links>
           <TabUi.Link href="/dashboard/transaction/send" active>
             Send Tokens

@@ -12,7 +12,7 @@ export const PasskeyNotification = observer(function PasskeyNotification() {
 
   return (
     <Notification
-      description="CAUTION: Your account is currently only secured by your device passkey. Please add a <b>mobile key</b> to enable recovery on other devices."
+      description="Caution: Your account is currently only secured by your passkey. Please add one or more <b>recovery keys</b>."
       type="warning"
     />
   );

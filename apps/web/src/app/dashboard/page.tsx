@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Divider, getPrice } from "@/components";
+import { Box, Divider, PriceData, getPrice } from "@/components";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
@@ -16,180 +16,115 @@ import { FromAsset, ToAsset, fromAssets, toAssets } from "./fast-travel/assets";
 // const API_KEY =
 // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZWFtX2lkIjoiNjU5NDBmY2U1NGU2M2ViZDcwZWIyNDBlIiwia2V5X2dlbmVyYXRlZF9hdCI6MTcwNDIwMjIwMi40NzY0MzczfQ.lcCCpTEZaRL47qrpvekjVNwAopgiYmIUvooD2MZlDks";
 // const pulsar = new PulsarSDK(API_KEY);
-// type TxData = {
-//   squid_status: {
-//     axelarTransactionUrl: string;
-//     error: Record<string, unknown>;
-//     fromChain: {
-//       blockNumber: number;
-
-//       callEventStatus: string;
-//       chainData: {
-//         axelarContracts: {
-//           forecallable: string;
-//           gateway: string;
-//         };
-//         blockExplorerUrls: string[];
-//         chainIconURI: string;
-//         chainId: number;
-//         chainName: string;
-//         chainNativeContracts: {
-//           ensRegistry: string;
-//           multicall: string;
-//           usdcToken: string;
-//           wrappedNativeToken: string;
-//         };
-//         chainType: string;
-//         compliance: {
-//           trmIdentifier: string;
-//         };
-//         estimatedExpressRouteDuration: number;
-//         estimatedRouteDuration: number;
-//         nativeCurrency: {
-//           decimals: number;
-//           icon: string;
-//           name: string;
-//           symbol: string;
-//         };
-//         networkName: string;
-//         rpc: string;
-//         squidContracts: {
-//           defaultCrosschainToken: string;
-//           squidFeeCollector: string;
-//           squidMulticall: string;
-//           squidRouter: string;
-//         };
-//         swapAmountForGas: string;
-//       };
-//       transactionId: string;
-//       transactionUrl: string;
-//     };
-//     gasStatus: string;
-//     id: string;
-//     isGMPTransaction: boolean;
-//     routeStatus: {
-//       action: string;
-//       chainId: number;
-//       status: string;
-//       txHash: string;
-//     }[];
-//     squidTransactionStatus: string;
-//     status: string;
-//     timeSpent: {
-//       total: number;
-//     };
-//     toChain: {
-//       blockNumber: string;
-
-//       callEventStatus: string;
-//       transactionId: string;
-//       transactionUrl: string;
-//     };
-//   };
-//   transaction: {
-//     deposit_address: string;
-//     id: number;
-//     status: string;
-//     steps: {
-//       enableForecall: boolean | null;
-//       fromAddress: string | null;
-//       fromAmount: string | null;
-//       fromChain: string;
-//       fromToken: string;
-//       slippage: string | null;
-//       stepType: string;
-//       toAddress: string | null;
-//       toChain: string | null;
-//       toToken: string | null;
-//     }[];
-//     tx_hashes: string[];
-//   }[];
-// };
-type TX = {
-  squid_status: {
-    axelarTransactionUrl: string;
-    error: Record<string, unknown>;
-    fromChain: {
-      blockNumber: number;
-
-      callEventStatus: string;
-      chainData: {
-        axelarContracts: {
-          forecallable: string;
-          gateway: string;
-        };
-        blockExplorerUrls: string[];
-        chainIconURI: string;
-        chainId: number;
-        chainName: string;
-        chainNativeContracts: {
-          ensRegistry: string;
-          multicall: string;
-          usdcToken: string;
-          wrappedNativeToken: string;
-        };
-        chainType: string;
-        compliance: {
-          trmIdentifier: string;
-        };
-        estimatedExpressRouteDuration: number;
-        estimatedRouteDuration: number;
-        nativeCurrency: {
-          decimals: number;
-          icon: string;
-          name: string;
-          symbol: string;
-        };
-        networkName: string;
-        rpc: string;
-        squidContracts: {
-          defaultCrosschainToken: string;
-          squidFeeCollector: string;
-          squidMulticall: string;
-          squidRouter: string;
-        };
-        swapAmountForGas: string;
-      };
-      transactionId: string;
-      transactionUrl: string;
-    };
-    gasStatus: string;
-    id: string;
-    isGMPTransaction: boolean;
-    routeStatus: {
-      action: string;
-      chainId: number;
-      status: string;
-      txHash: string;
-    }[];
-    squidTransactionStatus: string;
-    status: string;
-    timeSpent: {
-      total: number;
-    };
-    toChain: {
-      blockNumber: string;
-
-      callEventStatus: string;
-      transactionId: string;
-      transactionUrl: string;
-    };
-  };
-  deposit_address: string;
-  steps: {
-    enableForecall: boolean | null;
-    fromAddress: string | null;
-    fromAmount: string | null;
-    fromChain: string;
-    fromToken: string;
-    slippage: string | null;
-    stepType: string;
-    toAddress: string | null;
-    toChain: string | null;
-    toToken: string | null;
-  }[];
+export interface TransactionStatus {
+  axelarTransactionUrl: string;
+  error: object;
+  fromChain: ChainData;
+  gasStatus: string;
+  id: string;
+  isGMPTransaction: boolean;
+  routeStatus: RouteStatus[];
+  squidTransactionStatus: string;
   status: string;
-};
+  timeSpent: TimeSpent;
+  toChain: ChainData;
+}
+
+export interface ChainData {
+  blockNumber: number;
+  callEventLog: object[];
+  callEventStatus: string;
+  chainData: ChainDetails;
+  transactionId: string;
+  transactionUrl: string;
+}
+
+export interface ChainDetails {
+  axelarContracts: AxelarContracts;
+  blockExplorerUrls: string[];
+  chainIconURI: string;
+  chainId: number | string;
+  chainName: string;
+  chainNativeContracts: ChainNativeContracts;
+  chainType: string;
+  compliance: Compliance;
+  estimatedExpressRouteDuration: number;
+  estimatedRouteDuration: number;
+  nativeCurrency: Currency;
+  networkName: string;
+  rpc: string;
+  squidContracts: SquidContracts;
+  swapAmountForGas: string;
+}
+
+export interface AxelarContracts {
+  forecallable?: string;
+  gateway: string;
+}
+
+export interface ChainNativeContracts {
+  ensRegistry?: string;
+  multicall?: string;
+  usdcToken?: string;
+  wrappedNativeToken?: string;
+}
+
+export interface Compliance {
+  trmIdentifier: string;
+}
+
+export interface Currency {
+  decimals: number;
+  icon: string;
+  name: string;
+  symbol: string;
+}
+
+export interface SquidContracts {
+  defaultCrosschainToken?: string;
+  squidFeeCollector?: string;
+  squidMulticall?: string;
+  squidRouter?: string;
+}
+
+export interface RouteStatus {
+  action: string;
+  chainId: number | string;
+  status: string;
+  txHash: string;
+}
+
+export interface TimeSpent {
+  call_confirm: number;
+  total: number;
+}
+
+export interface Transaction {
+  deposit_address: string;
+  id: number;
+  status: string;
+  steps: TransactionStep[];
+  tx_hashes: string[];
+}
+
+export interface TransactionStep {
+  enableForecall?: boolean;
+  fromAddress?: string;
+  fromAmount?: string;
+  fromChain: string;
+  fromToken: string;
+  slippage?: string;
+  stepType: string;
+  toAddress?: string;
+  toChain?: string;
+  toToken?: string;
+}
+
+export interface TX {
+  status: TransactionStatus;
+  transaction: Transaction;
+}
+
 export default observer(function Dashboard() {
   useCurrentWallet({ redirectTo: "/" });
 
@@ -220,44 +155,20 @@ const PendingAssets = observer(function PendingAssets() {
   useEffect(() => {
     if (!publicKey?.value) return;
     fetchPendingAssets();
-    // simulateSquidSwap({
-    //   asset: fromAssets["Eth-arbitrum"] as FromAsset,
-    //   vsAsset: toAssets["sei"] as ToAsset,
-    //   amount: "10000000000000000",
-    // });
   }, [publicKey?.value]);
+
   const fetchPendingAssets = async () => {
     const data = await getPendingAssets(publicKey?.value ?? "");
-    // grab relevant data from data and set it to txData
-    const actualTX = data.filter((d) => d.status !== "AwaitingDeposit");
-    // fetch squid status from actualTX hashes
-    const squidStatus = await Promise.all(
-      actualTX.map(async (tx) => {
-        const res = await fetch(
-          `https://fast-travel-playground.vercel.app/api/status/check.rs?test=false&depositAddress=${encodeURIComponent(
-            tx.deposit_address,
-          )}`,
-        );
-        const json = await res.json();
-        return { ...tx, squid_status: json.squid_status };
-      }),
-    );
+    // console.log("DATA", data, publicKey?.value);
 
-    console.log("SQUID", squidStatus);
     setTxData(
-      squidStatus.filter(
-        (s) => s.squid_status.squidTransactionStatus === "ongoing",
-      ),
+      data.filter((t) => t.status.squidTransactionStatus === "ongoing"),
     );
   };
 
-  // get the wallet using the public key and prefixes
   if (!txData) return null;
   return txData.map((tx: TX) => {
-    // if (["AwaitingDeposit"].includes(tx.status)) {
-    //   return null;
-    // }
-    return <PendingAsset key={tx.deposit_address} tx={tx} />;
+    return <PendingAsset key={tx.transaction.deposit_address} tx={tx} />;
   });
 });
 
@@ -266,14 +177,14 @@ const PendingAsset = observer(function PendingAsset({ tx }: { tx: TX }) {
   const asset =
     toAssets[
       Object.keys(toAssets).find(
-        (key) => toAssets[key]?.denom === tx.steps[1]?.toToken,
+        (key) => toAssets[key]?.denom === tx.transaction.steps[1]?.toToken,
       ) ?? ""
     ];
 
   return (
     <div
       className="mb-3 mt-3 flex flex-row items-center justify-between rounded-lg bg-gray-700 p-5 hover:bg-gray-600"
-      key={tx.deposit_address}
+      key={tx.transaction.deposit_address}
     >
       <div className="flex flex-row items-center">
         <div className="mr-3">
@@ -311,23 +222,29 @@ const EstimateAmount = observer(function EstimateAmount({
   if (toAsset === undefined) return null;
   const getAmount = async () => {
     setLoading(true);
-    const fromAssetAmount = tx.steps[1]?.fromAmount;
+    const fromAssetAmount = tx.transaction.steps[1]?.fromAmount;
     //find from asset based on the chainId
     const fromAsset =
       fromAssets[
         Object.keys(fromAssets).find(
-          (key) => fromAssets[key]?.chainId === tx.steps[1]?.fromChain,
+          (key) =>
+            fromAssets[key]?.chainId === tx.transaction.steps[1]?.fromChain,
         ) ?? ""
       ];
 
-    const price = await getPrice({
+    const priceData = (await getPrice({
       mainCoin: fromAsset as FromAsset,
       vsCoin: toAsset,
-    });
-    console.log("PRICE", price, fromAssetAmount);
+      usdPrices: true,
+    })) as PriceData;
+    const price = priceData.mainVsPrice;
+    // console.log("PRICE", price, fromAssetAmount);
     const amount = formatEther(parseUnits(fromAssetAmount ?? "0", "wei"));
-    console.log("AMOUNT", amount);
-    setAmount(Number(amount) * price);
+    // console.log("AMOUNT", amount);
+    const amountNumber = Number(amount) * price;
+    // discount 2$ for fees
+    setAmount(amountNumber - 2.5 / priceData.vsUsd);
+
     setLoading(false);
   };
   if (!amount || loading) return null;
@@ -355,14 +272,14 @@ function StatusLink({ tx }: { tx: TX }) {
     <div>
       <a
         target="_blank"
-        href={tx.squid_status.axelarTransactionUrl}
+        href={tx.status.axelarTransactionUrl}
         rel="noreferrer"
         className={cn(
           " uppercase hover:underline",
-          getStatusColor(tx.squid_status.squidTransactionStatus),
+          getStatusColor(tx.status.squidTransactionStatus),
         )}
       >
-        {tx.squid_status.squidTransactionStatus}
+        {tx.status.squidTransactionStatus}
       </a>
     </div>
   );
@@ -378,10 +295,12 @@ const AssetBalance = observer(function AssetBalance() {
   const [loading, setLoading] = useState(false);
   const chains = [
     "SEI",
+    "NEUTRON",
     // ChainKeys.OSMOSIS, ChainKeys.NEUTRON
   ];
   const prefixes = [
     "sei",
+    "neutron",
     // "osmo", "neutron"
   ];
   const pubkey = usePublicKey();
@@ -398,7 +317,7 @@ const AssetBalance = observer(function AssetBalance() {
     );
 
     const balances = addresses.map((address, index) => {
-      return getBalanceFromPulsar(address, chains[index] as string);
+      return getBalances(address, chains[index] as string);
     });
     const result = await Promise.all(balances);
 
@@ -438,11 +357,7 @@ function AssetItem({ asset }: { asset: { amount: number; denom: string } }) {
     >
       <div className="flex flex-row items-center">
         <div className="mr-3">
-          <img
-            src={toAssets["sei"]?.image ?? ""}
-            alt="asset"
-            className="h-8 w-8"
-          />
+          <img src={assetData?.image ?? ""} alt="asset" className="h-8 w-8" />
         </div>
         <div className="flex flex-row">
           <div className="mr-5 text-lg">{assetData?.label}</div>
@@ -491,144 +406,29 @@ function PriceComponent({
 
 const getPendingAssets = async (pubKey: string) => {
   if (!pubKey) return [];
-  //https://fast-travel-playground.vercel.app/api/status/check.rs?test=false&pubkey=BOhbwGQj67ZIiUunwoqyMFte4x5iRVFZSIS0hVauQYMR2D%2Ffzq7zdWthXja8bD8Z%2BtUA8V28WqqFZt3u460pmn0%3D
+
   const url = `https://fast-travel-playground.vercel.app/api/status/check.rs?test=false&pubkey=${encodeURIComponent(
     pubKey,
   )}`;
-  console.log({ url });
+  // console.log({ url });
   const res = await fetch(url);
   const data = await res.json();
-  return data.transactions as TX[];
+  // console.log("DATAT", data);
+  return data as TX[];
 };
 
-// const txData = {
-//   squid_status: {
-//     axelarTransactionUrl:
-//       "https://axelarscan.io/gmp/0x3b655af324e7bae0a05c7efc7333fd30d28b1515e8205e2677fad8c46507b5bf",
-//     error: {},
-//     fromChain: {
-//       blockNumber: 173870219,
-//       callEventLog: [],
-//       callEventStatus: "",
-//       chainData: {
-//         axelarContracts: {
-//           forecallable: "0x2d5d7d31F671F86C782533cc367F14109a082712",
-//           gateway: "0xe432150cce91c13a887f7D836923d5597adD8E31",
-//         },
-//         blockExplorerUrls: ["https://arbiscan.io/"],
-//         chainIconURI:
-//           "https://raw.githubusercontent.com/0xsquid/assets/main/images/tokens/arb.svg",
-//         chainId: 42161,
-//         chainName: "Arbitrum",
-//         chainNativeContracts: {
-//           ensRegistry: "",
-//           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
-//           usdcToken: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
-//           wrappedNativeToken: "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
-//         },
-//         chainType: "evm",
-//         compliance: {
-//           trmIdentifier: "arbitrum",
-//         },
-//         estimatedExpressRouteDuration: 20,
-//         estimatedRouteDuration: 1800,
-//         nativeCurrency: {
-//           decimals: 18,
-//           icon: "https://raw.githubusercontent.com/axelarnetwork/axelar-docs/main/public/images/chains/arbitrum.svg",
-//           name: "Arbitrum",
-//           symbol: "ETH",
-//         },
-//         networkName: "Arbitrum",
-//         rpc: "https://arb1.arbitrum.io/rpc",
-//         squidContracts: {
-//           defaultCrosschainToken: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
-//           squidFeeCollector: "0x19cd4F3820E7BBed45762a30BFA37dFC6c9C145b",
-//           squidMulticall: "0x4fd39C9E151e50580779bd04B1f7eCc310079fd3",
-//           squidRouter: "0xce16F69375520ab01377ce7B88f5BA8C48F8D666",
-//         },
-//         swapAmountForGas: "2000000",
-//       },
-//       transactionId:
-//         "0x3b655af324e7bae0a05c7efc7333fd30d28b1515e8205e2677fad8c46507b5bf",
-//       transactionUrl:
-//         "https://arbiscan.io/tx/0x3b655af324e7bae0a05c7efc7333fd30d28b1515e8205e2677fad8c46507b5bf",
-//     },
-//     gasStatus: "gas_paid",
-//     id: "0x3b655af324e7bae0a05c7efc7333fd30d28b1515e8205e2677fad8c46507b5bf_2_14",
-//     isGMPTransaction: true,
-//     routeStatus: [
-//       {
-//         action: "call",
-//         chainId: 42161,
-//         status: "success",
-//         txHash:
-//           "0x3b655af324e7bae0a05c7efc7333fd30d28b1515e8205e2677fad8c46507b5bf",
-//       },
-//     ],
-//     squidTransactionStatus: "ongoing",
-//     status: "source_gateway_called",
-//     timeSpent: {
-//       total: 374,
-//     },
-//     toChain: {
-//       blockNumber: "",
-//       callEventLog: [],
-//       callEventStatus: "",
-//       transactionId: "",
-//       transactionUrl: "",
-//     },
-//   },
-//   transaction: [
-//     {
-//       deposit_address: "0xdb1dfde093058ad27f98d6210500d1da11ff4d73",
-//       id: 21,
-//       status: "AwaitingWithdrawal",
-//       steps: [
-//         {
-//           enableForecall: null,
-//           fromAddress: null,
-//           fromAmount: null,
-//           fromChain: "arbitrum",
-//           fromToken: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-//           slippage: null,
-//           stepType: "EthDeposit",
-//           toAddress: null,
-//           toChain: null,
-//           toToken: null,
-//         },
-//         {
-//           enableForecall: false,
-//           fromAddress: "0xeCbFB380e9020FF4f7fFfE05a78D2153A7071153",
-//           fromAmount: "10000000000000000",
-//           fromChain: "42161",
-//           fromToken: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-//           slippage: "1",
-//           stepType: "Squid",
-//           toAddress: "sei12q45tpyvpuz0397qma3arx7hz4nypvtlfzteyk",
-//           toChain: "pacific-1",
-//           toToken: "usei",
-//         },
-//       ],
-//       tx_hashes: [
-//         "0x3b655af324e7bae0a05c7efc7333fd30d28b1515e8205e2677fad8c46507b5bf",
-//       ],
-//     },
-//   ],
-// } as TxData;
-
-const getBalanceFromPulsar = async (address: string, chain: string) => {
-  console.log("getbalance", address, chain);
+const getBalances = async (address: string, chain: string) => {
+  // console.log("getbalance", address, chain);
   if (!address) return [];
   let balance = [];
   if (chain === "SEI") {
-    console.log({ address });
+    // console.log({ address });
     balance = await fetchSEIBalance(address);
   }
+  if (chain === "NEUTRON") {
+    balance = await fetchNeutronBalance(address);
+  }
 
-  // const balances = pulsar.balances.getWalletBalances(address, chain);
-  // for await (const b of balances) {
-  //   balance.push(b);
-  // }
   return balance;
 };
 async function fetchSEIBalance(walletAddress: string) {
@@ -638,22 +438,17 @@ async function fetchSEIBalance(walletAddress: string) {
   const res = await queryClient.cosmos.bank.v1beta1.allBalances({
     address: walletAddress,
   });
-  console.log("SEI BALANCE", res.balances);
+  // console.log("SEI BALANCE", res.balances);
   return res.balances;
 }
 
-// const simulateSquidSwap = async ({
-//   asset,
-//   vsAsset,
-//   amount,
-// }: {
-//   asset: FromAsset;
-//   vsAsset: ToAsset;
-//   amount: string;
-// }) => {
-//   const url = `https://fast-travel-playground.vercel.app/api/swap/simulate.rs?test=false&fromChain=${asset.chainId}&toChain=${vsAsset.chainId}&fromToken=${asset.address}&toToken=${vsAsset.denom}&amount=${amount}`;
-//   const res = await fetch(url);
-//   const json = await res.json();
-//   console.log("SIM", json);
-//   return json;
-// };
+async function fetchNeutronBalance(walletAddress: string) {
+  if (!walletAddress) return [];
+  const REST_URL = "https://neutron-api.polkachu.com/";
+  const queryClient = await getQueryClient(REST_URL);
+  const res = await queryClient.cosmos.bank.v1beta1.allBalances({
+    address: walletAddress,
+  });
+  // console.log("NEUTRON BALANCE", res.balances);
+  return res.balances;
+}

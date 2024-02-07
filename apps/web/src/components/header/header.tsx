@@ -4,22 +4,38 @@ import { Button, Modal, renderModal } from "@/components";
 import { PrimaryLink } from "@/components/links";
 import { CURRENT_THEME } from "@/configs";
 import { useStore } from "@/contexts";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FaCircleUser, FaQrcode } from "react-icons/fa6";
 
 export const Header = observer(function Header() {
   const { mpcWalletsStore } = useStore();
 
   const primaryLinkHref = mpcWalletsStore.currentWallet ? "/dashboard" : "/";
-  const children = mpcWalletsStore.currentWallet ? <LogOut /> : <LogIn />;
+  const authChildren = mpcWalletsStore.currentWallet ? <LogOut /> : <LogIn />;
+
+  const { userDataStore } = useStore();
+  const currentWallet = useCurrentWallet({});
+
+  const userData = currentWallet
+    ? userDataStore.getUserData(currentWallet.userEntryAddress)
+    : {};
 
   return (
     <>
-      <header className="bg-background-primary flex h-20 items-center justify-between px-8 shadow">
-        <PrimaryLink href={primaryLinkHref}>
-          {/* <Text
+      <header className="h-20 w-full">
+        <div
+          className={cn(
+            "bg-background-primary flex h-full w-full items-center justify-between px-8 shadow",
+            "max-sm:hidden",
+          )}
+        >
+          <PrimaryLink href={primaryLinkHref}>
+            {/* <Text
             color="white"
             size="2xl"
             fontWeight="bold"
@@ -28,9 +44,32 @@ export const Header = observer(function Header() {
             Obi
           </Text>
            */}
-          <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
-        </PrimaryLink>
-        {children}
+            <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
+          </PrimaryLink>
+          {authChildren}
+        </div>
+        <div
+          className={cn(
+            "bg-background-primary flex h-full w-full items-center justify-between p-6 shadow",
+            "sm:hidden",
+          )}
+        >
+          <div className="bg-background-primary h-11 w-11 rounded-full opacity-80">
+            {userData.avatar ? (
+              <Image
+                width={44}
+                height={44}
+                className="rounded-full"
+                src={userData.avatar}
+                alt={userData.name as string}
+              />
+            ) : (
+              <FaCircleUser className="h-11 w-11 text-white" />
+            )}
+          </div>
+
+          <FaQrcode className="h-11 w-11 rounded text-white" />
+        </div>
       </header>
     </>
   );
@@ -38,11 +77,13 @@ export const Header = observer(function Header() {
 
 const LogOut = observer(function LogOut() {
   const { mpcWalletsStore } = useStore();
+  const router = useRouter();
 
   return (
     <Button
       onClick={() => {
         mpcWalletsStore.logout();
+        router.push("/");
       }}
     >
       Log out
@@ -71,17 +112,19 @@ const LogIn = observer(function LogIn() {
       {modalOpen
         ? renderModal(
             <Modal title="Log in">
-              {mpcWalletsStore.wallets.map((wallet) => {
+              {mpcWalletsStore.wallets.map((wallet, i) => {
                 return (
                   <Button
-                    key={wallet.userEntryAddress}
+                    key={i}
                     onClick={() => {
                       mpcWalletsStore.setCurrentWallet(wallet);
                       setModalOpen(false);
                     }}
                     className="w-full"
                   >
-                    {wallet.userEntryAddress}
+                    <div className="w-full overflow-hidden text-ellipsis text-left">
+                      {wallet.userEntryAddress}
+                    </div>
                   </Button>
                 );
               })}

@@ -47,11 +47,11 @@ export const UserDataStep = observer(function UserDataStep({
       </Text>
       <Input
         label="Name"
-        className="w-96"
-        labelClassname="bg-slate-950"
+        labelClassname="bg-black"
         onChange={(value) => {
           draft.value.setName(value);
         }}
+        className="w-96 max-sm:w-full"
         value={draft.value.name}
       />
 

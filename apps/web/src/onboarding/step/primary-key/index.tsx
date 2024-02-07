@@ -46,13 +46,13 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
           : "Create Your First Key"}
       </Text>
       <Text
-        className="w-96 text-center"
+        className="w-96 text-center max-sm:w-full"
         fontWeight="medium"
         leading="tight"
         color="zinc"
       >
         {step.from === OnboardingFromType.External
-          ? "Create a passkey to secure access to your SEI tokens and other assets."
+          ? "Create a passkey to secure access to your Neutron tokens and other assets."
           : "Sign in with one of the services below to create your first key."}
       </Text>
 
