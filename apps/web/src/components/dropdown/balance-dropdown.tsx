@@ -17,15 +17,26 @@ export interface IBalanceOption {
 export function BalanceDropDown({
   options,
   onSelectOption,
+  selectedOptionProp,
 }: {
   options: IBalanceOption[];
+  selectedOptionProp?: IBalanceOption;
   onSelectOption?: (option: IBalanceOption) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<
     IBalanceOption | undefined
-  >(options?.[0]);
+  >();
+
+  // check if selectedOptionProp is equal to selectedOption
+  useEffect(() => {
+    if (selectedOptionProp) {
+      if (selectedOptionProp !== selectedOption) {
+        setSelectedOption(selectedOptionProp);
+      }
+    }
+  }, [selectedOptionProp]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -47,7 +58,7 @@ export function BalanceDropDown({
 
     onSelectOption && onSelectOption(option);
   };
-  console.log(options);
+
   return (
     <div ref={ref} className="relative z-50">
       <button
@@ -57,7 +68,7 @@ export function BalanceDropDown({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="flex items-center space-x-3">
+        <div className="flex min-w-[50px] items-center space-x-3">
           {selectedOption && (
             <Image
               src={selectedOption.image ?? "  "}
@@ -67,8 +78,16 @@ export function BalanceDropDown({
             />
           )}
           <div className="flex flex-col space-y-2">
-            <Text>{selectedOption?.network}</Text>
-            <Text>{`${selectedOption?.balance} ${selectedOption?.assetUnit}`}</Text>
+            {selectedOption ? (
+              <>
+                <Text size="xs">{selectedOption?.network}</Text>
+                <Text size="xs">{`${selectedOption?.balance} ${selectedOption?.assetUnit}`}</Text>
+              </>
+            ) : (
+              <Text size="md" className="  ml-7 mr-7">
+                Select
+              </Text>
+            )}
           </div>
           <div className="ml-3">{isOpen ? <FaAngleUp /> : <FaAngleDown />}</div>
         </div>
@@ -102,8 +121,8 @@ export function BalanceDropDown({
                   height={24}
                 />
                 <div className="flex flex-col space-y-2">
-                  <Text>{option.network}</Text>
-                  <Text>{`${option.balance} ${option.assetUnit}`}</Text>
+                  <Text size="xs">{option.network}</Text>
+                  <Text size="xs">{`${option.balance} ${option.assetUnit}`}</Text>
                 </div>
               </div>
             </li>

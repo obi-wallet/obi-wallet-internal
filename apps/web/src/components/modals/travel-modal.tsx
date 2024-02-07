@@ -9,13 +9,14 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import copy from "copy-to-clipboard";
 import { BrowserProvider, parseUnits, Contract } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import * as R from "ramda";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm, ControllerFieldState } from "react-hook-form";
-import { FaExclamation, FaSpinner } from "react-icons/fa6";
+import { FaCheck, FaExclamation, FaSpinner } from "react-icons/fa6";
 import { pubkeyToAddress } from "secretjs";
 import { z } from "zod";
 
@@ -515,6 +516,7 @@ function GetAddressComponent({
   const [address, setAddress] = useState<string | undefined>(undefined);
   const [invalid, setInvalid] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isCopied, setIsCopied] = useState(false);
   useEffect(() => {
     if (validProps()) {
       setInvalid(true);
@@ -639,14 +641,22 @@ function GetAddressComponent({
     }
     if (address) {
       return (
-        <>
+        <div className="relative">
           <Text className="flex  items-center justify-center text-sm">
             {address}
           </Text>
           <div className="mt-2 text-xs font-medium uppercase text-blue-600">
             Click to copy
           </div>
-        </>
+          {isCopied && (
+            <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 gap-4 rounded-md bg-gray-500 px-4 py-2 text-center text-white">
+              <span className=" text-green-500">
+                <FaCheck />
+              </span>
+              <p>Copied</p>
+            </div>
+          )}
+        </div>
       );
     }
     return (
@@ -669,9 +679,12 @@ function GetAddressComponent({
         onClick={() => {
           if (!address) return;
           // copy to clipboard
-          navigator.clipboard.writeText(address);
-          // display popup
-          alert("Copied to clipboard!");
+          copy(address);
+          setIsCopied(true);
+
+          setTimeout(() => {
+            setIsCopied(false);
+          }, 2000);
         }}
       >
         {renderContent()}
