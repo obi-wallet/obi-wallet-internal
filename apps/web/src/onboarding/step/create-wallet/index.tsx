@@ -14,7 +14,7 @@ export const CreateWalletStep = observer(function CreateWalletStep({
   draft,
   step,
 }: StepProps<CreateWalletOnboardingStep>) {
-  const { mpcWalletsStore } = useStore();
+  const { mpcWalletsStore, userDataStore } = useStore();
   const router = useRouter();
 
   const onDone = () => {
@@ -35,6 +35,10 @@ export const CreateWalletStep = observer(function CreateWalletStep({
       draft.value.confirmOwner();
       await draft.value.continueFlow();
       const walletData = draft.value.toMpcWalletData();
+      userDataStore.setUserData(walletData.userEntryAddress, {
+        name: draft.value.name,
+        avatar: draft.value.image,
+      });
       mpcWalletsStore.upsertWallet(ObservableMpcWallet.create(walletData));
       return true;
     },
