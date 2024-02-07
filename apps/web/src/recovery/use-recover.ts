@@ -1,6 +1,20 @@
 import { useStore } from "@/contexts";
-import { ProxyWallet } from "@/onboarding/onboarding-payload";
 import { MultisigKey } from "@obi-wallet/sdk";
+import { z } from "zod";
+
+const ProxyWallet = z.object({
+  proxyAddress: z.object({
+    address: z.string(),
+    codeId: z.number(),
+  }),
+  owner: z.object({
+    threshold: z.string(),
+    // TODO: here we should probably be more specific regarding the structure of `keys`, review /add logic and make sure the schema usage is consistent here.
+    keys: z.array(z.unknown()),
+  }),
+});
+
+export type ProxyWallet = z.TypeOf<typeof ProxyWallet>;
 
 export function useRecover() {
   const { walletsStore } = useStore();

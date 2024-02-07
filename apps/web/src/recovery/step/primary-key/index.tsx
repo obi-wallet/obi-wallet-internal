@@ -1,8 +1,7 @@
 "use client";
 
 import { Button, ButtonLink, Modal, renderModal, Text } from "@/components";
-import { ProxyWallet } from "@/onboarding/onboarding-payload";
-import { RecoveryPayload } from "@/recovery/recovery-payload";
+import { RecoveryPayload, ProxyWallet } from "@/recovery/recovery-payload";
 import { useRecover } from "@/recovery/use-recover";
 import { Draft } from "@/stores";
 import { getPasskey, KeyType } from "@obi-wallet/sdk";

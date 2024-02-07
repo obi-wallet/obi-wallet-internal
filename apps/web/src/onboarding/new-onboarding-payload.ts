@@ -1,6 +1,7 @@
 import { SecretJsHomeChain } from "@/home-chain/secret-js";
 import { rootStore } from "@/hooks/use-create-root-store";
 import { MultisigKeyEncryption, Secp256k1Encryption } from "@/lib/encryption";
+import { Draftable } from "@/stores/drafts/draft";
 import { DistributeSharesResponse } from "@/stores/mpc";
 import {
   BackupShare,
@@ -13,6 +14,7 @@ import {
   NetworkShare,
   ObservableMultisigKey,
 } from "@obi-wallet/sdk";
+import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { action, observable } from "mobx";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -57,7 +59,7 @@ const OnboardingPayloadSchema = z.object({
   homeAccountClaimed: z.boolean(),
 });
 
-export class NewOnboardingPayload {
+export class NewOnboardingPayload implements Draftable {
   @observable protected accessor _multisigKey: MultisigKey;
   @observable protected accessor _ownerConfirmed = false;
   @observable protected accessor _name = "";
@@ -77,9 +79,31 @@ export class NewOnboardingPayload {
     this._multisigKey = ObservableMultisigKey.create(undefined, homeChainId);
   }
 
+  public get homeChainId() {
+    return this._multisigKey.chainId;
+  }
+
+  public get name() {
+    return this._name;
+  }
+
+  @action
+  public setName(name: string) {
+    this._name = name;
+  }
+
+  public get image() {
+    return this._image;
+  }
+
+  @action
+  public setImage(image: string) {
+    this._image = image;
+  }
+
   public toJSON(): z.infer<typeof OnboardingPayloadSchema> {
     return OnboardingPayloadSchema.parse({
-      homeChain: this._multisigKey.chainId,
+      homeChain: this.homeChainId,
       multisigKey: this._multisigKey.toJSON()!,
       ownerConfirmed: this._ownerConfirmed,
       userData: {
@@ -101,7 +125,7 @@ export class NewOnboardingPayload {
     invariant(this._distributedShares, "Shares have not been distributed");
 
     return MpcWallet.schema.migratableSchema.parse({
-      homeChain: this._multisigKey.chainId,
+      homeChain: this.homeChainId,
       owner: this._multisigKey.toJSON()!,
       encryptedShares: {
         easy: this._encryptedShares.easyShare,
@@ -126,6 +150,24 @@ export class NewOnboardingPayload {
   }
 
   @action
+  public async setPrimaryKey({
+    key,
+  }: {
+    key: {
+      type: KeyType.Device;
+      payload: Secp256k1KeyPair;
+    };
+  }) {
+    switch (key.type) {
+      case KeyType.Device:
+        await this._multisigKey.setDeviceKey(key.payload);
+        break;
+      default:
+        throw new Error(`Unsupported primary key type: ${key.type}`);
+    }
+  }
+
+  @action
   public confirmOwner() {
     this._ownerConfirmed = true;
   }
@@ -141,7 +183,7 @@ export class NewOnboardingPayload {
     const response = await fetch("/api/setup/home-account", {
       method: "POST",
       body: JSON.stringify({
-        chainId: this._multisigKey.chainId,
+        chainId: this.homeChainId,
       }),
     });
 
@@ -187,12 +229,12 @@ export class NewOnboardingPayload {
     const response = await fetch("/api/setup/distribute-shares", {
       method: "POST",
       body: JSON.stringify({
-        homeChainId: this._multisigKey.chainId,
+        homeChainId: this.homeChainId,
         networkParticipants: this._shares.networkParticipants,
         networkShare: this._shares.networkShare,
         userEntryAddress: this._unclaimedHomeAccount.homeAccountAddress,
         userEntryCodeHash: await new SecretJsHomeChain(
-          this._multisigKey.chainId,
+          this.homeChainId,
         ).userEntryCodeHash(this._unclaimedHomeAccount.homeAccountAddress),
         ownerIndex: this._unclaimedHomeAccount.ownerIndex,
       }),
@@ -216,7 +258,7 @@ export class NewOnboardingPayload {
     if (this._homeAccountClaimed) return;
     invariant(this._unclaimedHomeAccount, "Home account is not available");
 
-    const homeChain = new SecretJsHomeChain(this._multisigKey.chainId);
+    const homeChain = new SecretJsHomeChain(this.homeChainId);
     const userEntryCodeHash = await homeChain.userEntryCodeHash(
       this._unclaimedHomeAccount.homeAccountAddress,
     );
@@ -228,7 +270,7 @@ export class NewOnboardingPayload {
     const response = await fetch("/api/setup/first-update-owner", {
       method: "POST",
       body: JSON.stringify({
-        homeChainId: this._multisigKey.chainId,
+        homeChainId: this.homeChainId,
         owner: this._multisigKey.toJSON(),
         ownerAddress: this._multisigKey.address,
         userAccountAddress: userAccount.userAccountAddress,
@@ -266,5 +308,33 @@ export class NewOnboardingPayload {
     payload._unclaimedHomeAccount = data.unclaimedHomeAccount;
     payload._homeAccountClaimed = data.homeAccountClaimed;
     return payload;
+  }
+
+  public clone() {
+    const clone = new NewOnboardingPayload(this.homeChainId);
+    clone._multisigKey = this._multisigKey.clone();
+    clone._ownerConfirmed = this._ownerConfirmed;
+    clone._name = this._name;
+    clone._image = this._image;
+    clone._shares = this._shares;
+    clone._encryptedShares = this._encryptedShares;
+    clone._distributedShares = this._distributedShares;
+    clone._unclaimedHomeAccount = this._unclaimedHomeAccount;
+    clone._homeAccountClaimed = this._homeAccountClaimed;
+    return clone as this;
+  }
+
+  public equals(other: NewOnboardingPayload) {
+    return (
+      this._multisigKey.equals(other._multisigKey) &&
+      this._ownerConfirmed === other._ownerConfirmed &&
+      this._name === other._name &&
+      this._image === other._image &&
+      this._shares === other._shares &&
+      this._encryptedShares === other._encryptedShares &&
+      this._distributedShares === other._distributedShares &&
+      this._unclaimedHomeAccount === other._unclaimedHomeAccount &&
+      this._homeAccountClaimed === other._homeAccountClaimed
+    );
   }
 }

@@ -4,6 +4,7 @@ import { Text } from "@/components";
 import { useStore } from "@/contexts";
 import { CreateWalletOnboardingStep } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
+import { ObservableMpcWallet } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
@@ -13,7 +14,7 @@ export const CreateWalletStep = observer(function CreateWalletStep({
   draft,
   step,
 }: StepProps<CreateWalletOnboardingStep>) {
-  const { mpcStore, walletsStore, userDataStore } = useStore();
+  const { mpcWalletsStore } = useStore();
   const router = useRouter();
 
   const onDone = () => {
@@ -31,24 +32,14 @@ export const CreateWalletStep = observer(function CreateWalletStep({
         return;
       }
 
-      draft.value.createMagicAccountInBackground();
-      await draft.value.finishWalletCreation(mpcStore);
-
-      return;
-      const response = await walletsStore.createWallet({
-        multisigKey: draft.value.multisigKey,
-        demoMode: false,
-      });
-      if (response) {
-        userDataStore.setUserData(response.homeAccountAddress, {
-          name: draft.value.name,
-          avatar: draft.value.image,
-        });
-      }
+      draft.value.confirmOwner();
+      await draft.value.continueFlow();
+      const walletData = draft.value.toMpcWalletData();
+      mpcWalletsStore.upsertWallet(ObservableMpcWallet.create(walletData));
       return true;
     },
     onSuccess() {
-      // if (step.waitUntilDone) onDone();x
+      if (step.waitUntilDone) onDone();
     },
   });
 

@@ -50,6 +50,10 @@ export class RootStore {
     return this.sdkRootStore.walletConnectStore;
   }
 
+  public get mpcWalletsStore() {
+    return this.sdkRootStore.mpcWalletsStore;
+  }
+
   public get walletsStore() {
     return this.sdkRootStore.walletsStore;
   }

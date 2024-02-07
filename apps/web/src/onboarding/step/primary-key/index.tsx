@@ -30,7 +30,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
       });
 
       await queryClient.prefetchQuery(
-        Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
+        Sdk.chainId(draft.value.homeChainId).transactions.prepareKeyPairQuery(
           keyPair,
         ),
       );
