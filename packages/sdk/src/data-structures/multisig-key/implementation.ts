@@ -1,7 +1,7 @@
 import {
+  generateSec256k1KeyPair,
   Secp256k1KeyPair,
   Secp256k1PublicKey,
-  generateSec256k1KeyPair,
 } from "@obi-wallet/sdk-secp256k1";
 import { ethers } from "ethers";
 import * as R from "ramda";
@@ -9,7 +9,7 @@ import { TxResponse } from "secretjs";
 
 import { SetupMultisigKeyDetails } from "./factories";
 import { MultisigKeySchema } from "./schema";
-import { ChainId, SecretJsChainIds, SecretJsChains } from "../../chains";
+import { ChainId, SecretJsChainIds } from "../../chains";
 import { MultisigPublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
 import { SerializedProxyWallet } from "../../sdk/wallets/secret-js-msig/types";
@@ -160,8 +160,6 @@ export class MultisigKey {
       ", owner index: " + ownerIndex,
     );
 
-    const chain = SecretJsChains[SecretJsChainIds.MAINNET];
-
     // now we can add a key. The ownerIndex fee wallet will be able
     // to use it to sign for now (to setup account) if needed,
     // until first_update_owner
@@ -169,7 +167,6 @@ export class MultisigKey {
       method: "POST",
       body: JSON.stringify({
         userEntryAddress: homeAccountAddress,
-        userEntryCodeHash: chain.userEntry.codeHash,
       }),
     });
 

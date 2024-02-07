@@ -1,14 +1,11 @@
 "use client";
 
-import { useStore } from "@/contexts";
 import { NewOnboardingPayload } from "@/onboarding/new-onboarding-payload";
 import { TargetChainId } from "@/target-chain";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
-import { decodeSignature } from "@cosmjs/amino";
-import { sha256 } from "@cosmjs/crypto";
-import { makeSignBytes } from "@cosmjs/proto-signing";
 import {
   credentialToKeyPair,
+  KeyType,
   MpcWallet,
   MultisigKey,
   SecretJsHomeChainId,
@@ -20,8 +17,6 @@ import * as secp256k1 from "secp256k1";
 
 // @refresh reset
 export default function DebugPage() {
-  const { mpcStore } = useStore();
-
   useEffectOnceWhen(async () => {
     /* eslint-disable import/no-extraneous-dependencies */
     const [_chai, mocha] = await Promise.all([
@@ -58,9 +53,9 @@ export default function DebugPage() {
         );
         await owner.setDeviceKey(await credentialToKeyPair(credential));
 
-        const details = {
-          homeChain: "secret-4",
-          multisigKey: owner.toJSON(),
+        const payload = NewOnboardingPayload.deserialize({
+          homeChain: SecretJsHomeChainId.MAINNET,
+          multisigKey: owner.toJSON()!,
           ownerConfirmed: true,
           userData: {
             name: "",
@@ -180,20 +175,18 @@ export default function DebugPage() {
             ownerIndex: 180,
           },
           homeAccountClaimed: true,
-        };
-
-        const payload = NewOnboardingPayload.deserialize(details);
+        } as const);
         await payload.continueFlow();
         console.log(payload.toJSON());
       });
       test("MPC Wallet", async function (this: { timeout(ms: number): void }) {
         this.timeout(0);
-        const details = {
-          homeChain: "secret-4",
+        const payload = NewOnboardingPayload.deserialize({
+          homeChain: SecretJsHomeChainId.MAINNET,
           multisigKey: {
             keys: [
               {
-                type: "device",
+                type: KeyType.Device,
                 payload: {
                   publicKey: {
                     type: "tendermint/PubKeySecp256k1",
@@ -331,8 +324,7 @@ export default function DebugPage() {
             ownerIndex: 180,
           },
           homeAccountClaimed: true,
-        };
-        const payload = NewOnboardingPayload.deserialize(details);
+        });
         const walletData = payload.toMpcWalletData();
         const mpcWallet = MpcWallet.create(walletData);
         const signer = await CosmosSdkMpcSigner.fromWallet(
@@ -342,18 +334,11 @@ export default function DebugPage() {
         // @ts-expect-error: Intentionally stripped down
         const signDoc: SignDoc = { memo: "foobar" };
         const response = await signer.signDirect(
+          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
           (await signer.getAccounts())?.[0]?.address!,
           signDoc,
         );
-        const signBytes = makeSignBytes(signDoc);
-
-        console.log(
-          secp256k1.ecdsaVerify(
-            decodeSignature(response.signature).signature,
-            sha256(signBytes),
-            (await signer.getAccounts())[0].pubkey,
-          ),
-        );
+        console.log(response);
       });
     });
 

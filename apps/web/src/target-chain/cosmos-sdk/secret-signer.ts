@@ -79,7 +79,6 @@ export class CosmosSdkSecretSigner implements OfflineDirectSigner {
       query: {
         sign_bytes: {
           user_entry_address: this.wallet.proxyAddress,
-          user_entry_code_hash: this.wallet.chain.userEntry.codeHash,
           bytes: Buffer.from(hashedMessage).toString("hex"),
           bytes_signed_by_signers: [
             Buffer.from(await passkeySigner.signHash(hashedMessage)).toString(

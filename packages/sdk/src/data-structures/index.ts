@@ -7,6 +7,7 @@ export * from "./home-chain-id";
 export * from "./key";
 export * from "./mpc";
 export * from "./mpc-wallet";
+export * from "./mpc-wallets";
 export * from "./multisig-key";
 export * from "./multisig-wallet";
 export * from "./singlesig-wallet";

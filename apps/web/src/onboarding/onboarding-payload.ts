@@ -1,11 +1,13 @@
+import { MultisigKeyEncryption, Secp256k1Encryption } from "@/lib/encryption";
 import { Draftable } from "@/stores/drafts/draft";
+import { MpcStore } from "@/stores/mpc";
 import { KVStore } from "@obi-wallet/headless-ui";
 import {
   ChainId,
   KeyType,
+  MpcWallet,
   MultisigKey,
   ObservableMultisigKey,
-  SecretJsChains,
 } from "@obi-wallet/sdk";
 import {
   Secp256k1KeyPair,
@@ -19,17 +21,10 @@ import { z } from "zod";
 const unclaimedAccountsKvStorePrefix = "unclaimed-accounts";
 
 // TODO: here we probably also want to persist codeId
-const HomeAccount = z.object({
+const UnclaimedAccount = z.object({
   homeAccountAddress: z.string(),
   ownerAddress: z.string(),
   ownerIndex: z.number(),
-});
-
-type HomeAccount = z.TypeOf<typeof HomeAccount>;
-
-const UnclaimedAccount = HomeAccount.extend({
-  evmSigningAddress: z.string(),
-  evmUserContractAddress: z.string(),
 });
 
 type UnclaimedAccount = z.TypeOf<typeof UnclaimedAccount>;
@@ -39,8 +34,6 @@ const ProxyWallet = z.object({
     address: z.string(),
     codeId: z.number(),
   }),
-  evmUserContractAddress: z.string(),
-  evmSigningAddress: z.string(),
   owner: z.object({
     threshold: z.string(),
     // TODO: here we should probably be more specific regarding the structure of `keys`, review /add logic and make sure the schema usage is consistent here.
@@ -126,10 +119,98 @@ export class OnboardingPayload implements Draftable {
     }
   }
 
-  public async finishWalletCreation() {
+  public async finishWalletCreation(mpcStore: MpcStore): Promise<unknown> {
     invariant(this._magicAccountPromise, "magic account promise not set, yet");
     const account = await this._magicAccountPromise;
-    this.multisigKey.setSetupDetails(account);
+
+    const shares = await mpcStore.getShares();
+
+    const passkey = this.multisigKey.getUsableKeyOfType(KeyType.Device);
+    invariant(passkey, "No passkey");
+    const passkeyEncryption = new Secp256k1Encryption(
+      passkey.payload.publicKey,
+    );
+    const encryptedEasyShare = await passkeyEncryption.encrypt(
+      JSON.stringify(shares.easyShare),
+    );
+
+    const multisigKeyEncryption = new MultisigKeyEncryption(
+      this.multisigKey.publicKey,
+    );
+    const encryptedBackupShare = await multisigKeyEncryption.encrypt(
+      JSON.stringify(shares.backupShare),
+    );
+
+    const response = await fetch("/api/setup/distribute-shares", {
+      method: "POST",
+      body: JSON.stringify({
+        networkParticipants: shares.networkParticipants,
+        chainId: this.chainId,
+        networkShare: shares.networkShare,
+      }),
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`Failed to distribute shares: ${response.status}`);
+    }
+
+    const result: { success: boolean } = await response.json();
+
+    if (!result.success) {
+      throw new Error(`Failed to distribute contract share`);
+    }
+
+    const data = {
+      homeChain: this.chainId,
+      owner: account.ownerAddress,
+      userEntryAddress: account.homeAccountAddress,
+      encryptedShares: {
+        easyShare: encryptedEasyShare,
+        backupShare: encryptedBackupShare,
+      },
+    };
+
+    console.log(data);
+    return;
+
+    // // TODO: encrypt shares
+    //
+    // const response = await fetch("/api/setup/distribute-shares", {
+    //   method: "POST",
+    //   body: JSON.stringify({
+    //     contractParticipants: shares.contractParticipants,
+    //     chainId: this.chainId,
+    //     contractSignersCompletedOfflineStage:
+    //       shares.contractSignersCompletedOfflineStage,
+    //     backupSignersCompletedOfflineStage:
+    //       shares.backupSignersCompletedOfflineStage,
+    //     accountAddress: account.homeAccountAddress,
+    //     multiPublicKeys: this.multisigKey.keys.map(
+    //       (key) => key.publicKey.value,
+    //     ),
+    //   }),
+    // });
+    //
+    // if (response.status !== 200) {
+    //   throw new Error(`Failed to distribute shares: ${response.status}`);
+    // }
+    //
+    // const result: { success: boolean } = await response.json();
+    //
+    // if (!result.success) {
+    //   throw new Error(`Failed to distribute contract share`);
+    // }
+    //
+    // console.log("NEED TO PERSIST THIS STUFF");
+    // console.log({
+    //   shareForContract: shares.userShareForContract,
+    //   shareForBackup: shares.userShareForBackup,
+    // });
+    // return;
+
+    // TODO: here we distribute shares
+
+    // this.multisigKey.setSetupDetails(account);
     await this.clearUnclaimedAccount();
     return account;
   }
@@ -144,13 +225,18 @@ export class OnboardingPayload implements Draftable {
     if (account) return account;
 
     const homeAccount = await this.createHomeAccount();
-    const unclaimedAccount = await this.addKey(homeAccount);
+    const unclaimedAccount = {
+      ...homeAccount,
+      evmUserContractAddress: "",
+      evmSigningAddress: "",
+    };
+    // const unclaimedAccount = await this.addKey(homeAccount);
 
     await this.setUnclaimedAccount(unclaimedAccount);
     return unclaimedAccount;
   }
 
-  protected async createHomeAccount(): Promise<HomeAccount> {
+  protected async createHomeAccount(): Promise<UnclaimedAccount> {
     const response = await fetch("/api/setup/home-account", {
       method: "POST",
       body: JSON.stringify({
@@ -162,7 +248,7 @@ export class OnboardingPayload implements Draftable {
       throw new Error(`Failed to create magic account: ${response.status}`);
     }
 
-    const result = HomeAccount.safeParse(await response.json());
+    const result = UnclaimedAccount.safeParse(await response.json());
     if (!result.success) {
       throw new Error(`Failed to parse magic account: ${result.error}`);
     }
@@ -170,38 +256,37 @@ export class OnboardingPayload implements Draftable {
     return result.data;
   }
 
-  protected async addKey(account: HomeAccount): Promise<UnclaimedAccount> {
-    const chain = SecretJsChains[this.chainId];
-    const response = await fetch("/api/setup/add-key", {
-      method: "POST",
-      body: JSON.stringify({
-        chainId: this.chainId,
-        userEntryAddress: account.homeAccountAddress,
-        userEntryCodeHash: chain.userEntry.codeHash,
-      }),
-    });
-
-    if (response.status !== 200) {
-      throw new Error(`Failed to add key: ${response.status}`);
-    }
-
-    const schema = z.object({
-      success: z.literal(true),
-      evmSigningAddress: z.string(),
-      evmUserContractAddress: z.string(),
-    });
-
-    const result = schema.safeParse(await response.json());
-    if (!result.success) {
-      throw new Error(`Failed to parse add key response: ${result.error}`);
-    }
-
-    return {
-      ...account,
-      evmSigningAddress: result.data.evmSigningAddress,
-      evmUserContractAddress: result.data.evmUserContractAddress,
-    };
-  }
+  // protected async addKey(account: HomeAccount): Promise<UnclaimedAccount> {
+  //   const chain = SecretJsChains[this.chainId];
+  //   const response = await fetch("/api/setup/add-key", {
+  //     method: "POST",
+  //     body: JSON.stringify({
+  //       chainId: this.chainId,
+  //       userEntryAddress: account.homeAccountAddress,
+  //     }),
+  //   });
+  //
+  //   if (response.status !== 200) {
+  //     throw new Error(`Failed to add key: ${response.status}`);
+  //   }
+  //
+  //   const schema = z.object({
+  //     success: z.literal(true),
+  //     evmSigningAddress: z.string(),
+  //     evmUserContractAddress: z.string(),
+  //   });
+  //
+  //   const result = schema.safeParse(await response.json());
+  //   if (!result.success) {
+  //     throw new Error(`Failed to parse add key response: ${result.error}`);
+  //   }
+  //
+  //   return {
+  //     ...account,
+  //     evmSigningAddress: result.data.evmSigningAddress,
+  //     evmUserContractAddress: result.data.evmUserContractAddress,
+  //   };
+  // }
 
   // protected async distributeShares(
   //   mpcPackage: MpcEcdsaWasm,

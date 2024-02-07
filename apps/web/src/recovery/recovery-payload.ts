@@ -5,7 +5,6 @@ import {
   KeyType,
   MultisigKey,
   ObservableMultisigKey,
-  SecretJsChains,
 } from "@obi-wallet/sdk";
 import {
   Secp256k1KeyPair,
@@ -170,13 +169,11 @@ export class RecoveryPayload implements Draftable {
   }
 
   protected async addKey(account: HomeAccount): Promise<UnclaimedAccount> {
-    const chain = SecretJsChains[this.chainId];
     const response = await fetch("/api/setup/add-key", {
       method: "POST",
       body: JSON.stringify({
         chainId: this.chainId,
         userEntryAddress: account.homeAccountAddress,
-        userEntryCodeHash: chain.userEntry.codeHash,
       }),
     });
 

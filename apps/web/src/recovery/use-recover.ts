@@ -23,8 +23,8 @@ export function useRecover() {
         demoMode: false,
         skipInit: true,
         homeAccountAddressOverride: account.proxyAddress.address,
-        evmSigningAddressOverride: account.evmSigningAddress,
-        evmUserContractAddressOverride: account.evmUserContractAddress,
+        evmSigningAddressOverride: "",
+        evmUserContractAddressOverride: "",
       });
     }
   }
