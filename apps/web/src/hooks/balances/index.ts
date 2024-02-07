@@ -1,10 +1,12 @@
 import { ToAsset, toAssets } from "@/app/dashboard/fast-travel/assets";
-import { TargetChainId, TargetChains } from "@/target-chain";
+import { TargetChain, TargetChainId, TargetChains } from "@/target-chain";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { getQueryClient } from "@sei-js/core";
-import { UseQueryResult, useQueries } from "@tanstack/react-query";
-import { pubkeyToAddress } from "secretjs";
+import { useQueries, UseQueryResult } from "@tanstack/react-query";
+import invariant from "tiny-invariant";
 
 import { usePublicKey } from "../use-public-key";
+
 export type Coin = {
   denom: string;
   amount: string;
@@ -59,9 +61,9 @@ async function fetchBalances({
 }
 
 export function useBalances({
-  pubkey,
+  publicKey,
 }: {
-  pubkey: string | undefined;
+  publicKey: Secp256k1PublicKey | undefined;
 }): UseQueryResult<Balance, unknown>[] {
   // get an array of all the chain ids from TargetChainId
   const chains = Object.values(TargetChainId);
@@ -69,17 +71,16 @@ export function useBalances({
   // useQueries to fetch balances for each chain
   return useQueries({
     queries: chains.map((chainId) => ({
-      queryKey: ["balances", pubkey, chainId],
-      enabled: !!pubkey, // Only run query if address is provided
+      queryKey: ["balances", publicKey, chainId],
+      enabled: !!publicKey, // Only run query if address is provided
       queryFn: (): Promise<Balance> => {
+        invariant(publicKey, "Expected publicKey to be set.");
         const chain = TargetChains[chainId];
-        if (chain.disabled)
+        if (chain.disabled) {
           return Promise.resolve({ balances: [], chainId } as Balance);
+        }
         return fetchBalances({
-          address: pubkeyToAddress(
-            Buffer.from(pubkey ?? "", "base64"),
-            TargetChains[chainId].prefix as string | undefined,
-          ),
+          address: TargetChain.chainId(chainId).computeAddress(publicKey),
           chainId,
         });
       },
@@ -98,10 +99,9 @@ export function useUSDTotalPrice(): {
   total: number;
   loading: boolean;
 } {
-  const pubkey = usePublicKey();
-
-  const balances = useBalances({ pubkey: pubkey?.value });
-  if (pubkey === undefined) return { total: 0, loading: false };
+  const publicKey = usePublicKey();
+  const balances = useBalances({ publicKey });
+  // if (publicKey === undefined) return { total: 0, loading: false };
 
   // if all balances are not loaded, return 0
   if (balances.every((balance) => balance.status === "loading")) {

@@ -296,9 +296,9 @@ function StatusLink({ tx }: { tx: TX }) {
 }
 
 const AssetBalance = observer(function AssetBalance() {
-  const pubkey = usePublicKey();
+  const publicKey = usePublicKey();
   const balances = useBalances({
-    pubkey: pubkey?.value as string,
+    publicKey,
   });
   if (balances.every((b) => b.isLoading)) {
     return <span className="font-extrabold  text-white"> loading </span>;

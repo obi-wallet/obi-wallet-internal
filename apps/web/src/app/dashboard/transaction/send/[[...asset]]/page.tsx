@@ -13,10 +13,8 @@ const Send = observer(function Send({
 }) {
   const asset = params.asset?.[0]?.toLowerCase();
 
-  const pubkey = usePublicKey();
-  const balances = useBalances({
-    pubkey: pubkey?.value,
-  });
+  const publicKey = usePublicKey();
+  const balances = useBalances({ publicKey });
   const loading = balances.every((b) => b.isLoading);
   if (loading) return <div>Loading...</div>;
 
