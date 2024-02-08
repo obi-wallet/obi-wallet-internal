@@ -1,0 +1,29 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env", "**/.env.*local"],
+  "globalEnv": [
+    "FEE_LENDERS_PULSAR_3",
+    "FEE_LENDER_SECRET_4",
+    "STACKUP_API_KEYS",
+    "NEXT_PUBLIC_PHONE_NUMBER_KEY_SECRET",
+    "NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_USER",
+    "NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD",
+    "NEXT_PUBLIC_THEME"
+  ],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "tsc": {
+      "dependsOn": ["^tsc"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

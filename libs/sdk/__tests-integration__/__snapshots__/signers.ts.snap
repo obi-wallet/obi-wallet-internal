@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`MultisigSigner Cosmos 1`] = `"Invariant failed: Not enough signatures to create signed transaction"`;
-
-exports[`MultisigSigner Terra 1`] = `"Invariant failed: Not enough signatures to create signed transaction"`;
