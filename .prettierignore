@@ -1,21 +1,11 @@
-# Transpiled code
-dist/
-build/
+# Deprecated NX monorepo
+deprecated/
 
-# TypeDoc output
-docs/
-
-/apps/*/android/
-/apps/*/ios/
-
-# React Cosmos
-cosmos.userdeps.js
+# Next
+.next/
 
 # Yarn
 .yarn/
 
-# Highflux
-.highflux/
-
-# Next
-.next/
+# Built Output
+packages/mpc-ecdsa-wasm/src/

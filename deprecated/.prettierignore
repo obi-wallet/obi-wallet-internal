@@ -1,0 +1,21 @@
+# Transpiled code
+dist/
+build/
+
+# TypeDoc output
+docs/
+
+/apps/*/android/
+/apps/*/ios/
+
+# React Cosmos
+cosmos.userdeps.js
+
+# Yarn
+.yarn/
+
+# Highflux
+.highflux/
+
+# Next
+.next/
