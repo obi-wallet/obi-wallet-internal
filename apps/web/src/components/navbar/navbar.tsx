@@ -4,8 +4,16 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 import { Account, Button, Divider, Footer, PrimaryLink, Text } from "..";
-
-const navMenu = [
+type NavMenu = {
+  href: string;
+  text: string;
+  module: string;
+  icon: string;
+  showOnMobile?: boolean;
+  showOnDesktop?: boolean;
+  target?: string;
+};
+const navMenu: NavMenu[] = [
   {
     href: "/dashboard/transaction/send",
     text: "Transact",
@@ -31,11 +39,12 @@ const navMenu = [
     showOnDesktop: true,
   },
   {
-    href: "/dashboard/buy-crypto",
+    href: "https://app.kado.money",
     text: "Buy Crypto",
     module: "buy-crypto",
     icon: "/assets/icons/nav-buy-crypto.svg",
     showOnDesktop: true,
+    target: "_blank",
   },
   {
     href: "/dashboard/fast-travel",
@@ -76,6 +85,7 @@ export function Navbar() {
                         ? "bg-background-select rounded-md font-bold"
                         : ""
                     }`}
+                    target={navItem.target || "_self"}
                   >
                     <Image
                       src={navItem.icon}
