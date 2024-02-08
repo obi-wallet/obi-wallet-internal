@@ -1,5 +1,6 @@
 import { SecretJsHomeChain } from "@/home-chain/secret-js";
 import { rootStore } from "@/hooks/use-create-root-store";
+import { backupWallet } from "@/lib/backup";
 import { MultisigKeyEncryption, Secp256k1Encryption } from "@/lib/encryption";
 import { Draftable } from "@/stores/drafts/draft";
 import { DistributeSharesResponse } from "@/stores/mpc";
@@ -146,8 +147,8 @@ export class NewOnboardingPayload implements Draftable {
     if (!this._ownerConfirmed) return;
     await this.encryptSharesIfNecessary();
     await this.distributeSharesIfNecessary();
-    await this.backupHomeAccount();
     await this.claimHomeAccountIfNecessary();
+    await this.backupHomeAccount();
   }
 
   @action
@@ -255,50 +256,6 @@ export class NewOnboardingPayload implements Draftable {
     this._distributedShares = true;
   }
 
-  protected async backupHomeAccount() {
-    invariant(this._unclaimedHomeAccount, "Home account is not available");
-    invariant(this._encryptedShares, "Shares are not encrypted");
-
-    const response = await fetch(
-      "https://proxy-wallets.obiwallet.workers.dev/add",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          chainId: this.homeChainId,
-          proxyWallet: {
-            proxyAddress: {
-              address: this._unclaimedHomeAccount.homeAccountAddress,
-            },
-            owner: {
-              threshold: String(this._multisigKey.threshold),
-              keys: this._multisigKey.keys.map(({ type, publicKey }) => {
-                if (!Object.values(KeyType).includes(type as KeyType)) {
-                  throw new Error(`Invalid key type: ${type}`);
-                }
-                return {
-                  type: type as KeyType,
-                  publicKey,
-                };
-              }),
-            },
-            userData: {
-              name: this._name,
-              image: this._image,
-            },
-            encryptedBackupShare: this._encryptedShares.backupShare,
-          },
-        }),
-        headers: {
-          "Api-Version": "v1",
-        },
-      },
-    );
-
-    if (response.status !== 200) {
-      throw new Error(`Failed to backup wallet: ${response.status}`);
-    }
-  }
-
   protected async claimHomeAccountIfNecessary() {
     if (this._homeAccountClaimed) return;
     invariant(this._unclaimedHomeAccount, "Home account is not available");
@@ -334,6 +291,19 @@ export class NewOnboardingPayload implements Draftable {
     }
 
     this._homeAccountClaimed = true;
+  }
+
+  protected async backupHomeAccount() {
+    invariant(this._unclaimedHomeAccount, "Home account is not available");
+    invariant(this._encryptedShares, "Shares are not encrypted");
+
+    await backupWallet({
+      wallet: this.toMpcWalletData(),
+      userData: {
+        name: this._name,
+        avatar: this._image,
+      },
+    });
   }
 
   public static deserialize(data: z.infer<typeof OnboardingPayloadSchema>) {

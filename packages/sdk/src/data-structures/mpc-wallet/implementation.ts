@@ -1,6 +1,5 @@
-import { MpcWalletSchema } from "./schema";
+import { MpcWalletSchema, UserEntryAddress } from "./schema";
 import { HomeChainId, SecretJsHomeChains } from "../../home-chains";
-import { AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
 
 export class MpcWallet {
@@ -38,11 +37,11 @@ export class MpcWallet {
     return MpcWalletSchema;
   }
 
-  public toJSON(): AbstractSerialized<typeof MpcWalletSchema> {
+  public toJSON() {
     return {
       homeChain: this._homeChainId,
       owner: this._owner.toJSON()!,
-      userEntryAddress: this._userEntryAddress,
+      userEntryAddress: UserEntryAddress.parse(this._userEntryAddress),
       encryptedShares: this._encryptedShares,
     };
   }

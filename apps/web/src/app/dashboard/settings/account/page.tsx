@@ -3,6 +3,7 @@
 import { Box, Button, Divider, ImageDropzone, Text } from "@/components";
 import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { backupWallet } from "@/lib/backup";
 import { UserData } from "@/stores";
 import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
@@ -19,8 +20,15 @@ export default observer(function AccountSettings() {
   return (
     <Form
       userData={userData}
-      onSave={(userData) => {
+      onSave={async (userData) => {
         userDataStore.setUserData(wallet.userEntryAddress, userData);
+        await backupWallet({
+          wallet: wallet.toJSON(),
+          userData: {
+            name: userData.name ?? "",
+            avatar: userData.avatar ?? "",
+          },
+        });
       }}
     />
   );

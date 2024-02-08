@@ -1,8 +1,8 @@
 "use client";
 
 import { Button, ButtonLink, Modal, renderModal, Text } from "@/components";
-import { RecoveryPayload, ProxyWallet } from "@/recovery/recovery-payload";
-import { useRecover } from "@/recovery/use-recover";
+import { RecoveryPayload } from "@/recovery/recovery-payload";
+import { ProxyWallet, useRecover } from "@/recovery/use-recover";
 import { Draft } from "@/stores";
 import { getPasskey, KeyType } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
@@ -30,6 +30,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
       const proxyWallets = await draft.value.lookupProxyWallets(
         keyPair.publicKey,
       );
+      console.log(proxyWallets);
 
       const wallet = proxyWallets[0];
 
@@ -38,9 +39,9 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
           multisigKey: draft.value.multisigKey,
           account: wallet,
         });
+      } else {
+        setProxyWallets(proxyWallets);
       }
-
-      setProxyWallets(proxyWallets);
     },
   });
 
