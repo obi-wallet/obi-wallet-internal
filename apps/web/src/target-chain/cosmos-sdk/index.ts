@@ -53,9 +53,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
   }
 
   protected async createCosmJsStargateClient() {
-    // TODO: handle multiple
-    const rpc = this.chainData.rpc;
-    const rpcs = [rpc];
+    const rpcs = this.chainData.rpcs;
     for (const rpc of rpcs) {
       try {
         return await StargateClient.connect(rpc);
@@ -67,9 +65,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
   }
 
   protected async createCosmJsSigningStargateClient(signer: OfflineSigner) {
-    // TODO: handle multiple
-    const rpc = this.chainData.rpc;
-    const rpcs = [rpc];
+    const rpcs = this.chainData.rpcs;
     for (const rpc of rpcs) {
       try {
         return await SigningStargateClient.connectWithSigner(rpc, signer, {

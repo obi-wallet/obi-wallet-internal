@@ -17,7 +17,7 @@ export interface CosmosSdkChainData {
   id: CosmosSdkChainId;
   name: string;
   prefix: string;
-  rpc: string;
+  rpcs: string[];
   image: string;
   disabled?: boolean;
 }
@@ -26,7 +26,7 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
   [CosmosSdkChainId.Sei]: {
     id: CosmosSdkChainId.Sei,
     name: "Sei",
-    rpc: "https://sei-rpc.polkachu.com",
+    rpcs: ["https://sei-rpc.polkachu.com"],
     prefix: "sei",
     image:
       "https://assets.coingecko.com/coins/images/28205/standard/Sei_Logo_-_Transparent.png?1696527207",
@@ -34,7 +34,7 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
   [CosmosSdkChainId.Osmosis]: {
     id: CosmosSdkChainId.Osmosis,
     name: "Osmosis",
-    rpc: "https://rpc.osmosis.zone",
+    rpcs: ["https://rpc.osmosis.zone"],
     prefix: "osmo",
     image:
       "https://assets.coingecko.com/coins/images/16724/large/osmo.png?1696516298",
@@ -43,7 +43,7 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
     id: CosmosSdkChainId.Neutron,
     name: "Neutron",
     // TODO: disabled because RPC not working
-    rpc: "https://rpc.neutron.devcorp.cloud",
+    rpcs: ["https://rpc.neutron.devcorp.cloud"],
     prefix: "neutron",
     image:
       "https://assets.coingecko.com/coins/images/30813/large/ntrn.png?1696529669",
@@ -53,7 +53,7 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
     id: CosmosSdkChainId.Stargaze,
     name: "Stargaze",
     // TODO: disabled because RPC not working
-    rpc: "https://rpc.stargaze.oceanprotocol.com",
+    rpcs: ["https://rpc.stargaze.oceanprotocol.com"],
     prefix: "stars",
     image:
       "https://assets.coingecko.com/coins/images/22363/large/stargaze_star_pink.png?1702801402",
@@ -62,7 +62,7 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
   [CosmosSdkChainId.Tia]: {
     id: CosmosSdkChainId.Tia,
     name: "Tia",
-    rpc: "https://rpc.tia.oceanprotocol.com",
+    rpcs: ["https://rpc.tia.oceanprotocol.com"],
     prefix: "tia",
     image:
       "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
@@ -71,7 +71,7 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
   [CosmosSdkChainId.Inj]: {
     id: CosmosSdkChainId.Inj,
     name: "Injective",
-    rpc: "https://rpc.injective.devcorp.cloud",
+    rpcs: ["https://rpc.injective.devcorp.cloud"],
     prefix: "inj",
     image:
       "https://assets.coingecko.com/coins/images/33976/large/autism-logo.png?1703578236",
