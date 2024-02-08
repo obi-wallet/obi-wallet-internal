@@ -1,5 +1,6 @@
 "use client";
 
+import { ToAsset } from "@/app/dashboard/fast-travel/assets";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -12,6 +13,7 @@ export interface IBalanceOption {
   network: string;
   assetUnit: string;
   balance: number;
+  asset: ToAsset;
 }
 
 export function BalanceDropDown({

@@ -1,44 +1,50 @@
 "use client";
-import { ComponentPropsWithoutRef, useEffect, useState } from "react";
+
+import { useEffect } from "react";
 
 import { Input } from "./input";
 import { BalanceDropDown, IBalanceOption } from "../dropdown";
 
-interface InputProps
-  extends Omit<ComponentPropsWithoutRef<"input">, "onChange"> {
-  balances?: IBalanceOption[];
-  onChange?: (value: number) => void;
+export interface BalanceInputValue {
+  amount: string;
+  asset: IBalanceOption | undefined;
+}
+
+export interface BalanceInputProps {
+  balances: IBalanceOption[];
+  value: BalanceInputValue;
+  onChange(value: BalanceInputValue): void;
   showMaxButton?: boolean;
   label?: string;
-  selectedAsset?: IBalanceOption;
+  disabled?: boolean;
+  placeholder?: string;
 }
 
 export function BalanceInput({
+  balances,
+  value,
   onChange,
   disabled,
   placeholder,
-  balances,
   showMaxButton = true,
   label,
-  selectedAsset,
-}: InputProps) {
-  const [amount, setAmount] = useState(0);
-  const [text, setText] = useState("");
-  const [selectedBalance, setSelectedBalance] = useState<
-    IBalanceOption | undefined
-  >();
+}: BalanceInputProps) {
+  useEffect(() => {
+    const firstAsset = balances[0];
+    if (!value.asset && firstAsset) {
+      onChange({
+        amount: value.amount,
+        asset: firstAsset,
+      });
+    }
+  }, [balances, onChange, value]);
 
-  useEffect(() => {
-    setAmount(parseFloat(text) || 0);
-  }, [text]);
-  useEffect(() => {
-    onChange && onChange(amount);
-  }, [amount, onChange]);
-  useEffect(() => {
-    setSelectedBalance(selectedAsset);
-  }, [selectedAsset]);
-  const handleClickMax = () => {
-    setText(selectedBalance?.balance.toString() || "");
+  const selectedBalance = value.asset;
+  const setAmount = (amount: string) => {
+    onChange({ amount, asset: value.asset });
+  };
+  const setSelectedBalance = (asset: IBalanceOption) => {
+    onChange({ amount: value.amount, asset });
   };
 
   return (
@@ -47,23 +53,25 @@ export function BalanceInput({
         placeholder={placeholder}
         className="pr-72 "
         disabled={disabled}
-        value={text}
-        onChange={(value) => setText(value)}
+        value={value.amount}
+        onChange={(value) => setAmount(value)}
         type="number"
         step={0.001}
         labelText={label}
       />
 
       <div className="absolute right-2 top-1/2 z-10 flex -translate-y-1/2 space-x-2">
-        {showMaxButton && selectedBalance && (
+        {showMaxButton && selectedBalance ? (
           <button
             className="h-16 w-20 rounded-xl bg-slate-950 text-white hover:bg-blue-700 focus:outline-none"
             disabled={disabled}
-            onClick={handleClickMax}
+            onClick={() => {
+              setAmount(selectedBalance.balance.toString() || "");
+            }}
           >
             MAX
           </button>
-        )}
+        ) : null}
         {balances && (
           <BalanceDropDown
             options={balances}

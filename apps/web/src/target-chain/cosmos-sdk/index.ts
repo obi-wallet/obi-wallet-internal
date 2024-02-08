@@ -82,7 +82,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     const firstFeeToken = this.chain.fees?.fee_tokens[0];
     const gasPrice: GasPrice | undefined = firstFeeToken
       ? GasPrice.fromString(
-          `${firstFeeToken.average_gas_price}u${firstFeeToken.denom}`,
+          `${firstFeeToken.average_gas_price}${firstFeeToken.denom}`,
         )
       : undefined;
 
