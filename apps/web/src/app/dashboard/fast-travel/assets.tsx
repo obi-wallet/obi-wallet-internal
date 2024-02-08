@@ -157,6 +157,7 @@ export const toAssets = {
     disabled: true,
   },
 } as ToAssets;
+// TODO: use CosmosSdkTargetChain instead
 // recheck rpcs
 export const chains: ChainData[] = [
   {

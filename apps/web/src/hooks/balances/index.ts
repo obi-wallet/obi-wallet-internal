@@ -2,7 +2,6 @@ import { ToAsset, toAssets } from "@/app/dashboard/fast-travel/assets";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
-import { getQueryClient } from "@sei-js/core";
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import invariant from "tiny-invariant";
 
@@ -27,38 +26,26 @@ async function fetchBalances({
   address?: string;
   chainId: TargetChainId;
 }): Promise<Balance> {
-  if (!address)
+  if (!address) {
     return Promise.resolve({ balances: [] as Coin[], chainId: chainId });
-  const chainData = CosmosSdkChains[chainId];
-  const queryClient = await getQueryClient(chainData.rest);
-
-  try {
-    const res = await queryClient.cosmos.bank.v1beta1.allBalances({ address });
-    // Validate res.balances before using it
-    if (!Array.isArray(res.balances)) {
-      throw new Error(
-        `Expected res.balances to be an array, got ${typeof res.balances}`,
-      );
-    }
-    const pricesPromises = res.balances.map(
-      async (balance: { denom: string; amount: string }) => {
+  }
+  return await TargetChain.chainId(chainId).withStargateClient(
+    async (client) => {
+      const balances = await client.getAllBalances(address);
+      const pricesPromises = balances.map(async (balance) => {
         const price = await getTokenPrice(chainId, balance.denom);
         return {
           ...balance,
           price,
         };
-      },
-    );
-    const balancesWithPrice = await Promise.all(pricesPromises);
-
-    return {
-      balances: balancesWithPrice.flat() as Coin[],
-      chainId,
-    };
-  } catch (e) {
-    console.error("Fetching balances error", e);
-    throw new Error("Failed to fetch balances");
-  }
+      });
+      const balancesWithPrice = await Promise.all(pricesPromises);
+      return {
+        balances: balancesWithPrice.flat() as Coin[],
+        chainId,
+      };
+    },
+  );
 }
 
 export function useBalances({

@@ -97,7 +97,7 @@ const ChainDropdown = observer(function ChainDropdown({
   chainId,
 }: {
   chainId: string;
-  onChange: (chainId: string) => void;
+  onChange: (chainId: TargetChainId) => void;
 }) {
   const chainOptions = chains.map(
     ({ name, id, image, disabled }: ChainData) => {
@@ -117,7 +117,7 @@ const ChainDropdown = observer(function ChainDropdown({
         description="Select chain"
         className="relative z-10 w-full"
         onSelectOption={(option) => {
-          onChange(option.value as string);
+          onChange(option.value as TargetChainId);
         }}
         customSelectedItemComponent={(option) => {
           return (

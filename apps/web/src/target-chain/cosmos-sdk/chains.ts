@@ -17,7 +17,6 @@ export interface CosmosSdkChainData {
   id: CosmosSdkChainId;
   name: string;
   prefix: string;
-  rest: string;
   rpc: string;
   image: string;
   disabled?: boolean;
@@ -27,7 +26,6 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
   [CosmosSdkChainId.Sei]: {
     id: CosmosSdkChainId.Sei,
     name: "Sei",
-    rest: "https://sei-api.polkachu.com",
     rpc: "https://sei-rpc.polkachu.com",
     prefix: "sei",
     image:
@@ -36,7 +34,7 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
   [CosmosSdkChainId.Osmosis]: {
     id: CosmosSdkChainId.Osmosis,
     name: "Osmosis",
-    rest: "https://lcd.osmosis.zone",
+    rpc: "https://rpc.osmosis.zone",
     prefix: "osmo",
     image:
       "https://assets.coingecko.com/coins/images/16724/large/osmo.png?1696516298",
@@ -44,35 +42,39 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
   [CosmosSdkChainId.Neutron]: {
     id: CosmosSdkChainId.Neutron,
     name: "Neutron",
-    rest: "https://neutron-api.polkachu.com/",
+    // TODO: disabled because RPC not working
+    rpc: "https://rpc.neutron.devcorp.cloud",
     prefix: "neutron",
     image:
       "https://assets.coingecko.com/coins/images/30813/large/ntrn.png?1696529669",
+    disabled: true,
   },
   [CosmosSdkChainId.Stargaze]: {
     id: CosmosSdkChainId.Stargaze,
     name: "Stargaze",
-    rest: "https://rest.stargaze-apis.com",
+    // TODO: disabled because RPC not working
+    rpc: "https://rpc.stargaze.oceanprotocol.com",
     prefix: "stars",
     image:
       "https://assets.coingecko.com/coins/images/22363/large/stargaze_star_pink.png?1702801402",
+    disabled: true,
   },
   [CosmosSdkChainId.Tia]: {
     id: CosmosSdkChainId.Tia,
     name: "Tia",
-    rest: "https://celestia-api.lavenderfive.com:443",
+    rpc: "https://rpc.tia.oceanprotocol.com",
     prefix: "tia",
-    disabled: true,
     image:
       "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+    disabled: true,
   },
   [CosmosSdkChainId.Inj]: {
     id: CosmosSdkChainId.Inj,
     name: "Injective",
-    rest: "https://sentry.lcd.injective.network:443",
+    rpc: "https://rpc.injective.devcorp.cloud",
     prefix: "inj",
-    disabled: true,
     image:
       "https://assets.coingecko.com/coins/images/33976/large/autism-logo.png?1703578236",
+    disabled: true,
   },
 };

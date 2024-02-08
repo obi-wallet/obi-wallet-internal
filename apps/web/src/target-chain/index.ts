@@ -10,6 +10,8 @@ export type TargetChainId = CosmosSdkChainId;
 export class TargetChain {
   public constructor(protected chainId: TargetChainId) {}
 
+  public static chainId(chainId: CosmosSdkChainId): CosmosSdkTargetChain;
+  public static chainId(chainId: string): AbstractTargetChain;
   public static chainId(chainId: string): AbstractTargetChain {
     if (isCosmosSdkChainId(chainId)) {
       return new CosmosSdkTargetChain(chainId);
