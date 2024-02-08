@@ -86,7 +86,6 @@ export class ExtendedWallet extends Wallet {
         query: {
           sign_bytes: {
             user_entry_address: this.userEntryAddress,
-            user_entry_code_hash: chain.userEntry.codeHash,
             bytes: messageString,
             bytes_signed_by_signers: [Buffer.from(signature).toString("hex")],
           },

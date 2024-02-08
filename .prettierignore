@@ -6,3 +6,6 @@ deprecated/
 
 # Yarn
 .yarn/
+
+# Built Output
+packages/mpc-ecdsa-wasm/src/

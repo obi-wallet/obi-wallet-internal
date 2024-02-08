@@ -22,15 +22,15 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
   const passkeyFlow = useMutation({
     mutationFn: async () => {
       const keyPair = await createPasskey();
-      await draft.value.setPrimaryKey({
+      draft.value.setPrimaryKey({
         key: {
-          type: KeyType.Device,
+          type: KeyType.Passkey,
           payload: keyPair,
         },
       });
 
       await queryClient.prefetchQuery(
-        Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
+        Sdk.chainId(draft.value.homeChainId).transactions.prepareKeyPairQuery(
           keyPair,
         ),
       );

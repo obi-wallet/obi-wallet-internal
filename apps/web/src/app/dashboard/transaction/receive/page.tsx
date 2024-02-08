@@ -4,13 +4,16 @@ import { DropDown, TabUi } from "@/components";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
 import { TargetChain, TargetChainId } from "@/target-chain";
+import {
+  CosmosSdkChainId,
+  CosmosSdkChains,
+} from "@/target-chain/cosmos-sdk/chains";
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
 import { useQRCode } from "next-qrcode";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 
-import { ChainData, chains } from "../../fast-travel/assets";
 export interface IChainOption {
   label: string;
   value: string;
@@ -20,7 +23,7 @@ export interface IChainOption {
 
 export default observer(function Receive() {
   const { Canvas } = useQRCode();
-  const [chainId, setChainId] = useState<string>(TargetChainId.Sei);
+  const [chainId, setChainId] = useState<TargetChainId>(CosmosSdkChainId.Sei);
   const [isCopied, setIsCopied] = useState(false);
   const publicKey = usePublicKey();
 
@@ -94,11 +97,11 @@ const ChainDropdown = observer(function ChainDropdown({
   onChange,
   chainId,
 }: {
-  chainId: string;
-  onChange: (chainId: string) => void;
+  chainId: TargetChainId;
+  onChange: (chainId: TargetChainId) => void;
 }) {
-  const chainOptions = chains.map(
-    ({ name, id, image, disabled }: ChainData) => {
+  const chainOptions = Object.values(CosmosSdkChains).map(
+    ({ name, id, image, disabled }) => {
       return {
         label: name,
         value: id,
@@ -115,7 +118,7 @@ const ChainDropdown = observer(function ChainDropdown({
         description="Select chain"
         className="relative z-10 w-full"
         onSelectOption={(option) => {
-          onChange(option.value as string);
+          onChange(option.value);
         }}
         customSelectedItemComponent={(option) => {
           return (

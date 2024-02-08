@@ -43,7 +43,7 @@ const rows: IRow[] = [
   },
 ];
 
-const options: IDropDownOption[] = [
+const options: IDropDownOption<string>[] = [
   {
     value: "a",
     label: "Option A",

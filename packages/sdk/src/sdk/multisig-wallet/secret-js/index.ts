@@ -147,7 +147,6 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
   public async getUserAccountAddress() {
     const client = new SecretJsClient(SecretJsChainIds.MAINNET);
     if (!this.userAccountAddress || !this.userAccountCodeHash) {
-      const chain = SecretJsChains[SecretJsChainIds.MAINNET];
       const res: {
         user_account_address: string;
         user_account_code_hash: string;
@@ -159,7 +158,6 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
         try {
           res = await client.query.compute.queryContract({
             contract_address: this.wallet.proxyAddress,
-            code_hash: chain.userEntry.codeHash,
             query: { user_account_address: {} },
           });
           invariant(res.user_account_address, "no user account address");

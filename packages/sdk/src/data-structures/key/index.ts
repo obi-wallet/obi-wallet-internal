@@ -3,6 +3,7 @@ import { Key as KeyInterface } from "./implementation";
 import { KeySchema } from "./schema";
 import { AbstractDataStructure } from "../abstract";
 
+export { UsableKeySchema, PendingRecoveryKeySchema } from "./schema";
 export * from "./types";
 export type Key = KeyInterface;
 

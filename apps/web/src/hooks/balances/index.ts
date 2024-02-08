@@ -1,10 +1,16 @@
 import { ToAsset, toAssets } from "@/app/dashboard/fast-travel/assets";
-import { TargetChainId, TargetChains } from "@/target-chain";
-import { getQueryClient } from "@sei-js/core";
-import { UseQueryResult, useQueries } from "@tanstack/react-query";
-import { pubkeyToAddress } from "secretjs";
+import { TargetChain, TargetChainId } from "@/target-chain";
+import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
+import {
+  useQueries,
+  useQueryClient,
+  UseQueryResult,
+} from "@tanstack/react-query";
+import invariant from "tiny-invariant";
 
 import { usePublicKey } from "../use-public-key";
+
 export type Coin = {
   denom: string;
   amount: string;
@@ -24,63 +30,59 @@ async function fetchBalances({
   address?: string;
   chainId: TargetChainId;
 }): Promise<Balance> {
-  if (!address)
+  if (!address) {
     return Promise.resolve({ balances: [] as Coin[], chainId: chainId });
-  const chainData = TargetChains[chainId];
-  const queryClient = await getQueryClient(chainData.rpc);
-
-  try {
-    const res = await queryClient.cosmos.bank.v1beta1.allBalances({ address });
-    // Validate res.balances before using it
-    if (!Array.isArray(res.balances)) {
-      throw new Error(
-        `Expected res.balances to be an array, got ${typeof res.balances}`,
-      );
-    }
-    const pricesPromises = res.balances.map(
-      async (balance: { denom: string; amount: string }) => {
+  }
+  return await TargetChain.chainId(chainId).withStargateClient(
+    async (client) => {
+      const balances = await client.getAllBalances(address);
+      const pricesPromises = balances.map(async (balance) => {
         const price = await getTokenPrice(chainId, balance.denom);
         return {
           ...balance,
           price,
         };
-      },
-    );
-    const balancesWithPrice = await Promise.all(pricesPromises);
+      });
+      const balancesWithPrice = await Promise.all(pricesPromises);
+      return {
+        balances: balancesWithPrice.flat() as Coin[],
+        chainId,
+      };
+    },
+  );
+}
 
-    return {
-      balances: balancesWithPrice.flat() as Coin[],
-      chainId,
-    };
-  } catch (e) {
-    console.error("Fetching balances error", e);
-    throw new Error("Failed to fetch balances");
-  }
+export function useInvalidateBalancesQueries() {
+  const queryClient = useQueryClient();
+  return async (chainId: TargetChainId) => {
+    await queryClient.invalidateQueries(["balances", chainId]);
+  };
 }
 
 export function useBalances({
-  pubkey,
+  publicKey,
 }: {
-  pubkey: string | undefined;
+  publicKey: Secp256k1PublicKey | undefined;
 }): UseQueryResult<Balance, unknown>[] {
   // get an array of all the chain ids from TargetChainId
-  const chains = Object.values(TargetChainId);
+  const chains = Object.values(CosmosSdkChains);
 
   // useQueries to fetch balances for each chain
   return useQueries({
-    queries: chains.map((chainId) => ({
-      queryKey: ["balances", pubkey, chainId],
-      enabled: !!pubkey, // Only run query if address is provided
+    queries: chains.map((chain) => ({
+      queryKey: ["balances", chain.id, publicKey],
+      enabled: !!publicKey, // Only run query if address is provided
       queryFn: (): Promise<Balance> => {
-        const chain = TargetChains[chainId];
-        if (chain.disabled)
-          return Promise.resolve({ balances: [], chainId } as Balance);
+        invariant(publicKey, "Expected publicKey to be set.");
+        if (chain.disabled) {
+          return Promise.resolve({
+            balances: [],
+            chainId: chain.id,
+          } as Balance);
+        }
         return fetchBalances({
-          address: pubkeyToAddress(
-            Buffer.from(pubkey ?? "", "base64"),
-            TargetChains[chainId].prefix as string | undefined,
-          ),
-          chainId,
+          address: TargetChain.chainId(chain.id).computeAddress(publicKey),
+          chainId: chain.id,
         });
       },
     })),
@@ -98,10 +100,9 @@ export function useUSDTotalPrice(): {
   total: number;
   loading: boolean;
 } {
-  const pubkey = usePublicKey();
-
-  const balances = useBalances({ pubkey: pubkey?.value });
-  if (pubkey === undefined) return { total: 0, loading: false };
+  const publicKey = usePublicKey();
+  const balances = useBalances({ publicKey });
+  // if (publicKey === undefined) return { total: 0, loading: false };
 
   // if all balances are not loaded, return 0
   if (balances.every((balance) => balance.status === "loading")) {

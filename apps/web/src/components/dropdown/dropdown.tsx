@@ -3,13 +3,13 @@ import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
-export interface IDropDownOption {
-  value: string | number;
+export interface IDropDownOption<T extends string | number> {
+  value: T;
   label: string;
   disabled?: boolean;
 }
 
-export function DropDown({
+export function DropDown<T extends string | number>({
   description,
   options,
   onSelectOption,
@@ -19,13 +19,13 @@ export function DropDown({
   className,
 }: {
   description: string;
-  options: IDropDownOption[];
-  onSelectOption?: (option: IDropDownOption) => void;
-  value?: string | number;
-  customSelectedItemComponent?: (option?: IDropDownOption) => JSX.Element;
+  options: IDropDownOption<T>[];
+  onSelectOption?: (option: IDropDownOption<T>) => void;
+  value?: T;
+  customSelectedItemComponent?: (option?: IDropDownOption<T>) => JSX.Element;
   customItemComponent?: (
-    option: IDropDownOption,
-    selectedOption: IDropDownOption | undefined,
+    option: IDropDownOption<T>,
+    selectedOption: IDropDownOption<T> | undefined,
     handleOptionClick: () => void,
   ) => JSX.Element;
   className?: string;
@@ -33,7 +33,7 @@ export function DropDown({
   const ref = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<
-    IDropDownOption | undefined
+    IDropDownOption<T> | undefined
   >(options?.[0]);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export function DropDown({
     };
   }, []);
 
-  const handleClickOption = (option: IDropDownOption) => {
+  const handleClickOption = (option: IDropDownOption<T>) => {
     if (option.disabled) return;
     setSelectedOption(option);
     setIsOpen(false);

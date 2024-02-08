@@ -38,6 +38,10 @@ export class RootStore {
     return this._walletsStore.wallets;
   }
 
+  public get mpcWalletsStore() {
+    return this._walletsStore.mpcWallets;
+  }
+
   public get walletConnectStore() {
     return this._walletConnectStore.walletConnect;
   }
