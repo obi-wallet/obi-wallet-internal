@@ -146,6 +146,7 @@ export class NewOnboardingPayload implements Draftable {
     if (!this._ownerConfirmed) return;
     await this.encryptSharesIfNecessary();
     await this.distributeSharesIfNecessary();
+    await this.backupHomeAccount();
     await this.claimHomeAccountIfNecessary();
   }
 
@@ -252,6 +253,50 @@ export class NewOnboardingPayload implements Draftable {
     // Clear local network share
     this._shares = null;
     this._distributedShares = true;
+  }
+
+  protected async backupHomeAccount() {
+    invariant(this._unclaimedHomeAccount, "Home account is not available");
+    invariant(this._encryptedShares, "Shares are not encrypted");
+
+    const response = await fetch(
+      "https://proxy-wallets.obiwallet.workers.dev/add",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          chainId: this.homeChainId,
+          proxyWallet: {
+            proxyAddress: {
+              address: this._unclaimedHomeAccount.homeAccountAddress,
+            },
+            owner: {
+              threshold: String(this._multisigKey.threshold),
+              keys: this._multisigKey.keys.map(({ type, publicKey }) => {
+                if (!Object.values(KeyType).includes(type as KeyType)) {
+                  throw new Error(`Invalid key type: ${type}`);
+                }
+                return {
+                  type: type as KeyType,
+                  publicKey,
+                };
+              }),
+            },
+            userData: {
+              name: this._name,
+              image: this._image,
+            },
+            encryptedBackupShare: this._encryptedShares.backupShare,
+          },
+        }),
+        headers: {
+          "Api-Version": "v1",
+        },
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error(`Failed to backup wallet: ${response.status}`);
+    }
   }
 
   protected async claimHomeAccountIfNecessary() {
