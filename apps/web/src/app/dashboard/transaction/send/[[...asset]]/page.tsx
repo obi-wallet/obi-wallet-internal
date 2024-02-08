@@ -6,12 +6,9 @@ import { Balance, useBalances } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { TargetChain } from "@/target-chain";
-import {
-  CosmosSdkChainId,
-  CosmosSdkChains,
-} from "@/target-chain/cosmos-sdk/chains";
+import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
-import { calculateFee, SigningStargateClient } from "@cosmjs/stargate";
+import { calculateFee } from "@cosmjs/stargate";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 
@@ -31,29 +28,30 @@ const Send = observer(function Send({
     mutationFn: async () => {
       if (!wallet) return;
       const chainId = CosmosSdkChainId.Sei;
-      const rpc = CosmosSdkChains[chainId].rpc;
       const signer = await CosmosSdkMpcSigner.fromWallet(wallet, chainId);
-      // const signingClient = await getSigningClient(rpc, signer);
+      await TargetChain.chainId(chainId).withSigningStargateClient(
+        signer,
+        async (client) => {
+          const accounts = await signer.getAccounts();
 
-      const client = await SigningStargateClient.connectWithSigner(rpc, signer);
-      const accounts = await signer.getAccounts();
+          const firstAccount = accounts[0];
+          if (!firstAccount) return;
 
-      const firstAccount = accounts[0];
-      if (!firstAccount) return;
-
-      const fee = calculateFee(100000, "0.1usei");
-      const result = await client.sendTokens(
-        firstAccount.address,
-        "sei1299v8cn9udgt7k05jmf25lzf3sy953qehz0eyh",
-        [
-          {
-            amount: "1",
-            denom: "usei",
-          },
-        ],
-        fee,
+          const fee = calculateFee(100000, "0.1usei");
+          const result = await client.sendTokens(
+            firstAccount.address,
+            "sei1299v8cn9udgt7k05jmf25lzf3sy953qehz0eyh",
+            [
+              {
+                amount: "1",
+                denom: "usei",
+              },
+            ],
+            fee,
+          );
+          console.log(result);
+        },
       );
-      console.log(result);
     },
   });
 

@@ -3,7 +3,8 @@ import {
   CosmosSdkChainId,
   CosmosSdkChains,
 } from "@/target-chain/cosmos-sdk/chains";
-import { StargateClient } from "@cosmjs/stargate";
+import { OfflineSigner } from "@cosmjs/proto-signing";
+import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import {
   getSec256k1CompressedPublicKey,
@@ -39,6 +40,18 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     }
   }
 
+  public async withSigningStargateClient<T>(
+    signer: OfflineSigner,
+    f: (client: SigningStargateClient) => T,
+  ) {
+    const client = await this.createCosmJsSigningStargateClient(signer);
+    try {
+      return await f(client);
+    } finally {
+      client.disconnect();
+    }
+  }
+
   protected async createCosmJsStargateClient() {
     // TODO: handle multiple
     const rpc = this.chainData.rpc;
@@ -46,6 +59,27 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     for (const rpc of rpcs) {
       try {
         return await StargateClient.connect(rpc);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    throw new Error("No RPC connected");
+  }
+
+  protected async createCosmJsSigningStargateClient(signer: OfflineSigner) {
+    // TODO: handle multiple
+    const rpc = this.chainData.rpc;
+    const rpcs = [rpc];
+    for (const rpc of rpcs) {
+      try {
+        return await SigningStargateClient.connectWithSigner(rpc, signer, {
+          // TODO: handle gas price
+          // gasPrice: {
+          //   // low: 10, average: 25, high: 40
+          //   amount: Decimal.fromAtomics("25", 4),
+          //   denom,
+          // },
+        });
       } catch (e) {
         console.error(e);
       }
