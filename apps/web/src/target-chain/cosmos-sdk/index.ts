@@ -3,21 +3,34 @@ import {
   CosmosSdkChainId,
   CosmosSdkChains,
 } from "@/target-chain/cosmos-sdk/chains";
+import { Chain } from "@chain-registry/types";
 import { OfflineSigner } from "@cosmjs/proto-signing";
-import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
+import {
+  GasPrice,
+  SigningStargateClient,
+  StargateClient,
+} from "@cosmjs/stargate";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
+import { chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
+import invariant from "tiny-invariant";
 
 export class CosmosSdkTargetChain extends AbstractTargetChain {
   protected readonly chainData: CosmosSdkChainData;
+  protected readonly chain: Chain;
 
   public constructor(chainId: CosmosSdkChainId) {
     super();
     this.chainData = CosmosSdkChains[chainId];
+    const chain = chains.find((c) => {
+      return c.chain_id === chainId;
+    });
+    invariant(chain, `Chain not found for ${chainId}`);
+    this.chain = chain;
   }
 
   public get label() {
@@ -66,15 +79,17 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
 
   protected async createCosmJsSigningStargateClient(signer: OfflineSigner) {
     const rpcs = this.chainData.rpcs;
+    const firstFeeToken = this.chain.fees?.fee_tokens[0];
+    const gasPrice: GasPrice | undefined = firstFeeToken
+      ? GasPrice.fromString(
+          `${firstFeeToken.average_gas_price}u${firstFeeToken.denom}`,
+        )
+      : undefined;
+
     for (const rpc of rpcs) {
       try {
         return await SigningStargateClient.connectWithSigner(rpc, signer, {
-          // TODO: handle gas price
-          // gasPrice: {
-          //   // low: 10, average: 25, high: 40
-          //   amount: Decimal.fromAtomics("25", 4),
-          //   denom,
-          // },
+          gasPrice,
         });
       } catch (e) {
         console.error(e);
