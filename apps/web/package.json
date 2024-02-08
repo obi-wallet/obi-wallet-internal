@@ -17,6 +17,7 @@
     "@cosmjs/cosmwasm-stargate": "^0.31.3",
     "@cosmjs/crypto": "^0.31.3",
     "@cosmjs/proto-signing": "^0.31.3",
+    "@cosmjs/stargate": "^0.31.3",
     "@hookform/resolvers": "^3.3.4",
     "@obi-wallet/config": "workspace:*",
     "@obi-wallet/headless-ui": "workspace:*",

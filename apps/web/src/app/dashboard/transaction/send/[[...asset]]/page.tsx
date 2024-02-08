@@ -1,9 +1,18 @@
 "use client";
+
 import { ToAsset, toAssets } from "@/app/dashboard/fast-travel/assets";
 import { BalanceInput, Button, IBalanceOption, Input } from "@/components";
 import { Balance, useBalances } from "@/hooks/balances";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
-import { TargetChainId, TargetChains } from "@/target-chain";
+import { TargetChain } from "@/target-chain";
+import {
+  CosmosSdkChainId,
+  CosmosSdkChains,
+} from "@/target-chain/cosmos-sdk/chains";
+import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
+import { calculateFee, SigningStargateClient } from "@cosmjs/stargate";
+import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 
 const Send = observer(function Send({
@@ -11,11 +20,43 @@ const Send = observer(function Send({
 }: {
   params: { asset: string | undefined };
 }) {
+  const wallet = useCurrentWallet({});
   const asset = params.asset?.[0]?.toLowerCase();
 
   const publicKey = usePublicKey();
   const balances = useBalances({ publicKey });
   const loading = balances.every((b) => b.isLoading);
+
+  const send = useMutation({
+    mutationFn: async () => {
+      if (!wallet) return;
+      const chainId = CosmosSdkChainId.Sei;
+      const rpc = CosmosSdkChains[chainId].rpc;
+      const signer = await CosmosSdkMpcSigner.fromWallet(wallet, chainId);
+      // const signingClient = await getSigningClient(rpc, signer);
+
+      const client = await SigningStargateClient.connectWithSigner(rpc, signer);
+      const accounts = await signer.getAccounts();
+
+      const firstAccount = accounts[0];
+      if (!firstAccount) return;
+
+      const fee = calculateFee(100000, "0.1usei");
+      const result = await client.sendTokens(
+        firstAccount.address,
+        "sei1299v8cn9udgt7k05jmf25lzf3sy953qehz0eyh",
+        [
+          {
+            amount: "1",
+            denom: "usei",
+          },
+        ],
+        fee,
+      );
+      console.log(result);
+    },
+  });
+
   if (loading) return <div>Loading...</div>;
 
   const balance = balances
@@ -51,7 +92,7 @@ const Send = observer(function Send({
 
     return {
       image: asset?.image,
-      network: TargetChains[b?.chainId as TargetChainId]?.name,
+      network: TargetChain.chainId(b.chainId).label,
       assetUnit: asset.label,
       balance: decimalAmount,
     };
@@ -65,12 +106,23 @@ const Send = observer(function Send({
         selectedAsset={balanceOptions.find(
           (b) => b.assetUnit.toLowerCase() === asset,
         )}
+        onChange={(value) => {
+          console.log("statte", value, asset);
+        }}
       />
       <Input labelText="Recipient Address" />
       <div className="flex justify-end">
-        <Button className="block w-44">Next</Button>
+        <Button
+          className="block w-44"
+          onClick={() => {
+            send.mutate();
+          }}
+        >
+          Next
+        </Button>
       </div>
     </div>
   );
 });
+
 export default Send;

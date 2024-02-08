@@ -4,6 +4,7 @@ import { DropDown, TabUi } from "@/components";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
 import { TargetChain, TargetChainId } from "@/target-chain";
+import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
 import { useQRCode } from "next-qrcode";
@@ -11,6 +12,7 @@ import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 
 import { ChainData, chains } from "../../fast-travel/assets";
+
 export interface IChainOption {
   label: string;
   value: string;
@@ -20,7 +22,7 @@ export interface IChainOption {
 
 export default observer(function Receive() {
   const { Canvas } = useQRCode();
-  const [chainId, setChainId] = useState<string>(TargetChainId.Sei);
+  const [chainId, setChainId] = useState<TargetChainId>(CosmosSdkChainId.Sei);
   const [isCopied, setIsCopied] = useState(false);
   const publicKey = usePublicKey();
 

@@ -8,7 +8,8 @@ import {
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
-import { TargetChain, TargetChains } from "@/target-chain";
+import { TargetChain } from "@/target-chain";
+import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import copy from "copy-to-clipboard";
@@ -566,7 +567,7 @@ function GetAddressComponent({
     const from = fromAssets[fromAsset?.asset ?? ""];
     const to = toAssets[toAsset?.asset ?? ""];
     const slippageValue = slippage.toString();
-    const chain = Object.values(TargetChains).find((chain) => {
+    const chain = Object.values(CosmosSdkChains).find((chain) => {
       return chain.prefix === to?.addressPrefix;
     });
     invariant(publicKey, "Public key is required");

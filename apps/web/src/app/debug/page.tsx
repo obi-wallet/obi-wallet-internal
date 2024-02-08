@@ -1,7 +1,7 @@
 "use client";
 
 import { NewOnboardingPayload } from "@/onboarding/new-onboarding-payload";
-import { TargetChainId } from "@/target-chain";
+import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
 import {
   credentialToKeyPair,
@@ -329,7 +329,7 @@ export default function DebugPage() {
         const mpcWallet = MpcWallet.create(walletData);
         const signer = await CosmosSdkMpcSigner.fromWallet(
           mpcWallet,
-          TargetChainId.Sei,
+          CosmosSdkChainId.Sei,
         );
         // @ts-expect-error: Intentionally stripped down
         const signDoc: SignDoc = { memo: "foobar" };

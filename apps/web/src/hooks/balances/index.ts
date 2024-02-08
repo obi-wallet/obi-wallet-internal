@@ -1,5 +1,6 @@
 import { ToAsset, toAssets } from "@/app/dashboard/fast-travel/assets";
-import { TargetChain, TargetChainId, TargetChains } from "@/target-chain";
+import { TargetChain, TargetChainId } from "@/target-chain";
+import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { getQueryClient } from "@sei-js/core";
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
@@ -28,8 +29,8 @@ async function fetchBalances({
 }): Promise<Balance> {
   if (!address)
     return Promise.resolve({ balances: [] as Coin[], chainId: chainId });
-  const chainData = TargetChains[chainId];
-  const queryClient = await getQueryClient(chainData.rpc);
+  const chainData = CosmosSdkChains[chainId];
+  const queryClient = await getQueryClient(chainData.rest);
 
   try {
     const res = await queryClient.cosmos.bank.v1beta1.allBalances({ address });
@@ -66,22 +67,24 @@ export function useBalances({
   publicKey: Secp256k1PublicKey | undefined;
 }): UseQueryResult<Balance, unknown>[] {
   // get an array of all the chain ids from TargetChainId
-  const chains = Object.values(TargetChainId);
+  const chains = Object.values(CosmosSdkChains);
 
   // useQueries to fetch balances for each chain
   return useQueries({
-    queries: chains.map((chainId) => ({
-      queryKey: ["balances", publicKey, chainId],
+    queries: chains.map((chain) => ({
+      queryKey: ["balances", publicKey, chain.id],
       enabled: !!publicKey, // Only run query if address is provided
       queryFn: (): Promise<Balance> => {
         invariant(publicKey, "Expected publicKey to be set.");
-        const chain = TargetChains[chainId];
         if (chain.disabled) {
-          return Promise.resolve({ balances: [], chainId } as Balance);
+          return Promise.resolve({
+            balances: [],
+            chainId: chain.id,
+          } as Balance);
         }
         return fetchBalances({
-          address: TargetChain.chainId(chainId).computeAddress(publicKey),
-          chainId,
+          address: TargetChain.chainId(chain.id).computeAddress(publicKey),
+          chainId: chain.id,
         });
       },
     })),

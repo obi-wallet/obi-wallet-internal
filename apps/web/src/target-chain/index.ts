@@ -1,18 +1,19 @@
+import { CosmosSdkTargetChain } from "@/target-chain/cosmos-sdk";
+import {
+  CosmosSdkChainId,
+  isCosmosSdkChainId,
+} from "@/target-chain/cosmos-sdk/chains";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 
-import { TargetChains } from ".";
-import { TargetChainId } from ".";
-import { TargetChainData } from "./target-chain";
+export type TargetChainId = CosmosSdkChainId;
 
 export class TargetChain {
   public constructor(protected chainId: TargetChainId) {}
 
   public static chainId(chainId: string): AbstractTargetChain {
-    if (TargetChains[chainId as TargetChainId] === undefined) {
-      throw new Error(`ChainId ${chainId} not found`);
+    if (isCosmosSdkChainId(chainId)) {
+      return new CosmosSdkTargetChain(chainId);
     }
-    return new TargetChainData(chainId);
+    throw new Error(`ChainId ${chainId} not found`);
   }
 }
-export * from "./target-chain";
-export * from "./chains";
