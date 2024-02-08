@@ -8,7 +8,11 @@ import {
   IBalanceOption,
   Input,
 } from "@/components";
-import { Balance, useBalances } from "@/hooks/balances";
+import {
+  Balance,
+  useBalances,
+  useInvalidateBalancesQueries,
+} from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { TargetChain } from "@/target-chain";
@@ -26,6 +30,7 @@ const Send = observer(function Send() {
   const wallet = useCurrentWallet({});
   const publicKey = usePublicKey();
   const balances = useBalances({ publicKey });
+  const invalidateBalancesQueries = useInvalidateBalancesQueries();
 
   const [coin, setCoin] = useState<BalanceInputValue>({
     amount: "",
@@ -68,6 +73,7 @@ const Send = observer(function Send() {
           "auto",
         );
       });
+      await invalidateBalancesQueries(chainId);
 
       if (!isDeliverTxSuccess(response)) {
         throw new Error(response.rawLog);

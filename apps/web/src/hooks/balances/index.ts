@@ -2,7 +2,11 @@ import { ToAsset, toAssets } from "@/app/dashboard/fast-travel/assets";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
-import { useQueries, UseQueryResult } from "@tanstack/react-query";
+import {
+  useQueries,
+  useQueryClient,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import invariant from "tiny-invariant";
 
 import { usePublicKey } from "../use-public-key";
@@ -48,6 +52,13 @@ async function fetchBalances({
   );
 }
 
+export function useInvalidateBalancesQueries() {
+  const queryClient = useQueryClient();
+  return async (chainId: TargetChainId) => {
+    await queryClient.invalidateQueries(["balances", chainId]);
+  };
+}
+
 export function useBalances({
   publicKey,
 }: {
@@ -59,7 +70,7 @@ export function useBalances({
   // useQueries to fetch balances for each chain
   return useQueries({
     queries: chains.map((chain) => ({
-      queryKey: ["balances", publicKey, chain.id],
+      queryKey: ["balances", chain.id, publicKey],
       enabled: !!publicKey, // Only run query if address is provided
       queryFn: (): Promise<Balance> => {
         invariant(publicKey, "Expected publicKey to be set.");
