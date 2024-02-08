@@ -108,7 +108,12 @@ export class SecretJsClient {
             contract_address: contract,
             query,
           });
-          return schema.parse(response);
+          try {
+            return schema.parse(response);
+          } catch (e) {
+            console.log(response);
+            throw e;
+          }
         }),
       );
     });
@@ -232,7 +237,7 @@ export class SecretJsClient {
 
   public get defaultTxOptions(): TxOptions {
     return {
-      gasLimit: 400_000,
+      gasLimit: 800_000,
       gasPriceInFeeDenom: 0.05,
       feeDenom: this.chain.denom,
       broadcastMode: BroadcastMode.Block,

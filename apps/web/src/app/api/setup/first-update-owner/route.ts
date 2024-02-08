@@ -1,24 +1,23 @@
 import { getFeeLender } from "@/lib/fee-lender";
 import {
+  HomeChainIdSchema,
   Messages,
   MultisigKey,
   SecretJsClient,
-  SecretJsChains,
-  SecretJsChainIds,
-  SecretJsChainId,
 } from "@obi-wallet/sdk";
 import { NextResponse } from "next/server";
-import { MsgSend, TxResponse } from "secretjs";
+import { MsgSend } from "secretjs";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
-export interface FirstUpdateOwnerRequestBody {
-  owner: MultisigKey;
-  ownerAddress: string;
-  homeAccountAddress: string;
-  evmUserContractAddress: string;
-  evmSigningAddress: string;
-  ownerIndex: number;
-}
+const schema = z.object({
+  homeChainId: HomeChainIdSchema,
+  owner: MultisigKey.schema.migratableSchema,
+  ownerAddress: z.string(),
+  userAccountAddress: z.string(),
+  userAccountCodeHash: z.string(),
+  ownerIndex: z.number(),
+});
 
 export interface UserAccountAddress {
   user_account_address: string;
@@ -28,17 +27,29 @@ export interface UserAccountAddress {
 /// Calls first_update_owner to update the pre-created account's owner to
 /// the user's multisig key
 export async function POST(request: Request) {
-  const body: FirstUpdateOwnerRequestBody = await request.json();
-  const chainId: SecretJsChainId = SecretJsChainIds.MAINNET;
+  const result = schema.safeParse(await request.json());
+  if (!result.success) {
+    console.error(result.error.errors);
+    return new Response("Invalid request", {
+      status: 400,
+    });
+  }
 
-  console.log("async funding multisig (for later)...");
-  const client = new SecretJsClient(chainId);
-  const chain = SecretJsChains[SecretJsChainIds.MAINNET];
-  const messagesSdk = Messages.chainId(chainId);
-  const lender1 = getFeeLender(chainId);
+  const {
+    homeChainId,
+    owner,
+    ownerAddress,
+    userAccountAddress,
+    userAccountCodeHash,
+    ownerIndex,
+  } = result.data;
+
+  const client = new SecretJsClient(homeChainId);
+  const messagesSdk = Messages.chainId(homeChainId);
+  const lender1 = getFeeLender(homeChainId);
   const sendMessage = new MsgSend({
     from_address: lender1.wallet.address,
-    to_address: body.ownerAddress,
+    to_address: ownerAddress,
     amount: [
       {
         amount: "100",
@@ -55,36 +66,37 @@ export async function POST(request: Request) {
     lendSignedTransaction,
   );
 
-  console.log("setup/first-update-owner setting up...");
   // old lender from before, which is the only account capable of
   // updating owner, even with "magic" first_update_owner
-  const { wallet, signer, lenderIndex } = getFeeLender(
-    chainId,
-    body.ownerIndex,
-  );
-
-  console.log("setup/first-update-owner creating message...");
+  const { wallet, signer } = getFeeLender(homeChainId, ownerIndex);
   invariant(wallet.address, "no fee lender wallet address");
-  const userAccountAddress: UserAccountAddress =
+
+  const legacyOwner: { legacy_owner: string } =
     await client.withSecretNetworkClient(async (client) => {
       return await client.query.compute.queryContract({
-        contract_address: body.homeAccountAddress,
-        code_hash: chain.userEntry.codeHash,
-        query: { user_account_address: {} },
+        contract_address: userAccountAddress,
+        code_hash: userAccountCodeHash,
+        query: { legacy_owner: {} },
       });
     });
+
+  // Make this request idempotent by checking if the owner has already been set
+  if (legacyOwner.legacy_owner === ownerAddress) {
+    return NextResponse.json({
+      success: true,
+    });
+  }
+
   const message = messagesSdk.getFirstUpdateWalletMessage(
-    body.owner,
-    body.ownerAddress,
-    userAccountAddress.user_account_address,
-    body.evmUserContractAddress,
-    body.evmSigningAddress,
+    MultisigKey.create(undefined, homeChainId, owner),
+    ownerAddress,
+    userAccountAddress,
+    userAccountCodeHash,
+    "",
+    "",
     wallet.address,
   );
-  console.log(
-    "setup/first-update-owner attempting message: " + JSON.stringify(message),
-  );
-  console.log("setup/first-update-owner creating transaction...");
+
   const signedTransaction = await client.createAndSignTransaction({
     signer,
     messages: [message],
@@ -93,39 +105,7 @@ export async function POST(request: Request) {
     await client.broadcastSignedTransaction(signedTransaction);
   console.log(broadcastTransactionResult);
 
-  if (!broadcastTransactionResult.success) {
-    return NextResponse.json({
-      ownerAddress: body.owner.address,
-      homeAccountAddress: "TX FAILED",
-      txResult: broadcastTransactionResult,
-      lenderIndex: 0,
-    });
-  }
-
-  const txResult = broadcastTransactionResult.rawResult as TxResponse;
-  try {
-    invariant(txResult.arrayLog, "No log found");
-    // TODO: zod
-    const _accountLogicAddress = txResult.arrayLog?.find((log) => {
-      return log.type === "instantiate" && log.key === "contract_address";
-    })?.value;
-    const matchingLogs = txResult.arrayLog?.filter((log) => {
-      return log.type === "instantiate" && log.key === "contract_address";
-    });
-    const homeAccountAddress = matchingLogs?.[1]?.value;
-    invariant(homeAccountAddress, "Contract address not found");
-    return NextResponse.json({
-      ownerAddress: body.ownerAddress,
-      homeAccountAddress,
-      txResult,
-      lenderIndex,
-    });
-  } catch (e) {
-    return NextResponse.json({
-      ownerAddress: body.ownerAddress,
-      homeAccountAddress: "PARSE ERROR",
-      txResult: broadcastTransactionResult,
-      lenderIndex: 0,
-    });
-  }
+  return NextResponse.json({
+    success: broadcastTransactionResult.success,
+  });
 }

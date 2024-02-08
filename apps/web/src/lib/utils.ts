@@ -1,4 +1,8 @@
+import { EthUserOp, RustEthUserOp } from "@obi-wallet/mpc-ecdsa-wasm-types";
 import clsx, { ClassValue } from "clsx";
+import { ec } from "elliptic";
+import { ethers } from "ethers";
+import { PubKey } from "secretjs";
 import { twMerge } from "tailwind-merge";
 
 /** Merge classes with tailwind-merge with clsx full feature */
@@ -26,4 +30,109 @@ export function formatBytes(bytes: number, decimals = 2) {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
+
+export function decompressPoint(compressedPointHex: string): string {
+  // Decode the compressed point to get an elliptic curve point
+  const secp256k1 = new ec("secp256k1");
+  const point = secp256k1.curve.decodePoint(compressedPointHex, "hex");
+
+  // Retrieve the uncompressed x and y coordinates
+  const x = point.getX().toString(16).padStart(64, "0");
+  const y = point.getY().toString(16).padStart(64, "0");
+
+  // Create the uncompressed hex string
+  return x + y;
+}
+
+export function createUserOperationHash(
+  ethUserOp: EthUserOp,
+  entryPointAddr: string,
+  chainId: string,
+): string {
+  const getUserOpHash = (): string => {
+    const packed = ethers.AbiCoder.defaultAbiCoder().encode(
+      [
+        "address",
+        "uint256",
+        "bytes32",
+        "bytes32",
+        "uint256",
+        "uint256",
+        "uint256",
+        "uint256",
+        "uint256",
+        "bytes32",
+      ],
+      [
+        ethUserOp.sender,
+        ethUserOp.nonce,
+        ethers.keccak256(ethUserOp.initCode),
+        ethers.keccak256(ethUserOp.callData),
+        ethUserOp.callGasLimit,
+        ethUserOp.verificationGasLimit,
+        ethUserOp.preVerificationGas,
+        ethUserOp.maxFeePerGas,
+        ethUserOp.maxPriorityFeePerGas,
+        ethers.keccak256(ethUserOp.paymasterAndData),
+      ],
+    );
+
+    const enc = ethers.AbiCoder.defaultAbiCoder().encode(
+      ["bytes32", "address", "uint256"],
+      [ethers.keccak256(packed), entryPointAddr, chainId],
+    );
+
+    return ethers.keccak256(enc);
+  };
+
+  return getUserOpHash();
+}
+
+export function transformEthUserOp(ethUserOp: EthUserOp): RustEthUserOp {
+  function hexToNumberArray(hexString: string): number[] {
+    return Array.from(new Uint8Array(Buffer.from(hexString.slice(2), "hex")));
+  }
+
+  return {
+    sender: ethUserOp.sender.toLowerCase().startsWith("0x")
+      ? ethUserOp.sender.slice(2)
+      : ethUserOp.sender,
+    nonce: parseInt(ethUserOp.nonce, 16).toString(10),
+    init_code: hexToNumberArray(ethUserOp.initCode),
+    call_data: hexToNumberArray(ethUserOp.callData),
+    call_gas_limit: parseInt(ethUserOp.callGasLimit, 16).toString(10),
+    verification_gas_limit: parseInt(
+      ethUserOp.verificationGasLimit,
+      16,
+    ).toString(10),
+    pre_verification_gas: parseInt(ethUserOp.preVerificationGas, 16).toString(
+      10,
+    ),
+    max_fee_per_gas: parseInt(ethUserOp.maxFeePerGas, 16).toString(10),
+    max_priority_fee_per_gas: parseInt(
+      ethUserOp.maxPriorityFeePerGas,
+      16,
+    ).toString(10), // Fixed this line
+    paymaster_and_data: hexToNumberArray(ethUserOp.paymasterAndData),
+    signature: [],
+  };
+}
+
+export function encodeSecp256k1Pubkey(pubkey: Uint8Array): PubKey {
+  if (pubkey.length !== 33 || (pubkey[0] !== 0x02 && pubkey[0] !== 0x03)) {
+    throw new Error(
+      "Public key must be compressed secp256k1, i.e. 33 bytes starting with 0x02 or 0x03",
+    );
+  }
+  return {
+    type: "tendermint/PubKeySecp256k1",
+    value: Buffer.from(pubkey).toString("base64"),
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function utf8ArrayToObject(data: Uint8Array): any {
+  const decoder = new TextDecoder();
+  return JSON.parse(decoder.decode(data));
 }

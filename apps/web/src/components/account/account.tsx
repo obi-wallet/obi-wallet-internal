@@ -15,7 +15,7 @@ export const Account = observer(function Account() {
 
   if (!currentWallet) return null;
 
-  const userData = userDataStore.getUserData(currentWallet.address);
+  const userData = userDataStore.getUserData(currentWallet.userEntryAddress);
 
   return (
     <div className="flex w-full space-x-3">

@@ -13,15 +13,17 @@ import { useState } from "react";
 import { FaCircleUser, FaQrcode } from "react-icons/fa6";
 
 export const Header = observer(function Header() {
-  const currentWallet = useCurrentWallet({});
+  const { mpcWalletsStore } = useStore();
 
-  const primaryLinkHref = currentWallet ? "/dashboard" : "/";
+  const primaryLinkHref = mpcWalletsStore.currentWallet ? "/dashboard" : "/";
+  const authChildren = mpcWalletsStore.currentWallet ? <LogOut /> : <LogIn />;
 
   const { userDataStore } = useStore();
+  const currentWallet = useCurrentWallet({});
 
   const userData = currentWallet
-    ? userDataStore.getUserData(currentWallet.address)
-    : undefined;
+    ? userDataStore.getUserData(currentWallet.userEntryAddress)
+    : {};
 
   return (
     <>
@@ -33,9 +35,18 @@ export const Header = observer(function Header() {
           )}
         >
           <PrimaryLink href={primaryLinkHref}>
+            {/* <Text
+            color="white"
+            size="2xl"
+            fontWeight="bold"
+            className="leading-3"
+          >
+            Obi
+          </Text>
+           */}
             <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
           </PrimaryLink>
-          {currentWallet ? <LogOut /> : <LogIn />}
+          {authChildren}
         </div>
         <div
           className={cn(
@@ -44,7 +55,7 @@ export const Header = observer(function Header() {
           )}
         >
           <div className="bg-background-primary h-11 w-11 rounded-full opacity-80">
-            {userData?.avatar ? (
+            {userData.avatar ? (
               <Image
                 width={44}
                 height={44}
@@ -65,13 +76,13 @@ export const Header = observer(function Header() {
 });
 
 const LogOut = observer(function LogOut() {
-  const { walletsStore } = useStore();
+  const { mpcWalletsStore } = useStore();
   const router = useRouter();
 
   return (
     <Button
       onClick={() => {
-        walletsStore.logout();
+        mpcWalletsStore.logout();
         router.push("/");
       }}
     >
@@ -81,7 +92,7 @@ const LogOut = observer(function LogOut() {
 });
 
 const LogIn = observer(function LogIn() {
-  const { walletsStore } = useStore();
+  const { mpcWalletsStore } = useStore();
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -89,7 +100,7 @@ const LogIn = observer(function LogIn() {
     <>
       <Button
         onClick={() => {
-          if (walletsStore.wallets.length > 0) {
+          if (mpcWalletsStore.wallets.length > 0) {
             setModalOpen(true);
           } else {
             router.push("/recovery");
@@ -101,18 +112,18 @@ const LogIn = observer(function LogIn() {
       {modalOpen
         ? renderModal(
             <Modal title="Log in">
-              {walletsStore.wallets.map((wallet, i) => {
+              {mpcWalletsStore.wallets.map((wallet, i) => {
                 return (
                   <Button
                     key={i}
                     onClick={() => {
-                      walletsStore.setCurrentWallet(wallet);
+                      mpcWalletsStore.setCurrentWallet(wallet);
                       setModalOpen(false);
                     }}
                     className="w-full"
                   >
                     <div className="w-full overflow-hidden text-ellipsis text-left">
-                      {wallet.address}
+                      {wallet.userEntryAddress}
                     </div>
                   </Button>
                 );

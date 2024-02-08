@@ -3,7 +3,6 @@ import { create, get } from "@github/webauthn-json";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import type { CredentialDeviceType } from "@simplewebauthn/typescript-types";
 
-import { KeySubclassTypeMapping, KeyType } from "../data-structures/key";
 import { Secp256k1PrivateKeySigner } from "../signers/sec256k1-private-key";
 
 const DEMO_PRIVATE_KEY = "jrfHogEDo91xaC0Kym/BMheAhlm5z93fVwMT8mKTGy4=";
@@ -178,14 +177,4 @@ function hexToBase64(hex: string) {
     hex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)),
   );
   return btoa(String.fromCharCode(...byteArray));
-}
-
-export async function getDevicePrivateKey(
-  key: KeySubclassTypeMapping[KeyType.Device],
-): Promise<string | null> {
-  if (key.payload.privateKey) {
-    console.log("device private key exists");
-    return key.payload.privateKey;
-  }
-  return (await getPasskey()).privateKey;
 }

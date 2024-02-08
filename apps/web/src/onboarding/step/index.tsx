@@ -1,4 +1,4 @@
-import { OnboardingPayload } from "@/onboarding/onboarding-payload";
+import { NewOnboardingPayload } from "@/onboarding/new-onboarding-payload";
 import {
   OnboardingFromType,
   OnboardingStep,
@@ -12,7 +12,7 @@ import { Draft } from "@/stores";
 import { observer } from "mobx-react-lite";
 
 export interface StepProps<Step = OnboardingStep> {
-  draft: Draft<OnboardingPayload>;
+  draft: Draft<NewOnboardingPayload>;
   step: Step;
   back?: () => void;
   next?: () => void;

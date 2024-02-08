@@ -4,6 +4,7 @@ import { AbstractSerialized } from "../migratable";
 
 export enum KeyType {
   Device = "device",
+  Passkey = "passkey",
   Phone = "phone",
   Social = "social",
   Nfc = "nfc",

@@ -1,17 +1,17 @@
 "use client";
 
-import { Box, Divider, PriceData, Text, getPrice } from "@/components";
+import { Box, Divider, getPrice, PriceData, Text } from "@/components";
 import { Coin, useBalances, useUSDTotalPrice } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
-import { TargetChainId, TargetChains } from "@/target-chain";
+import { TargetChain } from "@/target-chain";
 import { formatEther, parseUnits } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { FromAsset, ToAsset, fromAssets, toAssets } from "./fast-travel/assets";
+import { FromAsset, fromAssets, ToAsset, toAssets } from "./fast-travel/assets";
 
 export interface TransactionStatus {
   axelarTransactionUrl: string;
@@ -296,9 +296,9 @@ function StatusLink({ tx }: { tx: TX }) {
 }
 
 const AssetBalance = observer(function AssetBalance() {
-  const pubkey = usePublicKey();
+  const publicKey = usePublicKey();
   const balances = useBalances({
-    pubkey: pubkey?.value as string,
+    publicKey,
   });
   if (balances.every((b) => b.isLoading)) {
     return <span className="font-extrabold  text-white"> loading </span>;
@@ -355,7 +355,7 @@ function AssetItem({
           <div className="mr-5 text-lg">
             <div>{assetData?.label}</div>
             <div className=" text-xs opacity-60">
-              (on {TargetChains[asset.chainId as TargetChainId].name})
+              (on {TargetChain.chainId(asset.chainId).label})
             </div>
           </div>
           <div className="flex items-center text-xl font-bold">{amount}</div>

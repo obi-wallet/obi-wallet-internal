@@ -1,29 +1,33 @@
 "use client";
 import {
   FromAsset,
-  ToAsset,
   fromAssets,
+  ToAsset,
   toAssets,
 } from "@/app/dashboard/fast-travel/assets";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
+import { TargetChain } from "@/target-chain";
+import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import copy from "copy-to-clipboard";
-import { BrowserProvider, parseUnits, Contract } from "ethers";
+import { BrowserProvider, Contract, parseUnits } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import * as R from "ramda";
 import { useEffect, useRef, useState } from "react";
-import { Controller, useForm, ControllerFieldState } from "react-hook-form";
+import { Controller, ControllerFieldState, useForm } from "react-hook-form";
 import { FaCheck, FaExclamation, FaSpinner } from "react-icons/fa6";
-import { pubkeyToAddress } from "secretjs";
+import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { AssetInput, Box, Button, Text } from "..";
 import { nonEmptyString } from "../../../lib/form/validation-helpers";
 import { Divider } from "../divider";
 import { IAssetOption } from "../dropdown";
+
 export type PriceData = {
   mainVsPrice: number;
   mainUsd: number;
@@ -506,7 +510,7 @@ function GetAddressComponent({
   slippageError,
   publicKey,
 }: {
-  publicKey?: { value: string };
+  publicKey?: Secp256k1PublicKey;
   fromAsset?: AssetAmmount;
   toAsset: AssetAmmount;
   slippage: number;
@@ -563,10 +567,13 @@ function GetAddressComponent({
     const from = fromAssets[fromAsset?.asset ?? ""];
     const to = toAssets[toAsset?.asset ?? ""];
     const slippageValue = slippage.toString();
-    const toAddress = pubkeyToAddress(
-      Buffer.from(publicKey?.value ?? "", "base64"),
-      to?.addressPrefix,
-    );
+    const chain = Object.values(CosmosSdkChains).find((chain) => {
+      return chain.prefix === to?.addressPrefix;
+    });
+    invariant(publicKey, "Public key is required");
+    invariant(chain, "Chain is required");
+    const targetChain = TargetChain.chainId(chain.id);
+    const toAddress = targetChain.computeAddress(publicKey);
     const fromAmount = parseUnits(
       fromAsset?.amount?.toString() ?? "0",
       from?.decimals,

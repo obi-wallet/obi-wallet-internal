@@ -1,0 +1,50 @@
+import { makeObservable, observable } from "mobx";
+
+import { MpcWallet } from "./implementation";
+import { MpcWalletSchema } from "./schema";
+import { AbstractMigratable } from "../migratable";
+import { MultisigKey, ObservableMultisigKey } from "../multisig-key";
+
+export function createMpcWallet(
+  migratable: AbstractMigratable<typeof MpcWalletSchema>,
+  factories = {
+    MultisigKey,
+  },
+) {
+  const serialized = MpcWalletSchema.migratableSchema.parse(migratable);
+  return new MpcWallet(
+    serialized.homeChain,
+    factories.MultisigKey.create(
+      undefined,
+      serialized.homeChain,
+      serialized.owner,
+    ),
+    serialized.userEntryAddress,
+    serialized.encryptedShares,
+  );
+}
+
+export function createObservableMpcWallet(
+  serialized: AbstractMigratable<typeof MpcWalletSchema>,
+) {
+  const wallet = createMpcWallet(serialized, {
+    MultisigKey: ObservableMultisigKey,
+  });
+  makeObservable<
+    MpcWallet,
+    "_homeChainId" | "_owner" | "_userEntryAddress" | "_encryptedShares"
+  >(
+    wallet,
+    {
+      _homeChainId: observable,
+      _owner: observable,
+      _userEntryAddress: observable,
+      _encryptedShares: observable,
+      toJSON: false,
+    },
+    {
+      name: "MpcWallet",
+    },
+  );
+  return wallet;
+}

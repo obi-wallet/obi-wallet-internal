@@ -154,7 +154,6 @@ export function useSignAndBroadcastTransaction({
               sign_bytes: {
                 user_entry_address:
                   wallet?.proxyAddress ?? R.has("userEntryAddress")(payload),
-                user_entry_code_hash: chain.userEntry.codeHash,
                 bytes: (payload.messages[0] as any).raw
                   ? sha256(Buffer.from((payload.messages[0] as any).raw))
                   : (payload.messages[0] as any).hash,
