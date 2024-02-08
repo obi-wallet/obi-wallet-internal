@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-
 import { Input } from "./input";
 import { BalanceDropDown, IBalanceOption } from "../dropdown";
 
@@ -29,16 +27,6 @@ export function BalanceInput({
   showMaxButton = true,
   label,
 }: BalanceInputProps) {
-  useEffect(() => {
-    const firstAsset = balances[0];
-    if (!value.asset && firstAsset) {
-      onChange({
-        amount: value.amount,
-        asset: firstAsset,
-      });
-    }
-  }, [balances, onChange, value]);
-
   const selectedBalance = value.asset;
   const setAmount = (amount: string) => {
     onChange({ amount, asset: value.asset });

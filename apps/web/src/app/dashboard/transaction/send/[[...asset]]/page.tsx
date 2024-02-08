@@ -23,10 +23,12 @@ import { isDeliverTxSuccess } from "@cosmjs/stargate";
 import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import invariant from "tiny-invariant";
 
-const Send = observer(function Send() {
+const Send = observer<{ params: { asset?: string[] } }>(function Send({
+  params,
+}) {
   const wallet = useCurrentWallet({});
   const publicKey = usePublicKey();
   const balances = useBalances({ publicKey });
@@ -80,7 +82,7 @@ const Send = observer(function Send() {
       }
     },
     onSuccess() {
-      window.alert("TX Broadcasted successfully");
+      window.alert("TX broadcast successfully");
     },
     onError(error: Error) {
       window.alert(`TX failed: ${error.message}`);
@@ -128,6 +130,23 @@ const Send = observer(function Send() {
       asset: asset,
     };
   });
+
+  useEffect(() => {
+    if (coin.asset) return;
+
+    const initialAssetParam = params.asset?.[0];
+    const initialAsset = initialAssetParam
+      ? balanceOptions.find((balance) => {
+          return balance.assetUnit === initialAssetParam;
+        })
+      : balanceOptions[0];
+    if (initialAsset) {
+      setCoin({
+        amount: coin.amount,
+        asset: initialAsset,
+      });
+    }
+  }, [balanceOptions, coin, params]);
 
   return (
     <div className="space-y-7 py-4">
