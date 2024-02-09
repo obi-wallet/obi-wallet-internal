@@ -1,13 +1,18 @@
 "use client";
 
+import { toAssets } from "@/app/dashboard/fast-travel/assets";
 import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
-import { TargetChain } from "@/target-chain";
+import { TargetChain, TargetChainId } from "@/target-chain";
 import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
-import { isDeliverTxSuccess } from "@cosmjs/stargate";
+import { Coin } from "@cosmjs/amino";
+import { EncodeObject } from "@cosmjs/proto-signing";
+import { isDeliverTxSuccess, MsgSendEncodeObject } from "@cosmjs/stargate";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { NewSignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
+import BigNumber from "bignumber.js";
+import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import invariant from "tiny-invariant";
@@ -86,8 +91,6 @@ export const SignAndBroadcastTransactionUserInteractionHandlerInner = observer<{
     },
   });
 
-  console.log(fee.data);
-
   return (
     <div className="w-full">
       <div className="flex justify-center">
@@ -101,12 +104,10 @@ export const SignAndBroadcastTransactionUserInteractionHandlerInner = observer<{
             Complete Transaction
           </Text>
 
-          {/* TODO: */}
-          <Transaction
-            amountInfo={{ amount: 1250, unit: "NTRN" }}
-            description="Stake 1,250.00 NTRN to xyz validator"
-            network="Neutron"
-            feeInfo={{ amount: 0.03021, unit: "NTRN" }}
+          <PrettyPrint
+            messages={interaction.payload.messages}
+            targetChainId={interaction.payload.targetChainId}
+            fee={fee.data}
           />
 
           {/*<Text className="mt-4">{`${threshold} Key${*/}
@@ -151,3 +152,107 @@ export const SignAndBroadcastTransactionUserInteractionHandlerInner = observer<{
     </div>
   );
 });
+
+const PrettyPrint = observer(function PrettyPrint({
+  messages,
+  targetChainId,
+  fee,
+}: {
+  messages: unknown[];
+  targetChainId: string;
+  fee: unknown;
+}) {
+  if (isCosmosSdkChainId(targetChainId)) {
+    return (
+      <PrettyPrintCosmosSdk
+        messages={messages}
+        targetChainId={targetChainId}
+        fee={fee}
+      />
+    );
+  }
+});
+
+const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
+  messages,
+  targetChainId,
+  fee,
+}: {
+  messages: unknown[];
+  targetChainId: TargetChainId;
+  fee: unknown | undefined;
+}) {
+  const targetChain = TargetChain.chainId(targetChainId);
+  invariant(targetChain.validateMessages(messages), "Invalid messages");
+
+  const feeInfo =
+    fee && targetChain.validateFee(fee)
+      ? fee.amount.map(prettyPrintCoin)
+      : [
+          {
+            amount: "",
+            denom: "Simulating",
+          },
+        ];
+  const amounts = messages.map(messageToAmount).flat().map(prettyPrintCoin);
+  const descriptions = messages.map(messageToDescription).flat();
+  const rawData = messages.map(messageToRawData);
+
+  return (
+    <Transaction
+      amountInfo={amounts}
+      descriptions={descriptions}
+      targetChainId={targetChainId}
+      feeInfo={feeInfo}
+      rawData={rawData}
+    />
+  );
+});
+
+function messageToAmount(message: EncodeObject) {
+  switch (message.typeUrl) {
+    case "/cosmos.bank.v1beta1.MsgSend": {
+      const { value } = message as MsgSendEncodeObject;
+      return value.amount ?? [];
+    }
+    default:
+      console.warn("Unknown message type: ", message.typeUrl);
+      return [];
+  }
+}
+
+function messageToDescription(message: EncodeObject) {
+  switch (message.typeUrl) {
+    case "/cosmos.bank.v1beta1.MsgSend": {
+      const { value } = message as MsgSendEncodeObject;
+      const amount = messageToAmount(message);
+      return amount.map((amount) => {
+        const prettyAmount = prettyPrintCoin(amount);
+        return `Send ${prettyAmount.amount} ${prettyAmount.denom} to ${value.toAddress}`;
+      });
+    }
+    default:
+      console.warn("Unknown message type: ", message.typeUrl);
+      return [];
+  }
+}
+
+function messageToRawData(message: EncodeObject) {
+  return toJS(message);
+}
+
+function prettyPrintCoin(coin: Coin): {
+  amount: string;
+  denom: string;
+} {
+  const toAsset = Object.values(toAssets).find((value) => {
+    return value.denom === coin.denom;
+  });
+  invariant(toAsset, "Asset not found");
+  return {
+    amount: new BigNumber(coin.amount)
+      .dividedBy(10 ** toAsset?.decimals)
+      .toString(10),
+    denom: toAsset.label,
+  };
+}

@@ -1,5 +1,7 @@
 "use client";
 
+import { observer } from "mobx-react-lite";
+
 import { Input } from "./input";
 import { BalanceDropDown, IBalanceOption } from "../dropdown";
 
@@ -18,7 +20,7 @@ export interface BalanceInputProps {
   placeholder?: string;
 }
 
-export function BalanceInput({
+export const BalanceInput = observer<BalanceInputProps>(function BalanceInput({
   balances,
   value,
   onChange,
@@ -26,7 +28,7 @@ export function BalanceInput({
   placeholder,
   showMaxButton = true,
   label,
-}: BalanceInputProps) {
+}) {
   const selectedBalance = value.asset;
   const setAmount = (amount: string) => {
     onChange({ amount, asset: value.asset });
@@ -60,14 +62,14 @@ export function BalanceInput({
             MAX
           </button>
         ) : null}
-        {balances && (
+        {balances ? (
           <BalanceDropDown
             options={balances}
             onSelectOption={setSelectedBalance}
             selectedOptionProp={selectedBalance}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );
-}
+});

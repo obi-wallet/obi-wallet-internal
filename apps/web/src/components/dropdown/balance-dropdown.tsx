@@ -2,6 +2,7 @@
 
 import { ToAsset } from "@/app/dashboard/fast-travel/assets";
 import { cn } from "@/lib/utils";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
@@ -16,15 +17,11 @@ export interface IBalanceOption {
   asset: ToAsset;
 }
 
-export function BalanceDropDown({
-  options,
-  onSelectOption,
-  selectedOptionProp,
-}: {
+export const BalanceDropDown = observer<{
   options: IBalanceOption[];
   selectedOptionProp?: IBalanceOption;
   onSelectOption?: (option: IBalanceOption) => void;
-}) {
+}>(function BalanceDropDown({ options, onSelectOption, selectedOptionProp }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<
@@ -133,4 +130,4 @@ export function BalanceDropDown({
       </div>
     </div>
   );
-}
+});

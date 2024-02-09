@@ -7,10 +7,10 @@ import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
 import { Chain } from "@chain-registry/types";
 import { EncodeObject, OfflineSigner } from "@cosmjs/proto-signing";
 import {
+  calculateFee,
   GasPrice,
   SigningStargateClient,
   StargateClient,
-  calculateFee,
   StdFee,
 } from "@cosmjs/stargate";
 import { MpcWallet } from "@obi-wallet/sdk";
@@ -31,6 +31,15 @@ const EncodeObjectSchema = z.object({
 
 function isEncodeObject(message: unknown): message is EncodeObject {
   return EncodeObjectSchema.safeParse(message).success;
+}
+
+const StdFeeSchema = z.object({
+  amount: z.array(z.object({ amount: z.string(), denom: z.string() })),
+  gas: z.string(),
+});
+
+function isStdFee(fee: unknown): fee is StdFee {
+  return StdFeeSchema.safeParse(fee).success;
 }
 
 export class CosmosSdkTargetChain extends AbstractTargetChain {
@@ -138,7 +147,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
   }) {
     invariant(this.validateMessages(messages), "Invalid messages");
 
-    const signer = await CosmosSdkMpcSigner.fromWallet(wallet, chainId);
+    const signer = await this.getSigner(wallet);
     return await this.withSigningStargateClient(signer, async (client) => {
       return await client.signAndBroadcast(signer.address, messages, fee);
     });
@@ -157,7 +166,11 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     return await CosmosSdkMpcSigner.fromWallet(wallet, this.chainData.id);
   }
 
-  protected validateMessages(messages: unknown[]): messages is EncodeObject[] {
+  public validateMessages(messages: unknown[]): messages is EncodeObject[] {
     return messages.every(isEncodeObject);
+  }
+
+  public validateFee(fee: unknown): fee is StdFee {
+    return isStdFee(fee);
   }
 }
