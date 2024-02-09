@@ -4,9 +4,8 @@ import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
 import { TargetChain } from "@/target-chain";
 import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
-import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
-import { EncodeObject } from "@cosmjs/proto-signing";
 import { isDeliverTxSuccess } from "@cosmjs/stargate";
+import { useQuery } from "@obi-wallet/headless-ui";
 import { NewSignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -41,8 +40,9 @@ export const SignAndBroadcastTransactionUserInteractionHandlerInner = observer<{
     interaction.payload.walletMeta.userEntryAddress,
   );
 
-  const broadcast = useMutation({
-    mutationFn: async () => {
+  const fee = useQuery({
+    queryKey: ["simulate", interaction.payload.messages],
+    queryFn: async () => {
       invariant(wallet, "Wallet not found");
 
       const chainId = interaction.payload.targetChainId;
@@ -51,19 +51,28 @@ export const SignAndBroadcastTransactionUserInteractionHandlerInner = observer<{
         "ChainId is not a Cosmos SDK chain",
       );
 
-      const signer = await CosmosSdkMpcSigner.fromWallet(wallet, chainId);
-      const accounts = await signer.getAccounts();
-      const firstAccount = accounts[0];
-      invariant(firstAccount, "No account found");
+      return await TargetChain.chainId(chainId).calculateFee({
+        wallet,
+        messages: interaction.payload.messages,
+      });
+    },
+  });
 
-      const response = await TargetChain.chainId(
-        chainId,
-      ).withSigningStargateClient(signer, async (client) => {
-        return await client.signAndBroadcast(
-          firstAccount.address,
-          interaction.payload.messages as EncodeObject[],
-          "auto",
-        );
+  const broadcast = useMutation({
+    mutationFn: async () => {
+      invariant(wallet, "Wallet not found");
+      invariant(fee.data, "Fee could not be calculated");
+
+      const chainId = interaction.payload.targetChainId;
+      invariant(
+        isCosmosSdkChainId(chainId),
+        "ChainId is not a Cosmos SDK chain",
+      );
+
+      const response = await TargetChain.chainId(chainId).signAndBroadcast({
+        wallet,
+        fee: fee.data!,
+        messages: interaction.payload.messages,
       });
       interaction.resolve({
         approved: true,
@@ -76,6 +85,8 @@ export const SignAndBroadcastTransactionUserInteractionHandlerInner = observer<{
       });
     },
   });
+
+  console.log(fee.data);
 
   return (
     <div className="w-full">
