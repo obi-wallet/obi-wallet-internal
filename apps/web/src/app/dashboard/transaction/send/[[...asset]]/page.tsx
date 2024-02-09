@@ -19,7 +19,8 @@ import { TargetChain } from "@/target-chain";
 import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
 import { Coin } from "@cosmjs/amino";
-import { isDeliverTxSuccess } from "@cosmjs/stargate";
+import { MsgSendEncodeObject } from "@cosmjs/stargate";
+import { NewSignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
@@ -42,7 +43,8 @@ const Send = observer<{ params: { asset?: string[] } }>(function Send({
 
   const send = useMutation({
     mutationFn: async () => {
-      if (!wallet || !coin.asset) return;
+      invariant(wallet, "Wallet not found");
+      invariant(coin.asset, "No asset selected");
 
       const chainId = coin.asset.asset.chainId;
       invariant(
@@ -63,26 +65,38 @@ const Send = observer<{ params: { asset?: string[] } }>(function Send({
 
       const accounts = await signer.getAccounts();
       const firstAccount = accounts[0];
-      if (!firstAccount) return;
+      invariant(firstAccount, "No account found");
 
-      const response = await TargetChain.chainId(
-        chainId,
-      ).withSigningStargateClient(signer, async (client) => {
-        return await client.sendTokens(
-          firstAccount.address,
-          recipient,
-          tokens,
-          "auto",
-        );
-      });
+      const message: MsgSendEncodeObject = {
+        typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+        value: {
+          fromAddress: firstAccount.address,
+          toAddress: recipient,
+          amount: tokens,
+        },
+      };
+      const response =
+        await NewSignAndBroadcastTransactionUserInteraction.start({
+          messages: [message],
+          cancelable: true,
+          targetChainId: chainId,
+          walletMeta: {
+            userEntryAddress: wallet.userEntryAddress,
+          },
+        });
+
       await invalidateBalancesQueries(chainId);
-
-      if (!isDeliverTxSuccess(response)) {
-        throw new Error(response.rawLog);
-      }
+      return response;
     },
-    onSuccess() {
-      window.alert("TX broadcast successfully");
+    onSuccess(response) {
+      if (response.approved) {
+        const broadcastResult = response.payload;
+        if (broadcastResult.success) {
+          window.alert("TX broadcast successfully");
+        } else {
+          window.alert(`TX failed: ${broadcastResult.rawLog}`);
+        }
+      }
     },
     onError(error: Error) {
       window.alert(`TX failed: ${error.message}`);
@@ -164,6 +178,7 @@ const Send = observer<{ params: { asset?: string[] } }>(function Send({
       <div className="flex justify-end">
         <Button
           className="block w-44"
+          disabled={send.isLoading}
           onClick={() => {
             send.mutate();
           }}

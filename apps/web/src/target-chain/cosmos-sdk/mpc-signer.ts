@@ -26,7 +26,7 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 
 export class CosmosSdkMpcSigner implements OfflineDirectSigner {
-  protected get address(): string {
+  public get address(): string {
     return this.targetChain.computeAddress(this.publicKey);
   }
 

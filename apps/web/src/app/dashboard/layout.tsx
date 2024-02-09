@@ -1,4 +1,5 @@
 import { Navbar } from "@/components";
+import { SignAndBroadcastTransactionUserInteractionHandler } from "@/user-interactions/sign-and-broadcast-transaction-handler";
 import type { Metadata } from "next";
 import { ReactNode } from "react";
 
@@ -19,7 +20,9 @@ export default function RootLayout({
         // 96px for bottom-navbar and 80px for header
       }
       <div className="flex grow overflow-auto max-sm:h-[calc(100vh-96px-80px)]">
-        {children}
+        <SignAndBroadcastTransactionUserInteractionHandler>
+          {children}
+        </SignAndBroadcastTransactionUserInteractionHandler>
       </div>
     </section>
   );
