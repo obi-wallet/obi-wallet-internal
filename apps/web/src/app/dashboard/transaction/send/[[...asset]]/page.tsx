@@ -43,7 +43,8 @@ const Send = observer<{ params: { asset?: string[] } }>(function Send({
 
   const send = useMutation({
     mutationFn: async () => {
-      if (!wallet || !coin.asset) return;
+      invariant(wallet, "Wallet not found");
+      invariant(coin.asset, "No asset selected");
 
       const chainId = coin.asset.asset.chainId;
       invariant(
@@ -64,7 +65,7 @@ const Send = observer<{ params: { asset?: string[] } }>(function Send({
 
       const accounts = await signer.getAccounts();
       const firstAccount = accounts[0];
-      if (!firstAccount) return;
+      invariant(firstAccount, "No account found");
 
       const message: MsgSendEncodeObject = {
         typeUrl: "/cosmos.bank.v1beta1.MsgSend",
@@ -88,7 +89,7 @@ const Send = observer<{ params: { asset?: string[] } }>(function Send({
       return response;
     },
     onSuccess(response) {
-      if (response?.approved) {
+      if (response.approved) {
         const broadcastResult = response.payload;
         if (broadcastResult.success) {
           window.alert("TX broadcast successfully");
@@ -177,6 +178,7 @@ const Send = observer<{ params: { asset?: string[] } }>(function Send({
       <div className="flex justify-end">
         <Button
           className="block w-44"
+          disabled={send.isLoading}
           onClick={() => {
             send.mutate();
           }}
