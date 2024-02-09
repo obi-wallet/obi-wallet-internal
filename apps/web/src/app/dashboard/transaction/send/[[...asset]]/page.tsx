@@ -19,7 +19,8 @@ import { TargetChain } from "@/target-chain";
 import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
 import { Coin } from "@cosmjs/amino";
-import { isDeliverTxSuccess, MsgSendEncodeObject } from "@cosmjs/stargate";
+import { MsgSendEncodeObject } from "@cosmjs/stargate";
+import { NewSignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
@@ -65,31 +66,36 @@ const Send = observer<{ params: { asset?: string[] } }>(function Send({
       const firstAccount = accounts[0];
       if (!firstAccount) return;
 
-      const response = await TargetChain.chainId(
-        chainId,
-      ).withSigningStargateClient(signer, async (client) => {
-        const message: MsgSendEncodeObject = {
-          typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-          value: {
-            fromAddress: firstAccount.address,
-            toAddress: recipient,
-            amount: tokens,
+      const message: MsgSendEncodeObject = {
+        typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+        value: {
+          fromAddress: firstAccount.address,
+          toAddress: recipient,
+          amount: tokens,
+        },
+      };
+      const response =
+        await NewSignAndBroadcastTransactionUserInteraction.start({
+          messages: [message],
+          cancelable: true,
+          targetChainId: chainId,
+          walletMeta: {
+            userEntryAddress: wallet.userEntryAddress,
           },
-        };
-        return await client.signAndBroadcast(
-          firstAccount.address,
-          [message],
-          "auto",
-        );
-      });
-      await invalidateBalancesQueries(chainId);
+        });
 
-      if (!isDeliverTxSuccess(response)) {
-        throw new Error(response.rawLog);
-      }
+      await invalidateBalancesQueries(chainId);
+      return response;
     },
-    onSuccess() {
-      window.alert("TX broadcast successfully");
+    onSuccess(response) {
+      if (response?.approved) {
+        const broadcastResult = response.payload;
+        if (broadcastResult.success) {
+          window.alert("TX broadcast successfully");
+        } else {
+          window.alert(`TX failed: ${broadcastResult.rawLog}`);
+        }
+      }
     },
     onError(error: Error) {
       window.alert(`TX failed: ${error.message}`);
