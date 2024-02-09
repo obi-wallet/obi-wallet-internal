@@ -19,7 +19,7 @@ import { TargetChain } from "@/target-chain";
 import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
 import { Coin } from "@cosmjs/amino";
-import { isDeliverTxSuccess } from "@cosmjs/stargate";
+import { isDeliverTxSuccess, MsgSendEncodeObject } from "@cosmjs/stargate";
 import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
@@ -68,10 +68,17 @@ const Send = observer<{ params: { asset?: string[] } }>(function Send({
       const response = await TargetChain.chainId(
         chainId,
       ).withSigningStargateClient(signer, async (client) => {
-        return await client.sendTokens(
+        const message: MsgSendEncodeObject = {
+          typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+          value: {
+            fromAddress: firstAccount.address,
+            toAddress: recipient,
+            amount: tokens,
+          },
+        };
+        return await client.signAndBroadcast(
           firstAccount.address,
-          recipient,
-          tokens,
+          [message],
           "auto",
         );
       });
