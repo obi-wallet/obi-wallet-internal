@@ -7,7 +7,6 @@ import { Inter } from "next/font/google";
 import { ReactNode } from "react";
 
 import "./globals.css";
-import Head from "next/head";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,17 +14,13 @@ const Provider = dynamic(() => import("@/components/provider"), {
   ssr: false,
 });
 export const metadata: Metadata = {
-  title: "Obi - Anything in two clicks",
-  description: "Anything in two clicks",
+  title: "Obi - Anything In Two Clicks",
+  description: "Anything In Two Clicks",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="bg-black">
-      <Head>
-        <title>Obi</title>
-        <meta property="og:title" content="Obi" key="title" />
-      </Head>
       <body
         className={cn(
           inter.className,

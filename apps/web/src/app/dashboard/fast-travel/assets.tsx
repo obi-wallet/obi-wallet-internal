@@ -77,6 +77,7 @@ export const toAssets: Record<string, ToAsset> = {
     image:
       "https://assets.coingecko.com/coins/images/22363/large/stargaze_star_pink.png?1702801402",
     disabled: false,
+    addressPrefix: "stars",
   },
   sei: {
     chainId: "pacific-1",
@@ -111,7 +112,7 @@ export const toAssets: Record<string, ToAsset> = {
     chainId: "tia-4", // TODO: change to  tia chain
     decimals: 6,
     label: "Celestia (TIA)",
-    denom: "uautism",
+    denom: "utia",
     image:
       "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
     disabled: true,
