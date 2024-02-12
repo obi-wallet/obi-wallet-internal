@@ -10,9 +10,11 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "format": "prettier --write . && yarn lint -- --fix",
+    "integration": "turbo integration",
     "lint": "turbo lint",
     "prettier": "prettier --check .",
     "setup": "node scripts/setup.mjs",
+    "test": "turbo test",
     "tsc": "turbo tsc"
   },
   "devDependencies": {

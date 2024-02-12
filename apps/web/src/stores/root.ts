@@ -1,4 +1,5 @@
 import { MpcStore } from "@/stores/mpc";
+import { WalletConnectStore } from "@/stores/wallet-connect";
 import { WasmStore } from "@/stores/wasm";
 import { Config } from "@obi-wallet/config";
 import {
@@ -19,6 +20,7 @@ export class RootStore {
   public readonly mpcStore: MpcStore;
   public readonly sdkRootStore: SdkRootStore;
   public readonly userDataStore: UserDataStore;
+  public readonly walletConnectStore: WalletConnectStore;
   public readonly wasmStore: WasmStore;
 
   constructor({
@@ -45,10 +47,9 @@ export class RootStore {
       walletsStore: this.mpcWalletsStore,
       wasmStore: this.wasmStore,
     });
-  }
-
-  public get walletConnectStore() {
-    return this.sdkRootStore.walletConnectStore;
+    this.walletConnectStore = new WalletConnectStore({
+      walletsStore: this.mpcWalletsStore,
+    });
   }
 
   public get mpcWalletsStore() {

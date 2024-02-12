@@ -15,6 +15,12 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
+    "test": {
+      "dependsOn": ["^test"]
+    },
+    "integration": {
+      "dependsOn": ["^integration"]
+    },
     "lint": {
       "dependsOn": ["^lint"]
     },
