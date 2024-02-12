@@ -10,9 +10,9 @@ import { formatEther, parseUnits } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { FaExclamation } from "react-icons/fa6";
 
 import { FromAsset, fromAssets, ToAsset, toAssets } from "./fast-travel/assets";
-import { FaExclamation } from "react-icons/fa6";
 
 export interface TransactionStatus {
   axelarTransactionUrl: string;

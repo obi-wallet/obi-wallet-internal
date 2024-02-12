@@ -1,7 +1,6 @@
 "use client";
 
 import { Footer } from "@/components";
-import { Metadata } from "next";
 
 export default function OnboardLayout({
   children,
