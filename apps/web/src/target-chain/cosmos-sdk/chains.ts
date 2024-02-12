@@ -3,8 +3,8 @@ export enum CosmosSdkChainId {
   Osmosis = "osmosis-1",
   Neutron = "neutron-1",
   Stargaze = "stargaze-1",
-  Tia = "tia-4",
-  Inj = "inj-4",
+  Tia = "celestia",
+  Inj = "injective-1",
 }
 
 export function isCosmosSdkChainId(
@@ -57,20 +57,19 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
   },
   [CosmosSdkChainId.Tia]: {
     id: CosmosSdkChainId.Tia,
-    name: "Tia",
-    rpcs: ["https://rpc.tia.oceanprotocol.com"],
-    prefix: "tia",
+    name: "Celestia",
+    rpcs: ["https://celestia-rpc.publicnode.com:443"],
+    prefix: "celestia",
     image:
       "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
-    disabled: true,
+    // disabled: true,
   },
   [CosmosSdkChainId.Inj]: {
     id: CosmosSdkChainId.Inj,
     name: "Injective",
-    rpcs: ["https://rpc.injective.devcorp.cloud"],
+    rpcs: ["https://injective-rpc.publicnode.com:443"],
     prefix: "inj",
     image:
       "https://assets.coingecko.com/coins/images/33976/large/autism-logo.png?1703578236",
-    disabled: true,
   },
 };
