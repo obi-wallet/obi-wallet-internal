@@ -42,22 +42,18 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
   [CosmosSdkChainId.Neutron]: {
     id: CosmosSdkChainId.Neutron,
     name: "Neutron",
-    // TODO: disabled because RPC not working
-    rpcs: ["https://rpc.neutron.devcorp.cloud"],
+    rpcs: ["https://rpc-lb.neutron.org"],
     prefix: "neutron",
     image:
       "https://assets.coingecko.com/coins/images/30813/large/ntrn.png?1696529669",
-    disabled: true,
   },
   [CosmosSdkChainId.Stargaze]: {
     id: CosmosSdkChainId.Stargaze,
     name: "Stargaze",
-    // TODO: disabled because RPC not working
-    rpcs: ["https://rpc.stargaze.oceanprotocol.com"],
+    rpcs: ["https://rpc.stargaze-apis.com/"],
     prefix: "stars",
     image:
       "https://assets.coingecko.com/coins/images/22363/large/stargaze_star_pink.png?1702801402",
-    disabled: true,
   },
   [CosmosSdkChainId.Tia]: {
     id: CosmosSdkChainId.Tia,
