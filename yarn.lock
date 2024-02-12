@@ -3422,12 +3422,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@obi-wallet/wallet-connect@workspace:packages/wallet-connect":
+"@obi-wallet/wallet-connect@workspace:*, @obi-wallet/wallet-connect@workspace:packages/wallet-connect":
   version: 0.0.0-use.local
   resolution: "@obi-wallet/wallet-connect@workspace:packages/wallet-connect"
   dependencies:
-    "@repo/eslint-config": "npm:*"
-    "@repo/typescript-config": "npm:*"
+    "@obi-wallet/sdk-abstract-user-interaction": "workspace:*"
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
     "@types/jest": "npm:^29.5.11"
     "@walletconnect/core": "npm:^2.10.6"
     "@walletconnect/sign-client": "npm:^2.11.0"
@@ -3460,6 +3461,7 @@ __metadata:
     "@obi-wallet/sdk": "workspace:*"
     "@obi-wallet/sdk-abstract-target-chain": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
+    "@obi-wallet/wallet-connect": "workspace:*"
     "@reactuses/core": "npm:^4.0.13"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
@@ -4417,7 +4419,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@repo/eslint-config@npm:*, @repo/eslint-config@workspace:*, @repo/eslint-config@workspace:configs/eslint-config":
+"@repo/eslint-config@workspace:*, @repo/eslint-config@workspace:configs/eslint-config":
   version: 0.0.0-use.local
   resolution: "@repo/eslint-config@workspace:configs/eslint-config"
   dependencies:
@@ -4436,7 +4438,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@repo/typescript-config@npm:*, @repo/typescript-config@workspace:*, @repo/typescript-config@workspace:configs/typescript-config":
+"@repo/typescript-config@workspace:*, @repo/typescript-config@workspace:configs/typescript-config":
   version: 0.0.0-use.local
   resolution: "@repo/typescript-config@workspace:configs/typescript-config"
   languageName: unknown

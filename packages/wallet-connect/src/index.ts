@@ -2,9 +2,13 @@ import { Core } from "@walletconnect/core";
 import { buildApprovedNamespaces, getSdkError } from "@walletconnect/utils";
 import { Web3Wallet } from "@walletconnect/web3wallet";
 
+import { WalletConnectPairingUserInteraction } from "./user-interaction";
+export * from "./user-interaction";
+
 export async function setupWalletConnect({
   projectId,
   metadata,
+  getAccounts,
 }: {
   projectId: string;
   metadata: {
@@ -13,6 +17,7 @@ export async function setupWalletConnect({
     url: string;
     icons: string[];
   };
+  getAccounts: () => Promise<string[]>;
 }) {
   const core = new Core({
     projectId,
@@ -36,7 +41,37 @@ export async function setupWalletConnect({
   });
 
   // TODO:
-  web3wallet.on("session_proposal", async ({ id, params }) => {
+  web3wallet.on("session_proposal", async (params) => {
+    console.log("incoming session_proposal", params);
+
+    const response = await WalletConnectPairingUserInteraction.start(params);
+    if (response.approved) {
+      // TODO: Here we need to fetch the addresses etc. from the store somehow
+      const approvedNamespaces = buildApprovedNamespaces({
+        proposal: params.params,
+        supportedNamespaces: {
+          cosmos: {
+            chains: ["cosmos:neutron-1"],
+            methods: [
+              "cosmos_getAccounts",
+              "cosmos_signAmino",
+              "cosmos_signDirect",
+            ],
+            accounts: await getAccounts(),
+            events: ["chainChanged", "accountsChanged"],
+          },
+        },
+      });
+      const _session = await web3wallet.approveSession({
+        id: params.id,
+        namespaces: approvedNamespaces,
+      });
+    } else {
+      await web3wallet.rejectSession({
+        id: params.id,
+        reason: getSdkError("USER_REJECTED"),
+      });
+    }
     const _examplePayload = {
       id: 1707743595483114,
       params: {
@@ -69,31 +104,6 @@ export async function setupWalletConnect({
         },
       },
     };
-
-    console.log("incoming session_proposal", { id, params });
-
-    // try {
-    //   const approvedNamespaces = buildApprovedNamespaces({
-    //     proposal: params,
-    //     supportedNamespaces: {
-    //       cosmos: {
-    //         chains: ["cosmos:cosmoshub-4"],
-    //         methods: ["cosmos_signDirect"],
-    //         accounts: ["cosmos:cosmoshub-4:foobar"],
-    //         events: [],
-    //       },
-    //     },
-    //   });
-    //   const _session = await web3wallet.approveSession({
-    //     id,
-    //     namespaces: approvedNamespaces,
-    //   });
-    // } catch (error) {
-    //   await web3wallet.rejectSession({
-    //     id,
-    //     reason: getSdkError("USER_REJECTED"),
-    //   });
-    // }
   });
 
   return web3wallet;

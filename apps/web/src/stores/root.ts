@@ -1,4 +1,5 @@
 import { MpcStore } from "@/stores/mpc";
+import { WalletConnectStore } from "@/stores/wallet-connect";
 import { WasmStore } from "@/stores/wasm";
 import { Config } from "@obi-wallet/config";
 import {
@@ -11,7 +12,6 @@ import { UserDataStore } from ".";
 import { ChainStore } from "./chain";
 import { ConfigStore } from "./config";
 import { DraftsStore } from "./drafts";
-import { WalletConnectStore } from "@/stores/wallet-connect";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -35,7 +35,6 @@ export class RootStore {
     this.draftsStore = new DraftsStore();
     this.sdkRootStore = new SdkRootStore(KVStore);
     this.userDataStore = new UserDataStore(new KVStore("user-data-store"));
-    this.walletConnectStore = new WalletConnectStore();
     this.wasmStore = new WasmStore();
 
     // TODO: do we still need the chain store, and if so, the reference to walletsStore?
@@ -47,6 +46,9 @@ export class RootStore {
       kvStore: new KVStore("mpc-store"),
       walletsStore: this.mpcWalletsStore,
       wasmStore: this.wasmStore,
+    });
+    this.walletConnectStore = new WalletConnectStore({
+      walletsStore: this.mpcWalletsStore,
     });
   }
 

@@ -12,13 +12,14 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
+    "@obi-wallet/sdk-abstract-user-interaction": "workspace:*",
     "@walletconnect/core": "^2.10.6",
     "@walletconnect/utils": "^2.11.0",
     "@walletconnect/web3wallet": "^1.9.5"
   },
   "devDependencies": {
-    "@repo/eslint-config": "*",
-    "@repo/typescript-config": "*",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "@types/jest": "^29.5.11",
     "@walletconnect/sign-client": "^2.11.0",
     "@walletconnect/types": "^2.11.0",

@@ -27,6 +27,7 @@
     "@obi-wallet/sdk": "workspace:*",
     "@obi-wallet/sdk-abstract-target-chain": "workspace:*",
     "@obi-wallet/sdk-secp256k1": "workspace:*",
+    "@obi-wallet/wallet-connect": "workspace:*",
     "@reactuses/core": "^4.0.13",
     "@tanstack/react-query": "^4.29.25",
     "apexcharts": "^3.45.1",
