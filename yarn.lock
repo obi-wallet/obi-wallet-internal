@@ -3486,6 +3486,7 @@ __metadata:
     "@types/react": "npm:^18.2.45"
     "@types/react-dom": "npm:^18.2.17"
     "@types/secp256k1": "npm:^4.0.6"
+    "@walletconnect/utils": "npm:^2.11.0"
     apexcharts: "npm:^3.45.1"
     autoprefixer: "npm:^10.4.16"
     axios: "npm:^1.6.6"

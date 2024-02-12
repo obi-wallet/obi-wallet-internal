@@ -1,4 +1,3 @@
-import { UserInteractions } from "@obi-wallet/sdk";
 import { SignClient } from "@walletconnect/sign-client";
 import { ISignClient } from "@walletconnect/types";
 import { getSdkError } from "@walletconnect/utils";
@@ -31,7 +30,6 @@ const TEST_REQUIRED_NAMESPACES = {
   },
 };
 
-let userInteractions: UserInteractions;
 let wallet: Web3Wallet;
 let dApp: ISignClient;
 let sessionApproval: () => Promise<unknown>;
@@ -44,7 +42,6 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  userInteractions = UserInteractions.create();
   dApp = await SignClient.init({ projectId: PROJECT_ID, name: "Dapp" });
   const { uri, approval } = await dApp.connect({
     requiredNamespaces: TEST_REQUIRED_NAMESPACES,

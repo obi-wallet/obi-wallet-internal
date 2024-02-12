@@ -2,6 +2,7 @@ import { newFetchPublicKey } from "@/hooks/use-public-key";
 import { TargetChain } from "@/target-chain";
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import { MpcWallets } from "@obi-wallet/sdk";
+import { getSdkError } from "@walletconnect/utils";
 import type Web3Wallet from "@walletconnect/web3wallet";
 import invariant from "tiny-invariant";
 
@@ -19,6 +20,14 @@ export class WalletConnectStore {
     // the user has to refresh the QR code and scan again.
     const web3Wallet = await this.getWeb3Wallet();
     await web3Wallet.pair({ uri });
+  }
+
+  public async disconnect(topic: string) {
+    const web3Wallet = await this.getWeb3Wallet();
+    await web3Wallet.disconnectSession({
+      topic,
+      reason: getSdkError("USER_DISCONNECTED"),
+    });
   }
 
   public async getActiveSessions() {

@@ -40,24 +40,26 @@ export async function setupWalletConnect({
     console.log("incoming auth_request", params);
   });
 
-  // TODO:
   web3wallet.on("session_proposal", async (params) => {
     console.log("incoming session_proposal", params);
 
     const response = await WalletConnectPairingUserInteraction.start(params);
     if (response.approved) {
-      // TODO: Here we need to fetch the addresses etc. from the store somehow
+      const accounts = await getAccounts();
+      const chains = accounts.map((account) =>
+        account.split(":").slice(0, 2).join(":"),
+      );
       const approvedNamespaces = buildApprovedNamespaces({
         proposal: params.params,
         supportedNamespaces: {
           cosmos: {
-            chains: ["cosmos:neutron-1"],
+            chains: chains,
             methods: [
               "cosmos_getAccounts",
               "cosmos_signAmino",
               "cosmos_signDirect",
             ],
-            accounts: await getAccounts(),
+            accounts,
             events: ["chainChanged", "accountsChanged"],
           },
         },
