@@ -11,6 +11,7 @@ import { UserDataStore } from ".";
 import { ChainStore } from "./chain";
 import { ConfigStore } from "./config";
 import { DraftsStore } from "./drafts";
+import { WalletConnectStore } from "@/stores/wallet-connect";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -19,6 +20,7 @@ export class RootStore {
   public readonly mpcStore: MpcStore;
   public readonly sdkRootStore: SdkRootStore;
   public readonly userDataStore: UserDataStore;
+  public readonly walletConnectStore: WalletConnectStore;
   public readonly wasmStore: WasmStore;
 
   constructor({
@@ -33,6 +35,7 @@ export class RootStore {
     this.draftsStore = new DraftsStore();
     this.sdkRootStore = new SdkRootStore(KVStore);
     this.userDataStore = new UserDataStore(new KVStore("user-data-store"));
+    this.walletConnectStore = new WalletConnectStore();
     this.wasmStore = new WasmStore();
 
     // TODO: do we still need the chain store, and if so, the reference to walletsStore?
@@ -45,10 +48,6 @@ export class RootStore {
       walletsStore: this.mpcWalletsStore,
       wasmStore: this.wasmStore,
     });
-  }
-
-  public get walletConnectStore() {
-    return this.sdkRootStore.walletConnectStore;
   }
 
   public get mpcWalletsStore() {

@@ -27,7 +27,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import invariant from "tiny-invariant";
 
-const Send = observer<{ params: { asset?: string[] } }>(function Send({
+export default observer<{ params: { asset?: string[] } }>(function Send({
   params,
 }) {
   const wallet = useCurrentWallet({});
@@ -189,5 +189,3 @@ const Send = observer<{ params: { asset?: string[] } }>(function Send({
     </div>
   );
 });
-
-export default Send;
