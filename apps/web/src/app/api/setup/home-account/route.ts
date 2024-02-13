@@ -4,6 +4,8 @@ import { TxResponse } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
+export const maxDuration = 45;
+
 const schema = z.object({
   chainId: ChainIdSchema,
 });
