@@ -4,6 +4,8 @@ import { generateSec256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { NextResponse } from "next/server";
 import { MsgExecuteContract } from "secretjs";
 
+export const maxDuration = 45;
+
 export interface SetupEvmKeyPairRequestBody {
   chainId: ChainId;
   userEntryAddress: string;

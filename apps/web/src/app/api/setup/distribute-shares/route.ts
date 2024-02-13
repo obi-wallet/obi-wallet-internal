@@ -9,6 +9,8 @@ import {
 import { MsgExecuteContract } from "secretjs";
 import { z } from "zod";
 
+export const maxDuration = 45;
+
 const schema = z.object({
   homeChainId: HomeChainIdSchema,
   networkParticipants: z.array(z.number()),
