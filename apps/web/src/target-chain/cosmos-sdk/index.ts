@@ -162,7 +162,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
       : undefined;
   }
 
-  protected async getSigner(wallet: MpcWallet) {
+  public async getSigner(wallet: MpcWallet) {
     return await CosmosSdkMpcSigner.fromWallet(wallet, this.chainData.id);
   }
 

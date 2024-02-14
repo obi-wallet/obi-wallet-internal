@@ -53,6 +53,13 @@ const navMenu: NavMenu[] = [
     icon: "/assets/icons/nav-fast-travel.svg",
     showOnDesktop: true,
   },
+  {
+    href: "/dashboard/app-connect",
+    text: "App Connect",
+    module: "app-connect",
+    icon: "/assets/icons/nav-app-connect.svg",
+    showOnDesktop: true,
+  },
 ];
 
 export function Navbar() {

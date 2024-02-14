@@ -12,7 +12,10 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
+    "@cosmjs/amino": "^0.31.3",
+    "@cosmjs/proto-signing": "^0.31.3",
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*",
+    "@obi-wallet/sdk-secp256k1": "workspace:*",
     "@walletconnect/core": "^2.10.6",
     "@walletconnect/utils": "^2.11.0",
     "@walletconnect/web3wallet": "^1.9.5"

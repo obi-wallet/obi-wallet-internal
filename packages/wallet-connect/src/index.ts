@@ -1,14 +1,20 @@
+import { OfflineAminoSigner } from "@cosmjs/amino";
+import { OfflineDirectSigner } from "@cosmjs/proto-signing";
+import {
+  getSec256k1CompressedPublicKey,
+  Secp256k1PublicKey,
+} from "@obi-wallet/sdk-secp256k1";
 import { Core } from "@walletconnect/core";
 import { buildApprovedNamespaces, getSdkError } from "@walletconnect/utils";
 import { Web3Wallet } from "@walletconnect/web3wallet";
 
-import { WalletConnectPairingUserInteraction } from "./user-interaction";
 export * from "./user-interaction";
 
 export async function setupWalletConnect({
   projectId,
   metadata,
   getAccounts,
+  getSigner,
 }: {
   projectId: string;
   metadata: {
@@ -17,7 +23,17 @@ export async function setupWalletConnect({
     url: string;
     icons: string[];
   };
-  getAccounts: () => Promise<string[]>;
+  getAccounts: () => Promise<
+    {
+      namespace: string;
+      chainId: string;
+      address: string;
+      publicKey: Secp256k1PublicKey;
+    }[]
+  >;
+  getSigner: (
+    chainId: string,
+  ) => Promise<OfflineDirectSigner & OfflineAminoSigner>;
 }) {
   const core = new Core({
     projectId,
@@ -32,8 +48,77 @@ export async function setupWalletConnect({
     console.log("incoming session_delete", params);
   });
 
-  web3wallet.on("session_request", async (...params) => {
-    console.log("incoming session_request", params);
+  web3wallet.on("session_request", async (event) => {
+    console.log("incoming session_request", event);
+
+    const { topic, params, id } = event;
+    const { request } = params;
+    const [namespace, chainId] = params.chainId.split(":") as [string, string];
+
+    switch (request.method) {
+      case "cosmos_getAccounts": {
+        const accounts = await getAccounts();
+        const result = accounts
+          .filter((account) => {
+            return (
+              account.namespace === namespace && account.chainId === chainId
+            );
+          })
+          .map((account) => {
+            return {
+              algo: "secp256k1",
+              address: account.address,
+              pubkey: Buffer.from(
+                getSec256k1CompressedPublicKey(account.publicKey),
+              ).toString("base64"),
+            };
+          });
+
+        console.log(result);
+
+        const response = {
+          id,
+          jsonrpc: "2.0",
+          result,
+        };
+
+        await web3wallet.respondSessionRequest({ topic, response });
+        break;
+      }
+      case "cosmos_signAmino": {
+        const signer = await getSigner(chainId);
+        console.log(signer);
+        const { signerAddress, signDoc } = request.params;
+        // TODO: Should be user interaction showing signature modal instead
+        const signResponse = await signer.signAmino(signerAddress, signDoc);
+        console.log(signResponse);
+
+        const response = {
+          id,
+          jsonrpc: "2.0",
+          result: signResponse,
+        };
+
+        await web3wallet.respondSessionRequest({ topic, response });
+        break;
+      }
+      case "cosmos_signDirect": {
+        const signer = await getSigner(chainId);
+        const { signerAddress, signDoc } = request.params;
+        // TODO: Should be user interaction showing signature modal instead
+        const signResponse = await signer.signDirect(signerAddress, signDoc);
+        console.log(signResponse);
+
+        const response = {
+          id,
+          jsonrpc: "2.0",
+          result: signResponse,
+        };
+
+        await web3wallet.respondSessionRequest({ topic, response });
+        break;
+      }
+    }
   });
 
   web3wallet.on("auth_request", async (...params) => {
@@ -43,12 +128,15 @@ export async function setupWalletConnect({
   web3wallet.on("session_proposal", async (params) => {
     console.log("incoming session_proposal", params);
 
-    const response = await WalletConnectPairingUserInteraction.start(params);
+    // Automatically approve the session proposal for now
+    const response = { approved: true };
+    // const response = await WalletConnectPairingUserInteraction.start(params);
+
     if (response.approved) {
       const accounts = await getAccounts();
-      const chains = accounts.map((account) =>
-        account.split(":").slice(0, 2).join(":"),
-      );
+      const chains = accounts.map((account) => {
+        return `${account.namespace}:${account.chainId}`;
+      });
       const approvedNamespaces = buildApprovedNamespaces({
         proposal: params.params,
         supportedNamespaces: {
@@ -59,11 +147,14 @@ export async function setupWalletConnect({
               "cosmos_signAmino",
               "cosmos_signDirect",
             ],
-            accounts,
+            accounts: accounts.map((account) => {
+              return `${account.namespace}:${account.chainId}:${account.address}`;
+            }),
             events: ["chainChanged", "accountsChanged"],
           },
         },
       });
+      console.log(approvedNamespaces);
       const _session = await web3wallet.approveSession({
         id: params.id,
         namespaces: approvedNamespaces,
@@ -74,38 +165,6 @@ export async function setupWalletConnect({
         reason: getSdkError("USER_REJECTED"),
       });
     }
-    const _examplePayload = {
-      id: 1707743595483114,
-      params: {
-        id: 1707743595483114,
-        pairingTopic:
-          "5f3a6ea5ba2337c3d4fd443f4ebb27032fa798c94271d77134d9f8047846adb1",
-        expiry: 1707743911,
-        requiredNamespaces: {
-          cosmos: {
-            methods: ["cosmos_signDirect", "cosmos_signAmino"],
-            chains: ["cosmos:cosmoshub-4"],
-            events: [],
-          },
-        },
-        optionalNamespaces: {},
-        relays: [
-          {
-            protocol: "irn",
-          },
-        ],
-        proposer: {
-          publicKey:
-            "5d31c5a6e03fd76e63209e1b684e94b5e49d550aa975b9d0ff752df8a1901113",
-          metadata: {
-            description: "React App for WalletConnect",
-            url: "https://react-dapp-v2-cosmos-provider.vercel.app",
-            icons: ["https://avatars.githubusercontent.com/u/37784886"],
-            name: "React App",
-          },
-        },
-      },
-    };
   });
 
   return web3wallet;

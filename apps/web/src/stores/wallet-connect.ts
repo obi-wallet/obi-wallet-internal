@@ -1,6 +1,9 @@
 import { newFetchPublicKey } from "@/hooks/use-public-key";
 import { TargetChain } from "@/target-chain";
-import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
+import {
+  CosmosSdkChains,
+  isCosmosSdkChainId,
+} from "@/target-chain/cosmos-sdk/chains";
 import { MpcWallets } from "@obi-wallet/sdk";
 import { getSdkError } from "@walletconnect/utils";
 import type Web3Wallet from "@walletconnect/web3wallet";
@@ -41,12 +44,18 @@ export class WalletConnectStore {
       this.web3Wallet = await setupWalletConnect({
         projectId: "044348b5f9a15395896ca2661ad9ea10",
         metadata: {
-          name: "foo",
-          description: "foo",
-          url: "foo",
+          name: "Keplr",
+          description: "",
+          url: "",
           icons: [],
         },
         getAccounts: this.getAccounts.bind(this),
+        getSigner: async (chainId: string) => {
+          const wallet = this.walletsStore.currentWallet;
+          invariant(isCosmosSdkChainId(chainId), "Invalid chain ID");
+          invariant(wallet, "Wallet not found");
+          return TargetChain.chainId(chainId).getSigner(wallet);
+        },
       });
     }
     return this.web3Wallet;
@@ -55,7 +64,7 @@ export class WalletConnectStore {
   protected async getAccounts() {
     const wallet = this.walletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await newFetchPublicKey(this.walletsStore.currentWallet);
+    const publicKey = await newFetchPublicKey(wallet);
     const enabledCosmosSdkChains = Object.values(CosmosSdkChains).filter(
       (chain) => {
         return !chain.disabled;
@@ -63,7 +72,12 @@ export class WalletConnectStore {
     );
     return enabledCosmosSdkChains.map((chain) => {
       const targetChain = TargetChain.chainId(chain.id);
-      return `cosmos:${chain.id}:${targetChain.computeAddress(publicKey)}`;
+      return {
+        namespace: "cosmos",
+        chainId: chain.id,
+        address: targetChain.computeAddress(publicKey),
+        publicKey,
+      };
     });
   }
 }
