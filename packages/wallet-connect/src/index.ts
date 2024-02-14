@@ -1,3 +1,5 @@
+import { OfflineAminoSigner } from "@cosmjs/amino";
+import { OfflineDirectSigner } from "@cosmjs/proto-signing";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
@@ -12,6 +14,7 @@ export async function setupWalletConnect({
   projectId,
   metadata,
   getAccounts,
+  getSigner,
 }: {
   projectId: string;
   metadata: {
@@ -28,6 +31,9 @@ export async function setupWalletConnect({
       publicKey: Secp256k1PublicKey;
     }[]
   >;
+  getSigner: (
+    chainId: string,
+  ) => Promise<OfflineDirectSigner & OfflineAminoSigner>;
 }) {
   const core = new Core({
     projectId,
@@ -47,16 +53,16 @@ export async function setupWalletConnect({
 
     const { topic, params, id } = event;
     const { request } = params;
+    const [namespace, chainId] = params.chainId.split(":") as [string, string];
 
     switch (request.method) {
       case "cosmos_getAccounts": {
-        const { chainId } = params;
-        console.log(chainId);
-
         const accounts = await getAccounts();
         const result = accounts
           .filter((account) => {
-            return `${account.namespace}:${account.chainId}` === chainId;
+            return (
+              account.namespace === namespace && account.chainId === chainId
+            );
           })
           .map((account) => {
             return {
@@ -77,6 +83,40 @@ export async function setupWalletConnect({
         };
 
         await web3wallet.respondSessionRequest({ topic, response });
+        break;
+      }
+      case "cosmos_signAmino": {
+        const signer = await getSigner(chainId);
+        console.log(signer);
+        const { signerAddress, signDoc } = request.params;
+        // TODO: Should be user interaction showing signature modal instead
+        const signResponse = await signer.signAmino(signerAddress, signDoc);
+        console.log(signResponse);
+
+        const response = {
+          id,
+          jsonrpc: "2.0",
+          result: signResponse,
+        };
+
+        await web3wallet.respondSessionRequest({ topic, response });
+        break;
+      }
+      case "cosmos_signDirect": {
+        const signer = await getSigner(chainId);
+        const { signerAddress, signDoc } = request.params;
+        // TODO: Should be user interaction showing signature modal instead
+        const signResponse = await signer.signDirect(signerAddress, signDoc);
+        console.log(signResponse);
+
+        const response = {
+          id,
+          jsonrpc: "2.0",
+          result: signResponse,
+        };
+
+        await web3wallet.respondSessionRequest({ topic, response });
+        break;
       }
     }
   });

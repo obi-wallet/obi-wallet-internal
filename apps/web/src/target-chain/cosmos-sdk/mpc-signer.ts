@@ -2,7 +2,14 @@ import { rootStore } from "@/hooks/use-create-root-store";
 import { newFetchPublicKey } from "@/hooks/use-public-key";
 import { Secp256k1Decryption } from "@/lib/encryption";
 import { TargetChain, TargetChainId } from "@/target-chain";
-import { encodeSecp256k1Signature } from "@cosmjs/amino";
+import {
+  AminoSignResponse,
+  encodeSecp256k1Signature,
+  OfflineAminoSigner,
+  serializeSignDoc,
+  StdSignature,
+  StdSignDoc,
+} from "@cosmjs/amino";
 import { sha256 } from "@cosmjs/crypto";
 import {
   AccountData,
@@ -25,7 +32,9 @@ import { SignDoc } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-export class CosmosSdkMpcSigner implements OfflineDirectSigner {
+export class CosmosSdkMpcSigner
+  implements OfflineDirectSigner, OfflineAminoSigner
+{
   public get address(): string {
     return this.targetChain.computeAddress(this.publicKey);
   }
@@ -64,6 +73,31 @@ export class CosmosSdkMpcSigner implements OfflineDirectSigner {
     signDoc: SignDoc,
   ): Promise<DirectSignResponse> {
     const signBytes = makeSignBytes(signDoc);
+    const stdSignature = await this.signHash(address, sha256(signBytes));
+
+    return {
+      signed: signDoc,
+      signature: stdSignature,
+    };
+  }
+
+  public async signAmino(
+    address: string,
+    signDoc: StdSignDoc,
+  ): Promise<AminoSignResponse> {
+    const signBytes = serializeSignDoc(signDoc);
+    const stdSignature = await this.signHash(address, sha256(signBytes));
+
+    return {
+      signed: signDoc,
+      signature: stdSignature,
+    };
+  }
+
+  protected async signHash(
+    address: string,
+    hash: Uint8Array,
+  ): Promise<StdSignature> {
     invariant(rootStore.current, "Root store is not initialized");
     const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
 
@@ -85,10 +119,9 @@ export class CosmosSdkMpcSigner implements OfflineDirectSigner {
     if (address !== this.address) {
       throw new Error(`Address ${address} not found in wallet`);
     }
-    const hashedMessage = sha256(signBytes);
 
     const partialSignatures = signers.map((signer) => {
-      return signer.partial(hashedMessage).scalar;
+      return signer.partial(hash).scalar;
     });
 
     const passkeySigner = new Secp256k1PrivateKeySigner(
@@ -127,11 +160,9 @@ export class CosmosSdkMpcSigner implements OfflineDirectSigner {
           other_partial_sigs: partialSignatures,
           prepend: false,
           is_already_hashed: true,
-          bytes: Buffer.from(hashedMessage).toString("hex"),
+          bytes: Buffer.from(hash).toString("hex"),
           bytes_signed_by_signers: [
-            Buffer.from(await passkeySigner.signHash(hashedMessage)).toString(
-              "hex",
-            ),
+            Buffer.from(await passkeySigner.signHash(hash)).toString("hex"),
           ],
         },
       },
@@ -141,13 +172,9 @@ export class CosmosSdkMpcSigner implements OfflineDirectSigner {
       response.r.padStart(64, "0") + response.s.padStart(64, "0"),
       "hex",
     );
-    const stdSignature = encodeSecp256k1Signature(
+    return encodeSecp256k1Signature(
       getSec256k1CompressedPublicKey(this.publicKey),
       signature,
     );
-    return {
-      signed: signDoc,
-      signature: stdSignature,
-    };
   }
 }

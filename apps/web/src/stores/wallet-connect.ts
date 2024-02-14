@@ -1,5 +1,5 @@
 import { newFetchPublicKey } from "@/hooks/use-public-key";
-import { TargetChain } from "@/target-chain";
+import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import { MpcWallets } from "@obi-wallet/sdk";
 import { getSdkError } from "@walletconnect/utils";
@@ -12,11 +12,6 @@ export class WalletConnectStore {
 
   public constructor({ walletsStore }: { walletsStore: MpcWallets }) {
     this.walletsStore = walletsStore;
-    setTimeout(() => {
-      this.getAccounts().then((accounts) => {
-        console.log(accounts);
-      });
-    }, 1000);
   }
 
   public async pair(uri: string) {
@@ -52,6 +47,11 @@ export class WalletConnectStore {
           icons: [],
         },
         getAccounts: this.getAccounts.bind(this),
+        getSigner: async (chainId: TargetChainId) => {
+          const wallet = this.walletsStore.currentWallet;
+          invariant(wallet, "Wallet not found");
+          return TargetChain.chainId(chainId).getSigner(wallet);
+        },
       });
     }
     return this.web3Wallet;
