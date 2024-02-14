@@ -1,34 +1,14 @@
 import { cn } from "@/lib/utils";
-import {
-  DetailedHTMLProps,
-  InputHTMLAttributes,
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-} from "react";
+import { DetailedHTMLProps, forwardRef, InputHTMLAttributes } from "react";
 
 export interface BaseInputProps
   extends DetailedHTMLProps<
     InputHTMLAttributes<HTMLInputElement>,
     HTMLInputElement
   > {}
-interface ParentRef {
-  focus: () => void;
-}
 
-export const BaseInput = forwardRef<ParentRef, BaseInputProps>(
-  function BaseInput(
-    { className, ...rest }: BaseInputProps,
-    parentRef: React.Ref<ParentRef>,
-  ) {
-    const ref = useRef<HTMLInputElement>(null);
-    useImperativeHandle(parentRef, () => ({
-      // This function exposes the localRef's current value to the parent
-      // You can also expose other methods or values if needed
-      focus: () => {
-        ref.current?.focus();
-      },
-    }));
+export const BaseInput = forwardRef<HTMLInputElement, BaseInputProps>(
+  function BaseInput({ className, ...rest }: BaseInputProps, ref) {
     return (
       <input
         ref={ref}
