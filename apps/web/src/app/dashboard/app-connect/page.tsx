@@ -1,8 +1,8 @@
 "use client";
 
-import { Button, Text } from "@/components";
+import { Box, Button, Divider, Text } from "@/components";
 import { useStore } from "@/contexts";
-import { Input } from "@/ui/input";
+import { cn } from "@/lib/utils";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -19,6 +19,7 @@ export default observer(function AppConnect() {
       return walletConnectStore.getActiveSessions();
     },
     staleTime: 0,
+    refetchInterval: 1000,
   });
 
   const activeSessions = Object.values(sessions.data ?? {}).map((session) => {
@@ -26,44 +27,78 @@ export default observer(function AppConnect() {
   });
 
   return (
-    <div className="pt-5">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          void walletConnectStore.pair(uri);
-        }}
-      >
-        <Input
-          value={uri}
-          onChange={setUri}
-          label="Pairing URL"
-          labelClassname="bg-black"
-        />
-        <Button type="submit">Scan</Button>
-      </form>
+    <div className="grid h-full w-full grid-rows-3 gap-4 px-7 py-5 text-white">
+      <Box className="ml-2 rounded-md text-xl">
+        <Text size="xl">App Connect</Text>
+        <Text className="mt-2">
+          Navigate to your favorite application and copy the WalletConnect URL.
+          Paste the pairing URL below to connect Obi dashboard to the
+          application.
+        </Text>
 
-      <Text>Connections</Text>
-      {activeSessions.length === 0 ? <Text>No active sessions</Text> : null}
-      {activeSessions.map((session) => {
-        return (
-          <div key={session.topic}>
-            <Text>{session.topic}</Text>
-            <Button
-              onClick={async () => {
-                await walletConnectStore.disconnect(session.topic);
-                await queryClient.invalidateQueries([
-                  "wallet-connect",
-                  "sessions",
-                ]);
-              }}
-            >
-              Disconnect
-            </Button>
+        <Divider className="mb-7 mt-5" />
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void walletConnectStore.pair(uri);
+            setUri("");
+          }}
+        >
+          <div className="flex w-full flex-col">
+            <div className="relative w-full">
+              <label>
+                <div className="border-background-select flex flex-row justify-between rounded-xl border bg-transparent p-2 align-middle">
+                  <input
+                    className={cn(
+                      "peer w-full bg-transparent px-2 text-2xl font-normal text-white focus:border-blue-600 focus-visible:outline-none",
+                      "[-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none",
+                    )}
+                    value={uri}
+                    onChange={(e) => {
+                      setUri(e.target.value);
+                    }}
+                  />
+                  <Button type="submit" variant="secondary">
+                    Connect
+                  </Button>
+                </div>
+
+                <span
+                  className={cn(
+                    "absolute left-0 top-0 ml-5 -translate-y-1/2 px-2 py-1 text-xs text-white",
+                    "bg-background-secondary",
+                  )}
+                >
+                  Pairing URL
+                </span>
+              </label>
+            </div>
           </div>
-        );
-      })}
+        </form>
+
+        <div className="mt-5">
+          {activeSessions.map((session) => {
+            return (
+              <Button
+                className="flex-flex-row my-1 w-full justify-between"
+                variant="secondary"
+                key={session.topic}
+                onClick={async () => {
+                  await walletConnectStore.disconnect(session.topic);
+                  await queryClient.invalidateQueries([
+                    "wallet-connect",
+                    "sessions",
+                  ]);
+                }}
+              >
+                <Text size="xl">{session.peer.metadata.name}</Text>
+                <Text size="sm">Disconnect</Text>
+              </Button>
+            );
+          })}
+        </div>
+      </Box>
     </div>
   );
-
-  return null;
 });
