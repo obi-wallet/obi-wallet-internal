@@ -590,7 +590,7 @@ function GetAddressComponent({
         address: "0x337bd07492342e6148212b0dab1bce90e9433e7b",
         chainId: from?.chainId,
         asset: from?.address,
-        amount: fromAmount,
+        amount: Number(fromAmount),
       },
       to: {
         chainId: to?.chainId,
