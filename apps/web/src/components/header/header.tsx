@@ -92,7 +92,7 @@ const LogOut = observer(function LogOut() {
 });
 
 const LogIn = observer(function LogIn() {
-  const { mpcWalletsStore } = useStore();
+  const { mpcWalletsStore, userDataStore } = useStore();
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -123,7 +123,8 @@ const LogIn = observer(function LogIn() {
                     className="w-full"
                   >
                     <div className="w-full overflow-hidden text-ellipsis text-left">
-                      {wallet.userEntryAddress}
+                      {userDataStore.getUserData(wallet.userEntryAddress)
+                        .name || "My Account"}
                     </div>
                   </Button>
                 );
