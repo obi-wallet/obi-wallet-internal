@@ -12,6 +12,11 @@ export class WalletConnectStore {
 
   public constructor({ walletsStore }: { walletsStore: MpcWallets }) {
     this.walletsStore = walletsStore;
+    setTimeout(() => {
+      this.getAccounts().then((accounts) => {
+        console.log(accounts);
+      });
+    }, 1000);
   }
 
   public async pair(uri: string) {
@@ -41,9 +46,9 @@ export class WalletConnectStore {
       this.web3Wallet = await setupWalletConnect({
         projectId: "044348b5f9a15395896ca2661ad9ea10",
         metadata: {
-          name: "foo",
-          description: "foo",
-          url: "foo",
+          name: "Keplr",
+          description: "",
+          url: "",
           icons: [],
         },
         getAccounts: this.getAccounts.bind(this),
@@ -55,7 +60,7 @@ export class WalletConnectStore {
   protected async getAccounts() {
     const wallet = this.walletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await newFetchPublicKey(this.walletsStore.currentWallet);
+    const publicKey = await newFetchPublicKey(wallet);
     const enabledCosmosSdkChains = Object.values(CosmosSdkChains).filter(
       (chain) => {
         return !chain.disabled;
@@ -63,7 +68,12 @@ export class WalletConnectStore {
     );
     return enabledCosmosSdkChains.map((chain) => {
       const targetChain = TargetChain.chainId(chain.id);
-      return `cosmos:${chain.id}:${targetChain.computeAddress(publicKey)}`;
+      return {
+        namespace: "cosmos",
+        chainId: chain.id,
+        address: targetChain.computeAddress(publicKey),
+        publicKey,
+      };
     });
   }
 }

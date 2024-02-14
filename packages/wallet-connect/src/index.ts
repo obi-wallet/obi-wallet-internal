@@ -1,3 +1,4 @@
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { Core } from "@walletconnect/core";
 import { buildApprovedNamespaces, getSdkError } from "@walletconnect/utils";
 import { Web3Wallet } from "@walletconnect/web3wallet";
@@ -16,7 +17,14 @@ export async function setupWalletConnect({
     url: string;
     icons: string[];
   };
-  getAccounts: () => Promise<string[]>;
+  getAccounts: () => Promise<
+    {
+      namespace: string;
+      chainId: string;
+      address: string;
+      publicKey: Secp256k1PublicKey;
+    }[]
+  >;
 }) {
   const core = new Core({
     projectId,
@@ -31,8 +39,41 @@ export async function setupWalletConnect({
     console.log("incoming session_delete", params);
   });
 
-  web3wallet.on("session_request", async (...params) => {
-    console.log("incoming session_request", params);
+  web3wallet.on("session_request", async (event) => {
+    console.log("incoming session_request", event);
+
+    const { topic, params, id } = event;
+    const { request } = params;
+
+    switch (request.method) {
+      case "cosmos_getAccounts": {
+        const { chainId } = params;
+        console.log(chainId);
+
+        const accounts = await getAccounts();
+        const result = accounts
+          .filter((account) => {
+            return `${account.namespace}:${account.chainId}` === chainId;
+          })
+          .map((account) => {
+            return {
+              algo: "secp256k1",
+              address: account.address,
+              pubkey: account.publicKey.value,
+            };
+          });
+
+        console.log(result);
+
+        const response = {
+          id,
+          jsonrpc: "2.0",
+          result,
+        };
+
+        await web3wallet.respondSessionRequest({ topic, response });
+      }
+    }
   });
 
   web3wallet.on("auth_request", async (...params) => {
@@ -48,9 +89,9 @@ export async function setupWalletConnect({
 
     if (response.approved) {
       const accounts = await getAccounts();
-      const chains = accounts.map((account) =>
-        account.split(":").slice(0, 2).join(":"),
-      );
+      const chains = accounts.map((account) => {
+        return `${account.namespace}:${account.chainId}`;
+      });
       const approvedNamespaces = buildApprovedNamespaces({
         proposal: params.params,
         supportedNamespaces: {
@@ -61,11 +102,14 @@ export async function setupWalletConnect({
               "cosmos_signAmino",
               "cosmos_signDirect",
             ],
-            accounts,
+            accounts: accounts.map((account) => {
+              return `${account.namespace}:${account.chainId}:${account.address}`;
+            }),
             events: ["chainChanged", "accountsChanged"],
           },
         },
       });
+      console.log(approvedNamespaces);
       const _session = await web3wallet.approveSession({
         id: params.id,
         namespaces: approvedNamespaces,

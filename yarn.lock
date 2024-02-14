@@ -3427,6 +3427,7 @@ __metadata:
   resolution: "@obi-wallet/wallet-connect@workspace:packages/wallet-connect"
   dependencies:
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*"
+    "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/jest": "npm:^29.5.11"
