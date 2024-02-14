@@ -1,16 +1,18 @@
 "use client";
 
-import { Box, Button, Divider, Text } from "@/components";
+import { Box, Button, Divider, Modal, renderModal, Text } from "@/components";
 import { useStore } from "@/contexts";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import { FaQuestionCircle } from "react-icons/fa";
 
 export default observer(function AppConnect() {
   const { walletConnectStore } = useStore();
   const [uri, setUri] = useState("");
+  const [showExplanationModal, setShowExplanationModal] = useState(false);
 
   const queryClient = useQueryClient();
   const sessions = useQuery({
@@ -26,14 +28,65 @@ export default observer(function AppConnect() {
     return session;
   });
 
+  function renderExplanationModal() {
+    if (!showExplanationModal) return null;
+
+    return renderModal(
+      <Modal title="How to App Connect with Obi">
+        <div className="text-ml text-white">
+          <ol className="list-inside list-decimal">
+            <li>
+              Navigate to the application you want to connect to. If you already
+              connected to the application with a wallet, you may need to
+              disconnect.
+            </li>
+            <li>
+              Find the Wallet Connect option, and display the QR code. In some
+              circumstances, you can choose Keplr Mobile to display the QR code.
+              <img
+                className="my-2 w-full object-contain"
+                src="/assets/images/app-connect-pairing.png"
+              />
+            </li>
+            <li>
+              Copy the pairing URL and paste it in the pairing URL box on the
+              Obi App Connect tab.
+            </li>
+          </ol>
+          <div className="mt-5 flex justify-end">
+            <Button
+              onClick={() => {
+                setShowExplanationModal(false);
+              }}
+              variant="primary"
+            >
+              Close
+            </Button>
+          </div>
+        </div>
+      </Modal>,
+    );
+  }
+
   return (
     <div className="grid h-full w-full grid-rows-3 gap-4 px-7 py-5 text-white">
+      {renderExplanationModal()}
       <Box className="ml-2 rounded-md text-xl">
         <Text size="xl">App Connect</Text>
         <Text className="mt-2">
-          Navigate to your favorite application and copy the WalletConnect URL.
-          Paste the pairing URL below to connect Obi dashboard to the
-          application.
+          <span className="justify-center align-middle">
+            Navigate to your favorite application and copy the WalletConnect
+            URL. Paste the pairing URL below to connect Obi dashboard to the
+            application.
+            <div
+              className="inline-block cursor-pointer px-2"
+              onClick={() => {
+                setShowExplanationModal(true);
+              }}
+            >
+              <FaQuestionCircle />
+            </div>
+          </span>
         </Text>
 
         <Divider className="mb-7 mt-5" />
