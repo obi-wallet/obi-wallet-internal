@@ -16,6 +16,7 @@ export const Account = observer(function Account() {
   if (!currentWallet) return null;
 
   const userData = userDataStore.getUserData(currentWallet.userEntryAddress);
+  const name = userData.name || "My Account";
 
   return (
     <div className="flex w-full space-x-3">
@@ -26,7 +27,7 @@ export const Account = observer(function Account() {
             height={64}
             className="rounded-full"
             src={userData.avatar}
-            alt={userData.name as string}
+            alt={name}
           />
         ) : (
           <FaCircleUser className="h-16 w-16 text-white" />
@@ -34,7 +35,7 @@ export const Account = observer(function Account() {
       </div>
       <div className="flex flex-col justify-around">
         <Text size="xl" color="white">
-          My Account
+          {name}
         </Text>
         <Text size="3xl" color="white" fontWeight="bold">
           ${totalData.loading ? 0 : totalData.total}
