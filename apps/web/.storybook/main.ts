@@ -19,10 +19,22 @@ const config: StorybookConfig = {
   ],
   framework: {
     name: getAbsolutePath("@storybook/nextjs"),
-    options: {},
+    options: {
+      builder: {
+        useSWC: true,
+      },
+    },
   },
   docs: {
     autodocs: "tag",
   },
+  swc: (config, options) => {
+    return {
+      ...config,
+      decorators: true,
+      decoratorVersion: "2022-03",
+    };
+  },
 };
+
 export default config;
