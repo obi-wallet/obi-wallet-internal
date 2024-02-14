@@ -69,7 +69,7 @@ export default observer(function AppConnect() {
   }
 
   return (
-    <div className="grid h-full w-full grid-rows-3 gap-4 px-7 py-5 text-white">
+    <div className="grid h-full w-full px-7 py-5 text-white">
       {renderExplanationModal()}
       <Box className="ml-2 rounded-md text-xl">
         <Text size="xl">App Connect</Text>
