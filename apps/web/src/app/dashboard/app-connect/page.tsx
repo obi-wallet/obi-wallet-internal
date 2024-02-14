@@ -35,22 +35,26 @@ export default observer(function AppConnect() {
       <Modal title="How to App Connect with Obi">
         <div className="text-ml text-white">
           <ol className="list-inside list-decimal">
-            <li>
-              Navigate to the application you want to connect to. If you already
-              connected to the application with a wallet, you may need to
+            <li className="mb-6">
+              Open the app you want to connect to in a browser tab.
+            </li>
+            <li className="mb-6">
+              If you have used a different wallet with this app, you may need to
               disconnect.
             </li>
-            <li>
-              Find the Wallet Connect option, and display the QR code. In some
-              circumstances, you can choose Keplr Mobile to display the QR code.
+            <li className="mb-6">
+              Find the <strong className="font-bold">WalletConnect</strong>{" "}
+              option and display the QR code. In some apps, you may need to
+              select <strong className="font-bold">Keplr Mobile</strong> to
+              display the code.
               <img
                 className="my-2 w-full object-contain"
                 src="/assets/images/app-connect-pairing.png"
               />
             </li>
-            <li>
-              Copy the pairing URL and paste it in the pairing URL box on the
-              Obi App Connect tab.
+            <li className="mb-6">
+              Copy the WalletConnect URL and paste it into the Obi App Connect
+              tab.
             </li>
           </ol>
           <div className="mt-5 flex justify-end">
@@ -75,9 +79,8 @@ export default observer(function AppConnect() {
         <Text size="xl">App Connect</Text>
         <Text className="mt-2">
           <span className="justify-center align-middle">
-            Navigate to your favorite application and copy the WalletConnect
-            URL. Paste the pairing URL below to connect Obi dashboard to the
-            application.
+            Navigate to your favorite app, copy the WalletConnect URL, and paste
+            it below to connect it to Obi.
             <div
               className="inline-block cursor-pointer px-2"
               onClick={() => {
@@ -123,7 +126,7 @@ export default observer(function AppConnect() {
                     "bg-background-secondary",
                   )}
                 >
-                  Pairing URL
+                  WalletConnect URL
                 </span>
               </label>
             </div>
