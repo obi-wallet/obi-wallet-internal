@@ -1,4 +1,7 @@
-import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
+import {
+  getSec256k1CompressedPublicKey,
+  Secp256k1PublicKey,
+} from "@obi-wallet/sdk-secp256k1";
 import { Core } from "@walletconnect/core";
 import { buildApprovedNamespaces, getSdkError } from "@walletconnect/utils";
 import { Web3Wallet } from "@walletconnect/web3wallet";
@@ -59,7 +62,9 @@ export async function setupWalletConnect({
             return {
               algo: "secp256k1",
               address: account.address,
-              pubkey: account.publicKey.value,
+              pubkey: Buffer.from(
+                getSec256k1CompressedPublicKey(account.publicKey),
+              ).toString("base64"),
             };
           });
 
