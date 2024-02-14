@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Input } from "./input";
+import { BalanceInput } from ".";
 
 const meta = {
-  title: "UI/Input",
-  component: Input,
+  title: "UI/Balance Input",
+  component: BalanceInput,
   parameters: {
     layout: "centered",
     backgrounds: {
@@ -14,22 +14,15 @@ const meta = {
   },
   tags: ["autodocs"],
   argTypes: {
-    label: { type: "string" },
-    labelClassname: {
-      type: "string",
-      description:
-        "Additional classes for the label. To display the label correctly, it is required to pass the background, such as `bg-black`",
-    },
+    placeholder: { type: "string" },
   },
-} satisfies Meta<typeof Input>;
+} satisfies Meta<typeof BalanceInput>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
-    label: "Label",
-    labelClassname: "bg-black",
     placeholder: "Placeholder",
   },
 };

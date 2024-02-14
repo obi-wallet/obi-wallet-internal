@@ -148,8 +148,8 @@ const Assets = observer(function Assets() {
       <div className="mt-3 flex  w-full flex-row rounded-md bg-slate-600 p-2">
         <FaExclamation className="ml-2 mr-3" />
         <Text size="sm" className="">
-          Fast Travel transactions may take a few minutes be processed and will
-          appear here once visible on the network.
+          Fast Travel transactions may take a few minutes to be processed and
+          will appear here once visible on the network.
         </Text>
       </div>
 

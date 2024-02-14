@@ -8,6 +8,7 @@ import {
   CosmosSdkChainId,
   CosmosSdkChains,
 } from "@/target-chain/cosmos-sdk/chains";
+import { InputContainer } from "@/ui/container";
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
 import { useQRCode } from "next-qrcode";
@@ -161,31 +162,3 @@ const ChainDropdown = observer(function ChainDropdown({
     </div>
   );
 });
-function InputContainer({
-  children,
-  label,
-  className,
-  onClick,
-}: {
-  children: React.ReactNode;
-  label?: string;
-  className?: string;
-  onClick?: () => void;
-}) {
-  return (
-    <div
-      className={
-        " hover:border-color group relative  cursor-pointer rounded-xl  border border-zinc-800 p-6 hover:border-blue-600 hover:first:scale-125" +
-        className
-      }
-      onClick={onClick}
-    >
-      {children}
-      {label && (
-        <label className="bg-background-secondary absolute left-0 top-0 ml-5 -translate-y-1/2  px-2 py-1 text-xs text-white">
-          {label}
-        </label>
-      )}
-    </div>
-  );
-}

@@ -1,21 +1,45 @@
 import { cn } from "@/lib/utils";
-import { DetailedHTMLProps, InputHTMLAttributes } from "react";
+import {
+  DetailedHTMLProps,
+  InputHTMLAttributes,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+} from "react";
 
 export interface BaseInputProps
   extends DetailedHTMLProps<
     InputHTMLAttributes<HTMLInputElement>,
     HTMLInputElement
   > {}
-
-export function BaseInput({ className, ...rest }: BaseInputProps) {
-  return (
-    <input
-      className={cn(
-        "border-foreground-primary-border peer w-full rounded-xl border bg-transparent px-7 py-6 text-2xl font-normal text-white focus:border-blue-600 focus-visible:outline-none",
-        "[-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none",
-        className,
-      )}
-      {...rest}
-    />
-  );
+interface ParentRef {
+  focus: () => void;
 }
+
+export const BaseInput = forwardRef<ParentRef, BaseInputProps>(
+  function BaseInput(
+    { className, ...rest }: BaseInputProps,
+    parentRef: React.Ref<ParentRef>,
+  ) {
+    const ref = useRef<HTMLInputElement>(null);
+    useImperativeHandle(parentRef, () => ({
+      // This function exposes the localRef's current value to the parent
+      // You can also expose other methods or values if needed
+      focus: () => {
+        ref.current?.focus();
+      },
+    }));
+    return (
+      <input
+        ref={ref}
+        className={cn(
+          // we need to remove focus and hover styles
+          "p-0 text-lg text-white hover:border-transparent focus:border-transparent focus:outline-none focus:ring-0",
+          "bg-transparent",
+          className,
+        )}
+        {...rest}
+      />
+    );
+  },
+);
