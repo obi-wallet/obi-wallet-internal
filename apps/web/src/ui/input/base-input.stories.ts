@@ -7,6 +7,10 @@ const meta = {
   component: BaseInput,
   parameters: {
     layout: "centered",
+    backgrounds: {
+      default: "obi",
+      values: [{ name: "obi", value: "#0F0F26" }],
+    },
   },
   tags: ["autodocs"],
   argTypes: {

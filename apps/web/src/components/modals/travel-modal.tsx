@@ -67,7 +67,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   targetAsset,
   onDismiss,
   modal = true,
-  cancelLabel = "Cancel",
+  cancelLabel = "Accept",
 }) {
   const [focused, setFocused] = useState<boolean>(false);
   const [direction, setDirection] = useState<"from" | "to">();
@@ -123,6 +123,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   const [depositAddress, setDepositAddress] = useState<string | undefined>(
     undefined,
   );
+  const [addressCopied, setAddressCopied] = useState<boolean>(false);
 
   const executeTx = async () => {
     if (!isDataValid()) return;
@@ -362,21 +363,22 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
 
         <Divider />
         {depositAddress && (
-          <div className="flex-column  flex  bg-black/30 bg-opacity-10 p-5">
+          <div
+            className={cn(
+              "flex-column  flex  bg-black/30 bg-opacity-10 p-5",
+              addressCopied && "rounded-md  border-2 shadow-md shadow-white",
+            )}
+          >
             <div
-              className=" mr-5
-           flex aspect-square
-           h-10
-            w-10
-          items-center
-          justify-center rounded-full
-          border border-white
-          p-2
-          "
+              className={cn(
+                "mr-5 flex aspect-square h-10 w-10 items-center justify-center rounded-full border border-white p-2",
+
+                addressCopied && "border-2",
+              )}
             >
               <FaExclamation className="m-auto text-white " />
             </div>
-            <Text size="sm" className=" leading-5">
+            <Text size={addressCopied ? "md" : "sm"} className=" leading-5">
               Execute with Metamask or deposit to the address shown below. You
               may close this dialogue after depositing.
             </Text>
@@ -389,6 +391,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
           addressChanged={setDepositAddress}
           slippageError={formState.errors.slippage?.message}
           publicKey={publicKey}
+          onCopy={() => setAddressCopied(true)}
         />
 
         <div className="mt-8 flex justify-between">
@@ -509,6 +512,7 @@ function GetAddressComponent({
   addressChanged,
   slippageError,
   publicKey,
+  onCopy,
 }: {
   publicKey?: Secp256k1PublicKey;
   fromAsset?: AssetAmmount;
@@ -516,6 +520,7 @@ function GetAddressComponent({
   slippage: number;
   slippageError?: string;
   addressChanged: (address: string | undefined) => void;
+  onCopy?: () => void;
 }) {
   const [address, setAddress] = useState<string | undefined>(undefined);
   const [invalid, setInvalid] = useState<boolean>(false);
@@ -581,29 +586,23 @@ function GetAddressComponent({
 
     const requestData = {
       slippage: slippageValue,
-      steps: [
-        {
-          fromToken: from?.address,
-          fromChain: "arbitrum",
-          stepType: "EthDeposit",
-        },
-        {
-          fromAmount,
-          fromAddress: "0xeCbFB380e9020FF4f7fFfE05a78D2153A7071153",
-          toChain: to?.chainId,
-          slippage: slippageValue,
-          toToken: to?.denom,
-          fromToken: from?.address,
-          fromChain: from?.chainId,
-          toAddress,
-          enableForecall: false,
-          stepType: "Squid",
-        },
-      ],
+      from: {
+        address: "0x337bd07492342e6148212b0dab1bce90e9433e7b",
+        chainId: from?.chainId,
+        asset: from?.address,
+        amount: fromAmount,
+      },
+      to: {
+        chainId: to?.chainId,
+        asset: to?.denom,
+        address: toAddress,
+      },
+
       pubkey: publicKey?.value,
     };
     // fetch the deposit address
     const requestURL = `https://fast-travel-playground.vercel.app/api/swap/simulate.rs`;
+
     // make a post request to the url
     const res = await fetch(requestURL, {
       method: "POST",
@@ -688,6 +687,7 @@ function GetAddressComponent({
           // copy to clipboard
           copy(address);
           setIsCopied(true);
+          onCopy && onCopy();
 
           setTimeout(() => {
             setIsCopied(false);

@@ -39,12 +39,11 @@ const navMenu: NavMenu[] = [
     showOnDesktop: true,
   },
   {
-    href: "https://app.kado.money",
+    href: "/dashboard/buy-crypto",
     text: "Buy Crypto",
     module: "buy-crypto",
     icon: "/assets/icons/nav-buy-crypto.svg",
     showOnDesktop: true,
-    target: "_blank",
   },
   {
     href: "/dashboard/fast-travel",

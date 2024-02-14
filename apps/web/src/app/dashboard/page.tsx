@@ -10,6 +10,7 @@ import { formatEther, parseUnits } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { FaExclamation } from "react-icons/fa6";
 
 import { FromAsset, fromAssets, ToAsset, toAssets } from "./fast-travel/assets";
 
@@ -143,6 +144,14 @@ const Assets = observer(function Assets() {
       </div>
 
       <Divider className="mt-5" />
+      {/* create an alert banner to remind users to wait if a tx has just been issued */}
+      <div className="mt-3 flex  w-full flex-row rounded-md bg-slate-600 p-2">
+        <FaExclamation className="ml-2 mr-3" />
+        <Text size="sm" className="">
+          Fast Travel transactions may take a few minutes to be processed and
+          will appear here once visible on the network.
+        </Text>
+      </div>
 
       <PendingAssets />
       <AssetBalance />

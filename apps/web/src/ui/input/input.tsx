@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
+import { InputContainer } from "@/ui/container";
 import { BaseInput } from "@/ui/input/base-input";
-import { DetailedHTMLProps, InputHTMLAttributes } from "react";
+import React, { DetailedHTMLProps, InputHTMLAttributes } from "react";
 
 export interface InputProps
   extends Omit<
@@ -10,38 +10,42 @@ export interface InputProps
   label: string;
   labelClassname: string;
   onChange?: (value: string) => void;
+  containerClassName?: string;
+  inputClassName?: string;
 }
 
 export function Input({
   labelClassname,
   label,
   onChange,
+  inputClassName,
+  className,
   ...rest
 }: InputProps) {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const handleClick = () => {
+    inputRef.current?.focus();
+  };
+
   return (
-    <div className="flex w-full flex-col">
-      <div className="relative w-full">
-        <label>
-          <BaseInput
-            {...rest}
-            onChange={
-              onChange
-                ? (e) => {
-                    onChange(e.target.value);
-                  }
-                : undefined
-            }
-          />
-          <span
-            className={cn(
-              "absolute left-0 top-0 ml-5 -translate-y-1/2 px-2 py-1 text-xs text-white",
-              labelClassname,
-            )}
-          >
-            {label}
-          </span>
-        </label>
-      </div>
-    </div>
+    <InputContainer
+      label={label}
+      labelClassname={labelClassname}
+      className={className}
+      onClick={handleClick}
+    >
+      <BaseInput
+        {...rest}
+        ref={inputRef}
+        onChange={
+          onChange
+            ? (e) => {
+                onChange(e.target.value);
+              }
+            : undefined
+        }
+        className={inputClassName}
+      />
+    </InputContainer>
   );
 }
