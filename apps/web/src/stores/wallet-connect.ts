@@ -1,6 +1,9 @@
 import { newFetchPublicKey } from "@/hooks/use-public-key";
-import { TargetChain, TargetChainId } from "@/target-chain";
-import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
+import { TargetChain } from "@/target-chain";
+import {
+  CosmosSdkChains,
+  isCosmosSdkChainId,
+} from "@/target-chain/cosmos-sdk/chains";
 import { MpcWallets } from "@obi-wallet/sdk";
 import { getSdkError } from "@walletconnect/utils";
 import type Web3Wallet from "@walletconnect/web3wallet";
@@ -47,8 +50,9 @@ export class WalletConnectStore {
           icons: [],
         },
         getAccounts: this.getAccounts.bind(this),
-        getSigner: async (chainId: TargetChainId) => {
+        getSigner: async (chainId: string) => {
           const wallet = this.walletsStore.currentWallet;
+          invariant(isCosmosSdkChainId(chainId), "Invalid chain ID");
           invariant(wallet, "Wallet not found");
           return TargetChain.chainId(chainId).getSigner(wallet);
         },
