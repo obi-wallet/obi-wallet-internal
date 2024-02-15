@@ -45,6 +45,7 @@ export class RootStore {
     this.mpcStore = new MpcStore({
       kvStore: new KVStore("mpc-store"),
       walletsStore: this.mpcWalletsStore,
+      sdkRootStore: this.sdkRootStore,
       wasmStore: this.wasmStore,
     });
     this.walletConnectStore = new WalletConnectStore({

@@ -1,5 +1,4 @@
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
-import fetch from "isomorphic-unfetch";
 import invariant from "tiny-invariant";
 
 import { ChainId } from "../../chains";
