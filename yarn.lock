@@ -3438,6 +3438,7 @@ __metadata:
     "@walletconnect/types": "npm:^2.11.0"
     "@walletconnect/utils": "npm:^2.11.0"
     "@walletconnect/web3wallet": "npm:^1.9.5"
+    cosmjs-types: "npm:^0.8.0"
     eslint: "npm:^8.55.0"
     jest: "npm:^29.7.0"
     ts-jest: "npm:^29.1.1"
