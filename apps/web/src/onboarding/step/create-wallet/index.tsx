@@ -8,6 +8,7 @@ import { ObservableMpcWallet } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useEffectOnceWhen } from "rooks";
 
 export const CreateWalletStep = observer(function CreateWalletStep({
@@ -53,7 +54,43 @@ export const CreateWalletStep = observer(function CreateWalletStep({
   });
 
   if (!step.waitUntilDone) return null;
-  if (createWalletMutation.isLoading) return <Text color="white">Loading</Text>;
+
+  if (createWalletMutation.isLoading)
+    return (
+      <div className="flex flex-col items-center justify-center">
+        <img
+          src="/assets/images/loading.gif"
+          alt="loading"
+          style={{
+            marginTop: "-20px",
+          }}
+        />
+
+        <LoadingText />
+      </div>
+    );
 
   return null;
 });
+const messages = [
+  "Building your all-chains account…",
+  "Rolling your secure key shards…",
+  "This will only take a few moments…",
+  "Adding EVM chains…",
+  "Adding Cosmos chains…",
+  "Securing your non-custodial fast travel tunnel…",
+];
+const getRandomMessage = () => {
+  return messages[Math.floor(Math.random() * messages.length)];
+};
+function LoadingText() {
+  const [message, setMessage] = useState(getRandomMessage());
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMessage(getRandomMessage);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return <Text className=" text-center">{message}</Text>;
+}

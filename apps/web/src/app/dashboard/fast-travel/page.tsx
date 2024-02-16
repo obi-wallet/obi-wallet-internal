@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useState } from "react";
-import { FaHome } from "react-icons/fa";
 
 import { toAssets } from "./assets";
 
@@ -101,7 +100,14 @@ export default observer(function FastTravel() {
                     key={`vault-${asset.label}`}
                     className="flex cursor-not-allowed flex-row space-x-3 bg-gray-700 opacity-50"
                   >
-                    {/* {asset.icon} */}
+                    <div className="relative aspect-square w-full max-w-[35px] ">
+                      <Image
+                        alt={asset.label}
+                        src={asset.image ?? ""}
+                        layout="fill"
+                        objectFit="contain"
+                      />
+                    </div>
                     <Text>{asset.label} (soon)</Text>
                   </Box>
                 ))}
@@ -119,7 +125,17 @@ export default observer(function FastTravel() {
                       "cursor-not-allowed opacity-50 ",
                     )}
                   >
-                    <Text>{asset.label} (soon)</Text>
+                    {asset.image && (
+                      <div className="relative aspect-square w-full max-w-[35px] ">
+                        <Image
+                          alt={asset.label}
+                          src={asset.image ?? ""}
+                          layout="fill"
+                          objectFit="contain"
+                        />
+                      </div>
+                    )}
+                    <Text className="leading-4">{asset.label} (soon)</Text>
                   </Box>
                 ))}
               </div>
@@ -142,19 +158,31 @@ export default observer(function FastTravel() {
 const nfts = [
   {
     label: "Bad Kids",
-    icon: <FaHome className="h-8 w-8 text-white" />,
+    image: null,
   },
 ];
 const vaults = [
   {
-    label: "Sommelier Finance: Real Yield ETH - 14.42% ",
-    icon: <FaHome className="h-8 w-8 text-white" />,
+    label: "Apollo's wstETH/axlWETH 7d Locked LP Vault 33.42% APY",
+    image:
+      "https://assets.coingecko.com/coins/images/34792/large/apollo-png-256.png?1706031403",
+  },
+  {
+    label: "Apollo's stTIA/TIA Capped LP Vault 44.45% APY",
+
+    image:
+      "https://assets.coingecko.com/coins/images/34792/large/apollo-png-256.png?1706031403",
+  },
+  {
+    label: "Apollo's NTRN/wstETH 7d Locked LP Vault 101.26% APY",
+    image:
+      "https://assets.coingecko.com/coins/images/34792/large/apollo-png-256.png?1706031403",
   },
 ];
+
 const farms = [
   {
     label: "Staking assets",
-
-    icon: <FaHome className="h-8 w-8 text-white" />,
+    image: null,
   },
 ];

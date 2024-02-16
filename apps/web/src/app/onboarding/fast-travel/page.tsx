@@ -12,7 +12,6 @@ export default function Congratulations() {
       <TravelModal
         targetAsset="sei"
         modal={false}
-        cancelLabel="SKIP"
         onDismiss={() => {
           router.push("/dashboard");
         }}

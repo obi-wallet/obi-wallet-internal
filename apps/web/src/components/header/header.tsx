@@ -111,7 +111,7 @@ const LogIn = observer(function LogIn() {
       </Button>
       {modalOpen
         ? renderModal(
-            <Modal title="Log in">
+            <Modal title="Log in" onClose={() => setModalOpen(false)}>
               {mpcWalletsStore.wallets.map((wallet, i) => {
                 return (
                   <Button

@@ -15,14 +15,14 @@ const flows: Record<string, OnboardingStep[]> = {
     {
       type: OnboardingStepType.CreateWallet,
       waitUntilDone: true,
-      redirectTo: "/onboarding/congratulations",
+      redirectTo: "/dashboard",
     },
   ],
   external: [
     { type: OnboardingStepType.PrimaryKey, from: OnboardingFromType.External },
     {
       type: OnboardingStepType.CreateWallet,
-      waitUntilDone: false,
+      waitUntilDone: true,
       redirectTo: "/onboarding/fast-travel",
     },
   ],
@@ -42,7 +42,7 @@ const flows: Record<string, OnboardingStep[]> = {
     {
       type: OnboardingStepType.CreateWallet,
       demoMode: true,
-      waitUntilDone: false,
+      waitUntilDone: true,
       redirectTo: "/onboarding/fast-travel",
     },
   ],
