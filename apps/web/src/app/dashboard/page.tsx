@@ -358,7 +358,15 @@ function AssetItem({
     >
       <div className="flex flex-row items-center">
         <div className="mr-3">
-          <img src={assetData?.image ?? ""} alt="asset" className="h-8 w-8" />
+          {assetData?.image ? (
+            <img
+              src={assetData?.image}
+              alt={assetData.label}
+              className="h-8 w-8"
+            />
+          ) : (
+            <div className="h-8 w-8" />
+          )}
         </div>
         <div className="flex flex-row">
           <div className="mr-5 text-lg">
