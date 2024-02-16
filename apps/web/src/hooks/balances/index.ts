@@ -1,4 +1,4 @@
-import { ToAsset, toAssets } from "@/app/dashboard/fast-travel/assets";
+import { toAssets } from "@/app/dashboard/fast-travel/assets";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
@@ -89,10 +89,18 @@ export function useBalances({
   });
 }
 
-const getTokenPrice = async (chainId: string, denom: string) => {
+const getTokenPrice = async (
+  chainId: string,
+  denom: string,
+): Promise<number> => {
   const url = `https://api.0xsquid.com/v1/token-price?chainId=${chainId}&tokenAddress=${denom}`;
   const res = await fetch(url);
-  const json = await res.json();
+
+  if (res.status !== 200) {
+    return 0;
+  }
+
+  const json = (await res.json()) as { price: number };
   return json.price;
 };
 
@@ -123,11 +131,15 @@ export function useUSDTotalPrice(): {
     .reduce((acc, balance) => {
       const price = balance?.price as number;
 
-      const asset = toAssets[
-        Object.keys(toAssets).find(
-          (key) => toAssets[key]?.denom === balance?.denom,
-        ) ?? ""
-      ] as ToAsset;
+      const asset =
+        toAssets[
+          Object.keys(toAssets).find(
+            (key) => toAssets[key]?.denom === balance?.denom,
+          ) ?? ""
+        ];
+      if (!asset) {
+        return acc;
+      }
       const amount = Number(balance?.amount);
       const decimals = asset?.decimals ?? 0;
       // get amount using the asset's decimals

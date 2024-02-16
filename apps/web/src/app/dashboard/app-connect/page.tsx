@@ -107,7 +107,7 @@ export default observer(function AppConnect() {
                 <div className="border-background-select flex flex-row justify-between rounded-xl border bg-transparent p-2 align-middle">
                   <input
                     className={cn(
-                      "peer w-full bg-transparent px-2 text-2xl font-normal text-white focus:border-blue-600 focus-visible:outline-none",
+                      "peer w-full bg-transparent px-2 text-sm font-normal text-white focus:border-blue-600 focus-visible:outline-none",
                       "[-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none",
                     )}
                     value={uri}
