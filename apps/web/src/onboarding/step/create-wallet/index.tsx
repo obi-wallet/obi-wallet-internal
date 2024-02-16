@@ -55,7 +55,7 @@ export const CreateWalletStep = observer(function CreateWalletStep({
 
   if (!step.waitUntilDone) return null;
 
-  if (createWalletMutation.isLoading || true)
+  if (createWalletMutation.isLoading)
     return (
       <div className="flex flex-col items-center justify-center">
         <img
@@ -83,7 +83,7 @@ const messages = [
 const getRandomMessage = () => {
   return messages[Math.floor(Math.random() * messages.length)];
 };
-const LoadingText = () => {
+function LoadingText() {
   const [message, setMessage] = useState(getRandomMessage());
   useEffect(() => {
     const interval = setInterval(() => {
@@ -93,4 +93,4 @@ const LoadingText = () => {
   }, []);
 
   return <Text className=" text-center">{message}</Text>;
-};
+}

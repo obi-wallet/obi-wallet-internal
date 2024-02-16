@@ -1,9 +1,9 @@
 "use client";
 
 import { ReactNode } from "react";
+import { FaTimes } from "react-icons/fa";
 
 import { Box, Divider, Text } from "..";
-import { FaTimes } from "react-icons/fa";
 
 export function Modal({
   children,

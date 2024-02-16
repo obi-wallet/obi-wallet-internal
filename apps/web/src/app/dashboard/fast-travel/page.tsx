@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useState } from "react";
-import { FaHome } from "react-icons/fa";
 
 import { toAssets } from "./assets";
 
