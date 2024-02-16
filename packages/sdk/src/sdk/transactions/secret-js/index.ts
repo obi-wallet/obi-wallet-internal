@@ -88,7 +88,7 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     if (!account || !this.isBaseAccount(account)) {
       return AccountValidationResult.ACCOUNT_NOT_READY;
     }
-    if (!account.pubKey || account.sequence.equals(0)) {
+    if (!account.pubKey || account.sequence == 0n) {
       return AccountValidationResult.PUBLIC_KEY_NOT_READY;
     }
     return AccountValidationResult.READY;

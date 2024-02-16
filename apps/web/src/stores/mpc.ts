@@ -1,5 +1,9 @@
 import { WasmStore } from "@/stores/wasm";
-import { AbstractKVStore } from "@obi-wallet/headless-ui";
+import {
+  AbstractKVStore,
+  RootStore,
+  WalletState,
+} from "@obi-wallet/headless-ui";
 import { Parameters as KeygenParam } from "@obi-wallet/mpc-ecdsa-wasm-types";
 import {
   BackupShare,
@@ -32,10 +36,12 @@ export class MpcStore {
   constructor({
     kvStore,
     walletsStore,
+    sdkRootStore,
     wasmStore,
   }: {
     kvStore: AbstractKVStore;
     walletsStore: MpcWallets;
+    sdkRootStore: RootStore;
     wasmStore: WasmStore;
   }) {
     this.unclaimedSharesKVStore = kvStore;
@@ -45,7 +51,10 @@ export class MpcStore {
     this.webWorker = new Worker(new URL("../workers/mpc", import.meta.url));
 
     autorun(() => {
-      if (!this.walletsStore.currentWallet) {
+      if (
+        sdkRootStore.walletsStoreState === WalletState.READY &&
+        !sdkRootStore.mpcWalletsStore.currentWallet
+      ) {
         void new Promise(() => {
           void this.createSharesSingleton();
         });

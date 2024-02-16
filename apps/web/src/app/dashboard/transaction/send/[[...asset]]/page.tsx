@@ -123,27 +123,33 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     .map((b) => b.balances)
     .flat();
 
-  const balanceOptions: IBalanceOption[] = withChainId.map((b) => {
-    // find the asset in ToAssets using the denom, toAssets is an object and the denom is not the key
-    const asset =
-      toAssets[
-        Object.keys(toAssets).find((key) => toAssets[key]?.denom === b.denom) ??
-          ""
-      ];
-    invariant(asset, "Asset not found");
-    const amount = Number(b.amount);
-    const decimals = asset?.decimals ?? 0;
-    // get amount using the asset's decimals
-    const decimalAmount = amount / Math.pow(10, decimals);
+  const balanceOptions = withChainId
+    .map((b) => {
+      // find the asset in ToAssets using the denom, toAssets is an object and the denom is not the key
+      const asset =
+        toAssets[
+          Object.keys(toAssets).find(
+            (key) => toAssets[key]?.denom === b.denom,
+          ) ?? ""
+        ];
+      if (!asset) {
+        return null;
+      }
+      invariant(asset, "Asset not found");
+      const amount = Number(b.amount);
+      const decimals = asset?.decimals ?? 0;
+      // get amount using the asset's decimals
+      const decimalAmount = amount / Math.pow(10, decimals);
 
-    return {
-      image: asset?.image,
-      network: TargetChain.chainId(b.chainId).label,
-      assetUnit: asset?.label,
-      balance: decimalAmount,
-      asset: asset,
-    };
-  });
+      return {
+        image: asset?.image,
+        network: TargetChain.chainId(b.chainId).label,
+        assetUnit: asset?.label,
+        balance: decimalAmount,
+        asset: asset,
+      };
+    })
+    .filter((option): option is IBalanceOption => !!option);
 
   useEffect(() => {
     if (coin.asset) return;

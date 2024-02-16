@@ -5,9 +5,25 @@ import {
 } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
 import { Chain } from "@chain-registry/types";
-import { EncodeObject, OfflineSigner } from "@cosmjs/proto-signing";
 import {
+  CosmWasmClient,
+  createWasmAminoConverters,
+  SigningCosmWasmClient,
+  wasmTypes,
+} from "@cosmjs/cosmwasm-stargate";
+import { EncodeObject, OfflineSigner, Registry } from "@cosmjs/proto-signing";
+import {
+  AminoTypes,
   calculateFee,
+  createAuthzAminoConverters,
+  createBankAminoConverters,
+  createDistributionAminoConverters,
+  createFeegrantAminoConverters,
+  createGovAminoConverters,
+  createIbcAminoConverters,
+  createStakingAminoConverters,
+  createVestingAminoConverters,
+  defaultRegistryTypes,
   GasPrice,
   SigningStargateClient,
   StargateClient,
@@ -68,7 +84,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
   }
 
   public async withStargateClient<T>(f: (client: StargateClient) => T) {
-    const client = await this.createCosmJsStargateClient();
+    const client = await this.createStargateClient();
     try {
       return await f(client);
     } finally {
@@ -80,7 +96,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     signer: OfflineSigner,
     f: (client: SigningStargateClient) => T,
   ) {
-    const client = await this.createCosmJsSigningStargateClient(signer);
+    const client = await this.createSigningStargateClient(signer);
     try {
       return await f(client);
     } finally {
@@ -88,7 +104,28 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     }
   }
 
-  protected async createCosmJsStargateClient() {
+  public async withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
+    const client = await this.createCosmWasmClient();
+    try {
+      return await f(client);
+    } finally {
+      client.disconnect();
+    }
+  }
+
+  public async withSigningCosmWasmClient<T>(
+    signer: OfflineSigner,
+    f: (client: SigningCosmWasmClient) => T,
+  ) {
+    const client = await this.createSigningCosmWasmClient(signer);
+    try {
+      return await f(client);
+    } finally {
+      client.disconnect();
+    }
+  }
+
+  protected async createStargateClient() {
     const rpcs = this.chainData.rpcs;
     for (const rpc of rpcs) {
       try {
@@ -100,13 +137,37 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     throw new Error("No RPC connected");
   }
 
-  protected async createCosmJsSigningStargateClient(signer: OfflineSigner) {
+  protected async createSigningStargateClient(signer: OfflineSigner) {
     const rpcs = this.chainData.rpcs;
     for (const rpc of rpcs) {
       try {
         return await SigningStargateClient.connectWithSigner(rpc, signer, {
           gasPrice: this.gasPrice,
         });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    throw new Error("No RPC connected");
+  }
+
+  protected async createCosmWasmClient() {
+    const rpcs = this.chainData.rpcs;
+    for (const rpc of rpcs) {
+      try {
+        return await CosmWasmClient.connect(rpc);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    throw new Error("No RPC connected");
+  }
+
+  protected async createSigningCosmWasmClient(signer: OfflineSigner) {
+    const rpcs = this.chainData.rpcs;
+    for (const rpc of rpcs) {
+      try {
+        return await SigningCosmWasmClient.connectWithSigner(rpc, signer);
       } catch (e) {
         console.error(e);
       }
@@ -124,7 +185,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     invariant(this.validateMessages(messages), "Invalid messages");
 
     const signer = await this.getSigner(wallet);
-    return await this.withSigningStargateClient(signer, async (client) => {
+    return await this.withSigningCosmWasmClient(signer, async (client) => {
       if (!this.gasPrice) return undefined;
 
       const gasEstimation = await client.simulate(
@@ -172,5 +233,24 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
 
   public validateFee(fee: unknown): fee is StdFee {
     return isStdFee(fee);
+  }
+
+  public get aminoTypes() {
+    return new AminoTypes({
+      ...createAuthzAminoConverters(),
+      ...createBankAminoConverters(),
+      ...createDistributionAminoConverters(),
+      ...createGovAminoConverters(),
+      ...createStakingAminoConverters(),
+      ...createIbcAminoConverters(),
+      ...createFeegrantAminoConverters(),
+      ...createVestingAminoConverters(),
+      ...createWasmAminoConverters(),
+      ...createFeegrantAminoConverters(),
+    });
+  }
+
+  public get registry() {
+    return new Registry([...defaultRegistryTypes, ...wasmTypes]);
   }
 }
