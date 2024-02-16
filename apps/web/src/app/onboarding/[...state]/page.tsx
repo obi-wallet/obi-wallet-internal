@@ -15,7 +15,7 @@ const flows: Record<string, OnboardingStep[]> = {
     {
       type: OnboardingStepType.CreateWallet,
       waitUntilDone: true,
-      redirectTo: "/onboarding/congratulations",
+      redirectTo: "/dashboard",
     },
   ],
   external: [
