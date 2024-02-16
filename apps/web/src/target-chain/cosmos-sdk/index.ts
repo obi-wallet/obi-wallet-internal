@@ -9,8 +9,9 @@ import {
   CosmWasmClient,
   createWasmAminoConverters,
   SigningCosmWasmClient,
+  wasmTypes,
 } from "@cosmjs/cosmwasm-stargate";
-import { EncodeObject, OfflineSigner } from "@cosmjs/proto-signing";
+import { EncodeObject, OfflineSigner, Registry } from "@cosmjs/proto-signing";
 import {
   AminoTypes,
   calculateFee,
@@ -22,6 +23,7 @@ import {
   createIbcAminoConverters,
   createStakingAminoConverters,
   createVestingAminoConverters,
+  defaultRegistryTypes,
   GasPrice,
   SigningStargateClient,
   StargateClient,
@@ -246,5 +248,9 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
       ...createWasmAminoConverters(),
       ...createFeegrantAminoConverters(),
     });
+  }
+
+  public get registry() {
+    return new Registry([...defaultRegistryTypes, ...wasmTypes]);
   }
 }

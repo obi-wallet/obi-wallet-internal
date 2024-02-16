@@ -3449,6 +3449,7 @@ __metadata:
     "@cosmjs/amino": "npm:^0.32.2"
     "@cosmjs/cosmwasm-stargate": "npm:^0.32.2"
     "@cosmjs/crypto": "npm:^0.32.2"
+    "@cosmjs/encoding": "npm:^0.32.2"
     "@cosmjs/proto-signing": "npm:^0.32.2"
     "@cosmjs/stargate": "npm:^0.32.2"
     "@hookform/resolvers": "npm:^3.3.4"
