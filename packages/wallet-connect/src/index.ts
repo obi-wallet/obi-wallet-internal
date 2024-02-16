@@ -1,5 +1,3 @@
-import { OfflineAminoSigner } from "@cosmjs/amino";
-import { OfflineDirectSigner } from "@cosmjs/proto-signing";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
@@ -8,13 +6,18 @@ import { Core } from "@walletconnect/core";
 import { buildApprovedNamespaces, getSdkError } from "@walletconnect/utils";
 import { Web3Wallet } from "@walletconnect/web3wallet";
 
-export * from "./user-interaction";
+import {
+  CosmosSignAminoUserInteraction,
+  CosmosSignDirectUserInteraction,
+} from "./user-interactions";
+
+export * from "./user-interactions";
 
 export async function setupWalletConnect({
   projectId,
   metadata,
   getAccounts,
-  getSigner,
+  getWalletMeta,
 }: {
   projectId: string;
   metadata: {
@@ -31,9 +34,9 @@ export async function setupWalletConnect({
       publicKey: Secp256k1PublicKey;
     }[]
   >;
-  getSigner: (
-    chainId: string,
-  ) => Promise<OfflineDirectSigner & OfflineAminoSigner>;
+  getWalletMeta: () => {
+    userEntryAddress: string;
+  };
 }) {
   const core = new Core({
     projectId,
@@ -86,36 +89,63 @@ export async function setupWalletConnect({
         break;
       }
       case "cosmos_signAmino": {
-        const signer = await getSigner(chainId);
-        console.log(signer);
-        const { signerAddress, signDoc } = request.params;
-        // TODO: Should be user interaction showing signature modal instead
-        const signResponse = await signer.signAmino(signerAddress, signDoc);
-        console.log(signResponse);
+        const walletMeta = getWalletMeta();
+        const response = await CosmosSignAminoUserInteraction.start({
+          walletMeta,
+          cancelable: true,
+          signerAddress: request.params.signerAddress,
+          signDoc: request.params.signDoc,
+        });
 
-        const response = {
-          id,
-          jsonrpc: "2.0",
-          result: signResponse,
-        };
-
-        await web3wallet.respondSessionRequest({ topic, response });
+        if (response.approved) {
+          await web3wallet.respondSessionRequest({
+            topic,
+            response: {
+              id,
+              jsonrpc: "2.0",
+              result: response.payload,
+            },
+          });
+        } else {
+          await web3wallet.respondSessionRequest({
+            topic,
+            response: {
+              id,
+              jsonrpc: "2.0",
+              error: getSdkError("USER_REJECTED"),
+            },
+          });
+        }
         break;
       }
       case "cosmos_signDirect": {
-        const signer = await getSigner(chainId);
-        const { signerAddress, signDoc } = request.params;
-        // TODO: Should be user interaction showing signature modal instead
-        const signResponse = await signer.signDirect(signerAddress, signDoc);
-        console.log(signResponse);
+        const walletMeta = getWalletMeta();
+        const response = await CosmosSignDirectUserInteraction.start({
+          walletMeta,
+          cancelable: true,
+          signerAddress: request.params.signerAddress,
+          signDoc: request.params.signDoc,
+        });
 
-        const response = {
-          id,
-          jsonrpc: "2.0",
-          result: signResponse,
-        };
-
-        await web3wallet.respondSessionRequest({ topic, response });
+        if (response.approved) {
+          await web3wallet.respondSessionRequest({
+            topic,
+            response: {
+              id,
+              jsonrpc: "2.0",
+              result: response.payload,
+            },
+          });
+        } else {
+          await web3wallet.respondSessionRequest({
+            topic,
+            response: {
+              id,
+              jsonrpc: "2.0",
+              error: getSdkError("USER_REJECTED"),
+            },
+          });
+        }
         break;
       }
     }
