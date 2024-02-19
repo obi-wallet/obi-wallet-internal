@@ -4,7 +4,7 @@ import {
   CosmosSdkChains,
 } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
-import { Chain } from "@chain-registry/types";
+import { Asset, AssetList, Chain } from "@chain-registry/types";
 import {
   CosmWasmClient,
   createWasmAminoConverters,
@@ -35,7 +35,7 @@ import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
-import { chains } from "chain-registry";
+import { assets, chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -61,6 +61,7 @@ function isStdFee(fee: unknown): fee is StdFee {
 export class CosmosSdkTargetChain extends AbstractTargetChain {
   protected readonly chainData: CosmosSdkChainData;
   protected readonly chain: Chain;
+  public readonly assets: Asset[];
 
   public constructor(chainId: CosmosSdkChainId) {
     super();
@@ -70,6 +71,8 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     });
     invariant(chain, `Chain not found for ${chainId}`);
     this.chain = chain;
+    this.assets =
+      assets.find((a) => a.chain_name === chain.chain_name)?.assets ?? [];
   }
 
   public get label() {

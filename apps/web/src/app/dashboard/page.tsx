@@ -5,7 +5,7 @@ import { Coin, useBalances, useUSDTotalPrice } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
-import { TargetChain } from "@/target-chain";
+import { TargetChain, TargetChainId } from "@/target-chain";
 import { formatEther, parseUnits } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
@@ -335,33 +335,39 @@ const AssetBalance = observer(function AssetBalance() {
 function AssetItem({
   asset,
 }: {
-  asset: { amount: number; denom: string; price: number; chainId: string };
+  asset: {
+    amount: number;
+    denom: string;
+    price: number;
+    chainId: TargetChainId;
+  };
 }) {
   const router = useRouter();
-  const assetData =
-    toAssets[
-      Object.keys(toAssets).find(
-        (key) => toAssets[key]?.denom === asset.denom,
-      ) ?? ""
-    ];
 
-  // get the amount readable using the decimal places in the assetData
-  const amount = asset.amount / Math.pow(10, assetData?.decimals ?? 0);
+  const targetChain = TargetChain.chainId(asset.chainId);
+  const assetData = targetChain.assets.find((value) => {
+    return value.base === asset.denom;
+  });
+  console.log(assetData);
+  const denomUnit = assetData?.denom_units.find((value) => {
+    return value.denom === assetData.display;
+  });
+  const amount = asset.amount / Math.pow(10, denomUnit?.exponent ?? 0);
 
   return (
     <div
       key={asset.denom}
       className="mb-3 mt-3 flex cursor-pointer flex-row items-center justify-between rounded-lg bg-gray-700 p-5 hover:bg-gray-600"
       onClick={() => {
-        router.push(`/dashboard/transaction/send/${assetData?.label}`);
+        router.push(`/dashboard/transaction/send/${denomUnit?.denom}`);
       }}
     >
       <div className="flex flex-row items-center">
         <div className="mr-3">
-          {assetData?.image ? (
+          {assetData?.images ? (
             <img
-              src={assetData?.image}
-              alt={assetData.label}
+              src={assetData?.images[0]?.svg ?? assetData?.images[0]?.png ?? ""}
+              alt={assetData?.symbol}
               className="h-8 w-8"
             />
           ) : (
@@ -370,8 +376,8 @@ function AssetItem({
         </div>
         <div className="flex flex-row">
           <div className="mr-5 text-lg">
-            <div>{assetData?.label}</div>
-            <div className=" text-xs opacity-60">
+            <div>{assetData?.symbol}</div>
+            <div className="text-xs opacity-60">
               (on {TargetChain.chainId(asset.chainId).label})
             </div>
           </div>
