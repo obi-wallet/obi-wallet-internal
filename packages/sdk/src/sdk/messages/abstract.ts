@@ -141,8 +141,8 @@ export abstract class AbstractMessages<T> {
   public abstract getFirstUpdateWalletMessage(
     newOwner: MultisigKey,
     newOwnerAddress: string,
-    userAccountContractAddress: string,
-    userAccountCodeHash: string,
+    userEntryContractAddress: string,
+    userEntryCodeHash: string,
     evmUserContractAddress: string,
     evmSigningAddress: string,
     sender: string,

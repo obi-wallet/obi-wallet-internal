@@ -275,6 +275,8 @@ export class NewOnboardingPayload implements Draftable {
         homeChainId: this.homeChainId,
         owner: this._multisigKey.toJSON(),
         ownerAddress: this._multisigKey.address,
+        userEntryAddress: this._unclaimedHomeAccount.homeAccountAddress,
+        userEntryCodeHash,
         userAccountAddress: userAccount.userAccountAddress,
         userAccountCodeHash: userAccount.userAccountCodeHash,
         ownerIndex: this._unclaimedHomeAccount.ownerIndex,

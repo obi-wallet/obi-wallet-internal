@@ -244,6 +244,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
               };
             }>,
           ),
+          threshold: wallet.owner.threshold - 1,
         },
         signatures: nexthashSignedBySigners,
       },
@@ -409,6 +410,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
                 };
               }>,
             ),
+            threshold: newOwner.threshold - 1,
           },
         },
       },
