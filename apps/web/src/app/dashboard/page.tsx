@@ -394,9 +394,9 @@ function PriceComponent({ amount, price }: { price: number; amount?: number }) {
 const getPendingAssets = async (pubKey: string) => {
   if (!pubKey) return [];
 
-  const url = `https://fast-travel-playground.vercel.app/api/status/check.rs?test=false&pubkey=${encodeURIComponent(
-    pubKey,
-  )}`;
+  const url = `${
+    process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL
+  }/api/status/check.rs?test=false&pubkey=${encodeURIComponent(pubKey)}`;
 
   const res = await fetch(url);
   const data = await res.json();

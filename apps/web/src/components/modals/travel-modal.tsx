@@ -601,7 +601,7 @@ function GetAddressComponent({
       pubkey: publicKey?.value,
     };
     // fetch the deposit address
-    const requestURL = `https://fast-travel-playground.vercel.app/api/swap/simulate.rs`;
+    const requestURL = `${process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL}/api/swap/simulate.rs`;
 
     // make a post request to the url
     const res = await fetch(requestURL, {

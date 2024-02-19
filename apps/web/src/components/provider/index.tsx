@@ -30,6 +30,7 @@ const Provider = observer<ProviderProps>(function Provider({
     >
       <EnvContext.Provider
         value={{
+          FAST_TRAVEL_API_URL: process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL!,
           PHONE_NUMBER_KEY_SECRET:
             process.env.NEXT_PUBLIC_PHONE_NUMBER_KEY_SECRET!,
           PHONE_NUMBER_TWILIO_BASIC_AUTH_USER:
