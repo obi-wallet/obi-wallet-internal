@@ -2,6 +2,7 @@ import { createContext, useContext } from "react";
 import invariant from "tiny-invariant";
 
 export interface Env {
+  FAST_TRAVEL_API_URL: string;
   PHONE_NUMBER_KEY_SECRET: string;
   PHONE_NUMBER_TWILIO_BASIC_AUTH_USER: string;
   PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD: string;
