@@ -54,6 +54,10 @@ export async function backupWallet({
       }),
       headers: {
         "Api-Version": "v1",
+        Env:
+          process.env.NEXT_PUBLIC_ENV === "production"
+            ? "production"
+            : "staging",
       },
     },
   );

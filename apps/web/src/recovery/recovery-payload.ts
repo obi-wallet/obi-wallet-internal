@@ -65,6 +65,13 @@ export class RecoveryPayload implements Draftable {
           chainId: this.chainId,
           publicKey: publicKey.value,
         }),
+        headers: {
+          "Api-Version": "v1",
+          Env:
+            process.env.NEXT_PUBLIC_ENV === "production"
+              ? "production"
+              : "staging",
+        },
       },
     );
     if (response.status === 404) {
