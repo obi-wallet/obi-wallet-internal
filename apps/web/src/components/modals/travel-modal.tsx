@@ -66,7 +66,7 @@ interface FormData {
 export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   targetAsset,
   onDismiss,
-  modal = true,
+  modal,
   cancelLabel = "Accept",
 }) {
   const [focused, setFocused] = useState<boolean>(false);

@@ -142,6 +142,7 @@ export default observer(function FastTravel() {
         </Box>
         {targetAsset ? (
           <TravelModal
+            modal
             targetAsset={targetAsset || ""}
             onDismiss={() => {
               setTargetAsset(undefined);
