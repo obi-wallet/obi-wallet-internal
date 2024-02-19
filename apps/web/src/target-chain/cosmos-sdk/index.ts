@@ -39,6 +39,7 @@ import { assets, chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
+import { buildAssets } from "@/target-chain/cosmos-sdk/assets";
 
 const EncodeObjectSchema = z.object({
   typeUrl: z.string(),
@@ -61,7 +62,7 @@ function isStdFee(fee: unknown): fee is StdFee {
 export class CosmosSdkTargetChain extends AbstractTargetChain {
   protected readonly chainData: CosmosSdkChainData;
   protected readonly chain: Chain;
-  public readonly assets: Asset[];
+  public readonly assets: Record<string, Asset>;
 
   public constructor(chainId: CosmosSdkChainId) {
     super();
@@ -71,8 +72,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     });
     invariant(chain, `Chain not found for ${chainId}`);
     this.chain = chain;
-    this.assets =
-      assets.find((a) => a.chain_name === chain.chain_name)?.assets ?? [];
+    this.assets = buildAssets();
   }
 
   public get label() {

@@ -345,10 +345,8 @@ function AssetItem({
   const router = useRouter();
 
   const targetChain = TargetChain.chainId(asset.chainId);
-  const assetData = targetChain.assets.find((value) => {
-    return value.base === asset.denom;
-  });
-  console.log(assetData);
+  const assetKey = `${asset.chainId}:${asset.denom}`;
+  const assetData = targetChain.assets[assetKey];
   const denomUnit = assetData?.denom_units.find((value) => {
     return value.denom === assetData.display;
   });
