@@ -398,8 +398,9 @@ function NewPriceComponent({
 
 function PriceComponent({ amount, price }: { price: number; amount?: number }) {
   return (
-    <div>
-      <div className="text-xl">${(price * (amount || 0)).toFixed(2)}</div>
+    <div className="flex flex-col items-end">
+      <div className="text-md font-bold">{amount}</div>
+      <div className="text-xs">${(price * (amount || 0)).toFixed(2)}</div>
     </div>
   );
 }
