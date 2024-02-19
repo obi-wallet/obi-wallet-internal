@@ -18,6 +18,8 @@ const schema = z.object({
   ownerAddress: z.string(),
   userAccountAddress: z.string(),
   userAccountCodeHash: z.string(),
+  userEntryAddress: z.string(),
+  userEntryCodeHash: z.string(),
   ownerIndex: z.number(),
 });
 
@@ -43,6 +45,8 @@ export async function POST(request: Request) {
     ownerAddress,
     userAccountAddress,
     userAccountCodeHash,
+    userEntryAddress,
+    userEntryCodeHash,
     ownerIndex,
   } = result.data;
 
@@ -92,8 +96,8 @@ export async function POST(request: Request) {
   const message = messagesSdk.getFirstUpdateWalletMessage(
     MultisigKey.create(undefined, homeChainId, owner),
     ownerAddress,
-    userAccountAddress,
-    userAccountCodeHash,
+    userEntryAddress,
+    userEntryCodeHash,
     "",
     "",
     wallet.address,
