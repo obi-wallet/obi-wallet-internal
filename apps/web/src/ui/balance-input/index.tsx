@@ -1,8 +1,10 @@
 import { DropDown } from "@/components/dropdown/dropdown";
-import { InputContainer } from "@/ui/container";
+
 import React from "react";
 
-import { BaseInput } from "../input";
+import { BaseInput, Input } from "../input";
+import { Button } from "@/components/buttons";
+
 export function BalanceInput() {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const handleClick = () => {
@@ -10,16 +12,34 @@ export function BalanceInput() {
   };
 
   return (
-    <InputContainer
-      label="Balance"
-      labelClassname="text-white"
-      onClick={handleClick}
-    >
-      <div className="flex flex-row">
-        <BaseInput ref={inputRef} onChange={undefined} />
-        <DropDown description="somedescription" options={[]} />
-      </div>
-      <div className="text-white">aaa</div>
-    </InputContainer>
+    <div>
+      <Input
+        label="Balance"
+        labelClassname="text-white bg-black"
+        onClick={handleClick}
+        RightComponent={
+          <DropDown
+            description="Select"
+            options={[
+              {
+                label: "a",
+                value: "a",
+              },
+              {
+                label: "b",
+                value: "b",
+              },
+            ]}
+          />
+        }
+      >
+        <div className="flex flex-row items-center gap-2 text-xs  text-white">
+          <div className=" rounded-sm border-2 border-blue-700  p-1">25%</div>
+          <div>50%</div>
+          <div>75%</div>
+          <div>100%</div>
+        </div>
+      </Input>
+    </div>
   );
 }

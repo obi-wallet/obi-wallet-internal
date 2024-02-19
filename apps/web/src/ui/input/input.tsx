@@ -1,3 +1,4 @@
+import { Divider } from "@/components/divider";
 import { InputContainer } from "@/ui/container";
 import { BaseInput } from "@/ui/input/base-input";
 import React, { DetailedHTMLProps, InputHTMLAttributes } from "react";
@@ -12,6 +13,9 @@ export interface InputProps
   onChange?: (value: string) => void;
   containerClassName?: string;
   inputClassName?: string;
+  leftComponent?: React.ReactNode;
+  rightComponent?: React.ReactNode;
+  topComponent?: React.ReactNode;
 }
 
 export function Input({
@@ -20,6 +24,10 @@ export function Input({
   onChange,
   inputClassName,
   className,
+  leftComponent,
+  rightComponent,
+  topComponent,
+  children,
   ...rest
 }: InputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -34,18 +42,31 @@ export function Input({
       className={className}
       onClick={handleClick}
     >
-      <BaseInput
-        {...rest}
-        ref={inputRef}
-        onChange={
-          onChange
-            ? (e) => {
-                onChange(e.target.value);
-              }
-            : undefined
-        }
-        className={inputClassName}
-      />
+      <div className="flex flex-1 flex-col">
+        {topComponent && <>{topComponent}</>}
+        <div className="flex flex-1 flex-row items-center">
+          {leftComponent && <div>{leftComponent}</div>}
+          <BaseInput
+            {...rest}
+            ref={inputRef}
+            onChange={
+              onChange
+                ? (e) => {
+                    onChange(e.target.value);
+                  }
+                : undefined
+            }
+            className={"w-full flex-1" + inputClassName}
+          />
+          {rightComponent && <div>{rightComponent}</div>}
+        </div>
+        {children && (
+          <>
+            <Divider className="mb-2 mt-2" />
+            {children}
+          </>
+        )}
+      </div>
     </InputContainer>
   );
 }
