@@ -9,7 +9,6 @@ import { useState } from "react";
 import { toAssets } from "./assets";
 
 export default observer(function FastTravel() {
-  const [isOpenTravelModal, setIsOpenTravelModal] = useState(false);
   const [targetAsset, setTargetAsset] = useState<string | undefined>(undefined);
 
   return (
@@ -56,7 +55,6 @@ export default observer(function FastTravel() {
                     onClick={() => {
                       if (toAssets[assetKey]?.disabled) return;
                       setTargetAsset(assetKey);
-                      setIsOpenTravelModal(true);
                     }}
                   >
                     {toAssets[assetKey]?.image && (
@@ -142,15 +140,14 @@ export default observer(function FastTravel() {
             </div>
           </div>
         </Box>
-        {isOpenTravelModal && (
+        {targetAsset ? (
           <TravelModal
             targetAsset={targetAsset || ""}
             onDismiss={() => {
               setTargetAsset(undefined);
-              setIsOpenTravelModal(false);
             }}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );
