@@ -1,11 +1,12 @@
 "use client";
 
 import { Box, Divider, getPrice, PriceData, Text } from "@/components";
-import { Coin, useBalances, useUSDTotalPrice } from "@/hooks/balances";
+import { NewCoin, useNewBalances, useUSDTotalPrice } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
+import BigNumber from "bignumber.js";
 import { formatEther, parseUnits } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
@@ -306,7 +307,7 @@ function StatusLink({ tx }: { tx: TX }) {
 
 const AssetBalance = observer(function AssetBalance() {
   const publicKey = usePublicKey();
-  const balances = useBalances({
+  const balances = useNewBalances({
     publicKey,
   });
   if (balances.every((b) => b.isLoading)) {
@@ -317,51 +318,46 @@ const AssetBalance = observer(function AssetBalance() {
   if (balance.length === 0) return null;
 
   return balance.map((b) => {
-    return b.data?.balances.map((chainBalance: Coin) => {
+    return b.data?.balances.map((chainBalance) => {
       return (
-        <AssetItem
-          asset={{
-            amount: Number(chainBalance.amount),
-            denom: chainBalance.denom,
-            price: chainBalance.price,
-            chainId: b.data.chainId,
-          }}
-          key={chainBalance.denom + b.data.chainId}
+        <NewAssetItem
+          key={`${chainBalance.targetChainId}:${chainBalance.denom}`}
+          coin={chainBalance}
         />
       );
     });
   });
 });
-function AssetItem({
-  asset,
-}: {
-  asset: { amount: number; denom: string; price: number; chainId: string };
-}) {
-  const router = useRouter();
-  const assetData =
-    toAssets[
-      Object.keys(toAssets).find(
-        (key) => toAssets[key]?.denom === asset.denom,
-      ) ?? ""
-    ];
 
-  // get the amount readable using the decimal places in the assetData
-  const amount = asset.amount / Math.pow(10, assetData?.decimals ?? 0);
+function NewAssetItem({ coin }: { coin: NewCoin }) {
+  const router = useRouter();
+
+  const targetChain = TargetChain.chainId(coin.targetChainId);
+  const assetData = targetChain.getAsset(coin.denom);
+  const denomUnit = assetData?.denom_units.find((value) => {
+    return value.denom === assetData.display;
+  });
+  const amount = new BigNumber(coin.amount).dividedBy(
+    10 ** (denomUnit?.exponent ?? 0),
+  );
 
   return (
     <div
-      key={asset.denom}
       className="mb-3 mt-3 flex cursor-pointer flex-row items-center justify-between rounded-lg bg-gray-700 p-5 hover:bg-gray-600"
       onClick={() => {
-        router.push(`/dashboard/transaction/send/${assetData?.label}`);
+        router.push(
+          `/dashboard/transaction/send/${encodeURIComponent(
+            `${coin.targetChainId}:${coin.denom}`,
+          )}`,
+        );
       }}
     >
       <div className="flex flex-row items-center">
         <div className="mr-3">
-          {assetData?.image ? (
+          {assetData?.images ? (
             <img
-              src={assetData?.image}
-              alt={assetData.label}
+              src={assetData?.images[0]?.svg ?? assetData?.images[0]?.png ?? ""}
+              alt={assetData?.symbol}
               className="h-8 w-8"
             />
           ) : (
@@ -370,23 +366,42 @@ function AssetItem({
         </div>
         <div className="flex flex-row">
           <div className="mr-5 text-lg">
-            <div>{assetData?.label}</div>
-            <div className=" text-xs opacity-60">
-              (on {TargetChain.chainId(asset.chainId).label})
-            </div>
+            <div>{assetData?.symbol}</div>
+            <div className="text-xs opacity-60">(on {targetChain.label})</div>
           </div>
-          <div className="flex items-center text-xl font-bold">{amount}</div>
+          {/* <div className="flex items-center text-xl font-bold">
+            {amount.toString()}
+          </div> */}
         </div>
       </div>
-      <PriceComponent amount={amount} price={asset.price} />
+      <NewPriceComponent amount={amount} price={coin.price} />
+    </div>
+  );
+}
+
+function NewPriceComponent({
+  amount,
+  price,
+}: {
+  price: string;
+  amount: BigNumber;
+}) {
+  const priceBn = new BigNumber(price);
+  const total = priceBn.times(amount);
+
+  return (
+    <div className="flex flex-col items-end">
+      <div className="text-md font-bold">{amount.toFixed(2)}</div>
+      <div className="text-xs">${total.toFixed(2)}</div>
     </div>
   );
 }
 
 function PriceComponent({ amount, price }: { price: number; amount?: number }) {
   return (
-    <div>
-      <div className="text-xl">${(price * (amount || 0)).toFixed(2)}</div>
+    <div className="flex flex-col items-end">
+      <div className="text-md font-bold">{amount}</div>
+      <div className="text-xs">${(price * (amount || 0)).toFixed(2)}</div>
     </div>
   );
 }
@@ -394,9 +409,9 @@ function PriceComponent({ amount, price }: { price: number; amount?: number }) {
 const getPendingAssets = async (pubKey: string) => {
   if (!pubKey) return [];
 
-  const url = `https://fast-travel-playground.vercel.app/api/status/check.rs?test=false&pubkey=${encodeURIComponent(
-    pubKey,
-  )}`;
+  const url = `${
+    process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL
+  }/api/status/check.rs?test=false&pubkey=${encodeURIComponent(pubKey)}`;
 
   const res = await fetch(url);
   const data = await res.json();

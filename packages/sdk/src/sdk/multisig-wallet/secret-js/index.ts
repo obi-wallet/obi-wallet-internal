@@ -127,9 +127,10 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
           }),
           headers: {
             "Api-Version": "v1",
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "*",
+            Env:
+              process.env.NEXT_PUBLIC_ENV === "production"
+                ? "production"
+                : "staging",
           },
         },
       );

@@ -1,4 +1,4 @@
-import { ChainId, Sdk } from "@obi-wallet/sdk";
+import { TargetChain, TargetChainId } from "@/target-chain";
 import z from "zod";
 
 export function trim<T extends z.ZodTypeAny>(schema: T) {
@@ -9,17 +9,10 @@ export function nonEmptyString(key: string) {
   return trim(z.string().min(1, `${key} cannot be empty`));
 }
 
-export function mnemonic() {
-  return nonEmptyString("Mnemonic").refine((val) => {
-    const words = val.split(" ");
-    return words.length > 12;
-  }, "Invalid mnemonic");
-}
-
-export function address(chainId: ChainId) {
+export function address(chainId: TargetChainId) {
   return nonEmptyString("Address").refine(
     (address: string) => {
-      return Sdk.chainId(chainId).transactions.validateAddress(address);
+      return TargetChain.chainId(chainId).validateAddress(address);
     },
     {
       message: "Invalid address",

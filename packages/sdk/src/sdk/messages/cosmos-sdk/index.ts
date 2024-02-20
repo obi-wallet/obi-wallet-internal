@@ -311,6 +311,7 @@ export class CosmosSdkMessages extends AbstractMessages<string> {
                 ? {
                     signers: {
                       signers: this.getSigners(wallet.owner),
+                      threshold: wallet.owner.threshold - 1,
                     },
                   }
                 : {}),
@@ -370,6 +371,7 @@ export class CosmosSdkMessages extends AbstractMessages<string> {
           ? {
               signers: {
                 signers: this.getSigners(newOwner),
+                threshold: wallet.owner.threshold - 1,
               },
             }
           : {}),

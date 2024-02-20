@@ -1,7 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
-import React from "react";
-import { ComponentPropsWithoutRef, useEffect } from "react";
+import { ComponentPropsWithoutRef, useEffect, useRef } from "react";
 import { ControllerFieldState } from "react-hook-form";
 
 import { Input } from "./input";
@@ -54,7 +53,7 @@ export function AssetInput({
   onBlur,
 }: InputProps) {
   const errors = fieldState.error as errors | undefined;
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!disableTextInput) {
@@ -159,7 +158,9 @@ export function AssetInput({
                   alt="asset"
                   className="h-6 w-6 "
                 />
-                <span>{option.label}</span>
+                <span>
+                  {option.label} {option.disabled ? "soon" : ""}
+                </span>
               </li>
             )}
           />

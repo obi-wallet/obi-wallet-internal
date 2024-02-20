@@ -1,4 +1,3 @@
-import { toAssets } from "@/app/dashboard/fast-travel/assets";
 import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
 import { TargetChain, TargetChainId } from "@/target-chain";
@@ -154,15 +153,20 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
 
   const feeInfo =
     fee && targetChain.validateFee(fee)
-      ? fee.amount.map(prettyPrintCoin)
+      ? fee.amount.map((coin) => prettyPrintCoin({ coin, targetChainId }))
       : [
           {
             amount: "",
             denom: "Simulating…",
           },
         ];
-  const amounts = messages.map(messageToAmount).flat().map(prettyPrintCoin);
-  const descriptions = messages.map(messageToDescription).flat();
+  const amounts = messages
+    .map((message) => messageToAmount({ message, targetChainId }))
+    .flat()
+    .map((coin) => prettyPrintCoin({ coin, targetChainId }));
+  const descriptions = messages
+    .map((message) => messageToDescription({ message, targetChainId }))
+    .flat();
 
   return (
     <Transaction
@@ -175,7 +179,12 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
   );
 });
 
-function messageToAmount(message: EncodeObject) {
+function messageToAmount({
+  message,
+}: {
+  message: EncodeObject;
+  targetChainId: TargetChainId;
+}): Coin[] {
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
       const { value } = message as MsgSendEncodeObject;
@@ -187,13 +196,22 @@ function messageToAmount(message: EncodeObject) {
   }
 }
 
-function messageToDescription(message: EncodeObject) {
+function messageToDescription({
+  message,
+  targetChainId,
+}: {
+  message: EncodeObject;
+  targetChainId: TargetChainId;
+}) {
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
       const { value } = message as MsgSendEncodeObject;
-      const amount = messageToAmount(message);
+      const amount = messageToAmount({ message, targetChainId });
       return amount.map((amount) => {
-        const prettyAmount = prettyPrintCoin(amount);
+        const prettyAmount = prettyPrintCoin({
+          coin: amount,
+          targetChainId,
+        });
         return `Send ${prettyAmount.amount} ${prettyAmount.denom} to ${value.toAddress}`;
       });
     }
@@ -203,23 +221,31 @@ function messageToDescription(message: EncodeObject) {
   }
 }
 
-function prettyPrintCoin(coin: Coin): {
+function prettyPrintCoin({
+  coin,
+  targetChainId,
+}: {
+  coin: Coin;
+  targetChainId: TargetChainId;
+}): {
   amount: string;
   denom: string;
 } {
-  const toAsset = Object.values(toAssets).find((value) => {
-    return value.denom === coin.denom;
-  });
-  if (!toAsset) {
+  const asset = TargetChain.chainId(targetChainId).getAsset(coin.denom);
+  if (!asset) {
     return {
       amount: coin.amount,
       denom: coin.denom,
     };
   }
+
+  const denomUnit = asset.denom_units.find((value) => {
+    return value.denom === asset.display;
+  });
   return {
     amount: new BigNumber(coin.amount)
-      .dividedBy(10 ** toAsset?.decimals)
-      .toString(10),
-    denom: toAsset.label,
+      .dividedBy(10 ** (denomUnit?.exponent ?? 0))
+      .toString(),
+    denom: asset.symbol,
   };
 }

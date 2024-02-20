@@ -9,14 +9,13 @@ import { useState } from "react";
 import { toAssets } from "./assets";
 
 export default observer(function FastTravel() {
-  const [isOpenTravelModal, setIsOpenTravelModal] = useState(false);
   const [targetAsset, setTargetAsset] = useState<string | undefined>(undefined);
 
   return (
     <div className="h-full w-full px-7 py-5">
       <div className="relative h-full w-full text-white">
-        <Box className="pt-0 max-sm:bg-transparent">
-          <div className="relative h-fit">
+        <Box className="px-0 pt-0 max-sm:bg-transparent">
+          <div className="relative">
             <Image
               src="/travel.png"
               alt="fast-travel"
@@ -25,22 +24,22 @@ export default observer(function FastTravel() {
               sizes="100vw"
               style={{
                 width: "100%",
-                height: "auto",
+                height: "100%",
                 borderRadius: 6,
               }}
-              className="opacity-40 max-sm:!h-56"
+              className="opacity-40 max-lg:!h-[240px]"
             />
             <div className="absolute top-0 flex h-full w-full flex-col justify-center p-10 ">
-              <h1 className="mb-4 text-4xl font-bold text-white">
+              <h1 className="mb-4 text-4xl font-bold text-white max-md:text-3xl">
                 Obi Fast Travel
               </h1>
-              <h2 className="text-xl font-bold text-white">
+              <h2 className="text-xl font-bold text-white max-md:text-lg">
                 Skip the research and hassle of migrating to new ecosystems.
                 Select an asset below to receive it in your Obi account.
               </h2>
             </div>
           </div>
-          <div className="mt-4 space-y-5 px-3 max-sm:px-0">
+          <div className="mt-4 space-y-5 px-5 max-sm:px-0">
             <div className="space-y-4">
               <Text size="xl">Assets</Text>
               <Divider />
@@ -56,7 +55,6 @@ export default observer(function FastTravel() {
                     onClick={() => {
                       if (toAssets[assetKey]?.disabled) return;
                       setTargetAsset(assetKey);
-                      setIsOpenTravelModal(true);
                     }}
                   >
                     {toAssets[assetKey]?.image && (
@@ -94,7 +92,7 @@ export default observer(function FastTravel() {
             <div className="space-y-4">
               <Text size="xl">Vaults</Text>
               <Divider />
-              <div className="flex flex-row space-x-3">
+              <div className="flex flex-row max-lg:flex-col max-lg:space-y-3 lg:space-x-3">
                 {vaults.map((asset) => (
                   <Box
                     key={`vault-${asset.label}`}
@@ -142,15 +140,15 @@ export default observer(function FastTravel() {
             </div>
           </div>
         </Box>
-        {isOpenTravelModal && (
+        {targetAsset ? (
           <TravelModal
+            modal
             targetAsset={targetAsset || ""}
             onDismiss={() => {
               setTargetAsset(undefined);
-              setIsOpenTravelModal(false);
             }}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );

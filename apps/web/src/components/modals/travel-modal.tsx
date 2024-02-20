@@ -10,6 +10,7 @@ import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
+import { nonEmptyString } from "@/validation-helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import copy from "copy-to-clipboard";
@@ -24,7 +25,6 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { AssetInput, Box, Button, Text } from "..";
-import { nonEmptyString } from "../../../lib/form/validation-helpers";
 import { Divider } from "../divider";
 import { IAssetOption } from "../dropdown";
 
@@ -66,7 +66,7 @@ interface FormData {
 export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   targetAsset,
   onDismiss,
-  modal = true,
+  modal,
   cancelLabel = "Accept",
 }) {
   const [focused, setFocused] = useState<boolean>(false);
@@ -601,7 +601,7 @@ function GetAddressComponent({
       pubkey: publicKey?.value,
     };
     // fetch the deposit address
-    const requestURL = `https://fast-travel-playground.vercel.app/api/swap/simulate.rs`;
+    const requestURL = `${process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL}/api/swap/simulate.rs`;
 
     // make a post request to the url
     const res = await fetch(requestURL, {

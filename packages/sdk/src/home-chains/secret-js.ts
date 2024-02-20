@@ -16,7 +16,7 @@ export const SecretJsHomeChains = {
     secretSigner: {
       address: "secret1tsw07lzugyqwrez34v85e73a3uet0uha83phne",
       codeHash:
-        "85cecdb5dd9447c43114abd35de4b99450994e411e77bc15b0f7d6d3a2b5aacc",
+        "18dc025952aaf371d366e474c088d473b6281e924877fe0bba65209b4a17074e",
     },
     currentCodeIds: {
       userAccount: 135,
@@ -35,14 +35,14 @@ export const SecretJsHomeChains = {
     label: "Secret Network",
     prefix: "secret",
     accountCreator: {
-      address: "secret1ade0mzc37z7lgqfrmmd6w6wm800t26kmkz6xnj",
+      address: "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
       codeHash:
-        "b63651c0b205a1beff039c57d0b1e898ce72b4739b2739dba33885d861e8c42f",
+        "8a50e15844d996fec54306fce3dbe563cb1e4d45346177c0e3baf462324715e5",
     },
     secretSigner: {
-      address: "secret1waecxrv74zeftvxznlrtet8z3wzej0wnwgx4nw",
+      address: "secret146zlhvjws92znj6898kxpcyjs9mfrlgzpl5u5y",
       codeHash:
-        "85c1bdcb93c60e4318ab6cbfc19b6bd1603dd09e812bb5b3edb2a0222c369b49",
+        "18dc025952aaf371d366e474c088d473b6281e924877fe0bba65209b4a17074e",
     },
     currentCodeIds: {
       userAccount: 1267,

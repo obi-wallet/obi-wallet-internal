@@ -1,7 +1,9 @@
 "use client";
 
-import { ToAsset } from "@/app/dashboard/fast-travel/assets";
 import { cn } from "@/lib/utils";
+import { TargetChainId } from "@/target-chain";
+import { Asset } from "@chain-registry/types";
+import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -11,10 +13,13 @@ import { Text } from "../text";
 
 export interface IBalanceOption {
   image: string | undefined;
+  targetChainId: TargetChainId;
+  denom: string;
   network: string;
   assetUnit: string;
-  balance: number;
-  asset: ToAsset;
+  balance: BigNumber;
+  asset: Asset;
+  disabled?: boolean;
 }
 
 export const BalanceDropDown = observer<{
@@ -105,7 +110,7 @@ export const BalanceDropDown = observer<{
         >
           {options.map((option) => (
             <li
-              key={`dropdown-${option.network}`}
+              key={`dropdown-${option.network}-${option.asset.base}`}
               onClick={() => handleClickOption(option)}
               className={cn(
                 " px-4 py-2 hover:bg-gray-600 ",

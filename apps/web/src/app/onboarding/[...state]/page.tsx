@@ -1,3 +1,4 @@
+import { toAssets } from "@/app/dashboard/fast-travel/assets";
 import { Onboarding } from "@/onboarding";
 import {
   OnboardingFromType,
@@ -5,7 +6,32 @@ import {
   OnboardingStepType,
 } from "@/onboarding/onboarding-step";
 import { notFound, redirect } from "next/navigation";
-import { flatten, keys, times } from "ramda";
+import { flatten, fromPairs, keys, times } from "ramda";
+
+function getExternalFlows(): Record<string, OnboardingStep[]> {
+  const targetAssets = Object.keys(toAssets).filter(
+    (key) => !toAssets[key]?.disabled,
+  );
+  return fromPairs(
+    targetAssets.map((targetAsset) => {
+      return [`external-${targetAsset}`, getExternalFlow(targetAsset)];
+    }),
+  );
+
+  function getExternalFlow(targetAsset: string): OnboardingStep[] {
+    return [
+      {
+        type: OnboardingStepType.PrimaryKey,
+        from: OnboardingFromType.External,
+      },
+      {
+        type: OnboardingStepType.CreateWallet,
+        waitUntilDone: true,
+        redirectTo: `/onboarding/fast-travel/${targetAsset}`,
+      },
+    ];
+  }
+}
 
 const flows: Record<string, OnboardingStep[]> = {
   internal: [
@@ -18,34 +44,7 @@ const flows: Record<string, OnboardingStep[]> = {
       redirectTo: "/dashboard",
     },
   ],
-  external: [
-    { type: OnboardingStepType.PrimaryKey, from: OnboardingFromType.External },
-    {
-      type: OnboardingStepType.CreateWallet,
-      waitUntilDone: true,
-      redirectTo: "/onboarding/fast-travel",
-    },
-  ],
-  "internal-demo": [
-    { type: OnboardingStepType.UserData },
-    { type: OnboardingStepType.Explanation },
-    { type: OnboardingStepType.PrimaryKey },
-    {
-      type: OnboardingStepType.CreateWallet,
-      demoMode: true,
-      waitUntilDone: true,
-      redirectTo: "/onboarding/congratulations",
-    },
-  ],
-  "external-demo": [
-    { type: OnboardingStepType.PrimaryKey },
-    {
-      type: OnboardingStepType.CreateWallet,
-      demoMode: true,
-      waitUntilDone: true,
-      redirectTo: "/onboarding/fast-travel",
-    },
-  ],
+  ...getExternalFlows(),
 };
 
 export async function generateStaticParams() {
@@ -110,10 +109,3 @@ export default function OnboardingStateHandler({
     />
   );
 }
-
-//
-// export default observer<{ params: { state: unknown[] } }>(
-//   function OnboardingStateHandler({ params }) {
-//     return JSON.stringify(params, null, 2);
-//   },
-// );
