@@ -197,7 +197,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
         messages,
         undefined,
       );
-      return calculateFee(Math.round(gasEstimation * 1.5), this.gasPrice);
+      return calculateFee(Math.round(gasEstimation * 2), this.gasPrice);
     });
   }
 
