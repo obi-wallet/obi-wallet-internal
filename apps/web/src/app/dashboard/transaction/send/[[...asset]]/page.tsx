@@ -92,7 +92,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         {
           amount: new BigNumber(coin.amount)
             .multipliedBy(10 ** (denomUnit?.exponent ?? 0))
-            .toString(),
+            .toFixed(0, BigNumber.ROUND_DOWN),
           denom: asset.denom,
         },
       ];
