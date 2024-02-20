@@ -42,7 +42,7 @@ export const SecretJsHomeChains = {
     secretSigner: {
       address: "secret146zlhvjws92znj6898kxpcyjs9mfrlgzpl5u5y",
       codeHash:
-        "8cde3907ac6652d361289423b028c7a48d94448a6b4c4ee332990b51c0a4b90b",
+        "18dc025952aaf371d366e474c088d473b6281e924877fe0bba65209b4a17074e",
     },
     currentCodeIds: {
       userAccount: 1267,
