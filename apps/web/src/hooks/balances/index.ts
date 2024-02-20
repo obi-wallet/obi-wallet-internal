@@ -11,17 +11,16 @@ import invariant from "tiny-invariant";
 
 import { usePublicKey } from "../use-public-key";
 
-export type Coin = {
+export interface Coin {
   denom: string;
   amount: string;
   price: number;
-};
-export type Balance = {
+}
+
+export interface Balance {
   balances: Coin[];
   chainId: TargetChainId;
-};
-
-export type FetchBalanceResponse = Promise<Balance>;
+}
 
 async function fetchBalances({
   address,
@@ -31,21 +30,23 @@ async function fetchBalances({
   chainId: TargetChainId;
 }): Promise<Balance> {
   if (!address) {
-    return Promise.resolve({ balances: [] as Coin[], chainId: chainId });
+    return { balances: [], chainId };
   }
+
   return await TargetChain.chainId(chainId).withStargateClient(
     async (client) => {
-      const balances = await client.getAllBalances(address);
-      const pricesPromises = balances.map(async (balance) => {
-        const price = await getTokenPrice(chainId, balance.denom);
-        return {
-          ...balance,
-          price,
-        };
-      });
-      const balancesWithPrice = await Promise.all(pricesPromises);
+      const coins = await client.getAllBalances(address);
+      const balances = await Promise.all(
+        coins.map(async (balance) => {
+          const price = await getTokenPrice(chainId, balance.denom);
+          return {
+            ...balance,
+            price,
+          };
+        }),
+      );
       return {
-        balances: balancesWithPrice.flat() as Coin[],
+        balances,
         chainId,
       };
     },

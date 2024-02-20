@@ -5,13 +5,6 @@ export function middleware(request: NextRequest) {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
-  console.log(
-    pathname,
-    Object.keys(toAssets).some((asset) => {
-      return pathname === `/${asset}`;
-    }),
-  );
-
   if (
     Object.keys(toAssets).some((asset) => {
       return pathname === `/${asset}`;
