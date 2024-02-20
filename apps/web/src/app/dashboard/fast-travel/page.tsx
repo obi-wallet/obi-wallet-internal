@@ -92,7 +92,7 @@ export default observer(function FastTravel() {
             <div className="space-y-4">
               <Text size="xl">Vaults</Text>
               <Divider />
-              <div className="flex flex-row space-x-3">
+              <div className="flex flex-row max-md:flex-col max-md:space-y-3 md:space-x-3">
                 {vaults.map((asset) => (
                   <Box
                     key={`vault-${asset.label}`}
