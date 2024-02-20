@@ -10,6 +10,7 @@ import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
+import { nonEmptyString } from "@/validation-helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import copy from "copy-to-clipboard";
@@ -24,7 +25,6 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { AssetInput, Box, Button, Text } from "..";
-import { nonEmptyString } from "../../../lib/form/validation-helpers";
 import { Divider } from "../divider";
 import { IAssetOption } from "../dropdown";
 

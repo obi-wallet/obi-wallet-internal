@@ -1560,7 +1560,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.22.15, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2":
   version: 7.23.9
   resolution: "@babel/runtime@npm:7.23.9"
   dependencies:
@@ -3490,6 +3490,7 @@ __metadata:
     apexcharts: "npm:^3.45.1"
     autoprefixer: "npm:^10.4.16"
     axios: "npm:^1.6.6"
+    bech32: "npm:^2.0.0"
     bignumber.js: "npm:^9.1.2"
     chai: "npm:^5.0.3"
     chain-registry: "npm:^1.28.0"
@@ -3497,6 +3498,7 @@ __metadata:
     copy-to-clipboard: "npm:^3.3.3"
     cosmjs-types: "npm:^0.9.0"
     crypto-js: "npm:^4.2.0"
+    downshift: "npm:^8.3.1"
     ecies-wasm: "npm:^0.2.0"
     elliptic: "npm:^6.5.4"
     eslint: "npm:^8.55.0"
@@ -9434,6 +9436,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"compute-scroll-into-view@npm:^3.0.3":
+  version: 3.1.0
+  resolution: "compute-scroll-into-view@npm:3.1.0"
+  checksum: 10c0/bf305c4ece8e5c59ed3f7ed82b6dab5b7487ce26f56a693d903869964712870fccb08fe31d40edcbd600b03c99198f54d443acb315d674bd64fd344410c8672e
+  languageName: node
+  linkType: hard
+
 "concat-map@npm:0.0.1":
   version: 0.0.1
   resolution: "concat-map@npm:0.0.1"
@@ -10408,6 +10417,21 @@ __metadata:
   version: 16.4.1
   resolution: "dotenv@npm:16.4.1"
   checksum: 10c0/ef3d95f48f38146df0881a4b58447ae437d2da3f6d645074b84de4e64ef64ba75fc357c5ed66b3c2b813b5369fdeb6a4777d6ade2d50e54eed6aa06dddc98bc4
+  languageName: node
+  linkType: hard
+
+"downshift@npm:^8.3.1":
+  version: 8.3.1
+  resolution: "downshift@npm:8.3.1"
+  dependencies:
+    "@babel/runtime": "npm:^7.22.15"
+    compute-scroll-into-view: "npm:^3.0.3"
+    prop-types: "npm:^15.8.1"
+    react-is: "npm:^18.2.0"
+    tslib: "npm:^2.6.2"
+  peerDependencies:
+    react: ">=16.12.0"
+  checksum: 10c0/5ffb56bf17e2101115ccf94136815e80ce907df9efbed89fd93400769c557c7cdb6b6a751f6454ab9862b37cd8f5effd0326d08fb330701ec4355df83c695210
   languageName: node
   linkType: hard
 
@@ -17359,7 +17383,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^18.0.0":
+"react-is@npm:^18.0.0, react-is@npm:^18.2.0":
   version: 18.2.0
   resolution: "react-is@npm:18.2.0"
   checksum: 10c0/6eb5e4b28028c23e2bfcf73371e72cd4162e4ac7ab445ddae2afe24e347a37d6dc22fae6e1748632cd43c6d4f9b8f86dcf26bf9275e1874f436d129952528ae0
