@@ -49,8 +49,7 @@ export default observer(function FastTravel() {
                     key={`asset-${assetKey}`}
                     className={cn(
                       " hover:bg-background-primary-hover flex cursor-pointer flex-row bg-gray-700 sm:min-w-[170px]",
-                      toAssets[assetKey]?.disabled &&
-                        "",
+                      toAssets[assetKey]?.disabled && "",
                     )}
                     onClick={() => {
                       if (toAssets[assetKey]?.disabled) return;
@@ -118,10 +117,7 @@ export default observer(function FastTravel() {
                 {farms.map((asset) => (
                   <Box
                     key={`farm-${asset.label}`}
-                    className={cn(
-                      "flex flex-row space-x-3 bg-gray-700",
-                      "",
-                    )}
+                    className={cn("flex flex-row space-x-3 bg-gray-700", "")}
                   >
                     {asset.image && (
                       <div className="relative aspect-square w-full max-w-[35px] ">

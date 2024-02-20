@@ -49,12 +49,11 @@ export default function Settings() {
           <Button
             key={sigKey.label}
             variant={sigKey.active ? "confirmed" : "secondary"}
-            disabled={sigKey.comingSoon}
             block
           >
             {!sigKey.active ? "Add " : ""}
             {sigKey.label}
-            {sigKey.active ? " Active" : sigKey.comingSoon ? " (soon)" : ""}
+            {sigKey.active ? " Active" : ""}
           </Button>
         ))}
       </div>
