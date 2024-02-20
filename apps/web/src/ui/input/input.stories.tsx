@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { FaSearch } from "react-icons/fa";
 import { FaPhone } from "react-icons/fa6";
 
-import { Input, InputProps } from "./input";
+import { Input } from "./input";
 
 const meta = {
   title: "UI/Input",
@@ -81,25 +81,25 @@ export const WithLeftIconAndRightButton: Story = {
     </div>
   ),
 };
-export const withChildren = {
+export const WithChildren: Story = {
   args: {
     label: "Label",
     labelClassname: "bg-black",
     placeholder: "Placeholder",
   },
-  render: (args: JSX.IntrinsicAttributes & InputProps) => (
+  render: (args) => (
     <Input {...args}>
       <div className="text-white">you can add children here</div>
     </Input>
   ),
 };
-export const withTopComponent = {
+export const WithTopComponent: Story = {
   args: {
     label: "Label",
     labelClassname: "bg-black",
     placeholder: "Placeholder",
   },
-  render: (args: JSX.IntrinsicAttributes & InputProps) => (
+  render: (args) => (
     <div>
       <Input
         {...args}
