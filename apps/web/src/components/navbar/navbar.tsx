@@ -128,30 +128,29 @@ export function Navbar() {
         <Footer className="!px-0" />
       </div>
       <div className="flex h-full w-full sm:hidden">
-        <ul
-          role="list"
-          className="flex h-full w-full flex-row  items-center justify-around "
-        >
-          {navMenu
-            .filter((item) => item.showOnMobile)
-            .map((navItem, index) => (
-              <li key={`navmenu-${index}`}>
-                <PrimaryLink
-                  href={navItem.href}
-                  className="flex flex-col items-center justify-center space-y-3"
-                >
-                  <Image
-                    src={navItem.icon}
-                    height={32}
-                    width={32}
-                    alt={navItem.text}
-                    className="!h-8 !w-8"
-                  />
-                  <Text className="text-center">{navItem.text}</Text>
-                </PrimaryLink>
-              </li>
-            ))}
-        </ul>
+        <div className="flex flex-row items-center ">
+          <ul role="list" className="flex w-full flex-row justify-around ">
+            {navMenu
+              .filter((item) => item.showOnMobile)
+              .map((navItem, index) => (
+                <li key={`navmenu-${index}`}>
+                  <PrimaryLink
+                    href={navItem.href}
+                    className="flex flex-col items-center justify-center space-y-3"
+                  >
+                    <Image
+                      src={navItem.icon}
+                      height={32}
+                      width={32}
+                      alt={navItem.text}
+                      className="!h-8 !w-8"
+                    />
+                    <Text className="text-center">{navItem.text}</Text>
+                  </PrimaryLink>
+                </li>
+              ))}
+          </ul>
+        </div>
       </div>
     </nav>
   );
