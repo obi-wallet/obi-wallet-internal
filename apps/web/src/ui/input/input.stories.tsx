@@ -1,9 +1,9 @@
+import { Button } from "@/components/buttons";
 import type { Meta, StoryObj } from "@storybook/react";
-
-import { Input } from "./input";
 import { FaSearch } from "react-icons/fa";
 import { FaPhone } from "react-icons/fa6";
-import { Button } from "@/components/buttons";
+
+import { Input, InputProps } from "./input";
 
 const meta = {
   title: "UI/Input",
@@ -87,7 +87,7 @@ export const withChildren = {
     labelClassname: "bg-black",
     placeholder: "Placeholder",
   },
-  render: (args) => (
+  render: (args: JSX.IntrinsicAttributes & InputProps) => (
     <Input {...args}>
       <div className="text-white">you can add children here</div>
     </Input>
@@ -99,7 +99,7 @@ export const withTopComponent = {
     labelClassname: "bg-black",
     placeholder: "Placeholder",
   },
-  render: (args) => (
+  render: (args: JSX.IntrinsicAttributes & InputProps) => (
     <div>
       <Input
         {...args}

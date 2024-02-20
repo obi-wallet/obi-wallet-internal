@@ -1,9 +1,7 @@
 import { DropDown } from "@/components/dropdown/dropdown";
-
 import React from "react";
 
-import { BaseInput, Input } from "../input";
-import { Button } from "@/components/buttons";
+import { Input } from "../input";
 
 export function BalanceInput() {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -17,7 +15,7 @@ export function BalanceInput() {
         label="Balance"
         labelClassname="text-white bg-black"
         onClick={handleClick}
-        RightComponent={
+        rightComponent={
           <DropDown
             description="Select"
             options={[

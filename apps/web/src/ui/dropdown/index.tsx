@@ -1,8 +1,8 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
-import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import Downshift from "downshift";
+import { useState } from "react";
+import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 export interface DropdownItem {
   disabled?: boolean;
 }
@@ -19,7 +19,12 @@ export interface CustomDropdownProps<T extends DropdownItem> {
 
 export interface ItemComponentProps<T extends DropdownItem> {
   item: T;
-  getItemProps: (options: any) => any;
+  getItemProps: (options: {
+    item: T;
+    index?: number;
+    disabled?: boolean;
+    style?: React.CSSProperties;
+  }) => React.HTMLAttributes<HTMLDivElement>;
   isSelected: boolean;
 }
 

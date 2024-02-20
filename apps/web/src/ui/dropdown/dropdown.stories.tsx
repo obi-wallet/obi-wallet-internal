@@ -1,13 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { FaSearch } from "react-icons/fa";
+import { FaPhone } from "react-icons/fa6";
 
 import {
   CustomDropdown as Dropdown,
   DropdownItem,
   ItemComponentProps,
 } from ".";
-import { FaSearch } from "react-icons/fa";
-import { FaPhone } from "react-icons/fa6";
-import { Button } from "@/components/buttons";
 // types for books
 interface Book extends DropdownItem {
   id: string;
@@ -48,20 +47,20 @@ const books: Book[] = [
   { id: "book-10", author: "Fyodor Dostoevsky", title: "Crime and Punishment" },
 ];
 
-const BookComponent: React.FC<ItemComponentProps<Book>> = ({
+function BookComponent({
   item,
   getItemProps,
   isSelected,
-}) => {
+}: ItemComponentProps<Book>) {
   return (
     <div
-      {...getItemProps({
+      {...(getItemProps({
         item,
         style: {
           backgroundColor: isSelected ? "blue" : "white",
           color: isSelected ? "white" : "black",
         },
-      })}
+      }) as React.HTMLAttributes<HTMLDivElement>)}
       className="flex cursor-pointer items-center justify-between px-4 py-2"
     >
       <div className="flex items-center space-x-2">
@@ -70,22 +69,24 @@ const BookComponent: React.FC<ItemComponentProps<Book>> = ({
       </div>
     </div>
   );
-};
+}
 
-const SelectedBook = ({ item }: { item: Book }) => {
+function SelectedBook({ item }: { item: Book }) {
   return (
     <div className="flex items-center space-x-2">
       <FaPhone />
       <span>{item.title}</span>
     </div>
   );
-};
+}
 
 export const Primary: Story = {
   args: {
     items: books,
-    itemComponent: BookComponent as React.FC<ItemComponentProps<Book>>,
-    selectedItemComponent: SelectedBook as React.FC<{ item: Book }>,
+    itemComponent: BookComponent as unknown as React.FC<
+      ItemComponentProps<DropdownItem>
+    >,
+    selectedItemComponent: SelectedBook as React.FC<{ item: DropdownItem }>,
   },
   render: (args) => {
     return (
@@ -94,7 +95,7 @@ export const Primary: Story = {
           items={books}
           itemComponent={args.itemComponent}
           onItemSelect={(item) => console.log(item)}
-          selectedItemComponent={BookComponent}
+          selectedItemComponent={args.selectedItemComponent}
         />
       </div>
     );

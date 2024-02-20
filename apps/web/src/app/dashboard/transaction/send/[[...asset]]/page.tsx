@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  BalanceInput,
-  BalanceInputValue,
-  Button,
-  IBalanceOption,
-} from "@/components";
+import { BalanceInputValue, Button, IBalanceOption } from "@/components";
 import {
   NewBalance,
   useInvalidateBalancesQueries,
@@ -13,10 +8,11 @@ import {
 } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
+import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
-import { Input } from "@/ui/input";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
+import { Input } from "@/ui/input";
 import { Coin } from "@cosmjs/amino";
 import { MsgSendEncodeObject } from "@cosmjs/stargate";
 import { NewSignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
@@ -25,7 +21,6 @@ import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import invariant from "tiny-invariant";
-import { cn } from "@/lib/utils";
 
 export default observer<{ params: { asset?: string[] } }>(function Send({
   params,
@@ -186,7 +181,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
   return (
     <div className="space-y-7 py-4">
       <Input
-        label={"Amount"}
+        label="Amount"
         placeholder="0.1"
         value={coin.amount}
         onChange={(value) => {
@@ -275,58 +270,54 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
             }}
           />
         }
-        children={
-          <div className="flex gap-3  text-slate-500">
-            <span
-              className=" cursor-pointer text-xs hover:text-blue-600"
-              onClick={() => {
-                setCoin({
-                  amount:
-                    coin.asset?.balance.multipliedBy(0.25).toString() ?? "",
-                  asset: coin.asset,
-                });
-              }}
-            >
-              25%
-            </span>
-            <span
-              className="cursor-pointer  text-xs hover:text-blue-600"
-              onClick={() => {
-                setCoin({
-                  amount:
-                    coin.asset?.balance.multipliedBy(0.5).toString() ?? "",
-                  asset: coin.asset,
-                });
-              }}
-            >
-              50%
-            </span>
-            <span
-              className="cursor-pointer  text-xs hover:text-blue-600"
-              onClick={() => {
-                setCoin({
-                  amount:
-                    coin.asset?.balance.multipliedBy(0.75).toString() ?? "",
-                  asset: coin.asset,
-                });
-              }}
-            >
-              75%
-            </span>
-            <span
-              className="cursor-pointer  text-xs hover:text-blue-600"
-              onClick={() => {
-                setCoin({
-                  amount: coin.asset?.balance.toString() ?? "",
-                  asset: coin.asset,
-                });
-              }}
-            >
-              100%
-            </span>
-          </div>
-        }
-      />
+      >
+        <div className="flex gap-3  text-slate-500">
+          <span
+            className=" cursor-pointer text-xs hover:text-blue-600"
+            onClick={() => {
+              setCoin({
+                amount: coin.asset?.balance.multipliedBy(0.25).toString() ?? "",
+                asset: coin.asset,
+              });
+            }}
+          >
+            25%
+          </span>
+          <span
+            className="cursor-pointer  text-xs hover:text-blue-600"
+            onClick={() => {
+              setCoin({
+                amount: coin.asset?.balance.multipliedBy(0.5).toString() ?? "",
+                asset: coin.asset,
+              });
+            }}
+          >
+            50%
+          </span>
+          <span
+            className="cursor-pointer  text-xs hover:text-blue-600"
+            onClick={() => {
+              setCoin({
+                amount: coin.asset?.balance.multipliedBy(0.75).toString() ?? "",
+                asset: coin.asset,
+              });
+            }}
+          >
+            75%
+          </span>
+          <span
+            className="cursor-pointer  text-xs hover:text-blue-600"
+            onClick={() => {
+              setCoin({
+                amount: coin.asset?.balance.toString() ?? "",
+                asset: coin.asset,
+              });
+            }}
+          >
+            100%
+          </span>
+        </div>
+      </Input>
       <Input
         label="Recipient Address"
         placeholder="Enter recipient address"
