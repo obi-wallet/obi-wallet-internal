@@ -9,15 +9,23 @@ export default function Settings() {
     },
     {
       label: "Phone Number",
-      active: false,
+      active: true,
     },
     {
       label: "Telegram Key",
-      active: false,
+      active: true,
     },
     {
-      label: "Ledger Key",
-      comingSoon: true,
+      label: "Email Recovery Key",
+      active: true,
+    },
+    {
+      label: "Ledger/YubiKey",
+      active: true,
+    },
+    {
+      label: "Google Authenticator",
+      active: true,
     },
   ];
   return (

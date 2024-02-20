@@ -50,7 +50,7 @@ export default observer(function FastTravel() {
                     className={cn(
                       " hover:bg-background-primary-hover flex cursor-pointer flex-row bg-gray-700 sm:min-w-[170px]",
                       toAssets[assetKey]?.disabled &&
-                        "cursor-not-allowed opacity-50 hover:bg-gray-700",
+                        "",
                     )}
                     onClick={() => {
                       if (toAssets[assetKey]?.disabled) return;
@@ -82,9 +82,9 @@ export default observer(function FastTravel() {
                 {nfts.map((asset) => (
                   <Box
                     key={`nft-${asset.label}`}
-                    className="flex cursor-not-allowed flex-row space-x-3 bg-gray-700 opacity-50"
+                    className="flex flex-row space-x-3 bg-gray-700"
                   >
-                    <Text>{asset.label} (soon)</Text>
+                    <Text>{asset.label}</Text>
                   </Box>
                 ))}
               </div>
@@ -96,7 +96,7 @@ export default observer(function FastTravel() {
                 {vaults.map((asset) => (
                   <Box
                     key={`vault-${asset.label}`}
-                    className="flex cursor-not-allowed flex-row space-x-3 bg-gray-700 opacity-50"
+                    className="flex flex-row space-x-3 bg-gray-700"
                   >
                     <div className="relative aspect-square w-full max-w-[35px] ">
                       <Image
@@ -120,7 +120,7 @@ export default observer(function FastTravel() {
                     key={`farm-${asset.label}`}
                     className={cn(
                       "flex flex-row space-x-3 bg-gray-700",
-                      "cursor-not-allowed opacity-50 ",
+                      "",
                     )}
                   >
                     {asset.image && (
