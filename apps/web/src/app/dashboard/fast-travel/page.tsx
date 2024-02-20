@@ -68,7 +68,7 @@ export default observer(function FastTravel() {
 
                     <Text>
                       {toAssets[assetKey]?.label}{" "}
-                      {toAssets[assetKey]?.disabled && "(soon)"}
+                      {toAssets[assetKey]?.disabled}
                     </Text>
                   </Box>
                 ))}
@@ -105,7 +105,7 @@ export default observer(function FastTravel() {
                         objectFit="contain"
                       />
                     </div>
-                    <Text>{asset.label} (soon)</Text>
+                    <Text>{asset.label}</Text>
                   </Box>
                 ))}
               </div>
@@ -129,7 +129,7 @@ export default observer(function FastTravel() {
                         />
                       </div>
                     )}
-                    <Text className="leading-4">{asset.label} (soon)</Text>
+                    <Text className="leading-4">{asset.label}</Text>
                   </Box>
                 ))}
               </div>
