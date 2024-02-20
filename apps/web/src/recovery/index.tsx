@@ -10,7 +10,7 @@ export const Recovery = observer(function Recovery() {
   if (!draft) return null;
 
   return (
-    <section className="flex flex-col items-center space-y-7">
+    <section className="flex flex-col items-center space-y-7 px-5">
       <PrimaryKeyStep draft={draft} />
     </section>
   );
