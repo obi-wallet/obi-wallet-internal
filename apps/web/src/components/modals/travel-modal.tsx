@@ -27,6 +27,8 @@ import { z } from "zod";
 import { AssetInput, Box, Button, Text } from "..";
 import { Divider } from "../divider";
 import { IAssetOption } from "../dropdown";
+import { Input } from "@/ui/input";
+import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 
 export type PriceData = {
   mainVsPrice: number;
@@ -54,15 +56,17 @@ interface ITravelModalProps {
 }
 interface FormData {
   fromAsset: {
-    amount: number | undefined;
+    amount: string | undefined;
     asset: string | undefined;
   };
   toAsset: {
-    amount: number | undefined;
+    amount: string | undefined;
     asset: string | undefined;
   };
   slippage: number;
 }
+type Errors = { [key: string]: { message: string; type: string } };
+
 export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   targetAsset,
   onDismiss,
@@ -77,11 +81,29 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   const schema = z.object({
     fromAsset: z.object({
       // amount should be undefined or number
-      amount: z.number().min(0, "Amount must be greater than 0"),
+      amount: z
+        .string()
+        .refine(nonEmptyString, "Amount is required")
+        .refine((str) => {
+          console.log({ str }, "REFINE");
+          if (str === "") return true;
+          const num = Number(str);
+          if (!isNaN(num)) return true;
+          if (num >= 0) return true;
+        }, "Amount is invalid"),
       asset: z.string().refine(nonEmptyString, "Asset is required"),
     }),
     toAsset: z.object({
-      amount: z.number().min(1, "Amount must be greater than 0"),
+      amount: z
+        .string()
+        .refine(nonEmptyString, "Amount is required")
+        .refine((str) => {
+          console.log({ str }, "REFINE");
+          if (str === "") return true;
+          const num = Number(str);
+          if (!isNaN(num)) return true;
+          if (num >= 0) return true;
+        }, "Amount is invalid"),
       asset: z.string().refine(nonEmptyString, "Asset is required"),
     }),
     slippage: z
@@ -231,7 +253,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
 
     setValue("toAsset", {
       ...getValues("toAsset"),
-      amount: toAssetAmount,
+      amount: toAssetAmount.toString(),
     });
   };
 
@@ -289,66 +311,282 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
         <Controller
           name="fromAsset"
           control={control}
-          render={({ field, fieldState }) => (
-            <AssetInput
-              assets={getAssetOptions(fromAssets)}
-              placeholder="0.1"
-              labelText="Deposit"
-              className="z-20"
-              direction="from"
-              disableTextInput={direction === "to" || !focused}
-              onClick={() => {
-                setDirection("from");
-                setFocused(true);
-              }}
-              onFocus={() => {
-                setDirection("from");
-                setFocused(true);
-              }}
-              onBlur={() => setFocused(false)}
-              field={{
-                ...field,
-                value: {
-                  ...field.value,
-                  amount: field.value ? Number(field.value.amount) : undefined,
-                },
-              }}
-              fieldState={fieldState}
-              onChange={handleFromAssetChange}
-            />
-          )}
+          render={({ field, fieldState }) => {
+            console.log({ fieldState, field });
+            const errors = formState.errors?.fromAsset as Errors | undefined;
+            console.log({ errors }, "ERRORS");
+            const options = getAssetOptions(fromAssets);
+
+            return (
+              // <AssetInput
+              //   assets={getAssetOptions(fromAssets)}
+              //   placeholder="0.1"
+              //   labelText="Deposit"
+              //   className="z-20"
+              //   direction="from"
+              //   disableTextInput={direction === "to" || !focused}
+              //   onClick={() => {
+              //     setDirection("from");
+              //     setFocused(true);
+              //   }}
+              //   onFocus={() => {
+              //     setDirection("from");
+              //     setFocused(true);
+              //   }}
+              //   onBlur={() => setFocused(false)}
+              //   field={{
+              //     ...field,
+              //     value: {
+              //       ...field.value,
+              //       amount: field.value ? Number(field.value.amount) : undefined,
+              //     },
+              //   }}
+              //   fieldState={fieldState}
+              //   onChange={handleFromAssetChange}
+              // />
+              <Input
+                label={"Deposit"}
+                onChange={(value) => {
+                  console.log({ value });
+                  field.onChange({
+                    asset: field.value.asset,
+                    amount: value,
+                  });
+                  handleFromAssetChange();
+                }}
+                className={cn(
+                  "z-20",
+                  "relative",
+                  errors && " border-red-500 focus-within:border-red-500",
+                )}
+                onBlur={field.onBlur}
+                value={field.value.amount}
+                placeholder="0.1"
+                rightComponent={
+                  <Dropdown
+                    items={options}
+                    selectedItem={
+                      options.find(
+                        (item) => item.value === field.value.asset,
+                      ) ?? undefined
+                    }
+                    getKey={(item) => item.label}
+                    className=" w-60"
+                    itemComponent={({ getItemProps, item, isSelected }) => {
+                      const {
+                        onClick,
+                        onMouseDown,
+                        onMouseMove,
+                        ...itemProps
+                      } = getItemProps({ item });
+                      console.log({ itemProps });
+                      return (
+                        <div
+                          {...itemProps}
+                          {...(!item.disabled && {
+                            onClick,
+                            onMouseDown,
+                            onMouseMove,
+                          })}
+                          className={cn(
+                            " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                            isSelected && "bg-gray-600 ",
+                            item.disabled &&
+                              "cursor-not-allowed opacity-50 hover:bg-gray-600",
+                          )}
+                        >
+                          <div className="flex items-center justify-center ">
+                            <img
+                              src={item.image}
+                              alt={item.label}
+                              width={24}
+                              height={24}
+                            />
+                          </div>
+                          <div className="text-white">
+                            <div className=" uppercase">{item.label}</div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                    onItemSelect={function (item: IAssetOption): void {
+                      field.onChange({
+                        asset: item.value,
+                        amount: field.value.amount,
+                      });
+                      handleFromAssetChange();
+                    }}
+                    selectedItemComponent={(selected) => {
+                      // console.log("selected", selected);
+                      if (!selected.item) {
+                        return <div>Select</div>;
+                      }
+                      return (
+                        <div className="flex  w-full cursor-pointer flex-row gap-5 font-normal">
+                          <div className="flex items-center   justify-between">
+                            <img
+                              src={selected.item.image}
+                              alt={selected.item.label}
+                              className="h-6 w-6"
+                            />
+                          </div>
+                          <div className="flex flex-col items-end text-sm font-normal">
+                            <div className=" uppercase">
+                              {selected.item.label}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                  />
+                }
+              >
+                {fieldState.error && <ErrorsComponent errors={errors} />}
+              </Input>
+            );
+          }}
         />
         <Controller
           name="toAsset"
           control={control}
-          render={({ field, fieldState }) => (
-            <AssetInput
-              direction="to"
-              disableTextInput={direction === "from" || !focused}
-              onClick={() => {
-                setDirection("to");
-                setFocused(true);
-              }}
-              onFocus={() => {
-                setDirection("to");
-                setFocused(true);
-              }}
-              onBlur={() => setFocused(false)}
-              assets={getAssetOptions(toAssets)}
-              placeholder="0.1"
-              labelText="Receive (estimated)"
-              field={{
-                ...field,
-                value: {
-                  ...field.value,
-                  amount: field.value ? Number(field.value.amount) : undefined,
-                },
-              }}
-              fieldState={fieldState}
-              onChange={handleToAssetChange}
-            />
-          )}
+          render={({ field, fieldState }) => {
+            console.log({ fieldState, field });
+            const errors = formState.errors?.toAsset as Errors | undefined;
+            console.log({ errors }, "ERRORS");
+            const options = getAssetOptions(toAssets);
+
+            return (
+              // <AssetInput
+              //   direction="to"
+              //   disableTextInput={direction === "from" || !focused}
+              //   onClick={() => {
+              //     setDirection("to");
+              //     setFocused(true);
+              //   }}
+              //   onFocus={() => {
+              //     setDirection("to");
+              //     setFocused(true);
+              //   }}
+              //   onBlur={() => setFocused(false)}
+              //   assets={getAssetOptions(toAssets)}
+              //   placeholder="0.1"
+              //   labelText="Receive (estimated)"
+              //   field={{
+              //     ...field,
+              //     value: {
+              //       ...field.value,
+              //       amount: field.value ? Number(field.value.amount) : undefined,
+              //     },
+              //   }}
+              //   fieldState={fieldState}
+              //   onChange={handleToAssetChange}
+              // />
+              <Input
+                label={"Receive (estimated)"}
+                onChange={(value) => {
+                  console.log({ value });
+                  field.onChange({
+                    asset: field.value.asset,
+                    amount: value,
+                  });
+                  handleToAssetChange();
+                }}
+                className={cn(
+                  "z-10",
+                  "relative",
+                  fieldState.error &&
+                    " border-red-500 focus-within:border-red-500",
+                )}
+                onBlur={field.onBlur}
+                value={field.value.amount}
+                placeholder="0.1"
+                rightComponent={
+                  <Dropdown
+                    items={options}
+                    selectedItem={
+                      options.find(
+                        (item) => item.value === field.value.asset,
+                      ) ?? undefined
+                    }
+                    getKey={(item) => item.label}
+                    className=" w-60"
+                    itemComponent={({ getItemProps, item, isSelected }) => {
+                      const {
+                        onClick,
+                        onMouseDown,
+                        onMouseMove,
+                        ...itemProps
+                      } = getItemProps({ item });
+                      console.log({ itemProps });
+                      return (
+                        <div
+                          {...itemProps}
+                          {...(!item.disabled && {
+                            onClick,
+                            onMouseDown,
+                            onMouseMove,
+                          })}
+                          className={cn(
+                            " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                            isSelected && "bg-gray-600 ",
+                            item.disabled &&
+                              "cursor-not-allowed opacity-50 hover:bg-gray-600",
+                          )}
+                        >
+                          <div className="flex items-center justify-center ">
+                            <img
+                              src={item.image}
+                              alt={item.label}
+                              width={24}
+                              height={24}
+                            />
+                          </div>
+                          <div className="text-white">
+                            <div className=" uppercase">{item.label}</div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                    onItemSelect={function (item: IAssetOption): void {
+                      field.onChange({
+                        asset: item.value,
+                        amount: field.value.amount,
+                      });
+                      handleToAssetChange();
+                    }}
+                    selectedItemComponent={(selected) => {
+                      // console.log("selected", selected);
+                      if (!selected.item) {
+                        return <div>Select</div>;
+                      }
+                      return (
+                        <div className="flex  w-full cursor-pointer flex-row gap-5 font-normal">
+                          <div className="flex items-center   justify-between">
+                            <img
+                              src={selected.item.image}
+                              alt={selected.item.label}
+                              className="h-6 w-6"
+                            />
+                          </div>
+                          <div className="flex flex-col items-end text-sm font-normal">
+                            <div className=" uppercase">
+                              {selected.item.label}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                  />
+                }
+              >
+                {fieldState.error && (
+                  <ErrorsComponent errors={fieldState.error} />
+                )}
+              </Input>
+            );
+          }}
         />
+
         <Controller
           name="slippage"
           control={control}
@@ -741,4 +979,23 @@ export const getPrice = async ({
       : mainVsPrice;
   }
   return 0;
+};
+
+const ErrorsComponent = ({ errors }: { errors: Errors | undefined }) => {
+  console.log({ errors });
+  const renderErrorMessage = () => {
+    if (!errors) return;
+    if (errors?.amount?.message) {
+      if (errors?.amount?.message === "Required") return "Amount is required";
+      return errors?.amount?.message;
+    }
+    if (errors?.asset?.message) {
+      return `Asset ${errors?.asset?.message}`;
+    }
+  };
+  return (
+    <div className=" absolute bottom-6 h-1 w-full  text-sm  text-red-800">
+      {renderErrorMessage()}
+    </div>
+  );
 };
