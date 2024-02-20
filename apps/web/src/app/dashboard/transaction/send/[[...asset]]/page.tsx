@@ -4,8 +4,8 @@ import {
   BalanceInput,
   BalanceInputValue,
   Button,
+  DropDown,
   IBalanceOption,
-  Input,
 } from "@/components";
 import {
   NewBalance,
@@ -16,6 +16,7 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { TargetChain } from "@/target-chain";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
+import { Input } from "@/ui/input";
 import { Coin } from "@cosmjs/amino";
 import { MsgSendEncodeObject } from "@cosmjs/stargate";
 import { NewSignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
@@ -173,16 +174,47 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     }
   }, [balanceOptions, coin, params]);
 
+  if (balanceOptions.length === 0) {
+    return (
+      <div className="flex min-h-[200px] items-center justify-center">
+        <p className=" text-white">No balances found</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-7 py-4">
-      <BalanceInput
+      {/* <BalanceInput
         value={coin}
         onChange={setCoin}
         label="Amount"
         balances={balanceOptions}
+      /> */}
+      <Input
+        label={"Amount"}
+        placeholder="0.1"
+        value={coin.amount}
+        onChange={(value) => {
+          setCoin({
+            amount: value,
+            asset: coin.asset,
+          });
+        }}
+        rightComponent={
+          <DropDown description="Select" options={balanceOptions} />
+        }
+        children={
+          <div className="flex gap-3 text-xs font-bold text-white">
+            <span className=" cursor-pointer hover:text-blue-600">25%</span>
+            <span className="cursor-pointer  hover:text-blue-600">50%</span>
+            <span className="cursor-pointer  hover:text-blue-600">75%</span>
+            <span className="cursor-pointer  hover:text-blue-600">100%</span>
+          </div>
+        }
       />
       <Input
-        labelText="Recipient Address"
+        label="Recipient Address"
+        placeholder="Enter recipient address"
         value={recipient}
         onChange={setRecipient}
       />

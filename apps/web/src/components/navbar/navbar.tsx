@@ -3,7 +3,9 @@
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-import { Account, Button, Divider, Footer, PrimaryLink, Text } from "..";
+import { Account, Divider, Footer, PrimaryLink, Text } from "..";
+import Link from "next/link";
+
 type NavMenu = {
   href: string;
   text: string;
@@ -30,20 +32,14 @@ const navMenu: NavMenu[] = [
     showOnMobile: true,
     showOnDesktop: true,
   },
-  {
-    href: "/dashboard/settings",
-    text: "Settings",
-    module: "settings",
-    icon: "/assets/icons/nav-settings.svg",
-    showOnMobile: true,
-    showOnDesktop: true,
-  },
+
   {
     href: "/dashboard/buy-crypto",
     text: "Buy Crypto",
     module: "buy-crypto",
     icon: "/assets/icons/nav-buy-crypto.svg",
     showOnDesktop: true,
+    showOnMobile: true,
   },
   {
     href: "/dashboard/fast-travel",
@@ -51,12 +47,22 @@ const navMenu: NavMenu[] = [
     module: "fast-travel",
     icon: "/assets/icons/nav-fast-travel.svg",
     showOnDesktop: true,
+    showOnMobile: true,
   },
   {
     href: "/dashboard/app-connect",
     text: "App Connect",
     module: "app-connect",
     icon: "/assets/icons/nav-app-connect.svg",
+    showOnDesktop: true,
+    showOnMobile: true,
+  },
+  {
+    href: "/dashboard/settings",
+    text: "Settings",
+    module: "settings",
+    icon: "/assets/icons/nav-settings.svg",
+    showOnMobile: true,
     showOnDesktop: true,
   },
 ];
@@ -69,13 +75,20 @@ export function Navbar() {
     <nav className="bg-background-secondary relative max-sm:absolute max-sm:bottom-0 max-sm:h-24 max-sm:w-full sm:h-full">
       <div className="flex h-full w-[330px] flex-col px-7 pt-16 max-sm:hidden">
         <Account />
-        <Button
-          className="my-7 text-xl font-bold"
-          block
-          href="/dashboard/transaction/send"
-        >
-          New Transaction
-        </Button>
+        <div className="mb-4 mt-4 flex  gap-5 text-white">
+          <Link
+            href="/dashboard/transaction/send"
+            className="flex flex-1  justify-center rounded-md bg-blue-600 p-3"
+          >
+            <span className=" text-sm">Send</span>
+          </Link>
+          <Link
+            href="/dashboard/transaction/receive"
+            className="flex flex-1  justify-center rounded-md bg-blue-600 p-3"
+          >
+            <span className=" text-sm">Receive</span>
+          </Link>
+        </div>
         <Divider />
 
         <div className="mt-7 grow">
@@ -95,8 +108,8 @@ export function Navbar() {
                   >
                     <Image
                       src={navItem.icon}
-                      width={40}
-                      height={40}
+                      width={30}
+                      height={30}
                       alt={navItem.text}
                     />
                     <Text
@@ -139,7 +152,6 @@ export function Navbar() {
               </li>
             ))}
         </ul>
-        aaaa
       </div>
     </nav>
   );

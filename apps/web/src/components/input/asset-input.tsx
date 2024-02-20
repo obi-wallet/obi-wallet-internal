@@ -159,7 +159,9 @@ export function AssetInput({
                   alt="asset"
                   className="h-6 w-6 "
                 />
-                <span>{option.label}</span>
+                <span>
+                  {option.label} {option.disabled ? "soon" : ""}
+                </span>
               </li>
             )}
           />

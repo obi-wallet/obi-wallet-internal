@@ -26,14 +26,6 @@ export const fromAssets: Record<string, FromAsset> = {
     image:
       "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
   },
-  "Usdc-ethereum": {
-    image:
-      "https://assets.coingecko.com/coins/images/6319/large/usdc.png?1696506694",
-    chainId: "1",
-    address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-    decimals: 6,
-    label: "USDC (Ethereum)",
-  },
   "Eth-arbitrum": {
     chainId: "42161",
     address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
@@ -41,14 +33,6 @@ export const fromAssets: Record<string, FromAsset> = {
     label: "ETH (Arbitrum)",
     image:
       "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
-  },
-  "Usdc-arbitrum": {
-    chainId: "42161",
-    address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-    decimals: 6,
-    label: "USDC (Arbitrum)",
-    image:
-      "https://assets.coingecko.com/coins/images/6319/large/usdc.png?1696506694",
   },
   "Eth-base": {
     chainId: "8453",
@@ -58,6 +42,26 @@ export const fromAssets: Record<string, FromAsset> = {
     image:
       "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
   },
+  "Usdc-ethereum": {
+    image:
+      "https://assets.coingecko.com/coins/images/6319/large/usdc.png?1696506694",
+    chainId: "1",
+    address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    decimals: 6,
+    label: "USDC (Ethereum)",
+    disabled: true,
+  },
+
+  "Usdc-arbitrum": {
+    chainId: "42161",
+    address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+    decimals: 6,
+    label: "USDC (Arbitrum)",
+    disabled: true,
+    image:
+      "https://assets.coingecko.com/coins/images/6319/large/usdc.png?1696506694",
+  },
+
   "Usdc-base": {
     image:
       "https://assets.coingecko.com/coins/images/6319/large/usdc.png?1696506694",
@@ -65,6 +69,7 @@ export const fromAssets: Record<string, FromAsset> = {
     address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     decimals: 6,
     label: "USDC (Base)",
+    disabled: true,
   },
 };
 
