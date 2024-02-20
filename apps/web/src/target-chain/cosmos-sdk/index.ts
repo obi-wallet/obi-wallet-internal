@@ -36,6 +36,7 @@ import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
+import { bech32 } from "bech32";
 import { chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
@@ -243,6 +244,11 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
       chainId: this.chainData.id,
       denom,
     });
+  }
+
+  public validateAddress(address: string): boolean {
+    const { prefix } = bech32.decode(address);
+    return prefix === this.chainData.prefix;
   }
 
   public get aminoTypes() {
