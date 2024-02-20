@@ -1,6 +1,5 @@
 "use client";
 
-import { toAssets } from "@/app/dashboard/fast-travel/assets";
 import {
   BalanceInput,
   BalanceInputValue,
@@ -9,14 +8,13 @@ import {
   Input,
 } from "@/components";
 import {
-  Balance,
-  useBalances,
+  NewBalance,
   useInvalidateBalancesQueries,
+  useNewBalances,
 } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { TargetChain } from "@/target-chain";
-import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
 import { Coin } from "@cosmjs/amino";
 import { MsgSendEncodeObject } from "@cosmjs/stargate";
@@ -32,7 +30,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
 }) {
   const wallet = useCurrentWallet({});
   const publicKey = usePublicKey();
-  const balances = useBalances({ publicKey });
+  const balances = useNewBalances({ publicKey });
   const invalidateBalancesQueries = useInvalidateBalancesQueries();
 
   const [coin, setCoin] = useState<BalanceInputValue>({
@@ -46,18 +44,19 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       invariant(wallet, "Wallet not found");
       invariant(coin.asset, "No asset selected");
 
-      const chainId = coin.asset.asset.chainId;
-      invariant(
-        isCosmosSdkChainId(chainId),
-        "ChainId is not a Cosmos SDK chain",
-      );
+      const asset = coin.asset;
+
+      const chainId = coin.asset.targetChainId;
+      const denomUnit = asset.asset.denom_units.find((value) => {
+        return value.denom === asset.asset.display;
+      });
 
       const tokens: Coin[] = [
         {
           amount: new BigNumber(coin.amount)
-            .multipliedBy(10 ** coin.asset.asset.decimals)
+            .multipliedBy(10 ** (denomUnit?.exponent ?? 0))
             .toString(),
-          denom: coin.asset.asset.denom,
+          denom: coin.asset.denom,
         },
       ];
 
@@ -106,7 +105,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
   const balance = balances
     .filter((b) => b.isSuccess)
     .map((b) => b.data)
-    .filter((b) => b?.balances) as Balance[];
+    .filter((b): b is NewBalance => !!b?.balances);
 
   // add chainId to balance.balances
   const withChainId = balance
@@ -115,7 +114,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         balances: b?.balances.map((balance) => {
           return {
             ...balance,
-            chainId: b.chainId,
+            chainId: b.targetChainId,
           };
         }),
       };
@@ -125,40 +124,46 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
 
   const balanceOptions = withChainId
     .map((b) => {
-      // find the asset in ToAssets using the denom, toAssets is an object and the denom is not the key
-      const asset =
-        toAssets[
-          Object.keys(toAssets).find(
-            (key) => toAssets[key]?.denom === b.denom,
-          ) ?? ""
-        ];
-      if (!asset) {
-        return null;
-      }
-      invariant(asset, "Asset not found");
-      const amount = Number(b.amount);
-      const decimals = asset?.decimals ?? 0;
-      // get amount using the asset's decimals
-      const decimalAmount = amount / Math.pow(10, decimals);
+      const assetData = TargetChain.chainId(b.chainId).getAsset(b.denom);
+      if (!assetData) return null;
 
-      return {
-        image: asset?.image,
+      const amount = new BigNumber(b.amount);
+      const denomUnit = assetData.denom_units.find((value) => {
+        return value.denom === assetData.display;
+      });
+      const decimalAmount = amount.dividedBy(10 ** (denomUnit?.exponent ?? 0));
+
+      const result: IBalanceOption = {
+        image: assetData.images?.[0]?.svg ?? assetData.images?.[0]?.png,
+        targetChainId: b.chainId,
+        denom: b.denom,
         network: TargetChain.chainId(b.chainId).label,
-        assetUnit: asset?.label,
+        assetUnit: assetData?.symbol,
         balance: decimalAmount,
-        asset: asset,
+        asset: assetData,
       };
+      return result;
     })
     .filter((option): option is IBalanceOption => !!option);
 
   useEffect(() => {
     if (coin.asset) return;
 
-    const initialAssetParam = params.asset?.[0];
+    const initialAssetParam = decodeURIComponent(params.asset?.[0] ?? "");
+
+    function getInitialAsset() {
+      if (!initialAssetParam) return;
+
+      const [chainId, denom] = initialAssetParam.split(":");
+      if (!chainId || !denom) return;
+
+      return balanceOptions.find((balance) => {
+        return balance.targetChainId === chainId && balance.denom === denom;
+      });
+    }
+
     const initialAsset = initialAssetParam
-      ? balanceOptions.find((balance) => {
-          return balance.assetUnit === initialAssetParam;
-        })
+      ? getInitialAsset()
       : balanceOptions[0];
     if (initialAsset) {
       setCoin({

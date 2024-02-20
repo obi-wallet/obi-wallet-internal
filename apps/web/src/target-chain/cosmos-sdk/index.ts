@@ -4,6 +4,7 @@ import {
   CosmosSdkChains,
 } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
+import { CosmosSdkTokenRegistry } from "@/target-chain/cosmos-sdk/token-registry";
 import { Chain } from "@chain-registry/types";
 import {
   CosmWasmClient,
@@ -61,6 +62,7 @@ function isStdFee(fee: unknown): fee is StdFee {
 export class CosmosSdkTargetChain extends AbstractTargetChain {
   protected readonly chainData: CosmosSdkChainData;
   protected readonly chain: Chain;
+  protected readonly tokenRegistry: CosmosSdkTokenRegistry;
 
   public constructor(chainId: CosmosSdkChainId) {
     super();
@@ -70,6 +72,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     });
     invariant(chain, `Chain not found for ${chainId}`);
     this.chain = chain;
+    this.tokenRegistry = CosmosSdkTokenRegistry.getInstance();
   }
 
   public get label() {
@@ -233,6 +236,13 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
 
   public validateFee(fee: unknown): fee is StdFee {
     return isStdFee(fee);
+  }
+
+  public getAsset(denom: string) {
+    return this.tokenRegistry.getAsset({
+      chainId: this.chainData.id,
+      denom,
+    });
   }
 
   public get aminoTypes() {
