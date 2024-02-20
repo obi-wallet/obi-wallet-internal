@@ -8,9 +8,9 @@ import {
   Input,
 } from "@/components";
 import {
-  Balance,
-  useBalances,
+  NewBalance,
   useInvalidateBalancesQueries,
+  useNewBalances,
 } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
@@ -30,7 +30,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
 }) {
   const wallet = useCurrentWallet({});
   const publicKey = usePublicKey();
-  const balances = useBalances({ publicKey });
+  const balances = useNewBalances({ publicKey });
   const invalidateBalancesQueries = useInvalidateBalancesQueries();
 
   const [coin, setCoin] = useState<BalanceInputValue>({
@@ -46,7 +46,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
 
       const asset = coin.asset;
 
-      const chainId = coin.asset.targetChainId;
+      const chainId = coin.asset.targetChain;
       const denomUnit = asset.asset.denom_units.find((value) => {
         return value.denom === asset.asset.display;
       });
@@ -56,7 +56,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
           amount: new BigNumber(coin.amount)
             .multipliedBy(10 ** (denomUnit?.exponent ?? 0))
             .toString(),
-          denom: asset.asset.base,
+          denom: coin.asset.denom,
         },
       ];
 
@@ -105,7 +105,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
   const balance = balances
     .filter((b) => b.isSuccess)
     .map((b) => b.data)
-    .filter((b) => b?.balances) as Balance[];
+    .filter((b): b is NewBalance => !!b?.balances);
 
   // add chainId to balance.balances
   const withChainId = balance
@@ -133,25 +133,37 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       });
       const decimalAmount = amount.dividedBy(10 ** (denomUnit?.exponent ?? 0));
 
-      return {
+      const result: IBalanceOption = {
         image: assetData.images?.[0]?.svg ?? assetData.images?.[0]?.png,
-        targetChainId: b.chainId,
+        targetChain: b.chainId,
+        denom: b.denom,
         network: TargetChain.chainId(b.chainId).label,
         assetUnit: assetData?.symbol,
         balance: decimalAmount,
         asset: assetData,
       };
+      return result;
     })
     .filter((option): option is IBalanceOption => !!option);
 
   useEffect(() => {
     if (coin.asset) return;
 
-    const initialAssetParam = params.asset?.[0];
+    const initialAssetParam = decodeURIComponent(params.asset?.[0] ?? "");
+
+    function getInitialAsset() {
+      if (!initialAssetParam) return;
+
+      const [chainId, denom] = initialAssetParam.split(":");
+      if (!chainId || !denom) return;
+
+      return balanceOptions.find((balance) => {
+        return balance.targetChain === chainId && balance.denom === denom;
+      });
+    }
+
     const initialAsset = initialAssetParam
-      ? balanceOptions.find((balance) => {
-          return balance.assetUnit === initialAssetParam;
-        })
+      ? getInitialAsset()
       : balanceOptions[0];
     if (initialAsset) {
       setCoin({

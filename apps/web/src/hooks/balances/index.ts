@@ -2,11 +2,7 @@ import { toAssets } from "@/app/dashboard/fast-travel/assets";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
-import {
-  useQueries,
-  useQueryClient,
-  UseQueryResult,
-} from "@tanstack/react-query";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
 import invariant from "tiny-invariant";
 
 import { usePublicKey } from "../use-public-key";
@@ -20,6 +16,51 @@ export interface Coin {
 export interface Balance {
   balances: Coin[];
   chainId: TargetChainId;
+}
+
+export interface NewCoin {
+  targetChain: TargetChainId;
+  denom: string;
+  amount: string;
+  price: string;
+}
+
+export interface NewBalance {
+  balances: NewCoin[];
+  chainId: TargetChainId;
+}
+
+async function fetchNewBalances({
+  address,
+  chainId,
+}: {
+  address?: string;
+  chainId: TargetChainId;
+}): Promise<NewBalance> {
+  if (!address) {
+    return { balances: [], chainId };
+  }
+
+  return await TargetChain.chainId(chainId).withStargateClient(
+    async (client) => {
+      const coins = await client.getAllBalances(address);
+      const balances = await Promise.all(
+        coins.map(async (balance) => {
+          const price = await getTokenPrice(chainId, balance.denom);
+          return {
+            targetChain: chainId,
+            denom: balance.denom,
+            amount: balance.amount,
+            price: price.toString(),
+          };
+        }),
+      );
+      return {
+        balances,
+        chainId,
+      };
+    },
+  );
 }
 
 async function fetchBalances({
@@ -60,11 +101,40 @@ export function useInvalidateBalancesQueries() {
   };
 }
 
+export function useNewBalances({
+  publicKey,
+}: {
+  publicKey?: Secp256k1PublicKey;
+}) {
+  const chains = Object.values(CosmosSdkChains);
+
+  // useQueries to fetch balances for each chain
+  return useQueries({
+    queries: chains.map((chain) => ({
+      queryKey: ["new-balances", chain.id, publicKey],
+      enabled: !!publicKey, // Only run query if address is provided
+      queryFn: async (): Promise<NewBalance> => {
+        invariant(publicKey, "Expected publicKey to be set.");
+        if (chain.disabled) {
+          return {
+            balances: [],
+            chainId: chain.id,
+          };
+        }
+        return await fetchNewBalances({
+          address: TargetChain.chainId(chain.id).computeAddress(publicKey),
+          chainId: chain.id,
+        });
+      },
+    })),
+  });
+}
+
 export function useBalances({
   publicKey,
 }: {
   publicKey: Secp256k1PublicKey | undefined;
-}): UseQueryResult<Balance, unknown>[] {
+}) {
   // get an array of all the chain ids from TargetChainId
   const chains = Object.values(CosmosSdkChains);
 
