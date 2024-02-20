@@ -45,7 +45,7 @@ export function Input({
       <div className="flex flex-1 flex-col">
         {topComponent && <>{topComponent}</>}
         <div className="flex flex-1 flex-row items-center">
-          {leftComponent && <div>{leftComponent}</div>}
+          {leftComponent && <div>{leftComponent as React.ReactNode}</div>}
           <BaseInput
             {...rest}
             ref={inputRef}

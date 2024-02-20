@@ -35,14 +35,14 @@ export const SecretJsHomeChains = {
     label: "Secret Network",
     prefix: "secret",
     accountCreator: {
-      address: "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      address: "secret1ade0mzc37z7lgqfrmmd6w6wm800t26kmkz6xnj",
       codeHash:
-        "8a50e15844d996fec54306fce3dbe563cb1e4d45346177c0e3baf462324715e5",
+        "b63651c0b205a1beff039c57d0b1e898ce72b4739b2739dba33885d861e8c42f",
     },
     secretSigner: {
-      address: "secret146zlhvjws92znj6898kxpcyjs9mfrlgzpl5u5y",
+      address: "secret1waecxrv74zeftvxznlrtet8z3wzej0wnwgx4nw",
       codeHash:
-        "18dc025952aaf371d366e474c088d473b6281e924877fe0bba65209b4a17074e",
+        "85c1bdcb93c60e4318ab6cbfc19b6bd1603dd09e812bb5b3edb2a0222c369b49",
     },
     currentCodeIds: {
       userAccount: 1267,
