@@ -1,4 +1,5 @@
 import { Divider } from "@/components/divider";
+import { cn } from "@/lib/utils";
 import { InputContainer } from "@/ui/container";
 import { BaseInput } from "@/ui/input/base-input";
 import {
@@ -62,7 +63,7 @@ export function Input({
                   }
                 : undefined
             }
-            className={"w-full flex-1" + inputClassName}
+            className={cn("w-full flex-1", inputClassName)}
           />
           {rightComponent && <div>{rightComponent}</div>}
         </div>
