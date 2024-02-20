@@ -27,6 +27,7 @@ export function TOSModal() {
           <Link
             href="https://docs.google.com/document/d/1mqCHAYghjEQJQaW5lnTY6w9690Znr6qQlOH34KEEzkE/edit?usp=sharing"
             className=" text-blue-600"
+            target="_blank"
           >
             Obi Terms and Conditions
           </Link>
