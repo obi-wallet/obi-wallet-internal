@@ -15,7 +15,7 @@ export function Modal({
   onClose?: () => void;
 }) {
   return (
-    <div className="absolute top-0 flex h-full w-full items-center justify-center bg-black/30 backdrop-blur-sm ">
+    <div className="absolute top-0 z-50 flex h-full w-full items-center justify-center bg-black/30   backdrop-blur-sm">
       <Box className="relative w-[560px] space-y-4 pt-6 shadow-lg shadow-neutral-600 max-sm:w-[400px]">
         <Text size="xl">{title}</Text>
         <Divider />
