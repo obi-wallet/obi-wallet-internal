@@ -2,7 +2,10 @@ import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { Asset } from "@chain-registry/types";
 import { assets, chains } from "chain-registry";
 
-import astroportSeiTokens from "./astroport-token-lists/sei.json";
+import astroportTokensInjective from "./astroport-token-lists/injective.json";
+import astroportTokensNeutron from "./astroport-token-lists/neutron.json";
+import astroportTokensOsmosis from "./astroport-token-lists/osmosis.json";
+import astroportTokensSei from "./astroport-token-lists/sei.json";
 
 export class CosmosSdkTokenRegistry {
   protected static instance: CosmosSdkTokenRegistry;
@@ -42,18 +45,27 @@ export class CosmosSdkTokenRegistry {
       });
     });
 
-    // Add Astroport tokens for Sei
-    astroportSeiTokens.forEach(({ token, originDenom, originChainId }) => {
-      if (token && originDenom && originChainId) {
-        const key = `${CosmosSdkChainId.Sei}:${token}`;
-        const originKey = `${originChainId}:${originDenom}`;
-        const origin = result[originKey];
-        if (origin) {
-          result[key] = origin;
-        }
-      }
-    });
+    addAstroportTokens(CosmosSdkChainId.Inj, astroportTokensInjective);
+    addAstroportTokens(CosmosSdkChainId.Neutron, astroportTokensNeutron);
+    addAstroportTokens(CosmosSdkChainId.Osmosis, astroportTokensOsmosis);
+    addAstroportTokens(CosmosSdkChainId.Sei, astroportTokensSei);
 
     return result;
+
+    function addAstroportTokens(
+      chainId: CosmosSdkChainId,
+      tokens: { token: string; originDenom?: string; originChainId?: string }[],
+    ) {
+      tokens.forEach(({ token, originDenom, originChainId }) => {
+        if (token && originDenom && originChainId) {
+          const key = `${chainId}:${token}`;
+          const originKey = `${originChainId}:${originDenom}`;
+          const origin = result[originKey];
+          if (origin) {
+            result[key] = origin;
+          }
+        }
+      });
+    }
   }
 }

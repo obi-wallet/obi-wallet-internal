@@ -4,6 +4,7 @@ import {
   CosmosSdkChains,
 } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
+import { CosmosSdkTokenRegistry } from "@/target-chain/cosmos-sdk/token-registry";
 import { Chain } from "@chain-registry/types";
 import {
   CosmWasmClient,
@@ -39,7 +40,6 @@ import { chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-import { CosmosSdkTokenRegistry } from "@/target-chain/cosmos-sdk/token-registry";
 
 const EncodeObjectSchema = z.object({
   typeUrl: z.string(),
