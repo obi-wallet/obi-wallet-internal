@@ -345,8 +345,7 @@ function AssetItem({
   const router = useRouter();
 
   const targetChain = TargetChain.chainId(asset.chainId);
-  const assetKey = `${asset.chainId}:${asset.denom}`;
-  const assetData = targetChain.assets[assetKey];
+  const assetData = targetChain.getAsset(asset.denom);
   const denomUnit = assetData?.denom_units.find((value) => {
     return value.denom === assetData.display;
   });

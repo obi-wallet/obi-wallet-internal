@@ -4,7 +4,7 @@ import {
   CosmosSdkChains,
 } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
-import { Asset, AssetList, Chain } from "@chain-registry/types";
+import { Chain } from "@chain-registry/types";
 import {
   CosmWasmClient,
   createWasmAminoConverters,
@@ -35,11 +35,11 @@ import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
-import { assets, chains } from "chain-registry";
+import { chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-import { buildAssets } from "@/target-chain/cosmos-sdk/assets";
+import { CosmosSdkTokenRegistry } from "@/target-chain/cosmos-sdk/token-registry";
 
 const EncodeObjectSchema = z.object({
   typeUrl: z.string(),
@@ -62,7 +62,7 @@ function isStdFee(fee: unknown): fee is StdFee {
 export class CosmosSdkTargetChain extends AbstractTargetChain {
   protected readonly chainData: CosmosSdkChainData;
   protected readonly chain: Chain;
-  public readonly assets: Record<string, Asset>;
+  protected readonly tokenRegistry: CosmosSdkTokenRegistry;
 
   public constructor(chainId: CosmosSdkChainId) {
     super();
@@ -72,7 +72,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     });
     invariant(chain, `Chain not found for ${chainId}`);
     this.chain = chain;
-    this.assets = buildAssets();
+    this.tokenRegistry = CosmosSdkTokenRegistry.getInstance();
   }
 
   public get label() {
@@ -236,6 +236,13 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
 
   public validateFee(fee: unknown): fee is StdFee {
     return isStdFee(fee);
+  }
+
+  public getAsset(denom: string) {
+    return this.tokenRegistry.getAsset({
+      chainId: this.chainData.id,
+      denom,
+    });
   }
 
   public get aminoTypes() {
