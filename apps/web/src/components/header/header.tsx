@@ -4,13 +4,13 @@ import { Button, Modal, renderModal } from "@/components";
 import { PrimaryLink } from "@/components/links";
 import { CURRENT_THEME } from "@/configs";
 import { useStore } from "@/contexts";
-import { useCurrentWallet } from "@/hooks/use-current-wallet";
+// import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FaCircleUser, FaQrcode } from "react-icons/fa6";
+// import { FaCircleUser, FaQrcode } from "react-icons/fa6";
 
 export const Header = observer(function Header() {
   const { mpcWalletsStore } = useStore();
@@ -18,12 +18,12 @@ export const Header = observer(function Header() {
   const primaryLinkHref = mpcWalletsStore.currentWallet ? "/dashboard" : "/";
   const authChildren = mpcWalletsStore.currentWallet ? <LogOut /> : <LogIn />;
 
-  const { userDataStore } = useStore();
-  const currentWallet = useCurrentWallet({});
+  // const { userDataStore } = useStore();
+  // const currentWallet = useCurrentWallet({});
 
-  const userData = currentWallet
-    ? userDataStore.getUserData(currentWallet.userEntryAddress)
-    : {};
+  // const userData = currentWallet
+  //   ? userDataStore.getUserData(currentWallet.userEntryAddress)
+  //   : {};
 
   return (
     <>
@@ -31,7 +31,6 @@ export const Header = observer(function Header() {
         <div
           className={cn(
             "bg-background-primary flex h-full w-full items-center justify-between px-8 shadow",
-            "max-sm:hidden",
           )}
         >
           <PrimaryLink href={primaryLinkHref}>
@@ -48,7 +47,7 @@ export const Header = observer(function Header() {
           </PrimaryLink>
           {authChildren}
         </div>
-        <div
+        {/* <div
           className={cn(
             "bg-background-primary flex h-full w-full items-center justify-between p-6 shadow",
             "sm:hidden",
@@ -69,7 +68,7 @@ export const Header = observer(function Header() {
           </div>
 
           <FaQrcode className="h-11 w-11 rounded text-white" />
-        </div>
+        </div> */}
       </header>
     </>
   );
