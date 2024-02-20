@@ -19,6 +19,7 @@ export interface IBalanceOption {
   assetUnit: string;
   balance: BigNumber;
   asset: Asset;
+  disabled?: boolean;
 }
 
 export const BalanceDropDown = observer<{

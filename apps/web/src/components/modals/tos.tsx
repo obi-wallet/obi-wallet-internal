@@ -12,7 +12,7 @@ export function TOSModal() {
   const tosAccepted = localStorage.getItem("tosAccepted");
   const [showTOSModal, setShowTOSModal] = useState(!tosAccepted);
   const [firstCheckbox, setFirstCheckbox] = useState(false);
-  const [secondCheckbox, setSecondCheckbox] = useState(false);
+
   const acceptTOS = () => {
     localStorage.setItem("tosAccepted", "true");
     setShowTOSModal(false);
@@ -24,11 +24,15 @@ export function TOSModal() {
       <div className="text-md ml-3 mr-3 text-white">
         <p className="mb-10 mt-5">
           Please check the boxes below to confirm your agreement to the{" "}
-          <Link href="" className=" text-blue-600">
+          <Link
+            href="https://docs.google.com/document/d/1mqCHAYghjEQJQaW5lnTY6w9690Znr6qQlOH34KEEzkE/edit?usp=sharing"
+            className=" text-blue-600"
+            target="_blank"
+          >
             Obi Terms and Conditions
           </Link>
         </p>
-        <ul className="mb-5 mt-5 flex flex-col gap-5">
+        <ul className="mb-5 mt-5 flex cursor-pointer flex-col gap-5">
           <li
             className="flex flex-row"
             onClick={() => setFirstCheckbox(!firstCheckbox)}
@@ -43,35 +47,21 @@ export function TOSModal() {
                 {firstCheckbox && <FaCheck className="text-sm" />}
               </div>
             </div>
-            <div className=" text-sm">
-              I have read and understood, and do hereby agree to be legally
-              bound as a ‘User’ under, the Terms, including all future
-              amendments thereto. Such agreement is irrevocable and will apply
-              to all of my uses of the Site without me providing confirmation in
-              each specific instance.
-            </div>
-          </li>
-          <li
-            className="flex flex-row"
-            onClick={() => setSecondCheckbox(!secondCheckbox)}
-          >
-            <div>
-              <div
-                className={cn(
-                  " m-6 mt-0 flex h-6 w-6 items-center justify-center rounded-md",
-                  secondCheckbox ? "bg-green-600 " : "bg-white",
-                )}
-              >
-                {secondCheckbox && <FaCheck className="text-sm" />}
+            <div className="flex flex-col gap-6 text-sm">
+              <div>
+                While Obi’s smart contracts have been audited by third parties,
+                the use of Obi Fast Travel and Obi Dashboard is noncustodial and
+                there are no representations or warranties that its usage will
+                be uninterrupted or error-free. Services are provided on an “as
+                is” and “as available” basis. Any risk of usage of Obi services
+                is solely borne by User.
               </div>
-            </div>
-            <div className=" text-sm">
-              I acknowledge and agree that the Site solely provides information
-              about data on the applicable blockchains. I accept that the Site
-              operators have no custody over my funds, ability or duty to
-              transact on my behalf or power to reverse my transactions. The
-              Site operators do not endorse or provide any warranty with respect
-              to any tokens.
+              <div>
+                User is responsible for the security of your blockchain
+                account(s), including protecting your login credentials and
+                private keys. <br />
+              </div>
+              <div>Obi is not responsible for any losses or damages.</div>
             </div>
           </li>
         </ul>
@@ -79,7 +69,7 @@ export function TOSModal() {
           <Button
             onClick={acceptTOS}
             variant="primary"
-            disabled={!firstCheckbox || !secondCheckbox}
+            disabled={!firstCheckbox}
             className=" w-32 items-center justify-center"
           >
             Confirm

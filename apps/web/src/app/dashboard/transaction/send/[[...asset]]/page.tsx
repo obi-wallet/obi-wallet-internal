@@ -1,6 +1,6 @@
 "use client";
 
-import { BalanceInput, Button, IBalanceOption, Input } from "@/components";
+import { Button, IBalanceOption } from "@/components";
 import {
   NewBalance,
   useInvalidateBalancesQueries,
@@ -8,9 +8,12 @@ import {
 } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
+import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
+import { CustomDropdown as Dropdown } from "@/ui/dropdown";
+import { Input } from "@/ui/input";
 import { nonEmptyString } from "@/validation-helpers";
 import { Coin } from "@cosmjs/amino";
 import { MsgSendEncodeObject } from "@cosmjs/stargate";
@@ -208,6 +211,14 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     }
   }, [balanceOptions, form, params]);
 
+  if (balanceOptions.length === 0) {
+    return (
+      <div className="flex min-h-[200px] items-center justify-center">
+        <p className=" text-white">No balances found</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-7 py-4">
       <Controller
@@ -215,15 +226,155 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         control={form.control}
         rules={{ required: true }}
         render={({ field }) => {
+          const coin = field.value;
+          const setCoin = field.onChange;
+
           return (
-            <BalanceInput
-              value={field.value}
-              onChange={(coin) => {
-                field.onChange(coin);
-              }}
+            <Input
               label="Amount"
-              balances={balanceOptions}
-            />
+              placeholder="0.1"
+              value={coin.amount}
+              onChange={(value) => {
+                setCoin({
+                  amount: value,
+                  asset: coin.asset,
+                });
+              }}
+              topComponent={
+                <div
+                  className={cn(
+                    "m-0 text-xs uppercase",
+                    " cursor-pointer text-slate-500  hover:text-blue-600",
+                  )}
+                  onClick={() => {
+                    if (!coin.asset) return;
+                    setCoin({
+                      amount: coin.asset.balance.toString(),
+                      asset: coin.asset,
+                    });
+                  }}
+                >
+                  {coin.asset
+                    ? `${coin.asset.balance.toString()} ${
+                        coin.asset.asset.display
+                      }`
+                    : ""}
+                </div>
+              }
+              rightComponent={
+                <Dropdown
+                  items={balanceOptions}
+                  selectedItem={coin.asset}
+                  getKey={(item) => item.denom}
+                  itemToString={(item) => (item ? item.denom : "")}
+                  className="w-48"
+                  itemComponent={({ getItemProps, item, isSelected }) => {
+                    return (
+                      <div
+                        {...getItemProps({ item })}
+                        className={cn(
+                          " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                          isSelected && "bg-gray-600 ",
+                          item.disabled &&
+                            "cursor-not-allowed opacity-50 hover:bg-gray-600",
+                        )}
+                      >
+                        <div className="flex items-center justify-center ">
+                          <img
+                            src={item.image}
+                            alt={item.network}
+                            width={24}
+                            height={24}
+                          />
+                        </div>
+                        <div className="text-white">
+                          <div className=" uppercase">{item.asset.display}</div>
+                          <div>{item.balance.toString()}</div>
+                        </div>
+                      </div>
+                    );
+                  }}
+                  onItemSelect={function (item: IBalanceOption): void {
+                    setCoin({
+                      amount: coin.amount,
+                      asset: item,
+                    });
+                  }}
+                  selectedItemComponent={(selected) => {
+                    if (!selected.item) {
+                      return <div>Select</div>;
+                    }
+
+                    return (
+                      <div className="flex  w-full cursor-pointer flex-row gap-5 font-normal">
+                        <div className="flex items-center   justify-between">
+                          <img
+                            src={selected.item.image}
+                            alt={selected.item.network}
+                            className="h-6 w-6"
+                          />
+                        </div>
+                        <div className="text-md flex flex-col items-end font-normal">
+                          <div className=" uppercase">
+                            {selected.item.asset.display}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }}
+                />
+              }
+            >
+              <div className="flex gap-3  text-slate-500">
+                <span
+                  className=" cursor-pointer text-xs hover:text-blue-600"
+                  onClick={() => {
+                    setCoin({
+                      amount:
+                        coin.asset?.balance.multipliedBy(0.25).toString() ?? "",
+                      asset: coin.asset,
+                    });
+                  }}
+                >
+                  25%
+                </span>
+                <span
+                  className="cursor-pointer  text-xs hover:text-blue-600"
+                  onClick={() => {
+                    setCoin({
+                      amount:
+                        coin.asset?.balance.multipliedBy(0.5).toString() ?? "",
+                      asset: coin.asset,
+                    });
+                  }}
+                >
+                  50%
+                </span>
+                <span
+                  className="cursor-pointer  text-xs hover:text-blue-600"
+                  onClick={() => {
+                    setCoin({
+                      amount:
+                        coin.asset?.balance.multipliedBy(0.75).toString() ?? "",
+                      asset: coin.asset,
+                    });
+                  }}
+                >
+                  75%
+                </span>
+                <span
+                  className="cursor-pointer  text-xs hover:text-blue-600"
+                  onClick={() => {
+                    setCoin({
+                      amount: coin.asset?.balance.toString() ?? "",
+                      asset: coin.asset,
+                    });
+                  }}
+                >
+                  100%
+                </span>
+              </div>
+            </Input>
           );
         }}
       />
@@ -235,7 +386,8 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         render={({ field }) => {
           return (
             <Input
-              labelText="Recipient Address"
+              label="Recipient Address"
+              placeholder="Enter recipient address"
               value={field.value}
               onChange={(recipient) => {
                 field.onChange(recipient);

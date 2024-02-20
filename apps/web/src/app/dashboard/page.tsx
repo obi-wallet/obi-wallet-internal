@@ -369,9 +369,9 @@ function NewAssetItem({ coin }: { coin: NewCoin }) {
             <div>{assetData?.symbol}</div>
             <div className="text-xs opacity-60">(on {targetChain.label})</div>
           </div>
-          <div className="flex items-center text-xl font-bold">
+          {/* <div className="flex items-center text-xl font-bold">
             {amount.toString()}
-          </div>
+          </div> */}
         </div>
       </div>
       <NewPriceComponent amount={amount} price={coin.price} />
@@ -390,16 +390,18 @@ function NewPriceComponent({
   const total = priceBn.times(amount);
 
   return (
-    <div>
-      <div className="text-xl">${total.toFixed(2)}</div>
+    <div className="flex flex-col items-end">
+      <div className="text-md font-bold">{amount.toFixed(2)}</div>
+      <div className="text-xs">${total.toFixed(2)}</div>
     </div>
   );
 }
 
 function PriceComponent({ amount, price }: { price: number; amount?: number }) {
   return (
-    <div>
-      <div className="text-xl">${(price * (amount || 0)).toFixed(2)}</div>
+    <div className="flex flex-col items-end">
+      <div className="text-md font-bold">{amount}</div>
+      <div className="text-xs">${(price * (amount || 0)).toFixed(2)}</div>
     </div>
   );
 }

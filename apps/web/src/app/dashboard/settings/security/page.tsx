@@ -9,11 +9,11 @@ export default function Settings() {
     },
     {
       label: "Phone Number",
-      active: false,
+      comingSoon: true,
     },
     {
       label: "Telegram Key",
-      active: false,
+      comingSoon: true,
     },
     {
       label: "Email Recovery Key",

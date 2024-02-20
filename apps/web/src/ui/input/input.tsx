@@ -1,6 +1,13 @@
+import { Divider } from "@/components/divider";
+import { cn } from "@/lib/utils";
 import { InputContainer } from "@/ui/container";
 import { BaseInput } from "@/ui/input/base-input";
-import React, { DetailedHTMLProps, InputHTMLAttributes } from "react";
+import {
+  DetailedHTMLProps,
+  InputHTMLAttributes,
+  ReactNode,
+  useRef,
+} from "react";
 
 export interface InputProps
   extends Omit<
@@ -8,10 +15,13 @@ export interface InputProps
     "onChange"
   > {
   label: string;
-  labelClassname: string;
+  labelClassname?: string;
   onChange?: (value: string) => void;
   containerClassName?: string;
   inputClassName?: string;
+  leftComponent?: ReactNode;
+  rightComponent?: ReactNode;
+  topComponent?: ReactNode;
 }
 
 export function Input({
@@ -20,9 +30,14 @@ export function Input({
   onChange,
   inputClassName,
   className,
+  leftComponent,
+  rightComponent,
+  topComponent,
+  children,
   ...rest
 }: InputProps) {
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const handleClick = () => {
     inputRef.current?.focus();
   };
@@ -34,18 +49,31 @@ export function Input({
       className={className}
       onClick={handleClick}
     >
-      <BaseInput
-        {...rest}
-        ref={inputRef}
-        onChange={
-          onChange
-            ? (e) => {
-                onChange(e.target.value);
-              }
-            : undefined
-        }
-        className={inputClassName}
-      />
+      <div className="flex flex-1 flex-col">
+        {topComponent && <>{topComponent}</>}
+        <div className="flex flex-1 flex-row items-center">
+          {leftComponent && <div>{leftComponent}</div>}
+          <BaseInput
+            {...rest}
+            ref={inputRef}
+            onChange={
+              onChange
+                ? (e) => {
+                    onChange(e.target.value);
+                  }
+                : undefined
+            }
+            className={cn("w-full flex-1", inputClassName)}
+          />
+          {rightComponent && <div>{rightComponent}</div>}
+        </div>
+        {children && (
+          <>
+            <Divider className="mb-2 mt-2" />
+            {children}
+          </>
+        )}
+      </div>
     </InputContainer>
   );
 }
