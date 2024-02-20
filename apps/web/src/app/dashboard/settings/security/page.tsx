@@ -9,23 +9,23 @@ export default function Settings() {
     },
     {
       label: "Phone Number",
-      active: true,
+      active: false,
     },
     {
       label: "Telegram Key",
-      active: true,
+      active: false,
     },
     {
       label: "Email Recovery Key",
-      active: true,
+      active: false,
     },
     {
       label: "Ledger/YubiKey",
-      active: true,
+      active: false,
     },
     {
       label: "Google Authenticator",
-      active: true,
+      active: false,
     },
   ];
   return (
