@@ -19,7 +19,7 @@ export interface Balance {
 }
 
 export interface NewCoin {
-  targetChain: TargetChainId;
+  targetChainId: TargetChainId;
   denom: string;
   amount: string;
   price: string;
@@ -27,28 +27,28 @@ export interface NewCoin {
 
 export interface NewBalance {
   balances: NewCoin[];
-  chainId: TargetChainId;
+  targetChainId: TargetChainId;
 }
 
 async function fetchNewBalances({
   address,
-  chainId,
+  targetChainId,
 }: {
   address?: string;
-  chainId: TargetChainId;
+  targetChainId: TargetChainId;
 }): Promise<NewBalance> {
   if (!address) {
-    return { balances: [], chainId };
+    return { balances: [], targetChainId };
   }
 
-  return await TargetChain.chainId(chainId).withStargateClient(
+  return await TargetChain.chainId(targetChainId).withStargateClient(
     async (client) => {
       const coins = await client.getAllBalances(address);
       const balances = await Promise.all(
         coins.map(async (balance) => {
-          const price = await getTokenPrice(chainId, balance.denom);
+          const price = await getTokenPrice(targetChainId, balance.denom);
           return {
-            targetChain: chainId,
+            targetChainId,
             denom: balance.denom,
             amount: balance.amount,
             price: price.toString(),
@@ -57,7 +57,7 @@ async function fetchNewBalances({
       );
       return {
         balances,
-        chainId,
+        targetChainId,
       };
     },
   );
@@ -118,12 +118,12 @@ export function useNewBalances({
         if (chain.disabled) {
           return {
             balances: [],
-            chainId: chain.id,
+            targetChainId: chain.id,
           };
         }
         return await fetchNewBalances({
           address: TargetChain.chainId(chain.id).computeAddress(publicKey),
-          chainId: chain.id,
+          targetChainId: chain.id,
         });
       },
     })),

@@ -13,7 +13,7 @@ import { Text } from "../text";
 
 export interface IBalanceOption {
   image: string | undefined;
-  targetChain: TargetChainId;
+  targetChainId: TargetChainId;
   denom: string;
   network: string;
   assetUnit: string;

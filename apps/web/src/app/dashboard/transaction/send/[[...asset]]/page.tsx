@@ -46,7 +46,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
 
       const asset = coin.asset;
 
-      const chainId = coin.asset.targetChain;
+      const chainId = coin.asset.targetChainId;
       const denomUnit = asset.asset.denom_units.find((value) => {
         return value.denom === asset.asset.display;
       });
@@ -114,7 +114,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         balances: b?.balances.map((balance) => {
           return {
             ...balance,
-            chainId: b.chainId,
+            chainId: b.targetChainId,
           };
         }),
       };
@@ -135,7 +135,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
 
       const result: IBalanceOption = {
         image: assetData.images?.[0]?.svg ?? assetData.images?.[0]?.png,
-        targetChain: b.chainId,
+        targetChainId: b.chainId,
         denom: b.denom,
         network: TargetChain.chainId(b.chainId).label,
         assetUnit: assetData?.symbol,
@@ -158,7 +158,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       if (!chainId || !denom) return;
 
       return balanceOptions.find((balance) => {
-        return balance.targetChain === chainId && balance.denom === denom;
+        return balance.targetChainId === chainId && balance.denom === denom;
       });
     }
 

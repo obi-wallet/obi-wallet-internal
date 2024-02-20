@@ -321,7 +321,7 @@ const AssetBalance = observer(function AssetBalance() {
     return b.data?.balances.map((chainBalance) => {
       return (
         <NewAssetItem
-          key={`${chainBalance.targetChain}:${chainBalance.denom}`}
+          key={`${chainBalance.targetChainId}:${chainBalance.denom}`}
           coin={chainBalance}
         />
       );
@@ -332,7 +332,7 @@ const AssetBalance = observer(function AssetBalance() {
 function NewAssetItem({ coin }: { coin: NewCoin }) {
   const router = useRouter();
 
-  const targetChain = TargetChain.chainId(coin.targetChain);
+  const targetChain = TargetChain.chainId(coin.targetChainId);
   const assetData = targetChain.getAsset(coin.denom);
   const denomUnit = assetData?.denom_units.find((value) => {
     return value.denom === assetData.display;
@@ -347,7 +347,7 @@ function NewAssetItem({ coin }: { coin: NewCoin }) {
       onClick={() => {
         router.push(
           `/dashboard/transaction/send/${encodeURIComponent(
-            `${coin.targetChain}:${coin.denom}`,
+            `${coin.targetChainId}:${coin.denom}`,
           )}`,
         );
       }}
