@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  BalanceInput,
-  BalanceInputValue,
-  Button,
-  IBalanceOption,
-  Input,
-} from "@/components";
+import { BalanceInput, Button, IBalanceOption, Input } from "@/components";
 import {
   NewBalance,
   useInvalidateBalancesQueries,
@@ -15,38 +9,78 @@ import {
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { TargetChain } from "@/target-chain";
+import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
+import { nonEmptyString } from "@/validation-helpers";
 import { Coin } from "@cosmjs/amino";
 import { MsgSendEncodeObject } from "@cosmjs/stargate";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { NewSignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
 import invariant from "tiny-invariant";
+import { z } from "zod";
+
+const schema = z
+  .object({
+    coin: z.object({
+      amount: z.string(),
+      // TODO: This should be more precise
+      asset: z.any().optional(),
+    }),
+    recipient: nonEmptyString("Address"),
+  })
+  .required()
+  .refine(
+    (data) => {
+      if (!data.coin.asset) return true;
+      if (!isCosmosSdkChainId(data.coin.asset.targetChainId)) return true;
+
+      try {
+        return TargetChain.chainId(
+          data.coin.asset.targetChainId,
+        ).validateAddress(data.recipient);
+      } catch (_e) {
+        return false;
+      }
+    },
+    {
+      message: "Invalid address",
+    },
+  );
+type FormData = z.infer<typeof schema>;
 
 export default observer<{ params: { asset?: string[] } }>(function Send({
   params,
 }) {
+  const form = useForm<FormData>({
+    defaultValues: {
+      coin: {
+        amount: "",
+        asset: undefined,
+      },
+      recipient: "",
+    },
+    mode: "onTouched",
+    resolver: zodResolver(schema),
+  });
+
   const wallet = useCurrentWallet({});
   const publicKey = usePublicKey();
   const balances = useNewBalances({ publicKey });
   const invalidateBalancesQueries = useInvalidateBalancesQueries();
 
-  const [coin, setCoin] = useState<BalanceInputValue>({
-    amount: "",
-    asset: undefined,
-  });
-  const [recipient, setRecipient] = useState<string>("");
-
   const send = useMutation({
-    mutationFn: async () => {
+    mutationFn: async ({ coin, recipient }: FormData) => {
       invariant(wallet, "Wallet not found");
       invariant(coin.asset, "No asset selected");
 
-      const asset = coin.asset;
+      const asset = coin.asset as IBalanceOption;
 
-      const chainId = coin.asset.targetChainId;
+      const chainId = asset.targetChainId;
       const denomUnit = asset.asset.denom_units.find((value) => {
         return value.denom === asset.asset.display;
       });
@@ -56,7 +90,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
           amount: new BigNumber(coin.amount)
             .multipliedBy(10 ** (denomUnit?.exponent ?? 0))
             .toString(),
-          denom: coin.asset.denom,
+          denom: asset.denom,
         },
       ];
 
@@ -147,6 +181,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     .filter((option): option is IBalanceOption => !!option);
 
   useEffect(() => {
+    const coin = form.getValues().coin;
     if (coin.asset) return;
 
     const initialAssetParam = decodeURIComponent(params.asset?.[0] ?? "");
@@ -166,33 +201,56 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       ? getInitialAsset()
       : balanceOptions[0];
     if (initialAsset) {
-      setCoin({
+      form.setValue("coin", {
         amount: coin.amount,
         asset: initialAsset,
       });
     }
-  }, [balanceOptions, coin, params]);
+  }, [balanceOptions, form, params]);
 
   return (
     <div className="space-y-7 py-4">
-      <BalanceInput
-        value={coin}
-        onChange={setCoin}
-        label="Amount"
-        balances={balanceOptions}
+      <Controller
+        name="coin"
+        control={form.control}
+        rules={{ required: true }}
+        render={({ field }) => {
+          return (
+            <BalanceInput
+              value={field.value}
+              onChange={(coin) => {
+                field.onChange(coin);
+              }}
+              label="Amount"
+              balances={balanceOptions}
+            />
+          );
+        }}
       />
-      <Input
-        labelText="Recipient Address"
-        value={recipient}
-        onChange={setRecipient}
+
+      <Controller
+        name="recipient"
+        control={form.control}
+        rules={{ required: true }}
+        render={({ field }) => {
+          return (
+            <Input
+              labelText="Recipient Address"
+              value={field.value}
+              onChange={(recipient) => {
+                field.onChange(recipient);
+              }}
+            />
+          );
+        }}
       />
       <div className="flex justify-end">
         <Button
           className="block w-44"
-          disabled={send.isLoading}
-          onClick={() => {
-            send.mutate();
-          }}
+          disabled={!form.formState.isValid || send.isLoading}
+          onClick={form.handleSubmit((data) => {
+            send.mutate(data);
+          })}
         >
           Next
         </Button>
