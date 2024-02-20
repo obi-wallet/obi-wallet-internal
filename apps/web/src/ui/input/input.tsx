@@ -1,7 +1,12 @@
 import { Divider } from "@/components/divider";
 import { InputContainer } from "@/ui/container";
 import { BaseInput } from "@/ui/input/base-input";
-import React, { DetailedHTMLProps, InputHTMLAttributes } from "react";
+import {
+  DetailedHTMLProps,
+  InputHTMLAttributes,
+  ReactNode,
+  useRef,
+} from "react";
 
 export interface InputProps
   extends Omit<
@@ -13,9 +18,9 @@ export interface InputProps
   onChange?: (value: string) => void;
   containerClassName?: string;
   inputClassName?: string;
-  leftComponent?: React.ReactNode;
-  rightComponent?: React.ReactNode;
-  topComponent?: React.ReactNode;
+  leftComponent?: ReactNode;
+  rightComponent?: ReactNode;
+  topComponent?: ReactNode;
 }
 
 export function Input({
@@ -30,7 +35,8 @@ export function Input({
   children,
   ...rest
 }: InputProps) {
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const handleClick = () => {
     inputRef.current?.focus();
   };
@@ -45,7 +51,7 @@ export function Input({
       <div className="flex flex-1 flex-col">
         {topComponent && <>{topComponent}</>}
         <div className="flex flex-1 flex-row items-center">
-          {leftComponent && <div>{leftComponent as React.ReactNode}</div>}
+          {leftComponent && <div>{leftComponent}</div>}
           <BaseInput
             {...rest}
             ref={inputRef}

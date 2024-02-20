@@ -1,10 +1,10 @@
 import { DropDown } from "@/components/dropdown/dropdown";
-import React from "react";
+import { useRef } from "react";
 
 import { Input } from "../input";
 
 export function BalanceInput() {
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const handleClick = () => {
     inputRef.current?.focus();
   };
