@@ -147,7 +147,7 @@ export function Navbar() {
                     alt={navItem.text}
                     className="!h-8 !w-8"
                   />
-                  <Text>{navItem.text}</Text>
+                  <Text className="text-center">{navItem.text}</Text>
                 </PrimaryLink>
               </li>
             ))}
