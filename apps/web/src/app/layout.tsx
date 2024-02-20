@@ -1,4 +1,5 @@
 import { PasskeyNotification, Header } from "@/components";
+import { TOSModal } from "@/components/modals/tos";
 import { MultiThemeProvider } from "@/components/provider/multi-theme-provider";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <main id="main" className="relative flex w-full grow">
               {children}
             </main>
+            <TOSModal />
             <div id="modal-root" />
           </MultiThemeProvider>
         </Provider>
