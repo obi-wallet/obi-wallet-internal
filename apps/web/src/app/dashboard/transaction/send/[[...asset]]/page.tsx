@@ -266,32 +266,34 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                   items={balanceOptions}
                   selectedItem={coin.asset}
                   getKey={(item) => item.denom}
+                  itemToString={(item) => (item ? item.denom : "")}
                   className="w-48"
-                  itemComponent={({ getItemProps, item, isSelected }) => (
-                    <div
-                      {...getItemProps({ item })}
-                      className={cn(
-                        " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
-                        isSelected && "bg-gray-600 ",
-                        item.disabled &&
-                          "cursor-not-allowed opacity-50 hover:bg-gray-600",
-                      )}
-                      key={item.denom}
-                    >
-                      <div className="flex items-center justify-center ">
-                        <img
-                          src={item.image}
-                          alt={item.network}
-                          width={24}
-                          height={24}
-                        />
+                  itemComponent={({ getItemProps, item, isSelected }) => {
+                    return (
+                      <div
+                        {...getItemProps({ item })}
+                        className={cn(
+                          " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                          isSelected && "bg-gray-600 ",
+                          item.disabled &&
+                            "cursor-not-allowed opacity-50 hover:bg-gray-600",
+                        )}
+                      >
+                        <div className="flex items-center justify-center ">
+                          <img
+                            src={item.image}
+                            alt={item.network}
+                            width={24}
+                            height={24}
+                          />
+                        </div>
+                        <div className="text-white">
+                          <div className=" uppercase">{item.asset.display}</div>
+                          <div>{item.balance.toString()}</div>
+                        </div>
                       </div>
-                      <div className="text-white">
-                        <div className=" uppercase">{item.asset.display}</div>
-                        <div>{item.balance.toString()}</div>
-                      </div>
-                    </div>
-                  )}
+                    );
+                  }}
                   onItemSelect={function (item: IBalanceOption): void {
                     setCoin({
                       amount: coin.amount,

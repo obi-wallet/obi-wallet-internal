@@ -86,6 +86,7 @@ export const Primary: Story = {
     itemComponent: BookComponent as unknown as React.FC<
       ItemComponentProps<DropdownItem>
     >,
+    itemToString: (item) => (item ? (item as Book).title : ""),
     selectedItemComponent: SelectedBook as React.FC<{ item: DropdownItem }>,
   },
   render: (args) => {
@@ -94,6 +95,7 @@ export const Primary: Story = {
         <Dropdown
           items={books}
           itemComponent={args.itemComponent}
+          itemToString={args.itemToString}
           onItemSelect={(item) => console.log(item)}
           selectedItemComponent={args.selectedItemComponent}
         />

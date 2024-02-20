@@ -1,4 +1,5 @@
 "use client";
+
 import { cn } from "@/lib/utils";
 import Downshift from "downshift";
 import { useState } from "react";
@@ -9,6 +10,7 @@ export interface DropdownItem {
 
 export interface CustomDropdownProps<T extends DropdownItem> {
   items: T[];
+  itemToString: (item: T | null) => string;
   itemComponent: React.FC<ItemComponentProps<T>>;
   onItemSelect: (item: T) => void;
   selectedItemComponent: React.FC<{ item: T }>;
@@ -31,6 +33,7 @@ export interface ItemComponentProps<T extends DropdownItem> {
 export function CustomDropdown<T extends DropdownItem>({
   items,
   itemComponent: ItemComponent,
+  itemToString,
   onItemSelect,
   selectedItemComponent: SelectedItemComponent,
   getKey,
@@ -45,6 +48,7 @@ export function CustomDropdown<T extends DropdownItem>({
         onItemSelect(selection as T);
         setIsOpen(false); // Close dropdown after selection
       }}
+      itemToString={itemToString}
       selectedItem={selectedItem}
     >
       {({ getItemProps, selectedItem }) => (
@@ -62,14 +66,16 @@ export function CustomDropdown<T extends DropdownItem>({
           </button>
           {isOpen && (
             <div className="z-1000  absolute right-0 w-full rounded-lg bg-gray-700 shadow">
-              {items.map((item, index) => (
-                <ItemComponent
-                  key={getKey ? getKey(item) : index.toString()}
-                  item={item}
-                  getItemProps={getItemProps}
-                  isSelected={selectedItem === item}
-                />
-              ))}
+              {items.map((item, index) => {
+                return (
+                  <ItemComponent
+                    key={getKey ? getKey(item) : index.toString()}
+                    item={item}
+                    getItemProps={getItemProps}
+                    isSelected={selectedItem === item}
+                  />
+                );
+              })}
             </div>
           )}
         </div>
