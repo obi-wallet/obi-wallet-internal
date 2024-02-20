@@ -31,7 +31,6 @@ export const Header = observer(function Header() {
         <div
           className={cn(
             "bg-background-primary flex h-full w-full items-center justify-between px-8 shadow",
-            "max-sm:hidden",
           )}
         >
           <PrimaryLink href={primaryLinkHref}>
@@ -48,7 +47,7 @@ export const Header = observer(function Header() {
           </PrimaryLink>
           {authChildren}
         </div>
-        <div
+        {/* <div
           className={cn(
             "bg-background-primary flex h-full w-full items-center justify-between p-6 shadow",
             "sm:hidden",
@@ -69,7 +68,7 @@ export const Header = observer(function Header() {
           </div>
 
           <FaQrcode className="h-11 w-11 rounded text-white" />
-        </div>
+        </div> */}
       </header>
     </>
   );
