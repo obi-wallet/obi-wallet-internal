@@ -197,7 +197,7 @@ const PendingAssets = observer(function PendingAssets() {
 });
 
 const PendingAsset = observer(function PendingAsset({ tx }: { tx: TX }) {
-  const [amount, setAmount] = useState<number | undefined>();
+  const [amount, setAmount] = useState<BigNumber | undefined>();
   const asset =
     toAssets[
       Object.keys(toAssets).find(
@@ -220,7 +220,7 @@ const PendingAsset = observer(function PendingAsset({ tx }: { tx: TX }) {
         </div>
       </div>
       <StatusLink tx={tx} />
-      <PriceComponent amount={amount} price={0} />
+      <PriceComponent amount={amount} price={BigNumber(0)} />
     </div>
   );
 });
@@ -232,10 +232,10 @@ const EstimateAmount = observer(function EstimateAmount({
 }: {
   tx: TX;
   toAsset: ToAsset | undefined;
-  onAmountChange?: (amount: number) => void;
+  onAmountChange?: (amount: BigNumber) => void;
 }) {
   const [loading, setLoading] = useState(false);
-  const [amount, setAmount] = useState<number | undefined>();
+  const [amount, setAmount] = useState<BigNumber | undefined>();
   useEffect(() => {
     getAmount();
   }, []);
@@ -265,16 +265,16 @@ const EstimateAmount = observer(function EstimateAmount({
 
     const amount = formatEther(parseUnits(fromAssetAmount ?? "0", "wei"));
 
-    const amountNumber = Number(amount) * price;
+    const amountNumber = price.times(Number(amount));
     // discount 2$ for fees
-    setAmount(amountNumber - 2.5 / priceData.vsUsd);
+    setAmount(amountNumber.minus(-2.5).div(priceData.vsUsd));
 
     setLoading(false);
   };
   if (!amount || loading) return null;
   return (
     <div className="text-xl font-bold">
-      {amount?.toFixed(2)} <span className="text-sm">(estimate)</span>
+      {amount.toFixed(2)} <span className="text-sm">(estimate)</span>
     </div>
   );
 });
@@ -399,11 +399,19 @@ function NewPriceComponent({
   );
 }
 
-function PriceComponent({ amount, price }: { price: number; amount?: number }) {
+function PriceComponent({
+  amount,
+  price,
+}: {
+  price: BigNumber;
+  amount?: BigNumber;
+}) {
   return (
     <div className="flex flex-col items-end">
-      <div className="text-md font-bold">{amount}</div>
-      <div className="text-xs">${(price * (amount || 0)).toFixed(2)}</div>
+      <div className="text-md font-bold">{amount?.toNumber()}</div>
+      <div className="text-xs">
+        ${price.multipliedBy(amount || 0).toFixed(2)}
+      </div>
     </div>
   );
 }

@@ -87,12 +87,12 @@ export function AssetInput({
         value={field.value.amount}
         errorMessage={renderErrorMessage(errors)}
         onFocus={() => onFocus && onFocus()}
-        onChange={(amount: string) => {
+        onChange={(amount) => {
           if (disableTextInput) return;
 
           field.onChange({
             asset: field.value.asset,
-            amount: Number(amount),
+            amount,
           });
           field.onBlur();
           onChange && onChange();
@@ -119,7 +119,7 @@ export function AssetInput({
             onSelectOption={(option) => {
               field.onChange({
                 asset: option.value as string,
-                amount: Number(field.value.amount),
+                amount: field.value.amount,
               });
               onChange && onChange();
             }}

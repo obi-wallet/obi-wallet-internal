@@ -10,9 +10,12 @@ import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
+import { CustomDropdown as Dropdown } from "@/ui/dropdown";
+import { Input } from "@/ui/input";
 import { nonEmptyString } from "@/validation-helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
+import BigNumber from "bignumber.js";
 import copy from "copy-to-clipboard";
 import { BrowserProvider, Contract, parseUnits } from "ethers";
 import { observer } from "mobx-react-lite";
@@ -24,19 +27,17 @@ import { FaCheck, FaExclamation, FaSpinner } from "react-icons/fa6";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import { AssetInput, Box, Button, Text } from "..";
+import { Box, Button, Text } from "..";
 import { Divider } from "../divider";
 import { IAssetOption } from "../dropdown";
-import { Input } from "@/ui/input";
-import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 
 export type PriceData = {
-  mainVsPrice: number;
-  mainUsd: number;
-  vsUsd: number;
+  mainVsPrice: BigNumber;
+  mainUsd: BigNumber;
+  vsUsd: BigNumber;
 };
 export type AssetAmmount = {
-  amount: number | undefined;
+  amount: string | undefined;
   asset: string | undefined;
 };
 interface IToleranceProps {
@@ -65,7 +66,9 @@ interface FormData {
   };
   slippage: number;
 }
-type Errors = { [key: string]: { message: string; type: string } };
+type ErrorsObject = { [key: string]: { message: string; type: string } };
+type SingleError = { message: string; type: string };
+type Errors = ErrorsObject | SingleError;
 
 export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   targetAsset,
@@ -73,36 +76,51 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   modal,
   cancelLabel = "Accept",
 }) {
-  const [focused, setFocused] = useState<boolean>(false);
-  const [direction, setDirection] = useState<"from" | "to">();
   const publicKey = usePublicKey();
   const currentWallet = useCurrentWallet({ redirectIfFound: false });
 
   const schema = z.object({
-    fromAsset: z.object({
-      // amount should be undefined or number
-      amount: z
-        .string()
-        .refine(nonEmptyString, "Amount is required")
-        .refine((str) => {
-          console.log({ str }, "REFINE");
-          if (str === "") return true;
-          const num = Number(str);
-          if (!isNaN(num)) return true;
-          if (num >= 0) return true;
-        }, "Amount is invalid"),
-      asset: z.string().refine(nonEmptyString, "Asset is required"),
-    }),
+    fromAsset: z
+      .object({
+        // amount should be undefined or number
+        amount: z
+          .string()
+          .refine(nonEmptyString, "Amount is required")
+          .refine((str) => {
+            if (str === "") return false;
+            const num = new BigNumber(str);
+
+            if (num.gte(0)) return true;
+          }, "Amount is invalid"),
+        asset: z.string().refine(nonEmptyString, "Asset is required"),
+      })
+      .refine(
+        (data) => {
+          const { amount, asset } = data;
+          const num = new BigNumber(amount);
+          // Define the minimum amount based on whether the asset contains "ETHEREUM"
+          const minAmount = asset.toUpperCase().includes("ETHEREUM")
+            ? 0.01
+            : 0.005;
+          return num.isGreaterThanOrEqualTo(minAmount);
+        },
+        (data) => {
+          const isEth = data.asset.toUpperCase().includes("ETHEREUM");
+          const minAmount = isEth ? "0.01" : "0.005";
+          return {
+            message: `Min ${minAmount} for this chain`,
+          };
+        },
+      ),
+
     toAsset: z.object({
       amount: z
         .string()
         .refine(nonEmptyString, "Amount is required")
         .refine((str) => {
-          console.log({ str }, "REFINE");
-          if (str === "") return true;
-          const num = Number(str);
-          if (!isNaN(num)) return true;
-          if (num >= 0) return true;
+          if (str === "") return false;
+          const num = new BigNumber(str);
+          if (num.gte(0)) return true;
         }, "Amount is invalid"),
       asset: z.string().refine(nonEmptyString, "Asset is required"),
     }),
@@ -236,25 +254,32 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     // if both amounts are not set we don't need to do anything
     if (!fromData.amount && !toData.amount) return;
 
-    if (direction === "to" && fromData.asset !== undefined) {
-      handleToAssetChange();
-      return;
-    }
-
     if (!fromData) return;
     if (!fromData.asset || fromData.asset === "") return;
     if (!toData.asset) return;
-    const price = (await getPrice({
+    const coins = {
       mainCoin: fromAssets[fromData.asset] as FromAsset,
       vsCoin: toAssets[toData.asset] as ToAsset,
-    })) as number;
+    };
+    const price = await getPrice(coins);
 
-    const toAssetAmount = price * (Number(fromData?.amount) ?? 0);
+    const toAssetAmount = new BigNumber(fromData?.amount ?? 0).times(
+      price as BigNumber,
+    );
 
-    setValue("toAsset", {
-      ...getValues("toAsset"),
-      amount: toAssetAmount.toString(),
-    });
+    const decimals = Math.min(toAssetAmount.decimalPlaces() as number, 8);
+    const amount = toAssetAmount.isNaN()
+      ? ""
+      : toAssetAmount.toFixed(decimals).replace(/(\.0+|0+)$/, "");
+
+    setValue(
+      "toAsset",
+      {
+        ...getValues("toAsset"),
+        amount,
+      },
+      { shouldValidate: true },
+    );
   };
 
   const handleToAssetChange = async () => {
@@ -264,25 +289,33 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     if (!fromData?.asset || !toData?.asset) return;
     // if both amounts are not set we don't need to do anything
     if (!fromData.amount && !toData.amount) return;
-
-    if (direction === "from" && toData.asset !== undefined) {
-      handleFromAssetChange();
-      return;
-    }
     if (!toData) return;
     if (!toData.asset || toData.asset === "") return;
     const fromAssetAsset = getValues("fromAsset").asset;
     if (!fromAssetAsset) return;
-    const price = (await getPrice({
+    const coins = {
       mainCoin: toAssets[toData.asset] as ToAsset,
       vsCoin: fromAssets[fromAssetAsset] as FromAsset,
-    })) as number;
+    };
+    const price = await getPrice(coins);
 
-    const fromAssetAmount = price * (Number(toData?.amount) ?? 0);
-    setValue("fromAsset", {
-      ...getValues("fromAsset"),
-      amount: fromAssetAmount,
-    });
+    const fromAssetAmount = new BigNumber(toData?.amount ?? 0).times(
+      price as BigNumber,
+    );
+
+    const decimals = Math.min(fromAssetAmount.decimalPlaces() as number, 8);
+    const amount = fromAssetAmount.isNaN()
+      ? ""
+      : fromAssetAmount.toFixed(decimals).replace(/(\.0+|0+)$/, "");
+
+    setValue(
+      "fromAsset",
+      {
+        ...getValues("fromAsset"),
+        amount,
+      },
+      { shouldValidate: true },
+    );
   };
 
   const isDataValid = () => {
@@ -312,40 +345,12 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
           name="fromAsset"
           control={control}
           render={({ field, fieldState }) => {
-            console.log({ fieldState, field });
-            const errors = formState.errors?.fromAsset as Errors | undefined;
-            console.log({ errors }, "ERRORS");
+            const errors = fieldState.error as Errors | undefined;
             const options = getAssetOptions(fromAssets);
 
             return (
-              // <AssetInput
-              //   assets={getAssetOptions(fromAssets)}
-              //   placeholder="0.1"
-              //   labelText="Deposit"
-              //   className="z-20"
-              //   direction="from"
-              //   disableTextInput={direction === "to" || !focused}
-              //   onClick={() => {
-              //     setDirection("from");
-              //     setFocused(true);
-              //   }}
-              //   onFocus={() => {
-              //     setDirection("from");
-              //     setFocused(true);
-              //   }}
-              //   onBlur={() => setFocused(false)}
-              //   field={{
-              //     ...field,
-              //     value: {
-              //       ...field.value,
-              //       amount: field.value ? Number(field.value.amount) : undefined,
-              //     },
-              //   }}
-              //   fieldState={fieldState}
-              //   onChange={handleFromAssetChange}
-              // />
               <Input
-                label={"Deposit"}
+                label="Deposit"
                 onChange={(value) => {
                   console.log({ value });
                   field.onChange({
@@ -357,13 +362,17 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                 className={cn(
                   "z-20",
                   "relative",
-                  errors && " border-red-500 focus-within:border-red-500",
+                  fieldState.error &&
+                    " border-red-500 focus-within:border-red-500",
                 )}
                 onBlur={field.onBlur}
                 value={field.value.amount}
                 placeholder="0.1"
                 rightComponent={
                   <Dropdown
+                    itemToString={(item: IAssetOption | null) =>
+                      item?.label ?? ""
+                    }
                     items={options}
                     selectedItem={
                       options.find(
@@ -379,7 +388,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                         onMouseMove,
                         ...itemProps
                       } = getItemProps({ item });
-                      console.log({ itemProps });
+                      // console.log({ itemProps });
                       return (
                         <div
                           {...itemProps}
@@ -441,7 +450,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                   />
                 }
               >
-                {fieldState.error && <ErrorsComponent errors={errors} />}
+                {errors && <ErrorsComponent errors={errors} />}
               </Input>
             );
           }}
@@ -450,39 +459,12 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
           name="toAsset"
           control={control}
           render={({ field, fieldState }) => {
-            console.log({ fieldState, field });
-            const errors = formState.errors?.toAsset as Errors | undefined;
-            console.log({ errors }, "ERRORS");
+            const errors = fieldState.error as Errors | undefined;
             const options = getAssetOptions(toAssets);
 
             return (
-              // <AssetInput
-              //   direction="to"
-              //   disableTextInput={direction === "from" || !focused}
-              //   onClick={() => {
-              //     setDirection("to");
-              //     setFocused(true);
-              //   }}
-              //   onFocus={() => {
-              //     setDirection("to");
-              //     setFocused(true);
-              //   }}
-              //   onBlur={() => setFocused(false)}
-              //   assets={getAssetOptions(toAssets)}
-              //   placeholder="0.1"
-              //   labelText="Receive (estimated)"
-              //   field={{
-              //     ...field,
-              //     value: {
-              //       ...field.value,
-              //       amount: field.value ? Number(field.value.amount) : undefined,
-              //     },
-              //   }}
-              //   fieldState={fieldState}
-              //   onChange={handleToAssetChange}
-              // />
               <Input
-                label={"Receive (estimated)"}
+                label="Receive (estimated)"
                 onChange={(value) => {
                   console.log({ value });
                   field.onChange({
@@ -502,6 +484,9 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                 placeholder="0.1"
                 rightComponent={
                   <Dropdown
+                    itemToString={(item: IAssetOption | null) =>
+                      item?.label ?? ""
+                    }
                     items={options}
                     selectedItem={
                       options.find(
@@ -517,7 +502,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                         onMouseMove,
                         ...itemProps
                       } = getItemProps({ item });
-                      console.log({ itemProps });
+                      // console.log({ itemProps });
                       return (
                         <div
                           {...itemProps}
@@ -579,9 +564,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                   />
                 }
               >
-                {fieldState.error && (
-                  <ErrorsComponent errors={fieldState.error} />
-                )}
+                {errors && <ErrorsComponent errors={errors} />}
               </Input>
             );
           }}
@@ -600,37 +583,41 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
         />
 
         <Divider />
-        {depositAddress && (
-          <div
-            className={cn(
-              "flex-column  flex  bg-black/30 bg-opacity-10 p-5",
-              addressCopied && "rounded-md  border-2 shadow-md shadow-white",
-            )}
-          >
+        {depositAddress && isDataValid() && (
+          <>
             <div
               className={cn(
-                "mr-5 flex aspect-square h-10 w-10 items-center justify-center rounded-full border border-white p-2",
-
-                addressCopied && "border-2",
+                "flex-column  flex  bg-black/30 bg-opacity-10 p-5",
+                addressCopied && "rounded-md  border-2 shadow-md shadow-white",
               )}
             >
-              <FaExclamation className="m-auto text-white " />
+              <div
+                className={cn(
+                  "mr-5 flex aspect-square h-10 w-10 items-center justify-center rounded-full border border-white p-2",
+
+                  addressCopied && "border-2",
+                )}
+              >
+                <FaExclamation className="m-auto text-white " />
+              </div>
+              <Text size={addressCopied ? "md" : "sm"} className=" leading-5">
+                Execute with Metamask or deposit to the address shown below. You
+                may close this dialogue after depositing.
+              </Text>
             </div>
-            <Text size={addressCopied ? "md" : "sm"} className=" leading-5">
-              Execute with Metamask or deposit to the address shown below. You
-              may close this dialogue after depositing.
-            </Text>
-          </div>
+          </>
         )}
-        <GetAddressComponent
-          fromAsset={fromAssetValue}
-          toAsset={toAssetValue}
-          slippage={slippageValue}
-          addressChanged={setDepositAddress}
-          slippageError={formState.errors.slippage?.message}
-          publicKey={publicKey}
-          onCopy={() => setAddressCopied(true)}
-        />
+        {isDataValid() && (
+          <GetAddressComponent
+            fromAsset={fromAssetValue}
+            toAsset={toAssetValue}
+            slippage={slippageValue}
+            addressChanged={setDepositAddress}
+            slippageError={formState.errors.slippage?.message}
+            publicKey={publicKey}
+            onCopy={() => setAddressCopied(true)}
+          />
+        )}
 
         <div className="mt-8 flex justify-between">
           <Button className="block w-44" variant="outline" onClick={onDismiss}>
@@ -798,7 +785,8 @@ function GetAddressComponent({
     ) {
       return false;
     }
-    if (fromAsset.amount === 0 || toAsset.amount === 0) return false;
+    if (BigNumber(fromAsset.amount).eq(0) || BigNumber(toAsset.amount).eq(0))
+      return false;
 
     return true;
   };
@@ -818,10 +806,12 @@ function GetAddressComponent({
     const targetChain = TargetChain.chainId(chain.id);
     const toAddress = targetChain.computeAddress(publicKey);
     const fromAmount = parseUnits(
-      fromAsset?.amount?.toString() ?? "0",
+      new BigNumber(fromAsset?.amount as string)
+        .times(new BigNumber(10).pow(from?.decimals ?? 0))
+        .toString(),
       from?.decimals,
     ).toString();
-
+    console.log("SIMULATION", { fromAmount });
     const requestData = {
       slippage: slippageValue,
       from: {
@@ -938,8 +928,10 @@ function GetAddressComponent({
   );
 }
 
-const fetchPrice = async (assetData: FromAsset | ToAsset | undefined) => {
-  if (!assetData) return;
+const fetchPrice = async (
+  assetData: FromAsset | ToAsset | undefined,
+): Promise<number | undefined> => {
+  if (!assetData) return undefined;
   // I need to know which type it is so I can use address or denom
   const isFromAsset = R.has("address", assetData);
 
@@ -951,6 +943,10 @@ const fetchPrice = async (assetData: FromAsset | ToAsset | undefined) => {
   // make a post request to the url
   const res = await fetch(requestURL);
   const data = await res.json();
+  if (!res.ok) {
+    console.error(data.error);
+    return undefined;
+  }
 
   return data.price;
 };
@@ -962,35 +958,43 @@ export const getPrice = async ({
   mainCoin: FromAsset | ToAsset;
   vsCoin: FromAsset | ToAsset;
   usdPrices?: boolean;
-}): Promise<number | PriceData> => {
+}): Promise<BigNumber | PriceData> => {
   // get Dollar prices from squid
   const main = await fetchPrice(mainCoin);
   const vs = await fetchPrice(vsCoin);
   // we have the dollar price of both coins, now we need the price of the main coin in vs coin
   // we need to divide the main coin price by the vs coin price
   if (main && vs) {
-    const mainVsPrice = Number(main) / Number(vs);
+    // get the price of the main coin in vs coin
+    const mainVsPrice = new BigNumber(main).dividedBy(vs);
     return usdPrices
       ? {
           mainVsPrice,
-          mainUsd: Number(main),
-          vsUsd: Number(vs),
+          mainUsd: new BigNumber(main),
+          vsUsd: new BigNumber(vs),
         }
       : mainVsPrice;
   }
-  return 0;
+  return new BigNumber(0);
 };
 
-const ErrorsComponent = ({ errors }: { errors: Errors | undefined }) => {
-  console.log({ errors });
+function ErrorsComponent({ errors }: { errors: Errors | undefined }) {
   const renderErrorMessage = () => {
     if (!errors) return;
-    if (errors?.amount?.message) {
-      if (errors?.amount?.message === "Required") return "Amount is required";
-      return errors?.amount?.message;
+    // I need to know if errors is of type SingleError or ErrorsObject
+    const error = errors as SingleError;
+    if (error?.message) {
+      return error.message;
     }
-    if (errors?.asset?.message) {
-      return `Asset ${errors?.asset?.message}`;
+    const errorsObject = errors as ErrorsObject;
+
+    if (errorsObject?.amount?.message) {
+      if (errorsObject?.amount?.message === "Required")
+        return "Amount is required";
+      return errorsObject?.amount?.message;
+    }
+    if (errorsObject?.asset?.message) {
+      return `Asset ${errorsObject?.asset?.message}`;
     }
   };
   return (
@@ -998,4 +1002,4 @@ const ErrorsComponent = ({ errors }: { errors: Errors | undefined }) => {
       {renderErrorMessage()}
     </div>
   );
-};
+}
