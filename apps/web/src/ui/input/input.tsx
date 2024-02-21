@@ -56,13 +56,9 @@ export function Input({
           <BaseInput
             {...rest}
             ref={inputRef}
-            onChange={
-              onChange
-                ? (e) => {
-                    onChange(e.target.value);
-                  }
-                : undefined
-            }
+            onChange={(e) => {
+              onChange && onChange(e.target.value);
+            }}
             className={cn("w-full flex-1", inputClassName)}
           />
           {rightComponent && <div>{rightComponent}</div>}

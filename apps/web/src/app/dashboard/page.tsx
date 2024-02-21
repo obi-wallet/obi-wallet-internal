@@ -220,7 +220,7 @@ const PendingAsset = observer(function PendingAsset({ tx }: { tx: TX }) {
         </div>
       </div>
       <StatusLink tx={tx} />
-      <PriceComponent amount={amount} price={BigNumber(0)} />
+      <PendingAmount amount={amount} asset={asset as ToAsset} />
     </div>
   );
 });
@@ -274,7 +274,7 @@ const EstimateAmount = observer(function EstimateAmount({
   if (!amount || loading) return null;
   return (
     <div className="text-xl font-bold">
-      {amount.toFixed(2)} <span className="text-sm">(estimate)</span>
+      {/* {amount.toFixed(2)} <span className="text-sm">(estimate)</span> */}
     </div>
   );
 });
@@ -399,19 +399,20 @@ function NewPriceComponent({
   );
 }
 
-function PriceComponent({
+function PendingAmount({
   amount,
-  price,
+  asset,
 }: {
-  price: BigNumber;
   amount?: BigNumber;
+  asset: ToAsset;
 }) {
+  const decimals = Math.min(asset.decimals, 8);
   return (
     <div className="flex flex-col items-end">
-      <div className="text-md font-bold">{amount?.toNumber()}</div>
-      <div className="text-xs">
-        ${price.multipliedBy(amount || 0).toFixed(2)}
+      <div className="text-md font-bold">
+        {amount?.toFixed(decimals).replace(/(\.0+|0+)$/, "")}
       </div>
+      <div className="text-xs">estimate</div>
     </div>
   );
 }

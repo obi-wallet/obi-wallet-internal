@@ -57,12 +57,12 @@ interface ITravelModalProps {
 }
 interface FormData {
   fromAsset: {
-    amount: string | undefined;
-    asset: string | undefined;
+    amount: string;
+    asset: string;
   };
   toAsset: {
-    amount: string | undefined;
-    asset: string | undefined;
+    amount: string;
+    asset: string;
   };
   slippage: number;
 }
@@ -140,11 +140,11 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   } = useForm<FormData>({
     defaultValues: {
       fromAsset: {
-        amount: undefined,
-        asset: undefined,
+        amount: "",
+        asset: "",
       },
       toAsset: {
-        amount: undefined,
+        amount: "",
         asset: targetAsset,
       },
       slippage: 1,
@@ -209,7 +209,6 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
 
         const transaction = await signer.sendTransaction(tx);
         console.log("Transaction hash:", transaction.hash);
-        // setTxHash(transaction.hash);
         alert("Transaction sent!");
         router.push("/dashboard");
         return;
@@ -352,7 +351,6 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
               <Input
                 label="Deposit"
                 onChange={(value) => {
-                  console.log({ value });
                   field.onChange({
                     asset: field.value.asset,
                     amount: value,
@@ -374,11 +372,9 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       item?.label ?? ""
                     }
                     items={options}
-                    selectedItem={
-                      options.find(
-                        (item) => item.value === field.value.asset,
-                      ) ?? undefined
-                    }
+                    selectedItem={options.find(
+                      (item) => item.value === field.value.asset,
+                    )}
                     getKey={(item) => item.label}
                     className=" w-60"
                     itemComponent={({ getItemProps, item, isSelected }) => {
@@ -388,7 +384,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                         onMouseMove,
                         ...itemProps
                       } = getItemProps({ item });
-                      // console.log({ itemProps });
+
                       return (
                         <div
                           {...itemProps}
@@ -426,7 +422,6 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       handleFromAssetChange();
                     }}
                     selectedItemComponent={(selected) => {
-                      // console.log("selected", selected);
                       if (!selected.item) {
                         return <div>Select</div>;
                       }
@@ -466,7 +461,6 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
               <Input
                 label="Receive (estimated)"
                 onChange={(value) => {
-                  console.log({ value });
                   field.onChange({
                     asset: field.value.asset,
                     amount: value,
@@ -488,11 +482,9 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       item?.label ?? ""
                     }
                     items={options}
-                    selectedItem={
-                      options.find(
-                        (item) => item.value === field.value.asset,
-                      ) ?? undefined
-                    }
+                    selectedItem={options.find(
+                      (item) => item.value === field.value.asset,
+                    )}
                     getKey={(item) => item.label}
                     className=" w-60"
                     itemComponent={({ getItemProps, item, isSelected }) => {
@@ -502,7 +494,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                         onMouseMove,
                         ...itemProps
                       } = getItemProps({ item });
-                      // console.log({ itemProps });
+
                       return (
                         <div
                           {...itemProps}
@@ -540,7 +532,6 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       handleToAssetChange();
                     }}
                     selectedItemComponent={(selected) => {
-                      // console.log("selected", selected);
                       if (!selected.item) {
                         return <div>Select</div>;
                       }
@@ -577,7 +568,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
             <ToleranceSetting
               field={field}
               fieldState={fieldState}
-              errorMessage={fieldState.error?.message}
+              errorMessage={fieldState.error?.message as string}
             />
           )}
         />
@@ -645,7 +636,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
 
 function ToleranceSetting({ field, fieldState }: IToleranceProps) {
   const tolerances = [1, 2];
-  const [text, setText] = useState<string | undefined>(undefined);
+  const [text, setText] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
   // we need to trigger an onChange event from the input so we can trigger the validation
   // this is because we are using a custom input and not the one from react-hook-form
@@ -705,7 +696,7 @@ function ToleranceSetting({ field, fieldState }: IToleranceProps) {
           <input
             ref={inputRef}
             type="text"
-            value={text}
+            value={text as string}
             onBlur={field.onBlur}
             className={cn(
               "w-10 bg-transparent text-center",
@@ -806,12 +797,10 @@ function GetAddressComponent({
     const targetChain = TargetChain.chainId(chain.id);
     const toAddress = targetChain.computeAddress(publicKey);
     const fromAmount = parseUnits(
-      new BigNumber(fromAsset?.amount as string)
-        .times(new BigNumber(10).pow(from?.decimals ?? 0))
-        .toString(),
+      new BigNumber(fromAsset?.amount as string).toString(),
       from?.decimals,
     ).toString();
-    console.log("SIMULATION", { fromAmount });
+
     const requestData = {
       slippage: slippageValue,
       from: {
