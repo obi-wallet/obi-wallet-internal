@@ -10,6 +10,7 @@ import { createPasskey, KeyType, Sdk } from "@obi-wallet/sdk";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 export const PrimaryKeyStep = observer(function PrimaryKeyStep({
   draft,
@@ -18,6 +19,12 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
   step,
 }: StepProps<PrimaryKeyOnboardingStep>) {
   const queryClient = useQueryClient();
+  const pathName = usePathname();
+  const externalAsset = pathName.split("/")[2]?.split("-")[1];
+
+  const capitalizedExternalAsset = externalAsset
+    ? externalAsset?.charAt(0).toUpperCase() + externalAsset?.slice(1)
+    : "";
 
   const passkeyFlow = useMutation({
     mutationFn: async () => {
@@ -52,7 +59,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
         color="zinc"
       >
         {step.from === OnboardingFromType.External
-          ? "Create a passkey to secure access to your Neutron tokens and other assets."
+          ? `Create a passkey to secure access to your ${capitalizedExternalAsset} tokens and other assets.`
           : "Sign in with one of the services below to create your first key."}
       </Text>
 
