@@ -8,8 +8,11 @@ import { useQuery } from "@obi-wallet/headless-ui";
 import { MpcWallet } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
+import Lottie from "lottie-react";
 import { observer } from "mobx-react-lite";
 import invariant from "tiny-invariant";
+
+import SendingAnimation from "./sending-animation.json";
 
 export interface ApproveMessagesProps {
   walletMeta: {
@@ -61,7 +64,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
     });
 
     return (
-      <div className="w-full">
+      <div className="relative w-full">
         <div className="flex justify-center">
           <div className="flex w-fit flex-col items-center">
             <Text
@@ -110,6 +113,18 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
               </Button>
             </div>
           </div>
+        </div>
+        <div className="absolute top-0 flex h-full w-full flex-1">
+          {approve.isLoading && (
+            <div className="absolute top-0 flex h-full w-full flex-1 flex-col items-center justify-center bg-black bg-opacity-50">
+              <div className="    w-60  rounded-xl  bg-blue-600 p-5">
+                <Lottie animationData={SendingAnimation} />;
+                <Text size="xl" className="justify-center  text-white">
+                  Sending
+                </Text>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
