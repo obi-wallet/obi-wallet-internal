@@ -71,7 +71,7 @@ export function DropDown<T extends string | number>({
       <button
         id="dropdownDefaultButton"
         data-dropdown-toggle="dropdown"
-        className="  bg-background-primary hover:bg-background-primary-hoverfocus:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white "
+        className="bg-background-primary hover:bg-background-primary-hoverfocus:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white max-sm:px-3"
         type="button"
         onClick={() => setIsOpen(!isOpen)}
       >

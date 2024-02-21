@@ -128,7 +128,7 @@ export default observer(function Dashboard() {
   useCurrentWallet({ redirectTo: "/" });
 
   return (
-    <div className="grid h-full w-full grid-rows-3 gap-4 text-white">
+    <div className="flex h-full w-full flex-col space-y-4 text-white">
       <Assets />
       {/* <Box title="Chart" /> */}
       {/* <Box title="Top Positions" /> */}
@@ -187,9 +187,13 @@ const PendingAssets = observer(function PendingAssets() {
 
   if (!txData) return null;
 
-  return txData.map((tx: TX) => {
-    return <PendingAsset key={tx.transaction.deposit_address} tx={tx} />;
-  });
+  return (
+    <>
+      {txData.map((tx: TX) => (
+        <PendingAsset key={tx.transaction.deposit_address} tx={tx} />
+      ))}
+    </>
+  );
 });
 
 const PendingAsset = observer(function PendingAsset({ tx }: { tx: TX }) {
@@ -318,14 +322,12 @@ const AssetBalance = observer(function AssetBalance() {
   if (balance.length === 0) return null;
 
   return balance.map((b) => {
-    return b.data?.balances.map((chainBalance) => {
-      return (
-        <NewAssetItem
-          key={`${chainBalance.targetChainId}:${chainBalance.denom}`}
-          coin={chainBalance}
-        />
-      );
-    });
+    return b.data?.balances.map((chainBalance) => (
+      <NewAssetItem
+        key={`${chainBalance.targetChainId}:${chainBalance.denom}`}
+        coin={chainBalance}
+      />
+    ));
   });
 });
 

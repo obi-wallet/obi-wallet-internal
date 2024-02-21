@@ -73,7 +73,7 @@ export function AssetInput({
   };
 
   return (
-    <div className={"relative z-10 w-full  " + className} aria-disabled>
+    <div className={"relative z-10 w-full " + className} aria-disabled>
       <Input
         ref={inputRef}
         placeholder={placeholder || "0"}
@@ -112,7 +112,7 @@ export function AssetInput({
       <div className="absolute right-2 top-1/2 flex -translate-y-1/2 space-x-2">
         {assets && (
           <DropDown
-            className="w-52"
+            className="w-52 max-sm:w-40"
             // TODO: change description
             description="something"
             options={assets}
