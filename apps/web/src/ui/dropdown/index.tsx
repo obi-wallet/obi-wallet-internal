@@ -1,9 +1,7 @@
 "use client";
-
 import { cn } from "@/lib/utils";
 import Downshift from "downshift";
-import { RefObject, useRef, useState } from "react";
-import { useEffect } from "react";
+import { RefObject, useRef, useState, useEffect } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 export interface DropdownItem {
   disabled?: boolean;

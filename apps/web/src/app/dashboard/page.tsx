@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Divider, getPrice, PriceData, Text } from "@/components";
+import { Box, Divider, getPrice, Text } from "@/components";
 import { NewCoin, useNewBalances, useUSDTotalPrice } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
@@ -256,18 +256,17 @@ const EstimateAmount = observer(function EstimateAmount({
         ) ?? ""
       ];
 
-    const priceData = (await getPrice({
+    const priceData = await getPrice({
       mainCoin: fromAsset as FromAsset,
       vsCoin: toAsset,
-      usdPrices: true,
-    })) as PriceData;
+    });
     const price = priceData.mainVsPrice;
 
     const amount = formatEther(parseUnits(fromAssetAmount ?? "0", "wei"));
 
-    const amountNumber = price.times(Number(amount));
+    const amountNumber = price.times(amount);
     // discount 2$ for fees
-    setAmount(amountNumber.minus(-2.5).div(priceData.vsUsd));
+    setAmount(amountNumber.minus(2.5).div(priceData.vsUsd));
 
     setLoading(false);
   };

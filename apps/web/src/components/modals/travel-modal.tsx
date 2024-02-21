@@ -87,9 +87,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
           .string()
           .refine(nonEmptyString, "Amount is required")
           .refine((str) => {
-            if (str === "") return false;
             const num = new BigNumber(str);
-
             if (num.gte(0)) return true;
           }, "Amount is invalid"),
         asset: z.string().refine(nonEmptyString, "Asset is required"),
@@ -166,7 +164,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   const [addressCopied, setAddressCopied] = useState<boolean>(false);
 
   const executeTx = async () => {
-    if (!isDataValid()) return;
+    if (!formState.isValid) return;
     // get the deposit data
     const from = fromAssets[fromAssetValue?.asset ?? ""];
     setLoading(true);
@@ -263,13 +261,13 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     const price = await getPrice(coins);
 
     const toAssetAmount = new BigNumber(fromData?.amount ?? 0).times(
-      price as BigNumber,
+      price.mainVsPrice,
     );
 
     const decimals = Math.min(toAssetAmount.decimalPlaces() as number, 8);
     const amount = toAssetAmount.isNaN()
       ? ""
-      : toAssetAmount.toFixed(decimals).replace(/(\.0+|0+)$/, "");
+      : toAssetAmount.decimalPlaces(decimals).toString();
 
     setValue(
       "toAsset",
@@ -299,13 +297,13 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     const price = await getPrice(coins);
 
     const fromAssetAmount = new BigNumber(toData?.amount ?? 0).times(
-      price as BigNumber,
+      price.mainVsPrice,
     );
 
     const decimals = Math.min(fromAssetAmount.decimalPlaces() as number, 8);
     const amount = fromAssetAmount.isNaN()
       ? ""
-      : fromAssetAmount.toFixed(decimals).replace(/(\.0+|0+)$/, "");
+      : fromAssetAmount.decimalPlaces(decimals).toString();
 
     setValue(
       "fromAsset",
@@ -315,10 +313,6 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
       },
       { shouldValidate: true },
     );
-  };
-
-  const isDataValid = () => {
-    return Object.keys(formState.errors).length === 0;
   };
 
   return (
@@ -568,13 +562,13 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
             <ToleranceSetting
               field={field}
               fieldState={fieldState}
-              errorMessage={fieldState.error?.message as string}
+              errorMessage={fieldState.error?.message}
             />
           )}
         />
 
         <Divider />
-        {depositAddress && isDataValid() && (
+        {depositAddress && formState.isValid && (
           <>
             <div
               className={cn(
@@ -598,7 +592,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
             </div>
           </>
         )}
-        {isDataValid() && (
+        {formState.isValid && (
           <GetAddressComponent
             fromAsset={fromAssetValue}
             toAsset={toAssetValue}
@@ -615,7 +609,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
             {cancelLabel}
           </Button>
 
-          {isDataValid() && depositAddress && window.ethereum && (
+          {formState.isValid && depositAddress && window.ethereum && (
             <Button className="block w-44" onClick={executeTx}>
               Use Metamask
             </Button>
@@ -696,7 +690,7 @@ function ToleranceSetting({ field, fieldState }: IToleranceProps) {
           <input
             ref={inputRef}
             type="text"
-            value={text as string}
+            value={text}
             onBlur={field.onBlur}
             className={cn(
               "w-10 bg-transparent text-center",
@@ -796,8 +790,9 @@ function GetAddressComponent({
     invariant(chain, "Chain is required");
     const targetChain = TargetChain.chainId(chain.id);
     const toAddress = targetChain.computeAddress(publicKey);
+    invariant(fromAsset?.amount, "Asset amount is required");
     const fromAmount = parseUnits(
-      new BigNumber(fromAsset?.amount as string).toString(),
+      new BigNumber(fromAsset?.amount).toString(),
       from?.decimals,
     ).toString();
 
@@ -942,12 +937,10 @@ const fetchPrice = async (
 export const getPrice = async ({
   mainCoin,
   vsCoin,
-  usdPrices,
 }: {
   mainCoin: FromAsset | ToAsset;
   vsCoin: FromAsset | ToAsset;
-  usdPrices?: boolean;
-}): Promise<BigNumber | PriceData> => {
+}): Promise<PriceData> => {
   // get Dollar prices from squid
   const main = await fetchPrice(mainCoin);
   const vs = await fetchPrice(vsCoin);
@@ -956,34 +949,38 @@ export const getPrice = async ({
   if (main && vs) {
     // get the price of the main coin in vs coin
     const mainVsPrice = new BigNumber(main).dividedBy(vs);
-    return usdPrices
-      ? {
-          mainVsPrice,
-          mainUsd: new BigNumber(main),
-          vsUsd: new BigNumber(vs),
-        }
-      : mainVsPrice;
+    return {
+      mainVsPrice,
+      mainUsd: new BigNumber(main),
+      vsUsd: new BigNumber(vs),
+    };
   }
-  return new BigNumber(0);
+  return {
+    mainVsPrice: new BigNumber(0),
+    mainUsd: new BigNumber(0),
+    vsUsd: new BigNumber(0),
+  };
 };
 
-function ErrorsComponent({ errors }: { errors: Errors | undefined }) {
+function ErrorsComponent({ errors }: { errors: Errors }) {
   const renderErrorMessage = () => {
+    function isSingle(e: SingleError | ErrorsObject): e is SingleError {
+      return (e as SingleError).message !== undefined;
+    }
+
     if (!errors) return;
     // I need to know if errors is of type SingleError or ErrorsObject
     const error = errors as SingleError;
-    if (error?.message) {
+    if (isSingle(errors)) {
       return error.message;
-    }
-    const errorsObject = errors as ErrorsObject;
-
-    if (errorsObject?.amount?.message) {
-      if (errorsObject?.amount?.message === "Required")
-        return "Amount is required";
-      return errorsObject?.amount?.message;
-    }
-    if (errorsObject?.asset?.message) {
-      return `Asset ${errorsObject?.asset?.message}`;
+    } else {
+      if (errors?.amount?.message) {
+        if (errors?.amount?.message === "Required") return "Amount is required";
+        return errors?.amount?.message;
+      }
+      if (errors?.asset?.message) {
+        return `Asset ${errors?.asset?.message}`;
+      }
     }
   };
   return (

@@ -8,17 +8,15 @@ import { usePathname } from "next/navigation";
 export const PasskeyNotification = observer(function PasskeyNotification() {
   const currentWallet = useCurrentWallet({});
   const isOnlyPassKey = currentWallet && currentWallet.owner.keys.length === 1;
-  const params = usePathname();
-  const isDashboard = params.includes("/dashboard/");
+  const pathName = usePathname();
+  const isDashboard = pathName.includes("/dashboard/");
 
-  if (!isOnlyPassKey) return null;
+  if (!isOnlyPassKey || !isDashboard) return null;
 
-  return isDashboard ? (
+  return (
     <Notification
       description="Caution: Your account is currently only secured by your passkey. Please add one or more <b>recovery keys</b>."
       type="warning"
     />
-  ) : (
-    <> </>
   );
 });
