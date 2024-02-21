@@ -409,7 +409,7 @@ function PendingAmount({
   return (
     <div className="flex flex-col items-end">
       <div className="text-md font-bold">
-        {amount?.toFixed(decimals).replace(/(\.0+|0+)$/, "")}
+        {amount?.decimalPlaces(decimals).toString()}
       </div>
       <div className="text-xs">estimate</div>
     </div>
