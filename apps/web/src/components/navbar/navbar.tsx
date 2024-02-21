@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Account, Divider, Footer, PrimaryLink, Text } from "..";
+import { cn } from "@/lib/utils";
 
 type NavMenu = {
   href: string;
@@ -149,7 +150,10 @@ export function Navbar() {
                 <li key={`navmenu-${index}`}>
                   <PrimaryLink
                     href={navItem.href}
-                    className="flex flex-col items-center justify-center space-y-3"
+                    className={cn(
+                      "flex flex-col items-center justify-center space-y-3",
+                      mainURISegment !== navItem.module && "opacity-60",
+                    )}
                   >
                     <Image
                       src={navItem.icon}
