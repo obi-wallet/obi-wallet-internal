@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 
 import { Account, Divider, Footer, PrimaryLink, Text } from "..";
 
-
 type NavMenu = {
   href: string;
   text: string;
