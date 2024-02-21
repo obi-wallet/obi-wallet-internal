@@ -200,9 +200,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       });
     }
 
-    const initialAsset = initialAssetParam
-      ? getInitialAsset()
-      : balanceOptions[0];
+    const initialAsset = initialAssetParam ? getInitialAsset() : null;
     if (initialAsset) {
       form.setValue("coin", {
         amount: coin.amount,
