@@ -9,11 +9,13 @@ import { Account, Divider, Footer, PrimaryLink, Text } from "..";
 type NavMenu = {
   href: string;
   text: string;
+  mobileText?: string;
   module: string;
   icon: string;
   showOnMobile?: boolean;
   showOnDesktop?: boolean;
   target?: string;
+  mobileOrder: number;
 };
 const navMenu: NavMenu[] = [
   {
@@ -21,8 +23,9 @@ const navMenu: NavMenu[] = [
     text: "Transact",
     module: "",
     icon: "/assets/icons/nav-transact.svg",
-    showOnMobile: true,
+    showOnMobile: false,
     showOnDesktop: false,
+    mobileOrder: 0,
   },
   {
     href: "/dashboard",
@@ -31,6 +34,7 @@ const navMenu: NavMenu[] = [
     icon: "/assets/icons/nav-home.svg",
     showOnMobile: true,
     showOnDesktop: true,
+    mobileOrder: 3,
   },
 
   {
@@ -40,22 +44,27 @@ const navMenu: NavMenu[] = [
     icon: "/assets/icons/nav-buy-crypto.svg",
     showOnDesktop: true,
     showOnMobile: true,
+    mobileOrder: 2,
   },
   {
     href: "/dashboard/fast-travel",
     text: "Fast Travel",
+    mobileText: "FT",
     module: "fast-travel",
     icon: "/assets/icons/nav-fast-travel.svg",
     showOnDesktop: true,
     showOnMobile: true,
+    mobileOrder: 1,
   },
   {
     href: "/dashboard/app-connect",
     text: "App Connect",
+    mobileText: "Apps",
     module: "app-connect",
     icon: "/assets/icons/nav-app-connect.svg",
     showOnDesktop: true,
     showOnMobile: true,
+    mobileOrder: 4,
   },
   {
     href: "/dashboard/settings",
@@ -64,6 +73,7 @@ const navMenu: NavMenu[] = [
     icon: "/assets/icons/nav-settings.svg",
     showOnMobile: true,
     showOnDesktop: true,
+    mobileOrder: 5,
   },
 ];
 
@@ -128,10 +138,13 @@ export function Navbar() {
         <Footer className="!px-0" />
       </div>
       <div className="flex h-full w-full sm:hidden">
-        <div className="flex flex-row items-center ">
-          <ul role="list" className="flex w-full flex-row justify-around ">
+        <div className="flex w-full flex-row items-center justify-center px-4">
+          <ul role="list" className="flex w-full flex-row justify-between ">
             {navMenu
               .filter((item) => item.showOnMobile)
+              .sort((itemX, itemY) =>
+                itemX.mobileOrder - itemY.mobileOrder > 0 ? 1 : -1,
+              )
               .map((navItem, index) => (
                 <li key={`navmenu-${index}`}>
                   <PrimaryLink
@@ -145,7 +158,9 @@ export function Navbar() {
                       alt={navItem.text}
                       className="!h-8 !w-8"
                     />
-                    <Text className="text-center">{navItem.text}</Text>
+                    <Text className="text-center">
+                      {navItem.mobileText ?? navItem.text}
+                    </Text>
                   </PrimaryLink>
                 </li>
               ))}
