@@ -73,16 +73,16 @@ export default observer(function AppConnect() {
   }
 
   return (
-    <div className="grid h-full w-full px-7 py-5 text-white">
+    <div className="grid h-full w-full text-white">
       {renderExplanationModal()}
-      <Box className="ml-2 rounded-md text-xl">
+      <Box className="rounded-md text-xl">
         <Text size="xl">App Connect</Text>
         <Text className="mt-2">
-          <span className="justify-center align-middle">
+          <span className="justify-center align-middle leading-normal">
             Navigate to your favorite app, copy the WalletConnect URL, and paste
             it below to connect it to Obi.
             <div
-              className="inline-block cursor-pointer px-2"
+              className="ml-2 inline-block cursor-pointer"
               onClick={() => {
                 setShowExplanationModal(true);
               }}

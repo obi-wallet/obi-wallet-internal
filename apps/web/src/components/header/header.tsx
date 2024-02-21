@@ -4,13 +4,13 @@ import { Button, Modal, renderModal } from "@/components";
 import { PrimaryLink } from "@/components/links";
 import { CURRENT_THEME } from "@/configs";
 import { useStore } from "@/contexts";
-// import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-// import { FaCircleUser, FaQrcode } from "react-icons/fa6";
+import { FaCircleUser } from "react-icons/fa6";
 
 export const Header = observer(function Header() {
   const { mpcWalletsStore } = useStore();
@@ -18,38 +18,38 @@ export const Header = observer(function Header() {
   const primaryLinkHref = mpcWalletsStore.currentWallet ? "/dashboard" : "/";
   const authChildren = mpcWalletsStore.currentWallet ? <LogOut /> : <LogIn />;
 
-  // const { userDataStore } = useStore();
-  // const currentWallet = useCurrentWallet({});
+  const { userDataStore } = useStore();
+  const currentWallet = useCurrentWallet({});
 
-  // const userData = currentWallet
-  //   ? userDataStore.getUserData(currentWallet.userEntryAddress)
-  //   : {};
+  const userData = currentWallet
+    ? userDataStore.getUserData(currentWallet.userEntryAddress)
+    : {};
 
   return (
     <>
-      <header className="h-20 w-full">
+      <header className="w-full max-sm:h-16 sm:h-20">
         <div
           className={cn(
-            "bg-background-primary flex h-full w-full items-center justify-between px-8 shadow",
+            "bg-background-primary flex h-full w-full items-center justify-between px-8 shadow max-sm:hidden",
           )}
         >
           <PrimaryLink href={primaryLinkHref}>
             {/* <Text
-            color="white"
-            size="2xl"
-            fontWeight="bold"
-            className="leading-3"
-          >
-            Obi
-          </Text>
-           */}
+              color="white"
+              size="2xl"
+              fontWeight="bold"
+              className="leading-3"
+            >
+              Obi
+            </Text> */}
+
             <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
           </PrimaryLink>
           {authChildren}
         </div>
-        {/* <div
+        <div
           className={cn(
-            "bg-background-primary flex h-full w-full items-center justify-between p-6 shadow",
+            "flex h-full w-full items-center justify-between p-4 shadow",
             "sm:hidden",
           )}
         >
@@ -67,8 +67,8 @@ export const Header = observer(function Header() {
             )}
           </div>
 
-          <FaQrcode className="h-11 w-11 rounded text-white" />
-        </div> */}
+          {/* <FaQrcode className="h-11 w-11 rounded text-white" /> */}
+        </div>
       </header>
     </>
   );
