@@ -9,7 +9,7 @@ export const PasskeyNotification = observer(function PasskeyNotification() {
   const currentWallet = useCurrentWallet({});
   const isOnlyPassKey = currentWallet && currentWallet.owner.keys.length === 1;
   const pathName = usePathname();
-  const isDashboard = pathName.includes("/dashboard/");
+  const isDashboard = pathName.includes("/dashboard");
 
   if (!isOnlyPassKey || !isDashboard) return null;
 
