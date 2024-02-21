@@ -12,7 +12,7 @@ export default observer(function FastTravel() {
   const [targetAsset, setTargetAsset] = useState<string | undefined>(undefined);
 
   return (
-    <div className="h-full w-full px-7 py-5">
+    <div className="h-full w-full">
       <div className="relative h-full w-full text-white">
         <Box className="px-0 pt-0 max-sm:bg-transparent">
           <div className="relative">
@@ -27,13 +27,13 @@ export default observer(function FastTravel() {
                 height: "100%",
                 borderRadius: 6,
               }}
-              className="opacity-40 max-lg:!h-[240px]"
+              className="opacity-40 max-lg:!h-[240px] max-sm:!h-40"
             />
-            <div className="absolute top-0 flex h-full w-full flex-col justify-center p-10 ">
-              <h1 className="mb-4 text-4xl font-bold text-white max-md:text-3xl">
+            <div className="absolute top-0 flex h-full w-full flex-col justify-center p-10 max-sm:p-3">
+              <h1 className="mb-4 text-4xl font-bold text-white max-md:text-3xl max-sm:text-xl">
                 Obi Fast Travel
               </h1>
-              <h2 className="text-xl font-bold text-white max-md:text-lg">
+              <h2 className="text-xl font-bold text-white max-md:text-lg max-sm:text-base">
                 Skip the research and hassle of migrating to new ecosystems.
                 Select an asset below to receive it in your Obi account.
               </h2>

@@ -128,7 +128,7 @@ export default observer(function Dashboard() {
   useCurrentWallet({ redirectTo: "/" });
 
   return (
-    <div className="grid h-full w-full grid-rows-3 gap-4 px-7 py-5 text-white">
+    <div className="flex h-full w-full flex-col space-y-4 text-white">
       <Assets />
       {/* <Box title="Chart" /> */}
       {/* <Box title="Top Positions" /> */}
@@ -138,7 +138,7 @@ export default observer(function Dashboard() {
 
 const Assets = observer(function Assets() {
   return (
-    <Box className="ml-2 rounded-md text-xl">
+    <Box className="rounded-md text-xl">
       <div className="flex flex-row justify-between">
         <Text>Assets</Text>
         <Total />
@@ -146,9 +146,9 @@ const Assets = observer(function Assets() {
 
       <Divider className="mt-5" />
       {/* create an alert banner to remind users to wait if a tx has just been issued */}
-      <div className="mt-3 flex  w-full flex-row rounded-md bg-slate-600 p-2">
+      <div className="mt-3 flex w-full flex-row items-center rounded-md bg-slate-600 p-2">
         <FaExclamation className="ml-2 mr-3" />
-        <Text size="sm" className="">
+        <Text size="sm" className="leading-normal">
           Fast Travel transactions may take a few minutes to be processed and
           will appear here once visible on the network.
         </Text>
@@ -187,9 +187,13 @@ const PendingAssets = observer(function PendingAssets() {
 
   if (!txData) return null;
 
-  return txData.map((tx: TX) => {
-    return <PendingAsset key={tx.transaction.deposit_address} tx={tx} />;
-  });
+  return (
+    <>
+      {txData.map((tx: TX) => (
+        <PendingAsset key={tx.transaction.deposit_address} tx={tx} />
+      ))}
+    </>
+  );
 });
 
 const PendingAsset = observer(function PendingAsset({ tx }: { tx: TX }) {
@@ -318,14 +322,12 @@ const AssetBalance = observer(function AssetBalance() {
   if (balance.length === 0) return null;
 
   return balance.map((b) => {
-    return b.data?.balances.map((chainBalance) => {
-      return (
-        <NewAssetItem
-          key={`${chainBalance.targetChainId}:${chainBalance.denom}`}
-          coin={chainBalance}
-        />
-      );
-    });
+    return b.data?.balances.map((chainBalance) => (
+      <NewAssetItem
+        key={`${chainBalance.targetChainId}:${chainBalance.denom}`}
+        coin={chainBalance}
+      />
+    ));
   });
 });
 

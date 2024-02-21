@@ -20,7 +20,7 @@ export default function TransactionLayout({
   const activeTab = getActive(pathName);
   return (
     <div className="w-full ">
-      <Box className="m-5 w-full sm:w-2/3">
+      <Box className="w-full sm:w-2/3">
         <TabUi.Links>
           <TabUi.Link
             href="/dashboard/transaction/send"
