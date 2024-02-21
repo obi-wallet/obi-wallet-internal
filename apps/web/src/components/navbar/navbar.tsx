@@ -153,10 +153,10 @@ export function Navbar() {
                   >
                     <Image
                       src={navItem.icon}
-                      height={32}
-                      width={32}
+                      height={30}
+                      width={30}
                       alt={navItem.text}
-                      className="!h-8 !w-8"
+                      className="!h-[30px] !w-[30px]"
                     />
                     <Text className="text-center">
                       {navItem.mobileText ?? navItem.text}

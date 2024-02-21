@@ -14,12 +14,10 @@ module.exports = {
         "background-select-hover": "var(--background-select-hover)",
         "background-select-active": "var(--background-select-active)",
         "background-select-disabled": "var(--background-select-disabled)",
-        "gradient-background": `linear-gradient(to right bottom, rgba(0, 0, 0, 1), var(--background-main))`,
 
         "--foreground-primary": "var(--foreground-primary)",
         "--foreground-primary-border": "var(--foreground-primary-border)",
       },
-      backgroundGradient: () => ({}),
     },
   },
   plugins: [],
