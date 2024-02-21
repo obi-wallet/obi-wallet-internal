@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body
         className={cn(
           inter.className,
-          "bg-gradient-background flex min-h-screen flex-col",
+          "flex min-h-screen flex-col bg-gradient-to-br from-black to-slate-900",
         )}
       >
         <Provider>
