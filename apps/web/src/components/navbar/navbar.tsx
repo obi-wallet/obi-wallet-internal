@@ -1,11 +1,12 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Account, Divider, Footer, PrimaryLink, Text } from "..";
-import { cn } from "@/lib/utils";
+
 
 type NavMenu = {
   href: string;
