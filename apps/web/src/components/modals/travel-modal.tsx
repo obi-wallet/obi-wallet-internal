@@ -10,9 +10,12 @@ import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
+import { CustomDropdown as Dropdown } from "@/ui/dropdown";
+import { Input } from "@/ui/input";
 import { nonEmptyString } from "@/validation-helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
+import BigNumber from "bignumber.js";
 import copy from "copy-to-clipboard";
 import { BrowserProvider, Contract, parseUnits } from "ethers";
 import { observer } from "mobx-react-lite";
@@ -24,17 +27,17 @@ import { FaCheck, FaExclamation, FaSpinner } from "react-icons/fa6";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import { AssetInput, Box, Button, Text } from "..";
+import { Box, Button, Text } from "..";
 import { Divider } from "../divider";
 import { IAssetOption } from "../dropdown";
 
 export type PriceData = {
-  mainVsPrice: number;
-  mainUsd: number;
-  vsUsd: number;
+  mainVsPrice: BigNumber;
+  mainUsd: BigNumber;
+  vsUsd: BigNumber;
 };
 export type AssetAmmount = {
-  amount: number | undefined;
+  amount: string | undefined;
   asset: string | undefined;
 };
 interface IToleranceProps {
@@ -54,34 +57,69 @@ interface ITravelModalProps {
 }
 interface FormData {
   fromAsset: {
-    amount: number | undefined;
-    asset: string | undefined;
+    amount: string;
+    asset: string;
   };
   toAsset: {
-    amount: number | undefined;
-    asset: string | undefined;
+    amount: string;
+    asset: string;
   };
   slippage: number;
 }
+type ErrorsObject = { [key: string]: { message: string; type: string } };
+type SingleError = { message: string; type: string };
+type Errors = ErrorsObject | SingleError;
+
 export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   targetAsset,
   onDismiss,
   modal,
   cancelLabel = "Accept",
 }) {
-  const [focused, setFocused] = useState<boolean>(false);
-  const [direction, setDirection] = useState<"from" | "to">();
   const publicKey = usePublicKey();
   const currentWallet = useCurrentWallet({ redirectIfFound: false });
 
   const schema = z.object({
-    fromAsset: z.object({
-      // amount should be undefined or number
-      amount: z.number().min(0, "Amount must be greater than 0"),
-      asset: z.string().refine(nonEmptyString, "Asset is required"),
-    }),
+    fromAsset: z
+      .object({
+        // amount should be undefined or number
+        amount: z
+          .string()
+          .refine(nonEmptyString, "Amount is required")
+          .refine((str) => {
+            const num = new BigNumber(str);
+            if (num.gte(0)) return true;
+          }, "Amount is invalid"),
+        asset: z.string().refine(nonEmptyString, "Asset is required"),
+      })
+      .refine(
+        (data) => {
+          const { amount, asset } = data;
+          const num = new BigNumber(amount);
+          // Define the minimum amount based on whether the asset contains "ETHEREUM"
+          const minAmount = asset.toUpperCase().includes("ETHEREUM")
+            ? 0.01
+            : 0.005;
+          return num.isGreaterThanOrEqualTo(minAmount);
+        },
+        (data) => {
+          const isEth = data.asset.toUpperCase().includes("ETHEREUM");
+          const minAmount = isEth ? "0.01" : "0.005";
+          return {
+            message: `Min ${minAmount} for this chain`,
+          };
+        },
+      ),
+
     toAsset: z.object({
-      amount: z.number().min(1, "Amount must be greater than 0"),
+      amount: z
+        .string()
+        .refine(nonEmptyString, "Amount is required")
+        .refine((str) => {
+          if (str === "") return false;
+          const num = new BigNumber(str);
+          if (num.gte(0)) return true;
+        }, "Amount is invalid"),
       asset: z.string().refine(nonEmptyString, "Asset is required"),
     }),
     slippage: z
@@ -100,11 +138,11 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   } = useForm<FormData>({
     defaultValues: {
       fromAsset: {
-        amount: undefined,
-        asset: undefined,
+        amount: "",
+        asset: "",
       },
       toAsset: {
-        amount: undefined,
+        amount: "",
         asset: targetAsset,
       },
       slippage: 1,
@@ -126,7 +164,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   const [addressCopied, setAddressCopied] = useState<boolean>(false);
 
   const executeTx = async () => {
-    if (!isDataValid()) return;
+    if (!formState.isValid) return;
     // get the deposit data
     const from = fromAssets[fromAssetValue?.asset ?? ""];
     setLoading(true);
@@ -169,7 +207,6 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
 
         const transaction = await signer.sendTransaction(tx);
         console.log("Transaction hash:", transaction.hash);
-        // setTxHash(transaction.hash);
         alert("Transaction sent!");
         router.push("/dashboard");
         return;
@@ -214,25 +251,32 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     // if both amounts are not set we don't need to do anything
     if (!fromData.amount && !toData.amount) return;
 
-    if (direction === "to" && fromData.asset !== undefined) {
-      handleToAssetChange();
-      return;
-    }
-
     if (!fromData) return;
     if (!fromData.asset || fromData.asset === "") return;
     if (!toData.asset) return;
-    const price = (await getPrice({
+    const coins = {
       mainCoin: fromAssets[fromData.asset] as FromAsset,
       vsCoin: toAssets[toData.asset] as ToAsset,
-    })) as number;
+    };
+    const price = await getPrice(coins);
 
-    const toAssetAmount = price * (Number(fromData?.amount) ?? 0);
+    const toAssetAmount = new BigNumber(fromData?.amount ?? 0).times(
+      price.mainVsPrice,
+    );
 
-    setValue("toAsset", {
-      ...getValues("toAsset"),
-      amount: toAssetAmount,
-    });
+    const decimals = Math.min(toAssetAmount.decimalPlaces() as number, 8);
+    const amount = toAssetAmount.isNaN()
+      ? ""
+      : toAssetAmount.decimalPlaces(decimals).toString();
+
+    setValue(
+      "toAsset",
+      {
+        ...getValues("toAsset"),
+        amount,
+      },
+      { shouldValidate: true },
+    );
   };
 
   const handleToAssetChange = async () => {
@@ -242,29 +286,33 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     if (!fromData?.asset || !toData?.asset) return;
     // if both amounts are not set we don't need to do anything
     if (!fromData.amount && !toData.amount) return;
-
-    if (direction === "from" && toData.asset !== undefined) {
-      handleFromAssetChange();
-      return;
-    }
     if (!toData) return;
     if (!toData.asset || toData.asset === "") return;
     const fromAssetAsset = getValues("fromAsset").asset;
     if (!fromAssetAsset) return;
-    const price = (await getPrice({
+    const coins = {
       mainCoin: toAssets[toData.asset] as ToAsset,
       vsCoin: fromAssets[fromAssetAsset] as FromAsset,
-    })) as number;
+    };
+    const price = await getPrice(coins);
 
-    const fromAssetAmount = price * (Number(toData?.amount) ?? 0);
-    setValue("fromAsset", {
-      ...getValues("fromAsset"),
-      amount: fromAssetAmount,
-    });
-  };
+    const fromAssetAmount = new BigNumber(toData?.amount ?? 0).times(
+      price.mainVsPrice,
+    );
 
-  const isDataValid = () => {
-    return Object.keys(formState.errors).length === 0;
+    const decimals = Math.min(fromAssetAmount.decimalPlaces() as number, 8);
+    const amount = fromAssetAmount.isNaN()
+      ? ""
+      : fromAssetAmount.decimalPlaces(decimals).toString();
+
+    setValue(
+      "fromAsset",
+      {
+        ...getValues("fromAsset"),
+        amount,
+      },
+      { shouldValidate: true },
+    );
   };
 
   return (
@@ -289,66 +337,224 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
         <Controller
           name="fromAsset"
           control={control}
-          render={({ field, fieldState }) => (
-            <AssetInput
-              assets={getAssetOptions(fromAssets)}
-              placeholder="0.1"
-              labelText="Deposit"
-              className="z-20"
-              direction="from"
-              disableTextInput={direction === "to" || !focused}
-              onClick={() => {
-                setDirection("from");
-                setFocused(true);
-              }}
-              onFocus={() => {
-                setDirection("from");
-                setFocused(true);
-              }}
-              onBlur={() => setFocused(false)}
-              field={{
-                ...field,
-                value: {
-                  ...field.value,
-                  amount: field.value ? Number(field.value.amount) : undefined,
-                },
-              }}
-              fieldState={fieldState}
-              onChange={handleFromAssetChange}
-            />
-          )}
+          render={({ field, fieldState }) => {
+            const errors = fieldState.error as Errors | undefined;
+            const options = getAssetOptions(fromAssets);
+
+            return (
+              <Input
+                label="Deposit"
+                onChange={(value) => {
+                  field.onChange({
+                    asset: field.value.asset,
+                    amount: value,
+                  });
+                  handleFromAssetChange();
+                }}
+                className={cn(
+                  "z-20",
+                  "relative",
+                  fieldState.error &&
+                    " border-red-500 focus-within:border-red-500",
+                )}
+                onBlur={field.onBlur}
+                value={field.value.amount}
+                placeholder="0.1"
+                rightComponent={
+                  <Dropdown
+                    itemToString={(item: IAssetOption | null) =>
+                      item?.label ?? ""
+                    }
+                    items={options}
+                    selectedItem={options.find(
+                      (item) => item.value === field.value.asset,
+                    )}
+                    getKey={(item) => item.label}
+                    className=" w-60"
+                    itemComponent={({ getItemProps, item, isSelected }) => {
+                      const {
+                        onClick,
+                        onMouseDown,
+                        onMouseMove,
+                        ...itemProps
+                      } = getItemProps({ item });
+
+                      return (
+                        <div
+                          {...itemProps}
+                          {...(!item.disabled && {
+                            onClick,
+                            onMouseDown,
+                            onMouseMove,
+                          })}
+                          className={cn(
+                            " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                            isSelected && "bg-gray-600 ",
+                            item.disabled &&
+                              "cursor-not-allowed opacity-50 hover:bg-gray-600",
+                          )}
+                        >
+                          <div className="flex items-center justify-center ">
+                            <img
+                              src={item.image}
+                              alt={item.label}
+                              width={24}
+                              height={24}
+                            />
+                          </div>
+                          <div className="text-white">
+                            <div className=" uppercase">{item.label}</div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                    onItemSelect={function (item: IAssetOption): void {
+                      field.onChange({
+                        asset: item.value,
+                        amount: field.value.amount,
+                      });
+                      handleFromAssetChange();
+                    }}
+                    selectedItemComponent={(selected) => {
+                      if (!selected.item) {
+                        return <div>Select</div>;
+                      }
+                      return (
+                        <div className="flex  w-full cursor-pointer flex-row gap-5 font-normal">
+                          <div className="flex items-center   justify-between">
+                            <img
+                              src={selected.item.image}
+                              alt={selected.item.label}
+                              className="h-6 w-6"
+                            />
+                          </div>
+                          <div className="flex flex-col items-end text-sm font-normal">
+                            <div className=" uppercase">
+                              {selected.item.label}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                  />
+                }
+              >
+                {errors && <ErrorsComponent errors={errors} />}
+              </Input>
+            );
+          }}
         />
         <Controller
           name="toAsset"
           control={control}
-          render={({ field, fieldState }) => (
-            <AssetInput
-              direction="to"
-              disableTextInput={direction === "from" || !focused}
-              onClick={() => {
-                setDirection("to");
-                setFocused(true);
-              }}
-              onFocus={() => {
-                setDirection("to");
-                setFocused(true);
-              }}
-              onBlur={() => setFocused(false)}
-              assets={getAssetOptions(toAssets)}
-              placeholder="0.1"
-              labelText="Receive (estimated)"
-              field={{
-                ...field,
-                value: {
-                  ...field.value,
-                  amount: field.value ? Number(field.value.amount) : undefined,
-                },
-              }}
-              fieldState={fieldState}
-              onChange={handleToAssetChange}
-            />
-          )}
+          render={({ field, fieldState }) => {
+            const errors = fieldState.error as Errors | undefined;
+            const options = getAssetOptions(toAssets);
+
+            return (
+              <Input
+                label="Receive (estimated)"
+                onChange={(value) => {
+                  field.onChange({
+                    asset: field.value.asset,
+                    amount: value,
+                  });
+                  handleToAssetChange();
+                }}
+                className={cn(
+                  "z-10",
+                  "relative",
+                  fieldState.error &&
+                    " border-red-500 focus-within:border-red-500",
+                )}
+                onBlur={field.onBlur}
+                value={field.value.amount}
+                placeholder="0.1"
+                rightComponent={
+                  <Dropdown
+                    itemToString={(item: IAssetOption | null) =>
+                      item?.label ?? ""
+                    }
+                    items={options}
+                    selectedItem={options.find(
+                      (item) => item.value === field.value.asset,
+                    )}
+                    getKey={(item) => item.label}
+                    className=" w-60"
+                    itemComponent={({ getItemProps, item, isSelected }) => {
+                      const {
+                        onClick,
+                        onMouseDown,
+                        onMouseMove,
+                        ...itemProps
+                      } = getItemProps({ item });
+
+                      return (
+                        <div
+                          {...itemProps}
+                          {...(!item.disabled && {
+                            onClick,
+                            onMouseDown,
+                            onMouseMove,
+                          })}
+                          className={cn(
+                            " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                            isSelected && "bg-gray-600 ",
+                            item.disabled &&
+                              "cursor-not-allowed opacity-50 hover:bg-gray-600",
+                          )}
+                        >
+                          <div className="flex items-center justify-center ">
+                            <img
+                              src={item.image}
+                              alt={item.label}
+                              width={24}
+                              height={24}
+                            />
+                          </div>
+                          <div className="text-white">
+                            <div className=" uppercase">{item.label}</div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                    onItemSelect={function (item: IAssetOption): void {
+                      field.onChange({
+                        asset: item.value,
+                        amount: field.value.amount,
+                      });
+                      handleToAssetChange();
+                    }}
+                    selectedItemComponent={(selected) => {
+                      if (!selected.item) {
+                        return <div>Select</div>;
+                      }
+                      return (
+                        <div className="flex  w-full cursor-pointer flex-row gap-5 font-normal">
+                          <div className="flex items-center   justify-between">
+                            <img
+                              src={selected.item.image}
+                              alt={selected.item.label}
+                              className="h-6 w-6"
+                            />
+                          </div>
+                          <div className="flex flex-col items-end text-sm font-normal">
+                            <div className=" uppercase">
+                              {selected.item.label}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                  />
+                }
+              >
+                {errors && <ErrorsComponent errors={errors} />}
+              </Input>
+            );
+          }}
         />
+
         <Controller
           name="slippage"
           control={control}
@@ -362,44 +568,48 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
         />
 
         <Divider />
-        {depositAddress && (
-          <div
-            className={cn(
-              "flex-column  flex  bg-black/30 bg-opacity-10 p-5",
-              addressCopied && "rounded-md  border-2 shadow-md shadow-white",
-            )}
-          >
+        {depositAddress && formState.isValid && (
+          <>
             <div
               className={cn(
-                "mr-5 flex aspect-square h-10 w-10 items-center justify-center rounded-full border border-white p-2",
-
-                addressCopied && "border-2",
+                "flex-column  flex  bg-black/30 bg-opacity-10 p-5",
+                addressCopied && "rounded-md  border-2 shadow-md shadow-white",
               )}
             >
-              <FaExclamation className="m-auto text-white " />
+              <div
+                className={cn(
+                  "mr-5 flex aspect-square h-10 w-10 items-center justify-center rounded-full border border-white p-2",
+
+                  addressCopied && "border-2",
+                )}
+              >
+                <FaExclamation className="m-auto text-white " />
+              </div>
+              <Text size={addressCopied ? "md" : "sm"} className=" leading-5">
+                Execute with Metamask or deposit to the address shown below. You
+                may close this dialogue after depositing.
+              </Text>
             </div>
-            <Text size={addressCopied ? "md" : "sm"} className=" leading-5">
-              Execute with Metamask or deposit to the address shown below. You
-              may close this dialogue after depositing.
-            </Text>
-          </div>
+          </>
         )}
-        <GetAddressComponent
-          fromAsset={fromAssetValue}
-          toAsset={toAssetValue}
-          slippage={slippageValue}
-          addressChanged={setDepositAddress}
-          slippageError={formState.errors.slippage?.message}
-          publicKey={publicKey}
-          onCopy={() => setAddressCopied(true)}
-        />
+        {formState.isValid && (
+          <GetAddressComponent
+            fromAsset={fromAssetValue}
+            toAsset={toAssetValue}
+            slippage={slippageValue}
+            addressChanged={setDepositAddress}
+            slippageError={formState.errors.slippage?.message}
+            publicKey={publicKey}
+            onCopy={() => setAddressCopied(true)}
+          />
+        )}
 
         <div className="mt-8 flex justify-between">
           <Button className="block w-44" variant="outline" onClick={onDismiss}>
             {cancelLabel}
           </Button>
 
-          {isDataValid() && depositAddress && window.ethereum && (
+          {formState.isValid && depositAddress && window.ethereum && (
             <Button className="block w-44" onClick={executeTx}>
               Use Metamask
             </Button>
@@ -420,7 +630,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
 
 function ToleranceSetting({ field, fieldState }: IToleranceProps) {
   const tolerances = [1, 2];
-  const [text, setText] = useState<string | undefined>(undefined);
+  const [text, setText] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
   // we need to trigger an onChange event from the input so we can trigger the validation
   // this is because we are using a custom input and not the one from react-hook-form
@@ -560,7 +770,8 @@ function GetAddressComponent({
     ) {
       return false;
     }
-    if (fromAsset.amount === 0 || toAsset.amount === 0) return false;
+    if (BigNumber(fromAsset.amount).eq(0) || BigNumber(toAsset.amount).eq(0))
+      return false;
 
     return true;
   };
@@ -579,8 +790,9 @@ function GetAddressComponent({
     invariant(chain, "Chain is required");
     const targetChain = TargetChain.chainId(chain.id);
     const toAddress = targetChain.computeAddress(publicKey);
+    invariant(fromAsset?.amount, "Asset amount is required");
     const fromAmount = parseUnits(
-      fromAsset?.amount?.toString() ?? "0",
+      new BigNumber(fromAsset?.amount).toString(),
       from?.decimals,
     ).toString();
 
@@ -700,8 +912,10 @@ function GetAddressComponent({
   );
 }
 
-const fetchPrice = async (assetData: FromAsset | ToAsset | undefined) => {
-  if (!assetData) return;
+const fetchPrice = async (
+  assetData: FromAsset | ToAsset | undefined,
+): Promise<number | undefined> => {
+  if (!assetData) return undefined;
   // I need to know which type it is so I can use address or denom
   const isFromAsset = R.has("address", assetData);
 
@@ -713,32 +927,65 @@ const fetchPrice = async (assetData: FromAsset | ToAsset | undefined) => {
   // make a post request to the url
   const res = await fetch(requestURL);
   const data = await res.json();
+  if (!res.ok) {
+    console.error(data.error);
+    return undefined;
+  }
 
   return data.price;
 };
 export const getPrice = async ({
   mainCoin,
   vsCoin,
-  usdPrices,
 }: {
   mainCoin: FromAsset | ToAsset;
   vsCoin: FromAsset | ToAsset;
-  usdPrices?: boolean;
-}): Promise<number | PriceData> => {
+}): Promise<PriceData> => {
   // get Dollar prices from squid
   const main = await fetchPrice(mainCoin);
   const vs = await fetchPrice(vsCoin);
   // we have the dollar price of both coins, now we need the price of the main coin in vs coin
   // we need to divide the main coin price by the vs coin price
   if (main && vs) {
-    const mainVsPrice = Number(main) / Number(vs);
-    return usdPrices
-      ? {
-          mainVsPrice,
-          mainUsd: Number(main),
-          vsUsd: Number(vs),
-        }
-      : mainVsPrice;
+    // get the price of the main coin in vs coin
+    const mainVsPrice = new BigNumber(main).dividedBy(vs);
+    return {
+      mainVsPrice,
+      mainUsd: new BigNumber(main),
+      vsUsd: new BigNumber(vs),
+    };
   }
-  return 0;
+  return {
+    mainVsPrice: new BigNumber(0),
+    mainUsd: new BigNumber(0),
+    vsUsd: new BigNumber(0),
+  };
 };
+
+function ErrorsComponent({ errors }: { errors: Errors }) {
+  const renderErrorMessage = () => {
+    function isSingle(e: SingleError | ErrorsObject): e is SingleError {
+      return (e as SingleError).message !== undefined;
+    }
+
+    if (!errors) return;
+    // I need to know if errors is of type SingleError or ErrorsObject
+    const error = errors as SingleError;
+    if (isSingle(errors)) {
+      return error.message;
+    } else {
+      if (errors?.amount?.message) {
+        if (errors?.amount?.message === "Required") return "Amount is required";
+        return errors?.amount?.message;
+      }
+      if (errors?.asset?.message) {
+        return `Asset ${errors?.asset?.message}`;
+      }
+    }
+  };
+  return (
+    <div className=" absolute bottom-6 h-1 w-full  text-sm  text-red-800">
+      {renderErrorMessage()}
+    </div>
+  );
+}

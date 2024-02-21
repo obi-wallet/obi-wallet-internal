@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Divider, getPrice, PriceData, Text } from "@/components";
+import { Box, Divider, getPrice, Text } from "@/components";
 import { NewCoin, useNewBalances, useUSDTotalPrice } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
@@ -128,7 +128,7 @@ export default observer(function Dashboard() {
   useCurrentWallet({ redirectTo: "/" });
 
   return (
-    <div className="grid h-full w-full grid-rows-3 gap-4 px-7 py-5 text-white">
+    <div className="flex h-full w-full flex-col space-y-4 text-white">
       <Assets />
       {/* <Box title="Chart" /> */}
       {/* <Box title="Top Positions" /> */}
@@ -138,7 +138,7 @@ export default observer(function Dashboard() {
 
 const Assets = observer(function Assets() {
   return (
-    <Box className="ml-2 rounded-md text-xl">
+    <Box className="rounded-md text-xl">
       <div className="flex flex-row justify-between">
         <Text>Assets</Text>
         <Total />
@@ -146,9 +146,9 @@ const Assets = observer(function Assets() {
 
       <Divider className="mt-5" />
       {/* create an alert banner to remind users to wait if a tx has just been issued */}
-      <div className="mt-3 flex  w-full flex-row rounded-md bg-slate-600 p-2">
+      <div className="mt-3 flex w-full flex-row items-center rounded-md bg-slate-600 p-2">
         <FaExclamation className="ml-2 mr-3" />
-        <Text size="sm" className="">
+        <Text size="sm" className="leading-normal">
           Fast Travel transactions may take a few minutes to be processed and
           will appear here once visible on the network.
         </Text>
@@ -187,13 +187,17 @@ const PendingAssets = observer(function PendingAssets() {
 
   if (!txData) return null;
 
-  return txData.map((tx: TX) => {
-    return <PendingAsset key={tx.transaction.deposit_address} tx={tx} />;
-  });
+  return (
+    <>
+      {txData.map((tx: TX) => (
+        <PendingAsset key={tx.transaction.deposit_address} tx={tx} />
+      ))}
+    </>
+  );
 });
 
 const PendingAsset = observer(function PendingAsset({ tx }: { tx: TX }) {
-  const [amount, setAmount] = useState<number | undefined>();
+  const [amount, setAmount] = useState<BigNumber | undefined>();
   const asset =
     toAssets[
       Object.keys(toAssets).find(
@@ -216,7 +220,7 @@ const PendingAsset = observer(function PendingAsset({ tx }: { tx: TX }) {
         </div>
       </div>
       <StatusLink tx={tx} />
-      <PriceComponent amount={amount} price={0} />
+      <PendingAmount amount={amount} asset={asset as ToAsset} />
     </div>
   );
 });
@@ -228,10 +232,10 @@ const EstimateAmount = observer(function EstimateAmount({
 }: {
   tx: TX;
   toAsset: ToAsset | undefined;
-  onAmountChange?: (amount: number) => void;
+  onAmountChange?: (amount: BigNumber) => void;
 }) {
   const [loading, setLoading] = useState(false);
-  const [amount, setAmount] = useState<number | undefined>();
+  const [amount, setAmount] = useState<BigNumber | undefined>();
   useEffect(() => {
     getAmount();
   }, []);
@@ -252,25 +256,24 @@ const EstimateAmount = observer(function EstimateAmount({
         ) ?? ""
       ];
 
-    const priceData = (await getPrice({
+    const priceData = await getPrice({
       mainCoin: fromAsset as FromAsset,
       vsCoin: toAsset,
-      usdPrices: true,
-    })) as PriceData;
+    });
     const price = priceData.mainVsPrice;
 
     const amount = formatEther(parseUnits(fromAssetAmount ?? "0", "wei"));
 
-    const amountNumber = Number(amount) * price;
+    const amountNumber = price.times(amount);
     // discount 2$ for fees
-    setAmount(amountNumber - 2.5 / priceData.vsUsd);
+    setAmount(amountNumber.minus(2.5).div(priceData.vsUsd));
 
     setLoading(false);
   };
   if (!amount || loading) return null;
   return (
     <div className="text-xl font-bold">
-      {amount?.toFixed(2)} <span className="text-sm">(estimate)</span>
+      {/* {amount.toFixed(2)} <span className="text-sm">(estimate)</span> */}
     </div>
   );
 });
@@ -318,14 +321,12 @@ const AssetBalance = observer(function AssetBalance() {
   if (balance.length === 0) return null;
 
   return balance.map((b) => {
-    return b.data?.balances.map((chainBalance) => {
-      return (
-        <NewAssetItem
-          key={`${chainBalance.targetChainId}:${chainBalance.denom}`}
-          coin={chainBalance}
-        />
-      );
-    });
+    return b.data?.balances.map((chainBalance) => (
+      <NewAssetItem
+        key={`${chainBalance.targetChainId}:${chainBalance.denom}`}
+        coin={chainBalance}
+      />
+    ));
   });
 });
 
@@ -397,11 +398,20 @@ function NewPriceComponent({
   );
 }
 
-function PriceComponent({ amount, price }: { price: number; amount?: number }) {
+function PendingAmount({
+  amount,
+  asset,
+}: {
+  amount?: BigNumber;
+  asset: ToAsset;
+}) {
+  const decimals = Math.min(asset.decimals, 8);
   return (
     <div className="flex flex-col items-end">
-      <div className="text-md font-bold">{amount}</div>
-      <div className="text-xs">${(price * (amount || 0)).toFixed(2)}</div>
+      <div className="text-md font-bold">
+        {amount?.decimalPlaces(decimals).toString()}
+      </div>
+      <div className="text-xs">estimate</div>
     </div>
   );
 }

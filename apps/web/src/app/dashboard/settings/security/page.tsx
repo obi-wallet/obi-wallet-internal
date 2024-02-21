@@ -21,7 +21,7 @@ export default function Settings() {
     },
   ];
   return (
-    <Box className="m-6 h-fit w-1/3 !min-w-[320px] px-4 py-6 max-sm:w-full">
+    <Box className="h-fit w-1/3 !min-w-[320px] px-4 py-6 max-sm:w-full">
       <Text size="xl">Security Settings</Text>
       <Text size="sm" fontWeight="medium" className="mt-3">
         Add keys to your account. Click any of the options below to update or

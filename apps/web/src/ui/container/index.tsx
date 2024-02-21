@@ -19,7 +19,6 @@ export function InputContainer({
         "hover:border-color relative   rounded-xl  border border-gray-700 p-6 hover:border-blue-600 ",
         "focus-within:border-blue-600",
         "flex items-center justify-between",
-
         className,
       )}
       onClick={onClick}

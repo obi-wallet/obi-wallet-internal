@@ -73,7 +73,7 @@ export function AssetInput({
   };
 
   return (
-    <div className={"relative z-10 w-full  " + className} aria-disabled>
+    <div className={"relative z-10 w-full " + className} aria-disabled>
       <Input
         ref={inputRef}
         placeholder={placeholder || "0"}
@@ -87,12 +87,12 @@ export function AssetInput({
         value={field.value.amount}
         errorMessage={renderErrorMessage(errors)}
         onFocus={() => onFocus && onFocus()}
-        onChange={(amount: string) => {
+        onChange={(amount) => {
           if (disableTextInput) return;
 
           field.onChange({
             asset: field.value.asset,
-            amount: Number(amount),
+            amount,
           });
           field.onBlur();
           onChange && onChange();
@@ -112,14 +112,14 @@ export function AssetInput({
       <div className="absolute right-2 top-1/2 flex -translate-y-1/2 space-x-2">
         {assets && (
           <DropDown
-            className="w-52"
+            className="w-52 max-sm:w-40"
             // TODO: change description
             description="something"
             options={assets}
             onSelectOption={(option) => {
               field.onChange({
                 asset: option.value as string,
-                amount: Number(field.value.amount),
+                amount: field.value.amount,
               });
               onChange && onChange();
             }}
