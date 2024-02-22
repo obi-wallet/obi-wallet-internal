@@ -22,8 +22,8 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
-    "test": {
-      "dependsOn": ["^test"]
+    "test-storybook": {
+      "dependsOn": ["^test-storybook"]
     },
     "integration": {
       "dependsOn": ["^integration"]
@@ -35,6 +35,10 @@
       "dependsOn": ["^tsc"]
     },
     "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "storybook": {
       "cache": false,
       "persistent": true
     }

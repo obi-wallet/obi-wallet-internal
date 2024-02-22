@@ -9,7 +9,6 @@
     "lint": "eslint .",
     "start": "next start",
     "storybook": "storybook dev -p 6006",
-    "test": "jest",
     "test-storybook": "test-storybook",
     "tsc": "tsc --noEmit"
   },
