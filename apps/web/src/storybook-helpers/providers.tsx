@@ -20,3 +20,11 @@ export function ProviderWithWallet({ children }: { children: ReactNode }) {
 
   return <Provider>{children}</Provider>;
 }
+
+export function providerWithWalletDecorator(Story: () => ReactNode) {
+  return (
+    <ProviderWithWallet>
+      <Story />
+    </ProviderWithWallet>
+  );
+}

@@ -1,5 +1,5 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
-import { ProviderWithWallet } from "@/storybook-helpers";
+import { providerWithWalletDecorator } from "@/storybook-helpers";
 import { TargetChain } from "@/target-chain";
 import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import type { Meta, StoryObj } from "@storybook/react";
@@ -13,6 +13,7 @@ const meta = {
     layout: "centered",
   },
   tags: ["autodocs"],
+  decorators: [providerWithWalletDecorator],
 } satisfies Meta<typeof ApproveMessages>;
 
 export default meta;
@@ -42,13 +43,6 @@ export const SendMessage: Story = {
     rawData: [sendMessage],
     onReject: () => {},
     onApprove: async () => {},
-  },
-  render: (args) => {
-    return (
-      <ProviderWithWallet>
-        <ApproveMessages {...args} />
-      </ProviderWithWallet>
-    );
   },
 };
 
@@ -92,12 +86,5 @@ export const AstroportSwapMessage: Story = {
     rawData: [executeMessage],
     onReject: () => {},
     onApprove: async () => {},
-  },
-  render: (args) => {
-    return (
-      <ProviderWithWallet>
-        <ApproveMessages {...args} />
-      </ProviderWithWallet>
-    );
   },
 };

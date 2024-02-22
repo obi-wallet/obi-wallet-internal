@@ -1,8 +1,8 @@
 import { usePublicKeyQuery } from "@/hooks/use-public-key";
 import {
-  ProviderWithWallet,
   AutomatedTest,
   automatedTestPlay,
+  providerWithWalletDecorator,
 } from "@/storybook-helpers";
 import { Meta, StoryObj } from "@storybook/react";
 
@@ -16,15 +16,7 @@ type Story = StoryObj<typeof meta>;
 
 export const UsePublicKeyQuery: Story = {
   args: {},
-  decorators: [
-    (Story) => {
-      return (
-        <ProviderWithWallet>
-          <Story />
-        </ProviderWithWallet>
-      );
-    },
-  ],
+  decorators: [providerWithWalletDecorator],
   render: function UsePublicKeyQueryTest() {
     const publicKey = usePublicKeyQuery();
     return (
