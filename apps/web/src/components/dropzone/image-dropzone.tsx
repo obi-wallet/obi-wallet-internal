@@ -24,6 +24,7 @@ export function ImageDropzone({
   height = 100,
 }: ImageDropzoneProps) {
   const [file, setFile] = useState<File>();
+  // @ts-expect-error useObjectUrl also can work with `undefined`
   const fileObjectUrl = useObjectUrl(file);
 
   useEffect(() => {

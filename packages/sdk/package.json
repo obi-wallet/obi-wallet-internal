@@ -21,7 +21,7 @@
     "@keplr-wallet/cosmos": "0.12.16",
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*",
     "@obi-wallet/sdk-secp256k1": "workspace:*",
-    "@simplewebauthn/typescript-types": "^8.0.0",
+    "@simplewebauthn/typescript-types": "^8.3.4",
     "@tanstack/query-core": "^4.29.25",
     "@terra-money/feather.js": "^1.0.8",
     "@walletconnect/client": "^1.8.0",
@@ -46,8 +46,8 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/luxon": "^3.3.7",
-    "@types/ramda": "^0.29.3",
+    "@types/luxon": "^3.4.2",
+    "@types/ramda": "^0.29.10",
     "@types/secp256k1": "^4.0.6",
     "eslint": "^8.55.0",
     "typescript": "^5.3.3"
