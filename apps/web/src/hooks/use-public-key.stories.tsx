@@ -7,7 +7,7 @@ import {
 import { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
-  title: "Tests/use-public-key",
+  title: "Tests/hooks/balances/use-public-key",
   component: AutomatedTest,
 } satisfies Meta<typeof AutomatedTest>;
 
@@ -15,6 +15,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const UsePublicKeyQuery: Story = {
+  name: "usePublicKeyQuery",
   args: {},
   decorators: [providerWithWalletDecorator],
   render: function UsePublicKeyQueryTest() {
