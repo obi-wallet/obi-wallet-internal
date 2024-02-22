@@ -3731,6 +3731,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@pkgr/core@npm:^0.1.0":
+  version: 0.1.1
+  resolution: "@pkgr/core@npm:0.1.1"
+  checksum: 10c0/3f7536bc7f57320ab2cf96f8973664bef624710c403357429fbf680a5c3b4843c1dbd389bb43daa6b1f6f1f007bb082f5abcb76bb2b5dc9f421647743b71d3d8
+  languageName: node
+  linkType: hard
+
 "@pkgr/utils@npm:^2.4.2":
   version: 2.4.2
   resolution: "@pkgr/utils@npm:2.4.2"
@@ -16651,9 +16658,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "obi-wallet-internal@workspace:."
   dependencies:
-    prettier: "npm:^3.1.1"
-    prettier-plugin-packagejson: "npm:^2.4.7"
-    prettier-plugin-tailwindcss: "npm:^0.5.9"
+    prettier: "npm:^3.2.5"
+    prettier-plugin-packagejson: "npm:^2.4.11"
+    prettier-plugin-tailwindcss: "npm:^0.5.11"
     turbo: "npm:^1.12.0"
   languageName: unknown
   linkType: soft
@@ -17642,7 +17649,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-packagejson@npm:^2.4.5, prettier-plugin-packagejson@npm:^2.4.7":
+"prettier-plugin-packagejson@npm:^2.4.11":
+  version: 2.4.11
+  resolution: "prettier-plugin-packagejson@npm:2.4.11"
+  dependencies:
+    sort-package-json: "npm:2.7.0"
+    synckit: "npm:0.9.0"
+  peerDependencies:
+    prettier: ">= 1.16.0"
+  peerDependenciesMeta:
+    prettier:
+      optional: true
+  checksum: 10c0/225ee83a7b5476139fed41215b90665e23f0ed722160b9beb74b384b922f87ea4fab5db4652ac56d51986961787e6be609da450f0872d9005d92f6286764b4c6
+  languageName: node
+  linkType: hard
+
+"prettier-plugin-packagejson@npm:^2.4.5":
   version: 2.4.7
   resolution: "prettier-plugin-packagejson@npm:2.4.7"
   dependencies:
@@ -17657,9 +17679,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-tailwindcss@npm:^0.5.9":
-  version: 0.5.9
-  resolution: "prettier-plugin-tailwindcss@npm:0.5.9"
+"prettier-plugin-tailwindcss@npm:^0.5.11":
+  version: 0.5.11
+  resolution: "prettier-plugin-tailwindcss@npm:0.5.11"
   peerDependencies:
     "@ianvs/prettier-plugin-sort-imports": "*"
     "@prettier/plugin-pug": "*"
@@ -17704,7 +17726,7 @@ __metadata:
       optional: true
     prettier-plugin-twig-melody:
       optional: true
-  checksum: 10c0/6f2827214adf169de80ce4e2c278b94bb4d06d2a432204ef86a609c4e4c517e2b1281e70a0777762b0916927599e7dba6ad45802f55509f93a1ca393dc3265cb
+  checksum: 10c0/46e095d2a4298820a75a7b36022e8f2bcd1658a289f2ab11e4b9d4b6075272fee003d9959d084dcb33d5d669daf275e978d9a9aed35efe5eb9e77e70070b47f6
   languageName: node
   linkType: hard
 
@@ -17717,12 +17739,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "prettier@npm:3.1.1"
+"prettier@npm:^3.2.5":
+  version: 3.2.5
+  resolution: "prettier@npm:3.2.5"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10c0/facc944ba20e194ff4db765e830ffbcb642803381f0d2033ed397e79904fa4ccc877dc25ad68f42d36985c01d051c990ca1b905fb83d2d7d65fe69e4386fa1a3
+  checksum: 10c0/ea327f37a7d46f2324a34ad35292af2ad4c4c3c3355da07313339d7e554320f66f65f91e856add8530157a733c6c4a897dc41b577056be5c24c40f739f5ee8c6
   languageName: node
   linkType: hard
 
@@ -19497,6 +19519,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sort-package-json@npm:2.7.0":
+  version: 2.7.0
+  resolution: "sort-package-json@npm:2.7.0"
+  dependencies:
+    detect-indent: "npm:^7.0.1"
+    detect-newline: "npm:^4.0.0"
+    get-stdin: "npm:^9.0.0"
+    git-hooks-list: "npm:^3.0.0"
+    globby: "npm:^13.1.2"
+    is-plain-obj: "npm:^4.1.0"
+    sort-object-keys: "npm:^1.1.3"
+  bin:
+    sort-package-json: cli.js
+  checksum: 10c0/fbd1cb6951dbc9f369d1f82ecb12602814c01cf276c516c0f3d7d44051346411f751fa6b82ccd8f25481a6f22fbf1e0c89591136a35aadc881b8f0ca1ac79878
+  languageName: node
+  linkType: hard
+
 "source-map-js@npm:^1.0.2":
   version: 1.0.2
   resolution: "source-map-js@npm:1.0.2"
@@ -20134,6 +20173,16 @@ __metadata:
     "@pkgr/utils": "npm:^2.4.2"
     tslib: "npm:^2.6.2"
   checksum: 10c0/200528062e3915a0190a4c6b1e01436fcfdf812e2e8d977746746f3998bb4182d758af760e51b06a64f8323e705735aff7b4b3efc4a0ab5f75eaccc044a8cfcc
+  languageName: node
+  linkType: hard
+
+"synckit@npm:0.9.0":
+  version: 0.9.0
+  resolution: "synckit@npm:0.9.0"
+  dependencies:
+    "@pkgr/core": "npm:^0.1.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10c0/b5c1e7c03fefe3d36a9ab4e71dd21859cb32be4138712c31a893382a568fd00efc59ede8f521dd7e53d43a2fea92bdf717e987ea9ed6ad94f97ef28d71d0ba2f
   languageName: node
   linkType: hard
 
