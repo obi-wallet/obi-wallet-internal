@@ -1,8 +1,4 @@
-import {
-  findByText,
-  queryByText,
-  waitForElementToBeRemoved,
-} from "@storybook/test";
+import { findByText, queryAllByText, waitFor } from "@storybook/test";
 
 export interface UnitTestProps {
   done?: boolean;
@@ -29,8 +25,10 @@ export async function automatedTestPlay({
 }: {
   canvasElement: HTMLElement;
 }) {
-  await waitForElementToBeRemoved(
-    () => queryByText(canvasElement, Status.InProgress),
+  await waitFor(
+    () => {
+      return queryAllByText(canvasElement, Status.InProgress).length === 0;
+    },
     {
       timeout: 10000,
     },
