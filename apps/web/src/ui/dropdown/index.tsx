@@ -62,7 +62,9 @@ export function CustomDropdown<T extends DropdownItem>({
               className="bg-background-primary hover:bg-background-primary-hoverfocus:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white"
               onClick={() => setIsOpen(!isOpen)}
             >
-              <SelectedItemComponent item={selectedItem as T} />
+              {selectedItem ? (
+                <SelectedItemComponent item={selectedItem} />
+              ) : null}
               <div className="ml-3">
                 {isOpen ? <FaAngleUp /> : <FaAngleDown />}
               </div>

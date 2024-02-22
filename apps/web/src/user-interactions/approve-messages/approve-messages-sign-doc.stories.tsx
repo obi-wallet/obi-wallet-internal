@@ -1,5 +1,5 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
-import { ProviderWithWallet } from "@/storybook-helpers";
+import { providerWithWalletDecorator } from "@/storybook-helpers";
 import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { fromHex } from "@cosmjs/encoding";
 import { makeSignDoc } from "@cosmjs/proto-signing";
@@ -45,11 +45,5 @@ export const TestTx: Story = {
     onReject: () => {},
     onApprove: async () => {},
   },
-  render: (args) => {
-    return (
-      <ProviderWithWallet>
-        <ApproveMessagesSignDoc {...args} />
-      </ProviderWithWallet>
-    );
-  },
+  decorators: [providerWithWalletDecorator],
 };
