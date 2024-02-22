@@ -3,13 +3,6 @@
   "compilerOptions": {
     "outDir": "dist"
   },
-  "include": [
-    "__tests__",
-    "__tests-integration__",
-    "src",
-    "turbo",
-    "jest.config.js",
-    "jest-integration.config.js"
-  ],
+  "include": ["__tests__", "__tests-integration__", "src", "turbo"],
   "exclude": ["node_modules", "dist"]
 }
