@@ -207,7 +207,7 @@ const PendingAsset = observer(function PendingAsset({ tx }: { tx: TX }) {
 
   return (
     <div
-      className="mb-3 mt-3 flex flex-row items-center justify-between rounded-lg bg-gray-700 p-5 hover:bg-gray-600"
+      className="mb-3 mt-3 flex flex-row items-center justify-between rounded-lg   bg-blue-950 p-5 hover:bg-gray-600"
       key={tx.transaction.deposit_address}
     >
       <div className="flex flex-row items-center">
@@ -215,7 +215,10 @@ const PendingAsset = observer(function PendingAsset({ tx }: { tx: TX }) {
           <img src={asset?.image ?? ""} alt="asset" className="h-8 w-8" />
         </div>
         <div className="flex flex-row">
-          <div className="mr-5 text-lg">{asset?.label}</div>
+          <div className="flex flex-col">
+            <div className="mr-5 text-lg">{asset?.label}</div>
+            <div className="mr-5 text-xs  opacity-60">Pending tx</div>
+          </div>
           <EstimateAmount tx={tx} toAsset={asset} onAmountChange={setAmount} />
         </div>
       </div>
@@ -298,7 +301,7 @@ function StatusLink({ tx }: { tx: TX }) {
         href={tx.status.axelarTransactionUrl}
         rel="noreferrer"
         className={cn(
-          " uppercase hover:underline",
+          " capitalize hover:underline",
           getStatusColor(tx.status.squidTransactionStatus),
         )}
       >
@@ -411,7 +414,7 @@ function PendingAmount({
       <div className="text-md font-bold">
         {amount?.decimalPlaces(decimals).toString()}
       </div>
-      <div className="text-xs">estimate</div>
+      <div className="text-xs opacity-60">Estimate</div>
     </div>
   );
 }

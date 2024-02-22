@@ -18,14 +18,6 @@ export interface FromAsset {
 }
 
 export const fromAssets: Record<string, FromAsset> = {
-  "Eth-ethereum": {
-    chainId: "1",
-    address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-    decimals: 18,
-    label: "ETH (Ethereum)",
-    image:
-      "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
-  },
   "Eth-arbitrum": {
     chainId: "42161",
     address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
@@ -41,6 +33,15 @@ export const fromAssets: Record<string, FromAsset> = {
     label: "ETH (Base)",
     image:
       "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
+  },
+  "Eth-ethereum": {
+    chainId: "1",
+    address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    decimals: 18,
+    label: "ETH (Ethereum)",
+    image:
+      "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
+    disabled: true,
   },
   "Usdc-ethereum": {
     image:
