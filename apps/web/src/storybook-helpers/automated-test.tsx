@@ -10,12 +10,12 @@ export interface UnitTestProps {
 }
 
 enum Status {
-  InProgress = "Unit test in progress",
-  Passed = "Unit test passed",
-  Failed = "Unit test failed",
+  InProgress = "Automated test in progress",
+  Passed = "Automated test passed",
+  Failed = "Automated test failed",
 }
 
-export function UnitTest({ done, success }: UnitTestProps) {
+export function AutomatedTest({ done, success }: UnitTestProps) {
   const status = done
     ? success
       ? Status.Passed
@@ -24,7 +24,7 @@ export function UnitTest({ done, success }: UnitTestProps) {
   return <div>{status}</div>;
 }
 
-export async function unitTestPlay({
+export async function automatedTestPlay({
   canvasElement,
 }: {
   canvasElement: HTMLElement;

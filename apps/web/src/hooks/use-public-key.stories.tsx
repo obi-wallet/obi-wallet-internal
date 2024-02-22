@@ -1,15 +1,15 @@
 import { usePublicKeyQuery } from "@/hooks/use-public-key";
 import {
   ProviderWithWallet,
-  UnitTest,
-  unitTestPlay,
+  AutomatedTest,
+  automatedTestPlay,
 } from "@/storybook-helpers";
 import { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
-  title: "Unit Tests/use-public-key",
-  component: UnitTest,
-} satisfies Meta<typeof UnitTest>;
+  title: "Tests/use-public-key",
+  component: AutomatedTest,
+} satisfies Meta<typeof AutomatedTest>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -28,8 +28,11 @@ export const UsePublicKeyQuery: Story = {
   render: function UsePublicKeyQueryTest() {
     const publicKey = usePublicKeyQuery();
     return (
-      <UnitTest done={!publicKey.isLoading} success={publicKey.isSuccess} />
+      <AutomatedTest
+        done={!publicKey.isLoading}
+        success={publicKey.isSuccess}
+      />
     );
   },
-  play: unitTestPlay,
+  play: automatedTestPlay,
 };

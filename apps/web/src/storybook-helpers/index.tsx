@@ -1,2 +1,2 @@
 export * from "./providers";
-export * from "./unit-test";
+export * from "./automated-test";
