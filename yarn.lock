@@ -3199,7 +3199,7 @@ __metadata:
   dependencies:
     "@obi-wallet/sdk": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
-    "@react-native-async-storage/async-storage": "npm:^1.21.0"
+    "@react-native-async-storage/async-storage": "npm:^1.22.1"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@tanstack/query-async-storage-persister": "npm:^4.36.1"
@@ -4277,14 +4277,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-async-storage/async-storage@npm:^1.21.0":
-  version: 1.21.0
-  resolution: "@react-native-async-storage/async-storage@npm:1.21.0"
+"@react-native-async-storage/async-storage@npm:^1.22.1":
+  version: 1.22.1
+  resolution: "@react-native-async-storage/async-storage@npm:1.22.1"
   dependencies:
     merge-options: "npm:^3.0.4"
   peerDependencies:
     react-native: ^0.0.0-0 || >=0.60 <1.0
-  checksum: 10c0/6e399f72a76e55fc2f0898ce188616267ac857e7c8c002feb4a998fc5aa27026d39478681b0a443fbd0a5fb0646e4e25dfb0d98dea04051fdafd7040d1aea7dc
+  checksum: 10c0/c31cd48f36773604c9de4e5353c3217b73f7f8ec3e273e290276364085dda5a166240143e06b62d9d117b3eae02dca25c824be3fedfc51cce24734f89d851a44
   languageName: node
   linkType: hard
 
