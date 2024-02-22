@@ -58,7 +58,7 @@ export const Header = observer(function Header() {
               <Image
                 width={44}
                 height={44}
-                className="rounded-full"
+                className="!h-11 !w-11 rounded-full"
                 src={userData.avatar}
                 alt={userData.name as string}
               />
