@@ -33,9 +33,9 @@ export async function newFetchPublicKey(wallet: {
   };
 }
 
-export function usePublicKey() {
+export function usePublicKeyQuery() {
   const wallet = useCurrentWallet({});
-  const publicKeyQuery = useQuery({
+  return useQuery({
     queryKey: ["public-key", wallet?.userEntryAddress],
     queryFn: async () => {
       invariant(wallet, "Expected wallet to be set.");
@@ -44,6 +44,8 @@ export function usePublicKey() {
     enabled: !!wallet,
     staleTime: staleTime({ minute: 5 }),
   });
+}
 
-  return publicKeyQuery.data;
+export function usePublicKey() {
+  return usePublicKeyQuery().data;
 }
