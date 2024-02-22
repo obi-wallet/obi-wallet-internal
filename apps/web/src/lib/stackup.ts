@@ -97,7 +97,6 @@ export async function generateEthereumAddresses(keyPair: Secp256k1KeyPair) {
   console.warn("For real debugging this time: " + signingKey.privateKey);
   const signer: Signer = new Wallet(signingKey);
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
-    // @ts-expect-error this should be fine
     signer,
     config.rpcUrl,
   );

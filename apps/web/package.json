@@ -67,7 +67,7 @@
     "sss-wasm": "^0.4.0",
     "tailwind-merge": "^2.1.0",
     "tiny-invariant": "^1.3.1",
-    "userop": "^0.3.3",
+    "userop": "^0.3.8",
     "zod": "^3.22.4"
   },
   "devDependencies": {

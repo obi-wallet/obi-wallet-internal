@@ -3318,7 +3318,7 @@ __metadata:
     tiny-warning: "npm:^1.0.3"
     typescript: "npm:^5.3.3"
     unfetch: "npm:^4.2.0"
-    userop: "npm:^0.3.7"
+    userop: "npm:^0.3.8"
     zod: "npm:^3.22.4"
   languageName: unknown
   linkType: soft
@@ -3435,7 +3435,7 @@ __metadata:
     tiny-invariant: "npm:^1.3.1"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.3.3"
-    userop: "npm:^0.3.3"
+    userop: "npm:^0.3.8"
     zod: "npm:^3.22.4"
     zora: "npm:^5.2.0"
   languageName: unknown
@@ -20227,14 +20227,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"userop@npm:^0.3.3, userop@npm:^0.3.7":
-  version: 0.3.7
-  resolution: "userop@npm:0.3.7"
+"userop@npm:^0.3.8":
+  version: 0.3.8
+  resolution: "userop@npm:0.3.8"
   dependencies:
     elliptic: "npm:^6.5.4"
     ethers: "npm:^5.7.2"
     js-base64: "npm:^3.7.5"
-  checksum: 10c0/24f17501466d9ed8162981576369eefe8081a404f7796d165fc90a73b2fc2ea35a14713da4a1e4ccd3dcb23937cf6a6803b04080aab99398a34f1770578f2543
+  checksum: 10c0/0975f0403e4c21e69060f8a899fe85bd08cea4bff2e9505d6641e8458602dc65765d7d099c1d3ace463b628dc673dcf0c385388aaab62f8aae60fd5a47f5d245
   languageName: node
   linkType: hard
 
