@@ -25,7 +25,7 @@
     "@repo/typescript-config": "workspace:*",
     "@walletconnect/sign-client": "^2.11.2",
     "@walletconnect/types": "^2.11.2",
-    "eslint": "^8.55.0",
+    "eslint": "^8.56.0",
     "typescript": "^5.3.3"
   }
 }
