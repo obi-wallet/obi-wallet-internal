@@ -6818,7 +6818,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/core@npm:2.11.2, @walletconnect/core@npm:^2.11.2":
+"@walletconnect/core@npm:2.11.2, @walletconnect/core@npm:^2.10.1, @walletconnect/core@npm:^2.11.2":
   version: 2.11.2
   resolution: "@walletconnect/core@npm:2.11.2"
   dependencies:
@@ -6840,31 +6840,6 @@ __metadata:
     lodash.isequal: "npm:4.5.0"
     uint8arrays: "npm:^3.1.0"
   checksum: 10c0/a1bd4f028c08b668b5b5ddd9adbf136010b55dea90f1b7203b45c7149acdb7a8f03e1310f4c7bbd9580b6ba163962914a86a5a3360359a32f7932de0963e8cb3
-  languageName: node
-  linkType: hard
-
-"@walletconnect/core@npm:^2.10.1":
-  version: 2.11.0
-  resolution: "@walletconnect/core@npm:2.11.0"
-  dependencies:
-    "@walletconnect/heartbeat": "npm:1.2.1"
-    "@walletconnect/jsonrpc-provider": "npm:1.0.13"
-    "@walletconnect/jsonrpc-types": "npm:1.0.3"
-    "@walletconnect/jsonrpc-utils": "npm:1.0.8"
-    "@walletconnect/jsonrpc-ws-connection": "npm:1.0.14"
-    "@walletconnect/keyvaluestorage": "npm:^1.1.1"
-    "@walletconnect/logger": "npm:^2.0.1"
-    "@walletconnect/relay-api": "npm:^1.0.9"
-    "@walletconnect/relay-auth": "npm:^1.0.4"
-    "@walletconnect/safe-json": "npm:^1.0.2"
-    "@walletconnect/time": "npm:^1.0.2"
-    "@walletconnect/types": "npm:2.11.0"
-    "@walletconnect/utils": "npm:2.11.0"
-    events: "npm:^3.3.0"
-    isomorphic-unfetch: "npm:3.1.0"
-    lodash.isequal: "npm:4.5.0"
-    uint8arrays: "npm:^3.1.0"
-  checksum: 10c0/673a9f3127a69a03de8de9626365b157ad6ce272b9ee04d3f67802685861f9f3ee748686662122d27212223f66054c49f0bf392f97e2fd18fab74789d0a87246
   languageName: node
   linkType: hard
 
@@ -7027,20 +7002,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/types@npm:2.11.0":
-  version: 2.11.0
-  resolution: "@walletconnect/types@npm:2.11.0"
-  dependencies:
-    "@walletconnect/events": "npm:^1.0.1"
-    "@walletconnect/heartbeat": "npm:1.2.1"
-    "@walletconnect/jsonrpc-types": "npm:1.0.3"
-    "@walletconnect/keyvaluestorage": "npm:^1.1.1"
-    "@walletconnect/logger": "npm:^2.0.1"
-    events: "npm:^3.3.0"
-  checksum: 10c0/7fa2493d8a9c938821f5234b4d2a087f903359875925a7abea3a0640aa765886c01b4846bbe5e39923b48883f7fd92c3f4ff8e643c4c894c50e9f715b3a881d8
-  languageName: node
-  linkType: hard
-
 "@walletconnect/types@npm:2.11.2, @walletconnect/types@npm:^2.11.2":
   version: 2.11.2
   resolution: "@walletconnect/types@npm:2.11.2"
@@ -7055,29 +7016,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/utils@npm:2.11.0, @walletconnect/utils@npm:^2.10.1":
-  version: 2.11.0
-  resolution: "@walletconnect/utils@npm:2.11.0"
-  dependencies:
-    "@stablelib/chacha20poly1305": "npm:1.0.1"
-    "@stablelib/hkdf": "npm:1.0.1"
-    "@stablelib/random": "npm:^1.0.2"
-    "@stablelib/sha256": "npm:1.0.1"
-    "@stablelib/x25519": "npm:^1.0.3"
-    "@walletconnect/relay-api": "npm:^1.0.9"
-    "@walletconnect/safe-json": "npm:^1.0.2"
-    "@walletconnect/time": "npm:^1.0.2"
-    "@walletconnect/types": "npm:2.11.0"
-    "@walletconnect/window-getters": "npm:^1.0.1"
-    "@walletconnect/window-metadata": "npm:^1.0.1"
-    detect-browser: "npm:5.3.0"
-    query-string: "npm:7.1.3"
-    uint8arrays: "npm:^3.1.0"
-  checksum: 10c0/2219408f2a9bbca8d263a89dd54ae3e466f6d4b32b6b25f253d7f84f7e58c5836f4a08ab287c2d9ab5446c727624821597fa16d64d8c5ca748f8e1cba729a929
-  languageName: node
-  linkType: hard
-
-"@walletconnect/utils@npm:2.11.2, @walletconnect/utils@npm:^2.11.2":
+"@walletconnect/utils@npm:2.11.2, @walletconnect/utils@npm:^2.10.1, @walletconnect/utils@npm:^2.11.2":
   version: 2.11.2
   resolution: "@walletconnect/utils@npm:2.11.2"
   dependencies:
@@ -8670,14 +8609,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.30001565, caniuse-lite@npm:^1.0.30001579":
-  version: 1.0.30001581
-  resolution: "caniuse-lite@npm:1.0.30001581"
-  checksum: 10c0/34b048156514eab5932212807428905cbecdef918f7c3d2153d5e8b6885d929e5c0b649f9e135cb1e03e413fbad8e00d1f24ed04cbcca52adc660ef98cad9032
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001578":
+"caniuse-lite@npm:^1.0.30001565, caniuse-lite@npm:^1.0.30001578, caniuse-lite@npm:^1.0.30001579":
   version: 1.0.30001589
   resolution: "caniuse-lite@npm:1.0.30001589"
   checksum: 10c0/20debfb949413f603011bc7dacaf050010778bc4f8632c86fafd1bd0c43180c95ae7c31f6c82348f6309e5e221934e327c3607a216e3f09640284acf78cd6d4d
@@ -16388,18 +16320,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.2.14, postcss@npm:^8.4.21, postcss@npm:^8.4.23, postcss@npm:^8.4.33":
-  version: 8.4.33
-  resolution: "postcss@npm:8.4.33"
-  dependencies:
-    nanoid: "npm:^3.3.7"
-    picocolors: "npm:^1.0.0"
-    source-map-js: "npm:^1.0.2"
-  checksum: 10c0/16eda83458fcd8a91bece287b5920c7f57164c3ea293e6c80d0ea71ce7843007bcd8592260a5160b9a7f02693e6ac93e2495b02d8c7596d3f3f72c1447e3ba79
-  languageName: node
-  linkType: hard
-
-"postcss@npm:^8.4.35":
+"postcss@npm:^8.2.14, postcss@npm:^8.4.21, postcss@npm:^8.4.23, postcss@npm:^8.4.33, postcss@npm:^8.4.35":
   version: 8.4.35
   resolution: "postcss@npm:8.4.35"
   dependencies:
