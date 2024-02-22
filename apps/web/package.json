@@ -31,7 +31,7 @@
     "@obi-wallet/wallet-connect": "workspace:*",
     "@reactuses/core": "^5.0.5",
     "@tanstack/react-query": "^4.29.25",
-    "@walletconnect/utils": "^2.11.0",
+    "@walletconnect/utils": "^2.11.2",
     "apexcharts": "^3.45.1",
     "axios": "^1.6.6",
     "bech32": "^2.0.0",
