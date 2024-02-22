@@ -44,7 +44,7 @@
     "downshift": "^8.3.2",
     "ecies-wasm": "^0.2.0",
     "elliptic": "^6.5.4",
-    "ethers": "^6.7.1",
+    "ethers": "^6.11.1",
     "jscrypto": "^1.0.3",
     "lottie-react": "^2.4.0",
     "luxon": "^3.4.4",
