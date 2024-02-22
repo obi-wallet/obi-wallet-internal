@@ -344,6 +344,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
             return (
               <Input
                 label="Deposit"
+                labelClassname="bg-background-secondary"
                 onChange={(value) => {
                   field.onChange({
                     asset: field.value.asset,
@@ -454,6 +455,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
             return (
               <Input
                 label="Receive (estimated)"
+                labelClassname="bg-background-secondary"
                 onChange={(value) => {
                   field.onChange({
                     asset: field.value.asset,

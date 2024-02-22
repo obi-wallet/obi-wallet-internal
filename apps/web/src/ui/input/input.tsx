@@ -15,7 +15,7 @@ export interface InputProps
     "onChange"
   > {
   label: string;
-  labelClassname?: string;
+  labelClassname: string;
   onChange?: (value: string) => void;
   containerClassName?: string;
   inputClassName?: string;

@@ -13,7 +13,7 @@ export function BalanceInput() {
     <div>
       <Input
         label="Balance"
-        labelClassname="text-white bg-black"
+        labelClassname="bg-black"
         onClick={handleClick}
         rightComponent={
           <DropDown
