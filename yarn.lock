@@ -3391,11 +3391,11 @@ __metadata:
     "@walletconnect/utils": "npm:^2.11.2"
     apexcharts: "npm:^3.45.1"
     autoprefixer: "npm:^10.4.16"
-    axios: "npm:^1.6.6"
+    axios: "npm:^1.6.7"
     bech32: "npm:^2.0.0"
     bignumber.js: "npm:^9.1.2"
     chai: "npm:^5.0.3"
-    chain-registry: "npm:^1.28.0"
+    chain-registry: "npm:^1.28.1"
     clsx: "npm:^2.0.0"
     copy-to-clipboard: "npm:^3.3.3"
     cosmjs-types: "npm:^0.9.0"
@@ -3423,8 +3423,8 @@ __metadata:
     react-apexcharts: "npm:^1.4.1"
     react-dom: "npm:^18.2.0"
     react-dropzone: "npm:^14.2.3"
-    react-hook-form: "npm:^7.49.3"
-    react-icons: "npm:^4.12.0"
+    react-hook-form: "npm:^7.50.1"
+    react-icons: "npm:^5.0.1"
     rooks: "npm:^7.14.1"
     secp256k1: "npm:^5.0.0"
     secretjs: "npm:1.9.3"
@@ -8036,7 +8036,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.6.0, axios@npm:^1.6.1, axios@npm:^1.6.6":
+"axios@npm:^1.6.0, axios@npm:^1.6.1, axios@npm:^1.6.7":
   version: 1.6.7
   resolution: "axios@npm:1.6.7"
   dependencies:
@@ -8799,13 +8799,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:^1.28.0":
-  version: 1.28.0
-  resolution: "chain-registry@npm:1.28.0"
+"chain-registry@npm:^1.28.1":
+  version: 1.28.1
+  resolution: "chain-registry@npm:1.28.1"
   dependencies:
     "@babel/runtime": "npm:^7.21.0"
     "@chain-registry/types": "npm:^0.18.0"
-  checksum: 10c0/d250a659dd3cf73a09ce1ef314918520f4dfeef0726b88fc63c120a6bcfa9860b425c4ac5b140dc2b1484fafe5d8d785b0b4852450b4ef3ee6e94dc4fed6ee73
+  checksum: 10c0/529f299b799aae9e41b33bc2b2a026764a8f37ed4201e40d25a4fc4bd3e58b9caa8c3bffd953f1f3dfeb680c9ec26fe59015b5acbc2d62d9d2acaeaaec8b2f12
   languageName: node
   linkType: hard
 
@@ -17297,21 +17297,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:^7.49.3":
-  version: 7.49.3
-  resolution: "react-hook-form@npm:7.49.3"
+"react-hook-form@npm:^7.50.1":
+  version: 7.50.1
+  resolution: "react-hook-form@npm:7.50.1"
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18
-  checksum: 10c0/f8e5b2dcc3d97c820b4fbac262d7e914d74f385f26f34da31b8efc6c0f32ba995f2a2330bdfd3d8b7c8b56a52349a0cbc0c0dbe9053b3971e5e0c78003dfb7f0
+  checksum: 10c0/4905c33afbea67dc817e8be53c360d5c009dfd5c5a93f6ac632e1fc258a8a59587add364842b2d39f7bf126e4e20b1883e90f9c3a2f916c5b79173ce4cf30491
   languageName: node
   linkType: hard
 
-"react-icons@npm:^4.12.0":
-  version: 4.12.0
-  resolution: "react-icons@npm:4.12.0"
+"react-icons@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "react-icons@npm:5.0.1"
   peerDependencies:
     react: "*"
-  checksum: 10c0/2170f43031ee7365539f72d4075cbe6c7fbf9a66d6cf4494aa9393b194272da0564f5b19d1b24dbfc567c0ac89f5fe5b8974d92dd83f61e252388dde6a226fb8
+  checksum: 10c0/717022d93a3b2b30082f86fbb3c725a94a603b3fa1c611533439cc886f691a13b1833c30446d257a177667779239eac57411fa7516d8a4787bd735e965c9f63d
   languageName: node
   linkType: hard
 
