@@ -142,10 +142,9 @@ export default observer(function AppConnect() {
                 key={session.topic}
                 onClick={async () => {
                   await walletConnectStore.disconnect(session.topic);
-                  await queryClient.invalidateQueries([
-                    "wallet-connect",
-                    "sessions",
-                  ]);
+                  await queryClient.invalidateQueries({
+                    queryKey: ["wallet-connect", "sessions"],
+                  });
                 }}
               >
                 <Text size="xl">{session.peer.metadata.name}</Text>

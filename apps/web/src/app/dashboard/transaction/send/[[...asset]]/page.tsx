@@ -399,7 +399,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       <div className="flex justify-end">
         <Button
           className="block w-44"
-          disabled={!form.formState.isValid || send.isLoading}
+          disabled={!form.formState.isValid || send.isPending}
           onClick={form.handleSubmit((data) => {
             send.mutate(data);
           })}
