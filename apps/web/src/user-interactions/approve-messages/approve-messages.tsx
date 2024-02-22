@@ -104,7 +104,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
               </Button>
               <Button
                 block
-                disabled={!fee.isSuccess || approve.isLoading}
+                disabled={!fee.isSuccess || approve.isPending}
                 onClick={() => {
                   approve.mutate();
                 }}
@@ -115,7 +115,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
           </div>
         </div>
 
-        {approve.isLoading && (
+        {approve.isPending && (
           <div className="absolute top-0 flex h-full w-full flex-1 flex-col items-center justify-center bg-black bg-opacity-50">
             <div className="    w-60  rounded-xl  bg-blue-600 p-5">
               <Lottie animationData={SendingAnimation} />;

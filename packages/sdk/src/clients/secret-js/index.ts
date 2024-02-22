@@ -10,14 +10,7 @@ import {
   createStakingAminoConverters,
   createVestingAminoConverters,
 } from "@cosmjs/stargate";
-import {
-  BroadcastMode,
-  fromBase64,
-  Msg,
-  SecretNetworkClient,
-  toBase64,
-  TxOptions,
-} from "secretjs";
+import { BroadcastMode, Msg, SecretNetworkClient, TxOptions } from "secretjs";
 import { StdFee } from "secretjs/dist/wallet_amino";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -131,12 +124,10 @@ export class SecretJsClient {
     return await this.withSigningSecretNetworkClient(
       SecretJsAminoSigner.fromSigner({ signer, prefix: this.chain.prefix }),
       async (client) => {
-        return fromBase64(
-          await client.tx.signTx(messages as Msg[], {
-            ...this.defaultTxOptions,
-            gasLimit: gasLimit ?? this.defaultTxOptions.gasLimit,
-          }),
-        );
+        return await client.tx.signTx(messages as Msg[], {
+          ...this.defaultTxOptions,
+          gasLimit: gasLimit ?? this.defaultTxOptions.gasLimit,
+        });
       },
     );
   }
@@ -147,14 +138,11 @@ export class SecretJsClient {
     return await this.withSecretNetworkClient(async (client) => {
       // TODO: need to do Sync/Async here
       const broadcastMode = BroadcastMode.Block;
-      const txResponse = await client.tx.broadcastSignedTx(
-        toBase64(signedTransaction),
-        {
-          ...this.defaultTxOptions,
-          broadcastMode: broadcastMode,
-          waitForCommit: true,
-        },
-      );
+      const txResponse = await client.tx.broadcastSignedTx(signedTransaction, {
+        ...this.defaultTxOptions,
+        broadcastMode: broadcastMode,
+        waitForCommit: true,
+      });
       if (broadcastMode !== BroadcastMode.Block) {
         await new Promise((resolve) => {
           setTimeout(resolve, 10_000);
@@ -168,14 +156,11 @@ export class SecretJsClient {
         if (!rawResult) {
           // tx might be in mempool, so try block
           try {
-            const res = await client.tx.broadcastSignedTx(
-              toBase64(signedTransaction),
-              {
-                ...this.defaultTxOptions,
-                broadcastMode: BroadcastMode.Block,
-                waitForCommit: false,
-              },
-            );
+            const res = await client.tx.broadcastSignedTx(signedTransaction, {
+              ...this.defaultTxOptions,
+              broadcastMode: BroadcastMode.Block,
+              waitForCommit: false,
+            });
             if (!res.code) {
               throw new Error("no res code");
             }

@@ -97,7 +97,7 @@ async function fetchBalances({
 export function useInvalidateBalancesQueries() {
   const queryClient = useQueryClient();
   return async (chainId: TargetChainId) => {
-    await queryClient.invalidateQueries(["balances", chainId]);
+    await queryClient.invalidateQueries({ queryKey: ["balances", chainId] });
   };
 }
 
@@ -184,7 +184,7 @@ export function useUSDTotalPrice(): {
   // if (publicKey === undefined) return { total: 0, loading: false };
 
   // if all balances are not loaded, return 0
-  if (balances.every((balance) => balance.status === "loading")) {
+  if (balances.every((balance) => balance.isPending)) {
     return {
       total: 0,
       loading: true,

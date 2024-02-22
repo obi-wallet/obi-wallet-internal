@@ -39,18 +39,10 @@ export interface UserInteraction<
   reject: (error: Error) => void;
 }
 
-export type UserInteractionPayload<T> = T extends UserInteraction<
-  infer TPayload,
-  infer _
->
-  ? TPayload
-  : never;
-export type UserInteractionResult<T> = T extends UserInteraction<
-  infer _,
-  infer TResult
->
-  ? TResult
-  : never;
+export type UserInteractionPayload<T> =
+  T extends UserInteraction<infer TPayload, infer _> ? TPayload : never;
+export type UserInteractionResult<T> =
+  T extends UserInteraction<infer _, infer TResult> ? TResult : never;
 
 export interface UserInteractionWithType<
   T extends symbol = symbol,

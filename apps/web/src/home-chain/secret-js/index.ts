@@ -38,8 +38,7 @@ export class SecretJsHomeChain {
             });
             const response =
               await secretNetworkClient.query.compute.codeHashByCodeId({
-                // @ts-expect-error Secret Network SDK types are wrong
-                code_id: info.contract_info.code_id,
+                code_id: info.contract_info?.code_id,
               });
             return response.code_hash;
           },

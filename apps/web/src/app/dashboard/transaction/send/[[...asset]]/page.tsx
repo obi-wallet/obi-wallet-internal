@@ -230,6 +230,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
           return (
             <Input
               label="Amount"
+              labelClassname="bg-background-secondary"
               placeholder="0.1"
               value={coin.amount}
               onChange={(value) => {
@@ -385,6 +386,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
           return (
             <Input
               label="Recipient Address"
+              labelClassname="bg-background-secondary"
               placeholder="Enter recipient address"
               value={field.value}
               onChange={(recipient) => {
@@ -397,7 +399,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       <div className="flex justify-end">
         <Button
           className="block w-44"
-          disabled={!form.formState.isValid || send.isLoading}
+          disabled={!form.formState.isValid || send.isPending}
           onClick={form.handleSubmit((data) => {
             send.mutate(data);
           })}

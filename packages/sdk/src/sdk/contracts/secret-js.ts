@@ -23,7 +23,7 @@ export class SecretJsContractsSdk extends AbstractContractsSdk {
       const response = await client.query.compute.contractInfo({
         contract_address: contract,
       });
-      const codeId = response.ContractInfo?.code_id;
+      const codeId = response.contract_info?.code_id;
       invariant(codeId, "Expected code_id in response.");
       return parseInt(codeId, 10);
     });
