@@ -16,7 +16,6 @@ type Story = StoryObj<typeof meta>;
 
 export const UsePublicKeyKnownCheck: Story = {
   name: "usePublicKeyKnownCheck",
-  args: {},
   decorators: [providerWithWalletDecorator],
   render: function UsePublicKeyKnownCheckTest() {
     const check = usePublicKeyKnownCheck();
