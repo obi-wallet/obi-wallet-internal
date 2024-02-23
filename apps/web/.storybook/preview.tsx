@@ -1,7 +1,7 @@
 import type { Preview } from "@storybook/react";
 
 import "../src/app/globals.css";
-import { RootContainer } from "@/app/layout";
+import { MainContainer, RootContainer } from "@/app/layout";
 import Provider from "@/components/provider";
 
 const preview: Preview = {
@@ -23,7 +23,9 @@ const preview: Preview = {
       return (
         <RootContainer>
           <Provider>
-            <Story />
+            <MainContainer>
+              <Story />
+            </MainContainer>
           </Provider>
         </RootContainer>
       );

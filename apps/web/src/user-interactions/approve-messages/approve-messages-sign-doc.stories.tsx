@@ -1,5 +1,6 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { providerWithWalletDecorator } from "@/storybook-helpers";
+import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { fromHex } from "@cosmjs/encoding";
 import { makeSignDoc } from "@cosmjs/proto-signing";
@@ -10,10 +11,8 @@ import { ApproveMessagesSignDoc } from "./approve-messages-sign-doc";
 const meta = {
   title: "User Interactions/Approve Messages Sign Doc",
   component: ApproveMessagesSignDoc,
-  parameters: {
-    layout: "centered",
-  },
   tags: ["autodocs"],
+  decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
 } satisfies Meta<typeof ApproveMessagesSignDoc>;
 
 export default meta;
@@ -45,5 +44,4 @@ export const TestTx: Story = {
     onReject: () => {},
     onApprove: async () => {},
   },
-  decorators: [providerWithWalletDecorator],
 };

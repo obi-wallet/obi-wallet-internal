@@ -31,6 +31,14 @@ export function RootContainer({ children }: { children: ReactNode }) {
   );
 }
 
+export function MainContainer({ children }: { children: ReactNode }) {
+  return (
+    <main id="main" className="relative flex w-full grow">
+      {children}
+    </main>
+  );
+}
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html>
@@ -39,9 +47,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <Provider>
             <Header />
             <PasskeyNotification />
-            <main id="main" className="relative flex w-full grow">
-              {children}
-            </main>
+            <MainContainer>{children}</MainContainer>
             <TOSModal />
             <div id="modal-root" />
           </Provider>
