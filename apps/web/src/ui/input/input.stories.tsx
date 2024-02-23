@@ -1,4 +1,5 @@
 import { Button } from "@/components/buttons";
+import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import type { Meta, StoryObj } from "@storybook/react";
 import { FaSearch } from "react-icons/fa";
 import { FaPhone } from "react-icons/fa6";
@@ -10,11 +11,8 @@ const meta = {
   component: Input,
   parameters: {
     layout: "centered",
-    backgrounds: {
-      default: "obi",
-      values: [{ name: "obi", value: "#0F0F26" }],
-    },
   },
+  decorators: [dashboardLayoutDecorator],
   tags: ["autodocs"],
   argTypes: {
     label: { type: "string" },

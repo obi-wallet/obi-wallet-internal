@@ -7,14 +7,25 @@ export const metadata: Metadata = {
   description: "Anything in two clicks",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export function DashboardCustomLayout({
+  children,
+  left,
+}: {
+  children: ReactNode;
+  left?: ReactNode;
+}) {
   return (
-    <section className="relative flex w-full ">
-      <Navbar />
-      {/* 96px for bottom-navbar and 80px for header */}
+    <section className="relative flex w-full">
+      {left}
       <div className="flex grow overflow-auto py-5 max-sm:h-[calc(100vh-96px-80px)] max-sm:px-4 max-sm:py-0 sm:px-7">
         <UserInteractionsHandlers>{children}</UserInteractionsHandlers>
       </div>
     </section>
+  );
+}
+
+export default function DashboardLayout({ children }: { children: ReactNode }) {
+  return (
+    <DashboardCustomLayout left={<Navbar />}>{children}</DashboardCustomLayout>
   );
 }

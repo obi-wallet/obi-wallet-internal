@@ -1,5 +1,6 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { providerWithWalletDecorator } from "@/storybook-helpers";
+import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import { TargetChain } from "@/target-chain";
 import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import type { Meta, StoryObj } from "@storybook/react";
@@ -9,11 +10,8 @@ import { ApproveMessages } from ".";
 const meta = {
   title: "User Interactions/Approve Messages",
   component: ApproveMessages,
-  parameters: {
-    layout: "centered",
-  },
   tags: ["autodocs"],
-  decorators: [providerWithWalletDecorator],
+  decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
 } satisfies Meta<typeof ApproveMessages>;
 
 export default meta;
