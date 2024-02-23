@@ -17,7 +17,7 @@ export function AutomatedTest({ done, success }: UnitTestProps) {
       ? Status.Passed
       : Status.Failed
     : Status.InProgress;
-  return <div>{status}</div>;
+  return <div className="text-white">{status}</div>;
 }
 
 export async function automatedTestPlay({

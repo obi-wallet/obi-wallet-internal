@@ -1,3 +1,4 @@
+import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { BaseInput } from "./base-input";
@@ -7,11 +8,8 @@ const meta = {
   component: BaseInput,
   parameters: {
     layout: "centered",
-    backgrounds: {
-      default: "obi",
-      values: [{ name: "obi", value: "#0F0F26" }],
-    },
   },
+  decorators: [dashboardLayoutDecorator],
   tags: ["autodocs"],
   argTypes: {
     placeholder: { type: "string" },
