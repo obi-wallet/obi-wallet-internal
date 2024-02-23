@@ -55,7 +55,7 @@ export const CreateWalletStep = observer(function CreateWalletStep({
 
   if (!step.waitUntilDone) return null;
 
-  if (createWalletMutation.isLoading)
+  if (createWalletMutation.isPending)
     return (
       <div className="flex flex-col items-center justify-center">
         <img

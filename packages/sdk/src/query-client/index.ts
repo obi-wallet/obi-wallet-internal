@@ -13,7 +13,7 @@ export function queryClientDuration(duration: DurationLikeObject) {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      cacheTime: queryClientDuration({ day: 1 }),
+      gcTime: queryClientDuration({ day: 1 }),
     },
   },
 });

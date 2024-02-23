@@ -45,12 +45,17 @@ export default observer(function Receive() {
   return (
     <TabUi.Main>
       <div className="flex w-full flex-col items-center justify-center space-y-7  py-4">
-        <InputContainer className="relative z-10  w-80" label="Chain">
+        <InputContainer
+          className="relative z-10  w-80"
+          label="Chain"
+          labelClassname="bg-background-secondary"
+        >
           <ChainDropdown onChange={setChainId} chainId={chainId} />
         </InputContainer>
         {address ? (
           <InputContainer
             label="Address"
+            labelClassname="bg-background-secondary"
             onClick={handleClickQRCode}
             className="relative z-0  flex w-80 flex-col"
           >

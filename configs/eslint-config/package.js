@@ -29,10 +29,11 @@ module.exports = {
       {
         devDependencies: [
           "{.storybook,__fixtures__,__stories__,__tests__,__tests-integration__,scripts}/**/*",
+          "**/storybook-helpers/**/*",
           "test-setup.ts",
           "next.config.js",
           "jest*.[jt]s",
-          "*.stories.*",
+          "**/*.stories.*",
         ],
         optionalDependencies: false,
       },

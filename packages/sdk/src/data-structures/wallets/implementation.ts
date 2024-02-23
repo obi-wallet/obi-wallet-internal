@@ -200,7 +200,6 @@ export class Wallets {
     );
     const signer: Signer = new Wallet(signingKey);
     const simpleAccount = await Presets.Builder.SimpleAccount.init(
-      // @ts-expect-error this should be fine
       signer,
       "https://api.stackup.sh/v1/node/ba320f6132714fa44989496f90aa8f059c55113322b22752ebf5a6bda111ac00",
     );

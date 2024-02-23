@@ -76,19 +76,15 @@ function createMigratableSchema<
 /**
  * Union type of all versions of the migratable data.
  */
-export type AbstractMigratable<T> = T extends AbstractMigratableSchema<
-  infer Any,
-  infer _Current
->
-  ? z.input<Any>
-  : never;
+export type AbstractMigratable<T> =
+  T extends AbstractMigratableSchema<infer Any, infer _Current>
+    ? z.input<Any>
+    : never;
 
 /**
  * The current version of the migratable data.
  */
-export type AbstractSerialized<T> = T extends AbstractMigratableSchema<
-  infer _Any,
-  infer Current
->
-  ? z.input<Current>
-  : never;
+export type AbstractSerialized<T> =
+  T extends AbstractMigratableSchema<infer _Any, infer Current>
+    ? z.input<Current>
+    : never;

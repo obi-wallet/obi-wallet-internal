@@ -1,22 +1,23 @@
 import { cn } from "@/lib/utils";
+import { ReactNode } from "react";
 
 export function InputContainer({
   children,
   label,
   className,
-  labelClassname = "",
+  labelClassname,
   onClick,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   label?: string;
   className?: string;
-  labelClassname?: string;
+  labelClassname: string;
   onClick?: () => void;
 }) {
   return (
     <div
       className={cn(
-        "hover:border-color relative   rounded-xl  border border-gray-700 p-6 hover:border-blue-600 ",
+        "hover:border-color relative rounded-xl border border-gray-700 p-6 hover:border-blue-600",
         "focus-within:border-blue-600",
         "flex items-center justify-between",
         className,
@@ -24,13 +25,16 @@ export function InputContainer({
       onClick={onClick}
     >
       {children}
-      {label && (
+      {label ? (
         <label
-          className={`bg-background-secondary absolute left-0 top-0 ml-5 -translate-y-1/2  px-2 py-1 text-xs text-white ${labelClassname}`}
+          className={cn(
+            "absolute left-0 top-0 ml-5 -translate-y-1/2 px-2 py-1 text-xs text-white",
+            labelClassname,
+          )}
         >
           {label}
         </label>
-      )}
+      ) : null}
     </div>
   );
 }

@@ -7,7 +7,6 @@
   },
   "main": "./src/index.ts",
   "scripts": {
-    "integration": "jest --config jest-integration.config.js --runInBand --forceExit",
     "lint": "eslint .",
     "tsc": "tsc --noEmit"
   },
@@ -16,20 +15,17 @@
     "@cosmjs/proto-signing": "^0.32.2",
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*",
     "@obi-wallet/sdk-secp256k1": "workspace:*",
-    "@walletconnect/core": "^2.10.6",
-    "@walletconnect/utils": "^2.11.0",
-    "@walletconnect/web3wallet": "^1.9.5",
+    "@walletconnect/core": "^2.11.2",
+    "@walletconnect/utils": "^2.11.2",
+    "@walletconnect/web3wallet": "^1.10.2",
     "cosmjs-types": "^0.9.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/jest": "^29.5.11",
-    "@walletconnect/sign-client": "^2.11.0",
-    "@walletconnect/types": "^2.11.0",
-    "eslint": "^8.55.0",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.1",
+    "@walletconnect/sign-client": "^2.11.2",
+    "@walletconnect/types": "^2.11.2",
+    "eslint": "^8.56.0",
     "typescript": "^5.3.3"
   }
 }
