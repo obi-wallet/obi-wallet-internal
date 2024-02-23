@@ -1,10 +1,12 @@
 import type { Preview } from "@storybook/react";
 
 import "../src/app/globals.css";
-import Provider from "../src/components/provider";
+import { RootContainer } from "@/app/layout";
+import Provider from "@/components/provider";
 
 const preview: Preview = {
   parameters: {
+    layout: "fullscreen",
     actions: { argTypesRegex: "^on[A-Z].*" },
     controls: {
       matchers: {
@@ -19,9 +21,11 @@ const preview: Preview = {
   decorators: [
     (Story) => {
       return (
-        <Provider>
-          <Story />
-        </Provider>
+        <RootContainer>
+          <Provider>
+            <Story />
+          </Provider>
+        </RootContainer>
       );
     },
   ],
