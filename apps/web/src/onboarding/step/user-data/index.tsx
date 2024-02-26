@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageDropzone, Text } from "@/components";
+import { CURRENT_THEME } from "@/configs";
 import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
 import { UserDataOnboardingStep } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
@@ -18,7 +19,7 @@ export const UserDataStep = observer(function UserDataStep({
 
   useEffectOnceWhen(async () => {
     try {
-      const response = await fetch("/assets/images/default-avatar.png");
+      const response = await fetch(CURRENT_THEME.defaultAvatar);
       const blob = await response.blob();
       const file = new File([blob], "defaultImage.png", {
         type: "image/png",
