@@ -22,11 +22,11 @@ const navMenu: NavMenu[] = [
   {
     href: "/dashboard/transaction/send",
     text: "Transact",
-    module: "",
+    module: "transaction",
     icon: "/assets/icons/nav-transact.svg",
-    showOnMobile: false,
+    showOnMobile: true,
     showOnDesktop: false,
-    mobileOrder: 0,
+    mobileOrder: 1,
   },
   {
     href: "/dashboard",
@@ -36,37 +36,6 @@ const navMenu: NavMenu[] = [
     showOnMobile: true,
     showOnDesktop: true,
     mobileOrder: 3,
-  },
-
-  {
-    href: "/dashboard/buy-crypto",
-    mobileText: "Buy",
-    text: "Buy Crypto",
-    module: "buy-crypto",
-    icon: "/assets/icons/nav-buy-crypto.svg",
-    showOnDesktop: true,
-    showOnMobile: true,
-    mobileOrder: 2,
-  },
-  {
-    href: "/dashboard/fast-travel",
-    text: "Fast Travel",
-    mobileText: "FT",
-    module: "fast-travel",
-    icon: "/assets/icons/nav-fast-travel.svg",
-    showOnDesktop: true,
-    showOnMobile: true,
-    mobileOrder: 1,
-  },
-  {
-    href: "/dashboard/app-connect",
-    text: "App Connect",
-    mobileText: "Apps",
-    module: "app-connect",
-    icon: "/assets/icons/nav-app-connect.svg",
-    showOnDesktop: true,
-    showOnMobile: true,
-    mobileOrder: 4,
   },
   {
     href: "/dashboard/settings",
@@ -84,10 +53,22 @@ export function Navbar() {
   const mainURISegment = pathname.split("/")[2] || "";
 
   return (
-    <nav className={cn("bg-background-secondary")}>
+    <nav className="bg-background-secondary relative max-sm:absolute max-sm:bottom-0 max-sm:h-24 max-sm:w-full sm:h-full">
       <div className="flex h-full w-[330px] flex-col px-7 pt-16 max-md:hidden">
-        <div className="hidden   w-full flex-col md:flex">
-          <AccountAndCTA />
+        <Account />
+        <div className="mb-4 mt-4 flex  gap-5 text-white">
+          <Link
+            href="/dashboard/transaction/send"
+            className="bg-background-primary flex  flex-1 justify-center rounded-md p-3"
+          >
+            <span className="text-sm">Send</span>
+          </Link>
+          <Link
+            href="/dashboard/transaction/receive"
+            className="bg-background-primary flex  flex-1 justify-center rounded-md p-3"
+          >
+            <span className="text-sm">Receive</span>
+          </Link>
         </div>
         <Divider />
 
@@ -127,8 +108,8 @@ export function Navbar() {
         </div>
         <Footer className="!px-0" />
       </div>
-      <div className="flex  h-20 w-full md:hidden">
-        <div className="flex w-full flex-row items-center justify-center px-4 ">
+      <div className="flex h-full w-full md:hidden">
+        <div className="flex w-full flex-row items-center justify-center px-4">
           <ul role="list" className="flex w-full flex-row justify-around ">
             {navMenu
               .filter((item) => item.showOnMobile)

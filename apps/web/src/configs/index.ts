@@ -4,6 +4,7 @@ export const THEME_CONFIGS = {
   obi: {
     value: "obi",
     logo: "/assets/images/logo-obi.png",
+    defaultAvatar: "/assets/images/default-avatar.png",
     explaination: {
       title: "What is an Obi Account?",
       description:
@@ -13,6 +14,7 @@ export const THEME_CONFIGS = {
   noble: {
     value: "noble",
     logo: "/assets/images/logo-noble.png",
+    defaultAvatar: "/assets/images/default-avatar-noble.png",
     explaination: {
       title: "What is a Noble Account?",
       description:

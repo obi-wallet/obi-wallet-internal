@@ -17,8 +17,8 @@ export function InputContainer({
   return (
     <div
       className={cn(
-        "hover:border-color relative rounded-xl border border-gray-700 p-6 hover:border-blue-600",
-        "focus-within:border-blue-600",
+        "hover:border-color hover:border-background-primary-disabled relative rounded-xl border border-gray-700 p-6",
+        "focus-within:border-background-primary-disabled",
         "flex items-center justify-between",
         className,
       )}

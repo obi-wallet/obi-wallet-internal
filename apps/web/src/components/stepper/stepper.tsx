@@ -22,7 +22,9 @@ export function Stepper({
           key={`stepper-${step}`}
           className={cn(
             "h-1 w-10 rounded-xl",
-            step + 1 === currentStep ? "bg-blue-600" : "bg-zinc-400",
+            step + 1 === currentStep
+              ? "bg-background-primary-disabled"
+              : "bg-zinc-400",
           )}
         />
       ))}
