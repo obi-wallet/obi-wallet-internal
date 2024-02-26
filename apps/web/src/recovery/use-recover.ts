@@ -1,5 +1,5 @@
 import { useStore } from "@/contexts";
-import { MultisigKey } from "@obi-wallet/sdk";
+import { MultisigKey, Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { z } from "zod";
 
 export const ProxyWallet = z.object({
@@ -9,13 +9,19 @@ export const ProxyWallet = z.object({
   owner: z.object({
     threshold: z.string(),
     // TODO: here we should probably be more specific regarding the structure of `keys`, review /add logic and make sure the schema usage is consistent here.
-    keys: z.array(z.unknown()),
+    keys: z.array(
+      z.object({
+        type: z.string(),
+        publicKey: Secp256k1PublicKey,
+      }),
+    ),
   }),
   userData: z.object({
     name: z.string(),
     avatar: z.string(),
   }),
   encryptedBackupShare: z.string(),
+  encryptedEasyShare: z.string().optional(),
 });
 
 export type ProxyWallet = z.TypeOf<typeof ProxyWallet>;

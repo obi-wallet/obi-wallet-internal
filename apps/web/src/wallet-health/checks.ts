@@ -1,22 +1,135 @@
+import { useStore } from "@/contexts";
+import { HomeChain } from "@/home-chain";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKeyQuery } from "@/hooks/use-public-key";
-import { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
+import { useQuery } from "@obi-wallet/headless-ui";
+import {
+  useMutation,
+  UseMutationResult,
+  UseQueryResult,
+} from "@tanstack/react-query";
+import invariant from "tiny-invariant";
 
 export interface WalletHealthCheck {
   label: string;
   /** Query should return a truthy value if the check passes. */
   query: UseQueryResult;
   /** An optional mutation that fixes the problem */
-  resolve?: UseMutationResult;
+  resolve?: UseMutationResult<void, Error, void, unknown>;
 }
 
 export function usePublicKeyKnownCheck(): WalletHealthCheck {
   const query = usePublicKeyQuery();
-  // TODO: to resolve, execute set_shares with multisigkey owner
-  // See also /api/setup/distribute-shares
-  // Transacting with the multisig owner has not been implemented yet, but will also be required for updating owner.
 
   return {
     label: "Secret signer has public key for this wallet",
+    query,
+  };
+}
+
+export function useWalletBackupCheck(): WalletHealthCheck {
+  const wallet = useCurrentWallet({});
+
+  const { userDataStore } = useStore();
+
+  const query = useQuery({
+    queryKey: ["wallet-backup", wallet?.userEntryAddress],
+    queryFn: async () => {
+      invariant(wallet, "Expected wallet to be set.");
+      const homeChain = HomeChain.chainId(wallet.homeChainId);
+      const backupPerKey = await Promise.all(
+        wallet.owner.keys.map(async (key) => {
+          return await homeChain.lookupWalletBackup(key.publicKey);
+        }),
+      );
+
+      return backupPerKey.every((backup) => {
+        const fail = (message: string) => {
+          console.error(message);
+          return false;
+        };
+
+        if (backupPerKey.length !== 1) {
+          return fail(
+            `Expected exactly one backup per key, got ${backupPerKey.length}`,
+          );
+        }
+
+        const [data] = backup;
+        invariant(data, "Expected data to be set");
+
+        if (data.proxyAddress.address !== wallet.userEntryAddress) {
+          return fail(
+            `Expected backup to be for wallet ${wallet.userEntryAddress}, got ${data.proxyAddress.address}`,
+          );
+        }
+
+        const actualOwner = wallet.owner;
+        const backupOwner = data.owner;
+
+        if (backupOwner.threshold !== actualOwner.threshold.toString()) {
+          return fail(
+            `Expected backup threshold to be ${actualOwner.threshold.toString()}, got ${backupOwner.threshold}`,
+          );
+        }
+
+        if (backupOwner.keys.length !== actualOwner.keys.length) {
+          return fail(
+            `Expected backup to have ${actualOwner.keys.length} keys, got ${backupOwner.keys.length}`,
+          );
+        }
+
+        const allKeysMatch = backupOwner.keys.every((backupKey, i) => {
+          const actualKey = actualOwner.keys[i];
+          invariant(actualKey, "Expected actual key to be set");
+
+          if (backupKey.type !== actualKey.type) return false;
+          if (
+            JSON.stringify(backupKey.publicKey) !==
+            JSON.stringify(actualKey.publicKey)
+          ) {
+            return false;
+          }
+
+          return true;
+        });
+
+        if (!allKeysMatch) {
+          return fail("Expected all keys to match");
+        }
+
+        if (typeof data.encryptedBackupShare !== "string") {
+          return fail("Expected backup share to be backed up");
+        }
+
+        if (typeof data.encryptedEasyShare !== "string") {
+          return fail("Expected easy share to be backed up");
+        }
+
+        return true;
+      });
+    },
+    enabled: !!wallet,
+  });
+
+  const resolve = useMutation({
+    mutationFn: async () => {
+      invariant(wallet, "Expected wallet to be set.");
+      const homeChain = HomeChain.chainId(wallet.homeChainId);
+      const userData = userDataStore.getUserData(wallet.userEntryAddress);
+      return await homeChain.backupWallet({
+        wallet: wallet.toJSON(),
+        userData: {
+          name: userData?.name ?? "",
+          avatar: userData?.avatar ?? "",
+        },
+      });
+    },
+  });
+
+  return {
+    label: "Wallet backup is available",
+    resolve,
     query,
   };
 }

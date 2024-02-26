@@ -1,8 +1,15 @@
+import { MultisigKeyEncryption, Secp256k1Decryption } from "@/lib/encryption";
+import { ProxyWallet } from "@/recovery/use-recover";
 import {
   HomeChainId,
+  KeyType,
+  MpcWallet,
+  PendingRecoveryKeySchema,
   queryClient,
   QueryClientNamespace,
+  Secp256k1PublicKey,
   SecretJsClient,
+  UsableKeySchema,
 } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -88,5 +95,109 @@ export class SecretJsHomeChain {
       },
       params,
     });
+  }
+
+  public async backupWallet({
+    wallet,
+    userData,
+  }: {
+    wallet: z.infer<typeof MpcWallet.schema.migratableSchema>;
+    userData: {
+      name: string;
+      avatar: string;
+    };
+  }) {
+    const w = MpcWallet.create(wallet);
+    const passkey = w.owner.getUsableKeyOfType(KeyType.Passkey);
+    invariant(passkey, "No usable passkey found");
+    const easyShare = await new Secp256k1Decryption(
+      passkey.payload.privateKey!,
+    ).decrypt(wallet.encryptedShares.easy);
+    const encryptedEasyShare = await new MultisigKeyEncryption(
+      w.owner.publicKey,
+    ).encrypt(easyShare);
+    const response = await fetch(
+      "https://proxy-wallets.obiwallet.workers.dev/add",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          chainId: wallet.homeChain,
+          proxyWallet: {
+            proxyAddress: {
+              address: wallet.userEntryAddress,
+            },
+            owner: {
+              threshold: String(wallet.owner.threshold),
+              keys: wallet.owner.keys.map((key) => {
+                const usableKeyResponse =
+                  UsableKeySchema.migratableSchema.safeParse(key);
+                if (usableKeyResponse.success) {
+                  return {
+                    type: usableKeyResponse.data.type,
+                    publicKey: usableKeyResponse.data.payload.publicKey,
+                  };
+                }
+                const pendingRecoveryKeyResponse =
+                  PendingRecoveryKeySchema.migratableSchema.safeParse(key);
+                if (pendingRecoveryKeyResponse.success) {
+                  return {
+                    type: pendingRecoveryKeyResponse.data.payload.type,
+                    publicKey:
+                      pendingRecoveryKeyResponse.data.payload.publicKey,
+                  };
+                }
+
+                throw new Error(`Invalid key: ${JSON.stringify(key)}`);
+              }),
+            },
+            userData,
+            encryptedEasyShare,
+            encryptedBackupShare: wallet.encryptedShares.backup,
+          },
+        }),
+        headers: {
+          "Api-Version": "v1",
+          Env:
+            process.env.NEXT_PUBLIC_ENV === "production"
+              ? "production"
+              : "staging",
+        },
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error(`Failed to backup wallet: ${response.status}`);
+    }
+  }
+
+  public async lookupWalletBackup(publicKey: Secp256k1PublicKey) {
+    const response = await fetch(
+      "https://proxy-wallets.obiwallet.workers.dev",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          chainId: this.chainId,
+          publicKey: publicKey.value,
+        }),
+        headers: {
+          "Api-Version": "v1",
+          Env:
+            process.env.NEXT_PUBLIC_ENV === "production"
+              ? "production"
+              : "staging",
+        },
+      },
+    );
+    if (response.status === 404) {
+      console.log("No wallets found");
+      return [];
+    }
+
+    const schema = z.array(ProxyWallet);
+    const result = schema.safeParse(await response.json());
+    if (!result.success) {
+      throw new Error(`Failed to parse proxy wallets: ${result.error}`);
+    }
+    return result.data;
   }
 }
