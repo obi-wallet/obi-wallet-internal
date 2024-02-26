@@ -6,12 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export function RootContainer({ children }: { children: ReactNode }) {
   return (
-    <div
-      className={cn(
-        inter.className,
-        "flex min-h-screen flex-col bg-gradient-to-br from-black to-slate-900",
-      )}
-    >
+    <div className={cn(inter.className, "flex min-h-screen flex-col bg-black")}>
       {children}
     </div>
   );
