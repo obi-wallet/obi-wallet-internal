@@ -1,7 +1,7 @@
 import type { Preview } from "@storybook/react";
 
 import "../src/app/globals.css";
-import { MainContainer, RootContainer } from "@/app/layout";
+import { MainContainer, RootContainer } from "@/layouts/root";
 import Provider from "@/components/provider";
 
 const preview: Preview = {

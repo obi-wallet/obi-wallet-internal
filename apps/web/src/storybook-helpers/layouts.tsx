@@ -1,5 +1,5 @@
-import { DashboardCustomLayout } from "@/app/dashboard/layout";
 import TransactionLayout from "@/app/dashboard/transaction/layout";
+import { DashboardCustomLayout } from "@/layouts/dashboard";
 import { ReactNode } from "react";
 
 export function dashboardLayoutDecorator(Story: () => ReactNode) {
