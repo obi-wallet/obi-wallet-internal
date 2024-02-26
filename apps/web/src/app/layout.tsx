@@ -23,7 +23,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <Provider>
             <Header />
             <MainContainer>{children}</MainContainer>
-            <TOSModal />
             <div id="modal-root" />
           </Provider>
         </RootContainer>
