@@ -1,5 +1,4 @@
-import { Header, PasskeyNotification } from "@/components";
-import { TOSModal } from "@/components/modals/tos";
+import { Header } from "@/components";
 import { MainContainer, RootContainer } from "@/layouts/root";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
