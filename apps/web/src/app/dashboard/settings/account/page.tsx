@@ -2,8 +2,8 @@
 
 import { Box, Button, Divider, ImageDropzone, Text } from "@/components";
 import { useStore } from "@/contexts";
+import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { backupWallet } from "@/lib/backup";
 import { UserData } from "@/stores";
 import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
@@ -22,7 +22,7 @@ export default observer(function AccountSettings() {
       userData={userData}
       onSave={async (userData) => {
         userDataStore.setUserData(wallet.userEntryAddress, userData);
-        await backupWallet({
+        await HomeChain.chainId(wallet.homeChainId).backupWallet({
           wallet: wallet.toJSON(),
           userData: {
             name: userData.name ?? "",

@@ -3,7 +3,10 @@ import {
   automatedTestPlay,
   providerWithWalletDecorator,
 } from "@/storybook-helpers";
-import { usePublicKeyKnownCheck } from "@/wallet-health/checks";
+import {
+  usePublicKeyKnownCheck,
+  useWalletBackupCheck,
+} from "@/wallet-health/checks";
 import { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
@@ -21,7 +24,23 @@ export const UsePublicKeyKnownCheck: Story = {
     const check = usePublicKeyKnownCheck();
     return (
       <AutomatedTest
-        done={!check.query.isLoading}
+        done={check.query.isSuccess || check.query.isError}
+        success={check.query.isSuccess && !!check.query.data}
+      />
+    );
+  },
+  play: automatedTestPlay,
+};
+
+export const UseWalletBackupCheck: Story = {
+  name: "useWalletBackupCheck",
+  decorators: [providerWithWalletDecorator],
+  render: function UseWalletBackupCheckTest() {
+    const check = useWalletBackupCheck();
+
+    return (
+      <AutomatedTest
+        done={check.query.isSuccess || check.query.isError}
         success={check.query.isSuccess && !!check.query.data}
       />
     );

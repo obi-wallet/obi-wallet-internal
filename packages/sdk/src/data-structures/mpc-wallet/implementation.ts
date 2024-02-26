@@ -33,6 +33,10 @@ export class MpcWallet {
     return this._encryptedShares.easy;
   }
 
+  public get encryptedBackupShare() {
+    return this._encryptedShares.backup;
+  }
+
   public get schema() {
     return MpcWalletSchema;
   }
