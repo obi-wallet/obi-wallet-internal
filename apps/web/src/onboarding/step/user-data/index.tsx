@@ -25,7 +25,7 @@ export const UserDataStep = observer(function UserDataStep({
       });
       setDefaultImageFile(file);
 
-      draft.value.setName("My OBI Wallet");
+      draft.value.setName("My Noble Wallet");
     } catch (error) {
       console.error("Error loading image:", error);
     }
