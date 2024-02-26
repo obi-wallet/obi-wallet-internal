@@ -5,7 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Account, Divider, Footer, PrimaryLink, Text } from "..";
+import {
+  Account,
+  Divider,
+  Footer,
+  PrimaryLink,
+  RainbowDivider,
+  Text,
+} from "..";
 
 type NavMenu = {
   href: string;
@@ -56,7 +63,7 @@ export function Navbar() {
     <nav className="bg-background-secondary relative max-sm:absolute max-sm:bottom-0 max-sm:h-24 max-sm:w-full sm:h-full">
       <div className="flex h-full w-[330px] flex-col px-7 pt-16 max-sm:hidden">
         <Account />
-        <div className="mb-4 mt-4 flex  gap-5 text-white">
+        <div className="my-7 flex gap-5 text-white">
           <Link
             href="/dashboard/transaction/send"
             className="bg-background-primary flex  flex-1 justify-center rounded-md p-3"
@@ -70,7 +77,7 @@ export function Navbar() {
             <span className="text-sm">Receive</span>
           </Link>
         </div>
-        <Divider />
+        <RainbowDivider className="h-[2px]" />
 
         <div className="mt-7 grow">
           <ul role="list" className="flex flex-col space-y-3">
@@ -108,8 +115,10 @@ export function Navbar() {
         </div>
         <Footer className="!px-0" />
       </div>
-      <div className="flex h-full w-full sm:hidden">
-        <div className="flex w-full flex-row items-center justify-center px-4">
+      <div className="flex h-full w-full flex-col sm:hidden">
+        <RainbowDivider />
+
+        <div className="flex h-full w-full flex-row items-center justify-center px-4">
           <ul role="list" className="flex w-full flex-row justify-around ">
             {navMenu
               .filter((item) => item.showOnMobile)
