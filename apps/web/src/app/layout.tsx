@@ -24,7 +24,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Header />
             <PasskeyNotification />
             <MainContainer>{children}</MainContainer>
-            <TOSModal />
             <div id="modal-root" />
           </Provider>
         </RootContainer>
