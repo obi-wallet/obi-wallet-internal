@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Modal, renderModal } from "@/components";
+import { Button, Modal, RainbowDivider, renderModal } from "@/components";
 import { PrimaryLink } from "@/components/links";
 import { CURRENT_THEME } from "@/configs";
 import { useStore } from "@/contexts";
@@ -18,19 +18,22 @@ export const Header = observer(function Header() {
 
   return (
     <>
-      <header
-        className={cn(
-          "w-full",
-          // shouldHide && "hidden",
-          "max-sm:h-16 md:h-20",
-        )}
-      >
+      <header className="w-full max-sm:h-16 md:h-20">
         <div
           className={cn(
             "bg-background-primary flex h-full w-full items-center justify-between px-3 shadow md:px-8",
           )}
         >
           <PrimaryLink href={primaryLinkHref}>
+            {/* <Text
+              color="white"
+              size="2xl"
+              fontWeight="bold"
+              className="leading-3"
+            >
+              Obi
+            </Text> */}
+
             <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
           </PrimaryLink>
           {authChildren}
