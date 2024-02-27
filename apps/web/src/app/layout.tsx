@@ -1,5 +1,4 @@
-import { Header, PasskeyNotification } from "@/components";
-import { TOSModal } from "@/components/modals/tos";
+import { Header } from "@/components";
 import { MainContainer, RootContainer } from "@/layouts/root";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
@@ -22,9 +21,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <RootContainer>
           <Provider>
             <Header />
-            <PasskeyNotification />
             <MainContainer>{children}</MainContainer>
-            <TOSModal />
             <div id="modal-root" />
           </Provider>
         </RootContainer>

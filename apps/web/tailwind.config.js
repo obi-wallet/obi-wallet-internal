@@ -18,6 +18,9 @@ module.exports = {
         "--foreground-primary": "var(--foreground-primary)",
         "--foreground-primary-border": "var(--foreground-primary-border)",
       },
+      backgroundImage: ({ theme }) => ({
+        rainbow: `linear-gradient(90deg, ${theme("colors.green.500")},${theme("colors.red.500")},${theme("colors.blue.500")},${theme("colors.emerald.500")})`,
+      }),
     },
   },
   plugins: [],
