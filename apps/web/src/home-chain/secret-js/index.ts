@@ -107,15 +107,23 @@ export class SecretJsHomeChain {
       avatar: string;
     };
   }) {
-    const w = MpcWallet.create(wallet);
-    const passkey = w.owner.getUsableKeyOfType(KeyType.Passkey);
-    invariant(passkey, "No usable passkey found");
-    const easyShare = await new Secp256k1Decryption(
-      passkey.payload.privateKey!,
-    ).decrypt(wallet.encryptedShares.easy);
-    const encryptedEasyShare = await new MultisigKeyEncryption(
-      w.owner.publicKey,
-    ).encrypt(easyShare);
+    async function getEncryptedEasyShare() {
+      const w = MpcWallet.create(wallet);
+
+      if (!wallet.encryptedShares.easy) return undefined;
+
+      const passkey = w.owner.getUsableKeyOfType(KeyType.Passkey);
+      invariant(passkey, "No usable passkey found");
+
+      const easyShare = await new Secp256k1Decryption(
+        passkey.payload.privateKey,
+      ).decrypt(wallet.encryptedShares.easy);
+      return await new MultisigKeyEncryption(w.owner.publicKey).encrypt(
+        easyShare,
+      );
+    }
+    const encryptedEasyShare = await getEncryptedEasyShare();
+
     const response = await fetch(
       "https://proxy-wallets.obiwallet.workers.dev/add",
       {

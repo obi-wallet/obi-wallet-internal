@@ -84,7 +84,9 @@ export const EncryptedBackups: Story = {
           backedUpEasyShare,
           backedUpBackupShare,
         ] = await Promise.all([
-          passkeyDecryption.decrypt(wallet.encryptedEasyShare),
+          wallet.encryptedEasyShare
+            ? passkeyDecryption.decrypt(wallet.encryptedEasyShare)
+            : undefined,
           multisigKeyDecryption.decrypt(wallet.encryptedBackupShare),
           multisigKeyDecryption.decrypt(data.encryptedEasyShare ?? ""),
           multisigKeyDecryption.decrypt(data.encryptedBackupShare),

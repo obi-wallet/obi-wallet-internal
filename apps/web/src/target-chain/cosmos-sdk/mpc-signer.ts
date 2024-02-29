@@ -104,6 +104,11 @@ export class CosmosSdkMpcSigner
     const passkey = this.wallet.owner.getUsableKeyOfType(KeyType.Passkey);
     invariant(passkey, "No usable passkey found");
 
+    if (!this.wallet.encryptedEasyShare) {
+      // TODO: sign with backup share
+      throw new Error("No encrypted easy share found");
+    }
+
     const easyShare = EasyShare.parse(
       JSON.parse(
         await new Secp256k1Decryption(passkey.payload.privateKey!).decrypt(
