@@ -1,8 +1,10 @@
-import { MultisigKeyEncryption, Secp256k1Decryption } from "@/lib/encryption";
+import {
+  SharesBackupEncryption,
+  SharesLocalEncryption,
+} from "@/lib/encryption";
 import { ProxyWallet } from "@/recovery/use-recover";
 import {
   HomeChainId,
-  KeyType,
   MpcWallet,
   PendingRecoveryKeySchema,
   queryClient,
@@ -108,19 +110,16 @@ export class SecretJsHomeChain {
     };
   }) {
     async function getEncryptedEasyShare() {
-      const w = MpcWallet.create(wallet);
-
       if (!wallet.encryptedShares.easy) return undefined;
 
-      const passkey = w.owner.getUsableKeyOfType(KeyType.Passkey);
-      invariant(passkey, "No usable passkey found");
+      const w = MpcWallet.create(wallet);
+      const sharesLocalEncryption = new SharesLocalEncryption(w.owner);
+      const sharesBackupEncryption = new SharesBackupEncryption(w.owner);
 
-      const easyShare = await new Secp256k1Decryption(
-        passkey.payload.privateKey,
-      ).decrypt(wallet.encryptedShares.easy);
-      return await new MultisigKeyEncryption(w.owner.publicKey).encrypt(
-        easyShare,
+      const easyShare = await sharesLocalEncryption.decryptEasyShare(
+        wallet.encryptedShares.easy,
       );
+      return await sharesBackupEncryption.encryptEasyShare(easyShare);
     }
     const encryptedEasyShare = await getEncryptedEasyShare();
 

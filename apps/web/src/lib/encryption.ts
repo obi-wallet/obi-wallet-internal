@@ -1,5 +1,11 @@
 import { rootStore } from "@/hooks/use-create-root-store";
-import { MultisigPublicKey } from "@obi-wallet/sdk";
+import {
+  BackupShare,
+  EasyShare,
+  KeyType,
+  MultisigKey,
+  MultisigPublicKey,
+} from "@obi-wallet/sdk";
 import {
   Sec256k1PrivateKey,
   Secp256k1PublicKey,
@@ -7,6 +13,94 @@ import {
 import { SHA256, Word32Array } from "jscrypto";
 import * as sss from "sss-wasm";
 import invariant from "tiny-invariant";
+
+export class SharesEncryption {
+  public constructor(
+    protected readonly multisigKey: MultisigKey,
+    protected easyEncryption: Encryption,
+    protected easyDecryption: Decryption,
+    protected backupEncryption: Encryption,
+    protected backupDecryption: Decryption,
+  ) {}
+
+  public async encrypt(shares: {
+    easy: EasyShare;
+    backup: BackupShare;
+  }): Promise<{ easy: string; backup: string }>;
+  public async encrypt(shares: {
+    easy?: EasyShare;
+    backup: BackupShare;
+  }): Promise<{ easy?: string; backup: string }>;
+  public async encrypt(shares: { easy?: EasyShare; backup: BackupShare }) {
+    const [easy, backup] = await Promise.all([
+      shares.easy ? this.encryptEasyShare(shares.easy) : undefined,
+      this.backupEncryption.encrypt(JSON.stringify(shares.backup)),
+    ]);
+    return {
+      easy,
+      backup,
+    };
+  }
+
+  public async decrypt(shares: {
+    easy: string;
+    backup: string;
+  }): Promise<{ easy: EasyShare; backup: BackupShare }>;
+  public async decrypt(shares: {
+    easy?: string;
+    backup: string;
+  }): Promise<{ easy?: EasyShare; backup: BackupShare }>;
+  public async decrypt(shares: { easy?: string; backup: string }) {
+    const [easy, backup] = await Promise.all([
+      shares.easy ? this.decryptEasyShare(shares.easy) : undefined,
+      this.backupDecryption.decrypt(shares.backup),
+    ]);
+    return {
+      easy,
+      backup: BackupShare.parse(JSON.parse(backup)),
+    };
+  }
+
+  public async decryptEasyShare(share: string) {
+    return EasyShare.parse(
+      JSON.parse(await this.easyDecryption.decrypt(share)),
+    );
+  }
+
+  public async encryptEasyShare(share: EasyShare) {
+    return this.easyEncryption.encrypt(JSON.stringify(share));
+  }
+}
+
+export class SharesLocalEncryption extends SharesEncryption {
+  public constructor(protected readonly multisigKey: MultisigKey) {
+    const primaryKey = multisigKey.getUsableKeyOfType(KeyType.Passkey);
+    invariant(primaryKey, "Primary key is not available");
+
+    super(
+      multisigKey,
+      new Secp256k1Encryption(primaryKey.publicKey),
+      new Secp256k1Decryption(primaryKey.payload.privateKey),
+      new MultisigKeyEncryption(multisigKey.publicKey),
+      new MultisigKeyDecryption([primaryKey.payload.privateKey]),
+    );
+  }
+}
+
+export class SharesBackupEncryption extends SharesEncryption {
+  public constructor(protected readonly multisigKey: MultisigKey) {
+    const primaryKey = multisigKey.getUsableKeyOfType(KeyType.Passkey);
+    invariant(primaryKey, "Primary key is not available");
+
+    super(
+      multisigKey,
+      new MultisigKeyEncryption(multisigKey.publicKey),
+      new MultisigKeyDecryption([primaryKey.payload.privateKey]),
+      new MultisigKeyEncryption(multisigKey.publicKey),
+      new MultisigKeyDecryption([primaryKey.payload.privateKey]),
+    );
+  }
+}
 
 export abstract class Encryption {
   public abstract encrypt(data: string): Promise<string>;

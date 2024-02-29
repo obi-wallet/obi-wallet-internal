@@ -1,8 +1,7 @@
 import { useStore } from "@/contexts";
 import {
-  MultisigKeyDecryption,
-  MultisigKeyEncryption,
-  Secp256k1Encryption,
+  SharesBackupEncryption,
+  SharesLocalEncryption,
 } from "@/lib/encryption";
 import {
   KeyType,
@@ -80,35 +79,23 @@ export function useRecover() {
           throw new Error("Passkey missing");
         }
 
-        const multisigKeyDecryption = new MultisigKeyDecryption([
-          passKey.payload.privateKey,
-        ]);
-        const easyShare = account.encryptedEasyShare
-          ? await multisigKeyDecryption.decrypt(account.encryptedEasyShare)
-          : undefined;
-        const backupShare = await multisigKeyDecryption.decrypt(
-          account.encryptedBackupShare,
-        );
+        const sharesBackupEncryption = new SharesBackupEncryption(multisigKey);
+        const decryptedShares = await sharesBackupEncryption.decrypt({
+          easy: account.encryptedEasyShare,
+          backup: account.encryptedBackupShare,
+        });
 
-        const passkeyEncryption = new Secp256k1Encryption(passKey.publicKey);
-        const multisigKeyEncryption = new MultisigKeyEncryption(
-          multisigKey.publicKey,
-        );
-
-        const encryptedEasyShare = easyShare
-          ? await passkeyEncryption.encrypt(easyShare)
-          : undefined;
-        const encryptedBackupShare =
-          await multisigKeyEncryption.encrypt(backupShare);
+        const sharesLocalEncryption = new SharesLocalEncryption(multisigKey);
+        const encryptedShares = await sharesLocalEncryption.encrypt({
+          easy: decryptedShares.easy,
+          backup: decryptedShares.backup,
+        });
 
         const wallet = ObservableMpcWallet.create({
           homeChain: multisigKey.chainId,
           owner,
           userEntryAddress: account.proxyAddress.address,
-          encryptedShares: {
-            easy: encryptedEasyShare,
-            backup: encryptedBackupShare,
-          },
+          encryptedShares,
         });
         mpcWalletsStore.upsertWallet(wallet);
       }

@@ -1,6 +1,6 @@
 import { rootStore } from "@/hooks/use-create-root-store";
 import { newFetchPublicKey } from "@/hooks/use-public-key";
-import { Secp256k1Decryption } from "@/lib/encryption";
+import { SharesLocalEncryption } from "@/lib/encryption";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import {
   AminoSignResponse,
@@ -18,7 +18,6 @@ import {
   OfflineDirectSigner,
 } from "@cosmjs/proto-signing";
 import {
-  EasyShare,
   KeyType,
   MpcWallet,
   Secp256k1PrivateKeySigner,
@@ -109,12 +108,9 @@ export class CosmosSdkMpcSigner
       throw new Error("No encrypted easy share found");
     }
 
-    const easyShare = EasyShare.parse(
-      JSON.parse(
-        await new Secp256k1Decryption(passkey.payload.privateKey!).decrypt(
-          this.wallet.encryptedEasyShare,
-        ),
-      ),
+    const sharesLocalEncryption = new SharesLocalEncryption(this.wallet.owner);
+    const easyShare = await sharesLocalEncryption.decryptEasyShare(
+      this.wallet.encryptedEasyShare,
     );
 
     const signers = mpcPackage.createSigners([
@@ -130,8 +126,7 @@ export class CosmosSdkMpcSigner
     });
 
     const passkeySigner = new Secp256k1PrivateKeySigner(
-      // TODO: typing, should either be always or never exist
-      passkey.payload.privateKey!,
+      passkey.payload.privateKey,
     );
 
     const client = new SecretJsClient(this.wallet.homeChainId);
