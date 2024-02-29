@@ -24,14 +24,21 @@ export const MpcPreSign = z.object({
 export type MpcPreSign = z.infer<typeof MpcPreSign>;
 
 export const MpcShare = z.object({
-  sign_keys: z.object({
-    k_i: MpcScalar,
-  }),
+  // TODO: this is probably problematic
+  // sign_keys: z.object({
+  //   k_i: MpcScalar,
+  // }),
+  sign_keys: z.any(),
   R: MpcPoint,
   sigma_i: MpcScalar,
-  local_key: z.object({
-    y_sum_s: MpcPoint,
-  }),
+  // TODO: this is probably problematic
+  // local_key: z.object({
+  //   y_sum_s: MpcPoint,
+  // }),
+  local_key: z.any(),
+  // TODO: this is probably problematic
+  i: z.any(),
+  t_vec: z.any(),
 });
 
 export type MpcShare = z.infer<typeof MpcShare>;
