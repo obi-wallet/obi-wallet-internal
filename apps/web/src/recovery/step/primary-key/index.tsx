@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, ButtonLink, Modal, renderModal, Text } from "@/components";
+import { SecretJsHomeChain } from "@/home-chain/secret-js";
 import { RecoveryPayload } from "@/recovery/recovery-payload";
 import { ProxyWallet, useRecover } from "@/recovery/use-recover";
 import { Draft } from "@/stores";
@@ -27,9 +28,9 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
         },
       });
 
-      const proxyWallets = await draft.value.lookupProxyWallets(
-        keyPair.publicKey,
-      );
+      const proxyWallets = await new SecretJsHomeChain(
+        draft.value.chainId,
+      ).lookupWalletBackup(keyPair.publicKey);
       console.log(proxyWallets);
 
       const wallet = proxyWallets[0];

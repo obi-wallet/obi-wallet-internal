@@ -1,6 +1,9 @@
 import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { MultisigKeyDecryption, Secp256k1Decryption } from "@/lib/encryption";
+import {
+  SharesBackupEncryption,
+  SharesLocalEncryption,
+} from "@/lib/encryption";
 import {
   AutomatedTest,
   automatedTestPlay,
@@ -13,6 +16,7 @@ import {
 import { useQuery } from "@obi-wallet/headless-ui";
 import { KeyType } from "@obi-wallet/sdk";
 import { Meta, StoryObj } from "@storybook/react";
+import { equals } from "ramda";
 import invariant from "tiny-invariant";
 
 const meta = {
@@ -62,38 +66,30 @@ export const EncryptedBackups: Story = {
       queryKey: ["encrypted-backups", wallet?.userEntryAddress],
       queryFn: async () => {
         invariant(wallet, "Expected wallet to be set.");
+
         const passkey = wallet.owner.getUsableKeyOfType(KeyType.Passkey);
         invariant(passkey, "Expected passkey to be set");
+
         const [data] = await HomeChain.chainId(
           wallet.homeChainId,
         ).lookupWalletBackup(passkey.publicKey);
-
         invariant(data, "Expected data to be set");
-        invariant(passkey, "No usable passkey found");
 
-        const passkeyDecryption = new Secp256k1Decryption(
-          passkey.payload.privateKey,
-        );
-        const multisigKeyDecryption = new MultisigKeyDecryption([
-          passkey.payload.privateKey,
+        const sharesLocalEncryption = new SharesLocalEncryption(wallet.owner);
+        const sharesBackupEncryption = new SharesBackupEncryption(wallet.owner);
+
+        const [actualShares, backedUpShares] = await Promise.all([
+          sharesLocalEncryption.decrypt({
+            easy: wallet.encryptedEasyShare,
+            backup: wallet.encryptedBackupShare,
+          }),
+          sharesBackupEncryption.decrypt({
+            easy: data.encryptedEasyShare,
+            backup: data.encryptedBackupShare,
+          }),
         ]);
 
-        const [
-          actualEasyShare,
-          actualBackupShare,
-          backedUpEasyShare,
-          backedUpBackupShare,
-        ] = await Promise.all([
-          passkeyDecryption.decrypt(wallet.encryptedEasyShare),
-          multisigKeyDecryption.decrypt(wallet.encryptedBackupShare),
-          multisigKeyDecryption.decrypt(data.encryptedEasyShare ?? ""),
-          multisigKeyDecryption.decrypt(data.encryptedBackupShare),
-        ]);
-
-        return (
-          actualEasyShare === backedUpEasyShare &&
-          actualBackupShare === backedUpBackupShare
-        );
+        return equals(actualShares, backedUpShares);
       },
       enabled: !!wallet,
     });

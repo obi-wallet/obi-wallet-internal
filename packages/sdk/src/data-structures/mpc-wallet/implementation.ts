@@ -8,7 +8,7 @@ export class MpcWallet {
     protected _owner: MultisigKey,
     protected _userEntryAddress: string,
     protected _encryptedShares: {
-      easy: string;
+      easy?: string;
       backup: string;
     },
   ) {}

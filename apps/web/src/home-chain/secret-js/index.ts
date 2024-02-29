@@ -1,8 +1,10 @@
-import { MultisigKeyEncryption, Secp256k1Decryption } from "@/lib/encryption";
+import {
+  SharesBackupEncryption,
+  SharesLocalEncryption,
+} from "@/lib/encryption";
 import { ProxyWallet } from "@/recovery/use-recover";
 import {
   HomeChainId,
-  KeyType,
   MpcWallet,
   PendingRecoveryKeySchema,
   queryClient,
@@ -107,15 +109,20 @@ export class SecretJsHomeChain {
       avatar: string;
     };
   }) {
-    const w = MpcWallet.create(wallet);
-    const passkey = w.owner.getUsableKeyOfType(KeyType.Passkey);
-    invariant(passkey, "No usable passkey found");
-    const easyShare = await new Secp256k1Decryption(
-      passkey.payload.privateKey!,
-    ).decrypt(wallet.encryptedShares.easy);
-    const encryptedEasyShare = await new MultisigKeyEncryption(
-      w.owner.publicKey,
-    ).encrypt(easyShare);
+    async function getEncryptedEasyShare() {
+      if (!wallet.encryptedShares.easy) return undefined;
+
+      const w = MpcWallet.create(wallet);
+      const sharesLocalEncryption = new SharesLocalEncryption(w.owner);
+      const sharesBackupEncryption = new SharesBackupEncryption(w.owner);
+
+      const easyShare = await sharesLocalEncryption.decryptEasyShare(
+        wallet.encryptedShares.easy,
+      );
+      return await sharesBackupEncryption.encryptEasyShare(easyShare);
+    }
+    const encryptedEasyShare = await getEncryptedEasyShare();
+
     const response = await fetch(
       "https://proxy-wallets.obiwallet.workers.dev/add",
       {

@@ -1,6 +1,6 @@
 import { HomeChain } from "@/home-chain";
 import { rootStore } from "@/hooks/use-create-root-store";
-import { MultisigKeyEncryption, Secp256k1Encryption } from "@/lib/encryption";
+import { SharesLocalEncryption } from "@/lib/encryption";
 import { Draftable } from "@/stores/drafts/draft";
 import { DistributeSharesResponse } from "@/stores/mpc";
 import {
@@ -204,20 +204,14 @@ export class NewOnboardingPayload implements Draftable {
     if (this._encryptedShares) return;
     invariant(this._shares, "Shares are not available");
 
-    const primaryKey = this._multisigKey.getUsableKeyOfType(KeyType.Passkey);
-    invariant(primaryKey, "Primary key is not available");
-
-    const primaryKeyEncryption = new Secp256k1Encryption(primaryKey.publicKey);
-    const multisigKeyEncryption = new MultisigKeyEncryption(
-      this._multisigKey.publicKey,
-    );
-    const [easyShare, backupShare] = await Promise.all([
-      primaryKeyEncryption.encrypt(JSON.stringify(this._shares.easyShare)),
-      multisigKeyEncryption.encrypt(JSON.stringify(this._shares.backupShare)),
-    ]);
+    const sharesLocalEncryption = new SharesLocalEncryption(this._multisigKey);
+    const { easy, backup } = await sharesLocalEncryption.encrypt({
+      easy: this._shares.easyShare,
+      backup: this._shares.backupShare,
+    });
     this._encryptedShares = {
-      easyShare,
-      backupShare,
+      easyShare: easy,
+      backupShare: backup,
     };
   }
 
