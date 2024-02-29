@@ -27,21 +27,55 @@ export function usePublicKeyKnownCheck(): WalletHealthCheck {
   };
 }
 
-export function useWalletBackupCheck(): WalletHealthCheck {
+function useWalletBackupQuery() {
   const wallet = useCurrentWallet({});
-
-  const { userDataStore } = useStore();
-
-  const query = useQuery({
+  return useQuery({
     queryKey: ["wallet-backup", wallet?.userEntryAddress],
     queryFn: async () => {
       invariant(wallet, "Expected wallet to be set.");
       const homeChain = HomeChain.chainId(wallet.homeChainId);
-      const backupPerKey = await Promise.all(
+      return await Promise.all(
         wallet.owner.keys.map(async (key) => {
           return await homeChain.lookupWalletBackup(key.publicKey);
         }),
       );
+    },
+    enabled: !!wallet,
+  });
+}
+
+function useBackupWalletMutation() {
+  const wallet = useCurrentWallet({});
+  const { userDataStore } = useStore();
+
+  return useMutation({
+    mutationFn: async () => {
+      invariant(wallet, "Expected wallet to be set.");
+      const homeChain = HomeChain.chainId(wallet.homeChainId);
+      const userData = userDataStore.getUserData(wallet.userEntryAddress);
+      return await homeChain.backupWallet({
+        wallet: wallet.toJSON(),
+        userData: {
+          name: userData?.name ?? "",
+          avatar: userData?.avatar ?? "",
+        },
+      });
+    },
+  });
+}
+
+export function useWalletBackupCheck(): WalletHealthCheck {
+  const wallet = useCurrentWallet({});
+
+  const walletBackup = useWalletBackupQuery();
+  const resolve = useBackupWalletMutation();
+
+  const query = useQuery({
+    queryKey: ["wallet-backup-check", wallet?.userEntryAddress],
+    queryFn: async () => {
+      invariant(wallet, "Expected wallet to be set.");
+      invariant(walletBackup.data, "Expected wallet backup to be set.");
+      const backupPerKey = walletBackup.data;
 
       return backupPerKey.every((backup) => {
         const fail = (message: string) => {
@@ -102,6 +136,50 @@ export function useWalletBackupCheck(): WalletHealthCheck {
           return fail("Expected backup share to be backed up");
         }
 
+        return true;
+      });
+    },
+    enabled: !!wallet && !!walletBackup.data,
+  });
+
+  return {
+    label: "Wallet backup is available",
+    resolve,
+    query,
+  };
+}
+
+export function useWalletBackupIncludesEasyShareCheck(): WalletHealthCheck {
+  const wallet = useCurrentWallet({});
+
+  const walletBackup = useWalletBackupQuery();
+  const resolve = useBackupWalletMutation();
+
+  const query = useQuery({
+    queryKey: [
+      "wallet-backup-includes-easy-share-check",
+      wallet?.userEntryAddress,
+    ],
+    queryFn: async () => {
+      invariant(wallet, "Expected wallet to be set.");
+      invariant(walletBackup.data, "Expected wallet backup to be set.");
+      const backupPerKey = walletBackup.data;
+
+      return backupPerKey.every((backup) => {
+        const fail = (message: string) => {
+          console.error(message);
+          return false;
+        };
+
+        if (backupPerKey.length !== 1) {
+          return fail(
+            `Expected exactly one backup per key, got ${backupPerKey.length}`,
+          );
+        }
+
+        const [data] = backup;
+        invariant(data, "Expected data to be set");
+
         if (typeof data.encryptedEasyShare !== "string") {
           return fail("Expected easy share to be backed up");
         }
@@ -109,27 +187,12 @@ export function useWalletBackupCheck(): WalletHealthCheck {
         return true;
       });
     },
-    enabled: !!wallet,
-  });
-
-  const resolve = useMutation({
-    mutationFn: async () => {
-      invariant(wallet, "Expected wallet to be set.");
-      const homeChain = HomeChain.chainId(wallet.homeChainId);
-      const userData = userDataStore.getUserData(wallet.userEntryAddress);
-      return await homeChain.backupWallet({
-        wallet: wallet.toJSON(),
-        userData: {
-          name: userData?.name ?? "",
-          avatar: userData?.avatar ?? "",
-        },
-      });
-    },
+    enabled: !!wallet && !!walletBackup.data,
   });
 
   return {
-    label: "Wallet backup is available",
-    resolve,
+    label: "Wallet backup includes easy share",
+    resolve: wallet?.encryptedEasyShare ? resolve : undefined,
     query,
   };
 }

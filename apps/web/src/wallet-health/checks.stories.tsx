@@ -12,6 +12,7 @@ import {
 import {
   usePublicKeyKnownCheck,
   useWalletBackupCheck,
+  useWalletBackupIncludesEasyShareCheck,
 } from "@/wallet-health/checks";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { KeyType } from "@obi-wallet/sdk";
@@ -47,6 +48,22 @@ export const UseWalletBackupCheck: Story = {
   decorators: [providerWithWalletDecorator],
   render: function UseWalletBackupCheckTest() {
     const check = useWalletBackupCheck();
+
+    return (
+      <AutomatedTest
+        done={check.query.isSuccess || check.query.isError}
+        success={check.query.isSuccess && !!check.query.data}
+      />
+    );
+  },
+  play: automatedTestPlay,
+};
+
+export const UseWalletBackupIncludesEasyShareCheck: Story = {
+  name: "useWalletBackupIncludesEasyShareCheck",
+  decorators: [providerWithWalletDecorator],
+  render: function UseWalletBackupCheckTest() {
+    const check = useWalletBackupIncludesEasyShareCheck();
 
     return (
       <AutomatedTest

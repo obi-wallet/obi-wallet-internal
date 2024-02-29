@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import {
   usePublicKeyKnownCheck,
   useWalletBackupCheck,
+  useWalletBackupIncludesEasyShareCheck,
   WalletHealthCheck,
 } from "@/wallet-health/checks";
 import { observer } from "mobx-react-lite";
@@ -10,6 +11,7 @@ import { observer } from "mobx-react-lite";
 export const HealthChecks = observer(function HealthChecks() {
   const publicKeyKnownCheck = usePublicKeyKnownCheck();
   const walletBackupCheck = useWalletBackupCheck();
+  const walletBackupIncludesEasyShare = useWalletBackupIncludesEasyShareCheck();
 
   return (
     <div className="grid h-full w-full text-white">
@@ -26,6 +28,7 @@ export const HealthChecks = observer(function HealthChecks() {
 
         <HealthCheckRow check={publicKeyKnownCheck} />
         <HealthCheckRow check={walletBackupCheck} />
+        <HealthCheckRow check={walletBackupIncludesEasyShare} />
       </Box>
     </div>
   );
