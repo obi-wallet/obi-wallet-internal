@@ -35,7 +35,7 @@ export const ProxyWallet = z.object({
 export type ProxyWallet = z.TypeOf<typeof ProxyWallet>;
 
 export function useRecover() {
-  const { mpcWalletsStore } = useStore();
+  const { mpcWalletsStore, userDataStore } = useStore();
 
   async function recover({
     account,
@@ -90,6 +90,11 @@ export function useRecover() {
           easy: decryptedShares.easy,
           backup: decryptedShares.backup,
         });
+
+        userDataStore.setUserData(
+          account.proxyAddress.address,
+          account.userData,
+        );
 
         const wallet = ObservableMpcWallet.create({
           homeChain: multisigKey.chainId,
