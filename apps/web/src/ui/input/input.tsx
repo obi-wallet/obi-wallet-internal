@@ -22,6 +22,7 @@ export interface InputProps
   leftComponent?: ReactNode;
   rightComponent?: ReactNode;
   topComponent?: ReactNode;
+  rightContainerClassName?: string;
 }
 
 export function Input({
@@ -34,6 +35,7 @@ export function Input({
   rightComponent,
   topComponent,
   children,
+  rightContainerClassName,
   ...rest
 }: InputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -49,9 +51,9 @@ export function Input({
       className={className}
       onClick={handleClick}
     >
-      <div className="flex flex-1 flex-col">
+      <div className="flex w-full flex-1 flex-col">
         {topComponent && <>{topComponent}</>}
-        <div className="flex flex-1 flex-row items-center">
+        <div className="flex flex-1 flex-row flex-nowrap items-center">
           {leftComponent && <div>{leftComponent}</div>}
           <BaseInput
             {...rest}
@@ -63,9 +65,13 @@ export function Input({
                   }
                 : undefined
             }
-            className={cn("w-full flex-1", inputClassName)}
+            className={cn("flex   w-full flex-1 ", inputClassName)}
           />
-          {rightComponent && <div>{rightComponent}</div>}
+          {rightComponent && (
+            <div className={cn(" flex  flex-1", rightContainerClassName)}>
+              {rightComponent}
+            </div>
+          )}
         </div>
         {children && (
           <>

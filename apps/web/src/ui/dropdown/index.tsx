@@ -12,7 +12,7 @@ export interface CustomDropdownProps<T extends DropdownItem> {
   itemToString: (item: T | null) => string;
   itemComponent: React.FC<ItemComponentProps<T>>;
   onItemSelect: (item: T) => void;
-  selectedItemComponent: React.FC<{ item: T }>;
+  selectedItemComponent: React.FC<{ item: T | null }>;
   getKey?: (item: T) => string;
   className?: string;
   selectedItem?: T;
@@ -44,7 +44,7 @@ export function CustomDropdown<T extends DropdownItem>({
   useOutsideClick(ref, () => setIsOpen(false));
 
   return (
-    <div ref={ref}>
+    <div ref={ref} className="flex flex-1">
       <Downshift
         onChange={(selection) => {
           onItemSelect(selection as T);
@@ -62,9 +62,8 @@ export function CustomDropdown<T extends DropdownItem>({
               className="bg-background-primary hover:bg-background-primary-hoverfocus:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white"
               onClick={() => setIsOpen(!isOpen)}
             >
-              {selectedItem ? (
-                <SelectedItemComponent item={selectedItem} />
-              ) : null}
+              <SelectedItemComponent item={selectedItem ?? null} />
+
               <div className="ml-3">
                 {isOpen ? <FaAngleUp /> : <FaAngleDown />}
               </div>

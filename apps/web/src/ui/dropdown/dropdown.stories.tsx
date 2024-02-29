@@ -85,7 +85,9 @@ export const Primary: Story = {
       ItemComponentProps<DropdownItem>
     >,
     itemToString: (item) => (item ? (item as Book).title : ""),
-    selectedItemComponent: SelectedBook as React.FC<{ item: DropdownItem }>,
+    selectedItemComponent: SelectedBook as React.FC<{
+      item: DropdownItem | null;
+    }>,
   },
   render: (args) => {
     return (

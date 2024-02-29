@@ -9,7 +9,7 @@ export function RootContainer({ children }: { children: ReactNode }) {
     <div
       className={cn(
         inter.className,
-        "flex min-h-screen flex-col bg-gradient-to-br from-black to-slate-900",
+        "flex h-full flex-col bg-gradient-to-br from-black to-slate-900",
       )}
     >
       {children}
@@ -19,7 +19,7 @@ export function RootContainer({ children }: { children: ReactNode }) {
 
 export function MainContainer({ children }: { children: ReactNode }) {
   return (
-    <main id="main" className="relative flex w-full grow">
+    <main id="main" className="relative flex w-full flex-1 grow">
       {children}
     </main>
   );

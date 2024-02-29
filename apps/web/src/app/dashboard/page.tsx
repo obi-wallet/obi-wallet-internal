@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Divider, getPrice, Text } from "@/components";
+import { AccountAndCTA, Box, Divider, getPrice, Text } from "@/components";
 import { NewCoin, useNewBalances, useUSDTotalPrice } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
@@ -138,13 +138,16 @@ export default observer(function Dashboard() {
 
 const Assets = observer(function Assets() {
   return (
-    <Box className="rounded-md text-xl">
-      <div className="flex flex-row justify-between">
+    <Box className="h-full rounded-md text-xl">
+      <div className="hidden  w-full flex-1 flex-col max-md:flex">
+        <AccountAndCTA />
+      </div>
+      <div className="hidden flex-row justify-between md:flex ">
         <Text>Assets</Text>
         <Total />
       </div>
 
-      <Divider className="mt-5" />
+      <Divider className="mt-5 hidden md:block" />
       {/* create an alert banner to remind users to wait if a tx has just been issued */}
       <div className="mt-3 flex w-full flex-row items-center rounded-md bg-slate-600 p-2">
         <FaExclamation className="ml-2 mr-3" />

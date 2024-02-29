@@ -19,8 +19,8 @@ export const Account = observer(function Account() {
   const name = userData.name || "My Account";
 
   return (
-    <div className="flex w-full space-x-3">
-      <div className="h-16 w-16 rounded-full bg-sky-500">
+    <div className="max-md: flex w-full space-x-3 p-3">
+      <div className=" h-16 w-16 rounded-full bg-sky-500 ">
         {userData.avatar ? (
           <Image
             width={64}
@@ -33,8 +33,8 @@ export const Account = observer(function Account() {
           <FaCircleUser className="h-16 w-16 text-white" />
         )}
       </div>
-      <div className="flex flex-col justify-around">
-        <Text size="xl" color="white">
+      <div className="flex flex-col justify-around ">
+        <Text size="xl" color="white" className="mb-3">
           {name}
         </Text>
         <Text size="3xl" color="white" fontWeight="bold">

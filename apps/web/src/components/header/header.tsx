@@ -4,13 +4,11 @@ import { Button, Modal, renderModal } from "@/components";
 import { PrimaryLink } from "@/components/links";
 import { CURRENT_THEME } from "@/configs";
 import { useStore } from "@/contexts";
-import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FaCircleUser } from "react-icons/fa6";
 
 export const Header = observer(function Header() {
   const { mpcWalletsStore } = useStore();
@@ -18,56 +16,25 @@ export const Header = observer(function Header() {
   const primaryLinkHref = mpcWalletsStore.currentWallet ? "/dashboard" : "/";
   const authChildren = mpcWalletsStore.currentWallet ? <LogOut /> : <LogIn />;
 
-  const { userDataStore } = useStore();
-  const currentWallet = useCurrentWallet({});
-
-  const userData = currentWallet
-    ? userDataStore.getUserData(currentWallet.userEntryAddress)
-    : {};
-
   return (
     <>
-      <header className="w-full max-sm:h-16 sm:h-20">
+      <header
+        className={cn(
+          "w-full",
+          // shouldHide && "hidden",
+          "max-sm:h-16 md:h-20",
+          "z-100 fixed left-0 right-0 top-0 z-[1000]",
+        )}
+      >
         <div
           className={cn(
-            "bg-background-primary flex h-full w-full items-center justify-between px-8 shadow max-sm:hidden",
+            "bg-background-primary flex h-full w-full items-center justify-between px-3 shadow md:px-8",
           )}
         >
           <PrimaryLink href={primaryLinkHref}>
-            {/* <Text
-              color="white"
-              size="2xl"
-              fontWeight="bold"
-              className="leading-3"
-            >
-              Obi
-            </Text> */}
-
             <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
           </PrimaryLink>
           {authChildren}
-        </div>
-        <div
-          className={cn(
-            "flex h-full w-full items-center justify-between p-4 shadow",
-            "sm:hidden",
-          )}
-        >
-          <div className="bg-background-primary h-11 w-11 rounded-full opacity-80">
-            {userData.avatar ? (
-              <Image
-                width={44}
-                height={44}
-                className="h-11 w-11 rounded-full object-cover"
-                src={userData.avatar}
-                alt={userData.name as string}
-              />
-            ) : (
-              <FaCircleUser className="h-11 w-11 text-white" />
-            )}
-          </div>
-
-          {/* <FaQrcode className="h-11 w-11 rounded text-white" /> */}
         </div>
       </header>
     </>
