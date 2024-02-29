@@ -55,7 +55,13 @@ export class KVStore implements AbstractKVStore {
     }
 
     if (R.has("encrypted", entry)) {
-      return JSON.parse(await decrypt(entry.encrypted));
+      try {
+        const decrypted = await decrypt(entry.encrypted);
+        return JSON.parse(decrypted);
+      } catch (e) {
+        console.error(e);
+        return undefined;
+      }
     }
 
     return JSON.parse(entry.value);
