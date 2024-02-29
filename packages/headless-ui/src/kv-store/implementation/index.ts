@@ -39,6 +39,7 @@ export class KVStore implements AbstractKVStore {
 
   public async get<T = unknown>(key: string): Promise<T | undefined> {
     const entry = await this.db.entries.get(key);
+
     if (!entry) {
       try {
         const legacyData = await this.legacy.get<T>(key);
@@ -54,7 +55,13 @@ export class KVStore implements AbstractKVStore {
     }
 
     if (R.has("encrypted", entry)) {
-      return JSON.parse(await decrypt(entry.encrypted));
+      try {
+        const decrypted = await decrypt(entry.encrypted);
+        return JSON.parse(decrypted);
+      } catch (e) {
+        console.error(e);
+        return undefined;
+      }
     }
 
     return JSON.parse(entry.value);
@@ -93,24 +100,35 @@ class EncryptionKeyDexie extends Dexie {
   }
 }
 
-async function getEncryptionKey() {
-  const db = new EncryptionKeyDexie();
-  const entry = await db.entries.get("key");
-  if (entry) return entry.value;
+class EncryptionKey {
+  protected static singletonPromise: Promise<CryptoKey> | null = null;
 
-  const key = await window.crypto.subtle.generateKey(
-    {
-      name: "AES-GCM",
-      length: 256,
-    },
-    false,
-    ["encrypt", "decrypt"],
-  );
-  await db.entries.put({
-    key: "key",
-    value: key,
-  });
-  return key;
+  public static async get() {
+    if (!EncryptionKey.singletonPromise) {
+      EncryptionKey.singletonPromise = EncryptionKey.getOrCreateEncryptionKey();
+    }
+    return EncryptionKey.singletonPromise;
+  }
+
+  protected static async getOrCreateEncryptionKey() {
+    const db = new EncryptionKeyDexie();
+    const entry = await db.entries.get("key");
+    if (entry) return entry.value;
+
+    const key = await window.crypto.subtle.generateKey(
+      {
+        name: "AES-GCM",
+        length: 256,
+      },
+      false,
+      ["encrypt", "decrypt"],
+    );
+    await db.entries.put({
+      key: "key",
+      value: key,
+    });
+    return key;
+  }
 }
 
 async function encrypt(data: string) {
@@ -119,7 +137,7 @@ async function encrypt(data: string) {
   const iv = window.crypto.getRandomValues(new Uint8Array(12));
   const encrypted = await window.crypto.subtle.encrypt(
     { name: "AES-GCM", iv: iv },
-    await getEncryptionKey(),
+    await EncryptionKey.get(),
     encoded,
   );
   return new Uint8Array([...iv, ...new Uint8Array(encrypted)]);
@@ -130,7 +148,7 @@ async function decrypt(data: Uint8Array) {
   const encrypted = data.slice(12);
   const decrypted = await window.crypto.subtle.decrypt(
     { name: "AES-GCM", iv: iv },
-    await getEncryptionKey(),
+    await EncryptionKey.get(),
     encrypted,
   );
   const dec = new TextDecoder();

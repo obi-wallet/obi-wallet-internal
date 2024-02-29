@@ -8,7 +8,7 @@ import astroportTokensOsmosis from "./astroport-token-lists/osmosis.json";
 import astroportTokensSei from "./astroport-token-lists/sei.json";
 
 export class CosmosSdkTokenRegistry {
-  protected static instance: CosmosSdkTokenRegistry;
+  protected static instance: CosmosSdkTokenRegistry | null = null;
   protected assets: Record<string, Asset>;
 
   protected constructor() {

@@ -64,7 +64,9 @@ export class WalletsStore {
       });
     } catch (e) {
       const error = e as Error;
-      this.state = WalletState.INVALID;
+      runInAction(() => {
+        this.state = WalletState.INVALID;
+      });
       console.error(error.message);
     }
   }
