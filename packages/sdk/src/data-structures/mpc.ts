@@ -32,8 +32,16 @@ export type MpcPreSign = z.infer<typeof MpcPreSign>;
 export const MpcShare = z
   .object({
     i: z.number(),
-    local_key: z.object({}).passthrough(),
-    sign_keys: z.object({}).passthrough(),
+    local_key: z
+      .object({
+        y_sum_s: MpcPoint,
+      })
+      .passthrough(),
+    sign_keys: z
+      .object({
+        k_i: MpcScalar,
+      })
+      .passthrough(),
     R: MpcPoint,
     sigma_i: MpcScalar,
     t_vec: z.array(MpcPoint),
