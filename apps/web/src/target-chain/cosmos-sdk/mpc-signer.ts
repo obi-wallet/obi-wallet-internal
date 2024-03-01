@@ -155,7 +155,6 @@ export class CosmosSdkMpcSigner
     const schema = z.object({
       r: z.string(),
       s: z.string(),
-      recid: z.number(),
     });
     const response = await client.queryContract({
       contract: this.wallet.homeChain.secretSigner.address,
@@ -176,14 +175,7 @@ export class CosmosSdkMpcSigner
       },
       schema,
     });
-    const signature = Buffer.from(
-      response.r.padStart(64, "0") + response.s.padStart(64, "0"),
-      "hex",
-    );
-    return encodeSecp256k1Signature(
-      getSec256k1CompressedPublicKey(this.publicKey),
-      signature,
-    );
+    return this.encodeSignature(response);
   }
 
   protected async signHashWithEasyAndBackupShare(
@@ -192,9 +184,6 @@ export class CosmosSdkMpcSigner
   ): Promise<StdSignature> {
     invariant(rootStore.current, "Root store is not initialized");
     const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
-
-    const passkey = this.wallet.owner.getUsableKeyOfType(KeyType.Passkey);
-    invariant(passkey, "No usable passkey found");
 
     const sharesLocalEncryption = new SharesLocalEncryption(this.wallet.owner);
     const { easy, backup } = await sharesLocalEncryption.decrypt({
@@ -219,11 +208,13 @@ export class CosmosSdkMpcSigner
     });
 
     const finalSignature = signers[1].create([partialSignatures[0]]);
-    const response = {
+    return this.encodeSignature({
       r: finalSignature.signature.r.scalar,
       s: finalSignature.signature.s.scalar,
-      recid: finalSignature.signature.recid,
-    };
+    });
+  }
+
+  protected encodeSignature(response: { r: string; s: string }) {
     const signature = Buffer.from(
       response.r.padStart(64, "0") + response.s.padStart(64, "0"),
       "hex",
