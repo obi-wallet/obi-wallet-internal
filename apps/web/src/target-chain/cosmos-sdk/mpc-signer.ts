@@ -206,11 +206,7 @@ export class CosmosSdkMpcSigner
 
     console.log(backup);
 
-    try {
-      const signers = mpcPackage.createSigners([easy, backup]);
-    } catch (e) {
-      console.log("ERROR", e);
-    }
+    const signers = mpcPackage.createSigners([backup]);
     console.log(signers);
 
     if (address !== this.address) {
@@ -245,6 +241,8 @@ export class CosmosSdkMpcSigner
       s: z.string(),
       recid: z.number(),
     });
+
+    // TODO: this doesn't work because we didn't add a completed offline stage to the contract for the backup share.
     const response = await client.queryContract({
       contract: this.wallet.homeChain.secretSigner.address,
       query: {
@@ -263,6 +261,54 @@ export class CosmosSdkMpcSigner
       },
       schema,
     });
+    const signature = Buffer.from(
+      response.r.padStart(64, "0") + response.s.padStart(64, "0"),
+      "hex",
+    );
+    return encodeSecp256k1Signature(
+      getSec256k1CompressedPublicKey(this.publicKey),
+      signature,
+    );
+  }
+
+  protected async signHashWithEasyAndBackupShare(
+    address: string,
+    hash: Uint8Array,
+  ): Promise<StdSignature> {
+    invariant(rootStore.current, "Root store is not initialized");
+    const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
+
+    const passkey = this.wallet.owner.getUsableKeyOfType(KeyType.Passkey);
+    invariant(passkey, "No usable passkey found");
+
+    const sharesLocalEncryption = new SharesLocalEncryption(this.wallet.owner);
+    const { easy, backup } = await sharesLocalEncryption.decrypt({
+      easy: this.wallet.encryptedEasyShare,
+      backup: this.wallet.encryptedBackupShare,
+    });
+
+    invariant(easy, "No easy share found");
+    invariant(backup, "No backup share found");
+
+    const signers = mpcPackage.createSigners([
+      easy.preSignForBackupShare,
+      backup,
+    ]);
+
+    if (address !== this.address) {
+      throw new Error(`Address ${address} not found in wallet`);
+    }
+
+    const partialSignatures = signers.map((signer) => {
+      return signer.partial(hash);
+    });
+
+    const finalSignature = signers[1].create([partialSignatures[0]]);
+    const response = {
+      r: finalSignature.signature.r.scalar,
+      s: finalSignature.signature.s.scalar,
+      recid: finalSignature.signature.recid,
+    };
     const signature = Buffer.from(
       response.r.padStart(64, "0") + response.s.padStart(64, "0"),
       "hex",
