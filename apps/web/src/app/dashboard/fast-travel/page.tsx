@@ -45,7 +45,7 @@ export default observer(function FastTravel() {
             <div className="space-evenly grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {Object.keys(toAssets)?.map((assetKey) => (
                 <Box
-                  key={`asset-${assetKey}`}
+                  key={assetKey}
                   className={cn(
                     " hover:bg-background-primary-hover col-span-1 flex w-full cursor-pointer flex-row bg-gray-700",
                     toAssets[assetKey]?.disabled &&

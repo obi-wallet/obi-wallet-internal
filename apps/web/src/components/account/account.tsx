@@ -19,7 +19,7 @@ export const Account = observer(function Account() {
   const name = userData.name || "My Account";
 
   return (
-    <div className="max-md: flex w-full space-x-3 p-3">
+    <div className="flex w-full space-x-3 p-3">
       <div className=" h-16 w-16 rounded-full bg-sky-500 ">
         {userData.avatar ? (
           <Image
