@@ -2,6 +2,7 @@ import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKeyQuery } from "@/hooks/use-public-key";
+import { SharesLocalEncryption } from "@/lib/encryption";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
   useMutation,
@@ -193,6 +194,47 @@ export function useWalletBackupIncludesEasyShareCheck(): WalletHealthCheck {
   return {
     label: "Wallet backup includes easy share",
     resolve: wallet?.encryptedEasyShare ? resolve : undefined,
+    query,
+  };
+}
+
+export function useWalletHasEasyShareCheck(): WalletHealthCheck {
+  const wallet = useCurrentWallet({});
+
+  const query = useQuery({
+    queryKey: ["wallet-has-easy-share", wallet?.userEntryAddress],
+    queryFn: async () => {
+      invariant(wallet, "Expected wallet to be set.");
+      return !!wallet.encryptedEasyShare;
+    },
+    enabled: !!wallet,
+  });
+
+  return {
+    label: "Wallet has easy share",
+    query,
+  };
+}
+
+export function useWalletHasUsableBackupShareCheck(): WalletHealthCheck {
+  const wallet = useCurrentWallet({});
+
+  const query = useQuery({
+    queryKey: ["wallet-has-usable-backup-share", wallet?.userEntryAddress],
+    queryFn: async () => {
+      invariant(wallet, "Expected wallet to be set.");
+      const sharesLocalEncryption = new SharesLocalEncryption(wallet.owner);
+      const shares = await sharesLocalEncryption.decrypt({
+        easy: wallet.encryptedEasyShare,
+        backup: wallet.encryptedBackupShare,
+      });
+      return !!shares;
+    },
+    enabled: !!wallet,
+  });
+
+  return {
+    label: "Wallet has usable backup share",
     query,
   };
 }

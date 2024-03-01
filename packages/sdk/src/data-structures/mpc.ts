@@ -31,21 +31,12 @@ export type MpcPreSign = z.infer<typeof MpcPreSign>;
 
 export const MpcShare = z
   .object({
-    // TODO: this is probably problematic
-    // sign_keys: z.object({
-    //   k_i: MpcScalar,
-    // }),
-    sign_keys: z.any(),
+    i: z.number(),
+    local_key: z.object({}).passthrough(),
+    sign_keys: z.object({}).passthrough(),
     R: MpcPoint,
     sigma_i: MpcScalar,
-    // TODO: this is probably problematic
-    // local_key: z.object({
-    //   y_sum_s: MpcPoint,
-    // }),
-    local_key: z.any(),
-    // TODO: this is probably problematic
-    i: z.any(),
-    t_vec: z.any(),
+    t_vec: z.array(MpcPoint),
   })
   .passthrough();
 
