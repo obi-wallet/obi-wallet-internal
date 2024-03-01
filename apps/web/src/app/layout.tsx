@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html className=" h-full ">
-      <body className="h-full overflow-hidden">
+      <body className="flex min-h-screen flex-col ">
         <RootContainer>
           <Provider>
             <Header />

@@ -84,7 +84,7 @@ export function Navbar() {
   const mainURISegment = pathname.split("/")[2] || "";
 
   return (
-    <nav className="bg-background-secondary fixed z-50 flex  max-md:bottom-0  max-md:left-0  max-md:w-full md:h-full md:pt-20">
+    <nav className={cn("bg-background-secondary")}>
       <div className="flex h-full w-[330px] flex-col px-7 pt-16 max-md:hidden">
         <div className="hidden   w-full flex-col md:flex">
           <AccountAndCTA />

@@ -23,7 +23,6 @@ export const Header = observer(function Header() {
           "w-full",
           // shouldHide && "hidden",
           "max-sm:h-16 md:h-20",
-          "z-100 fixed left-0 right-0 top-0 z-[1000]",
         )}
       >
         <div
