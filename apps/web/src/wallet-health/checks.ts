@@ -3,6 +3,7 @@ import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKeyQuery } from "@/hooks/use-public-key";
 import { SharesLocalEncryption } from "@/lib/encryption";
+import { staleTime } from "@/lib/stale-time";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
   useMutation,
@@ -41,6 +42,21 @@ function useWalletBackupQuery() {
         }),
       );
     },
+    enabled: !!wallet,
+  });
+}
+
+export function useBackupWalletAutomatically() {
+  const wallet = useCurrentWallet({});
+  const backupWalletMutation = useBackupWalletMutation();
+  useQuery({
+    queryKey: ["wallet-backup-mutation", wallet?.userEntryAddress],
+    queryFn: async () => {
+      backupWalletMutation.mutate();
+      return true;
+    },
+    gcTime: staleTime({ days: 1 }),
+    staleTime: staleTime({ days: 1 }),
     enabled: !!wallet,
   });
 }
