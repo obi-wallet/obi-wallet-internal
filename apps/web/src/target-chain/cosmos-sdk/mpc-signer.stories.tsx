@@ -1,21 +1,21 @@
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { newFetchPublicKey } from "@/hooks/use-public-key";
 import {
   AutomatedTest,
   automatedTestPlay,
   providerWithWalletDecorator,
 } from "@/storybook-helpers";
-import { Meta, StoryObj } from "@storybook/react";
-import { useQuery } from "@obi-wallet/headless-ui";
-import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { TargetChainId } from "@/target-chain";
+import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
 import { StdSignature } from "@cosmjs/amino";
-import invariant from "tiny-invariant";
-import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
-import { BackupShare, MpcWallet } from "@obi-wallet/sdk";
-import { TargetChainId } from "@/target-chain";
-import { newFetchPublicKey } from "@/hooks/use-public-key";
 import { sha256 } from "@cosmjs/crypto";
-import { useStore } from "@/contexts";
-import { MOCK_MPC_DISTRIBUTE_SHARES_RESPONSE } from "@/mocks/mpc";
+import { fromBase64 } from "@cosmjs/encoding";
+import { useQuery } from "@obi-wallet/headless-ui";
+import { MpcWallet } from "@obi-wallet/sdk";
+import { Meta, StoryObj } from "@storybook/react";
+import * as secp256k1 from "secp256k1";
+import invariant from "tiny-invariant";
 
 const meta = {
   title: "Tests/target-chain/cosmos-sdk/mpc-signer",
@@ -40,13 +40,6 @@ class TestCosmosSdkMpcSigner extends CosmosSdkMpcSigner {
     hash: Uint8Array,
   ): Promise<StdSignature> {
     return await super.signHashWithEasyShare(address, hash);
-  }
-
-  public override async signHashWithBackupShare(
-    address: string,
-    hash: Uint8Array,
-  ): Promise<StdSignature> {
-    return await super.signHashWithBackupShare(address, hash);
   }
 
   public override async signHashWithEasyAndBackupShare(
@@ -75,51 +68,28 @@ export const SignHashWithEasyShare: Story = {
 
         invariant(account, "Expected account to be set");
 
-        const hash = sha256(new Uint8Array(32));
+        const message = "hello world";
+        const hash = sha256(Buffer.from(message, "utf-8"));
         const signature = await signer.signHashWithEasyShare(
           account.address,
           hash,
         );
-        return !!signature;
-      },
-      enabled: !!wallet,
-    });
 
-    return <AutomatedTest done={!query.isLoading} success={query.isSuccess} />;
-  },
-  play: automatedTestPlay,
-};
-
-export const SignHashWithBackupShare: Story = {
-  name: "signHashWithBackupShare",
-  decorators: [providerWithWalletDecorator],
-  render: function SignHashWithBackupShareTest() {
-    const wallet = useCurrentWallet({});
-    const query = useQuery({
-      queryKey: ["signHashWithBackupShare", wallet?.userEntryAddress],
-      queryFn: async () => {
-        invariant(wallet, "Expected wallet to be set.");
-
-        const signer = await TestCosmosSdkMpcSigner.fromWallet(
-          wallet,
-          CosmosSdkChainId.Sei,
-        );
-        const account = (await signer.getAccounts())[0];
-
-        invariant(account, "Expected account to be set");
-
-        const hash = sha256(new Uint8Array(32));
-        const signature = await signer.signHashWithBackupShare(
-          account.address,
+        return secp256k1.ecdsaVerify(
+          fromBase64(signature.signature),
           hash,
+          fromBase64(signature.pub_key.value),
         );
-        console.log(signature);
-        return !!signature;
       },
       enabled: !!wallet,
     });
 
-    return <AutomatedTest done={!query.isLoading} success={query.isSuccess} />;
+    return (
+      <AutomatedTest
+        done={query.isSuccess || query.isError}
+        success={query.data}
+      />
+    );
   },
   play: automatedTestPlay,
 };
@@ -142,68 +112,28 @@ export const SignHashWithEasyAndBackupShare: Story = {
 
         invariant(account, "Expected account to be set");
 
-        const hash = sha256(new Uint8Array(32));
+        const message = "hello world";
+        const hash = sha256(Buffer.from(message, "utf-8"));
         const signature = await signer.signHashWithEasyAndBackupShare(
           account.address,
           hash,
         );
-        console.log(signature);
-        return !!signature;
+
+        return secp256k1.ecdsaVerify(
+          fromBase64(signature.signature),
+          hash,
+          fromBase64(signature.pub_key.value),
+        );
       },
       enabled: !!wallet,
     });
 
-    return <AutomatedTest done={!query.isLoading} success={query.isSuccess} />;
-  },
-  play: automatedTestPlay,
-};
-
-export const MpcFoo: Story = {
-  name: "mpcFoo",
-  decorators: [providerWithWalletDecorator],
-  render: function SignHashWithBackupShareTest() {
-    const wallet = useCurrentWallet({});
-    const { mpcStore, wasmStore } = useStore();
-    const query = useQuery({
-      queryKey: ["distributeShares", wallet?.userEntryAddress],
-      queryFn: async () => {
-        const mpcPackage = await wasmStore.getMpcEcdsaWasm();
-
-        // const shares = await mpcStore.getShares();
-        const shares = MOCK_MPC_DISTRIBUTE_SHARES_RESPONSE;
-        try {
-          const signers = mpcPackage.createSigners([
-            shares.easyShare.preSignForBackupShare,
-            BackupShare.parse(shares.backupShare),
-          ]);
-          console.log(signers.length);
-          console.log("that works!");
-        } catch (e) {
-          console.error("DOES NOT WORK");
-          console.error(e);
-        }
-        // invariant(wallet, "Expected wallet to be set.");
-        //
-        // const signer = await TestCosmosSdkMpcSigner.fromWallet(
-        //     wallet,
-        //     CosmosSdkChainId.Sei,
-        // );
-        // const account = (await signer.getAccounts())[0];
-        //
-        // invariant(account, "Expected account to be set");
-        //
-        // const hash = sha256(new Uint8Array(32));
-        // const signature = await signer.signHashWithBackupShare(
-        //     account.address,
-        //     hash,
-        // );
-        // console.log(signature);
-        // return !!signature;
-      },
-      enabled: !!wallet,
-    });
-
-    return <AutomatedTest done={!query.isLoading} success={query.isSuccess} />;
+    return (
+      <AutomatedTest
+        done={query.isSuccess || query.isError}
+        success={query.data}
+      />
+    );
   },
   play: automatedTestPlay,
 };

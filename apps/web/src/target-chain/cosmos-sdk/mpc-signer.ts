@@ -159,95 +159,10 @@ export class CosmosSdkMpcSigner
     });
     const response = await client.queryContract({
       contract: this.wallet.homeChain.secretSigner.address,
+      codeHash: this.wallet.homeChain.secretSigner.codeHash,
       query: {
         sign_bytes: {
           participants: [1, 3],
-          user_entry_address: this.wallet.userEntryAddress,
-          user_entry_code_hash: userEntryCodeHash,
-          other_partial_sigs: partialSignatures,
-          prepend: false,
-          is_already_hashed: true,
-          bytes: Buffer.from(hash).toString("hex"),
-          bytes_signed_by_signers: [
-            Buffer.from(await passkeySigner.signHash(hash)).toString("hex"),
-          ],
-        },
-      },
-      schema,
-    });
-    const signature = Buffer.from(
-      response.r.padStart(64, "0") + response.s.padStart(64, "0"),
-      "hex",
-    );
-    return encodeSecp256k1Signature(
-      getSec256k1CompressedPublicKey(this.publicKey),
-      signature,
-    );
-  }
-
-  protected async signHashWithBackupShare(
-    address: string,
-    hash: Uint8Array,
-  ): Promise<StdSignature> {
-    console.log("here we are");
-    invariant(rootStore.current, "Root store is not initialized");
-    const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
-
-    const passkey = this.wallet.owner.getUsableKeyOfType(KeyType.Passkey);
-    invariant(passkey, "No usable passkey found");
-
-    console.log(passkey);
-
-    const sharesLocalEncryption = new SharesLocalEncryption(this.wallet.owner);
-    const { easy, backup } = await sharesLocalEncryption.decrypt({
-      easy: this.wallet.encryptedEasyShare,
-      backup: this.wallet.encryptedBackupShare,
-    });
-
-    console.log(backup);
-
-    const signers = mpcPackage.createSigners([backup]);
-    console.log(signers);
-
-    if (address !== this.address) {
-      throw new Error(`Address ${address} not found in wallet`);
-    }
-
-    const partialSignatures = signers.map((signer) => {
-      return signer.partial(hash).scalar;
-    });
-
-    const passkeySigner = new Secp256k1PrivateKeySigner(
-      passkey.payload.privateKey,
-    );
-
-    const client = new SecretJsClient(this.wallet.homeChainId);
-
-    const userEntryCodeHash = await client.withSecretNetworkClient(
-      async (secretNetworkClient) => {
-        const info = await secretNetworkClient.query.compute.contractInfo({
-          contract_address: this.wallet.userEntryAddress,
-        });
-        const response =
-          await secretNetworkClient.query.compute.codeHashByCodeId({
-            code_id: info.contract_info?.code_id,
-          });
-        return response.code_hash;
-      },
-    );
-
-    const schema = z.object({
-      r: z.string(),
-      s: z.string(),
-      recid: z.number(),
-    });
-
-    // TODO: this doesn't work because we didn't add a completed offline stage to the contract for the backup share.
-    const response = await client.queryContract({
-      contract: this.wallet.homeChain.secretSigner.address,
-      query: {
-        sign_bytes: {
-          participants: [2, 3],
           user_entry_address: this.wallet.userEntryAddress,
           user_entry_code_hash: userEntryCodeHash,
           other_partial_sigs: partialSignatures,
