@@ -12,13 +12,15 @@ export function DashboardCustomLayout({
   nav?: ReactNode;
 }) {
   return (
-    <section
-      className={cn(
-        "flex max-h-[calc(100vh_-_80px)] flex-grow flex-col-reverse max-md:max-h-[calc(100dvh_-_60px)] md:flex-row",
-      )}
-    >
+    <section className={cn("flex flex-grow flex-row ")}>
       {nav}
-      <div className={cn("md:p-4", "flex-grow overflow-auto ")}>
+      <div
+        className={cn(
+          "p-4",
+          "flex-grow max-md:py-0",
+          "overflow-auto max-md:max-h-[calc(100vh-96px-80px)] md:max-h-[calc(100vh-80px)]",
+        )}
+      >
         <UserInteractionsHandlers>{children}</UserInteractionsHandlers>
         {/* </div> */}
       </div>

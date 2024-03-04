@@ -88,7 +88,7 @@ export default observer(function Receive() {
               <span className="mt-5 text-center text-xs text-white">
                 {address}
               </span>
-              <span className="mt-1  text-center text-sm font-bold  uppercase text-blue-600 transition duration-300  group-hover:scale-105 group-active:scale-100">
+              <span className="mt-1 text-center text-sm font-bold  uppercase text-green-600 transition duration-300  group-hover:scale-105 group-active:scale-100">
                 Click to Copy
               </span>
             </div>

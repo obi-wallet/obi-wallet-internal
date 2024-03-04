@@ -127,7 +127,7 @@ export default observer(function Dashboard() {
   useCurrentWallet({ redirectTo: "/" });
 
   return (
-    <div className="flex h-full w-full flex-col space-y-4 text-white">
+    <div className="flex w-full  flex-col space-y-4 text-white">
       <Assets />
       {/* <Box title="Chart" /> */}
       {/* <Box title="Top Positions" /> */}
@@ -137,16 +137,13 @@ export default observer(function Dashboard() {
 
 const Assets = observer(function Assets() {
   return (
-    <Box className="h-full rounded-md text-xl">
-      <div className="hidden  w-full flex-1 flex-col max-md:flex">
-        <AccountAndCTA />
-      </div>
-      <div className="hidden flex-row justify-between md:flex ">
+    <Box className="w-full grow rounded-md text-xl">
+      <div className="flex flex-row justify-between ">
         <Text>Assets</Text>
         <Total />
       </div>
 
-      <Divider className="mt-5 hidden md:block" />
+      <Divider className="mt-5 " />
       {/* create an alert banner to remind users to wait if a tx has just been issued */}
       {/* <div className="mt-3 flex w-full flex-row items-center rounded-md bg-slate-600 p-2">
         <FaExclamation className="ml-2 mr-3" />
@@ -155,7 +152,6 @@ const Assets = observer(function Assets() {
           will appear here once visible on the network.
         </Text>
       </div> */}
-
       <PendingAssets />
       <AssetBalance />
     </Box>

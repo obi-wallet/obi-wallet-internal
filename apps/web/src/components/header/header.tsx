@@ -4,11 +4,13 @@ import { Button, Modal, RainbowDivider, renderModal } from "@/components";
 import { PrimaryLink } from "@/components/links";
 import { CURRENT_THEME } from "@/configs";
 import { useStore } from "@/contexts";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FaCircleUser } from "react-icons/fa6";
 
 export const Header = observer(function Header() {
   const { mpcWalletsStore } = useStore();
@@ -16,16 +18,24 @@ export const Header = observer(function Header() {
   const primaryLinkHref = mpcWalletsStore.currentWallet ? "/dashboard" : "/";
   const authChildren = mpcWalletsStore.currentWallet ? <LogOut /> : <LogIn />;
 
+  const { userDataStore } = useStore();
+  const currentWallet = useCurrentWallet({});
+
+  const userData = currentWallet
+    ? userDataStore.getUserData(currentWallet.userEntryAddress)
+    : {};
+
   return (
     <>
       <header className="w-full max-sm:h-16 md:h-20">
-        <div
-          className={cn(
-            "bg-background-primary flex h-full w-full items-center justify-between px-3 shadow md:px-8",
-          )}
-        >
-          <PrimaryLink href={primaryLinkHref}>
-            {/* <Text
+        <div className="flex h-full w-full flex-col max-md:hidden">
+          <div
+            className={cn(
+              "bg-background-primary flex h-full w-full items-center justify-between px-3 shadow md:px-8",
+            )}
+          >
+            <PrimaryLink href={primaryLinkHref}>
+              {/* <Text
               color="white"
               size="2xl"
               fontWeight="bold"
@@ -44,6 +54,28 @@ export const Header = observer(function Header() {
             {authChildren}
           </div>
           <RainbowDivider />
+        </div>
+        <div
+          className={cn(
+            "flex h-full w-full items-center justify-between p-4 shadow",
+            "md:hidden",
+          )}
+        >
+          <div className="bg-background-primary h-11 w-11 rounded-full opacity-80">
+            {userData.avatar ? (
+              <Image
+                width={44}
+                height={44}
+                className="h-11 w-11 rounded-full object-cover"
+                src={userData.avatar}
+                alt={userData.name as string}
+              />
+            ) : (
+              <FaCircleUser className="h-11 w-11 text-white" />
+            )}
+          </div>
+
+          {/* <FaQrcode className="h-11 w-11 rounded text-white" /> */}
         </div>
       </header>
     </>

@@ -53,23 +53,9 @@ export function Navbar() {
   const mainURISegment = pathname.split("/")[2] || "";
 
   return (
-    <nav className="bg-background-secondary relative max-sm:absolute max-sm:bottom-0 max-sm:h-24 max-sm:w-full sm:h-full">
+    <nav className="bg-background-secondary relative max-md:absolute max-md:bottom-0 max-md:h-24 max-md:w-full md:h-full">
       <div className="flex h-full w-[330px] flex-col px-7 pt-16 max-md:hidden">
-        <Account />
-        <div className="my-7 flex gap-5 text-white">
-          <Link
-            href="/dashboard/transaction/send"
-            className="bg-background-primary flex  flex-1 justify-center rounded-md p-3"
-          >
-            <span className="text-sm">Send</span>
-          </Link>
-          <Link
-            href="/dashboard/transaction/receive"
-            className="bg-background-primary flex  flex-1 justify-center rounded-md p-3"
-          >
-            <span className="text-sm">Receive</span>
-          </Link>
-        </div>
+        <AccountAndCTA />
         <RainbowDivider className="h-[2px]" />
 
         <div className="mt-7 grow">
@@ -154,13 +140,13 @@ export function AccountAndCTA() {
       <div className="mb-4 mt-4 flex  gap-5 text-white">
         <Link
           href="/dashboard/transaction/send"
-          className="flex flex-1  justify-center rounded-md bg-blue-600 p-3"
+          className="bg-background-primary flex  flex-1 justify-center rounded-md p-3"
         >
           <span className=" text-sm">Send</span>
         </Link>
         <Link
           href="/dashboard/transaction/receive"
-          className="flex flex-1  justify-center rounded-md bg-blue-600 p-3"
+          className="bg-background-primary flex  flex-1 justify-center rounded-md p-3"
         >
           <span className=" text-sm">Receive</span>
         </Link>
