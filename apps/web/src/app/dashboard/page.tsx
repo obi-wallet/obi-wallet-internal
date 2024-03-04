@@ -1,6 +1,6 @@
 "use client";
 
-import { AccountAndCTA, Box, Divider, getPrice, Text } from "@/components";
+import { Box, Divider, getPrice, Text } from "@/components";
 import { NewCoin, useNewBalances, useUSDTotalPrice } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
