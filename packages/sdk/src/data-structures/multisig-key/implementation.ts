@@ -8,7 +8,6 @@ import { MultisigKeySchema } from "./schema";
 import { ChainId } from "../../chains";
 import { MultisigPublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
-import { Message } from "../../transactions";
 import { AbstractDataStructure } from "../abstract";
 import {
   Key,
@@ -18,12 +17,8 @@ import {
 } from "../key";
 import { KeySchema } from "../key/schema";
 import { AbstractSerialized } from "../migratable";
-import { WalletMeta } from "../multisig-wallet";
 
 export class MultisigKey {
-  // TODO: private, getters
-  public evmSigningAddress: string;
-  public evmUserContractAddress: string;
   public get schema() {
     return MultisigKeySchema;
   }
@@ -39,10 +34,7 @@ export class MultisigKey {
         serialized?: AbstractSerialized<typeof MultisigKeySchema>,
       ) => MultisigKey;
     },
-  ) {
-    this.evmSigningAddress = "";
-    this.evmUserContractAddress = "";
-  }
+  ) {}
 
   public toJSON(): AbstractSerialized<typeof MultisigKeySchema> | undefined {
     if (!this._keys) {
@@ -51,8 +43,6 @@ export class MultisigKey {
     return {
       keys: this._keys.map((key: Key) => key.toJSON()),
       threshold: this._threshold,
-      evmSigningAddress: this.evmSigningAddress,
-      evmUserContractAddress: this.evmUserContractAddress,
     };
   }
 
@@ -221,20 +211,6 @@ export class MultisigKey {
 
   public removeKeyOfType<T extends KeyType>(type: T) {
     this._keys = this._keys.filter((key) => key.type !== type);
-  }
-
-  public async createSigner(
-    { messages }: { messages: Message[] },
-    evmSigningAddress?: string,
-    walletMeta?: WalletMeta,
-  ) {
-    console.log("in createSigner(), messages are: " + JSON.stringify(messages));
-    return await this.sdk.transactions.createMultisigSigner({
-      multisigPublicKey: this.publicKey,
-      messages,
-      evmSigningAddress,
-      walletMeta,
-    });
   }
 
   protected get sdk() {

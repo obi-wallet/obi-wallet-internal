@@ -99,36 +99,6 @@ export class Wallets {
     return simpleAccount.getSender();
   }
 
-  public async recoverWallet({
-    serializedData,
-    newOwner,
-  }: {
-    serializedData: Serialized<MultisigWallet>["data"];
-    newOwner: MultisigKey;
-  }) {
-    console.log("creating wallet...");
-    const wallet = this._factory.create({
-      type: "multisig",
-      data: serializedData,
-    });
-    console.log("calling wallet.updateOwner...");
-    invariant(
-      serializedData.evmSigningAddress.length > 0,
-      "no serializedData evmSigningAddress",
-    );
-    const response = await wallet.updateOwner(
-      newOwner,
-      serializedData.evmSigningAddress,
-      serializedData.evmUserContractAddress,
-    );
-    wallet.setEvmSigningAddress(serializedData.evmSigningAddress, true);
-    wallet.setEvmUserContractAddress(serializedData.evmUserContractAddress);
-    if (response.approved && response.payload.success) {
-      this.upsertWallet(wallet);
-    }
-    return response;
-  }
-
   public upsertWallet(wallet: MultisigWallet) {
     this._wallets.push(wallet);
     this.setCurrentWallet(wallet);

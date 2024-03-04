@@ -37,8 +37,6 @@ export class CosmosSdkMessages extends AbstractMessages<string> {
     _newOwner: MultisigKey,
     _newOwnerAddress: string,
     _userAccountContractAddress: string,
-    _evmUserContractAddress: string,
-    _evmSigningAddress: string,
     _sender: string,
   ): unknown {
     throw new Error("Method not implemented.");

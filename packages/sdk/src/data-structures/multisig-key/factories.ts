@@ -6,20 +6,11 @@ import { ChainId } from "../../chains";
 import { Key, ObservableKey } from "../key";
 import { AbstractMigratable } from "../migratable";
 
-export type SetupMultisigKeyDetails = {
-  homeAccountAddress: string;
-  evmSigningAddress: string;
-  evmUserContractAddress: string;
-  ownerIndex: number;
-};
-
 export function createMultisigKey(
   chain: ChainId,
   serialized: AbstractMigratable<typeof MultisigKeySchema> = {
     keys: [],
     threshold: 1,
-    evmSigningAddress: "",
-    evmUserContractAddress: "",
   },
   factories = {
     Key,
@@ -48,13 +39,9 @@ export function createObservableMultisigKey(
     Key: ObservableKey,
     createMultisigKey: createObservableMultisigKey,
   });
-  makeObservable<
-    MultisigKey,
-    "_setupDetails" | "_chainId" | "_keys" | "_threshold" | "setKey"
-  >(
+  makeObservable<MultisigKey, "_chainId" | "_keys" | "_threshold" | "setKey">(
     key,
     {
-      _setupDetails: observable,
       _chainId: observable,
       _keys: observable,
       _threshold: observable,

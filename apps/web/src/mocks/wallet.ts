@@ -16,8 +16,6 @@ export const MOCK_WALLET_DATA = MpcWallet.schema.migratableSchema.parse({
       },
     ],
     threshold: 1,
-    evmSigningAddress: "",
-    evmUserContractAddress: "",
   },
   userEntryAddress: "secret1ff7zqrchxwlgdwtw78d460cp7y435h7c5hh2u9",
   encryptedShares: {

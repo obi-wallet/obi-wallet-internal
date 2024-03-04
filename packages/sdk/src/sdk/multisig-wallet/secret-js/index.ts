@@ -77,8 +77,6 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
     newOwner: MultisigKey,
     oldSigner: Secp256k1PrivateKeySigner,
     newSigner: Secp256k1PrivateKeySigner,
-    evmSigningAddress: string,
-    evmUserContractAddress: string,
   ): Promise<
     | {
         approved: true;
@@ -99,8 +97,6 @@ export class SecretJsMultisigWalletSdk extends AbstractMultisigWalletSdk {
         address: this.wallet.proxyAddress,
         codeId: chain.currentCodeIds.userAccount,
       },
-      evmUserContractAddress: evmUserContractAddress,
-      evmSigningAddress: evmSigningAddress,
       owner: {
         threshold: String(newOwner.threshold),
         keys: newOwner.keys.map(({ type, publicKey }) => {

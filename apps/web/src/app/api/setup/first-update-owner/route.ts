@@ -98,8 +98,6 @@ export async function POST(request: Request) {
     ownerAddress,
     userEntryAddress,
     userEntryCodeHash,
-    "",
-    "",
     wallet.address,
   );
 

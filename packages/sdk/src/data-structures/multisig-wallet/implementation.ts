@@ -43,8 +43,6 @@ export class MultisigWallet {
     protected _chainId: ChainId,
     protected _owner: MultisigKey,
     protected _proxyAddress: string,
-    protected _evmSigningAddress: string,
-    protected _evmUserContractAddress: string,
     protected _gatekeeperConfig: GatekeeperConfig,
     protected _singlesigWallets: SinglesigWallet[],
     protected _currentAccount: CurrentAccountMeta | null,
@@ -66,8 +64,6 @@ export class MultisigWallet {
         gatekeeperConfig: this._gatekeeperConfig.toJSON(),
         singlesigWallets: this._singlesigWallets.map((s) => s.toJSON()),
         currentAccount: this._currentAccount,
-        evmSigningAddress: this._evmSigningAddress,
-        evmUserContractAddress: this._evmUserContractAddress,
       },
     };
   }
@@ -89,14 +85,6 @@ export class MultisigWallet {
 
   public get chain() {
     return Chain.information(this._chainId);
-  }
-
-  public get evmUserContractAddress() {
-    return this._evmUserContractAddress;
-  }
-
-  public get evmSigningAddress() {
-    return this._evmSigningAddress;
   }
 
   public get isDemo() {
@@ -139,11 +127,7 @@ export class MultisigWallet {
     return await this.multisigWalletSdk.updateWallet();
   }
 
-  public async updateOwner(
-    newOwner: MultisigKey,
-    evmSigningAddress: string,
-    evmUserContractAddress: string,
-  ) {
+  public async updateOwner(newOwner: MultisigKey) {
     // remove email recovery keys from new owner: they are 1 time
     const indexToRemove = newOwner.keys.findIndex(
       (key) => key.type === KeyType.EmailRecovery,
@@ -168,8 +152,6 @@ export class MultisigWallet {
           // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
           newOwner.getUsableKeyOfType(KeyType.Phone)?.payload.privateKey!,
       ),
-      evmSigningAddress,
-      evmUserContractAddress,
     );
     if (response.approved && response.payload.success) {
       this.setOwner(newOwner);
@@ -201,24 +183,6 @@ export class MultisigWallet {
 
   public setCurrentAccountByMeta(account: CurrentAccountMeta | null) {
     this._currentAccount = account;
-  }
-
-  public setEvmUserContractAddress(address: string) {
-    this._evmUserContractAddress = address;
-  }
-
-  /// Also sets contract address, via paymaster
-  public setEvmSigningAddress(base64PrivKey: string, isAddress?: boolean) {
-    if (isAddress) {
-      this._evmSigningAddress = base64PrivKey;
-      return;
-    } else {
-      const wallet = new Wallet(
-        Buffer.from(base64PrivKey, "base64").toString("hex"),
-      );
-      // convert this base64 string pubKey to an ethereum address
-      this._evmSigningAddress = wallet.address;
-    }
   }
 
   public get owner() {

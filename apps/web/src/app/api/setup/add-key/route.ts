@@ -60,10 +60,6 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       publicKey: evmKeyPair.publicKey,
-      // TODO:
-      evmSigningAddress: "",
-      // TODO:
-      evmUserContractAddress: "",
     });
   } catch (e) {
     console.log(e);

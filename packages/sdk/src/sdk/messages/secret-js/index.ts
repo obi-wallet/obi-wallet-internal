@@ -387,8 +387,6 @@ export class SecretJsMessages extends AbstractMessages<string> {
     newOwnerAddress: string,
     userAccountContractAddress: string,
     userAccountCodeHash: string,
-    evmUserContractAddress: string,
-    evmSigningAddress: string,
     sender: string,
   ): Message {
     const message = new MsgExecuteContract({
@@ -398,8 +396,8 @@ export class SecretJsMessages extends AbstractMessages<string> {
       msg: {
         first_update_owner: {
           first_owner: newOwnerAddress,
-          evm_contract_address: evmUserContractAddress,
-          evm_signing_address: evmSigningAddress,
+          evm_contract_address: "",
+          evm_signing_address: "",
           signers: {
             signers: this.getSigners(
               newOwner.keys as unknown as Array<{

@@ -143,8 +143,6 @@ export abstract class AbstractMessages<T> {
     newOwnerAddress: string,
     userEntryContractAddress: string,
     userEntryCodeHash: string,
-    evmUserContractAddress: string,
-    evmSigningAddress: string,
     sender: string,
   ): Message;
 }
