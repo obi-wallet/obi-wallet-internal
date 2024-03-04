@@ -1,4 +1,4 @@
-import { Header, PasskeyNotification } from "@/components";
+import { Header } from "@/components";
 import { TOSModal } from "@/components/modals/tos";
 import { MainContainer, RootContainer } from "@/layouts/root";
 import type { Metadata } from "next";
@@ -17,12 +17,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html>
-      <body>
+    <html className=" h-full ">
+      <body className="flex min-h-screen flex-col ">
         <RootContainer>
           <Provider>
             <Header />
-            <PasskeyNotification />
             <MainContainer>{children}</MainContainer>
             <TOSModal />
             <div id="modal-root" />

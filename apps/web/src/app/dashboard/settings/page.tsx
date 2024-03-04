@@ -1,8 +1,12 @@
 "use client";
 import { Box, Button, Divider, Text } from "@/components";
+import { useStore } from "@/contexts";
 import Head from "next/head";
+import { useRouter } from "next/navigation";
 
 export default function Settings() {
+  const { mpcWalletsStore } = useStore();
+  const router = useRouter();
   return (
     <>
       <Head>
@@ -28,6 +32,17 @@ export default function Settings() {
             className="text-xl"
           >
             Security Settings
+          </Button>
+          <Button
+            variant="secondary"
+            block
+            onClick={() => {
+              mpcWalletsStore.logout();
+              router.push("/");
+            }}
+            className="text-xl md:hidden"
+          >
+            Log out
           </Button>
         </div>
       </Box>

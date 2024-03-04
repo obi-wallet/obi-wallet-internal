@@ -318,13 +318,13 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   return (
     <div
       className={cn(
-        "top-0 flex h-full w-full items-center justify-center rounded-md bg-black/30 backdrop-blur-sm",
+        "top-0 flex  h-full w-full flex-1 justify-center rounded-md bg-black/30 backdrop-blur-sm",
         modal ? "absolute" : "relative",
       )}
     >
       <Box
         className={cn(
-          "w-[560px] space-y-4 pt-6 sm:shadow-lg sm:shadow-neutral-600",
+          "m-5 h-fit w-full  space-y-4 pt-10 sm:shadow-lg sm:shadow-neutral-600 md:m-10 md:max-w-[560px]",
         )}
       >
         <Text size="xl">Obi Fast Travel</Text>
@@ -361,6 +361,8 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                 onBlur={field.onBlur}
                 value={field.value.amount}
                 placeholder="0.1"
+                inputClassName="flex-4 md:flex-1 sm:flex-6"
+                rightContainerClassName=" flex-6 md:flex-1 sm:flex-4"
                 rightComponent={
                   <Dropdown
                     itemToString={(item: IAssetOption | null) =>
@@ -371,7 +373,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       (item) => item.value === field.value.asset,
                     )}
                     getKey={(item) => item.label}
-                    className=" w-60"
+                    className="flex-1"
                     itemComponent={({ getItemProps, item, isSelected }) => {
                       const {
                         onClick,
@@ -417,6 +419,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       handleFromAssetChange();
                     }}
                     selectedItemComponent={(selected) => {
+                      console.log("selected", selected.item);
                       if (!selected.item) {
                         return <div>Select</div>;
                       }
@@ -472,6 +475,8 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                 onBlur={field.onBlur}
                 value={field.value.amount}
                 placeholder="0.1"
+                inputClassName="flex-4 md:flex-1 sm:flex-6"
+                rightContainerClassName=" flex-6 md:flex-1 sm:flex-4"
                 rightComponent={
                   <Dropdown
                     itemToString={(item: IAssetOption | null) =>
@@ -482,7 +487,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       (item) => item.value === field.value.asset,
                     )}
                     getKey={(item) => item.label}
-                    className=" w-60"
+                    className="w-full"
                     itemComponent={({ getItemProps, item, isSelected }) => {
                       const {
                         onClick,

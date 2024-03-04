@@ -10,6 +10,6 @@ export const metadata: Metadata = {
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <DashboardCustomLayout left={<Navbar />}>{children}</DashboardCustomLayout>
+    <DashboardCustomLayout nav={<Navbar />}>{children}</DashboardCustomLayout>
   );
 }

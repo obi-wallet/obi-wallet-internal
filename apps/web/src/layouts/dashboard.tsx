@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { UserInteractionsHandlers } from "@/user-interactions";
 import { ReactNode } from "react";
 
@@ -5,16 +6,21 @@ import { WalletBackupFixer } from "./wallet-backup-fixer";
 
 export function DashboardCustomLayout({
   children,
-  left,
+  nav,
 }: {
   children: ReactNode;
-  left?: ReactNode;
+  nav?: ReactNode;
 }) {
   return (
-    <section className="relative flex w-full">
-      {left}
-      <div className="flex grow overflow-auto py-5 max-sm:h-[calc(100vh-96px-80px)] max-sm:px-4 max-sm:py-0 sm:px-7">
+    <section
+      className={cn(
+        "flex max-h-[calc(100vh_-_80px)] flex-grow flex-col-reverse max-md:max-h-[calc(100dvh_-_60px)] md:flex-row",
+      )}
+    >
+      {nav}
+      <div className={cn("md:p-4", "flex-grow overflow-auto ")}>
         <UserInteractionsHandlers>{children}</UserInteractionsHandlers>
+        {/* </div> */}
       </div>
       <WalletBackupFixer />
     </section>
