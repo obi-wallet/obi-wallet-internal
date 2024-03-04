@@ -4,7 +4,6 @@ import {
 } from "@obi-wallet/sdk-secp256k1";
 import * as R from "ramda";
 
-import { SetupMultisigKeyDetails } from "./factories";
 import { MultisigKeySchema } from "./schema";
 import { ChainId } from "../../chains";
 import { MultisigPublicKey } from "../../keys";
@@ -30,17 +29,12 @@ export class MultisigKey {
   }
 
   public constructor(
-    // async account creation returns some values;
-    // they're stored here so they can be ready for
-    // the actual "Create Wallet" button
-    protected _setupDetails: SetupMultisigKeyDetails | undefined,
     protected _chainId: ChainId,
     protected _keys: Key[],
     protected _threshold: number,
     protected _factories: {
       Key: AbstractDataStructure<Key, typeof KeySchema>;
       createMultisigKey: (
-        setupDetails: SetupMultisigKeyDetails | undefined,
         chain: ChainId,
         serialized?: AbstractSerialized<typeof MultisigKeySchema>,
       ) => MultisigKey;
@@ -48,14 +42,6 @@ export class MultisigKey {
   ) {
     this.evmSigningAddress = "";
     this.evmUserContractAddress = "";
-  }
-
-  public get setupDetails() {
-    return this._setupDetails;
-  }
-
-  public setSetupDetails(setupDetails: SetupMultisigKeyDetails) {
-    this._setupDetails = setupDetails;
   }
 
   public toJSON(): AbstractSerialized<typeof MultisigKeySchema> | undefined {
@@ -75,11 +61,7 @@ export class MultisigKey {
   }
 
   public clone() {
-    return this._factories.createMultisigKey(
-      this._setupDetails,
-      this.chainId,
-      this.toJSON(),
-    );
+    return this._factories.createMultisigKey(this.chainId, this.toJSON());
   }
 
   public get chainId() {

@@ -14,7 +14,6 @@ export type SetupMultisigKeyDetails = {
 };
 
 export function createMultisigKey(
-  setupDetails: SetupMultisigKeyDetails | undefined, // TODO: make it optional
   chain: ChainId,
   serialized: AbstractMigratable<typeof MultisigKeySchema> = {
     keys: [],
@@ -35,19 +34,17 @@ export function createMultisigKey(
   } catch (e) {
     keysMapped = [];
   }
-  return new MultisigKey(setupDetails, chain, keysMapped, threshold, {
+  return new MultisigKey(chain, keysMapped, threshold, {
     Key: factories.Key,
     createMultisigKey: factories.createMultisigKey,
   });
 }
 
 export function createObservableMultisigKey(
-  setupDetails: SetupMultisigKeyDetails | undefined,
   chain: ChainId,
   migratable?: AbstractMigratable<typeof MultisigKeySchema>,
 ) {
-  console.log("running createObservableMultisigKey()");
-  const key = createMultisigKey(setupDetails, chain, migratable, {
+  const key = createMultisigKey(chain, migratable, {
     Key: ObservableKey,
     createMultisigKey: createObservableMultisigKey,
   });
@@ -66,7 +63,6 @@ export function createObservableMultisigKey(
       setThreshold: action,
       setKey: action,
       removeKeyOfType: action,
-      setSetupDetails: action,
     },
     {
       name: "MultisigKey",

@@ -12,7 +12,7 @@ export class RecoveryPayload implements Draftable {
   @observable protected accessor _multisigKey: MultisigKey;
 
   constructor(chainId: HomeChainId) {
-    this._multisigKey = ObservableMultisigKey.create(undefined, chainId);
+    this._multisigKey = ObservableMultisigKey.create(chainId);
   }
 
   public get chainId() {

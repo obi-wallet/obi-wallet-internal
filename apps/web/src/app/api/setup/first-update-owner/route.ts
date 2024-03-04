@@ -94,7 +94,7 @@ export async function POST(request: Request) {
   }
 
   const message = messagesSdk.getFirstUpdateWalletMessage(
-    MultisigKey.create(undefined, homeChainId, owner),
+    MultisigKey.create(homeChainId, owner),
     ownerAddress,
     userEntryAddress,
     userEntryCodeHash,

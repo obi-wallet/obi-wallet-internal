@@ -76,7 +76,7 @@ export class NewOnboardingPayload implements Draftable {
   @observable protected accessor _homeAccountClaimed: boolean = false;
 
   public constructor(homeChainId: HomeChainId) {
-    this._multisigKey = ObservableMultisigKey.create(undefined, homeChainId);
+    this._multisigKey = ObservableMultisigKey.create(homeChainId);
   }
 
   public get homeChainId() {
@@ -305,7 +305,6 @@ export class NewOnboardingPayload implements Draftable {
     OnboardingPayloadSchema.parse(data);
     const payload = new NewOnboardingPayload(data.homeChain);
     payload._multisigKey = ObservableMultisigKey.create(
-      undefined,
       data.homeChain,
       data.multisigKey,
     );
