@@ -34,9 +34,16 @@ export const Header = observer(function Header() {
               Obi
             </Text> */}
 
-            <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
-          </PrimaryLink>
-          {authChildren}
+              <Image
+                src={CURRENT_THEME.logo}
+                width={44}
+                height={44}
+                alt="logo"
+              />
+            </PrimaryLink>
+            {authChildren}
+          </div>
+          <RainbowDivider />
         </div>
       </header>
     </>
