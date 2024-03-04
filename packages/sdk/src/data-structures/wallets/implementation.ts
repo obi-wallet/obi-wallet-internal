@@ -7,7 +7,6 @@ import { Presets } from "userop";
 
 import { WalletsSchema } from "./schema";
 import { ChainId } from "../../chains";
-import { WalletsSdk } from "../../sdk/wallets";
 import { Serialized } from "../abstract";
 import { AbstractMigratable, AbstractSerialized } from "../migratable";
 import { MultisigKey } from "../multisig-key";
@@ -137,9 +136,5 @@ export class Wallets {
 
   public removeWallet(wallet: MultisigWallet) {
     this._wallets = this._wallets.filter((w) => w.id !== wallet.id);
-  }
-
-  protected get walletsSdk() {
-    return new WalletsSdk();
   }
 }

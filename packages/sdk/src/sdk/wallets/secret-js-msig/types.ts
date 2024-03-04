@@ -13,11 +13,6 @@ export enum KeyType {
   Telegram = "telegram",
 }
 
-export interface SerializedPublicKey {
-  type: string;
-  value: string;
-}
-
 export interface SerializedKey {
   type: KeyType;
   publicKey: Secp256k1PublicKey;
