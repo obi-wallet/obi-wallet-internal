@@ -1,18 +1,14 @@
 import {
-  generateSec256k1KeyPair,
   Secp256k1KeyPair,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
-import { ethers } from "ethers";
 import * as R from "ramda";
-import { TxResponse } from "secretjs";
 
 import { SetupMultisigKeyDetails } from "./factories";
 import { MultisigKeySchema } from "./schema";
-import { ChainId, SecretJsChainIds } from "../../chains";
+import { ChainId } from "../../chains";
 import { MultisigPublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
-import { SerializedProxyWallet } from "../../sdk/wallets/secret-js-msig/types";
 import { Message } from "../../transactions";
 import { AbstractDataStructure } from "../abstract";
 import {
@@ -136,193 +132,11 @@ export class MultisigKey {
     });
   }
 
-  public async createMagicAccount() {
-    // TODO: retry logic
-    console.log("Calling setup/home-account with fee address as owner");
-    const response = await fetch("/api/setup/home-account", {
-      method: "POST",
-      body: JSON.stringify({}),
-    });
-    const {
-      ownerIndex,
-      homeAccountAddress,
-      txResult,
-    }: {
-      ownerIndex: number;
-      homeAccountAddress: string;
-      txResult: TxResponse;
-    } = await response.json();
-    console.log(
-      "home account: " +
-        homeAccountAddress +
-        ", tx hash " +
-        txResult.transactionHash,
-      ", owner index: " + ownerIndex,
-    );
-
-    // now we can add a key. The ownerIndex fee wallet will be able
-    // to use it to sign for now (to setup account) if needed,
-    // until first_update_owner
-    const addKeyResponse = await fetch("/api/setup/add-key", {
-      method: "POST",
-      body: JSON.stringify({
-        userEntryAddress: homeAccountAddress,
-      }),
-    });
-
-    const addKeyResponseJson = await addKeyResponse.json();
-    console.log("add-key-response: " + JSON.stringify(addKeyResponseJson));
-    if (addKeyResponseJson.success) {
-      const {
-        success,
-        publicKey,
-        evmSigningAddress,
-        evmUserContractAddress,
-      }: {
-        success: boolean;
-        publicKey: Secp256k1PublicKey;
-        evmSigningAddress: string;
-        evmUserContractAddress: string;
-      } = addKeyResponseJson;
-      const _unused = { success, publicKey };
-
-      this._setupDetails = {
-        homeAccountAddress,
-        evmSigningAddress,
-        evmUserContractAddress,
-        ownerIndex,
-      };
-    }
-  }
-
-  // duplicated for now due to circular dependency
-  private async getProxyWalletsCloudflare(publicKey: string) {
-    try {
-      const response = await fetch(
-        `https://proxy-wallets.obiwallet.workers.dev`,
-        // `http://127.0.0.1:8787`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            chainId: SecretJsChainIds.MAINNET,
-            publicKey,
-          }),
-          headers: {
-            "Api-Version": "v1",
-            Env:
-              process.env.NEXT_PUBLIC_ENV === "production"
-                ? "production"
-                : "staging",
-          },
-        },
-      );
-      const proxyWallets = (await response.json()) as unknown[];
-      return proxyWallets;
-    } catch (e) {
-      //probably no wallets
-      console.log("cloudflare worker recover error: " + JSON.stringify(e));
-      return [];
-    }
-  }
-
-  /// Returns true if we should proceed to recovery
-  public async setupMagicAccountIfDoesNotExist(
-    publicKey: string,
-    existingUserSaysDeviceIsNew?: boolean,
-    recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
-  ): Promise<SerializedProxyWallet[] | undefined> {
-    try {
-      const proxyWallets = (await this.getProxyWalletsCloudflare(
-        publicKey,
-      )) as SerializedProxyWallet[];
-      if (proxyWallets.length === 0) {
-        if (!existingUserSaysDeviceIsNew && !recoverFlow) {
-          this.createMagicAccount();
-        }
-        return undefined;
-      } else {
-        return proxyWallets;
-      }
-    } catch (e) {
-      if (!existingUserSaysDeviceIsNew && !recoverFlow) {
-        this.createMagicAccount();
-      }
-      return undefined;
-    }
-  }
-
-  public async setDeviceKey(
-    keyPair: {
-      publicKey: Secp256k1PublicKey;
-      privateKey?: string;
-    },
-    // deviceIsNew?: boolean,
-    // recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
-  ) /*: Promise<SerializedProxyWallet[] | undefined> */ {
-    this.setKey({
-      type: KeyType.Device,
-      payload: keyPair,
-    });
-  }
-
   public setPasskeyKey(keyPair: Secp256k1KeyPair) {
     this.setKey({
       type: KeyType.Passkey,
       payload: keyPair,
     });
-  }
-
-  public async setUnityKey(
-    deviceId: string,
-    _deviceIsNew?: boolean,
-    _recoverFlow?: boolean, //avoids creating a new account even if no proxy wallets found
-  ): Promise<SerializedProxyWallet[] | undefined> {
-    // use unity device ID to generate a keypair right here,
-    // without a function call, and set it as the unity key
-
-    const hexStringToUint8Array = (hexString: string) => {
-      if (hexString.startsWith("0x")) {
-        hexString = hexString.slice(2);
-      }
-
-      const byteValues = [];
-      for (let i = 0; i < hexString.length; i += 2) {
-        byteValues.push(parseInt(hexString.substr(i, 2), 16));
-      }
-
-      return new Uint8Array(byteValues);
-    };
-
-    const toHash = ethers.toUtf8Bytes(deviceId + "102h01s8b93fptb8ftb82t");
-    const hash = ethers.keccak256(toHash);
-    const keyPair = generateSec256k1KeyPair(hexStringToUint8Array(hash));
-    console.log(
-      "Unity keypair generate with pubkey " + keyPair.publicKey.value,
-    );
-
-    this.setKey({
-      type: KeyType.Unity,
-      payload: keyPair,
-    });
-
-    if (!this._setupDetails) {
-      this._setupDetails = {
-        homeAccountAddress: "",
-        evmSigningAddress: "",
-        evmUserContractAddress: "",
-        ownerIndex: 0,
-      };
-      const proxyWallets = (await this.getProxyWalletsCloudflare(
-        keyPair.publicKey.value,
-      )) as SerializedProxyWallet[];
-      if (proxyWallets) {
-        return proxyWallets;
-      } else {
-        return undefined;
-      }
-    }
-    console.log("Current draft multisig: " + JSON.stringify(this));
-    return undefined;
   }
 
   public setPhoneKey(payload: {
