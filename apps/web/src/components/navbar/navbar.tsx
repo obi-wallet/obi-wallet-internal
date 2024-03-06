@@ -85,7 +85,7 @@ export function Navbar() {
 
   return (
     <nav className={cn("bg-background-secondary")}>
-      <div className="flex h-full w-[330px] flex-col px-7 pt-16 max-md:hidden">
+      <div className="flex h-full w-[330px] flex-col px-7 pt-16 max-md:hidden md:overflow-y-auto">
         <div className="hidden   w-full flex-col md:flex">
           <AccountAndCTA />
         </div>

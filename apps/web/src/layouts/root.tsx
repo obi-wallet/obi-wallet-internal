@@ -19,7 +19,7 @@ export function RootContainer({ children }: { children: ReactNode }) {
 
 export function MainContainer({ children }: { children: ReactNode }) {
   return (
-    <main id="main" className="flex w-full flex-1 grow">
+    <main id="main" className="flex h-full w-full flex-1 grow">
       {children}
     </main>
   );

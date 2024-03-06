@@ -52,17 +52,17 @@ export function CustomDropdown<T extends DropdownItem>({
         }}
         onOuterClick={() => setIsOpen(false)}
         itemToString={itemToString}
-        selectedItem={selectedItem || null}
+        selectedItem={selectedItem}
       >
         {({ getItemProps, selectedItem }) => (
           <div className={cn("relative z-10", className)}>
             <button
               id="dropdownDefaultButton"
               data-dropdown-toggle="dropdown"
-              className="bg-background-primary hover:bg-background-primary-hoverfocus:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white"
+              className="bg-background-primary hover:bg-background-primary-hoverfocus`:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white"
               onClick={() => setIsOpen(!isOpen)}
             >
-              <SelectedItemComponent item={selectedItem ?? null} />
+              <SelectedItemComponent item={selectedItem as T | null} />
 
               <div className="ml-3">
                 {isOpen ? <FaAngleUp /> : <FaAngleDown />}
