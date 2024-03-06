@@ -25,6 +25,7 @@ export default observer(function FastTravel() {
               width: "100%",
               height: "100%",
               borderRadius: 6,
+              objectFit: "cover",
             }}
             className="h-40 min-h-[200px] opacity-40"
           />
