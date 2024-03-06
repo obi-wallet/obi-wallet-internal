@@ -26,13 +26,13 @@ export default observer(function FastTravel() {
               height: "100%",
               borderRadius: 6,
             }}
-            className="opacity-40 max-lg:!h-[240px] max-sm:!h-40"
+            className="h-40 min-h-[200px] opacity-40"
           />
           <div className="absolute top-0 flex h-full w-full flex-col justify-center p-10 max-sm:p-3">
             <h1 className="mb-4 text-4xl font-bold text-white max-md:text-3xl max-sm:text-xl">
               Obi Fast Travel
             </h1>
-            <h2 className="text-xl font-bold text-white max-md:text-lg max-sm:text-base">
+            <h2 className="text-xs font-bold text-white   lg:text-sm">
               Skip the research and hassle of migrating to new ecosystems.
               Select an asset below to receive it in your Obi account.
             </h2>
@@ -91,13 +91,13 @@ export default observer(function FastTravel() {
           <div className="space-y-4">
             <Text size="xl">Vaults</Text>
             <Divider />
-            <div className="flex flex-row max-lg:flex-col max-lg:space-y-3 lg:space-x-3">
+            <div className="flex flex-col gap-3 ">
               {vaults.map((asset) => (
                 <Box
                   key={`vault-${asset.label}`}
-                  className="flex cursor-not-allowed flex-row space-x-3 bg-gray-700 opacity-50"
+                  className="flex cursor-not-allowed flex-row bg-gray-700 opacity-50 max-lg:space-x-3  "
                 >
-                  <div className="relative aspect-square w-full max-w-[35px] ">
+                  <div className="relative mr-3 aspect-square w-full max-w-[35px] ">
                     <Image
                       alt={asset.label}
                       src={asset.image ?? ""}
