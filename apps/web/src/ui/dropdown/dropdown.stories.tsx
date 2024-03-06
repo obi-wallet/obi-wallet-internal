@@ -16,7 +16,7 @@ interface Book extends DropdownItem {
 }
 
 const meta = {
-  title: "UI/DropDown",
+  title: "UI/Dropdown",
   component: Dropdown,
   parameters: {
     layout: "centered",
@@ -69,7 +69,10 @@ function BookComponent({
   );
 }
 
-function SelectedBook({ item }: { item: Book }) {
+function SelectedBook({ item }: { item: Book | null }) {
+  if (!item) {
+    return <div>Choose a book</div>;
+  }
   return (
     <div className="flex items-center space-x-2">
       <FaPhone />
@@ -91,9 +94,10 @@ export const Primary: Story = {
   },
   render: (args) => {
     return (
-      <div className="w-72">
+      <div className="min-w-screen flex min-h-screen flex-1 items-center justify-center">
         <Dropdown
           items={books}
+          className="w-full"
           itemComponent={args.itemComponent}
           itemToString={args.itemToString}
           onItemSelect={(item) => console.log(item)}

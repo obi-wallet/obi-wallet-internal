@@ -15,6 +15,7 @@ export function Footer({ className }: FooterProps) {
       className={cn(
         "flex w-full items-center pb-4 text-center",
         "justify-center",
+        "md:pt-10",
         className,
       )}
     >
