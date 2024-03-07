@@ -1,15 +1,11 @@
-import { PasskeyNotification, Header } from "@/components";
+import { Header } from "@/components";
 import { TOSModal } from "@/components/modals/tos";
-import { MultiThemeProvider } from "@/components/provider/multi-theme-provider";
-import { cn } from "@/lib/utils";
+import { MainContainer, RootContainer } from "@/layouts/root";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import { Inter } from "next/font/google";
 import { ReactNode } from "react";
 
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
 
 const Provider = dynamic(() => import("@/components/provider"), {
   ssr: false,
@@ -21,24 +17,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="bg-black">
-      <body
-        className={cn(
-          inter.className,
-          "flex min-h-screen flex-col bg-gradient-to-br from-black to-slate-900",
-        )}
-      >
-        <Provider>
-          <MultiThemeProvider>
+    <html className=" h-full ">
+      <body className="bg-background-primary flex h-full flex-col">
+        <RootContainer>
+          <Provider>
             <Header />
-            <PasskeyNotification />
-            <main id="main" className="relative flex w-full grow">
-              {children}
-            </main>
+            <MainContainer>{children}</MainContainer>
             <TOSModal />
             <div id="modal-root" />
-          </MultiThemeProvider>
-        </Provider>
+          </Provider>
+        </RootContainer>
       </body>
     </html>
   );

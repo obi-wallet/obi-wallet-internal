@@ -1,7 +1,6 @@
-import { SecretJsHomeChain } from "@/home-chain/secret-js";
+import { HomeChain } from "@/home-chain";
 import { rootStore } from "@/hooks/use-create-root-store";
-import { backupWallet } from "@/lib/backup";
-import { MultisigKeyEncryption, Secp256k1Encryption } from "@/lib/encryption";
+import { SharesLocalEncryption } from "@/lib/encryption";
 import { Draftable } from "@/stores/drafts/draft";
 import { DistributeSharesResponse } from "@/stores/mpc";
 import {
@@ -205,20 +204,14 @@ export class NewOnboardingPayload implements Draftable {
     if (this._encryptedShares) return;
     invariant(this._shares, "Shares are not available");
 
-    const primaryKey = this._multisigKey.getUsableKeyOfType(KeyType.Passkey);
-    invariant(primaryKey, "Primary key is not available");
-
-    const primaryKeyEncryption = new Secp256k1Encryption(primaryKey.publicKey);
-    const multisigKeyEncryption = new MultisigKeyEncryption(
-      this._multisigKey.publicKey,
-    );
-    const [easyShare, backupShare] = await Promise.all([
-      primaryKeyEncryption.encrypt(JSON.stringify(this._shares.easyShare)),
-      multisigKeyEncryption.encrypt(JSON.stringify(this._shares.backupShare)),
-    ]);
+    const sharesLocalEncryption = new SharesLocalEncryption(this._multisigKey);
+    const { easy, backup } = await sharesLocalEncryption.encrypt({
+      easy: this._shares.easyShare,
+      backup: this._shares.backupShare,
+    });
     this._encryptedShares = {
-      easyShare,
-      backupShare,
+      easyShare: easy,
+      backupShare: backup,
     };
   }
 
@@ -235,7 +228,7 @@ export class NewOnboardingPayload implements Draftable {
         networkParticipants: this._shares.networkParticipants,
         networkShare: this._shares.networkShare,
         userEntryAddress: this._unclaimedHomeAccount.homeAccountAddress,
-        userEntryCodeHash: await new SecretJsHomeChain(
+        userEntryCodeHash: await HomeChain.chainId(
           this.homeChainId,
         ).userEntryCodeHash(this._unclaimedHomeAccount.homeAccountAddress),
         ownerIndex: this._unclaimedHomeAccount.ownerIndex,
@@ -260,7 +253,7 @@ export class NewOnboardingPayload implements Draftable {
     if (this._homeAccountClaimed) return;
     invariant(this._unclaimedHomeAccount, "Home account is not available");
 
-    const homeChain = new SecretJsHomeChain(this.homeChainId);
+    const homeChain = HomeChain.chainId(this.homeChainId);
     const userEntryCodeHash = await homeChain.userEntryCodeHash(
       this._unclaimedHomeAccount.homeAccountAddress,
     );
@@ -299,7 +292,7 @@ export class NewOnboardingPayload implements Draftable {
     invariant(this._unclaimedHomeAccount, "Home account is not available");
     invariant(this._encryptedShares, "Shares are not encrypted");
 
-    await backupWallet({
+    await HomeChain.chainId(this.homeChainId).backupWallet({
       wallet: this.toMpcWalletData(),
       userData: {
         name: this._name,

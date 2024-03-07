@@ -1,5 +1,6 @@
 "use client";
 
+import { MultiThemeProvider } from "@/components/provider/multi-theme-provider";
 import { EnvContext, StoreContext } from "@/contexts";
 import { useCreateRootStore } from "@/hooks/use-create-root-store";
 import { obiModalConfig } from "@obi-wallet/config";
@@ -41,7 +42,9 @@ const Provider = observer<ProviderProps>(function Provider({
         }}
       >
         <StoreContext.Provider value={rootStore}>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            <MultiThemeProvider>{children}</MultiThemeProvider>
+          </ThemeProvider>
         </StoreContext.Provider>
       </EnvContext.Provider>
     </SdkProvider>

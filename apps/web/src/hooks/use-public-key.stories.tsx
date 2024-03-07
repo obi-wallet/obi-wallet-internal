@@ -16,7 +16,6 @@ type Story = StoryObj<typeof meta>;
 
 export const UsePublicKeyQuery: Story = {
   name: "usePublicKeyQuery",
-  args: {},
   decorators: [providerWithWalletDecorator],
   render: function UsePublicKeyQueryTest() {
     const publicKey = usePublicKeyQuery();

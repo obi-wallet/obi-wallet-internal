@@ -17,7 +17,7 @@ export function AutomatedTest({ done, success }: UnitTestProps) {
       ? Status.Passed
       : Status.Failed
     : Status.InProgress;
-  return <div>{status}</div>;
+  return <div className="text-white">{status}</div>;
 }
 
 export async function automatedTestPlay({
@@ -27,10 +27,12 @@ export async function automatedTestPlay({
 }) {
   await waitFor(
     () => {
-      return queryAllByText(canvasElement, Status.InProgress).length === 0;
+      if (queryAllByText(canvasElement, Status.InProgress).length !== 0) {
+        throw new Error("Test is still in progress");
+      }
     },
     {
-      timeout: 10000,
+      timeout: 60000,
     },
   );
   await findByText(canvasElement, Status.Passed);

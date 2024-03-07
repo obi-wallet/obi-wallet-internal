@@ -20,6 +20,7 @@ export async function newFetchPublicKey(wallet: {
   const schema = z.string();
   const response = await client.queryContract({
     contract: chain.secretSigner.address,
+    codeHash: chain.secretSigner.codeHash,
     query: {
       passport_pubkey: { user_entry_address: wallet.userEntryAddress },
     },

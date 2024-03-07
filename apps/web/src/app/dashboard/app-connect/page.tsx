@@ -137,7 +137,7 @@ export default observer(function AppConnect() {
           {activeSessions.map((session) => {
             return (
               <Button
-                className="flex-flex-row my-1 w-full justify-between"
+                className="my-1 w-full justify-between"
                 variant="secondary"
                 key={session.topic}
                 onClick={async () => {

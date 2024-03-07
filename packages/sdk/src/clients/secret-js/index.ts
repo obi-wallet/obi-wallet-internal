@@ -76,29 +76,35 @@ export class SecretJsClient {
 
   public async queryContract<T extends z.ZodTypeAny>({
     contract,
+    codeHash,
     query,
     schema,
   }: {
     contract: string;
+    codeHash: string;
     query: object;
     schema: T;
   }): Promise<z.infer<T>> {
-    const [response] = await this.queryContracts([{ contract, query, schema }]);
+    const [response] = await this.queryContracts([
+      { contract, codeHash, query, schema },
+    ]);
     return response;
   }
 
   public async queryContracts<T extends z.ZodTypeAny>(
     queries: {
       contract: string;
+      codeHash: string;
       query: object;
       schema: T;
     }[],
   ): Promise<z.infer<T>[]> {
     return this.withSecretNetworkClient(async (client) => {
       return await Promise.all(
-        queries.map(async ({ contract, query, schema }) => {
+        queries.map(async ({ contract, codeHash, query, schema }) => {
           const response = await client.query.compute.queryContract({
             contract_address: contract,
+            code_hash: codeHash,
             query,
           });
           try {

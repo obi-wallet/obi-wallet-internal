@@ -1,6 +1,6 @@
 import { rootStore } from "@/hooks/use-create-root-store";
 import { newFetchPublicKey } from "@/hooks/use-public-key";
-import { Secp256k1Decryption } from "@/lib/encryption";
+import { SharesLocalEncryption } from "@/lib/encryption";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import {
   AminoSignResponse,
@@ -18,7 +18,6 @@ import {
   OfflineDirectSigner,
 } from "@cosmjs/proto-signing";
 import {
-  EasyShare,
   KeyType,
   MpcWallet,
   Secp256k1PrivateKeySigner,
@@ -98,18 +97,28 @@ export class CosmosSdkMpcSigner
     address: string,
     hash: Uint8Array,
   ): Promise<StdSignature> {
+    if (this.wallet.encryptedEasyShare) {
+      return this.signHashWithEasyShare(address, hash);
+    }
+
+    throw new Error("No encrypted easy share found");
+  }
+
+  protected async signHashWithEasyShare(
+    address: string,
+    hash: Uint8Array,
+  ): Promise<StdSignature> {
     invariant(rootStore.current, "Root store is not initialized");
     const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
 
     const passkey = this.wallet.owner.getUsableKeyOfType(KeyType.Passkey);
     invariant(passkey, "No usable passkey found");
 
-    const easyShare = EasyShare.parse(
-      JSON.parse(
-        await new Secp256k1Decryption(passkey.payload.privateKey!).decrypt(
-          this.wallet.encryptedEasyShare,
-        ),
-      ),
+    invariant(this.wallet.encryptedEasyShare, "No encrypted easy share found");
+
+    const sharesLocalEncryption = new SharesLocalEncryption(this.wallet.owner);
+    const easyShare = await sharesLocalEncryption.decryptEasyShare(
+      this.wallet.encryptedEasyShare,
     );
 
     const signers = mpcPackage.createSigners([
@@ -125,8 +134,7 @@ export class CosmosSdkMpcSigner
     });
 
     const passkeySigner = new Secp256k1PrivateKeySigner(
-      // TODO: typing, should either be always or never exist
-      passkey.payload.privateKey!,
+      passkey.payload.privateKey,
     );
 
     const client = new SecretJsClient(this.wallet.homeChainId);
@@ -147,10 +155,10 @@ export class CosmosSdkMpcSigner
     const schema = z.object({
       r: z.string(),
       s: z.string(),
-      recid: z.number(),
     });
     const response = await client.queryContract({
       contract: this.wallet.homeChain.secretSigner.address,
+      codeHash: this.wallet.homeChain.secretSigner.codeHash,
       query: {
         sign_bytes: {
           participants: [1, 3],
@@ -167,6 +175,46 @@ export class CosmosSdkMpcSigner
       },
       schema,
     });
+    return this.encodeSignature(response);
+  }
+
+  protected async signHashWithEasyAndBackupShare(
+    address: string,
+    hash: Uint8Array,
+  ): Promise<StdSignature> {
+    invariant(rootStore.current, "Root store is not initialized");
+    const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
+
+    const sharesLocalEncryption = new SharesLocalEncryption(this.wallet.owner);
+    const { easy, backup } = await sharesLocalEncryption.decrypt({
+      easy: this.wallet.encryptedEasyShare,
+      backup: this.wallet.encryptedBackupShare,
+    });
+
+    invariant(easy, "No easy share found");
+    invariant(backup, "No backup share found");
+
+    const signers = mpcPackage.createSigners([
+      easy.preSignForBackupShare,
+      backup,
+    ]);
+
+    if (address !== this.address) {
+      throw new Error(`Address ${address} not found in wallet`);
+    }
+
+    const partialSignatures = signers.map((signer) => {
+      return signer.partial(hash);
+    });
+
+    const finalSignature = signers[1].create([partialSignatures[0]]);
+    return this.encodeSignature({
+      r: finalSignature.signature.r.scalar,
+      s: finalSignature.signature.s.scalar,
+    });
+  }
+
+  protected encodeSignature(response: { r: string; s: string }) {
     const signature = Buffer.from(
       response.r.padStart(64, "0") + response.s.padStart(64, "0"),
       "hex",

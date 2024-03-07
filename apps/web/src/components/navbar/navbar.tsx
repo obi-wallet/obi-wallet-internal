@@ -40,6 +40,7 @@ const navMenu: NavMenu[] = [
 
   {
     href: "/dashboard/buy-crypto",
+    mobileText: "Buy",
     text: "Buy Crypto",
     module: "buy-crypto",
     icon: "/assets/icons/nav-buy-crypto.svg",
@@ -83,22 +84,10 @@ export function Navbar() {
   const mainURISegment = pathname.split("/")[2] || "";
 
   return (
-    <nav className="bg-background-secondary relative max-sm:absolute max-sm:bottom-0 max-sm:h-24 max-sm:w-full sm:h-full">
-      <div className="flex h-full w-[330px] flex-col px-7 pt-16 max-sm:hidden">
-        <Account />
-        <div className="mb-4 mt-4 flex  gap-5 text-white">
-          <Link
-            href="/dashboard/transaction/send"
-            className="flex flex-1  justify-center rounded-md bg-blue-600 p-3"
-          >
-            <span className=" text-sm">Send</span>
-          </Link>
-          <Link
-            href="/dashboard/transaction/receive"
-            className="flex flex-1  justify-center rounded-md bg-blue-600 p-3"
-          >
-            <span className=" text-sm">Receive</span>
-          </Link>
+    <nav className={cn("bg-background-secondary")}>
+      <div className="flex h-full w-[330px] flex-col px-7 pt-16 max-md:hidden md:overflow-y-auto">
+        <div className="hidden   w-full flex-col md:flex">
+          <AccountAndCTA />
         </div>
         <Divider />
 
@@ -138,9 +127,9 @@ export function Navbar() {
         </div>
         <Footer className="!px-0" />
       </div>
-      <div className="flex h-full w-full sm:hidden">
-        <div className="flex w-full flex-row items-center justify-center px-4">
-          <ul role="list" className="flex w-full flex-row justify-between ">
+      <div className="flex  h-20 w-full md:hidden">
+        <div className="flex w-full flex-row items-center justify-center px-4 ">
+          <ul role="list" className="flex w-full flex-row justify-around ">
             {navMenu
               .filter((item) => item.showOnMobile)
               .sort((itemX, itemY) =>
@@ -172,5 +161,27 @@ export function Navbar() {
         </div>
       </div>
     </nav>
+  );
+}
+
+export function AccountAndCTA() {
+  return (
+    <>
+      <Account />
+      <div className="mb-4 mt-4 flex  gap-5 text-white">
+        <Link
+          href="/dashboard/transaction/send"
+          className="flex flex-1  justify-center rounded-md bg-blue-600 p-3"
+        >
+          <span className=" text-sm">Send</span>
+        </Link>
+        <Link
+          href="/dashboard/transaction/receive"
+          className="flex flex-1  justify-center rounded-md bg-blue-600 p-3"
+        >
+          <span className=" text-sm">Receive</span>
+        </Link>
+      </div>
+    </>
   );
 }

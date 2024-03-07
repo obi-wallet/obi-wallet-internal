@@ -233,6 +233,8 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
               labelClassname="bg-background-secondary"
               placeholder="0.1"
               value={coin.amount}
+              inputClassName="flex-1"
+              rightContainerClassName="flex-1"
               onChange={(value) => {
                 setCoin({
                   amount: value,
@@ -266,7 +268,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                   selectedItem={coin.asset}
                   getKey={(item) => item.denom}
                   itemToString={(item) => (item ? item.denom : "")}
-                  className="w-48"
+                  className="w-full"
                   itemComponent={({ getItemProps, item, isSelected }) => {
                     return (
                       <div

@@ -8,7 +8,7 @@ export class MpcWallet {
     protected _owner: MultisigKey,
     protected _userEntryAddress: string,
     protected _encryptedShares: {
-      easy: string;
+      easy?: string;
       backup: string;
     },
   ) {}
@@ -31,6 +31,10 @@ export class MpcWallet {
 
   public get encryptedEasyShare() {
     return this._encryptedShares.easy;
+  }
+
+  public get encryptedBackupShare() {
+    return this._encryptedShares.backup;
   }
 
   public get schema() {

@@ -1,22 +1,17 @@
-import { ProxyWallet } from "@/recovery/use-recover";
 import { Draftable } from "@/stores/drafts/draft";
 import {
-  ChainId,
+  HomeChainId,
   KeyType,
   MultisigKey,
   ObservableMultisigKey,
 } from "@obi-wallet/sdk";
-import {
-  Secp256k1KeyPair,
-  Secp256k1PublicKey,
-} from "@obi-wallet/sdk-secp256k1";
+import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { observable } from "mobx";
-import { z } from "zod";
 
 export class RecoveryPayload implements Draftable {
   @observable protected accessor _multisigKey: MultisigKey;
 
-  constructor(chainId: ChainId) {
+  constructor(chainId: HomeChainId) {
     this._multisigKey = ObservableMultisigKey.create(undefined, chainId);
   }
 
@@ -54,36 +49,5 @@ export class RecoveryPayload implements Draftable {
       default:
         throw new Error(`Unsupported primary key type: ${key.type}`);
     }
-  }
-
-  public async lookupProxyWallets(publicKey: Secp256k1PublicKey) {
-    const response = await fetch(
-      "https://proxy-wallets.obiwallet.workers.dev",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          chainId: this.chainId,
-          publicKey: publicKey.value,
-        }),
-        headers: {
-          "Api-Version": "v1",
-          Env:
-            process.env.NEXT_PUBLIC_ENV === "production"
-              ? "production"
-              : "staging",
-        },
-      },
-    );
-    if (response.status === 404) {
-      console.log("No wallets found");
-      return [];
-    }
-
-    const schema = z.array(ProxyWallet);
-    const result = schema.safeParse(await response.json());
-    if (!result.success) {
-      throw new Error(`Failed to parse proxy wallets: ${result.error}`);
-    }
-    return result.data;
   }
 }

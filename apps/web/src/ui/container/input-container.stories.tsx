@@ -1,3 +1,4 @@
+import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { InputContainer } from ".";
@@ -8,6 +9,7 @@ const meta = {
   parameters: {
     layout: "centered",
   },
+  decorators: [dashboardLayoutDecorator],
   tags: ["autodocs"],
   argTypes: {
     label: { type: "string" },

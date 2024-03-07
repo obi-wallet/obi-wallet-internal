@@ -8,7 +8,7 @@ export default function OnboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex w-full flex-col items-center justify-center max-sm:px-10">
+    <section className="flex w-full flex-col items-center justify-center max-sm:px-3">
       <div className="mt-24 w-fit grow max-sm:w-full">{children}</div>
       <Footer />
     </section>
