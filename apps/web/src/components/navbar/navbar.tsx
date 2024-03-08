@@ -129,7 +129,7 @@ export function Navbar() {
       </div>
       <div className="flex  h-20 w-full md:hidden">
         <div className="flex w-full flex-row items-center justify-center px-4 ">
-          <ul role="list" className="flex w-full flex-row justify-around ">
+          <ul role="list" className="flex w-full flex-row justify-between p-3 ">
             {navMenu
               .filter((item) => item.showOnMobile)
               .sort((itemX, itemY) =>
