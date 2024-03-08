@@ -23,6 +23,7 @@ export interface InputProps
   rightComponent?: ReactNode;
   topComponent?: ReactNode;
   rightContainerClassName?: string;
+  inputDisabled?: boolean;
 }
 
 export function Input({
@@ -36,6 +37,7 @@ export function Input({
   topComponent,
   children,
   rightContainerClassName,
+  inputDisabled,
   ...rest
 }: InputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -58,6 +60,7 @@ export function Input({
           <BaseInput
             {...rest}
             ref={inputRef}
+            disabled={inputDisabled}
             onChange={
               onChange
                 ? (e) => {

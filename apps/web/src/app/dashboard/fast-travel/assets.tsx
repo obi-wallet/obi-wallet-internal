@@ -9,7 +9,6 @@ export interface ToAsset {
 }
 
 export interface FromAsset {
-  chainId: string;
   address: string;
   decimals: number;
   label: string;
@@ -18,64 +17,17 @@ export interface FromAsset {
 }
 
 export const fromAssets: Record<string, FromAsset> = {
-  "Eth-arbitrum": {
-    chainId: "42161",
+  eth: {
     address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     decimals: 18,
-    label: "ETH (Arbitrum)",
+    label: "ETH",
     image:
       "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
-  },
-  "Eth-base": {
-    chainId: "8453",
-    address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-    decimals: 18,
-    label: "ETH (Base)",
-    image:
-      "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
-  },
-  "Eth-ethereum": {
-    chainId: "1",
-    address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-    decimals: 18,
-    label: "ETH (Ethereum)",
-    image:
-      "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
-    disabled: true,
-  },
-  "Usdc-ethereum": {
-    image:
-      "https://assets.coingecko.com/coins/images/6319/large/usdc.png?1696506694",
-    chainId: "1",
-    address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-    decimals: 6,
-    label: "USDC (Ethereum)",
-    disabled: true,
-  },
-
-  "Usdc-arbitrum": {
-    chainId: "42161",
-    address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-    decimals: 6,
-    label: "USDC (Arbitrum)",
-    disabled: true,
-    image:
-      "https://assets.coingecko.com/coins/images/6319/large/usdc.png?1696506694",
-  },
-
-  "Usdc-base": {
-    image:
-      "https://assets.coingecko.com/coins/images/6319/large/usdc.png?1696506694",
-    chainId: "8453",
-    address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-    decimals: 6,
-    label: "USDC (Base)",
-    disabled: true,
   },
 };
 
 export const toAssets: Record<string, ToAsset> = {
-  "stars-stargaze": {
+  stars: {
     chainId: "stargaze-1",
     decimals: 6,
     label: "STARS",
@@ -114,6 +66,34 @@ export const toAssets: Record<string, ToAsset> = {
     addressPrefix: "neutron",
   },
 
+  newt: {
+    chainId: "neutron-1",
+    decimals: 6,
+    label: "NEWT",
+    denom: "factory/neutron1p8d89wvxyjcnawmgw72klknr3lg9gwwl6ypxda/newt",
+    image: "https://newt-price.vercel.app/newt-logo.png",
+  },
+
+  apollo: {
+    chainId: "neutron-1",
+    decimals: 6,
+    label: "Apollo",
+    denom:
+      "factory/neutron154gg0wtm2v4h9ur8xg32ep64e8ef0g5twlsgvfeajqwghdryvyqsqhgk8e/APOLLO",
+    image:
+      "https://assets.coingecko.com/coins/images/34792/large/apollo-png-256.png?1706031403",
+    disabled: false,
+  },
+  usdc: {
+    chainId: "axelar-dojo-1",
+    decimals: 6,
+    label: "axlUSDC",
+    denom:
+      "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349",
+    image:
+      "https://assets.coingecko.com/coins/images/26476/large/uausdc_D_3x.png?1696525548",
+    disabled: false,
+  },
   celestia: {
     chainId: "tia-4",
     decimals: 6,
@@ -130,24 +110,6 @@ export const toAssets: Record<string, ToAsset> = {
     denom: "uautism",
     image:
       "https://assets.coingecko.com/coins/images/33976/large/autism-logo.png?1703578236",
-    disabled: true,
-  },
-
-  "atom-long-neutron": {
-    chainId: "neutron-1",
-    decimals: 6,
-    label: "ATOM Long",
-    denom: "10xlong",
-    image:
-      "https://assets.coingecko.com/coins/images/1481/large/cosmos_hub.png",
-    disabled: true,
-  },
-  "newt-neutron": {
-    chainId: "neutron-1",
-    decimals: 6,
-    label: "NEWT",
-    denom: "unewt",
-    image: "https://newt-price.vercel.app/newt-logo.png",
     disabled: true,
   },
 };

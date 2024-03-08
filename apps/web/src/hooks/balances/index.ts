@@ -1,6 +1,8 @@
 import { toAssets } from "@/app/dashboard/fast-travel/assets";
+import { SimulationEntry } from "@/app/dashboard/page";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
+import { useQuery } from "@obi-wallet/headless-ui";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 import invariant from "tiny-invariant";
@@ -166,7 +168,6 @@ const getTokenPrice = async (
 ): Promise<number> => {
   const url = `https://api.0xsquid.com/v1/token-price?chainId=${chainId}&tokenAddress=${denom}`;
   const res = await fetch(url);
-
   if (res.status !== 200) {
     return 0;
   }
@@ -224,3 +225,25 @@ export function useUSDTotalPrice(): {
     loading: false,
   };
 }
+
+const fetchPendingTX = async (pubKey: string) => {
+  if (!pubKey) return [];
+
+  const url = `${
+    process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL
+  }/api/status/check.rs?test=false&pubkey=${encodeURIComponent(pubKey)}`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  return data as SimulationEntry[];
+};
+
+export const usePendingTXs = (pubKey: string) => {
+  return useQuery({
+    queryKey: ["pending-txs", pubKey],
+    queryFn: async () => {
+      return fetchPendingTX(pubKey);
+    },
+  });
+};

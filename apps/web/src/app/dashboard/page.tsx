@@ -1,133 +1,145 @@
 "use client";
 
-import { AccountAndCTA, Box, Divider, getPrice, Text } from "@/components";
+import { AccountAndCTA, Box, Divider, Text } from "@/components";
+import { PendingAssets } from "@/dashboard/pending";
 import { NewCoin, useNewBalances, useUSDTotalPrice } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
-import { cn } from "@/lib/utils";
+// import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import BigNumber from "bignumber.js";
-import { formatEther, parseUnits } from "ethers";
+// import { formatEther, parseUnits } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { FaExclamation } from "react-icons/fa6";
 
-import { FromAsset, fromAssets, ToAsset, toAssets } from "./fast-travel/assets";
+// import { FromAsset, fromAssets, ToAsset } from "./fast-travel/assets";
 
-export interface TransactionStatus {
-  axelarTransactionUrl: string;
-  error: object;
-  fromChain: ChainData;
-  gasStatus: string;
-  id: string;
-  isGMPTransaction: boolean;
-  routeStatus: RouteStatus[];
-  squidTransactionStatus: string;
-  status: string;
-  timeSpent: TimeSpent;
-  toChain: ChainData;
-}
-
-export interface ChainData {
-  blockNumber: number;
-  callEventLog: object[];
-  callEventStatus: string;
-  chainData: ChainDetails;
-  transactionId: string;
-  transactionUrl: string;
-}
-
-export interface ChainDetails {
-  axelarContracts: AxelarContracts;
-  blockExplorerUrls: string[];
-  chainIconURI: string;
-  chainId: number | string;
-  chainName: string;
-  chainNativeContracts: ChainNativeContracts;
-  chainType: string;
-  compliance: Compliance;
-  estimatedExpressRouteDuration: number;
-  estimatedRouteDuration: number;
-  nativeCurrency: Currency;
-  networkName: string;
-  rpc: string;
-  squidContracts: SquidContracts;
-  swapAmountForGas: string;
-}
-
-export interface AxelarContracts {
-  forecallable?: string;
-  gateway: string;
-}
-
-export interface ChainNativeContracts {
-  ensRegistry?: string;
-  multicall?: string;
-  usdcToken?: string;
-  wrappedNativeToken?: string;
-}
-
-export interface Compliance {
-  trmIdentifier: string;
-}
-
-export interface Currency {
+type TransactionIntent = {
+  destination_address: string;
+  destination_asset: string;
+  destination_chain_id: string;
+  max_slippage: string;
+};
+export type TokenStatusType = {
+  address: string;
   decimals: number;
-  icon: string;
+  logoURI: string;
+  chainId: string;
+  name: string;
+  symbol: string;
+  coingeckoId?: string;
+};
+type StepStatusType =
+  | string
+  | {
+      squidTransactionStatus?: string;
+      axelarTransactionUrl: string;
+      status?: string;
+      routeStatus: {
+        status: string;
+        error: string;
+        action: string;
+        chainId: string;
+        txHash?: string;
+      }[];
+    };
+export type StepType = {
+  action: string;
+  chainId: string;
+  status: StepStatusType;
+  substeps: null;
+  txHash: null;
+  fromAmount: string;
+  fromToken: TokenStatusType;
+  toAmount: string;
+  toToken: TokenStatusType;
+  type: string;
+  fromChain: string;
+  toChain: string;
+};
+type SkipSimulationMessage = {
+  multi_chain_msg: {
+    chain_id: string;
+    msg: string;
+    msg_type_url: string;
+    path: string[];
+  };
+};
+type SkipSimulation = {
+  msgs: SkipSimulationMessage[];
+};
+type Transaction = {
+  deposit_address: string;
+  fast_travel_time: number;
+  intent: TransactionIntent;
+  pubkey: string;
+  status: "AwaitingDeposit" | "Done" | "Failed" | `InProgress[${number}]`;
+};
+interface SquidRouteToken {
+  address: string;
+  chainId: string;
+  coingeckoId?: string; // Optional based on your provided structure, adjust as necessary
+  decimals: number;
+  logoURI: string;
   name: string;
   symbol: string;
 }
 
-export interface SquidContracts {
-  defaultCrosschainToken?: string;
-  squidFeeCollector?: string;
-  squidMulticall?: string;
-  squidRouter?: string;
+interface SquidRouteDex {
+  chainName: string;
+  dexName: string;
+  isCrypto: boolean;
+  isStable: boolean;
 }
-
-export interface RouteStatus {
-  action: string;
-  chainId: number | string;
+export interface SquidRouteType {
+  dex: SquidRouteDex;
+  dynamicSlippage: number;
+  exchangeRate: string;
+  fromAmount: string;
+  fromToken: SquidRouteToken;
+  isFrom: boolean;
+  path: string[];
+  poolFees: number[];
+  priceImpact: string;
+  squidCallType: number;
+  swapType: string;
+  target: string;
+  toAmount: string;
+  toAmountMin: string;
+  toToken: SquidRouteToken;
+  type: string;
   status: string;
-  txHash: string;
 }
+export type SquidSimulationType = {
+  estimate: {
+    route: {
+      fromChain: SquidRouteType[];
+      toChain: SquidRouteType[];
+    };
+    toAmount: string;
+    toAmountMin: string;
+    toAmountUSD: string;
+  };
+  params: {
+    toToken: SquidRouteToken;
+  };
+  transaction: unknown;
+};
 
-export interface TimeSpent {
-  call_confirm: number;
-  total: number;
-}
-
-export interface Transaction {
-  deposit_address: string;
-  id: number;
-  status: string;
-  steps: TransactionStep[];
-  tx_hashes: string[];
-}
-
-export interface TransactionStep {
-  enableForecall?: boolean;
-  fromAddress?: string;
-  fromAmount?: string;
-  fromChain: string;
-  fromToken: string;
-  slippage?: string;
-  stepType: string;
-  toAddress?: string;
-  toChain?: string;
-  toToken?: string;
-}
-
-export interface TX {
-  status: TransactionStatus;
+export type SkipSimulationType = unknown;
+export type SimulationEntry = {
+  skip_simulation_body: SkipSimulation | null;
+  step_simulations: (null | SquidSimulationType | SkipSimulationType)[]; // Adjust this if you have specific types for simulation steps
+  step_statuses: StepType[];
   transaction: Transaction;
-}
+};
 
 export default observer(function Dashboard() {
   useCurrentWallet({ redirectTo: "/" });
   return (
-    <div className="flex h-full w-full flex-col space-y-4 text-white">
+    <div className="flex  w-full flex-col space-y-4 text-white">
       <Assets />
       {/* <Box title="Chart" /> */}
       {/* <Box title="Top Positions" /> */}
@@ -170,148 +182,6 @@ const Total = observer(function Total() {
 
   return <Text>$ {totalPrice.total}</Text>;
 });
-const PendingAssets = observer(function PendingAssets() {
-  const [txData, setTxData] = useState<TX[] | null>(null);
-  const publicKey = usePublicKey();
-
-  useEffect(() => {
-    if (!publicKey?.value) return;
-    fetchPendingAssets();
-  }, [publicKey?.value]);
-
-  const fetchPendingAssets = async () => {
-    const data = await getPendingAssets(publicKey?.value ?? "");
-
-    setTxData(
-      data.filter((t) => t.status.squidTransactionStatus === "ongoing"),
-    );
-  };
-
-  if (!txData) return null;
-
-  return (
-    <>
-      {txData.map((tx: TX) => (
-        <PendingAsset key={tx.transaction.deposit_address} tx={tx} />
-      ))}
-    </>
-  );
-});
-
-const PendingAsset = observer(function PendingAsset({ tx }: { tx: TX }) {
-  const [amount, setAmount] = useState<BigNumber | undefined>();
-  const asset =
-    toAssets[
-      Object.keys(toAssets).find(
-        (key) => toAssets[key]?.denom === tx.transaction.steps[1]?.toToken,
-      ) ?? ""
-    ];
-
-  return (
-    <div
-      className="mb-3 mt-3 flex flex-row items-center justify-between rounded-lg   bg-blue-950 p-5 hover:bg-gray-600"
-      key={tx.transaction.deposit_address}
-    >
-      <div className="flex flex-row items-center">
-        <div className="mr-3">
-          <img src={asset?.image ?? ""} alt="asset" className="h-8 w-8" />
-        </div>
-        <div className="flex flex-row">
-          <div className="flex flex-col">
-            <div className="mr-5 text-lg">{asset?.label}</div>
-            <div className="mr-5 text-xs  opacity-60">Pending tx</div>
-          </div>
-          <EstimateAmount tx={tx} toAsset={asset} onAmountChange={setAmount} />
-        </div>
-      </div>
-      <StatusLink tx={tx} />
-      <PendingAmount amount={amount} asset={asset as ToAsset} />
-    </div>
-  );
-});
-
-const EstimateAmount = observer(function EstimateAmount({
-  tx,
-  toAsset,
-  onAmountChange,
-}: {
-  tx: TX;
-  toAsset: ToAsset | undefined;
-  onAmountChange?: (amount: BigNumber) => void;
-}) {
-  const [loading, setLoading] = useState(false);
-  const [amount, setAmount] = useState<BigNumber | undefined>();
-  useEffect(() => {
-    getAmount();
-  }, []);
-  useEffect(() => {
-    if (!amount) return;
-    onAmountChange && onAmountChange(amount);
-  }, [amount]);
-  if (toAsset === undefined) return null;
-  const getAmount = async () => {
-    setLoading(true);
-    const fromAssetAmount = tx.transaction.steps[1]?.fromAmount;
-    //find from asset based on the chainId
-    const fromAsset =
-      fromAssets[
-        Object.keys(fromAssets).find(
-          (key) =>
-            fromAssets[key]?.chainId === tx.transaction.steps[1]?.fromChain,
-        ) ?? ""
-      ];
-
-    const priceData = await getPrice({
-      mainCoin: fromAsset as FromAsset,
-      vsCoin: toAsset,
-    });
-    const price = priceData.mainVsPrice;
-
-    const amount = formatEther(parseUnits(fromAssetAmount ?? "0", "wei"));
-
-    const amountNumber = price.times(amount);
-    // discount 2$ for fees
-    setAmount(amountNumber.minus(2.5).div(priceData.vsUsd));
-
-    setLoading(false);
-  };
-  if (!amount || loading) return null;
-  return (
-    <div className="text-xl font-bold">
-      {/* {amount.toFixed(2)} <span className="text-sm">(estimate)</span> */}
-    </div>
-  );
-});
-
-function StatusLink({ tx }: { tx: TX }) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "success":
-        return "text-green-500";
-      case "ongoing":
-        return "text-yellow-500";
-      case "failed":
-        return "text-red-500";
-      default:
-        return "text-white";
-    }
-  };
-  return (
-    <div>
-      <a
-        target="_blank"
-        href={tx.status.axelarTransactionUrl}
-        rel="noreferrer"
-        className={cn(
-          " capitalize hover:underline",
-          getStatusColor(tx.status.squidTransactionStatus),
-        )}
-      >
-        {tx.status.squidTransactionStatus}
-      </a>
-    </div>
-  );
-}
 
 const AssetBalance = observer(function AssetBalance() {
   const publicKey = usePublicKey();
@@ -402,34 +272,3 @@ function NewPriceComponent({
     </div>
   );
 }
-
-function PendingAmount({
-  amount,
-  asset,
-}: {
-  amount?: BigNumber;
-  asset: ToAsset;
-}) {
-  const decimals = Math.min(asset.decimals, 8);
-  return (
-    <div className="flex flex-col items-end">
-      <div className="text-md font-bold">
-        {amount?.decimalPlaces(decimals).toString()}
-      </div>
-      <div className="text-xs opacity-60">Estimate</div>
-    </div>
-  );
-}
-
-const getPendingAssets = async (pubKey: string) => {
-  if (!pubKey) return [];
-
-  const url = `${
-    process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL
-  }/api/status/check.rs?test=false&pubkey=${encodeURIComponent(pubKey)}`;
-
-  const res = await fetch(url);
-  const data = await res.json();
-
-  return data as TX[];
-};

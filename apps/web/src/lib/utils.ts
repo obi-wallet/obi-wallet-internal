@@ -1,3 +1,4 @@
+import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import { EthUserOp, RustEthUserOp } from "@obi-wallet/mpc-ecdsa-wasm-types";
 import clsx, { ClassValue } from "clsx";
 import { ec } from "elliptic";
@@ -136,3 +137,32 @@ export function utf8ArrayToObject(data: Uint8Array): any {
   const decoder = new TextDecoder();
   return JSON.parse(decoder.decode(data));
 }
+export function getToChain(chainId: string) {
+  return CosmosSdkChains[chainId as keyof typeof CosmosSdkChains];
+}
+export function getFromChain(chainId: string) {
+  return fromChains.find((c) => c.chainId === chainId);
+}
+export const fromChains = [
+  {
+    chainId: "42161",
+    label: "Arbitrum",
+    image:
+      "https://assets.coingecko.com/coins/images/16547/large/photo_2023-03-29_21.47.00.jpeg?1696516109",
+  },
+  {
+    chainId: "8453",
+    label: "Base",
+    image:
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABklBMVEUAAAAAVf8AUv8AUv8AUv8AUv8AU/8AUv8AUv8AUv8AUv8AU/8ATv8AVf8AUv8AUv8AU/8AVf8AUf8AUv8AUf8ASf8AUP8AUv8AUv8AT/8AU/8AUv8AUv8AU/8AUP8AUv8AYP8AU/8AUv8AUv8AUv8AVf8AUv8AUv8AXf8AUf8AU/8AUf8AUv8AUv8AUv8AUv8AUv8AUv8AUv8AU/8AUv8AUv8AUv8AU/8AUf8AUv8AUv8AUf8AUf8AUv8AVf8AU/8AUv8AU/8AUv8AVf8AUv8AUv8AUf8AUv8AUv8FVf8iaf86ef84eP8cZf8EVf8BU/9Tiv+uyP/z9//////v9P+lwv9JhP/R4P/B1f8ucf9pmf/5+//0+P9ll//+/v9WjP/8/f8rb//Q3/+/1P9Df/+50P+dvf/4+v/q8f8scP8TX/8RXv+Ttv8SXv/p8P+4z/+bu/9Cf//P3v++0/85ef/7/P8qbv9klv/9/v9QiP9nmP9Siv82d//O3v9Rif+tx//y9v/u8/+jwf9Hgv8gaP8bZP8uOY56AAAASHRSTlMACVGWw+nu/OTElVANHvOSIgaH+YEHI87RHSvm5S4g6wjM0IaAIfeZC/FWT8nj9vDnwJiUV/gciITN6C8pyySa9JcfDMjHkFR31d0YAAAAAWJLR0RTemcdBgAAAAlwSFlzAAAdhwAAHYcBj+XxZQAAAAd0SU1FB+cIBwwjJOGCmDYAAAGTSURBVDjLfVNXW8JAEDxElI4Ywa4IglgARRTF3lEQkLMXEDv23nv532YvCaTpPOTuZuZLNnuzCOWgKFAWqoqK1RqtTo+kMCiN4RyMphKRbC6lwgJQZRa+bi0PS1BRmderqllyeiYSnY2xh5paTq+rJ0Q8MZfENOYXFlkH+w5bAzlGl3AOyyuEsjN1OMhhdQ3zsJ4gZCPoThdsN7AQqTT5FyttaIJdZFNkwMkM8CaE3M30GtvCEmyTjulRC6xpLIMdUFqRCZZdOcMeKFrUBv3ZlzMcxGlJg9T0M4tlcUhLHuSFGo9EOCYG6JYXUf8bfAjuISP/iRNaav+nyFMosgP54WfO5AznoHSiwJ+NugBFh9wQxdilVL8irVawl3V9I7msW+CVkEcS17uUUL9/ALarGwIRJNl4FAQm+UTIHpIoCxPp5xfeVWcJ1WtmQx9iQvv69g7qx+cXE1q1k4t1X4iL/Xck+sPFPtTPGxy7dHAGDPzRsgVFo+dy2ETTOTg0nJd9I6My8z0W8I+rKK9nYnJKkWd/ARPt9/xvuhVMAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIzLTA4LTA3VDEyOjM1OjM2KzAwOjAwrnvl4wAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMy0wOC0wN1QxMjozNTozNiswMDowMN8mXV8AAAAZdEVYdFNvZnR3YXJlAHd3dy5pbmtzY2FwZS5vcmeb7jwaAAAAV3pUWHRSYXcgcHJvZmlsZSB0eXBlIGlwdGMAAHic4/IMCHFWKCjKT8vMSeVSAAMjCy5jCxMjE0uTFAMTIESANMNkAyOzVCDL2NTIxMzEHMQHy4BIoEouAOoXEXTyQjWVAAAAAElFTkSuQmCC",
+  },
+  {
+    chainId: "1",
+    label: "Ethereum",
+    image:
+      "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
+    disabled: true,
+  },
+];
+
+export const toChains = ["pacific-1", "stargaze-1", "osmosis-1", "neutron-1"];

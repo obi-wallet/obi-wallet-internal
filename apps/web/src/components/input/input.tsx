@@ -54,7 +54,6 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
   const [text, setText] = useState<string>("");
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    console.log("DEFAULT VALUE", defaultValue);
     setText(defaultValue as string);
   }, [defaultValue]);
 
@@ -67,7 +66,6 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
   }));
 
   useEffect(() => {
-    console.log("VALUE", value);
     if (value !== text) {
       if (type === "number" && isNaN(Number(value))) return;
       setText(value as string);
@@ -75,16 +73,9 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
-  // useEffect(() => {
-  //   console.log("TEXT", text);
-  //   if (text !== value) {
-  //     onChange && onChange(text as string);
-  //   }
-  // }, [text]);
-
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    console.log({ value, number: isNaN(parseFloat(value)) });
+
     if (type === "number" && isNaN(Number(value))) return;
     setText(value.trim());
     onChange && onChange(value.trim());

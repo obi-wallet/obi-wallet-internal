@@ -15,7 +15,8 @@ export interface CustomDropdownProps<T extends DropdownItem> {
   selectedItemComponent: React.FC<{ item: T | null }>;
   getKey?: (item: T) => string;
   className?: string;
-  selectedItem?: T;
+  selectedItem?: T | null | undefined;
+  selectedItemClassname?: string;
 }
 
 export interface ItemComponentProps<T extends DropdownItem> {
@@ -38,6 +39,7 @@ export function CustomDropdown<T extends DropdownItem>({
   getKey,
   className,
   selectedItem,
+  selectedItemClassname,
 }: CustomDropdownProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -59,7 +61,10 @@ export function CustomDropdown<T extends DropdownItem>({
             <button
               id="dropdownDefaultButton"
               data-dropdown-toggle="dropdown"
-              className="bg-background-primary hover:bg-background-primary-hoverfocus`:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white"
+              className={cn(
+                "bg-background-primary hover:bg-background-primary-hoverfocus`:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white",
+                selectedItemClassname,
+              )}
               onClick={() => setIsOpen(!isOpen)}
             >
               <SelectedItemComponent item={selectedItem as T | null} />
