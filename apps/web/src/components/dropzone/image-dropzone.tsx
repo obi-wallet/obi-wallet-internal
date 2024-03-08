@@ -76,7 +76,7 @@ export function ImageDropzone({
       {fileObjectUrl ? (
         <Image
           src={fileObjectUrl}
-          className="rounded-full"
+          className="aspect-square rounded-full object-cover"
           alt="image"
           width={width}
           height={height}

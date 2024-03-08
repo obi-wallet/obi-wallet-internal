@@ -7,11 +7,13 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { UserData } from "@/stores";
 import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default observer(function AccountSettings() {
   const wallet = useCurrentWallet({});
   const { userDataStore } = useStore();
+  const navigator = useRouter();
 
   if (!wallet) return null;
 
@@ -29,6 +31,7 @@ export default observer(function AccountSettings() {
             avatar: userData.avatar ?? "",
           },
         });
+        navigator.push("/dashboard/settings");
       }}
     />
   );
