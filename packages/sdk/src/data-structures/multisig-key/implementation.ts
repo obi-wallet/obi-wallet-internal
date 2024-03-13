@@ -26,6 +26,7 @@ export class MultisigKey {
   public constructor(
     protected _chainId: ChainId,
     protected _keys: Key[],
+    protected _primaryKeyIndex: number | null,
     protected _threshold: number,
     protected _factories: {
       Key: AbstractDataStructure<Key, typeof KeySchema>;
@@ -42,6 +43,7 @@ export class MultisigKey {
     }
     return {
       keys: this._keys.map((key: Key) => key.toJSON()),
+      primaryKeyIndex: this._primaryKeyIndex,
       threshold: this._threshold,
     };
   }
@@ -93,15 +95,19 @@ export class MultisigKey {
   }
 
   public getKeyOfType<T extends KeyType>(type: T) {
-    return this._keys.find((key): key is KeySubclassTypeMapping[T] => {
-      return key.type === type;
-    });
+    return this._keys.find(this.isKeyOfType(type));
+  }
+
+  public getPrimaryKey(): KeySubclassTypeMapping[KeyType.Passkey] | null {
+    const primaryKey =
+      this._primaryKeyIndex !== null ? this._keys[this._primaryKeyIndex] : null;
+    if (!primaryKey || !this.isUsableKeyOfType(KeyType.Passkey)(primaryKey))
+      return null;
+    return primaryKey;
   }
 
   public getUsableKeyOfType<T extends KeyType>(type: T) {
-    return this._keys.find((key): key is KeySubclassTypeMapping[T] => {
-      return key.type === type && key.isUsable;
-    });
+    return this._keys.find(this.isUsableKeyOfType(type));
   }
 
   public setPasskeyKey(keyPair: Secp256k1KeyPair) {
@@ -211,6 +217,15 @@ export class MultisigKey {
 
   public removeKeyOfType<T extends KeyType>(type: T) {
     this._keys = this._keys.filter((key) => key.type !== type);
+  }
+
+  protected isKeyOfType<T extends KeyType>(type: T) {
+    return (key: Key): key is KeySubclassTypeMapping[T] => key.type === type;
+  }
+
+  protected isUsableKeyOfType<T extends KeyType>(type: T) {
+    return (key: Key): key is KeySubclassTypeMapping[T] =>
+      key.type === type && key.isUsable;
   }
 
   protected get sdk() {

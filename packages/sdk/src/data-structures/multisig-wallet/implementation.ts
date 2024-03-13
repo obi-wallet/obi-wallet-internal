@@ -1,5 +1,4 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { Wallet } from "ethers";
 import * as R from "ramda";
 
 import { MultisigWalletSchema } from "./schema";

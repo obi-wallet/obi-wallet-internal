@@ -17,7 +17,7 @@ export function createMultisigKey(
     createMultisigKey,
   },
 ): MultisigKey {
-  const { keys, threshold } =
+  const { keys, primaryKeyIndex, threshold } =
     MultisigKeySchema.migratableSchema.parse(serialized);
   let keysMapped: Key[];
   try {
@@ -25,7 +25,7 @@ export function createMultisigKey(
   } catch (e) {
     keysMapped = [];
   }
-  return new MultisigKey(chain, keysMapped, threshold, {
+  return new MultisigKey(chain, keysMapped, primaryKeyIndex, threshold, {
     Key: factories.Key,
     createMultisigKey: factories.createMultisigKey,
   });

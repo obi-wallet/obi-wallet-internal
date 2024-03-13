@@ -2,7 +2,6 @@ import { rootStore } from "@/hooks/use-create-root-store";
 import {
   BackupShare,
   EasyShare,
-  KeyType,
   MultisigKey,
   MultisigPublicKey,
 } from "@obi-wallet/sdk";
@@ -74,7 +73,7 @@ export class SharesEncryption {
 
 export class SharesLocalEncryption extends SharesEncryption {
   public constructor(protected readonly multisigKey: MultisigKey) {
-    const primaryKey = multisigKey.getUsableKeyOfType(KeyType.Passkey);
+    const primaryKey = multisigKey.getPrimaryKey();
     invariant(primaryKey, "Primary key is not available");
 
     super(
@@ -89,7 +88,7 @@ export class SharesLocalEncryption extends SharesEncryption {
 
 export class SharesBackupEncryption extends SharesEncryption {
   public constructor(protected readonly multisigKey: MultisigKey) {
-    const primaryKey = multisigKey.getUsableKeyOfType(KeyType.Passkey);
+    const primaryKey = multisigKey.getPrimaryKey();
     invariant(primaryKey, "Primary key is not available");
 
     super(

@@ -2,14 +2,11 @@
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { Signer, SigningKey, Wallet } from "ethers";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import invariant from "tiny-invariant";
 import { Presets } from "userop";
 
 import { WalletsSchema } from "./schema";
 import { ChainId } from "../../chains";
-import { Serialized } from "../abstract";
 import { AbstractMigratable, AbstractSerialized } from "../migratable";
-import { MultisigKey } from "../multisig-key";
 import { MultisigWallet } from "../multisig-wallet";
 
 export class Wallets {

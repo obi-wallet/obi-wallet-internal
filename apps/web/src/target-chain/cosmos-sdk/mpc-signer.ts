@@ -18,7 +18,6 @@ import {
   OfflineDirectSigner,
 } from "@cosmjs/proto-signing";
 import {
-  KeyType,
   MpcWallet,
   Secp256k1PrivateKeySigner,
   SecretJsClient,
@@ -111,8 +110,8 @@ export class CosmosSdkMpcSigner
     invariant(rootStore.current, "Root store is not initialized");
     const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
 
-    const passkey = this.wallet.owner.getUsableKeyOfType(KeyType.Passkey);
-    invariant(passkey, "No usable passkey found");
+    const primaryKey = this.wallet.owner.getPrimaryKey();
+    invariant(primaryKey, "No primary key found");
 
     invariant(this.wallet.encryptedEasyShare, "No encrypted easy share found");
 
@@ -134,7 +133,7 @@ export class CosmosSdkMpcSigner
     });
 
     const passkeySigner = new Secp256k1PrivateKeySigner(
-      passkey.payload.privateKey,
+      primaryKey.payload.privateKey,
     );
 
     const client = new SecretJsClient(this.wallet.homeChainId);
