@@ -1,7 +1,4 @@
-import {
-  Secp256k1KeyPair,
-  Secp256k1PublicKey,
-} from "@obi-wallet/sdk-secp256k1";
+import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import * as R from "ramda";
 
 import { MultisigKeySchema } from "./schema";
@@ -114,83 +111,6 @@ export class MultisigKey {
     this.setKey({
       type: KeyType.Passkey,
       payload: keyPair,
-    });
-  }
-
-  public setPhoneKey(payload: {
-    publicKey: Secp256k1PublicKey;
-    privateKey: string;
-    phoneNumber: string;
-    securityQuestion: string;
-  }) {
-    this.setKey({
-      type: KeyType.Phone,
-      payload,
-    });
-    // console.log("Current multisig draft is: " + JSON.stringify(this));
-  }
-  public setTelegramKey(payload: {
-    publicKey: Secp256k1PublicKey;
-    privateKey: string;
-    chatID: string;
-    securityQuestion: string;
-  }) {
-    this.setKey({
-      type: KeyType.Telegram,
-      payload,
-    });
-    // console.log("Current multisig draft is: " + JSON.stringify(this));
-  }
-
-  public setSocialKey(publicKey: Secp256k1PublicKey) {
-    this.setKey({
-      type: KeyType.Social,
-      payload: {
-        publicKey,
-      },
-    });
-  }
-
-  public setNfcKey(payload: {
-    publicKey: Secp256k1PublicKey;
-    localEntropy: string;
-  }) {
-    this.setKey({
-      type: KeyType.Nfc,
-      payload,
-    });
-  }
-
-  public setCloudKey(payload: Secp256k1KeyPair & { provider: "google-drive" }) {
-    this.setKey({
-      type: KeyType.Cloud,
-      payload,
-    });
-  }
-
-  public setEmailKey(publicKey: Secp256k1PublicKey) {
-    this.setKey({
-      type: KeyType.Email,
-      payload: {
-        publicKey,
-      },
-    });
-  }
-
-  public setEmailRecoveryKey(key: Secp256k1KeyPair) {
-    this.setKey({
-      type: KeyType.EmailRecovery,
-      payload: key,
-    });
-  }
-
-  public setZAuthKey(publicKey: Secp256k1PublicKey) {
-    this.setKey({
-      type: KeyType.ZAuth,
-      payload: {
-        publicKey,
-        privateKey: "",
-      },
     });
   }
 
