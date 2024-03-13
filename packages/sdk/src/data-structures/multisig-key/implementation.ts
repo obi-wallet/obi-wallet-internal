@@ -115,28 +115,25 @@ export class MultisigKey {
   }
 
   protected setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
-    this._keys = this._keys.filter((k) => key.type !== k.type);
-    this._keys.push(this._factories.Key.create(key));
-    // sort the keys by type, and then by public key
-    this._keys = this._keys.sort((a, b) => {
-      if (a.type < b.type) {
-        return -1;
-      } else if (a.type > b.type) {
-        return 1;
-      } else {
-        if (a.publicKey.value < b.publicKey.value) {
-          return -1;
-        } else if (a.publicKey.value > b.publicKey.value) {
-          return 1;
-        } else {
-          return 0;
-        }
-      }
-    });
+    this.setKeys([
+      ...this._keys.filter((k) => key.type !== k.type),
+      this._factories.Key.create(key),
+    ]);
+  }
+
+  protected setKeys(keys: Key[]) {
+    this._keys = this.sortKeys(keys);
+  }
+
+  protected sortKeys(keys: Key[]) {
+    return R.sortWith<Key>([
+      R.ascend(R.prop("type")),
+      R.ascend((key) => key.publicKey.value),
+    ])(keys);
   }
 
   public removeKeyOfType<T extends KeyType>(type: T) {
-    this._keys = this._keys.filter((key) => key.type !== type);
+    this.setKeys(this._keys.filter((key) => key.type !== type));
   }
 
   protected isKeyOfType<T extends KeyType>(type: T) {
