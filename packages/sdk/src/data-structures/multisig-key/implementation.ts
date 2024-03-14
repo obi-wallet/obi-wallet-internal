@@ -90,16 +90,8 @@ export class MultisigKey {
     return this._keys;
   }
 
-  public get signerTypes() {
-    return this._keys.map((key) => key.type);
-  }
-
   public hasKeyOfType(type: KeyType) {
     return this._keys.some((key) => key.type === type);
-  }
-
-  public getKeyOfType<T extends KeyType>(type: T) {
-    return this._keys.find(this.isKeyOfType(type));
   }
 
   public get primaryKey(): KeySubclassTypeMapping[KeyType.Passkey] | null {
