@@ -16,6 +16,8 @@ import { KeySchema } from "../key/schema";
 import { AbstractSerialized } from "../migratable";
 
 export class MultisigKey {
+  protected _primaryKey: Key | null = null;
+
   public get schema() {
     return MultisigKeySchema;
   }
@@ -23,7 +25,7 @@ export class MultisigKey {
   public constructor(
     protected _chainId: ChainId,
     protected _keys: Key[],
-    protected _primaryKeyIndex: number | null,
+    _primaryKeyIndex: number | null,
     protected _threshold: number,
     protected _factories: {
       Key: AbstractDataStructure<Key, typeof KeySchema>;
@@ -32,7 +34,11 @@ export class MultisigKey {
         serialized?: AbstractSerialized<typeof MultisigKeySchema>,
       ) => MultisigKey;
     },
-  ) {}
+  ) {
+    if (_primaryKeyIndex !== null) {
+      this._primaryKey = _keys[_primaryKeyIndex] ?? null;
+    }
+  }
 
   public toJSON(): AbstractSerialized<typeof MultisigKeySchema> | undefined {
     if (!this._keys) {
@@ -40,7 +46,7 @@ export class MultisigKey {
     }
     return {
       keys: this._keys.map((key: Key) => key.toJSON()),
-      primaryKeyIndex: this._primaryKeyIndex,
+      primaryKeyIndex: this.primaryKeyIndex,
       threshold: this._threshold,
     };
   }
@@ -95,12 +101,15 @@ export class MultisigKey {
     return this._keys.find(this.isKeyOfType(type));
   }
 
-  public getPrimaryKey(): KeySubclassTypeMapping[KeyType.Passkey] | null {
-    const primaryKey =
-      this._primaryKeyIndex !== null ? this._keys[this._primaryKeyIndex] : null;
-    if (!primaryKey || !this.isUsableKeyOfType(KeyType.Passkey)(primaryKey))
-      return null;
-    return primaryKey;
+  public get primaryKey(): KeySubclassTypeMapping[KeyType.Passkey] | null {
+    if (
+      this._primaryKey &&
+      this.isUsableKeyOfType(KeyType.Passkey)(this._primaryKey) &&
+      this._keys.includes(this._primaryKey)
+    ) {
+      return this._primaryKey;
+    }
+    return null;
   }
 
   public getUsableKeyOfType<T extends KeyType>(type: T) {
@@ -112,6 +121,16 @@ export class MultisigKey {
       type: KeyType.Passkey,
       payload: keyPair,
     });
+  }
+
+  public removeKeyOfType<T extends KeyType>(type: T) {
+    this.setKeys(this._keys.filter((key) => key.type !== type));
+  }
+
+  protected get primaryKeyIndex() {
+    if (!this._primaryKey) return null;
+    const index = this._keys.indexOf(this._primaryKey);
+    return index !== -1 ? index : null;
   }
 
   protected setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
@@ -130,10 +149,6 @@ export class MultisigKey {
       R.ascend(R.prop("type")),
       R.ascend((key) => key.publicKey.value),
     ])(keys);
-  }
-
-  public removeKeyOfType<T extends KeyType>(type: T) {
-    this.setKeys(this._keys.filter((key) => key.type !== type));
   }
 
   protected isKeyOfType<T extends KeyType>(type: T) {

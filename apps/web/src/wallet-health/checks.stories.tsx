@@ -83,7 +83,7 @@ export const EncryptedBackups: Story = {
       queryFn: async () => {
         invariant(wallet, "Expected wallet to be set.");
 
-        const primaryKey = wallet.owner.getPrimaryKey();
+        const primaryKey = wallet.owner.primaryKey;
         invariant(primaryKey, "Expected passkey to be set");
 
         const [data] = await HomeChain.chainId(

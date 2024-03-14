@@ -110,7 +110,7 @@ export class CosmosSdkMpcSigner
     invariant(rootStore.current, "Root store is not initialized");
     const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
 
-    const primaryKey = this.wallet.owner.getPrimaryKey();
+    const primaryKey = this.wallet.owner.primaryKey;
     invariant(primaryKey, "No primary key found");
 
     invariant(this.wallet.encryptedEasyShare, "No encrypted easy share found");

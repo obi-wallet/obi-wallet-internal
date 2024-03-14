@@ -73,7 +73,7 @@ export class SharesEncryption {
 
 export class SharesLocalEncryption extends SharesEncryption {
   public constructor(protected readonly multisigKey: MultisigKey) {
-    const primaryKey = multisigKey.getPrimaryKey();
+    const primaryKey = multisigKey.primaryKey;
     invariant(primaryKey, "Primary key is not available");
 
     super(
@@ -88,7 +88,7 @@ export class SharesLocalEncryption extends SharesEncryption {
 
 export class SharesBackupEncryption extends SharesEncryption {
   public constructor(protected readonly multisigKey: MultisigKey) {
-    const primaryKey = multisigKey.getPrimaryKey();
+    const primaryKey = multisigKey.primaryKey;
     invariant(primaryKey, "Primary key is not available");
 
     super(
