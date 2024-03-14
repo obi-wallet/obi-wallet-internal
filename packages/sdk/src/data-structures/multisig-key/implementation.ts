@@ -90,10 +90,6 @@ export class MultisigKey {
     return this._keys;
   }
 
-  public hasKeyOfType(type: KeyType) {
-    return this._keys.some((key) => key.type === type);
-  }
-
   public get primaryKey(): KeySubclassTypeMapping[KeyType.Passkey] | null {
     if (
       this._primaryKey &&
@@ -110,19 +106,15 @@ export class MultisigKey {
     this._primaryKey = key;
   }
 
-  public getUsableKeyOfType<T extends KeyType>(type: T) {
-    return this._keys.find(this.isUsableKeyOfType(type));
-  }
-
-  public setPasskeyKey(keyPair: Secp256k1KeyPair) {
-    return this.setKey({
+  public addPasskeyKey(keyPair: Secp256k1KeyPair) {
+    return this.addKey({
       type: KeyType.Passkey,
       payload: keyPair,
     });
   }
 
-  public removeKeyOfType<T extends KeyType>(type: T) {
-    this.setKeys(this._keys.filter((key) => key.type !== type));
+  public removeKey(key: Key) {
+    this.setKeys(this._keys.filter((k) => k !== key));
   }
 
   protected get primaryKeyIndex() {
@@ -131,9 +123,9 @@ export class MultisigKey {
     return index !== -1 ? index : null;
   }
 
-  protected setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
+  protected addKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
     const newKey = this._factories.Key.create(key);
-    this.setKeys([...this._keys.filter((k) => key.type !== k.type), newKey]);
+    this.setKeys([...this._keys, newKey]);
     return newKey;
   }
 
@@ -146,10 +138,6 @@ export class MultisigKey {
       R.ascend(R.prop("type")),
       R.ascend((key) => key.publicKey.value),
     ])(keys);
-  }
-
-  protected isKeyOfType<T extends KeyType>(type: T) {
-    return (key: Key): key is KeySubclassTypeMapping[T] => key.type === type;
   }
 
   protected isUsableKeyOfType<T extends KeyType>(type: T) {

@@ -41,7 +41,7 @@ export function createObservableMultisigKey(
   });
   makeObservable<
     MultisigKey,
-    "_chainId" | "_keys" | "_threshold" | "setKey" | "setKeys" | "setPrimaryKey"
+    "_chainId" | "_keys" | "_threshold" | "addKey" | "setKeys" | "setPrimaryKey"
   >(
     key,
     {
@@ -51,8 +51,8 @@ export function createObservableMultisigKey(
       toJSON: false,
       clone: false,
       setThreshold: action,
-      setKey: action,
-      removeKeyOfType: action,
+      addKey: action,
+      removeKey: action,
       setKeys: action,
       setPrimaryKey: action,
     },

@@ -162,7 +162,7 @@ export class NewOnboardingPayload implements Draftable {
     const newKey = (() => {
       switch (key.type) {
         case KeyType.Passkey:
-          return this._multisigKey.setPasskeyKey(key.payload);
+          return this._multisigKey.addPasskeyKey(key.payload);
         default:
           throw new Error(`Unsupported primary key type: ${key.type}`);
       }
