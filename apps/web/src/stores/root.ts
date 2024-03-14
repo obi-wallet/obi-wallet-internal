@@ -40,7 +40,6 @@ export class RootStore {
     // TODO: do we still need the chain store, and if so, the reference to walletsStore?
     this.chainStore = new ChainStore({
       configStore: this.configStore,
-      walletsStore: this.walletsStore,
     });
     this.mpcStore = new MpcStore({
       kvStore: new KVStore("mpc-store"),
@@ -55,10 +54,6 @@ export class RootStore {
 
   public get mpcWalletsStore() {
     return this.sdkRootStore.mpcWalletsStore;
-  }
-
-  public get walletsStore() {
-    return this.sdkRootStore.walletsStore;
   }
 
   public get walletsStoreState() {

@@ -21,10 +21,6 @@ export class RootStore {
     return this._walletsStore.state;
   }
 
-  public get walletsStore() {
-    return this._walletsStore.wallets;
-  }
-
   public get mpcWalletsStore() {
     return this._walletsStore.mpcWallets;
   }

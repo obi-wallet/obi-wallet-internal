@@ -24,11 +24,7 @@ const Provider = observer<ProviderProps>(function Provider({
   const rootStore = useCreateRootStore({ config: obiModalConfig });
 
   return (
-    <SdkProvider
-      rootStore={rootStore.sdkRootStore}
-      QueryClientProvider={QueryClientProvider}
-      buster={buster}
-    >
+    <SdkProvider QueryClientProvider={QueryClientProvider} buster={buster}>
       <EnvContext.Provider
         value={{
           FAST_TRAVEL_API_URL: process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL!,

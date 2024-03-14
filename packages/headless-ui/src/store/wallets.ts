@@ -1,10 +1,4 @@
-import {
-  Migratable,
-  MpcWallets,
-  ObservableMpcWallets,
-  ObservableWallets,
-  Wallets,
-} from "@obi-wallet/sdk";
+import { Migratable, MpcWallets, ObservableMpcWallets } from "@obi-wallet/sdk";
 import { autorun, observable, runInAction, toJS } from "mobx";
 
 import { AbstractKVStore } from "../kv-store";
@@ -23,27 +17,21 @@ export class WalletsStore {
 
   @observable public accessor state: WalletState = WalletState.LOADING;
   public initPromise: Promise<void>;
-  @observable public accessor wallets: Wallets;
   @observable public accessor mpcWallets: MpcWallets;
 
   constructor({ kvStore }: { kvStore: AbstractKVStore }) {
     this.kvStore = kvStore;
-    this.wallets = ObservableWallets.create();
     this.mpcWallets = ObservableMpcWallets.create();
     this.initPromise = this.init();
   }
 
   protected async init() {
     try {
-      const [legacyData, data] = await Promise.all([
-        this.kvStore.get<Migratable<Wallets> | undefined>("wallets"),
-        this.kvStore.get<Migratable<MpcWallets> | undefined>("mpc-wallets"),
-      ]);
+      const data = await this.kvStore.get<Migratable<MpcWallets> | undefined>(
+        "mpc-wallets",
+      );
 
       runInAction(() => {
-        if (legacyData) {
-          this.wallets.deserialize(legacyData);
-        }
         if (data) {
           this.mpcWallets.deserialize(data);
         }
@@ -51,16 +39,10 @@ export class WalletsStore {
       });
 
       autorun(async () => {
-        const legacyData = Wallets.schema.currentSchema.parse(
-          toJS(this.wallets.toJSON()),
-        );
         const data = MpcWallets.schema.currentSchema.parse(
           toJS(this.mpcWallets.toJSON()),
         );
-        await Promise.all([
-          this.kvStore.set("wallets", legacyData),
-          this.kvStore.set("mpc-wallets", data),
-        ]);
+        await this.kvStore.set("mpc-wallets", data);
       });
     } catch (e) {
       const error = e as Error;

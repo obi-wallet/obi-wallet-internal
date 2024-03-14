@@ -4,7 +4,6 @@ import {
   SharesLocalEncryption,
 } from "@/lib/encryption";
 import {
-  KeyType,
   MultisigKey,
   ObservableMpcWallet,
   Secp256k1PublicKey,
