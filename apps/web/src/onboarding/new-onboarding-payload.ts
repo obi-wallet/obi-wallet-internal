@@ -159,13 +159,15 @@ export class NewOnboardingPayload implements Draftable {
       payload: Secp256k1KeyPair;
     };
   }) {
-    switch (key.type) {
-      case KeyType.Passkey:
-        this._multisigKey.setPasskeyKey(key.payload);
-        break;
-      default:
-        throw new Error(`Unsupported primary key type: ${key.type}`);
-    }
+    const newKey = (() => {
+      switch (key.type) {
+        case KeyType.Passkey:
+          return this._multisigKey.setPasskeyKey(key.payload);
+        default:
+          throw new Error(`Unsupported primary key type: ${key.type}`);
+      }
+    })();
+    this._multisigKey.setPrimaryKey(newKey);
   }
 
   @action

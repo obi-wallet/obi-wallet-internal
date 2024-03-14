@@ -1,5 +1,6 @@
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import * as R from "ramda";
+import invariant from "tiny-invariant";
 
 import { MultisigKeySchema } from "./schema";
 import { ChainId } from "../../chains";
@@ -112,12 +113,17 @@ export class MultisigKey {
     return null;
   }
 
+  public setPrimaryKey(key: Key) {
+    invariant(this._keys.includes(key), "Key not in multisig");
+    this._primaryKey = key;
+  }
+
   public getUsableKeyOfType<T extends KeyType>(type: T) {
     return this._keys.find(this.isUsableKeyOfType(type));
   }
 
   public setPasskeyKey(keyPair: Secp256k1KeyPair) {
-    this.setKey({
+    return this.setKey({
       type: KeyType.Passkey,
       payload: keyPair,
     });
@@ -134,10 +140,9 @@ export class MultisigKey {
   }
 
   protected setKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
-    this.setKeys([
-      ...this._keys.filter((k) => key.type !== k.type),
-      this._factories.Key.create(key),
-    ]);
+    const newKey = this._factories.Key.create(key);
+    this.setKeys([...this._keys.filter((k) => key.type !== k.type), newKey]);
+    return newKey;
   }
 
   protected setKeys(keys: Key[]) {
