@@ -23,8 +23,6 @@ import { Messages } from "../../messages";
 import { CosmosSdkMessages } from "../../messages/cosmos-sdk";
 import { AbstractTransactionsSdk } from "../abstract";
 
-export * from "./extended-ethers-signer";
-
 function notImplemented(message: string) {
   warning(false, message);
 }
@@ -210,5 +208,4 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
   }
 }
 
-export * from "./extended-ethers-signer";
 export * from "./multisigs-signer";
