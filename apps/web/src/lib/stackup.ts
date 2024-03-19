@@ -1,4 +1,3 @@
-import { EthereumAccount } from "@obi-wallet/headless-ui";
 import {
   SecretJsChainId,
   SecretJsChains,
@@ -16,6 +15,12 @@ import { MsgExecuteContract } from "secretjs";
 import { Presets } from "userop";
 
 import { getFeeLender } from "./fee-lender";
+
+export interface EthereumAccount {
+  publicKey: Secp256k1PublicKey;
+  evmSigningAddress: string;
+  evmUserContractAddress: string;
+}
 
 export interface HomeChain {
   zAuthKeyPair: Secp256k1KeyPair;

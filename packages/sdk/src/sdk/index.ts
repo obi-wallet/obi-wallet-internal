@@ -3,7 +3,6 @@ export * from "./common";
 export * from "./contracts";
 export * from "./gatekeeper";
 export * from "./messages";
-export * from "./multisig-wallet";
 export * from "./sdk";
 export * from "./staking";
 export * from "./transactions";

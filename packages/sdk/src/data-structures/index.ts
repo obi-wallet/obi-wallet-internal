@@ -12,4 +12,3 @@ export * from "./multisig-key";
 export * from "./multisig-wallet";
 export * from "./singlesig-wallet";
 export * from "./user-interactions";
-export * from "./wallets";

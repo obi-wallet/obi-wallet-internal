@@ -15,7 +15,6 @@ import {
   useWalletBackupIncludesEasyShareCheck,
 } from "@/wallet-health/checks";
 import { useQuery } from "@obi-wallet/headless-ui";
-import { KeyType } from "@obi-wallet/sdk";
 import { Meta, StoryObj } from "@storybook/react";
 import { equals } from "ramda";
 import invariant from "tiny-invariant";
@@ -84,12 +83,12 @@ export const EncryptedBackups: Story = {
       queryFn: async () => {
         invariant(wallet, "Expected wallet to be set.");
 
-        const passkey = wallet.owner.getUsableKeyOfType(KeyType.Passkey);
-        invariant(passkey, "Expected passkey to be set");
+        const primaryKey = wallet.owner.primaryKey;
+        invariant(primaryKey, "Expected passkey to be set");
 
         const [data] = await HomeChain.chainId(
           wallet.homeChainId,
-        ).lookupWalletBackup(passkey.publicKey);
+        ).lookupWalletBackup(primaryKey.publicKey);
         invariant(data, "Expected data to be set");
 
         const sharesLocalEncryption = new SharesLocalEncryption(wallet.owner);

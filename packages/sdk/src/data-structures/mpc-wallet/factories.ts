@@ -14,11 +14,7 @@ export function createMpcWallet(
   const serialized = MpcWalletSchema.migratableSchema.parse(migratable);
   return new MpcWallet(
     serialized.homeChain,
-    factories.MultisigKey.create(
-      undefined,
-      serialized.homeChain,
-      serialized.owner,
-    ),
+    factories.MultisigKey.create(serialized.homeChain, serialized.owner),
     serialized.userEntryAddress,
     serialized.encryptedShares,
   );

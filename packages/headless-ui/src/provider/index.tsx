@@ -6,11 +6,6 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { observer } from "mobx-react-lite";
 import { ComponentType, ReactNode } from "react";
 
-import { RootStoreProvider } from "./root-store";
-import { RootStore } from "../store";
-
-export * from "./root-store";
-
 const persister = createAsyncStoragePersister({
   storage: AsyncStorage,
 });
@@ -35,17 +30,15 @@ const QueryClientProviderWithPersister = observer<QueryClientProviderProps>(
 export const Provider = observer(function Provider({
   children,
   QueryClientProvider = QueryClientProviderWithPersister,
-  rootStore,
   buster,
 }: {
   children: ReactNode;
   QueryClientProvider?: ComponentType<QueryClientProviderProps>;
-  rootStore: RootStore;
   buster?: string;
 }) {
   return (
     <QueryClientProvider client={queryClient} buster={buster}>
-      <RootStoreProvider value={rootStore}>{children}</RootStoreProvider>
+      {children}
     </QueryClientProvider>
   );
 });

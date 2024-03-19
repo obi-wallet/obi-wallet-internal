@@ -6,13 +6,13 @@ import {
   ObservableMultisigKey,
 } from "@obi-wallet/sdk";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
-import { observable } from "mobx";
+import { action, observable } from "mobx";
 
 export class RecoveryPayload implements Draftable {
   @observable protected accessor _multisigKey: MultisigKey;
 
   constructor(chainId: HomeChainId) {
-    this._multisigKey = ObservableMultisigKey.create(undefined, chainId);
+    this._multisigKey = ObservableMultisigKey.create(chainId);
   }
 
   public get chainId() {
@@ -33,21 +33,23 @@ export class RecoveryPayload implements Draftable {
     return this._multisigKey.equals(other._multisigKey);
   }
 
+  @action
   public async setPrimaryKey({
     key,
   }: {
-    // TODO: here we also need to allow other key types
     key: {
       type: KeyType.Passkey;
       payload: Secp256k1KeyPair;
     };
   }) {
-    switch (key.type) {
-      case KeyType.Passkey:
-        await this._multisigKey.setPasskeyKey(key.payload);
-        break;
-      default:
-        throw new Error(`Unsupported primary key type: ${key.type}`);
-    }
+    const newKey = (() => {
+      switch (key.type) {
+        case KeyType.Passkey:
+          return this._multisigKey.addPasskeyKey(key.payload);
+        default:
+          throw new Error(`Unsupported primary key type: ${key.type}`);
+      }
+    })();
+    this._multisigKey.setPrimaryKey(newKey);
   }
 }

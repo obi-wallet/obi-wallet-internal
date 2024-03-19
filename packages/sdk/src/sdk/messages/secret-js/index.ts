@@ -15,14 +15,10 @@ import invariant from "tiny-invariant";
 import warning from "tiny-warning";
 
 import { SecretJsChainId, SecretJsChains } from "../../../chains";
-import {
-  GatekeeperConfig,
-  MultisigKey,
-  MultisigWallet,
-} from "../../../data-structures";
+import { MultisigKey } from "../../../data-structures";
 import { PublicKey } from "../../../keys";
 import { Message, MessageJson } from "../../../transactions";
-import { CodeIds, Token } from "../../common";
+import { Token } from "../../common";
 import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
 
@@ -210,115 +206,6 @@ export class SecretJsMessages extends AbstractMessages<string> {
     return [];
   }
 
-  public getUpdateWalletMessage(_: {
-    wallet: MultisigWallet;
-    codeIds: CodeIds;
-  }): Message {
-    notImplemented("getUpdateWalletMessage not implemented for SecretJS");
-    throw new Error("getUpdateWalletMessage not implemented for SecretJS");
-  }
-
-  public getProposeUpdateOwnerMessage({
-    wallet,
-    newOwner,
-    userAccountAddress,
-    userAccountCodeHash,
-    nexthashSignedBySigners,
-  }: {
-    wallet: MultisigWallet;
-    newOwner: MultisigKey;
-    userAccountAddress: string;
-    userAccountCodeHash: string;
-    nexthashSignedBySigners: string[];
-  }): Message {
-    const rawMessage = {
-      propose_update_owner: {
-        new_owner: newOwner.address,
-        signers: {
-          signers: this.getSigners(
-            newOwner.keys as unknown as Array<{
-              type: string;
-              payload: {
-                publicKey: PublicKey;
-                privateKey?: string;
-              };
-            }>,
-          ),
-          threshold: wallet.owner.threshold - 1,
-        },
-        signatures: nexthashSignedBySigners,
-      },
-    };
-    return new MsgExecuteContract({
-      sender: wallet.owner.address,
-      contract_address: userAccountAddress,
-      code_hash: userAccountCodeHash,
-      msg: rawMessage,
-    });
-  }
-
-  public getConfirmUpdateOwnerMessage({
-    wallet,
-    newOwner,
-    userAccountAddress,
-    userAccountCodeHash,
-    nexthashSignedBySigners,
-  }: {
-    wallet: MultisigWallet;
-    newOwner: MultisigKey;
-    userAccountAddress: string;
-    userAccountCodeHash: string;
-    nexthashSignedBySigners: string[];
-  }): Message {
-    const _wallet = wallet;
-    const rawMessage = {
-      confirm_update_owner: {
-        signatures: nexthashSignedBySigners,
-      },
-    };
-    return new MsgExecuteContract({
-      sender: newOwner.address,
-      contract_address: userAccountAddress,
-      code_hash: userAccountCodeHash,
-      msg: rawMessage,
-    });
-  }
-
-  public getUpdateGatekeeperMessages(_: {
-    wallet: MultisigWallet;
-    newGatekeeperConfig: GatekeeperConfig;
-    spendLimitGatekeeper: string;
-  }): Message[] {
-    notImplemented("getUpdateGatekeeperMessages not implemented for SecretJS");
-    return [];
-  }
-
-  public getStakeMessage(_: {
-    wallet: MultisigWallet;
-    amount: Token;
-    validator: string;
-  }): Message {
-    notImplemented("getStakeMessage not implemented for SecretJS");
-    throw new Error("getStakeMessage not implemented for SecretJS");
-  }
-
-  public getUnstakeMessage(_: {
-    wallet: MultisigWallet;
-    amount: Token;
-    validator: string;
-  }): Message {
-    notImplemented("getUnstakeMessage not implemented for SecretJS");
-    throw new Error("getUnstakeMessage not implemented for SecretJS");
-  }
-
-  public getWithdrawRewardsMessage(_: {
-    wallet: MultisigWallet;
-    validator: string;
-  }): Message {
-    notImplemented("getWithdrawRewardsMessage not implemented for SecretJS");
-    throw new Error("getWithdrawRewardsMessage not implemented for SecretJS");
-  }
-
   protected getSigners(
     multisigKey: Array<{
       type: string;
@@ -387,8 +274,6 @@ export class SecretJsMessages extends AbstractMessages<string> {
     newOwnerAddress: string,
     userAccountContractAddress: string,
     userAccountCodeHash: string,
-    evmUserContractAddress: string,
-    evmSigningAddress: string,
     sender: string,
   ): Message {
     const message = new MsgExecuteContract({
@@ -398,8 +283,8 @@ export class SecretJsMessages extends AbstractMessages<string> {
       msg: {
         first_update_owner: {
           first_owner: newOwnerAddress,
-          evm_contract_address: evmUserContractAddress,
-          evm_signing_address: evmSigningAddress,
+          evm_contract_address: "",
+          evm_signing_address: "",
           signers: {
             signers: this.getSigners(
               newOwner.keys as unknown as Array<{

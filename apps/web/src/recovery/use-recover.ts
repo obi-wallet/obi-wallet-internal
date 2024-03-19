@@ -4,7 +4,6 @@ import {
   SharesLocalEncryption,
 } from "@/lib/encryption";
 import {
-  KeyType,
   MultisigKey,
   ObservableMpcWallet,
   Secp256k1PublicKey,
@@ -74,9 +73,9 @@ export function useRecover() {
           throw new Error("Owner missing");
         }
 
-        const passKey = multisigKey.getUsableKeyOfType(KeyType.Passkey);
-        if (!passKey) {
-          throw new Error("Passkey missing");
+        const primaryKey = multisigKey.primaryKey;
+        if (!primaryKey) {
+          throw new Error("Primary Key missing");
         }
 
         const sharesBackupEncryption = new SharesBackupEncryption(multisigKey);
