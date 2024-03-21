@@ -52,6 +52,7 @@ export function Text({
         fontWeight === "medium" && "font-medium",
         fontWeight === "semibold" && "font-semibold",
         fontWeight === "bold" && "font-bold",
+        fontWeight === "light" && "font-light",
         leading === "none" && "leading-none",
         leading === "tight" && "leading-tight",
         leading === "snug" && "leading-snug",
