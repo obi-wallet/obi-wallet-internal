@@ -1,78 +1,13 @@
 "use client";
-import { Box, Button, Divider, Text } from "@/components";
-import { cn } from "@/lib/utils";
-import { FaPlus, FaTriangleExclamation } from "react-icons/fa6";
-interface KeyItem {
-  mandatory?: boolean;
-  label: string;
-  active?: true;
-  comingSoon?: true;
-  count: number;
-}
+import { Box, Button, Divider, KeyListItem, Text } from "@/components";
+import { MOCK_KEY_LIST } from "@/mocks/keys";
 
-const KeyListItem = ({ keyData, ...rest }: { keyData: KeyItem }) => {
-  return (
-    <Button
-      key={keyData.label}
-      variant="secondary"
-      disabled={keyData.comingSoon}
-      block
-      {...rest}
-      className="relative border-none"
-    >
-      {!keyData.active ? "Add " : ""}
-      {keyData.label}
-      <div
-        className={cn(
-          "absolute right-0 flex h-full w-14 items-center justify-center rounded-r",
-          keyData.count > 0
-            ? "bg-emerald-500"
-            : keyData.mandatory
-              ? "bg-red-500"
-              : "bg-slate-500",
-        )}
-      >
-        {keyData.count > 0 ? (
-          keyData.count
-        ) : keyData.mandatory ? (
-          <FaTriangleExclamation className="h-4 w-4" color="white" />
-        ) : (
-          <FaPlus className="h-4 w-4" color="white" />
-        )}
-      </div>
-    </Button>
-  );
-};
-
-export default function Settings() {
-  const keyList: KeyItem[] = [
-    {
-      label: "Passkey",
-      active: true,
-      count: 0,
-      mandatory: true,
-    },
-    {
-      label: "Phone Key",
-      active: true,
-      count: 2,
-    },
-    {
-      label: "Telegram Key",
-      active: true,
-      count: 1,
-    },
-    {
-      label: "Ledger Key",
-      active: true,
-      count: 0,
-    },
-  ];
-
+export default function SecuritySettings() {
+  const keyList = MOCK_KEY_LIST;
   const mandatoryKey = keyList.find((item) => item.mandatory);
 
   return (
-    <Box className="h-fit w-1/2 !min-w-[320px] px-4 py-6 max-sm:w-full">
+    <Box className="h-fit w-2/5 !min-w-[320px] px-4 py-6 max-sm:w-full">
       <Text size="xl" fontWeight="semibold">
         Security Settings
       </Text>
@@ -102,7 +37,11 @@ export default function Settings() {
           </Box>
         )}
         {keyList.map((sigKey) => (
-          <KeyListItem keyData={sigKey} />
+          <KeyListItem
+            key={sigKey.type}
+            keyData={sigKey}
+            href={`/dashboard/settings/security/${sigKey.type}`}
+          />
         ))}
       </div>
       <div className="mt-40 grid grid-cols-2 gap-8">
