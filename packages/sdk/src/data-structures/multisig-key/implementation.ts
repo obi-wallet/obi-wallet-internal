@@ -90,6 +90,10 @@ export class MultisigKey {
     return this._keys;
   }
 
+  public getKeysOfType<T extends KeyType>(type: T) {
+    return this._keys.filter(this.isKeyOfType(type));
+  }
+
   public get primaryKey(): KeySubclassTypeMapping[KeyType.Passkey] | null {
     if (
       this._primaryKey &&
@@ -140,9 +144,16 @@ export class MultisigKey {
     ])(keys);
   }
 
+  protected isKeyOfType<T extends KeyType>(type: T) {
+    return (key: Key): key is KeySubclassTypeMapping[T] => {
+      return key.type === type;
+    };
+  }
+
   protected isUsableKeyOfType<T extends KeyType>(type: T) {
-    return (key: Key): key is KeySubclassTypeMapping[T] =>
-      key.type === type && key.isUsable;
+    return (key: Key): key is KeySubclassTypeMapping[T] => {
+      return key.type === type && key.isUsable;
+    };
   }
 
   protected get sdk() {

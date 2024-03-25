@@ -1,12 +1,12 @@
 import { Button } from "@/components";
 import { cn } from "@/lib/utils";
+import { KeyType } from "@obi-wallet/sdk";
 import { FaPlus, FaTriangleExclamation } from "react-icons/fa6";
 
 export interface KeyItem {
-  type: string;
+  type: KeyType;
   mandatory?: boolean;
   label: string;
-  active?: true;
   comingSoon?: true;
   keys: {
     id: string;
@@ -33,7 +33,6 @@ export function KeyListItem({
       className="relative border-none"
       href={href}
     >
-      {!keyData.active ? "Add " : ""}
       {keyData.label}
       <div
         className={cn(

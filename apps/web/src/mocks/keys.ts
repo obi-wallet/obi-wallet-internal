@@ -1,17 +1,16 @@
 import { KeyItem } from "@/components";
+import { KeyType } from "@obi-wallet/sdk";
 
 export const MOCK_KEY_LIST: KeyItem[] = [
   {
-    type: "passkey",
+    type: KeyType.Passkey,
     label: "Passkey",
-    active: true,
     mandatory: true,
     keys: [],
   },
   {
-    type: "phone",
+    type: KeyType.Phone,
     label: "Phone Key",
-    active: true,
     keys: [
       {
         id: "id1",
@@ -24,9 +23,8 @@ export const MOCK_KEY_LIST: KeyItem[] = [
     ],
   },
   {
-    type: "telegram",
+    type: KeyType.Telegram,
     label: "Telegram Key",
-    active: true,
     keys: [
       {
         id: "id1",
@@ -41,11 +39,5 @@ export const MOCK_KEY_LIST: KeyItem[] = [
         label: "Telegram Key Name3",
       },
     ],
-  },
-  {
-    type: "ledger",
-    label: "Ledger Key",
-    active: true,
-    keys: [],
   },
 ];

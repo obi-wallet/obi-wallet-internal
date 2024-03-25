@@ -1,10 +1,65 @@
 "use client";
-import { Box, Button, Divider, KeyListItem, Text } from "@/components";
-import { MOCK_KEY_LIST } from "@/mocks/keys";
+import { Box, Button, Divider, KeyItem, KeyListItem, Text } from "@/components";
+import { useStore } from "@/contexts";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { KeyType, MultisigKey } from "@obi-wallet/sdk";
+import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
 
-export default function SecuritySettings() {
-  const keyList = MOCK_KEY_LIST;
-  const mandatoryKey = keyList.find((item) => item.mandatory);
+export default observer(function SecuritySettings() {
+  const currentWallet = useCurrentWallet({});
+  const draftId = `security-${currentWallet?.userEntryAddress}`;
+  const { draftsStore, keyMetaDataStore } = useStore();
+  const draft = draftsStore.get<MultisigKey>({ id: draftId });
+
+  useEffect(() => {
+    if (!draft && currentWallet) {
+      draftsStore.create({
+        id: draftId,
+        original: currentWallet.owner,
+      });
+    }
+  }, [currentWallet, draft, draftId, draftsStore]);
+
+  if (!currentWallet || !draft) return null;
+
+  const keyMetaData = keyMetaDataStore.getKeyMetaData(
+    currentWallet.userEntryAddress,
+  );
+
+  function getKeysOfType(type: KeyType) {
+    if (!draft) return [];
+    return draft.value.getKeysOfType(type).map((key) => {
+      const id = key.publicKey.value;
+      return {
+        id: key.publicKey.value,
+        label: keyMetaData[id]?.name ?? "Passkey",
+      };
+    });
+  }
+
+  const keyList: KeyItem[] = [
+    {
+      type: KeyType.Passkey,
+      label: "Passkey",
+      mandatory: true,
+      keys: getKeysOfType(KeyType.Passkey),
+    },
+    {
+      type: KeyType.Phone,
+      label: "Phone Key",
+      keys: getKeysOfType(KeyType.Phone),
+    },
+    {
+      type: KeyType.Telegram,
+      label: "Telegram Key",
+      keys: getKeysOfType(KeyType.Telegram),
+    },
+  ];
+
+  const missingManadatoryKey = keyList.find(
+    (item) => item.mandatory && item.keys.length === 0,
+  );
 
   return (
     <Box className="h-fit w-2/5 !min-w-[320px] px-4 py-6 max-sm:w-full">
@@ -24,18 +79,18 @@ export default function SecuritySettings() {
             Keys Required To Sign
           </Text>
           <Text size="sm" fontWeight="semibold" color="white">
-            {`1 of ${keyList.length}`}
+            {`${draft.value.threshold} of ${draft.value.keys.length}`}
           </Text>
         </div>
       </Box>
       <Divider className="my-2" />
 
       <div className="space-y-2">
-        {mandatoryKey && (
+        {missingManadatoryKey ? (
           <Box className="mt-4 bg-red-500">
-            {`Please add a ${mandatoryKey.label.toLocaleLowerCase()} on this device to continue using your Obi account.`}
+            {`Please add a ${missingManadatoryKey.label.toLocaleLowerCase()} on this device to continue using your Obi account.`}
           </Box>
-        )}
+        ) : null}
         {keyList.map((sigKey) => (
           <KeyListItem
             key={sigKey.type}
@@ -48,10 +103,10 @@ export default function SecuritySettings() {
         <Button variant="secondary" block href="/dashboard/settings">
           Back
         </Button>
-        <Button variant="primary" block>
+        <Button variant="primary" block disabled={!draft.isDirty}>
           Save
         </Button>
       </div>
     </Box>
   );
-}
+});
