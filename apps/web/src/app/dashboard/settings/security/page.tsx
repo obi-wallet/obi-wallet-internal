@@ -3,9 +3,11 @@
 import { Box, Button, Divider, KeyItem, KeyListItem, Text } from "@/components";
 import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { cn } from "@/lib/utils";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
+import { FaTrash } from "react-icons/fa";
 
 interface KeyItemPage {
   type: "key-item";
@@ -55,6 +57,7 @@ export default observer(function SecuritySettings() {
       return {
         id: key.publicKey.value,
         label: keyMetaData[id]?.name ?? "Passkey",
+        key,
       };
     });
   }
@@ -99,11 +102,31 @@ export default observer(function SecuritySettings() {
         </Text>
         <Divider className="my-2" />
         <div className="space-y-2">
-          {keyData.keys.map((sigKey) => (
-            <Button key={sigKey.id} variant="secondary" block>
-              {sigKey.label}
-            </Button>
-          ))}
+          {keyData.keys.map((sigKey) => {
+            const disabled = keyData.mandatory && keyData.keys.length === 1;
+
+            return (
+              <Button
+                key={sigKey.id}
+                className="relative border-none"
+                variant="secondary"
+                block
+              >
+                {sigKey.label}
+                <button
+                  className={cn(
+                    "absolute right-0 flex h-full w-14 items-center justify-center rounded-r bg-red-500 hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-600 disabled:opacity-30",
+                  )}
+                  disabled={disabled}
+                  onClick={() => {
+                    draft.value.removeKey(sigKey.key);
+                  }}
+                >
+                  <FaTrash className="h-4 w-4" color="white" />
+                </button>
+              </Button>
+            );
+          })}
         </div>
         <Button variant="outline" block className="mt-6 border-dashed">
           Add New Key
