@@ -81,9 +81,7 @@ export default observer(function SecuritySettings() {
     },
   ];
 
-  const missingMandatoryKey = keyList.find(
-    (item) => item.mandatory && item.keys.length === 0,
-  );
+  const missingMandatoryKey = !draft.value.primaryKey;
 
   const [firstPage] = navigationStack;
 
@@ -173,7 +171,8 @@ export default observer(function SecuritySettings() {
       <div className="space-y-2">
         {missingMandatoryKey ? (
           <Box className="mt-4 bg-red-500 text-white">
-            {`Please add a ${missingMandatoryKey.label.toLocaleLowerCase()} on this device to continue using your Obi account.`}
+            Please add a passkey on this device to continue using your Obi
+            account.
           </Box>
         ) : null}
         {keyList.map((sigKey) => (
