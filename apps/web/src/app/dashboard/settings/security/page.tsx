@@ -1,16 +1,37 @@
 "use client";
+
 import { Box, Button, Divider, KeyItem, KeyListItem, Text } from "@/components";
 import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+interface KeyItemPage {
+  type: "key-item";
+  payload: KeyType;
+}
+
+type Page = KeyItemPage;
 
 export default observer(function SecuritySettings() {
   const currentWallet = useCurrentWallet({});
   const draftId = `security-${currentWallet?.userEntryAddress}`;
   const { draftsStore, keyMetaDataStore } = useStore();
   const draft = draftsStore.get<MultisigKey>({ id: draftId });
+  const [navigationStack, setNavigationStack] = useState<Page[]>([]);
+
+  const pushPage = (page: Page) => {
+    setNavigationStack((stack) => {
+      return [page, ...stack];
+    });
+  };
+
+  const popPage = () => {
+    setNavigationStack((stack) => {
+      return stack.slice(1);
+    });
+  };
 
   useEffect(() => {
     if (!draft && currentWallet) {
@@ -57,9 +78,50 @@ export default observer(function SecuritySettings() {
     },
   ];
 
-  const missingManadatoryKey = keyList.find(
+  const missingMandatoryKey = keyList.find(
     (item) => item.mandatory && item.keys.length === 0,
   );
+
+  const [firstPage] = navigationStack;
+
+  if (firstPage) {
+    const keyData = keyList.find((item) => item.type === firstPage.payload);
+
+    if (!keyData) return null;
+
+    return (
+      <Box className="h-fit w-2/5 !min-w-[320px] px-4 py-6 max-sm:w-full">
+        <Text size="xl" fontWeight="semibold">
+          {`${keyData.label} Settings`}
+        </Text>
+        <Text size="sm" fontWeight="light" className="mt-3">
+          {`Update or name your ${keyData.type} keys.`}
+        </Text>
+        <Divider className="my-2" />
+        <div className="space-y-2">
+          {keyData.keys.map((sigKey) => (
+            <Button key={sigKey.id} variant="secondary" block>
+              {sigKey.label}
+            </Button>
+          ))}
+        </div>
+        <Button variant="outline" block className="mt-6 border-dashed">
+          Add New Key
+        </Button>
+        <div className="mt-40 grid grid-cols-2 gap-8">
+          <Button
+            variant="secondary"
+            block
+            onClick={() => {
+              popPage();
+            }}
+          >
+            Black
+          </Button>
+        </div>
+      </Box>
+    );
+  }
 
   return (
     <Box className="h-fit w-2/5 !min-w-[320px] px-4 py-6 max-sm:w-full">
@@ -86,16 +148,21 @@ export default observer(function SecuritySettings() {
       <Divider className="my-2" />
 
       <div className="space-y-2">
-        {missingManadatoryKey ? (
+        {missingMandatoryKey ? (
           <Box className="mt-4 bg-red-500">
-            {`Please add a ${missingManadatoryKey.label.toLocaleLowerCase()} on this device to continue using your Obi account.`}
+            {`Please add a ${missingMandatoryKey.label.toLocaleLowerCase()} on this device to continue using your Obi account.`}
           </Box>
         ) : null}
         {keyList.map((sigKey) => (
           <KeyListItem
             key={sigKey.type}
             keyData={sigKey}
-            href={`/dashboard/settings/security/${sigKey.type}`}
+            onClick={() => {
+              pushPage({
+                type: "key-item",
+                payload: sigKey.type,
+              });
+            }}
           />
         ))}
       </div>

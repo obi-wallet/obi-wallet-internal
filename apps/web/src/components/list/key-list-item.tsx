@@ -16,10 +16,10 @@ export interface KeyItem {
 
 export function KeyListItem({
   keyData,
-  href,
+  onClick,
   ...rest
 }: {
-  href: string;
+  onClick: () => void;
   keyData: KeyItem;
 }) {
   const keyCount = keyData.keys.length;
@@ -31,7 +31,7 @@ export function KeyListItem({
       block
       {...rest}
       className="relative border-none"
-      href={href}
+      onClick={onClick}
     >
       {keyData.label}
       <div
