@@ -9,13 +9,13 @@ import {
   useSecuritySettingsContext,
 } from "@/security-settings/context";
 import { SecuritySettingsIndex } from "@/security-settings/page";
+import { SecuritySettingsKeyAddPage } from "@/security-settings/page/key-add";
 import { SecuritySettingsKeyItemPage } from "@/security-settings/page/key-item";
 import { SecuritySettingsKeyTypePage } from "@/security-settings/page/key-type";
 import { SingleKeyMetaData } from "@/stores/key-meta-data";
 import { KeyType, MultisigKey, Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { SecuritySettingsKeyAddPage } from "@/security-settings/page/key-add";
 
 export const SecuritySettings = observer(function SecuritySettings() {
   const currentWallet = useCurrentWallet({});
