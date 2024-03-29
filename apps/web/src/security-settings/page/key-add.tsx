@@ -1,26 +1,42 @@
 import { Box, Button, Divider, Text } from "@/components";
 import {
-  KeyItemPage,
+  KeyAddPage,
   useSecuritySettingsContext,
 } from "@/security-settings/context";
 import { Input } from "@/ui/input";
+import { createPasskey, Sdk } from "@obi-wallet/sdk";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
-export const SecuritySettingsKeyItemPage = observer<{ page: KeyItemPage }>(
-  function SecuritySettingsKeyItemPage({ page }) {
-    const { keyMetaData, setKeyMetaData, popPage } =
-      useSecuritySettingsContext();
-    const [name, setName] = useState(keyMetaData[page.payload.id]?.name ?? "");
+export const SecuritySettingsKeyAddPage = observer<{ page: KeyAddPage }>(
+  function SecuritySettingsKeyAddPage() {
+    const queryClient = useQueryClient();
+    const { draft, setKeyMetaData, popPage } = useSecuritySettingsContext();
+    const [name, setName] = useState("");
+
+    const passkeyFlow = useMutation({
+      mutationFn: async () => {
+        const keyPair = await createPasskey();
+        draft.value.addPasskeyKey(keyPair);
+
+        await queryClient.prefetchQuery(
+          Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
+            keyPair,
+          ),
+        );
+        setKeyMetaData(keyPair.publicKey, {
+          name,
+        });
+        popPage();
+      },
+    });
 
     return (
       <Box className="h-fit w-2/5 !min-w-[320px] px-4 py-6 max-sm:w-full">
         <Text size="xl" fontWeight="semibold">
-          {`${page.payload.label} Settings`}
+          Add a new Passkey
         </Text>
-        {/*<Text size="sm" fontWeight="light" className="mt-3">*/}
-        {/*  {`Update or name your ${keyData.type} keys.`}*/}
-        {/*</Text>*/}
         <Divider className="my-2" />
         <div className="mt-3 space-y-2">
           <Input
@@ -48,10 +64,7 @@ export const SecuritySettingsKeyItemPage = observer<{ page: KeyItemPage }>(
             variant="primary"
             block
             onClick={() => {
-              setKeyMetaData(page.payload.key.publicKey, {
-                name,
-              });
-              popPage();
+              passkeyFlow.mutate();
             }}
           >
             Save

@@ -15,6 +15,7 @@ import { SingleKeyMetaData } from "@/stores/key-meta-data";
 import { KeyType, MultisigKey, Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
+import { SecuritySettingsKeyAddPage } from "@/security-settings/page/key-add";
 
 export const SecuritySettings = observer(function SecuritySettings() {
   const currentWallet = useCurrentWallet({});
@@ -122,9 +123,7 @@ const SecuritySettingsPageHandler = observer(
       case "key-item":
         return <SecuritySettingsKeyItemPage page={firstPage} />;
       case "key-add":
-        break;
+        return <SecuritySettingsKeyAddPage page={firstPage} />;
     }
-
-    return null;
   },
 );

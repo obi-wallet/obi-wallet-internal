@@ -64,7 +64,9 @@ export class KeyMetaDataStore {
   ) {
     this.setKeyMetaData(address, {
       ...this.getKeyMetaData(address),
-      [publicKey.value]: singleKeyMetaData,
+      [publicKey.value]: {
+        name: singleKeyMetaData.name ? singleKeyMetaData.name : undefined,
+      },
     });
   }
 
