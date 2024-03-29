@@ -6,11 +6,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
-export const AddPhoneKeyPage = observer(function AddPhoneKeyPage() {
+export const AddTelegramKeyPage = observer(function AddTelegramKeyPage() {
   const queryClient = useQueryClient();
   const { draft, setKeyMetaData, popPage } = useSecuritySettingsContext();
   const [name, setName] = useState("");
-  const [number, setNumber] = useState("");
+  const [chatId, setChatId] = useState("");
   // TODO: security question
   const [securityAnswer, setSecurityAnswer] = useState("");
   const [sentMagicCode, setSentMagicCode] = useState(false);
@@ -19,7 +19,7 @@ export const AddPhoneKeyPage = observer(function AddPhoneKeyPage() {
   const phoneKeyFlow = useMutation({
     mutationFn: async () => {
       if (sentMagicCode) {
-        // TODO: add phone key
+        // TODO: add telegram key
         // const keyPair = await createPasskey();
         // draft.value.addPasskeyKey(keyPair);
         //
@@ -42,7 +42,7 @@ export const AddPhoneKeyPage = observer(function AddPhoneKeyPage() {
   return (
     <Box className="h-fit w-2/5 !min-w-[320px] px-4 py-6 max-sm:w-full">
       <Text size="xl" fontWeight="semibold">
-        Add a New Phone Key
+        Add a New Telegram Key
       </Text>
       <Divider className="my-2" />
       <div className="mt-3 space-y-2">
@@ -85,13 +85,13 @@ export const AddPhoneKeyPage = observer(function AddPhoneKeyPage() {
           }}
         />
         <Input
-          label="Phone Number"
+          label="Chat ID"
           labelClassname="bg-background-secondary"
           className="max-w-96 max-sm:w-full"
           placeholder="+491234567"
-          value={number}
+          value={chatId}
           onChange={(value) => {
-            setNumber(value);
+            setChatId(value);
           }}
         />
         <Input

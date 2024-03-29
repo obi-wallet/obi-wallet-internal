@@ -4,6 +4,8 @@ import { AddPhoneKeyPage } from "@/security-settings/page/key-add/phone";
 import { KeyType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 
+import { AddTelegramKeyPage } from "./telegram";
+
 export const SecuritySettingsKeyAddPage = observer<{ page: KeyAddPage }>(
   function SecuritySettingsKeyAddPage({ page }) {
     switch (page.payload) {
@@ -11,6 +13,8 @@ export const SecuritySettingsKeyAddPage = observer<{ page: KeyAddPage }>(
         return <AddPasskeyPage />;
       case KeyType.Phone:
         return <AddPhoneKeyPage />;
+      case KeyType.Telegram:
+        return <AddTelegramKeyPage />;
       default:
         console.error("Not implemented");
     }
