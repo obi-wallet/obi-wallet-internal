@@ -3,6 +3,7 @@ import { useSecuritySettingsContext } from "@/security-settings/context";
 import { Input } from "@/ui/input";
 import { createPasskey, Sdk } from "@obi-wallet/sdk";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
@@ -23,6 +24,7 @@ export const AddPasskeyPage = observer(function AddPasskeyPage() {
       );
       setKeyMetaData(keyPair.publicKey, {
         name,
+        timestamp: DateTime.now().toISO(),
       });
       popPage();
     },

@@ -1,4 +1,7 @@
-import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
+import {
+  Secp256k1KeyPair,
+  Secp256k1PublicKey,
+} from "@obi-wallet/sdk-secp256k1";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
@@ -114,6 +117,44 @@ export class MultisigKey {
     return this.addKey({
       type: KeyType.Passkey,
       payload: keyPair,
+    });
+  }
+
+  public addPhoneKey({
+    publicKey,
+    phoneNumber,
+    securityQuestion,
+  }: {
+    publicKey: Secp256k1PublicKey;
+    phoneNumber: string;
+    securityQuestion: string;
+  }) {
+    return this.addKey({
+      type: KeyType.Phone,
+      payload: {
+        publicKey,
+        phoneNumber,
+        securityQuestion,
+      },
+    });
+  }
+
+  public addTelegramKey({
+    publicKey,
+    chatId,
+    securityQuestion,
+  }: {
+    publicKey: Secp256k1PublicKey;
+    chatId: string;
+    securityQuestion: string;
+  }) {
+    return this.addKey({
+      type: KeyType.Telegram,
+      payload: {
+        publicKey,
+        chatId,
+        securityQuestion,
+      },
     });
   }
 

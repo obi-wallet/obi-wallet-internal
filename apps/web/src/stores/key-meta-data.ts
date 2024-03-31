@@ -5,6 +5,7 @@ import { z } from "zod";
 
 const SingleKeyMetaData = z.object({
   name: z.string().optional(),
+  timestamp: z.string().datetime({ offset: true }).optional(),
 });
 
 export type SingleKeyMetaData = z.TypeOf<typeof SingleKeyMetaData>;
@@ -66,6 +67,9 @@ export class KeyMetaDataStore {
       ...this.getKeyMetaData(address),
       [publicKey.value]: {
         name: singleKeyMetaData.name ? singleKeyMetaData.name : undefined,
+        timestamp: singleKeyMetaData.timestamp
+          ? singleKeyMetaData.timestamp
+          : undefined,
       },
     });
   }

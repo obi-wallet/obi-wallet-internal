@@ -14,7 +14,9 @@ import { SecuritySettingsKeyItemPage } from "@/security-settings/page/key-item";
 import { SecuritySettingsKeyTypePage } from "@/security-settings/page/key-type";
 import { SingleKeyMetaData } from "@/stores/key-meta-data";
 import { KeyType, MultisigKey, Secp256k1PublicKey } from "@obi-wallet/sdk";
+import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
+import { prop, sortBy } from "ramda";
 import { useEffect, useState } from "react";
 
 export const SecuritySettings = observer(function SecuritySettings() {
@@ -58,20 +60,26 @@ export const SecuritySettings = observer(function SecuritySettings() {
     keyMetaDataStore.setSingleKeyMetaData(
       currentWallet.userEntryAddress,
       publicKey,
-      singleKeyMetaData,
+      {
+        ...keyMetaData[publicKey.value],
+        ...singleKeyMetaData,
+      },
     );
   };
 
   function getKeysOfType(type: KeyType) {
     if (!draft) return [];
-    return draft.value.getKeysOfType(type).map((key) => {
+    const keys = draft.value.getKeysOfType(type).map((key) => {
       const id = key.publicKey.value;
+      const { name, timestamp } = keyMetaData[id] ?? {};
       return {
         id: key.publicKey.value,
-        label: keyMetaData[id]?.name ?? "Passkey",
+        label: name ?? "Passkey",
+        timestamp: timestamp ? DateTime.fromISO(timestamp).toSeconds() : 0,
         key,
       };
     });
+    return sortBy(prop("timestamp"), keys);
   }
 
   const keyList: KeyItem[] = [

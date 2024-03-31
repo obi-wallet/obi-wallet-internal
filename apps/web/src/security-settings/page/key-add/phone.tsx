@@ -1,13 +1,13 @@
 import { Box, Button, Divider, Text } from "@/components";
 import { useSecuritySettingsContext } from "@/security-settings/context";
 import { Input } from "@/ui/input";
-import { createPasskey, Sdk } from "@obi-wallet/sdk";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk";
+import { useMutation } from "@tanstack/react-query";
+import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
 export const AddPhoneKeyPage = observer(function AddPhoneKeyPage() {
-  const queryClient = useQueryClient();
   const { draft, setKeyMetaData, popPage } = useSecuritySettingsContext();
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
@@ -31,6 +31,25 @@ export const AddPhoneKeyPage = observer(function AddPhoneKeyPage() {
         // setKeyMetaData(keyPair.publicKey, {
         //   name,
         // });
+
+        const DEMO_PUBLIC_KEY = "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI";
+        // const DEMO_PRIVATE_KEY = "jrfHogEDo91xaC0Kym/BMheAhlm5z93fVwMT8mKTGy4=";
+
+        const publicKey: Secp256k1PublicKey = {
+          type: "tendermint/PubKeySecp256k1",
+          value: DEMO_PUBLIC_KEY,
+        };
+        draft.value.addPhoneKey({
+          publicKey,
+          phoneNumber: number,
+          securityQuestion: "FOOBAR",
+        });
+
+        setKeyMetaData(publicKey, {
+          name,
+          timestamp: DateTime.now().toISO(),
+        });
+
         popPage();
       } else {
         // TODO: send magic code
