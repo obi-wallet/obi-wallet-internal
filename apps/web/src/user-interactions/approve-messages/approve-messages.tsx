@@ -21,6 +21,7 @@ export interface ApproveMessagesProps {
   targetChainId: TargetChainId;
   messages: unknown[];
   rawData: unknown;
+  memo?: string;
   onReject(): void;
   onApprove(args: { wallet: MpcWallet; fee: StdFee }): Promise<void>;
 }
@@ -31,6 +32,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
     targetChainId,
     messages,
     rawData,
+    memo,
     onApprove,
     onReject,
   }) {
@@ -81,6 +83,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
               rawData={rawData}
               targetChainId={targetChainId}
               fee={fee.data}
+              memo={memo}
             />
 
             {/*<Text className="mt-4">{`${threshold} Key${*/}
@@ -135,11 +138,13 @@ const PrettyPrint = observer(function PrettyPrint({
   rawData,
   targetChainId,
   fee,
+  memo,
 }: {
   messages: unknown[];
   targetChainId: TargetChainId;
   rawData: unknown;
   fee: unknown;
+  memo?: string;
 }) {
   return (
     <PrettyPrintCosmosSdk
@@ -147,6 +152,7 @@ const PrettyPrint = observer(function PrettyPrint({
       rawData={rawData}
       targetChainId={targetChainId}
       fee={fee}
+      memo={memo}
     />
   );
 });
@@ -156,11 +162,13 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
   rawData,
   targetChainId,
   fee,
+  memo,
 }: {
   messages: unknown[];
   rawData: unknown;
   targetChainId: TargetChainId;
   fee: unknown | undefined;
+  memo?: string;
 }) {
   const targetChain = TargetChain.chainId(targetChainId);
   invariant(targetChain.validateMessages(messages), "Invalid messages");
@@ -189,6 +197,7 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
       targetChainId={targetChainId}
       feeInfo={feeInfo}
       rawData={rawData}
+      memo={memo}
     />
   );
 });

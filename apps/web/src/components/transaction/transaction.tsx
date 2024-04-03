@@ -10,6 +10,7 @@ import { ComponentPropsWithoutRef, useState } from "react";
 import { Box, Button } from "..";
 
 type TransactionProps = {
+  memo?: string;
   amountInfo: {
     amount: string;
     denom: string;
@@ -30,6 +31,7 @@ export function Transaction({
   className,
   targetChainId,
   rawData,
+  memo,
   ...rest
 }: TransactionProps) {
   const [showData, setShowData] = useState(false);
@@ -71,6 +73,10 @@ export function Transaction({
           <Text color="gray">
             {feeInfo.map((info) => `${info.amount} ${info.denom}`).join("\n")}
           </Text>
+        </div>
+        <div className="flex flex-row justify-between">
+          <Text color="gray">Memo</Text>
+          <Text color="gray">{memo}</Text>
         </div>
       </div>
       <Button

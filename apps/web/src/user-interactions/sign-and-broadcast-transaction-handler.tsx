@@ -45,6 +45,7 @@ export const SignAndBroadcastTransactionUserInteractionHandlerInner = observer<{
       targetChainId={chainId}
       messages={interaction.payload.messages}
       rawData={interaction.payload.messages}
+      memo={interaction.payload.memo}
       onReject={() => {
         interaction.resolve({
           approved: false,
@@ -54,6 +55,7 @@ export const SignAndBroadcastTransactionUserInteractionHandlerInner = observer<{
         const response = await TargetChain.chainId(chainId).signAndBroadcast({
           wallet,
           fee,
+          memo: interaction.payload.memo,
           messages: interaction.payload.messages,
         });
         interaction.resolve({

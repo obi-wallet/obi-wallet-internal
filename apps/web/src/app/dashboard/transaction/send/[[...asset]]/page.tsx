@@ -35,6 +35,7 @@ const schema = z
       asset: z.any().optional(),
     }),
     recipient: nonEmptyString("Address"),
+    memo: z.string().optional(),
   })
   .required()
   .refine(
@@ -66,6 +67,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         asset: undefined,
       },
       recipient: "",
+      memo: "",
     },
     mode: "onTouched",
     resolver: zodResolver(schema),
@@ -77,7 +79,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
   const invalidateBalancesQueries = useInvalidateBalancesQueries();
 
   const send = useMutation({
-    mutationFn: async ({ coin, recipient }: FormData) => {
+    mutationFn: async ({ coin, recipient, memo }: FormData) => {
       invariant(wallet, "Wallet not found");
       invariant(coin.asset, "No asset selected");
 
@@ -116,6 +118,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
           messages: [message],
           cancelable: true,
           targetChainId: chainId,
+          memo,
           walletMeta: {
             userEntryAddress: wallet.userEntryAddress,
           },
@@ -219,6 +222,24 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
 
   return (
     <div className="space-y-7 py-4">
+      <Controller
+        name="recipient"
+        control={form.control}
+        rules={{ required: true }}
+        render={({ field }) => {
+          return (
+            <Input
+              label="Recipient Address"
+              labelClassname="bg-background-secondary"
+              placeholder="Enter recipient address"
+              value={field.value}
+              onChange={(recipient) => {
+                field.onChange(recipient);
+              }}
+            />
+          );
+        }}
+      />
       <Controller
         name="coin"
         control={form.control}
@@ -381,15 +402,15 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       />
 
       <Controller
-        name="recipient"
+        name="memo"
         control={form.control}
         rules={{ required: true }}
         render={({ field }) => {
           return (
             <Input
-              label="Recipient Address"
+              label="Memo (optional)"
               labelClassname="bg-background-secondary"
-              placeholder="Enter recipient address"
+              placeholder="Enter Memo"
               value={field.value}
               onChange={(recipient) => {
                 field.onChange(recipient);

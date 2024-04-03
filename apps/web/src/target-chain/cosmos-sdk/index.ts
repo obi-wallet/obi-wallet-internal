@@ -205,16 +205,18 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     wallet,
     fee,
     messages,
+    memo,
   }: {
     wallet: MpcWallet;
     fee: StdFee;
     messages: unknown[];
+    memo?: string;
   }) {
     invariant(this.validateMessages(messages), "Invalid messages");
 
     const signer = await this.getSigner(wallet);
     return await this.withSigningStargateClient(signer, async (client) => {
-      return await client.signAndBroadcast(signer.address, messages, fee);
+      return await client.signAndBroadcast(signer.address, messages, fee, memo);
     });
   }
 
