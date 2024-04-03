@@ -19,6 +19,7 @@ type TransactionProps = {
     denom: string;
   }[];
   descriptions: string[];
+  memo: string;
   targetChainId?: TargetChainId;
   rawData: unknown;
 } & ComponentPropsWithoutRef<"div">;
@@ -30,6 +31,7 @@ export function Transaction({
   className,
   targetChainId,
   rawData,
+  memo,
   ...rest
 }: TransactionProps) {
   const [showData, setShowData] = useState(false);
@@ -72,7 +74,7 @@ export function Transaction({
         {descriptions.join("\n")}
       </Text>
 
-      {targetChainLabel || feeInfo.length > 0 ? (
+      {targetChainLabel || feeInfo.length > 0 || memo ? (
         <div className="mt-9 w-full space-y-3">
           {targetChainLabel ? (
             <div className="flex flex-row justify-between">
@@ -88,6 +90,12 @@ export function Transaction({
                   .map((info) => `${info.amount} ${info.denom}`)
                   .join("\n")}
               </Text>
+            </div>
+          ) : null}
+          {memo.length ? (
+            <div className="flex flex-row justify-between">
+              <Text color="gray">Memo</Text>
+              <Text color="gray">{memo}</Text>
             </div>
           ) : null}
         </div>

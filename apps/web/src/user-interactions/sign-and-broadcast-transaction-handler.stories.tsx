@@ -34,7 +34,7 @@ const sendMessage = {
 const interaction: SignAndBroadcastTransactionUserInteraction = {
   payload: {
     messages: [sendMessage],
-    memo: "",
+    memo: "a memo",
     mockOnly: true,
     cancelable: true,
     targetChainId: CosmosSdkChainId.Sei,

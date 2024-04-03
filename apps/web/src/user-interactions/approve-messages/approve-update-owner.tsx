@@ -227,6 +227,7 @@ export const ApproveUpdateOwner = observer<ApproveUpdateOwnerProps>(
               descriptions={[
                 proposedUpdate ? `Confirm new owner` : `Propose new owner`,
               ]}
+              memo=""
               rawData={`
 Changes:
                 
