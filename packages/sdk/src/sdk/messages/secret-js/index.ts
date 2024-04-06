@@ -260,7 +260,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
           fee_debt: 0,
           update_delay: 0,
           // next_hash_seed is some randomness and doesn't need to be stored at all
-          next_hash_seed: randomBytes(32).toString(),
+          next_hash_seed: Buffer.from(randomBytes(32)).toString("hex"),
         },
       },
     });
@@ -297,6 +297,58 @@ export class SecretJsMessages extends AbstractMessages<string> {
             ),
             threshold: newOwner.threshold - 1,
           },
+        },
+      },
+    });
+    return message;
+  }
+
+  public getProposeUpdateOwnerMessage(
+    newOwner: MultisigKey,
+    userAccountContractAddress: string,
+    userAccountCodeHash: string,
+    sender: string,
+    signatures: string[],
+  ): Message {
+    const message = new MsgExecuteContract({
+      sender: sender,
+      contract_address: userAccountContractAddress,
+      code_hash: userAccountCodeHash,
+      msg: {
+        propose_update_owner: {
+          new_owner: newOwner.address,
+          signers: {
+            signers: this.getSigners(
+              newOwner.keys as unknown as Array<{
+                type: string;
+                payload: {
+                  publicKey: PublicKey;
+                  privateKey?: string;
+                };
+              }>,
+            ),
+            threshold: newOwner.threshold - 1,
+          },
+          signatures,
+        },
+      },
+    });
+    return message;
+  }
+
+  public getConfirmUpdateOwnerMessage(
+    userAccountContractAddress: string,
+    userAccountCodeHash: string,
+    sender: string,
+    signatures: string[],
+  ): Message {
+    const message = new MsgExecuteContract({
+      sender: sender,
+      contract_address: userAccountContractAddress,
+      code_hash: userAccountCodeHash,
+      msg: {
+        confirm_update_owner: {
+          signatures,
         },
       },
     });

@@ -1,3 +1,4 @@
+import { AminoMsg } from "@cosmjs/amino";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import {
@@ -20,7 +21,6 @@ import {
   RpcError,
 } from "../../common";
 import { Messages } from "../../messages";
-import { CosmosSdkMessages } from "../../messages/cosmos-sdk";
 import { AbstractTransactionsSdk } from "../abstract";
 
 function notImplemented(message: string) {
@@ -130,7 +130,7 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     invariant(account, "Account not found.");
     invariant(this.isBaseAccount(account), "account is not BaseAccount");
     const aminoMessages = messages.map((message) => {
-      return this.messages.toJSON(message);
+      return this.messages.toJSON(message) as unknown as AminoMsg;
     });
     /* eslint-disable @typescript-eslint/no-explicit-any */
     const checkMessages: any[] = aminoMessages;
@@ -204,7 +204,7 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
   }
 
   protected get messages() {
-    return Messages.chainId(this.chainId) as CosmosSdkMessages;
+    return Messages.chainId(this.chainId);
   }
 }
 
