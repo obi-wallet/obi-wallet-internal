@@ -10,7 +10,7 @@ import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-export async function newFetchPublicKey(wallet: {
+export async function fetchPublicKey(wallet: {
   homeChainId: HomeChainId;
   userEntryAddress: string;
 }): Promise<Secp256k1PublicKey> {
@@ -40,7 +40,7 @@ export function usePublicKeyQuery() {
     queryKey: ["public-key", wallet?.userEntryAddress],
     queryFn: async () => {
       invariant(wallet, "Expected wallet to be set.");
-      return await newFetchPublicKey(wallet);
+      return await fetchPublicKey(wallet);
     },
     enabled: !!wallet,
     staleTime: staleTime({ minute: 5 }),

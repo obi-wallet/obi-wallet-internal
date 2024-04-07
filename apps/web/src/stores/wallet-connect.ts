@@ -1,4 +1,4 @@
-import { newFetchPublicKey } from "@/hooks/use-public-key";
+import { fetchPublicKey } from "@/hooks/use-public-key";
 import { TargetChain } from "@/target-chain";
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import { MpcWallets } from "@obi-wallet/sdk";
@@ -62,7 +62,7 @@ export class WalletConnectStore {
   protected async getAccounts() {
     const wallet = this.walletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await newFetchPublicKey(wallet);
+    const publicKey = await fetchPublicKey(wallet);
     const enabledCosmosSdkChains = Object.values(CosmosSdkChains).filter(
       (chain) => {
         return !chain.disabled;

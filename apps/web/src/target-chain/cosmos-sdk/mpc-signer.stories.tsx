@@ -1,5 +1,5 @@
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { newFetchPublicKey } from "@/hooks/use-public-key";
+import { fetchPublicKey } from "@/hooks/use-public-key";
 import {
   AutomatedTest,
   automatedTestPlay,
@@ -30,7 +30,7 @@ class TestCosmosSdkMpcSigner extends CosmosSdkMpcSigner {
     wallet: MpcWallet,
     targetChainId: TargetChainId,
   ): Promise<TestCosmosSdkMpcSigner> {
-    const publicKey = await newFetchPublicKey(wallet);
+    const publicKey = await fetchPublicKey(wallet);
 
     return new TestCosmosSdkMpcSigner(wallet, publicKey, targetChainId);
   }

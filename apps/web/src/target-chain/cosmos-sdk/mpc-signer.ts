@@ -1,5 +1,5 @@
 import { rootStore } from "@/hooks/use-create-root-store";
-import { newFetchPublicKey } from "@/hooks/use-public-key";
+import { fetchPublicKey } from "@/hooks/use-public-key";
 import { SharesLocalEncryption } from "@/lib/encryption";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import {
@@ -51,7 +51,7 @@ export class CosmosSdkMpcSigner
     wallet: MpcWallet,
     targetChainId: TargetChainId,
   ): Promise<CosmosSdkMpcSigner> {
-    const publicKey = await newFetchPublicKey(wallet);
+    const publicKey = await fetchPublicKey(wallet);
 
     return new CosmosSdkMpcSigner(wallet, publicKey, targetChainId);
   }

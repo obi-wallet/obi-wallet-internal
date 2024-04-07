@@ -10,6 +10,7 @@ import {
   providerWithWalletDecorator,
 } from "@/storybook-helpers";
 import {
+  useOwnerUpToDateCheck,
   usePublicKeyKnownCheck,
   useWalletBackupCheck,
   useWalletBackupIncludesEasyShareCheck,
@@ -32,6 +33,21 @@ export const UsePublicKeyKnownCheck: Story = {
   decorators: [providerWithWalletDecorator],
   render: function UsePublicKeyKnownCheckTest() {
     const check = usePublicKeyKnownCheck();
+    return (
+      <AutomatedTest
+        done={check.query.isSuccess || check.query.isError}
+        success={check.query.isSuccess && !!check.query.data}
+      />
+    );
+  },
+  play: automatedTestPlay,
+};
+
+export const UseOwnerUpToDateCheck: Story = {
+  name: "useOwnerUpToDateCheck",
+  decorators: [providerWithWalletDecorator],
+  render: function UseOwnerUpToDateCheckTest() {
+    const check = useOwnerUpToDateCheck();
     return (
       <AutomatedTest
         done={check.query.isSuccess || check.query.isError}

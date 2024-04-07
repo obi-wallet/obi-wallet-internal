@@ -1,6 +1,7 @@
 import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { fetchOwner, useOwnerQuery } from "@/hooks/use-owner";
 import { usePublicKeyQuery } from "@/hooks/use-public-key";
 import { SharesLocalEncryption } from "@/lib/encryption";
 import { staleTime } from "@/lib/stale-time";
@@ -30,6 +31,24 @@ export function usePublicKeyKnownCheck(): WalletHealthCheck {
   };
 }
 
+export function useOwnerUpToDateCheck(): WalletHealthCheck {
+  const wallet = useCurrentWallet({});
+  const query = useQuery({
+    queryKey: ["owner-up-to-date", wallet?.userEntryAddress],
+    queryFn: async () => {
+      invariant(wallet, "Expected wallet to be set.");
+      const owner = await fetchOwner(wallet);
+      return wallet.owner.address === owner;
+    },
+    enabled: !!wallet,
+  });
+
+  return {
+    label: "Owner is up to date",
+    query,
+  };
+}
+
 function useWalletBackupQuery() {
   const wallet = useCurrentWallet({});
   return useQuery({
@@ -53,15 +72,21 @@ function useWalletBackupQuery() {
 export function useBackupWalletAutomatically() {
   const wallet = useCurrentWallet({});
   const backupWalletMutation = useBackupWalletMutation();
+  const owner = useOwnerQuery();
+
   useQuery({
     queryKey: ["wallet-backup-mutation", wallet?.userEntryAddress],
     queryFn: async () => {
-      backupWalletMutation.mutate();
+      invariant(wallet, "Expected wallet to be set.");
+      invariant(owner.data, "Expected owner to be set.");
+      if (wallet.owner.address === owner.data) {
+        backupWalletMutation.mutate();
+      }
       return true;
     },
     gcTime: staleTime({ days: 1 }),
     staleTime: staleTime({ days: 1 }),
-    enabled: !!wallet,
+    enabled: !!wallet && !!owner.data,
   });
 }
 
