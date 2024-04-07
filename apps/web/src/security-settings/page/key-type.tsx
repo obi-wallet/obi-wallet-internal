@@ -28,19 +28,20 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
             const disabled = keyData.mandatory && keyData.keys.length === 1;
 
             return (
-              <Button
-                key={sigKey.id}
-                className="relative border-none"
-                variant="secondary"
-                block
-                onClick={() => {
-                  pushPage({
-                    type: "key-item",
-                    payload: sigKey,
-                  });
-                }}
-              >
-                {sigKey.label}
+              <div key={sigKey.id} className="relative flex">
+                <Button
+                  className="relative border-none"
+                  variant="secondary"
+                  block
+                  onClick={() => {
+                    pushPage({
+                      type: "key-item",
+                      payload: sigKey,
+                    });
+                  }}
+                >
+                  {sigKey.label}
+                </Button>
                 <button
                   className={cn(
                     "absolute right-0 flex h-full w-14 items-center justify-center rounded-r bg-red-500 hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-600 disabled:opacity-30",
@@ -52,7 +53,7 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
                 >
                   <FaTrash className="h-4 w-4" color="white" />
                 </button>
-              </Button>
+              </div>
             );
           })}
         </div>
