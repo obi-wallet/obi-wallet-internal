@@ -5,6 +5,7 @@ import { usePublicKeyQuery } from "@/hooks/use-public-key";
 import { SharesLocalEncryption } from "@/lib/encryption";
 import { staleTime } from "@/lib/stale-time";
 import { useQuery } from "@obi-wallet/headless-ui";
+import { KeyType } from "@obi-wallet/sdk";
 import {
   useMutation,
   UseMutationResult,
@@ -38,7 +39,10 @@ function useWalletBackupQuery() {
       const homeChain = HomeChain.chainId(wallet.homeChainId);
       return await Promise.all(
         wallet.owner.keys.map(async (key) => {
-          return await homeChain.lookupWalletBackup(key.publicKey);
+          return {
+            key,
+            backups: await homeChain.lookupWalletBackup(key.publicKey),
+          };
         }),
       );
     },
@@ -100,13 +104,20 @@ export function useWalletBackupCheck(): WalletHealthCheck {
           return false;
         };
 
-        if (backupPerKey.length !== 1) {
+        if (
+          backup.key.type === KeyType.Passkey &&
+          backup.backups.length !== 1
+        ) {
           return fail(
             `Expected exactly one backup per key, got ${backupPerKey.length}`,
           );
         }
 
-        const [data] = backup;
+        if (backup.backups.length === 0) {
+          return fail(`Expected a backup per key, got ${backupPerKey.length}`);
+        }
+
+        const [data] = backup.backups;
         invariant(data, "Expected data to be set");
 
         if (data.proxyAddress.address !== wallet.userEntryAddress) {
@@ -188,13 +199,20 @@ export function useWalletBackupIncludesEasyShareCheck(): WalletHealthCheck {
           return false;
         };
 
-        if (backupPerKey.length !== 1) {
+        if (
+          backup.key.type === KeyType.Passkey &&
+          backup.backups.length !== 1
+        ) {
           return fail(
             `Expected exactly one backup per key, got ${backupPerKey.length}`,
           );
         }
 
-        const [data] = backup;
+        if (backup.backups.length === 0) {
+          return fail(`Expected a backup per key, got ${backupPerKey.length}`);
+        }
+
+        const [data] = backup.backups;
         invariant(data, "Expected data to be set");
 
         if (typeof data.encryptedEasyShare !== "string") {
