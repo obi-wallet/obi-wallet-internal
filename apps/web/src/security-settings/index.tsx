@@ -104,6 +104,7 @@ export const SecuritySettings = observer(function SecuritySettings() {
   return (
     <SecuritySettingsContext.Provider
       value={{
+        wallet: currentWallet,
         draft,
         keyList,
         keyMetaData,

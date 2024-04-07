@@ -1,7 +1,13 @@
 import { KeyItem } from "@/components";
 import { Draft } from "@/stores";
 import { KeyMetaData, SingleKeyMetaData } from "@/stores/key-meta-data";
-import { Key, KeyType, MultisigKey, Secp256k1PublicKey } from "@obi-wallet/sdk";
+import {
+  Key,
+  KeyType,
+  MpcWallet,
+  MultisigKey,
+  Secp256k1PublicKey,
+} from "@obi-wallet/sdk";
 import { createContext, useContext } from "react";
 import invariant from "tiny-invariant";
 
@@ -27,6 +33,7 @@ export interface KeyAddPage {
 export type Page = KeyTypePage | KeyItemPage | KeyAddPage;
 
 export const SecuritySettingsContext = createContext<{
+  wallet: MpcWallet;
   draft: Draft<MultisigKey>;
   keyList: KeyItem[];
   keyMetaData: KeyMetaData;

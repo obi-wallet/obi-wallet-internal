@@ -25,6 +25,10 @@ export class MpcWallet {
     return this._owner;
   }
 
+  public setOwner(owner: MultisigKey) {
+    this._owner = owner;
+  }
+
   public get userEntryAddress() {
     return this._userEntryAddress;
   }

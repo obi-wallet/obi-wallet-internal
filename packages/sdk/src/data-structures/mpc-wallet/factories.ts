@@ -1,4 +1,4 @@
-import { makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 
 import { MpcWallet } from "./implementation";
 import { MpcWalletSchema } from "./schema";
@@ -28,7 +28,11 @@ export function createObservableMpcWallet(
   });
   makeObservable<
     MpcWallet,
-    "_homeChainId" | "_owner" | "_userEntryAddress" | "_encryptedShares"
+    | "_homeChainId"
+    | "_owner"
+    | "_userEntryAddress"
+    | "_encryptedShares"
+    | "setOwner"
   >(
     wallet,
     {
@@ -36,6 +40,7 @@ export function createObservableMpcWallet(
       _owner: observable,
       _userEntryAddress: observable,
       _encryptedShares: observable,
+      setOwner: action,
       toJSON: false,
     },
     {

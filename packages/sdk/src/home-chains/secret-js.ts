@@ -48,7 +48,7 @@ export const SecretJsHomeChains = {
       userAccount: 1267,
       userEntry: 1268,
     },
-    urls: ["https://scrt-api.dalnim.finance", "https://lcd.secret.express/"],
+    urls: ["https://scrt-api.dalnim.finance", "https://scrt-api.bodhi.money/"],
     denom: "uscrt",
     startingUsdDebt: "0",
     bip: [{ path: "m/44'/529'/0'/0/0" }],

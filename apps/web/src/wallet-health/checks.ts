@@ -61,7 +61,7 @@ export function useBackupWalletAutomatically() {
   });
 }
 
-function useBackupWalletMutation() {
+export function useBackupWalletMutation() {
   const wallet = useCurrentWallet({});
   const { userDataStore } = useStore();
 

@@ -1,10 +1,13 @@
 import { Box, Button, Divider, KeyListItem, Text } from "@/components";
 import { useSecuritySettingsContext } from "@/security-settings/context";
+import { useBackupWalletMutation } from "@/wallet-health/checks";
+import { UpdateOwnerUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 
 export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
-  const { draft, keyList, pushPage } = useSecuritySettingsContext();
+  const { wallet, draft, keyList, pushPage } = useSecuritySettingsContext();
   const missingMandatoryKey = !draft.value.primaryKey;
+  const backupWalletMutation = useBackupWalletMutation();
 
   return (
     <Box className="h-fit w-2/5 !min-w-[320px] px-4 py-6 max-sm:w-full">
@@ -54,7 +57,26 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
         <Button variant="secondary" block href="/dashboard/settings">
           Back
         </Button>
-        <Button variant="primary" block disabled={!draft.isDirty}>
+        <Button
+          variant="primary"
+          block
+          disabled={!draft.isDirty}
+          onClick={async () => {
+            const response = await UpdateOwnerUserInteraction.start({
+              walletMeta: {
+                userEntryAddress: wallet.userEntryAddress,
+              },
+              homeChainId: draft.original.chainId,
+              previousOwner: draft.original.toJSON()!,
+              nextOwner: draft.value.toJSON()!,
+            });
+            if (response.approved && response.payload.success) {
+              draft.commit({ original: draft.value });
+              wallet.setOwner(draft.value);
+              backupWalletMutation.mutate();
+            }
+          }}
+        >
           Save
         </Button>
       </div>
