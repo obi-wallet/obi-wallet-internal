@@ -24,15 +24,7 @@ export const obiModalConfig: Config = {
     [Feature.DemoMode]: true,
   },
   keys: {
-    enabled: [
-      KeyType.Passkey,
-      KeyType.Device,
-      KeyType.Phone,
-      KeyType.Social,
-      KeyType.Nfc,
-      KeyType.Cloud,
-      KeyType.Email,
-    ],
+    enabled: [KeyType.Passkey, KeyType.Phone],
     required: [KeyType.Passkey, KeyType.Phone],
     comingSoon: [
       ComingSoonKeyType.Telegram,

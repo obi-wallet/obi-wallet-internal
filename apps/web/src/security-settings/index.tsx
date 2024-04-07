@@ -8,6 +8,7 @@ import {
   SecuritySettingsContext,
   useSecuritySettingsContext,
 } from "@/security-settings/context";
+import { keyTypeMeta } from "@/security-settings/meta";
 import { SecuritySettingsIndex } from "@/security-settings/page";
 import { SecuritySettingsKeyAddPage } from "@/security-settings/page/key-add";
 import { SecuritySettingsKeyItemPage } from "@/security-settings/page/key-item";
@@ -74,7 +75,7 @@ export const SecuritySettings = observer(function SecuritySettings() {
       const { name, timestamp } = keyMetaData[id] ?? {};
       return {
         id: key.publicKey.value,
-        label: name ?? "Passkey",
+        label: name ?? keyTypeMeta[type].label,
         timestamp: timestamp ? DateTime.fromISO(timestamp).toSeconds() : 0,
         key,
       };
@@ -84,19 +85,15 @@ export const SecuritySettings = observer(function SecuritySettings() {
 
   const keyList: KeyItem[] = [
     {
-      type: KeyType.Passkey,
-      label: "Passkey",
-      mandatory: true,
+      ...keyTypeMeta[KeyType.Passkey],
       keys: getKeysOfType(KeyType.Passkey),
     },
     {
-      type: KeyType.Phone,
-      label: "Phone Key",
+      ...keyTypeMeta[KeyType.Phone],
       keys: getKeysOfType(KeyType.Phone),
     },
     {
-      type: KeyType.Telegram,
-      label: "Telegram Key",
+      ...keyTypeMeta[KeyType.Telegram],
       keys: getKeysOfType(KeyType.Telegram),
     },
   ];
