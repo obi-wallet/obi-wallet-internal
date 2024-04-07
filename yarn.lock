@@ -2402,6 +2402,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ewoudenberg/difflib@npm:0.1.0":
+  version: 0.1.0
+  resolution: "@ewoudenberg/difflib@npm:0.1.0"
+  dependencies:
+    heap: "npm:>= 0.2.0"
+  checksum: 10c0/3060807c91f39c5c1e5421fe51573bb2bffcab48cb32e9dcc69ce0d43e658dbf5959421382541012628ca6b842d252fc157a79f70cea8088a864572fec2bd094
+  languageName: node
+  linkType: hard
+
 "@fal-works/esbuild-plugin-global-externals@npm:^2.1.2":
   version: 2.1.2
   resolution: "@fal-works/esbuild-plugin-global-externals@npm:2.1.2"
@@ -3380,6 +3389,7 @@ __metadata:
     "@types/crypto-js": "npm:^4.2.2"
     "@types/elliptic": "npm:^6.4.18"
     "@types/eslint": "npm:^8.56.2"
+    "@types/json-diff": "npm:^1"
     "@types/luxon": "npm:^3.4.2"
     "@types/mocha": "npm:^10.0.6"
     "@types/node": "npm:^20.11.19"
@@ -3405,6 +3415,7 @@ __metadata:
     eslint-plugin-storybook: "npm:^0.8.0"
     ethers: "npm:^6.11.1"
     jscrypto: "npm:^1.0.3"
+    json-diff: "npm:^1.0.6"
     lottie-react: "npm:^2.4.0"
     luxon: "npm:^3.4.4"
     mobx: "npm:^6.12.0"
@@ -6111,6 +6122,13 @@ __metadata:
   dependencies:
     "@types/istanbul-lib-report": "npm:*"
   checksum: 10c0/1647fd402aced5b6edac87274af14ebd6b3a85447ef9ad11853a70fd92a98d35f81a5d3ea9fcb5dbb5834e800c6e35b64475e33fcae6bfa9acc70d61497c54ee
+  languageName: node
+  linkType: hard
+
+"@types/json-diff@npm:^1":
+  version: 1.0.3
+  resolution: "@types/json-diff@npm:1.0.3"
+  checksum: 10c0/ad4dd1b1c4a253c4bfa54e9dfbd087ff7eb58a299eb77ac208c5852372b7637c77f7c507e876dab48eada03b9010db011088dd3d966089cc2b3778e7a35e5150
   languageName: node
   linkType: hard
 
@@ -8988,6 +9006,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"colors@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "colors@npm:1.4.0"
+  checksum: 10c0/9af357c019da3c5a098a301cf64e3799d27549d8f185d86f79af23069e4f4303110d115da98483519331f6fb71c8568d5688fa1c6523600044fd4a54e97c4efb
+  languageName: node
+  linkType: hard
+
 "combined-stream@npm:^1.0.8":
   version: 1.0.8
   resolution: "combined-stream@npm:1.0.8"
@@ -10042,6 +10067,15 @@ __metadata:
   peerDependencies:
     react: ">=16.12.0"
   checksum: 10c0/dcf0b54c59bb9c4a543e16d29924daa71b0a17e98ea4c0a296e08e01f22aed8609fec4c809ba40ba4e12b5385c3bf08a618c2d1c16216b5cd324e3ad29e5a6a2
+  languageName: node
+  linkType: hard
+
+"dreamopt@npm:~0.8.0":
+  version: 0.8.0
+  resolution: "dreamopt@npm:0.8.0"
+  dependencies:
+    wordwrap: "npm:>=0.0.2"
+  checksum: 10c0/8e5953c19519c9ec9427eff91b618c3ded7d2b50fcb89c051ca9c4f49e712460103c12dea09eb3feec5a63f21950488a19481798425aaba815b1c5016b3d58b9
   languageName: node
   linkType: hard
 
@@ -12246,6 +12280,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"heap@npm:>= 0.2.0":
+  version: 0.2.7
+  resolution: "heap@npm:0.2.7"
+  checksum: 10c0/341c5d51ae13dc8346c371a8a69c57c972fcb9a3233090d3dd5ba29d483d6b5b4e75492443cbfeacd46608bb30e6680f646ffb7a6205900221735587d07a79b6
+  languageName: node
+  linkType: hard
+
 "hmac-drbg@npm:^1.0.1":
   version: 1.0.1
   resolution: "hmac-drbg@npm:1.0.1"
@@ -13909,6 +13950,19 @@ __metadata:
   version: 3.0.1
   resolution: "json-buffer@npm:3.0.1"
   checksum: 10c0/0d1c91569d9588e7eef2b49b59851f297f3ab93c7b35c7c221e288099322be6b562767d11e4821da500f3219542b9afd2e54c5dc573107c1126ed1080f8e96d7
+  languageName: node
+  linkType: hard
+
+"json-diff@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "json-diff@npm:1.0.6"
+  dependencies:
+    "@ewoudenberg/difflib": "npm:0.1.0"
+    colors: "npm:^1.4.0"
+    dreamopt: "npm:~0.8.0"
+  bin:
+    json-diff: bin/json-diff.js
+  checksum: 10c0/21d0477a703ceaf1cbb8bcbb6ff38c16d16285a1ce6e358a47732632ece0c1d29d169cc5c099b64e65d8820784a04a53bc848699446ff3c546897426b0d3e443
   languageName: node
   linkType: hard
 
@@ -20259,7 +20313,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wordwrap@npm:^1.0.0":
+"wordwrap@npm:>=0.0.2, wordwrap@npm:^1.0.0":
   version: 1.0.0
   resolution: "wordwrap@npm:1.0.0"
   checksum: 10c0/7ed2e44f3c33c5c3e3771134d2b0aee4314c9e49c749e37f464bf69f2bcdf0cbf9419ca638098e2717cff4875c47f56a007532f6111c3319f557a2ca91278e92

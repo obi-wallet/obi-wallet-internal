@@ -19,7 +19,7 @@ type TransactionProps = {
     denom: string;
   }[];
   descriptions: string[];
-  targetChainId: TargetChainId;
+  targetChainId?: TargetChainId;
   rawData: unknown;
 } & ComponentPropsWithoutRef<"div">;
 
@@ -33,46 +33,65 @@ export function Transaction({
   ...rest
 }: TransactionProps) {
   const [showData, setShowData] = useState(false);
-  const targetChain = TargetChain.chainId(targetChainId);
-  const image = CosmosSdkChains[targetChainId].image;
+  const targetChainLabel = targetChainId
+    ? TargetChain.chainId(targetChainId).label
+    : "";
+  const image = targetChainId ? CosmosSdkChains[targetChainId].image : null;
 
   return (
     <Box
       className={cn(
-        "relative flex flex-col items-center justify-center px-8 py-7",
+        "relative flex flex-col items-center justify-center px-8",
+        { "py-7": !!image },
         className,
       )}
       {...rest}
     >
-      <Image
-        width="70"
-        height="70"
-        src={image}
-        alt={`${targetChain.label} logo`}
-        className="absolute -top-8"
-      />
-      <Text className="mt-10" size="sm" color="zinc">
-        Amount
-      </Text>
-      <Text size="2xl" className="mt-1">
-        {amountInfo.map((info) => `${info.amount} ${info.denom}`).join("\n")}
-      </Text>
-      <Text className="mt-12" color="zinc">
+      {image ? (
+        <Image
+          width="70"
+          height="70"
+          src={image}
+          alt={`${targetChainLabel} logo`}
+          className="absolute -top-8"
+        />
+      ) : null}
+      {amountInfo.length > 0 ? (
+        <>
+          <Text className="mt-10" size="sm" color="zinc">
+            Amount
+          </Text>
+          <Text size="2xl" className="mt-1">
+            {amountInfo
+              .map((info) => `${info.amount} ${info.denom}`)
+              .join("\n")}
+          </Text>
+        </>
+      ) : null}
+      <Text className={cn({ "mt-12": amountInfo.length > 0 })} color="zinc">
         {descriptions.join("\n")}
       </Text>
 
-      <div className="mt-9 w-full space-y-3">
-        <div className="flex flex-row justify-between">
-          <Text color="gray">Network</Text>
-          <Text color="gray">{targetChain.label}</Text>
+      {targetChainLabel || feeInfo.length > 0 ? (
+        <div className="mt-9 w-full space-y-3">
+          {targetChainLabel ? (
+            <div className="flex flex-row justify-between">
+              <Text color="gray">Network</Text>
+              <Text color="gray">{targetChainLabel}</Text>
+            </div>
+          ) : null}
+          {feeInfo.length > 0 ? (
+            <div className="flex flex-row justify-between">
+              <Text color="gray">Fee</Text>
+              <Text color="gray">
+                {feeInfo
+                  .map((info) => `${info.amount} ${info.denom}`)
+                  .join("\n")}
+              </Text>
+            </div>
+          ) : null}
         </div>
-        <div className="flex flex-row justify-between">
-          <Text color="gray">Fee</Text>
-          <Text color="gray">
-            {feeInfo.map((info) => `${info.amount} ${info.denom}`).join("\n")}
-          </Text>
-        </div>
-      </div>
+      ) : null}
       <Button
         className="mt-6 h-8 w-full justify-center"
         onClick={() => {
@@ -85,7 +104,9 @@ export function Transaction({
         <div className="mt-6 w-full space-y-3">
           <Text color="gray">Raw Data</Text>
           <pre className="text-gray-400">
-            {JSON.stringify(rawData, null, 2)}
+            {typeof rawData === "string"
+              ? rawData
+              : JSON.stringify(rawData, null, 2)}
           </pre>
         </div>
       ) : null}

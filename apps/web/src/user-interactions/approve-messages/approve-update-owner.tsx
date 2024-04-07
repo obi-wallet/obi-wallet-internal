@@ -1,4 +1,4 @@
-import { Button, Text } from "@/components";
+import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
 import { IntentionsResult } from "@/keys/intentions-handler";
@@ -6,6 +6,7 @@ import { ApproveIntentions } from "@/user-interactions/approve-intentions";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { MultisigKey, SecretJsClient } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
+import { diffString } from "json-diff";
 import Lottie from "lottie-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -155,6 +156,27 @@ export const ApproveUpdateOwner = observer<ApproveUpdateOwnerProps>(
               Complete Transaction
             </Text>
 
+            <Transaction
+              amountInfo={[]}
+              feeInfo={[]}
+              descriptions={[
+                proposedUpdate ? `Confirm new owner` : `Propose new owner`,
+              ]}
+              rawData={`
+Changes:
+                
+${diffString(previousOwner.toJSON(), nextOwner.toJSON())}
+              
+Proposed Owner:
+                
+${JSON.stringify(nextOwner.toJSON(), null, 2)}
+
+Current Owner:
+                
+${JSON.stringify(previousOwner.toJSON(), null, 2)}
+              `}
+            />
+
             {/*<PrettyPrint*/}
             {/*  messages={messages}*/}
             {/*  rawData={rawData}*/}
@@ -162,20 +184,6 @@ export const ApproveUpdateOwner = observer<ApproveUpdateOwnerProps>(
             {/*  fee={fee.data}*/}
             {/*/>*/}
 
-            {/*<Text className="mt-4">{`${threshold} Key${*/}
-            {/*  threshold > 1 ? "s" : ""*/}
-            {/*} Required`}</Text>*/}
-            {/*<Button*/}
-            {/*  className="mt-4"*/}
-            {/*  block*/}
-            {/*  onClick={() => {*/}
-            {/*    // TODO:*/}
-            {/*  }}*/}
-            {/*  variant={threshold > confirmedKeyCount ? "primary" : "confirmed"}*/}
-            {/*  // disabled={threshold === confirmedKeyCount}*/}
-            {/*>*/}
-            {/*  Passkey*/}
-            {/*</Button>*/}
             {nextHash.data ? (
               <ApproveIntentions
                 key={`${proposedUpdate}-${nextHash.data}`}
