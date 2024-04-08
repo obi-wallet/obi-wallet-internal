@@ -7,7 +7,7 @@ import {
   PasskeyIntentionsHandler,
 } from "@/keys/intentions-handler";
 import { useKeyListForMultisigKey } from "@/lib/keys";
-import { Key, KeyType, MultisigKey } from "@obi-wallet/sdk";
+import { Key, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
@@ -57,21 +57,20 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
               threshold > 1 ? "s" : ""
             } Required`}</Text>
             {keyList.map((keyData) => {
-              return keyData.keys.map((key) => {
+              return keyData.keys.map((key, index) => {
                 return (
                   <Button
                     key={key.id}
                     className="mt-4"
                     block
                     onClick={async () => {
-                      const passkey = multisigKey.getKeysOfType(
-                        KeyType.Passkey,
-                      )[0];
-                      const intentionsHandler = new PasskeyIntentionsHandler(
-                        passkey!,
-                      );
-                      const result = await intentionsHandler.handle(intentions);
-                      setResult(passkey!, result);
+                      const intentionsHandler = new PasskeyIntentionsHandler({
+                        key: key.key,
+                        index,
+                        payload: intentions,
+                      });
+                      const result = await intentionsHandler.newHandle();
+                      setResult(key.key, result);
                     }}
                     variant={getResult(key.key) ? "confirmed" : "primary"}
                     disabled={

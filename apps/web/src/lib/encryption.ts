@@ -230,6 +230,38 @@ export class MultisigKeyDecryption extends Decryption {
   }
 }
 
+export type NewMultisigKeyDecryptionInput = (string | null)[];
+
+export class NewMultisigKeyDecryption extends Decryption {
+  public constructor(protected readonly input: NewMultisigKeyDecryptionInput) {
+    super();
+  }
+
+  public async decrypt(data: string): Promise<string> {
+    const [encrypted, ...encryptedShares] = JSON.parse(data) as [
+      string,
+      ...string[],
+    ];
+    invariant(encryptedShares.length === this.input.length);
+
+    const decryptedShares = this.input.map((share) => {
+      return share ? new Uint8Array(Buffer.from(share, "base64")) : null;
+    });
+    const sssSecret = await sss.combineShares(
+      decryptedShares.filter((v): v is Uint8Array => !!v),
+    );
+    const raw = SHA256.hash(new Word32Array(sssSecret)).toUint8Array();
+    const key = await window.crypto.subtle.importKey(
+      "raw",
+      raw,
+      "AES-GCM",
+      true,
+      ["encrypt", "decrypt"],
+    );
+    return new AesGcmDecryption(key).decrypt(encrypted);
+  }
+}
+
 export class AesGcmEncryption extends Encryption {
   public constructor(protected readonly key: CryptoKey) {
     super();

@@ -41,6 +41,13 @@ export class MpcWallet {
     return this._encryptedShares.backup;
   }
 
+  public setEncryptedShares(encryptedShares: {
+    easy?: string;
+    backup: string;
+  }) {
+    this._encryptedShares = encryptedShares;
+  }
+
   public get schema() {
     return MpcWalletSchema;
   }

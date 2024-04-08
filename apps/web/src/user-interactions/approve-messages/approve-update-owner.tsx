@@ -1,10 +1,25 @@
 import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
-import { IntentionsResult } from "@/keys/intentions-handler";
+import {
+  IntentionsResult,
+  MultisigKeyEncryptedMessage,
+} from "@/keys/intentions-handler";
+import {
+  NewMultisigKeyDecryption,
+  Secp256k1Decryption,
+  SharesLocalEncryption,
+} from "@/lib/encryption";
 import { ApproveIntentions } from "@/user-interactions/approve-intentions";
+import { useBackupWalletMutation } from "@/wallet-health/checks";
 import { useQuery } from "@obi-wallet/headless-ui";
-import { MultisigKey, SecretJsClient } from "@obi-wallet/sdk";
+import {
+  BackupShare,
+  EasyShare,
+  MpcWallet,
+  MultisigKey,
+  SecretJsClient,
+} from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { diffString } from "json-diff";
 import Lottie from "lottie-react";
@@ -43,6 +58,10 @@ export const ApproveUpdateOwner = observer<ApproveUpdateOwnerProps>(
     const [results, setResults] = useState<
       Map<string, IntentionsResult> | undefined
     >(undefined);
+    const [backupShare, setBackupShare] = useState<BackupShare | undefined>(
+      undefined,
+    );
+    const backupWalletMutation = useBackupWalletMutation();
 
     const userAccount = useQuery({
       queryKey: ["user-account", { walletMeta }],
@@ -107,6 +126,32 @@ export const ApproveUpdateOwner = observer<ApproveUpdateOwnerProps>(
             throw new Error("Failed to update owner");
           }
 
+          const getEasyShare = async (wallet: MpcWallet) => {
+            const primaryKey = previousOwner.primaryKey;
+            if (!primaryKey) return undefined;
+            const easyShareDecryption = new Secp256k1Decryption(
+              primaryKey.payload.privateKey,
+            );
+
+            if (!wallet.encryptedEasyShare) return undefined;
+            return EasyShare.parse(
+              JSON.parse(
+                await easyShareDecryption.decrypt(wallet.encryptedEasyShare!),
+              ),
+            );
+          };
+          const easyShare = await getEasyShare(wallet);
+
+          const sharesLocalEncryption = new SharesLocalEncryption(nextOwner);
+          const { easy, backup } = await sharesLocalEncryption.encrypt({
+            easy: easyShare,
+            backup: backupShare!,
+          });
+
+          wallet.setOwner(nextOwner);
+          wallet.setEncryptedShares({ easy, backup });
+          backupWalletMutation.mutate();
+
           onApprove();
 
           return;
@@ -134,6 +179,14 @@ export const ApproveUpdateOwner = observer<ApproveUpdateOwnerProps>(
           throw new Error("Failed to update owner");
         }
 
+        const decryptedShares = previousOwner.keys.map((key) => {
+          return results.get(key.publicKey.value)?.decryptedShares[0] ?? null;
+        });
+        const decryption = new NewMultisigKeyDecryption(decryptedShares);
+        const decryptedBackupShare = await decryption.decrypt(
+          wallet.encryptedBackupShare,
+        );
+        setBackupShare(BackupShare.parse(JSON.parse(decryptedBackupShare)));
         await nextHash.refetch();
         setResults(undefined);
         setProposedUpdate(true);
@@ -142,6 +195,22 @@ export const ApproveUpdateOwner = observer<ApproveUpdateOwnerProps>(
         console.error(error);
       },
     });
+
+    function getMultisigKeyEncryptedMessages(): MultisigKeyEncryptedMessage[] {
+      if (proposedUpdate) return [];
+      const encryptedBackupShare = wallet?.encryptedBackupShare;
+
+      if (!encryptedBackupShare) return [];
+      const [encrypted, ...encryptedShares] = JSON.parse(
+        encryptedBackupShare,
+      ) as [string, ...string[]];
+      return [
+        {
+          encryptedMessage: encrypted,
+          encryptedShares,
+        },
+      ];
+    }
 
     return (
       <div className="relative w-full">
@@ -191,6 +260,8 @@ ${JSON.stringify(previousOwner.toJSON(), null, 2)}
                 intentions={{
                   signHashes: [nextHash.data],
                   decryptMessages: [],
+                  decryptMultisigKeyEncryptedMessages:
+                    getMultisigKeyEncryptedMessages(),
                 }}
                 onApprove={(results) => {
                   setResults(results);
