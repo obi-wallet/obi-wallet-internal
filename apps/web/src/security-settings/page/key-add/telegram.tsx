@@ -19,26 +19,29 @@ export const AddTelegramKeyPage = observer(function AddTelegramKeyPage() {
   const phoneKeyFlow = useMutation({
     mutationFn: async () => {
       if (sentMagicCode) {
-        // TODO: add telegram key
-        // const keyPair = await createPasskey();
-        // draft.value.addPasskeyKey(keyPair);
-        //
-        // await queryClient.prefetchQuery(
-        //   Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
-        //     keyPair,
-        //   ),
-        // );
-        // setKeyMetaData(keyPair.publicKey, {
-        //   name,
-        // });
-
-        const DEMO_PUBLIC_KEY = "A4TlI8UUTtpSI+oZ9q0dnXJoK9GiE/iMoy5cdMO2HNTI";
-        // const DEMO_PRIVATE_KEY = "jrfHogEDo91xaC0Kym/BMheAhlm5z93fVwMT8mKTGy4=";
+        const response = await fetch(
+          `https://phone-keys.obiwallet.workers.dev/handle?code=${code}`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              to: chatId,
+              answer: securityAnswer,
+              via: "telegram",
+              signHashes: [],
+              decryptMessages: [],
+            }),
+          },
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch public key");
+        }
+        const body = (await response.json()) as { publicKey: string };
 
         const publicKey: Secp256k1PublicKey = {
           type: "tendermint/PubKeySecp256k1",
-          value: DEMO_PUBLIC_KEY,
+          value: body.publicKey,
         };
+
         draft.value.addTelegramKey({
           publicKey,
           chatId: chatId,
@@ -52,7 +55,22 @@ export const AddTelegramKeyPage = observer(function AddTelegramKeyPage() {
 
         popPage();
       } else {
-        // TODO: send magic code
+        const response = await fetch(
+          "https://phone-keys.obiwallet.workers.dev/handle",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              to: chatId,
+              answer: securityAnswer,
+              via: "telegram",
+              signHashes: [],
+              decryptMessages: [],
+            }),
+          },
+        );
+        if (!response.ok) {
+          throw new Error("Failed to send magic code");
+        }
         setSentMagicCode(true);
       }
     },

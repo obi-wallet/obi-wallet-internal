@@ -41,6 +41,7 @@ export function createObservableMpcWallet(
       _userEntryAddress: observable,
       _encryptedShares: observable,
       setOwner: action,
+      setEncryptedShares: action,
       toJSON: false,
     },
     {
