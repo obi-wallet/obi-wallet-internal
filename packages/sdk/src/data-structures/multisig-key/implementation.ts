@@ -158,6 +158,23 @@ export class MultisigKey {
     });
   }
 
+  public addPendingRecoveryKey({
+    type,
+    publicKey,
+  }: {
+    type: KeyType;
+    publicKey: Secp256k1PublicKey;
+  }) {
+    const key = this._factories.Key.create({
+      payload: {
+        type,
+        publicKey,
+      },
+    });
+    this.setKeys([...this._keys, key]);
+    return key;
+  }
+
   public removeKey(key: Key) {
     this.setKeys(this._keys.filter((k) => k !== key));
   }

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { UserInteractionsHandlers } from "@/user-interactions";
 import { Inter } from "next/font/google";
 import { ReactNode } from "react";
 
@@ -20,7 +21,7 @@ export function RootContainer({ children }: { children: ReactNode }) {
 export function MainContainer({ children }: { children: ReactNode }) {
   return (
     <main id="main" className="flex h-full w-full flex-1 grow">
-      {children}
+      <UserInteractionsHandlers>{children}</UserInteractionsHandlers>
     </main>
   );
 }

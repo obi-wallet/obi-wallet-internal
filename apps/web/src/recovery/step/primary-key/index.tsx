@@ -36,6 +36,37 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
       const wallet = proxyWallets[0];
 
       if (wallet) {
+        draft.value.multisigKey.setThreshold(
+          parseInt(wallet.owner.threshold, 10),
+        );
+        wallet.owner.keys.forEach((key) => {
+          switch (key.type) {
+            case KeyType.Passkey:
+              if (
+                draft.value.multisigKey.primaryKey?.publicKey.value !==
+                key.publicKey.value
+              ) {
+                draft.value.multisigKey.addPendingRecoveryKey({
+                  type: KeyType.Passkey,
+                  publicKey: key.publicKey,
+                });
+              }
+              break;
+            case KeyType.Phone:
+              draft.value.multisigKey.addPendingRecoveryKey({
+                type: KeyType.Phone,
+                publicKey: key.publicKey,
+              });
+              break;
+            case KeyType.Telegram:
+              draft.value.multisigKey.addPendingRecoveryKey({
+                type: KeyType.Telegram,
+                publicKey: key.publicKey,
+              });
+              break;
+          }
+        });
+
         await recover({
           multisigKey: draft.value.multisigKey,
           account: wallet,

@@ -11,6 +11,7 @@ import {
   QueryClientNamespace,
   Secp256k1PublicKey,
   SecretJsClient,
+  Serialized,
   UsableKeySchema,
 } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
@@ -103,7 +104,7 @@ export class SecretJsHomeChain {
     wallet,
     userData,
   }: {
-    wallet: z.infer<typeof MpcWallet.schema.migratableSchema>;
+    wallet: Serialized<MpcWallet>;
     userData: {
       name: string;
       avatar: string;

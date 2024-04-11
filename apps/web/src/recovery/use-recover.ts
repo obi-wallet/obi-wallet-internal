@@ -1,11 +1,8 @@
 import { useStore } from "@/contexts";
 import {
-  SharesBackupEncryption,
-  SharesLocalEncryption,
-} from "@/lib/encryption";
-import {
   MultisigKey,
   ObservableMpcWallet,
+  RecoverWalletUserInteraction,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk";
 import { z } from "zod";
@@ -60,7 +57,9 @@ export function useRecover() {
 
         const publicKeysMatch = multisigKey.keys.every((key, i) => {
           const ownerKey = account.owner.keys[i];
-          if (!ownerKey) return false;
+          if (!ownerKey) {
+            return false;
+          }
           return key.publicKey.value === ownerKey.publicKey.value;
         });
 
@@ -78,30 +77,20 @@ export function useRecover() {
           throw new Error("Primary Key missing");
         }
 
-        const sharesBackupEncryption = new SharesBackupEncryption(multisigKey);
-        const decryptedShares = await sharesBackupEncryption.decrypt({
-          easy: account.encryptedEasyShare,
-          backup: account.encryptedBackupShare,
+        const response = await RecoverWalletUserInteraction.start({
+          homeChainId: multisigKey.chainId,
+          owner: multisigKey.toJSON()!,
+          walletData: account,
         });
 
-        const sharesLocalEncryption = new SharesLocalEncryption(multisigKey);
-        const encryptedShares = await sharesLocalEncryption.encrypt({
-          easy: decryptedShares.easy,
-          backup: decryptedShares.backup,
-        });
-
-        userDataStore.setUserData(
-          account.proxyAddress.address,
-          account.userData,
-        );
-
-        const wallet = ObservableMpcWallet.create({
-          homeChain: multisigKey.chainId,
-          owner,
-          userEntryAddress: account.proxyAddress.address,
-          encryptedShares,
-        });
-        mpcWalletsStore.upsertWallet(wallet);
+        if (response.approved && response.payload.wallet) {
+          userDataStore.setUserData(
+            account.proxyAddress.address,
+            account.userData,
+          );
+          const wallet = ObservableMpcWallet.create(response.payload.wallet);
+          mpcWalletsStore.upsertWallet(wallet);
+        }
       }
     } catch (e) {
       const error = e as Error;

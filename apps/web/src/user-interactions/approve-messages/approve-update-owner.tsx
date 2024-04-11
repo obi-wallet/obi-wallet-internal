@@ -246,13 +246,6 @@ ${JSON.stringify(previousOwner.toJSON(), null, 2)}
               `}
             />
 
-            {/*<PrettyPrint*/}
-            {/*  messages={messages}*/}
-            {/*  rawData={rawData}*/}
-            {/*  targetChainId={targetChainId}*/}
-            {/*  fee={fee.data}*/}
-            {/*/>*/}
-
             {nextHash.data ? (
               <ApproveIntentions
                 key={`${proposedUpdate}-${nextHash.data}`}

@@ -238,12 +238,10 @@ export class NewMultisigKeyDecryption extends Decryption {
   }
 
   public async decrypt(data: string): Promise<string> {
-    const [encrypted, ...encryptedShares] = JSON.parse(data) as [
+    const [encrypted, ..._encryptedShares] = JSON.parse(data) as [
       string,
       ...string[],
     ];
-    invariant(encryptedShares.length === this.input.length);
-
     const decryptedShares = this.input.map((share) => {
       return share ? new Uint8Array(Buffer.from(share, "base64")) : null;
     });

@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { UserInteractionsHandlers } from "@/user-interactions";
 import { ReactNode } from "react";
 
 import { WalletBackupFixer } from "./wallet-backup-fixer";
@@ -19,7 +18,7 @@ export function DashboardCustomLayout({
     >
       {nav}
       <div className={cn("md:p-4", "flex-grow overflow-auto ")}>
-        <UserInteractionsHandlers>{children}</UserInteractionsHandlers>
+        {children}
         {/* </div> */}
       </div>
       <WalletBackupFixer />

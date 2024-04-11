@@ -13,6 +13,7 @@ import {
   MultisigKey,
   NetworkShare,
   ObservableMultisigKey,
+  Serialized,
 } from "@obi-wallet/sdk";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { action, observable } from "mobx";
@@ -118,7 +119,7 @@ export class NewOnboardingPayload implements Draftable {
     });
   }
 
-  public toMpcWalletData(): z.infer<typeof MpcWallet.schema.migratableSchema> {
+  public toMpcWalletData(): Serialized<MpcWallet> {
     invariant(this._encryptedShares, "Shares are not encrypted");
     invariant(this._unclaimedHomeAccount, "Home account is not available");
     invariant(this._homeAccountClaimed, "Home account is not claimed");

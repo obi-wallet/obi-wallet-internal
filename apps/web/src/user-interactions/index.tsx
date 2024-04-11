@@ -1,3 +1,4 @@
+import { RecoverWalletUserInteractionHandler } from "@/user-interactions/recover-wallet-handler";
 import { SignAndBroadcastTransactionUserInteractionHandler } from "@/user-interactions/sign-and-broadcast-transaction-handler";
 import { SignUserInteractionHandler } from "@/user-interactions/sign-handler";
 import { UpdateOwnerUserInteractionHandler } from "@/user-interactions/update-owner-handler";
@@ -14,7 +15,9 @@ export function UserInteractionsHandlers({
       <WalletConnectPairingUserInteractionHandler>
         <SignUserInteractionHandler>
           <UpdateOwnerUserInteractionHandler>
-            {children}
+            <RecoverWalletUserInteractionHandler>
+              {children}
+            </RecoverWalletUserInteractionHandler>
           </UpdateOwnerUserInteractionHandler>
         </SignUserInteractionHandler>
       </WalletConnectPairingUserInteractionHandler>
