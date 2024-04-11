@@ -1,6 +1,7 @@
 import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
+import { fetchOwner } from "@/hooks/use-owner";
 import { IntentionsResult } from "@/keys/intentions-handler";
 import { Secp256k1Decryption, SharesLocalEncryption } from "@/lib/encryption";
 import {
@@ -143,6 +144,11 @@ export const ApproveUpdateOwner = observer<ApproveUpdateOwnerProps>(
             easy: easyShare,
             backup: backupShare!,
           });
+
+          const owner = await fetchOwner(wallet);
+          if (owner !== nextOwner.address) {
+            throw new Error("Owner mismatch");
+          }
 
           wallet.setOwner(nextOwner);
           wallet.setEncryptedShares({ easy, backup });
