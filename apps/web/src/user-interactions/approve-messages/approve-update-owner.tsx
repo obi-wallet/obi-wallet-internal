@@ -6,7 +6,7 @@ import {
   MultisigKeyEncryptedMessage,
 } from "@/keys/intentions-handler";
 import {
-  NewMultisigKeyDecryption,
+  MultisigKeyDecryption,
   Secp256k1Decryption,
   SharesLocalEncryption,
 } from "@/lib/encryption";
@@ -182,7 +182,7 @@ export const ApproveUpdateOwner = observer<ApproveUpdateOwnerProps>(
         const decryptedShares = previousOwner.keys.map((key) => {
           return results.get(key.publicKey.value)?.decryptedShares[0] ?? null;
         });
-        const decryption = new NewMultisigKeyDecryption(decryptedShares);
+        const decryption = new MultisigKeyDecryption(decryptedShares);
         const decryptedBackupShare = await decryption.decrypt(
           wallet.encryptedBackupShare,
         );

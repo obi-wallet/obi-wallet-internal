@@ -3,10 +3,7 @@ import {
   IntentionsResult,
   MultisigKeyEncryptedMessage,
 } from "@/keys/intentions-handler";
-import {
-  NewMultisigKeyDecryption,
-  SharesLocalEncryption,
-} from "@/lib/encryption";
+import { MultisigKeyDecryption, SharesLocalEncryption } from "@/lib/encryption";
 import { ApproveIntentions } from "@/user-interactions/approve-intentions";
 import {
   BackupShare,
@@ -50,7 +47,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
                 results.get(key.publicKey.value)?.decryptedShares[index] ?? null
               );
             });
-            const decryption = new NewMultisigKeyDecryption(decryptedShares);
+            const decryption = new MultisigKeyDecryption(decryptedShares);
             return await decryption.decrypt(message);
           }),
         );

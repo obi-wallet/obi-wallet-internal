@@ -1,7 +1,4 @@
-import {
-  SharesBackupEncryption,
-  SharesLocalEncryption,
-} from "@/lib/encryption";
+import { EasyShareDecryption, SharesBackupEncryption } from "@/lib/encryption";
 import { ProxyWallet } from "@/recovery/use-recover";
 import {
   HomeChainId,
@@ -114,10 +111,9 @@ export class SecretJsHomeChain {
       if (!wallet.encryptedShares.easy) return undefined;
 
       const w = MpcWallet.create(wallet);
-      const sharesLocalEncryption = new SharesLocalEncryption(w.owner);
       const sharesBackupEncryption = new SharesBackupEncryption(w.owner);
 
-      const easyShare = await sharesLocalEncryption.decryptEasyShare(
+      const easyShare = await new EasyShareDecryption(w.owner).decrypt(
         wallet.encryptedShares.easy,
       );
       return await sharesBackupEncryption.encryptEasyShare(easyShare);

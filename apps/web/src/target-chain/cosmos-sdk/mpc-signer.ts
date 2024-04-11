@@ -1,6 +1,6 @@
 import { rootStore } from "@/hooks/use-create-root-store";
 import { fetchPublicKey } from "@/hooks/use-public-key";
-import { SharesLocalEncryption } from "@/lib/encryption";
+import { EasyShareDecryption } from "@/lib/encryption";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import {
   AminoSignResponse,
@@ -115,8 +115,7 @@ export class CosmosSdkMpcSigner
 
     invariant(this.wallet.encryptedEasyShare, "No encrypted easy share found");
 
-    const sharesLocalEncryption = new SharesLocalEncryption(this.wallet.owner);
-    const easyShare = await sharesLocalEncryption.decryptEasyShare(
+    const easyShare = await new EasyShareDecryption(this.wallet.owner).decrypt(
       this.wallet.encryptedEasyShare,
     );
 
@@ -175,42 +174,6 @@ export class CosmosSdkMpcSigner
       schema,
     });
     return this.encodeSignature(response);
-  }
-
-  protected async signHashWithEasyAndBackupShare(
-    address: string,
-    hash: Uint8Array,
-  ): Promise<StdSignature> {
-    invariant(rootStore.current, "Root store is not initialized");
-    const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
-
-    const sharesLocalEncryption = new SharesLocalEncryption(this.wallet.owner);
-    const { easy, backup } = await sharesLocalEncryption.decrypt({
-      easy: this.wallet.encryptedEasyShare,
-      backup: this.wallet.encryptedBackupShare,
-    });
-
-    invariant(easy, "No easy share found");
-    invariant(backup, "No backup share found");
-
-    const signers = mpcPackage.createSigners([
-      easy.preSignForBackupShare,
-      backup,
-    ]);
-
-    if (address !== this.address) {
-      throw new Error(`Address ${address} not found in wallet`);
-    }
-
-    const partialSignatures = signers.map((signer) => {
-      return signer.partial(hash);
-    });
-
-    const finalSignature = signers[1].create([partialSignatures[0]]);
-    return this.encodeSignature({
-      r: finalSignature.signature.r.scalar,
-      s: finalSignature.signature.s.scalar,
-    });
   }
 
   protected encodeSignature(response: { r: string; s: string }) {
