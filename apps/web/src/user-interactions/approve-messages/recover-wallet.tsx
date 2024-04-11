@@ -1,10 +1,10 @@
 import { Button, Text, Transaction } from "@/components";
+import { IntentionsResult } from "@/keys/intentions-handler";
+import { SharesLocalEncryption } from "@/lib/encryption";
 import {
-  IntentionsResult,
-  MultisigKeyEncryptedMessage,
-} from "@/keys/intentions-handler";
-import { MultisigKeyDecryption, SharesLocalEncryption } from "@/lib/encryption";
-import { ApproveIntentions } from "@/user-interactions/approve-intentions";
+  ApproveIntentions,
+  handleMultisigKeyDecryptedMessages,
+} from "@/user-interactions/approve-intentions";
 import {
   BackupShare,
   EasyShare,
@@ -40,19 +40,12 @@ export const RecoverWallet = observer<RecoverWalletProps>(
       mutationFn: async () => {
         invariant(results, "Results not found");
 
-        const decryptedMessages = await Promise.all(
-          getRawEncryptedMessages().map(async (message, index) => {
-            const decryptedShares = owner.keys.map((key) => {
-              return (
-                results.get(key.publicKey.value)?.decryptedShares[index] ?? null
-              );
-            });
-            const decryption = new MultisigKeyDecryption(decryptedShares);
-            return await decryption.decrypt(message);
-          }),
-        );
-
-        const [firstShare, secondShare] = decryptedMessages;
+        const [firstShare, secondShare] =
+          await handleMultisigKeyDecryptedMessages({
+            multisigKeyEncryptedMessages: getMultisigKeyEncryptedMessages(),
+            multisigKey: owner,
+            results,
+          });
 
         if (firstShare && secondShare) {
           const easyShare = EasyShare.parse(JSON.parse(firstShare));
@@ -78,7 +71,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
       },
     });
 
-    function getRawEncryptedMessages(): string[] {
+    function getMultisigKeyEncryptedMessages(): string[] {
       const encryptedEasyShare = walletData.encryptedEasyShare;
       const encryptedBackupShare = walletData.encryptedBackupShare;
 
@@ -86,22 +79,6 @@ export const RecoverWallet = observer<RecoverWalletProps>(
         ...(encryptedEasyShare ? [encryptedEasyShare] : []),
         encryptedBackupShare,
       ];
-    }
-
-    function getEncryptedMessages(): MultisigKeyEncryptedMessage[] {
-      function stringToEncryptedMessage(
-        encryptedMessage: string,
-      ): MultisigKeyEncryptedMessage {
-        const [encrypted, ...encryptedShares] = JSON.parse(
-          encryptedMessage,
-        ) as [string, ...string[]];
-        return {
-          encryptedMessage: encrypted,
-          encryptedShares: encryptedShares,
-        };
-      }
-
-      return getRawEncryptedMessages().map(stringToEncryptedMessage);
     }
 
     return (
@@ -135,7 +112,8 @@ export const RecoverWallet = observer<RecoverWalletProps>(
               intentions={{
                 signHashes: [],
                 decryptMessages: [],
-                decryptMultisigKeyEncryptedMessages: getEncryptedMessages(),
+                decryptMultisigKeyEncryptedMessages:
+                  getMultisigKeyEncryptedMessages(),
               }}
               onApprove={(results) => {
                 setResults(results);

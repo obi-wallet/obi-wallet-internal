@@ -1,7 +1,7 @@
 import { Key } from "@obi-wallet/sdk";
 import { splitAt } from "ramda";
 
-export interface MultisigKeyEncryptedMessage {
+interface MultisigKeyEncryptedMessage {
   encryptedMessage: string;
   encryptedShares: string[];
 }
@@ -9,7 +9,7 @@ export interface MultisigKeyEncryptedMessage {
 export interface IntentionsPayload {
   signHashes: Uint8Array[];
   decryptMessages: string[];
-  decryptMultisigKeyEncryptedMessages: MultisigKeyEncryptedMessage[];
+  decryptMultisigKeyEncryptedMessages: string[];
 }
 
 export interface IntentionsResult {
@@ -37,8 +37,8 @@ export abstract class IntentionsHandler {
     this.payload = payload;
   }
 
-  public async newHandle(): Promise<IntentionsResult> {
-    const result = await this.handle({
+  public async handle(): Promise<IntentionsResult> {
+    const result = await this.internalHandle({
       signHashes: this.payload.signHashes,
       decryptMessages: this.messagesToDecrypt,
     });
@@ -53,7 +53,7 @@ export abstract class IntentionsHandler {
     };
   }
 
-  public abstract handle(payload: {
+  public abstract internalHandle(payload: {
     signHashes: Uint8Array[];
     decryptMessages: string[];
   }): Promise<{
@@ -65,8 +65,23 @@ export abstract class IntentionsHandler {
     return [
       ...this.payload.decryptMessages,
       ...this.payload.decryptMultisigKeyEncryptedMessages.map((m) => {
-        return m.encryptedShares[this.index]!;
+        return this.stringToMultisigKeyEncryptedMessage(m).encryptedShares[
+          this.index
+        ]!;
       }),
     ];
+  }
+
+  protected stringToMultisigKeyEncryptedMessage(
+    message: string,
+  ): MultisigKeyEncryptedMessage {
+    const [encryptedMessage, ...encryptedShares] = JSON.parse(message) as [
+      string,
+      ...string[],
+    ];
+    return {
+      encryptedMessage,
+      encryptedShares,
+    };
   }
 }

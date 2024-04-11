@@ -6,11 +6,51 @@ import {
   IntentionsResult,
   PasskeyIntentionsHandler,
 } from "@/keys/intentions-handler";
+import { MultisigKeyDecryption } from "@/lib/encryption";
 import { useKeyListForMultisigKey } from "@/lib/keys";
 import { Key, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
+
+export async function handleMultisigKeyDecryptedMessages({
+  multisigKeyEncryptedMessages,
+  multisigKey,
+  results,
+}: {
+  multisigKeyEncryptedMessages: string[];
+  multisigKey: MultisigKey;
+  results: Map<string, IntentionsResult>;
+}): Promise<string[]> {
+  return await Promise.all(
+    multisigKeyEncryptedMessages.map(async (message, index) => {
+      return await handleMultisigKeyDecryptedMessage({
+        multisigKeyEncryptedMessage: message,
+        multisigKey,
+        results,
+        index,
+      });
+    }),
+  );
+}
+
+export async function handleMultisigKeyDecryptedMessage({
+  multisigKeyEncryptedMessage,
+  multisigKey,
+  results,
+  index,
+}: {
+  multisigKeyEncryptedMessage: string;
+  multisigKey: MultisigKey;
+  results: Map<string, IntentionsResult>;
+  index: number;
+}) {
+  const decryptedShares = multisigKey.keys.map((key) => {
+    return results.get(key.publicKey.value)?.decryptedShares[index] ?? null;
+  });
+  const decryption = new MultisigKeyDecryption(decryptedShares);
+  return await decryption.decrypt(multisigKeyEncryptedMessage);
+}
 
 export interface ApproveIntentionsProps {
   multisigKey: MultisigKey;
@@ -69,7 +109,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                         index,
                         payload: intentions,
                       });
-                      const result = await intentionsHandler.newHandle();
+                      const result = await intentionsHandler.handle();
                       setResult(key.key, result);
                     }}
                     variant={getResult(key.key) ? "confirmed" : "primary"}

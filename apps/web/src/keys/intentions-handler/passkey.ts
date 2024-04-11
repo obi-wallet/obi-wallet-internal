@@ -4,7 +4,7 @@ import { getPasskey, Secp256k1PrivateKeySigner } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
 export class PasskeyIntentionsHandler extends IntentionsHandler {
-  public async handle(payload: {
+  public async internalHandle(payload: {
     signHashes: Uint8Array[];
     decryptMessages: string[];
   }) {

@@ -1,16 +1,12 @@
 import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
+import { IntentionsResult } from "@/keys/intentions-handler";
+import { Secp256k1Decryption, SharesLocalEncryption } from "@/lib/encryption";
 import {
-  IntentionsResult,
-  MultisigKeyEncryptedMessage,
-} from "@/keys/intentions-handler";
-import {
-  MultisigKeyDecryption,
-  Secp256k1Decryption,
-  SharesLocalEncryption,
-} from "@/lib/encryption";
-import { ApproveIntentions } from "@/user-interactions/approve-intentions";
+  ApproveIntentions,
+  handleMultisigKeyDecryptedMessage,
+} from "@/user-interactions/approve-intentions";
 import { useBackupWalletMutation } from "@/wallet-health/checks";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
@@ -179,13 +175,12 @@ export const ApproveUpdateOwner = observer<ApproveUpdateOwnerProps>(
           throw new Error("Failed to update owner");
         }
 
-        const decryptedShares = previousOwner.keys.map((key) => {
-          return results.get(key.publicKey.value)?.decryptedShares[0] ?? null;
+        const decryptedBackupShare = await handleMultisigKeyDecryptedMessage({
+          multisigKeyEncryptedMessage: wallet.encryptedBackupShare,
+          multisigKey: previousOwner,
+          results,
+          index: 0,
         });
-        const decryption = new MultisigKeyDecryption(decryptedShares);
-        const decryptedBackupShare = await decryption.decrypt(
-          wallet.encryptedBackupShare,
-        );
         setBackupShare(BackupShare.parse(JSON.parse(decryptedBackupShare)));
         await nextHash.refetch();
         setResults(undefined);
@@ -196,20 +191,12 @@ export const ApproveUpdateOwner = observer<ApproveUpdateOwnerProps>(
       },
     });
 
-    function getMultisigKeyEncryptedMessages(): MultisigKeyEncryptedMessage[] {
+    function getMultisigKeyEncryptedMessages(): string[] {
       if (proposedUpdate) return [];
       const encryptedBackupShare = wallet?.encryptedBackupShare;
 
       if (!encryptedBackupShare) return [];
-      const [encrypted, ...encryptedShares] = JSON.parse(
-        encryptedBackupShare,
-      ) as [string, ...string[]];
-      return [
-        {
-          encryptedMessage: encrypted,
-          encryptedShares,
-        },
-      ];
+      return [encryptedBackupShare];
     }
 
     return (
