@@ -1,4 +1,4 @@
-import { Button, Text } from "@/components";
+import { Button, KeyItem, Text } from "@/components";
 import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import {
@@ -8,7 +8,8 @@ import {
 } from "@/keys/intentions-handler";
 import { MultisigKeyDecryption } from "@/lib/encryption";
 import { useKeyListForMultisigKey } from "@/lib/keys";
-import { Key, MultisigKey } from "@obi-wallet/sdk";
+import { PhoneKeyModal } from "@/user-interactions/approve-intentions/modals/phone";
+import { Key, KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
@@ -70,6 +71,10 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
       multisigKey,
       keyMetaData,
     });
+    const [modal, setModal] = useState<{
+      key: KeyItem;
+      index: number;
+    } | null>(null);
 
     const [results, setResults] = useState(new Map<string, IntentionsResult>());
 
@@ -96,21 +101,40 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
             <Text className="mt-4">{`${threshold} Key${
               threshold > 1 ? "s" : ""
             } Required`}</Text>
+            {renderKeyModal()}
             {keyList.map((keyData) => {
-              return keyData.keys.map((key, index) => {
+              return keyData.keys.map((key) => {
                 return (
                   <Button
                     key={key.id}
                     className="mt-4"
                     block
                     onClick={async () => {
-                      const intentionsHandler = new PasskeyIntentionsHandler({
-                        key: key.key,
-                        index,
-                        payload: intentions,
+                      const index = multisigKey.keys.findIndex((k) => {
+                        return k.publicKey.value === key.key.publicKey.value;
                       });
-                      const result = await intentionsHandler.handle();
-                      setResult(key.key, result);
+
+                      switch (key.key.type) {
+                        case KeyType.Passkey: {
+                          const intentionsHandler =
+                            new PasskeyIntentionsHandler({
+                              key: key.key,
+                              index,
+                              payload: intentions,
+                            });
+                          const result = await intentionsHandler.handle();
+                          setResult(key.key, result);
+                          break;
+                        }
+
+                        case KeyType.Telegram: {
+                          setModal({
+                            key,
+                            index,
+                          });
+                          break;
+                        }
+                      }
                     }}
                     variant={getResult(key.key) ? "confirmed" : "primary"}
                     disabled={
@@ -126,5 +150,24 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
         </div>
       </div>
     );
+
+    function renderKeyModal() {
+      if (!modal) return null;
+
+      return (
+        <PhoneKeyModal
+          keyItem={modal.key}
+          index={modal.index}
+          intentions={intentions}
+          onCancel={() => {
+            setModal(null);
+          }}
+          onResult={(results) => {
+            setModal(null);
+            setResult(modal.key.key, results);
+          }}
+        />
+      );
+    }
   },
 );

@@ -1,4 +1,6 @@
 import { Box, Button, Divider, Text } from "@/components";
+import { PhoneKeyWorkerClient } from "@/keys/intentions-handler/phone";
+
 import { useSecuritySettingsContext } from "@/security-settings/context";
 import { Input } from "@/ui/input";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk";
@@ -18,28 +20,18 @@ export const AddTelegramKeyPage = observer(function AddTelegramKeyPage() {
 
   const phoneKeyFlow = useMutation({
     mutationFn: async () => {
+      const client = new PhoneKeyWorkerClient({
+        to: chatId,
+        answer: securityAnswer,
+        via: "telegram",
+        signHashes: [],
+        decryptMessages: [],
+      });
       if (sentMagicCode) {
-        const response = await fetch(
-          `https://phone-keys.obiwallet.workers.dev/handle?code=${code}`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              to: chatId,
-              answer: securityAnswer,
-              via: "telegram",
-              signHashes: [],
-              decryptMessages: [],
-            }),
-          },
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch public key");
-        }
-        const body = (await response.json()) as { publicKey: string };
-
+        const response = await client.confirmMagicCode(code);
         const publicKey: Secp256k1PublicKey = {
           type: "tendermint/PubKeySecp256k1",
-          value: body.publicKey,
+          value: response.publicKey,
         };
 
         draft.value.addTelegramKey({
@@ -55,22 +47,7 @@ export const AddTelegramKeyPage = observer(function AddTelegramKeyPage() {
 
         popPage();
       } else {
-        const response = await fetch(
-          "https://phone-keys.obiwallet.workers.dev/handle",
-          {
-            method: "POST",
-            body: JSON.stringify({
-              to: chatId,
-              answer: securityAnswer,
-              via: "telegram",
-              signHashes: [],
-              decryptMessages: [],
-            }),
-          },
-        );
-        if (!response.ok) {
-          throw new Error("Failed to send magic code");
-        }
+        await client.requestMagicCode();
         setSentMagicCode(true);
       }
     },

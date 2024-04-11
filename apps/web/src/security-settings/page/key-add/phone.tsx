@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import { PhoneKeyWorkerClient } from "@/keys/intentions-handler/phone";
 
 export const AddPhoneKeyPage = observer(function AddPhoneKeyPage() {
   const { draft, setKeyMetaData, popPage } = useSecuritySettingsContext();
@@ -18,28 +19,19 @@ export const AddPhoneKeyPage = observer(function AddPhoneKeyPage() {
 
   const phoneKeyFlow = useMutation({
     mutationFn: async () => {
-      if (sentMagicCode) {
-        const response = await fetch(
-          `https://phone-keys.obiwallet.workers.dev/handle?code=${code}`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              to: number,
-              answer: securityAnswer,
-              via: "sms",
-              signHashes: [],
-              decryptMessages: [],
-            }),
-          },
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch public key");
-        }
-        const body = (await response.json()) as { publicKey: string };
+      const client = new PhoneKeyWorkerClient({
+        to: number,
+        answer: securityAnswer,
+        via: "sms",
+        signHashes: [],
+        decryptMessages: [],
+      });
 
+      if (sentMagicCode) {
+        const response = await client.confirmMagicCode(code);
         const publicKey: Secp256k1PublicKey = {
           type: "tendermint/PubKeySecp256k1",
-          value: body.publicKey,
+          value: response.publicKey,
         };
         draft.value.addPhoneKey({
           publicKey,
@@ -54,22 +46,7 @@ export const AddPhoneKeyPage = observer(function AddPhoneKeyPage() {
 
         popPage();
       } else {
-        const response = await fetch(
-          "https://phone-keys.obiwallet.workers.dev/handle",
-          {
-            method: "POST",
-            body: JSON.stringify({
-              to: number,
-              answer: securityAnswer,
-              via: "sms",
-              signHashes: [],
-              decryptMessages: [],
-            }),
-          },
-        );
-        if (!response.ok) {
-          throw new Error("Failed to send magic code");
-        }
+        await client.requestMagicCode();
         setSentMagicCode(true);
       }
     },

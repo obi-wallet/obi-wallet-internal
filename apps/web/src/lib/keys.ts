@@ -1,4 +1,4 @@
-import { KeyItem } from "@/components";
+import { KeyItems } from "@/components";
 import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { KeyMetaData } from "@/stores/key-meta-data";
@@ -50,7 +50,7 @@ export function useKeyListForMultisigKey({
 }: {
   multisigKey?: MultisigKey;
   keyMetaData: KeyMetaData;
-}): KeyItem[] {
+}): KeyItems[] {
   function getKeysOfType(type: KeyType) {
     if (!multisigKey) return [];
     const keys = multisigKey.getKeysOfType(type).map((key) => {

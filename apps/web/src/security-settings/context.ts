@@ -1,4 +1,4 @@
-import { KeyItem } from "@/components";
+import { KeyItems } from "@/components";
 import { Draft } from "@/stores";
 import { KeyMetaData, SingleKeyMetaData } from "@/stores/key-meta-data";
 import {
@@ -35,7 +35,7 @@ export type Page = KeyTypePage | KeyItemPage | KeyAddPage;
 export const SecuritySettingsContext = createContext<{
   wallet: MpcWallet;
   draft: Draft<MultisigKey>;
-  keyList: KeyItem[];
+  keyList: KeyItems[];
   keyMetaData: KeyMetaData;
   setKeyMetaData(
     publicKey: Secp256k1PublicKey,

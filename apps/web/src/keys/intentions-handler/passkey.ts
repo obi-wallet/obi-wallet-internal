@@ -4,10 +4,7 @@ import { getPasskey, Secp256k1PrivateKeySigner } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
 export class PasskeyIntentionsHandler extends IntentionsHandler {
-  public async internalHandle(payload: {
-    signHashes: Uint8Array[];
-    decryptMessages: string[];
-  }) {
+  public async handle() {
     const keyPair = await getPasskey();
     invariant(
       keyPair.publicKey.value === this.key.publicKey.value,
@@ -19,20 +16,20 @@ export class PasskeyIntentionsHandler extends IntentionsHandler {
 
     const [signedHashes, decryptedMessages] = await Promise.all([
       await Promise.all(
-        payload.signHashes.map(async (hash) => {
+        this.payload.signHashes.map(async (hash) => {
           return await signer.signHash(hash);
         }),
       ),
       await Promise.all(
-        payload.decryptMessages.map(async (message) => {
+        this.messagesToDecrypt.map(async (message) => {
           return await decryption.decrypt(message);
         }),
       ),
     ]);
 
-    return {
+    return this.toIntentionsResult({
       signedHashes,
       decryptedMessages,
-    };
+    });
   }
 }

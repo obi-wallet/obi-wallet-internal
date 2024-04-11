@@ -4,15 +4,17 @@ import { Key, KeyType } from "@obi-wallet/sdk";
 import { FaPlus, FaTriangleExclamation } from "react-icons/fa6";
 
 export interface KeyItem {
+  id: string;
+  label: string;
+  key: Key;
+}
+
+export interface KeyItems {
   type: KeyType;
   mandatory?: boolean;
   label: string;
   comingSoon?: true;
-  keys: {
-    id: string;
-    label: string;
-    key: Key;
-  }[];
+  keys: KeyItem[];
 }
 
 export function KeyListItem({
@@ -21,7 +23,7 @@ export function KeyListItem({
   ...rest
 }: {
   onClick: () => void;
-  keyData: KeyItem;
+  keyData: KeyItems;
 }) {
   const keyCount = keyData.keys.length;
   return (

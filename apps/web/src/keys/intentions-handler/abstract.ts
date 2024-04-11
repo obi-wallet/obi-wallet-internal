@@ -37,11 +37,10 @@ export abstract class IntentionsHandler {
     this.payload = payload;
   }
 
-  public async handle(): Promise<IntentionsResult> {
-    const result = await this.internalHandle({
-      signHashes: this.payload.signHashes,
-      decryptMessages: this.messagesToDecrypt,
-    });
+  protected toIntentionsResult(result: {
+    signedHashes: Uint8Array[];
+    decryptedMessages: string[];
+  }): IntentionsResult {
     const [decryptedMessages, decryptedShares] = splitAt(
       this.payload.decryptMessages.length,
       result.decryptedMessages,
@@ -52,14 +51,6 @@ export abstract class IntentionsHandler {
       decryptedShares,
     };
   }
-
-  public abstract internalHandle(payload: {
-    signHashes: Uint8Array[];
-    decryptMessages: string[];
-  }): Promise<{
-    signedHashes: Uint8Array[];
-    decryptedMessages: string[];
-  }>;
 
   protected get messagesToDecrypt() {
     return [
@@ -79,6 +70,7 @@ export abstract class IntentionsHandler {
       string,
       ...string[],
     ];
+
     return {
       encryptedMessage,
       encryptedShares,
