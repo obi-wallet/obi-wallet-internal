@@ -87,6 +87,7 @@ export class KeyMetaDataStore {
     this.setKeyMetaData(address, {
       ...this.getKeyMetaData(address),
       [publicKey.value]: {
+        ...singleKeyMetaData,
         name: singleKeyMetaData.name ? singleKeyMetaData.name : undefined,
         timestamp: singleKeyMetaData.timestamp
           ? singleKeyMetaData.timestamp

@@ -5,18 +5,22 @@ import { Input } from "@/ui/input";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import { KeySubclassTypeMapping, KeyType } from "@obi-wallet/sdk";
+import {
+  PhoneSingleKeyMetaData,
+  TelegramSingleKeyMetaData,
+} from "@/stores/key-meta-data";
 
 export interface PhoneKeyModalProps {
-  keyItem: KeyItem;
+  keyItem: KeyItem & {
+    key:
+      | KeySubclassTypeMapping[KeyType.Phone]
+      | KeySubclassTypeMapping[KeyType.Telegram];
+  };
   index: number;
   intentions: IntentionsPayload;
   onCancel(): void;
   onResult(result: IntentionsResult): void;
-  //& {
-  //   key:
-  //     | KeySubclassTypeMapping[KeyType.Phone]
-  //     | KeySubclassTypeMapping[KeyType.Telegram];
-  // };
 }
 
 export const PhoneKeyModal = observer<PhoneKeyModalProps>(
@@ -24,20 +28,43 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
     const [sentMagicCode, setSentMagicCode] = useState(false);
     const [securityAnswer, setSecurityAnswer] = useState("");
     const [code, setCode] = useState("");
+    const [to, setTo] = useState("");
 
-    // TODO: check if usable
+    const needsTo = !keyItem.keyMetaData.payload;
 
     const confirm = useMutation({
       mutationFn: async () => {
-        console.log("trying");
+        function getKeyMetaData() {
+          if (needsTo && keyItem.key.type === KeyType.Phone) {
+            return PhoneSingleKeyMetaData.parse({
+              ...keyItem.keyMetaData,
+              payload: {
+                phoneNumber: to,
+                securityQuestion: "",
+              },
+            });
+          }
+
+          if (needsTo && keyItem.key.type === KeyType.Telegram) {
+            return TelegramSingleKeyMetaData.parse({
+              ...keyItem.keyMetaData,
+              payload: {
+                chatId: to,
+                securityQuestion: "",
+              },
+            });
+          }
+
+          return keyItem.keyMetaData;
+        }
+
         const intentionsHandler = new PhoneKeyIntentionsHandler({
-          // @ts-expect-error
           key: keyItem.key,
+          keyMetaData: getKeyMetaData(),
           index,
           payload: intentions,
           answer: securityAnswer,
         });
-        console.log("confirming");
 
         if (sentMagicCode) {
           onResult(await intentionsHandler.confirmMagicCode(code));
@@ -58,23 +85,43 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
             label="Magic Code"
             labelClassname="bg-background-secondary"
             className="max-w-96 max-sm:w-full"
-            placeholder="Security Answer"
+            placeholder="12345678"
             value={code}
             onChange={(value) => {
               setCode(value);
             }}
           />
         ) : (
-          <Input
-            label="Security Answer"
-            labelClassname="bg-background-secondary"
-            className="max-w-96 max-sm:w-full"
-            placeholder="Security Answer"
-            value={securityAnswer}
-            onChange={(value) => {
-              setSecurityAnswer(value);
-            }}
-          />
+          <>
+            {needsTo ? (
+              <Input
+                label={
+                  keyItem.key.type === KeyType.Phone
+                    ? "Phone Number"
+                    : "Chat ID"
+                }
+                labelClassname="bg-background-secondary"
+                className="max-w-96 max-sm:w-full"
+                placeholder={
+                  keyItem.key.type === KeyType.Phone ? "+491234567" : "Chat ID"
+                }
+                value={to}
+                onChange={(value) => {
+                  setTo(value);
+                }}
+              />
+            ) : null}
+            <Input
+              label="Security Answer"
+              labelClassname="bg-background-secondary"
+              className="max-w-96 max-sm:w-full"
+              placeholder="Security Answer"
+              value={securityAnswer}
+              onChange={(value) => {
+                setSecurityAnswer(value);
+              }}
+            />
+          </>
         )}
         <div className="mt-40 grid grid-cols-2 gap-8">
           <Button

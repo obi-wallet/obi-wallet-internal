@@ -132,7 +132,7 @@ export const AddPhoneKeyPage = observer(function AddPhoneKeyPage() {
           label="Magic Code"
           labelClassname="bg-background-secondary"
           className="max-w-96 max-sm:w-full"
-          placeholder="Magic Code"
+          placeholder="12345678"
           value={code}
           onChange={(value) => {
             setCode(value);

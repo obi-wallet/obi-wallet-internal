@@ -8,6 +8,7 @@ import {
   TelegramSingleKeyMetaData,
 } from "@/stores/key-meta-data";
 import { KeySubclassTypeMapping, KeyType } from "@obi-wallet/sdk";
+import invariant from "tiny-invariant";
 
 export type PhoneKeyWorkerVia = "sms" | "voice" | "telegram";
 
@@ -135,6 +136,11 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
       ),
     });
     const response = await client.confirmMagicCode(code);
+
+    invariant(
+      response.publicKey === this.key.publicKey.value,
+      "Public keys do not match, wrong to/answer combination",
+    );
     return this.toIntentionsResult({
       signedHashes: response.signedHashes.map((hash) => {
         return Buffer.from(hash, "base64");

@@ -105,7 +105,7 @@ export const AddTelegramKeyPage = observer(function AddTelegramKeyPage() {
           label="Chat ID"
           labelClassname="bg-background-secondary"
           className="max-w-96 max-sm:w-full"
-          placeholder="+491234567"
+          placeholder="123456789"
           value={chatId}
           onChange={(value) => {
             setChatId(value);
@@ -132,7 +132,7 @@ export const AddTelegramKeyPage = observer(function AddTelegramKeyPage() {
           label="Magic Code"
           labelClassname="bg-background-secondary"
           className="max-w-96 max-sm:w-full"
-          placeholder="Magic Code"
+          placeholder="12345678"
           value={code}
           onChange={(value) => {
             setCode(value);
