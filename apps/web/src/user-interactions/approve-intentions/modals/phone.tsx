@@ -1,15 +1,15 @@
 import { Button, KeyItem, Modal } from "@/components";
 import { IntentionsPayload, IntentionsResult } from "@/keys/intentions-handler";
 import { PhoneKeyIntentionsHandler } from "@/keys/intentions-handler/phone";
-import { Input } from "@/ui/input";
-import { useMutation } from "@tanstack/react-query";
-import { observer } from "mobx-react-lite";
-import { useState } from "react";
-import { KeySubclassTypeMapping, KeyType } from "@obi-wallet/sdk";
 import {
   PhoneSingleKeyMetaData,
   TelegramSingleKeyMetaData,
 } from "@/stores/key-meta-data";
+import { Input } from "@/ui/input";
+import { KeySubclassTypeMapping, KeyType } from "@obi-wallet/sdk";
+import { useMutation } from "@tanstack/react-query";
+import { observer } from "mobx-react-lite";
+import { useState } from "react";
 
 export interface PhoneKeyModalProps {
   keyItem: KeyItem & {

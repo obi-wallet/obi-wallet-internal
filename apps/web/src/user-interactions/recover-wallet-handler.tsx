@@ -11,12 +11,9 @@ export const RecoverWalletUserInteractionHandler = observer<{
 }>(function RecoverWalletUserInteractionHandler({ children }) {
   const { userInteractionsStore } = useStore();
 
-  console.log("waiting for recover interactions");
-
   const interaction = userInteractionsStore.getPendingUserInteractionsOfType(
     RecoverWalletUserInteraction,
   )[0];
-  console.log("RECOVERI INTERACTION", interaction);
 
   if (!interaction) return children;
 

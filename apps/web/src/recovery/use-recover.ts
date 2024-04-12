@@ -1,7 +1,6 @@
 import { useStore } from "@/contexts";
 import {
   MultisigKey,
-  ObservableMpcWallet,
   RecoverWalletUserInteraction,
   WalletData,
 } from "@obi-wallet/sdk";
@@ -11,7 +10,7 @@ export const ProxyWallet = WalletData;
 export type ProxyWallet = WalletData;
 
 export function useRecover() {
-  const { mpcWalletsStore, userDataStore } = useStore();
+  const { mpcWalletsStore } = useStore();
 
   async function recover({
     account,
