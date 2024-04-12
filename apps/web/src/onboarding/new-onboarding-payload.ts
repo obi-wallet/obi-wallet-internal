@@ -301,6 +301,7 @@ export class NewOnboardingPayload implements Draftable {
         name: this._name,
         avatar: this._image,
       },
+      keyMetaData: {},
     });
   }
 

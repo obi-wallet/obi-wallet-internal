@@ -1,7 +1,7 @@
 import { Box, Button, Divider, Text } from "@/components";
 import { PhoneKeyWorkerClient } from "@/keys/intentions-handler/phone";
-
 import { useSecuritySettingsContext } from "@/security-settings/context";
+import { TelegramSingleKeyMetaData } from "@/stores/key-meta-data";
 import { Input } from "@/ui/input";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
@@ -34,16 +34,19 @@ export const AddTelegramKeyPage = observer(function AddTelegramKeyPage() {
           value: response.publicKey,
         };
 
-        draft.value.addTelegramKey({
-          publicKey,
-          chatId: chatId,
-          securityQuestion: "FOOBAR",
-        });
+        draft.value.addTelegramKey(publicKey);
 
-        setKeyMetaData(publicKey, {
-          name,
-          timestamp: DateTime.now().toISO(),
-        });
+        setKeyMetaData(
+          publicKey,
+          TelegramSingleKeyMetaData.parse({
+            name,
+            timestamp: DateTime.now().toISO(),
+            payload: {
+              chatId: chatId,
+              securityQuestion: "FOOBAR",
+            },
+          }),
+        );
 
         popPage();
       } else {

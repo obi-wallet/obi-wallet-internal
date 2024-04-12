@@ -12,7 +12,7 @@ import { useState } from "react";
 
 export default observer(function AccountSettings() {
   const wallet = useCurrentWallet({});
-  const { userDataStore } = useStore();
+  const { keyMetaDataStore, userDataStore } = useStore();
   const navigator = useRouter();
 
   if (!wallet) return null;
@@ -30,6 +30,7 @@ export default observer(function AccountSettings() {
             name: userData.name ?? "",
             avatar: userData.avatar ?? "",
           },
+          keyMetaData: keyMetaDataStore.getKeyMetaData(wallet.userEntryAddress),
         });
         navigator.push("/dashboard/settings");
       }}

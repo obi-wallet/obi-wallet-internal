@@ -2,6 +2,11 @@ import {
   IntentionsHandler,
   IntentionsPayload,
 } from "@/keys/intentions-handler/abstract";
+import {
+  PhoneSingleKeyMetaData,
+  SingleKeyMetaData,
+  TelegramSingleKeyMetaData,
+} from "@/stores/key-meta-data";
 import { KeySubclassTypeMapping, KeyType } from "@obi-wallet/sdk";
 
 export type PhoneKeyWorkerVia = "sms" | "voice" | "telegram";
@@ -76,6 +81,7 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
 
   public constructor({
     key,
+    keyMetaData,
     index,
     payload,
     answer,
@@ -83,21 +89,22 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
     key:
       | KeySubclassTypeMapping[KeyType.Phone]
       | KeySubclassTypeMapping[KeyType.Telegram];
+    keyMetaData: SingleKeyMetaData;
     index: number;
     payload: IntentionsPayload;
     answer: string;
   }) {
-    super({ key, index, payload });
+    super({ key, keyMetaData, index, payload });
     this.answer = answer;
 
     switch (key.type) {
       case KeyType.Phone:
         this.via = "sms";
-        this.to = key.payload.phoneNumber;
+        this.to = PhoneSingleKeyMetaData.parse(keyMetaData).payload.phoneNumber;
         break;
       case KeyType.Telegram:
         this.via = "telegram";
-        this.to = key.payload.chatId;
+        this.to = TelegramSingleKeyMetaData.parse(keyMetaData).payload.chatId;
         break;
       default:
         throw new Error("Invalid key type");

@@ -61,6 +61,7 @@ export function useKeyListForMultisigKey({
         label: name ?? keyTypeMeta[type].label,
         timestamp: timestamp ? DateTime.fromISO(timestamp).toSeconds() : 0,
         key,
+        keyMetaData: keyMetaData[id] ?? {},
       };
     });
     return sortBy(prop("timestamp"), keys);

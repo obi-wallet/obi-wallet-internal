@@ -1,3 +1,4 @@
+import { SingleKeyMetaData } from "@/stores/key-meta-data";
 import { Key } from "@obi-wallet/sdk";
 import { splitAt } from "ramda";
 
@@ -20,19 +21,23 @@ export interface IntentionsResult {
 
 export abstract class IntentionsHandler {
   protected key: Key;
+  protected keyMetaData: SingleKeyMetaData;
   protected index: number;
   protected payload: IntentionsPayload;
 
   public constructor({
     key,
+    keyMetaData,
     index,
     payload,
   }: {
     key: Key;
+    keyMetaData: SingleKeyMetaData;
     index: number;
     payload: IntentionsPayload;
   }) {
     this.key = key;
+    this.keyMetaData = keyMetaData;
     this.index = index;
     this.payload = payload;
   }

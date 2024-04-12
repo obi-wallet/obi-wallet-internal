@@ -91,7 +91,7 @@ export function useBackupWalletAutomatically() {
 
 export function useBackupWalletMutation() {
   const wallet = useCurrentWallet({});
-  const { userDataStore } = useStore();
+  const { userDataStore, keyMetaDataStore } = useStore();
 
   return useMutation({
     mutationFn: async () => {
@@ -104,6 +104,7 @@ export function useBackupWalletMutation() {
           name: userData?.name ?? "",
           avatar: userData?.avatar ?? "",
         },
+        keyMetaData: keyMetaDataStore.getKeyMetaData(wallet.userEntryAddress),
       });
     },
   });

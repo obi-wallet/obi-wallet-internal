@@ -1,5 +1,10 @@
-import { EasyShareDecryption, SharesBackupEncryption } from "@/lib/encryption";
+import {
+  EasyShareDecryption,
+  MultisigKeyEncryption,
+  SharesBackupEncryption,
+} from "@/lib/encryption";
 import { ProxyWallet } from "@/recovery/use-recover";
+import { KeyMetaData } from "@/stores/key-meta-data";
 import {
   HomeChainId,
   MpcWallet,
@@ -100,25 +105,30 @@ export class SecretJsHomeChain {
   public async backupWallet({
     wallet,
     userData,
+    keyMetaData,
   }: {
     wallet: Serialized<MpcWallet>;
     userData: {
       name: string;
       avatar: string;
     };
+    keyMetaData: KeyMetaData;
   }) {
+    const w = MpcWallet.create(wallet);
     async function getEncryptedEasyShare() {
       if (!wallet.encryptedShares.easy) return undefined;
-
-      const w = MpcWallet.create(wallet);
-      const sharesBackupEncryption = new SharesBackupEncryption(w.owner);
 
       const easyShare = await new EasyShareDecryption(w.owner).decrypt(
         wallet.encryptedShares.easy,
       );
-      return await sharesBackupEncryption.encryptEasyShare(easyShare);
+      return await new SharesBackupEncryption(w.owner).encryptEasyShare(
+        easyShare,
+      );
     }
     const encryptedEasyShare = await getEncryptedEasyShare();
+    const encryptedKeyMetaData = await new MultisigKeyEncryption(
+      w.owner.publicKey,
+    ).encrypt(JSON.stringify(keyMetaData));
 
     const response = await fetch(
       "https://proxy-wallets.obiwallet.workers.dev/add",
@@ -157,6 +167,7 @@ export class SecretJsHomeChain {
             userData,
             encryptedEasyShare,
             encryptedBackupShare: wallet.encryptedShares.backup,
+            encryptedKeyMetaData,
           },
         }),
         headers: {

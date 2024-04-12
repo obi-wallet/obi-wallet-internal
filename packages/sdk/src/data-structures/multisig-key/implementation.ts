@@ -120,40 +120,20 @@ export class MultisigKey {
     });
   }
 
-  public addPhoneKey({
-    publicKey,
-    phoneNumber,
-    securityQuestion,
-  }: {
-    publicKey: Secp256k1PublicKey;
-    phoneNumber: string;
-    securityQuestion: string;
-  }) {
+  public addPhoneKey(publicKey: Secp256k1PublicKey) {
     return this.addKey({
       type: KeyType.Phone,
       payload: {
         publicKey,
-        phoneNumber,
-        securityQuestion,
       },
     });
   }
 
-  public addTelegramKey({
-    publicKey,
-    chatId,
-    securityQuestion,
-  }: {
-    publicKey: Secp256k1PublicKey;
-    chatId: string;
-    securityQuestion: string;
-  }) {
+  public addTelegramKey(publicKey: Secp256k1PublicKey) {
     return this.addKey({
       type: KeyType.Telegram,
       payload: {
         publicKey,
-        chatId,
-        securityQuestion,
       },
     });
   }

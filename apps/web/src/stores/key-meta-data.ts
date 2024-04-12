@@ -6,7 +6,28 @@ import { z } from "zod";
 const SingleKeyMetaData = z.object({
   name: z.string().optional(),
   timestamp: z.string().datetime({ offset: true }).optional(),
+  payload: z.unknown().optional(),
 });
+
+export const PhoneSingleKeyMetaData = z.intersection(
+  SingleKeyMetaData,
+  z.object({
+    payload: z.object({
+      phoneNumber: z.string(),
+      securityQuestion: z.string(),
+    }),
+  }),
+);
+
+export const TelegramSingleKeyMetaData = z.intersection(
+  SingleKeyMetaData,
+  z.object({
+    payload: z.object({
+      chatId: z.string(),
+      securityQuestion: z.string(),
+    }),
+  }),
+);
 
 export type SingleKeyMetaData = z.TypeOf<typeof SingleKeyMetaData>;
 

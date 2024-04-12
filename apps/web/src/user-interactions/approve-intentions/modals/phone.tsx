@@ -1,10 +1,10 @@
 import { Button, KeyItem, Modal } from "@/components";
+import { IntentionsPayload, IntentionsResult } from "@/keys/intentions-handler";
+import { PhoneKeyIntentionsHandler } from "@/keys/intentions-handler/phone";
 import { Input } from "@/ui/input";
+import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { PhoneKeyIntentionsHandler } from "@/keys/intentions-handler/phone";
-import { IntentionsPayload, IntentionsResult } from "@/keys/intentions-handler";
 
 export interface PhoneKeyModalProps {
   keyItem: KeyItem;

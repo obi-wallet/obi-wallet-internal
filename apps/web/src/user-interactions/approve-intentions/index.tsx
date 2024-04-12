@@ -119,6 +119,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                           const intentionsHandler =
                             new PasskeyIntentionsHandler({
                               key: key.key,
+                              keyMetaData: key.keyMetaData,
                               index,
                               payload: intentions,
                             });

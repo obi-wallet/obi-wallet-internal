@@ -7,7 +7,5 @@ export const TelegramKey = z.object({
   type: z.literal(KeyType.Telegram),
   payload: z.object({
     publicKey: Secp256k1PublicKey,
-    chatId: z.string(),
-    securityQuestion: z.string(),
   }),
 });

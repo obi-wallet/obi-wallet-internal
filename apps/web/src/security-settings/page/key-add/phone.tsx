@@ -1,12 +1,13 @@
 import { Box, Button, Divider, Text } from "@/components";
+import { PhoneKeyWorkerClient } from "@/keys/intentions-handler/phone";
 import { useSecuritySettingsContext } from "@/security-settings/context";
+import { PhoneSingleKeyMetaData } from "@/stores/key-meta-data";
 import { Input } from "@/ui/input";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { PhoneKeyWorkerClient } from "@/keys/intentions-handler/phone";
 
 export const AddPhoneKeyPage = observer(function AddPhoneKeyPage() {
   const { draft, setKeyMetaData, popPage } = useSecuritySettingsContext();
@@ -33,16 +34,19 @@ export const AddPhoneKeyPage = observer(function AddPhoneKeyPage() {
           type: "tendermint/PubKeySecp256k1",
           value: response.publicKey,
         };
-        draft.value.addPhoneKey({
-          publicKey,
-          phoneNumber: number,
-          securityQuestion: "FOOBAR",
-        });
+        draft.value.addPhoneKey(publicKey);
 
-        setKeyMetaData(publicKey, {
-          name,
-          timestamp: DateTime.now().toISO(),
-        });
+        setKeyMetaData(
+          publicKey,
+          PhoneSingleKeyMetaData.parse({
+            name,
+            timestamp: DateTime.now().toISO(),
+            payload: {
+              phoneNumber: number,
+              securityQuestion: "FOOBAR",
+            },
+          }),
+        );
 
         popPage();
       } else {
