@@ -3,7 +3,7 @@ import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { action, autorun, observable, runInAction, toJS } from "mobx";
 import { z } from "zod";
 
-const SingleKeyMetaData = z.object({
+export const SingleKeyMetaData = z.object({
   name: z.string().optional(),
   timestamp: z.string().datetime({ offset: true }).optional(),
   payload: z.unknown().optional(),
@@ -31,11 +31,11 @@ export const TelegramSingleKeyMetaData = z.intersection(
 
 export type SingleKeyMetaData = z.TypeOf<typeof SingleKeyMetaData>;
 
-const KeyMetaData = z.record(SingleKeyMetaData);
+export const KeyMetaData = z.record(SingleKeyMetaData);
 
 export type KeyMetaData = z.TypeOf<typeof KeyMetaData>;
 
-const KeyMetaDataPerWallet = z.record(KeyMetaData);
+export const KeyMetaDataPerWallet = z.record(KeyMetaData);
 
 export type KeyMetaDataPerWallet = z.TypeOf<typeof KeyMetaDataPerWallet>;
 

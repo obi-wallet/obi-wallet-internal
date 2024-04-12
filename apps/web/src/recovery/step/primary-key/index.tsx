@@ -31,7 +31,6 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
       const proxyWallets = await new SecretJsHomeChain(
         draft.value.chainId,
       ).lookupWalletBackup(keyPair.publicKey);
-      console.log(proxyWallets);
 
       const wallet = proxyWallets[0];
 
@@ -53,16 +52,10 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
               }
               break;
             case KeyType.Phone:
-              draft.value.multisigKey.addPendingRecoveryKey({
-                type: KeyType.Phone,
-                publicKey: key.publicKey,
-              });
+              draft.value.multisigKey.addPhoneKey(key.publicKey);
               break;
             case KeyType.Telegram:
-              draft.value.multisigKey.addPendingRecoveryKey({
-                type: KeyType.Telegram,
-                publicKey: key.publicKey,
-              });
+              draft.value.multisigKey.addTelegramKey(key.publicKey);
               break;
           }
         });

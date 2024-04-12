@@ -27,6 +27,7 @@ export const WalletData = z.object({
   }),
   encryptedBackupShare: z.string(),
   encryptedEasyShare: z.string().optional(),
+  encryptedKeyMetaData: z.string().optional(),
 });
 
 export type WalletData = z.infer<typeof WalletData>;

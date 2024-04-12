@@ -3,32 +3,12 @@ import {
   MultisigKey,
   ObservableMpcWallet,
   RecoverWalletUserInteraction,
-  Secp256k1PublicKey,
+  WalletData,
 } from "@obi-wallet/sdk";
-import { z } from "zod";
 
-export const ProxyWallet = z.object({
-  proxyAddress: z.object({
-    address: z.string(),
-  }),
-  owner: z.object({
-    threshold: z.string(),
-    keys: z.array(
-      z.object({
-        type: z.string(),
-        publicKey: Secp256k1PublicKey,
-      }),
-    ),
-  }),
-  userData: z.object({
-    name: z.string(),
-    avatar: z.string(),
-  }),
-  encryptedBackupShare: z.string(),
-  encryptedEasyShare: z.string().optional(),
-});
+export const ProxyWallet = WalletData;
 
-export type ProxyWallet = z.TypeOf<typeof ProxyWallet>;
+export type ProxyWallet = WalletData;
 
 export function useRecover() {
   const { mpcWalletsStore, userDataStore } = useStore();

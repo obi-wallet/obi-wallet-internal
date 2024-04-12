@@ -1,6 +1,8 @@
 import { Button, Text, Transaction } from "@/components";
+import { useStore } from "@/contexts";
 import { IntentionsResult } from "@/keys/intentions-handler";
 import { SharesLocalEncryption } from "@/lib/encryption";
+import { KeyMetaData } from "@/stores/key-meta-data";
 import {
   ApproveIntentions,
   handleMultisigKeyDecryptedMessages,
@@ -32,6 +34,7 @@ export interface RecoverWalletProps {
 
 export const RecoverWallet = observer<RecoverWalletProps>(
   function RecoverWallet({ owner, walletData, onApprove, onReject }) {
+    const { keyMetaDataStore } = useStore();
     const [results, setResults] = useState<
       Map<string, IntentionsResult> | undefined
     >(undefined);
@@ -39,15 +42,17 @@ export const RecoverWallet = observer<RecoverWalletProps>(
     const approve = useMutation({
       mutationFn: async () => {
         invariant(results, "Results not found");
+        console.log(results);
 
-        const [firstShare, secondShare] =
+        const [keyMetaData, firstShare, secondShare] =
           await handleMultisigKeyDecryptedMessages({
             multisigKeyEncryptedMessages: getMultisigKeyEncryptedMessages(),
             multisigKey: owner,
             results,
           });
 
-        if (firstShare && secondShare) {
+        // TODO: handle optionals
+        if (keyMetaData && firstShare && secondShare) {
           const easyShare = EasyShare.parse(JSON.parse(firstShare));
           const backupShare = BackupShare.parse(JSON.parse(secondShare));
 
@@ -63,6 +68,10 @@ export const RecoverWallet = observer<RecoverWalletProps>(
             userEntryAddress: walletData.proxyAddress.address,
             encryptedShares,
           });
+          keyMetaDataStore.setKeyMetaData(
+            wallet.userEntryAddress,
+            KeyMetaData.parse(JSON.parse(keyMetaData)),
+          );
           onApprove(wallet.toJSON());
         }
       },
@@ -72,10 +81,12 @@ export const RecoverWallet = observer<RecoverWalletProps>(
     });
 
     function getMultisigKeyEncryptedMessages(): string[] {
+      const encryptedKeyMetaData = walletData.encryptedKeyMetaData;
       const encryptedEasyShare = walletData.encryptedEasyShare;
       const encryptedBackupShare = walletData.encryptedBackupShare;
 
       return [
+        ...(encryptedKeyMetaData ? [encryptedKeyMetaData] : []),
         ...(encryptedEasyShare ? [encryptedEasyShare] : []),
         encryptedBackupShare,
       ];
