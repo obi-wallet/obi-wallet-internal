@@ -7,7 +7,7 @@ import {
   SingleKeyMetaData,
   TelegramSingleKeyMetaData,
 } from "@/stores/key-meta-data";
-import { KeySubclassTypeMapping, KeyType } from "@obi-wallet/sdk";
+import { Key, KeyType } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
 export type PhoneKeyWorkerVia = "sms" | "voice" | "telegram";
@@ -87,9 +87,7 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
     payload,
     answer,
   }: {
-    key:
-      | KeySubclassTypeMapping[KeyType.Phone]
-      | KeySubclassTypeMapping[KeyType.Telegram];
+    key: Key;
     keyMetaData: SingleKeyMetaData;
     index: number;
     payload: IntentionsPayload;
