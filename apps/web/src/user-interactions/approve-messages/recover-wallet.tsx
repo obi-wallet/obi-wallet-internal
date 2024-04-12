@@ -10,9 +10,8 @@ import {
 import {
   BackupShare,
   EasyShare,
-  MpcWallet,
   MultisigKey,
-  Serialized,
+  ObservableMpcWallet,
   WalletData,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
@@ -28,13 +27,12 @@ export interface RecoverWalletProps {
   walletData: WalletData;
 
   onReject(): void;
-
-  onApprove(wallet: Serialized<MpcWallet>): void;
+  onApprove(): void;
 }
 
 export const RecoverWallet = observer<RecoverWalletProps>(
   function RecoverWallet({ owner, walletData, onApprove, onReject }) {
-    const { keyMetaDataStore } = useStore();
+    const { keyMetaDataStore, mpcWalletsStore, userDataStore } = useStore();
     const [results, setResults] = useState<
       Map<string, IntentionsResult> | undefined
     >(undefined);
@@ -42,7 +40,6 @@ export const RecoverWallet = observer<RecoverWalletProps>(
     const approve = useMutation({
       mutationFn: async () => {
         invariant(results, "Results not found");
-        console.log(results);
 
         const [keyMetaData, firstShare, secondShare] =
           await handleMultisigKeyDecryptedMessages({
@@ -62,7 +59,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
             backup: backupShare,
           });
 
-          const wallet = MpcWallet.create({
+          const wallet = ObservableMpcWallet.create({
             homeChain: owner.chainId,
             owner: owner.toJSON()!,
             userEntryAddress: walletData.proxyAddress.address,
@@ -72,7 +69,12 @@ export const RecoverWallet = observer<RecoverWalletProps>(
             wallet.userEntryAddress,
             KeyMetaData.parse(JSON.parse(keyMetaData)),
           );
-          onApprove(wallet.toJSON());
+          userDataStore.setUserData(
+            wallet.userEntryAddress,
+            walletData.userData,
+          );
+          mpcWalletsStore.upsertWallet(wallet);
+          onApprove();
         }
       },
       onError(error) {

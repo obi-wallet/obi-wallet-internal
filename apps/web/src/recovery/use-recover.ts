@@ -57,20 +57,11 @@ export function useRecover() {
           throw new Error("Primary Key missing");
         }
 
-        const response = await RecoverWalletUserInteraction.start({
+        await RecoverWalletUserInteraction.start({
           homeChainId: multisigKey.chainId,
           owner: multisigKey.toJSON()!,
           walletData: account,
         });
-
-        if (response.approved && response.payload.wallet) {
-          userDataStore.setUserData(
-            account.proxyAddress.address,
-            account.userData,
-          );
-          const wallet = ObservableMpcWallet.create(response.payload.wallet);
-          mpcWalletsStore.upsertWallet(wallet);
-        }
       }
     } catch (e) {
       const error = e as Error;

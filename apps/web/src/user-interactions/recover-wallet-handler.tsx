@@ -38,12 +38,9 @@ const RecoverWalletUserInteractionHandlerInner = observer<{
           approved: false,
         });
       }}
-      onApprove={(wallet) => {
+      onApprove={() => {
         interaction.resolve({
           approved: true,
-          payload: {
-            wallet,
-          },
         });
       }}
     />

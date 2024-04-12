@@ -5,7 +5,7 @@ import {
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { z } from "zod";
 
-import { MpcWallet, MultisigKey, Serialized } from "../data-structures";
+import { MultisigKey, Serialized } from "../data-structures";
 import { HomeChainId } from "../home-chains";
 
 export const WalletData = z.object({
@@ -40,9 +40,6 @@ export interface RecoverWalletUserInteractionPayload {
 
 interface UserInteractionResultApproved {
   approved: true;
-  payload: {
-    wallet: Serialized<MpcWallet> | null;
-  };
 }
 
 interface UserInteractionResultRejected {
