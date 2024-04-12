@@ -1,67 +1,58 @@
 "use client";
 
 import { Button, ButtonLink, Modal, renderModal, Text } from "@/components";
+import { useStore } from "@/contexts";
 import { SecretJsHomeChain } from "@/home-chain/secret-js";
-import { RecoveryPayload } from "@/recovery/recovery-payload";
 import { ProxyWallet, useRecover } from "@/recovery/use-recover";
-import { Draft } from "@/stores";
-import { getPasskey, KeyType } from "@obi-wallet/sdk";
+import { getPasskey, KeyType, ObservableMultisigKey } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
-export const PrimaryKeyStep = observer(function PrimaryKeyStep({
-  draft,
-}: {
-  draft: Draft<RecoveryPayload>;
-}) {
+export const PrimaryKeyStep = observer(function PrimaryKeyStep() {
+  const { chainStore } = useStore();
   const [proxyWallets, setProxyWallets] = useState<ProxyWallet[] | null>(null);
   const recover = useRecover();
 
   const passkeyFlow = useMutation({
     mutationFn: async () => {
+      const chainId = chainStore.currentChain;
+      const multisigKey = ObservableMultisigKey.create(chainId);
       const keyPair = await getPasskey();
-      await draft.value.setPrimaryKey({
-        key: {
-          type: KeyType.Passkey,
-          payload: keyPair,
-        },
-      });
+      const primaryKey = multisigKey.addPasskeyKey(keyPair);
+      multisigKey.setPrimaryKey(primaryKey);
 
       const proxyWallets = await new SecretJsHomeChain(
-        draft.value.chainId,
+        chainId,
       ).lookupWalletBackup(keyPair.publicKey);
 
       const wallet = proxyWallets[0];
 
       if (wallet) {
-        draft.value.multisigKey.setThreshold(
-          parseInt(wallet.owner.threshold, 10),
-        );
+        multisigKey.setThreshold(parseInt(wallet.owner.threshold, 10));
         wallet.owner.keys.forEach((key) => {
           switch (key.type) {
             case KeyType.Passkey:
               if (
-                draft.value.multisigKey.primaryKey?.publicKey.value !==
-                key.publicKey.value
+                multisigKey.primaryKey?.publicKey.value !== key.publicKey.value
               ) {
-                draft.value.multisigKey.addPendingRecoveryKey({
+                multisigKey.addPendingRecoveryKey({
                   type: KeyType.Passkey,
                   publicKey: key.publicKey,
                 });
               }
               break;
             case KeyType.Phone:
-              draft.value.multisigKey.addPhoneKey(key.publicKey);
+              multisigKey.addPhoneKey(key.publicKey);
               break;
             case KeyType.Telegram:
-              draft.value.multisigKey.addTelegramKey(key.publicKey);
+              multisigKey.addTelegramKey(key.publicKey);
               break;
           }
         });
 
         await recover({
-          multisigKey: draft.value.multisigKey,
+          multisigKey,
           account: wallet,
         });
       } else {
@@ -99,39 +90,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
       );
     }
 
-    const count = proxyWallets.length;
-
-    return renderModal(
-      <Modal title="Existing Wallets">
-        <Text color="zinc" size="xs">
-          We found {count} {count > 1 ? "wallets" : "wallet"} associated with
-          this key.
-        </Text>
-        {proxyWallets.map((wallet, i) => {
-          return (
-            <Button
-              key={i}
-              onClick={async () => {
-                await recover({
-                  multisigKey: draft.value.multisigKey,
-                  account: wallet,
-                });
-              }}
-              className="w-full"
-            >
-              Recover {wallet.proxyAddress.address}
-            </Button>
-          );
-        })}
-        <ButtonLink
-          href="/onboarding/internal"
-          variant="outline"
-          className="w-full"
-        >
-          Create a new wallet
-        </ButtonLink>
-      </Modal>,
-    );
+    return null;
   }
 
   return (
