@@ -2,7 +2,6 @@
 
 import { Box, Button, Divider, ImageDropzone, Text } from "@/components";
 import { useStore } from "@/contexts";
-import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { UserData } from "@/stores";
 import { Input } from "@/ui/input";
@@ -12,7 +11,7 @@ import { useState } from "react";
 
 export default observer(function AccountSettings() {
   const wallet = useCurrentWallet({});
-  const { keyMetaDataStore, userDataStore } = useStore();
+  const { userDataStore } = useStore();
   const navigator = useRouter();
 
   if (!wallet) return null;
@@ -24,14 +23,6 @@ export default observer(function AccountSettings() {
       userData={userData}
       onSave={async (userData) => {
         userDataStore.setUserData(wallet.userEntryAddress, userData);
-        await HomeChain.chainId(wallet.homeChainId).backupWallet({
-          wallet: wallet.toJSON(),
-          userData: {
-            name: userData.name ?? "",
-            avatar: userData.avatar ?? "",
-          },
-          keyMetaData: keyMetaDataStore.getKeyMetaData(wallet.userEntryAddress),
-        });
         navigator.push("/dashboard/settings");
       }}
     />

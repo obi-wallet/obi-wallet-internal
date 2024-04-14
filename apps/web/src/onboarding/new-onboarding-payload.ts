@@ -297,10 +297,6 @@ export class NewOnboardingPayload implements Draftable {
 
     await HomeChain.chainId(this.homeChainId).backupWallet({
       wallet: this.toMpcWalletData(),
-      userData: {
-        name: this._name,
-        avatar: this._image,
-      },
       keyMetaData: {},
     });
   }

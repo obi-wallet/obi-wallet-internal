@@ -137,19 +137,14 @@ export function useBackupWalletAutomatically() {
 
 export function useBackupWalletMutation() {
   const wallet = useCurrentWallet({});
-  const { userDataStore, keyMetaDataStore } = useStore();
+  const { keyMetaDataStore } = useStore();
 
   return useMutation({
     mutationFn: async () => {
       invariant(wallet, "Expected wallet to be set.");
       const homeChain = HomeChain.chainId(wallet.homeChainId);
-      const userData = userDataStore.getUserData(wallet.userEntryAddress);
       return await homeChain.backupWallet({
         wallet: wallet.toJSON(),
-        userData: {
-          name: userData?.name ?? "",
-          avatar: userData?.avatar ?? "",
-        },
         keyMetaData: keyMetaDataStore.getKeyMetaData(wallet.userEntryAddress),
       });
     },

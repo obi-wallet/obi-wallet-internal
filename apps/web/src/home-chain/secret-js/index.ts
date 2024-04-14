@@ -104,14 +104,9 @@ export class SecretJsHomeChain {
 
   public async backupWallet({
     wallet,
-    userData,
     keyMetaData,
   }: {
     wallet: Serialized<MpcWallet>;
-    userData: {
-      name: string;
-      avatar: string;
-    };
     keyMetaData: KeyMetaData;
   }) {
     const w = MpcWallet.create(wallet);
@@ -169,7 +164,6 @@ export class SecretJsHomeChain {
                 throw new Error(`Invalid key: ${JSON.stringify(key)}`);
               }),
             },
-            userData,
             encryptedEasyShare,
             encryptedBackupShare: wallet.encryptedShares.backup,
             encryptedKeyMetaData,

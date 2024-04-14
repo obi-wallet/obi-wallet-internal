@@ -180,12 +180,14 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
         const easyShare = await getEasyShare();
 
         invariant(backupShare, "Backup share not found");
+
         await finishFlow({
           keyMetaData,
           shares: {
             easy: easyShare,
             backup: backupShare,
           },
+          backupWallet: true,
         });
         return;
       }
