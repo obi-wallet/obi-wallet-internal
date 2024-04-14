@@ -4,7 +4,6 @@ import { Button, ButtonLink, Modal, renderModal, Text } from "@/components";
 import { SecretJsHomeChain } from "@/home-chain/secret-js";
 import { AddPhoneKey } from "@/keys/phone/add-phone-key";
 import { AddTelegramKey } from "@/keys/phone/add-telegram-key";
-import { ProxyWallet } from "@/recovery/use-recover";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import {
   getPasskey,
@@ -12,6 +11,7 @@ import {
   KeyType,
   MultisigKey,
   Secp256k1PublicKey,
+  WalletData,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -19,7 +19,7 @@ import { useState } from "react";
 
 export const FirstKeyStep = observer(function FirstKeyStep() {
   const { state, dispatch } = useWalletDataFlowContext();
-  const [proxyWallets, setProxyWallets] = useState<ProxyWallet[] | null>(null);
+  const [proxyWallets, setProxyWallets] = useState<WalletData[] | null>(null);
   const [modal, setModal] = useState<KeyType | null>(null);
 
   const recoverByPublicKey = useMutation({

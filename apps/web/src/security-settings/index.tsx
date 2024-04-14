@@ -1,109 +1,59 @@
 "use client";
 
 import { useStore } from "@/contexts";
+import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { useKeyListForMultisigKey } from "@/lib/keys";
-import {
-  Page,
-  SecuritySettingsContext,
-  useSecuritySettingsContext,
-} from "@/security-settings/context";
-import { SecuritySettingsIndex } from "@/security-settings/page";
-import { SecuritySettingsKeyAddPage } from "@/security-settings/page/key-add";
-import { SecuritySettingsKeyItemPage } from "@/security-settings/page/key-item";
-import { SecuritySettingsKeyTypePage } from "@/security-settings/page/key-type";
-import {
-  MultisigKey,
-  Secp256k1PublicKey,
-  SingleKeyMetaData,
-} from "@obi-wallet/sdk";
+import { WalletDataFlow } from "@/wallet-data-flow";
+import { useQuery } from "@obi-wallet/headless-ui";
+import { ObservableMpcWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import invariant from "tiny-invariant";
 
 export const SecuritySettings = observer(function SecuritySettings() {
-  const currentWallet = useCurrentWallet({});
-  const draftId = `security-${currentWallet?.userEntryAddress}`;
-  const { draftsStore, keyMetaDataStore } = useStore();
-  const draft = draftsStore.get<MultisigKey>({ id: draftId });
-  const [navigationStack, setNavigationStack] = useState<Page[]>([]);
-  const keyMetaData = currentWallet
-    ? keyMetaDataStore.getKeyMetaData(currentWallet.userEntryAddress)
-    : {};
+  const wallet = useCurrentWallet({});
+  const router = useRouter();
+  const { keyMetaDataStore, mpcWalletsStore } = useStore();
 
-  const keyList = useKeyListForMultisigKey({
-    multisigKey: draft?.value,
-    keyMetaData,
+  const walletData = useQuery({
+    queryKey: ["wallet-data", wallet?.userEntryAddress],
+    queryFn: async () => {
+      invariant(wallet, "Expected wallet to be set.");
+      invariant(
+        wallet.owner.primaryKey,
+        "Expected wallet to have a primary key",
+      );
+      const homeChain = HomeChain.chainId(wallet.homeChainId!);
+      const [firstWallet] = await homeChain.lookupWalletBackup(
+        wallet.owner.primaryKey.publicKey,
+      );
+      return firstWallet;
+    },
   });
 
-  const pushPage = (page: Page) => {
-    setNavigationStack((stack) => {
-      return [page, ...stack];
-    });
-  };
-
-  const popPage = () => {
-    setNavigationStack((stack) => {
-      return stack.slice(1);
-    });
-  };
-
-  useEffect(() => {
-    if (!draft && currentWallet) {
-      draftsStore.create({
-        id: draftId,
-        original: currentWallet.owner,
-      });
-    }
-  }, [currentWallet, draft, draftId, draftsStore]);
-
-  if (!currentWallet || !draft) return null;
-
-  const setKeyMetaData = (
-    publicKey: Secp256k1PublicKey,
-    singleKeyMetaData: SingleKeyMetaData,
-  ) => {
-    keyMetaDataStore.setSingleKeyMetaData(
-      currentWallet.userEntryAddress,
-      publicKey,
-      {
-        ...keyMetaData[publicKey.value],
-        ...singleKeyMetaData,
-      },
-    );
-  };
+  if (!wallet || !walletData.data) return null;
 
   return (
-    <SecuritySettingsContext.Provider
-      value={{
-        wallet: currentWallet,
-        draft,
-        keyList,
-        keyMetaData,
-        setKeyMetaData,
-        navigationStack,
-        pushPage,
-        popPage,
+    <WalletDataFlow
+      homeChainId={wallet.homeChainId}
+      initialValues={{
+        owner: wallet.owner,
+        walletData: walletData.data,
+        keyMetaData: keyMetaDataStore.getKeyMetaData(wallet.userEntryAddress),
+        locallyEncryptedSharesByPreviousOwner: {
+          easy: wallet.encryptedEasyShare!,
+          backup: wallet.encryptedBackupShare,
+        },
       }}
-    >
-      <SecuritySettingsPageHandler />
-    </SecuritySettingsContext.Provider>
+      onDone={({ wallet: walletData, keyMetaData }) => {
+        const wallet = ObservableMpcWallet.create(walletData);
+
+        keyMetaDataStore.setKeyMetaData(wallet.userEntryAddress, keyMetaData);
+        mpcWalletsStore.upsertWallet(wallet);
+      }}
+      onBack={() => {
+        router.replace("/dashboard/settings");
+      }}
+    />
   );
 });
-
-const SecuritySettingsPageHandler = observer(
-  function SecuritySettingsPageHandler() {
-    const { navigationStack } = useSecuritySettingsContext();
-    const [firstPage] = navigationStack;
-
-    if (!firstPage) return <SecuritySettingsIndex />;
-
-    switch (firstPage.type) {
-      case "key-type":
-        return <SecuritySettingsKeyTypePage page={firstPage} />;
-      case "key-item":
-        return <SecuritySettingsKeyItemPage page={firstPage} />;
-      case "key-add":
-        return <SecuritySettingsKeyAddPage page={firstPage} />;
-    }
-  },
-);

@@ -4,7 +4,7 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { fetchOwner, useOwnerQuery } from "@/hooks/use-owner";
 import { usePublicKeyQuery } from "@/hooks/use-public-key";
 import { useQuery } from "@obi-wallet/headless-ui";
-import { KeyType, ObservableMultisigKey } from "@obi-wallet/sdk";
+import { KeyType } from "@obi-wallet/sdk";
 import {
   useMutation,
   UseMutationResult,
@@ -69,62 +69,65 @@ function useWalletBackupQuery() {
 
 export function useBackupWalletAutomatically() {
   const wallet = useCurrentWallet({});
-  const backupWalletMutation = useBackupWalletMutation();
   const owner = useOwnerQuery();
 
   useQuery({
     queryKey: ["wallet-backup-mutation", wallet?.userEntryAddress],
     queryFn: async () => {
-      invariant(wallet, "Expected wallet to be set.");
-      invariant(owner.data, "Expected owner to be set.");
-      if (wallet.owner.address === owner.data) {
-        backupWalletMutation.mutate();
-      }
-
-      console.log("owners do not match, sync!");
-
-      if (wallet.owner.primaryKey?.publicKey) {
-        // First, check whether primary key is still okay
-        const homeChain = HomeChain.chainId(wallet.homeChainId);
-        const [proxyWallet] = await homeChain.lookupWalletBackup(
-          wallet.owner.primaryKey?.publicKey,
-        );
-
-        if (
-          proxyWallet &&
-          proxyWallet.proxyAddress.address === wallet.userEntryAddress
-        ) {
-          const backupOwner = ObservableMultisigKey.create(wallet.homeChainId);
-          proxyWallet.owner.keys.forEach((key) => {
-            switch (key.type) {
-              case KeyType.Passkey:
-                backupOwner.addPendingRecoveryKey({
-                  type: KeyType.Passkey,
-                  publicKey: key.publicKey,
-                });
-                break;
-              case KeyType.Phone:
-                backupOwner.addPhoneKey(key.publicKey);
-                break;
-              case KeyType.Telegram:
-                backupOwner.addTelegramKey(key.publicKey);
-                break;
-            }
-          });
-          backupOwner.removeKeyByPublicKey(wallet.owner.primaryKey.publicKey);
-          const key = backupOwner.addPasskeyKey(
-            wallet.owner.primaryKey.payload,
-          );
-          backupOwner.setPrimaryKey(key);
-
-          if (backupOwner.address === owner.data) {
-            console.log("We were able to recover the new owner");
-            // TODO: trigger interaction to sync with backup
-          }
-        }
-      }
-
+      // TODO: review!
       return true;
+
+      // invariant(wallet, "Expected wallet to be set.");
+      // invariant(owner.data, "Expected owner to be set.");
+      // if (wallet.owner.address === owner.data) {
+      //   backupWalletMutation.mutate();
+      //   return true;
+      // }
+      //
+      // console.log("owners do not match, sync!");
+      //
+      // if (wallet.owner.primaryKey?.publicKey) {
+      //   // First, check whether primary key is still okay
+      //   const homeChain = HomeChain.chainId(wallet.homeChainId);
+      //   const [proxyWallet] = await homeChain.lookupWalletBackup(
+      //     wallet.owner.primaryKey?.publicKey,
+      //   );
+      //
+      //   if (
+      //     proxyWallet &&
+      //     proxyWallet.proxyAddress.address === wallet.userEntryAddress
+      //   ) {
+      //     const backupOwner = ObservableMultisigKey.create(wallet.homeChainId);
+      //     proxyWallet.owner.keys.forEach((key) => {
+      //       switch (key.type) {
+      //         case KeyType.Passkey:
+      //           backupOwner.addPendingRecoveryKey({
+      //             type: KeyType.Passkey,
+      //             publicKey: key.publicKey,
+      //           });
+      //           break;
+      //         case KeyType.Phone:
+      //           backupOwner.addPhoneKey(key.publicKey);
+      //           break;
+      //         case KeyType.Telegram:
+      //           backupOwner.addTelegramKey(key.publicKey);
+      //           break;
+      //       }
+      //     });
+      //     backupOwner.removeKeyByPublicKey(wallet.owner.primaryKey.publicKey);
+      //     const key = backupOwner.addPasskeyKey(
+      //       wallet.owner.primaryKey.payload,
+      //     );
+      //     backupOwner.setPrimaryKey(key);
+      //
+      //     if (backupOwner.address === owner.data) {
+      //       console.log("We were able to recover the new owner");
+      //       // TODO: trigger interaction to sync with backup
+      //     }
+      //   }
+      // }
+      //
+      // return true;
     },
     // gcTime: staleTime({ days: 1 }),
     // staleTime: staleTime({ days: 1 }),

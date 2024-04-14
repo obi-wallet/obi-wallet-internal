@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite";
 import { useSecuritySettingsContext } from "../context";
 
 export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
-  const { dispatch } = useWalletDataFlowContext();
+  const { state, dispatch } = useWalletDataFlowContext();
   const finishFlow = useFinishFlow();
   const { draft, keyMetaDataDraft, keyList, pushPage } =
     useSecuritySettingsContext();
@@ -57,7 +57,13 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
         ))}
       </div>
       <div className="mt-40 grid grid-cols-2 gap-8">
-        <Button variant="secondary" block href="/dashboard/settings">
+        <Button
+          variant="secondary"
+          block
+          onClick={() => {
+            state.onBack();
+          }}
+        >
           Back
         </Button>
         <Button

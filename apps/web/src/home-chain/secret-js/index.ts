@@ -3,7 +3,6 @@ import {
   MultisigKeyEncryption,
   SharesBackupEncryption,
 } from "@/lib/encryption";
-import { ProxyWallet } from "@/recovery/use-recover";
 import {
   HomeChainId,
   KeyMetaData,
@@ -15,6 +14,7 @@ import {
   SecretJsClient,
   Serialized,
   UsableKeySchema,
+  WalletData,
 } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -213,7 +213,7 @@ export class SecretJsHomeChain {
       return [];
     }
 
-    const schema = z.array(ProxyWallet);
+    const schema = z.array(WalletData);
     const result = schema.safeParse(await response.json());
     if (!result.success) {
       throw new Error(`Failed to parse proxy wallets: ${result.error}`);

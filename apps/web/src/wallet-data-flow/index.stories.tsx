@@ -22,6 +22,10 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+function onBack() {
+  console.log("back");
+}
+
 function onDone(args: unknown) {
   window.alert("Success, see console for data");
   console.log(args);
@@ -32,6 +36,7 @@ export const FromScratch: Story = {
     homeChainId: SecretJsHomeChainId.MAINNET,
     initialValues: {},
     onDone,
+    onBack,
   },
 };
 
@@ -336,6 +341,7 @@ export const ViaPassKey: Story = {
       walletData,
     },
     onDone,
+    onBack,
   },
 };
 
@@ -358,6 +364,7 @@ export const ViaTelegramKey: Story = {
     },
     mockOnly: true,
     onDone,
+    onBack,
   },
 };
 
@@ -375,6 +382,7 @@ export const ViaTelegramKeyStep2: Story = {
     },
     mockOnly: true,
     onDone,
+    onBack,
   },
 };
 
@@ -394,6 +402,7 @@ export const UpdatingOwner: Story = {
     },
     mockOnly: true,
     onDone,
+    onBack,
   },
 };
 
@@ -408,6 +417,7 @@ export const SecuritySettings: Story = {
     },
     mockOnly: true,
     onDone,
+    onBack,
   },
 };
 
@@ -424,6 +434,7 @@ export const ConfirmSecuritySettings: Story = {
     },
     mockOnly: true,
     onDone,
+    onBack,
   },
 };
 

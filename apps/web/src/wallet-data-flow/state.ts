@@ -67,6 +67,7 @@ export interface WalletDataFlowState {
     wallet: Serialized<typeof MpcWallet>;
     keyMetaData: KeyMetaData;
   }): void;
+  onBack(): void;
   updateOwnerInteraction: boolean;
 }
 
@@ -210,6 +211,7 @@ export interface WalletDataFlowStatePayload {
     wallet: Serialized<typeof MpcWallet>;
     keyMetaData: KeyMetaData;
   }): void;
+  onBack(): void;
   mockOnly?: boolean;
 }
 
@@ -219,7 +221,13 @@ export function useWalletDataFlowState(
   return useReducer(
     walletDataFlowStateReducer,
     payload,
-    ({ homeChainId, initialValues, onDone, mockOnly }): WalletDataFlowState => {
+    ({
+      homeChainId,
+      initialValues,
+      onBack,
+      onDone,
+      mockOnly,
+    }): WalletDataFlowState => {
       const {
         owner,
         newOwner,
@@ -230,6 +238,7 @@ export function useWalletDataFlowState(
         locallyEncryptedSharesByPreviousOwner,
       } = initialValues;
       return {
+        onBack,
         onDone,
         ownerDraft: new Draft<MultisigKey>({
           original: owner ?? ObservableMultisigKey.create(homeChainId),
