@@ -8,5 +8,5 @@ export function renderModal(children: ReactNode) {
   const modalRoot = document.getElementById("modal-root");
   if (!modalRoot) return null;
 
-  return createPortal(children, document.getElementById("modal-root")!);
+  return createPortal(children, modalRoot);
 }
