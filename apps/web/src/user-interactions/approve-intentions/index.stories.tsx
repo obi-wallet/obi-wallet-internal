@@ -22,6 +22,7 @@ export const SignOnly: Story = {
       MOCK_WALLET_DATA.homeChain,
       MOCK_WALLET_DATA.owner,
     ),
+    keyMetaData: {},
     intentions: {
       signHashes: [new Uint8Array(32)],
       decryptMessages: [],
@@ -37,6 +38,7 @@ export const DecryptOnly: Story = {
       MOCK_WALLET_DATA.homeChain,
       MOCK_WALLET_DATA.owner,
     ),
+    keyMetaData: {},
     intentions: {
       signHashes: [],
       decryptMessages: [],

@@ -4,9 +4,9 @@ import {
   SharesBackupEncryption,
 } from "@/lib/encryption";
 import { ProxyWallet } from "@/recovery/use-recover";
-import { KeyMetaData } from "@/stores/key-meta-data";
 import {
   HomeChainId,
+  KeyMetaData,
   MpcWallet,
   PendingRecoveryKeySchema,
   queryClient,
@@ -126,6 +126,11 @@ export class SecretJsHomeChain {
       );
     }
     const encryptedEasyShare = await getEncryptedEasyShare();
+
+    if (!encryptedEasyShare) {
+      return;
+    }
+
     const encryptedKeyMetaData = await new MultisigKeyEncryption(
       w.owner.publicKey,
     ).encrypt(JSON.stringify(keyMetaData));

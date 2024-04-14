@@ -12,8 +12,11 @@ import { SecuritySettingsIndex } from "@/security-settings/page";
 import { SecuritySettingsKeyAddPage } from "@/security-settings/page/key-add";
 import { SecuritySettingsKeyItemPage } from "@/security-settings/page/key-item";
 import { SecuritySettingsKeyTypePage } from "@/security-settings/page/key-type";
-import { SingleKeyMetaData } from "@/stores/key-meta-data";
-import { MultisigKey, Secp256k1PublicKey } from "@obi-wallet/sdk";
+import {
+  MultisigKey,
+  Secp256k1PublicKey,
+  SingleKeyMetaData,
+} from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 
@@ -26,6 +29,7 @@ export const SecuritySettings = observer(function SecuritySettings() {
   const keyMetaData = currentWallet
     ? keyMetaDataStore.getKeyMetaData(currentWallet.userEntryAddress)
     : {};
+
   const keyList = useKeyListForMultisigKey({
     multisigKey: draft?.value,
     keyMetaData,

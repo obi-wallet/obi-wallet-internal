@@ -1,12 +1,13 @@
 import { KeyItems } from "@/components";
 import { Draft } from "@/stores";
-import { KeyMetaData, SingleKeyMetaData } from "@/stores/key-meta-data";
 import {
   Key,
+  KeyMetaData,
   KeyType,
   MpcWallet,
   MultisigKey,
   Secp256k1PublicKey,
+  SingleKeyMetaData,
 } from "@obi-wallet/sdk";
 import { createContext, useContext } from "react";
 import invariant from "tiny-invariant";

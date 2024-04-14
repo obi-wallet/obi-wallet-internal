@@ -16,7 +16,6 @@ import warning from "tiny-warning";
 
 import { SecretJsChainId, SecretJsChains } from "../../../chains";
 import { MultisigKey } from "../../../data-structures";
-import { PublicKey } from "../../../keys";
 import { Message, MessageJson } from "../../../transactions";
 import { Token } from "../../common";
 import { Sdk } from "../../sdk";
@@ -206,34 +205,16 @@ export class SecretJsMessages extends AbstractMessages<string> {
     return [];
   }
 
-  protected getSigners(
-    multisigKey: Array<{
-      type: string;
-      payload: {
-        publicKey: PublicKey;
-        // TODO: remove
-        privateKey?: string;
-      };
-    }>,
-  ) {
+  protected getSigners(multisigKey: MultisigKey) {
     console.warn("getting signers...");
     const addressAndTypes: Array<{ address: string; ty: string }> =
-      multisigKey.map(
-        (key: {
-          type: string;
-          payload: {
-            publicKey: PublicKey;
-          };
-        }) => {
-          return {
-            address: this.sdk.transactions.getAddressOfPublicKey(
-              key.payload.publicKey,
-            ),
-            ty: key.type,
-            pubkey_base_64: key.payload.publicKey.value,
-          };
-        },
-      );
+      multisigKey.keys.map((key) => {
+        return {
+          address: this.sdk.transactions.getAddressOfPublicKey(key.publicKey),
+          ty: key.type,
+          pubkey_base_64: key.publicKey.value,
+        };
+      });
     return addressAndTypes;
   }
 
@@ -286,15 +267,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
           evm_contract_address: "",
           evm_signing_address: "",
           signers: {
-            signers: this.getSigners(
-              newOwner.keys as unknown as Array<{
-                type: string;
-                payload: {
-                  publicKey: PublicKey;
-                  privateKey?: string;
-                };
-              }>,
-            ),
+            signers: this.getSigners(newOwner),
             threshold: newOwner.threshold - 1,
           },
         },
@@ -318,15 +291,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
         propose_update_owner: {
           new_owner: newOwner.address,
           signers: {
-            signers: this.getSigners(
-              newOwner.keys as unknown as Array<{
-                type: string;
-                payload: {
-                  publicKey: PublicKey;
-                  privateKey?: string;
-                };
-              }>,
-            ),
+            signers: this.getSigners(newOwner),
             threshold: newOwner.threshold - 1,
           },
           signatures,

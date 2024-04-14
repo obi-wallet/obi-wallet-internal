@@ -30,6 +30,7 @@ const RecoverWalletUserInteractionHandlerInner = observer<{
         interaction.payload.owner,
       )}
       walletData={interaction.payload.walletData}
+      keyMetaData={interaction.payload.keyMetaData}
       onReject={() => {
         interaction.resolve({
           approved: false,

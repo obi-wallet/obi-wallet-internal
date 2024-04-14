@@ -2,7 +2,6 @@ import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
 import { IntentionsResult } from "@/keys/intentions-handler";
 import { SharesLocalEncryption } from "@/lib/encryption";
-import { KeyMetaData } from "@/stores/key-meta-data";
 import {
   ApproveIntentions,
   handleMultisigKeyDecryptedMessages,
@@ -10,12 +9,14 @@ import {
 import {
   BackupShare,
   EasyShare,
+  KeyMetaData,
   MultisigKey,
   ObservableMpcWallet,
   WalletData,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import Lottie from "lottie-react";
+import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import invariant from "tiny-invariant";
@@ -25,13 +26,20 @@ import SendingAnimation from "./sending-animation.json";
 export interface RecoverWalletProps {
   owner: MultisigKey;
   walletData: WalletData;
+  keyMetaData: KeyMetaData;
 
   onReject(): void;
   onApprove(): void;
 }
 
 export const RecoverWallet = observer<RecoverWalletProps>(
-  function RecoverWallet({ owner, walletData, onApprove, onReject }) {
+  function RecoverWallet({
+    owner,
+    keyMetaData,
+    walletData,
+    onApprove,
+    onReject,
+  }) {
     const { keyMetaDataStore, mpcWalletsStore, userDataStore } = useStore();
     const [results, setResults] = useState<
       Map<string, IntentionsResult> | undefined
@@ -48,8 +56,12 @@ export const RecoverWallet = observer<RecoverWalletProps>(
             results,
           });
 
+        console.log(toJS(walletData));
+
         // TODO: handle optionals
         if (keyMetaData && firstShare && secondShare) {
+          console.log(keyMetaData, firstShare, secondShare);
+
           const easyShare = EasyShare.parse(JSON.parse(firstShare));
           const backupShare = BackupShare.parse(JSON.parse(secondShare));
 
@@ -65,6 +77,11 @@ export const RecoverWallet = observer<RecoverWalletProps>(
             userEntryAddress: walletData.proxyAddress.address,
             encryptedShares,
           });
+          console.log(
+            "Setting key meta data",
+            KeyMetaData.parse(JSON.parse(keyMetaData)),
+          );
+
           keyMetaDataStore.setKeyMetaData(
             wallet.userEntryAddress,
             KeyMetaData.parse(JSON.parse(keyMetaData)),
@@ -122,6 +139,7 @@ export const RecoverWallet = observer<RecoverWalletProps>(
 
             <ApproveIntentions
               multisigKey={owner}
+              keyMetaData={keyMetaData}
               intentions={{
                 signHashes: [],
                 decryptMessages: [],

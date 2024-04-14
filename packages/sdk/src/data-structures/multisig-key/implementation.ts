@@ -155,6 +155,12 @@ export class MultisigKey {
     return key;
   }
 
+  public removeKeyByPublicKey(publicKey: Secp256k1PublicKey) {
+    this.setKeys(
+      this._keys.filter((key) => key.publicKey.value !== publicKey.value),
+    );
+  }
+
   public removeKey(key: Key) {
     this.setKeys(this._keys.filter((k) => k !== key));
   }

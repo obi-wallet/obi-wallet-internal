@@ -1,8 +1,7 @@
 import { KeyItems } from "@/components";
 import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { KeyMetaData } from "@/stores/key-meta-data";
-import { KeyType, MultisigKey } from "@obi-wallet/sdk";
+import { KeyMetaData, KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
 import { prop, sortBy } from "ramda";
 

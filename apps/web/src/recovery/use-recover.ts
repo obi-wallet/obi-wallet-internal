@@ -1,23 +1,28 @@
 import { useStore } from "@/contexts";
 import {
   MultisigKey,
+  KeyMetaData,
   RecoverWalletUserInteraction,
   WalletData,
 } from "@obi-wallet/sdk";
+import { useRouter } from "next/navigation";
 
 export const ProxyWallet = WalletData;
 
 export type ProxyWallet = WalletData;
 
 export function useRecover() {
+  const router = useRouter();
   const { mpcWalletsStore } = useStore();
 
   async function recover({
     account,
     multisigKey,
+    keyMetaData,
   }: {
     multisigKey: MultisigKey;
     account: ProxyWallet;
+    keyMetaData: KeyMetaData;
   }) {
     try {
       const wallet = mpcWalletsStore.getWalletByUserEntryAddress(
@@ -51,16 +56,18 @@ export function useRecover() {
           throw new Error("Owner missing");
         }
 
-        const primaryKey = multisigKey.primaryKey;
-        if (!primaryKey) {
-          throw new Error("Primary Key missing");
-        }
+        // const primaryKey = multisigKey.primaryKey;
+        // if (!primaryKey) {
+        //   throw new Error("Primary Key missing");
+        // }
 
         await RecoverWalletUserInteraction.start({
           homeChainId: multisigKey.chainId,
           owner: multisigKey.toJSON()!,
           walletData: account,
+          keyMetaData,
         });
+        router.replace("/dashboard/settings/security");
       }
     } catch (e) {
       const error = e as Error;

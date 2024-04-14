@@ -15,7 +15,10 @@ export const AddPasskeyPage = observer(function AddPasskeyPage() {
   const passkeyFlow = useMutation({
     mutationFn: async () => {
       const keyPair = await createPasskey();
-      draft.value.addPasskeyKey(keyPair);
+      const passkey = draft.value.addPasskeyKey(keyPair);
+      if (!draft.value.primaryKey) {
+        draft.value.setPrimaryKey(passkey);
+      }
 
       await queryClient.prefetchQuery(
         Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(

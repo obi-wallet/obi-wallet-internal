@@ -1,6 +1,4 @@
 import { Button, KeyItem, Text } from "@/components";
-import { useStore } from "@/contexts";
-import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import {
   IntentionsPayload,
   IntentionsResult,
@@ -9,7 +7,7 @@ import {
 import { MultisigKeyDecryption } from "@/lib/encryption";
 import { useKeyListForMultisigKey } from "@/lib/keys";
 import { PhoneKeyModal } from "@/user-interactions/approve-intentions/modals/phone";
-import { Key, KeyType, MultisigKey } from "@obi-wallet/sdk";
+import { Key, KeyMetaData, KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
@@ -55,18 +53,19 @@ export async function handleMultisigKeyDecryptedMessage({
 
 export interface ApproveIntentionsProps {
   multisigKey: MultisigKey;
+  keyMetaData: KeyMetaData;
   intentions: IntentionsPayload;
   onApprove(result: Map<string, IntentionsResult>): void;
 }
 
 export const ApproveIntentions = observer<ApproveIntentionsProps>(
-  function ApproveIntentions({ multisigKey, intentions, onApprove }) {
+  function ApproveIntentions({
+    multisigKey,
+    keyMetaData,
+    intentions,
+    onApprove,
+  }) {
     const threshold = multisigKey.threshold;
-    const currentWallet = useCurrentWallet({});
-    const { keyMetaDataStore } = useStore();
-    const keyMetaData = currentWallet
-      ? keyMetaDataStore.getKeyMetaData(currentWallet.userEntryAddress)
-      : {};
     const keyList = useKeyListForMultisigKey({
       multisigKey,
       keyMetaData,

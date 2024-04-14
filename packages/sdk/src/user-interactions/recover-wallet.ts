@@ -32,10 +32,23 @@ export const WalletData = z.object({
 
 export type WalletData = z.infer<typeof WalletData>;
 
+export const SingleKeyMetaData = z.object({
+  name: z.string().optional(),
+  timestamp: z.string().datetime({ offset: true }).optional(),
+  payload: z.unknown().optional(),
+});
+
+export type SingleKeyMetaData = z.TypeOf<typeof SingleKeyMetaData>;
+
+export const KeyMetaData = z.record(SingleKeyMetaData);
+
+export type KeyMetaData = z.TypeOf<typeof KeyMetaData>;
+
 export interface RecoverWalletUserInteractionPayload {
   readonly homeChainId: HomeChainId;
   readonly owner: Serialized<MultisigKey>;
   readonly walletData: WalletData;
+  readonly keyMetaData: KeyMetaData;
 }
 
 interface UserInteractionResultApproved {

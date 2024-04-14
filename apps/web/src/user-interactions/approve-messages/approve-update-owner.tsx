@@ -47,8 +47,11 @@ export const ApproveUpdateOwner = observer<ApproveUpdateOwnerProps>(
     onApprove,
     onReject,
   }) {
-    const { mpcWalletsStore } = useStore();
+    const { keyMetaDataStore, mpcWalletsStore } = useStore();
     const wallet = mpcWalletsStore.getWalletByUserEntryAddress(
+      walletMeta.userEntryAddress,
+    );
+    const keyMetaData = keyMetaDataStore.getKeyMetaData(
       walletMeta.userEntryAddress,
     );
     const [proposedUpdate, setProposedUpdate] = useState(false);
@@ -243,6 +246,7 @@ ${JSON.stringify(previousOwner.toJSON(), null, 2)}
               <ApproveIntentions
                 key={`${proposedUpdate}-${nextHash.data}`}
                 multisigKey={proposedUpdate ? nextOwner : previousOwner}
+                keyMetaData={keyMetaData}
                 intentions={{
                   signHashes: [nextHash.data],
                   decryptMessages: [],

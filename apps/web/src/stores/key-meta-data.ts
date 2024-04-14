@@ -1,13 +1,8 @@
 import { AbstractKVStore } from "@obi-wallet/headless-ui";
+import { KeyMetaData, SingleKeyMetaData } from "@obi-wallet/sdk";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { action, autorun, observable, runInAction, toJS } from "mobx";
 import { z } from "zod";
-
-export const SingleKeyMetaData = z.object({
-  name: z.string().optional(),
-  timestamp: z.string().datetime({ offset: true }).optional(),
-  payload: z.unknown().optional(),
-});
 
 export const PhoneSingleKeyMetaData = z.intersection(
   SingleKeyMetaData,
@@ -28,12 +23,6 @@ export const TelegramSingleKeyMetaData = z.intersection(
     }),
   }),
 );
-
-export type SingleKeyMetaData = z.TypeOf<typeof SingleKeyMetaData>;
-
-export const KeyMetaData = z.record(SingleKeyMetaData);
-
-export type KeyMetaData = z.TypeOf<typeof KeyMetaData>;
 
 export const KeyMetaDataPerWallet = z.record(KeyMetaData);
 
