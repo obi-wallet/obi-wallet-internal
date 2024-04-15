@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   const client = new SecretJsClient(homeChainId);
   const messagesSdk = Messages.chainId(homeChainId);
 
-  const { wallet, signer } = getFeeLender(homeChainId, 0);
+  const { wallet, signer } = getFeeLender(homeChainId);
   invariant(wallet.address, "no fee lender wallet address");
 
   const message = messagesSdk.getConfirmUpdateOwnerMessage(
