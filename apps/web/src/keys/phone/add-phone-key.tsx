@@ -1,5 +1,5 @@
 import { Button } from "@/components";
-import { PhoneKeyWorkerClient } from "@/keys/intentions-handler/phone";
+import { PhoneKeyWorkerClient } from "@/keys/intentions-handler";
 import {
   PhoneSingleKeyMetaData,
   SingleKeyMetaData,

@@ -24,8 +24,6 @@ export const Recovery = observer(function Recovery() {
 
         keyMetaDataStore.setKeyMetaData(wallet.userEntryAddress, keyMetaData);
         mpcWalletsStore.upsertWallet(wallet);
-
-        // TODO: potentially backup wallet somewhere? After updating owner!
       }}
       onBack={() => {
         increaseKey();

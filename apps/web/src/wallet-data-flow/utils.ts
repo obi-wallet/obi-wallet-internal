@@ -30,7 +30,7 @@ export function useFinishFlow() {
       encryptedShares,
     };
 
-    if (payload.backupWallet) {
+    if (payload.backupWallet && !state.mockOnly) {
       await HomeChain.chainId(wallet.homeChain).backupWallet({
         wallet,
         keyMetaData: payload.keyMetaData,

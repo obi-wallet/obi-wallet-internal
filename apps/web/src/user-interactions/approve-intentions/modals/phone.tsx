@@ -1,6 +1,9 @@
 import { Button, KeyItem, Modal } from "@/components";
-import { IntentionsPayload, IntentionsResult } from "@/keys/intentions-handler";
-import { PhoneKeyIntentionsHandler } from "@/keys/intentions-handler/phone";
+import {
+  IntentionsPayload,
+  IntentionsResult,
+  PhoneKeyIntentionsHandler,
+} from "@/keys/intentions-handler";
 import {
   PhoneSingleKeyMetaData,
   TelegramSingleKeyMetaData,
