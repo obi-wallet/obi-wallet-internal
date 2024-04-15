@@ -13,6 +13,9 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
 
+export const IntentionsResults = Map<string, IntentionsResult>;
+export type IntentionsResults = Map<string, IntentionsResult>;
+
 export async function handleMultisigKeyDecryptedMessages({
   multisigKeyEncryptedMessages,
   multisigKey,
@@ -20,7 +23,7 @@ export async function handleMultisigKeyDecryptedMessages({
 }: {
   multisigKeyEncryptedMessages: string[];
   multisigKey: MultisigKey;
-  results: Map<string, IntentionsResult>;
+  results: IntentionsResults;
 }): Promise<string[]> {
   return await Promise.all(
     multisigKeyEncryptedMessages.map(async (message, index) => {
@@ -42,7 +45,7 @@ export async function handleMultisigKeyDecryptedMessage({
 }: {
   multisigKeyEncryptedMessage: string;
   multisigKey: MultisigKey;
-  results: Map<string, IntentionsResult>;
+  results: IntentionsResults;
   index: number;
 }) {
   const decryptedShares = multisigKey.keys.map((key) => {
@@ -56,7 +59,7 @@ export interface ApproveIntentionsProps {
   multisigKey: MultisigKey;
   keyMetaData: KeyMetaData;
   intentions: IntentionsPayload;
-  onApprove(result: Map<string, IntentionsResult>): void;
+  onApprove(result: IntentionsResults): void;
 }
 
 export const ApproveIntentions = observer<ApproveIntentionsProps>(
@@ -76,7 +79,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
       index: number;
     } | null>(null);
 
-    const [results, setResults] = useState(new Map<string, IntentionsResult>());
+    const [results, setResults] = useState(new IntentionsResults());
 
     const getResult = (key: Key) => {
       return results.get(key.publicKey.value);

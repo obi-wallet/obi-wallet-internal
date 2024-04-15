@@ -51,9 +51,19 @@ export const ApproveMessagesSignDoc = observer<ApproveMessagesSignDocProps>(
       <ApproveMessages
         targetChainId={chainId}
         messages={encodeObjects}
+        memo={decodedBodyWithDecodedMessageValues.memo}
         rawData={encodeObjects}
-        onApprove={async ({ wallet, fee }) => {
+        onApprove={async ({
+          wallet,
+          fee,
+          intentionsPayload,
+          intentionsResults,
+        }) => {
           const signer = await targetChain.getSigner(wallet);
+          signer.addIntentionsResults({
+            payload: intentionsPayload,
+            results: intentionsResults,
+          });
           const previousAuthInfo = AuthInfo.decode(signDoc.authInfoBytes);
           const newAuthInfo = AuthInfo.fromPartial({
             ...previousAuthInfo,

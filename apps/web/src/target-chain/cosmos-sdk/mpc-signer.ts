@@ -1,7 +1,9 @@
 import { rootStore } from "@/hooks/use-create-root-store";
 import { fetchPublicKey } from "@/hooks/use-public-key";
+import { IntentionsPayload } from "@/keys/intentions-handler";
 import { EasyShareDecryption } from "@/lib/encryption";
 import { TargetChain, TargetChainId } from "@/target-chain";
+import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import {
   AminoSignResponse,
   encodeSecp256k1Signature,
@@ -17,11 +19,7 @@ import {
   makeSignBytes,
   OfflineDirectSigner,
 } from "@cosmjs/proto-signing";
-import {
-  MpcWallet,
-  Secp256k1PrivateKeySigner,
-  SecretJsClient,
-} from "@obi-wallet/sdk";
+import { MpcWallet, SecretJsClient } from "@obi-wallet/sdk";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
@@ -33,6 +31,9 @@ import { z } from "zod";
 export class CosmosSdkMpcSigner
   implements OfflineDirectSigner, OfflineAminoSigner
 {
+  protected bytesSignedBySignersPerHash = new Map<string, string[]>();
+  public lastHash: Uint8Array | undefined;
+
   public get address(): string {
     return this.targetChain.computeAddress(this.publicKey);
   }
@@ -54,6 +55,28 @@ export class CosmosSdkMpcSigner
     const publicKey = await fetchPublicKey(wallet);
 
     return new CosmosSdkMpcSigner(wallet, publicKey, targetChainId);
+  }
+
+  public addIntentionsResults({
+    payload,
+    results,
+  }: {
+    payload: IntentionsPayload;
+    results: IntentionsResults;
+  }) {
+    payload.signHashes.forEach((hash, index) => {
+      this.bytesSignedBySignersPerHash.set(
+        Buffer.from(hash).toString("hex"),
+        [...results.values()]
+          .map((result) => {
+            return result.signedHashes[index];
+          })
+          .filter((signedHash): signedHash is Uint8Array => {
+            return !!signedHash;
+          })
+          .map((signedHash) => Buffer.from(signedHash).toString("hex")),
+      );
+    });
   }
 
   public async getAccounts(): Promise<readonly AccountData[]> {
@@ -96,6 +119,7 @@ export class CosmosSdkMpcSigner
     address: string,
     hash: Uint8Array,
   ): Promise<StdSignature> {
+    this.lastHash = hash;
     if (this.wallet.encryptedEasyShare) {
       return this.signHashWithEasyShare(address, hash);
     }
@@ -108,6 +132,11 @@ export class CosmosSdkMpcSigner
     hash: Uint8Array,
   ): Promise<StdSignature> {
     invariant(rootStore.current, "Root store is not initialized");
+
+    const bytes = Buffer.from(hash).toString("hex");
+    const bytesSignedBySigners = this.bytesSignedBySignersPerHash.get(bytes);
+    invariant(bytesSignedBySigners, "Hash has not been signed");
+
     const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
 
     const primaryKey = this.wallet.owner.primaryKey;
@@ -130,10 +159,6 @@ export class CosmosSdkMpcSigner
     const partialSignatures = signers.map((signer) => {
       return signer.partial(hash).scalar;
     });
-
-    const passkeySigner = new Secp256k1PrivateKeySigner(
-      primaryKey.payload.privateKey,
-    );
 
     const client = new SecretJsClient(this.wallet.homeChainId);
 
@@ -165,10 +190,8 @@ export class CosmosSdkMpcSigner
           other_partial_sigs: partialSignatures,
           prepend: false,
           is_already_hashed: true,
-          bytes: Buffer.from(hash).toString("hex"),
-          bytes_signed_by_signers: [
-            Buffer.from(await passkeySigner.signHash(hash)).toString("hex"),
-          ],
+          bytes,
+          bytes_signed_by_signers: bytesSignedBySigners,
         },
       },
       schema,

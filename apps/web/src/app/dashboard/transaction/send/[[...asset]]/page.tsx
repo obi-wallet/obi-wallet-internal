@@ -113,6 +113,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       };
       const response = await SignAndBroadcastTransactionUserInteraction.start({
         messages: [message],
+        memo: "",
         cancelable: true,
         targetChainId: chainId,
         walletMeta: {

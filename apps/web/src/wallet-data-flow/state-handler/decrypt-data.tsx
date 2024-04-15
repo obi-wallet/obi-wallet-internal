@@ -1,10 +1,10 @@
 import { Button, Text, Transaction } from "@/components";
 import { WalletData } from "@/home-chain/secret-js";
-import { IntentionsResult } from "@/keys/intentions-handler";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import {
   ApproveIntentions,
   handleMultisigKeyDecryptedMessages,
+  IntentionsResults,
 } from "@/user-interactions/approve-intentions";
 import SendingAnimation from "@/user-interactions/approve-messages/sending-animation.json";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
@@ -28,9 +28,9 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
   const owner = state.ownerDraft.value;
   const keyMetaData = state.keyMetaDataDraft.value.value;
 
-  const [results, setResults] = useState<
-    Map<string, IntentionsResult> | undefined
-  >(undefined);
+  const [results, setResults] = useState<IntentionsResults | undefined>(
+    undefined,
+  );
 
   const approve = useMutation({
     mutationFn: async () => {

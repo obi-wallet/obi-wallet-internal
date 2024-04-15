@@ -38,9 +38,19 @@ export const ApproveMessagesStdSignDoc =
       <ApproveMessages
         targetChainId={chainId}
         messages={messages}
+        memo={signDoc.memo}
         rawData={signDoc.msgs}
-        onApprove={async ({ wallet, fee }) => {
+        onApprove={async ({
+          wallet,
+          fee,
+          intentionsPayload,
+          intentionsResults,
+        }) => {
           const signer = await targetChain.getSigner(wallet);
+          signer.addIntentionsResults({
+            payload: intentionsPayload,
+            results: intentionsResults,
+          });
           const signResponse = await signer.signAmino(signerAddress, {
             ...signDoc,
             fee,

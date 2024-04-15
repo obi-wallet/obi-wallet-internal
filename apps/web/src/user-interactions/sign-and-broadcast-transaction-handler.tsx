@@ -44,18 +44,36 @@ export const SignAndBroadcastTransactionUserInteractionHandlerInner = observer<{
       walletMeta={interaction.payload.walletMeta}
       targetChainId={chainId}
       messages={interaction.payload.messages}
+      memo={interaction.payload.memo}
       rawData={interaction.payload.messages}
       onReject={() => {
         interaction.resolve({
           approved: false,
         });
       }}
-      onApprove={async ({ wallet, fee }) => {
-        const response = await TargetChain.chainId(chainId).signAndBroadcast({
+      onApprove={async ({
+        wallet,
+        fee,
+        intentionsPayload,
+        intentionsResults,
+      }) => {
+        const targetChain = TargetChain.chainId(chainId);
+        const payload = {
           wallet,
-          fee,
           messages: interaction.payload.messages,
-        });
+          fee,
+          memo: interaction.payload.memo,
+          intentionsPayload,
+          intentionsResults,
+        };
+
+        if (interaction.payload.mockOnly) {
+          const response = await targetChain.sign(payload);
+          console.log(response);
+          return;
+        }
+
+        const response = await targetChain.signAndBroadcast(payload);
         interaction.resolve({
           approved: true,
           payload: {

@@ -1,11 +1,11 @@
 import { Button, Text, Transaction } from "@/components";
 import { HomeChain } from "@/home-chain";
 import { WalletData } from "@/home-chain/secret-js";
-import { IntentionsResult } from "@/keys/intentions-handler";
 import { Secp256k1Decryption } from "@/lib/encryption";
 import {
   ApproveIntentions,
   handleMultisigKeyDecryptedMessage,
+  IntentionsResults,
 } from "@/user-interactions/approve-intentions";
 import SendingAnimation from "@/user-interactions/approve-messages/sending-animation.json";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
@@ -41,9 +41,9 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
     ? state.keyMetaDataDraft.value.value
     : state.keyMetaDataDraft.original.value;
 
-  const [results, setResults] = useState<
-    Map<string, IntentionsResult> | undefined
-  >(undefined);
+  const [results, setResults] = useState<IntentionsResults | undefined>(
+    undefined,
+  );
   const [backupShare, setBackupShare] = useState<BackupShare | undefined>(
     undefined,
   );

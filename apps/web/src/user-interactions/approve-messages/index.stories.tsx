@@ -20,8 +20,8 @@ type Story = StoryObj<typeof meta>;
 const sendMessage = {
   typeUrl: "/cosmos.bank.v1beta1.MsgSend",
   value: {
-    fromAddress: "sei1rptyr50v9sdythznd46vvml5wpp3uzvhdyfwqf",
-    toAddress: "sei1rptyr50v9sdythznd46vvml5wpp3uzvhdyfwqf",
+    fromAddress: "sei1kvjg92ldmughvhcynu72ef3zjgrx9rdkdct83l",
+    toAddress: "sei1kvjg92ldmughvhcynu72ef3zjgrx9rdkdct83l",
     amount: [
       {
         denom: "usei",
@@ -38,6 +38,7 @@ export const SendMessage: Story = {
     },
     targetChainId: CosmosSdkChainId.Sei,
     messages: [sendMessage],
+    memo: "",
     rawData: [sendMessage],
     onReject: () => {},
     onApprove: async () => {},
@@ -81,6 +82,7 @@ export const AstroportSwapMessage: Story = {
     },
     targetChainId: CosmosSdkChainId.Sei,
     messages: [encodeObject],
+    memo: "",
     rawData: [executeMessage],
     onReject: () => {},
     onApprove: async () => {},

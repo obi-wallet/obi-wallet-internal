@@ -2,11 +2,11 @@ import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
 import { fetchOwner } from "@/hooks/use-owner";
-import { IntentionsResult } from "@/keys/intentions-handler";
 import { Secp256k1Decryption, SharesLocalEncryption } from "@/lib/encryption";
 import {
   ApproveIntentions,
   handleMultisigKeyDecryptedMessage,
+  IntentionsResults,
 } from "@/user-interactions/approve-intentions";
 import { useBackupWalletMutation } from "@/wallet-health/checks";
 import { useQuery } from "@obi-wallet/headless-ui";
@@ -55,9 +55,9 @@ export const ApproveUpdateOwner = observer<ApproveUpdateOwnerProps>(
       walletMeta.userEntryAddress,
     );
     const [proposedUpdate, setProposedUpdate] = useState(false);
-    const [results, setResults] = useState<
-      Map<string, IntentionsResult> | undefined
-    >(undefined);
+    const [results, setResults] = useState<IntentionsResults | undefined>(
+      undefined,
+    );
     const [backupShare, setBackupShare] = useState<BackupShare | undefined>(
       undefined,
     );

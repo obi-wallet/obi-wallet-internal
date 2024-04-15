@@ -1,6 +1,11 @@
 import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
+import { IntentionsPayload } from "@/keys/intentions-handler";
 import { TargetChain, TargetChainId } from "@/target-chain";
+import {
+  ApproveIntentions,
+  IntentionsResults,
+} from "@/user-interactions/approve-intentions";
 import { Coin } from "@cosmjs/amino";
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { MsgSendEncodeObject, StdFee } from "@cosmjs/stargate";
@@ -10,6 +15,7 @@ import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import Lottie from "lottie-react";
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
 import invariant from "tiny-invariant";
 
 import SendingAnimation from "./sending-animation.json";
@@ -20,9 +26,15 @@ export interface ApproveMessagesProps {
   };
   targetChainId: TargetChainId;
   messages: unknown[];
+  memo: string;
   rawData: unknown;
   onReject(): void;
-  onApprove(args: { wallet: MpcWallet; fee: StdFee }): Promise<void>;
+  onApprove(args: {
+    wallet: MpcWallet;
+    fee: StdFee;
+    intentionsPayload: IntentionsPayload;
+    intentionsResults: IntentionsResults;
+  }): Promise<void>;
 }
 
 export const ApproveMessages = observer<ApproveMessagesProps>(
@@ -30,38 +42,78 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
     walletMeta,
     targetChainId,
     messages,
+    memo,
     rawData,
     onApprove,
     onReject,
   }) {
-    const { mpcWalletsStore } = useStore();
+    const { keyMetaDataStore, mpcWalletsStore } = useStore();
     const wallet = mpcWalletsStore.getWalletByUserEntryAddress(
       walletMeta.userEntryAddress,
     );
+    const [intentionsResults, setIntentionsResults] = useState<
+      IntentionsResults | undefined
+    >();
 
-    const fee = useQuery({
+    const txInfo = useQuery({
       queryKey: ["simulate", { walletMeta, targetChainId, messages }],
       queryFn: async () => {
         invariant(wallet, "Wallet not found");
+        const targetChain = TargetChain.chainId(targetChainId);
 
-        return await TargetChain.chainId(targetChainId).calculateFee({
+        const fee = await targetChain.calculateFee({
           wallet,
           messages,
+          memo,
         });
+
+        invariant(fee, "Fee could not be calculated");
+
+        const hash = await targetChain.calculateHashToSign({
+          wallet,
+          fee,
+          messages,
+          memo,
+        });
+
+        invariant(hash, "Hash could not be calculated");
+
+        return {
+          fee,
+          hash: Buffer.from(hash).toString("hex"),
+        };
       },
+      retry: false,
     });
 
     const approve = useMutation({
       mutationFn: async () => {
         invariant(wallet, "Wallet not found");
-        invariant(fee.data, "Fee could not be calculated");
+        invariant(txInfo.data, "txInfo could not be calculated");
+        invariant(intentionsPayload, "Intentions payload not found");
+        invariant(intentionsResults, "Intentions results not found");
 
         await onApprove({
           wallet,
-          fee: fee.data,
+          fee: txInfo.data.fee,
+          intentionsResults,
+          intentionsPayload,
         });
       },
     });
+
+    if (!wallet) return null;
+
+    const keyMetaData = keyMetaDataStore.getKeyMetaData(
+      wallet.userEntryAddress,
+    );
+    const intentionsPayload: IntentionsPayload | null = txInfo.data
+      ? {
+          signHashes: [new Uint8Array(Buffer.from(txInfo.data.hash, "hex"))],
+          decryptMessages: [],
+          decryptMultisigKeyEncryptedMessages: [],
+        }
+      : null;
 
     return (
       <div className="relative w-full">
@@ -80,23 +132,19 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
               messages={messages}
               rawData={rawData}
               targetChainId={targetChainId}
-              fee={fee.data}
+              fee={txInfo.data?.fee}
             />
 
-            {/*<Text className="mt-4">{`${threshold} Key${*/}
-            {/*  threshold > 1 ? "s" : ""*/}
-            {/*} Required`}</Text>*/}
-            {/*<Button*/}
-            {/*  className="mt-4"*/}
-            {/*  block*/}
-            {/*  onClick={() => {*/}
-            {/*    // TODO:*/}
-            {/*  }}*/}
-            {/*  variant={threshold > confirmedKeyCount ? "primary" : "confirmed"}*/}
-            {/*  // disabled={threshold === confirmedKeyCount}*/}
-            {/*>*/}
-            {/*  Passkey*/}
-            {/*</Button>*/}
+            {intentionsPayload ? (
+              <ApproveIntentions
+                multisigKey={wallet.owner}
+                keyMetaData={keyMetaData}
+                intentions={intentionsPayload}
+                onApprove={(results) => {
+                  setIntentionsResults(results);
+                }}
+              />
+            ) : null}
 
             <div className="mt-6 flex w-full flex-row space-x-6 ">
               <Button block variant="outline" onClick={onReject}>
@@ -104,7 +152,9 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
               </Button>
               <Button
                 block
-                disabled={!fee.isSuccess || approve.isPending}
+                disabled={
+                  !txInfo.isSuccess || approve.isPending || !intentionsResults
+                }
                 onClick={() => {
                   approve.mutate();
                 }}

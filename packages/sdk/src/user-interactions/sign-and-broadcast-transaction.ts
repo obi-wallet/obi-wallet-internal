@@ -13,6 +13,8 @@ export interface SignAndBroadcastTransactionUserInteractionPayload {
   readonly cancelable: boolean;
   // Contains chain-specific data structures
   readonly messages: unknown[];
+  readonly memo: string;
+  readonly mockOnly?: boolean;
 }
 
 interface UserInteractionResultApproved {
