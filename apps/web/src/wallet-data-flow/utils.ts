@@ -1,7 +1,8 @@
 import { HomeChain } from "@/home-chain";
 import { SharesLocalEncryption } from "@/lib/encryption";
+import { KeyMetaData } from "@/stores/key-meta-data";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
-import { BackupShare, EasyShare, KeyMetaData } from "@obi-wallet/sdk";
+import { BackupShare, EasyShare } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
 export function useFinishFlow() {

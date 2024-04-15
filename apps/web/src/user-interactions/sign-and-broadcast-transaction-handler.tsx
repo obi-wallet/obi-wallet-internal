@@ -5,7 +5,7 @@ import { TargetChain } from "@/target-chain";
 import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { ApproveMessages } from "@/user-interactions/approve-messages";
 import { isDeliverTxSuccess } from "@cosmjs/stargate";
-import { NewSignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
+import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 
@@ -15,7 +15,7 @@ export const SignAndBroadcastTransactionUserInteractionHandler = observer<{
   const { userInteractionsStore } = useStore();
 
   const interaction = userInteractionsStore.getPendingUserInteractionsOfType(
-    NewSignAndBroadcastTransactionUserInteraction,
+    SignAndBroadcastTransactionUserInteraction,
   )[0];
 
   if (!interaction) return children;
@@ -28,7 +28,7 @@ export const SignAndBroadcastTransactionUserInteractionHandler = observer<{
 });
 
 export const SignAndBroadcastTransactionUserInteractionHandlerInner = observer<{
-  interaction: NewSignAndBroadcastTransactionUserInteraction;
+  interaction: SignAndBroadcastTransactionUserInteraction;
 }>(function SignAndBroadcastTransactionUserInteractionHandlerInner({
   interaction,
 }) {

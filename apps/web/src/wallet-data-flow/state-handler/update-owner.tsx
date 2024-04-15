@@ -1,5 +1,6 @@
 import { Button, Text, Transaction } from "@/components";
 import { HomeChain } from "@/home-chain";
+import { WalletData } from "@/home-chain/secret-js";
 import { IntentionsResult } from "@/keys/intentions-handler";
 import { Secp256k1Decryption } from "@/lib/encryption";
 import {
@@ -10,12 +11,7 @@ import SendingAnimation from "@/user-interactions/approve-messages/sending-anima
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow } from "@/wallet-data-flow/utils";
 import { useQuery } from "@obi-wallet/headless-ui";
-import {
-  BackupShare,
-  EasyShare,
-  SecretJsClient,
-  WalletData,
-} from "@obi-wallet/sdk";
+import { BackupShare, EasyShare, SecretJsClient } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { diffString } from "json-diff";
 import Lottie from "lottie-react";

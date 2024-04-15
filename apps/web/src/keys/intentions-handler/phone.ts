@@ -4,9 +4,10 @@ import {
 } from "@/keys/intentions-handler/abstract";
 import {
   PhoneSingleKeyMetaData,
+  SingleKeyMetaData,
   TelegramSingleKeyMetaData,
 } from "@/stores/key-meta-data";
-import { Key, KeyType, SingleKeyMetaData } from "@obi-wallet/sdk";
+import { Key, KeyType } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
 export type PhoneKeyWorkerVia = "sms" | "voice" | "telegram";

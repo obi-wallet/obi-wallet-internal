@@ -1,8 +1,11 @@
 import { Button } from "@/components";
 import { PhoneKeyWorkerClient } from "@/keys/intentions-handler/phone";
-import { PhoneSingleKeyMetaData } from "@/stores/key-meta-data";
+import {
+  PhoneSingleKeyMetaData,
+  SingleKeyMetaData,
+} from "@/stores/key-meta-data";
 import { Input } from "@/ui/input";
-import { Secp256k1PublicKey, SingleKeyMetaData } from "@obi-wallet/sdk";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";

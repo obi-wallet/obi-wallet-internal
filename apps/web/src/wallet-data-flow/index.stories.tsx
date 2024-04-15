@@ -1,11 +1,7 @@
+import { WalletData } from "@/home-chain/secret-js";
+import { KeyMetaData } from "@/stores/key-meta-data";
 import { walletDataToMultisigKey } from "@/wallet-data-flow/state";
-import {
-  BackupShare,
-  EasyShare,
-  KeyMetaData,
-  SecretJsHomeChainId,
-  WalletData,
-} from "@obi-wallet/sdk";
+import { BackupShare, EasyShare, SecretJsHomeChainId } from "@obi-wallet/sdk";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import type { Meta, StoryObj } from "@storybook/react";
 import { DateTime } from "luxon";

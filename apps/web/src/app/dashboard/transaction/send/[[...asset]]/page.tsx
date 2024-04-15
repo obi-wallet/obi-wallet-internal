@@ -18,7 +18,7 @@ import { nonEmptyString } from "@/validation-helpers";
 import { Coin } from "@cosmjs/amino";
 import { MsgSendEncodeObject } from "@cosmjs/stargate";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { NewSignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
+import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
@@ -111,15 +111,14 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
           amount: tokens,
         },
       };
-      const response =
-        await NewSignAndBroadcastTransactionUserInteraction.start({
-          messages: [message],
-          cancelable: true,
-          targetChainId: chainId,
-          walletMeta: {
-            userEntryAddress: wallet.userEntryAddress,
-          },
-        });
+      const response = await SignAndBroadcastTransactionUserInteraction.start({
+        messages: [message],
+        cancelable: true,
+        targetChainId: chainId,
+        walletMeta: {
+          userEntryAddress: wallet.userEntryAddress,
+        },
+      });
 
       await invalidateBalancesQueries(chainId);
       return response;

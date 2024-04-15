@@ -1,15 +1,15 @@
+import { WalletData } from "@/home-chain/secret-js";
 import { Draft } from "@/stores";
+import { KeyMetaData } from "@/stores/key-meta-data";
 import {
   BackupShare,
   EasyShare,
   HomeChainId,
-  KeyMetaData,
   KeyType,
   MpcWallet,
   MultisigKey,
   ObservableMultisigKey,
   Serialized,
-  WalletData,
 } from "@obi-wallet/sdk";
 import { action, observable, toJS } from "mobx";
 import { Dispatch, useReducer } from "react";

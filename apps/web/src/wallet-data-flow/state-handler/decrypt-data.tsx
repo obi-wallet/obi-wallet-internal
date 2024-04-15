@@ -1,5 +1,7 @@
 import { Button, Text, Transaction } from "@/components";
+import { WalletData } from "@/home-chain/secret-js";
 import { IntentionsResult } from "@/keys/intentions-handler";
+import { KeyMetaData } from "@/stores/key-meta-data";
 import {
   ApproveIntentions,
   handleMultisigKeyDecryptedMessages,
@@ -7,12 +9,7 @@ import {
 import SendingAnimation from "@/user-interactions/approve-messages/sending-animation.json";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow } from "@/wallet-data-flow/utils";
-import {
-  BackupShare,
-  EasyShare,
-  KeyMetaData,
-  WalletData,
-} from "@obi-wallet/sdk";
+import { BackupShare, EasyShare } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import Lottie from "lottie-react";
 import { observer } from "mobx-react-lite";

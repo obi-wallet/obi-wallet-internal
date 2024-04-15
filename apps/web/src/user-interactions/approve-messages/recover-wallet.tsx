@@ -1,7 +1,9 @@
 import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
+import { WalletData } from "@/home-chain/secret-js";
 import { IntentionsResult } from "@/keys/intentions-handler";
 import { SharesLocalEncryption } from "@/lib/encryption";
+import { KeyMetaData } from "@/stores/key-meta-data";
 import {
   ApproveIntentions,
   handleMultisigKeyDecryptedMessages,
@@ -9,10 +11,8 @@ import {
 import {
   BackupShare,
   EasyShare,
-  KeyMetaData,
   MultisigKey,
   ObservableMpcWallet,
-  WalletData,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import Lottie from "lottie-react";

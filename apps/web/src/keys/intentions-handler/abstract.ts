@@ -1,4 +1,5 @@
-import { Key, SingleKeyMetaData } from "@obi-wallet/sdk";
+import { SingleKeyMetaData } from "@/stores/key-meta-data";
+import { Key } from "@obi-wallet/sdk";
 import { splitAt } from "ramda";
 
 interface MultisigKeyEncryptedMessage {

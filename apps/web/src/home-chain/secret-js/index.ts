@@ -3,9 +3,9 @@ import {
   MultisigKeyEncryption,
   SharesBackupEncryption,
 } from "@/lib/encryption";
+import { KeyMetaData } from "@/stores/key-meta-data";
 import {
   HomeChainId,
-  KeyMetaData,
   MpcWallet,
   PendingRecoveryKeySchema,
   queryClient,
@@ -14,10 +14,33 @@ import {
   SecretJsClient,
   Serialized,
   UsableKeySchema,
-  WalletData,
 } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 import { z } from "zod";
+
+export const WalletData = z.object({
+  proxyAddress: z.object({
+    address: z.string(),
+  }),
+  owner: z.object({
+    threshold: z.string(),
+    keys: z.array(
+      z.object({
+        type: z.string(),
+        publicKey: Secp256k1PublicKey,
+      }),
+    ),
+  }),
+  userData: z.object({
+    name: z.string(),
+    avatar: z.string(),
+  }),
+  encryptedBackupShare: z.string(),
+  encryptedEasyShare: z.string().optional(),
+  encryptedKeyMetaData: z.string().optional(),
+});
+
+export type WalletData = z.infer<typeof WalletData>;
 
 export class SecretJsHomeChain {
   protected queryNamespace: QueryClientNamespace<

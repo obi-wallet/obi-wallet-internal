@@ -1,8 +1,9 @@
 "use client";
 
 import { useKeyListForMultisigKey } from "@/lib/keys";
+import { SingleKeyMetaData } from "@/stores/key-meta-data";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
-import { Secp256k1PublicKey, SingleKeyMetaData } from "@obi-wallet/sdk";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 

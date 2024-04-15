@@ -6,8 +6,9 @@ import {
 } from "@/keys/intentions-handler";
 import { MultisigKeyDecryption } from "@/lib/encryption";
 import { useKeyListForMultisigKey } from "@/lib/keys";
+import { KeyMetaData } from "@/stores/key-meta-data";
 import { PhoneKeyModal } from "@/user-interactions/approve-intentions/modals/phone";
-import { Key, KeyMetaData, KeyType, MultisigKey } from "@obi-wallet/sdk";
+import { Key, KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";

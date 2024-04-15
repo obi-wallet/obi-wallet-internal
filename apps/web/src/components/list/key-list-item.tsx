@@ -1,6 +1,7 @@
 import { Button } from "@/components";
 import { cn } from "@/lib/utils";
-import { Key, KeyType, SingleKeyMetaData } from "@obi-wallet/sdk";
+import { SingleKeyMetaData } from "@/stores/key-meta-data";
+import { Key, KeyType } from "@obi-wallet/sdk";
 import { FaPlus, FaTriangleExclamation } from "react-icons/fa6";
 
 export interface KeyItem {

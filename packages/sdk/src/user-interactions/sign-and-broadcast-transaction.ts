@@ -3,48 +3,25 @@ import {
   UserInteraction,
 } from "@obi-wallet/sdk-abstract-user-interaction";
 
-import { MultisigKey, WalletMeta } from "../data-structures";
 import { BroadcastTransactionResult } from "../sdk";
-import { TargetChainId } from "../target-chains";
-import { Message } from "../transactions";
 
-interface CommonPayloadWalletMeta {
-  readonly walletMeta: WalletMeta;
-}
-
-interface CommonPayloadMultisigKey {
-  readonly multisigKey: MultisigKey;
-}
-
-interface DefaultInteractionPayload {
-  readonly messages: Message[];
-  readonly demoMode: boolean;
+export interface SignAndBroadcastTransactionUserInteractionPayload {
+  readonly walletMeta: {
+    userEntryAddress: string;
+  };
+  readonly targetChainId: string;
   readonly cancelable: boolean;
-  readonly autoBroadcast?: boolean;
-  readonly isLogin?: boolean;
-  readonly targetChainId?: TargetChainId;
-  readonly hint?: string;
-  readonly amount?: string;
+  // Contains chain-specific data structures
+  readonly messages: unknown[];
 }
 
-type WalletMetaOrMultisigKey =
-  | CommonPayloadMultisigKey
-  | CommonPayloadWalletMeta;
-
-interface BaseUserInteractionResult {
-  approved: boolean;
-  signature: Uint8Array | undefined;
-}
-
-interface UserInteractionResultApproved extends BaseUserInteractionResult {
+interface UserInteractionResultApproved {
   approved: true;
   payload: BroadcastTransactionResult;
-  signature: Uint8Array | undefined;
 }
 
-interface UserInteractionResultRejected extends BaseUserInteractionResult {
+interface UserInteractionResultRejected {
   approved: false;
-  signature: undefined;
 }
 
 type MaybeApproved =
@@ -52,7 +29,7 @@ type MaybeApproved =
   | UserInteractionResultRejected;
 
 export type SignAndBroadcastTransactionUserInteraction = UserInteraction<
-  DefaultInteractionPayload & WalletMetaOrMultisigKey,
+  SignAndBroadcastTransactionUserInteractionPayload,
   MaybeApproved
 >;
 

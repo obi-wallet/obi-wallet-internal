@@ -1,17 +1,16 @@
 "use client";
 
 import { Button, ButtonLink, Modal, renderModal, Text } from "@/components";
-import { SecretJsHomeChain } from "@/home-chain/secret-js";
+import { SecretJsHomeChain, WalletData } from "@/home-chain/secret-js";
 import { AddPhoneKey } from "@/keys/phone/add-phone-key";
 import { AddTelegramKey } from "@/keys/phone/add-telegram-key";
+import { KeyMetaData } from "@/stores/key-meta-data";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import {
   getPasskey,
-  KeyMetaData,
   KeyType,
   MultisigKey,
   Secp256k1PublicKey,
-  WalletData,
 } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
