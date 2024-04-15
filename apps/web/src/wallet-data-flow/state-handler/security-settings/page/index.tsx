@@ -17,22 +17,17 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
       <Text size="xl" fontWeight="semibold">
         Security Settings
       </Text>
-      <Text size="sm" fontWeight="light" className="mt-3">
+      <Text size="sm" fontWeight="light" className="mt-3" leading="normal">
         Add keys to your account. Click any of the options below to update or
         add keys to your account.
       </Text>
-      <Box className="bg-background-select mt-3 flex flex-col justify-between gap-2">
-        <Text size="sm" fontWeight="medium" color="white">
-          My Accounts
+      <Box className="bg-background-select mt-3 flex flex-row justify-between gap-2">
+        <Text size="sm" fontWeight="semibold" color="white">
+          Keys Required To Sign
         </Text>
-        <div className="flex flex-row justify-between">
-          <Text size="sm" fontWeight="light" color="zinc">
-            Keys Required To Sign
-          </Text>
-          <Text size="sm" fontWeight="semibold" color="white">
-            {`${draft.value.threshold} of ${draft.value.keys.length}`}
-          </Text>
-        </div>
+        <Text size="sm" fontWeight="semibold" color="white">
+          {`${draft.value.threshold} of ${draft.value.keys.length}`}
+        </Text>
       </Box>
       <Divider className="my-2" />
 

@@ -68,7 +68,7 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
 
   return (
     <>
-      <div className="mt-3 space-y-2">
+      <div className="mt-6 space-y-2">
         {sentMagicCode ? renderMagicCodeForm() : renderDataForm()}
       </div>
       <div className="mt-40 grid grid-cols-2 gap-8">
@@ -96,7 +96,7 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
 
   function renderDataForm() {
     return (
-      <>
+      <div className="flex flex-col gap-4">
         {askForName ? (
           <Input
             label="Name"
@@ -129,7 +129,7 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
             setSecurityAnswer(value);
           }}
         />
-      </>
+      </div>
     );
   }
 

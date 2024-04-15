@@ -64,7 +64,7 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
 
     return (
       <>
-        <div className="mt-3 space-y-2">
+        <div className="mt-6 space-y-2">
           {sentMagicCode ? renderMagicCodeForm() : renderDataForm()}
         </div>
         <div className="mt-40 grid grid-cols-2 gap-8">
@@ -92,7 +92,7 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
 
     function renderDataForm() {
       return (
-        <>
+        <div className="flex flex-col gap-4">
           {askForName ? (
             <Input
               label="Name"
@@ -125,7 +125,7 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
               setSecurityAnswer(value);
             }}
           />
-        </>
+        </div>
       );
     }
 
