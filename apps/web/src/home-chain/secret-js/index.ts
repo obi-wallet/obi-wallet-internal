@@ -31,10 +31,6 @@ export const WalletData = z.object({
       }),
     ),
   }),
-  userData: z.object({
-    name: z.string(),
-    avatar: z.string(),
-  }),
   encryptedBackupShare: z.string(),
   encryptedEasyShare: z.string().optional(),
   encryptedKeyMetaData: z.string().optional(),
