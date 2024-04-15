@@ -3389,7 +3389,7 @@ __metadata:
     "@types/crypto-js": "npm:^4.2.2"
     "@types/elliptic": "npm:^6.4.18"
     "@types/eslint": "npm:^8.56.2"
-    "@types/json-diff": "npm:^1"
+    "@types/json-diff": "npm:^1.0.3"
     "@types/luxon": "npm:^3.4.2"
     "@types/mocha": "npm:^10.0.6"
     "@types/node": "npm:^20.11.19"
@@ -6125,7 +6125,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/json-diff@npm:^1":
+"@types/json-diff@npm:^1.0.3":
   version: 1.0.3
   resolution: "@types/json-diff@npm:1.0.3"
   checksum: 10c0/ad4dd1b1c4a253c4bfa54e9dfbd087ff7eb58a299eb77ac208c5852372b7637c77f7c507e876dab48eada03b9010db011088dd3d966089cc2b3778e7a35e5150
