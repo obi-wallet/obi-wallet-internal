@@ -142,8 +142,6 @@ export class CosmosSdkMpcSigner
     const primaryKey = this.wallet.owner.primaryKey;
     invariant(primaryKey, "No primary key found");
 
-    invariant(this.wallet.encryptedEasyShare, "No encrypted easy share found");
-
     const easyShare = await new EasyShareDecryption(this.wallet.owner).decrypt(
       this.wallet.encryptedEasyShare,
     );

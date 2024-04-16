@@ -1,4 +1,6 @@
 import { getFeeLender } from "@/lib/fee-lender";
+import { NewWalletData } from "@/wallet-data-backup";
+import { setWalletData } from "@/wallet-data-backup/worker-client";
 import {
   HomeChainIdSchema,
   Messages,
@@ -21,6 +23,7 @@ const schema = z.object({
   userEntryAddress: z.string(),
   userEntryCodeHash: z.string(),
   ownerIndex: z.number(),
+  walletData: NewWalletData,
 });
 
 export interface UserAccountAddress {
@@ -48,6 +51,7 @@ export async function POST(request: Request) {
     userEntryAddress,
     userEntryCodeHash,
     ownerIndex,
+    walletData,
   } = result.data;
 
   const client = new SecretJsClient(homeChainId);
@@ -108,6 +112,20 @@ export async function POST(request: Request) {
   const broadcastTransactionResult =
     await client.broadcastSignedTransaction(signedTransaction);
   console.log(broadcastTransactionResult);
+
+  if (broadcastTransactionResult.success) {
+    const response = await setWalletData(walletData);
+    if (response.status !== 200) {
+      return NextResponse.json(
+        {
+          success: false,
+        },
+        {
+          status: response.status,
+        },
+      );
+    }
+  }
 
   return NextResponse.json({
     success: broadcastTransactionResult.success,

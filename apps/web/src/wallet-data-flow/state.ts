@@ -1,6 +1,6 @@
-import { WalletData } from "@/home-chain/secret-js";
 import { Draft } from "@/stores";
 import { KeyMetaData } from "@/stores/key-meta-data";
+import { WalletData } from "@/wallet-data-backup";
 import {
   BackupShare,
   EasyShare,

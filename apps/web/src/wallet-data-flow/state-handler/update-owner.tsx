@@ -1,6 +1,5 @@
 import { Button, Text, Transaction } from "@/components";
 import { HomeChain } from "@/home-chain";
-import { WalletData } from "@/home-chain/secret-js";
 import { Secp256k1Decryption } from "@/lib/encryption";
 import {
   ApproveIntentions,
@@ -8,6 +7,7 @@ import {
   IntentionsResults,
 } from "@/user-interactions/approve-intentions";
 import SendingAnimation from "@/user-interactions/approve-messages/sending-animation.json";
+import { WalletData } from "@/wallet-data-backup";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow } from "@/wallet-data-flow/utils";
 import { useQuery } from "@obi-wallet/headless-ui";

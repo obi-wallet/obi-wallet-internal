@@ -12,7 +12,7 @@ export const MpcWalletSchema = migratable(
     owner: MultisigKey.schema.migratableSchema,
     userEntryAddress: UserEntryAddress,
     encryptedShares: z.object({
-      easy: z.string().optional(),
+      easy: z.string(),
       backup: z.string(),
     }),
   }),

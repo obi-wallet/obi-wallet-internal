@@ -42,6 +42,7 @@ export async function POST(request: Request) {
   });
   const broadcastTransactionResult =
     await client.broadcastSignedTransaction(signedTransaction);
+
   console.log(broadcastTransactionResult);
 
   return NextResponse.json({

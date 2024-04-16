@@ -276,6 +276,10 @@ export class NewOnboardingPayload implements Draftable {
         userAccountAddress: userAccount.userAccountAddress,
         userAccountCodeHash: userAccount.userAccountCodeHash,
         ownerIndex: this._unclaimedHomeAccount.ownerIndex,
+        walletData: await HomeChain.chainId(this.homeChainId).getWalletData({
+          wallet: this.toMpcWalletData(),
+          keyMetaData: {},
+        }),
       }),
     });
 

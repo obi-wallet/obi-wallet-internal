@@ -1,5 +1,4 @@
 import { Button, Text, Transaction } from "@/components";
-import { WalletData } from "@/home-chain/secret-js";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import {
   ApproveIntentions,
@@ -7,6 +6,7 @@ import {
   IntentionsResults,
 } from "@/user-interactions/approve-intentions";
 import SendingAnimation from "@/user-interactions/approve-messages/sending-animation.json";
+import { WalletData } from "@/wallet-data-backup";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow } from "@/wallet-data-flow/utils";
 import { BackupShare, EasyShare } from "@obi-wallet/sdk";

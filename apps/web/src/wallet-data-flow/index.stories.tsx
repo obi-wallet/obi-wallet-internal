@@ -1,5 +1,5 @@
-import { WalletData } from "@/home-chain/secret-js";
 import { KeyMetaData } from "@/stores/key-meta-data";
+import { WalletData } from "@/wallet-data-backup";
 import { walletDataToMultisigKey } from "@/wallet-data-flow/state";
 import { BackupShare, EasyShare, SecretJsHomeChainId } from "@obi-wallet/sdk";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";

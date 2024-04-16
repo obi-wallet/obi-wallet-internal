@@ -41,7 +41,7 @@ export const SecuritySettings = observer(function SecuritySettings() {
         walletData: walletData.data,
         keyMetaData: keyMetaDataStore.getKeyMetaData(wallet.userEntryAddress),
         locallyEncryptedSharesByPreviousOwner: {
-          easy: wallet.encryptedEasyShare!,
+          easy: wallet.encryptedEasyShare,
           backup: wallet.encryptedBackupShare,
         },
       }}

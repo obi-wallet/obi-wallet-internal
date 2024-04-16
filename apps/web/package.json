@@ -104,6 +104,7 @@
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
+    "vercel": "^34.0.0",
     "zora": "^5.2.0"
   }
 }
