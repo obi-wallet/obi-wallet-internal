@@ -257,6 +257,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
             descriptions={[
               proposedUpdate ? `Confirm new owner` : `Propose new owner`,
             ]}
+            memo=""
             rawData={`
 Changes:
                 

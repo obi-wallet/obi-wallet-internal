@@ -105,6 +105,7 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
             amountInfo={[]}
             feeInfo={[]}
             descriptions={["Recover Wallet"]}
+            memo=""
             rawData={{
               userEntryAddress: walletData.proxyAddress.address,
               owner: walletData.owner,

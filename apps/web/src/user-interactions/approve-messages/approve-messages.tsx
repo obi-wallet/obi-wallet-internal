@@ -83,7 +83,9 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
           hash: Buffer.from(hash).toString("hex"),
         };
       },
-      retry: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
     });
 
     const approve = useMutation({
@@ -133,6 +135,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
               rawData={rawData}
               targetChainId={targetChainId}
               fee={txInfo.data?.fee}
+              memo={memo}
             />
 
             {intentionsPayload ? (
@@ -185,11 +188,13 @@ const PrettyPrint = observer(function PrettyPrint({
   rawData,
   targetChainId,
   fee,
+  memo,
 }: {
   messages: unknown[];
   targetChainId: TargetChainId;
   rawData: unknown;
   fee: unknown;
+  memo: string;
 }) {
   return (
     <PrettyPrintCosmosSdk
@@ -197,6 +202,7 @@ const PrettyPrint = observer(function PrettyPrint({
       rawData={rawData}
       targetChainId={targetChainId}
       fee={fee}
+      memo={memo}
     />
   );
 });
@@ -206,11 +212,13 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
   rawData,
   targetChainId,
   fee,
+  memo,
 }: {
   messages: unknown[];
   rawData: unknown;
   targetChainId: TargetChainId;
   fee: unknown | undefined;
+  memo: string;
 }) {
   const targetChain = TargetChain.chainId(targetChainId);
   invariant(targetChain.validateMessages(messages), "Invalid messages");
@@ -239,6 +247,7 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
       targetChainId={targetChainId}
       feeInfo={feeInfo}
       rawData={rawData}
+      memo={memo}
     />
   );
 });
