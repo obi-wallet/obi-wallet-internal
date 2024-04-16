@@ -1,5 +1,12 @@
 import { getFeeLender } from "@/lib/fee-lender";
-import { HomeChainIdSchema, Messages, SecretJsClient } from "@obi-wallet/sdk";
+import { NewWalletData } from "@/wallet-data-backup";
+import { updateOwner } from "@/wallet-data-backup/worker-client";
+import {
+  HomeChainIdSchema,
+  Messages,
+  MultisigKey,
+  SecretJsClient,
+} from "@obi-wallet/sdk";
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -9,6 +16,8 @@ const schema = z.object({
   userAccountAddress: z.string(),
   userAccountCodeHash: z.string(),
   signatures: z.array(z.string()),
+  previousOwner: MultisigKey.schema.migratableSchema,
+  walletData: NewWalletData,
 });
 
 export async function POST(request: Request) {
@@ -20,8 +29,14 @@ export async function POST(request: Request) {
     });
   }
 
-  const { homeChainId, userAccountAddress, userAccountCodeHash, signatures } =
-    result.data;
+  const {
+    homeChainId,
+    userAccountAddress,
+    userAccountCodeHash,
+    signatures,
+    previousOwner,
+    walletData,
+  } = result.data;
 
   const client = new SecretJsClient(homeChainId);
   const messagesSdk = Messages.chainId(homeChainId);
@@ -44,6 +59,20 @@ export async function POST(request: Request) {
     await client.broadcastSignedTransaction(signedTransaction);
 
   console.log(broadcastTransactionResult);
+
+  if (broadcastTransactionResult.success) {
+    const response = await updateOwner({ walletData, previousOwner });
+    if (response.status !== 200) {
+      return NextResponse.json(
+        {
+          success: false,
+        },
+        {
+          status: response.status,
+        },
+      );
+    }
+  }
 
   return NextResponse.json({
     success: broadcastTransactionResult.success,
