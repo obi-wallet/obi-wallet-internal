@@ -1,7 +1,36 @@
-import { HomeChain } from "@/home-chain";
-import { Migratable, MultisigKey } from "@obi-wallet/sdk";
+import {
+  Migratable,
+  MultisigKey,
+  PendingRecoveryKeySchema,
+  UsableKeySchema,
+} from "@obi-wallet/sdk";
 
 import { NewWalletData } from ".";
+
+export function getOwnerData(owner: Migratable<MultisigKey>) {
+  return {
+    threshold: owner.threshold.toString(),
+    keys: owner.keys.map((key) => {
+      const usableKeyResponse = UsableKeySchema.migratableSchema.safeParse(key);
+      if (usableKeyResponse.success) {
+        return {
+          type: usableKeyResponse.data.type,
+          publicKey: usableKeyResponse.data.payload.publicKey,
+        };
+      }
+      const pendingRecoveryKeyResponse =
+        PendingRecoveryKeySchema.migratableSchema.safeParse(key);
+      if (pendingRecoveryKeyResponse.success) {
+        return {
+          type: pendingRecoveryKeyResponse.data.payload.type,
+          publicKey: pendingRecoveryKeyResponse.data.payload.publicKey,
+        };
+      }
+
+      throw new Error(`Invalid key: ${JSON.stringify(key)}`);
+    }),
+  };
+}
 
 export async function setWalletData(walletData: NewWalletData) {
   const env =
@@ -43,9 +72,7 @@ export async function updateOwner({
       type: "update-owner",
       payload: {
         walletData,
-        previousOwner: HomeChain.chainId(walletData.homeChainId).getOwnerData(
-          previousOwner,
-        ),
+        previousOwner: getOwnerData(previousOwner),
       },
     }),
     headers: {

@@ -9,6 +9,7 @@ import {
   WalletDataBackup,
   NewWalletData,
 } from "@/wallet-data-backup";
+import { getOwnerData } from "@/wallet-data-backup/worker-client";
 import {
   HomeChainId,
   Migratable,
@@ -109,32 +110,6 @@ export class SecretJsHomeChain {
     });
   }
 
-  public getOwnerData(owner: Migratable<MultisigKey>) {
-    return {
-      threshold: owner.threshold.toString(),
-      keys: owner.keys.map((key) => {
-        const usableKeyResponse =
-          UsableKeySchema.migratableSchema.safeParse(key);
-        if (usableKeyResponse.success) {
-          return {
-            type: usableKeyResponse.data.type,
-            publicKey: usableKeyResponse.data.payload.publicKey,
-          };
-        }
-        const pendingRecoveryKeyResponse =
-          PendingRecoveryKeySchema.migratableSchema.safeParse(key);
-        if (pendingRecoveryKeyResponse.success) {
-          return {
-            type: pendingRecoveryKeyResponse.data.payload.type,
-            publicKey: pendingRecoveryKeyResponse.data.payload.publicKey,
-          };
-        }
-
-        throw new Error(`Invalid key: ${JSON.stringify(key)}`);
-      }),
-    };
-  }
-
   public async getWalletData({
     wallet,
     keyMetaData,
@@ -142,6 +117,7 @@ export class SecretJsHomeChain {
     wallet: Serialized<MpcWallet>;
     keyMetaData: KeyMetaData;
   }): Promise<NewWalletData> {
+    console.log("get wallet data");
     const w = MpcWallet.create(wallet);
     async function getEncryptedEasyShare() {
       const easyShare = await new EasyShareDecryption(w.owner).decrypt(
@@ -160,7 +136,7 @@ export class SecretJsHomeChain {
     const data: NewWalletData = {
       homeChainId: wallet.homeChain,
       userEntryAddress: wallet.userEntryAddress,
-      owner: this.getOwnerData(wallet.owner),
+      owner: getOwnerData(wallet.owner),
       encryptedShares: {
         easy: encryptedEasyShare,
         backup: wallet.encryptedShares.backup,

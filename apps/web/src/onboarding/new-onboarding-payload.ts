@@ -122,7 +122,6 @@ export class NewOnboardingPayload implements Draftable {
   public toMpcWalletData(): Serialized<MpcWallet> {
     invariant(this._encryptedShares, "Shares are not encrypted");
     invariant(this._unclaimedHomeAccount, "Home account is not available");
-    invariant(this._homeAccountClaimed, "Home account is not claimed");
     invariant(this._distributedShares, "Shares have not been distributed");
 
     return MpcWallet.schema.migratableSchema.parse({
