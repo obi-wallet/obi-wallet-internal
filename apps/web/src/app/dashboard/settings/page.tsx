@@ -36,6 +36,14 @@ export default function Settings() {
           <Button
             variant="secondary"
             block
+            href="/dashboard/settings/import-token"
+            className="text-xl"
+          >
+            Import Token
+          </Button>
+          <Button
+            variant="secondary"
+            block
             onClick={() => {
               mpcWalletsStore.logout();
               router.push("/");
