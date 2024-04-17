@@ -1,15 +1,10 @@
-import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { fetchOwner, useOwnerQuery } from "@/hooks/use-owner";
 import { usePublicKeyQuery } from "@/hooks/use-public-key";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { KeyType } from "@obi-wallet/sdk";
-import {
-  useMutation,
-  UseMutationResult,
-  UseQueryResult,
-} from "@tanstack/react-query";
+import { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
 import invariant from "tiny-invariant";
 
 export interface WalletHealthCheck {
@@ -135,27 +130,10 @@ export function useBackupWalletAutomatically() {
   });
 }
 
-export function useBackupWalletMutation() {
-  const wallet = useCurrentWallet({});
-  const { keyMetaDataStore } = useStore();
-
-  return useMutation({
-    mutationFn: async () => {
-      invariant(wallet, "Expected wallet to be set.");
-      const homeChain = HomeChain.chainId(wallet.homeChainId);
-      return await homeChain.backupWallet({
-        wallet: wallet.toJSON(),
-        keyMetaData: keyMetaDataStore.getKeyMetaData(wallet.userEntryAddress),
-      });
-    },
-  });
-}
-
 export function useWalletBackupCheck(): WalletHealthCheck {
   const wallet = useCurrentWallet({});
 
   const walletBackup = useWalletBackupQuery();
-  const resolve = useBackupWalletMutation();
 
   const query = useQuery({
     queryKey: ["wallet-backup-check", wallet?.userEntryAddress],
@@ -238,7 +216,6 @@ export function useWalletBackupCheck(): WalletHealthCheck {
 
   return {
     label: "Wallet backup is available",
-    resolve,
     query,
   };
 }
@@ -247,7 +224,6 @@ export function useWalletBackupIncludesEasyShareCheck(): WalletHealthCheck {
   const wallet = useCurrentWallet({});
 
   const walletBackup = useWalletBackupQuery();
-  const resolve = useBackupWalletMutation();
 
   const query = useQuery({
     queryKey: [
@@ -293,7 +269,6 @@ export function useWalletBackupIncludesEasyShareCheck(): WalletHealthCheck {
 
   return {
     label: "Wallet backup includes easy share",
-    resolve: wallet?.encryptedEasyShare ? resolve : undefined,
     query,
   };
 }

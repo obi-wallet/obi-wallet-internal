@@ -147,7 +147,6 @@ export class NewOnboardingPayload implements Draftable {
     await this.encryptSharesIfNecessary();
     await this.distributeSharesIfNecessary();
     await this.claimHomeAccountIfNecessary();
-    await this.backupHomeAccount();
   }
 
   @action
@@ -292,16 +291,6 @@ export class NewOnboardingPayload implements Draftable {
     }
 
     this._homeAccountClaimed = true;
-  }
-
-  protected async backupHomeAccount() {
-    invariant(this._unclaimedHomeAccount, "Home account is not available");
-    invariant(this._encryptedShares, "Shares are not encrypted");
-
-    await HomeChain.chainId(this.homeChainId).backupWallet({
-      wallet: this.toMpcWalletData(),
-      keyMetaData: {},
-    });
   }
 
   public static deserialize(data: z.infer<typeof OnboardingPayloadSchema>) {

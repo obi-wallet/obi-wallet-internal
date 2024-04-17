@@ -202,34 +202,6 @@ export class SecretJsHomeChain {
     });
   }
 
-  public async backupWallet({
-    wallet,
-    keyMetaData,
-  }: {
-    wallet: Serialized<MpcWallet>;
-    keyMetaData: KeyMetaData;
-  }) {
-    const body = await this.getWalletDataBackup({ wallet, keyMetaData });
-    const response = await fetch(
-      "https://proxy-wallets.obiwallet.workers.dev/add",
-      {
-        method: "POST",
-        body: JSON.stringify(body),
-        headers: {
-          "Api-Version": "v1",
-          Env:
-            process.env.NEXT_PUBLIC_ENV === "production"
-              ? "production"
-              : "staging",
-        },
-      },
-    );
-
-    if (response.status !== 200) {
-      throw new Error(`Failed to backup wallet: ${response.status}`);
-    }
-  }
-
   public async lookupWalletBackup(publicKey: Secp256k1PublicKey) {
     const response = await fetch(
       "https://proxy-wallets.obiwallet.workers.dev",
