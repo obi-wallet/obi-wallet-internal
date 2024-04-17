@@ -195,10 +195,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
           throw new Error("Failed to update owner");
         }
 
-        await finishFlow({
-          ...payload,
-          backupWallet: true,
-        });
+        await finishFlow(payload);
         return;
       }
 

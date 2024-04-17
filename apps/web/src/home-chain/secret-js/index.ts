@@ -12,10 +12,7 @@ import {
 import { getOwnerData } from "@/wallet-data-backup/worker-client";
 import {
   HomeChainId,
-  Migratable,
-  // HomeChainIdSchema,
   MpcWallet,
-  MultisigKey,
   PendingRecoveryKeySchema,
   queryClient,
   QueryClientNamespace,
@@ -117,7 +114,6 @@ export class SecretJsHomeChain {
     wallet: Serialized<MpcWallet>;
     keyMetaData: KeyMetaData;
   }): Promise<NewWalletData> {
-    console.log("get wallet data");
     const w = MpcWallet.create(wallet);
     async function getEncryptedEasyShare() {
       const easyShare = await new EasyShareDecryption(w.owner).decrypt(

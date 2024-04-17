@@ -1,5 +1,6 @@
 import { Box, Divider, Text } from "@/components";
 import { AddPhoneKey } from "@/keys/phone/add-phone-key";
+import { isPublicKeyInUse } from "@/wallet-data-backup/worker-client";
 import { observer } from "mobx-react-lite";
 
 import { useSecuritySettingsContext } from "../../context";
@@ -14,9 +15,21 @@ export const AddPhoneKeyPage = observer(function AddPhoneKeyPage() {
       </Text>
       <Divider className="my-2" />
       <AddPhoneKey
-        onSubmit={({ publicKey, keyMetaData }) => {
-          draft.value.addPhoneKey(publicKey);
-          setKeyMetaData(publicKey, keyMetaData);
+        onSubmit={async ({ publicKey, keyMetaData }) => {
+          if (
+            await isPublicKeyInUse({
+              homeChainId: draft.value.chainId,
+              publicKey,
+            })
+          ) {
+            window.alert(
+              "This key is already used by a wallet. Please use a different phone number or security answer.",
+            );
+          } else {
+            draft.value.addPhoneKey(publicKey);
+            setKeyMetaData(publicKey, keyMetaData);
+          }
+          popPage();
         }}
         onCancel={() => {
           popPage();

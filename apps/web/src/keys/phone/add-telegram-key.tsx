@@ -44,6 +44,7 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
             type: "tendermint/PubKeySecp256k1",
             value: response.publicKey,
           };
+
           onSubmit({
             publicKey,
             keyMetaData: TelegramSingleKeyMetaData.parse({

@@ -50,6 +50,7 @@ export const SecuritySettings = observer(function SecuritySettings() {
 
         keyMetaDataStore.setKeyMetaData(wallet.userEntryAddress, keyMetaData);
         mpcWalletsStore.upsertWallet(wallet);
+        router.replace("/dashboard/settings");
       }}
       onBack={() => {
         router.replace("/dashboard/settings");

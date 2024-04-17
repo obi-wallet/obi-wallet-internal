@@ -1,11 +1,50 @@
 import {
+  HomeChainId,
   Migratable,
   MultisigKey,
   PendingRecoveryKeySchema,
+  Secp256k1PublicKey,
   UsableKeySchema,
 } from "@obi-wallet/sdk";
 
 import { NewWalletData } from ".";
+
+export async function isPublicKeyInUse({
+  homeChainId,
+  publicKey,
+}: {
+  homeChainId: HomeChainId;
+  publicKey: Secp256k1PublicKey;
+}) {
+  const response = await lookupPublicKey({
+    homeChainId,
+    publicKey: publicKey,
+  });
+
+  switch (response.status) {
+    case 200:
+      return true;
+    case 404:
+      return false;
+    default:
+      throw new Error(`Unexpected status code: ${response.status}`);
+  }
+}
+
+export async function lookupPublicKey({
+  homeChainId,
+  publicKey,
+}: {
+  homeChainId: HomeChainId;
+  publicKey: Secp256k1PublicKey;
+}) {
+  return await fetch(
+    `https://wallets.obiwallet.workers.dev/${encodeURIComponent(homeChainId)}/key/${encodeURIComponent(publicKey.value)}`,
+    {
+      headers: getAnonymousHeaders(),
+    },
+  );
+}
 
 export function getOwnerData(owner: Migratable<MultisigKey>) {
   return {
@@ -33,23 +72,13 @@ export function getOwnerData(owner: Migratable<MultisigKey>) {
 }
 
 export async function setWalletData(walletData: NewWalletData) {
-  const env =
-    process.env.NEXT_PUBLIC_ENV === "production" ? "production" : "staging";
-  const token =
-    env === "production"
-      ? process.env.WALLETS_WORKER_SECRET_PRODUCTION
-      : process.env.WALLETS_WORKER_SECRET_STAGING;
   return await fetch("https://wallets.obiwallet.workers.dev", {
     method: "POST",
     body: JSON.stringify({
       type: "set-wallet-data",
       payload: walletData,
     }),
-    headers: {
-      Env:
-        process.env.NEXT_PUBLIC_ENV === "production" ? "production" : "staging",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: getAuthenticatedHeaders(),
   });
 }
 
@@ -60,12 +89,6 @@ export async function updateOwner({
   walletData: NewWalletData;
   previousOwner: Migratable<MultisigKey>;
 }) {
-  const env =
-    process.env.NEXT_PUBLIC_ENV === "production" ? "production" : "staging";
-  const token =
-    env === "production"
-      ? process.env.WALLETS_WORKER_SECRET_PRODUCTION
-      : process.env.WALLETS_WORKER_SECRET_STAGING;
   return await fetch("https://wallets.obiwallet.workers.dev", {
     method: "POST",
     body: JSON.stringify({
@@ -75,10 +98,26 @@ export async function updateOwner({
         previousOwner: getOwnerData(previousOwner),
       },
     }),
-    headers: {
-      Env:
-        process.env.NEXT_PUBLIC_ENV === "production" ? "production" : "staging",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: getAuthenticatedHeaders(),
   });
+}
+
+function getAuthenticatedHeaders() {
+  const anonymousHeaders = getAnonymousHeaders();
+  const token =
+    anonymousHeaders.Env === "production"
+      ? process.env.WALLETS_WORKER_SECRET_PRODUCTION
+      : process.env.WALLETS_WORKER_SECRET_STAGING;
+  return {
+    ...anonymousHeaders,
+    Authorization: `Bearer ${token}`,
+  };
+}
+
+function getAnonymousHeaders() {
+  const env =
+    process.env.NEXT_PUBLIC_ENV === "production" ? "production" : "staging";
+  return {
+    Env: env,
+  };
 }

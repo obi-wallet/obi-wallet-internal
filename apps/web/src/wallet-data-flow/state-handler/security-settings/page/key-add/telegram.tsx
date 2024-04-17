@@ -1,5 +1,6 @@
 import { Box, Divider, Text } from "@/components";
 import { AddTelegramKey } from "@/keys/phone/add-telegram-key";
+import { isPublicKeyInUse } from "@/wallet-data-backup/worker-client";
 import { observer } from "mobx-react-lite";
 
 import { useSecuritySettingsContext } from "../../context";
@@ -14,9 +15,21 @@ export const AddTelegramKeyPage = observer(function AddTelegramKeyPage() {
       </Text>
       <Divider className="my-2" />
       <AddTelegramKey
-        onSubmit={({ publicKey, keyMetaData }) => {
-          draft.value.addTelegramKey(publicKey);
-          setKeyMetaData(publicKey, keyMetaData);
+        onSubmit={async ({ publicKey, keyMetaData }) => {
+          if (
+            await isPublicKeyInUse({
+              homeChainId: draft.value.chainId,
+              publicKey,
+            })
+          ) {
+            window.alert(
+              "This key is already used by a wallet. Please use a different Telegram Chat ID or security answer.",
+            );
+          } else {
+            draft.value.addTelegramKey(publicKey);
+            setKeyMetaData(publicKey, keyMetaData);
+          }
+          popPage();
         }}
         onCancel={() => {
           popPage();

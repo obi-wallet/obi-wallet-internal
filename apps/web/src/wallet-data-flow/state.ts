@@ -64,7 +64,7 @@ export interface WalletDataFlowState {
     wallet,
     keyMetaData,
   }: {
-    wallet: Serialized<typeof MpcWallet>;
+    wallet: Serialized<MpcWallet>;
     keyMetaData: KeyMetaData;
   }): void;
   onBack(): void;

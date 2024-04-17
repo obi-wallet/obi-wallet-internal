@@ -1,8 +1,8 @@
-import { HomeChain } from "@/home-chain";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { SharesLocalEncryption } from "@/lib/encryption";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
-import { BackupShare, EasyShare } from "@obi-wallet/sdk";
+import { BackupShare, EasyShare, MpcWallet, Serialized } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
 export function useGetWallet() {
@@ -10,7 +10,6 @@ export function useGetWallet() {
 
   return async function getWallet(payload: {
     shares: { easy: EasyShare; backup: BackupShare };
-    keyMetaData: KeyMetaData;
   }) {
     invariant(state.walletData, "Wallet data not found");
 
@@ -30,34 +29,32 @@ export function useGetWallet() {
 }
 
 export function useFinishFlow() {
+  const wallet = useCurrentWallet({});
   const { state } = useWalletDataFlowContext();
   const getWallet = useGetWallet();
 
   return async (payload: {
     shares?: { easy: EasyShare; backup: BackupShare };
     keyMetaData: KeyMetaData;
-    backupWallet?: boolean;
   }) => {
     invariant(state.walletData, "Wallet data not found");
     invariant(state.ownerDraft.value.primaryKey, "Primary key not found");
 
-    const shares = payload.shares ?? state.shares;
-    invariant(shares, "Shares not found");
+    async function getWalletData(): Promise<Serialized<MpcWallet>> {
+      const shares = payload.shares ?? state.shares;
 
-    const wallet = await getWallet({
-      shares,
-      keyMetaData: payload.keyMetaData,
-    });
+      if (!shares) {
+        invariant(wallet, "No shares available, expected wallet to be set");
+        return wallet.toJSON();
+      }
 
-    if (payload.backupWallet && !state.mockOnly) {
-      await HomeChain.chainId(wallet.homeChain).backupWallet({
-        wallet,
-        keyMetaData: payload.keyMetaData,
+      return await getWallet({
+        shares,
       });
     }
 
     state.onDone({
-      wallet,
+      wallet: await getWalletData(),
       keyMetaData: payload.keyMetaData,
     });
   };

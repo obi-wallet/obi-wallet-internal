@@ -1,13 +1,11 @@
 import { Box, Button, Divider, KeyListItem, Text } from "@/components";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
-import { useFinishFlow } from "@/wallet-data-flow/utils";
 import { observer } from "mobx-react-lite";
 
 import { useSecuritySettingsContext } from "../context";
 
 export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
   const { state, dispatch } = useWalletDataFlowContext();
-  const finishFlow = useFinishFlow();
   const { draft, keyMetaDataDraft, keyList, pushPage } =
     useSecuritySettingsContext();
   const missingMandatoryKey = !draft.value.primaryKey;
@@ -68,13 +66,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
             (!draft.isDirty && !keyMetaDataDraft.isDirty) || missingMandatoryKey
           }
           onClick={async () => {
-            if (draft.value.address === draft.original.address) {
-              await finishFlow({
-                keyMetaData: keyMetaDataDraft.value.value,
-              });
-              return;
-            }
-
+            // TODO: if the owner has not been updated, we can simplify this (only requires to sign a hash to authenticate the update)
             dispatch({
               type: "update-owner",
             });

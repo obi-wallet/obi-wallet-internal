@@ -24,7 +24,7 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
   walletData,
 }) {
   const { state, dispatch } = useWalletDataFlowContext();
-  const commitData = useFinishFlow();
+  const finishFlow = useFinishFlow();
   const owner = state.ownerDraft.value;
   const keyMetaData = state.keyMetaDataDraft.value.value;
 
@@ -49,7 +49,7 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
         const keyMetaData = KeyMetaData.parse(JSON.parse(keyMetaDataRaw));
 
         if (state.ownerDraft.value.primaryKey) {
-          await commitData({
+          await finishFlow({
             shares: {
               easy: easyShare,
               backup: backupShare,

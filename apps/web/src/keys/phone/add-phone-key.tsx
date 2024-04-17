@@ -48,6 +48,7 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
           type: "tendermint/PubKeySecp256k1",
           value: response.publicKey,
         };
+
         onSubmit({
           publicKey,
           keyMetaData: PhoneSingleKeyMetaData.parse({
