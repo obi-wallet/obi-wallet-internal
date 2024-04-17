@@ -22,7 +22,7 @@ export function useGetWallet() {
     return {
       homeChain: owner.chainId,
       owner: owner.toJSON()!,
-      userEntryAddress: state.walletData.proxyAddress.address,
+      userEntryAddress: state.walletData.userEntryAddress,
       encryptedShares,
     };
   };

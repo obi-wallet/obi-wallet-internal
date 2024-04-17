@@ -9,7 +9,10 @@ import {
   WalletDataBackup,
   NewWalletData,
 } from "@/wallet-data-backup";
-import { getOwnerData } from "@/wallet-data-backup/worker-client";
+import {
+  getOwnerData,
+  lookupPublicKey,
+} from "@/wallet-data-backup/worker-client";
 import {
   HomeChainId,
   MpcWallet,
@@ -202,7 +205,26 @@ export class SecretJsHomeChain {
     });
   }
 
-  public async lookupWalletBackup(publicKey: Secp256k1PublicKey) {
+  public async lookupWalletBackup({
+    homeChainId,
+    publicKey,
+  }: {
+    homeChainId: HomeChainId;
+    publicKey: Secp256k1PublicKey;
+  }): Promise<NewWalletData | null> {
+    const response = await lookupPublicKey({
+      homeChainId,
+      publicKey,
+    });
+
+    if (response.status === 200) {
+      return NewWalletData.parse(await response.json());
+    }
+
+    return null;
+  }
+
+  public async lookupLegacyWalletBackups(publicKey: Secp256k1PublicKey) {
     const response = await fetch(
       "https://proxy-wallets.obiwallet.workers.dev",
       {

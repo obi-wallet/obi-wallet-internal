@@ -3,7 +3,6 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { fetchOwner, useOwnerQuery } from "@/hooks/use-owner";
 import { usePublicKeyQuery } from "@/hooks/use-public-key";
 import { useQuery } from "@obi-wallet/headless-ui";
-import { KeyType } from "@obi-wallet/sdk";
 import { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
 import invariant from "tiny-invariant";
 
@@ -53,7 +52,10 @@ function useWalletBackupQuery() {
         wallet.owner.keys.map(async (key) => {
           return {
             key,
-            backups: await homeChain.lookupWalletBackup(key.publicKey),
+            data: await homeChain.lookupWalletBackup({
+              homeChainId: wallet.homeChainId,
+              publicKey: key.publicKey,
+            }),
           };
         }),
       );
@@ -142,31 +144,17 @@ export function useWalletBackupCheck(): WalletHealthCheck {
       invariant(walletBackup.data, "Expected wallet backup to be set.");
       const backupPerKey = walletBackup.data;
 
-      return backupPerKey.every((backup) => {
+      return backupPerKey.every(({ data }) => {
         const fail = (message: string) => {
           console.error(message);
           return false;
         };
 
-        if (
-          backup.key.type === KeyType.Passkey &&
-          backup.backups.length !== 1
-        ) {
-          return fail(
-            `Expected exactly one backup per key, got ${backupPerKey.length}`,
-          );
-        }
-
-        if (backup.backups.length === 0) {
-          return fail(`Expected a backup per key, got ${backupPerKey.length}`);
-        }
-
-        const [data] = backup.backups;
         invariant(data, "Expected data to be set");
 
-        if (data.proxyAddress.address !== wallet.userEntryAddress) {
+        if (data.userEntryAddress !== wallet.userEntryAddress) {
           return fail(
-            `Expected backup to be for wallet ${wallet.userEntryAddress}, got ${data.proxyAddress.address}`,
+            `Expected backup to be for wallet ${wallet.userEntryAddress}, got ${data.userEntryAddress}`,
           );
         }
 
@@ -204,7 +192,7 @@ export function useWalletBackupCheck(): WalletHealthCheck {
           return fail("Expected all keys to match");
         }
 
-        if (typeof data.encryptedBackupShare !== "string") {
+        if (typeof data.encryptedShares.backup !== "string") {
           return fail("Expected backup share to be backed up");
         }
 
@@ -235,29 +223,15 @@ export function useWalletBackupIncludesEasyShareCheck(): WalletHealthCheck {
       invariant(walletBackup.data, "Expected wallet backup to be set.");
       const backupPerKey = walletBackup.data;
 
-      return backupPerKey.every((backup) => {
+      return backupPerKey.every(({ data }) => {
         const fail = (message: string) => {
           console.error(message);
           return false;
         };
 
-        if (
-          backup.key.type === KeyType.Passkey &&
-          backup.backups.length !== 1
-        ) {
-          return fail(
-            `Expected exactly one backup per key, got ${backupPerKey.length}`,
-          );
-        }
-
-        if (backup.backups.length === 0) {
-          return fail(`Expected a backup per key, got ${backupPerKey.length}`);
-        }
-
-        const [data] = backup.backups;
         invariant(data, "Expected data to be set");
 
-        if (typeof data.encryptedEasyShare !== "string") {
+        if (typeof data.encryptedShares.easy !== "string") {
           return fail("Expected easy share to be backed up");
         }
 

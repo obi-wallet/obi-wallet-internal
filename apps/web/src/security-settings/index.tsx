@@ -24,10 +24,10 @@ export const SecuritySettings = observer(function SecuritySettings() {
         "Expected wallet to have a primary key",
       );
       const homeChain = HomeChain.chainId(wallet.homeChainId!);
-      const [firstWallet] = await homeChain.lookupWalletBackup(
-        wallet.owner.primaryKey.publicKey,
-      );
-      return firstWallet;
+      return await homeChain.lookupWalletBackup({
+        homeChainId: wallet.homeChainId,
+        publicKey: wallet.owner.primaryKey.publicKey,
+      });
     },
   });
 

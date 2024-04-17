@@ -8,7 +8,7 @@ import {
   IntentionsResults,
 } from "@/user-interactions/approve-intentions";
 import SendingAnimation from "@/user-interactions/approve-messages/sending-animation.json";
-import { WalletData } from "@/wallet-data-backup";
+import { NewWalletData } from "@/wallet-data-backup";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow, useGetWallet } from "@/wallet-data-flow/utils";
 import { useQuery } from "@obi-wallet/headless-ui";
@@ -22,7 +22,7 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 
 export interface UpdateOwnerProps {
-  walletData: WalletData;
+  walletData: NewWalletData;
 }
 
 export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
@@ -32,7 +32,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
   const finishFlow = useFinishFlow();
   const getWallet = useGetWallet();
 
-  const userEntryAddress = walletData.proxyAddress.address;
+  const userEntryAddress = walletData.userEntryAddress;
 
   const previousOwner = state.ownerDraft.original;
   const newOwner = state.ownerDraft.value;

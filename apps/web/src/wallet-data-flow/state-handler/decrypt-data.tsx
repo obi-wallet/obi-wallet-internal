@@ -6,7 +6,7 @@ import {
   IntentionsResults,
 } from "@/user-interactions/approve-intentions";
 import SendingAnimation from "@/user-interactions/approve-messages/sending-animation.json";
-import { WalletData } from "@/wallet-data-backup";
+import { NewWalletData } from "@/wallet-data-backup";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow } from "@/wallet-data-flow/utils";
 import { BackupShare, EasyShare } from "@obi-wallet/sdk";
@@ -17,7 +17,7 @@ import { useState } from "react";
 import invariant from "tiny-invariant";
 
 export interface DecryptDataProps {
-  walletData: WalletData;
+  walletData: NewWalletData;
 }
 
 export const DecryptData = observer<DecryptDataProps>(function DecryptData({
@@ -78,8 +78,8 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
 
   function getMultisigKeyEncryptedMessages(): string[] {
     const encryptedKeyMetaData = walletData.encryptedKeyMetaData;
-    const encryptedEasyShare = walletData.encryptedEasyShare;
-    const encryptedBackupShare = walletData.encryptedBackupShare;
+    const encryptedEasyShare = walletData.encryptedShares.easy;
+    const encryptedBackupShare = walletData.encryptedShares.backup;
 
     return [
       ...(encryptedKeyMetaData ? [encryptedKeyMetaData] : []),
@@ -107,7 +107,7 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
             descriptions={["Recover Wallet"]}
             memo=""
             rawData={{
-              userEntryAddress: walletData.proxyAddress.address,
+              userEntryAddress: walletData.userEntryAddress,
               owner: walletData.owner,
             }}
           />

@@ -1,6 +1,6 @@
 import { Draft } from "@/stores";
 import { KeyMetaData } from "@/stores/key-meta-data";
-import { WalletData } from "@/wallet-data-backup";
+import { NewWalletData } from "@/wallet-data-backup";
 import {
   BackupShare,
   EasyShare,
@@ -51,7 +51,7 @@ export interface WalletDataFlowState {
   mockOnly: boolean;
   ownerDraft: Draft<MultisigKey>;
   keyMetaDataDraft: Draft<KeyMetaDataContainer>;
-  walletData: WalletData | null;
+  walletData: NewWalletData | null;
   shares: {
     easy: EasyShare;
     backup: BackupShare;
@@ -75,7 +75,7 @@ export type WalletDataFlowAction =
   | {
       type: "set-wallet-data";
       payload: {
-        wallet: WalletData;
+        wallet: NewWalletData;
         modifyMultisigKey?(multisigKey: MultisigKey): void;
         extraKeyMetaData?: KeyMetaData;
       };
@@ -105,7 +105,7 @@ export function walletDataToMultisigKey({
   wallet,
 }: {
   homeChainId: HomeChainId;
-  wallet: WalletData;
+  wallet: NewWalletData;
 }): MultisigKey {
   const multisigKey = ObservableMultisigKey.create(homeChainId);
   wallet.owner.keys.forEach((key) => {
@@ -192,7 +192,7 @@ export interface WalletDataFlowStatePayload {
   initialValues: {
     owner?: MultisigKey;
     newOwner?: MultisigKey;
-    walletData?: WalletData;
+    walletData?: NewWalletData;
     keyMetaData?: KeyMetaData;
     newKeyMetaData?: KeyMetaData;
     shares?: {

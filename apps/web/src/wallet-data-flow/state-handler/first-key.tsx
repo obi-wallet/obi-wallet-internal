@@ -33,10 +33,10 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
       modifyMultisigKey?(multisigKey: MultisigKey): void;
     }) => {
       const chainId = state.ownerDraft.value.chainId;
-      const proxyWallets = await new SecretJsHomeChain(
-        chainId,
-      ).lookupWalletBackup(publicKey);
-      const wallet = proxyWallets[0];
+      const wallet = await new SecretJsHomeChain(chainId).lookupWalletBackup({
+        homeChainId: chainId,
+        publicKey,
+      });
 
       if (wallet) {
         dispatch({
@@ -48,7 +48,7 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
           },
         });
       } else {
-        setProxyWallets(proxyWallets);
+        setProxyWallets([]);
       }
     },
     onError(error) {
