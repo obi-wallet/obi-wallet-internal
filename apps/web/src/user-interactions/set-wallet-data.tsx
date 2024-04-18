@@ -78,7 +78,7 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
           return Buffer.from(signature).toString("hex");
         });
 
-      await fetch("/api/set-wallet-data", {
+      const response = await fetch("/api/set-wallet-data", {
         method: "POST",
         body: JSON.stringify({
           serializedWalletData: interaction.payload.serializedWalletData,
@@ -87,6 +87,10 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
           userAccountCodeHash: userAccount.data.userAccountCodeHash,
         }),
       });
+
+      if (response.status === 200 && (await response.json()).success) {
+        interaction.resolve({ approved: true });
+      }
     },
     onError(error) {
       console.error(error);

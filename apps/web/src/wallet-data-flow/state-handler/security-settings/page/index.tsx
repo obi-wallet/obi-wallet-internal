@@ -1,10 +1,14 @@
 import { Box, Button, Divider, KeyListItem, Text } from "@/components";
+import { HomeChain } from "@/home-chain";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { observer } from "mobx-react-lite";
 
 import { useSecuritySettingsContext } from "../context";
 
 export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
+  const currentWallet = useCurrentWallet({});
   const { state, dispatch } = useWalletDataFlowContext();
   const { draft, keyMetaDataDraft, keyList, pushPage } =
     useSecuritySettingsContext();
@@ -66,10 +70,35 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
             (!draft.isDirty && !keyMetaDataDraft.isDirty) || missingMandatoryKey
           }
           onClick={async () => {
-            // TODO: if the owner has not been updated, we can simplify this (only requires to sign a hash to authenticate the update)
-            dispatch({
-              type: "update-owner",
-            });
+            if (
+              draft.value.address === draft.original.address &&
+              currentWallet
+            ) {
+              const keyMetaData = keyMetaDataDraft.value.value;
+              const wallet = await HomeChain.chainId(
+                draft.value.chainId,
+              ).getWalletData({
+                wallet: currentWallet.toJSON(),
+                keyMetaData: keyMetaDataDraft.value.value,
+              });
+              const response = await SetWalletDataUserInteraction.start({
+                homeChainId: draft.value.chainId,
+                owner: draft.value.toJSON()!,
+                keyMetaData: keyMetaDataDraft.value.value,
+                serializedWalletData: JSON.stringify(wallet),
+              });
+              if (response.approved) {
+                state.onDone({
+                  wallet: currentWallet.toJSON(),
+                  keyMetaData,
+                });
+              }
+            } else {
+              // TODO: if the owner has not been updated, we can simplify this (only requires to sign a hash to authenticate the update)
+              dispatch({
+                type: "update-owner",
+              });
+            }
           }}
         >
           Save
