@@ -3434,6 +3434,7 @@ __metadata:
     "@obi-wallet/mpc-ecdsa-wasm-types": "workspace:*"
     "@obi-wallet/sdk": "workspace:*"
     "@obi-wallet/sdk-abstract-target-chain": "workspace:*"
+    "@obi-wallet/sdk-abstract-user-interaction": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@obi-wallet/wallet-connect": "workspace:*"
     "@reactuses/core": "npm:^5.0.5"

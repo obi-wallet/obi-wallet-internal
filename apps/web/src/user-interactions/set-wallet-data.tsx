@@ -115,7 +115,16 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
             feeInfo={[]}
             descriptions={["Backup Wallet Data"]}
             memo=""
-            rawData={JSON.parse(interaction.payload.serializedWalletData)}
+            rawData={{
+              homeChainId: walletData.homeChainId,
+              userEntryAddress: walletData.userEntryAddress,
+              owner: walletData.owner,
+              encryptedShares: {
+                easy: "...",
+                backup: "...",
+              },
+              encryptedKeyMetaData: "...",
+            }}
           />
 
           <ApproveIntentions

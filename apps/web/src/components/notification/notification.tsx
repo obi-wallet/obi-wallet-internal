@@ -1,17 +1,20 @@
 import { cn } from "@/lib/utils";
 import {
-  FaTriangleExclamation,
-  FaSquareCheck,
   FaRectangleXmark,
+  FaSquareCheck,
+  FaTriangleExclamation,
 } from "react-icons/fa6";
+
 export type NOTIFICATION_TYPE = "warning" | "success" | "error";
 
 export function Notification({
   description,
   type,
+  onClick,
 }: {
   description: string;
   type: NOTIFICATION_TYPE;
+  onClick?: () => void;
 }) {
   return (
     <div
@@ -21,7 +24,11 @@ export function Notification({
         type === "warning" && "bg-[#ffa70b]",
         type === "success" && "bg-[#34D399]",
         type === "error" && "bg-[#F87171]",
+        {
+          "cursor-pointer": !!onClick,
+        },
       )}
+      onClick={onClick}
     >
       <div className="max-md:hidden">
         {type === "warning" && (

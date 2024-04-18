@@ -8,6 +8,7 @@ import { useQuery } from "@obi-wallet/headless-ui";
 import {
   useMutation,
   UseMutationResult,
+  useQueryClient,
   UseQueryResult,
 } from "@tanstack/react-query";
 import invariant from "tiny-invariant";
@@ -73,6 +74,7 @@ function useWalletBackupQuery() {
 export function useWalletBackupMutation() {
   const wallet = useCurrentWallet({});
   const { keyMetaDataStore } = useStore();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async () => {
@@ -91,6 +93,20 @@ export function useWalletBackupMutation() {
           }),
         ),
       });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["wallet-backup", wallet.userEntryAddress],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["wallet-backup-check", wallet.userEntryAddress],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [
+            "wallet-backup-includes-easy-share-check",
+            wallet.userEntryAddress,
+          ],
+        }),
+      ]);
     },
   });
 }
