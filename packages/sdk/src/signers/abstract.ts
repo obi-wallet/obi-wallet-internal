@@ -3,6 +3,10 @@ import { SHA256, Word32Array } from "jscrypto";
 
 import { KeySubclassTypeMapping, KeyType } from "../data-structures";
 
+export function createHash(payload: Buffer): Uint8Array {
+  return SHA256.hash(new Word32Array(payload)).toUint8Array();
+}
+
 export abstract class Signer {
   public abstract get publicKey(): Secp256k1PublicKey;
   public abstract signHash(hash: Uint8Array): Promise<Uint8Array>;
@@ -13,11 +17,7 @@ export abstract class Signer {
   }
 
   protected createHash(payload: Buffer): Uint8Array {
-    const hash = Buffer.from(
-      SHA256.hash(new Word32Array(payload)).toString(),
-      "hex",
-    );
-    return Uint8Array.from(hash);
+    return createHash(payload);
   }
 }
 
