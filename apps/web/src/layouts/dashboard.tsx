@@ -1,8 +1,6 @@
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 
-import { WalletBackupFixer } from "./wallet-backup-fixer";
-
 export function DashboardCustomLayout({
   children,
   nav,
@@ -17,11 +15,7 @@ export function DashboardCustomLayout({
       )}
     >
       {nav}
-      <div className={cn("md:p-4", "flex-grow overflow-auto ")}>
-        {children}
-        {/* </div> */}
-      </div>
-      <WalletBackupFixer />
+      <div className={cn("md:p-4", "flex-grow overflow-auto ")}>{children}</div>
     </section>
   );
 }

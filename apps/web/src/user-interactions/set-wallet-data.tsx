@@ -9,9 +9,8 @@ import {
 } from "@/user-interactions/approve-intentions";
 import SendingAnimation from "@/user-interactions/approve-messages/sending-animation.json";
 import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
-import { NewWalletData } from "@/wallet-data-backup";
 import { useQuery } from "@obi-wallet/headless-ui";
-import { createHash, MultisigKey } from "@obi-wallet/sdk";
+import { createHash, MultisigKey, WalletData } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import Lottie from "lottie-react";
 import { observer } from "mobx-react-lite";
@@ -40,7 +39,7 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
     interaction.payload.owner,
   );
   const keyMetaData = interaction.payload.keyMetaData;
-  const walletData = NewWalletData.parse(
+  const walletData = WalletData.parse(
     JSON.parse(interaction.payload.serializedWalletData),
   );
 

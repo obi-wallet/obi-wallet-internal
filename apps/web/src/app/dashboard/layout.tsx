@@ -1,5 +1,9 @@
-import { Navbar, PasskeyNotification } from "@/components";
-import { BackupNotification } from "@/components/notification/backup-notification";
+import {
+  Navbar,
+  BackupNotification,
+  PasskeyNotification,
+  OutdatedNotification,
+} from "@/components";
 import { DashboardCustomLayout } from "@/layouts/dashboard";
 import type { Metadata } from "next";
 import { ReactNode } from "react";
@@ -13,6 +17,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <DashboardCustomLayout nav={<Navbar />}>
       <BackupNotification />
+      <OutdatedNotification />
       <PasskeyNotification />
       {children}
     </DashboardCustomLayout>

@@ -5,9 +5,8 @@ import {
   PendingRecoveryKeySchema,
   Secp256k1PublicKey,
   UsableKeySchema,
+  WalletData,
 } from "@obi-wallet/sdk";
-
-import { NewWalletData } from ".";
 
 export async function isPublicKeyInUse({
   homeChainId,
@@ -46,6 +45,21 @@ export async function lookupPublicKey({
   );
 }
 
+export async function lookupWallet({
+  homeChainId,
+  userEntryAddress,
+}: {
+  homeChainId: HomeChainId;
+  userEntryAddress: string;
+}) {
+  return await fetch(
+    `https://wallets.obiwallet.workers.dev/${encodeURIComponent(homeChainId)}/wallet/${encodeURIComponent(userEntryAddress)}`,
+    {
+      headers: getAnonymousHeaders(),
+    },
+  );
+}
+
 export function getOwnerData(owner: Migratable<MultisigKey>) {
   return {
     threshold: owner.threshold.toString(),
@@ -71,7 +85,7 @@ export function getOwnerData(owner: Migratable<MultisigKey>) {
   };
 }
 
-export async function setWalletData(walletData: NewWalletData) {
+export async function setWalletData(walletData: WalletData) {
   return await fetch("https://wallets.obiwallet.workers.dev", {
     method: "POST",
     body: JSON.stringify({
@@ -86,7 +100,7 @@ export async function updateOwner({
   walletData,
   previousOwner,
 }: {
-  walletData: NewWalletData;
+  walletData: WalletData;
   previousOwner: Migratable<MultisigKey>;
 }) {
   return await fetch("https://wallets.obiwallet.workers.dev", {

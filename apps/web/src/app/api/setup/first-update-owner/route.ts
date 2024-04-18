@@ -1,11 +1,11 @@
 import { getFeeLender } from "@/lib/fee-lender";
-import { NewWalletData } from "@/wallet-data-backup";
 import { setWalletData } from "@/wallet-data-backup/worker-client";
 import {
   HomeChainIdSchema,
   Messages,
   MultisigKey,
   SecretJsClient,
+  WalletData,
 } from "@obi-wallet/sdk";
 import { NextResponse } from "next/server";
 import { MsgSend } from "secretjs";
@@ -23,7 +23,7 @@ const schema = z.object({
   userEntryAddress: z.string(),
   userEntryCodeHash: z.string(),
   ownerIndex: z.number(),
-  walletData: NewWalletData,
+  walletData: WalletData,
 });
 
 export interface UserAccountAddress {

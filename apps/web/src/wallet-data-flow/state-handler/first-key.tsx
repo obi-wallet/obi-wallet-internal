@@ -5,7 +5,7 @@ import { SecretJsHomeChain } from "@/home-chain/secret-js";
 import { AddPhoneKey } from "@/keys/phone/add-phone-key";
 import { AddTelegramKey } from "@/keys/phone/add-telegram-key";
 import { KeyMetaData } from "@/stores/key-meta-data";
-import { WalletData } from "@/wallet-data-backup";
+import { LegacyWalletData } from "@/wallet-data-backup";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import {
   getPasskey,
@@ -19,7 +19,9 @@ import { useState } from "react";
 
 export const FirstKeyStep = observer(function FirstKeyStep() {
   const { state, dispatch } = useWalletDataFlowContext();
-  const [proxyWallets, setProxyWallets] = useState<WalletData[] | null>(null);
+  const [proxyWallets, setProxyWallets] = useState<LegacyWalletData[] | null>(
+    null,
+  );
   const [modal, setModal] = useState<KeyType | null>(null);
 
   const recoverByPublicKey = useMutation({

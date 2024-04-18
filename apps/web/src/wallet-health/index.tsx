@@ -1,6 +1,7 @@
 import { Box, Button, Divider, Text } from "@/components";
 import { cn } from "@/lib/utils";
 import {
+  useLocalDataIsUpToDateCheck,
   useOwnerUpToDateCheck,
   usePublicKeyKnownCheck,
   useWalletBackupCheck,
@@ -16,6 +17,7 @@ export const HealthChecks = observer(function HealthChecks() {
   const walletBackupCheck = useWalletBackupCheck();
   const walletBackupIncludesEasyShare = useWalletBackupIncludesEasyShareCheck();
   const walletHasEasyShare = useWalletHasEasyShareCheck();
+  const localDataIsUpToDate = useLocalDataIsUpToDateCheck();
 
   return (
     <div className="grid h-full w-full text-white">
@@ -35,6 +37,7 @@ export const HealthChecks = observer(function HealthChecks() {
         <HealthCheckRow check={walletBackupCheck} />
         <HealthCheckRow check={walletBackupIncludesEasyShare} />
         <HealthCheckRow check={walletHasEasyShare} />
+        <HealthCheckRow check={localDataIsUpToDate} />
       </Box>
     </div>
   );

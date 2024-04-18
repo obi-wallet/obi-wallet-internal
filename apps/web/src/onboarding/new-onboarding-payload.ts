@@ -14,9 +14,10 @@ import {
   NetworkShare,
   ObservableMultisigKey,
   Serialized,
+  WalletData,
 } from "@obi-wallet/sdk";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
-import { action, observable } from "mobx";
+import { action, observable, toJS } from "mobx";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -75,6 +76,7 @@ export class NewOnboardingPayload implements Draftable {
   @observable
   protected accessor _unclaimedHomeAccount: UnclaimedHomeAccount | null = null;
   @observable protected accessor _homeAccountClaimed: boolean = false;
+  @observable protected accessor _walletData: WalletData | null = null;
 
   public constructor(homeChainId: HomeChainId) {
     this._multisigKey = ObservableMultisigKey.create(homeChainId);
@@ -132,6 +134,7 @@ export class NewOnboardingPayload implements Draftable {
         backup: this._encryptedShares.backupShare,
       },
       userEntryAddress: this._unclaimedHomeAccount.homeAccountAddress,
+      previousWalletData: toJS(this._walletData),
     });
   }
 
@@ -255,6 +258,11 @@ export class NewOnboardingPayload implements Draftable {
     invariant(this._unclaimedHomeAccount, "Home account is not available");
 
     const homeChain = HomeChain.chainId(this.homeChainId);
+    this._walletData = await homeChain.getWalletData({
+      wallet: this.toMpcWalletData(),
+      keyMetaData: {},
+    });
+
     const userEntryCodeHash = await homeChain.userEntryCodeHash(
       this._unclaimedHomeAccount.homeAccountAddress,
     );
@@ -274,10 +282,7 @@ export class NewOnboardingPayload implements Draftable {
         userAccountAddress: userAccount.userAccountAddress,
         userAccountCodeHash: userAccount.userAccountCodeHash,
         ownerIndex: this._unclaimedHomeAccount.ownerIndex,
-        walletData: await HomeChain.chainId(this.homeChainId).getWalletData({
-          wallet: this.toMpcWalletData(),
-          keyMetaData: {},
-        }),
+        walletData: this._walletData,
       }),
     });
 

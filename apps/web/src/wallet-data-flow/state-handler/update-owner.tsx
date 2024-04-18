@@ -1,18 +1,21 @@
 import { Button, Text, Transaction } from "@/components";
 import { HomeChain } from "@/home-chain";
 import { Secp256k1Decryption } from "@/lib/encryption";
-import { KeyMetaData } from "@/stores/key-meta-data";
 import {
   ApproveIntentions,
   handleMultisigKeyDecryptedMessage,
   IntentionsResults,
 } from "@/user-interactions/approve-intentions";
 import SendingAnimation from "@/user-interactions/approve-messages/sending-animation.json";
-import { NewWalletData } from "@/wallet-data-backup";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow, useGetWallet } from "@/wallet-data-flow/utils";
 import { useQuery } from "@obi-wallet/headless-ui";
-import { BackupShare, EasyShare, SecretJsClient } from "@obi-wallet/sdk";
+import {
+  BackupShare,
+  EasyShare,
+  SecretJsClient,
+  WalletData,
+} from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { diffString } from "json-diff";
 import Lottie from "lottie-react";
@@ -22,7 +25,7 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 
 export interface UpdateOwnerProps {
-  walletData: NewWalletData;
+  walletData: WalletData;
 }
 
 export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
@@ -113,10 +116,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
         });
       }
 
-      async function getConfirmOwnerResponse(payload: {
-        shares: { easy: EasyShare; backup: BackupShare };
-        keyMetaData: KeyMetaData;
-      }) {
+      async function getConfirmOwnerResponse(walletData: WalletData) {
         invariant(userAccount.data, "Message not found");
         invariant(results, "Results not found");
 
@@ -129,7 +129,6 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
           };
         }
 
-        const wallet = await getWallet(payload);
         return await fetch("/api/confirm-update-owner", {
           method: "POST",
           body: JSON.stringify({
@@ -139,9 +138,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
             signatures: [...results.values()].map((value) => {
               return Buffer.from(value.signedHashes[0]!).toString("hex");
             }),
-            walletData: await HomeChain.chainId(newOwner.chainId).getWalletData(
-              { wallet, keyMetaData: payload.keyMetaData },
-            ),
+            walletData,
             previousOwner: previousOwner.toJSON(),
           }),
         });
@@ -184,7 +181,12 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
           },
         };
 
-        const response = await getConfirmOwnerResponse(payload);
+        const wallet = await getWallet(payload);
+        const walletData = await HomeChain.chainId(
+          newOwner.chainId,
+        ).getWalletData({ wallet, keyMetaData: payload.keyMetaData });
+        walletData.revision++;
+        const response = await getConfirmOwnerResponse(walletData);
 
         if (response.status !== 200) {
           throw new Error(`Failed to update owner: ${response.status}`);
@@ -195,7 +197,10 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
           throw new Error("Failed to update owner");
         }
 
-        await finishFlow(payload);
+        await finishFlow({
+          ...payload,
+          walletData,
+        });
         return;
       }
 

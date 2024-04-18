@@ -1,7 +1,11 @@
 import { KeyMetaData } from "@/stores/key-meta-data";
-import { NewWalletData } from "@/wallet-data-backup";
 import { walletDataToMultisigKey } from "@/wallet-data-flow/state";
-import { BackupShare, EasyShare, SecretJsHomeChainId } from "@obi-wallet/sdk";
+import {
+  BackupShare,
+  EasyShare,
+  SecretJsHomeChainId,
+  WalletData,
+} from "@obi-wallet/sdk";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import type { Meta, StoryObj } from "@storybook/react";
 import { DateTime } from "luxon";
@@ -36,7 +40,7 @@ export const FromScratch: Story = {
   },
 };
 
-const walletData = NewWalletData.parse({
+const walletData = WalletData.parse({
   homeChainId: SecretJsHomeChainId.MAINNET,
   userEntryAddress: "secret1u2rwlzqyvkdh5sdlsxy8gceqhaxa7zq6fjjlhx",
   owner: {

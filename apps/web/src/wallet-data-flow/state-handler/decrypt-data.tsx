@@ -6,10 +6,9 @@ import {
   IntentionsResults,
 } from "@/user-interactions/approve-intentions";
 import SendingAnimation from "@/user-interactions/approve-messages/sending-animation.json";
-import { NewWalletData } from "@/wallet-data-backup";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow } from "@/wallet-data-flow/utils";
-import { BackupShare, EasyShare } from "@obi-wallet/sdk";
+import { BackupShare, EasyShare, WalletData } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import Lottie from "lottie-react";
 import { observer } from "mobx-react-lite";
@@ -17,7 +16,7 @@ import { useState } from "react";
 import invariant from "tiny-invariant";
 
 export interface DecryptDataProps {
-  walletData: NewWalletData;
+  walletData: WalletData;
 }
 
 export const DecryptData = observer<DecryptDataProps>(function DecryptData({

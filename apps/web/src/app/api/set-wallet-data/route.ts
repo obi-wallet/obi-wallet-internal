@@ -1,10 +1,10 @@
-import { NewWalletData } from "@/wallet-data-backup";
 import { setWalletData } from "@/wallet-data-backup/worker-client";
 import {
   createHash,
   MultisigPublicKey,
   Sdk,
   SecretJsClient,
+  WalletData,
 } from "@obi-wallet/sdk";
 import { NextResponse } from "next/server";
 import * as secp256k1 from "secp256k1";
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     userAccountCodeHash,
   } = result.data;
 
-  const walletDataResult = NewWalletData.safeParse(
+  const walletDataResult = WalletData.safeParse(
     JSON.parse(serializedWalletData),
   );
 

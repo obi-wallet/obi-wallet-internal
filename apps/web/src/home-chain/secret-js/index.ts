@@ -4,11 +4,7 @@ import {
   SharesBackupEncryption,
 } from "@/lib/encryption";
 import { KeyMetaData } from "@/stores/key-meta-data";
-import {
-  WalletData,
-  WalletDataBackup,
-  NewWalletData,
-} from "@/wallet-data-backup";
+import { LegacyWalletData, LegacyWalletDataBackup } from "@/wallet-data-backup";
 import {
   getOwnerData,
   lookupPublicKey,
@@ -23,6 +19,7 @@ import {
   SecretJsClient,
   Serialized,
   UsableKeySchema,
+  WalletData,
 } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -116,7 +113,7 @@ export class SecretJsHomeChain {
   }: {
     wallet: Serialized<MpcWallet>;
     keyMetaData: KeyMetaData;
-  }): Promise<NewWalletData> {
+  }): Promise<WalletData> {
     const w = MpcWallet.create(wallet);
     async function getEncryptedEasyShare() {
       const easyShare = await new EasyShareDecryption(w.owner).decrypt(
@@ -132,7 +129,7 @@ export class SecretJsHomeChain {
       w.owner.publicKey,
     ).encrypt(JSON.stringify(keyMetaData));
 
-    const data: NewWalletData = {
+    const data: WalletData = {
       homeChainId: wallet.homeChain,
       userEntryAddress: wallet.userEntryAddress,
       owner: getOwnerData(wallet.owner),
@@ -141,8 +138,9 @@ export class SecretJsHomeChain {
         backup: wallet.encryptedShares.backup,
       },
       encryptedKeyMetaData,
+      revision: wallet.previousWalletData?.revision ?? 0,
     };
-    return NewWalletData.parse(data);
+    return WalletData.parse(data);
   }
 
   public async getWalletDataBackup({
@@ -151,7 +149,7 @@ export class SecretJsHomeChain {
   }: {
     wallet: Serialized<MpcWallet>;
     keyMetaData: KeyMetaData;
-  }): Promise<WalletDataBackup> {
+  }): Promise<LegacyWalletDataBackup> {
     const w = MpcWallet.create(wallet);
     async function getEncryptedEasyShare() {
       if (!wallet.encryptedShares.easy) return undefined;
@@ -169,7 +167,7 @@ export class SecretJsHomeChain {
       w.owner.publicKey,
     ).encrypt(JSON.stringify(keyMetaData));
 
-    return WalletDataBackup.parse({
+    return LegacyWalletDataBackup.parse({
       chainId: wallet.homeChain,
       proxyWallet: {
         proxyAddress: {
@@ -211,14 +209,14 @@ export class SecretJsHomeChain {
   }: {
     homeChainId: HomeChainId;
     publicKey: Secp256k1PublicKey;
-  }): Promise<NewWalletData | null> {
+  }): Promise<WalletData | null> {
     const response = await lookupPublicKey({
       homeChainId,
       publicKey,
     });
 
     if (response.status === 200) {
-      return NewWalletData.parse(await response.json());
+      return WalletData.parse(await response.json());
     }
 
     return null;
@@ -247,7 +245,7 @@ export class SecretJsHomeChain {
       return [];
     }
 
-    const schema = z.array(WalletData);
+    const schema = z.array(LegacyWalletData);
     const result = schema.safeParse(await response.json());
     if (!result.success) {
       throw new Error(`Failed to parse proxy wallets: ${result.error}`);

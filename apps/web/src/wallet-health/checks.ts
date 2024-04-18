@@ -1,9 +1,10 @@
 import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { fetchOwner, useOwnerQuery } from "@/hooks/use-owner";
+import { fetchOwner } from "@/hooks/use-owner";
 import { usePublicKeyQuery } from "@/hooks/use-public-key";
 import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
+import { lookupWallet } from "@/wallet-data-backup/worker-client";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
   useMutation,
@@ -82,100 +83,37 @@ export function useWalletBackupMutation() {
       const keyMetaData = keyMetaDataStore.getKeyMetaData(
         wallet.userEntryAddress,
       );
-      await SetWalletDataUserInteraction.start({
+      const walletData = await HomeChain.chainId(
+        wallet.homeChainId,
+      ).getWalletData({
+        wallet: wallet.toJSON(),
+        keyMetaData: keyMetaData,
+      });
+      walletData.revision++;
+      const response = await SetWalletDataUserInteraction.start({
         homeChainId: wallet.homeChainId,
         owner: wallet.owner.toJSON()!,
         keyMetaData: keyMetaData,
-        serializedWalletData: JSON.stringify(
-          await HomeChain.chainId(wallet.homeChainId).getWalletData({
-            wallet: wallet.toJSON(),
-            keyMetaData: keyMetaData,
-          }),
-        ),
+        serializedWalletData: JSON.stringify(walletData),
       });
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ["wallet-backup", wallet.userEntryAddress],
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ["wallet-backup-check", wallet.userEntryAddress],
-        }),
-        queryClient.invalidateQueries({
-          queryKey: [
-            "wallet-backup-includes-easy-share-check",
-            wallet.userEntryAddress,
-          ],
-        }),
-      ]);
+      if (response.approved) {
+        wallet.setPreviousWalletData(walletData);
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: ["wallet-backup", wallet.userEntryAddress],
+          }),
+          queryClient.invalidateQueries({
+            queryKey: ["wallet-backup-check", wallet.userEntryAddress],
+          }),
+          queryClient.invalidateQueries({
+            queryKey: [
+              "wallet-backup-includes-easy-share-check",
+              wallet.userEntryAddress,
+            ],
+          }),
+        ]);
+      }
     },
-  });
-}
-
-export function useBackupWalletAutomatically() {
-  const wallet = useCurrentWallet({});
-  const owner = useOwnerQuery();
-
-  useQuery({
-    queryKey: ["wallet-backup-mutation", wallet?.userEntryAddress],
-    queryFn: async () => {
-      // TODO: review!
-      return true;
-
-      // invariant(wallet, "Expected wallet to be set.");
-      // invariant(owner.data, "Expected owner to be set.");
-      // if (wallet.owner.address === owner.data) {
-      //   backupWalletMutation.mutate();
-      //   return true;
-      // }
-      //
-      // console.log("owners do not match, sync!");
-      //
-      // if (wallet.owner.primaryKey?.publicKey) {
-      //   // First, check whether primary key is still okay
-      //   const homeChain = HomeChain.chainId(wallet.homeChainId);
-      //   const [proxyWallet] = await homeChain.lookupWalletBackup(
-      //     wallet.owner.primaryKey?.publicKey,
-      //   );
-      //
-      //   if (
-      //     proxyWallet &&
-      //     proxyWallet.proxyAddress.address === wallet.userEntryAddress
-      //   ) {
-      //     const backupOwner = ObservableMultisigKey.create(wallet.homeChainId);
-      //     proxyWallet.owner.keys.forEach((key) => {
-      //       switch (key.type) {
-      //         case KeyType.Passkey:
-      //           backupOwner.addPendingRecoveryKey({
-      //             type: KeyType.Passkey,
-      //             publicKey: key.publicKey,
-      //           });
-      //           break;
-      //         case KeyType.Phone:
-      //           backupOwner.addPhoneKey(key.publicKey);
-      //           break;
-      //         case KeyType.Telegram:
-      //           backupOwner.addTelegramKey(key.publicKey);
-      //           break;
-      //       }
-      //     });
-      //     backupOwner.removeKeyByPublicKey(wallet.owner.primaryKey.publicKey);
-      //     const key = backupOwner.addPasskeyKey(
-      //       wallet.owner.primaryKey.payload,
-      //     );
-      //     backupOwner.setPrimaryKey(key);
-      //
-      //     if (backupOwner.address === owner.data) {
-      //       console.log("We were able to recover the new owner");
-      //       // TODO: trigger interaction to sync with backup
-      //     }
-      //   }
-      // }
-      //
-      // return true;
-    },
-    // gcTime: staleTime({ days: 1 }),
-    // staleTime: staleTime({ days: 1 }),
-    enabled: !!wallet && !!owner.data,
   });
 }
 
@@ -186,7 +124,11 @@ export function useWalletBackupCheck(): WalletHealthCheck {
   const resolve = useWalletBackupMutation();
 
   const query = useQuery({
-    queryKey: ["wallet-backup-check", wallet?.userEntryAddress],
+    queryKey: [
+      "wallet-backup-check",
+      wallet?.userEntryAddress,
+      wallet?.previousWalletData,
+    ],
     queryFn: async () => {
       invariant(wallet, "Expected wallet to be set.");
       invariant(walletBackup.data, "Expected wallet backup to be set.");
@@ -267,6 +209,7 @@ export function useWalletBackupIncludesEasyShareCheck(): WalletHealthCheck {
     queryKey: [
       "wallet-backup-includes-easy-share-check",
       wallet?.userEntryAddress,
+      wallet?.previousWalletData,
     ],
     queryFn: async () => {
       invariant(wallet, "Expected wallet to be set.");
@@ -295,6 +238,45 @@ export function useWalletBackupIncludesEasyShareCheck(): WalletHealthCheck {
     label: "Wallet backup includes easy share",
     query,
     resolve,
+  };
+}
+
+export function useLocalDataIsUpToDateCheck(): WalletHealthCheck {
+  const wallet = useCurrentWallet({});
+
+  const walletBackup = useWalletBackupQuery();
+
+  const query = useQuery({
+    queryKey: [
+      "local-data-is-up-to-date-check",
+      wallet?.userEntryAddress,
+      wallet?.previousWalletData,
+    ],
+    queryFn: async () => {
+      invariant(wallet, "Expected wallet to be set.");
+      invariant(walletBackup.data, "Expected wallet backup to be set.");
+
+      const response = await lookupWallet({
+        homeChainId: wallet.homeChainId,
+        userEntryAddress: wallet.userEntryAddress,
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        const backupRevision = data?.revision ?? 0;
+        const previousRevision = wallet.previousWalletData?.revision ?? 0;
+
+        return previousRevision >= backupRevision;
+      }
+
+      return false;
+    },
+    enabled: !!wallet,
+  });
+
+  return {
+    label: "Local data is up-to-date",
+    query,
   };
 }
 

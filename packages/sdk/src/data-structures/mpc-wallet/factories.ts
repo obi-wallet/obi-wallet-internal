@@ -17,6 +17,7 @@ export function createMpcWallet(
     factories.MultisigKey.create(serialized.homeChain, serialized.owner),
     serialized.userEntryAddress,
     serialized.encryptedShares,
+    serialized.previousWalletData,
   );
 }
 
@@ -32,6 +33,7 @@ export function createObservableMpcWallet(
     | "_owner"
     | "_userEntryAddress"
     | "_encryptedShares"
+    | "_previousWalletData"
     | "setOwner"
   >(
     wallet,
@@ -40,8 +42,10 @@ export function createObservableMpcWallet(
       _owner: observable,
       _userEntryAddress: observable,
       _encryptedShares: observable,
+      _previousWalletData: observable,
       setOwner: action,
       setEncryptedShares: action,
+      setPreviousWalletData: action,
       toJSON: false,
     },
     {

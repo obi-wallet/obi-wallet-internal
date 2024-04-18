@@ -1,11 +1,11 @@
 import { getFeeLender } from "@/lib/fee-lender";
-import { NewWalletData } from "@/wallet-data-backup";
 import { updateOwner } from "@/wallet-data-backup/worker-client";
 import {
   HomeChainIdSchema,
   Messages,
   MultisigKey,
   SecretJsClient,
+  WalletData,
 } from "@obi-wallet/sdk";
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
@@ -17,7 +17,7 @@ const schema = z.object({
   userAccountCodeHash: z.string(),
   signatures: z.array(z.string()),
   previousOwner: MultisigKey.schema.migratableSchema,
-  walletData: NewWalletData,
+  walletData: WalletData,
 });
 
 export async function POST(request: Request) {
