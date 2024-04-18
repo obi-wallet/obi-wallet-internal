@@ -1,9 +1,15 @@
+import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { fetchOwner, useOwnerQuery } from "@/hooks/use-owner";
 import { usePublicKeyQuery } from "@/hooks/use-public-key";
+import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
 import { useQuery } from "@obi-wallet/headless-ui";
-import { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
+import {
+  useMutation,
+  UseMutationResult,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import invariant from "tiny-invariant";
 
 export interface WalletHealthCheck {
@@ -61,6 +67,31 @@ function useWalletBackupQuery() {
       );
     },
     enabled: !!wallet,
+  });
+}
+
+export function useWalletBackupMutation() {
+  const wallet = useCurrentWallet({});
+  const { keyMetaDataStore } = useStore();
+
+  return useMutation({
+    mutationFn: async () => {
+      invariant(wallet, "Expected wallet to be set.");
+      const keyMetaData = keyMetaDataStore.getKeyMetaData(
+        wallet.userEntryAddress,
+      );
+      await SetWalletDataUserInteraction.start({
+        homeChainId: wallet.homeChainId,
+        owner: wallet.owner.toJSON()!,
+        keyMetaData: keyMetaData,
+        serializedWalletData: JSON.stringify(
+          await HomeChain.chainId(wallet.homeChainId).getWalletData({
+            wallet: wallet.toJSON(),
+            keyMetaData: keyMetaData,
+          }),
+        ),
+      });
+    },
   });
 }
 
@@ -136,6 +167,7 @@ export function useWalletBackupCheck(): WalletHealthCheck {
   const wallet = useCurrentWallet({});
 
   const walletBackup = useWalletBackupQuery();
+  const resolve = useWalletBackupMutation();
 
   const query = useQuery({
     queryKey: ["wallet-backup-check", wallet?.userEntryAddress],
@@ -205,6 +237,7 @@ export function useWalletBackupCheck(): WalletHealthCheck {
   return {
     label: "Wallet backup is available",
     query,
+    resolve,
   };
 }
 
@@ -212,6 +245,7 @@ export function useWalletBackupIncludesEasyShareCheck(): WalletHealthCheck {
   const wallet = useCurrentWallet({});
 
   const walletBackup = useWalletBackupQuery();
+  const resolve = useWalletBackupMutation();
 
   const query = useQuery({
     queryKey: [
@@ -244,6 +278,7 @@ export function useWalletBackupIncludesEasyShareCheck(): WalletHealthCheck {
   return {
     label: "Wallet backup includes easy share",
     query,
+    resolve,
   };
 }
 
