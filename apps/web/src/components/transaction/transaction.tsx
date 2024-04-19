@@ -42,17 +42,6 @@ export function Transaction({
     ? CosmosSdkChains[targetChainId].image
     : "/assets/icons/transaction-lock.svg";
 
-  console.log({
-    amountInfo,
-    descriptions,
-    feeInfo,
-    className,
-    targetChainId,
-    rawData,
-    memo,
-    ...rest,
-  });
-
   return (
     <Box
       className={cn(
