@@ -2,11 +2,9 @@ import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import invariant from "tiny-invariant";
 
 import { ChainId } from "../../chains";
-import { WalletMeta } from "../../data-structures";
-import { MultisigPublicKey, PublicKey } from "../../keys";
+import { PublicKey } from "../../keys";
 import { queryClient, QueryClientNamespace } from "../../query-client";
-import { MultisigSigner } from "../../signers";
-import { Message, SignedTransaction } from "../../transactions";
+import { SignedTransaction } from "../../transactions";
 import { AccountValidationResult, BroadcastTransactionResult } from "../common";
 
 export abstract class AbstractTransactionsSdk {
@@ -90,21 +88,6 @@ export abstract class AbstractTransactionsSdk {
       }
     }
   }
-
-  /**
-   * Creates a signer for a multisig transaction.
-   */
-  public abstract createMultisigSigner({
-    multisigPublicKey,
-    messages,
-    evmSigningAddress,
-    walletMeta,
-  }: {
-    multisigPublicKey: MultisigPublicKey;
-    messages: Message[];
-    evmSigningAddress?: string;
-    walletMeta?: WalletMeta;
-  }): Promise<MultisigSigner>;
 
   /**
    * Broadcasts a signed transaction.
