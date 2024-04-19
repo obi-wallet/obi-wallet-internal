@@ -19,9 +19,6 @@ export const SecuritySettingsKeyItemPage = observer<{ page: KeyItemPage }>(
         <Text size="xl" fontWeight="semibold">
           {`${page.payload.label} Settings`}
         </Text>
-        {/*<Text size="sm" fontWeight="light" className="mt-3">*/}
-        {/*  {`Update or name your ${keyData.type} keys.`}*/}
-        {/*</Text>*/}
         <Divider className="my-2" />
         <div className="mt-3 space-y-2">
           <Input
