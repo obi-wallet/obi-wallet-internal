@@ -38,25 +38,39 @@ export function Transaction({
   const targetChainLabel = targetChainId
     ? TargetChain.chainId(targetChainId).label
     : "";
-  const image = targetChainId ? CosmosSdkChains[targetChainId].image : null;
+  const image = targetChainId
+    ? CosmosSdkChains[targetChainId].image
+    : "/assets/icons/transaction-lock.svg";
+
+  console.log({
+    amountInfo,
+    descriptions,
+    feeInfo,
+    className,
+    targetChainId,
+    rawData,
+    memo,
+    ...rest,
+  });
 
   return (
     <Box
       className={cn(
-        "relative flex flex-col items-center justify-center px-8",
-        { "py-7": !!image },
+        "relative flex w-80 flex-col items-center justify-center px-8",
+        { "py-12": !!image },
         className,
       )}
       {...rest}
     >
       {image ? (
-        <Image
-          width="70"
-          height="70"
-          src={image}
-          alt={`${targetChainLabel} logo`}
-          className="absolute -top-8"
-        />
+        <div className="absolute -top-8 h-[70px] w-[70px] rounded-full bg-black p-4">
+          <Image
+            width="70"
+            height="70"
+            src={image}
+            alt={`${targetChainLabel} logo`}
+          />
+        </div>
       ) : null}
       {amountInfo.length > 0 ? (
         <>
@@ -70,7 +84,13 @@ export function Transaction({
           </Text>
         </>
       ) : null}
-      <Text className={cn({ "mt-12": amountInfo.length > 0 })} color="zinc">
+      <Text
+        className={cn(
+          { "mt-12": amountInfo.length > 0 },
+          "text-center leading-normal",
+        )}
+        color="zinc"
+      >
         {descriptions.join("\n")}
       </Text>
 
@@ -100,24 +120,28 @@ export function Transaction({
           ) : null}
         </div>
       ) : null}
-      <Button
-        className="mt-6 h-8 w-full justify-center"
-        onClick={() => {
-          setShowData(!showData);
-        }}
-      >
-        See Data
-      </Button>
-      {showData ? (
-        <div className="mt-6 w-full space-y-3">
-          <Text color="gray">Raw Data</Text>
-          <pre className="text-gray-400">
-            {typeof rawData === "string"
-              ? rawData
-              : JSON.stringify(rawData, null, 2)}
-          </pre>
-        </div>
-      ) : null}
+      <div className="mt-6 flex w-full flex-col bg-indigo-950">
+        <Button
+          className="w-full justify-center"
+          size="sm"
+          onClick={() => {
+            setShowData(!showData);
+          }}
+          variant="detail"
+        >
+          See Data
+        </Button>
+        {showData ? (
+          <div className="scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300 scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-corner-rounded-full mt-6 max-h-[360px] w-full space-y-3 overflow-auto pr-1">
+            <Text color="gray">Changes:</Text>
+            <pre className="text-gray-400">
+              {typeof rawData === "string"
+                ? rawData
+                : JSON.stringify(rawData, null, 2)}
+            </pre>
+          </div>
+        ) : null}
+      </div>
     </Box>
   );
 }

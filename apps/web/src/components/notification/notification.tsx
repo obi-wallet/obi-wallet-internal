@@ -19,7 +19,7 @@ export function Notification({
   return (
     <div
       className={cn(
-        " min-h-[40px] w-full items-center space-x-2 bg-blue-600 px-11 pb-3 pt-3 shadow-md max-md:p-2 md:flex",
+        "min-h-[40px] w-full items-center space-x-2 bg-blue-600 px-11 pb-3 pt-3 shadow-md max-md:p-2 md:flex",
         // "max-sm:hidden",
         type === "warning" && "bg-[#ffa70b]",
         type === "success" && "bg-[#34D399]",
