@@ -78,6 +78,15 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
           >
             Back
           </Button>
+          <Button
+            variant="primary"
+            block
+            onClick={() => {
+              popPage();
+            }}
+          >
+            Save
+          </Button>
         </div>
       </Box>
     );
