@@ -1,8 +1,7 @@
 import {
   Navbar,
-  BackupNotification,
   PasskeyNotification,
-  OutdatedNotification,
+  WalletDataNotification,
 } from "@/components";
 import { DashboardCustomLayout } from "@/layouts/dashboard";
 import type { Metadata } from "next";
@@ -16,8 +15,7 @@ export const metadata: Metadata = {
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <DashboardCustomLayout nav={<Navbar />}>
-      <BackupNotification />
-      <OutdatedNotification />
+      <WalletDataNotification />
       <PasskeyNotification />
       {children}
     </DashboardCustomLayout>

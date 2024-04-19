@@ -38,28 +38,22 @@ export type WalletDataState =
       };
     };
 
-export const SyncWalletData = observer(function SyncWalletData() {
-  const currentWallet = useCurrentWallet({});
-  const { chainStore, mpcWalletsStore, keyMetaDataStore } = useStore();
-  const router = useRouter();
-
-  const [key, setKey] = useState(0);
-  const increaseKey = () => setKey((key) => key + 1);
-
-  const walletData = useQuery({
+export function useWalletDataStateQuery() {
+  const wallet = useCurrentWallet({});
+  return useQuery({
     queryKey: [
       "wallet-data",
-      currentWallet?.userEntryAddress,
-      currentWallet?.previousWalletData,
+      wallet?.userEntryAddress,
+      wallet?.previousWalletData,
     ],
     queryFn: async (): Promise<WalletDataState> => {
-      invariant(currentWallet, "Expected wallet to be set.");
-      const primaryKey = currentWallet.owner.primaryKey;
+      invariant(wallet, "Expected wallet to be set.");
+      const primaryKey = wallet.owner.primaryKey;
       invariant(primaryKey, "Expected wallet to have a primary key");
-      const homeChain = HomeChain.chainId(currentWallet.homeChainId);
+      const homeChain = HomeChain.chainId(wallet.homeChainId);
       const walletData = await homeChain.lookupWalletBackup({
-        homeChainId: currentWallet.homeChainId,
-        publicKey: currentWallet.owner.primaryKey.publicKey,
+        homeChainId: wallet.homeChainId,
+        publicKey: wallet.owner.primaryKey.publicKey,
       });
 
       if (!walletData) {
@@ -69,7 +63,7 @@ export const SyncWalletData = observer(function SyncWalletData() {
       }
 
       const backupRevision = walletData.revision;
-      const previousRevision = currentWallet.previousWalletData?.revision ?? 0;
+      const previousRevision = wallet.previousWalletData?.revision ?? 0;
 
       if (previousRevision >= backupRevision) {
         return {
@@ -78,7 +72,7 @@ export const SyncWalletData = observer(function SyncWalletData() {
       }
 
       const owner = walletDataToMultisigKey({
-        homeChainId: currentWallet.homeChainId,
+        homeChainId: wallet.homeChainId,
         wallet: walletData,
       });
 
@@ -104,12 +98,22 @@ export const SyncWalletData = observer(function SyncWalletData() {
         },
       };
     },
-    enabled: !!currentWallet,
+    enabled: !!wallet,
   });
+}
 
-  if (!walletData.data) return null;
+export const SyncWalletData = observer(function SyncWalletData() {
+  const { chainStore, mpcWalletsStore, keyMetaDataStore } = useStore();
+  const router = useRouter();
 
-  switch (walletData.data.type) {
+  const [key, setKey] = useState(0);
+  const increaseKey = () => setKey((key) => key + 1);
+
+  const walletDataState = useWalletDataStateQuery();
+
+  if (!walletDataState.data) return null;
+
+  switch (walletDataState.data.type) {
     case WalletDataStateType.NotAvailable:
       return (
         <Text size="xl">
@@ -130,10 +134,10 @@ export const SyncWalletData = observer(function SyncWalletData() {
           key={key}
           homeChainId={chainStore.currentChain}
           initialValues={{
-            walletData: walletData.data.payload.walletData,
+            walletData: walletDataState.data.payload.walletData,
             owner: ObservableMultisigKey.create(
-              walletData.data.payload.walletData.homeChainId,
-              walletData.data.payload.owner,
+              walletDataState.data.payload.walletData.homeChainId,
+              walletDataState.data.payload.owner,
             ),
           }}
           onDone={({ wallet: walletData, keyMetaData }) => {

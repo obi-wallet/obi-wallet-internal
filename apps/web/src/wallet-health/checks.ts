@@ -4,7 +4,10 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { fetchOwner } from "@/hooks/use-owner";
 import { usePublicKeyQuery } from "@/hooks/use-public-key";
 import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
-import { lookupWallet } from "@/wallet-data-backup/worker-client";
+import {
+  useWalletDataStateQuery,
+  WalletDataStateType,
+} from "@/wallet-data-backup/sync-wallet-data";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
   useMutation,
@@ -12,6 +15,7 @@ import {
   useQueryClient,
   UseQueryResult,
 } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import invariant from "tiny-invariant";
 
 export interface WalletHealthCheck {
@@ -243,8 +247,8 @@ export function useWalletBackupIncludesEasyShareCheck(): WalletHealthCheck {
 
 export function useLocalDataIsUpToDateCheck(): WalletHealthCheck {
   const wallet = useCurrentWallet({});
-
-  const walletBackup = useWalletBackupQuery();
+  const walletDataState = useWalletDataStateQuery();
+  const router = useRouter();
 
   const query = useQuery({
     queryKey: [
@@ -253,30 +257,21 @@ export function useLocalDataIsUpToDateCheck(): WalletHealthCheck {
       wallet?.previousWalletData,
     ],
     queryFn: async () => {
-      invariant(wallet, "Expected wallet to be set.");
-      invariant(walletBackup.data, "Expected wallet backup to be set.");
+      invariant(walletDataState.data, "Expected wallet backup to be set.");
 
-      const response = await lookupWallet({
-        homeChainId: wallet.homeChainId,
-        userEntryAddress: wallet.userEntryAddress,
-      });
-
-      if (response.status === 200) {
-        const data = await response.json();
-        const backupRevision = data?.revision ?? 0;
-        const previousRevision = wallet.previousWalletData?.revision ?? 0;
-
-        return previousRevision >= backupRevision;
-      }
-
-      return false;
+      return walletDataState.data.type === WalletDataStateType.UpToDate;
     },
-    enabled: !!wallet,
+    enabled: !!walletDataState.data,
   });
 
   return {
     label: "Local data is up-to-date",
     query,
+    resolve: useMutation({
+      mutationFn: async () => {
+        router.push("/dashboard/sync-wallet-data");
+      },
+    }),
   };
 }
 
