@@ -1,5 +1,9 @@
-import { Button } from "@/components";
+import { Button, DropDown } from "@/components";
 import { PhoneKeyWorkerClient } from "@/keys/intentions-handler";
+import {
+  useSecurityQuestionInput,
+  useSecurityQuestions,
+} from "@/keys/phone/use-security-questions";
 import {
   PhoneSingleKeyMetaData,
   SingleKeyMetaData,
@@ -27,8 +31,8 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
 }) {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
-  // TODO: security question
-  const [securityAnswer, setSecurityAnswer] = useState("");
+  const securityQuestion = useSecurityQuestionInput();
+  const securityQuestions = useSecurityQuestions();
   const [sentMagicCode, setSentMagicCode] = useState(false);
   const [code, setCode] = useState("");
 
@@ -36,7 +40,7 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
     mutationFn: async () => {
       const client = new PhoneKeyWorkerClient({
         to: number,
-        answer: securityAnswer,
+        answer: securityQuestion.securityAnswer,
         via: "sms",
         signHashes: [],
         decryptMessages: [],
@@ -56,7 +60,7 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
             timestamp: DateTime.now().toISO(),
             payload: {
               phoneNumber: number,
-              securityQuestion: "FOOBAR",
+              securityQuestion: securityQuestion.securityQuestion,
             },
           }),
         });
@@ -120,14 +124,24 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
             setNumber(value);
           }}
         />
+        <DropDown
+          className="max-w-96 max-sm:w-full"
+          contentContainerClassname="max-w-96 max-sm:w-full"
+          description="Security Question"
+          options={securityQuestions}
+          value={securityQuestion.securityQuestion}
+          onSelectOption={(value) => {
+            securityQuestion.setSecurityQuestion(value.value);
+          }}
+        />
         <Input
           label="Security Answer"
           labelClassname="bg-background-secondary"
           className="max-w-96 max-sm:w-full"
           placeholder="Security Answer"
-          value={securityAnswer}
+          value={securityQuestion.securityAnswer}
           onChange={(value) => {
-            setSecurityAnswer(value);
+            securityQuestion.setSecurityAnswer(value);
           }}
         />
       </div>

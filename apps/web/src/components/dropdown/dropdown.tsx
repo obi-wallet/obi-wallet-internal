@@ -17,6 +17,8 @@ export function DropDown<T extends string | number>({
   customSelectedItemComponent,
   value,
   className,
+  contentContainerClassname,
+  disabled,
 }: {
   description: string;
   options: IDropDownOption<T>[];
@@ -29,6 +31,8 @@ export function DropDown<T extends string | number>({
     handleOptionClick: () => void,
   ) => JSX.Element;
   className?: string;
+  contentContainerClassname?: string;
+  disabled?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -73,6 +77,7 @@ export function DropDown<T extends string | number>({
         data-dropdown-toggle="dropdown"
         className="bg-background-primary hover:bg-background-primary-hoverfocus:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white max-sm:px-3"
         type="button"
+        disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
       >
         {(customSelectedItemComponent &&
@@ -86,7 +91,8 @@ export function DropDown<T extends string | number>({
         <div
           id="dropdown"
           className={cn(
-            "z-1000 absolute right-0 w-full rounded-lg bg-gray-700 shadow",
+            "z-1000 relative right-0 w-full rounded-lg bg-gray-700 shadow",
+            contentContainerClassname,
           )}
         >
           <ul

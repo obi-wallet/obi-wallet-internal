@@ -1,5 +1,9 @@
-import { Button } from "@/components";
+import { Button, DropDown } from "@/components";
 import { PhoneKeyWorkerClient } from "@/keys/intentions-handler";
+import {
+  useSecurityQuestionInput,
+  useSecurityQuestions,
+} from "@/keys/phone/use-security-questions";
 import {
   SingleKeyMetaData,
   TelegramSingleKeyMetaData,
@@ -24,8 +28,8 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
   function AddTelegramKey({ onSubmit, onCancel, askForName }) {
     const [name, setName] = useState("");
     const [chatId, setChatId] = useState("");
-    // TODO: security question
-    const [securityAnswer, setSecurityAnswer] = useState("");
+    const securityQuestion = useSecurityQuestionInput();
+    const securityQuestions = useSecurityQuestions();
     const [sentMagicCode, setSentMagicCode] = useState(false);
     const [code, setCode] = useState("");
 
@@ -33,7 +37,7 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
       mutationFn: async () => {
         const client = new PhoneKeyWorkerClient({
           to: chatId,
-          answer: securityAnswer,
+          answer: securityQuestion.securityAnswer,
           via: "telegram",
           signHashes: [],
           decryptMessages: [],
@@ -52,7 +56,7 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
               timestamp: DateTime.now().toISO(),
               payload: {
                 chatId: chatId,
-                securityQuestion: "FOOBAR",
+                securityQuestion: securityQuestion.securityQuestion,
               },
             }),
           });
@@ -116,14 +120,24 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
               setChatId(value);
             }}
           />
+          <DropDown
+            className="max-w-96 max-sm:w-full"
+            contentContainerClassname="max-w-96 max-sm:w-full"
+            description="Security Question"
+            options={securityQuestions}
+            value={securityQuestion.securityQuestion}
+            onSelectOption={(value) => {
+              securityQuestion.setSecurityQuestion(value.value);
+            }}
+          />
           <Input
             label="Security Answer"
             labelClassname="bg-background-secondary"
             className="max-w-96 max-sm:w-full"
             placeholder="Security Answer"
-            value={securityAnswer}
+            value={securityQuestion.securityAnswer}
             onChange={(value) => {
-              setSecurityAnswer(value);
+              securityQuestion.setSecurityAnswer(value);
             }}
           />
         </div>

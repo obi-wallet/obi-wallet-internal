@@ -1,9 +1,10 @@
-import { Button, KeyItem, Modal } from "@/components";
+import { Button, DropDown, KeyItem, Modal } from "@/components";
 import {
   IntentionsPayload,
   IntentionsResult,
   PhoneKeyIntentionsHandler,
 } from "@/keys/intentions-handler";
+import { useSecurityQuestions } from "@/keys/phone/use-security-questions";
 import {
   PhoneSingleKeyMetaData,
   TelegramSingleKeyMetaData,
@@ -26,9 +27,19 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
   function PhoneKeyModal({ keyItem, index, intentions, onCancel, onResult }) {
     const [sentMagicCode, setSentMagicCode] = useState(false);
     const [securityAnswer, setSecurityAnswer] = useState("");
+    const securityQuestions = useSecurityQuestions();
     const [code, setCode] = useState("");
     const [to, setTo] = useState("");
 
+    const securityQuestionIndex =
+      securityQuestions.findIndex((question) => {
+        return (
+          question.value ===
+          (keyItem.keyMetaData.payload as { securityQuestion: string })
+            .securityQuestion
+        );
+      }) ?? 0;
+    const securityQuestion = securityQuestions[securityQuestionIndex]!;
     const needsTo = !keyItem.keyMetaData.payload;
 
     const confirm = useMutation({
@@ -110,6 +121,14 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
                 }}
               />
             ) : null}
+            <DropDown
+              className="max-w-96 max-sm:w-full"
+              contentContainerClassname="max-w-96 max-sm:w-full"
+              description="Security Question"
+              options={securityQuestions}
+              value={securityQuestion.value}
+              disabled
+            />
             <Input
               label="Security Answer"
               labelClassname="bg-background-secondary"
