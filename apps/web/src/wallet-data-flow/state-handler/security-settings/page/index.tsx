@@ -96,7 +96,6 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
                 });
               }
             } else {
-              // TODO: if the owner has not been updated, we can simplify this (only requires to sign a hash to authenticate the update)
               dispatch({
                 type: "update-owner",
               });

@@ -40,7 +40,6 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
   const previousOwner = state.ownerDraft.original;
   const newOwner = state.ownerDraft.value;
 
-  // TODO:
   const [proposedUpdate, setProposedUpdate] = useState(false);
   const keyMetaData = proposedUpdate
     ? state.keyMetaDataDraft.value.value
