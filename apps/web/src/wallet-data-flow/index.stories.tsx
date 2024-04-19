@@ -432,36 +432,3 @@ export const ConfirmSecuritySettings: Story = {
     onBack,
   },
 };
-
-//
-// export const SignOnly: Story = {
-//   args: {
-//     multisigKey: MultisigKey.create(
-//       MOCK_WALLET_DATA.homeChain,
-//       MOCK_WALLET_DATA.owner,
-//     ),
-//     keyMetaData: {},
-//     intentions: {
-//       signHashes: [new Uint8Array(32)],
-//       decryptMessages: [],
-//       decryptMultisigKeyEncryptedMessages: [],
-//     },
-//     onApprove: async () => {},
-//   },
-// };
-//
-// export const DecryptOnly: Story = {
-//   args: {
-//     multisigKey: MultisigKey.create(
-//       MOCK_WALLET_DATA.homeChain,
-//       MOCK_WALLET_DATA.owner,
-//     ),
-//     keyMetaData: {},
-//     intentions: {
-//       signHashes: [],
-//       decryptMessages: [],
-//       decryptMultisigKeyEncryptedMessages: [],
-//     },
-//     onApprove: async () => {},
-//   },
-// };
