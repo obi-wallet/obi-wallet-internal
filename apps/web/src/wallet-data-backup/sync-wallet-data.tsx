@@ -28,7 +28,11 @@ export enum WalletDataStateType {
 
 export type WalletDataState =
   | {
-      type: WalletDataStateType.NotAvailable | WalletDataStateType.UpToDate;
+      type: WalletDataStateType.NotAvailable;
+    }
+  | {
+      type: WalletDataStateType.UpToDate;
+      payload: WalletData;
     }
   | {
       type: WalletDataStateType.Outdated;
@@ -68,6 +72,7 @@ export function useWalletDataStateQuery() {
       if (previousRevision >= backupRevision) {
         return {
           type: WalletDataStateType.UpToDate,
+          payload: walletData,
         };
       }
 

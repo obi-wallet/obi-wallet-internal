@@ -1,60 +1,67 @@
 "use client";
 
 import { useStore } from "@/contexts";
-import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import {
+  SyncWalletData,
+  useWalletDataStateQuery,
+  WalletDataStateType,
+} from "@/wallet-data-backup/sync-wallet-data";
 import { WalletDataFlow } from "@/wallet-data-flow";
-import { useQuery } from "@obi-wallet/headless-ui";
+import { useWalletBackupMutation } from "@/wallet-health/checks";
 import { ObservableMpcWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-import invariant from "tiny-invariant";
+import { useEffectOnceWhen } from "rooks";
 
 export const SecuritySettings = observer(function SecuritySettings() {
   const wallet = useCurrentWallet({});
   const router = useRouter();
   const { keyMetaDataStore, mpcWalletsStore } = useStore();
+  const backupWallet = useWalletBackupMutation();
 
-  const walletData = useQuery({
-    queryKey: ["wallet-data", wallet?.userEntryAddress],
-    queryFn: async () => {
-      invariant(wallet, "Expected wallet to be set.");
-      invariant(
-        wallet.owner.primaryKey,
-        "Expected wallet to have a primary key",
+  const walletDataState = useWalletDataStateQuery();
+
+  useEffectOnceWhen(() => {
+    if (walletDataState.data?.type === WalletDataStateType.NotAvailable) {
+      backupWallet.mutate();
+    }
+  }, !!wallet && !!walletDataState.data);
+
+  if (!wallet || !walletDataState.data) return null;
+
+  switch (walletDataState.data.type) {
+    case WalletDataStateType.Outdated:
+      return <SyncWalletData />;
+    case WalletDataStateType.UpToDate:
+      return (
+        <WalletDataFlow
+          homeChainId={wallet.homeChainId}
+          initialValues={{
+            owner: wallet.owner,
+            walletData: walletDataState.data.payload,
+            keyMetaData: keyMetaDataStore.getKeyMetaData(
+              wallet.userEntryAddress,
+            ),
+            locallyEncryptedSharesByPreviousOwner: {
+              easy: wallet.encryptedEasyShare,
+              backup: wallet.encryptedBackupShare,
+            },
+          }}
+          onDone={({ wallet: walletData, keyMetaData }) => {
+            const wallet = ObservableMpcWallet.create(walletData);
+
+            keyMetaDataStore.setKeyMetaData(
+              wallet.userEntryAddress,
+              keyMetaData,
+            );
+            mpcWalletsStore.upsertWallet(wallet);
+            router.replace("/dashboard/settings");
+          }}
+          onBack={() => {
+            router.replace("/dashboard/settings");
+          }}
+        />
       );
-      const homeChain = HomeChain.chainId(wallet.homeChainId!);
-      return await homeChain.lookupWalletBackup({
-        homeChainId: wallet.homeChainId,
-        publicKey: wallet.owner.primaryKey.publicKey,
-      });
-    },
-  });
-
-  if (!wallet || !walletData.data) return null;
-
-  return (
-    <WalletDataFlow
-      homeChainId={wallet.homeChainId}
-      initialValues={{
-        owner: wallet.owner,
-        walletData: walletData.data,
-        keyMetaData: keyMetaDataStore.getKeyMetaData(wallet.userEntryAddress),
-        locallyEncryptedSharesByPreviousOwner: {
-          easy: wallet.encryptedEasyShare,
-          backup: wallet.encryptedBackupShare,
-        },
-      }}
-      onDone={({ wallet: walletData, keyMetaData }) => {
-        const wallet = ObservableMpcWallet.create(walletData);
-
-        keyMetaDataStore.setKeyMetaData(wallet.userEntryAddress, keyMetaData);
-        mpcWalletsStore.upsertWallet(wallet);
-        router.replace("/dashboard/settings");
-      }}
-      onBack={() => {
-        router.replace("/dashboard/settings");
-      }}
-    />
-  );
+  }
 });
