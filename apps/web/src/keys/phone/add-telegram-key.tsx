@@ -1,4 +1,4 @@
-import { Button, DropDown } from "@/components";
+import { Button, DropDown, Text } from "@/components";
 import { PhoneKeyWorkerClient } from "@/keys/intentions-handler";
 import {
   useSecurityQuestionInput,
@@ -13,6 +13,7 @@ import { Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 import { useState } from "react";
 
 export interface AddTelegramKeyProps {
@@ -110,6 +111,14 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
               }}
             />
           ) : null}
+          <Text>
+            To find out your Chat ID, initiate chat with our Telegram bot:
+          </Text>
+          <Text>
+            <Link href="https://t.me/Obi_telegram_bot" target="_blank">
+              https://t.me/Obi_telegram_bot
+            </Link>
+          </Text>
           <Input
             label="Chat ID"
             labelClassname="bg-background-secondary"
