@@ -58,7 +58,7 @@ export function useKeyListForMultisigKey({
       const { name, timestamp } = keyMetaData[id] ?? {};
       return {
         id: key.publicKey.value,
-        label: name ?? keyTypeMeta[type].label,
+        label: name || keyTypeMeta[type].label,
         timestamp: timestamp ? DateTime.fromISO(timestamp).toSeconds() : 0,
         key,
         keyMetaData: keyMetaData[id] ?? {},
