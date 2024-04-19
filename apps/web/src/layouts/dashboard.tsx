@@ -15,7 +15,9 @@ export function DashboardCustomLayout({
       )}
     >
       {nav}
-      <div className={cn("md:p-4", "flex-grow overflow-auto ")}>{children}</div>
+      <div className={cn("md:p-4", "flex-grow space-y-2 overflow-auto")}>
+        {children}
+      </div>
     </section>
   );
 }

@@ -99,7 +99,7 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
   return (
     <div className="relative w-full">
       <div className="flex justify-center">
-        <div className="flex w-fit flex-col items-center">
+        <div className="flex flex-col items-center">
           <Text
             leading="loose"
             size="3xl"
@@ -112,7 +112,7 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
           <Transaction
             amountInfo={[]}
             feeInfo={[]}
-            descriptions={["Backup Wallet Data"]}
+            descriptions={["Backup non-sensitive wallet information"]}
             memo=""
             rawData={{
               homeChainId: walletData.homeChainId,
@@ -146,7 +146,7 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
             }}
           />
 
-          <div className="mt-6 flex w-full flex-row space-x-6 ">
+          <div className="mt-6 grid w-full grid-cols-2 gap-6 ">
             <Button
               block
               variant="outline"

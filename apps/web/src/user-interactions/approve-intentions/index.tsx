@@ -100,7 +100,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
     return (
       <div className="relative w-full">
         <div className="flex justify-center">
-          <div className="flex w-fit flex-col items-center">
+          <div className="flex w-full flex-col items-center">
             <Text className="mt-4">{`${threshold} Key${
               threshold > 1 ? "s" : ""
             } Required`}</Text>
@@ -110,7 +110,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                 return (
                   <Button
                     key={key.id}
-                    className="mt-4"
+                    className="mt-4 w-full"
                     block
                     onClick={async () => {
                       const index = multisigKey.keys.findIndex((k) => {
