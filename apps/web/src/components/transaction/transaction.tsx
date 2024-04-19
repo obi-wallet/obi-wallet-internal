@@ -133,7 +133,6 @@ export function Transaction({
         </Button>
         {showData ? (
           <div className="scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300 scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-corner-rounded-full mt-6 max-h-[360px] w-full space-y-3 overflow-auto pr-1">
-            <Text color="gray">Changes:</Text>
             <pre className="text-gray-400">
               {typeof rawData === "string"
                 ? rawData
