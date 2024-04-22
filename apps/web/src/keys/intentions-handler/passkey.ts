@@ -1,18 +1,29 @@
-import { IntentionsHandler } from "@/keys/intentions-handler/abstract";
+import { NewIntentionsHandler } from "@/keys/intentions-handler/abstract";
 import { Secp256k1Decryption } from "@/lib/encryption";
-import { getPasskey, Secp256k1PrivateKeySigner } from "@obi-wallet/sdk";
+import {
+  getPasskey,
+  KeyType,
+  Secp256k1PrivateKeySigner,
+} from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
-export class PasskeyIntentionsHandler extends IntentionsHandler {
+export class PasskeyIntentionsHandler extends NewIntentionsHandler {
   public async handle() {
     const keyPair = await getPasskey();
+    const key = this.owner.keys.find((key) => {
+      return key.publicKey.value === keyPair.publicKey.value;
+    });
     invariant(
-      keyPair.publicKey.value === this.key.publicKey.value,
-      "Public key mismatch",
+      key && key.type === KeyType.Passkey,
+      "No passkey found with the given public key",
     );
 
     const signer = new Secp256k1PrivateKeySigner(keyPair.privateKey);
     const decryption = new Secp256k1Decryption(keyPair.privateKey);
+
+    const messagesToDecrypt = this.getMessagesToDecrypt(
+      keyPair.publicKey.value,
+    );
 
     const [signedHashes, decryptedMessages] = await Promise.all([
       await Promise.all(
@@ -21,15 +32,18 @@ export class PasskeyIntentionsHandler extends IntentionsHandler {
         }),
       ),
       await Promise.all(
-        this.messagesToDecrypt.map(async (message) => {
+        messagesToDecrypt.map(async (message) => {
           return await decryption.decrypt(message);
         }),
       ),
     ]);
 
-    return this.toIntentionsResult({
-      signedHashes,
-      decryptedMessages,
-    });
+    return {
+      publicKey: key.publicKey.value,
+      intentionsResult: this.toIntentionsResult({
+        signedHashes,
+        decryptedMessages,
+      }),
+    };
   }
 }

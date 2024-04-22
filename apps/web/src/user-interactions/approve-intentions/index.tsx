@@ -85,9 +85,18 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
       return results.get(key.publicKey.value);
     };
 
-    const setResult = (key: Key, result: IntentionsResult) => {
+    const setResultWithKey = (key: Key, result: IntentionsResult) => {
       setResults((map) => {
         return new Map(map.set(key.publicKey.value, result));
+      });
+    };
+
+    const setResultWithPublicKey = (
+      publicKey: string,
+      result: IntentionsResult,
+    ) => {
+      setResults((map) => {
+        return new Map(map.set(publicKey, result));
       });
     };
 
@@ -121,13 +130,14 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                         case KeyType.Passkey: {
                           const intentionsHandler =
                             new PasskeyIntentionsHandler({
-                              key: key.key,
-                              keyMetaData: key.keyMetaData,
-                              index,
+                              owner: multisigKey,
                               payload: intentions,
                             });
                           const result = await intentionsHandler.handle();
-                          setResult(key.key, result);
+                          setResultWithPublicKey(
+                            result.publicKey,
+                            result.intentionsResult,
+                          );
                           break;
                         }
 
@@ -168,7 +178,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
           }}
           onResult={(results) => {
             setModal(null);
-            setResult(modal.key.key, results);
+            setResultWithKey(modal.key.key, results);
           }}
         />
       );
