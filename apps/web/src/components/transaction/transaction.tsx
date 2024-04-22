@@ -121,7 +121,13 @@ export function Transaction({
           See Data
         </Button>
         {showData ? (
-          <div className="scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300 scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-corner-rounded-full mt-6 max-h-[360px] w-full space-y-3 overflow-auto pr-1">
+          <div
+            className={cn(
+              "max-md:max-h-[80px]",
+              "max-h-[360px] w-full space-y-3 overflow-auto pr-1",
+              "scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300 scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-corner-rounded-full",
+            )}
+          >
             <pre className="text-gray-400">
               {typeof rawData === "string"
                 ? rawData

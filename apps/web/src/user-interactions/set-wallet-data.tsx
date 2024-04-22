@@ -97,7 +97,7 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
   });
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full md:mt-24">
       <div className="flex justify-center">
         <div className="flex flex-col items-center">
           <Text
