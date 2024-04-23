@@ -6,6 +6,7 @@ import {
 } from "@/keys/intentions-handler";
 import { MultisigKeyDecryption } from "@/lib/encryption";
 import { useKeyListForMultisigKey } from "@/lib/keys";
+import { cn } from "@/lib/utils";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { PhoneKeyModal } from "@/user-interactions/approve-intentions/modals/phone";
 import { Key, KeyType, MultisigKey } from "@obi-wallet/sdk";
@@ -110,7 +111,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
       <div className="relative w-full">
         <div className="flex justify-center">
           <div className="flex w-full flex-col items-center">
-            <Text className="mt-4">{`${threshold} Key${
+            <Text className={cn("mt-4", "max-md:mt-2")}>{`${threshold} Key${
               threshold > 1 ? "s" : ""
             } Required`}</Text>
             {renderKeyModal()}
@@ -119,7 +120,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                 return (
                   <Button
                     key={key.id}
-                    className="mt-4 w-full"
+                    className={cn("mt-4 w-full", "max-md:mt-2")}
                     block
                     onClick={async () => {
                       const index = multisigKey.keys.findIndex((k) => {
