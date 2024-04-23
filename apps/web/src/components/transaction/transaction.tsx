@@ -76,7 +76,7 @@ export function Transaction({
       <Text
         className={cn(
           { "mt-12": amountInfo.length > 0 },
-          "text-center leading-normal",
+          "break-all text-center leading-normal",
         )}
         color="zinc"
       >
@@ -124,7 +124,7 @@ export function Transaction({
           <div
             className={cn(
               "max-md:max-h-[80px]",
-              "max-h-[360px] w-full space-y-3 overflow-auto pr-1",
+              "max-h-[200px] w-full space-y-3 overflow-auto pr-1",
               "scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300 scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-corner-rounded-full",
             )}
           >
