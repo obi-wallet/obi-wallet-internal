@@ -11,7 +11,7 @@ export function DashboardCustomLayout({
   return (
     <section
       className={cn(
-        "flex max-h-[calc(100vh_-_80px)] flex-grow flex-col-reverse max-md:max-h-[calc(100dvh_-_50px)] md:flex-row",
+        "flex max-h-[calc(100vh_-_80px)] flex-grow flex-col-reverse max-md:max-h-[calc(100dvh_-_64px)] md:flex-row",
       )}
     >
       {nav}

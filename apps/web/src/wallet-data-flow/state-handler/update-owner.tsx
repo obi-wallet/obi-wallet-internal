@@ -254,7 +254,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
   }
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full md:mt-24">
       <div className="flex justify-center">
         <div className="flex w-fit flex-col items-center">
           <Text
