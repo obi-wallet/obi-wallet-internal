@@ -46,6 +46,7 @@ export const CreateWalletStep = observer(function CreateWalletStep({
     onSuccess() {
       if (step.waitUntilDone) onDone();
     },
+    retry: 3,
   });
 
   useEffectOnceWhen(() => {

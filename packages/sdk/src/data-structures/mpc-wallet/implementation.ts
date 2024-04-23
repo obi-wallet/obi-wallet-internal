@@ -1,4 +1,6 @@
-import { MpcWalletSchema, UserEntryAddress } from "./schema";
+import { toJS } from "mobx";
+
+import { MpcWalletSchema, UserEntryAddress, WalletData } from "./schema";
 import { HomeChainId, SecretJsHomeChains } from "../../home-chains";
 import { MultisigKey } from "../multisig-key";
 
@@ -8,9 +10,10 @@ export class MpcWallet {
     protected _owner: MultisigKey,
     protected _userEntryAddress: string,
     protected _encryptedShares: {
-      easy?: string;
+      easy: string;
       backup: string;
     },
+    protected _previousWalletData: WalletData | null,
   ) {}
 
   public get homeChainId() {
@@ -25,6 +28,10 @@ export class MpcWallet {
     return this._owner;
   }
 
+  public setOwner(owner: MultisigKey) {
+    this._owner = owner;
+  }
+
   public get userEntryAddress() {
     return this._userEntryAddress;
   }
@@ -37,6 +44,18 @@ export class MpcWallet {
     return this._encryptedShares.backup;
   }
 
+  public get previousWalletData() {
+    return this._previousWalletData;
+  }
+
+  public setEncryptedShares(encryptedShares: { easy: string; backup: string }) {
+    this._encryptedShares = encryptedShares;
+  }
+
+  public setPreviousWalletData(previousWalletData: WalletData | null) {
+    this._previousWalletData = previousWalletData;
+  }
+
   public get schema() {
     return MpcWalletSchema;
   }
@@ -47,6 +66,7 @@ export class MpcWallet {
       owner: this._owner.toJSON()!,
       userEntryAddress: UserEntryAddress.parse(this._userEntryAddress),
       encryptedShares: this._encryptedShares,
+      previousWalletData: toJS(this._previousWalletData),
     };
   }
 }

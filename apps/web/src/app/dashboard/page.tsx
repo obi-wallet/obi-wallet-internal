@@ -126,7 +126,6 @@ export interface TX {
 
 export default observer(function Dashboard() {
   useCurrentWallet({ redirectTo: "/" });
-
   return (
     <div className="flex h-full w-full flex-col space-y-4 text-white">
       <Assets />

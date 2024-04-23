@@ -1,17 +1,33 @@
 "use client";
 
-import { PrimaryKeyStep } from "@/recovery/step/primary-key";
-import { useRecoveryDraft } from "@/recovery/use-recovery-draft";
+import { useStore } from "@/contexts";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { WalletDataFlow } from "@/wallet-data-flow";
+import { ObservableMpcWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
 
 export const Recovery = observer(function Recovery() {
-  const draft = useRecoveryDraft();
+  useCurrentWallet({ redirectTo: "/dashboard", redirectIfFound: true });
+  const { chainStore, mpcWalletsStore, keyMetaDataStore } = useStore();
 
-  if (!draft) return null;
+  const [key, setKey] = useState(0);
+  const increaseKey = () => setKey((key) => key + 1);
 
   return (
-    <section className="flex flex-col items-center space-y-7 px-5">
-      <PrimaryKeyStep draft={draft} />
-    </section>
+    <WalletDataFlow
+      key={key}
+      homeChainId={chainStore.currentChain}
+      initialValues={{}}
+      onDone={({ wallet: walletData, keyMetaData }) => {
+        const wallet = ObservableMpcWallet.create(walletData);
+
+        keyMetaDataStore.setKeyMetaData(wallet.userEntryAddress, keyMetaData);
+        mpcWalletsStore.upsertWallet(wallet);
+      }}
+      onBack={() => {
+        increaseKey();
+      }}
+    />
   );
 });

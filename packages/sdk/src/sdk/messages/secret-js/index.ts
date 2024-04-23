@@ -16,7 +16,6 @@ import warning from "tiny-warning";
 
 import { SecretJsChainId, SecretJsChains } from "../../../chains";
 import { MultisigKey } from "../../../data-structures";
-import { PublicKey } from "../../../keys";
 import { Message, MessageJson } from "../../../transactions";
 import { Token } from "../../common";
 import { Sdk } from "../../sdk";
@@ -206,34 +205,16 @@ export class SecretJsMessages extends AbstractMessages<string> {
     return [];
   }
 
-  protected getSigners(
-    multisigKey: Array<{
-      type: string;
-      payload: {
-        publicKey: PublicKey;
-        // TODO: remove
-        privateKey?: string;
-      };
-    }>,
-  ) {
+  protected getSigners(multisigKey: MultisigKey) {
     console.warn("getting signers...");
     const addressAndTypes: Array<{ address: string; ty: string }> =
-      multisigKey.map(
-        (key: {
-          type: string;
-          payload: {
-            publicKey: PublicKey;
-          };
-        }) => {
-          return {
-            address: this.sdk.transactions.getAddressOfPublicKey(
-              key.payload.publicKey,
-            ),
-            ty: key.type,
-            pubkey_base_64: key.payload.publicKey.value,
-          };
-        },
-      );
+      multisigKey.keys.map((key) => {
+        return {
+          address: this.sdk.transactions.getAddressOfPublicKey(key.publicKey),
+          ty: key.type,
+          pubkey_base_64: key.publicKey.value,
+        };
+      });
     return addressAndTypes;
   }
 
@@ -260,7 +241,7 @@ export class SecretJsMessages extends AbstractMessages<string> {
           fee_debt: 0,
           update_delay: 0,
           // next_hash_seed is some randomness and doesn't need to be stored at all
-          next_hash_seed: randomBytes(32).toString(),
+          next_hash_seed: Buffer.from(randomBytes(32)).toString("hex"),
         },
       },
     });
@@ -286,17 +267,53 @@ export class SecretJsMessages extends AbstractMessages<string> {
           evm_contract_address: "",
           evm_signing_address: "",
           signers: {
-            signers: this.getSigners(
-              newOwner.keys as unknown as Array<{
-                type: string;
-                payload: {
-                  publicKey: PublicKey;
-                  privateKey?: string;
-                };
-              }>,
-            ),
+            signers: this.getSigners(newOwner),
             threshold: newOwner.threshold - 1,
           },
+        },
+      },
+    });
+    return message;
+  }
+
+  public getProposeUpdateOwnerMessage(
+    newOwner: MultisigKey,
+    userAccountContractAddress: string,
+    userAccountCodeHash: string,
+    sender: string,
+    signatures: string[],
+  ): Message {
+    const message = new MsgExecuteContract({
+      sender: sender,
+      contract_address: userAccountContractAddress,
+      code_hash: userAccountCodeHash,
+      msg: {
+        propose_update_owner: {
+          new_owner: newOwner.address,
+          signers: {
+            signers: this.getSigners(newOwner),
+            threshold: newOwner.threshold - 1,
+          },
+          signatures,
+        },
+      },
+    });
+    return message;
+  }
+
+  public getConfirmUpdateOwnerMessage(
+    userAccountContractAddress: string,
+    userAccountCodeHash: string,
+    sender: string,
+    signatures: string[],
+  ): Message {
+    const message = new MsgExecuteContract({
+      sender: sender,
+      contract_address: userAccountContractAddress,
+      code_hash: userAccountCodeHash,
+      msg: {
+        confirm_update_owner: {
+          signatures,
         },
       },
     });

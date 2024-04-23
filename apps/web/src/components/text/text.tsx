@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { IColors, ISizes } from "@/types/styles";
 import { IFontWeights } from "@/types/styles";
 import { ILeadings } from "@/types/styles";
-import { ReactNode } from "react";
+import { ComponentPropsWithRef, ReactNode } from "react";
 
 export type TypographyProps = {
   mono?: boolean;
@@ -14,7 +14,7 @@ export type TypographyProps = {
   uppercase?: boolean;
   className?: string;
   children?: ReactNode;
-};
+} & ComponentPropsWithRef<"span">;
 
 export function Text({
   size = "md",
@@ -25,6 +25,7 @@ export function Text({
   uppercase = false,
   className,
   children,
+  ...rest
 }: TypographyProps) {
   return (
     <span
@@ -63,6 +64,7 @@ export function Text({
         uppercase && "uppercase",
         className,
       )}
+      {...rest}
     >
       {children}
     </span>

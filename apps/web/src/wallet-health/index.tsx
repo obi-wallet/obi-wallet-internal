@@ -1,21 +1,23 @@
 import { Box, Button, Divider, Text } from "@/components";
 import { cn } from "@/lib/utils";
 import {
+  useLocalDataIsUpToDateCheck,
+  useOwnerUpToDateCheck,
   usePublicKeyKnownCheck,
   useWalletBackupCheck,
   useWalletBackupIncludesEasyShareCheck,
   useWalletHasEasyShareCheck,
-  useWalletHasUsableBackupShareCheck,
   WalletHealthCheck,
 } from "@/wallet-health/checks";
 import { observer } from "mobx-react-lite";
 
 export const HealthChecks = observer(function HealthChecks() {
   const publicKeyKnownCheck = usePublicKeyKnownCheck();
+  const ownerUpToDateCheck = useOwnerUpToDateCheck();
   const walletBackupCheck = useWalletBackupCheck();
   const walletBackupIncludesEasyShare = useWalletBackupIncludesEasyShareCheck();
   const walletHasEasyShare = useWalletHasEasyShareCheck();
-  const walletHasUsableBackupShare = useWalletHasUsableBackupShareCheck();
+  const localDataIsUpToDate = useLocalDataIsUpToDateCheck();
 
   return (
     <div className="grid h-full w-full text-white">
@@ -31,10 +33,11 @@ export const HealthChecks = observer(function HealthChecks() {
         <Divider className="mb-7 mt-5" />
 
         <HealthCheckRow check={publicKeyKnownCheck} />
+        <HealthCheckRow check={ownerUpToDateCheck} />
         <HealthCheckRow check={walletBackupCheck} />
         <HealthCheckRow check={walletBackupIncludesEasyShare} />
         <HealthCheckRow check={walletHasEasyShare} />
-        <HealthCheckRow check={walletHasUsableBackupShare} />
+        <HealthCheckRow check={localDataIsUpToDate} />
       </Box>
     </div>
   );

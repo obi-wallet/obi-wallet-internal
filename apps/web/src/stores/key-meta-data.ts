@@ -3,17 +3,39 @@ import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { action, autorun, observable, runInAction, toJS } from "mobx";
 import { z } from "zod";
 
-const SingleKeyMetaData = z.object({
+export const SingleKeyMetaData = z.object({
   name: z.string().optional(),
+  timestamp: z.string().datetime({ offset: true }).optional(),
+  payload: z.unknown().optional(),
 });
 
 export type SingleKeyMetaData = z.TypeOf<typeof SingleKeyMetaData>;
 
-const KeyMetaData = z.record(SingleKeyMetaData);
+export const KeyMetaData = z.record(SingleKeyMetaData);
 
 export type KeyMetaData = z.TypeOf<typeof KeyMetaData>;
 
-const KeyMetaDataPerWallet = z.record(KeyMetaData);
+export const PhoneSingleKeyMetaData = z.intersection(
+  SingleKeyMetaData,
+  z.object({
+    payload: z.object({
+      phoneNumber: z.string(),
+      securityQuestion: z.string(),
+    }),
+  }),
+);
+
+export const TelegramSingleKeyMetaData = z.intersection(
+  SingleKeyMetaData,
+  z.object({
+    payload: z.object({
+      chatId: z.string(),
+      securityQuestion: z.string(),
+    }),
+  }),
+);
+
+export const KeyMetaDataPerWallet = z.record(KeyMetaData);
 
 export type KeyMetaDataPerWallet = z.TypeOf<typeof KeyMetaDataPerWallet>;
 
@@ -64,7 +86,13 @@ export class KeyMetaDataStore {
   ) {
     this.setKeyMetaData(address, {
       ...this.getKeyMetaData(address),
-      [publicKey.value]: singleKeyMetaData,
+      [publicKey.value]: {
+        ...singleKeyMetaData,
+        name: singleKeyMetaData.name ? singleKeyMetaData.name : undefined,
+        timestamp: singleKeyMetaData.timestamp
+          ? singleKeyMetaData.timestamp
+          : undefined,
+      },
     });
   }
 

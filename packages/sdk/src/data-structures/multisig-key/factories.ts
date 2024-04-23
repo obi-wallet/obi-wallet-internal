@@ -53,6 +53,7 @@ export function createObservableMultisigKey(
       setThreshold: action,
       addKey: action,
       removeKey: action,
+      removeKeyByPublicKey: action,
       setKeys: action,
       setPrimaryKey: action,
     },

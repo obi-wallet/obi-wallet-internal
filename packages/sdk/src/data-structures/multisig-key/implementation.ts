@@ -1,4 +1,7 @@
-import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
+import {
+  Secp256k1KeyPair,
+  Secp256k1PublicKey,
+} from "@obi-wallet/sdk-secp256k1";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
@@ -90,6 +93,10 @@ export class MultisigKey {
     return this._keys;
   }
 
+  public getKeysOfType<T extends KeyType>(type: T) {
+    return this._keys.filter(this.isKeyOfType(type));
+  }
+
   public get primaryKey(): KeySubclassTypeMapping[KeyType.Passkey] | null {
     if (
       this._primaryKey &&
@@ -111,6 +118,47 @@ export class MultisigKey {
       type: KeyType.Passkey,
       payload: keyPair,
     });
+  }
+
+  public addPhoneKey(publicKey: Secp256k1PublicKey) {
+    return this.addKey({
+      type: KeyType.Phone,
+      payload: {
+        publicKey,
+      },
+    });
+  }
+
+  public addTelegramKey(publicKey: Secp256k1PublicKey) {
+    return this.addKey({
+      type: KeyType.Telegram,
+      payload: {
+        publicKey,
+      },
+    });
+  }
+
+  public addPendingRecoveryKey({
+    type,
+    publicKey,
+  }: {
+    type: KeyType;
+    publicKey: Secp256k1PublicKey;
+  }) {
+    const key = this._factories.Key.create({
+      payload: {
+        type,
+        publicKey,
+      },
+    });
+    this.setKeys([...this._keys, key]);
+    return key;
+  }
+
+  public removeKeyByPublicKey(publicKey: Secp256k1PublicKey) {
+    this.setKeys(
+      this._keys.filter((key) => key.publicKey.value !== publicKey.value),
+    );
   }
 
   public removeKey(key: Key) {
@@ -140,9 +188,16 @@ export class MultisigKey {
     ])(keys);
   }
 
+  protected isKeyOfType<T extends KeyType>(type: T) {
+    return (key: Key): key is KeySubclassTypeMapping[T] => {
+      return key.type === type;
+    };
+  }
+
   protected isUsableKeyOfType<T extends KeyType>(type: T) {
-    return (key: Key): key is KeySubclassTypeMapping[T] =>
-      key.type === type && key.isUsable;
+    return (key: Key): key is KeySubclassTypeMapping[T] => {
+      return key.type === type && key.isUsable;
+    };
   }
 
   protected get sdk() {

@@ -1,3 +1,4 @@
+import { IntentionsPayload } from "@/keys/intentions-handler";
 import {
   CosmosSdkChainData,
   CosmosSdkChainId,
@@ -5,6 +6,7 @@ import {
 } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
 import { CosmosSdkTokenRegistry } from "@/target-chain/cosmos-sdk/token-registry";
+import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { Chain } from "@chain-registry/types";
 import {
   CosmWasmClient,
@@ -182,9 +184,11 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
   public async calculateFee({
     wallet,
     messages,
+    memo,
   }: {
     wallet: MpcWallet;
     messages: unknown[];
+    memo: string;
   }) {
     invariant(this.validateMessages(messages), "Invalid messages");
 
@@ -195,9 +199,60 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
       const gasEstimation = await client.simulate(
         signer.address,
         messages,
-        undefined,
+        memo,
       );
       return calculateFee(Math.round(gasEstimation * 2), this.gasPrice);
+    });
+  }
+
+  public async calculateHashToSign({
+    wallet,
+    fee,
+    messages,
+    memo,
+  }: {
+    wallet: MpcWallet;
+    fee: StdFee;
+    messages: unknown[];
+    memo: string;
+  }): Promise<Uint8Array | undefined> {
+    invariant(this.validateMessages(messages), "Invalid messages");
+    const signer = await this.getSigner(wallet);
+    return await this.withSigningStargateClient(signer, async (client) => {
+      try {
+        // This will fail, but we are able to retrieve the hash that needs to be signed
+        await client.sign(signer.address, messages, fee, memo);
+      } catch (e) {
+        // Ignoring errors
+      }
+      return signer.lastHash;
+    });
+  }
+
+  public async sign({
+    wallet,
+    fee,
+    messages,
+    memo,
+    intentionsPayload,
+    intentionsResults,
+  }: {
+    wallet: MpcWallet;
+    fee: StdFee;
+    messages: unknown[];
+    memo: string;
+    intentionsPayload: IntentionsPayload;
+    intentionsResults: IntentionsResults;
+  }) {
+    invariant(this.validateMessages(messages), "Invalid messages");
+
+    const signer = await this.getSigner(wallet);
+    signer.addIntentionsResults({
+      payload: intentionsPayload,
+      results: intentionsResults,
+    });
+    return await this.withSigningStargateClient(signer, async (client) => {
+      return await client.sign(signer.address, messages, fee, memo);
     });
   }
 
@@ -205,16 +260,26 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     wallet,
     fee,
     messages,
+    memo,
+    intentionsPayload,
+    intentionsResults,
   }: {
     wallet: MpcWallet;
     fee: StdFee;
     messages: unknown[];
+    memo: string;
+    intentionsPayload: IntentionsPayload;
+    intentionsResults: IntentionsResults;
   }) {
     invariant(this.validateMessages(messages), "Invalid messages");
 
     const signer = await this.getSigner(wallet);
+    signer.addIntentionsResults({
+      payload: intentionsPayload,
+      results: intentionsResults,
+    });
     return await this.withSigningStargateClient(signer, async (client) => {
-      return await client.signAndBroadcast(signer.address, messages, fee);
+      return await client.signAndBroadcast(signer.address, messages, fee, memo);
     });
   }
 

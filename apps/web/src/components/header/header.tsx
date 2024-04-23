@@ -18,7 +18,7 @@ export const Header = observer(function Header() {
 
   return (
     <>
-      <header className={cn("w-full", "md:h-20")}>
+      <header className={cn("h-16 w-full", "md:h-20")}>
         <div
           className={cn(
             "bg-background-primary flex h-full w-full items-center justify-between px-3 shadow md:px-8",

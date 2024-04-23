@@ -13,9 +13,11 @@ import {
   MultisigKey,
   NetworkShare,
   ObservableMultisigKey,
+  Serialized,
+  WalletData,
 } from "@obi-wallet/sdk";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
-import { action, observable } from "mobx";
+import { action, observable, toJS } from "mobx";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -74,6 +76,7 @@ export class NewOnboardingPayload implements Draftable {
   @observable
   protected accessor _unclaimedHomeAccount: UnclaimedHomeAccount | null = null;
   @observable protected accessor _homeAccountClaimed: boolean = false;
+  @observable protected accessor _walletData: WalletData | null = null;
 
   public constructor(homeChainId: HomeChainId) {
     this._multisigKey = ObservableMultisigKey.create(homeChainId);
@@ -118,10 +121,9 @@ export class NewOnboardingPayload implements Draftable {
     });
   }
 
-  public toMpcWalletData(): z.infer<typeof MpcWallet.schema.migratableSchema> {
+  public toMpcWalletData(): Serialized<MpcWallet> {
     invariant(this._encryptedShares, "Shares are not encrypted");
     invariant(this._unclaimedHomeAccount, "Home account is not available");
-    invariant(this._homeAccountClaimed, "Home account is not claimed");
     invariant(this._distributedShares, "Shares have not been distributed");
 
     return MpcWallet.schema.migratableSchema.parse({
@@ -132,6 +134,7 @@ export class NewOnboardingPayload implements Draftable {
         backup: this._encryptedShares.backupShare,
       },
       userEntryAddress: this._unclaimedHomeAccount.homeAccountAddress,
+      previousWalletData: toJS(this._walletData),
     });
   }
 
@@ -147,7 +150,6 @@ export class NewOnboardingPayload implements Draftable {
     await this.encryptSharesIfNecessary();
     await this.distributeSharesIfNecessary();
     await this.claimHomeAccountIfNecessary();
-    await this.backupHomeAccount();
   }
 
   @action
@@ -256,6 +258,11 @@ export class NewOnboardingPayload implements Draftable {
     invariant(this._unclaimedHomeAccount, "Home account is not available");
 
     const homeChain = HomeChain.chainId(this.homeChainId);
+    this._walletData = await homeChain.getWalletData({
+      wallet: this.toMpcWalletData(),
+      keyMetaData: {},
+    });
+
     const userEntryCodeHash = await homeChain.userEntryCodeHash(
       this._unclaimedHomeAccount.homeAccountAddress,
     );
@@ -275,6 +282,7 @@ export class NewOnboardingPayload implements Draftable {
         userAccountAddress: userAccount.userAccountAddress,
         userAccountCodeHash: userAccount.userAccountCodeHash,
         ownerIndex: this._unclaimedHomeAccount.ownerIndex,
+        walletData: this._walletData,
       }),
     });
 
@@ -288,19 +296,6 @@ export class NewOnboardingPayload implements Draftable {
     }
 
     this._homeAccountClaimed = true;
-  }
-
-  protected async backupHomeAccount() {
-    invariant(this._unclaimedHomeAccount, "Home account is not available");
-    invariant(this._encryptedShares, "Shares are not encrypted");
-
-    await HomeChain.chainId(this.homeChainId).backupWallet({
-      wallet: this.toMpcWalletData(),
-      userData: {
-        name: this._name,
-        avatar: this._image,
-      },
-    });
   }
 
   public static deserialize(data: z.infer<typeof OnboardingPayloadSchema>) {

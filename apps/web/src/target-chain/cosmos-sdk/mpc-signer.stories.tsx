@@ -1,5 +1,5 @@
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { newFetchPublicKey } from "@/hooks/use-public-key";
+import { fetchPublicKey } from "@/hooks/use-public-key";
 import {
   AutomatedTest,
   automatedTestPlay,
@@ -8,11 +8,12 @@ import {
 import { TargetChainId } from "@/target-chain";
 import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
+import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { StdSignature } from "@cosmjs/amino";
 import { sha256 } from "@cosmjs/crypto";
 import { fromBase64 } from "@cosmjs/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
-import { MpcWallet } from "@obi-wallet/sdk";
+import { MpcWallet, Secp256k1PrivateKeySigner } from "@obi-wallet/sdk";
 import { Meta, StoryObj } from "@storybook/react";
 import * as secp256k1 from "secp256k1";
 import invariant from "tiny-invariant";
@@ -30,7 +31,7 @@ class TestCosmosSdkMpcSigner extends CosmosSdkMpcSigner {
     wallet: MpcWallet,
     targetChainId: TargetChainId,
   ): Promise<TestCosmosSdkMpcSigner> {
-    const publicKey = await newFetchPublicKey(wallet);
+    const publicKey = await fetchPublicKey(wallet);
 
     return new TestCosmosSdkMpcSigner(wallet, publicKey, targetChainId);
   }
@@ -40,13 +41,6 @@ class TestCosmosSdkMpcSigner extends CosmosSdkMpcSigner {
     hash: Uint8Array,
   ): Promise<StdSignature> {
     return await super.signHashWithEasyShare(address, hash);
-  }
-
-  public override async signHashWithEasyAndBackupShare(
-    address: string,
-    hash: Uint8Array,
-  ): Promise<StdSignature> {
-    return await super.signHashWithEasyAndBackupShare(address, hash);
   }
 }
 
@@ -59,6 +53,10 @@ export const SignHashWithEasyShare: Story = {
       queryKey: ["signHashWithEasyShare", wallet?.userEntryAddress],
       queryFn: async () => {
         invariant(wallet, "Expected wallet to be set.");
+        invariant(
+          wallet.owner.primaryKey,
+          "Expected wallet owner primary key to be set.",
+        );
 
         const signer = await TestCosmosSdkMpcSigner.fromWallet(
           wallet,
@@ -70,51 +68,30 @@ export const SignHashWithEasyShare: Story = {
 
         const message = "hello world";
         const hash = sha256(Buffer.from(message, "utf-8"));
+
+        const intentionsPayload = {
+          signHashes: [hash],
+          decryptMessages: [],
+          decryptMultisigKeyEncryptedMessages: [],
+        };
+
+        const intentionsResults = new IntentionsResults();
+        intentionsResults.set(wallet.owner.primaryKey.publicKey.value, {
+          signedHashes: [
+            await new Secp256k1PrivateKeySigner(
+              wallet.owner.primaryKey.payload.privateKey,
+            ).signHash(hash),
+          ],
+          decryptedMessages: [],
+          decryptedShares: [],
+        });
+
+        signer.addIntentionsResults({
+          payload: intentionsPayload,
+          results: intentionsResults,
+        });
+
         const signature = await signer.signHashWithEasyShare(
-          account.address,
-          hash,
-        );
-
-        return secp256k1.ecdsaVerify(
-          fromBase64(signature.signature),
-          hash,
-          fromBase64(signature.pub_key.value),
-        );
-      },
-      enabled: !!wallet,
-    });
-
-    return (
-      <AutomatedTest
-        done={query.isSuccess || query.isError}
-        success={query.data}
-      />
-    );
-  },
-  play: automatedTestPlay,
-};
-
-export const SignHashWithEasyAndBackupShare: Story = {
-  name: "signHashWithEasyAndBackupShare",
-  decorators: [providerWithWalletDecorator],
-  render: function SignHashWithEasyAndBackupShareTest() {
-    const wallet = useCurrentWallet({});
-    const query = useQuery({
-      queryKey: ["signHashWithEasyAndBackupShare", wallet?.userEntryAddress],
-      queryFn: async () => {
-        invariant(wallet, "Expected wallet to be set.");
-
-        const signer = await TestCosmosSdkMpcSigner.fromWallet(
-          wallet,
-          CosmosSdkChainId.Sei,
-        );
-        const account = (await signer.getAccounts())[0];
-
-        invariant(account, "Expected account to be set");
-
-        const message = "hello world";
-        const hash = sha256(Buffer.from(message, "utf-8"));
-        const signature = await signer.signHashWithEasyAndBackupShare(
           account.address,
           hash,
         );

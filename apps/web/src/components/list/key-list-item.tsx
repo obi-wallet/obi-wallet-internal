@@ -1,26 +1,31 @@
 import { Button } from "@/components";
 import { cn } from "@/lib/utils";
+import { SingleKeyMetaData } from "@/stores/key-meta-data";
+import { Key, KeyType } from "@obi-wallet/sdk";
 import { FaPlus, FaTriangleExclamation } from "react-icons/fa6";
 
 export interface KeyItem {
-  type: string;
+  id: string;
+  label: string;
+  key: Key;
+  keyMetaData: SingleKeyMetaData;
+}
+
+export interface KeyItems {
+  type: KeyType;
   mandatory?: boolean;
   label: string;
-  active?: true;
   comingSoon?: true;
-  keys: {
-    id: string;
-    label: string;
-  }[];
+  keys: KeyItem[];
 }
 
 export function KeyListItem({
   keyData,
-  href,
+  onClick,
   ...rest
 }: {
-  href: string;
-  keyData: KeyItem;
+  onClick: () => void;
+  keyData: KeyItems;
 }) {
   const keyCount = keyData.keys.length;
   return (
@@ -31,9 +36,8 @@ export function KeyListItem({
       block
       {...rest}
       className="relative border-none"
-      href={href}
+      onClick={onClick}
     >
-      {!keyData.active ? "Add " : ""}
       {keyData.label}
       <div
         className={cn(
