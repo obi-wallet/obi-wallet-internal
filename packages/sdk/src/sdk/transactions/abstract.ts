@@ -1,8 +1,6 @@
 import { ChainId } from "../../chains";
 import { PublicKey } from "../../keys";
 import { QueryClientNamespace } from "../../query-client";
-import { SignedTransaction } from "../../transactions";
-import { BroadcastTransactionResult } from "../common";
 
 export abstract class AbstractTransactionsSdk {
   protected queryNamespace: QueryClientNamespace<
@@ -20,9 +18,4 @@ export abstract class AbstractTransactionsSdk {
    * Address of the given public key.
    */
   public abstract getAddressOfPublicKey(publicKey: PublicKey): string;
-
-  /**
-   * Validates the given address
-   */
-  public abstract validateAddress(address: string): boolean;
 }
