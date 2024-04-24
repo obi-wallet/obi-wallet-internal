@@ -43,27 +43,6 @@ export abstract class AbstractTransactionsSdk {
   ): Promise<AccountValidationResult>;
 
   /**
-   * Prepares an account for signing transactions.
-   */
-  public async prepareAccount(address: string): Promise<void> {
-    const validationResult = await this.validateAccount(address);
-    invariant(
-      validationResult !== AccountValidationResult.INVALID_ADDRESS,
-      "Invalid address",
-    );
-
-    if (validationResult <= AccountValidationResult.ACCOUNT_NOT_READY) {
-      await this.lendFees(address);
-      while (
-        (await this.validateAccount(address)) <=
-        AccountValidationResult.ACCOUNT_NOT_READY
-      ) {
-        await this.wait({ ms: 100 });
-      }
-    }
-  }
-
-  /**
    * Broadcasts a signed transaction.
    */
   public abstract broadcastSignedTransaction({
