@@ -5,19 +5,13 @@ import {
 } from "@terra-money/feather.js";
 import { BaseAccount } from "cosmjs-types/cosmos/auth/v1beta1/auth";
 import { Account } from "secretjs";
-import warning from "tiny-warning";
 
 import { SecretJsChainId, SecretJsChains } from "../../../chains";
 import { SecretJsClient } from "../../../clients";
 import { PublicKey } from "../../../keys";
-import { SignedTransaction } from "../../../transactions";
-import { BroadcastTransactionResult, RpcError } from "../../common";
+import { RpcError } from "../../common";
 import { Messages } from "../../messages";
 import { AbstractTransactionsSdk } from "../abstract";
-
-function notImplemented(message: string) {
-  warning(false, message);
-}
 
 export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
   protected override chainId: SecretJsChainId;
@@ -76,14 +70,6 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
         throw e;
       }
     });
-  }
-
-  public async broadcastSignedTransaction({
-    signedTransaction,
-  }: {
-    signedTransaction: SignedTransaction;
-  }): Promise<BroadcastTransactionResult> {
-    return await this.client.broadcastSignedTransaction(signedTransaction);
   }
 
   protected get chain() {

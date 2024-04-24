@@ -25,13 +25,4 @@ export abstract class AbstractTransactionsSdk {
    * Validates the given address
    */
   public abstract validateAddress(address: string): boolean;
-
-  /**
-   * Broadcasts a signed transaction.
-   */
-  public abstract broadcastSignedTransaction({
-    signedTransaction,
-  }: {
-    signedTransaction: SignedTransaction;
-  }): Promise<BroadcastTransactionResult>;
 }
