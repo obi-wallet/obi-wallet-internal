@@ -11,11 +11,7 @@ import { SecretJsChainId, SecretJsChains } from "../../../chains";
 import { SecretJsClient } from "../../../clients";
 import { PublicKey } from "../../../keys";
 import { SignedTransaction } from "../../../transactions";
-import {
-  AccountValidationResult,
-  BroadcastTransactionResult,
-  RpcError,
-} from "../../common";
+import { BroadcastTransactionResult, RpcError } from "../../common";
 import { Messages } from "../../messages";
 import { AbstractTransactionsSdk } from "../abstract";
 
@@ -59,22 +55,6 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     } catch (e) {
       return false;
     }
-  }
-
-  public async validateAccount(
-    address: string,
-  ): Promise<AccountValidationResult> {
-    if (!this.validateAddress(address)) {
-      return AccountValidationResult.INVALID_ADDRESS;
-    }
-    const account = await this.fetchAccount(address);
-    if (!account || !this.isBaseAccount(account)) {
-      return AccountValidationResult.ACCOUNT_NOT_READY;
-    }
-    if (!account.pubKey || account.sequence == 0n) {
-      return AccountValidationResult.PUBLIC_KEY_NOT_READY;
-    }
-    return AccountValidationResult.READY;
   }
 
   protected isBaseAccount(account: Account): account is Account & BaseAccount {

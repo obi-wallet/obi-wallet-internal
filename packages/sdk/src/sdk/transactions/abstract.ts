@@ -4,7 +4,7 @@ import { ChainId } from "../../chains";
 import { PublicKey } from "../../keys";
 import { QueryClientNamespace } from "../../query-client";
 import { SignedTransaction } from "../../transactions";
-import { AccountValidationResult, BroadcastTransactionResult } from "../common";
+import { BroadcastTransactionResult } from "../common";
 
 export abstract class AbstractTransactionsSdk {
   protected queryNamespace: QueryClientNamespace<
@@ -27,13 +27,6 @@ export abstract class AbstractTransactionsSdk {
    * Validates the given address
    */
   public abstract validateAddress(address: string): boolean;
-
-  /**
-   * Validates the account of the given address
-   */
-  public abstract validateAccount(
-    address: string,
-  ): Promise<AccountValidationResult>;
 
   /**
    * Broadcasts a signed transaction.
